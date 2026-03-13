@@ -41,7 +41,6 @@ const steps = [
   },
 ];
 
-/* ── page ── */
 const MadeForYou = () => {
   const stepsRef = useRef<HTMLDivElement>(null);
   const [visibleCards, setVisibleCards] = useState<boolean[]>(
@@ -76,21 +75,16 @@ const MadeForYou = () => {
 
   return (
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
-      {/* ═══════════ SECTION 1 — Hero Banner ═══════════ */}
+      {/* ═══════════ SECTION 1 — Hero Banner (floral bg) ═══════════ */}
       <section className="relative w-full overflow-hidden">
-        {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-
-        {/* Dim overlay */}
         <div
           className="absolute inset-0"
           style={{ backgroundColor: "hsla(0,0%,0%,0.45)" }}
         />
-
-        {/* Floral pattern overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -100,8 +94,6 @@ const MadeForYou = () => {
             opacity: 0.06,
           }}
         />
-
-        {/* Corner florals */}
         <img
           src={floralTopLeft}
           alt=""
@@ -113,8 +105,7 @@ const MadeForYou = () => {
           className="absolute bottom-0 right-0 w-[140px] md:w-[200px] lg:w-[260px] opacity-[0.12] pointer-events-none select-none"
         />
 
-        {/* Content */}
-        <div className="relative z-10 flex items-center justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-5 py-20 md:py-28 lg:py-36">
+        <div className="relative z-10 flex items-center justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-6 md:px-10 lg:px-20 py-20 md:py-28 lg:py-36">
           <div
             className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20 rounded-2xl"
             style={{
@@ -124,15 +115,12 @@ const MadeForYou = () => {
               border: "1px solid hsla(0,0%,100%,0.12)",
             }}
           >
-            {/* Label */}
             <p
               className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em] mb-4"
               style={{ color: "hsl(30 30% 82%)" }}
             >
               MADE FOR YOU
             </p>
-
-            {/* Heading */}
             <h1
               className="font-cormorant text-[30px] md:text-[42px] lg:text-[54px] font-medium leading-[1.15] mb-5"
               style={{ color: "hsl(0 0% 98%)" }}
@@ -140,15 +128,10 @@ const MadeForYou = () => {
               Design Your Dream
               <br />
               Outfit With{" "}
-              <span
-                className="italic"
-                style={{ color: "hsl(16 50% 76%)" }}
-              >
+              <span className="italic" style={{ color: "hsl(16 50% 76%)" }}>
                 Naira
               </span>
             </h1>
-
-            {/* Subheading */}
             <p
               className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-relaxed max-w-[480px] mx-auto mb-8"
               style={{ color: "hsl(0 0% 82%)" }}
@@ -156,8 +139,6 @@ const MadeForYou = () => {
               Over 2,500+ custom pieces handcrafted for brides, celebrations,
               and once-in-a-lifetime moments.
             </p>
-
-            {/* CTA */}
             <Link
               to="/custom"
               className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
@@ -173,24 +154,12 @@ const MadeForYou = () => {
         </div>
       </section>
 
-      {/* ═══════════ SECTION 2 — Process Steps ═══════════ */}
+      {/* ═══════════ SECTION 2 — Process Steps (clean, no pattern) ═══════════ */}
       <section
-        className="relative w-full overflow-hidden py-[70px] md:py-[100px] lg:py-[130px]"
+        className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
         style={{ backgroundColor: "hsl(30 20% 95%)" }}
       >
-        {/* Background pattern */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${floralPatternBg})`,
-            backgroundSize: "600px",
-            backgroundRepeat: "repeat",
-            opacity: 0.06,
-          }}
-        />
-
-        <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
-          {/* Section heading */}
+        <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
           <div className="text-center mb-12 md:mb-16">
             <p
               className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
@@ -203,35 +172,20 @@ const MadeForYou = () => {
               style={{ color: "hsl(0 0% 18%)" }}
             >
               Your Journey to Custom{" "}
-              <span
-                className="italic"
-                style={{ color: "hsl(16 50% 72%)" }}
-              >
+              <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
                 Perfection
               </span>
             </h2>
-
-            {/* Divider */}
             <div className="flex items-center justify-center gap-3 mt-5">
-              <div
-                className="w-12 md:w-16 h-px"
-                style={{ backgroundColor: "hsl(160 12% 72%)" }}
-              />
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: "hsl(160 15% 55%)" }}
-              />
-              <div
-                className="w-12 md:w-16 h-px"
-                style={{ backgroundColor: "hsl(160 12% 72%)" }}
-              />
+              <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(160 15% 55%)" }} />
+              <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
             </div>
           </div>
 
-          {/* Step cards */}
           <div
             ref={stepsRef}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-7"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
           >
             {steps.map((step, i) => (
               <div
@@ -243,41 +197,29 @@ const MadeForYou = () => {
                   boxShadow: "0 2px 14px -4px hsla(0,0%,0%,0.07)",
                   border: "1px solid hsl(30 15% 90%)",
                   opacity: visibleCards[i] ? 1 : 0,
-                  transform: visibleCards[i]
-                    ? "translateY(0)"
-                    : "translateY(24px)",
+                  transform: visibleCards[i] ? "translateY(0)" : "translateY(24px)",
                   transitionDuration: "0.6s",
                   transitionDelay: visibleCards[i] ? `${i * 0.12}s` : "0s",
                 }}
               >
-                {/* Icon circle */}
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
                   style={{ backgroundColor: "hsl(160 12% 88%)" }}
                 >
-                  <step.icon
-                    size={24}
-                    style={{ color: "hsl(160 15% 42%)" }}
-                  />
+                  <step.icon size={24} style={{ color: "hsl(160 15% 42%)" }} />
                 </div>
-
-                {/* Step number */}
                 <span
                   className="font-cormorant text-[12px] font-semibold tracking-[0.1em] mb-1"
                   style={{ color: "hsl(160 15% 55%)" }}
                 >
                   STEP {step.number}
                 </span>
-
-                {/* Title */}
                 <h3
                   className="font-cormorant text-[18px] md:text-[19px] font-semibold mb-2"
                   style={{ color: "hsl(0 0% 18%)" }}
                 >
                   {step.title}
                 </h3>
-
-                {/* Description */}
                 <p
                   className="font-cormorant text-[13px] md:text-[14px] leading-relaxed max-w-[260px]"
                   style={{ color: "hsl(0 0% 48%)" }}
@@ -290,8 +232,12 @@ const MadeForYou = () => {
         </div>
       </section>
 
+      {/* Section 3 — Customer Stories (floral bg, handled inside component) */}
       <CustomizationStories />
+
+      {/* Section 4 — FAQ (plain bg, handled inside component) */}
       <CustomFAQ />
+
       <Footer />
     </div>
   );

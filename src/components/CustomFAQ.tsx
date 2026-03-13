@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
-import floralPatternBg from "@/assets/floral-pattern-bg.webp";
 
 /* ── FAQ data ── */
 const faqCategories = [

@@ -327,11 +327,11 @@ const ShopAll = () => {
         </div>
 
         {/* Mobile toolbar */}
-        <div className="flex md:hidden items-center gap-3 px-5 h-[52px]">
+        <div className="flex md:hidden items-center gap-2 px-5 h-[52px]">
           <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
             <SheetTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -371,7 +371,7 @@ const ShopAll = () => {
           <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
             <DialogTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -409,6 +409,35 @@ const ShopAll = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Layout toggle */}
+          <div
+            className="flex items-center rounded-full border overflow-hidden"
+            style={{ borderColor: "hsl(0 0% 82%)", backgroundColor: "hsl(0 0% 100%)" }}
+          >
+            <button
+              className="p-2.5 transition-colors duration-150"
+              style={{
+                backgroundColor: mobileLayout === "grid" ? "hsl(0 0% 92%)" : "transparent",
+                color: mobileLayout === "grid" ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
+              }}
+              onClick={() => setMobileLayout("grid")}
+              title="Grid view"
+            >
+              <LayoutGrid size={14} />
+            </button>
+            <button
+              className="p-2.5 transition-colors duration-150"
+              style={{
+                backgroundColor: mobileLayout === "list" ? "hsl(0 0% 92%)" : "transparent",
+                color: mobileLayout === "list" ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
+              }}
+              onClick={() => setMobileLayout("list")}
+              title="List view"
+            >
+              <LayoutList size={14} />
+            </button>
+          </div>
         </div>
       </div>
 

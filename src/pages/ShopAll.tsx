@@ -455,7 +455,11 @@ const ShopAll = () => {
           {/* Scrollable product grid */}
           <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
             <div
-              className={`grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10 md:gap-x-6 md:gap-y-12 ${
+              className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
+                mobileLayout === "list"
+                  ? "grid-cols-1 gap-y-8"
+                  : "grid-cols-2 gap-y-10"
+              } ${
                 gridCols === 4
                   ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
                   : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"

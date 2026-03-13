@@ -1,0 +1,296 @@
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { MessageSquare, Palette, Phone, Package } from "lucide-react";
+import heroImage from "@/assets/made-for-you-hero.jpg";
+import floralTopLeft from "@/assets/floral-top-left.png";
+import floralBottomRight from "@/assets/floral-bottom-right.png";
+import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import Footer from "@/components/Footer";
+
+/* ── process steps ── */
+const steps = [
+  {
+    icon: MessageSquare,
+    number: "01",
+    title: "Send Us Your Dream Outfit",
+    description:
+      "Share your inspiration with us on WhatsApp — a photo, sketch, or even just an idea.",
+  },
+  {
+    icon: Palette,
+    number: "02",
+    title: "Explore Design Options",
+    description:
+      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea.",
+  },
+  {
+    icon: Phone,
+    number: "03",
+    title: "Consultation Call",
+    description:
+      "We align on measurements, finishing details, and final design choices during a quick consultation.",
+  },
+  {
+    icon: Package,
+    number: "04",
+    title: "Delivered To You",
+    description:
+      "Your dream outfit is handcrafted, quality-checked, and delivered to your doorstep.",
+  },
+];
+
+/* ── page ── */
+const MadeForYou = () => {
+  const stepsRef = useRef<HTMLDivElement>(null);
+  const [visibleCards, setVisibleCards] = useState<boolean[]>(
+    steps.map(() => false)
+  );
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    const cards = stepsRef.current?.querySelectorAll("[data-step-card]");
+    if (!cards) return;
+
+    cards.forEach((card, i) => {
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setVisibleCards((prev) => {
+              const next = [...prev];
+              next[i] = true;
+              return next;
+            });
+            obs.disconnect();
+          }
+        },
+        { threshold: 0.15 }
+      );
+      obs.observe(card);
+      observers.push(obs);
+    });
+
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  return (
+    <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+      {/* ═══════════ SECTION 1 — Hero Banner ═══════════ */}
+      <section className="relative w-full overflow-hidden">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+
+        {/* Dim overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: "hsla(0,0%,0%,0.45)" }}
+        />
+
+        {/* Floral pattern overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${floralPatternBg})`,
+            backgroundSize: "500px",
+            backgroundRepeat: "repeat",
+            opacity: 0.06,
+          }}
+        />
+
+        {/* Corner florals */}
+        <img
+          src={floralTopLeft}
+          alt=""
+          className="absolute top-0 left-0 w-[140px] md:w-[200px] lg:w-[260px] opacity-[0.12] pointer-events-none select-none"
+        />
+        <img
+          src={floralBottomRight}
+          alt=""
+          className="absolute bottom-0 right-0 w-[140px] md:w-[200px] lg:w-[260px] opacity-[0.12] pointer-events-none select-none"
+        />
+
+        {/* Content */}
+        <div className="relative z-10 flex items-center justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-5 py-20 md:py-28 lg:py-36">
+          <div
+            className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20 rounded-2xl"
+            style={{
+              backgroundColor: "hsla(0,0%,100%,0.08)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+              border: "1px solid hsla(0,0%,100%,0.12)",
+            }}
+          >
+            {/* Label */}
+            <p
+              className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em] mb-4"
+              style={{ color: "hsl(30 30% 82%)" }}
+            >
+              MADE FOR YOU
+            </p>
+
+            {/* Heading */}
+            <h1
+              className="font-cormorant text-[30px] md:text-[42px] lg:text-[54px] font-medium leading-[1.15] mb-5"
+              style={{ color: "hsl(0 0% 98%)" }}
+            >
+              Design Your Dream
+              <br />
+              Outfit With{" "}
+              <span
+                className="italic"
+                style={{ color: "hsl(16 50% 76%)" }}
+              >
+                Naira
+              </span>
+            </h1>
+
+            {/* Subheading */}
+            <p
+              className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-relaxed max-w-[480px] mx-auto mb-8"
+              style={{ color: "hsl(0 0% 82%)" }}
+            >
+              Over 2,500+ custom pieces handcrafted for brides, celebrations,
+              and once-in-a-lifetime moments.
+            </p>
+
+            {/* CTA */}
+            <Link
+              to="/custom"
+              className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              style={{
+                backgroundColor: "hsl(0 0% 100%)",
+                color: "hsl(0 0% 15%)",
+                boxShadow: "0 4px 20px -4px hsla(0,0%,0%,0.25)",
+              }}
+            >
+              Get Customized Design
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ SECTION 2 — Process Steps ═══════════ */}
+      <section
+        className="relative w-full overflow-hidden py-[70px] md:py-[100px] lg:py-[130px]"
+        style={{ backgroundColor: "hsl(30 20% 95%)" }}
+      >
+        {/* Background pattern */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${floralPatternBg})`,
+            backgroundSize: "600px",
+            backgroundRepeat: "repeat",
+            opacity: 0.06,
+          }}
+        />
+
+        <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
+          {/* Section heading */}
+          <div className="text-center mb-12 md:mb-16">
+            <p
+              className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
+              style={{ color: "hsl(160 15% 45%)" }}
+            >
+              HOW IT WORKS
+            </p>
+            <h2
+              className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
+              style={{ color: "hsl(0 0% 18%)" }}
+            >
+              Your Journey to Custom{" "}
+              <span
+                className="italic"
+                style={{ color: "hsl(16 50% 72%)" }}
+              >
+                Perfection
+              </span>
+            </h2>
+
+            {/* Divider */}
+            <div className="flex items-center justify-center gap-3 mt-5">
+              <div
+                className="w-12 md:w-16 h-px"
+                style={{ backgroundColor: "hsl(160 12% 72%)" }}
+              />
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: "hsl(160 15% 55%)" }}
+              />
+              <div
+                className="w-12 md:w-16 h-px"
+                style={{ backgroundColor: "hsl(160 12% 72%)" }}
+              />
+            </div>
+          </div>
+
+          {/* Step cards */}
+          <div
+            ref={stepsRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-7"
+          >
+            {steps.map((step, i) => (
+              <div
+                key={i}
+                data-step-card
+                className="flex flex-col items-center text-center rounded-xl px-6 py-9 transition-all ease-out"
+                style={{
+                  backgroundColor: "hsl(30 25% 96%)",
+                  boxShadow: "0 2px 14px -4px hsla(0,0%,0%,0.07)",
+                  border: "1px solid hsl(30 15% 90%)",
+                  opacity: visibleCards[i] ? 1 : 0,
+                  transform: visibleCards[i]
+                    ? "translateY(0)"
+                    : "translateY(24px)",
+                  transitionDuration: "0.6s",
+                  transitionDelay: visibleCards[i] ? `${i * 0.12}s` : "0s",
+                }}
+              >
+                {/* Icon circle */}
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
+                  style={{ backgroundColor: "hsl(160 12% 88%)" }}
+                >
+                  <step.icon
+                    size={24}
+                    style={{ color: "hsl(160 15% 42%)" }}
+                  />
+                </div>
+
+                {/* Step number */}
+                <span
+                  className="font-cormorant text-[12px] font-semibold tracking-[0.1em] mb-1"
+                  style={{ color: "hsl(160 15% 55%)" }}
+                >
+                  STEP {step.number}
+                </span>
+
+                {/* Title */}
+                <h3
+                  className="font-cormorant text-[18px] md:text-[19px] font-semibold mb-2"
+                  style={{ color: "hsl(0 0% 18%)" }}
+                >
+                  {step.title}
+                </h3>
+
+                {/* Description */}
+                <p
+                  className="font-cormorant text-[13px] md:text-[14px] leading-relaxed max-w-[260px]"
+                  style={{ color: "hsl(0 0% 48%)" }}
+                >
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default MadeForYou;

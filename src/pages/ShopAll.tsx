@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

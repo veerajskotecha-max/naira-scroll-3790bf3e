@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, Minus, Plus, Truck, RotateCcw, ShieldCheck, Ruler } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";

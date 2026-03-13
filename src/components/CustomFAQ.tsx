@@ -64,19 +64,9 @@ const CustomFAQ = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-[70px] md:py-[100px] lg:py-[130px]"
+      className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
       style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
-      {/* Subtle background pattern */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${floralPatternBg})`,
-          backgroundSize: "700px",
-          backgroundRepeat: "repeat",
-          opacity: 0.04,
-        }}
-      />
 
       <div className="relative z-10 max-w-[1100px] mx-auto px-5 md:px-8 lg:px-10">
         {/* Section heading */}

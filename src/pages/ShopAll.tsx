@@ -247,10 +247,8 @@ const ShopAll = () => {
           {/* Two-column layout */}
           <div className="flex gap-10 lg:gap-14">
             {/* Left sidebar — desktop only */}
-            <aside className="hidden lg:block w-[280px] shrink-0">
-              <div className="sticky top-[130px]">
-                <FilterSidebar {...filterProps} />
-              </div>
+            <aside className="hidden lg:block w-[280px] shrink-0 self-start sticky top-[130px] max-h-[calc(100vh-150px)] overflow-y-auto">
+              <FilterSidebar {...filterProps} />
             </aside>
 
             {/* Product grid */}

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, Minus, Plus, Truck, RotateCcw, ShieldCheck, Ruler } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
@@ -26,11 +27,145 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
   const [zoomed, setZoomed] = useState(false);
+  const isMobile = useIsMobile();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isScrolling = useRef(false);
+
+  // Sync scroll position when tapping thumbnails on mobile
+  const scrollToImage = useCallback((index: number) => {
+    if (!scrollRef.current) return;
+    isScrolling.current = true;
+    const container = scrollRef.current;
+    container.scrollTo({ left: index * container.offsetWidth, behavior: "smooth" });
+    setSelectedImage(index);
+    setTimeout(() => { isScrolling.current = false; }, 400);
+  }, []);
+
+  // Detect active slide on swipe
+  useEffect(() => {
+    if (!isMobile || !scrollRef.current) return;
+    const container = scrollRef.current;
+    let timeout: ReturnType<typeof setTimeout>;
+    const onScroll = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        if (isScrolling.current) return;
+        const index = Math.round(container.scrollLeft / container.offsetWidth);
+        setSelectedImage(index);
+      }, 60);
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => { container.removeEventListener("scroll", onScroll); clearTimeout(timeout); };
+  }, [isMobile]);
+
+  const WishlistButton = (
+    <button
+      className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200"
+      style={{ backgroundColor: "hsla(0,0%,100%,0.9)" }}
+      onClick={(e) => { e.stopPropagation(); setWishlisted(!wishlisted); }}
+    >
+      <Heart
+        size={18}
+        className="transition-colors duration-200"
+        style={{
+          color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)",
+          fill: wishlisted ? "hsl(0 70% 55%)" : "none",
+        }}
+      />
+    </button>
+  );
+
+  const MobileGallery = (
+    <div className="relative -mx-4 md:hidden">
+      {/* Swipeable image carousel */}
+      <div
+        ref={scrollRef}
+        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+      >
+        {thumbnails.map((img, i) => (
+          <div
+            key={i}
+            className="w-full shrink-0 snap-center"
+            style={{ aspectRatio: "4/5", backgroundColor: "hsl(0 0% 97%)" }}
+          >
+            <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+          </div>
+        ))}
+      </div>
+      {WishlistButton}
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 mt-3">
+        {thumbnails.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToImage(i)}
+            className="w-2 h-2 rounded-full transition-all duration-200"
+            style={{
+              backgroundColor: selectedImage === i ? "hsl(186 35% 28%)" : "hsl(0 0% 78%)",
+              transform: selectedImage === i ? "scale(1.3)" : "scale(1)",
+            }}
+          />
+        ))}
+      </div>
+      {/* Thumbnail strip */}
+      <div className="flex gap-2 mt-3 px-4 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+        {thumbnails.map((thumb, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToImage(i)}
+            className="shrink-0 w-[56px] h-[56px] rounded-md overflow-hidden border-2 transition-all duration-200"
+            style={{
+              borderColor: selectedImage === i ? "hsl(186 35% 28%)" : "hsl(0 0% 88%)",
+              opacity: selectedImage === i ? 1 : 0.6,
+            }}
+          >
+            <img src={thumb} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const DesktopGallery = (
+    <div className="lg:w-[58%] hidden md:flex flex-col-reverse md:flex-row gap-4">
+      {/* Thumbnails */}
+      <div className="flex md:flex-col gap-3 md:w-[80px] shrink-0 overflow-x-auto md:overflow-visible">
+        {thumbnails.map((thumb, i) => (
+          <button
+            key={i}
+            onClick={() => setSelectedImage(i)}
+            className="shrink-0 w-[64px] h-[64px] md:w-[72px] md:h-[72px] rounded-md overflow-hidden border-2 transition-all duration-200"
+            style={{
+              borderColor: selectedImage === i ? "hsl(186 35% 28%)" : "hsl(0 0% 88%)",
+              opacity: selectedImage === i ? 1 : 0.7,
+            }}
+          >
+            <img src={thumb} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+          </button>
+        ))}
+      </div>
+      {/* Main Image */}
+      <div
+        className="relative flex-1 rounded-lg overflow-hidden cursor-zoom-in"
+        style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 97%)" }}
+        onClick={() => setZoomed(!zoomed)}
+      >
+        <img
+          src={thumbnails[selectedImage]}
+          alt="Midnight Silk Drape Saree"
+          className="w-full h-full object-cover transition-transform duration-500 ease-out"
+          style={{ transform: zoomed ? "scale(1.5)" : "scale(1)" }}
+        />
+        {WishlistButton}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
-      {/* Breadcrumb */}
-      <div className="max-w-[1200px] mx-auto px-4 pt-28 pb-4">
+      {/* Breadcrumb - hidden on mobile */}
+      <div className="max-w-[1200px] mx-auto px-4 pt-28 pb-4 hidden md:block">
         <nav className="flex items-center gap-2 text-[13px] font-cormorant" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
@@ -40,57 +175,15 @@ const ProductDetail = () => {
         </nav>
       </div>
 
+      {/* Mobile: full-width gallery at top */}
+      <div className="md:hidden pt-20">
+        {MobileGallery}
+      </div>
+
       {/* Main Product Section */}
       <div className="max-w-[1200px] mx-auto px-4 pb-20">
         <div className="flex flex-col lg:flex-row gap-10 xl:gap-14">
-
-          {/* Left Column – Image Gallery */}
-          <div className="lg:w-[58%] flex flex-col-reverse md:flex-row gap-4">
-            {/* Thumbnails */}
-            <div className="flex md:flex-col gap-3 md:w-[80px] shrink-0 overflow-x-auto md:overflow-visible">
-              {thumbnails.map((thumb, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedImage(i)}
-                  className="shrink-0 w-[64px] h-[64px] md:w-[72px] md:h-[72px] rounded-md overflow-hidden border-2 transition-all duration-200"
-                  style={{
-                    borderColor: selectedImage === i ? "hsl(186 35% 28%)" : "hsl(0 0% 88%)",
-                    opacity: selectedImage === i ? 1 : 0.7,
-                  }}
-                >
-                  <img src={thumb} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-
-            {/* Main Image */}
-            <div
-              className="relative flex-1 rounded-lg overflow-hidden cursor-zoom-in"
-              style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 97%)" }}
-              onClick={() => setZoomed(!zoomed)}
-            >
-              <img
-                src={thumbnails[selectedImage]}
-                alt="Midnight Silk Drape Saree"
-                className="w-full h-full object-cover transition-transform duration-500 ease-out"
-                style={{ transform: zoomed ? "scale(1.5)" : "scale(1)" }}
-              />
-              <button
-                className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200"
-                style={{ backgroundColor: "hsla(0,0%,100%,0.9)" }}
-                onClick={(e) => { e.stopPropagation(); setWishlisted(!wishlisted); }}
-              >
-                <Heart
-                  size={18}
-                  className="transition-colors duration-200"
-                  style={{
-                    color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)",
-                    fill: wishlisted ? "hsl(0 70% 55%)" : "none",
-                  }}
-                />
-              </button>
-            </div>
-          </div>
+          {DesktopGallery}
 
           {/* Right Column – Product Details */}
           <div className="lg:w-[42%] flex flex-col">

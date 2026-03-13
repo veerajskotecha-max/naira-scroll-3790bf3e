@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import floralPatternBg from "@/assets/floral-pattern-bg.webp";
 import { Sparkles, Palette, Gift, Search, MessageSquare, Scissors, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import floralTopLeft from "@/assets/floral-top-left.png";

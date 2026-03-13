@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -211,6 +211,7 @@ const ShopAll = () => {
   const [sortValue, setSortValue] = useState("newest");
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
+  const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
 
   const sortOptions = [
     { value: "newest", label: "Newest Arrivals" },
@@ -326,11 +327,11 @@ const ShopAll = () => {
         </div>
 
         {/* Mobile toolbar */}
-        <div className="flex md:hidden items-center gap-3 px-5 h-[52px]">
+        <div className="flex md:hidden items-center gap-2 px-5 h-[52px]">
           <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
             <SheetTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -370,7 +371,7 @@ const ShopAll = () => {
           <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
             <DialogTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -408,6 +409,35 @@ const ShopAll = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Layout toggle */}
+          <div
+            className="flex items-center rounded-full border overflow-hidden"
+            style={{ borderColor: "hsl(0 0% 82%)", backgroundColor: "hsl(0 0% 100%)" }}
+          >
+            <button
+              className="p-2.5 transition-colors duration-150"
+              style={{
+                backgroundColor: mobileLayout === "grid" ? "hsl(0 0% 92%)" : "transparent",
+                color: mobileLayout === "grid" ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
+              }}
+              onClick={() => setMobileLayout("grid")}
+              title="Grid view"
+            >
+              <LayoutGrid size={14} />
+            </button>
+            <button
+              className="p-2.5 transition-colors duration-150"
+              style={{
+                backgroundColor: mobileLayout === "list" ? "hsl(0 0% 92%)" : "transparent",
+                color: mobileLayout === "list" ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
+              }}
+              onClick={() => setMobileLayout("list")}
+              title="List view"
+            >
+              <LayoutList size={14} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -425,7 +455,11 @@ const ShopAll = () => {
           {/* Scrollable product grid */}
           <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
             <div
-              className={`grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10 md:gap-x-6 md:gap-y-12 ${
+              className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
+                mobileLayout === "list"
+                  ? "grid-cols-1 gap-y-8"
+                  : "grid-cols-2 gap-y-10"
+              } ${
                 gridCols === 4
                   ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
                   : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"

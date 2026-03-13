@@ -37,24 +37,20 @@ const Craftsmanship = () => {
             style={{ transitionDuration: "0.6s" }}
           >
             {/* Main image */}
-            <div
-              className="relative rounded-2xl overflow-hidden"
+            <img
+              src={craftsmanshipMain}
+              alt="Hand embroidery craftsmanship"
+              className="w-full rounded-2xl object-cover"
               style={{
                 aspectRatio: "4/5",
-                boxShadow: "0 12px 40px -10px hsla(0,0%,0%,0.15)",
+                boxShadow: "0 10px 35px -8px hsla(0,0%,0%,0.18)",
               }}
-            >
-              <img
-                src={craftsmanshipMain}
-                alt="Hand embroidery craftsmanship"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
+              loading="lazy"
+            />
 
             {/* Overlapping smaller image */}
             <div
-              className={`absolute -bottom-6 -right-4 md:-bottom-8 md:-right-6 lg:-bottom-10 lg:-right-8 w-[40%] md:w-[38%] rounded-xl overflow-hidden transition-all ease-out ${
+              className={`absolute -bottom-6 -right-4 md:-bottom-8 md:-right-6 lg:-bottom-10 lg:-right-8 w-[40%] md:w-[38%] transition-all ease-out ${
                 visible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
@@ -62,14 +58,16 @@ const Craftsmanship = () => {
               style={{
                 transitionDuration: "0.6s",
                 transitionDelay: visible ? "0.25s" : "0s",
-                boxShadow: "0 8px 30px -6px hsla(0,0%,0%,0.2)",
-                border: "4px solid hsl(0 0% 100%)",
+                padding: "14px",
+                backgroundColor: "hsl(0 0% 100%)",
+                borderRadius: "16px",
+                boxShadow: "0 8px 28px -6px hsla(0,0%,0%,0.18)",
               }}
             >
               <img
                 src={craftsmanshipOverlay}
                 alt="Colorful fabrics and garments"
-                className="w-full aspect-square object-cover"
+                className="w-full aspect-square object-cover rounded-lg"
                 loading="lazy"
               />
             </div>

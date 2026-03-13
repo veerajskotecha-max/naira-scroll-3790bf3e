@@ -1,4 +1,5 @@
 import { useState } from "react";
+import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -472,6 +473,7 @@ const ShopAll = () => {
           </div>
         </div>
       </div>
+      <UrgencyNotification />
     </div>
   );
 };

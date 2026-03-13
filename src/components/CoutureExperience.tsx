@@ -194,20 +194,6 @@ const CoutureExperience = () => {
           </div>
         </div>
 
-        {/* Curved bottom divider */}
-        <div className="relative mt-16 md:mt-20 -mb-px">
-          <svg
-            viewBox="0 0 1440 80"
-            preserveAspectRatio="none"
-            className="w-full h-[40px] md:h-[60px] lg:h-[80px] block"
-            style={{ color: "hsl(30 20% 92%)" }}
-          >
-            <path
-              d="M0,0 C360,80 1080,80 1440,0 L1440,80 L0,80 Z"
-              fill="currentColor"
-            />
-          </svg>
-        </div>
       </section>
 
       {/* Bottom Section – Customisation Steps */}

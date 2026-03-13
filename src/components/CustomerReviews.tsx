@@ -135,8 +135,33 @@ const CustomerReviews = () => {
   const [visibleCount, setVisibleCount] = useState(4);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
   const maxCount = ratingBreakdown[0].count;
+
+  const filteredReviews = useMemo(() => {
+    switch (activeFilter) {
+      case "With Photos":
+        return reviewsData.filter((r) => r.hasPhotos);
+      case "5★":
+        return reviewsData.filter((r) => r.rating === 5);
+      case "4★":
+        return reviewsData.filter((r) => r.rating === 4);
+      case "3★":
+        return reviewsData.filter((r) => r.rating === 3);
+      default:
+        return reviewsData;
+    }
+  }, [activeFilter]);
+
+  const handleFilterChange = (filter: string) => {
+    setAnimating(true);
+    setTimeout(() => {
+      setActiveFilter(filter);
+      setVisibleCount(4);
+      setAnimating(false);
+    }, 200);
+  };
 
   return (
     <section className="max-w-[1200px] mx-auto px-4 pb-20">

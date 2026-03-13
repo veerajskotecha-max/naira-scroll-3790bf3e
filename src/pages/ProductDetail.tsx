@@ -173,14 +173,14 @@ const ProductDetail = () => {
           <div className="lg:w-[42%] flex flex-col">
             {/* Title */}
             <h1
-              className="font-cormorant text-[28px] md:text-[34px] font-semibold leading-tight"
+              className="font-cormorant text-[28px] md:text-[34px] font-semibold leading-[1.2] md:leading-tight max-w-[320px] md:max-w-none mt-4 md:mt-0"
               style={{ color: "hsl(0 0% 15%)" }}
             >
               Midnight Silk Drape Saree
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-1.5 md:mt-3">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={14} style={{ color: "hsl(45 93% 47%)", fill: "hsl(45 93% 47%)" }} />
@@ -193,22 +193,22 @@ const ProductDetail = () => {
 
             {/* Price */}
             <p
-              className="font-cormorant text-[26px] font-bold mt-5"
+              className="font-cormorant text-[26px] font-bold mt-2 md:mt-5"
               style={{ color: "hsl(186 35% 28%)" }}
             >
               ₹18,500
             </p>
 
-            {/* Description */}
+            {/* Description - moved after variants on mobile via order */}
             <p
-              className="font-cormorant text-[15px] leading-relaxed mt-4 max-w-[420px]"
+              className="font-cormorant text-[15px] leading-relaxed mt-4 max-w-[420px] order-last md:order-none"
               style={{ color: "hsl(0 0% 40%)" }}
             >
               A contemporary take on the classic saree, featuring pre-draped pleats and a structured bodice. Crafted from premium midnight blue silk.
             </p>
 
             {/* Highlight */}
-            <div className="flex items-center gap-2 mt-5">
+            <div className="flex items-center gap-2 mt-4 md:mt-5 order-last md:order-none">
               <Ruler size={15} style={{ color: "hsl(186 35% 28%)" }} />
               <span className="text-[13px] font-cormorant font-medium" style={{ color: "hsl(0 0% 35%)" }}>
                 Handcrafted in 60 days

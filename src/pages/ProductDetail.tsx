@@ -246,7 +246,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Quantity */}
-            <div className="mt-6">
+            <div className="mt-4 md:mt-6">
               <span className="text-[13px] uppercase tracking-[0.1em] font-medium block mb-3" style={{ color: "hsl(0 0% 25%)" }}>
                 Quantity
               </span>

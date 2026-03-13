@@ -4,6 +4,8 @@ import CampaignFilm from "@/components/CampaignFilm";
 import MostLoved from "@/components/MostLoved";
 import Craftsmanship from "@/components/Craftsmanship";
 import CoutureExperience from "@/components/CoutureExperience";
+import Testimonials from "@/components/Testimonials";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -14,6 +16,8 @@ const Index = () => {
       <MostLoved />
       <Craftsmanship />
       <CoutureExperience />
+      <Testimonials />
+      <Footer />
     </div>
   );
 };

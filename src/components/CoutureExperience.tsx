@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import floralPatternBg from "@/assets/floral-pattern-bg.webp";
 import { Sparkles, Palette, Gift, Search, MessageSquare, Scissors, Package } from "lucide-react";
 import { Link } from "react-router-dom";
-import floralTopLeft from "@/assets/floral-top-left.png";
+
 
 const steps = [
   {
@@ -214,12 +215,16 @@ const CoutureExperience = () => {
         className="relative w-full overflow-hidden pb-[70px] md:pb-[90px] lg:pb-[120px] pt-6 md:pt-10"
         style={{ backgroundColor: "hsl(30 20% 92%)" }}
       >
-        {/* Subtle floral pattern */}
-        <img
-          src={floralTopLeft}
-          alt=""
-          aria-hidden="true"
-          className="absolute top-[-10px] right-[-20px] w-[120px] md:w-[180px] lg:w-[240px] opacity-20 pointer-events-none select-none rotate-180"
+        {/* Full background pattern */}
+        <div
+          className="absolute inset-0 pointer-events-none select-none"
+          style={{
+            backgroundImage: `url(${floralPatternBg})`,
+            backgroundSize: "600px",
+            backgroundPosition: "center",
+            backgroundRepeat: "repeat",
+            opacity: 0.09,
+          }}
         />
 
         <div ref={bottomRef} className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">

@@ -1,6 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import NewArrivals from "@/components/NewArrivals";
 import CampaignFilm from "@/components/CampaignFilm";
+import MostLoved from "@/components/MostLoved";
 
 const Index = () => {
   return (
@@ -8,6 +9,7 @@ const Index = () => {
       <HeroSection />
       <NewArrivals />
       <CampaignFilm />
+      <MostLoved />
     </div>
   );
 };

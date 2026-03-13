@@ -29,29 +29,29 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           height: "var(--navbar-h)",
         }}
       >
-        <div className="h-full max-w-[1400px] mx-auto flex items-center justify-between px-5 lg:px-10">
-          {/* Mobile: hamburger */}
-          <button
-            className="md:hidden opacity-70 hover:opacity-100 transition-opacity duration-200"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu size={22} strokeWidth={1.5} />
-          </button>
-
-          {/* Left nav links — hidden on mobile */}
-          <div className="hidden md:flex items-center gap-[30px] lg:gap-[34px] flex-1">
-            {leftLinks.map((link) => (
-              <Link
-                key={link.label}
-                to={link.to}
-                className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80 ${
-                  location.pathname === link.to ? "active" : ""
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-10">
+          {/* Left: hamburger (mobile) / nav links (desktop) */}
+          <div className="flex items-center">
+            <button
+              className="md:hidden opacity-70 hover:opacity-100 transition-opacity duration-200"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu size={22} strokeWidth={1.5} />
+            </button>
+            <div className="hidden md:flex items-center gap-[30px] lg:gap-[34px]">
+              {leftLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80 ${
+                    location.pathname === link.to ? "active" : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* Center logo */}
@@ -60,27 +60,27 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               src="/logo.webp"
               alt="NAIRA"
               className="w-auto object-contain"
-              style={{ height: "clamp(26px, 3.2vw, 38px)" }}
+              style={{ height: "clamp(32px, 3.5vw, 48px)" }}
             />
           </Link>
 
-          {/* Right section — hidden on mobile (except cart) */}
-          <div className="hidden md:flex items-center justify-end gap-[22px] flex-1">
+          {/* Right section */}
+          <div className="flex items-center justify-end gap-[22px]">
             <Link
               to="/contact"
-              className="nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80"
+              className="hidden md:inline nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80"
             >
               CONTACT
             </Link>
             <Search
               size={20}
               strokeWidth={1.5}
-              className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="hidden md:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
             <User
               size={20}
               strokeWidth={1.5}
-              className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="hidden md:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
             <div className="relative">
               <ShoppingBag
@@ -88,17 +88,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                 strokeWidth={1.5}
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
-              {/* Future badge: <span className="absolute -top-1 -right-1 ...">0</span> */}
             </div>
-          </div>
-
-          {/* Mobile: cart icon only */}
-          <div className="md:hidden relative">
-            <ShoppingBag
-              size={20}
-              strokeWidth={1.5}
-              className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
-            />
           </div>
         </div>
       </nav>

@@ -266,6 +266,7 @@ const ProductDetail = () => {
         </div>
       </div>
 
+      <CustomerReviews />
       <Footer />
     </div>
   );

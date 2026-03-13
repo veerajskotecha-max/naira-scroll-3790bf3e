@@ -256,12 +256,11 @@ const ShopAll = () => {
   const sidebarTop = { lg: 116 + 52 + 16 }; // navbar + toolbar + gap
 
   return (
-    <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
-      {/* ── Sticky Shop Toolbar ── */}
+    <div className="h-screen flex flex-col overflow-hidden pt-[94px] md:pt-[100px] lg:pt-[116px]">
+      {/* ── Fixed Shop Toolbar ── */}
       <div
-        className="sticky z-30"
+        className="shrink-0 z-30"
         style={{
-          top: "var(--navbar-h, 94px)",
           backgroundColor: "hsl(0 0% 98%)",
           borderBottom: "1px solid hsl(0 0% 90%)",
         }}
@@ -269,7 +268,7 @@ const ShopAll = () => {
         {/* Desktop / Tablet toolbar */}
         <div className="hidden md:block">
           <div className="max-w-[1400px] mx-auto px-8 lg:px-10">
-            <div className="flex items-center justify-between h-[52px]">
+            <div className="flex items-center justify-between h-[52px] relative">
               {/* Grid toggle – desktop only */}
               <div className="hidden lg:flex items-center gap-1">
                 <button
@@ -412,48 +411,33 @@ const ShopAll = () => {
         </div>
       </div>
 
-      {/* ── Shop Content ── */}
-      <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 98%)" }}>
-        <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-12 lg:py-14">
-          {/* Page title */}
-          <h1
-            className="font-cormorant text-[28px] md:text-[34px] lg:text-[40px] font-semibold mb-8 md:mb-10"
-            style={{ color: "hsl(0 0% 15%)" }}
+      {/* ── Fixed two-column shop layout ── */}
+      <div className="flex-1 flex min-h-0" style={{ backgroundColor: "hsl(0 0% 98%)" }}>
+        <div className="max-w-[1400px] mx-auto flex w-full">
+          {/* Fixed sidebar – desktop/tablet */}
+          <aside
+            className="hidden md:block w-[240px] lg:w-[280px] shrink-0 overflow-y-auto px-8 lg:px-10 py-8"
+            style={{ borderRight: "1px solid hsl(0 0% 92%)" }}
           >
-            Shop All
-          </h1>
+            <FilterSidebar {...filterProps} />
+          </aside>
 
-          {/* Two-column layout */}
-          <div className="flex gap-10 lg:gap-14">
-            {/* Sidebar – desktop/tablet */}
-            <aside
-              className="hidden md:block w-[240px] lg:w-[280px] shrink-0 self-start sticky overflow-y-auto pr-2"
-              style={{
-                top: `${sidebarTop.lg}px`,
-                maxHeight: `calc(100vh - ${sidebarTop.lg}px - 16px)`,
-              }}
+          {/* Scrollable product grid */}
+          <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
+            <div
+              className={`grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10 md:gap-x-6 md:gap-y-12 ${
+                gridCols === 4
+                  ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
+                  : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
+              }`}
             >
-              <FilterSidebar {...filterProps} />
-            </aside>
-
-            {/* Product grid */}
-            <div className="flex-1 min-w-0">
-              <div
-                className={`grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10 md:gap-x-6 md:gap-y-12 ${
-                  gridCols === 4
-                    ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
-                    : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
-                }`}
-              >
-                {allProducts.map((product, i) => (
-                  <ProductCard key={i} product={product} index={i} visible />
-                ))}
-              </div>
+              {allProducts.map((product, i) => (
+                <ProductCard key={i} product={product} index={i} visible />
+              ))}
             </div>
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

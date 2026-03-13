@@ -290,6 +290,8 @@ const MadeForYou = () => {
         </div>
       </section>
 
+      <CustomizationStories />
+      <CustomFAQ />
       <Footer />
     </div>
   );

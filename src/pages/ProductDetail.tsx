@@ -8,6 +8,7 @@ import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import NairaPhilosophy from "@/components/NairaPhilosophy";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
+import StickyAddToCart from "@/components/StickyAddToCart";
 
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";

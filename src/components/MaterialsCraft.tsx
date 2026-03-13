@@ -94,15 +94,24 @@ const MaterialsCraft = () => {
 
         {/* Steps */}
         <div className="relative flex flex-col md:flex-row items-center md:items-start justify-center gap-14 md:gap-8 lg:gap-16">
-          {/* Dotted connector line (desktop) */}
-          <div
-            className="hidden md:block absolute top-[52px] left-1/2 -translate-x-1/2"
-            style={{
-              width: "60%",
-              height: "1px",
-              borderTop: "2px dotted hsl(186 35% 28% / 0.25)",
-            }}
-          />
+          {/* Curved dotted connector SVG (desktop) */}
+          <svg
+            className="hidden md:block absolute top-[52px] left-1/2 -translate-x-1/2 pointer-events-none"
+            width="66%"
+            height="60"
+            viewBox="0 0 600 60"
+            preserveAspectRatio="none"
+            fill="none"
+            style={{ zIndex: 0 }}
+          >
+            <path
+              d="M 0,30 C 100,58 200,2 300,30 C 400,58 500,2 600,30"
+              stroke="hsl(24 50% 65%)"
+              strokeWidth="2"
+              strokeDasharray="6 6"
+              fill="none"
+            />
+          </svg>
 
           {steps.map((step, i) => (
             <div

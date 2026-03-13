@@ -282,6 +282,7 @@ const ProductDetail = () => {
         price="₹18,500"
         selectedSize={selectedSize}
       />
+      <UrgencyNotification />
     </div>
   );
 };

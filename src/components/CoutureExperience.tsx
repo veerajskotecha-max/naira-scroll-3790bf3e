@@ -195,7 +195,7 @@ const CoutureExperience = () => {
         </div>
 
         {/* Curved bottom divider */}
-        <div className="relative mt-16 md:mt-20">
+        <div className="relative mt-16 md:mt-20 -mb-px">
           <svg
             viewBox="0 0 1440 80"
             preserveAspectRatio="none"

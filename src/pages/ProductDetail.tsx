@@ -4,6 +4,7 @@ import { Star, Heart, Minus, Plus, Truck, RotateCcw, ShieldCheck, Ruler } from "
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import Footer from "@/components/Footer";
+import CustomerReviews from "@/components/CustomerReviews";
 
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";

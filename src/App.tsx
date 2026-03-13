@@ -8,6 +8,7 @@ import Index from "./pages/Index.tsx";
 import ShopAll from "./pages/ShopAll.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import MadeForYou from "./pages/MadeForYou.tsx";
 
 const queryClient = new QueryClient();
 

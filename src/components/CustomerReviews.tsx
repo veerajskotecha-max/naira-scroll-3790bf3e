@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Star, Camera, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,7 +25,18 @@ const overallRating = 4.8;
 
 const filters = ["All Reviews", "With Photos", "5★", "4★", "3★"];
 
-const reviewsData = [
+interface Review {
+  name: string;
+  initials: string;
+  verified: boolean;
+  rating: number;
+  date: string;
+  text: string;
+  hasPhotos: boolean;
+  images: string[];
+}
+
+const reviewsData: Review[] = [
   {
     name: "Ananya",
     initials: "AN",
@@ -33,6 +44,8 @@ const reviewsData = [
     rating: 5,
     date: "March 2, 2026",
     text: "Absolutely loved the saree. The embroidery detail is stunning and the fabric feels premium. It draped beautifully for my brother's wedding.",
+    hasPhotos: true,
+    images: [product1, product2],
   },
   {
     name: "Priya",
@@ -41,6 +54,8 @@ const reviewsData = [
     rating: 5,
     date: "February 18, 2026",
     text: "The quality exceeded my expectations. The silk is luxurious and the color is exactly as shown. Received so many compliments!",
+    hasPhotos: true,
+    images: [product3],
   },
   {
     name: "Meera",
@@ -49,6 +64,8 @@ const reviewsData = [
     rating: 4,
     date: "February 10, 2026",
     text: "Beautiful saree with excellent craftsmanship. The pre-draped design makes it so easy to wear. Slightly long for my height but overall gorgeous.",
+    hasPhotos: false,
+    images: [],
   },
   {
     name: "Kavya",
@@ -57,6 +74,8 @@ const reviewsData = [
     rating: 5,
     date: "January 28, 2026",
     text: "This is my third purchase from this brand and they never disappoint. The midnight blue is absolutely mesmerizing in person.",
+    hasPhotos: true,
+    images: [product4],
   },
   {
     name: "Roshni",
@@ -65,6 +84,8 @@ const reviewsData = [
     rating: 5,
     date: "January 15, 2026",
     text: "Perfect for festive occasions. The structured bodice gives a very flattering silhouette. Worth every penny!",
+    hasPhotos: false,
+    images: [],
   },
   {
     name: "Deepa",
@@ -73,6 +94,8 @@ const reviewsData = [
     rating: 4,
     date: "January 5, 2026",
     text: "Stunning piece! The hand embroidery is intricate and beautiful. Packaging was also very premium. Great gifting option.",
+    hasPhotos: true,
+    images: [product1Hover],
   },
   {
     name: "Swati",
@@ -81,6 +104,8 @@ const reviewsData = [
     rating: 5,
     date: "December 22, 2025",
     text: "I wore this for my engagement ceremony and felt like a queen. The drape is effortless and the silk quality is top-notch.",
+    hasPhotos: false,
+    images: [],
   },
   {
     name: "Nisha",
@@ -89,9 +114,10 @@ const reviewsData = [
     rating: 3,
     date: "December 10, 2025",
     text: "The saree is nice but took longer than expected to arrive. The fabric quality is good though, and the color is rich.",
+    hasPhotos: false,
+    images: [],
   },
 ];
-
 const Stars = ({ count, size = 12 }: { count: number; size?: number }) => (
   <div className="flex gap-0.5">
     {[...Array(5)].map((_, i) => (
@@ -109,8 +135,33 @@ const CustomerReviews = () => {
   const [visibleCount, setVisibleCount] = useState(4);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
   const maxCount = ratingBreakdown[0].count;
+
+  const filteredReviews = useMemo(() => {
+    switch (activeFilter) {
+      case "With Photos":
+        return reviewsData.filter((r) => r.hasPhotos);
+      case "5★":
+        return reviewsData.filter((r) => r.rating === 5);
+      case "4★":
+        return reviewsData.filter((r) => r.rating === 4);
+      case "3★":
+        return reviewsData.filter((r) => r.rating === 3);
+      default:
+        return reviewsData;
+    }
+  }, [activeFilter]);
+
+  const handleFilterChange = (filter: string) => {
+    setAnimating(true);
+    setTimeout(() => {
+      setActiveFilter(filter);
+      setVisibleCount(4);
+      setAnimating(false);
+    }, 200);
+  };
 
   return (
     <section className="max-w-[1200px] mx-auto px-4 pb-20">
@@ -190,7 +241,7 @@ const CustomerReviews = () => {
         {filters.map((f) => (
           <button
             key={f}
-            onClick={() => setActiveFilter(f)}
+            onClick={() => handleFilterChange(f)}
             className="px-4 py-2 rounded-full text-[13px] font-medium border transition-all duration-200"
             style={{
               backgroundColor: activeFilter === f ? "hsl(186 35% 28%)" : "transparent",
@@ -204,46 +255,61 @@ const CustomerReviews = () => {
       </div>
 
       {/* Review Cards */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {reviewsData.slice(0, visibleCount).map((review, i) => (
-          <div
-            key={i}
-            className="rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-in fade-in"
-            style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback className="text-[12px] font-medium bg-secondary text-secondary-foreground">
-                  {review.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-[14px] font-semibold font-cormorant" style={{ color: "hsl(var(--foreground))" }}>
-                  {review.name}
-                </p>
-                {review.verified && (
-                  <span className="text-[10px] uppercase tracking-[0.08em] font-medium" style={{ color: "hsl(186 35% 28%)" }}>
-                    Verified Buyer
-                  </span>
-                )}
+      <div
+        className={`mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-opacity duration-200 ${animating ? "opacity-0" : "opacity-100"}`}
+      >
+        {filteredReviews.length === 0 ? (
+          <p className="col-span-full text-center text-[14px] font-cormorant py-10" style={{ color: "hsl(var(--muted-foreground))" }}>
+            No reviews match this filter.
+          </p>
+        ) : (
+          filteredReviews.slice(0, visibleCount).map((review, i) => (
+            <div
+              key={`${activeFilter}-${i}`}
+              className="rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-fade-in"
+              style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <Avatar className="h-9 w-9">
+                  <AvatarFallback className="text-[12px] font-medium bg-secondary text-secondary-foreground">
+                    {review.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-[14px] font-semibold font-cormorant" style={{ color: "hsl(var(--foreground))" }}>
+                    {review.name}
+                  </p>
+                  {review.verified && (
+                    <span className="text-[10px] uppercase tracking-[0.08em] font-medium" style={{ color: "hsl(186 35% 28%)" }}>
+                      Verified Buyer
+                    </span>
+                  )}
+                </div>
               </div>
+              <div className="flex items-center justify-between mb-3">
+                <Stars count={review.rating} />
+                <span className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>{review.date}</span>
+              </div>
+              <p className="text-[13px] leading-relaxed font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
+                "{review.text}"
+              </p>
+              {review.hasPhotos && review.images.length > 0 && (
+                <div className="flex gap-2 mt-3">
+                  {review.images.map((img, idx) => (
+                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 rounded-md object-cover" />
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="flex items-center justify-between mb-3">
-              <Stars count={review.rating} />
-              <span className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>{review.date}</span>
-            </div>
-            <p className="text-[13px] leading-relaxed font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
-              "{review.text}"
-            </p>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Load More */}
-      {visibleCount < reviewsData.length && (
+      {visibleCount < filteredReviews.length && (
         <div className="mt-10 flex justify-center">
           <button
-            onClick={() => setVisibleCount((v) => Math.min(v + 4, reviewsData.length))}
+            onClick={() => setVisibleCount((v) => Math.min(v + 4, filteredReviews.length))}
             className="px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border-2 transition-all duration-200 hover:bg-foreground hover:text-background"
             style={{ borderColor: "hsl(var(--foreground))", color: "hsl(var(--foreground))" }}
           >

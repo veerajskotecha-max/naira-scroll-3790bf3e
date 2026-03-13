@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
+import NairaPhilosophy from "@/components/NairaPhilosophy";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 
 import product1 from "@/assets/product-1.jpg";

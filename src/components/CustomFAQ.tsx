@@ -68,7 +68,7 @@ const CustomFAQ = () => {
       style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
 
-      <div className="relative z-10 max-w-[1100px] mx-auto px-5 md:px-8 lg:px-10">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
         {/* Section heading */}
         <div className="text-center mb-12 md:mb-16">
           <p

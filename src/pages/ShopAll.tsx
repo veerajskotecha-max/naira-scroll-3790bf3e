@@ -473,6 +473,7 @@ const ShopAll = () => {
           </div>
         </div>
       </div>
+      <UrgencyNotification />
     </div>
   );
 };

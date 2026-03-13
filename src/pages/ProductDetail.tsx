@@ -162,6 +162,29 @@ const ProductDetail = () => {
     </div>
   );
 
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
+      {/* Breadcrumb - hidden on mobile */}
+      <div className="max-w-[1200px] mx-auto px-4 pt-28 pb-4 hidden md:block">
+        <nav className="flex items-center gap-2 text-[13px] font-cormorant" style={{ color: "hsl(0 0% 55%)" }}>
+          <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
+          <span>/</span>
+          <Link to="/shop" className="transition-colors hover:text-foreground">Shop</Link>
+          <span>/</span>
+          <span style={{ color: "hsl(0 0% 30%)" }}>Midnight Silk Drape Saree</span>
+        </nav>
+      </div>
+
+      {/* Mobile: full-width gallery at top */}
+      <div className="md:hidden pt-20">
+        {MobileGallery}
+      </div>
+
+      {/* Main Product Section */}
+      <div className="max-w-[1200px] mx-auto px-4 pb-20">
+        <div className="flex flex-col lg:flex-row gap-10 xl:gap-14">
+          {DesktopGallery}
+
           {/* Right Column – Product Details */}
           <div className="lg:w-[42%] flex flex-col">
             {/* Title */}

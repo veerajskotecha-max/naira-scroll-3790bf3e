@@ -76,7 +76,7 @@ const ProductDetail = () => {
   );
 
   const MobileGallery = (
-    <div className="relative -mx-4 md:hidden">
+    <div className="relative md:hidden">
       {/* Swipeable image carousel */}
       <div
         ref={scrollRef}
@@ -95,7 +95,7 @@ const ProductDetail = () => {
       </div>
       {WishlistButton}
       {/* Dot indicators */}
-      <div className="flex justify-center gap-2 mt-3">
+      <div className="flex justify-center gap-2 mt-3 mb-1">
         {thumbnails.map((_, i) => (
           <button
             key={i}
@@ -106,22 +106,6 @@ const ProductDetail = () => {
               transform: selectedImage === i ? "scale(1.3)" : "scale(1)",
             }}
           />
-        ))}
-      </div>
-      {/* Thumbnail strip */}
-      <div className="flex gap-2 mt-3 px-4 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
-        {thumbnails.map((thumb, i) => (
-          <button
-            key={i}
-            onClick={() => scrollToImage(i)}
-            className="shrink-0 w-[56px] h-[56px] rounded-md overflow-hidden border-2 transition-all duration-200"
-            style={{
-              borderColor: selectedImage === i ? "hsl(186 35% 28%)" : "hsl(0 0% 88%)",
-              opacity: selectedImage === i ? 1 : 0.6,
-            }}
-          >
-            <img src={thumb} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
-          </button>
         ))}
       </div>
     </div>

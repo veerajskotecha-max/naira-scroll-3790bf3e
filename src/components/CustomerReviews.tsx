@@ -172,56 +172,67 @@ const CustomerReviews = () => {
         Customer Reviews
       </h2>
 
-      {/* Rating Summary + Breakdown */}
-      <div className="mt-6 flex flex-col md:flex-row gap-8 md:gap-14">
-        {/* Left: Overall */}
-        <div className="flex flex-col items-start gap-2">
-          <Stars count={5} size={18} />
-          <p className="font-cormorant text-[36px] font-bold" style={{ color: "hsl(var(--foreground))" }}>
-            {overallRating}
-          </p>
-          <p className="text-[13px] font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
-            Based on {totalReviews} reviews
-          </p>
-        </div>
-
-        {/* Right: Breakdown */}
-        <div className="flex-1 max-w-[360px] flex flex-col gap-2.5">
-          {ratingBreakdown.map(({ stars, count }) => (
-            <div key={stars} className="flex items-center gap-3">
-              <span className="text-[13px] w-8 shrink-0 font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
-                {stars} ★
-              </span>
-              <Progress
-                value={(count / maxCount) * 100}
-                className="h-2.5 flex-1 bg-secondary"
-              />
-              <span className="text-[12px] w-8 text-right" style={{ color: "hsl(var(--muted-foreground))" }}>
-                {count}
-              </span>
+      {/* Two-Column Header */}
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+        {/* Left Column: Rating Summary + Breakdown */}
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-10">
+            {/* Overall */}
+            <div className="flex flex-col items-start gap-2">
+              <Stars count={5} size={18} />
+              <p className="font-cormorant text-[36px] font-bold" style={{ color: "hsl(var(--foreground))" }}>
+                {overallRating}
+              </p>
+              <p className="text-[13px] font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
+                Based on {totalReviews} reviews
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Customer Photos */}
-      <div className="mt-10">
-        <h3
-          className="font-cormorant text-[18px] font-semibold flex items-center gap-2"
-          style={{ color: "hsl(var(--foreground))" }}
-        >
-          <Camera size={16} /> Customer Photos
-        </h3>
-        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
-          {customerPhotos.map((photo, i) => (
-            <button
-              key={i}
-              onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-              className="shrink-0 w-[80px] h-[80px] md:w-[100px] md:h-[100px] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
-            >
-              <img src={photo} alt={`Customer photo ${i + 1}`} className="w-full h-full object-cover" />
-            </button>
-          ))}
+            {/* Breakdown */}
+            <div className="flex-1 max-w-[320px] flex flex-col gap-2.5">
+              {ratingBreakdown.map(({ stars, count }) => (
+                <div key={stars} className="flex items-center gap-3">
+                  <span className="text-[13px] w-8 shrink-0 font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
+                    {stars} ★
+                  </span>
+                  <Progress
+                    value={(count / maxCount) * 100}
+                    className="h-2.5 flex-1 bg-secondary"
+                  />
+                  <span className="text-[12px] w-8 text-right" style={{ color: "hsl(var(--muted-foreground))" }}>
+                    {count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Customer Photos + Write Review */}
+        <div className="flex flex-col gap-5">
+          <h3
+            className="font-cormorant text-[18px] font-semibold flex items-center gap-2"
+            style={{ color: "hsl(var(--foreground))" }}
+          >
+            <Camera size={16} /> Customer Photos
+          </h3>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {customerPhotos.map((photo, i) => (
+              <button
+                key={i}
+                onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
+                className="shrink-0 w-[80px] h-[80px] md:w-[90px] md:h-[90px] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+              >
+                <img src={photo} alt={`Customer photo ${i + 1}`} className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+          <button
+            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border-2 transition-all duration-200 hover:bg-foreground hover:text-background"
+            style={{ borderColor: "hsl(var(--foreground))", color: "hsl(var(--foreground))" }}
+          >
+            Write a Review
+          </button>
         </div>
       </div>
 

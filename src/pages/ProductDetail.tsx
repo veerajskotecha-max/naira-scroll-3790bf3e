@@ -215,7 +215,7 @@ const ProductDetail = () => {
               </span>
             </div>
 
-            <Separator className="my-6" />
+            <Separator className="my-4 md:my-6" />
 
             {/* Size Selection */}
             <div>

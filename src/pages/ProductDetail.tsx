@@ -76,7 +76,7 @@ const ProductDetail = () => {
   );
 
   const MobileGallery = (
-    <div className="relative -mx-4 md:hidden">
+    <div className="relative md:hidden">
       {/* Swipeable image carousel */}
       <div
         ref={scrollRef}
@@ -95,7 +95,7 @@ const ProductDetail = () => {
       </div>
       {WishlistButton}
       {/* Dot indicators */}
-      <div className="flex justify-center gap-2 mt-3">
+      <div className="flex justify-center gap-2 mt-3 mb-1">
         {thumbnails.map((_, i) => (
           <button
             key={i}
@@ -106,22 +106,6 @@ const ProductDetail = () => {
               transform: selectedImage === i ? "scale(1.3)" : "scale(1)",
             }}
           />
-        ))}
-      </div>
-      {/* Thumbnail strip */}
-      <div className="flex gap-2 mt-3 px-4 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
-        {thumbnails.map((thumb, i) => (
-          <button
-            key={i}
-            onClick={() => scrollToImage(i)}
-            className="shrink-0 w-[56px] h-[56px] rounded-md overflow-hidden border-2 transition-all duration-200"
-            style={{
-              borderColor: selectedImage === i ? "hsl(186 35% 28%)" : "hsl(0 0% 88%)",
-              opacity: selectedImage === i ? 1 : 0.6,
-            }}
-          >
-            <img src={thumb} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
-          </button>
         ))}
       </div>
     </div>
@@ -189,14 +173,14 @@ const ProductDetail = () => {
           <div className="lg:w-[42%] flex flex-col">
             {/* Title */}
             <h1
-              className="font-cormorant text-[28px] md:text-[34px] font-semibold leading-tight"
+              className="font-cormorant text-[28px] md:text-[34px] font-semibold leading-[1.2] md:leading-tight max-w-[320px] md:max-w-none mt-4 md:mt-0"
               style={{ color: "hsl(0 0% 15%)" }}
             >
               Midnight Silk Drape Saree
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-1.5 md:mt-3">
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={14} style={{ color: "hsl(45 93% 47%)", fill: "hsl(45 93% 47%)" }} />
@@ -209,29 +193,29 @@ const ProductDetail = () => {
 
             {/* Price */}
             <p
-              className="font-cormorant text-[26px] font-bold mt-5"
+              className="font-cormorant text-[26px] font-bold mt-2 md:mt-5"
               style={{ color: "hsl(186 35% 28%)" }}
             >
               ₹18,500
             </p>
 
-            {/* Description */}
+            {/* Description - moved after variants on mobile via order */}
             <p
-              className="font-cormorant text-[15px] leading-relaxed mt-4 max-w-[420px]"
+              className="font-cormorant text-[15px] leading-relaxed mt-4 max-w-[420px] order-last md:order-none"
               style={{ color: "hsl(0 0% 40%)" }}
             >
               A contemporary take on the classic saree, featuring pre-draped pleats and a structured bodice. Crafted from premium midnight blue silk.
             </p>
 
             {/* Highlight */}
-            <div className="flex items-center gap-2 mt-5">
+            <div className="flex items-center gap-2 mt-4 md:mt-5 order-last md:order-none">
               <Ruler size={15} style={{ color: "hsl(186 35% 28%)" }} />
               <span className="text-[13px] font-cormorant font-medium" style={{ color: "hsl(0 0% 35%)" }}>
                 Handcrafted in 60 days
               </span>
             </div>
 
-            <Separator className="my-6" />
+            <Separator className="my-4 md:my-6" />
 
             {/* Size Selection */}
             <div>
@@ -262,7 +246,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Quantity */}
-            <div className="mt-6">
+            <div className="mt-4 md:mt-6">
               <span className="text-[13px] uppercase tracking-[0.1em] font-medium block mb-3" style={{ color: "hsl(0 0% 25%)" }}>
                 Quantity
               </span>
@@ -284,7 +268,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Action Buttons */}
-            <div id="product-actions" className="flex gap-4 mt-8">
+            <div id="product-actions" className="flex gap-4 mt-[18px] md:mt-8">
               <button
                 className="flex-1 h-[50px] rounded-md text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}

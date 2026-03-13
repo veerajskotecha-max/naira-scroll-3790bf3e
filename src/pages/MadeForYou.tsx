@@ -5,6 +5,8 @@ import heroImage from "@/assets/made-for-you-hero.jpg";
 import floralTopLeft from "@/assets/floral-top-left.png";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import CustomizationStories from "@/components/CustomizationStories";
+import CustomFAQ from "@/components/CustomFAQ";
 import Footer from "@/components/Footer";
 
 /* ── process steps ── */
@@ -288,6 +290,8 @@ const MadeForYou = () => {
         </div>
       </section>
 
+      <CustomizationStories />
+      <CustomFAQ />
       <Footer />
     </div>
   );

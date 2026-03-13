@@ -9,6 +9,7 @@ import ShopAll from "./pages/ShopAll.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import MadeForYou from "./pages/MadeForYou.tsx";
+import AboutUs from "./pages/AboutUs.tsx";
 
 const queryClient = new QueryClient();
 

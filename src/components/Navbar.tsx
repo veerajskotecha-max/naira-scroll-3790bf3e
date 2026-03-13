@@ -59,7 +59,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             <img
               src="/logo.webp"
               alt="NAIRA"
-              className="h-[32px] md:h-[38px] lg:h-[46px] w-auto object-contain"
+              className="h-[30px] md:h-[34px] lg:h-[40px] w-auto object-contain"
             />
           </Link>
 

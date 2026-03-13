@@ -245,7 +245,8 @@ const MostLoved = () => {
         </div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-5 lg:gap-6">
+        {/* Desktop/Tablet grid */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
           {products.map((product, i) => (
             <MostLovedCard
               key={i}
@@ -253,6 +254,19 @@ const MostLoved = () => {
               index={i}
               visible={visible}
             />
+          ))}
+        </div>
+
+        {/* Mobile horizontal scroll */}
+        <div className="md:hidden flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-5 px-5">
+          {products.map((product, i) => (
+            <div key={i} className="min-w-[75vw] snap-start">
+              <MostLovedCard
+                product={product}
+                index={i}
+                visible={visible}
+              />
+            </div>
           ))}
         </div>
 

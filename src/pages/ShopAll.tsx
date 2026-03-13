@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, X, ChevronDown, Check } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ProductCard, { type Product } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 
@@ -163,6 +164,15 @@ const ShopAll = () => {
   const [priceRange, setPriceRange] = useState<number[]>([0, 50000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [sortValue, setSortValue] = useState("newest");
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
+
+  const sortOptions = [
+    { value: "newest", label: "Newest Arrivals" },
+    { value: "price-low", label: "Price: Low to High" },
+    { value: "price-high", label: "Price: High to Low" },
+    { value: "popular", label: "Most Popular" },
+  ];
 
   const toggleCategory = (cat: string) =>
     setSelectedCategories((prev) =>
@@ -191,19 +201,110 @@ const ShopAll = () => {
       >
         <div className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10 py-10 md:py-14 lg:py-16">
           {/* Page header */}
-          <div className="flex items-center justify-between mb-10 md:mb-12">
+          <div className="mb-10 md:mb-12">
             <h1
-              className="font-cormorant text-[28px] md:text-[34px] lg:text-[40px] font-semibold"
+              className="font-cormorant text-[28px] md:text-[34px] lg:text-[40px] font-semibold mb-5 md:mb-0"
               style={{ color: "hsl(0 0% 15%)" }}
             >
               Shop All
             </h1>
-            <div className="flex items-center gap-3">
-              {/* Mobile filter button */}
+
+            {/* Mobile: pill toolbar */}
+            <div className="flex md:hidden items-center gap-3">
               <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
                 <SheetTrigger asChild>
                   <button
-                    className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-md border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                    style={{
+                      borderColor: "hsl(0 0% 82%)",
+                      color: "hsl(0 0% 25%)",
+                      backgroundColor: "hsl(0 0% 100%)",
+                    }}
+                  >
+                    <SlidersHorizontal size={14} />
+                    Filters
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle className="font-cormorant text-[20px]">Filters</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 pb-4">
+                    <FilterSidebar {...filterProps} />
+                    <div className="flex gap-3 mt-8">
+                      <button
+                        className="flex-1 py-3 rounded-full border font-cormorant text-[14px] font-medium"
+                        style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 40%)" }}
+                        onClick={() => {
+                          setSelectedCategories([]);
+                          setPriceRange([0, 50000]);
+                          setSelectedSizes([]);
+                        }}
+                      >
+                        Reset
+                      </button>
+                      <button
+                        className="flex-1 py-3 rounded-full font-cormorant text-[14px] font-medium"
+                        style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                        onClick={() => setMobileFiltersOpen(false)}
+                      >
+                        Apply Filters
+                      </button>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
+                <DialogTrigger asChild>
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                    style={{
+                      borderColor: "hsl(0 0% 82%)",
+                      color: "hsl(0 0% 25%)",
+                      backgroundColor: "hsl(0 0% 100%)",
+                    }}
+                  >
+                    <ArrowUpDown size={14} />
+                    Sort
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[340px] rounded-2xl p-0 overflow-hidden">
+                  <DialogHeader className="px-5 pt-5 pb-3">
+                    <DialogTitle className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
+                      Sort By
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="pb-5">
+                    {sortOptions.map((opt) => (
+                      <button
+                        key={opt.value}
+                        className="w-full flex items-center justify-between px-5 py-3 font-cormorant text-[15px] transition-colors duration-150"
+                        style={{
+                          color: sortValue === opt.value ? "hsl(186 35% 28%)" : "hsl(0 0% 30%)",
+                          backgroundColor: sortValue === opt.value ? "hsl(186 35% 28% / 0.06)" : "transparent",
+                        }}
+                        onClick={() => {
+                          setSortValue(opt.value);
+                          setMobileSortOpen(false);
+                        }}
+                      >
+                        {opt.label}
+                        {sortValue === opt.value && <Check size={16} style={{ color: "hsl(186 35% 28%)" }} />}
+                      </button>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {/* Desktop/Tablet: sort dropdown aligned right */}
+            <div className="hidden md:flex items-center justify-end mt-[-36px]">
+              {/* Tablet filter button */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button
+                    className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-md border font-cormorant text-[14px] font-medium transition-colors duration-200 mr-3"
                     style={{
                       borderColor: "hsl(0 0% 82%)",
                       color: "hsl(0 0% 25%)",
@@ -223,10 +324,9 @@ const ShopAll = () => {
                 </SheetContent>
               </Sheet>
 
-              {/* Sort dropdown */}
-              <Select defaultValue="newest">
+              <Select value={sortValue} onValueChange={setSortValue}>
                 <SelectTrigger
-                  className="w-[180px] md:w-[200px] font-cormorant text-[14px] border rounded-md"
+                  className="w-[200px] font-cormorant text-[14px] border rounded-md"
                   style={{
                     borderColor: "hsl(0 0% 82%)",
                     color: "hsl(0 0% 30%)",
@@ -235,10 +335,11 @@ const ShopAll = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest" className="font-cormorant">Newest Arrivals</SelectItem>
-                  <SelectItem value="price-low" className="font-cormorant">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high" className="font-cormorant">Price: High to Low</SelectItem>
-                  <SelectItem value="popular" className="font-cormorant">Most Popular</SelectItem>
+                  {sortOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value} className="font-cormorant">
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

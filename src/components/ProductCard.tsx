@@ -43,7 +43,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
         <div
           className="relative overflow-hidden rounded-lg transition-shadow duration-300"
           style={{
-            aspectRatio: "4/5",
+            aspectRatio: "3/4",
             boxShadow: hovered ? "0 8px 24px hsl(0 0% 0% / 0.1)" : "0 2px 8px hsl(0 0% 0% / 0.04)",
           }}
         >
@@ -72,7 +72,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
 
           {/* Tag */}
           <span
-            className="absolute top-3 left-3 z-20 text-[11px] md:text-[12px] font-medium uppercase tracking-[0.1em] px-2.5 py-1.5"
+            className="absolute top-2 left-2 md:top-3 md:left-3 z-20 text-[9px] md:text-[11px] lg:text-[12px] font-medium uppercase tracking-[0.1em] px-1.5 py-1 md:px-2.5 md:py-1.5"
             style={{
               backgroundColor: "hsl(186 35% 28%)",
               color: "hsl(0 0% 100%)",

@@ -5,6 +5,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Separator } from "@/components/ui/separator";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
+import MaterialsCraft from "@/components/MaterialsCraft";
+import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";
@@ -267,6 +269,8 @@ const ProductDetail = () => {
       </div>
 
       <CustomerReviews />
+      <MaterialsCraft />
+      <YouMayAlsoLike />
       <Footer />
     </div>
   );

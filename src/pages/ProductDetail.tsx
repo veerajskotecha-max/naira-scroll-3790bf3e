@@ -271,6 +271,7 @@ const ProductDetail = () => {
 
       <CustomerReviews />
       <MaterialsCraft />
+      <NairaPhilosophy />
       <YouMayAlsoLike />
       <Footer />
     </div>

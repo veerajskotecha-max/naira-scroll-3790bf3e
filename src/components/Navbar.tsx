@@ -64,23 +64,23 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             />
           </Link>
 
-          {/* Right section — hidden on mobile (except cart) */}
-          <div className="hidden md:flex items-center justify-end gap-[22px] flex-1">
+          {/* Right section */}
+          <div className="flex items-center justify-end gap-[22px]">
             <Link
               to="/contact"
-              className="nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80"
+              className="hidden md:inline nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80"
             >
               CONTACT
             </Link>
             <Search
               size={20}
               strokeWidth={1.5}
-              className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="hidden md:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
             <User
               size={20}
               strokeWidth={1.5}
-              className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="hidden md:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
             <div className="relative">
               <ShoppingBag
@@ -88,17 +88,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                 strokeWidth={1.5}
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
-              {/* Future badge: <span className="absolute -top-1 -right-1 ...">0</span> */}
             </div>
-          </div>
-
-          {/* Mobile: cart icon only */}
-          <div className="md:hidden relative">
-            <ShoppingBag
-              size={20}
-              strokeWidth={1.5}
-              className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
-            />
           </div>
         </div>
       </nav>

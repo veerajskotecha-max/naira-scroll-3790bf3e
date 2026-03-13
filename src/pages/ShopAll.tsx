@@ -100,7 +100,6 @@ const FilterSidebar = ({
       <Separator className="mt-3" style={{ backgroundColor: "hsl(0 0% 85%)" }} />
     </div>
 
-    {/* Categories */}
     <FilterSection title="Categories">
       <div className="space-y-3">
         {categories.map((cat) => (
@@ -123,7 +122,6 @@ const FilterSidebar = ({
 
     <Separator style={{ backgroundColor: "hsl(0 0% 90%)" }} />
 
-    {/* Price Range */}
     <FilterSection title="Price Range">
       <Slider
         min={0}
@@ -145,7 +143,6 @@ const FilterSidebar = ({
 
     <Separator style={{ backgroundColor: "hsl(0 0% 90%)" }} />
 
-    {/* Sizes */}
     <FilterSection title="Size">
       <div className="flex flex-wrap gap-2">
         {sizes.map((size) => {
@@ -182,7 +179,6 @@ const FilterSidebar = ({
 
     <Separator style={{ backgroundColor: "hsl(0 0% 90%)" }} />
 
-    {/* Availability */}
     <FilterSection title="Availability">
       <div className="space-y-3">
         {availabilityOptions.map((opt) => (
@@ -254,152 +250,62 @@ const ShopAll = () => {
     setSelectedAvailability([]);
   };
 
+  /* Navbar heights: mobile 94px, md 100px, lg 116px */
+  /* Toolbar height ~52px */
+  const toolbarTop = { mobile: 94, md: 100, lg: 116 };
+  const sidebarTop = { lg: 116 + 52 + 16 }; // navbar + toolbar + gap
+
   return (
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
-      <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 98%)" }}>
-        <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 py-10 md:py-14 lg:py-16">
-          {/* Page title */}
-          <h1
-            className="font-cormorant text-[28px] md:text-[34px] lg:text-[40px] font-semibold mb-8 md:mb-10"
-            style={{ color: "hsl(0 0% 15%)" }}
-          >
-            Shop All
-          </h1>
-
-          {/* Mobile toolbar */}
-          <div className="flex lg:hidden items-center gap-3 mb-8">
-            <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-              <SheetTrigger asChild>
+      {/* ── Sticky Shop Toolbar ── */}
+      <div
+        className="sticky z-30"
+        style={{
+          top: "var(--navbar-h, 94px)",
+          backgroundColor: "hsl(0 0% 98%)",
+          borderBottom: "1px solid hsl(0 0% 90%)",
+        }}
+      >
+        {/* Desktop / Tablet toolbar */}
+        <div className="hidden md:block">
+          <div className="max-w-[1400px] mx-auto px-8 lg:px-10">
+            <div className="flex items-center justify-between h-[52px]">
+              {/* Grid toggle – desktop only */}
+              <div className="hidden lg:flex items-center gap-1">
                 <button
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  onClick={() => setGridCols(3)}
+                  className="p-2 rounded-md transition-colors duration-150"
                   style={{
-                    borderColor: "hsl(0 0% 82%)",
-                    color: "hsl(0 0% 25%)",
-                    backgroundColor: "hsl(0 0% 100%)",
+                    backgroundColor: gridCols === 3 ? "hsl(0 0% 92%)" : "transparent",
+                    color: gridCols === 3 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
                   }}
+                  title="3 columns"
                 >
-                  <SlidersHorizontal size={14} />
-                  Filters
+                  <Grid3X3 size={18} />
                 </button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle className="font-cormorant text-[20px]">Filters</SheetTitle>
-                </SheetHeader>
-                <div className="mt-6 pb-4">
-                  <FilterSidebar {...filterProps} />
-                  <div className="flex gap-3 mt-8">
-                    <button
-                      className="flex-1 py-3 rounded-full border font-cormorant text-[14px] font-medium"
-                      style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 40%)" }}
-                      onClick={resetFilters}
-                    >
-                      Reset
-                    </button>
-                    <button
-                      className="flex-1 py-3 rounded-full font-cormorant text-[14px] font-medium"
-                      style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
-                      onClick={() => setMobileFiltersOpen(false)}
-                    >
-                      Apply Filters
-                    </button>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-
-            <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
-              <DialogTrigger asChild>
                 <button
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  onClick={() => setGridCols(4)}
+                  className="p-2 rounded-md transition-colors duration-150"
                   style={{
-                    borderColor: "hsl(0 0% 82%)",
-                    color: "hsl(0 0% 25%)",
-                    backgroundColor: "hsl(0 0% 100%)",
+                    backgroundColor: gridCols === 4 ? "hsl(0 0% 92%)" : "transparent",
+                    color: gridCols === 4 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
                   }}
+                  title="4 columns"
                 >
-                  <ArrowUpDown size={14} />
-                  Sort
+                  <LayoutGrid size={18} />
                 </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[340px] rounded-2xl p-0 overflow-hidden">
-                <DialogHeader className="px-5 pt-5 pb-3">
-                  <DialogTitle className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
-                    Sort By
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="pb-5">
-                  {sortOptions.map((opt) => (
-                    <button
-                      key={opt.value}
-                      className="w-full flex items-center justify-between px-5 py-3 font-cormorant text-[15px] transition-colors duration-150"
-                      style={{
-                        color: sortValue === opt.value ? "hsl(186 35% 28%)" : "hsl(0 0% 30%)",
-                        backgroundColor: sortValue === opt.value ? "hsl(186 35% 28% / 0.06)" : "transparent",
-                      }}
-                      onClick={() => {
-                        setSortValue(opt.value);
-                        setMobileSortOpen(false);
-                      }}
-                    >
-                      {opt.label}
-                      {sortValue === opt.value && <Check size={16} style={{ color: "hsl(186 35% 28%)" }} />}
-                    </button>
-                  ))}
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+              </div>
 
-          {/* Two-column layout */}
-          <div className="flex gap-10 lg:gap-14">
-            {/* Sidebar – desktop only */}
-            <aside className="hidden lg:block w-[280px] shrink-0 self-start sticky top-[130px] max-h-[calc(100vh-150px)] overflow-y-auto pr-2">
-              <FilterSidebar {...filterProps} />
-            </aside>
-
-            {/* Products area */}
-            <div className="flex-1 min-w-0">
-              {/* Desktop toolbar */}
-              <div
-                className="hidden lg:flex items-center justify-between mb-8 pb-5"
-                style={{ borderBottom: "1px solid hsl(0 0% 90%)" }}
+              {/* Product count */}
+              <p
+                className="font-cormorant text-[14px] tracking-wide lg:absolute lg:left-1/2 lg:-translate-x-1/2"
+                style={{ color: "hsl(0 0% 45%)" }}
               >
-                {/* Grid toggle */}
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setGridCols(3)}
-                    className="p-2 rounded-md transition-colors duration-150"
-                    style={{
-                      backgroundColor: gridCols === 3 ? "hsl(0 0% 92%)" : "transparent",
-                      color: gridCols === 3 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
-                    }}
-                    title="3 columns"
-                  >
-                    <Grid3X3 size={18} />
-                  </button>
-                  <button
-                    onClick={() => setGridCols(4)}
-                    className="p-2 rounded-md transition-colors duration-150"
-                    style={{
-                      backgroundColor: gridCols === 4 ? "hsl(0 0% 92%)" : "transparent",
-                      color: gridCols === 4 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
-                    }}
-                    title="4 columns"
-                  >
-                    <LayoutGrid size={18} />
-                  </button>
-                </div>
+                {allProducts.length} Products
+              </p>
 
-                {/* Product count */}
-                <p
-                  className="font-cormorant text-[14px] tracking-wide"
-                  style={{ color: "hsl(0 0% 45%)" }}
-                >
-                  {allProducts.length} Products
-                </p>
-
-                {/* Sort */}
+              {/* Sort */}
+              <div className="ml-auto">
                 <Select value={sortValue} onValueChange={setSortValue}>
                   <SelectTrigger
                     className="w-[200px] font-cormorant text-[14px] border rounded-md"
@@ -416,36 +322,122 @@ const ShopAll = () => {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Tablet toolbar (md only) */}
-              <div
-                className="hidden md:flex lg:hidden items-center justify-between mb-8 pb-5"
-                style={{ borderBottom: "1px solid hsl(0 0% 90%)" }}
+        {/* Mobile toolbar */}
+        <div className="flex md:hidden items-center gap-3 px-5 h-[52px]">
+          <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+            <SheetTrigger asChild>
+              <button
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                style={{
+                  borderColor: "hsl(0 0% 82%)",
+                  color: "hsl(0 0% 25%)",
+                  backgroundColor: "hsl(0 0% 100%)",
+                }}
               >
-                <p
-                  className="font-cormorant text-[14px] tracking-wide"
-                  style={{ color: "hsl(0 0% 45%)" }}
-                >
-                  {allProducts.length} Products
-                </p>
-                <Select value={sortValue} onValueChange={setSortValue}>
-                  <SelectTrigger
-                    className="w-[180px] font-cormorant text-[14px] border rounded-md"
-                    style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 30%)" }}
+                <SlidersHorizontal size={14} />
+                Filters
+              </button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="font-cormorant text-[20px]">Filters</SheetTitle>
+              </SheetHeader>
+              <div className="mt-6 pb-4">
+                <FilterSidebar {...filterProps} />
+                <div className="flex gap-3 mt-8">
+                  <button
+                    className="flex-1 py-3 rounded-full border font-cormorant text-[14px] font-medium"
+                    style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 40%)" }}
+                    onClick={resetFilters}
                   >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value} className="font-cormorant">
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    Reset
+                  </button>
+                  <button
+                    className="flex-1 py-3 rounded-full font-cormorant text-[14px] font-medium"
+                    style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                    onClick={() => setMobileFiltersOpen(false)}
+                  >
+                    Apply Filters
+                  </button>
+                </div>
               </div>
+            </SheetContent>
+          </Sheet>
 
-              {/* Product grid */}
+          <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
+            <DialogTrigger asChild>
+              <button
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                style={{
+                  borderColor: "hsl(0 0% 82%)",
+                  color: "hsl(0 0% 25%)",
+                  backgroundColor: "hsl(0 0% 100%)",
+                }}
+              >
+                <ArrowUpDown size={14} />
+                Sort
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[340px] rounded-2xl p-0 overflow-hidden">
+              <DialogHeader className="px-5 pt-5 pb-3">
+                <DialogTitle className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
+                  Sort By
+                </DialogTitle>
+              </DialogHeader>
+              <div className="pb-5">
+                {sortOptions.map((opt) => (
+                  <button
+                    key={opt.value}
+                    className="w-full flex items-center justify-between px-5 py-3 font-cormorant text-[15px] transition-colors duration-150"
+                    style={{
+                      color: sortValue === opt.value ? "hsl(186 35% 28%)" : "hsl(0 0% 30%)",
+                      backgroundColor: sortValue === opt.value ? "hsl(186 35% 28% / 0.06)" : "transparent",
+                    }}
+                    onClick={() => {
+                      setSortValue(opt.value);
+                      setMobileSortOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                    {sortValue === opt.value && <Check size={16} style={{ color: "hsl(186 35% 28%)" }} />}
+                  </button>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      {/* ── Shop Content ── */}
+      <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 98%)" }}>
+        <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 py-8 md:py-12 lg:py-14">
+          {/* Page title */}
+          <h1
+            className="font-cormorant text-[28px] md:text-[34px] lg:text-[40px] font-semibold mb-8 md:mb-10"
+            style={{ color: "hsl(0 0% 15%)" }}
+          >
+            Shop All
+          </h1>
+
+          {/* Two-column layout */}
+          <div className="flex gap-10 lg:gap-14">
+            {/* Sidebar – desktop/tablet */}
+            <aside
+              className="hidden md:block w-[240px] lg:w-[280px] shrink-0 self-start sticky overflow-y-auto pr-2"
+              style={{
+                top: `${sidebarTop.lg}px`,
+                maxHeight: `calc(100vh - ${sidebarTop.lg}px - 16px)`,
+              }}
+            >
+              <FilterSidebar {...filterProps} />
+            </aside>
+
+            {/* Product grid */}
+            <div className="flex-1 min-w-0">
               <div
                 className={`grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-10 md:gap-x-6 md:gap-y-12 ${
                   gridCols === 4

@@ -275,6 +275,12 @@ const ProductDetail = () => {
       <NairaPhilosophy />
       <YouMayAlsoLike />
       <Footer />
+      <StickyAddToCart
+        image={product1}
+        title="Midnight Silk Drape Saree"
+        price="₹18,500"
+        selectedSize={selectedSize}
+      />
     </div>
   );
 };

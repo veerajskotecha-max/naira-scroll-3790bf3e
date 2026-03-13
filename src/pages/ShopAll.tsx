@@ -211,6 +211,7 @@ const ShopAll = () => {
   const [sortValue, setSortValue] = useState("newest");
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
+  const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
 
   const sortOptions = [
     { value: "newest", label: "Newest Arrivals" },

@@ -11,10 +11,24 @@ const shopLinks = [
 
 const careLinks = [
   { label: "Contact Us", to: "/contact" },
+  { label: "Track Your Order", to: "/track-order" },
   { label: "Shipping & Delivery", to: "/shipping" },
-  { label: "Returns & Exchanges", to: "/returns" },
+  { label: "Return & Exchange Policy", to: "/returns" },
   { label: "Size Guide", to: "/size-guide" },
+  { label: "FAQs", to: "/faqs" },
+];
+
+const policyLinks = [
   { label: "Privacy Policy", to: "/privacy" },
+  { label: "Terms of Service", to: "/terms" },
+];
+
+const exploreLinks = [
+  { label: "Home", to: "/" },
+  { label: "Shop", to: "/shop" },
+  { label: "About", to: "/about" },
+  { label: "Made For You", to: "/made-for-you" },
+  { label: "Contact", to: "/contact" },
 ];
 
 const SocialIcon = ({

@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound.tsx";
 import MadeForYou from "./pages/MadeForYou.tsx";
 import AboutUs from "./pages/AboutUs.tsx";
 import ContactUs from "./pages/ContactUs.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/made-for-you" element={<MadeForYou />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

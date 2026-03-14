@@ -67,9 +67,9 @@ const Footer = () => {
       style={{ backgroundColor: "hsl(0 0% 10%)" }}
     >
       <div className="max-w-[1200px] mx-auto px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8 lg:gap-10 pb-12 md:pb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-10 md:gap-8 lg:gap-10 pb-12 md:pb-16">
           {/* Brand */}
-          <div className="md:col-span-2 lg:col-span-1">
+          <div className="sm:col-span-2 lg:col-span-1">
             <h3
               className="font-cormorant text-[24px] md:text-[28px] font-semibold tracking-[0.06em] mb-4"
               style={{ color: "hsl(0 0% 100%)" }}
@@ -84,46 +84,20 @@ const Footer = () => {
               for the modern woman who embraces her heritage with style.
             </p>
             <div className="flex gap-3">
-              {/* Instagram */}
               <SocialIcon href="#" label="Instagram">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="hsl(0 0% 75%)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0 0% 75%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="2" y="2" width="20" height="20" rx="5" />
                   <circle cx="12" cy="12" r="5" />
                   <circle cx="17.5" cy="6.5" r="1.5" fill="hsl(0 0% 75%)" stroke="none" />
                 </svg>
               </SocialIcon>
-              {/* Facebook */}
               <SocialIcon href="#" label="Facebook">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="hsl(0 0% 75%)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0 0% 75%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                 </svg>
               </SocialIcon>
-              {/* Twitter / X */}
               <SocialIcon href="#" label="Twitter">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="hsl(0 0% 75%)"
-                >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="hsl(0 0% 75%)">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </SocialIcon>
@@ -131,62 +105,16 @@ const Footer = () => {
           </div>
 
           {/* Shop */}
-          <div>
-            <h4
-              className="font-cormorant text-[16px] font-semibold uppercase tracking-[0.1em] mb-5"
-              style={{ color: "hsl(0 0% 100%)" }}
-            >
-              Shop
-            </h4>
-            <ul className="space-y-3">
-              {shopLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.to}
-                    className="font-cormorant text-[14px] transition-colors duration-200"
-                    style={{ color: "hsl(0 0% 55%)" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "hsl(0 0% 85%)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.color = "hsl(0 0% 55%)")
-                    }
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {renderLinkColumn("Shop", shopLinks)}
 
           {/* Customer Care */}
-          <div>
-            <h4
-              className="font-cormorant text-[16px] font-semibold uppercase tracking-[0.1em] mb-5"
-              style={{ color: "hsl(0 0% 100%)" }}
-            >
-              Customer Care
-            </h4>
-            <ul className="space-y-3">
-              {careLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.to}
-                    className="font-cormorant text-[14px] transition-colors duration-200"
-                    style={{ color: "hsl(0 0% 55%)" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "hsl(0 0% 85%)")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.color = "hsl(0 0% 55%)")
-                    }
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {renderLinkColumn("Customer Care", careLinks)}
+
+          {/* Policies */}
+          {renderLinkColumn("Policies", policyLinks)}
+
+          {/* Explore */}
+          {renderLinkColumn("Explore", exploreLinks)}
 
           {/* Newsletter */}
           <div>
@@ -203,10 +131,7 @@ const Footer = () => {
               Subscribe to receive updates, access to exclusive deals, and more.
             </p>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setEmail("");
-              }}
+              onSubmit={(e) => { e.preventDefault(); setEmail(""); }}
               className="flex flex-col gap-3"
             >
               <input
@@ -221,12 +146,8 @@ const Footer = () => {
                   border: "1px solid hsla(0,0%,100%,0.12)",
                   color: "hsl(0 0% 85%)",
                 }}
-                onFocus={(e) =>
-                  (e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.3)")
-                }
-                onBlur={(e) =>
-                  (e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.12)")
-                }
+                onFocus={(e) => (e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.3)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.12)")}
               />
               <button
                 type="submit"

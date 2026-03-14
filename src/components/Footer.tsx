@@ -23,13 +23,6 @@ const policyLinks = [
   { label: "Terms of Service", to: "/terms" },
 ];
 
-const exploreLinks = [
-  { label: "Home", to: "/" },
-  { label: "Shop", to: "/shop" },
-  { label: "About", to: "/about" },
-  { label: "Made For You", to: "/made-for-you" },
-  { label: "Contact", to: "/contact" },
-];
 
 const SocialIcon = ({
   children,

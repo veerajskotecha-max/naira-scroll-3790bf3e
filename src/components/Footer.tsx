@@ -132,8 +132,8 @@ const Footer = () => {
           {/* Policies */}
           {renderLinkColumn("Policies", policyLinks)}
 
-          {/* Explore */}
-          {renderLinkColumn("Explore", exploreLinks)}
+
+
 
           {/* Newsletter */}
           <div>

@@ -23,13 +23,6 @@ const policyLinks = [
   { label: "Terms of Service", to: "/terms" },
 ];
 
-const exploreLinks = [
-  { label: "Home", to: "/" },
-  { label: "Shop", to: "/shop" },
-  { label: "About", to: "/about" },
-  { label: "Made For You", to: "/made-for-you" },
-  { label: "Contact", to: "/contact" },
-];
 
 const SocialIcon = ({
   children,
@@ -92,8 +85,8 @@ const Footer = () => {
       className="w-full pt-[60px] md:pt-[70px] lg:pt-[80px] pb-6"
       style={{ backgroundColor: "hsl(0 0% 10%)" }}
     >
-      <div className="max-w-[1200px] mx-auto px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-10 md:gap-8 lg:gap-10 pb-12 md:pb-16">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-10 lg:px-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-8 lg:gap-12 pb-12 md:pb-16">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <h3
@@ -139,8 +132,8 @@ const Footer = () => {
           {/* Policies */}
           {renderLinkColumn("Policies", policyLinks)}
 
-          {/* Explore */}
-          {renderLinkColumn("Explore", exploreLinks)}
+
+
 
           {/* Newsletter */}
           <div>

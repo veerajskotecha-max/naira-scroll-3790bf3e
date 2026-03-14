@@ -61,6 +61,32 @@ const SocialIcon = ({
 const Footer = () => {
   const [email, setEmail] = useState("");
 
+  const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
+    <div>
+      <h4
+        className="font-cormorant text-[16px] font-semibold uppercase tracking-[0.1em] mb-5"
+        style={{ color: "hsl(0 0% 100%)" }}
+      >
+        {title}
+      </h4>
+      <ul className="space-y-3">
+        {links.map((link) => (
+          <li key={link.label}>
+            <Link
+              to={link.to}
+              className="font-cormorant text-[14px] transition-colors duration-200"
+              style={{ color: "hsl(0 0% 55%)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(0 0% 85%)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 55%)")}
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
     <footer
       className="w-full pt-[60px] md:pt-[70px] lg:pt-[80px] pb-6"

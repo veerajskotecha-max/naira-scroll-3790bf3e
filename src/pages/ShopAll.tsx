@@ -262,6 +262,19 @@ const ShopAll = () => {
     setSelectedAvailability([]);
   };
 
+  // Auto-apply category from URL query param
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      const mapped = categorySlugMap[categoryParam.toLowerCase()];
+      if (mapped) {
+        setSelectedCategories([mapped]);
+      } else {
+        setSelectedCategories([]);
+      }
+    }
+  }, [searchParams]);
+
   /* ── Memoized filtering + sorting ── */
   const filteredProducts = useMemo(() => {
     let result = allProducts;

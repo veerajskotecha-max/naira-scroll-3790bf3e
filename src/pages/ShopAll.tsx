@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -34,6 +35,14 @@ const allProducts: Product[] = [
 
 const categories = ["Dresses", "Co-ord Sets", "Fusion Sarees", "Festive Collection"];
 const sizes = ["XS", "S", "M", "L", "XL"];
+
+const categorySlugMap: Record<string, string> = {
+  "dresses": "Dresses",
+  "co-ord-sets": "Co-ord Sets",
+  "fusion-sarees": "Fusion Sarees",
+  "festive": "Festive Collection",
+  "new": "",
+};
 const availabilityOptions = ["In Stock", "Pre-Order"];
 
 /* ───── Collapsible Filter Section ───── */
@@ -204,6 +213,7 @@ const FilterSidebar = ({
 
 /* ───── Main Page ───── */
 const ShopAll = () => {
+  const [searchParams] = useSearchParams();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 50000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -251,6 +261,19 @@ const ShopAll = () => {
     setSelectedSizes([]);
     setSelectedAvailability([]);
   };
+
+  // Auto-apply category from URL query param
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      const mapped = categorySlugMap[categoryParam.toLowerCase()];
+      if (mapped) {
+        setSelectedCategories([mapped]);
+      } else {
+        setSelectedCategories([]);
+      }
+    }
+  }, [searchParams]);
 
   /* ── Memoized filtering + sorting ── */
   const filteredProducts = useMemo(() => {
@@ -610,6 +633,11 @@ const ShopAll = () => {
                 ))}
               </div>
             )}
+
+            {/* Footer inside scrollable area */}
+            <div className="mt-16">
+              <Footer />
+            </div>
           </div>
         </div>
       </div>

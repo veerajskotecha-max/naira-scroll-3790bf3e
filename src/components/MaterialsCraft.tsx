@@ -111,7 +111,7 @@ const MaterialsCraft = () => {
             >
               {/* Icon badge */}
               <div
-                className="w-[104px] h-[104px] rounded-full flex items-center justify-center mb-5 transition-transform duration-300 hover:scale-105"
+                className="w-[104px] h-[104px] rounded-full flex items-center justify-center mb-5 transition-transform duration-300 hover:scale-105 overflow-visible"
                 style={{
                   backgroundColor: "hsl(0 0% 100%)",
                   boxShadow: "0 4px 20px hsl(0 0% 0% / 0.06)",

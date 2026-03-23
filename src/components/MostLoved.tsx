@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Heart } from "lucide-react";
+import { useWishlist } from "@/contexts/WishlistContext";
 import floralTopLeft from "@/assets/floral-top-left.png";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import product1 from "@/assets/product-1.jpg";
@@ -53,6 +54,9 @@ const MostLovedCard = ({
   visible: boolean;
 }) => {
   const [hovered, setHovered] = useState(false);
+  const { toggleItem, isWishlisted } = useWishlist();
+  const slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const wishlisted = isWishlisted(slug);
 
   return (
     <div
@@ -101,12 +105,20 @@ const MostLovedCard = ({
           className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300"
           style={{
             backgroundColor: "hsla(0,0%,100%,0.85)",
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "translateY(0)" : "translateY(-4px)",
+            opacity: hovered || wishlisted ? 1 : 0,
+            transform: hovered || wishlisted ? "translateY(0)" : "translateY(-4px)",
           }}
           aria-label="Add to wishlist"
+          onClick={() => toggleItem({ id: slug, name: product.name, price: product.price, image: product.image })}
         >
-          <Heart size={14} style={{ color: "hsl(0 0% 30%)" }} />
+          <Heart
+            size={14}
+            className="transition-colors duration-200"
+            style={{
+              color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 30%)",
+              fill: wishlisted ? "hsl(0 70% 55%)" : "none",
+            }}
+          />
         </button>
 
         {/* Add to Cart overlay */}

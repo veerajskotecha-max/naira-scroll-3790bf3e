@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Heart } from "lucide-react";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 export interface Product {
   id?: string;
@@ -26,8 +27,9 @@ const toSlug = (name: string) =>
 
 const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) => {
   const [hovered, setHovered] = useState(false);
-  const [wishlisted, setWishlisted] = useState(false);
+  const { toggleItem, isWishlisted } = useWishlist();
   const slug = product.id || toSlug(product.name);
+  const wishlisted = isWishlisted(slug);
 
   return (
     <div
@@ -94,7 +96,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setWishlisted(!wishlisted);
+              toggleItem({ id: slug, name: product.name, price: product.price, image: product.image });
             }}
           >
             <Heart

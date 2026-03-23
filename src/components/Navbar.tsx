@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, User, ShoppingBag, Menu } from "lucide-react";
+import { Search, Heart, ShoppingBag, Menu } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 interface NavbarProps {
   scrolled: boolean;
@@ -19,6 +20,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { totalItems, setDrawerOpen } = useCart();
+  const { totalItems: wishlistCount, setDrawerOpen: setWishlistOpen } = useWishlist();
 
   return (
     <>
@@ -78,11 +80,20 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               strokeWidth={1.5}
               className="hidden lg:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
-            <User
-              size={20}
-              strokeWidth={1.5}
-              className="hidden lg:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
-            />
+            {/* Wishlist icon with dot indicator */}
+            <button className="relative" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
+              <Heart
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              />
+              {wishlistCount > 0 && (
+                <span
+                  className="absolute -top-0.5 -right-0.5 w-[7px] h-[7px] rounded-full animate-scale-in"
+                  style={{ backgroundColor: "hsl(186 35% 28%)" }}
+                />
+              )}
+            </button>
             <button className="relative" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
               <ShoppingBag
                 size={20}

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, Minus, Plus, Truck, RotateCcw, ShieldCheck, Ruler } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
@@ -27,9 +28,10 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
   const [zoomed, setZoomed] = useState(false);
   const isMobile = useIsMobile();
+  const { toggleItem, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted("midnight-silk-drape-saree");
   const { addItem, setDrawerOpen } = useCart();
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
@@ -65,7 +67,7 @@ const ProductDetail = () => {
     <button
       className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200"
       style={{ backgroundColor: "hsla(0,0%,100%,0.9)" }}
-      onClick={(e) => { e.stopPropagation(); setWishlisted(!wishlisted); }}
+      onClick={(e) => { e.stopPropagation(); toggleItem({ id: "midnight-silk-drape-saree", name: "Midnight Silk Drape Saree", price: "₹18,500", image: product1 }); }}
     >
       <Heart
         size={18}

@@ -392,7 +392,7 @@ const ShopAll = () => {
                 }}
               >
                 <SlidersHorizontal size={14} />
-                Filters
+                Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
               </button>
             </SheetTrigger>
             <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 
 interface StickyAddToCartProps {
   image: string;

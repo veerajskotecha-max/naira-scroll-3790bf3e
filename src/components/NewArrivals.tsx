@@ -79,21 +79,7 @@ const NewArrivals = () => {
       className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
-      {/* Decorative florals — prominent diagonal entry */}
-      <img
-        src={floralTopLeft}
-        alt=""
-        aria-hidden="true"
-        className="absolute w-[180px] md:w-[280px] lg:w-[380px] pointer-events-none select-none"
-        style={{
-          top: "-80px",
-          left: "-80px",
-          transform: "rotate(-30deg) scale(1.2)",
-          transformOrigin: "center center",
-          opacity: 0.72,
-          zIndex: 0,
-        }}
-      />
+      <FloatingFlower />
       <img
         src={floralBottomRight}
         alt=""

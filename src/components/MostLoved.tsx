@@ -205,21 +205,7 @@ const MostLoved = () => {
       className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
-      {/* Decorative florals — subtle diagonal entry */}
-      <img
-        src={floralTopLeft}
-        alt=""
-        aria-hidden="true"
-        className="absolute w-[140px] md:w-[200px] lg:w-[280px] pointer-events-none select-none"
-        style={{
-          top: "-80px",
-          left: "-80px",
-          transform: "rotate(-25deg) scale(0.9)",
-          transformOrigin: "center center",
-          opacity: 0.55,
-          zIndex: 0,
-        }}
-      />
+      <FloatingFlower />
       <img
         src={floralBottomRight}
         alt=""

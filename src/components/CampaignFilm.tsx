@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Play } from "lucide-react";
-import campaignPoster from "@/assets/campaign-video-poster.jpg";
 import featured1 from "@/assets/featured-1.jpg";
 import featured2 from "@/assets/featured-2.jpg";
 import featured3 from "@/assets/featured-3.jpg";
@@ -17,7 +15,6 @@ const featuredProducts = [
 const CampaignFilm = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
-  const [embedLoaded, setEmbedLoaded] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,10 +29,6 @@ const CampaignFilm = () => {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
-
-  const handleLoadEmbed = () => {
-    setEmbedLoaded(true);
-  };
 
   return (
     <section

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Instagram } from "lucide-react";
+import { Play } from "lucide-react";
 import campaignPoster from "@/assets/campaign-video-poster.jpg";
 import featured1 from "@/assets/featured-1.jpg";
 import featured2 from "@/assets/featured-2.jpg";

@@ -58,64 +58,46 @@ const CampaignFilm = () => {
                 aspectRatio: "9/16",
                 maxWidth: "400px",
                 boxShadow: "0 8px 30px -8px hsla(0,0%,0%,0.15)",
-                backgroundColor: "hsl(0 0% 92%)",
+                backgroundColor: "hsl(0 0% 8%)",
               }}
             >
               {!embedLoaded ? (
-                /* Thumbnail fallback with play button */
+                /* Dimmed preview with minimal play button */
                 <button
                   onClick={handleLoadEmbed}
-                  className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 cursor-pointer group"
-                  aria-label="Load Instagram Reel"
+                  className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer group"
+                  aria-label="Play campaign video"
                 >
                   <img
                     src={campaignPoster}
-                    alt="Campaign reel preview"
+                    alt="Campaign preview"
                     className="absolute inset-0 w-full h-full object-cover"
+                    style={{ filter: "brightness(0.6) contrast(1.05)" }}
                   />
-                  {/* Dark overlay */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(to top, hsla(0,0%,0%,0.3), hsla(0,0%,0%,0.1))",
-                    }}
-                  />
-
-                  {/* INSTAGRAM REEL pill */}
-                  <span
-                    className="absolute top-4 left-4 z-20 flex items-center gap-1.5 text-[11px] md:text-[12px] font-medium uppercase tracking-[0.08em] px-3 py-1.5 rounded-full"
-                    style={{
-                      backgroundColor: "hsl(0 0% 100%)",
-                      color: "hsl(0 0% 25%)",
-                    }}
-                  >
-                    <Instagram size={14} />
-                    INSTAGRAM REEL
-                  </span>
 
                   {/* Play button */}
                   <div
-                    className="relative z-20 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-200 group-hover:scale-110"
+                    className="relative z-20 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
                     style={{
-                      backgroundColor: "hsla(0,0%,100%,0.85)",
+                      backgroundColor: "hsla(0,0%,100%,0.2)",
+                      border: "1.5px solid hsla(0,0%,100%,0.4)",
                     }}
                   >
                     <Play
-                      size={28}
-                      className="ml-1"
-                      style={{ color: "hsl(0 0% 20%)" }}
+                      size={22}
+                      className="ml-0.5"
+                      style={{ color: "hsl(0 0% 100%)" }}
+                      fill="hsla(0,0%,100%,0.9)"
                     />
                   </div>
                 </button>
               ) : (
                 /* Instagram Embed iframe */
                 <iframe
-                  src={`https://www.instagram.com/reel/DWJxV5CsWSt/embed/`}
+                  src="https://www.instagram.com/reel/DWJxV5CsWSt/embed/"
                   className="absolute inset-0 w-full h-full border-0"
                   allowFullScreen
-                  loading="lazy"
-                  title="NAIRA Campaign Instagram Reel"
+                  title="NAIRA Campaign Reel"
                   style={{ borderRadius: "inherit" }}
                 />
               )}

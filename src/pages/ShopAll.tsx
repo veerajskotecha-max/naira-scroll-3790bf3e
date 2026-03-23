@@ -414,7 +414,7 @@ const ShopAll = () => {
                     style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                     onClick={() => setMobileFiltersOpen(false)}
                   >
-                    Apply Filters
+                    Done
                   </button>
                 </div>
               </div>

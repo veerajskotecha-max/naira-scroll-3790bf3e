@@ -61,9 +61,10 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           {/* Center logo */}
           <Link to="/" className="flex items-center justify-center">
             <img
-              src="/logo.webp"
+              src="/logo.png"
               alt="NAIRA"
-              className="w-auto object-contain block h-7 sm:h-9 md:h-12 lg:h-16"
+              loading="eager"
+              className="w-auto object-contain block h-8 sm:h-10 md:h-12 lg:h-14"
             />
           </Link>
 

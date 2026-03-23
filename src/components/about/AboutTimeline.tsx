@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import timeline1 from "@/assets/about-timeline-1.jpg";
+import timeline1 from "@/assets/about-dream-stitched.webp";
 import timeline2 from "@/assets/about-timeline-2.jpg";
 import timeline3 from "@/assets/about-timeline-3.jpg";
-import timeline4 from "@/assets/about-timeline-4.jpg";
+import timeline4 from "@/assets/about-founder.webp";
+import uniquelyYours from "@/assets/about-uniquely-yours.webp";
 
 const stories = [
   {
@@ -30,7 +31,7 @@ const stories = [
     label: "CUSTOMIZATION VISION",
     title: "Every Piece, Uniquely Yours",
     text: "Customization isn't just a service — it's our philosophy. We believe every person deserves an outfit that reflects their personality, their celebration, and their story. Over 2,500 custom pieces later, this belief only grows stronger.",
-    image: timeline3,
+    image: uniquelyYours,
     alt: "Custom outfit creation process",
   },
   {

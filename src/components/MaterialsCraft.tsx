@@ -1,29 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import PremiumSilkIcon from "./icons/PremiumSilkIcon";
+import EmbroideryIcon from "./icons/EmbroideryIcon";
 
-const steps = [
+const steps: { number: string; title: string; icon: ReactNode }[] = [
   {
     number: "01",
     title: "Premium Silk",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2" />
-        <path d="M8 12c0-2.2 1.8-4 4-4" />
-        <path d="M16 12c0 2.2-1.8 4-4 4" />
-        <line x1="12" y1="2" x2="12" y2="8" />
-        <line x1="12" y1="16" x2="12" y2="22" />
-      </svg>
-    ),
+    icon: <PremiumSilkIcon size={28} />,
   },
   {
     number: "02",
     title: "Handcrafted Embroidery",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14.5 2l6 6-10 10H4.5v-6l10-10z" />
-        <path d="M8 16l-3 3" />
-        <path d="M16 8l-2-2" />
-      </svg>
-    ),
+    icon: <EmbroideryIcon size={28} />,
   },
   {
     number: "03",

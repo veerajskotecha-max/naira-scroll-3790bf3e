@@ -137,23 +137,39 @@ const CustomerReviews = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [localReviews, setLocalReviews] = useState<Review[]>(reviewsData);
 
   const maxCount = ratingBreakdown[0].count;
 
   const filteredReviews = useMemo(() => {
     switch (activeFilter) {
       case "With Photos":
-        return reviewsData.filter((r) => r.hasPhotos);
+        return localReviews.filter((r) => r.hasPhotos);
       case "5★":
-        return reviewsData.filter((r) => r.rating === 5);
+        return localReviews.filter((r) => r.rating === 5);
       case "4★":
-        return reviewsData.filter((r) => r.rating === 4);
+        return localReviews.filter((r) => r.rating === 4);
       case "3★":
-        return reviewsData.filter((r) => r.rating === 3);
+        return localReviews.filter((r) => r.rating === 3);
       default:
-        return reviewsData;
+        return localReviews;
     }
-  }, [activeFilter]);
+  }, [activeFilter, localReviews]);
+
+  const handleNewReview = (review: { name: string; rating: number; text: string }) => {
+    const newReview: Review = {
+      name: review.name,
+      initials: review.name.slice(0, 2).toUpperCase(),
+      verified: false,
+      rating: review.rating,
+      date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      text: review.text,
+      hasPhotos: false,
+      images: [],
+    };
+    setLocalReviews((prev) => [newReview, ...prev]);
+  };
 
   const handleFilterChange = (filter: string) => {
     setAnimating(true);

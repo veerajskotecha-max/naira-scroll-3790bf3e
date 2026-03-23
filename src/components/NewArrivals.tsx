@@ -76,7 +76,7 @@ const NewArrivals = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
+      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
       <FloatingFlower />

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Palette, Phone, Package } from "lucide-react";
-import heroImage from "@/assets/made-for-you-hero.jpg";
+import heroImage from "@/assets/made-for-you-hero.webp";
 import floralTopLeft from "@/assets/floral-top-left.png";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";

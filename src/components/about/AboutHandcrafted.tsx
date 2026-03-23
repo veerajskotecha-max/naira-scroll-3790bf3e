@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import campaignPoster from "@/assets/campaign-video-poster.jpg";
+import craftingImg from "@/assets/about-crafting.webp";
 
 const AboutHandcrafted = () => {
   const ref = useRef<HTMLDivElement>(null);

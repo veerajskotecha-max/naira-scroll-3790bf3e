@@ -28,9 +28,10 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
   const [zoomed, setZoomed] = useState(false);
   const isMobile = useIsMobile();
+  const { toggleItem, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted("midnight-silk-drape-saree");
   const { addItem, setDrawerOpen } = useCart();
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);

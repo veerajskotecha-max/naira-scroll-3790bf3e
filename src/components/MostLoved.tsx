@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Heart } from "lucide-react";
+import { useWishlist } from "@/contexts/WishlistContext";
 import floralTopLeft from "@/assets/floral-top-left.png";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import product1 from "@/assets/product-1.jpg";

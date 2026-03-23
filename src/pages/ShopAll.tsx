@@ -354,7 +354,7 @@ const ShopAll = () => {
                 className="font-cormorant text-[14px] tracking-wide lg:absolute lg:left-1/2 lg:-translate-x-1/2"
                 style={{ color: "hsl(0 0% 45%)" }}
               >
-                {allProducts.length} Products
+                {filteredProducts.length} Product{filteredProducts.length !== 1 ? "s" : ""}
               </p>
 
               {/* Sort */}

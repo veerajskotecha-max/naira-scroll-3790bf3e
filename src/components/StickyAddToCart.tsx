@@ -12,6 +12,22 @@ interface StickyAddToCartProps {
 
 const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartProps) => {
   const [visible, setVisible] = useState(false);
+  const { addItem, setDrawerOpen } = useCart();
+
+  const handleAdd = () => {
+    addItem({
+      id: "midnight-silk-drape-saree",
+      name: title,
+      price: 18500,
+      priceLabel: price,
+      image,
+      size: selectedSize,
+    });
+    toast("Added to cart", {
+      description: `1× ${title} (${selectedSize})`,
+      action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {

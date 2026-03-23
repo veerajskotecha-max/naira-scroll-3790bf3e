@@ -634,13 +634,12 @@ const ShopAll = () => {
               </div>
             )}
 
-            {/* Footer inside scrollable area */}
-            <div className="mt-16">
-              <Footer />
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer at root level – full width */}
+      <Footer />
       <UrgencyNotification />
     </div>
   );

@@ -141,3 +141,8 @@ All colors MUST be HSL.
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+}

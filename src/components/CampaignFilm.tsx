@@ -185,7 +185,6 @@ const CampaignFilm = () => {
                     "hsl(143 14% 63%)")
                 }
               >
-                <Instagram size={16} />
                 WATCH ON INSTAGRAM
               </a>
             </div>

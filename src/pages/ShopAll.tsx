@@ -252,6 +252,58 @@ const ShopAll = () => {
     setSelectedAvailability([]);
   };
 
+  /* ── Memoized filtering + sorting ── */
+  const filteredProducts = useMemo(() => {
+    let result = allProducts;
+
+    // Category filter
+    if (selectedCategories.length > 0) {
+      result = result.filter((p) => selectedCategories.includes(p.category));
+    }
+
+    // Price range filter
+    result = result.filter(
+      (p) => p.numericPrice >= priceRange[0] && p.numericPrice <= priceRange[1]
+    );
+
+    // Size filter
+    if (selectedSizes.length > 0) {
+      result = result.filter((p) =>
+        selectedSizes.some((s) => p.sizes.includes(s))
+      );
+    }
+
+    // Availability filter
+    if (selectedAvailability.length > 0) {
+      result = result.filter((p) => selectedAvailability.includes(p.availability));
+    }
+
+    // Sorting (applied after filtering)
+    switch (sortValue) {
+      case "price-low":
+        result = [...result].sort((a, b) => a.numericPrice - b.numericPrice);
+        break;
+      case "price-high":
+        result = [...result].sort((a, b) => b.numericPrice - a.numericPrice);
+        break;
+      case "popular":
+        // Prioritise tagged items (BESTSELLER, etc.)
+        result = [...result].sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0));
+        break;
+      case "newest":
+      default:
+        break; // original order
+    }
+
+    return result;
+  }, [selectedCategories, priceRange, selectedSizes, selectedAvailability, sortValue]);
+
+  const activeFilterCount =
+    selectedCategories.length +
+    selectedSizes.length +
+    selectedAvailability.length +
+    (priceRange[0] !== 0 || priceRange[1] !== 50000 ? 1 : 0);
+
   /* Navbar heights: mobile 94px, md 100px, lg 116px */
   /* Toolbar height ~52px */
   const toolbarTop = { mobile: 94, md: 100, lg: 116 };

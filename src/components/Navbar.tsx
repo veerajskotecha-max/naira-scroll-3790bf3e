@@ -33,18 +33,18 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           {/* Left: hamburger (mobile) / nav links (desktop) */}
           <div className="flex items-center">
             <button
-              className="md:hidden opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="lg:hidden opacity-70 hover:opacity-100 transition-opacity duration-200"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
-            <div className="hidden md:flex items-center gap-[30px] lg:gap-[34px]">
+            <div className="hidden lg:flex items-center gap-[30px] lg:gap-[34px]">
               {leftLinks.map((link) => (
                 <Link
                   key={link.label}
                   to={link.to}
-                  className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80 ${
+                  className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80 ${
                     location.pathname === link.to ? "active" : ""
                   }`}
                 >

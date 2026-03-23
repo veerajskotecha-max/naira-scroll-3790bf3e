@@ -507,21 +507,45 @@ const ShopAll = () => {
 
           {/* Scrollable product grid */}
           <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
-            <div
-              className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
-                mobileLayout === "list"
-                  ? "grid-cols-1 gap-y-8"
-                  : "grid-cols-2 gap-y-10"
-              } ${
-                gridCols === 4
-                  ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
-                  : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
-              }`}
-            >
-              {allProducts.map((product, i) => (
-                <ProductCard key={i} product={product} index={i} visible />
-              ))}
-            </div>
+            {filteredProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <p
+                  className="font-cormorant text-[22px] font-semibold mb-2"
+                  style={{ color: "hsl(0 0% 25%)" }}
+                >
+                  No products found
+                </p>
+                <p
+                  className="font-cormorant text-[15px] mb-6"
+                  style={{ color: "hsl(0 0% 50%)" }}
+                >
+                  Try adjusting your filters to discover more pieces.
+                </p>
+                <button
+                  onClick={resetFilters}
+                  className="px-6 py-2.5 rounded-full font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            ) : (
+              <div
+                className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
+                  mobileLayout === "list"
+                    ? "grid-cols-1 gap-y-8"
+                    : "grid-cols-2 gap-y-10"
+                } ${
+                  gridCols === 4
+                    ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
+                    : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
+                }`}
+              >
+                {filteredProducts.map((product, i) => (
+                  <ProductCard key={product.name} product={product} index={i} visible />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Star, Camera, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import WriteReviewModal from "@/components/WriteReviewModal";
 
 import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";
@@ -136,23 +137,39 @@ const CustomerReviews = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [localReviews, setLocalReviews] = useState<Review[]>(reviewsData);
 
   const maxCount = ratingBreakdown[0].count;
 
   const filteredReviews = useMemo(() => {
     switch (activeFilter) {
       case "With Photos":
-        return reviewsData.filter((r) => r.hasPhotos);
+        return localReviews.filter((r) => r.hasPhotos);
       case "5★":
-        return reviewsData.filter((r) => r.rating === 5);
+        return localReviews.filter((r) => r.rating === 5);
       case "4★":
-        return reviewsData.filter((r) => r.rating === 4);
+        return localReviews.filter((r) => r.rating === 4);
       case "3★":
-        return reviewsData.filter((r) => r.rating === 3);
+        return localReviews.filter((r) => r.rating === 3);
       default:
-        return reviewsData;
+        return localReviews;
     }
-  }, [activeFilter]);
+  }, [activeFilter, localReviews]);
+
+  const handleNewReview = (review: { name: string; rating: number; text: string }) => {
+    const newReview: Review = {
+      name: review.name,
+      initials: review.name.slice(0, 2).toUpperCase(),
+      verified: false,
+      rating: review.rating,
+      date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+      text: review.text,
+      hasPhotos: false,
+      images: [],
+    };
+    setLocalReviews((prev) => [newReview, ...prev]);
+  };
 
   const handleFilterChange = (filter: string) => {
     setAnimating(true);
@@ -228,13 +245,23 @@ const CustomerReviews = () => {
             ))}
           </div>
           <button
-            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border-2 transition-all duration-200 hover:bg-foreground hover:text-background"
-            style={{ borderColor: "hsl(var(--foreground))", color: "hsl(var(--foreground))" }}
+            onClick={() => setReviewModalOpen(true)}
+            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-[250ms] ease-in-out hover:shadow-md hover:-translate-y-[1px] hover:bg-secondary"
+            style={{
+              borderColor: "hsl(var(--border))",
+              color: "hsl(var(--foreground))",
+            }}
           >
             Write a Review
           </button>
         </div>
       </div>
+
+      <WriteReviewModal
+        open={reviewModalOpen}
+        onOpenChange={setReviewModalOpen}
+        onSubmit={handleNewReview}
+      />
 
       {/* Lightbox */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>

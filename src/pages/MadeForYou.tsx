@@ -229,6 +229,58 @@ const MadeForYou = () => {
               </div>
             ))}
           </div>
+
+          {/* CTA below steps */}
+          <div className="text-center mt-14 md:mt-20">
+            <h3
+              className="font-cormorant text-[24px] md:text-[30px] lg:text-[38px] font-medium leading-tight mb-3"
+              style={{ color: "hsl(0 0% 18%)" }}
+            >
+              Start Your Custom Journey
+            </h3>
+            <p
+              className="font-cormorant text-[14px] md:text-[16px] leading-relaxed max-w-[440px] mx-auto mb-8"
+              style={{ color: "hsl(0 0% 48%)" }}
+            >
+              Share your idea with us or explore our ready-to-wear collection.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://wa.me/919876543210?text=Hi%2C%20I%20want%20to%20create%20a%20custom%20outfit"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                style={{
+                  backgroundColor: "hsl(143 14% 50%)",
+                  color: "hsl(0 0% 100%)",
+                  boxShadow: "0 4px 16px -4px hsla(143,14%,50%,0.35)",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(143 14% 42%)")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(143 14% 50%)")}
+              >
+                Chat on WhatsApp
+              </a>
+              <Link
+                to="/shop"
+                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                style={{
+                  border: "1.5px solid hsl(0 0% 30%)",
+                  color: "hsl(0 0% 22%)",
+                  backgroundColor: "transparent",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(0 0% 18%)";
+                  e.currentTarget.style.color = "hsl(0 0% 100%)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(0 0% 22%)";
+                }}
+              >
+                Explore Collection
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 

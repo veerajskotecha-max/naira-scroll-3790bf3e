@@ -10,13 +10,16 @@ import product3Hover from "@/assets/product-3-hover.jpg";
 import product4 from "@/assets/product-4.jpg";
 import product4Hover from "@/assets/product-4-hover.jpg";
 
-const products = [
+const products: Product[] = [
   {
     image: product2,
     hoverImage: product2Hover,
     name: "Ivory Embroidered Anarkali",
     category: "Designer Anarkali",
     price: "₹22,800",
+    numericPrice: 22800,
+    sizes: ["XS", "S", "M", "L"],
+    availability: "In Stock",
     tag: "BESTSELLER",
   },
   {
@@ -25,6 +28,9 @@ const products = [
     name: "Terracotta Lehenga Set",
     category: "Contemporary Lehengas",
     price: "₹28,500",
+    numericPrice: 28500,
+    sizes: ["S", "M", "L"],
+    availability: "Pre-Order",
     tag: "NEW ARRIVAL",
   },
   {
@@ -33,6 +39,9 @@ const products = [
     name: "Lavender Chiffon Kurta Set",
     category: "Premium Kurtas",
     price: "₹12,900",
+    numericPrice: 12900,
+    sizes: ["XS", "S", "M", "L", "XL"],
+    availability: "In Stock",
     tag: "NEW ARRIVAL",
   },
   {
@@ -41,6 +50,9 @@ const products = [
     name: "Rose Gold Silk Saree",
     category: "Classic Sarees",
     price: "₹16,200",
+    numericPrice: 16200,
+    sizes: ["S", "M", "L", "XL"],
+    availability: "In Stock",
     tag: "BESTSELLER",
   },
 ];

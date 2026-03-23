@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,15 +21,15 @@ import product4 from "@/assets/product-4.jpg";
 import product4Hover from "@/assets/product-4-hover.jpg";
 
 const allProducts: Product[] = [
-  { image: product1, hoverImage: product1Hover, name: "Midnight Silk Drape Saree", category: "Fusion Sarees", price: "₹18,500" },
-  { image: product2, hoverImage: product2Hover, name: "Ivory Embroidered Anarkali", category: "Designer Anarkali", price: "₹22,800" },
-  { image: product3, hoverImage: product3Hover, name: "Terracotta Lehenga Set", category: "Contemporary Lehengas", price: "₹28,500" },
-  { image: product4, hoverImage: product4Hover, name: "Lavender Chiffon Kurta Set", category: "Premium Kurtas", price: "₹12,900" },
-  { image: product3, hoverImage: product3Hover, name: "Rose Gold Festive Saree", category: "Festive Collection", price: "₹24,500", tag: "BESTSELLER" },
-  { image: product1, hoverImage: product1Hover, name: "Emerald Silk Co-ord Set", category: "Co-ord Sets", price: "₹16,200" },
-  { image: product2, hoverImage: product2Hover, name: "Pearl White Anarkali Gown", category: "Dresses", price: "₹19,800" },
-  { image: product4, hoverImage: product4Hover, name: "Dusty Pink Sharara Set", category: "Co-ord Sets", price: "₹15,600" },
-  { image: product1, hoverImage: product1Hover, name: "Royal Blue Drape Saree", category: "Fusion Sarees", price: "₹21,000", tag: "LIMITED" },
+  { image: product1, hoverImage: product1Hover, name: "Midnight Silk Drape Saree", category: "Fusion Sarees", price: "₹18,500", numericPrice: 18500, sizes: ["S", "M", "L", "XL"], availability: "In Stock" },
+  { image: product2, hoverImage: product2Hover, name: "Ivory Embroidered Anarkali", category: "Designer Anarkali", price: "₹22,800", numericPrice: 22800, sizes: ["XS", "S", "M", "L"], availability: "In Stock" },
+  { image: product3, hoverImage: product3Hover, name: "Terracotta Lehenga Set", category: "Contemporary Lehengas", price: "₹28,500", numericPrice: 28500, sizes: ["S", "M", "L"], availability: "Pre-Order" },
+  { image: product4, hoverImage: product4Hover, name: "Lavender Chiffon Kurta Set", category: "Premium Kurtas", price: "₹12,900", numericPrice: 12900, sizes: ["XS", "S", "M", "L", "XL"], availability: "In Stock" },
+  { image: product3, hoverImage: product3Hover, name: "Rose Gold Festive Saree", category: "Festive Collection", price: "₹24,500", numericPrice: 24500, sizes: ["S", "M", "L"], availability: "In Stock", tag: "BESTSELLER" },
+  { image: product1, hoverImage: product1Hover, name: "Emerald Silk Co-ord Set", category: "Co-ord Sets", price: "₹16,200", numericPrice: 16200, sizes: ["M", "L", "XL"], availability: "In Stock" },
+  { image: product2, hoverImage: product2Hover, name: "Pearl White Anarkali Gown", category: "Dresses", price: "₹19,800", numericPrice: 19800, sizes: ["XS", "S", "M"], availability: "Pre-Order" },
+  { image: product4, hoverImage: product4Hover, name: "Dusty Pink Sharara Set", category: "Co-ord Sets", price: "₹15,600", numericPrice: 15600, sizes: ["S", "M", "L", "XL"], availability: "In Stock" },
+  { image: product1, hoverImage: product1Hover, name: "Royal Blue Drape Saree", category: "Fusion Sarees", price: "₹21,000", numericPrice: 21000, sizes: ["M", "L"], availability: "In Stock", tag: "LIMITED" },
 ];
 
 const categories = ["Dresses", "Co-ord Sets", "Fusion Sarees", "Festive Collection"];

@@ -83,13 +83,21 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               strokeWidth={1.5}
               className="hidden lg:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
-            <div className="relative">
+            <button className="relative" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
               <ShoppingBag
                 size={20}
                 strokeWidth={1.5}
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
-            </div>
+              {totalItems > 0 && (
+                <span
+                  className="absolute -top-2 -right-2 w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold leading-none"
+                  style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                >
+                  {totalItems > 9 ? "9+" : totalItems}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </nav>

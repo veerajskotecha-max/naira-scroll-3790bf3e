@@ -277,6 +277,20 @@ const ProductDetail = () => {
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
+                onClick={() => {
+                  addItem({
+                    id: "midnight-silk-drape-saree",
+                    name: "Midnight Silk Drape Saree",
+                    price: 18500,
+                    priceLabel: "₹18,500",
+                    image: product1,
+                    size: selectedSize,
+                  }, quantity);
+                  toast("Added to cart", {
+                    description: `${quantity}× Midnight Silk Drape Saree (${selectedSize})`,
+                    action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
+                  });
+                }}
               >
                 Add to Cart
               </button>
@@ -290,6 +304,17 @@ const ProductDetail = () => {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "transparent";
                   e.currentTarget.style.color = "hsl(186 35% 28%)";
+                }}
+                onClick={() => {
+                  addItem({
+                    id: "midnight-silk-drape-saree",
+                    name: "Midnight Silk Drape Saree",
+                    price: 18500,
+                    priceLabel: "₹18,500",
+                    image: product1,
+                    size: selectedSize,
+                  }, quantity);
+                  setDrawerOpen(true);
                 }}
               >
                 Buy Now

@@ -246,9 +246,9 @@ const CustomerReviews = () => {
           </div>
           <button
             onClick={() => setReviewModalOpen(true)}
-            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-[250ms] ease-in-out hover:shadow-md hover:-translate-y-[1px] hover:bg-secondary"
+            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-[250ms] ease-in-out hover:shadow-md hover:-translate-y-[1px] hover:bg-foreground hover:text-background"
             style={{
-              borderColor: "hsl(var(--border))",
+              borderColor: "hsl(var(--foreground))",
               color: "hsl(var(--foreground))",
             }}
           >

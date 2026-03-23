@@ -3,7 +3,7 @@ import craftingImg from "@/assets/about-crafting.webp";
 
 const AboutHandcrafted = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [visible, setVisible] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

@@ -213,6 +213,7 @@ const FilterSidebar = ({
 
 /* ───── Main Page ───── */
 const ShopAll = () => {
+  const [searchParams] = useSearchParams();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 50000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);

@@ -175,7 +175,7 @@ const CoutureExperience = () => {
             }}
           >
             <Link
-              to="/custom"
+              to="/made-for-you"
               className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               style={{
                 backgroundColor: "hsl(20 18% 28%)",

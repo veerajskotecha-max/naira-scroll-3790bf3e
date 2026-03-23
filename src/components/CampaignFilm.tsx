@@ -54,46 +54,13 @@ const CampaignFilm = () => {
                 backgroundColor: "hsl(0 0% 8%)",
               }}
             >
-              {!embedLoaded ? (
-                /* Dimmed preview with minimal play button */
-                <button
-                  onClick={handleLoadEmbed}
-                  className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer group"
-                  aria-label="Play campaign video"
-                >
-                  <img
-                    src={campaignPoster}
-                    alt="Campaign preview"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ filter: "brightness(0.6) contrast(1.05)" }}
-                  />
-
-                  {/* Play button */}
-                  <div
-                    className="relative z-20 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
-                    style={{
-                      backgroundColor: "hsla(0,0%,100%,0.2)",
-                      border: "1.5px solid hsla(0,0%,100%,0.4)",
-                    }}
-                  >
-                    <Play
-                      size={22}
-                      className="ml-0.5"
-                      style={{ color: "hsl(0 0% 100%)" }}
-                      fill="hsla(0,0%,100%,0.9)"
-                    />
-                  </div>
-                </button>
-              ) : (
-                /* Instagram Embed iframe */
-                <iframe
-                  src="https://www.instagram.com/reel/DWJxV5CsWSt/embed/"
-                  className="absolute inset-0 w-full h-full border-0"
-                  allowFullScreen
-                  title="NAIRA Campaign Reel"
-                  style={{ borderRadius: "inherit" }}
-                />
-              )}
+              <iframe
+                src="https://www.instagram.com/reel/DWJxV5CsWSt/embed/"
+                className="absolute inset-0 w-full h-full border-0"
+                allowFullScreen
+                title="NAIRA Campaign Reel"
+                style={{ borderRadius: "inherit" }}
+              />
             </div>
           </div>
 

@@ -35,6 +35,14 @@ const allProducts: Product[] = [
 
 const categories = ["Dresses", "Co-ord Sets", "Fusion Sarees", "Festive Collection"];
 const sizes = ["XS", "S", "M", "L", "XL"];
+
+const categorySlugMap: Record<string, string> = {
+  "dresses": "Dresses",
+  "co-ord-sets": "Co-ord Sets",
+  "fusion-sarees": "Fusion Sarees",
+  "festive": "Festive Collection",
+  "new": "",
+};
 const availabilityOptions = ["In Stock", "Pre-Order"];
 
 /* ───── Collapsible Filter Section ───── */

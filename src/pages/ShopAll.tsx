@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,15 +21,15 @@ import product4 from "@/assets/product-4.jpg";
 import product4Hover from "@/assets/product-4-hover.jpg";
 
 const allProducts: Product[] = [
-  { image: product1, hoverImage: product1Hover, name: "Midnight Silk Drape Saree", category: "Fusion Sarees", price: "₹18,500" },
-  { image: product2, hoverImage: product2Hover, name: "Ivory Embroidered Anarkali", category: "Designer Anarkali", price: "₹22,800" },
-  { image: product3, hoverImage: product3Hover, name: "Terracotta Lehenga Set", category: "Contemporary Lehengas", price: "₹28,500" },
-  { image: product4, hoverImage: product4Hover, name: "Lavender Chiffon Kurta Set", category: "Premium Kurtas", price: "₹12,900" },
-  { image: product3, hoverImage: product3Hover, name: "Rose Gold Festive Saree", category: "Festive Collection", price: "₹24,500", tag: "BESTSELLER" },
-  { image: product1, hoverImage: product1Hover, name: "Emerald Silk Co-ord Set", category: "Co-ord Sets", price: "₹16,200" },
-  { image: product2, hoverImage: product2Hover, name: "Pearl White Anarkali Gown", category: "Dresses", price: "₹19,800" },
-  { image: product4, hoverImage: product4Hover, name: "Dusty Pink Sharara Set", category: "Co-ord Sets", price: "₹15,600" },
-  { image: product1, hoverImage: product1Hover, name: "Royal Blue Drape Saree", category: "Fusion Sarees", price: "₹21,000", tag: "LIMITED" },
+  { image: product1, hoverImage: product1Hover, name: "Midnight Silk Drape Saree", category: "Fusion Sarees", price: "₹18,500", numericPrice: 18500, sizes: ["S", "M", "L", "XL"], availability: "In Stock" },
+  { image: product2, hoverImage: product2Hover, name: "Ivory Embroidered Anarkali", category: "Designer Anarkali", price: "₹22,800", numericPrice: 22800, sizes: ["XS", "S", "M", "L"], availability: "In Stock" },
+  { image: product3, hoverImage: product3Hover, name: "Terracotta Lehenga Set", category: "Contemporary Lehengas", price: "₹28,500", numericPrice: 28500, sizes: ["S", "M", "L"], availability: "Pre-Order" },
+  { image: product4, hoverImage: product4Hover, name: "Lavender Chiffon Kurta Set", category: "Premium Kurtas", price: "₹12,900", numericPrice: 12900, sizes: ["XS", "S", "M", "L", "XL"], availability: "In Stock" },
+  { image: product3, hoverImage: product3Hover, name: "Rose Gold Festive Saree", category: "Festive Collection", price: "₹24,500", numericPrice: 24500, sizes: ["S", "M", "L"], availability: "In Stock", tag: "BESTSELLER" },
+  { image: product1, hoverImage: product1Hover, name: "Emerald Silk Co-ord Set", category: "Co-ord Sets", price: "₹16,200", numericPrice: 16200, sizes: ["M", "L", "XL"], availability: "In Stock" },
+  { image: product2, hoverImage: product2Hover, name: "Pearl White Anarkali Gown", category: "Dresses", price: "₹19,800", numericPrice: 19800, sizes: ["XS", "S", "M"], availability: "Pre-Order" },
+  { image: product4, hoverImage: product4Hover, name: "Dusty Pink Sharara Set", category: "Co-ord Sets", price: "₹15,600", numericPrice: 15600, sizes: ["S", "M", "L", "XL"], availability: "In Stock" },
+  { image: product1, hoverImage: product1Hover, name: "Royal Blue Drape Saree", category: "Fusion Sarees", price: "₹21,000", numericPrice: 21000, sizes: ["M", "L"], availability: "In Stock", tag: "LIMITED" },
 ];
 
 const categories = ["Dresses", "Co-ord Sets", "Fusion Sarees", "Festive Collection"];
@@ -252,6 +252,58 @@ const ShopAll = () => {
     setSelectedAvailability([]);
   };
 
+  /* ── Memoized filtering + sorting ── */
+  const filteredProducts = useMemo(() => {
+    let result = allProducts;
+
+    // Category filter
+    if (selectedCategories.length > 0) {
+      result = result.filter((p) => selectedCategories.includes(p.category));
+    }
+
+    // Price range filter
+    result = result.filter(
+      (p) => p.numericPrice >= priceRange[0] && p.numericPrice <= priceRange[1]
+    );
+
+    // Size filter
+    if (selectedSizes.length > 0) {
+      result = result.filter((p) =>
+        selectedSizes.some((s) => p.sizes.includes(s))
+      );
+    }
+
+    // Availability filter
+    if (selectedAvailability.length > 0) {
+      result = result.filter((p) => selectedAvailability.includes(p.availability));
+    }
+
+    // Sorting (applied after filtering)
+    switch (sortValue) {
+      case "price-low":
+        result = [...result].sort((a, b) => a.numericPrice - b.numericPrice);
+        break;
+      case "price-high":
+        result = [...result].sort((a, b) => b.numericPrice - a.numericPrice);
+        break;
+      case "popular":
+        // Prioritise tagged items (BESTSELLER, etc.)
+        result = [...result].sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0));
+        break;
+      case "newest":
+      default:
+        break; // original order
+    }
+
+    return result;
+  }, [selectedCategories, priceRange, selectedSizes, selectedAvailability, sortValue]);
+
+  const activeFilterCount =
+    selectedCategories.length +
+    selectedSizes.length +
+    selectedAvailability.length +
+    (priceRange[0] !== 0 || priceRange[1] !== 50000 ? 1 : 0);
+
   /* Navbar heights: mobile 94px, md 100px, lg 116px */
   /* Toolbar height ~52px */
   const toolbarTop = { mobile: 94, md: 100, lg: 116 };
@@ -302,7 +354,7 @@ const ShopAll = () => {
                 className="font-cormorant text-[14px] tracking-wide lg:absolute lg:left-1/2 lg:-translate-x-1/2"
                 style={{ color: "hsl(0 0% 45%)" }}
               >
-                {allProducts.length} Products
+                {filteredProducts.length} Product{filteredProducts.length !== 1 ? "s" : ""}
               </p>
 
               {/* Sort */}
@@ -455,21 +507,45 @@ const ShopAll = () => {
 
           {/* Scrollable product grid */}
           <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
-            <div
-              className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
-                mobileLayout === "list"
-                  ? "grid-cols-1 gap-y-8"
-                  : "grid-cols-2 gap-y-10"
-              } ${
-                gridCols === 4
-                  ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
-                  : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
-              }`}
-            >
-              {allProducts.map((product, i) => (
-                <ProductCard key={i} product={product} index={i} visible />
-              ))}
-            </div>
+            {filteredProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <p
+                  className="font-cormorant text-[22px] font-semibold mb-2"
+                  style={{ color: "hsl(0 0% 25%)" }}
+                >
+                  No products found
+                </p>
+                <p
+                  className="font-cormorant text-[15px] mb-6"
+                  style={{ color: "hsl(0 0% 50%)" }}
+                >
+                  Try adjusting your filters to discover more pieces.
+                </p>
+                <button
+                  onClick={resetFilters}
+                  className="px-6 py-2.5 rounded-full font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
+            ) : (
+              <div
+                className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
+                  mobileLayout === "list"
+                    ? "grid-cols-1 gap-y-8"
+                    : "grid-cols-2 gap-y-10"
+                } ${
+                  gridCols === 4
+                    ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
+                    : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
+                }`}
+              >
+                {filteredProducts.map((product, i) => (
+                  <ProductCard key={product.name} product={product} index={i} visible />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

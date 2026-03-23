@@ -9,6 +9,9 @@ export interface Product {
   name: string;
   category: string;
   price: string;
+  numericPrice: number;
+  sizes: string[];
+  availability: "In Stock" | "Pre-Order";
   tag?: string;
 }
 

@@ -82,32 +82,14 @@ const MadeForYou = () => {
           style={{
             backgroundImage: `url(${heroImage})`,
             backgroundPosition: "center 70%",
+            filter: "brightness(0.9) contrast(1.05)",
           }}
         />
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(to bottom, hsla(0,0%,0%,0.38), hsla(0,0%,0%,0.48))",
+            background: "linear-gradient(to bottom, hsla(0,0%,0%,0.25), hsla(0,0%,0%,0.3))",
           }}
-        />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${floralPatternBg})`,
-            backgroundSize: "500px",
-            backgroundRepeat: "repeat",
-            opacity: 0.06,
-          }}
-        />
-        <img
-          src={floralTopLeft}
-          alt=""
-          className="absolute top-0 left-0 w-[140px] md:w-[200px] lg:w-[260px] opacity-[0.12] pointer-events-none select-none"
-        />
-        <img
-          src={floralBottomRight}
-          alt=""
-          className="absolute bottom-0 right-0 w-[140px] md:w-[200px] lg:w-[260px] opacity-[0.12] pointer-events-none select-none"
         />
 
         <div className="relative z-10 flex items-start justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-6 md:px-10 lg:px-20 pt-24 pb-20 md:pt-32 md:pb-28 lg:pt-36 lg:pb-36">

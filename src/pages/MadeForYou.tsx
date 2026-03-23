@@ -78,12 +78,17 @@ const MadeForYou = () => {
       {/* ═══════════ SECTION 1 — Hero Banner (floral bg) ═══════════ */}
       <section className="relative w-full overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroImage})` }}
+          className="absolute inset-0 bg-cover"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            backgroundPosition: "center 70%",
+          }}
         />
         <div
           className="absolute inset-0"
-          style={{ backgroundColor: "hsla(0,0%,0%,0.45)" }}
+          style={{
+            background: "linear-gradient(to bottom, hsla(0,0%,0%,0.38), hsla(0,0%,0%,0.48))",
+          }}
         />
         <div
           className="absolute inset-0 pointer-events-none"

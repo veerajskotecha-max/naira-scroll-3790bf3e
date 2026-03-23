@@ -30,6 +30,7 @@ const ProductDetail = () => {
   const [wishlisted, setWishlisted] = useState(false);
   const [zoomed, setZoomed] = useState(false);
   const isMobile = useIsMobile();
+  const { addItem, setDrawerOpen } = useCart();
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
 

@@ -3,6 +3,7 @@ import timeline1 from "@/assets/about-dream-stitched.webp";
 import timeline2 from "@/assets/about-timeline-2.jpg";
 import timeline3 from "@/assets/about-timeline-3.jpg";
 import timeline4 from "@/assets/about-founder.webp";
+import uniquelyYours from "@/assets/about-uniquely-yours.webp";
 
 const stories = [
   {

@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const shopLinks = [
-  { label: "Dresses", to: "/shop/dresses" },
-  { label: "Co-ord Sets", to: "/shop/coord-sets" },
-  { label: "Fusion Sarees", to: "/shop/fusion-sarees" },
-  { label: "Festive Collection", to: "/shop/festive" },
-  { label: "New Arrivals", to: "/shop/new-arrivals" },
+  { label: "Dresses", to: "/shop?category=dresses" },
+  { label: "Co-ord Sets", to: "/shop?category=co-ord-sets" },
+  { label: "Fusion Sarees", to: "/shop?category=fusion-sarees" },
+  { label: "Festive Collection", to: "/shop?category=festive" },
+  { label: "New Arrivals", to: "/shop?category=new" },
 ];
 
 const careLinks = [

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Palette, Phone, Package } from "lucide-react";
-import heroImage from "@/assets/made-for-you-hero.jpg";
+import heroImage from "@/assets/made-for-you-hero.webp";
 import floralTopLeft from "@/assets/floral-top-left.png";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
@@ -78,12 +78,17 @@ const MadeForYou = () => {
       {/* ═══════════ SECTION 1 — Hero Banner (floral bg) ═══════════ */}
       <section className="relative w-full overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroImage})` }}
+          className="mfy-hero-bg absolute inset-0 bg-cover"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            backgroundPosition: "center 70%",
+          }}
         />
         <div
           className="absolute inset-0"
-          style={{ backgroundColor: "hsla(0,0%,0%,0.45)" }}
+          style={{
+            background: "linear-gradient(to bottom, hsla(0,0%,0%,0.38), hsla(0,0%,0%,0.48))",
+          }}
         />
         <div
           className="absolute inset-0 pointer-events-none"
@@ -105,7 +110,13 @@ const MadeForYou = () => {
           className="absolute bottom-0 right-0 w-[140px] md:w-[200px] lg:w-[260px] opacity-[0.12] pointer-events-none select-none"
         />
 
-        <div className="relative z-10 flex items-center justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-6 md:px-10 lg:px-20 py-20 md:py-28 lg:py-36">
+        <div className="relative z-10 flex items-start justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-6 md:px-10 lg:px-20 pt-24 pb-20 md:pt-32 md:pb-28 lg:pt-36 lg:pb-36">
+          {/* Responsive bg-position via inline style media query alternative */}
+          <style>{`
+            @media (max-width: 767px) {
+              .mfy-hero-bg { background-position: center 60% !important; }
+            }
+          `}</style>
           <div
             className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20 rounded-2xl"
             style={{

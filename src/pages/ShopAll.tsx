@@ -392,7 +392,7 @@ const ShopAll = () => {
                 }}
               >
                 <SlidersHorizontal size={14} />
-                Filters
+                Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
               </button>
             </SheetTrigger>
             <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
@@ -414,7 +414,7 @@ const ShopAll = () => {
                     style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                     onClick={() => setMobileFiltersOpen(false)}
                   >
-                    Apply Filters
+                    Done
                   </button>
                 </div>
               </div>
@@ -507,18 +507,84 @@ const ShopAll = () => {
 
           {/* Scrollable product grid */}
           <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
+            {/* Active Filter Chips */}
+            {activeFilterCount > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                {selectedCategories.map((cat) => (
+                  <button
+                    key={`chip-cat-${cat}`}
+                    onClick={() => toggleCategory(cat)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    style={{
+                      borderColor: "hsl(186 35% 28%)",
+                      color: "hsl(186 35% 28%)",
+                      backgroundColor: "hsl(186 35% 28% / 0.06)",
+                    }}
+                  >
+                    {cat}
+                    <X size={12} />
+                  </button>
+                ))}
+                {(priceRange[0] !== 0 || priceRange[1] !== 50000) && (
+                  <button
+                    onClick={() => setPriceRange([0, 50000])}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    style={{
+                      borderColor: "hsl(186 35% 28%)",
+                      color: "hsl(186 35% 28%)",
+                      backgroundColor: "hsl(186 35% 28% / 0.06)",
+                    }}
+                  >
+                    ₹{(priceRange[0] / 1000).toFixed(0)}k – ₹{(priceRange[1] / 1000).toFixed(0)}k
+                    <X size={12} />
+                  </button>
+                )}
+                {selectedSizes.map((size) => (
+                  <button
+                    key={`chip-size-${size}`}
+                    onClick={() => toggleSize(size)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    style={{
+                      borderColor: "hsl(186 35% 28%)",
+                      color: "hsl(186 35% 28%)",
+                      backgroundColor: "hsl(186 35% 28% / 0.06)",
+                    }}
+                  >
+                    Size {size}
+                    <X size={12} />
+                  </button>
+                ))}
+                {selectedAvailability.map((a) => (
+                  <button
+                    key={`chip-avail-${a}`}
+                    onClick={() => toggleAvailability(a)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    style={{
+                      borderColor: "hsl(186 35% 28%)",
+                      color: "hsl(186 35% 28%)",
+                      backgroundColor: "hsl(186 35% 28% / 0.06)",
+                    }}
+                  >
+                    {a}
+                    <X size={12} />
+                  </button>
+                ))}
+                <button
+                  onClick={resetFilters}
+                  className="px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium transition-colors duration-150"
+                  style={{ color: "hsl(0 0% 45%)" }}
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
+
             {filteredProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
-                <p
-                  className="font-cormorant text-[22px] font-semibold mb-2"
-                  style={{ color: "hsl(0 0% 25%)" }}
-                >
+                <p className="font-cormorant text-[22px] font-semibold mb-2" style={{ color: "hsl(0 0% 25%)" }}>
                   No products found
                 </p>
-                <p
-                  className="font-cormorant text-[15px] mb-6"
-                  style={{ color: "hsl(0 0% 50%)" }}
-                >
+                <p className="font-cormorant text-[15px] mb-6" style={{ color: "hsl(0 0% 50%)" }}>
                   Try adjusting your filters to discover more pieces.
                 </p>
                 <button
@@ -531,10 +597,8 @@ const ShopAll = () => {
               </div>
             ) : (
               <div
-                className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 ${
-                  mobileLayout === "list"
-                    ? "grid-cols-1 gap-y-8"
-                    : "grid-cols-2 gap-y-10"
+                className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 transition-opacity duration-300 ${
+                  mobileLayout === "list" ? "grid-cols-1 gap-y-8" : "grid-cols-2 gap-y-10"
                 } ${
                   gridCols === 4
                     ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"

@@ -333,7 +333,7 @@ const ShopAll = () => {
   const sidebarTop = { lg: 116 + 52 + 16 }; // navbar + toolbar + gap
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden pt-[94px] md:pt-[100px] lg:pt-[116px]">
+    <div className="min-h-screen flex flex-col pt-[94px] md:pt-[100px] lg:pt-[116px]">
       {/* ── Fixed Shop Toolbar ── */}
       <div
         className="shrink-0 z-30"
@@ -517,19 +517,19 @@ const ShopAll = () => {
         </div>
       </div>
 
-      {/* ── Fixed two-column shop layout ── */}
-      <div className="flex-1 flex min-h-0" style={{ backgroundColor: "hsl(0 0% 98%)" }}>
+      {/* ── Two-column shop layout ── */}
+      <div className="flex-1 flex" style={{ backgroundColor: "hsl(0 0% 98%)" }}>
         <div className="max-w-[1400px] mx-auto flex w-full">
-          {/* Fixed sidebar – desktop/tablet */}
+          {/* Sidebar – desktop/tablet */}
           <aside
-            className="hidden md:block w-[240px] lg:w-[280px] shrink-0 overflow-y-auto px-8 lg:px-10 py-8"
+            className="hidden md:block w-[240px] lg:w-[280px] shrink-0 px-8 lg:px-10 py-8 sticky top-[146px] md:top-[152px] lg:top-[168px] self-start max-h-[calc(100vh-168px)] overflow-y-auto"
             style={{ borderRight: "1px solid hsl(0 0% 92%)" }}
           >
             <FilterSidebar {...filterProps} />
           </aside>
 
-          {/* Scrollable product grid */}
-          <div className="flex-1 min-w-0 overflow-y-auto px-5 md:px-8 lg:px-10 py-8">
+          {/* Product grid */}
+          <div className="flex-1 min-w-0 px-5 md:px-8 lg:px-10 py-8">
             {/* Active Filter Chips */}
             {activeFilterCount > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -634,13 +634,12 @@ const ShopAll = () => {
               </div>
             )}
 
-            {/* Footer inside scrollable area */}
-            <div className="mt-16">
-              <Footer />
-            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer at root level – full width */}
+      <Footer />
       <UrgencyNotification />
     </div>
   );

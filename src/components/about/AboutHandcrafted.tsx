@@ -9,12 +9,7 @@ const AboutHandcrafted = () => {
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          videoRef.current?.play().catch(() => {});
-        } else {
-          videoRef.current?.pause();
-        }
+        if (e.isIntersecting) { setVisible(true); obs.disconnect(); }
       },
       { threshold: 0.15 }
     );

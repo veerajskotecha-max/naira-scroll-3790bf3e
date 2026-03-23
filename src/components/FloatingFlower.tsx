@@ -20,11 +20,11 @@ const FloatingFlower = () => {
       className="absolute w-[80px] md:w-[110px] lg:w-[130px] pointer-events-none select-none"
       style={{
         top: "24px",
-        left: "-36px",
+        left: "0px",
         opacity: 0.82,
         zIndex: 1,
         filter: "saturate(0.85) drop-shadow(0 2px 8px hsla(33, 30%, 60%, 0.25))",
-        transform: `rotate(${rotation}deg)`,
+        transform: `translateX(-40%) rotate(${rotation}deg)`,
         transformOrigin: "center center",
         willChange: "transform",
       }}

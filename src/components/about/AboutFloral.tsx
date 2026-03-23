@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import floralImg from "@/assets/about-floral.jpg";
+import floralImg from "@/assets/about-uniquely-yours.webp";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
 
 const AboutFloral = () => {

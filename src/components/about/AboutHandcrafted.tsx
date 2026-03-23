@@ -33,31 +33,23 @@ const AboutHandcrafted = () => {
         className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20"
       >
         <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
-          {/* Left — Video */}
+          {/* Left — Image */}
           <div
             className={`w-full lg:w-[55%] transition-all duration-700 ${
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
           >
             <div
-              className="relative rounded-xl overflow-hidden"
+              className="rounded-xl overflow-hidden"
               style={{
-                aspectRatio: "16/10",
                 boxShadow: "0 8px 36px -8px hsla(0,0%,0%,0.15)",
               }}
             >
-              <video
-                ref={videoRef}
-                poster={campaignPoster}
-                muted
-                loop
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-              />
               <img
-                src={campaignPoster}
-                alt="Embroidery craftsmanship video"
-                className="absolute inset-0 w-full h-full object-cover"
+                src={craftingImg}
+                alt="Artisan hand-embroidering fabric"
+                className="w-full aspect-[4/5] object-cover object-center"
+                loading="lazy"
               />
             </div>
           </div>

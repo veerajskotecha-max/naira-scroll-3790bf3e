@@ -246,9 +246,9 @@ const CustomerReviews = () => {
           </div>
           <button
             onClick={() => setReviewModalOpen(true)}
-            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-[250ms] ease-in-out hover:shadow-md hover:-translate-y-[1px] hover:bg-secondary"
+            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-[250ms] ease-in-out hover:shadow-md hover:-translate-y-[1px] hover:bg-foreground hover:text-background"
             style={{
-              borderColor: "hsl(var(--border))",
+              borderColor: "hsl(var(--foreground))",
               color: "hsl(var(--foreground))",
             }}
           >
@@ -348,7 +348,7 @@ const CustomerReviews = () => {
         <div className="mt-10 flex justify-center">
           <button
             onClick={() => setVisibleCount((v) => Math.min(v + 4, filteredReviews.length))}
-            className="px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border-2 transition-all duration-200 hover:bg-foreground hover:text-background"
+            className="px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border-2 transition-all duration-[250ms] ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
             style={{ borderColor: "hsl(var(--foreground))", color: "hsl(var(--foreground))" }}
           >
             Load More Reviews

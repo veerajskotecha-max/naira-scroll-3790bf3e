@@ -3,6 +3,7 @@ import { Star, Camera, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import WriteReviewModal from "@/components/WriteReviewModal";
 
 import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";

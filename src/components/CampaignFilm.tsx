@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Instagram } from "lucide-react";
 import campaignPoster from "@/assets/campaign-video-poster.jpg";
 import featured1 from "@/assets/featured-1.jpg";
 import featured2 from "@/assets/featured-2.jpg";
 import featured3 from "@/assets/featured-3.jpg";
+
+const INSTAGRAM_REEL_URL =
+  "https://www.instagram.com/reel/DWJxV5CsWSt/?igsh=MWtxNnEzdXE4d2NmaQ==";
 
 const featuredProducts = [
   { image: featured1, name: "Midnight Silk Drape Saree", price: "₹18,500" },
@@ -13,22 +16,15 @@ const featuredProducts = [
 
 const CampaignFilm = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [visible, setVisible] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [embedLoaded, setEmbedLoaded] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          if (videoRef.current) {
-            videoRef.current.play().catch(() => {});
-          }
-        } else {
-          if (videoRef.current) {
-            videoRef.current.pause();
-          }
+          observer.disconnect();
         }
       },
       { threshold: 0.15 }
@@ -37,11 +33,8 @@ const CampaignFilm = () => {
     return () => observer.disconnect();
   }, []);
 
-  const handlePlayClick = () => {
-    setIsPlaying(true);
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
+  const handleLoadEmbed = () => {
+    setEmbedLoaded(true);
   };
 
   return (
@@ -52,7 +45,7 @@ const CampaignFilm = () => {
     >
       <div className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start">
-          {/* Left – Campaign Video */}
+          {/* Left – Instagram Reel Embed */}
           <div
             className={`transition-all ease-out ${
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
@@ -60,71 +53,72 @@ const CampaignFilm = () => {
             style={{ transitionDuration: "0.6s" }}
           >
             <div
-              className="relative overflow-hidden rounded-xl"
+              className="relative overflow-hidden rounded-xl mx-auto"
               style={{
-                aspectRatio: "4/5",
+                aspectRatio: "9/16",
+                maxWidth: "400px",
                 boxShadow: "0 8px 30px -8px hsla(0,0%,0%,0.15)",
+                backgroundColor: "hsl(0 0% 92%)",
               }}
             >
-              {/* Poster / Video */}
-              <video
-                ref={videoRef}
-                poster={campaignPoster}
-                muted
-                loop
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              {/* Poster fallback as image (shows until video loads) */}
-              <img
-                src={campaignPoster}
-                alt="Campaign film preview"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-                  isPlaying ? "opacity-0" : "opacity-100"
-                }`}
-              />
-
-              {/* CAMPAIGN FILM pill */}
-              <span
-                className="absolute top-4 left-4 z-20 text-[11px] md:text-[12px] font-medium uppercase tracking-[0.08em] px-3 py-1.5 rounded-full"
-                style={{
-                  backgroundColor: "hsl(0 0% 100%)",
-                  color: "hsl(0 0% 25%)",
-                }}
-              >
-                CAMPAIGN FILM
-              </span>
-
-              {/* Play button */}
-              <button
-                onClick={handlePlayClick}
-                className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-300 ${
-                  isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
-                }`}
-                aria-label="Play campaign video"
-              >
-                <div
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-200 hover:scale-110"
-                  style={{
-                    backgroundColor: "hsla(0,0%,100%,0.85)",
-                  }}
+              {!embedLoaded ? (
+                /* Thumbnail fallback with play button */
+                <button
+                  onClick={handleLoadEmbed}
+                  className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 cursor-pointer group"
+                  aria-label="Load Instagram Reel"
                 >
-                  <Play
-                    size={28}
-                    className="ml-1"
-                    style={{ color: "hsl(0 0% 20%)" }}
+                  <img
+                    src={campaignPoster}
+                    alt="Campaign reel preview"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
-                </div>
-              </button>
+                  {/* Dark overlay */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(to top, hsla(0,0%,0%,0.3), hsla(0,0%,0%,0.1))",
+                    }}
+                  />
 
-              {/* Gradient overlay */}
-              <div
-                className="absolute inset-x-0 bottom-0 h-1/4 z-10"
-                style={{
-                  background:
-                    "linear-gradient(to top, hsla(0,0%,0%,0.12), transparent)",
-                }}
-              />
+                  {/* INSTAGRAM REEL pill */}
+                  <span
+                    className="absolute top-4 left-4 z-20 flex items-center gap-1.5 text-[11px] md:text-[12px] font-medium uppercase tracking-[0.08em] px-3 py-1.5 rounded-full"
+                    style={{
+                      backgroundColor: "hsl(0 0% 100%)",
+                      color: "hsl(0 0% 25%)",
+                    }}
+                  >
+                    <Instagram size={14} />
+                    INSTAGRAM REEL
+                  </span>
+
+                  {/* Play button */}
+                  <div
+                    className="relative z-20 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-200 group-hover:scale-110"
+                    style={{
+                      backgroundColor: "hsla(0,0%,100%,0.85)",
+                    }}
+                  >
+                    <Play
+                      size={28}
+                      className="ml-1"
+                      style={{ color: "hsl(0 0% 20%)" }}
+                    />
+                  </div>
+                </button>
+              ) : (
+                /* Instagram Embed iframe */
+                <iframe
+                  src={`https://www.instagram.com/reel/DWJxV5CsWSt/embed/`}
+                  className="absolute inset-0 w-full h-full border-0"
+                  allowFullScreen
+                  loading="lazy"
+                  title="NAIRA Campaign Instagram Reel"
+                  style={{ borderRadius: "inherit" }}
+                />
+              )}
             </div>
           </div>
 
@@ -191,8 +185,11 @@ const CampaignFilm = () => {
                 transitionDelay: visible ? "0.35s" : "0s",
               }}
             >
-              <button
-                className="font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-8 py-3.5 rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              <a
+                href={INSTAGRAM_REEL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-8 py-3.5 rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
                   backgroundColor: "hsl(143 14% 63%)",
                   color: "hsl(0 0% 100%)",
@@ -206,8 +203,9 @@ const CampaignFilm = () => {
                     "hsl(143 14% 63%)")
                 }
               >
-                SHOP THE LOOK
-              </button>
+                <Instagram size={16} />
+                WATCH ON INSTAGRAM
+              </a>
             </div>
 
             {/* Featured Products */}

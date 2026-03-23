@@ -55,12 +55,11 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           </div>
 
           {/* Center logo */}
-          <Link to="/" className="flex items-center justify-center flex-shrink-0">
+          <Link to="/" className="flex items-center justify-center">
             <img
               src="/logo.webp"
               alt="NAIRA"
-              className="w-auto object-contain"
-              style={{ height: "clamp(44px, 6vw, 64px)" }}
+              className="w-auto object-contain block h-7 sm:h-9 md:h-12 lg:h-16"
             />
           </Link>
 

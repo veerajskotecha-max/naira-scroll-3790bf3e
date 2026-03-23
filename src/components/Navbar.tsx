@@ -18,6 +18,7 @@ const leftLinks = [
 const Navbar = ({ scrolled }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { totalItems, setDrawerOpen } = useCart();
 
   return (
     <>

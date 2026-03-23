@@ -67,19 +67,19 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           <div className="flex items-center justify-end gap-[22px]">
             <Link
               to="/contact"
-              className="hidden md:inline nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] transition-opacity duration-200 hover:opacity-80"
+              className="hidden lg:inline nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80"
             >
               CONTACT
             </Link>
             <Search
               size={20}
               strokeWidth={1.5}
-              className="hidden md:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="hidden lg:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
             <User
               size={20}
               strokeWidth={1.5}
-              className="hidden md:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="hidden lg:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
             <div className="relative">
               <ShoppingBag

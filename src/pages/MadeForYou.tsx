@@ -78,7 +78,7 @@ const MadeForYou = () => {
       {/* ═══════════ SECTION 1 — Hero Banner (floral bg) ═══════════ */}
       <section className="relative w-full overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover"
+          className="mfy-hero-bg absolute inset-0 bg-cover"
           style={{
             backgroundImage: `url(${heroImage})`,
             backgroundPosition: "center 70%",

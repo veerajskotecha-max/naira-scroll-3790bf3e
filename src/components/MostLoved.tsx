@@ -54,6 +54,9 @@ const MostLovedCard = ({
   visible: boolean;
 }) => {
   const [hovered, setHovered] = useState(false);
+  const { toggleItem, isWishlisted } = useWishlist();
+  const slug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const wishlisted = isWishlisted(slug);
 
   return (
     <div

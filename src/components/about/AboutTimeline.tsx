@@ -31,7 +31,7 @@ const stories = [
     label: "CUSTOMIZATION VISION",
     title: "Every Piece, Uniquely Yours",
     text: "Customization isn't just a service — it's our philosophy. We believe every person deserves an outfit that reflects their personality, their celebration, and their story. Over 2,500 custom pieces later, this belief only grows stronger.",
-    image: undefined as any,
+    image: uniquelyYours,
     alt: "Custom outfit creation process",
   },
   {

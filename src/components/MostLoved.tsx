@@ -190,21 +190,35 @@ const MostLoved = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16"
+      className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
-      {/* Decorative florals */}
+      {/* Decorative florals — subtle, secondary */}
       <img
         src={floralTopLeft}
         alt=""
         aria-hidden="true"
-        className="absolute top-[-20px] left-[-30px] w-[140px] md:w-[200px] lg:w-[280px] opacity-45 pointer-events-none select-none"
+        className="absolute w-[120px] md:w-[180px] lg:w-[240px] pointer-events-none select-none"
+        style={{
+          top: "-50px",
+          left: "-50px",
+          transform: "rotate(-15deg) scale(0.9)",
+          opacity: 0.6,
+          zIndex: 0,
+        }}
       />
       <img
         src={floralBottomRight}
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[-20px] right-[-30px] w-[140px] md:w-[200px] lg:w-[280px] opacity-45 pointer-events-none select-none"
+        className="absolute w-[120px] md:w-[180px] lg:w-[240px] pointer-events-none select-none"
+        style={{
+          bottom: "-50px",
+          right: "-50px",
+          transform: "rotate(20deg) scale(0.85)",
+          opacity: 0.55,
+          zIndex: 0,
+        }}
       />
 
       <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">

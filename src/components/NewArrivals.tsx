@@ -64,21 +64,35 @@ const NewArrivals = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16"
+      className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
-      {/* Decorative florals */}
+      {/* Decorative florals — prominent framing */}
       <img
         src={floralTopLeft}
         alt=""
         aria-hidden="true"
-        className="absolute top-[-20px] left-[-30px] w-[140px] md:w-[200px] lg:w-[280px] opacity-45 pointer-events-none select-none"
+        className="absolute w-[160px] md:w-[240px] lg:w-[320px] pointer-events-none select-none"
+        style={{
+          top: "-60px",
+          left: "-60px",
+          transform: "rotate(-30deg) scale(1.25)",
+          opacity: 0.75,
+          zIndex: 0,
+        }}
       />
       <img
         src={floralBottomRight}
         alt=""
         aria-hidden="true"
-        className="absolute bottom-[-20px] right-[-30px] w-[140px] md:w-[200px] lg:w-[280px] opacity-45 pointer-events-none select-none"
+        className="absolute w-[160px] md:w-[240px] lg:w-[320px] pointer-events-none select-none"
+        style={{
+          bottom: "-60px",
+          right: "-60px",
+          transform: "rotate(30deg) scale(1.1)",
+          opacity: 0.7,
+          zIndex: 0,
+        }}
       />
 
       {/* Content */}

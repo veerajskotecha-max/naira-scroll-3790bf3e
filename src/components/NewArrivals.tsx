@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import floralTopLeft from "@/assets/floral-top-left.png";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
+import FloatingFlower from "@/components/FloatingFlower";
 import ProductCard, { type Product } from "@/components/ProductCard";
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";

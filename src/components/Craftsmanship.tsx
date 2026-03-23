@@ -50,7 +50,7 @@ const Craftsmanship = () => {
 
             {/* Overlapping smaller image */}
             <div
-              className={`absolute -bottom-6 -right-4 md:-bottom-8 md:-right-6 lg:-bottom-10 lg:-right-8 w-[40%] md:w-[38%] transition-all ease-out ${
+              className={`absolute -bottom-5 -right-3 md:-bottom-6 md:-right-5 lg:-bottom-8 lg:-right-6 w-[35%] md:w-[33%] transition-all ease-out ${
                 visible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4"
@@ -58,16 +58,16 @@ const Craftsmanship = () => {
               style={{
                 transitionDuration: "0.6s",
                 transitionDelay: visible ? "0.25s" : "0s",
-                padding: "14px",
+                padding: "10px",
                 backgroundColor: "hsl(0 0% 100%)",
-                borderRadius: "16px",
-                boxShadow: "0 8px 28px -6px hsla(0,0%,0%,0.18)",
+                borderRadius: "14px",
+                boxShadow: "0 6px 24px -6px hsla(0,0%,0%,0.15)",
               }}
             >
               <img
                 src={craftsmanshipOverlay}
-                alt="Colorful fabrics and garments"
-                className="w-full aspect-square object-cover rounded-lg"
+                alt="Uniquely yours customization"
+                className="w-full aspect-square object-cover object-center rounded-lg"
                 loading="lazy"
               />
             </div>

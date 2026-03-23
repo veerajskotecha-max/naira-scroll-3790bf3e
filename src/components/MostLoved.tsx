@@ -102,12 +102,20 @@ const MostLovedCard = ({
           className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300"
           style={{
             backgroundColor: "hsla(0,0%,100%,0.85)",
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "translateY(0)" : "translateY(-4px)",
+            opacity: hovered || wishlisted ? 1 : 0,
+            transform: hovered || wishlisted ? "translateY(0)" : "translateY(-4px)",
           }}
           aria-label="Add to wishlist"
+          onClick={() => toggleItem({ id: slug, name: product.name, price: product.price, image: product.image })}
         >
-          <Heart size={14} style={{ color: "hsl(0 0% 30%)" }} />
+          <Heart
+            size={14}
+            className="transition-colors duration-200"
+            style={{
+              color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 30%)",
+              fill: wishlisted ? "hsl(0 70% 55%)" : "none",
+            }}
+          />
         </button>
 
         {/* Add to Cart overlay */}

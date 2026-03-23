@@ -96,7 +96,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setWishlisted(!wishlisted);
+              toggleItem({ id: slug, name: product.name, price: product.price, image: product.image });
             }}
           >
             <Heart

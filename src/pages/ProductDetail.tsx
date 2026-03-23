@@ -67,7 +67,7 @@ const ProductDetail = () => {
     <button
       className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200"
       style={{ backgroundColor: "hsla(0,0%,100%,0.9)" }}
-      onClick={(e) => { e.stopPropagation(); setWishlisted(!wishlisted); }}
+      onClick={(e) => { e.stopPropagation(); toggleItem({ id: "midnight-silk-drape-saree", name: "Midnight Silk Drape Saree", price: "₹18,500", image: product1 }); }}
     >
       <Heart
         size={18}

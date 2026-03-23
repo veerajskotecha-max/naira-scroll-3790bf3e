@@ -193,17 +193,18 @@ const MostLoved = () => {
       className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
-      {/* Decorative florals — subtle, secondary */}
+      {/* Decorative florals — subtle diagonal entry */}
       <img
         src={floralTopLeft}
         alt=""
         aria-hidden="true"
-        className="absolute w-[120px] md:w-[180px] lg:w-[240px] pointer-events-none select-none"
+        className="absolute w-[140px] md:w-[200px] lg:w-[280px] pointer-events-none select-none"
         style={{
-          top: "-50px",
-          left: "-50px",
-          transform: "rotate(-15deg) scale(0.9)",
-          opacity: 0.6,
+          top: "-80px",
+          left: "-80px",
+          transform: "rotate(-25deg) scale(0.9)",
+          transformOrigin: "center center",
+          opacity: 0.55,
           zIndex: 0,
         }}
       />
@@ -211,12 +212,13 @@ const MostLoved = () => {
         src={floralBottomRight}
         alt=""
         aria-hidden="true"
-        className="absolute w-[120px] md:w-[180px] lg:w-[240px] pointer-events-none select-none"
+        className="absolute w-[140px] md:w-[200px] lg:w-[280px] pointer-events-none select-none"
         style={{
-          bottom: "-50px",
-          right: "-50px",
-          transform: "rotate(20deg) scale(0.85)",
-          opacity: 0.55,
+          bottom: "-80px",
+          right: "-80px",
+          transform: "rotate(25deg) scale(0.9)",
+          transformOrigin: "center center",
+          opacity: 0.5,
           zIndex: 0,
         }}
       />

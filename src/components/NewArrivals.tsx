@@ -67,17 +67,18 @@ const NewArrivals = () => {
       className="relative w-full overflow-visible py-10 md:py-14 lg:py-16"
       style={{ backgroundColor: "hsl(33 30% 85%)" }}
     >
-      {/* Decorative florals — prominent framing */}
+      {/* Decorative florals — prominent diagonal entry */}
       <img
         src={floralTopLeft}
         alt=""
         aria-hidden="true"
-        className="absolute w-[160px] md:w-[240px] lg:w-[320px] pointer-events-none select-none"
+        className="absolute w-[180px] md:w-[280px] lg:w-[380px] pointer-events-none select-none"
         style={{
-          top: "-60px",
-          left: "-60px",
-          transform: "rotate(-30deg) scale(1.25)",
-          opacity: 0.75,
+          top: "-80px",
+          left: "-80px",
+          transform: "rotate(-30deg) scale(1.2)",
+          transformOrigin: "center center",
+          opacity: 0.72,
           zIndex: 0,
         }}
       />
@@ -85,12 +86,13 @@ const NewArrivals = () => {
         src={floralBottomRight}
         alt=""
         aria-hidden="true"
-        className="absolute w-[160px] md:w-[240px] lg:w-[320px] pointer-events-none select-none"
+        className="absolute w-[180px] md:w-[280px] lg:w-[380px] pointer-events-none select-none"
         style={{
-          bottom: "-60px",
-          right: "-60px",
-          transform: "rotate(30deg) scale(1.1)",
-          opacity: 0.7,
+          bottom: "-80px",
+          right: "-80px",
+          transform: "rotate(30deg) scale(1.2)",
+          transformOrigin: "center center",
+          opacity: 0.68,
           zIndex: 0,
         }}
       />

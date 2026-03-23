@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Search, User, ShoppingBag, Menu } from "lucide-react";
 import MobileMenu from "./MobileMenu";
+import { useCart } from "@/contexts/CartContext";
 
 interface NavbarProps {
   scrolled: boolean;

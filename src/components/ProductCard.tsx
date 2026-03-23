@@ -27,8 +27,9 @@ const toSlug = (name: string) =>
 
 const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) => {
   const [hovered, setHovered] = useState(false);
-  const [wishlisted, setWishlisted] = useState(false);
+  const { toggleItem, isWishlisted } = useWishlist();
   const slug = product.id || toSlug(product.name);
+  const wishlisted = isWishlisted(slug);
 
   return (
     <div

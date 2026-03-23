@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 
 interface StickyAddToCartProps {
   image: string;
@@ -10,6 +12,22 @@ interface StickyAddToCartProps {
 
 const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartProps) => {
   const [visible, setVisible] = useState(false);
+  const { addItem, setDrawerOpen } = useCart();
+
+  const handleAdd = () => {
+    addItem({
+      id: "midnight-silk-drape-saree",
+      name: title,
+      price: 18500,
+      priceLabel: price,
+      image,
+      size: selectedSize,
+    });
+    toast("Added to cart", {
+      description: `1× ${title} (${selectedSize})`,
+      action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,6 +100,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
                 SIZE&nbsp;&nbsp;{selectedSize}
               </div>
               <button
+                onClick={handleAdd}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
                 style={{
                   backgroundColor: "hsl(186 35% 28%)",
@@ -131,6 +150,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
               </div>
             </div>
             <button
+              onClick={handleAdd}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.08em]"
               style={{
                 backgroundColor: "hsl(186 35% 28%)",

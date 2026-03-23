@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Star, Heart, Minus, Plus, Truck, RotateCcw, ShieldCheck, Ruler } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -28,6 +30,7 @@ const ProductDetail = () => {
   const [wishlisted, setWishlisted] = useState(false);
   const [zoomed, setZoomed] = useState(false);
   const isMobile = useIsMobile();
+  const { addItem, setDrawerOpen } = useCart();
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
 
@@ -274,6 +277,20 @@ const ProductDetail = () => {
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
+                onClick={() => {
+                  addItem({
+                    id: "midnight-silk-drape-saree",
+                    name: "Midnight Silk Drape Saree",
+                    price: 18500,
+                    priceLabel: "₹18,500",
+                    image: product1,
+                    size: selectedSize,
+                  }, quantity);
+                  toast("Added to cart", {
+                    description: `${quantity}× Midnight Silk Drape Saree (${selectedSize})`,
+                    action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
+                  });
+                }}
               >
                 Add to Cart
               </button>
@@ -287,6 +304,17 @@ const ProductDetail = () => {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "transparent";
                   e.currentTarget.style.color = "hsl(186 35% 28%)";
+                }}
+                onClick={() => {
+                  addItem({
+                    id: "midnight-silk-drape-saree",
+                    name: "Midnight Silk Drape Saree",
+                    price: 18500,
+                    priceLabel: "₹18,500",
+                    image: product1,
+                    size: selectedSize,
+                  }, quantity);
+                  setDrawerOpen(true);
                 }}
               >
                 Buy Now

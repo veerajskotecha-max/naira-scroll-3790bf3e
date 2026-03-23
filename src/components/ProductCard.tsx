@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Heart } from "lucide-react";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 export interface Product {
   id?: string;

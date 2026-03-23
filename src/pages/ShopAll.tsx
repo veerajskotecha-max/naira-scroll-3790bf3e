@@ -333,7 +333,7 @@ const ShopAll = () => {
   const sidebarTop = { lg: 116 + 52 + 16 }; // navbar + toolbar + gap
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden pt-[94px] md:pt-[100px] lg:pt-[116px]">
+    <div className="min-h-screen flex flex-col pt-[94px] md:pt-[100px] lg:pt-[116px]">
       {/* ── Fixed Shop Toolbar ── */}
       <div
         className="shrink-0 z-30"

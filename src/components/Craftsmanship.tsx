@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import craftsmanshipMain from "@/assets/craftsmanship-main.jpg";
-import craftsmanshipOverlay from "@/assets/craftsmanship-overlay.jpg";
+import craftsmanshipMain from "@/assets/about-crafting.webp";
+import craftsmanshipOverlay from "@/assets/about-uniquely-yours.webp";
 
 const Craftsmanship = () => {
   const sectionRef = useRef<HTMLElement>(null);

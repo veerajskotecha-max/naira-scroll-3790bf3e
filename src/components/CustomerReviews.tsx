@@ -257,6 +257,12 @@ const CustomerReviews = () => {
         </div>
       </div>
 
+      <WriteReviewModal
+        open={reviewModalOpen}
+        onOpenChange={setReviewModalOpen}
+        onSubmit={handleNewReview}
+      />
+
       {/* Lightbox */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent className="max-w-lg p-2 bg-background">

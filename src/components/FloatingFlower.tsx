@@ -6,7 +6,7 @@ const FloatingFlower = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setRotation(window.scrollY * 0.08);
+      setRotation(window.scrollY * 0.05);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -17,13 +17,13 @@ const FloatingFlower = () => {
       src={floatingFlower}
       alt=""
       aria-hidden="true"
-      className="absolute w-[100px] md:w-[140px] lg:w-[160px] pointer-events-none select-none"
+      className="absolute w-[80px] md:w-[110px] lg:w-[130px] pointer-events-none select-none"
       style={{
-        top: "90px",
-        left: "-20px",
-        opacity: 0.88,
+        top: "24px",
+        left: "-36px",
+        opacity: 0.82,
         zIndex: 1,
-        filter: "blur(0.4px)",
+        filter: "saturate(0.85) drop-shadow(0 2px 8px hsla(33, 30%, 60%, 0.25))",
         transform: `rotate(${rotation}deg)`,
         transformOrigin: "center center",
         willChange: "transform",

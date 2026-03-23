@@ -154,7 +154,7 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
       {/* Breadcrumb - hidden on mobile */}
-      <div className="max-w-[1200px] mx-auto px-4 pt-28 pb-4 hidden md:block">
+      <div className="max-w-[1200px] mx-auto px-4 pt-[100px] md:pt-[112px] lg:pt-[128px] pb-4 hidden md:block">
         <nav className="flex items-center gap-2 text-[13px] font-cormorant" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
@@ -165,7 +165,7 @@ const ProductDetail = () => {
       </div>
 
       {/* Mobile: full-width gallery at top */}
-      <div className="md:hidden pt-20">
+      <div className="md:hidden pt-[94px]">
         {MobileGallery}
       </div>
 

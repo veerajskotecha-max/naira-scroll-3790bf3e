@@ -3,7 +3,7 @@ import { PenLine, Scissors, Flower } from "lucide-react";
 
 const pillars = [
   { icon: PenLine, title: "Personalised" },
-  { icon: Needle, title: "Handcrafted" },
+  { icon: Scissors, title: "Handcrafted" },
   { icon: Flower, title: "Floral-Inspired" },
 ];
 

@@ -46,10 +46,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
       <Link to={`/product/${slug}`} className="block cursor-pointer">
         {/* Image area */}
         <div
-          className="relative overflow-hidden rounded-lg transition-shadow duration-300"
+          className="relative overflow-hidden transition-all duration-300"
           style={{
             aspectRatio: "3/4",
-            boxShadow: hovered ? "0 8px 24px hsl(0 0% 0% / 0.1)" : "0 2px 8px hsl(0 0% 0% / 0.04)",
           }}
         >
           {/* Primary image */}

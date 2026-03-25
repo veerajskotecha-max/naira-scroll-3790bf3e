@@ -13,7 +13,7 @@ const AboutCTA = () => (
         backgroundSize: "600px",
         backgroundPosition: "center",
         backgroundRepeat: "repeat",
-        opacity: 0.07,
+        opacity: 0.5,
       }}
     />
     <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">

@@ -28,7 +28,7 @@ const AboutPersonalised = () => {
           backgroundSize: "600px",
           backgroundPosition: "center",
           backgroundRepeat: "repeat",
-          opacity: 0.07,
+          opacity: 0.5,
         }}
       />
       <div

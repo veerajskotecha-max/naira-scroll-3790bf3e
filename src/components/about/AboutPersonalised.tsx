@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import personalisedImg from "@/assets/about-personalised.jpg";
+import floralPattern from "@/assets/floral-pattern-frame.svg";
 
 const AboutPersonalised = () => {
   const ref = useRef<HTMLDivElement>(null);

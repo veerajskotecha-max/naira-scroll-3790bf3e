@@ -594,7 +594,7 @@ const ShopAll = () => {
                 ))}
                 <button
                   onClick={resetFilters}
-                  className="px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium transition-colors duration-150"
+                  className="px-3 py-1.5 font-cormorant text-[13px] font-medium transition-colors duration-150"
                   style={{ color: "hsl(0 0% 45%)" }}
                 >
                   Clear All

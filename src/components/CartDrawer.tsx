@@ -42,7 +42,7 @@ const CartDrawer = () => {
             <Link
               to="/shop"
               onClick={() => setDrawerOpen(false)}
-              className="mt-2 px-8 py-3 rounded-md text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
+              className="mt-2 px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             >
               Continue Shopping

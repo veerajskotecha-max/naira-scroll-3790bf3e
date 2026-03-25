@@ -134,7 +134,7 @@ const CustomizationStories = () => {
                 style={{ backgroundColor: "hsla(0,0%,0%,0.2)" }}
               >
                 <div
-                  className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                  className="w-11 h-11 md:w-12 md:h-12 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                   style={{
                     backgroundColor: "hsla(0,0%,100%,0.25)",
                     backdropFilter: "blur(4px)",

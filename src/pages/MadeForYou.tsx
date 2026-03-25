@@ -131,7 +131,7 @@ const MadeForYou = () => {
             </p>
             <Link
               to="/custom"
-              className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               style={{
                 backgroundColor: "hsl(0 0% 100%)",
                 color: "hsl(0 0% 15%)",

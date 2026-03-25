@@ -272,26 +272,34 @@ const ProductDetails = () => {
       </Accordion>
 
       {/* Divider */}
-      <div className="my-5" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+      <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
       {/* Help Section */}
-      <div>
+      <div className="w-full">
         <span
-          className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-4"
+          className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-3"
           style={{ color: "hsl(0 0% 30%)" }}
         >
           Need Help?
         </span>
-        <div className="flex gap-6">
+        <div className="flex flex-col md:flex-row w-full">
           {[
             { icon: Phone, label: "Call Us" },
             { icon: Mail, label: "Email Us" },
             { icon: MessageCircle, label: "WhatsApp" },
-          ].map(({ icon: Icon, label }) => (
+          ].map(({ icon: Icon, label }, idx) => (
             <button
               key={label}
-              className="flex items-center gap-2 text-[12px] tracking-[0.02em] transition-colors hover:opacity-70"
-              style={{ color: "hsl(0 0% 35%)" }}
+              className="flex-1 flex items-center justify-center gap-2 py-3 text-[12px] tracking-[0.02em] transition-colors duration-200"
+              style={{
+                color: "hsl(0 0% 35%)",
+                borderTop: "1px solid hsl(0 0% 90%)",
+                borderBottom: "1px solid hsl(0 0% 90%)",
+                borderLeft: idx === 0 ? "1px solid hsl(0 0% 90%)" : "none",
+                borderRight: "1px solid hsl(0 0% 90%)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(0 0% 96%)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               <Icon size={15} strokeWidth={1.5} />
               {label}

@@ -1,53 +1,27 @@
-const strip1 =
-  "HANDMADE EMBROIDERY \u2726 PREMIUM FABRICS \u2726 MADE TO ORDER \u2726 ARTISAN CRAFTED";
-const strip2 =
-  "CUSTOM DESIGN AVAILABLE \u2726 FREE SHIPPING ABOVE \u20B92999 \u2726 EASY RETURNS \u2726 SECURE PAYMENTS";
+const AnnouncementBar = () => {
+  const text =
+    "HANDMADE EMBROIDERY \u2726 PREMIUM FABRICS \u2726 CUSTOM DESIGN AVAILABLE \u2726 FREE SHIPPING ABOVE \u20B92999";
 
-const MarqueeRow = ({
-  text,
-  reverse = false,
-}: {
-  text: string;
-  reverse?: boolean;
-}) => (
-  <div className="pause-animation w-full overflow-hidden flex items-center" style={{ height: "50%" }}>
+  return (
     <div
-      className="flex shrink-0 items-center whitespace-nowrap"
-      style={{
-        animation: `marquee-${reverse ? "reverse" : "forward"} 38s linear infinite`,
-      }}
+      className="pause-animation w-full overflow-hidden"
+      style={{ backgroundColor: "#AEBDB6", height: "var(--announcement-h)" }}
     >
-      {[...Array(6)].map((_, i) => (
-        <span
-          key={i}
-          className="font-cormorant text-[10.5px] md:text-[11.5px] lg:text-[12.5px] font-medium uppercase tracking-[0.18em] px-10"
-          style={{ color: "#FFFFFF" }}
-        >
-          {text}
-        </span>
-      ))}
+      <div className="flex items-center h-full">
+        <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">
+          {[...Array(4)].map((_, i) => (
+            <span
+              key={i}
+              className="font-cormorant text-[11px] md:text-[12px] lg:text-[13px] font-medium uppercase tracking-[0.18em] px-8"
+              style={{ color: "#FFFFFF" }}
+            >
+              {text}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
-  </div>
-);
-
-const AnnouncementBar = () => (
-  <div
-    className="w-full overflow-hidden flex flex-col"
-    style={{ backgroundColor: "#AEBDB6", height: "var(--announcement-h)" }}
-  >
-    <style>{`
-      @keyframes marquee-forward {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-      @keyframes marquee-reverse {
-        0% { transform: translateX(-50%); }
-        100% { transform: translateX(0); }
-      }
-    `}</style>
-    <MarqueeRow text={strip1} />
-    <MarqueeRow text={strip2} reverse />
-  </div>
-);
+  );
+};
 
 export default AnnouncementBar;

@@ -38,8 +38,8 @@ const SocialIcon = ({
     target="_blank"
     rel="noopener noreferrer"
     aria-label={label}
-    className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200"
-    style={{ backgroundColor: "hsla(0,0%,100%,0.08)" }}
+    className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
+    style={{ borderRadius: '50%', backgroundColor: "hsla(0,0%,100%,0.08)" }}
     onMouseEnter={(e) =>
       (e.currentTarget.style.backgroundColor = "hsla(0,0%,100%,0.18)")
     }

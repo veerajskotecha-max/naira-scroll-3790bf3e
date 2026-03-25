@@ -134,8 +134,9 @@ const CustomizationStories = () => {
                 style={{ backgroundColor: "hsla(0,0%,0%,0.2)" }}
               >
                 <div
-                  className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                  className="w-11 h-11 md:w-12 md:h-12 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                   style={{
+                    borderRadius: '50%',
                     backgroundColor: "hsla(0,0%,100%,0.25)",
                     backdropFilter: "blur(4px)",
                     border: "1px solid hsla(0,0%,100%,0.35)",
@@ -177,16 +178,16 @@ const CustomizationStories = () => {
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => scroll("left")}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200"
-                style={{ border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
+                className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                style={{ borderRadius: '50%', border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
                 aria-label="Previous"
               >
                 <ChevronLeft size={18} />
               </button>
               <button
                 onClick={() => scroll("right")}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200"
-                style={{ border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
+                className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                style={{ borderRadius: '50%', border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
                 aria-label="Next"
               >
                 <ChevronRight size={18} />

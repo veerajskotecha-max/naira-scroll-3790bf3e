@@ -134,13 +134,14 @@ const CoutureExperience = () => {
               >
                 {/* Icon circle */}
                 <div
-                  className="w-[80px] h-[80px] md:w-[96px] md:h-[96px] rounded-full flex items-center justify-center mb-5"
+                  className="w-[56px] h-[56px] md:w-[64px] md:h-[64px] flex items-center justify-center mb-4"
                   style={{
-                    backgroundColor: "hsl(0 0% 100%)",
-                    boxShadow: "0 4px 20px -4px hsla(0,0%,0%,0.1)",
+                    borderRadius: '50%',
+                    backgroundColor: "hsl(0 0% 98%)",
+                    boxShadow: "0 2px 12px -4px hsla(0,0%,0%,0.06)",
                   }}
                 >
-                  <step.icon size={28} style={{ color: "hsl(16 40% 62%)" }} />
+                  <step.icon size={22} style={{ color: "hsl(16 40% 62%)" }} />
                 </div>
                 <span
                   className="font-cormorant text-[13px] font-semibold tracking-[0.08em] mb-1.5"
@@ -176,7 +177,7 @@ const CoutureExperience = () => {
           >
             <Link
               to="/made-for-you"
-              className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               style={{
                 backgroundColor: "hsl(20 18% 28%)",
                 color: "hsl(0 0% 100%)",
@@ -244,7 +245,7 @@ const CoutureExperience = () => {
             {featureCards.map((card, i) => (
               <div
                 key={i}
-                className={`flex flex-col items-center text-center rounded-xl px-6 py-8 transition-all ease-out cursor-pointer hover:-translate-y-1 hover:shadow-lg ${
+                className={`flex flex-col items-center text-center px-6 py-8 transition-all ease-out cursor-pointer hover:-translate-y-1 hover:shadow-lg ${
                   bottomVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{
@@ -255,10 +256,10 @@ const CoutureExperience = () => {
                 }}
               >
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: "hsl(20 40% 93%)" }}
+                  className="w-10 h-10 flex items-center justify-center mb-3"
+                  style={{ borderRadius: '50%', backgroundColor: "hsl(20 40% 95%)" }}
                 >
-                  <card.icon size={22} style={{ color: "hsl(16 40% 55%)" }} />
+                  <card.icon size={18} style={{ color: "hsl(16 40% 55%)" }} />
                 </div>
                 <h3
                   className="font-cormorant text-[17px] md:text-[18px] font-semibold mb-2"

@@ -87,6 +87,7 @@ const ProductGallery = () => {
               onClick={() => scrollToImage(i)}
               className="w-1.5 h-1.5 transition-all duration-200"
               style={{
+                borderRadius: '50%',
                 backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)",
                 transform: selectedImage === i ? "scale(1.4)" : "scale(1)",
               }}

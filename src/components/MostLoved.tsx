@@ -102,8 +102,9 @@ const MostLovedCard = ({
 
         {/* Wishlist heart */}
         <button
-          className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300"
+          className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center transition-all duration-300"
           style={{
+            borderRadius: '50%',
             backgroundColor: "hsla(0,0%,100%,0.85)",
             opacity: hovered || wishlisted ? 1 : 0,
             transform: hovered || wishlisted ? "translateY(0)" : "translateY(-4px)",

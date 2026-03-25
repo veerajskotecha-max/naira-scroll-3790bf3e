@@ -95,10 +95,10 @@ const ContactUs = () => {
                 }}
               >
                 <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5"
-                  style={{ backgroundColor: "hsl(143 14% 90%)" }}
+                  className="w-9 h-9 flex items-center justify-center mx-auto mb-4"
+                  style={{ borderRadius: '50%', backgroundColor: "hsl(143 14% 93%)" }}
                 >
-                  <card.icon size={20} style={{ color: "hsl(143 14% 50%)" }} />
+                  <card.icon size={16} style={{ color: "hsl(143 14% 50%)" }} />
                 </div>
                 <h3
                   className="font-cormorant text-[20px] md:text-[22px] font-semibold mb-3"
@@ -151,7 +151,7 @@ const ContactUs = () => {
                 value={form.name}
                 onChange={handleChange}
                 required
-                className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+                className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
               />
               <Input
                 name="email"
@@ -160,7 +160,7 @@ const ContactUs = () => {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+                className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -169,7 +169,7 @@ const ContactUs = () => {
                 placeholder="Phone Number"
                 value={form.phone}
                 onChange={handleChange}
-                className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+                className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
               />
               <Input
                 name="subject"
@@ -177,7 +177,7 @@ const ContactUs = () => {
                 value={form.subject}
                 onChange={handleChange}
                 required
-                className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+                className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
               />
             </div>
             <Textarea
@@ -187,13 +187,13 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               rows={5}
-              className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+              className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
             />
 
             <div className="text-center pt-2">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ backgroundColor: "hsl(143 14% 63%)", color: "hsl(0 0% 100%)" }}
               >
                 <Send size={15} />
@@ -218,10 +218,10 @@ const ContactUs = () => {
       <section className={sectionPadding} style={{ backgroundColor: "hsl(0 0% 100%)" }}>
         <div className={`${maxW} text-center`}>
           <div
-            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: "hsl(143 14% 90%)" }}
+            className="w-10 h-10 flex items-center justify-center mx-auto mb-4"
+            style={{ borderRadius: '50%', backgroundColor: "hsl(143 14% 93%)" }}
           >
-            <MessageCircle size={24} style={{ color: "hsl(143 14% 50%)" }} />
+            <MessageCircle size={18} style={{ color: "hsl(143 14% 50%)" }} />
           </div>
           <h2
             className="font-cormorant text-[26px] md:text-[34px] lg:text-[40px] font-medium leading-[1.2] mb-4"
@@ -242,7 +242,7 @@ const ContactUs = () => {
             href="https://wa.me/919876543210"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
             style={{ backgroundColor: "hsl(143 14% 63%)", color: "hsl(0 0% 100%)" }}
           >
             <MessageCircle size={16} />
@@ -256,10 +256,10 @@ const ContactUs = () => {
         <div className="absolute inset-0 pointer-events-none" style={floralBg(0.05)} />
         <div className={`relative z-10 ${maxW} text-center`}>
           <div
-            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: "hsl(16 50% 92%)" }}
+            className="w-10 h-10 flex items-center justify-center mx-auto mb-4"
+            style={{ borderRadius: '50%', backgroundColor: "hsl(16 50% 94%)" }}
           >
-            <HelpCircle size={24} style={{ color: "hsl(16 50% 60%)" }} />
+            <HelpCircle size={18} style={{ color: "hsl(16 50% 60%)" }} />
           </div>
           <h2
             className="font-cormorant text-[26px] md:text-[34px] lg:text-[40px] font-medium leading-[1.2] mb-4"
@@ -278,7 +278,7 @@ const ContactUs = () => {
           </p>
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
             style={{
               border: "1.5px solid hsl(143 14% 63%)",
               color: "hsl(143 14% 50%)",

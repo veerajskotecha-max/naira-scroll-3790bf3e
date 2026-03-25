@@ -13,7 +13,7 @@ const NotFound = () => {
       <div className="flex-1 flex items-center justify-center px-5 pt-28 pb-20">
         <div className="text-center max-w-[480px] animate-fade-in">
           {/* Decorative element */}
-          <div className="mx-auto mb-8 w-24 h-24 rounded-full flex items-center justify-center" style={{ backgroundColor: "hsl(33 30% 85%)" }}>
+          <div className="mx-auto mb-8 w-16 h-16 flex items-center justify-center" style={{ borderRadius: '50%', backgroundColor: "hsl(33 30% 90%)" }}>
             <span className="font-cormorant text-[42px] font-light italic" style={{ color: "hsl(186 35% 28%)" }}>
               404
             </span>

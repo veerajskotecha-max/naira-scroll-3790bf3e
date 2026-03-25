@@ -28,10 +28,10 @@ const CartDrawer = () => {
           /* Empty state */
           <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
             <div
-              className="w-20 h-20 flex items-center justify-center"
-              style={{ backgroundColor: "hsl(0 0% 96%)" }}
+              className="w-14 h-14 flex items-center justify-center"
+              style={{ borderRadius: '50%', backgroundColor: "hsl(0 0% 96%)" }}
             >
-              <ShoppingBag size={32} style={{ color: "hsl(0 0% 60%)" }} />
+              <ShoppingBag size={24} style={{ color: "hsl(0 0% 60%)" }} />
             </div>
             <p className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>
               Your cart is empty

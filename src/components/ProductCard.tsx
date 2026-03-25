@@ -91,6 +91,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           <button
             className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center transition-all duration-200"
             style={{
+              borderRadius: '50%',
               backgroundColor: "hsla(0,0%,100%,0.85)",
             }}
             onClick={(e) => {

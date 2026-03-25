@@ -193,7 +193,7 @@ const ContactUs = () => {
             <div className="text-center pt-2">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ backgroundColor: "hsl(143 14% 63%)", color: "hsl(0 0% 100%)" }}
               >
                 <Send size={15} />

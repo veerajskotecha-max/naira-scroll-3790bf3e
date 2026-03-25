@@ -43,7 +43,7 @@ const AboutPersonalised = () => {
             >
               Designed Around{" "}
               <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-                Your Story
+                You
               </span>
             </h2>
             <p

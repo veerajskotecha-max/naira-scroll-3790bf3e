@@ -97,22 +97,24 @@ const ProductGallery = () => {
     );
   }
 
-  // Desktop: two large images side-by-side
+  // Desktop: two large images side-by-side, content-driven height
   return (
-    <div className="lg:w-[58%] relative">
-      <div className="flex gap-[6px]" style={{ height: "calc(100vh - 140px)", minHeight: "560px", maxHeight: "820px" }}>
+    <div className="relative w-full">
+      <div className="flex gap-[6px]">
         <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
           <img
             src={images[0]}
             alt="Midnight Silk Drape Saree - Front"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            className="w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            style={{ aspectRatio: "3/4" }}
           />
         </div>
         <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
           <img
             src={images[1]}
             alt="Midnight Silk Drape Saree - Detail"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            className="w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            style={{ aspectRatio: "3/4" }}
           />
         </div>
       </div>

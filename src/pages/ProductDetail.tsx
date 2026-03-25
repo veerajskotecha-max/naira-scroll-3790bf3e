@@ -35,14 +35,14 @@ const ProductDetail = () => {
 
       {/* Main Product Section */}
       <div className="max-w-[1400px] mx-auto md:px-6 pb-16 md:pb-24">
-        <div className="flex flex-col lg:flex-row lg:items-start">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 lg:items-start lg:gap-0">
           {/* Desktop gallery */}
           <div className="hidden md:block">
             <ProductGallery />
           </div>
 
           {/* Details */}
-          <div className="mt-5 md:mt-0 lg:sticky lg:top-[120px] lg:self-start lg:py-2">
+          <div className="mt-5 md:mt-0 lg:sticky lg:top-[120px] lg:py-2">
             <ProductDetails />
           </div>
         </div>

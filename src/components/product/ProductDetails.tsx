@@ -82,7 +82,7 @@ const ProductDetails = () => {
       </p>
 
       {/* Divider */}
-      <div className="my-5 md:my-6" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
+      <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
       {/* Size Selector */}
       <div>

@@ -141,7 +141,7 @@ const CoutureExperience = () => {
                     boxShadow: "0 2px 12px -4px hsla(0,0%,0%,0.06)",
                   }}
                 >
-                  <step.icon size={28} style={{ color: "hsl(16 40% 62%)" }} />
+                  <step.icon size={22} style={{ color: "hsl(16 40% 62%)" }} />
                 </div>
                 <span
                   className="font-cormorant text-[13px] font-semibold tracking-[0.08em] mb-1.5"

@@ -90,7 +90,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
             {/* Right — controls */}
             <div className="flex items-center gap-3 shrink-0">
               <div
-                className="px-4 py-1.5 rounded-full text-[12px] font-medium"
+                className="px-4 py-1.5 text-[12px] font-medium"
                 style={{
                   backgroundColor: "hsl(0 0% 96%)",
                   border: "1px solid hsl(0 0% 88%)",

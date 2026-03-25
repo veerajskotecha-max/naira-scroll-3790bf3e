@@ -221,7 +221,7 @@ const ShopAll = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortValue, setSortValue] = useState("newest");
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
-  const [gridCols, setGridCols] = useState<3 | 4>(4);
+  const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
 
   const sortOptions = [

@@ -193,7 +193,7 @@ const MadeForYou = () => {
                 }}
               >
                 <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
+                  className="w-16 h-16 flex items-center justify-center mb-5"
                   style={{ backgroundColor: "hsl(160 12% 88%)" }}
                 >
                   <step.icon size={24} style={{ color: "hsl(160 15% 42%)" }} />

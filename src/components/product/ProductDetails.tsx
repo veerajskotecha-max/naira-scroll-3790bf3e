@@ -48,7 +48,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="flex flex-col w-full px-4 lg:px-8 xl:px-10">
+    <div className="flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
       {/* Title */}
       <h1
         className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em]"
@@ -58,7 +58,7 @@ const ProductDetails = () => {
       </h1>
 
       {/* Price + Tax */}
-      <div className="mt-4 md:mt-5">
+      <div className="mt-2 md:mt-3">
         <span
           className="font-cormorant text-[22px] md:text-[24px] font-bold"
           style={{ color: "hsl(0 0% 15%)" }}
@@ -75,14 +75,14 @@ const ProductDetails = () => {
 
       {/* Info line */}
       <p
-        className="text-[12px] mt-3 leading-relaxed"
+        className="text-[12px] mt-2 leading-relaxed"
         style={{ color: "hsl(0 0% 50%)" }}
       >
         *Prices are inclusive of GST. Handcrafted to order — allow 15–20 business days for delivery.
       </p>
 
       {/* Divider */}
-      <div className="my-5 md:my-6" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
+      <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
       {/* Size Selector */}
       <div>
@@ -118,7 +118,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Quantity */}
-      <div className="mt-5">
+      <div className="mt-4">
         <span
           className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-2.5"
           style={{ color: "hsl(0 0% 25%)" }}
@@ -151,7 +151,7 @@ const ProductDetails = () => {
       </div>
 
       {/* CTA Row */}
-      <div id="product-actions" className="flex gap-3 mt-6">
+      <div id="product-actions" className="flex gap-3 mt-5">
         <button
           onClick={handleAddToCart}
           className="flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200"
@@ -206,7 +206,7 @@ const ProductDetails = () => {
       </button>
 
       {/* Divider */}
-      <div className="my-6 md:my-7" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+      <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
       {/* Accordions */}
       <Accordion type="single" collapsible className="w-full">
@@ -272,26 +272,34 @@ const ProductDetails = () => {
       </Accordion>
 
       {/* Divider */}
-      <div className="my-5" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+      <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
       {/* Help Section */}
-      <div>
+      <div className="w-full">
         <span
-          className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-4"
+          className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-3"
           style={{ color: "hsl(0 0% 30%)" }}
         >
           Need Help?
         </span>
-        <div className="flex gap-6">
+        <div className="flex flex-col md:flex-row w-full">
           {[
             { icon: Phone, label: "Call Us" },
             { icon: Mail, label: "Email Us" },
             { icon: MessageCircle, label: "WhatsApp" },
-          ].map(({ icon: Icon, label }) => (
+          ].map(({ icon: Icon, label }, idx) => (
             <button
               key={label}
-              className="flex items-center gap-2 text-[12px] tracking-[0.02em] transition-colors hover:opacity-70"
-              style={{ color: "hsl(0 0% 35%)" }}
+              className="flex-1 flex items-center justify-center gap-2 py-3 text-[12px] tracking-[0.02em] transition-colors duration-200"
+              style={{
+                color: "hsl(0 0% 35%)",
+                borderTop: "1px solid hsl(0 0% 90%)",
+                borderBottom: "1px solid hsl(0 0% 90%)",
+                borderLeft: idx === 0 ? "1px solid hsl(0 0% 90%)" : "none",
+                borderRight: "1px solid hsl(0 0% 90%)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(0 0% 96%)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               <Icon size={15} strokeWidth={1.5} />
               {label}

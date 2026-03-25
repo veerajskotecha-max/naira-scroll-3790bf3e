@@ -47,7 +47,7 @@ const CustomisationSteps = () => {
   return (
     <section
       className="relative w-full overflow-hidden py-[70px] md:py-[90px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 20% 92%)" }}
+      style={{ backgroundColor: "hsl(30 25% 96%)" }}
     >
       {/* Full background pattern */}
       <div

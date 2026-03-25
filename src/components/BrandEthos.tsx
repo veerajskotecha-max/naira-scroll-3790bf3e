@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { PenLine, Needle, Flower } from "lucide-react";
+import { PenLine, Scissors, Flower } from "lucide-react";
 
 const pillars = [
   { icon: PenLine, title: "Personalised" },

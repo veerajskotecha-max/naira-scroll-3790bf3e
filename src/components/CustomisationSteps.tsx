@@ -1,27 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
-import { Search, MessageSquare, Scissors, Package } from "lucide-react";
+import { MessageSquare, Palette, SlidersHorizontal, Phone, Package } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const featureCards = [
   {
-    icon: Search,
-    title: "Explore Styles",
-    description: "Browse our collections and pick what you love.",
-  },
-  {
     icon: MessageSquare,
-    title: "Share Your Preferences",
-    description: "Tell us your measurements and ideas.",
+    title: "Share Your Vision",
+    description: "Share your dream look with us on WhatsApp.",
   },
   {
-    icon: Scissors,
-    title: "We Craft Your Piece",
-    description: "Our artisans design your custom outfit.",
+    icon: Palette,
+    title: "Curated Design Options",
+    description: "Receive curated design, colour, and fabric options, handpicked for you.",
+  },
+  {
+    icon: SlidersHorizontal,
+    title: "Finalise Your Style",
+    description: "Choose your fabric and silhouette, then share your measurements.",
+  },
+  {
+    icon: Phone,
+    title: "Personal Consultation",
+    description: "A personal consultation call to refine every last detail.",
   },
   {
     icon: Package,
     title: "Delivered to You",
-    description: "Receive something made just for you.",
+    description: "Your customized outfit, delivered to your doorstep.",
   },
 ];
 

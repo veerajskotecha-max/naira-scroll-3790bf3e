@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import personalisedImg from "@/assets/about-personalised.jpg";
-import floralPattern from "@/assets/background_image_flora.webp";
+
 
 const AboutPersonalised = () => {
   const ref = useRef<HTMLDivElement>(null);

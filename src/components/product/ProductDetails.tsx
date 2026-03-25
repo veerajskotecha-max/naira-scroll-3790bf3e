@@ -58,7 +58,7 @@ const ProductDetails = () => {
       </h1>
 
       {/* Price + Tax */}
-      <div className="mt-4 md:mt-5">
+      <div className="mt-2 md:mt-3">
         <span
           className="font-cormorant text-[22px] md:text-[24px] font-bold"
           style={{ color: "hsl(0 0% 15%)" }}

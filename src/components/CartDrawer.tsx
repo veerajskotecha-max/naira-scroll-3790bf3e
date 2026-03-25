@@ -91,7 +91,7 @@ const CartDrawer = () => {
                       </div>
                       <button
                         onClick={() => removeItem(item.id, item.size)}
-                        className="p-1.5 rounded-full transition-colors hover:bg-muted"
+                        className="p-1.5 transition-colors hover:bg-muted"
                       >
                         <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
                       </button>

@@ -1,11 +1,22 @@
 import { Link } from "react-router-dom";
+import floralPattern from "@/assets/floral-pattern-frame.svg";
 
 const AboutCTA = () => (
   <section
-    className="w-full py-[60px] md:py-[80px] lg:py-[120px]"
+    className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
     style={{ backgroundColor: "hsl(30 25% 96%)" }}
   >
-    <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">
+    <div
+      className="absolute inset-0 pointer-events-none select-none"
+      style={{
+        backgroundImage: `url(${floralPattern})`,
+        backgroundSize: "600px",
+        backgroundPosition: "center",
+        backgroundRepeat: "repeat",
+        opacity: 0.07,
+      }}
+    />
+    <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">
       <p
         className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em] mb-4"
         style={{ color: "hsl(160 15% 45%)" }}

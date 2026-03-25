@@ -178,8 +178,8 @@ const CustomizationStories = () => {
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => scroll("left")}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200"
-                style={{ border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
+                className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                style={{ borderRadius: '50%', border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
                 aria-label="Previous"
               >
                 <ChevronLeft size={18} />

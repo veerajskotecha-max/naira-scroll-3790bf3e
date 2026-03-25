@@ -238,7 +238,7 @@ const CustomerReviews = () => {
               <button
                 key={i}
                 onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                className="shrink-0 w-[80px] h-[80px] md:w-[90px] md:h-[90px] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+                className="shrink-0 w-[80px] h-[80px] md:w-[90px] md:h-[90px] overflow-hidden hover:shadow-md transition-all duration-200 hover:scale-105"
               >
                 <img src={photo} alt={`Customer photo ${i + 1}`} className="w-full h-full object-cover" />
               </button>

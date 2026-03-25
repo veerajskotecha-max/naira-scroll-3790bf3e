@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import personalisedImg from "@/assets/about-personalised.jpg";
-import floralPattern from "@/assets/background_image_flora.webp";
+
 
 const AboutPersonalised = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -19,18 +19,8 @@ const AboutPersonalised = () => {
     <section
       id="about-personalised"
       className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 25% 96%)" }}
+      style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
-      <div
-        className="absolute inset-0 pointer-events-none select-none"
-        style={{
-          backgroundImage: `url(${floralPattern})`,
-          backgroundSize: "600px",
-          backgroundPosition: "center",
-          backgroundRepeat: "repeat",
-          opacity: 0.5,
-        }}
-      />
       <div
         ref={ref}
         className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20"

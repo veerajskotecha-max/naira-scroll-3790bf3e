@@ -48,7 +48,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="flex flex-col w-full px-4 lg:px-8 xl:px-10">
+    <div className="flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
       {/* Title */}
       <h1
         className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em]"

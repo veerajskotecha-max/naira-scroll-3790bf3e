@@ -252,7 +252,7 @@ const MadeForYou = () => {
               </a>
               <Link
                 to="/shop"
-                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
                   border: "1.5px solid hsl(0 0% 30%)",
                   color: "hsl(0 0% 22%)",

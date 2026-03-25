@@ -55,7 +55,7 @@ const WishlistDrawer = () => {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-[80px] h-[100px] rounded-md object-cover shrink-0"
+                  className="w-[80px] h-[100px] object-cover shrink-0"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div>

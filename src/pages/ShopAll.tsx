@@ -418,7 +418,7 @@ const ShopAll = () => {
                 Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
               </button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
+            <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="font-cormorant text-[20px]">Filters</SheetTitle>
               </SheetHeader>

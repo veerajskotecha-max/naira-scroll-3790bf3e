@@ -1,11 +1,11 @@
 import HeroSection from "@/components/HeroSection";
 import TrustStrip from "@/components/TrustStrip";
 import NewArrivals from "@/components/NewArrivals";
-import CampaignFilm from "@/components/CampaignFilm";
-import MostLoved from "@/components/MostLoved";
-import Craftsmanship from "@/components/Craftsmanship";
 import CoutureExperience from "@/components/CoutureExperience";
+import BrandEthos from "@/components/BrandEthos";
+import Craftsmanship from "@/components/Craftsmanship";
 import Testimonials from "@/components/Testimonials";
+import CampaignFilm from "@/components/CampaignFilm";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -14,11 +14,11 @@ const Index = () => {
       <HeroSection />
       <TrustStrip />
       <NewArrivals />
-      <CampaignFilm />
-      <MostLoved />
-      <Craftsmanship />
       <CoutureExperience />
+      <BrandEthos />
+      <Craftsmanship />
       <Testimonials />
+      <CampaignFilm />
       <Footer />
     </div>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Palette, Phone, Package } from "lucide-react";
-import heroImage from "@/assets/made-for-you-hero.webp";
+import heroImage from "@/assets/customize-hero.jpg";
 import CustomizationStories from "@/components/CustomizationStories";
 import CustomFAQ from "@/components/CustomFAQ";
 import Footer from "@/components/Footer";
@@ -109,7 +109,7 @@ const MadeForYou = () => {
               className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em] mb-4"
               style={{ color: "hsl(30 30% 82%)" }}
             >
-              MADE FOR YOU
+              CUSTOMIZE
             </p>
             <h1
               className="font-cormorant text-[30px] md:text-[42px] lg:text-[54px] font-medium leading-[1.15] mb-5"

@@ -13,7 +13,7 @@ const leftLinks = [
   { label: "HOME", to: "/" },
   { label: "SHOP", to: "/shop" },
   { label: "ABOUT", to: "/about" },
-  { label: "MADE FOR YOU", to: "/made-for-you" },
+  { label: "CUSTOMIZE", to: "/customize" },
 ];
 
 const Navbar = ({ scrolled }: NavbarProps) => {

@@ -90,7 +90,7 @@ const CoutureExperience = () => {
               className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
               style={{ color: "hsl(16 30% 55%)" }}
             >
-              MADE FOR YOU
+              CUSTOMIZE
             </p>
             <h2
               className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
@@ -176,7 +176,7 @@ const CoutureExperience = () => {
             }}
           >
             <Link
-              to="/made-for-you"
+              to="/customize"
               className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               style={{
                 backgroundColor: "hsl(20 18% 28%)",

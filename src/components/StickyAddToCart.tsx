@@ -64,7 +64,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
               <img
                 src={image}
                 alt={title}
-                className="w-12 h-12 rounded-md object-cover shrink-0"
+                className="w-12 h-12 object-cover shrink-0"
               />
               <div className="min-w-0">
                 <p
@@ -90,7 +90,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
             {/* Right — controls */}
             <div className="flex items-center gap-3 shrink-0">
               <div
-                className="px-4 py-1.5 rounded-full text-[12px] font-medium"
+                className="px-4 py-1.5 text-[12px] font-medium"
                 style={{
                   backgroundColor: "hsl(0 0% 96%)",
                   border: "1px solid hsl(0 0% 88%)",
@@ -101,7 +101,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
               </div>
               <button
                 onClick={handleAdd}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
+                className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
                 style={{
                   backgroundColor: "hsl(186 35% 28%)",
                   color: "hsl(0 0% 100%)",
@@ -122,7 +122,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
               <img
                 src={image}
                 alt={title}
-                className="w-10 h-10 rounded-md object-cover shrink-0"
+                className="w-10 h-10 object-cover shrink-0"
               />
               <div className="min-w-0 flex-1">
                 <p
@@ -139,7 +139,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
                 </span>
               </div>
               <div
-                className="px-3 py-1 rounded-full text-[11px] font-medium shrink-0"
+                className="px-3 py-1 text-[11px] font-medium shrink-0"
                 style={{
                   backgroundColor: "hsl(0 0% 96%)",
                   border: "1px solid hsl(0 0% 88%)",
@@ -151,7 +151,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
             </div>
             <button
               onClick={handleAdd}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.08em]"
+              className="w-full flex items-center justify-center gap-2 py-3 text-[13px] font-medium uppercase tracking-[0.08em]"
               style={{
                 backgroundColor: "hsl(186 35% 28%)",
                 color: "hsl(0 0% 100%)",

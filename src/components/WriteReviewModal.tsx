@@ -52,7 +52,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
   if (submitted) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-4">
-        <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: "hsl(186 35% 28% / 0.1)" }}>
+        <div className="w-14 h-14 flex items-center justify-center" style={{ backgroundColor: "hsl(186 35% 28% / 0.1)" }}>
           <Star size={24} style={{ color: "hsl(186 35% 28%)", fill: "hsl(186 35% 28%)" }} />
         </div>
         <p className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(var(--foreground))" }}>
@@ -63,7 +63,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
         </p>
         <button
           onClick={onClose}
-          className="mt-2 px-6 py-2.5 rounded-md text-[13px] font-medium transition-colors duration-200"
+          className="mt-2 px-6 py-2.5 text-[13px] font-medium transition-colors duration-200"
           style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
         >
           Done
@@ -100,7 +100,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name"
-          className="w-full h-11 px-4 rounded-md border text-[14px] font-cormorant bg-background outline-none transition-colors duration-200 focus:border-primary"
+          className="w-full h-11 px-4 border text-[14px] font-cormorant bg-background outline-none transition-colors duration-200 focus:border-primary"
           style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--foreground))" }}
         />
       </div>
@@ -115,7 +115,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
           onChange={(e) => setText(e.target.value)}
           placeholder="Share your experience..."
           rows={4}
-          className="w-full px-4 py-3 rounded-md border text-[14px] font-cormorant bg-background outline-none resize-none transition-colors duration-200 focus:border-primary"
+          className="w-full px-4 py-3 border text-[14px] font-cormorant bg-background outline-none resize-none transition-colors duration-200 focus:border-primary"
           style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--foreground))" }}
         />
       </div>
@@ -123,7 +123,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
       {/* Photo Upload (visual only) */}
       <button
         type="button"
-        className="self-start flex items-center gap-2 px-4 py-2 rounded-md border text-[13px] font-cormorant transition-colors duration-200 hover:bg-secondary"
+        className="self-start flex items-center gap-2 px-4 py-2 border text-[13px] font-cormorant transition-colors duration-200 hover:bg-secondary"
         style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
       >
         <ImagePlus size={15} />
@@ -134,7 +134,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
       <button
         type="submit"
         disabled={!isValid}
-        className="w-full h-[48px] rounded-md text-[13px] font-medium uppercase tracking-[0.1em] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full h-[48px] text-[13px] font-medium uppercase tracking-[0.1em] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
           backgroundColor: isValid ? "hsl(186 35% 28%)" : "hsl(186 35% 28%)",
           color: "hsl(0 0% 100%)",

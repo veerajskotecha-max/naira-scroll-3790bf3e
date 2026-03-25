@@ -46,17 +46,16 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
       <Link to={`/product/${slug}`} className="block cursor-pointer">
         {/* Image area */}
         <div
-          className="relative overflow-hidden rounded-lg transition-shadow duration-300"
+          className="relative overflow-hidden transition-all duration-300"
           style={{
             aspectRatio: "3/4",
-            boxShadow: hovered ? "0 8px 24px hsl(0 0% 0% / 0.1)" : "0 2px 8px hsl(0 0% 0% / 0.04)",
           }}
         >
           {/* Primary image */}
           <img
             src={product.image}
             alt={product.name}
-            className="absolute inset-0 w-full h-full object-cover rounded-lg transition-all duration-500 ease-out"
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
             style={{
               opacity: hovered ? 0 : 1,
               transform: hovered ? "scale(1.05)" : "scale(1)",
@@ -67,7 +66,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           <img
             src={product.hoverImage}
             alt={`${product.name} alternate view`}
-            className="absolute inset-0 w-full h-full object-cover rounded-lg transition-all duration-500 ease-out"
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
             style={{
               opacity: hovered ? 1 : 0,
               transform: hovered ? "scale(1.05)" : "scale(1)",
@@ -77,7 +76,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
 
           {/* Tag */}
           <span
-            className="absolute top-2.5 left-2.5 md:top-3 md:left-3 z-20 text-[8px] md:text-[9px] font-normal uppercase tracking-[0.14em] px-2 py-[3px] md:px-2.5 md:py-1 rounded-sm transition-opacity duration-300"
+            className="absolute top-2.5 left-2.5 md:top-3 md:left-3 z-20 text-[8px] md:text-[9px] font-normal uppercase tracking-[0.14em] px-2 py-[3px] md:px-2.5 md:py-1 transition-opacity duration-300"
             style={{
               backgroundColor: "hsla(0, 0%, 100%, 0.55)",
               color: "hsl(0 0% 32%)",
@@ -90,7 +89,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
 
           {/* Wishlist icon */}
           <button
-            className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200"
+            className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center transition-all duration-200"
             style={{
               backgroundColor: "hsla(0,0%,100%,0.85)",
             }}
@@ -119,7 +118,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             }}
           >
             <button
-              className="flex items-center gap-2 px-6 py-2.5 rounded-md text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
+              className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
               style={{
                 backgroundColor: "hsl(186 35% 28%)",
                 color: "hsl(0 0% 100%)",
@@ -143,7 +142,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
 
           {/* Hover gradient overlay */}
           <div
-            className="absolute inset-x-0 bottom-0 h-1/3 z-10 rounded-b-lg transition-opacity duration-300"
+            className="absolute inset-x-0 bottom-0 h-1/3 z-10 transition-opacity duration-300"
             style={{
               background: "linear-gradient(to top, hsla(0,0%,0%,0.35), transparent)",
               opacity: hovered ? 1 : 0,

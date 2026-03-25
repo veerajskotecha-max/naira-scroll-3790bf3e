@@ -161,7 +161,7 @@ const FilterSidebar = ({
             <button
               key={size}
               onClick={() => toggleSize(size)}
-              className="min-w-[44px] h-[44px] flex items-center justify-center rounded-md font-cormorant text-[14px] font-medium transition-all duration-200 border"
+              className="min-w-[44px] h-[44px] flex items-center justify-center font-cormorant text-[14px] font-medium transition-all duration-200 border"
               style={{
                 borderColor: isSelected ? "hsl(186 35% 28%)" : "hsl(0 0% 82%)",
                 backgroundColor: isSelected ? "hsl(186 35% 28%)" : "transparent",
@@ -350,7 +350,7 @@ const ShopAll = () => {
               <div className="hidden lg:flex items-center gap-1">
                 <button
                   onClick={() => setGridCols(3)}
-                  className="p-2 rounded-md transition-colors duration-150"
+                  className="p-2 transition-colors duration-150"
                   style={{
                     backgroundColor: gridCols === 3 ? "hsl(0 0% 92%)" : "transparent",
                     color: gridCols === 3 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
@@ -361,7 +361,7 @@ const ShopAll = () => {
                 </button>
                 <button
                   onClick={() => setGridCols(4)}
-                  className="p-2 rounded-md transition-colors duration-150"
+                  className="p-2 transition-colors duration-150"
                   style={{
                     backgroundColor: gridCols === 4 ? "hsl(0 0% 92%)" : "transparent",
                     color: gridCols === 4 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
@@ -384,7 +384,7 @@ const ShopAll = () => {
               <div className="ml-auto">
                 <Select value={sortValue} onValueChange={setSortValue}>
                   <SelectTrigger
-                    className="w-[200px] font-cormorant text-[14px] border rounded-md"
+                    className="w-[200px] font-cormorant text-[14px] border"
                     style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 30%)" }}
                   >
                     <SelectValue />
@@ -407,7 +407,7 @@ const ShopAll = () => {
           <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
             <SheetTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -418,7 +418,7 @@ const ShopAll = () => {
                 Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
               </button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
+            <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="font-cormorant text-[20px]">Filters</SheetTitle>
               </SheetHeader>
@@ -426,14 +426,14 @@ const ShopAll = () => {
                 <FilterSidebar {...filterProps} />
                 <div className="flex gap-3 mt-8">
                   <button
-                    className="flex-1 py-3 rounded-full border font-cormorant text-[14px] font-medium"
+                    className="flex-1 py-3 border font-cormorant text-[14px] font-medium"
                     style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 40%)" }}
                     onClick={resetFilters}
                   >
                     Reset
                   </button>
                   <button
-                    className="flex-1 py-3 rounded-full font-cormorant text-[14px] font-medium"
+                    className="flex-1 py-3 font-cormorant text-[14px] font-medium"
                     style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                     onClick={() => setMobileFiltersOpen(false)}
                   >
@@ -447,7 +447,7 @@ const ShopAll = () => {
           <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
             <DialogTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -458,7 +458,7 @@ const ShopAll = () => {
                 Sort
               </button>
             </DialogTrigger>
-            <DialogContent className="max-w-[340px] rounded-2xl p-0 overflow-hidden">
+            <DialogContent className="max-w-[340px] p-0 overflow-hidden">
               <DialogHeader className="px-5 pt-5 pb-3">
                 <DialogTitle className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
                   Sort By
@@ -488,7 +488,7 @@ const ShopAll = () => {
 
           {/* Layout toggle */}
           <div
-            className="flex items-center rounded-full border overflow-hidden"
+            className="flex items-center border overflow-hidden"
             style={{ borderColor: "hsl(0 0% 82%)", backgroundColor: "hsl(0 0% 100%)" }}
           >
             <button
@@ -537,7 +537,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-cat-${cat}`}
                     onClick={() => toggleCategory(cat)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -551,7 +551,7 @@ const ShopAll = () => {
                 {(priceRange[0] !== 0 || priceRange[1] !== 50000) && (
                   <button
                     onClick={() => setPriceRange([0, 50000])}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -566,7 +566,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-size-${size}`}
                     onClick={() => toggleSize(size)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -581,7 +581,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-avail-${a}`}
                     onClick={() => toggleAvailability(a)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -594,7 +594,7 @@ const ShopAll = () => {
                 ))}
                 <button
                   onClick={resetFilters}
-                  className="px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium transition-colors duration-150"
+                  className="px-3 py-1.5 font-cormorant text-[13px] font-medium transition-colors duration-150"
                   style={{ color: "hsl(0 0% 45%)" }}
                 >
                   Clear All
@@ -612,7 +612,7 @@ const ShopAll = () => {
                 </p>
                 <button
                   onClick={resetFilters}
-                  className="px-6 py-2.5 rounded-full font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  className="px-6 py-2.5 font-cormorant text-[14px] font-medium transition-colors duration-200"
                   style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 >
                   Reset All Filters

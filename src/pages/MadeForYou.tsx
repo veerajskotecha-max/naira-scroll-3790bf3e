@@ -97,7 +97,7 @@ const MadeForYou = () => {
             }
           `}</style>
           <div
-            className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20 rounded-2xl"
+            className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20"
             style={{
               backgroundColor: "hsla(0,0%,100%,0.08)",
               backdropFilter: "blur(6px)",
@@ -131,7 +131,7 @@ const MadeForYou = () => {
             </p>
             <Link
               to="/custom"
-              className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               style={{
                 backgroundColor: "hsl(0 0% 100%)",
                 color: "hsl(0 0% 15%)",
@@ -168,7 +168,7 @@ const MadeForYou = () => {
             </h2>
             <div className="flex items-center justify-center gap-3 mt-5">
               <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(160 15% 55%)" }} />
+              <div className="w-2 h-2" style={{ backgroundColor: "hsl(160 15% 55%)" }} />
               <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
             </div>
           </div>
@@ -181,7 +181,7 @@ const MadeForYou = () => {
               <div
                 key={i}
                 data-step-card
-                className="flex flex-col items-center text-center rounded-xl px-6 py-9 transition-all ease-out"
+                className="flex flex-col items-center text-center px-6 py-9 transition-all ease-out"
                 style={{
                   backgroundColor: "hsl(30 25% 96%)",
                   boxShadow: "0 2px 14px -4px hsla(0,0%,0%,0.07)",
@@ -193,7 +193,7 @@ const MadeForYou = () => {
                 }}
               >
                 <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
+                  className="w-16 h-16 flex items-center justify-center mb-5"
                   style={{ backgroundColor: "hsl(160 12% 88%)" }}
                 >
                   <step.icon size={24} style={{ color: "hsl(160 15% 42%)" }} />
@@ -239,7 +239,7 @@ const MadeForYou = () => {
                 href="https://wa.me/919876543210?text=Hi%2C%20I%20want%20to%20create%20a%20custom%20outfit"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
                   backgroundColor: "hsl(143 14% 50%)",
                   color: "hsl(0 0% 100%)",
@@ -252,7 +252,7 @@ const MadeForYou = () => {
               </a>
               <Link
                 to="/shop"
-                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
                   border: "1.5px solid hsl(0 0% 30%)",
                   color: "hsl(0 0% 22%)",

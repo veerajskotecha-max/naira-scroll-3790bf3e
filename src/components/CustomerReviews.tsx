@@ -238,7 +238,7 @@ const CustomerReviews = () => {
               <button
                 key={i}
                 onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                className="shrink-0 w-[80px] h-[80px] md:w-[90px] md:h-[90px] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+                className="shrink-0 w-[80px] h-[80px] md:w-[90px] md:h-[90px] overflow-hidden hover:shadow-md transition-all duration-200 hover:scale-105"
               >
                 <img src={photo} alt={`Customer photo ${i + 1}`} className="w-full h-full object-cover" />
               </button>
@@ -246,7 +246,7 @@ const CustomerReviews = () => {
           </div>
           <button
             onClick={() => setReviewModalOpen(true)}
-            className="mt-2 self-start px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border border-foreground text-foreground transition-all duration-[250ms] ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
+            className="mt-2 self-start px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] border border-foreground text-foreground transition-all duration-[250ms] ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
           >
             Write a Review
           </button>
@@ -265,7 +265,7 @@ const CustomerReviews = () => {
           <img
             src={customerPhotos[lightboxIndex]}
             alt="Customer photo"
-            className="w-full h-auto rounded-md"
+            className="w-full h-auto"
           />
         </DialogContent>
       </Dialog>
@@ -276,7 +276,7 @@ const CustomerReviews = () => {
           <button
             key={f}
             onClick={() => handleFilterChange(f)}
-            className="px-4 py-2 rounded-full text-[13px] font-medium border transition-all duration-200"
+            className="px-4 py-2 text-[13px] font-medium border transition-all duration-200"
             style={{
               backgroundColor: activeFilter === f ? "hsl(186 35% 28%)" : "transparent",
               color: activeFilter === f ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))",
@@ -300,7 +300,7 @@ const CustomerReviews = () => {
           filteredReviews.slice(0, visibleCount).map((review, i) => (
             <div
               key={`${activeFilter}-${i}`}
-              className="rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-fade-in"
+              className="p-5 hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-fade-in"
               style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -330,7 +330,7 @@ const CustomerReviews = () => {
               {review.hasPhotos && review.images.length > 0 && (
                 <div className="flex gap-2 mt-3">
                   {review.images.map((img, idx) => (
-                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 rounded-md object-cover" />
+                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 object-cover" />
                   ))}
                 </div>
               )}
@@ -344,7 +344,7 @@ const CustomerReviews = () => {
         <div className="mt-10 flex justify-center">
           <button
             onClick={() => setVisibleCount((v) => Math.min(v + 4, filteredReviews.length))}
-            className="px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border-2 border-foreground text-foreground transition-all duration-[250ms] ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
+            className="px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] border-2 border-foreground text-foreground transition-all duration-[250ms] ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
           >
             Load More Reviews
           </button>

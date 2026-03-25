@@ -23,7 +23,7 @@ const WishlistDrawer = () => {
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
             <div
-              className="w-20 h-20 rounded-full flex items-center justify-center"
+              className="w-20 h-20 flex items-center justify-center"
               style={{ backgroundColor: "hsl(0 0% 96%)" }}
             >
               <Heart size={32} style={{ color: "hsl(0 0% 60%)" }} />
@@ -37,7 +37,7 @@ const WishlistDrawer = () => {
             <Link
               to="/shop"
               onClick={() => setDrawerOpen(false)}
-              className="mt-2 px-8 py-3 rounded-md text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
+              className="mt-2 px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             >
               Browse Products
@@ -55,7 +55,7 @@ const WishlistDrawer = () => {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-[80px] h-[100px] rounded-md object-cover shrink-0"
+                  className="w-[80px] h-[100px] object-cover shrink-0"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div>
@@ -68,7 +68,7 @@ const WishlistDrawer = () => {
                   </div>
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeItem(item.id); }}
-                    className="self-start p-1.5 rounded-full transition-colors hover:bg-muted"
+                    className="self-start p-1.5 transition-colors hover:bg-muted"
                     aria-label="Remove from wishlist"
                   >
                     <X size={14} style={{ color: "hsl(0 0% 50%)" }} />

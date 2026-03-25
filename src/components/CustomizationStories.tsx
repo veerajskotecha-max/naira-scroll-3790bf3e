@@ -70,7 +70,7 @@ const CustomizationStories = () => {
           style={{ transitionDuration: "0.6s" }}
         >
           <p
-            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
+            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-2"
             style={{ color: "hsl(160 15% 45%)" }}
           >
             CUSTOMER STORIES

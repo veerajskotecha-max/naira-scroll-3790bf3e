@@ -76,7 +76,7 @@ const CustomizationStories = () => {
             CUSTOMER STORIES
           </p>
           <h2
-            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-4"
+            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-3"
             style={{ color: "hsl(0 0% 18%)" }}
           >
             Real Custom{" "}

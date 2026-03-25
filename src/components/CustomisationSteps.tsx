@@ -49,17 +49,8 @@ const CustomisationSteps = () => {
       className="relative w-full overflow-hidden py-[70px] md:py-[90px] lg:py-[120px]"
       style={{ backgroundColor: "hsl(30 25% 96%)" }}
     >
-      {/* Full background pattern */}
-      <div
-        className="absolute inset-0 pointer-events-none select-none"
-        style={{
-          backgroundImage: `url(${floralPatternBg})`,
-          backgroundSize: "600px",
-          backgroundPosition: "center",
-          backgroundRepeat: "repeat",
-          opacity: 0.09,
-        }}
-      />
+
+
 
       <div ref={ref} className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
         {/* Heading */}

@@ -134,10 +134,11 @@ const CoutureExperience = () => {
               >
                 {/* Icon circle */}
                 <div
-                  className="w-[80px] h-[80px] md:w-[96px] md:h-[96px] rounded-full flex items-center justify-center mb-5"
+                  className="w-[56px] h-[56px] md:w-[64px] md:h-[64px] flex items-center justify-center mb-4"
                   style={{
-                    backgroundColor: "hsl(0 0% 100%)",
-                    boxShadow: "0 4px 20px -4px hsla(0,0%,0%,0.1)",
+                    borderRadius: '50%',
+                    backgroundColor: "hsl(0 0% 98%)",
+                    boxShadow: "0 2px 12px -4px hsla(0,0%,0%,0.06)",
                   }}
                 >
                   <step.icon size={28} style={{ color: "hsl(16 40% 62%)" }} />

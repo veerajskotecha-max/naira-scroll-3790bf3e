@@ -181,7 +181,7 @@ const MadeForYou = () => {
               <div
                 key={i}
                 data-step-card
-                className="flex flex-col items-center text-center rounded-xl px-6 py-9 transition-all ease-out"
+                className="flex flex-col items-center text-center px-6 py-9 transition-all ease-out"
                 style={{
                   backgroundColor: "hsl(30 25% 96%)",
                   boxShadow: "0 2px 14px -4px hsla(0,0%,0%,0.07)",

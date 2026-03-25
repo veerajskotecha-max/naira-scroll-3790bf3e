@@ -95,10 +95,10 @@ const ContactUs = () => {
                 }}
               >
                 <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5"
-                  style={{ backgroundColor: "hsl(143 14% 90%)" }}
+                  className="w-9 h-9 flex items-center justify-center mx-auto mb-4"
+                  style={{ borderRadius: '50%', backgroundColor: "hsl(143 14% 93%)" }}
                 >
-                  <card.icon size={20} style={{ color: "hsl(143 14% 50%)" }} />
+                  <card.icon size={16} style={{ color: "hsl(143 14% 50%)" }} />
                 </div>
                 <h3
                   className="font-cormorant text-[20px] md:text-[22px] font-semibold mb-3"

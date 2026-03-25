@@ -239,7 +239,7 @@ const MadeForYou = () => {
                 href="https://wa.me/919876543210?text=Hi%2C%20I%20want%20to%20create%20a%20custom%20outfit"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="w-full sm:w-auto inline-flex items-center justify-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{
                   backgroundColor: "hsl(143 14% 50%)",
                   color: "hsl(0 0% 100%)",

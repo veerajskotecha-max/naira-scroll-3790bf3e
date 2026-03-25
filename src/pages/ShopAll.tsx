@@ -384,7 +384,7 @@ const ShopAll = () => {
               <div className="ml-auto">
                 <Select value={sortValue} onValueChange={setSortValue}>
                   <SelectTrigger
-                    className="w-[200px] font-cormorant text-[14px] border rounded-md"
+                    className="w-[200px] font-cormorant text-[14px] border"
                     style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 30%)" }}
                   >
                     <SelectValue />

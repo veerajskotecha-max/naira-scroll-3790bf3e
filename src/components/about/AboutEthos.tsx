@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pencil, Scissors, Flower2 } from "lucide-react";
-import floralPattern from "@/assets/floral-pattern-frame.svg";
+
 
 const pillars = [
   {

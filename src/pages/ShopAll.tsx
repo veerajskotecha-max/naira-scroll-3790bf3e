@@ -433,7 +433,7 @@ const ShopAll = () => {
                     Reset
                   </button>
                   <button
-                    className="flex-1 py-3 rounded-full font-cormorant text-[14px] font-medium"
+                    className="flex-1 py-3 font-cormorant text-[14px] font-medium"
                     style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                     onClick={() => setMobileFiltersOpen(false)}
                   >

@@ -84,7 +84,7 @@ const CustomisationSteps = () => {
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
           {featureCards.map((card, i) => (
             <div
               key={i}
@@ -118,6 +118,35 @@ const CustomisationSteps = () => {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div
+          className={`flex justify-center mt-12 md:mt-16 transition-all ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+          style={{
+            transitionDuration: "0.6s",
+            transitionDelay: visible ? "0.8s" : "0s",
+          }}
+        >
+          <Link
+            to="/customize"
+            className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{
+              backgroundColor: "hsl(20 18% 28%)",
+              color: "hsl(0 0% 100%)",
+              boxShadow: "0 4px 16px -4px hsla(20,18%,28%,0.35)",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "hsl(20 18% 22%)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "hsl(20 18% 28%)")
+            }
+          >
+            BEGIN MY CUSTOM ORDER
+          </Link>
         </div>
       </div>
     </section>

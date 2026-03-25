@@ -51,7 +51,7 @@ const ProductDetail = () => {
       <CustomerReviews />
       <MaterialsCraft />
       <YouMayAlsoLike />
-      <NairaPhilosophy />
+      
       <Footer />
       <StickyAddToCart
         image={product1}

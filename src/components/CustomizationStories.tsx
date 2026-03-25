@@ -58,24 +58,13 @@ const CustomizationStories = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 25% 96%)" }}
+      className="relative w-full overflow-hidden py-[30px] md:py-[40px] lg:py-[56px]"
+      style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
-      {/* Floral pattern background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${floralPatternBg})`,
-          backgroundSize: "600px",
-          backgroundRepeat: "repeat",
-          opacity: 0.05,
-        }}
-      />
-
       <div ref={sectionRef} className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
         {/* Section heading */}
         <div
-          className={`text-center mb-12 md:mb-16 transition-all ease-out ${
+          className={`text-center mb-6 md:mb-8 transition-all ease-out ${
             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
           }`}
           style={{ transitionDuration: "0.6s" }}

@@ -1,74 +1,11 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { MessageSquare, Palette, Phone, Package } from "lucide-react";
 import heroImage from "@/assets/customize-hero.jpg";
+import ScrollSteps from "@/components/ScrollSteps";
 import CustomizationStories from "@/components/CustomizationStories";
 import CustomFAQ from "@/components/CustomFAQ";
 import Footer from "@/components/Footer";
 
-/* ── process steps ── */
-const steps = [
-  {
-    icon: MessageSquare,
-    number: "01",
-    title: "Send Us Your Dream Outfit",
-    description:
-      "Share your inspiration with us on WhatsApp — a photo, sketch, or even just an idea.",
-  },
-  {
-    icon: Palette,
-    number: "02",
-    title: "Explore Design Options",
-    description:
-      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea.",
-  },
-  {
-    icon: Phone,
-    number: "03",
-    title: "Consultation Call",
-    description:
-      "We align on measurements, finishing details, and final design choices during a quick consultation.",
-  },
-  {
-    icon: Package,
-    number: "04",
-    title: "Delivered To You",
-    description:
-      "Your dream outfit is handcrafted, quality-checked, and delivered to your doorstep.",
-  },
-];
-
 const MadeForYou = () => {
-  const stepsRef = useRef<HTMLDivElement>(null);
-  const [visibleCards, setVisibleCards] = useState<boolean[]>(
-    steps.map(() => false)
-  );
-
-  useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    const cards = stepsRef.current?.querySelectorAll("[data-step-card]");
-    if (!cards) return;
-
-    cards.forEach((card, i) => {
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setVisibleCards((prev) => {
-              const next = [...prev];
-              next[i] = true;
-              return next;
-            });
-            obs.disconnect();
-          }
-        },
-        { threshold: 0.15 }
-      );
-      obs.observe(card);
-      observers.push(obs);
-    });
-
-    return () => observers.forEach((o) => o.disconnect());
-  }, []);
 
   return (
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">

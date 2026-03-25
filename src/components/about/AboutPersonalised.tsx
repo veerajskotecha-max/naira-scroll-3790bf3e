@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import personalisedImg from "@/assets/about-personalised.jpg";
-import floralPattern from "@/assets/floral-pattern-frame.svg";
+import floralPattern from "@/assets/background_image_flora.webp";
 
 const AboutPersonalised = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ const AboutPersonalised = () => {
           backgroundSize: "600px",
           backgroundPosition: "center",
           backgroundRepeat: "repeat",
-          opacity: 0.07,
+          opacity: 0.5,
         }}
       />
       <div

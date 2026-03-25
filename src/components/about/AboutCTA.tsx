@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import floralPattern from "@/assets/floral-pattern-frame.svg";
+import floralPattern from "@/assets/background_image_flora.webp";
 
 const AboutCTA = () => (
   <section
@@ -13,7 +13,7 @@ const AboutCTA = () => (
         backgroundSize: "600px",
         backgroundPosition: "center",
         backgroundRepeat: "repeat",
-        opacity: 0.07,
+        opacity: 0.5,
       }}
     />
     <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">

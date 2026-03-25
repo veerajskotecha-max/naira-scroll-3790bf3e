@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/customize-hero.jpg";
-import floralPattern from "@/assets/floral-pattern-frame.svg";
+import floralPattern from "@/assets/background_image_flora.webp";
 import ScrollSteps from "@/components/ScrollSteps";
 import CustomizationStories from "@/components/CustomizationStories";
 import CustomFAQ from "@/components/CustomFAQ";
@@ -97,7 +97,7 @@ const MadeForYou = () => {
             backgroundSize: "600px",
             backgroundPosition: "center",
             backgroundRepeat: "repeat",
-            opacity: 0.06,
+            opacity: 0.5,
           }}
         />
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">

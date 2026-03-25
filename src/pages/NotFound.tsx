@@ -61,7 +61,7 @@ const NotFound = () => {
           </div>
 
           <Link
-            to="/made-for-you"
+            to="/customize"
             className="inline-flex items-center gap-1.5 mt-6 font-cormorant text-[14px] underline transition-opacity duration-200 hover:opacity-70"
             style={{ color: "hsl(186 35% 28%)" }}
           >

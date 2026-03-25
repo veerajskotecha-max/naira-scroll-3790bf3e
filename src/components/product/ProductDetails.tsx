@@ -206,7 +206,7 @@ const ProductDetails = () => {
       </button>
 
       {/* Divider */}
-      <div className="my-6 md:my-7" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+      <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
       {/* Accordions */}
       <Accordion type="single" collapsible className="w-full">

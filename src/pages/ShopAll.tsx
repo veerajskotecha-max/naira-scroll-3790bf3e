@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import UrgencyNotification from "@/components/UrgencyNotification";
-import { SlidersHorizontal, ArrowUpDown, X, Check, Grid3X3, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -221,7 +221,7 @@ const ShopAll = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortValue, setSortValue] = useState("newest");
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
-  const [gridCols, setGridCols] = useState<3 | 4>(4);
+  const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
 
   const sortOptions = [
@@ -349,15 +349,15 @@ const ShopAll = () => {
               {/* Grid toggle – desktop only */}
               <div className="hidden lg:flex items-center gap-1">
                 <button
-                  onClick={() => setGridCols(3)}
+                  onClick={() => setGridCols(2)}
                   className="p-2 transition-colors duration-150"
                   style={{
-                    backgroundColor: gridCols === 3 ? "hsl(0 0% 92%)" : "transparent",
-                    color: gridCols === 3 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
+                    backgroundColor: gridCols === 2 ? "hsl(0 0% 92%)" : "transparent",
+                    color: gridCols === 2 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
                   }}
-                  title="3 columns"
+                  title="2 columns"
                 >
-                  <Grid3X3 size={18} />
+                  <Columns2 size={18} />
                 </button>
                 <button
                   onClick={() => setGridCols(4)}
@@ -625,7 +625,7 @@ const ShopAll = () => {
                 } ${
                   gridCols === 4
                     ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
-                    : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
+                    : "lg:grid-cols-2 lg:gap-x-10 lg:gap-y-16"
                 }`}
               >
                 {filteredProducts.map((product, i) => (

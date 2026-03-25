@@ -1,7 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import TrustStrip from "@/components/TrustStrip";
 import NewArrivals from "@/components/NewArrivals";
-import CoutureExperience from "@/components/CoutureExperience";
 import BrandEthos from "@/components/BrandEthos";
 import Craftsmanship from "@/components/Craftsmanship";
 import Testimonials from "@/components/Testimonials";
@@ -14,7 +13,6 @@ const Index = () => {
       <HeroSection />
       <TrustStrip />
       <NewArrivals />
-      <CoutureExperience />
       <BrandEthos />
       <Craftsmanship />
       <Testimonials />

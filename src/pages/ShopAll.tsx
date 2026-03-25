@@ -551,7 +551,7 @@ const ShopAll = () => {
                 {(priceRange[0] !== 0 || priceRange[1] !== 50000) && (
                   <button
                     onClick={() => setPriceRange([0, 50000])}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",

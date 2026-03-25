@@ -276,7 +276,7 @@ const CustomerReviews = () => {
           <button
             key={f}
             onClick={() => handleFilterChange(f)}
-            className="px-4 py-2 rounded-full text-[13px] font-medium border transition-all duration-200"
+            className="px-4 py-2 text-[13px] font-medium border transition-all duration-200"
             style={{
               backgroundColor: activeFilter === f ? "hsl(186 35% 28%)" : "transparent",
               color: activeFilter === f ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))",

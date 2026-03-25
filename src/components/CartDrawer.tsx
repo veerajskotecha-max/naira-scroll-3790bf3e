@@ -28,7 +28,7 @@ const CartDrawer = () => {
           /* Empty state */
           <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
             <div
-              className="w-20 h-20 rounded-full flex items-center justify-center"
+              className="w-20 h-20 flex items-center justify-center"
               style={{ backgroundColor: "hsl(0 0% 96%)" }}
             >
               <ShoppingBag size={32} style={{ color: "hsl(0 0% 60%)" }} />

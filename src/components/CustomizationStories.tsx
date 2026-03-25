@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
-import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+
 
 import reelPoster1 from "@/assets/reel-poster-1.jpg";
 import reelPoster2 from "@/assets/reel-poster-2.jpg";
@@ -58,36 +58,25 @@ const CustomizationStories = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 25% 96%)" }}
+      className="relative w-full overflow-hidden py-[30px] md:py-[40px] lg:py-[56px]"
+      style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
-      {/* Floral pattern background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${floralPatternBg})`,
-          backgroundSize: "600px",
-          backgroundRepeat: "repeat",
-          opacity: 0.05,
-        }}
-      />
-
       <div ref={sectionRef} className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
         {/* Section heading */}
         <div
-          className={`text-center mb-12 md:mb-16 transition-all ease-out ${
+          className={`text-center mb-6 md:mb-8 transition-all ease-out ${
             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
           }`}
           style={{ transitionDuration: "0.6s" }}
         >
           <p
-            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
+            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-2"
             style={{ color: "hsl(160 15% 45%)" }}
           >
             CUSTOMER STORIES
           </p>
           <h2
-            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-4"
+            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-3"
             style={{ color: "hsl(0 0% 18%)" }}
           >
             Real Custom{" "}
@@ -102,7 +91,7 @@ const CustomizationStories = () => {
             See how our clients bring their dream outfits to life through
             Naira's customization process.
           </p>
-          <div className="flex items-center justify-center gap-3 mt-5">
+          <div className="flex items-center justify-center gap-3 mt-3">
             <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: "hsl(160 15% 55%)" }} />
             <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
@@ -110,7 +99,7 @@ const CustomizationStories = () => {
         </div>
 
         {/* Reels Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mb-12 md:mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mb-8 md:mb-10">
           {reels.map((reel, i) => (
             <div
               key={i}

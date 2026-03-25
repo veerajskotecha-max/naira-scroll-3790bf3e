@@ -157,7 +157,7 @@ const Craftsmanship = () => {
                   e.currentTarget.style.color = "hsl(0 0% 20%)";
                 }}
               >
-                READ OUR STORY
+                OUR STORY
               </Link>
             </div>
           </div>

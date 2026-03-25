@@ -151,7 +151,7 @@ const ProductDetails = () => {
       </div>
 
       {/* CTA Row */}
-      <div id="product-actions" className="flex gap-3 mt-6">
+      <div id="product-actions" className="flex gap-3 mt-5">
         <button
           onClick={handleAddToCart}
           className="flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200"

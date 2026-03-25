@@ -245,7 +245,7 @@ const CoutureExperience = () => {
             {featureCards.map((card, i) => (
               <div
                 key={i}
-                className={`flex flex-col items-center text-center rounded-xl px-6 py-8 transition-all ease-out cursor-pointer hover:-translate-y-1 hover:shadow-lg ${
+                className={`flex flex-col items-center text-center px-6 py-8 transition-all ease-out cursor-pointer hover:-translate-y-1 hover:shadow-lg ${
                   bottomVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                 }`}
                 style={{

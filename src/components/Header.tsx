@@ -16,7 +16,7 @@ const Header = () => {
       className="fixed top-0 left-0 w-full z-50"
       style={
         {
-          "--announcement-h": "34px",
+          "--announcement-h": "44px",
           "--navbar-h": "64px",
         } as React.CSSProperties
       }

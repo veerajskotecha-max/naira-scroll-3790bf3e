@@ -447,7 +447,7 @@ const ShopAll = () => {
           <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
             <DialogTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",

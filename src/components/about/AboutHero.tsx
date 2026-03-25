@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/about-crafting.webp";
-import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import heroBg from "@/assets/about-hero-bg.webp";
 
 const AboutHero = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -19,16 +19,12 @@ const AboutHero = () => {
   return (
     <section
       className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 30% 97%)" }}
     >
-      {/* Subtle motif pattern */}
+      {/* Background image */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none bg-cover bg-center"
         style={{
-          backgroundImage: `url(${floralPatternBg})`,
-          backgroundSize: "600px",
-          backgroundRepeat: "repeat",
-          opacity: 0.06,
+          backgroundImage: `url(${heroBg})`,
         }}
       />
 

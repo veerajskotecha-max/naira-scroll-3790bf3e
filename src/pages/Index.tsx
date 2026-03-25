@@ -1,4 +1,5 @@
 import HeroSection from "@/components/HeroSection";
+import TrustStrip from "@/components/TrustStrip";
 import NewArrivals from "@/components/NewArrivals";
 import CampaignFilm from "@/components/CampaignFilm";
 import MostLoved from "@/components/MostLoved";

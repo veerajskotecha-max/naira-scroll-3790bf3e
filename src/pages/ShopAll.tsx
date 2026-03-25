@@ -566,7 +566,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-size-${size}`}
                     onClick={() => toggleSize(size)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",

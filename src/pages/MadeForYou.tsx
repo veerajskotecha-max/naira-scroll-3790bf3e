@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/customize-hero.jpg";
-import floralPattern from "@/assets/floral-pattern-frame.svg";
+import floralPattern from "@/assets/background_image_flora.webp";
 import ScrollSteps from "@/components/ScrollSteps";
 import CustomizationStories from "@/components/CustomizationStories";
 import CustomFAQ from "@/components/CustomFAQ";

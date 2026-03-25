@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import floralPattern from "@/assets/floral-pattern-frame.svg";
+import floralPattern from "@/assets/background_image_flora.webp";
 
 const AboutCTA = () => (
   <section

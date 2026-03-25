@@ -112,7 +112,7 @@ const CartDrawer = () => {
                 </span>
               </div>
               <button
-                className="w-full py-3.5 rounded-md text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
+                className="w-full py-3.5 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}

@@ -134,7 +134,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
       <button
         type="submit"
         disabled={!isValid}
-        className="w-full h-[48px] rounded-md text-[13px] font-medium uppercase tracking-[0.1em] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-full h-[48px] text-[13px] font-medium uppercase tracking-[0.1em] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
           backgroundColor: isValid ? "hsl(186 35% 28%)" : "hsl(186 35% 28%)",
           color: "hsl(0 0% 100%)",

@@ -68,7 +68,7 @@ const WishlistDrawer = () => {
                   </div>
                   <button
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeItem(item.id); }}
-                    className="self-start p-1.5 rounded-full transition-colors hover:bg-muted"
+                    className="self-start p-1.5 transition-colors hover:bg-muted"
                     aria-label="Remove from wishlist"
                   >
                     <X size={14} style={{ color: "hsl(0 0% 50%)" }} />

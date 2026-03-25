@@ -187,7 +187,7 @@ const ContactUs = () => {
               onChange={handleChange}
               required
               rows={5}
-              className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+              className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
             />
 
             <div className="text-center pt-2">

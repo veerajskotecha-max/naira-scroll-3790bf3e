@@ -256,8 +256,8 @@ const CoutureExperience = () => {
                 }}
               >
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: "hsl(20 40% 93%)" }}
+                  className="w-10 h-10 flex items-center justify-center mb-3"
+                  style={{ borderRadius: '50%', backgroundColor: "hsl(20 40% 95%)" }}
                 >
                   <card.icon size={22} style={{ color: "hsl(16 40% 55%)" }} />
                 </div>

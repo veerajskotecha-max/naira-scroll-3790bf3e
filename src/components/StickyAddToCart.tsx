@@ -101,7 +101,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
               </div>
               <button
                 onClick={handleAdd}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
+                className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
                 style={{
                   backgroundColor: "hsl(186 35% 28%)",
                   color: "hsl(0 0% 100%)",

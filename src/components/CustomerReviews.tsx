@@ -265,7 +265,7 @@ const CustomerReviews = () => {
           <img
             src={customerPhotos[lightboxIndex]}
             alt="Customer photo"
-            className="w-full h-auto rounded-md"
+            className="w-full h-auto"
           />
         </DialogContent>
       </Dialog>

@@ -160,7 +160,7 @@ const ContactUs = () => {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="rounded-xl border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
+                className="border-[hsl(30_20%_88%)] bg-[hsl(0_0%_100%)] py-3 h-12 font-cormorant text-[15px] placeholder:text-[hsl(0_0%_60%)] focus-visible:ring-[hsl(143_14%_55%)]"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

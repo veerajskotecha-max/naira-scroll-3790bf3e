@@ -84,7 +84,8 @@ const CustomisationSteps = () => {
               }`}
               style={{
                 backgroundColor: "hsl(0 0% 100%)",
-                boxShadow: "0 2px 12px -4px hsla(0,0%,0%,0.08)",
+                border: "1px solid hsl(0 0% 92%)",
+                boxShadow: "0 1px 8px -3px hsla(0,0%,0%,0.06)",
                 transitionDuration: "0.5s",
                 transitionDelay: visible ? `${i * 0.12 + 0.15}s` : "0s",
               }}

@@ -458,7 +458,7 @@ const ShopAll = () => {
                 Sort
               </button>
             </DialogTrigger>
-            <DialogContent className="max-w-[340px] rounded-2xl p-0 overflow-hidden">
+            <DialogContent className="max-w-[340px] p-0 overflow-hidden">
               <DialogHeader className="px-5 pt-5 pb-3">
                 <DialogTitle className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
                   Sort By

@@ -103,8 +103,8 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
               {totalItems > 0 && (
                 <span
-                  className="absolute -top-2 -right-2 w-[18px] h-[18px] rounded-full flex items-center justify-center text-[10px] font-bold leading-none"
-                  style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                  className="absolute -top-2 -right-2 w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold leading-none"
+                  style={{ borderRadius: '50%', backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 >
                   {totalItems > 9 ? "9+" : totalItems}
                 </span>

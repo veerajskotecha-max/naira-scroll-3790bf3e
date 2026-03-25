@@ -186,8 +186,8 @@ const CustomizationStories = () => {
               </button>
               <button
                 onClick={() => scroll("right")}
-                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200"
-                style={{ border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
+                className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
+                style={{ borderRadius: '50%', border: "1px solid hsl(0 0% 80%)", color: "hsl(0 0% 40%)" }}
                 aria-label="Next"
               >
                 <ChevronRight size={18} />

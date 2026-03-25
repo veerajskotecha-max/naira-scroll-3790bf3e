@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
-import NairaPhilosophy from "@/components/NairaPhilosophy";
+
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 import StickyAddToCart from "@/components/StickyAddToCart";
 import UrgencyNotification from "@/components/UrgencyNotification";

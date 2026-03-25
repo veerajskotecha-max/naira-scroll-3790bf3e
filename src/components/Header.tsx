@@ -23,7 +23,7 @@ const Header = () => {
     >
       <style>{`
         @media (min-width: 768px) {
-          header { --announcement-h: 36px !important; --navbar-h: 72px !important; }
+          header { --announcement-h: 48px !important; --navbar-h: 72px !important; }
         }
         @media (min-width: 1024px) {
           header { --announcement-h: 40px !important; --navbar-h: 80px !important; }

@@ -142,7 +142,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
 
           {/* Hover gradient overlay */}
           <div
-            className="absolute inset-x-0 bottom-0 h-1/3 z-10 rounded-b-lg transition-opacity duration-300"
+            className="absolute inset-x-0 bottom-0 h-1/3 z-10 transition-opacity duration-300"
             style={{
               background: "linear-gradient(to top, hsla(0,0%,0%,0.35), transparent)",
               opacity: hovered ? 1 : 0,

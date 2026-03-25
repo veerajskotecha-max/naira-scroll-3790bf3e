@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MessageSquare, Palette, Phone, Package } from "lucide-react";
-import heroImage from "@/assets/made-for-you-hero.webp";
+import heroImage from "@/assets/customize-hero.jpg";
 import CustomizationStories from "@/components/CustomizationStories";
 import CustomFAQ from "@/components/CustomFAQ";
 import Footer from "@/components/Footer";

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
-import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+
 
 import reelPoster1 from "@/assets/reel-poster-1.jpg";
 import reelPoster2 from "@/assets/reel-poster-2.jpg";

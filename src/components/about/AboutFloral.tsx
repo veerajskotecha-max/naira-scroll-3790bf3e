@@ -62,11 +62,7 @@ const AboutFloral = () => {
               className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[460px] mx-auto lg:mx-0"
               style={{ color: "hsl(0 0% 48%)" }}
             >
-              Florals are more than a motif at Naira — they are our design
-              language. Inspired by the gardens and natural landscapes of India,
-              every embroidery pattern draws from the organic beauty of
-              blossoms, leaves, and vines. These motifs carry a timeless
-              elegance that connects heritage with contemporary silhouettes.
+              Floral elements define the visual language of Naira. Inspired by the gardens and natural landscapes of India, every embroidery pattern draws from the organic beauty of blossoms, leaves, and vines.
             </p>
           </div>
 

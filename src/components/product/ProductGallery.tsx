@@ -1,0 +1,124 @@
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+import product1 from "@/assets/product-1.jpg";
+import product1Hover from "@/assets/product-1-hover.jpg";
+import product2 from "@/assets/product-2.jpg";
+import product3 from "@/assets/product-3.jpg";
+import product4 from "@/assets/product-4.jpg";
+
+const images = [product1, product1Hover, product2, product3, product4];
+
+const ProductGallery = () => {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const isMobile = useIsMobile();
+  const { toggleItem, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted("midnight-silk-drape-saree");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isScrolling = useRef(false);
+
+  const scrollToImage = useCallback((index: number) => {
+    if (!scrollRef.current) return;
+    isScrolling.current = true;
+    scrollRef.current.scrollTo({ left: index * scrollRef.current.offsetWidth, behavior: "smooth" });
+    setSelectedImage(index);
+    setTimeout(() => { isScrolling.current = false; }, 400);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile || !scrollRef.current) return;
+    const container = scrollRef.current;
+    let timeout: ReturnType<typeof setTimeout>;
+    const onScroll = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        if (isScrolling.current) return;
+        setSelectedImage(Math.round(container.scrollLeft / container.offsetWidth));
+      }, 60);
+    };
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => { container.removeEventListener("scroll", onScroll); clearTimeout(timeout); };
+  }, [isMobile]);
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleItem({ id: "midnight-silk-drape-saree", name: "Midnight Silk Drape Saree", price: "₹18,500", image: product1 });
+  };
+
+  const WishlistBtn = (
+    <button
+      className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200"
+      style={{ backgroundColor: "hsla(0,0%,100%,0.85)" }}
+      onClick={handleWishlist}
+    >
+      <Heart
+        size={17}
+        className="transition-colors duration-200"
+        style={{
+          color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)",
+          fill: wishlisted ? "hsl(0 70% 55%)" : "none",
+        }}
+      />
+    </button>
+  );
+
+  // Mobile: swipeable carousel
+  if (isMobile) {
+    return (
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+          style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+        >
+          {images.map((img, i) => (
+            <div key={i} className="w-full shrink-0 snap-center" style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 96%)" }}>
+              <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+        {WishlistBtn}
+        <div className="flex justify-center gap-2 mt-3 mb-1">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollToImage(i)}
+              className="w-1.5 h-1.5 transition-all duration-200"
+              style={{
+                backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)",
+                transform: selectedImage === i ? "scale(1.4)" : "scale(1)",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: two large images side-by-side
+  return (
+    <div className="lg:w-[58%] relative">
+      <div className="flex gap-[6px]" style={{ height: "calc(100vh - 140px)", minHeight: "560px", maxHeight: "820px" }}>
+        <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
+          <img
+            src={images[0]}
+            alt="Midnight Silk Drape Saree - Front"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+          />
+        </div>
+        <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
+          <img
+            src={images[1]}
+            alt="Midnight Silk Drape Saree - Detail"
+            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+          />
+        </div>
+      </div>
+      {WishlistBtn}
+    </div>
+  );
+};
+
+export default ProductGallery;

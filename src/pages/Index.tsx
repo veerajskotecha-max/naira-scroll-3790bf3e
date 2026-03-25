@@ -12,6 +12,7 @@ const Index = () => {
   return (
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
       <HeroSection />
+      <TrustStrip />
       <NewArrivals />
       <CampaignFilm />
       <MostLoved />

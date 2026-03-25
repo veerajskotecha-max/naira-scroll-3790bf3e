@@ -74,10 +74,7 @@ const AboutHandcrafted = () => {
               className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[440px] mx-auto lg:mx-0"
               style={{ color: "hsl(0 0% 48%)" }}
             >
-              Each garment passes through the hands of skilled artisans who
-              practise embroidery techniques passed down through generations.
-              From zardosi to delicate thread work, every stitch is placed with
-              intention — transforming fabric into heirloom-worthy art.
+              Artisans bring each design to life through techniques refined over generations. Zardosi, threadwork, and fine detailing come together with precision, resulting in pieces that carry depth and character.
             </p>
           </div>
         </div>

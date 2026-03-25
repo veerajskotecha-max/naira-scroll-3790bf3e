@@ -43,18 +43,14 @@ const AboutPersonalised = () => {
             >
               Designed Around{" "}
               <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-                Your Story
+                You
               </span>
             </h2>
             <p
               className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[460px] mx-auto lg:mx-0"
               style={{ color: "hsl(0 0% 48%)" }}
             >
-              Every Naira piece begins with you. Share a sketch, a Pinterest
-              board, or simply describe your vision — our designers translate
-              your ideas into bespoke garments that are uniquely yours. From
-              fabric selection to final fitting, personalization is at the heart
-              of everything we do.
+              Share a sketch, a Pinterest board, or simply describe your vision — our designers translate your ideas into bespoke garments that are uniquely yours. From fabric selection to final fitting, personalization is at the heart of everything we do.
             </p>
           </div>
 

@@ -488,7 +488,7 @@ const ShopAll = () => {
 
           {/* Layout toggle */}
           <div
-            className="flex items-center rounded-full border overflow-hidden"
+            className="flex items-center border overflow-hidden"
             style={{ borderColor: "hsl(0 0% 82%)", backgroundColor: "hsl(0 0% 100%)" }}
           >
             <button

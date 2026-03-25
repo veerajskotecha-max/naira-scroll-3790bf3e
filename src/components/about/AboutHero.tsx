@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/about-crafting.webp";
-import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import heroBg from "@/assets/about-hero-bg.webp";
 
 const AboutHero = () => {
   const ref = useRef<HTMLDivElement>(null);

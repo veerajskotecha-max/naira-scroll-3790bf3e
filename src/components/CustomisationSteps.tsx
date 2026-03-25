@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import floralPatternBg from "@/assets/floral-pattern-frame.svg";
+
 import { MessageSquare, Palette, SlidersHorizontal, Phone, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 

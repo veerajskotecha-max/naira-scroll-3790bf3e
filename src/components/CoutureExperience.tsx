@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
-import { Sparkles, Palette, Gift, Search, MessageSquare, Scissors, Package } from "lucide-react";
+import { Sparkles, Palette, Gift, MessageSquare, SlidersHorizontal, Phone, Package } from "lucide-react";
 import { Link } from "react-router-dom";
-
 
 const steps = [
   {
@@ -30,24 +29,29 @@ const steps = [
 
 const featureCards = [
   {
-    icon: Search,
-    title: "Explore Styles",
-    description: "Browse our collections and pick what you love.",
-  },
-  {
     icon: MessageSquare,
-    title: "Share Your Preferences",
-    description: "Tell us your measurements and ideas.",
+    title: "Share Your Vision",
+    description: "Share your dream look with us on WhatsApp.",
   },
   {
-    icon: Scissors,
-    title: "We Craft Your Piece",
-    description: "Our artisans design your custom outfit.",
+    icon: Palette,
+    title: "Curated Design Options",
+    description: "Receive curated design, colour, and fabric options, handpicked for you.",
+  },
+  {
+    icon: SlidersHorizontal,
+    title: "Finalise Your Style",
+    description: "Choose your fabric and silhouette, then share your measurements.",
+  },
+  {
+    icon: Phone,
+    title: "Personal Consultation",
+    description: "A personal consultation call to refine every last detail.",
   },
   {
     icon: Package,
     title: "Delivered to You",
-    description: "Receive something made just for you.",
+    description: "Your customized outfit, delivered to your doorstep.",
   },
 ];
 
@@ -232,16 +236,12 @@ const CoutureExperience = () => {
               className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
               style={{ color: "hsl(0 0% 18%)" }}
             >
-              Tailoring Products to Suit
-              <br />
-              <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-                Your Preferences
-              </span>
+              Customize Your Dress
             </h2>
           </div>
 
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
             {featureCards.map((card, i) => (
               <div
                 key={i}

@@ -1,27 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
-import { Search, MessageSquare, Scissors, Package } from "lucide-react";
+import { MessageSquare, Palette, SlidersHorizontal, Phone, Package } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const featureCards = [
   {
-    icon: Search,
-    title: "Explore Styles",
-    description: "Browse our collections and pick what you love.",
-  },
-  {
     icon: MessageSquare,
-    title: "Share Your Preferences",
-    description: "Tell us your measurements and ideas.",
+    title: "Share Your Vision",
+    description: "Share your dream look with us on WhatsApp.",
   },
   {
-    icon: Scissors,
-    title: "We Craft Your Piece",
-    description: "Our artisans design your custom outfit.",
+    icon: Palette,
+    title: "Curated Design Options",
+    description: "Receive curated design, colour, and fabric options, handpicked for you.",
+  },
+  {
+    icon: SlidersHorizontal,
+    title: "Finalise Your Style",
+    description: "Choose your fabric and silhouette, then share your measurements.",
+  },
+  {
+    icon: Phone,
+    title: "Personal Consultation",
+    description: "A personal consultation call to refine every last detail.",
   },
   {
     icon: Package,
     title: "Delivered to You",
-    description: "Receive something made just for you.",
+    description: "Your customized outfit, delivered to your doorstep.",
   },
 ];
 
@@ -73,16 +79,12 @@ const CustomisationSteps = () => {
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
             style={{ color: "hsl(0 0% 18%)" }}
           >
-            Tailoring Products to Suit
-            <br />
-            <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-              Your Preferences
-            </span>
+            Customize Your Dress
           </h2>
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
           {featureCards.map((card, i) => (
             <div
               key={i}
@@ -116,6 +118,35 @@ const CustomisationSteps = () => {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div
+          className={`flex justify-center mt-12 md:mt-16 transition-all ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+          style={{
+            transitionDuration: "0.6s",
+            transitionDelay: visible ? "0.8s" : "0s",
+          }}
+        >
+          <Link
+            to="/customize"
+            className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{
+              backgroundColor: "hsl(20 18% 28%)",
+              color: "hsl(0 0% 100%)",
+              boxShadow: "0 4px 16px -4px hsla(20,18%,28%,0.35)",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "hsl(20 18% 22%)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "hsl(20 18% 28%)")
+            }
+          >
+            BEGIN MY CUSTOM ORDER
+          </Link>
         </div>
       </div>
     </section>

@@ -75,7 +75,7 @@ const ProductDetails = () => {
 
       {/* Info line */}
       <p
-        className="text-[12px] mt-3 leading-relaxed"
+        className="text-[12px] mt-2 leading-relaxed"
         style={{ color: "hsl(0 0% 50%)" }}
       >
         *Prices are inclusive of GST. Handcrafted to order — allow 15–20 business days for delivery.

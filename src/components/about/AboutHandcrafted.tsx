@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import craftingImg from "@/assets/about-crafting.webp";
+import floralPattern from "@/assets/floral-pattern-frame.svg";
 
 const AboutHandcrafted = () => {
   const ref = useRef<HTMLDivElement>(null);

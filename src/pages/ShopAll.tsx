@@ -625,7 +625,7 @@ const ShopAll = () => {
                 } ${
                   gridCols === 4
                     ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14"
-                    : "lg:grid-cols-3 lg:gap-x-8 lg:gap-y-[60px]"
+                    : "lg:grid-cols-2 lg:gap-x-10 lg:gap-y-16"
                 }`}
               >
                 {filteredProducts.map((product, i) => (

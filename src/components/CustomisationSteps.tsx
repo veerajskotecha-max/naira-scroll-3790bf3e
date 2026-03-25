@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import floralPatternBg from "@/assets/floral-pattern-frame.svg";
 import { MessageSquare, Palette, SlidersHorizontal, Phone, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -47,7 +47,7 @@ const CustomisationSteps = () => {
   return (
     <section
       className="relative w-full overflow-hidden py-[70px] md:py-[90px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 20% 92%)" }}
+      style={{ backgroundColor: "hsl(30 25% 96%)" }}
     >
       {/* Full background pattern */}
       <div

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pencil, Scissors, Flower2 } from "lucide-react";
+import floralPattern from "@/assets/floral-pattern-frame.svg";
 
 const pillars = [
   {
@@ -44,7 +45,17 @@ const AboutEthos = () => {
       className="relative w-full overflow-hidden py-8"
       style={{ backgroundColor: "hsl(30 25% 96%)" }}
     >
-      <div ref={ref} className="max-w-[960px] mx-auto px-6">
+      <div
+        className="absolute inset-0 pointer-events-none select-none"
+        style={{
+          backgroundImage: `url(${floralPattern})`,
+          backgroundSize: "600px",
+          backgroundPosition: "center",
+          backgroundRepeat: "repeat",
+          opacity: 0.07,
+        }}
+      />
+      <div ref={ref} className="relative max-w-[960px] mx-auto px-6">
         {/* Heading */}
         <p
           className="text-center text-[10px] font-medium uppercase tracking-[0.2em] mb-6"

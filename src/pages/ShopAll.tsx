@@ -349,15 +349,15 @@ const ShopAll = () => {
               {/* Grid toggle – desktop only */}
               <div className="hidden lg:flex items-center gap-1">
                 <button
-                  onClick={() => setGridCols(3)}
+                  onClick={() => setGridCols(2)}
                   className="p-2 transition-colors duration-150"
                   style={{
-                    backgroundColor: gridCols === 3 ? "hsl(0 0% 92%)" : "transparent",
-                    color: gridCols === 3 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
+                    backgroundColor: gridCols === 2 ? "hsl(0 0% 92%)" : "transparent",
+                    color: gridCols === 2 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
                   }}
-                  title="3 columns"
+                  title="2 columns"
                 >
-                  <Grid3X3 size={18} />
+                  <Columns2 size={18} />
                 </button>
                 <button
                   onClick={() => setGridCols(4)}

@@ -65,7 +65,7 @@ const CustomFAQ = () => {
   return (
     <section
       className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(0 0% 100%)" }}
+      style={{ backgroundColor: "#FAF8F6" }}
     >
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">

@@ -53,7 +53,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-4">
         <div className="w-14 h-14 flex items-center justify-center" style={{ backgroundColor: "hsl(186 35% 28% / 0.1)" }}>
-          <Star size={24} style={{ color: "hsl(186 35% 28%)", fill: "hsl(186 35% 28%)" }} />
+          <Star size={18} style={{ color: "hsl(186 35% 28%)", fill: "hsl(186 35% 28%)" }} />
         </div>
         <p className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(var(--foreground))" }}>
           Thank you for your review

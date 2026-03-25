@@ -193,10 +193,10 @@ const MadeForYou = () => {
                 }}
               >
                 <div
-                  className="w-16 h-16 flex items-center justify-center mb-5"
-                  style={{ backgroundColor: "hsl(160 12% 88%)" }}
+                  className="w-11 h-11 flex items-center justify-center mb-4"
+                  style={{ borderRadius: '50%', backgroundColor: "hsl(160 12% 91%)" }}
                 >
-                  <step.icon size={24} style={{ color: "hsl(160 15% 42%)" }} />
+                  <step.icon size={18} style={{ color: "hsl(160 15% 42%)" }} />
                 </div>
                 <span
                   className="font-cormorant text-[12px] font-semibold tracking-[0.1em] mb-1"

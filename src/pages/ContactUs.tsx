@@ -256,10 +256,10 @@ const ContactUs = () => {
         <div className="absolute inset-0 pointer-events-none" style={floralBg(0.05)} />
         <div className={`relative z-10 ${maxW} text-center`}>
           <div
-            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-            style={{ backgroundColor: "hsl(16 50% 92%)" }}
+            className="w-10 h-10 flex items-center justify-center mx-auto mb-4"
+            style={{ borderRadius: '50%', backgroundColor: "hsl(16 50% 94%)" }}
           >
-            <HelpCircle size={24} style={{ color: "hsl(16 50% 60%)" }} />
+            <HelpCircle size={18} style={{ color: "hsl(16 50% 60%)" }} />
           </div>
           <h2
             className="font-cormorant text-[26px] md:text-[34px] lg:text-[40px] font-medium leading-[1.2] mb-4"

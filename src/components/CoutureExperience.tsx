@@ -259,7 +259,7 @@ const CoutureExperience = () => {
                   className="w-10 h-10 flex items-center justify-center mb-3"
                   style={{ borderRadius: '50%', backgroundColor: "hsl(20 40% 95%)" }}
                 >
-                  <card.icon size={22} style={{ color: "hsl(16 40% 55%)" }} />
+                  <card.icon size={18} style={{ color: "hsl(16 40% 55%)" }} />
                 </div>
                 <h3
                   className="font-cormorant text-[17px] md:text-[18px] font-semibold mb-2"

@@ -86,10 +86,10 @@ const AboutEthos = () => {
               }}
             >
               <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
-                style={{ backgroundColor: "hsl(160 12% 88%)" }}
+                className="w-11 h-11 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
+                style={{ borderRadius: '50%', backgroundColor: "hsl(160 12% 91%)" }}
               >
-                <pillar.icon size={24} style={{ color: "hsl(160 15% 42%)" }} />
+                <pillar.icon size={18} style={{ color: "hsl(160 15% 42%)" }} />
               </div>
               <h3
                 className="font-cormorant text-[20px] md:text-[22px] font-semibold mb-2"

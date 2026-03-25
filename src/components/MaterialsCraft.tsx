@@ -83,10 +83,10 @@ const MaterialsCraft = () => {
               }}
             >
               <div
-                className="w-14 h-14 flex items-center justify-center mb-2.5"
+                className="w-10 h-10 flex items-center justify-center mb-2"
                 style={{
-                  backgroundColor: "hsl(0 0% 100%)",
-                  boxShadow: "0 2px 10px hsl(0 0% 0% / 0.05)",
+                  borderRadius: '50%',
+                  backgroundColor: "hsl(0 0% 100% / 0.7)",
                   color: "hsl(186 35% 28%)",
                 }}
               >

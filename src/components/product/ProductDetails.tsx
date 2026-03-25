@@ -118,7 +118,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Quantity */}
-      <div className="mt-5">
+      <div className="mt-4">
         <span
           className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-2.5"
           style={{ color: "hsl(0 0% 25%)" }}

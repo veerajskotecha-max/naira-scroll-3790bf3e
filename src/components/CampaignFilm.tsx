@@ -82,13 +82,13 @@ const CampaignFilm = () => {
                 className="font-cormorant text-[30px] md:text-[40px] lg:text-[52px] font-medium leading-[1.15]"
                 style={{ color: "hsl(0 0% 18%)" }}
               >
-                Watch. Feel.
+                Watch it. Feel it.
                 <br />
                 <span
                   className="italic"
                   style={{ color: "hsl(20 60% 75%)" }}
                 >
-                  Own It.
+                  Own it.
                 </span>
               </h2>
             </div>
@@ -109,9 +109,8 @@ const CampaignFilm = () => {
                 className="font-cormorant text-[14px] md:text-[15px] lg:text-[16px] leading-relaxed mt-6 max-w-[480px]"
                 style={{ color: "hsl(0 0% 42%)" }}
               >
-                Discover how our Indo-Western pieces move, flow, and define
-                confidence. See the craftsmanship, feel the quality, and imagine
-                yourself in these timeless designs.
+                See the craftsmanship, colours, and quality of Naira's timeless
+                designs.
               </p>
             </div>
 

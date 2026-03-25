@@ -1,0 +1,125 @@
+import { useEffect, useRef, useState } from "react";
+import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import { Search, MessageSquare, Scissors, Package } from "lucide-react";
+
+const featureCards = [
+  {
+    icon: Search,
+    title: "Explore Styles",
+    description: "Browse our collections and pick what you love.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Share Your Preferences",
+    description: "Tell us your measurements and ideas.",
+  },
+  {
+    icon: Scissors,
+    title: "We Craft Your Piece",
+    description: "Our artisans design your custom outfit.",
+  },
+  {
+    icon: Package,
+    title: "Delivered to You",
+    description: "Receive something made just for you.",
+  },
+];
+
+const CustomisationSteps = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section
+      className="relative w-full overflow-hidden py-[70px] md:py-[90px] lg:py-[120px]"
+      style={{ backgroundColor: "hsl(30 20% 92%)" }}
+    >
+      {/* Full background pattern */}
+      <div
+        className="absolute inset-0 pointer-events-none select-none"
+        style={{
+          backgroundImage: `url(${floralPatternBg})`,
+          backgroundSize: "600px",
+          backgroundPosition: "center",
+          backgroundRepeat: "repeat",
+          opacity: 0.09,
+        }}
+      />
+
+      <div ref={ref} className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
+        {/* Heading */}
+        <div
+          className={`text-center mb-10 md:mb-14 transition-all ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+          }`}
+          style={{ transitionDuration: "0.6s" }}
+        >
+          <p
+            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
+            style={{ color: "hsl(16 30% 55%)" }}
+          >
+            STEPS TO EASY CUSTOMISATION
+          </p>
+          <h2
+            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
+            style={{ color: "hsl(0 0% 18%)" }}
+          >
+            Tailoring Products to Suit
+            <br />
+            <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
+              Your Preferences
+            </span>
+          </h2>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          {featureCards.map((card, i) => (
+            <div
+              key={i}
+              className={`flex flex-col items-center text-center px-6 py-8 transition-all ease-out cursor-pointer hover:-translate-y-1 hover:shadow-lg ${
+                visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              }`}
+              style={{
+                backgroundColor: "hsl(0 0% 100%)",
+                boxShadow: "0 2px 12px -4px hsla(0,0%,0%,0.08)",
+                transitionDuration: "0.5s",
+                transitionDelay: visible ? `${i * 0.12 + 0.15}s` : "0s",
+              }}
+            >
+              <div
+                className="w-10 h-10 flex items-center justify-center mb-3"
+                style={{ borderRadius: '50%', backgroundColor: "hsl(20 40% 95%)" }}
+              >
+                <card.icon size={18} style={{ color: "hsl(16 40% 55%)" }} />
+              </div>
+              <h3
+                className="font-cormorant text-[17px] md:text-[18px] font-semibold mb-2"
+                style={{ color: "hsl(0 0% 18%)" }}
+              >
+                {card.title}
+              </h3>
+              <p
+                className="font-cormorant text-[13px] md:text-[14px] leading-relaxed"
+                style={{ color: "hsl(0 0% 48%)" }}
+              >
+                {card.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default CustomisationSteps;

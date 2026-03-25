@@ -236,16 +236,12 @@ const CoutureExperience = () => {
               className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
               style={{ color: "hsl(0 0% 18%)" }}
             >
-              Tailoring Products to Suit
-              <br />
-              <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-                Your Preferences
-              </span>
+              Customize Your Dress
             </h2>
           </div>
 
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
             {featureCards.map((card, i) => (
               <div
                 key={i}

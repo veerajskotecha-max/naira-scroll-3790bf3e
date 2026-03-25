@@ -90,13 +90,13 @@ const Craftsmanship = () => {
                 className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-[1.15]"
                 style={{ color: "hsl(0 0% 18%)" }}
               >
-                Crafting Elegance
+                Statement pieces,
                 <br />
                 <span
                   className="italic"
                   style={{ color: "hsl(16 62% 72%)" }}
                 >
-                  Since 2026
+                  made by human hands.
                 </span>
               </h2>
             </div>
@@ -116,18 +116,16 @@ const Craftsmanship = () => {
                 className="font-cormorant text-[14px] md:text-[15px] lg:text-[16px] leading-relaxed mt-6 max-w-[460px]"
                 style={{ color: "hsl(0 0% 42%)" }}
               >
-                NAIRA was born from a desire to bridge the gap between
-                traditional Indian craftsmanship and modern global fashion. We
-                believe that heritage is not just about the past—it's about how
-                we carry it forward.
+                Heritage is often assumed to be a thing of the past.
+                But Naira brings together traditional techniques with modern design.
               </p>
               <p
                 className="font-cormorant text-[14px] md:text-[15px] lg:text-[16px] leading-relaxed mt-4 max-w-[460px]"
                 style={{ color: "hsl(0 0% 42%)" }}
               >
-                Every piece in our collection tells a story of intricate
-                details, luxurious fabrics, and silhouettes designed to empower
-                the contemporary woman.
+                Every piece has intricate details, soft and luxurious fabrics,
+                and custom designs that the contemporary woman can move through
+                in, effortlessly.
               </p>
             </div>
 

@@ -330,7 +330,7 @@ const CustomerReviews = () => {
               {review.hasPhotos && review.images.length > 0 && (
                 <div className="flex gap-2 mt-3">
                   {review.images.map((img, idx) => (
-                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 rounded-md object-cover" />
+                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 object-cover" />
                   ))}
                 </div>
               )}

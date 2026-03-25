@@ -139,7 +139,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
                 </span>
               </div>
               <div
-                className="px-3 py-1 rounded-full text-[11px] font-medium shrink-0"
+                className="px-3 py-1 text-[11px] font-medium shrink-0"
                 style={{
                   backgroundColor: "hsl(0 0% 96%)",
                   border: "1px solid hsl(0 0% 88%)",

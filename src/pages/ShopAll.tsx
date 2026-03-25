@@ -161,7 +161,7 @@ const FilterSidebar = ({
             <button
               key={size}
               onClick={() => toggleSize(size)}
-              className="min-w-[44px] h-[44px] flex items-center justify-center rounded-md font-cormorant text-[14px] font-medium transition-all duration-200 border"
+              className="min-w-[44px] h-[44px] flex items-center justify-center font-cormorant text-[14px] font-medium transition-all duration-200 border"
               style={{
                 borderColor: isSelected ? "hsl(186 35% 28%)" : "hsl(0 0% 82%)",
                 backgroundColor: isSelected ? "hsl(186 35% 28%)" : "transparent",

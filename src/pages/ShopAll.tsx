@@ -350,7 +350,7 @@ const ShopAll = () => {
               <div className="hidden lg:flex items-center gap-1">
                 <button
                   onClick={() => setGridCols(3)}
-                  className="p-2 rounded-md transition-colors duration-150"
+                  className="p-2 transition-colors duration-150"
                   style={{
                     backgroundColor: gridCols === 3 ? "hsl(0 0% 92%)" : "transparent",
                     color: gridCols === 3 ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",

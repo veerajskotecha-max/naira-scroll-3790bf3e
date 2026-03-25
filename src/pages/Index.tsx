@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+    <div className="pt-[108px] md:pt-[120px] lg:pt-[132px]">
       <HeroSection />
       <TrustStrip />
       <NewArrivals />

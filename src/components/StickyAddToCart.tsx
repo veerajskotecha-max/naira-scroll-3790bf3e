@@ -122,7 +122,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartP
               <img
                 src={image}
                 alt={title}
-                className="w-10 h-10 rounded-md object-cover shrink-0"
+                className="w-10 h-10 object-cover shrink-0"
               />
               <div className="min-w-0 flex-1">
                 <p

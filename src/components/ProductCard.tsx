@@ -66,7 +66,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           <img
             src={product.hoverImage}
             alt={`${product.name} alternate view`}
-            className="absolute inset-0 w-full h-full object-cover rounded-lg transition-all duration-500 ease-out"
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
             style={{
               opacity: hovered ? 1 : 0,
               transform: hovered ? "scale(1.05)" : "scale(1)",

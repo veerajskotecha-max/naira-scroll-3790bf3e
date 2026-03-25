@@ -426,7 +426,7 @@ const ShopAll = () => {
                 <FilterSidebar {...filterProps} />
                 <div className="flex gap-3 mt-8">
                   <button
-                    className="flex-1 py-3 rounded-full border font-cormorant text-[14px] font-medium"
+                    className="flex-1 py-3 border font-cormorant text-[14px] font-medium"
                     style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 40%)" }}
                     onClick={resetFilters}
                   >

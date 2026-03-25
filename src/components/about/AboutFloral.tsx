@@ -53,9 +53,9 @@ const AboutFloral = () => {
               className="font-cormorant text-[28px] md:text-[36px] lg:text-[44px] font-medium leading-tight mb-5"
               style={{ color: "hsl(0 0% 15%)" }}
             >
-              Rooted in Nature's{" "}
+              Echoing{" "}
               <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-                Beauty
+                Nature
               </span>
             </h2>
             <p

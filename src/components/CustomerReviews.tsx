@@ -300,7 +300,7 @@ const CustomerReviews = () => {
           filteredReviews.slice(0, visibleCount).map((review, i) => (
             <div
               key={`${activeFilter}-${i}`}
-              className="rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-fade-in"
+              className="p-5 hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-fade-in"
               style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
             >
               <div className="flex items-center gap-3 mb-3">

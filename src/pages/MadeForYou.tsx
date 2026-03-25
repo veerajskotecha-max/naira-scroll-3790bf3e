@@ -87,7 +87,7 @@ const MadeForYou = () => {
 
       {/* ═══════════ SECTION 3 — Start Your Custom Journey ═══════════ */}
       <section
-        className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
+        className="relative w-full overflow-hidden py-[32px] md:py-[44px] lg:py-[60px]"
         style={{ backgroundColor: "hsl(30 25% 96%)" }}
       >
         <div
@@ -97,18 +97,18 @@ const MadeForYou = () => {
             backgroundSize: "600px",
             backgroundPosition: "center",
             backgroundRepeat: "repeat",
-            opacity: 0.5,
+            opacity: 0.22,
           }}
         />
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">
           <p
-            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
+            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-2"
             style={{ color: "hsl(160 15% 45%)" }}
           >
             GET STARTED
           </p>
           <h2
-            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-6"
+            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-3"
             style={{ color: "hsl(0 0% 15%)" }}
           >
             Start Your Custom{" "}
@@ -117,7 +117,7 @@ const MadeForYou = () => {
             </span>
           </h2>
           <p
-            className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[480px] mx-auto mb-10"
+            className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[480px] mx-auto mb-6"
             style={{ color: "hsl(0 0% 48%)" }}
           >
             Ready to bring your dream outfit to life? Chat with our design team

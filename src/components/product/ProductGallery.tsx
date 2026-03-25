@@ -99,20 +99,20 @@ const ProductGallery = () => {
 
   // Desktop: two large images side-by-side, sticky
   return (
-    <div className="relative w-full sticky top-[120px]">
-      <div className="flex gap-[4px]">
-        <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
+    <div className="relative w-full sticky top-[120px]" style={{ minHeight: "80vh" }}>
+      <div className="grid grid-cols-2 gap-[4px] items-start">
+        <div className="overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
           <img
             src={images[0]}
             alt="Midnight Silk Drape Saree - Front"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            className="w-full h-auto object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
           />
         </div>
-        <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
+        <div className="overflow-hidden relative" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
           <img
             src={images[1]}
             alt="Midnight Silk Drape Saree - Detail"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            className="w-full h-auto object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
           />
         </div>
       </div>

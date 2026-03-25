@@ -97,7 +97,7 @@ const MadeForYou = () => {
             }
           `}</style>
           <div
-            className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20 rounded-2xl"
+            className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20"
             style={{
               backgroundColor: "hsla(0,0%,100%,0.08)",
               backdropFilter: "blur(6px)",

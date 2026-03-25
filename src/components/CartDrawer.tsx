@@ -74,7 +74,7 @@ const CartDrawer = () => {
                       </p>
                     </div>
                     <div className="flex items-center justify-between mt-2">
-                      <div className="inline-flex items-center border rounded-md" style={{ borderColor: "hsl(0 0% 82%)" }}>
+                      <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
                         <button
                           onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
                           className="w-8 h-8 flex items-center justify-center transition-colors hover:bg-muted"

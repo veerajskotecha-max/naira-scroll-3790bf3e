@@ -77,14 +77,15 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
 
           {/* Tag */}
           <span
-            className="absolute top-2 left-2 md:top-3 md:left-3 z-20 text-[9px] md:text-[11px] lg:text-[12px] font-medium uppercase tracking-[0.1em] px-1.5 py-1 md:px-2.5 md:py-1.5"
+            className="absolute top-2.5 left-2.5 md:top-3 md:left-3 z-20 text-[8px] md:text-[9px] font-normal uppercase tracking-[0.14em] px-2 py-[3px] md:px-2.5 md:py-1 rounded-sm transition-opacity duration-300"
             style={{
-              backgroundColor: "hsl(186 35% 28%)",
-              color: "hsl(0 0% 100%)",
-              borderRadius: "3px",
+              backgroundColor: "hsla(0, 0%, 100%, 0.55)",
+              color: "hsl(0 0% 32%)",
+              backdropFilter: "blur(6px)",
+              opacity: hovered ? 0.4 : 0.85,
             }}
           >
-            {product.tag || "NEW ARRIVAL"}
+            {product.tag || "New"}
           </span>
 
           {/* Wishlist icon */}

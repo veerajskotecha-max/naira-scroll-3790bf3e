@@ -100,7 +100,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name"
-          className="w-full h-11 px-4 rounded-md border text-[14px] font-cormorant bg-background outline-none transition-colors duration-200 focus:border-primary"
+          className="w-full h-11 px-4 border text-[14px] font-cormorant bg-background outline-none transition-colors duration-200 focus:border-primary"
           style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--foreground))" }}
         />
       </div>

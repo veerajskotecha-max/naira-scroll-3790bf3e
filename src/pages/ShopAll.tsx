@@ -612,7 +612,7 @@ const ShopAll = () => {
                 </p>
                 <button
                   onClick={resetFilters}
-                  className="px-6 py-2.5 rounded-full font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  className="px-6 py-2.5 font-cormorant text-[14px] font-medium transition-colors duration-200"
                   style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 >
                   Reset All Filters

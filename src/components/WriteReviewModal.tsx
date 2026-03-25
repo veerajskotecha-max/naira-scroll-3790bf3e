@@ -123,7 +123,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
       {/* Photo Upload (visual only) */}
       <button
         type="button"
-        className="self-start flex items-center gap-2 px-4 py-2 rounded-md border text-[13px] font-cormorant transition-colors duration-200 hover:bg-secondary"
+        className="self-start flex items-center gap-2 px-4 py-2 border text-[13px] font-cormorant transition-colors duration-200 hover:bg-secondary"
         style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
       >
         <ImagePlus size={15} />

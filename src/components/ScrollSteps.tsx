@@ -66,14 +66,14 @@ const StepRow = ({
       >
         {/* Image */}
         <div className="w-full md:w-1/2">
-          <div className="overflow-hidden flex items-center justify-center" style={{ aspectRatio: index === 3 ? undefined : "4/5" }}>
+          <div className="overflow-hidden flex items-center justify-center">
             <img
               src={step.image}
               alt={step.title}
               loading="lazy"
               width={640}
               height={800}
-              className={`w-full transition-transform duration-700 hover:scale-105 ${index === 3 ? "h-auto object-contain" : "h-full object-cover"}`}
+              className="w-full h-auto object-contain transition-transform duration-700 hover:scale-105"
             />
           </div>
         </div>

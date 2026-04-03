@@ -73,7 +73,7 @@ const StepRow = ({
               loading="lazy"
               width={640}
               height={800}
-              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 px-0"
             />
           </div>
         </div>

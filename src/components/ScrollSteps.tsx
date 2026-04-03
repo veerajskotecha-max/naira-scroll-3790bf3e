@@ -3,7 +3,7 @@ import { MessageSquare, Palette, Phone, Package } from "lucide-react";
 import step01Img from "@/assets/step-01-dream.jpg";
 import step02Img from "@/assets/step-02-design.jpg";
 import step03Img from "@/assets/step-03-consultation.jpg";
-import step04Img from "@/assets/step-04-delivery.jpg";
+import step04Img from "@/assets/7da639b9-dbe2-483c-a607-0c8381819967.webp";
 
 const steps = [
   {

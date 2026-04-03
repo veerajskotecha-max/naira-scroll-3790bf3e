@@ -109,16 +109,16 @@ const MadeForYou = () => {
           </p>
           <h2
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-3"
-            style={{ color: "hsl(0 0% 15%)" }}
+            style={{ color: "hsl(0 0% 10%)" }}
           >
             Start Your Custom{" "}
-            <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
+            <span className="italic" style={{ color: "hsl(16 45% 58%)" }}>
               Journey
             </span>
           </h2>
           <p
             className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[480px] mx-auto mb-6"
-            style={{ color: "hsl(0 0% 48%)" }}
+            style={{ color: "hsl(0 0% 22%)" }}
           >
             Ready to bring your dream outfit to life? Chat with our design team
             and let's create something beautiful together.

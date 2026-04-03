@@ -69,8 +69,8 @@ const CustomizationStories = () => {
             className="font-cormorant text-[14px] md:text-[16px] leading-relaxed max-w-[520px] mx-auto"
             style={{ color: "hsl(0 0% 48%)" }}
           >
-            See how our clients bring their dream outfits to life through
-            Naira's customization process.
+            See how each design comes to life, guided by our clients and
+            crafted by Naira.
           </p>
           <div className="flex items-center justify-center gap-3 mt-3">
             <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />

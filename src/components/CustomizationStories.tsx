@@ -60,9 +60,9 @@ const CustomizationStories = () => {
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight mb-3"
             style={{ color: "hsl(0 0% 18%)" }}
           >
-            Real Custom{" "}
+            Where ideas become{" "}
             <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
-              Creations
+              Outfits
             </span>
           </h2>
           <p

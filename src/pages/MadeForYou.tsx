@@ -97,7 +97,7 @@ const MadeForYou = () => {
             backgroundSize: "600px",
             backgroundPosition: "center",
             backgroundRepeat: "repeat",
-            opacity: 0.2,
+            opacity: 0.5,
           }}
         />
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center">

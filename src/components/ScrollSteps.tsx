@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageSquare, Palette, Phone, Package } from "lucide-react";
+import step01Img from "@/assets/step-01-dream.jpg";
+import step02Img from "@/assets/step-02-design.jpg";
+import step03Img from "@/assets/step-03-consultation.jpg";
+import step04Img from "@/assets/step-04-delivery.jpg";
 
 const steps = [
   {
@@ -7,187 +11,149 @@ const steps = [
     number: "01",
     title: "Send Us Your Dream Outfit",
     description:
-      "Share your inspiration with us on WhatsApp — a photo, sketch, or even just an idea.",
+      "Share your inspiration with us on WhatsApp — a photo, sketch, or even just an idea. We'll take it from there and begin bringing your vision to life.",
+    image: step01Img,
   },
   {
     icon: Palette,
     number: "02",
     title: "Explore Design Options",
     description:
-      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea.",
+      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea — so you can see the possibilities before we begin.",
+    image: step02Img,
   },
   {
     icon: Phone,
     number: "03",
     title: "Consultation Call",
     description:
-      "We align on measurements, finishing details, and final design choices during a quick consultation.",
+      "We align on measurements, finishing details, and final design choices during a quick consultation to make sure everything is exactly how you want it.",
+    image: step03Img,
   },
   {
     icon: Package,
     number: "04",
     title: "Delivered To You",
     description:
-      "Your dream outfit is handcrafted, quality-checked, and delivered to your doorstep.",
+      "Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep — ready to wear.",
+    image: step04Img,
   },
 ];
 
-const TRANSITION_MS = 500;
+const StepRow = ({
+  step,
+  index,
+  isVisible,
+}: {
+  step: (typeof steps)[0];
+  index: number;
+  isVisible: boolean;
+}) => {
+  const isEven = index % 2 === 0;
+  const StepIcon = step.icon;
+
+  return (
+    <div
+      className="transition-all duration-700"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(30px)",
+        transitionDelay: `${index * 0.1}s`,
+      }}
+    >
+      <div
+        className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} items-center gap-8 md:gap-12 lg:gap-20`}
+      >
+        {/* Image */}
+        <div className="w-full md:w-1/2">
+          <div className="overflow-hidden" style={{ aspectRatio: "4/5" }}>
+            <img
+              src={step.image}
+              alt={step.title}
+              loading="lazy"
+              width={640}
+              height={800}
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            />
+          </div>
+        </div>
+
+        {/* Text */}
+        <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+          <div
+            className="w-12 h-12 flex items-center justify-center mb-5"
+            style={{
+              borderRadius: "50%",
+              backgroundColor: "hsl(160 12% 91%)",
+            }}
+          >
+            <StepIcon size={20} style={{ color: "hsl(160 15% 42%)" }} />
+          </div>
+
+          <span
+            className="font-cormorant text-[13px] font-semibold tracking-[0.15em] uppercase mb-2"
+            style={{ color: "hsl(160 15% 45%)" }}
+          >
+            Step {step.number}
+          </span>
+
+          <h3
+            className="font-cormorant text-[26px] md:text-[30px] lg:text-[34px] font-semibold leading-tight mb-4"
+            style={{ color: "hsl(0 0% 12%)" }}
+          >
+            {step.title}
+          </h3>
+
+          <p
+            className="text-[15px] md:text-[16px] leading-[1.75] max-w-[440px]"
+            style={{ color: "hsl(0 0% 28%)" }}
+          >
+            {step.description}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ScrollSteps = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const [activeStep, setActiveStep] = useState(0);
-  const [direction, setDirection] = useState<"enter" | "exit">("enter");
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
-  const lockRef = useRef(false);
-  const activeRef = useRef(0);
+  const [visibleSteps, setVisibleSteps] = useState<Set<number>>(new Set());
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const goTo = useCallback(
-    (next: number) => {
-      if (isAnimating || next < 0 || next >= steps.length || next === activeRef.current) return;
-      setIsAnimating(true);
-      setDirection("exit");
-
-      setTimeout(() => {
-        activeRef.current = next;
-        setActiveStep(next);
-        setDirection("enter");
-        setTimeout(() => setIsAnimating(false), TRANSITION_MS);
-      }, TRANSITION_MS);
-    },
-    [isAnimating]
-  );
-
-  /* wheel-driven step navigation while section is in view */
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const onIntersect: IntersectionObserverCallback = ([entry]) => {
-      const inView = entry.isIntersecting && entry.intersectionRatio > 0.4;
-      lockRef.current = inView;
-      setIsLocked(inView);
-    };
-
-    const obs = new IntersectionObserver(onIntersect, { threshold: [0, 0.4, 0.6, 1] });
-    obs.observe(section);
-
-    const handleWheel = (e: WheelEvent) => {
-      if (!lockRef.current) return;
-
-      const down = e.deltaY > 0;
-      const cur = activeRef.current;
-
-      // Allow normal scroll if at boundaries
-      if (down && cur >= steps.length - 1) {
-        lockRef.current = false;
-        setIsLocked(false);
-        return;
-      }
-      if (!down && cur <= 0) {
-        lockRef.current = false;
-        setIsLocked(false);
-        return;
-      }
-
-      e.preventDefault();
-      goTo(down ? cur + 1 : cur - 1);
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => {
-      obs.disconnect();
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, [goTo]);
-
-  /* Touch swipe support */
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-    let startY = 0;
-
-    const onTouchStart = (e: TouchEvent) => {
-      startY = e.touches[0].clientY;
-    };
-
-    const onTouchEnd = (e: TouchEvent) => {
-      if (!lockRef.current) return;
-      const diff = startY - e.changedTouches[0].clientY;
-      const cur = activeRef.current;
-
-      if (Math.abs(diff) < 40) return;
-
-      const down = diff > 0;
-      if (down && cur >= steps.length - 1) {
-        lockRef.current = false;
-        setIsLocked(false);
-        return;
-      }
-      if (!down && cur <= 0) {
-        lockRef.current = false;
-        setIsLocked(false);
-        return;
-      }
-
-      goTo(down ? cur + 1 : cur - 1);
-    };
-
-    section.addEventListener("touchstart", onTouchStart, { passive: true });
-    section.addEventListener("touchend", onTouchEnd, { passive: true });
-    return () => {
-      section.removeEventListener("touchstart", onTouchStart);
-      section.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [goTo]);
-
-  /* Re-lock when scrolling back into section */
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const reLockObs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
-          const cur = activeRef.current;
-          if (cur > 0 && cur < steps.length - 1) {
-            lockRef.current = true;
-            setIsLocked(true);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = stepRefs.current.indexOf(
+              entry.target as HTMLDivElement
+            );
+            if (idx !== -1) {
+              setVisibleSteps((prev) => new Set(prev).add(idx));
+            }
           }
-        }
+        });
       },
-      { threshold: 0.6 }
+      { threshold: 0.15 }
     );
-    reLockObs.observe(section);
-    return () => reLockObs.disconnect();
+
+    stepRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
   }, []);
-
-  const step = steps[activeStep];
-  const StepIcon = step.icon;
-
-  const cardStyle: React.CSSProperties =
-    direction === "enter"
-      ? {
-          opacity: 1,
-          transform: "translateX(0)",
-          transition: `all ${TRANSITION_MS}ms ease-out`,
-        }
-      : {
-          opacity: 0,
-          transform: "translateX(-40px)",
-          transition: `all ${TRANSITION_MS}ms ease-out`,
-        };
 
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
-      style={{ backgroundColor: "hsl(30 20% 95%)", minHeight: "80vh" }}
+      className="relative w-full overflow-hidden py-16 md:py-24 lg:py-32"
+      style={{ backgroundColor: "hsl(30 20% 96%)" }}
     >
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-16">
         {/* Heading */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-16 md:mb-24">
           <p
             className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
             style={{ color: "hsl(160 15% 45%)" }}
@@ -195,8 +161,8 @@ const ScrollSteps = () => {
             HOW IT WORKS
           </p>
           <h2
-            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
-            style={{ color: "hsl(0 0% 18%)" }}
+            className="font-cormorant text-[30px] md:text-[40px] lg:text-[50px] font-medium leading-tight"
+            style={{ color: "hsl(0 0% 12%)" }}
           >
             Your Journey to Custom{" "}
             <span className="italic" style={{ color: "hsl(16 50% 72%)" }}>
@@ -204,78 +170,44 @@ const ScrollSteps = () => {
             </span>
           </h2>
           <div className="flex items-center justify-center gap-3 mt-5">
-            <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
-            <div className="w-2 h-2" style={{ backgroundColor: "hsl(160 15% 55%)" }} />
-            <div className="w-12 md:w-16 h-px" style={{ backgroundColor: "hsl(160 12% 72%)" }} />
-          </div>
-        </div>
-
-        {/* Single card area */}
-        <div className="flex justify-center items-center" style={{ minHeight: "260px" }}>
-          <div
-            key={activeStep}
-            className="flex flex-col items-center text-center px-8 py-10 w-full max-w-[380px]"
-            style={{
-              backgroundColor: "hsl(30 25% 96%)",
-              boxShadow: "0 2px 14px -4px hsla(0,0%,0%,0.07)",
-              border: "1px solid hsl(30 15% 90%)",
-              ...cardStyle,
-            }}
-          >
             <div
-              className="w-11 h-11 flex items-center justify-center mb-4"
-              style={{ borderRadius: "50%", backgroundColor: "hsl(160 12% 91%)" }}
-            >
-              <StepIcon size={18} style={{ color: "hsl(160 15% 42%)" }} />
-            </div>
-            <span
-              className="font-cormorant text-[12px] font-semibold tracking-[0.1em] mb-1"
-              style={{ color: "hsl(160 15% 55%)" }}
-            >
-              STEP {step.number}
-            </span>
-            <h3
-              className="font-cormorant text-[18px] md:text-[19px] font-semibold mb-2"
-              style={{ color: "hsl(0 0% 18%)" }}
-            >
-              {step.title}
-            </h3>
-            <p
-              className="font-cormorant text-[13px] md:text-[14px] leading-relaxed max-w-[260px]"
-              style={{ color: "hsl(0 0% 48%)" }}
-            >
-              {step.description}
-            </p>
+              className="w-12 md:w-16 h-px"
+              style={{ backgroundColor: "hsl(160 12% 72%)" }}
+            />
+            <div
+              className="w-2 h-2"
+              style={{ backgroundColor: "hsl(160 15% 55%)" }}
+            />
+            <div
+              className="w-12 md:w-16 h-px"
+              style={{ backgroundColor: "hsl(160 12% 72%)" }}
+            />
           </div>
         </div>
 
-        {/* Progress dots */}
-        <div className="flex items-center justify-center gap-3 mt-10">
-          {steps.map((s, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className="flex flex-col items-center gap-1.5 transition-all duration-300 group"
-              aria-label={`Go to step ${s.number}`}
+        {/* Steps */}
+        <div className="flex flex-col gap-16 md:gap-24 lg:gap-32">
+          {steps.map((step, i) => (
+            <div
+              key={step.number}
+              ref={(el) => {
+                stepRefs.current[i] = el;
+              }}
             >
-              <span
-                className="font-cormorant text-[11px] font-semibold tracking-[0.08em] transition-colors duration-300"
-                style={{
-                  color: i === activeStep ? "hsl(160 15% 42%)" : "hsl(0 0% 72%)",
-                }}
-              >
-                {s.number}
-              </span>
-              <div
-                className="rounded-full transition-all duration-300"
-                style={{
-                  width: i === activeStep ? "10px" : "6px",
-                  height: i === activeStep ? "10px" : "6px",
-                  backgroundColor:
-                    i === activeStep ? "hsl(160 15% 45%)" : "hsl(0 0% 80%)",
-                }}
+              <StepRow
+                step={step}
+                index={i}
+                isVisible={visibleSteps.has(i)}
               />
-            </button>
+              {i < steps.length - 1 && (
+                <div className="flex justify-center mt-16 md:mt-24">
+                  <div
+                    className="w-px h-12 md:h-16"
+                    style={{ backgroundColor: "hsl(160 12% 80%)" }}
+                  />
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

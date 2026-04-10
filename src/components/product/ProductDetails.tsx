@@ -233,10 +233,10 @@ const ProductDetails = () => {
             Delivery Timelines
           </AccordionTrigger>
           <AccordionContent>
-            <p className="text-[13px] leading-[1.7] pb-2" style={{ color: "hsl(0 0% 45%)" }}>
-              Standard delivery within 15–20 business days. Express delivery available for select pincodes at ₹500.
-              International shipping available — please contact us for timelines.
-            </p>
+            <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
+              <p>• All orders from the website are delivered within 3–7 working days.</p>
+              <p>• Custom orders are delivered in 45–60 days.</p>
+            </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="disclaimer" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
@@ -247,10 +247,10 @@ const ProductDetails = () => {
             Disclaimer
           </AccordionTrigger>
           <AccordionContent>
-            <p className="text-[13px] leading-[1.7] pb-2" style={{ color: "hsl(0 0% 45%)" }}>
-              As each piece is handcrafted, slight variations in colour, embroidery, and texture are natural and add to the uniqueness of the garment.
-              Product images are representative; actual colours may vary slightly due to screen settings.
-            </p>
+            <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
+              <p>• Dry clean only.</p>
+              <p>• Product color may slightly vary due to photographic lighting sources or your screen settings.</p>
+            </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="additional" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
@@ -261,11 +261,10 @@ const ProductDetails = () => {
             Additional Information
           </AccordionTrigger>
           <AccordionContent>
-            <div className="text-[13px] leading-[1.7] pb-2 space-y-1" style={{ color: "hsl(0 0% 45%)" }}>
-              <p>Fabric: 100% Pure Silk</p>
-              <p>Care: Dry clean only</p>
-              <p>Storage: Cool, dry place away from direct sunlight</p>
-              <p>Ironing: Use a muslin cloth while pressing</p>
+            <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
+              <p>• For queries or assistance, please WhatsApp / WhatsApp Call on: <span className="font-semibold" style={{ color: "hsl(0 0% 20%)" }}>+91 9561557935</span></p>
+              <p>• Manufactured and marketed by Naira Flore</p>
+              <p>• Address: Flat 7, Veeraj Blossom, Karanyogi Nagar, Nashik – 422002</p>
             </div>
           </AccordionContent>
         </AccordionItem>

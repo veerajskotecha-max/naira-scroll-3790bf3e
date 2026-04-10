@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Minus, Plus, Phone, Mail, MessageCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
@@ -204,6 +205,17 @@ const ProductDetails = () => {
       >
         Inquire About Customization
       </button>
+
+      {/* Exchange & Return Policy link */}
+      <Link
+        to="/exchange-return-policy"
+        className="block w-full text-center mt-3 font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4 transition-colors duration-200"
+        style={{ color: "hsl(0 0% 45%)" }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(0 0% 20%)")}
+        onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 45%)")}
+      >
+        View Exchange &amp; Return Policy
+      </Link>
 
       {/* Divider */}
       <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />

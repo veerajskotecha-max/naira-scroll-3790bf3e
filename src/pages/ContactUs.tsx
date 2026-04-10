@@ -11,7 +11,7 @@ const contactCards = [
   {
     icon: MapPin,
     title: "Visit Us",
-    lines: ["Naira Design Studio", "123 Couture Lane, Bandra West", "Mumbai, Maharashtra 400050"],
+    lines: ["Naira Design Studio", "Flat 7, Veeraj Blossom, Karanyogi Nagar", "Nashik, Maharashtra 422002"],
   },
   {
     icon: Phone,

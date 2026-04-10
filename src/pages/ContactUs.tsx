@@ -16,7 +16,7 @@ const contactCards = [
   {
     icon: Phone,
     title: "Call or WhatsApp",
-    lines: ["+91 98765 43210", "Mon – Sat, 10 AM – 7 PM IST"],
+    lines: ["+91 9561557935", "Mon – Sat, 10 AM – 7 PM IST"],
   },
   {
     icon: Mail,
@@ -239,7 +239,7 @@ const ContactUs = () => {
             Chat with our team on WhatsApp for faster support.
           </p>
           <a
-            href="https://wa.me/919876543210"
+            href="https://wa.me/919561557935"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"

@@ -1,32 +1,39 @@
 
 
-## Plan: Create Exchange & Return Policy Page
+## Plan: Create FAQ Page & Integrate Links
 
-### Overview
-Create a new static page at `/exchange-return-policy` following the same layout pattern as the Privacy Policy page, then link it from the footer and product page.
+### 1. Create `src/pages/FAQs.tsx`
 
-### Files to Create
+New standalone page following the Exchange & Return Policy layout pattern:
 
-**1. `src/pages/ExchangeReturnPolicy.tsx`**
-- Follow the exact same structure as `PrivacyPolicy.tsx` (hero header with `#F4F1ED` background, 760px max-width content area, section dividers)
-- Hero: title "Exchange & Return Policy", subtext: "Please review our policy carefully before making a purchase."
-- Anchor navigation strip below hero linking to the 3 sections
-- Three content sections with headings, bullet points, and proper spacing:
-  - **Custom Orders (Made for You)** — non-returnable/non-exchangeable notice
-  - **Standard (Ready-to-Ship) Orders** — 48-hour defect return process with WhatsApp contact steps, resolution options
-  - **Not Eligible for Returns** — worn/washed/altered items, colour variations, handcraft irregularities
-- **Need Help? CTA** at bottom with a WhatsApp button linking to `https://wa.me/919561557935`
-- Footer component at the bottom
+- **Hero**: Title "Frequently Asked Questions", subtext "Everything you need to know before placing your order", `#F4F1ED` background
+- **Anchor nav strip**: Links to each of the 5 sections below
+- **Content**: 5 accordion sections using the existing `Accordion` UI component (`@/components/ui/accordion`), max-width 760px:
+  - **Orders & Customization** — How customization works, timelines (4–8 weeks), modification policy
+  - **Shipping & Delivery** — 3–7 days standard, 45–60 days custom, tracking info
+  - **Returns & Exchanges** — Summary of policy, custom non-returnable, 48-hour defect window
+  - **Product & Care** — Dry clean only, colour variations, handcraft irregularities
+  - **Contact & Support** — WhatsApp number, styling assistance availability
+- **Need Help? CTA** at bottom with WhatsApp button (same as Exchange & Return page)
+- Footer at bottom
 
-### Files to Edit
+### 2. Update `src/App.tsx`
 
-**2. `src/App.tsx`**
-- Import `ExchangeReturnPolicy` page
-- Add route: `<Route path="/exchange-return-policy" element={<ExchangeReturnPolicy />} />`
+- Import and add route: `/faqs` → `<FAQs />`
 
-**3. `src/components/Footer.tsx`**
-- Update `careLinks` array: change the existing "Return & Exchange Policy" entry's `to` from `/returns` to `/exchange-return-policy`
+### 3. Update `src/components/Footer.tsx`
 
-**4. `src/components/product/ProductDetails.tsx`**
-- Add a subtle "View Exchange & Return Policy" link below the CTA buttons (after the "Inquire About Customization" button), styled as an understated text link matching the page's typography
+- The `careLinks` array already has `{ label: "FAQs", to: "/faqs" }` — verify it points to `/faqs` (it does, no change needed)
+
+### 4. Update `src/pages/MadeForYou.tsx`
+
+- Replace the inline `<CustomFAQ />` component with a styled CTA block linking to `/faqs` (e.g. "Have questions? View our FAQs" with a link button), keeping the section visually consistent
+
+### 5. Update `src/components/product/ProductDetails.tsx`
+
+- Add a "View FAQs" link next to or below the existing "View Exchange & Return Policy" link
+
+### Files
+- **Create**: `src/pages/FAQs.tsx`
+- **Edit**: `src/App.tsx`, `src/pages/MadeForYou.tsx`, `src/components/product/ProductDetails.tsx`
 

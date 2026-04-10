@@ -3,7 +3,6 @@ import heroImage from "@/assets/customize-hero.jpg";
 import floralPattern from "@/assets/background_image_flora.webp";
 import ScrollSteps from "@/components/ScrollSteps";
 import CustomizationStories from "@/components/CustomizationStories";
-import CustomFAQ from "@/components/CustomFAQ";
 import Footer from "@/components/Footer";
 
 const MadeForYou = () => {
@@ -141,8 +140,36 @@ const MadeForYou = () => {
       {/* Section 4 — Customer Stories */}
       <CustomizationStories />
 
-      {/* Section 4 — FAQ (plain bg, handled inside component) */}
-      <CustomFAQ />
+      {/* Section 5 — FAQ CTA */}
+      <section
+        className="w-full py-16 md:py-20 lg:py-24"
+        style={{ backgroundColor: "hsl(30 25% 96%)" }}
+      >
+        <div className="max-w-[600px] mx-auto px-6 text-center">
+          <h2
+            className="font-cormorant text-[26px] md:text-[34px] lg:text-[42px] font-medium leading-tight mb-4"
+            style={{ color: "hsl(0 0% 12%)" }}
+          >
+            Have Questions?
+          </h2>
+          <p
+            className="font-cormorant text-[14px] md:text-[16px] leading-relaxed mb-8"
+            style={{ color: "hsl(0 0% 40%)" }}
+          >
+            Find answers about customization, shipping, returns, and more in our comprehensive FAQ section.
+          </p>
+          <Link
+            to="/faqs"
+            className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{
+              backgroundColor: "hsl(0 0% 12%)",
+              color: "hsl(0 0% 100%)",
+            }}
+          >
+            View FAQs
+          </Link>
+        </div>
+      </section>
 
       <Footer />
     </div>

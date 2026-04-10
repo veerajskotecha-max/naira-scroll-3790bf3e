@@ -14,7 +14,7 @@ const careLinks = [
   { label: "Track Your Order", to: "/track-order" },
   { label: "Shipping & Delivery", to: "/shipping" },
   { label: "Return & Exchange Policy", to: "/exchange-return-policy" },
-  { label: "Size Guide", to: "/size-guide" },
+  
   { label: "FAQs", to: "/faqs" },
 ];
 

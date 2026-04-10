@@ -1,38 +1,32 @@
 
 
-## Plan: Update Product Page Accordion Content
+## Plan: Create Exchange & Return Policy Page
 
-**File to edit:** `src/components/product/ProductDetails.tsx` (lines 228–275)
+### Overview
+Create a new static page at `/exchange-return-policy` following the same layout pattern as the Privacy Policy page, then link it from the footer and product page.
 
-### Changes
+### Files to Create
 
-Replace the content of three accordion sections while keeping "Product Information" untouched:
+**1. `src/pages/ExchangeReturnPolicy.tsx`**
+- Follow the exact same structure as `PrivacyPolicy.tsx` (hero header with `#F4F1ED` background, 760px max-width content area, section dividers)
+- Hero: title "Exchange & Return Policy", subtext: "Please review our policy carefully before making a purchase."
+- Anchor navigation strip below hero linking to the 3 sections
+- Three content sections with headings, bullet points, and proper spacing:
+  - **Custom Orders (Made for You)** — non-returnable/non-exchangeable notice
+  - **Standard (Ready-to-Ship) Orders** — 48-hour defect return process with WhatsApp contact steps, resolution options
+  - **Not Eligible for Returns** — worn/washed/altered items, colour variations, handcraft irregularities
+- **Need Help? CTA** at bottom with a WhatsApp button linking to `https://wa.me/919561557935`
+- Footer component at the bottom
 
-**1. Delivery Timelines (lines 235–239)**
-Replace with two bullet points:
-- All orders from the website are delivered within 3–7 working days.
-- Custom orders are delivered in 45–60 days.
+### Files to Edit
 
-Use a `space-y-1.5` container with individual `<p>` tags prefixed by bullet characters for clean line spacing.
+**2. `src/App.tsx`**
+- Import `ExchangeReturnPolicy` page
+- Add route: `<Route path="/exchange-return-policy" element={<ExchangeReturnPolicy />} />`
 
-**2. Disclaimer (lines 249–253)**
-Replace with two bullet points:
-- Dry clean only.
-- Product color may slightly vary due to photographic lighting sources or your screen settings.
+**3. `src/components/Footer.tsx`**
+- Update `careLinks` array: change the existing "Return & Exchange Policy" entry's `to` from `/returns` to `/exchange-return-policy`
 
-Same formatting pattern as above.
-
-**3. Additional Information (lines 263–269)**
-Replace with three lines:
-- For queries or assistance, please WhatsApp / WhatsApp Call on: **+91 9561557935** (phone number in semi-bold with a subtle accent color, e.g. `font-semibold` + `hsl(0 0% 20%)`)
-- Manufactured and marketed by Naira Flore
-- Address: Flat 7, Veeraj Blossom, Karanyogi Nagar, Nashik – 422002
-
-Same `space-y-1.5` container with `<p>` tags for proper line spacing.
-
-### What stays the same
-- Product Information accordion — unchanged
-- All typography sizes, tracking, accordion trigger styles
-- Expand/collapse behavior
-- Mobile responsiveness (already handled by existing layout)
+**4. `src/components/product/ProductDetails.tsx`**
+- Add a subtle "View Exchange & Return Policy" link below the CTA buttons (after the "Inquire About Customization" button), styled as an understated text link matching the page's typography
 

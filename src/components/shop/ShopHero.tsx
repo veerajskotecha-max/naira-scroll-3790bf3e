@@ -31,6 +31,7 @@ const ShopHero = ({
 }: ShopHeroProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -46,12 +47,60 @@ const ShopHero = ({
     return () => obs.disconnect();
   }, []);
 
+  // Subtle parallax on background layers
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setScrollY(window.scrollY));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <section
       className="relative w-full overflow-hidden"
-      style={{ backgroundColor: background }}
+      style={{
+        background: `linear-gradient(135deg, hsl(33 40% 95%) 0%, ${background} 55%, hsl(16 35% 86%) 100%)`,
+      }}
       aria-label="Shop hero"
     >
+      {/* Layered floral pattern (very subtle) */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url(${floralPattern})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.06,
+          mixBlendMode: "multiply",
+          transform: `translateY(${scrollY * 0.08}px)`,
+          willChange: "transform",
+        }}
+      />
+
+      {/* Soft warm glow accent */}
+      <div
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{
+          top: "10%",
+          right: "8%",
+          width: "520px",
+          height: "520px",
+          background:
+            "radial-gradient(circle, hsla(16, 60%, 80%, 0.45) 0%, hsla(16, 60%, 80%, 0) 70%)",
+          filter: "blur(20px)",
+          transform: `translateY(${scrollY * -0.04}px)`,
+          willChange: "transform",
+        }}
+      />
+
       <div
         ref={ref}
         className="relative max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 items-stretch"

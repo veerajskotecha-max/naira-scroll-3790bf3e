@@ -1,10 +1,12 @@
-import { Shirt, RotateCcw, Hand, ShieldCheck } from "lucide-react";
+import { Truck, Hand, MessageCircle, Sparkles, ShieldCheck, Scissors } from "lucide-react";
 
 const items = [
-  { icon: Shirt, label: "Customised Dresses" },
-  { icon: RotateCcw, label: "Easy Returns" },
-  { icon: Hand, label: "Authentic Handwork" },
+  { icon: Truck, label: "Pan India Shipping" },
+  { icon: Hand, label: "Authentic Karigar Handwork" },
+  { icon: MessageCircle, label: "Free Design Consultation" },
+  { icon: Sparkles, label: "Premium Quality Fabrics" },
   { icon: ShieldCheck, label: "Secure Payments" },
+  { icon: Scissors, label: "5,000+ Custom Pieces Made" },
 ];
 
 const ItemRow = () => (

@@ -110,9 +110,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             />
           </button>
 
-          {/* Add to Cart overlay */}
+          {/* Add to Cart overlay (desktop hover only) */}
           <div
-            className="absolute inset-x-0 bottom-0 z-20 flex items-end justify-center pb-4 transition-all duration-300 ease-out"
+            className="hidden md:flex absolute inset-x-0 bottom-0 z-20 items-end justify-center pb-4 transition-all duration-300 ease-out"
             style={{
               opacity: hovered ? 1 : 0,
               transform: hovered ? "translateY(0)" : "translateY(8px)",
@@ -127,7 +127,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Add to cart logic here
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")
@@ -171,6 +170,24 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           >
             FROM <span className="font-bold">{product.price}</span>
           </p>
+
+          {/* Mobile-only inline Add to Cart */}
+          <button
+            className="md:hidden inline-flex items-center justify-center gap-1.5 mt-3 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-all duration-200 active:scale-[0.97]"
+            style={{
+              backgroundColor: "transparent",
+              color: "hsl(186 35% 28%)",
+              border: "1px solid hsl(186 35% 28% / 0.55)",
+              borderRadius: "2px",
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <ShoppingBag size={12} strokeWidth={1.5} />
+            Add to Cart
+          </button>
         </div>
       </Link>
     </div>

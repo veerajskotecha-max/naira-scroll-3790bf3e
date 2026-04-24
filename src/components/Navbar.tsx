@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Search, Heart, ShoppingBag, Menu } from "lucide-react";
 import MobileMenu from "./MobileMenu";
+import nairaLogo from "@/assets/naira-logo.svg";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 
@@ -61,7 +62,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           {/* Center logo */}
           <Link to="/" className="flex items-center justify-center">
             <img
-              src="/logo.png"
+              src={nairaLogo}
               alt="NAIRA"
               loading="eager"
               className="w-auto object-contain block h-8 sm:h-10 md:h-12 lg:h-14"

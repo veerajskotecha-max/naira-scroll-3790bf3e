@@ -138,11 +138,12 @@ const ShopHero = ({
             visible ? "opacity-100" : "opacity-0"
           }`}
         >
-          <div className="relative w-full h-[280px] md:h-[380px] lg:h-[480px] overflow-hidden group">
+          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] overflow-hidden group">
             <img
               src={image}
               alt={imageAlt}
-              className="w-full h-full object-cover object-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+              className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+              style={{ objectPosition: "center top" }}
               loading="eager"
             />
             {/* Soft overlay for contrast on small screens */}

@@ -35,9 +35,9 @@ const ProductDetail = () => {
 
       {/* Main Product Section */}
       <div className="max-w-[1400px] mx-auto md:px-6 pb-16 md:pb-24">
-        <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="flex flex-col lg:grid lg:items-stretch lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {/* Desktop gallery */}
-          <div className="hidden md:block">
+          <div className="hidden md:block h-full">
             <ProductGallery />
           </div>
 

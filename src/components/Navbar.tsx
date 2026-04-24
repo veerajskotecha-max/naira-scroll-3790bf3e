@@ -60,12 +60,12 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           </div>
 
           {/* Center logo */}
-          <Link to="/" className="flex items-center justify-center">
+          <Link to="/" className="flex items-center justify-center h-full">
             <img
               src={nairaLogo}
               alt="NAIRA"
               loading="eager"
-              className="w-auto object-contain block h-8 sm:h-10 md:h-12 lg:h-14"
+              className="object-contain block h-auto w-[80px] sm:w-[90px] md:w-[100px] lg:w-[130px] xl:w-[140px] max-h-[70%]"
             />
           </Link>
 

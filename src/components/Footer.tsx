@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import nairaLogo from "@/assets/naira-logo-footer.svg";
 
 const shopLinks = [
   { label: "Dresses", to: "/shop?category=dresses" },
@@ -94,12 +95,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-8 lg:gap-12 pb-12 md:pb-16">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <h3
-              className="font-cormorant text-[24px] md:text-[28px] font-semibold tracking-[0.06em] mb-4"
-              style={{ color: CREAM }}
-            >
-              NAIRA
-            </h3>
+            <img
+              src={nairaLogo}
+              alt="NAIRA"
+              className="h-10 md:h-12 w-auto mb-4 brightness-0 invert"
+            />
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"
               style={{ color: CREAM_MUTED }}

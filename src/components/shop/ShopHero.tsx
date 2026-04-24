@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import defaultHeroImage from "@/assets/hero-model-2.png";
+import floralPattern from "@/assets/floral-pattern-bg.webp";
 
 export interface ShopHeroProps {
   eyebrow?: string;
@@ -30,6 +31,7 @@ const ShopHero = ({
 }: ShopHeroProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -45,12 +47,60 @@ const ShopHero = ({
     return () => obs.disconnect();
   }, []);
 
+  // Subtle parallax on background layers
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setScrollY(window.scrollY));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <section
       className="relative w-full overflow-hidden"
-      style={{ backgroundColor: background }}
+      style={{
+        background: `linear-gradient(135deg, hsl(33 40% 95%) 0%, ${background} 55%, hsl(16 35% 86%) 100%)`,
+      }}
       aria-label="Shop hero"
     >
+      {/* Layered floral pattern (very subtle) */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `url(${floralPattern})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.06,
+          mixBlendMode: "multiply",
+          transform: `translateY(${scrollY * 0.08}px)`,
+          willChange: "transform",
+        }}
+      />
+
+      {/* Soft warm glow accent */}
+      <div
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{
+          top: "10%",
+          right: "8%",
+          width: "520px",
+          height: "520px",
+          background:
+            "radial-gradient(circle, hsla(16, 60%, 80%, 0.45) 0%, hsla(16, 60%, 80%, 0) 70%)",
+          filter: "blur(20px)",
+          transform: `translateY(${scrollY * -0.04}px)`,
+          willChange: "transform",
+        }}
+      />
+
       <div
         ref={ref}
         className="relative max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 items-stretch"
@@ -134,24 +184,52 @@ const ShopHero = ({
 
         {/* ── Image side ── */}
         <div
-          className={`order-1 lg:order-2 relative overflow-hidden transition-all duration-1000 ease-out ${
-            visible ? "opacity-100" : "opacity-0"
+          className={`order-1 lg:order-2 relative transition-all duration-1000 ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
           }`}
         >
-          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] overflow-hidden group">
+          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] group">
+            {/* Radial glow behind subject */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 55% 70% at 50% 45%, hsla(33, 50%, 92%, 0.85) 0%, hsla(33, 50%, 92%, 0) 70%)",
+              }}
+            />
             <img
               src={image}
               alt={imageAlt}
-              className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-              style={{ objectPosition: "center top" }}
+              className={`relative w-full h-full object-cover transition-transform ease-out group-hover:scale-[1.03] ${
+                visible ? "scale-100" : "scale-[1.02]"
+              }`}
+              style={{
+                objectPosition: "center top",
+                filter: "drop-shadow(0 24px 30px hsla(20, 30%, 25%, 0.18))",
+                transitionDuration: "1400ms",
+              }}
               loading="eager"
             />
-            {/* Soft overlay for contrast on small screens */}
+            {/* Grounding shadow under model */}
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+              style={{
+                bottom: "4%",
+                width: "62%",
+                height: "28px",
+                background:
+                  "radial-gradient(ellipse at center, hsla(20, 30%, 18%, 0.28) 0%, hsla(20, 30%, 18%, 0) 70%)",
+                filter: "blur(6px)",
+              }}
+            />
+            {/* Mobile contrast overlay */}
             <div
               className="absolute inset-0 lg:hidden pointer-events-none"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.18) 100%)",
+                  "linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.16) 100%)",
               }}
             />
           </div>

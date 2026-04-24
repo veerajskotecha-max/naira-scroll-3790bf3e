@@ -1,20 +1,24 @@
 
 
-## Plan: Replace Navbar Logo with Uploaded SVG
+## Plan: Update Trust Strip Items
 
-Replace the current `/logo.png` reference in the navbar with the newly uploaded `naira_logo.svg` file.
+Replace the current 4 items in the homepage Trust Strip marquee with a new set of 6 items (removing "Easy Returns" and "Customised Dresses", keeping "Authentic Handwork" reframed, and adding new ones).
 
-### Steps
+### Edit `src/components/TrustStrip.tsx`
 
-1. **Copy the uploaded SVG into the project**
-   - Copy `user-uploads://naira_logo.svg` → `src/assets/naira-logo.svg`
+Replace the `items` array with:
 
-2. **Edit `src/components/Navbar.tsx`**
-   - Import the SVG as an ES6 module: `import nairaLogo from "@/assets/naira-logo.svg";`
-   - Replace `src="/logo.png"` with `src={nairaLogo}` on the centered logo `<img>` tag
-   - Keep existing responsive height classes (`h-8 sm:h-10 md:h-12 lg:h-14`) and `alt="NAIRA"` unchanged
+| Label | Icon (lucide-react) |
+|---|---|
+| Pan India Shipping | `Truck` |
+| Authentic Karigar Handwork | `Hand` |
+| Free Design Consultation | `MessageCircle` |
+| Premium Quality Fabrics | `Sparkles` |
+| Secure Payments | `ShieldCheck` |
+| 5,000+ Custom Pieces Made | `Scissors` |
+
+Update the lucide-react import line accordingly. All styling, marquee animation (25s L→R loop), spacing, and triple-row duplication remain unchanged.
 
 ### Files
-- **Create**: `src/assets/naira-logo.svg` (copied from upload)
-- **Edit**: `src/components/Navbar.tsx`
+- **Edit**: `src/components/TrustStrip.tsx`
 

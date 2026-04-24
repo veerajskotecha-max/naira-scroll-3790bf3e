@@ -101,21 +101,20 @@ const ProductGallery = () => {
   // Desktop: two large images, full viewport height, sticky
   return (
     <div className="relative w-full h-full min-h-full">
-      <div className="grid grid-cols-2 gap-[4px] h-full min-h-full">
-        <div className="overflow-hidden relative h-full min-h-full" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
-          <img
-            src={images[0]}
-            alt="Midnight Silk Drape Saree - Front"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
-          />
-        </div>
-        <div className="overflow-hidden relative h-full min-h-full" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
-          <img
-            src={images[1]}
-            alt="Midnight Silk Drape Saree - Detail"
-            className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
-          />
-        </div>
+      <div className="grid grid-cols-2 grid-rows-2 gap-[4px] h-full min-h-full">
+        {images.slice(0, 4).map((img, i) => (
+          <div
+            key={i}
+            className="overflow-hidden relative min-h-0"
+            style={{ backgroundColor: "hsl(0 0% 96%)", height: "100%" }}
+          >
+            <img
+              src={img}
+              alt={`Midnight Silk Drape Saree - View ${i + 1}`}
+              className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            />
+          </div>
+        ))}
       </div>
       {WishlistBtn}
     </div>

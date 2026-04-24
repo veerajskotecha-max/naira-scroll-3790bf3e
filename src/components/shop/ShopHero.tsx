@@ -184,24 +184,52 @@ const ShopHero = ({
 
         {/* ── Image side ── */}
         <div
-          className={`order-1 lg:order-2 relative overflow-hidden transition-all duration-1000 ease-out ${
-            visible ? "opacity-100" : "opacity-0"
+          className={`order-1 lg:order-2 relative transition-all duration-1000 ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
           }`}
         >
-          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] overflow-hidden group">
+          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] group">
+            {/* Radial glow behind subject */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 55% 70% at 50% 45%, hsla(33, 50%, 92%, 0.85) 0%, hsla(33, 50%, 92%, 0) 70%)",
+              }}
+            />
             <img
               src={image}
               alt={imageAlt}
-              className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-              style={{ objectPosition: "center top" }}
+              className={`relative w-full h-full object-cover transition-transform ease-out group-hover:scale-[1.03] ${
+                visible ? "scale-100" : "scale-[1.02]"
+              }`}
+              style={{
+                objectPosition: "center top",
+                filter: "drop-shadow(0 24px 30px hsla(20, 30%, 25%, 0.18))",
+                transitionDuration: "1400ms",
+              }}
               loading="eager"
             />
-            {/* Soft overlay for contrast on small screens */}
+            {/* Grounding shadow under model */}
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+              style={{
+                bottom: "4%",
+                width: "62%",
+                height: "28px",
+                background:
+                  "radial-gradient(ellipse at center, hsla(20, 30%, 18%, 0.28) 0%, hsla(20, 30%, 18%, 0) 70%)",
+                filter: "blur(6px)",
+              }}
+            />
+            {/* Mobile contrast overlay */}
             <div
               className="absolute inset-0 lg:hidden pointer-events-none"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.18) 100%)",
+                  "linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.16) 100%)",
               }}
             />
           </div>

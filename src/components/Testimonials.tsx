@@ -10,6 +10,7 @@ import blLehenga from "@/assets/testimonials-bl-lehenga.webp";
 import t1Zardozi from "@/assets/testimonials-t1-zardozi.webp";
 import mrBridal from "@/assets/testimonials-mr-bridal.webp";
 import tallPink from "@/assets/testimonials-tall-pink.webp";
+import botEvening from "@/assets/testimonials-bot-evening.webp";
 
 type Tile = {
   src: string;
@@ -38,7 +39,7 @@ const tiles: Tile[] = [
   { src: mrBridal, outfit: "Bridal Couture",        by: "Riya · Delhi",        area: "mr",  quote: "Exactly how I imagined.", quoteAlign: "right" },
   { src: tallPink, outfit: "Sage Drape Saree",      by: "Sarah · Dubai",       area: "tall" },
   { src: blLehenga, outfit: "Soft Pastel Drape",     by: "Naina · Jaipur",      area: "bl" },
-  { src: festive2, outfit: "Evening Edit",          by: "Aanya · Hyderabad",   area: "bot", quote: "Felt like art.", quoteAlign: "left" },
+  { src: botEvening, outfit: "Evening Edit",          by: "Aanya · Hyderabad",   area: "bot", quote: "Felt like art.", quoteAlign: "left" },
 ];
 
 const Testimonials = () => {

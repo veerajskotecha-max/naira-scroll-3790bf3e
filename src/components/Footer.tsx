@@ -98,7 +98,7 @@ const Footer = () => {
             <img
               src={nairaLogo}
               alt="NAIRA"
-              className="h-10 md:h-12 w-auto mb-4 brightness-0 invert"
+              className="w-[100px] md:w-[120px] lg:w-[150px] h-auto max-w-full mb-4 brightness-0 invert"
             />
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"

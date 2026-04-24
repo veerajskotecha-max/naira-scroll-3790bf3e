@@ -6,6 +6,7 @@ import festive2 from "@/assets/carousel-festive-2.jpg";
 import fusion1 from "@/assets/carousel-fusion-1.jpg";
 import fusion2 from "@/assets/carousel-fusion-2.jpg";
 import centerNaira from "@/assets/testimonials-center-naira.webp";
+import blLehenga from "@/assets/testimonials-bl-lehenga.webp";
 
 type Tile = {
   src: string;
@@ -33,7 +34,7 @@ const tiles: Tile[] = [
   { src: festive2, outfit: "Festive Edit",          by: "Meera · Pune",        area: "t2" },
   { src: bride2,   outfit: "Bridal Couture",        by: "Riya · Delhi",        area: "mr",  quote: "Exactly how I imagined.", quoteAlign: "right" },
   { src: fusion1,  outfit: "Sage Drape Saree",      by: "Sarah · Dubai",       area: "tall" },
-  { src: festive1, outfit: "Soft Pastel Drape",     by: "Naina · Jaipur",      area: "bl" },
+  { src: blLehenga, outfit: "Soft Pastel Drape",     by: "Naina · Jaipur",      area: "bl" },
   { src: festive2, outfit: "Evening Edit",          by: "Aanya · Hyderabad",   area: "bot", quote: "Felt like art.", quoteAlign: "left" },
 ];
 

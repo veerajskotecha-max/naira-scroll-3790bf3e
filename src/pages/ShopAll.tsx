@@ -620,7 +620,7 @@ const ShopAll = () => {
               </div>
             ) : (
               <div
-                className={`grid md:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 transition-opacity duration-300 ${
+                className={`grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 transition-opacity duration-300 ${
                   mobileLayout === "list" ? "grid-cols-1 gap-y-8" : "grid-cols-2 gap-y-10"
                 } ${
                   gridCols === 4

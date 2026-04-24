@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import defaultHeroImage from "@/assets/hero-model-2.png";
+import floralPattern from "@/assets/floral-pattern-bg.webp";
 
 export interface ShopHeroProps {
   eyebrow?: string;

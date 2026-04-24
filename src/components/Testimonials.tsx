@@ -5,6 +5,7 @@ import festive1 from "@/assets/carousel-festive-1.jpg";
 import festive2 from "@/assets/carousel-festive-2.jpg";
 import fusion1 from "@/assets/carousel-fusion-1.jpg";
 import fusion2 from "@/assets/carousel-fusion-2.jpg";
+import centerNaira from "@/assets/testimonials-center-naira.webp";
 
 type Tile = {
   src: string;

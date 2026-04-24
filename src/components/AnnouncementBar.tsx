@@ -11,7 +11,7 @@ const AnnouncementBar = () => {
           {[...Array(4)].map((_, i) => (
             <span
               key={i}
-              className="font-cormorant text-[11px] md:text-[12px] lg:text-[13px] font-medium uppercase tracking-[0.18em] px-8"
+              className="font-sans text-[11px] md:text-[12px] lg:text-[13px] font-medium uppercase tracking-[0.18em] px-8"
               style={{ color: "#FFFFFF" }}
             >
               {text}

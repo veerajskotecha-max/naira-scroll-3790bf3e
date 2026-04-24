@@ -1,24 +1,63 @@
 import { useEffect, useRef, useState } from "react";
-import { Star } from "lucide-react";
+import bride1 from "@/assets/carousel-bride-1.jpg";
+import bride2 from "@/assets/carousel-bride-2.jpg";
+import festive1 from "@/assets/carousel-festive-1.jpg";
+import festive2 from "@/assets/carousel-festive-2.jpg";
+import fusion1 from "@/assets/carousel-fusion-1.jpg";
+import fusion2 from "@/assets/carousel-fusion-2.jpg";
 
-const testimonials = [
+type Tile = {
+  src: string;
+  outfit: string;
+  by: string;
+  // Grid placement (desktop only) — 6-col grid, 6 rows of ~80px
+  className: string;
+  quote?: string; // floating editorial caption
+  quotePos?: string; // absolute positioning classes for the caption
+};
+
+const tiles: Tile[] = [
   {
-    quote:
-      "The quality is unmatched. I felt like a queen wearing the Midnight Silk Saree.",
-    name: "Ananya S.",
-    location: "Mumbai",
+    src: bride1,
+    outfit: "Ivory Zardozi Lehenga",
+    by: "Ananya · Mumbai",
+    className: "lg:col-span-2 lg:row-span-4",
+    quote: "Perfect fit.",
+    quotePos: "lg:top-6 lg:-left-2 lg:rotate-[-4deg]",
   },
   {
-    quote:
-      "Finally, a brand that understands fusion wear without compromising on elegance.",
-    name: "Priya M.",
-    location: "London",
+    src: festive1,
+    outfit: "Blush Anarkali",
+    by: "Priya · London",
+    className: "lg:col-span-2 lg:row-span-3 lg:col-start-3",
   },
   {
-    quote:
-      "Customer service was exceptional, and the fit was perfect straight out of the box.",
-    name: "Sarah K.",
-    location: "Dubai",
+    src: fusion1,
+    outfit: "Sage Drape Saree",
+    by: "Sarah · Dubai",
+    className: "lg:col-span-2 lg:row-span-4 lg:col-start-5",
+    quote: "Exactly how I imagined.",
+    quotePos: "lg:top-10 lg:-right-2 lg:rotate-[3deg]",
+  },
+  {
+    src: festive2,
+    outfit: "Festive Edit",
+    by: "Meera · Pune",
+    className: "lg:col-span-2 lg:row-span-3 lg:col-start-3 lg:row-start-4",
+  },
+  {
+    src: bride2,
+    outfit: "Bridal Couture",
+    by: "Riya · Delhi",
+    className: "lg:col-span-2 lg:row-span-2 lg:col-start-1 lg:row-start-5",
+    quote: "Felt like art.",
+    quotePos: "lg:bottom-2 lg:left-4 lg:rotate-[-2deg]",
+  },
+  {
+    src: fusion2,
+    outfit: "Modern Fusion",
+    by: "Tanvi · Bangalore",
+    className: "lg:col-span-2 lg:row-span-2 lg:col-start-5 lg:row-start-5",
   },
 ];
 
@@ -43,75 +82,156 @@ const Testimonials = () => {
   return (
     <section
       ref={sectionRef}
-      className="w-full py-[70px] md:py-[80px] lg:py-[100px]"
-      style={{ backgroundColor: "hsl(0 0% 97%)" }}
+      className="w-full py-[70px] md:py-[90px] lg:py-[110px] overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(180deg, hsl(36 30% 96%) 0%, hsl(140 14% 92%) 100%)",
+      }}
     >
       <div className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
-        {/* Heading */}
+        {/* Eyebrow */}
         <div
-          className={`text-center mb-10 md:mb-14 transition-all ease-out ${
-            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+          className={`text-center mb-6 md:mb-8 transition-all ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
           style={{ transitionDuration: "0.6s" }}
         >
-          <h2
-            className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium italic"
-            style={{ color: "hsl(0 0% 18%)" }}
+          <p
+            className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em]"
+            style={{ color: "hsl(186 35% 28%)" }}
           >
-            Loved by Women Everywhere
-          </h2>
+            Worn by Her · Loved Forever
+          </p>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {testimonials.map((t, i) => (
+        {/* Collage */}
+        <div className="relative">
+          {/* Mobile / tablet: 2-col masonry-ish grid. Desktop: 6-col asymmetric grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-6 auto-rows-[110px] sm:auto-rows-[140px] lg:auto-rows-[80px] gap-3 md:gap-4 lg:gap-5">
+            {tiles.map((tile, i) => (
+              <div
+                key={i}
+                className={`group relative overflow-hidden cursor-pointer transition-all ease-out ${
+                  i === 1 ? "row-span-2" : ""
+                } ${i === 4 ? "row-span-2" : ""} ${tile.className} ${
+                  visible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-6"
+                }`}
+                style={{
+                  transitionDuration: "0.7s",
+                  transitionDelay: visible ? `${i * 0.08 + 0.1}s` : "0s",
+                  boxShadow: "0 6px 24px -10px hsla(0,0%,0%,0.18)",
+                }}
+              >
+                <img
+                  src={tile.src}
+                  alt={tile.outfit}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.05]"
+                />
+
+                {/* Soft gradient on hover */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background:
+                      "linear-gradient(to top, hsla(0,0%,0%,0.55) 0%, hsla(0,0%,0%,0.1) 50%, transparent 100%)",
+                  }}
+                />
+
+                {/* Hover info panel */}
+                <div className="absolute inset-x-0 bottom-0 p-3 md:p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  <p
+                    className="font-cormorant text-[15px] md:text-[17px] italic leading-tight"
+                    style={{ color: "hsl(0 0% 100%)" }}
+                  >
+                    {tile.outfit}
+                  </p>
+                  <p
+                    className="text-[10px] md:text-[11px] uppercase tracking-[0.15em] mt-1"
+                    style={{ color: "hsla(0,0%,100%,0.85)" }}
+                  >
+                    {tile.by} · View Story
+                  </p>
+                </div>
+
+                {/* Floating editorial caption (desktop only) */}
+                {tile.quote && (
+                  <span
+                    className={`hidden lg:block absolute font-cormorant italic text-[15px] xl:text-[17px] pointer-events-none z-20 ${tile.quotePos}`}
+                    style={{
+                      color: "hsl(186 35% 22%)",
+                      textShadow: "0 1px 8px hsla(36,30%,96%,0.9)",
+                    }}
+                  >
+                    "{tile.quote}"
+                  </span>
+                )}
+              </div>
+            ))}
+
+            {/* Center overlay text — desktop: absolutely centered on grid */}
             <div
-              key={i}
-              className={`flex flex-col items-center text-center rounded-xl px-7 py-9 md:px-8 md:py-10 cursor-default transition-all ease-out hover:-translate-y-1 hover:shadow-lg ${
+              className={`hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex-col items-center text-center px-8 py-7 max-w-[420px] transition-all ease-out ${
                 visible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-6"
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-95"
               }`}
               style={{
-                backgroundColor: "hsl(0 0% 100%)",
-                boxShadow: "0 2px 14px -4px hsla(0,0%,0%,0.07)",
-                transitionDuration: "0.5s",
-                transitionDelay: visible ? `${i * 0.12 + 0.15}s` : "0s",
+                transitionDuration: "0.9s",
+                transitionDelay: "0.5s",
+                backgroundColor: "hsla(36, 30%, 96%, 0.82)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
+                boxShadow: "0 10px 40px -12px hsla(0,0%,0%,0.18)",
               }}
             >
-              {/* Stars */}
-              <div className="flex gap-1 mb-5">
-                {Array.from({ length: 5 }).map((_, s) => (
-                  <Star
-                    key={s}
-                    size={16}
-                    fill="hsl(40 90% 55%)"
-                    style={{ color: "hsl(40 90% 55%)" }}
-                  />
-                ))}
-              </div>
-
-              <p
-                className="font-cormorant text-[15px] md:text-[16px] italic leading-relaxed mb-6"
-                style={{ color: "hsl(0 0% 30%)" }}
+              <div
+                className="w-10 h-px mb-4"
+                style={{ backgroundColor: "hsl(186 35% 28%)" }}
+              />
+              <h2
+                className="font-cormorant text-[34px] xl:text-[44px] font-medium leading-[1.1] mb-3"
+                style={{ color: "hsl(0 0% 16%)" }}
               >
-                "{t.quote}"
-              </p>
-
+                Loved by Women{" "}
+                <span className="italic" style={{ color: "hsl(186 35% 28%)" }}>
+                  Everywhere
+                </span>
+              </h2>
               <p
-                className="font-cormorant text-[15px] font-semibold"
-                style={{ color: "hsl(0 0% 18%)" }}
+                className="font-cormorant text-[15px] xl:text-[16px] leading-relaxed"
+                style={{ color: "hsl(0 0% 35%)" }}
               >
-                {t.name}
-              </p>
-              <p
-                className="font-cormorant text-[13px] mt-1"
-                style={{ color: "hsl(0 0% 50%)" }}
-              >
-                {t.location}
+                Real women. Real stories. Each piece worn, lived, and cherished.
               </p>
             </div>
-          ))}
+          </div>
+
+          {/* Mobile/tablet center text block (separate, on top) */}
+          <div
+            className={`lg:hidden mt-8 text-center max-w-[480px] mx-auto transition-all ease-out ${
+              visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+            style={{ transitionDuration: "0.6s", transitionDelay: "0.3s" }}
+          >
+            <h2
+              className="font-cormorant text-[28px] md:text-[36px] font-medium leading-[1.15] mb-3"
+              style={{ color: "hsl(0 0% 16%)" }}
+            >
+              Loved by Women{" "}
+              <span className="italic" style={{ color: "hsl(186 35% 28%)" }}>
+                Everywhere
+              </span>
+            </h2>
+            <p
+              className="font-cormorant text-[15px] md:text-[16px] leading-relaxed italic"
+              style={{ color: "hsl(0 0% 40%)" }}
+            >
+              "Perfect fit." · "Exactly how I imagined." · "Felt like art."
+            </p>
+          </div>
         </div>
       </div>
     </section>

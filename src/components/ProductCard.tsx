@@ -110,32 +110,38 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             />
           </button>
 
-          {/* Add to Cart overlay (desktop hover only) */}
+          {/* Add to Cart pill (tablet + desktop hover) */}
           <div
-            className="hidden md:flex absolute inset-x-0 bottom-0 z-20 items-end justify-center pb-4 transition-all duration-300 ease-out"
+            className="hidden md:flex absolute inset-x-0 bottom-0 z-20 items-end justify-center pb-5 transition-all duration-300 ease-out pointer-events-none"
             style={{
               opacity: hovered ? 1 : 0,
-              transform: hovered ? "translateY(0)" : "translateY(8px)",
+              transform: hovered ? "translateY(0)" : "translateY(6px)",
             }}
           >
             <button
-              className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
+              className="pointer-events-auto inline-flex items-center gap-2 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-200"
               style={{
-                backgroundColor: "hsl(186 35% 28%)",
-                color: "hsl(0 0% 100%)",
+                backgroundColor: "hsla(0, 0%, 100%, 0.92)",
+                color: "hsl(186 35% 22%)",
+                border: "1px solid hsla(0, 0%, 100%, 0.9)",
+                borderRadius: "9999px",
+                boxShadow: "0 2px 10px hsla(0, 0%, 0%, 0.08)",
+                backdropFilter: "blur(6px)",
               }}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "hsl(186 35% 22%)";
+                e.currentTarget.style.color = "hsl(0 0% 100%)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "hsla(0, 0%, 100%, 0.92)";
+                e.currentTarget.style.color = "hsl(186 35% 22%)";
+              }}
             >
-              <ShoppingBag size={14} />
+              <ShoppingBag size={12} strokeWidth={1.75} />
               Add to Cart
             </button>
           </div>

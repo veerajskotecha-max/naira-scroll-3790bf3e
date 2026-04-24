@@ -1,6 +1,5 @@
 const AnnouncementBar = () => {
-  const text =
-    "HANDMADE EMBROIDERY \u2726 PREMIUM FABRICS \u2726 CUSTOM DESIGN AVAILABLE \u2726 FREE SHIPPING ABOVE \u20B92999";
+  const text = "10% OFF YOUR FIRST ORDER \u2726 USE CODE NAIRA10";
 
   return (
     <div

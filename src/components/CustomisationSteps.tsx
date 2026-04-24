@@ -70,7 +70,7 @@ const CustomisationSteps = () => {
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
             style={{ color: "hsl(0 0% 18%)" }}
           >
-            Customize Your Dress
+            Customise Your Outfit
           </h2>
         </div>
 

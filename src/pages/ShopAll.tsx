@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import ProductCard, { type Product } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import ShopHero from "@/components/shop/ShopHero";
+import CustomizationCTA from "@/components/product/CustomizationCTA";
 
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";
@@ -648,6 +649,9 @@ const ShopAll = () => {
           </div>
         </div>
       </div>
+
+      {/* Customisation CTA – nudge users who didn't find a fit */}
+      <CustomizationCTA />
 
       {/* Footer at root level – full width */}
       <Footer />

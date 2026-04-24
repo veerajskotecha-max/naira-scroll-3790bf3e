@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import ProductCard, { type Product } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
+import ShopHero from "@/components/shop/ShopHero";
 
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";
@@ -334,6 +335,16 @@ const ShopAll = () => {
 
   return (
     <div className="min-h-screen flex flex-col pt-[94px] md:pt-[100px] lg:pt-[116px]">
+      {/* ── Campaign Hero ── */}
+      <ShopHero
+        eyebrow="New Arrivals"
+        title="The Festive"
+        titleAccent="Edit"
+        description="Curated silhouettes for the season — handwoven textures, refined embroidery, and contemporary drape."
+        primaryCta={{ label: "Shop Now", to: "/shop" }}
+        secondaryCta={{ label: "Explore Collection", to: "/shop?category=festive" }}
+      />
+
       {/* ── Fixed Shop Toolbar ── */}
       <div
         className="shrink-0 z-30"

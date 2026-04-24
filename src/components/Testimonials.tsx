@@ -11,6 +11,7 @@ import t1Zardozi from "@/assets/testimonials-t1-zardozi.webp";
 import mrBridal from "@/assets/testimonials-mr-bridal.webp";
 import tallPink from "@/assets/testimonials-tall-pink.webp";
 import botEvening from "@/assets/testimonials-bot-evening.webp";
+import t2Festive from "@/assets/testimonials-t2-festive.webp";
 
 type Tile = {
   src: string;
@@ -35,7 +36,7 @@ const tiles: Tile[] = [
   { src: festive1, outfit: "Blush Anarkali",        by: "Priya · London",      area: "top" },
   { src: fusion2,  outfit: "Modern Fusion",         by: "Tanvi · Bangalore",   area: "tr" },
   { src: centerNaira, outfit: "Loved by Women",        by: "",                    area: "ctr" }, // center hero tile
-  { src: festive2, outfit: "Festive Edit",          by: "Meera · Pune",        area: "t2" },
+  { src: t2Festive, outfit: "Festive Edit",          by: "Meera · Pune",        area: "t2" },
   { src: mrBridal, outfit: "Bridal Couture",        by: "Riya · Delhi",        area: "mr",  quote: "Exactly how I imagined.", quoteAlign: "right" },
   { src: tallPink, outfit: "Sage Drape Saree",      by: "Sarah · Dubai",       area: "tall" },
   { src: blLehenga, outfit: "Soft Pastel Drape",     by: "Naina · Jaipur",      area: "bl" },

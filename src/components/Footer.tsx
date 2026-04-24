@@ -161,14 +161,14 @@ const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="w-full px-4 py-2.5 rounded-md text-[13px] font-cormorant outline-none transition-colors duration-200 placeholder:opacity-70"
+                className="w-full px-4 py-2.5 rounded-md text-[13px] font-cormorant outline-none transition-colors duration-200 placeholder:text-[hsla(33,33%,95%,0.85)]"
                 style={{
-                  backgroundColor: "hsla(33,33%,95%,0.12)",
-                  border: "1px solid hsla(33,33%,95%,0.28)",
+                  backgroundColor: "hsla(0,0%,100%,0.18)",
+                  border: "1.5px solid hsl(33 33% 95%)",
                   color: CREAM,
                 }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = CREAM)}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "hsla(33,33%,95%,0.28)")}
+                onFocus={(e) => (e.currentTarget.style.backgroundColor = "hsla(0,0%,100%,0.28)")}
+                onBlur={(e) => (e.currentTarget.style.backgroundColor = "hsla(0,0%,100%,0.18)")}
               />
               <button
                 type="submit"

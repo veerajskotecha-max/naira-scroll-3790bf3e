@@ -7,6 +7,7 @@ import fusion1 from "@/assets/carousel-fusion-1.jpg";
 import fusion2 from "@/assets/carousel-fusion-2.jpg";
 import centerNaira from "@/assets/testimonials-center-naira.webp";
 import blLehenga from "@/assets/testimonials-bl-lehenga.webp";
+import t1Zardozi from "@/assets/testimonials-t1-zardozi.webp";
 
 type Tile = {
   src: string;
@@ -27,7 +28,7 @@ type Tile = {
  *   bl   bot  bot  bot  bot  tall
  */
 const tiles: Tile[] = [
-  { src: bride1,   outfit: "Ivory Zardozi Lehenga", by: "Ananya · Mumbai",     area: "t1",  quote: "Perfect fit.",          quoteAlign: "left" },
+  { src: t1Zardozi, outfit: "Ivory Zardozi Lehenga", by: "Ananya · Mumbai",     area: "t1",  quote: "Perfect fit.",          quoteAlign: "left" },
   { src: festive1, outfit: "Blush Anarkali",        by: "Priya · London",      area: "top" },
   { src: fusion2,  outfit: "Modern Fusion",         by: "Tanvi · Bangalore",   area: "tr" },
   { src: centerNaira, outfit: "Loved by Women",        by: "",                    area: "ctr" }, // center hero tile

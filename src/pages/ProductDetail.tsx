@@ -9,6 +9,7 @@ import StickyAddToCart from "@/components/StickyAddToCart";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";
+import CustomizationCTA from "@/components/product/CustomizationCTA";
 
 import product1 from "@/assets/product-1.jpg";
 
@@ -51,7 +52,8 @@ const ProductDetail = () => {
       <CustomerReviews />
       <MaterialsCraft />
       <YouMayAlsoLike />
-      
+      <CustomizationCTA />
+
       <Footer />
       <StickyAddToCart
         image={product1}

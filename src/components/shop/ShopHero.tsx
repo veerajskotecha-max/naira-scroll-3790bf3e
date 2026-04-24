@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import defaultHeroImage from "@/assets/shop-hero-detail.jpg";
 import floralPattern from "@/assets/floral-pattern-bg.webp";
 
 export interface ShopHeroProps {
   eyebrow?: string;
   title?: string;
-  titleAccent?: string; // italic accent appended to title
+  titleAccent?: string;
   description?: string;
-  badge?: string; // small tag, e.g. "10% OFF"
+  badge?: string;
   primaryCta?: { label: string; to: string };
   secondaryCta?: { label: string; to: string };
+  /** kept for backwards compatibility — no longer rendered */
   image?: string;
   imageAlt?: string;
-  /** subtle solid background color (HSL string) */
   background?: string;
 }
 
@@ -25,9 +24,6 @@ const ShopHero = ({
   badge,
   primaryCta = { label: "Shop Now", to: "/shop" },
   secondaryCta,
-  image = defaultHeroImage,
-  imageAlt = "Naira featured collection",
-  background = "hsl(33 30% 92%)",
 }: ShopHeroProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -47,7 +43,6 @@ const ShopHero = ({
     return () => obs.disconnect();
   }, []);
 
-  // Subtle parallax on background layers
   useEffect(() => {
     let raf = 0;
     const onScroll = () => {
@@ -65,11 +60,13 @@ const ShopHero = ({
     <section
       className="relative w-full overflow-hidden"
       style={{
-        background: `linear-gradient(135deg, hsl(33 40% 95%) 0%, ${background} 55%, hsl(16 35% 86%) 100%)`,
+        // Sage → soft beige gradient (Naira palette)
+        background:
+          "linear-gradient(135deg, hsl(140 14% 84%) 0%, hsl(36 30% 92%) 50%, hsl(20 35% 90%) 100%)",
       }}
       aria-label="Shop hero"
     >
-      {/* Layered floral pattern (very subtle) */}
+      {/* Subtle floral pattern */}
       <div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
@@ -77,163 +74,142 @@ const ShopHero = ({
           backgroundImage: `url(${floralPattern})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          opacity: 0.06,
+          opacity: 0.07,
           mixBlendMode: "multiply",
-          transform: `translateY(${scrollY * 0.08}px)`,
+          transform: `translateY(${scrollY * 0.06}px)`,
           willChange: "transform",
         }}
       />
 
-      {/* Soft warm glow accent */}
+      {/* Soft warm glow — top right */}
       <div
         aria-hidden="true"
         className="absolute pointer-events-none"
         style={{
-          top: "10%",
-          right: "8%",
-          width: "520px",
-          height: "520px",
+          top: "-10%",
+          right: "-5%",
+          width: "640px",
+          height: "640px",
           background:
-            "radial-gradient(circle, hsla(16, 60%, 80%, 0.45) 0%, hsla(16, 60%, 80%, 0) 70%)",
+            "radial-gradient(circle, hsla(20, 50%, 82%, 0.55) 0%, hsla(20, 50%, 82%, 0) 70%)",
           filter: "blur(20px)",
           transform: `translateY(${scrollY * -0.04}px)`,
           willChange: "transform",
         }}
       />
 
+      {/* Soft sage glow — bottom left */}
+      <div
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{
+          bottom: "-15%",
+          left: "-8%",
+          width: "560px",
+          height: "560px",
+          background:
+            "radial-gradient(circle, hsla(140, 18%, 75%, 0.55) 0%, hsla(140, 18%, 75%, 0) 70%)",
+          filter: "blur(20px)",
+          transform: `translateY(${scrollY * -0.03}px)`,
+          willChange: "transform",
+        }}
+      />
+
+      {/* Decorative hairline accents */}
+      <div
+        aria-hidden="true"
+        className="absolute left-1/2 -translate-x-1/2 top-0 h-px w-24 md:w-32"
+        style={{ backgroundColor: "hsl(186 30% 30% / 0.25)" }}
+      />
+
       <div
         ref={ref}
-        className="relative max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 items-stretch"
+        className={`relative max-w-[860px] mx-auto px-6 md:px-10 py-16 md:py-24 lg:py-28 text-center transition-all duration-700 ease-out ${
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
       >
-        {/* ── Content side ── */}
-        <div
-          className={`order-2 lg:order-1 flex flex-col justify-center px-6 md:px-10 lg:px-16 py-10 md:py-14 lg:py-16 text-center lg:text-left transition-all duration-700 ease-out ${
-            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          <div className="flex items-center gap-3 justify-center lg:justify-start mb-4">
-            <span
-              className="font-sans text-[11px] md:text-[12px] font-medium uppercase tracking-[0.22em]"
-              style={{ color: "hsl(186 35% 28%)" }}
-            >
-              {eyebrow}
-            </span>
-            {badge && (
-              <span
-                className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] px-2.5 py-1"
-                style={{
-                  backgroundColor: "hsl(186 35% 28%)",
-                  color: "hsl(0 0% 100%)",
-                }}
-              >
-                {badge}
-              </span>
-            )}
-          </div>
-
-          <h1
-            className="font-cormorant font-medium leading-[1.05] mb-5 md:mb-6 text-[36px] md:text-[52px] lg:text-[64px]"
-            style={{ color: "hsl(0 0% 15%)" }}
+        {/* Eyebrow + badge */}
+        <div className="flex items-center gap-3 justify-center mb-5">
+          <span className="h-px w-8" style={{ backgroundColor: "hsl(186 35% 28% / 0.4)" }} />
+          <span
+            className="font-sans text-[11px] md:text-[12px] font-medium uppercase tracking-[0.28em]"
+            style={{ color: "hsl(186 35% 28%)" }}
           >
-            {title}
-            {titleAccent && (
-              <>
-                {" "}
-                <em className="italic font-normal" style={{ color: "hsl(186 35% 28%)" }}>
-                  {titleAccent}
-                </em>
-              </>
-            )}
-          </h1>
-
-          {description && (
-            <p
-              className="font-cormorant text-[15px] md:text-[17px] lg:text-[18px] leading-[1.65] max-w-[460px] mx-auto lg:mx-0 mb-7 md:mb-8"
-              style={{ color: "hsl(0 0% 38%)" }}
-            >
-              {description}
-            </p>
-          )}
-
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 justify-center lg:justify-start">
-            <Link
-              to={primaryCta.to}
-              className="font-sans text-[12px] md:text-[13px] font-medium uppercase tracking-[0.16em] px-8 md:px-10 py-3.5 md:py-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            {eyebrow}
+          </span>
+          {badge && (
+            <span
+              className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] px-2.5 py-1"
               style={{
-                backgroundColor: "hsl(0 0% 12%)",
+                backgroundColor: "hsl(186 35% 28%)",
                 color: "hsl(0 0% 100%)",
               }}
             >
-              {primaryCta.label}
-            </Link>
-            {secondaryCta && (
-              <Link
-                to={secondaryCta.to}
-                className="font-sans text-[12px] md:text-[13px] font-medium uppercase tracking-[0.16em] px-7 md:px-8 py-3.5 md:py-4 transition-all duration-300 hover:-translate-y-0.5"
-                style={{
-                  border: "1px solid hsl(0 0% 18%)",
-                  color: "hsl(0 0% 15%)",
-                  backgroundColor: "transparent",
-                }}
-              >
-                {secondaryCta.label}
-              </Link>
-            )}
-          </div>
+              {badge}
+            </span>
+          )}
+          <span className="h-px w-8" style={{ backgroundColor: "hsl(186 35% 28% / 0.4)" }} />
         </div>
 
-        {/* ── Image side (editorial detail crop) ── */}
-        <div
-          className={`order-1 lg:order-2 relative transition-all duration-1000 ease-out ${
-            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
-          }`}
+        {/* Heading */}
+        <h1
+          className="font-cormorant font-medium leading-[1.05] mb-6 md:mb-7 text-[40px] md:text-[60px] lg:text-[76px]"
+          style={{ color: "hsl(0 0% 15%)" }}
         >
-          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] overflow-hidden group">
-            {/* Soft halo behind image edges */}
-            <div
-              aria-hidden="true"
-              className="absolute -inset-4 pointer-events-none"
+          {title}
+          {titleAccent && (
+            <>
+              {" "}
+              <em className="italic font-normal" style={{ color: "hsl(186 35% 28%)" }}>
+                {titleAccent}
+              </em>
+            </>
+          )}
+        </h1>
+
+        {description && (
+          <p
+            className="font-cormorant text-[16px] md:text-[18px] lg:text-[19px] leading-[1.65] max-w-[560px] mx-auto mb-9 md:mb-10"
+            style={{ color: "hsl(0 0% 35%)" }}
+          >
+            {description}
+          </p>
+        )}
+
+        {/* CTAs */}
+        <div className="flex flex-wrap items-center gap-3 md:gap-4 justify-center">
+          <Link
+            to={primaryCta.to}
+            className="font-sans text-[12px] md:text-[13px] font-medium uppercase tracking-[0.18em] px-9 md:px-11 py-3.5 md:py-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{
+              backgroundColor: "hsl(0 0% 12%)",
+              color: "hsl(0 0% 100%)",
+            }}
+          >
+            {primaryCta.label}
+          </Link>
+          {secondaryCta && (
+            <Link
+              to={secondaryCta.to}
+              className="font-sans text-[12px] md:text-[13px] font-medium uppercase tracking-[0.18em] px-8 md:px-10 py-3.5 md:py-4 transition-all duration-300 hover:-translate-y-0.5"
               style={{
-                background:
-                  "radial-gradient(ellipse at center, hsla(20, 30%, 18%, 0.18) 0%, hsla(20, 30%, 18%, 0) 70%)",
-                filter: "blur(8px)",
+                border: "1px solid hsl(0 0% 18%)",
+                color: "hsl(0 0% 15%)",
+                backgroundColor: "transparent",
               }}
-            />
-            <img
-              src={image}
-              alt={imageAlt}
-              width={1024}
-              height={1024}
-              className={`relative w-full h-full object-cover transition-transform ease-out group-hover:scale-[1.04] ${
-                visible ? "scale-100" : "scale-[1.03]"
-              }`}
-              style={{
-                objectPosition: "center 35%",
-                transitionDuration: "1600ms",
-                boxShadow: "0 20px 50px -20px hsla(20, 30%, 18%, 0.35)",
-              }}
-              loading="eager"
-            />
-            {/* Subtle vignette to anchor edges */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(ellipse at center, transparent 60%, hsla(20, 25%, 15%, 0.18) 100%)",
-              }}
-            />
-            {/* Mobile contrast overlay */}
-            <div
-              className="absolute inset-0 lg:hidden pointer-events-none"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.16) 100%)",
-              }}
-            />
-          </div>
+            >
+              {secondaryCta.label}
+            </Link>
+          )}
         </div>
       </div>
+
+      {/* Bottom hairline */}
+      <div
+        aria-hidden="true"
+        className="absolute left-1/2 -translate-x-1/2 bottom-0 h-px w-24 md:w-32"
+        style={{ backgroundColor: "hsl(186 30% 30% / 0.25)" }}
+      />
     </section>
   );
 };

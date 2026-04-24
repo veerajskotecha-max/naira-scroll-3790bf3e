@@ -100,16 +100,16 @@ const ProductGallery = () => {
 
   // Desktop: two large images, full viewport height, sticky
   return (
-    <div className="relative w-full sticky top-[120px]" style={{ height: "calc(100vh - 120px)" }}>
-      <div className="grid grid-cols-2 gap-[4px] h-full">
-        <div className="overflow-hidden relative h-full" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
+    <div className="relative w-full h-full min-h-full">
+      <div className="grid grid-cols-2 gap-[4px] h-full min-h-full">
+        <div className="overflow-hidden relative h-full min-h-full" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
           <img
             src={images[0]}
             alt="Midnight Silk Drape Saree - Front"
             className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
           />
         </div>
-        <div className="overflow-hidden relative h-full" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
+        <div className="overflow-hidden relative h-full min-h-full" style={{ backgroundColor: "hsl(0 0% 96%)" }}>
           <img
             src={images[1]}
             alt="Midnight Silk Drape Saree - Detail"

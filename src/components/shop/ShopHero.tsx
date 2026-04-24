@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import defaultHeroImage from "@/assets/hero-model-2.png";
+import defaultHeroImage from "@/assets/shop-hero-detail.jpg";
 import floralPattern from "@/assets/floral-pattern-bg.webp";
 
 export interface ShopHeroProps {
@@ -182,46 +182,45 @@ const ShopHero = ({
           </div>
         </div>
 
-        {/* ── Image side ── */}
+        {/* ── Image side (editorial detail crop) ── */}
         <div
           className={`order-1 lg:order-2 relative transition-all duration-1000 ease-out ${
             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
           }`}
         >
-          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] group">
-            {/* Radial glow behind subject */}
+          <div className="relative w-full h-[360px] md:h-[480px] lg:h-[560px] overflow-hidden group">
+            {/* Soft halo behind image edges */}
             <div
               aria-hidden="true"
-              className="absolute inset-0 pointer-events-none"
+              className="absolute -inset-4 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(ellipse 55% 70% at 50% 45%, hsla(33, 50%, 92%, 0.85) 0%, hsla(33, 50%, 92%, 0) 70%)",
+                  "radial-gradient(ellipse at center, hsla(20, 30%, 18%, 0.18) 0%, hsla(20, 30%, 18%, 0) 70%)",
+                filter: "blur(8px)",
               }}
             />
             <img
               src={image}
               alt={imageAlt}
-              className={`relative w-full h-full object-cover transition-transform ease-out group-hover:scale-[1.03] ${
-                visible ? "scale-100" : "scale-[1.02]"
+              width={1024}
+              height={1024}
+              className={`relative w-full h-full object-cover transition-transform ease-out group-hover:scale-[1.04] ${
+                visible ? "scale-100" : "scale-[1.03]"
               }`}
               style={{
-                objectPosition: "center top",
-                filter: "drop-shadow(0 24px 30px hsla(20, 30%, 25%, 0.18))",
-                transitionDuration: "1400ms",
+                objectPosition: "center 35%",
+                transitionDuration: "1600ms",
+                boxShadow: "0 20px 50px -20px hsla(20, 30%, 18%, 0.35)",
               }}
               loading="eager"
             />
-            {/* Grounding shadow under model */}
+            {/* Subtle vignette to anchor edges */}
             <div
               aria-hidden="true"
-              className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+              className="absolute inset-0 pointer-events-none"
               style={{
-                bottom: "4%",
-                width: "62%",
-                height: "28px",
                 background:
-                  "radial-gradient(ellipse at center, hsla(20, 30%, 18%, 0.28) 0%, hsla(20, 30%, 18%, 0) 70%)",
-                filter: "blur(6px)",
+                  "radial-gradient(ellipse at center, transparent 60%, hsla(20, 25%, 15%, 0.18) 100%)",
               }}
             />
             {/* Mobile contrast overlay */}

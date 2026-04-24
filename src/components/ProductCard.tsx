@@ -171,23 +171,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             FROM <span className="font-bold">{product.price}</span>
           </p>
 
-          {/* Mobile-only inline Add to Cart */}
-          <button
-            className="md:hidden inline-flex items-center justify-center gap-1.5 mt-3 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-all duration-200 active:scale-[0.97]"
-            style={{
-              backgroundColor: "transparent",
-              color: "hsl(186 35% 28%)",
-              border: "1px solid hsl(186 35% 28% / 0.55)",
-              borderRadius: "2px",
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            <ShoppingBag size={12} strokeWidth={1.5} />
-            Add to Cart
-          </button>
         </div>
       </Link>
     </div>

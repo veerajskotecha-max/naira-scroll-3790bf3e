@@ -173,8 +173,14 @@ const HeroScrollyWrapper = () => {
         @media (min-width: 768px)  { .hero-model-layer { top: 108px; } }
         @media (min-width: 1024px) { .hero-model-layer { top: 120px; } }
         /* Model max-width: wider on small screens so it doesn't look clipped */
-        .hero-model-img { max-width: 68vw; }
-        @media (min-width: 768px)  { .hero-model-img { max-width: 55vw; } }
+        .hero-model-img { 
+          max-width: 85vw; 
+          height: 50vh;
+          max-height: 420px;
+        }
+        @media (min-width: 768px)  { 
+          .hero-model-img { max-width: 55vw; height: min(590px, calc(100% - 6vh)); max-height: none; } 
+        }
         @media (min-width: 1024px) { .hero-model-img { max-width: 48vw; } }
       `}</style>
 
@@ -193,9 +199,7 @@ const HeroScrollyWrapper = () => {
             className="hero-model-img absolute bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
             style={{
               opacity: current === i ? 1 : 0,
-              filter: "drop-shadow(0 8px 30px rgba(74,47,34,0.12))",
-              /* Height constrained to available viewport — never overflows into header */
-              height: "min(590px, calc(100% - 6vh))",
+              filter: "drop-shadow(0 8px 30px rgba(74,47,34,0.12))"
             }}
             loading={i === 0 ? "eager" : "lazy"}
           />

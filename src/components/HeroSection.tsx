@@ -253,10 +253,10 @@ const HeroSection = ({
         {/* LEFT — Parallax wrapper (foreground layer, -0.06× scroll) */}
         <div
           ref={textLayerRef}
-          className="flex-1 z-20 order-2 lg:order-1 max-w-[420px] lg:max-w-[440px]"
+          className="flex-1 z-20 order-1 max-w-[420px] lg:max-w-[440px]"
           style={{ willChange: "transform" }}
         >
-          <div className="flex flex-col justify-center lg:justify-end pb-10 md:pb-14 lg:pb-24 text-center lg:text-left">
+          <div className="flex flex-col justify-center lg:justify-end pt-8 pb-4 lg:pt-0 pb-10 md:pb-14 lg:pb-24 text-center lg:text-left">
 
             {/* ── KINETIC HEADLINE ──────────────────────────────────
                 Each word is a MaskWord: slides up from below an
@@ -323,7 +323,7 @@ const HeroSection = ({
         </div>
 
         {/* CENTER SPACER — actual model rendered by HeroScrollyWrapper */}
-        <div className="flex-shrink-0 order-1 lg:order-2 self-end" aria-hidden="true">
+        <div className="flex-shrink-0 order-2 self-end" aria-hidden="true">
           <div className="h-[330px] md:h-[460px] lg:h-[590px] xl:h-[690px] w-[140px] md:w-[210px] lg:w-[290px] xl:w-[360px]" />
         </div>
 

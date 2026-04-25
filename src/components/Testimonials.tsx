@@ -34,7 +34,7 @@ type Tile = {
  *   bl   bot  bot  bot  bot  tall
  */
 const tiles: Tile[] = [
-  { src: t1Zardozi, outfit: "Ivory Zardozi Lehenga", by: "Ananya · Mumbai",     area: "t1",  quote: "Perfect fit.",          quoteAlign: "left" },
+  { src: t1Zardozi, outfit: "​", by: "Ananya · Mumbai",     area: "t1",  quote: "Perfect fit.",          quoteAlign: "left" },
   { src: topBlushAnarkali, outfit: "​",        by: "Priya · London",      area: "top" },
   { src: trFusion, outfit: "Modern Fusion",         by: "Tanvi · Bangalore",   area: "tr" },
   { src: centerNaira, outfit: "Loved by Women",        by: "",                    area: "ctr" }, // center hero tile

@@ -27,7 +27,7 @@ const Index = () => {
           observer.disconnect(); // fire once only
         }
       },
-      { threshold: 0.05 } // trigger as soon as 5% is visible
+      { threshold: 0.01 } // trigger earlier to ensure it fires on mobile
     );
     observer.observe(el);
     return () => observer.disconnect();

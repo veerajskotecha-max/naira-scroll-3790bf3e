@@ -8,9 +8,26 @@ import Footer from "@/components/Footer";
 const MadeForYou = () => {
 
   return (
-    <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+    <div className="pt-[98px] md:pt-[108px] lg:pt-[120px]">
       {/* ═══════════ SECTION 1 — Hero Banner (floral bg) ═══════════ */}
-      <section className="relative w-full overflow-hidden">
+      <section
+        className="customize-hero-viewport relative w-full overflow-hidden flex items-center justify-center"
+        style={{
+          height: "calc(100dvh - 98px)",
+          minHeight: "calc(100dvh - 98px)",
+        }}
+      >
+        <style>{`
+          @media (min-width: 768px) {
+            .customize-hero-viewport { height: calc(100dvh - 108px) !important; min-height: calc(100dvh - 108px) !important; }
+          }
+          @media (min-width: 1024px) {
+            .customize-hero-viewport { height: calc(100dvh - 120px) !important; min-height: calc(100dvh - 120px) !important; }
+          }
+          @media (max-width: 767px) {
+            .mfy-hero-bg { background-position: center 60% !important; }
+          }
+        `}</style>
         <div
           className="mfy-hero-bg absolute inset-0 bg-cover"
           style={{
@@ -26,15 +43,9 @@ const MadeForYou = () => {
           }}
         />
 
-        <div className="relative z-10 flex items-start justify-center min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] px-6 md:px-10 lg:px-20 pt-24 pb-20 md:pt-32 md:pb-28 lg:pt-36 lg:pb-36">
-          {/* Responsive bg-position via inline style media query alternative */}
-          <style>{`
-            @media (max-width: 767px) {
-              .mfy-hero-bg { background-position: center 60% !important; }
-            }
-          `}</style>
+        <div className="relative z-10 flex h-full w-full items-center justify-center px-6 md:px-10 lg:px-20">
           <div
-            className="max-w-[680px] text-center px-8 py-12 md:px-14 md:py-16 lg:px-20 lg:py-20"
+            className="max-w-[680px] text-center px-6 py-8 md:px-12 md:py-12 lg:px-16 lg:py-14"
             style={{
               backgroundColor: "hsla(0,0%,100%,0.08)",
               backdropFilter: "blur(6px)",

@@ -18,7 +18,7 @@ const AboutHero = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden flex items-center justify-center"
+      className="about-hero-viewport relative w-full overflow-hidden flex items-center justify-center"
       style={{
         height: "calc(100dvh - 98px)",
         minHeight: "calc(100dvh - 98px)",
@@ -42,7 +42,7 @@ const AboutHero = () => {
 
       <div
         ref={ref}
-        className="about-hero-viewport relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 flex items-center justify-center"
+        className="relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 flex items-center justify-center"
       >
         <div className="flex w-full flex-col lg:flex-row items-center justify-center gap-6 md:gap-8 lg:gap-16">
           {/* Left — Text */}

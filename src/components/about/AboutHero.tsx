@@ -18,8 +18,20 @@ const AboutHero = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden py-[60px] md:py-[80px] lg:py-[120px]"
+      className="relative w-full overflow-hidden flex items-center justify-center"
+      style={{
+        height: "calc(100dvh - 98px)",
+        minHeight: "calc(100dvh - 98px)",
+      }}
     >
+      <style>{`
+        @media (min-width: 768px) {
+          .about-hero-viewport { height: calc(100dvh - 108px) !important; min-height: calc(100dvh - 108px) !important; }
+        }
+        @media (min-width: 1024px) {
+          .about-hero-viewport { height: calc(100dvh - 120px) !important; min-height: calc(100dvh - 120px) !important; }
+        }
+      `}</style>
       {/* Background image */}
       <div
         className="absolute inset-0 pointer-events-none bg-cover bg-center"
@@ -30,9 +42,9 @@ const AboutHero = () => {
 
       <div
         ref={ref}
-        className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20"
+        className="about-hero-viewport relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 flex items-center justify-center"
       >
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex w-full flex-col lg:flex-row items-center justify-center gap-6 md:gap-8 lg:gap-16">
           {/* Left — Text */}
           <div className="lg:w-[50%] text-center lg:text-left">
             <p
@@ -60,7 +72,7 @@ const AboutHero = () => {
             </h1>
 
             <p
-              className={`font-cormorant text-[15px] md:text-[16px] lg:text-[17px] leading-[1.8] max-w-[480px] mx-auto lg:mx-0 mb-8 transition-all duration-700 ${
+              className={`font-cormorant text-[15px] md:text-[16px] lg:text-[17px] leading-[1.65] md:leading-[1.8] max-w-[480px] mx-auto lg:mx-0 mb-6 md:mb-8 transition-all duration-700 ${
                 visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
               style={{
@@ -100,7 +112,7 @@ const AboutHero = () => {
               <img
                 src={heroImage}
                 alt="Naira atelier — artisan working on embroidered fabric"
-                className="w-full aspect-[4/3] object-cover"
+                className="w-full max-h-[24dvh] md:max-h-[32dvh] lg:max-h-[62dvh] aspect-[4/3] object-cover"
               />
             </div>
           </div>

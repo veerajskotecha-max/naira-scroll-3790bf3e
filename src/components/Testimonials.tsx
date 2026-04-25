@@ -40,7 +40,7 @@ const tiles: Tile[] = [
   { src: centerNaira, outfit: "Loved by Women",        by: "",                    area: "ctr" }, // center hero tile
   { src: t2Festive, outfit: "Festive Edit",          by: "Meera · Pune",        area: "t2" },
   { src: mrBridal, outfit: "Bridal Couture",        by: "Riya · Delhi",        area: "mr",  quote: "Exactly how I imagined.", quoteAlign: "right" },
-  { src: tallPink, outfit: "Sage Drape Saree",      by: "Sarah · Dubai",       area: "tall" },
+  { src: tallPink, outfit: "​",      by: "Sarah · Dubai",       area: "tall" },
   { src: blLehenga, outfit: "Soft Pastel Drape",     by: "Naina · Jaipur",      area: "bl" },
   { src: botEvening, outfit: "Evening Edit",          by: "Aanya · Hyderabad",   area: "bot", quote: "Felt like art.", quoteAlign: "left" },
 ];

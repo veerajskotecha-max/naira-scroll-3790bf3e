@@ -197,6 +197,8 @@ const StepCard = ({
   );
 };
 
+const desktopFrames = [steps.slice(0, 2), steps.slice(2, 4)];
+
 const ScrollSteps = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visibleSteps, setVisibleSteps] = useState<Set<number>>(new Set());
@@ -267,29 +269,61 @@ const ScrollSteps = () => {
         </div>
 
         {/* Steps */}
-        <div className="flex flex-col gap-16 md:gap-24 lg:gap-32">
-          {steps.map((step, i) => (
+        <div className="scrollbar-hide -mx-6 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-6 pb-4 md:-mx-10 md:px-10 lg:-mx-16 lg:px-16">
+          <div className="hidden w-full shrink-0 snap-start md:grid md:grid-cols-2 md:gap-10 lg:gap-16">
+            {desktopFrames[0].map((step, i) => (
+              <div
+                key={step.number}
+                ref={(el) => {
+                  stepRefs.current[i] = el;
+                }}
+              >
+                <StepCard step={step} index={i} isVisible={visibleSteps.has(i)} />
+              </div>
+            ))}
+          </div>
+
+          <div className="hidden w-full shrink-0 snap-start md:grid md:grid-cols-2 md:gap-10 lg:gap-16">
+            {desktopFrames[1].map((step, i) => {
+              const stepIndex = i + 2;
+              return (
+                <div
+                  key={step.number}
+                  ref={(el) => {
+                    stepRefs.current[stepIndex] = el;
+                  }}
+                >
+                  <StepCard step={step} index={stepIndex} isVisible={visibleSteps.has(stepIndex)} />
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex w-full shrink-0 snap-start md:hidden">
             <div
-              key={step.number}
+              className="w-full"
               ref={(el) => {
-                stepRefs.current[i] = el;
+                stepRefs.current[0] = el;
               }}
             >
-              <StepRow
-                step={step}
-                index={i}
-                isVisible={visibleSteps.has(i)}
-              />
-              {i < steps.length - 1 && (
-                <div className="flex justify-center mt-16 md:mt-24">
-                  <div
-                    className="w-px h-12 md:h-16"
-                    style={{ backgroundColor: "hsl(160 12% 80%)" }}
-                  />
-                </div>
-              )}
+              <StepCard step={steps[0]} index={0} isVisible={visibleSteps.has(0)} />
             </div>
-          ))}
+          </div>
+          {steps.slice(1).map((step, i) => {
+            const stepIndex = i + 1;
+            return (
+              <div key={step.number} className="flex w-full shrink-0 snap-start md:hidden">
+                <div
+                  className="w-full"
+                  ref={(el) => {
+                    stepRefs.current[stepIndex] = el;
+                  }}
+                >
+                  <StepCard step={step} index={stepIndex} isVisible={visibleSteps.has(stepIndex)} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

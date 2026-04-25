@@ -132,8 +132,8 @@ const HeroScrollyWrapper = () => {
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
           start: "top top",
-          end: "+=1200",          // reduced from 2000 — cuts mobile scroll dead-zone nearly in half
-          scrub: 1.0,
+          end: "+=600",          // significantly reduced to feel fast and snappy on mobile
+          scrub: 0.8,            // slightly tighter scrub
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -146,16 +146,16 @@ const HeroScrollyWrapper = () => {
 
       tl
         .to(modelRef.current, {
-          scale: 0.65, transformOrigin: "bottom center",
-          duration: 1, ease: "power1.inOut",
+          scale: 0.75, transformOrigin: "bottom center",
+          duration: 0.8, ease: "power2.inOut",
         })
-        .to(heading || {}, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.2")
-        .to(cards, { y: 0, opacity: 1, duration: 1.4, ease: "power2.out", stagger: 0.1 }, "-=0.3")
-        .to({}, { duration: 0.4 })
+        .to(heading || {}, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, "-=0.3")
+        .to(cards, { y: 0, opacity: 1, duration: 1.0, ease: "power2.out", stagger: 0.1 }, "-=0.4")
+        .to({}, { duration: 0.2 })
         .to(modelRef.current, {
           x: "110vw", opacity: 0, rotation: 8,
           transformOrigin: "bottom center",
-          duration: 1.0, ease: "power1.inOut",
+          duration: 0.8, ease: "power1.inOut",
         })
         // Brief final breathe before pin releases
         .to({}, { duration: 0.6 });

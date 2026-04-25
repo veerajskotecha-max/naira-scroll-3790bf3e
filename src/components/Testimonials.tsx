@@ -258,12 +258,6 @@ const CollageTile = ({
         >
           {tile.outfit}
         </p>
-        <p
-          className="text-[9px] xl:text-[10px] uppercase tracking-[0.18em] mt-1"
-          style={{ color: "hsla(0,0%,100%,0.85)" }}
-        >
-          View Story
-        </p>
       </div>
 
       {/* Subtle italic quote overlay (no box) */}

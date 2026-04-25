@@ -116,6 +116,87 @@ const StepRow = ({
   );
 };
 
+const StepCard = ({
+  step,
+  index,
+  isVisible,
+}: {
+  step: (typeof steps)[0];
+  index: number;
+  isVisible: boolean;
+}) => {
+  const StepIcon = step.icon;
+  const textFirst = index % 2 === 0;
+
+  const textBlock = (
+    <div className="flex min-h-[220px] flex-col items-center justify-center px-5 py-8 text-center md:min-h-[300px] md:px-8 lg:px-10">
+      <div
+        className="mb-5 flex h-12 w-12 items-center justify-center"
+        style={{
+          borderRadius: "50%",
+          backgroundColor: "hsl(160 12% 91%)",
+        }}
+      >
+        <StepIcon size={20} style={{ color: "hsl(160 15% 42%)" }} />
+      </div>
+      <span
+        className="mb-2 font-cormorant text-[13px] font-semibold uppercase tracking-[0.15em]"
+        style={{ color: "hsl(160 15% 45%)" }}
+      >
+        Step {step.number}
+      </span>
+      <h3
+        className="mb-4 font-cormorant text-[26px] font-semibold leading-tight md:text-[30px] lg:text-[34px]"
+        style={{ color: "hsl(0 0% 12%)" }}
+      >
+        {step.title}
+      </h3>
+      <p
+        className="max-w-[420px] text-[15px] leading-[1.75] md:text-[16px]"
+        style={{ color: "hsl(0 0% 28%)" }}
+      >
+        {step.description}
+      </p>
+    </div>
+  );
+
+  const imageBlock = (
+    <div className="flex min-h-[260px] items-center justify-center overflow-hidden md:min-h-[360px]">
+      <img
+        src={step.image}
+        alt={step.title}
+        loading="lazy"
+        width={640}
+        height={800}
+        className="h-full max-h-[420px] w-full object-contain transition-transform duration-700 hover:scale-[1.03]"
+      />
+    </div>
+  );
+
+  return (
+    <article
+      className="grid h-full min-h-[520px] overflow-hidden transition-all duration-700 md:min-h-[680px]"
+      style={{
+        backgroundColor: "hsl(30 20% 98%)",
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(20px)",
+      }}
+    >
+      {textFirst ? (
+        <>
+          {textBlock}
+          {imageBlock}
+        </>
+      ) : (
+        <>
+          {imageBlock}
+          {textBlock}
+        </>
+      )}
+    </article>
+  );
+};
+
 const ScrollSteps = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visibleSteps, setVisibleSteps] = useState<Set<number>>(new Set());

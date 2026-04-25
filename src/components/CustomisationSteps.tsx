@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-
 import { MessageSquare, Palette, SlidersHorizontal, Phone, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -8,50 +7,78 @@ const featureCards = [
     icon: MessageSquare,
     title: "Share Your Vision",
     description: "Share your dream look with us on WhatsApp.",
+    step: "01",
   },
   {
     icon: Palette,
     title: "Curated Design Options",
     description: "Receive curated design, colour, and fabric options, handpicked for you.",
+    step: "02",
   },
   {
     icon: SlidersHorizontal,
     title: "Finalise Your Style",
     description: "Choose your fabric and silhouette, then share your measurements.",
+    step: "03",
   },
   {
     icon: Phone,
     title: "Personal Consultation",
     description: "A personal consultation call to refine every last detail.",
+    step: "04",
   },
   {
     icon: Package,
     title: "Delivered to You",
     description: "Your customized outfit, delivered to your doorstep.",
+    step: "05",
   },
 ];
 
 const CustomisationSteps = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  // Which card is currently "spotlighted" — cycles left to right, loops
+  const [activeCard, setActiveCard] = useState<number>(-1);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVisible(true);
+          obs.disconnect();
+        }
+      },
       { threshold: 0.1 }
     );
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);
 
+  // Once section is visible, start the sequential highlight cycle
+  useEffect(() => {
+    if (!visible) return;
+    // Start after a short delay (cards have finished fading in)
+    const startDelay = setTimeout(() => {
+      setActiveCard(0);
+    }, 900);
+    return () => clearTimeout(startDelay);
+  }, [visible]);
+
+  // Advance to next card every 1.8s, loop back after last
+  useEffect(() => {
+    if (activeCard < 0) return;
+    const t = setTimeout(() => {
+      setActiveCard((prev) => (prev + 1) % featureCards.length);
+    }, 1800);
+    return () => clearTimeout(t);
+  }, [activeCard]);
+
   return (
     <section
       className="relative w-full overflow-hidden py-[70px] md:py-[90px] lg:py-[120px]"
       style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
-
-
-
       <div ref={ref} className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
         {/* Heading */}
         <div
@@ -70,46 +97,101 @@ const CustomisationSteps = () => {
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
             style={{ color: "hsl(0 0% 18%)" }}
           >
-            Customise Your Outfit
+            Customize Your Dress
           </h2>
+        </div>
+
+        {/* Connector line — desktop only */}
+        <div className="relative hidden lg:block mb-2">
+          <div
+            className="absolute top-5 left-[10%] right-[10%] h-px"
+            style={{ backgroundColor: "hsl(0 0% 90%)" }}
+          />
+          {/* Animated fill — advances with activeCard */}
+          <div
+            className="absolute top-5 left-[10%] h-px transition-all duration-700 ease-in-out"
+            style={{
+              backgroundColor: "hsl(16 40% 55%)",
+              width:
+                activeCard < 0
+                  ? "0%"
+                  : `${(activeCard / (featureCards.length - 1)) * 80}%`,
+            }}
+          />
         </div>
 
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6">
-          {featureCards.map((card, i) => (
-            <div
-              key={i}
-              className={`flex flex-col items-center text-center px-6 py-8 transition-all ease-out cursor-pointer hover:-translate-y-1 hover:shadow-lg ${
-                visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-              }`}
-              style={{
-                backgroundColor: "hsl(0 0% 100%)",
-                border: "1px solid hsl(0 0% 92%)",
-                boxShadow: "0 1px 8px -3px hsla(0,0%,0%,0.06)",
-                transitionDuration: "0.5s",
-                transitionDelay: visible ? `${i * 0.12 + 0.15}s` : "0s",
-              }}
-            >
+          {featureCards.map((card, i) => {
+            const isActive = i === activeCard;
+            return (
               <div
-                className="w-10 h-10 flex items-center justify-center mb-3"
-                style={{ borderRadius: '50%', backgroundColor: "hsl(20 40% 95%)" }}
+                key={i}
+                className={`relative flex flex-col items-center text-center px-6 py-8 transition-all ease-out cursor-pointer ${
+                  visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+                }`}
+                style={{
+                  border: isActive
+                    ? "1.5px solid hsl(16 40% 62%)"
+                    : "1px solid hsl(0 0% 92%)",
+                  boxShadow: isActive
+                    ? "0 4px 24px -6px hsla(16,40%,55%,0.25), 0 0 0 4px hsla(16,40%,55%,0.07)"
+                    : "0 1px 8px -3px hsla(0,0%,0%,0.06)",
+                  backgroundColor: isActive ? "hsl(20 40% 98%)" : "hsl(0 0% 100%)",
+                  transitionDuration: isActive ? "0.4s" : "0.5s",
+                  transitionDelay: visible ? `${i * 0.12 + 0.15}s` : "0s",
+                  transform: isActive
+                    ? "translateY(-6px) scale(1.02)"
+                    : visible
+                    ? "translateY(0) scale(1)"
+                    : "translateY(24px) scale(1)",
+                }}
+                onMouseEnter={() => setActiveCard(i)}
               >
-                <card.icon size={18} style={{ color: "hsl(16 40% 55%)" }} />
+                {/* Step number badge */}
+                <span
+                  className="absolute top-3 right-3 font-cormorant text-[11px] font-semibold tracking-[0.06em]"
+                  style={{
+                    color: isActive ? "hsl(16 40% 55%)" : "hsl(0 0% 78%)",
+                    transition: "color 0.4s ease",
+                  }}
+                >
+                  {card.step}
+                </span>
+
+                {/* Icon circle */}
+                <div
+                  className="w-10 h-10 flex items-center justify-center mb-3 transition-all duration-300"
+                  style={{
+                    borderRadius: "50%",
+                    backgroundColor: isActive ? "hsl(16 40% 88%)" : "hsl(20 40% 95%)",
+                    transform: isActive ? "scale(1.12)" : "scale(1)",
+                  }}
+                >
+                  <card.icon
+                    size={18}
+                    style={{
+                      color: isActive ? "hsl(16 40% 40%)" : "hsl(16 40% 55%)",
+                      transition: "color 0.4s ease",
+                    }}
+                  />
+                </div>
+
+                <h3
+                  className="font-cormorant text-[17px] md:text-[18px] font-semibold mb-2 transition-colors duration-300"
+                  style={{ color: isActive ? "hsl(16 40% 32%)" : "hsl(0 0% 18%)" }}
+                >
+                  {card.title}
+                </h3>
+                <p
+                  className="font-cormorant text-[13px] md:text-[14px] leading-relaxed"
+                  style={{ color: "hsl(0 0% 48%)" }}
+                >
+                  {card.description}
+                </p>
               </div>
-              <h3
-                className="font-cormorant text-[17px] md:text-[18px] font-semibold mb-2"
-                style={{ color: "hsl(0 0% 18%)" }}
-              >
-                {card.title}
-              </h3>
-              <p
-                className="font-cormorant text-[13px] md:text-[14px] leading-relaxed"
-                style={{ color: "hsl(0 0% 48%)" }}
-              >
-                {card.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* CTA */}

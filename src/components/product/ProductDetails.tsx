@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Phone, Mail, MessageCircle } from "lucide-react";
+import { Minus, Plus, Phone, Mail, MessageCircle, Truck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import SizeGuideModal from "@/components/SizeGuideModal";
 import {
   Select,
   SelectContent,
@@ -19,6 +20,7 @@ const sizes = ["XS", "S", "M", "L", "XL"];
 const ProductDetails = () => {
   const [selectedSize, setSelectedSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const { addItem, setDrawerOpen } = useCart();
 
   const handleAddToCart = () => {
@@ -74,6 +76,14 @@ const ProductDetails = () => {
         </span>
       </div>
 
+      {/* Delivery badge */}
+      <div className="flex items-center gap-2 mt-2">
+        <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
+        <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
+          Ships in <strong className="font-medium">3–5 days</strong> · Free above ₹2,999
+        </span>
+      </div>
+
       {/* Info line */}
       <p
         className="text-[12px] mt-2 leading-relaxed"
@@ -95,10 +105,11 @@ const ProductDetails = () => {
             Size
           </span>
           <button
-            className="text-[11px] underline tracking-[0.02em]"
-            style={{ color: "hsl(0 0% 40%)" }}
+            className="text-[11px] underline tracking-[0.02em] min-h-[44px] px-2 -mr-2"
+            style={{ color: "hsl(186 35% 28%)" }}
+            onClick={() => setSizeGuideOpen(true)}
           >
-            Size Chart
+            Size Guide
           </button>
         </div>
         <Select value={selectedSize} onValueChange={setSelectedSize}>
@@ -330,6 +341,8 @@ const ProductDetails = () => {
           ))}
         </div>
       </div>
+
+      <SizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import FloatingFlower from "@/components/FloatingFlower";
@@ -55,29 +55,14 @@ const products: Product[] = [
   },
 ];
 
-const NewArrivals = () => {
+const NewArrivals = ({ contentRef }: { contentRef?: RefObject<HTMLDivElement> }) => {
   const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.08 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16"
-      style={{ backgroundColor: "hsl(33 30% 85%)" }}
+      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16 pt-[130px] md:pt-[140px] lg:pt-[155px]"
+      style={{ minHeight: "100vh" }}
     >
       <FloatingFlower />
       <img
@@ -96,14 +81,9 @@ const NewArrivals = () => {
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
+      <div ref={contentRef} className="relative z-10 max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
         {/* Heading */}
-        <div
-          className={`text-center mb-8 md:mb-10 lg:mb-12 transition-all ease-out ${
-            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
-          }`}
-          style={{ transitionDuration: "0.6s" }}
-        >
+        <div data-arrivals-heading className="text-center mb-8 md:mb-10 lg:mb-12">
           <h2
             className="font-cormorant text-[28px] md:text-[34px] lg:text-[42px] font-medium italic mb-2"
             style={{ color: "hsl(0 0% 18%)" }}
@@ -119,30 +99,21 @@ const NewArrivals = () => {
         </div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-5 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-5 lg:gap-6 relative z-20">
           {products.map((product, i) => (
             <ProductCard
               key={i}
               product={product}
               index={i}
-              visible={visible}
+              visible={true}
             />
           ))}
         </div>
 
-        {/* CTA Button */}
-        <div
-          className={`flex justify-center mt-10 md:mt-12 lg:mt-14 transition-all ease-out ${
-            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{
-            transitionDelay: visible ? "0.6s" : "0s",
-            transitionDuration: "0.6s",
-          }}
-        >
+        <div className="flex justify-center mt-10 md:mt-12 lg:mt-14">
           <Link
             to="/shop"
-            className="inline-flex items-center gap-2 font-cormorant text-[15px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            className="inline-flex items-center gap-2 font-cormorant text-[15px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg relative z-20"
             style={{
               backgroundColor: "hsl(186 35% 28%)",
               color: "hsl(0 0% 100%)",

@@ -19,12 +19,12 @@ const FloatingFlower = () => {
       aria-hidden="true"
       className="absolute w-[80px] md:w-[110px] lg:w-[130px] pointer-events-none select-none"
       style={{
-        top: "24px",
-        left: "0px",
+        top: "128px",
+        left: "12px",           /* fully inside section boundary */
         opacity: 0.82,
         zIndex: 1,
         filter: "saturate(0.85) drop-shadow(0 2px 8px hsla(33, 30%, 60%, 0.25))",
-        transform: `translateX(-40%) rotate(${rotation}deg)`,
+        transform: `rotate(${rotation}deg)`,   /* rotation only — no more clipping translateX */
         transformOrigin: "center center",
         willChange: "transform",
       }}

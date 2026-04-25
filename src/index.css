@@ -118,7 +118,7 @@ All colors MUST be HSL.
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -4px;
   left: 0;
   width: 100%;
   height: 1px;
@@ -145,4 +145,59 @@ All colors MUST be HSL.
 /* Prevent horizontal overflow globally */
 html, body {
   overflow-x: hidden;
+  /* Smoother font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scroll only for users who haven't requested reduced motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ─── Mobile Optimisation ─────────────────────────────────────── */
+
+/* 1. Remove 300ms tap delay across the entire app */
+* {
+  touch-action: manipulation;
+}
+
+/* 2. Remove the default iOS/Android blue tap highlight flash */
+a, button, [role="button"], input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 3. Prevent iOS Safari from auto-zooming on input focus
+      (triggered when input font-size < 16px) */
+input, select, textarea {
+  font-size: max(16px, 1em);
+}
+
+/* 4. Minimum 44×44px tap targets for interactive elements
+      Applied via class to avoid inflating tiny decorative elements like
+      carousel dot indicators */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 5. Smooth image rendering on all devices */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Section reveal — gentle fade-up for CustomisationSteps after New Arrivals pin.
+   Uses .is-visible toggled by IntersectionObserver in Index.tsx instead of
+   animation-timeline:view() which clashes with GSAP pin spacers. */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.section-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }

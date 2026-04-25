@@ -40,7 +40,7 @@ const steps = [
   },
 ];
 
-const StepRow = ({
+const StepCard = ({
   step,
   index,
   isVisible,
@@ -49,72 +49,79 @@ const StepRow = ({
   index: number;
   isVisible: boolean;
 }) => {
-  const isEven = index % 2 === 0;
   const StepIcon = step.icon;
+  const textFirst = index % 2 === 0;
 
-  return (
-    <div
-      className="transition-all duration-700"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translateY(0)" : "translateY(30px)",
-        transitionDelay: `${index * 0.1}s`,
-      }}
-    >
+  const textBlock = (
+    <div className="flex min-h-[220px] flex-col items-center justify-center px-5 py-8 text-center md:min-h-[300px] md:px-8 lg:px-10">
       <div
-        className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} items-center gap-8 md:gap-12 lg:gap-20`}
+        className="mb-5 flex h-12 w-12 items-center justify-center"
+        style={{
+          borderRadius: "50%",
+          backgroundColor: "hsl(160 12% 91%)",
+        }}
       >
-        {/* Image */}
-        <div className="w-full md:w-1/2">
-          <div className="overflow-hidden flex items-center justify-center">
-            <img
-              src={step.image}
-              alt={step.title}
-              loading="lazy"
-              width={640}
-              height={800}
-              className="w-full h-auto object-contain transition-transform duration-700 hover:scale-105"
-            />
-          </div>
-        </div>
-
-        {/* Text */}
-        <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
-          <div
-            className="w-12 h-12 flex items-center justify-center mb-5"
-            style={{
-              borderRadius: "50%",
-              backgroundColor: "hsl(160 12% 91%)",
-            }}
-          >
-            <StepIcon size={20} style={{ color: "hsl(160 15% 42%)" }} />
-          </div>
-
-          <span
-            className="font-cormorant text-[13px] font-semibold tracking-[0.15em] uppercase mb-2"
-            style={{ color: "hsl(160 15% 45%)" }}
-          >
-            Step {step.number}
-          </span>
-
-          <h3
-            className="font-cormorant text-[26px] md:text-[30px] lg:text-[34px] font-semibold leading-tight mb-4"
-            style={{ color: "hsl(0 0% 12%)" }}
-          >
-            {step.title}
-          </h3>
-
-          <p
-            className="text-[15px] md:text-[16px] leading-[1.75] max-w-[440px]"
-            style={{ color: "hsl(0 0% 28%)" }}
-          >
-            {step.description}
-          </p>
-        </div>
+        <StepIcon size={20} style={{ color: "hsl(160 15% 42%)" }} />
       </div>
+      <span
+        className="mb-2 font-cormorant text-[13px] font-semibold uppercase tracking-[0.15em]"
+        style={{ color: "hsl(160 15% 45%)" }}
+      >
+        Step {step.number}
+      </span>
+      <h3
+        className="mb-4 font-cormorant text-[26px] font-semibold leading-tight md:text-[30px] lg:text-[34px]"
+        style={{ color: "hsl(0 0% 12%)" }}
+      >
+        {step.title}
+      </h3>
+      <p
+        className="max-w-[420px] text-[15px] leading-[1.75] md:text-[16px]"
+        style={{ color: "hsl(0 0% 28%)" }}
+      >
+        {step.description}
+      </p>
     </div>
   );
+
+  const imageBlock = (
+    <div className="flex min-h-[260px] items-center justify-center overflow-hidden md:min-h-[360px]">
+      <img
+        src={step.image}
+        alt={step.title}
+        loading="lazy"
+        width={640}
+        height={800}
+        className="h-full max-h-[420px] w-full object-contain transition-transform duration-700 hover:scale-[1.03]"
+      />
+    </div>
+  );
+
+  return (
+    <article
+      className="grid h-full min-h-[520px] overflow-hidden transition-all duration-700 md:min-h-[680px]"
+      style={{
+        backgroundColor: "hsl(30 20% 98%)",
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(20px)",
+      }}
+    >
+      {textFirst ? (
+        <>
+          {textBlock}
+          {imageBlock}
+        </>
+      ) : (
+        <>
+          {imageBlock}
+          {textBlock}
+        </>
+      )}
+    </article>
+  );
 };
+
+const desktopFrames = [steps.slice(0, 2), steps.slice(2, 4)];
 
 const ScrollSteps = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -186,29 +193,61 @@ const ScrollSteps = () => {
         </div>
 
         {/* Steps */}
-        <div className="flex flex-col gap-16 md:gap-24 lg:gap-32">
-          {steps.map((step, i) => (
+        <div className="scrollbar-hide -mx-6 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden px-6 pb-4 md:-mx-10 md:px-10 lg:-mx-16 lg:px-16">
+          <div className="hidden w-full shrink-0 snap-start md:grid md:grid-cols-2 md:gap-10 lg:gap-16">
+            {desktopFrames[0].map((step, i) => (
+              <div
+                key={step.number}
+                ref={(el) => {
+                  stepRefs.current[i] = el;
+                }}
+              >
+                <StepCard step={step} index={i} isVisible={visibleSteps.has(i)} />
+              </div>
+            ))}
+          </div>
+
+          <div className="hidden w-full shrink-0 snap-start md:grid md:grid-cols-2 md:gap-10 lg:gap-16">
+            {desktopFrames[1].map((step, i) => {
+              const stepIndex = i + 2;
+              return (
+                <div
+                  key={step.number}
+                  ref={(el) => {
+                    stepRefs.current[stepIndex] = el;
+                  }}
+                >
+                  <StepCard step={step} index={stepIndex} isVisible={visibleSteps.has(stepIndex)} />
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex w-full shrink-0 snap-start md:hidden">
             <div
-              key={step.number}
+              className="w-full"
               ref={(el) => {
-                stepRefs.current[i] = el;
+                stepRefs.current[0] = el;
               }}
             >
-              <StepRow
-                step={step}
-                index={i}
-                isVisible={visibleSteps.has(i)}
-              />
-              {i < steps.length - 1 && (
-                <div className="flex justify-center mt-16 md:mt-24">
-                  <div
-                    className="w-px h-12 md:h-16"
-                    style={{ backgroundColor: "hsl(160 12% 80%)" }}
-                  />
-                </div>
-              )}
+              <StepCard step={steps[0]} index={0} isVisible={visibleSteps.has(0)} />
             </div>
-          ))}
+          </div>
+          {steps.slice(1).map((step, i) => {
+            const stepIndex = i + 1;
+            return (
+              <div key={step.number} className="flex w-full shrink-0 snap-start md:hidden">
+                <div
+                  className="w-full"
+                  ref={(el) => {
+                    stepRefs.current[stepIndex] = el;
+                  }}
+                >
+                  <StepCard step={step} index={stepIndex} isVisible={visibleSteps.has(stepIndex)} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

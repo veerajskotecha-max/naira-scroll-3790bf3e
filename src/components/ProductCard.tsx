@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Heart } from "lucide-react";
+import { ShoppingBag, Heart, Star } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
 
 export interface Product {
@@ -14,6 +14,8 @@ export interface Product {
   sizes: string[];
   availability: "In Stock" | "Pre-Order";
   tag?: string;
+  rating?: number;
+  reviewCount?: number;
 }
 
 interface ProductCardProps {
@@ -31,8 +33,13 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
   const slug = product.id || toSlug(product.name);
   const wishlisted = isWishlisted(slug);
 
+  // Default rating for demo — in production this comes from reviews data
+  const rating = product.rating ?? 4.8;
+  const reviewCount = product.reviewCount ?? 24;
+
   return (
     <div
+      data-product-card
       className={`group transition-all ease-out ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
@@ -47,20 +54,20 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
         {/* Image area */}
         <div
           className="relative overflow-hidden transition-all duration-300"
-          style={{
-            aspectRatio: "3/4",
-          }}
+          style={{ aspectRatio: "3/4" }}
         >
           {/* Primary image */}
           <img
             src={product.image}
-            alt={product.name}
+            alt={`${product.name} — ${product.category} by Naira Flore`}
             className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
             style={{
               opacity: hovered ? 0 : 1,
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
             loading="lazy"
+            width={400}
+            height={533}
           />
           {/* Hover image */}
           <img
@@ -72,6 +79,8 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
             loading="lazy"
+            width={400}
+            height={533}
           />
 
           {/* Tag */}
@@ -87,18 +96,26 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             {product.tag || "New"}
           </span>
 
+          {/* Stock badge */}
+          {product.availability === "Pre-Order" && (
+            <span
+              className="absolute top-2.5 right-10 z-20 text-[8px] font-medium uppercase tracking-[0.1em] px-2 py-[3px]"
+              style={{ backgroundColor: "hsl(35 90% 55%)", color: "#fff" }}
+            >
+              Pre-Order
+            </span>
+          )}
+
           {/* Wishlist icon */}
           <button
-            className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center transition-all duration-200"
-            style={{
-              borderRadius: '50%',
-              backgroundColor: "hsla(0,0%,100%,0.85)",
-            }}
+            className="absolute top-3 right-3 z-20 w-10 h-10 flex items-center justify-center transition-all duration-200"
+            style={{ borderRadius: "50%", backgroundColor: "hsla(0,0%,100%,0.85)" }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               toggleItem({ id: slug, name: product.name, price: product.price, image: product.image });
             }}
+            aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           >
             <Heart
               size={15}
@@ -110,43 +127,27 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             />
           </button>
 
-          {/* Add to Cart pill (tablet + desktop hover) */}
+          {/* Desktop: Add to Cart hover overlay */}
           <div
-            className="hidden md:flex absolute inset-x-0 bottom-0 z-20 items-end justify-center pb-5 transition-all duration-300 ease-out pointer-events-none"
+            className="absolute inset-x-0 bottom-0 z-20 hidden md:flex items-end justify-center pb-4 transition-all duration-300 ease-out"
             style={{
               opacity: hovered ? 1 : 0,
-              transform: hovered ? "translateY(0)" : "translateY(6px)",
+              transform: hovered ? "translateY(0)" : "translateY(8px)",
             }}
           >
             <button
-              className="pointer-events-auto inline-flex items-center gap-2 px-5 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-200"
-              style={{
-                backgroundColor: "hsla(0, 0%, 100%, 0.92)",
-                color: "hsl(186 35% 22%)",
-                border: "1px solid hsla(0, 0%, 100%, 0.9)",
-                borderRadius: "9999px",
-                boxShadow: "0 2px 10px hsla(0, 0%, 0%, 0.08)",
-                backdropFilter: "blur(6px)",
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "hsl(186 35% 22%)";
-                e.currentTarget.style.color = "hsl(0 0% 100%)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "hsla(0, 0%, 100%, 0.92)";
-                e.currentTarget.style.color = "hsl(186 35% 22%)";
-              }}
+              className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
+              style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
             >
-              <ShoppingBag size={12} strokeWidth={1.75} />
+              <ShoppingBag size={14} />
               Add to Cart
             </button>
           </div>
 
-          {/* Hover gradient overlay */}
+          {/* Hover gradient */}
           <div
             className="absolute inset-x-0 bottom-0 h-1/3 z-10 transition-opacity duration-300"
             style={{
@@ -157,26 +158,49 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
         </div>
 
         {/* Product info */}
-        <div className="pt-4 px-1">
+        <div className="pt-3 px-1">
+          {/* Star rating */}
+          <div className="flex items-center gap-1 mb-1.5">
+            <div className="flex items-center gap-0.5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={10}
+                  style={{
+                    color: star <= Math.floor(rating) ? "hsl(38 90% 50%)" : "hsl(0 0% 82%)",
+                    fill: star <= Math.floor(rating) ? "hsl(38 90% 50%)" : "none",
+                  }}
+                />
+              ))}
+            </div>
+            <span className="text-[11px]" style={{ color: "hsl(0 0% 55%)" }}>
+              {rating} ({reviewCount})
+            </span>
+          </div>
+
           <h3
             className="font-cormorant text-[16px] lg:text-[18px] font-medium leading-snug"
             style={{ color: "hsl(0 0% 18%)" }}
           >
             {product.name}
           </h3>
-          <p
-            className="font-cormorant text-[13px] lg:text-[14px] mt-1"
-            style={{ color: "hsl(0 0% 48%)" }}
-          >
+          <p className="font-cormorant text-[13px] lg:text-[14px] mt-0.5" style={{ color: "hsl(0 0% 48%)" }}>
             {product.category}
           </p>
-          <p
-            className="font-cormorant text-[15px] lg:text-[16px] font-semibold mt-2"
-            style={{ color: "hsl(186 35% 28%)" }}
-          >
+          <p className="font-cormorant text-[15px] lg:text-[16px] font-semibold mt-1.5" style={{ color: "hsl(186 35% 28%)" }}>
             FROM <span className="font-bold">{product.price}</span>
           </p>
 
+          {/* Mobile: always-visible ATC button */}
+          <button
+            className="md:hidden w-full mt-3 py-3 flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 min-h-[44px]"
+            style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            aria-label={`Add ${product.name} to cart`}
+          >
+            <ShoppingBag size={13} />
+            Add to Cart
+          </button>
         </div>
       </Link>
     </div>

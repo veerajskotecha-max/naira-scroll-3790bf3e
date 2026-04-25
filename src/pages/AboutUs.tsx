@@ -8,7 +8,7 @@ import AboutCTA from "@/components/about/AboutCTA";
 import Footer from "@/components/Footer";
 
 const AboutUs = () => (
-  <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+  <div className="pt-[98px] md:pt-[108px] lg:pt-[120px]">
     <AboutHero />
     <AboutTimeline />
     <AboutEthos />

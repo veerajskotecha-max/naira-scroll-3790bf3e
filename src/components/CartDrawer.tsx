@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 const FREE_SHIPPING_THRESHOLD = 2999;
 
 const CartDrawer = () => {
-  const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen } = useCart();
+  const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing } = useCart();
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -90,7 +90,7 @@ const CartDrawer = () => {
                   <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                     <div>
                       <p className="font-cormorant text-[15px] font-semibold truncate" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
-                      {item.size && <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>Size: {item.size}</p>}
+                      {item.selectedOptions?.length ? <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>{item.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(" · ")}</p> : item.size && <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>Size: {item.size}</p>}
                       <p className="font-cormorant text-[15px] font-bold mt-1" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
                     </div>
                     <div className="flex items-center justify-between mt-2">
@@ -124,12 +124,14 @@ const CartDrawer = () => {
               </div>
               {/* CTA */}
               <button
-                className="w-full py-4 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 flex items-center justify-center gap-2 min-h-[52px]"
+                onClick={checkout}
+                disabled={isLoading || isSyncing}
+                className="w-full py-4 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
               >
-                <Lock size={13} strokeWidth={2} /> Secure Checkout
+                {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
               {/* Trust badges */}
               <div className="flex flex-col items-center gap-2">

@@ -9,14 +9,6 @@ import NewArrivals from "./NewArrivals";
 gsap.registerPlugin(ScrollTrigger);
 
 import heroModel1 from "@/assets/naira-final-hero-1.png";
-import heroModel2 from "@/assets/naira-final-hero-2.png";
-import heroModel3 from "@/assets/naira-final-hero-3.png";
-
-export const SCROLL_SLIDES = [
-  { hero: heroModel1 },
-  { hero: heroModel2 },
-  { hero: heroModel3 },
-];
 
 const HeroScrollyWrapper = () => {
   const containerRef       = useRef<HTMLDivElement>(null);
@@ -24,25 +16,7 @@ const HeroScrollyWrapper = () => {
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
 
-  const [current, setCurrent]   = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const isAnimating             = useRef(false);
-
-  const next = useCallback(() => {
-    if (!isPaused && !isAnimating.current)
-      setCurrent((prev) => (prev + 1) % SCROLL_SLIDES.length);
-  }, [isPaused]);
-
-  useEffect(() => {
-    const id = setInterval(next, 4500);
-    return () => clearInterval(id);
-  }, [next]);
-
-  useEffect(() => {
-    const onScroll = () => setIsPaused(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const isAnimating = useRef(false);
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
@@ -175,8 +149,8 @@ const HeroScrollyWrapper = () => {
         /* Model max-width: wider on small screens so it doesn't look clipped */
         .hero-model-img { 
           max-width: 85vw; 
-          height: 50vh;
-          max-height: 420px;
+          height: 45vh;
+          max-height: 380px;
         }
         @media (min-width: 768px)  { 
           .hero-model-img { max-width: 55vw; height: min(590px, calc(100% - 6vh)); max-height: none; } 
@@ -190,24 +164,17 @@ const HeroScrollyWrapper = () => {
         style={{ bottom: 0, willChange: "transform, opacity" }}
         aria-hidden="true"
       >
-        {SCROLL_SLIDES.map((s, i) => (
-          <img
-            key={i}
-            src={s.hero}
-            alt=""
-            /* hero-model-img provides responsive max-width via the <style> block above */
-            className="hero-model-img absolute bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
-            style={{
-              opacity: current === i ? 1 : 0,
-              filter: "drop-shadow(0 8px 30px rgba(74,47,34,0.12))"
-            }}
-            loading={i === 0 ? "eager" : "lazy"}
-          />
-        ))}
+        <img
+          src={heroModel1}
+          alt=""
+          className="hero-model-img absolute bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
+          style={{ filter: "drop-shadow(0 8px 30px rgba(74,47,34,0.12))" }}
+          loading="eager"
+        />
       </div>
 
       <div>
-        <HeroSection current={current} setCurrent={setCurrent} />
+        <HeroSection />
       </div>
 
       <TrustStrip />

@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import heroModel1 from "@/assets/naira-final-hero-1.png";
-import heroModel2 from "@/assets/naira-final-hero-2.png";
-import heroModel3 from "@/assets/naira-final-hero-3.png";
-
-// The 3 hero models — used as both the main carousel and the featured collection previews
-const HERO_MODELS = [heroModel1, heroModel2, heroModel3];
 
 // ─── Lerp helper ───────────────────────────────────────────────
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -63,13 +58,7 @@ const MaskWord = ({
   </span>
 );
 
-const HeroSection = ({
-  current,
-  setCurrent,
-}: {
-  current: number;
-  setCurrent: (idx: number) => void;
-}) => {
+const HeroSection = () => {
   const [mounted, setMounted] = useState(false);
 
   // Parallax refs
@@ -84,123 +73,12 @@ const HeroSection = ({
   const glowVisible = useRef(false);
   const rafId       = useRef<number>(0);
 
-  // Touch swipe refs — for mobile carousel navigation
-  const touchStartX = useRef<number>(0);
-  const touchStartY = useRef<number>(0);
-
-  // ── Mount: triggers the kinetic reveal cascade ──────────────────
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 120);
-    return () => clearTimeout(t);
-  }, []);
-
-  // ── EFFECT 2: Parallax depth layers ────────────────────────────
-  useEffect(() => {
-    let ticking = false;
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const section = sectionRef.current;
-        if (!section) { ticking = false; return; }
-
-        const scrollY  = window.scrollY;
-        const sectionH = section.offsetHeight;
-
-        // Only apply within the hero's own height
-        if (scrollY > sectionH) { ticking = false; return; }
-
-        // Watermark drifts UP slowly — 0.25× → feels far-away / deep
-        if (watermarkRef.current) {
-          watermarkRef.current.style.transform = `translateY(${scrollY * 0.25}px)`;
-        }
-        // Text panel drifts UP slightly faster → feels closer / foreground
-        if (textLayerRef.current) {
-          textLayerRef.current.style.transform = `translateY(${scrollY * -0.06}px)`;
-        }
-
-        ticking = false;
-      });
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // ── EFFECT 3: Cursor glow with spring lag ───────────────────────
-  useEffect(() => {
-    const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
-    if (prefersCoarse) return;
-
-    const section = sectionRef.current;
-    const glow    = glowRef.current;
-    if (!section || !glow) return;
-
-    const loop = () => {
-      pos.current.x = lerp(pos.current.x, mouse.current.x, 0.075);
-      pos.current.y = lerp(pos.current.y, mouse.current.y, 0.075);
-      glow.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
-      rafId.current = requestAnimationFrame(loop);
-    };
-    rafId.current = requestAnimationFrame(loop);
-
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
-      mouse.current.x = e.clientX - rect.left - 150;
-      mouse.current.y = e.clientY - rect.top  - 150;
-
-      if (!glowVisible.current) {
-        glowVisible.current = true;
-        glow.style.opacity = "1";
-        pos.current.x = mouse.current.x;
-        pos.current.y = mouse.current.y;
-      }
-    };
-
-    const onMouseLeave = () => {
-      glowVisible.current = false;
-      glow.style.opacity = "0";
-    };
-
-    section.addEventListener("mousemove", onMouseMove);
-    section.addEventListener("mouseleave", onMouseLeave);
-
-    return () => {
-      cancelAnimationFrame(rafId.current);
-      section.removeEventListener("mousemove", onMouseMove);
-      section.removeEventListener("mouseleave", onMouseLeave);
-    };
-  }, []);
-
-  // ── Touch swipe handlers (mobile carousel) ─────────────────────
-  // Only fires when horizontal swipe dominates vertical — safe from scroll interference
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const dx = touchStartX.current - e.changedTouches[0].clientX;
-    const dy = touchStartY.current - e.changedTouches[0].clientY;
-    // Only register as horizontal swipe if dx is dominant (not a scroll gesture)
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      if (dx > 0) {
-        setCurrent((current + 1) % HERO_MODELS.length);
-      } else {
-        setCurrent((current - 1 + HERO_MODELS.length) % HERO_MODELS.length);
-      }
-    }
-  };
-
-  const previewIndices = HERO_MODELS.map((_, i) => i).filter((i) => i !== current);
+  // Touch swipe refs removed since we only have 1 model now
 
   return (
     <section
       ref={sectionRef}
       className="relative w-full overflow-hidden"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       style={{
         backgroundColor: "#E5B9A4",
         minHeight: "min(890px, 90vh)",
@@ -327,132 +205,7 @@ const HeroSection = ({
           <div className="h-[330px] md:h-[460px] lg:h-[590px] xl:h-[690px] w-[140px] md:w-[210px] lg:w-[290px] xl:w-[360px]" />
         </div>
 
-        {/* RIGHT BOTTOM — Featured collection (desktop only) */}
-        <div
-          className="hidden lg:flex flex-col items-end justify-end pb-20 xl:pb-24 flex-1 z-20 order-3"
-          style={{
-            opacity: mounted ? 1 : 0,
-            transform: mounted ? "translateY(0)" : "translateY(16px)",
-            transition: "opacity 0.7s ease, transform 0.7s ease",
-            transitionDelay: "700ms",
-          }}
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <span
-              className="w-[5px] h-[5px] rounded-full"
-              style={{ backgroundColor: "#4A2F22" }}
-            />
-            <span
-              className="font-cormorant text-[11px] xl:text-[12px] font-medium uppercase tracking-[0.18em]"
-              style={{ color: "#4A2F22" }}
-            >
-              FEATURED COLLECTION
-            </span>
-          </div>
-
-          <div className="flex gap-3">
-            {previewIndices.map((modelIdx) => (
-              <button
-                key={modelIdx}
-                onClick={() => setCurrent(modelIdx)}
-                className="w-[90px] h-[120px] xl:w-[100px] xl:h-[135px] rounded-full overflow-hidden relative transition-all duration-300 hover:scale-105"
-                style={{
-                  border: "2px solid rgba(74,47,34,0.18)",
-                  outline: "none",
-                }}
-                aria-label={`Switch to model ${modelIdx + 1}`}
-              >
-                <img
-                  src={HERO_MODELS[modelIdx]}
-                  alt={`Hero model ${modelIdx + 1}`}
-                  className="w-full h-full object-cover object-top"
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Dot indicators */}
-          <div className="flex items-center gap-0 mt-4">
-            {HERO_MODELS.map((_, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-center cursor-pointer"
-                style={{ width: 28, height: 44 }}
-                onClick={() => setCurrent(i)}
-                role="button"
-                aria-label={`Go to model ${i + 1}`}
-              >
-                <span
-                  className="rounded-full transition-all duration-300 block"
-                  style={{
-                    width: 6,
-                    height: 6,
-                    backgroundColor: current === i ? "#4A2F22" : "rgba(74,47,34,0.25)",
-                    transform: current === i ? "scale(1.4)" : "scale(1)",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* MOBILE — Featured collection below hero */}
-      <div className="lg:hidden flex flex-col items-center pb-10 px-6 relative z-10">
-        <div className="flex items-center gap-2 mb-4">
-          <span
-            className="w-[5px] h-[5px] rounded-full"
-            style={{ backgroundColor: "#4A2F22" }}
-          />
-          <span
-            className="font-cormorant text-[11px] font-medium uppercase tracking-[0.18em]"
-            style={{ color: "#4A2F22" }}
-          >
-            FEATURED COLLECTION
-          </span>
-        </div>
-
-        <div className="flex gap-3">
-          {previewIndices.map((modelIdx) => (
-            <button
-              key={modelIdx}
-              onClick={() => setCurrent(modelIdx)}
-              className="w-[72px] h-[96px] md:w-[80px] md:h-[106px] rounded-full overflow-hidden relative transition-all duration-300 active:scale-95"
-              style={{ border: "2px solid rgba(74,47,34,0.18)" }}
-              aria-label={`Switch to model ${modelIdx + 1}`}
-            >
-              <img
-                src={HERO_MODELS[modelIdx]}
-                alt={`Hero model ${modelIdx + 1}`}
-                className="w-full h-full object-cover object-top"
-              />
-            </button>
-          ))}
-        </div>
-
-        {/* Mobile dot indicators */}
-        <div className="flex items-center gap-0 mt-4">
-          {HERO_MODELS.map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-center cursor-pointer"
-              style={{ width: 28, height: 44 }}
-              onClick={() => setCurrent(i)}
-              role="button"
-              aria-label={`Go to model ${i + 1}`}
-            >
-              <span
-                className="rounded-full transition-all duration-300 block"
-                style={{
-                  width: 6,
-                  height: 6,
-                  backgroundColor: current === i ? "#4A2F22" : "rgba(74,47,34,0.25)",
-                  transform: current === i ? "scale(1.4)" : "scale(1)",
-                }}
-              />
-            </div>
-          ))}
-        </div>
+        {/* REMOVED PREVIEW AND DOTS SINCE WE ONLY USE 1 STATIC MODEL */}
       </div>
     </section>
   );

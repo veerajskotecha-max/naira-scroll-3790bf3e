@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
@@ -10,19 +11,33 @@ import UrgencyNotification from "@/components/UrgencyNotification";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";
 import product1 from "@/assets/product-1.jpg";
+import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 
 const ProductDetail = () => {
   const [selectedSize] = useState("M");
+  const { id } = useParams();
+  const { data: product } = useQuery({
+    queryKey: ["shopify-product", id],
+    queryFn: () => fetchShopifyProductByHandle(id ?? ""),
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const title = product?.title ?? "Midnight Silk Drape Saree";
+  const description = product?.description || "A contemporary pre-draped silk saree with hand-embroidered pallu. Premium indo-western fusion wear by Naira Flore.";
+  const price = product?.priceRange.minVariantPrice.amount ?? "18500";
+  const priceLabel = product ? formatShopifyPrice(product.priceRange.minVariantPrice) : "₹18,500";
+  const image = product?.images.edges[0]?.node.url ?? product1;
 
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Midnight Silk Drape Saree",
-    description: "A contemporary pre-draped silk saree with hand-embroidered pallu. Premium indo-western fusion wear by Naira Flore.",
+    name: title,
+    description,
     brand: { "@type": "Brand", name: "Naira Flore" },
     offers: {
       "@type": "Offer",
-      price: "18500",
+      price,
       priceCurrency: "INR",
       availability: "https://schema.org/InStock",
       seller: { "@type": "Organization", name: "Naira Flore" },
@@ -37,8 +52,8 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
       <Helmet>
-        <title>Midnight Silk Drape Saree | Naira Flore</title>
-        <meta name="description" content="Shop the Midnight Silk Drape Saree by Naira Flore — a pre-draped contemporary saree with hand-embroidered pallu. Premium Indo-Western fusion wear. Free shipping above ₹2,999." />
+        <title>{title} | Naira Flore</title>
+        <meta name="description" content={`Shop ${title} by Naira Flore — ${description.slice(0, 110)}`} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
@@ -50,13 +65,13 @@ const ProductDetail = () => {
           <span>/</span>
           <Link to="/shop" className="transition-colors hover:text-foreground">Shop</Link>
           <span>/</span>
-          <span style={{ color: "hsl(0 0% 30%)" }}>Midnight Silk Drape Saree</span>
+          <span style={{ color: "hsl(0 0% 30%)" }}>{title}</span>
         </nav>
       </div>
 
       {/* Mobile gallery */}
       <div className="md:hidden pt-[94px]">
-        <ProductGallery />
+        <ProductGallery product={product} />
       </div>
 
       {/* Main Product Section */}
@@ -64,12 +79,12 @@ const ProductDetail = () => {
         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
           {/* Desktop gallery */}
           <div className="hidden md:block">
-            <ProductGallery />
+            <ProductGallery product={product} />
           </div>
 
           {/* Details */}
           <div className="mt-5 md:mt-0 lg:py-2">
-            <ProductDetails />
+            <ProductDetails product={product} />
           </div>
         </div>
       </div>
@@ -80,9 +95,9 @@ const ProductDetail = () => {
       
       <Footer />
       <StickyAddToCart
-        image={product1}
-        title="Midnight Silk Drape Saree"
-        price="₹18,500"
+        image={image}
+        title={title}
+        price={priceLabel}
         selectedSize={selectedSize}
       />
       <UrgencyNotification />

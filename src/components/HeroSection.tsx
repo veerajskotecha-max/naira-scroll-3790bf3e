@@ -73,8 +73,90 @@ const HeroSection = () => {
   const glowVisible = useRef(false);
   const rafId       = useRef<number>(0);
 
-  // Touch swipe refs removed since we only have 1 model now
+  // ── Mount: triggers the kinetic reveal cascade ──────────────────
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 120);
+    return () => clearTimeout(t);
+  }, []);
 
+  // ── EFFECT 2: Parallax depth layers ────────────────────────────
+  useEffect(() => {
+    let ticking = false;
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const section = sectionRef.current;
+        if (!section) { ticking = false; return; }
+
+        const scrollY  = window.scrollY;
+        const sectionH = section.offsetHeight;
+
+        // Only apply within the hero's own height
+        if (scrollY > sectionH) { ticking = false; return; }
+
+        // Watermark drifts UP slowly — 0.25× → feels far-away / deep
+        if (watermarkRef.current) {
+          watermarkRef.current.style.transform = `translateY(${scrollY * 0.25}px)`;
+        }
+        // Text panel drifts UP slightly faster → feels closer / foreground
+        if (textLayerRef.current) {
+          textLayerRef.current.style.transform = `translateY(${scrollY * -0.06}px)`;
+        }
+
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // ── EFFECT 3: Cursor glow with spring lag ───────────────────────
+  useEffect(() => {
+    const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
+    if (prefersCoarse) return;
+
+    const section = sectionRef.current;
+    const glow    = glowRef.current;
+    if (!section || !glow) return;
+
+    const loop = () => {
+      pos.current.x = lerp(pos.current.x, mouse.current.x, 0.075);
+      pos.current.y = lerp(pos.current.y, mouse.current.y, 0.075);
+      glow.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
+      rafId.current = requestAnimationFrame(loop);
+    };
+    rafId.current = requestAnimationFrame(loop);
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = section.getBoundingClientRect();
+      mouse.current.x = e.clientX - rect.left - 150;
+      mouse.current.y = e.clientY - rect.top  - 150;
+
+      if (!glowVisible.current) {
+        glowVisible.current = true;
+        glow.style.opacity = "1";
+        pos.current.x = mouse.current.x;
+        pos.current.y = mouse.current.y;
+      }
+    };
+
+    const onMouseLeave = () => {
+      glowVisible.current = false;
+      glow.style.opacity = "0";
+    };
+
+    section.addEventListener("mousemove", onMouseMove);
+    section.addEventListener("mouseleave", onMouseLeave);
+
+    return () => {
+      cancelAnimationFrame(rafId.current);
+      section.removeEventListener("mousemove", onMouseMove);
+      section.removeEventListener("mouseleave", onMouseLeave);
+    };
+  }, []);
   return (
     <section
       ref={sectionRef}

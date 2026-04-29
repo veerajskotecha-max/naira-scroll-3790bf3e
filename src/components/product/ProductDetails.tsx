@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, Phone, Mail, MessageCircle, Truck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -21,6 +21,12 @@ const fallbackSizes = ["XS", "S", "M", "L", "XL"];
 const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) => {
   const sizeOptions = useMemo(() => product?.options.find((option) => option.name.toLowerCase() === "size")?.values ?? fallbackSizes, [product]);
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0] ?? "M");
+
+  useEffect(() => {
+    if (sizeOptions.length > 0 && !sizeOptions.includes(selectedSize)) {
+      setSelectedSize(sizeOptions[0]);
+    }
+  }, [selectedSize, sizeOptions]);
   const [quantity, setQuantity] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const { addItem, setDrawerOpen } = useCart();
@@ -75,7 +81,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em]"
         style={{ color: "hsl(0 0% 12%)" }}
       >
-        Midnight Silk Drape Saree
+        {title}
       </h1>
 
       {/* Price + Tax */}

@@ -42,11 +42,6 @@ const ProductDetail = () => {
       availability: "https://schema.org/InStock",
       seller: { "@type": "Organization", name: "Naira Flore" },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "24",
-    },
   };
 
   return (

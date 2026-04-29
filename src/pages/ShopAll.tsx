@@ -63,6 +63,7 @@ const FilterSection = ({
 
 /* ───── Sidebar Filter Content ───── */
 const FilterSidebar = ({
+  categories,
   selectedCategories,
   toggleCategory,
   priceRange,
@@ -72,6 +73,7 @@ const FilterSidebar = ({
   selectedAvailability,
   toggleAvailability,
 }: {
+  categories: string[];
   selectedCategories: string[];
   toggleCategory: (c: string) => void;
   priceRange: number[];
@@ -237,6 +239,7 @@ const ShopAll = () => {
     );
 
   const filterProps = {
+    categories,
     selectedCategories,
     toggleCategory,
     priceRange,

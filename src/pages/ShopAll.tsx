@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
@@ -9,33 +10,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import ProductCard, { type Product } from "@/components/ProductCard";
+import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import ShopHero from "@/components/shop/ShopHero";
 import CustomizationCTA from "@/components/product/CustomizationCTA";
+import { fetchShopifyProducts } from "@/lib/shopify";
 
-import product1 from "@/assets/product-1.jpg";
-import product1Hover from "@/assets/product-1-hover.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product2Hover from "@/assets/product-2-hover.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product3Hover from "@/assets/product-3-hover.jpg";
-import product4 from "@/assets/product-4.jpg";
-import product4Hover from "@/assets/product-4-hover.jpg";
-
-const allProducts: Product[] = [
-  { image: product1, hoverImage: product1Hover, name: "Midnight Silk Drape Saree", category: "Fusion Sarees", price: "₹18,500", numericPrice: 18500, sizes: ["S", "M", "L", "XL"], availability: "In Stock" },
-  { image: product2, hoverImage: product2Hover, name: "Ivory Embroidered Anarkali", category: "Designer Anarkali", price: "₹22,800", numericPrice: 22800, sizes: ["XS", "S", "M", "L"], availability: "In Stock" },
-  { image: product3, hoverImage: product3Hover, name: "Terracotta Lehenga Set", category: "Contemporary Lehengas", price: "₹28,500", numericPrice: 28500, sizes: ["S", "M", "L"], availability: "Pre-Order" },
-  { image: product4, hoverImage: product4Hover, name: "Lavender Chiffon Kurta Set", category: "Premium Kurtas", price: "₹12,900", numericPrice: 12900, sizes: ["XS", "S", "M", "L", "XL"], availability: "In Stock" },
-  { image: product3, hoverImage: product3Hover, name: "Rose Gold Festive Saree", category: "Festive Collection", price: "₹24,500", numericPrice: 24500, sizes: ["S", "M", "L"], availability: "In Stock", tag: "BESTSELLER" },
-  { image: product1, hoverImage: product1Hover, name: "Emerald Silk Co-ord Set", category: "Co-ord Sets", price: "₹16,200", numericPrice: 16200, sizes: ["M", "L", "XL"], availability: "In Stock" },
-  { image: product2, hoverImage: product2Hover, name: "Pearl White Anarkali Gown", category: "Dresses", price: "₹19,800", numericPrice: 19800, sizes: ["XS", "S", "M"], availability: "Pre-Order" },
-  { image: product4, hoverImage: product4Hover, name: "Dusty Pink Sharara Set", category: "Co-ord Sets", price: "₹15,600", numericPrice: 15600, sizes: ["S", "M", "L", "XL"], availability: "In Stock" },
-  { image: product1, hoverImage: product1Hover, name: "Royal Blue Drape Saree", category: "Fusion Sarees", price: "₹21,000", numericPrice: 21000, sizes: ["M", "L"], availability: "In Stock", tag: "LIMITED" },
-];
-
-const categories = ["Dresses", "Co-ord Sets", "Fusion Sarees", "Festive Collection"];
 const sizes = ["XS", "S", "M", "L", "XL"];
 
 const categorySlugMap: Record<string, string> = {
@@ -225,6 +205,16 @@ const ShopAll = () => {
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
+  const { data: shopifyProducts = [], isLoading, isError } = useQuery({
+    queryKey: ["shopify-products", "shop-all"],
+    queryFn: () => fetchShopifyProducts(50),
+    staleTime: 1000 * 60 * 5,
+  });
+  const allProducts = useMemo(() => shopifyProducts.map(productFromShopify), [shopifyProducts]);
+  const categories = useMemo(
+    () => Array.from(new Set(allProducts.map((product) => product.category).filter(Boolean))),
+    [allProducts]
+  );
 
   const sortOptions = [
     { value: "newest", label: "Newest Arrivals" },
@@ -279,7 +269,7 @@ const ShopAll = () => {
 
   /* ── Memoized filtering + sorting ── */
   const filteredProducts = useMemo(() => {
-    let result = allProducts;
+    let result = [...allProducts];
 
     // Category filter
     if (selectedCategories.length > 0) {
@@ -321,7 +311,7 @@ const ShopAll = () => {
     }
 
     return result;
-  }, [selectedCategories, priceRange, selectedSizes, selectedAvailability, sortValue]);
+  }, [allProducts, selectedCategories, priceRange, selectedSizes, selectedAvailability, sortValue]);
 
   const activeFilterCount =
     selectedCategories.length +
@@ -389,7 +379,7 @@ const ShopAll = () => {
                 className="font-cormorant text-[14px] tracking-wide lg:absolute lg:left-1/2 lg:-translate-x-1/2"
                 style={{ color: "hsl(0 0% 45%)" }}
               >
-                {filteredProducts.length} Product{filteredProducts.length !== 1 ? "s" : ""}
+                {isLoading ? "Loading" : filteredProducts.length} Product{!isLoading && filteredProducts.length !== 1 ? "s" : ""}
               </p>
 
               {/* Sort */}
@@ -614,13 +604,29 @@ const ShopAll = () => {
               </div>
             )}
 
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <div
+                className={`grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 transition-opacity duration-300 ${
+                  mobileLayout === "list" ? "grid-cols-1 gap-y-8" : "grid-cols-2 gap-y-10"
+                } ${
+                  gridCols === 4 ? "lg:grid-cols-4 lg:gap-x-6 lg:gap-y-14" : "lg:grid-cols-2 lg:gap-x-10 lg:gap-y-16"
+                }`}
+              >
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-muted" style={{ aspectRatio: "3/4" }} />
+                    <div className="h-4 bg-muted mt-3 w-3/4" />
+                    <div className="h-3 bg-muted mt-2 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 || isError ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <p className="font-cormorant text-[22px] font-semibold mb-2" style={{ color: "hsl(0 0% 25%)" }}>
                   No products found
                 </p>
                 <p className="font-cormorant text-[15px] mb-6" style={{ color: "hsl(0 0% 50%)" }}>
-                  Try adjusting your filters to discover more pieces.
+                  {isError ? "Shopify products could not be loaded right now." : "Try adjusting your filters to discover more pieces."}
                 </p>
                 <button
                   onClick={resetFilters}
@@ -641,7 +647,7 @@ const ShopAll = () => {
                 }`}
               >
                 {filteredProducts.map((product, i) => (
-                  <ProductCard key={product.name} product={product} index={i} visible />
+                  <ProductCard key={product.handle ?? product.name} product={product} index={i} visible />
                 ))}
               </div>
             )}

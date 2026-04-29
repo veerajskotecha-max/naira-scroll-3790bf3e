@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, Phone, Mail, MessageCircle, Truck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -14,39 +14,57 @@ import {
 } from "@/components/ui/select";
 
 import product1 from "@/assets/product-1.jpg";
+import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
 
-const sizes = ["XS", "S", "M", "L", "XL"];
+const fallbackSizes = ["XS", "S", "M", "L", "XL"];
 
-const ProductDetails = () => {
-  const [selectedSize, setSelectedSize] = useState("M");
+const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) => {
+  const sizeOptions = useMemo(() => product?.options.find((option) => option.name.toLowerCase() === "size")?.values ?? fallbackSizes, [product]);
+  const [selectedSize, setSelectedSize] = useState(sizeOptions[0] ?? "M");
   const [quantity, setQuantity] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const { addItem, setDrawerOpen } = useCart();
 
-  const handleAddToCart = () => {
-    addItem({
-      id: "midnight-silk-drape-saree",
-      name: "Midnight Silk Drape Saree",
-      price: 18500,
-      priceLabel: "₹18,500",
-      image: product1,
+  const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
+    const variants = product?.variants.edges.map((edge) => edge.node) ?? [];
+    return variants.find((variant) =>
+      variant.selectedOptions.some((option) => option.name.toLowerCase() === "size" && option.value === selectedSize)
+    ) ?? variants.find((variant) => variant.availableForSale) ?? variants[0];
+  }, [product, selectedSize]);
+
+  const title = product?.title ?? "Midnight Silk Drape Saree";
+  const description = product?.description || "The Midnight Silk Drape Saree is a contemporary masterpiece that reimagines the traditional saree for the modern woman.";
+  const image = product?.images.edges[0]?.node.url ?? product1;
+  const priceMoney = selectedVariant?.price ?? product?.priceRange.minVariantPrice;
+  const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "₹18,500";
+  const numericPrice = priceMoney ? Number(priceMoney.amount) : 18500;
+
+  const handleAddToCart = async () => {
+    if (!selectedVariant?.id) {
+      toast.error("This product is currently unavailable.");
+      return;
+    }
+
+    await addItem({
+      id: product?.handle ?? "midnight-silk-drape-saree",
+      variantId: selectedVariant.id,
+      name: title,
+      price: numericPrice,
+      priceLabel,
+      currencyCode: priceMoney?.currencyCode ?? "INR",
+      image,
       size: selectedSize,
+      variantTitle: selectedVariant.title,
+      selectedOptions: selectedVariant.selectedOptions,
     }, quantity);
     toast("Added to cart", {
-      description: `${quantity}× Midnight Silk Drape Saree (${selectedSize})`,
+      description: `${quantity}× ${title}${selectedSize ? ` (${selectedSize})` : ""}`,
       action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
     });
   };
 
-  const handleBuyNow = () => {
-    addItem({
-      id: "midnight-silk-drape-saree",
-      name: "Midnight Silk Drape Saree",
-      price: 18500,
-      priceLabel: "₹18,500",
-      image: product1,
-      size: selectedSize,
-    }, quantity);
+  const handleBuyNow = async () => {
+    await handleAddToCart();
     setDrawerOpen(true);
   };
 
@@ -66,7 +84,7 @@ const ProductDetails = () => {
           className="font-cormorant text-[22px] md:text-[24px] font-bold"
           style={{ color: "hsl(0 0% 15%)" }}
         >
-          ₹18,500
+          {priceLabel}
         </span>
         <span
           className="ml-2 text-[11px] tracking-[0.04em]"
@@ -120,7 +138,7 @@ const ProductDetails = () => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-none">
-            {sizes.map((size) => (
+            {sizeOptions.map((size) => (
               <SelectItem key={size} value={size} className="text-[13px] rounded-none">
                 {size}
               </SelectItem>
@@ -254,9 +272,7 @@ const ProductDetails = () => {
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-[13px] leading-[1.7] pb-2" style={{ color: "hsl(0 0% 45%)" }}>
-              The Midnight Silk Drape Saree is a contemporary masterpiece that reimagines the traditional saree for the modern woman.
-              Featuring pre-draped pleats and a structured bodice, this piece offers effortless elegance without the complexity of traditional draping.
-              Crafted from premium midnight blue silk with delicate hand-embroidered details along the pallu.
+              {description}
             </p>
           </AccordionContent>
         </AccordionItem>

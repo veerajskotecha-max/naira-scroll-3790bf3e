@@ -8,18 +8,29 @@ interface StickyAddToCartProps {
   title: string;
   price: string;
   selectedSize: string;
+  productHandle?: string;
+  variantId?: string;
+  numericPrice?: number;
+  currencyCode?: string;
 }
 
-const StickyAddToCart = ({ image, title, price, selectedSize }: StickyAddToCartProps) => {
+const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = "midnight-silk-drape-saree", variantId, numericPrice = 18500, currencyCode = "INR" }: StickyAddToCartProps) => {
   const [visible, setVisible] = useState(false);
   const { addItem, setDrawerOpen } = useCart();
 
-  const handleAdd = () => {
-    addItem({
-      id: "midnight-silk-drape-saree",
+  const handleAdd = async () => {
+    if (!variantId) {
+      toast.error("This product is currently unavailable.");
+      return;
+    }
+
+    await addItem({
+      id: productHandle,
+      variantId,
       name: title,
-      price: 18500,
+      price: numericPrice,
       priceLabel: price,
+      currencyCode,
       image,
       size: selectedSize,
     });

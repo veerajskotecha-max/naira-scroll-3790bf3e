@@ -28,6 +28,7 @@ const ProductDetail = () => {
   const price = product?.priceRange.minVariantPrice.amount ?? "18500";
   const priceLabel = product ? formatShopifyPrice(product.priceRange.minVariantPrice) : "₹18,500";
   const image = product?.images.edges[0]?.node.url ?? product1;
+  const stickyVariant = product?.variants.edges.find((edge) => edge.node.availableForSale)?.node ?? product?.variants.edges[0]?.node;
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -94,6 +95,10 @@ const ProductDetail = () => {
         title={title}
         price={priceLabel}
         selectedSize={selectedSize}
+        productHandle={product?.handle}
+        variantId={stickyVariant?.id}
+        numericPrice={stickyVariant ? Number(stickyVariant.price.amount) : Number(price)}
+        currencyCode={stickyVariant?.price.currencyCode}
       />
       <UrgencyNotification />
     </div>

@@ -213,10 +213,10 @@ const HeroSection = () => {
         {/* LEFT — Parallax wrapper (foreground layer, -0.06× scroll) */}
         <div
           ref={textLayerRef}
-          className="flex-1 z-20 order-1 max-w-[420px] lg:max-w-[440px]"
+          className="flex-1 z-50 order-1 max-w-[420px] lg:max-w-[440px] relative"
           style={{ willChange: "transform" }}
         >
-          <div className="flex flex-col justify-center lg:justify-end pt-8 pb-4 lg:pt-0 pb-10 md:pb-14 lg:pb-24 text-center lg:text-left">
+          <div className="flex flex-col justify-center lg:justify-end pt-4 pb-0 lg:pt-0 lg:pb-24 text-center lg:text-left">
 
             {/* ── KINETIC HEADLINE ──────────────────────────────────
                 Each word is a MaskWord: slides up from below an
@@ -227,7 +227,7 @@ const HeroSection = () => {
                 original layout exactly.
             ───────────────────────────────────────────────────── */}
             <h1
-              className="font-cormorant text-[34px] md:text-[48px] lg:text-[58px] xl:text-[62px] font-medium mb-5 md:mb-6 text-center lg:text-left"
+              className="font-cormorant text-[34px] md:text-[48px] lg:text-[58px] xl:text-[62px] font-medium mb-3 md:mb-6 text-center lg:text-left"
               style={{
                 color: "#3D2B1F",
                 lineHeight: 1.18,
@@ -246,7 +246,7 @@ const HeroSection = () => {
 
             {/* ── SUBTITLE — fades in after all words have appeared */}
             <p
-              className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-[1.6] mb-8 md:mb-10"
+              className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-[1.6] mb-5 md:mb-10"
               style={{
                 color: "rgba(61, 43, 31, 0.7)",
                 opacity: mounted ? 1 : 0,

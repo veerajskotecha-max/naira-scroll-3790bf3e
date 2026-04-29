@@ -149,8 +149,8 @@ const HeroScrollyWrapper = () => {
         /* Model max-width: wider on small screens so it doesn't look clipped */
         .hero-model-img { 
           max-width: 85vw; 
-          height: 45vh;
-          max-height: 380px;
+          height: 40vh;
+          max-height: 320px;
         }
         @media (min-width: 768px)  { 
           .hero-model-img { max-width: 55vw; height: min(590px, calc(100% - 6vh)); max-height: none; } 
@@ -167,7 +167,7 @@ const HeroScrollyWrapper = () => {
         <img
           src={heroModel1}
           alt=""
-          className="hero-model-img absolute bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
+          className="hero-model-img absolute bottom-0 md:bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
           style={{ filter: "drop-shadow(0 8px 30px rgba(74,47,34,0.12))" }}
           loading="eager"
         />

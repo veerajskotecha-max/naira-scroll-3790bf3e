@@ -8,14 +8,19 @@ import product1Hover from "@/assets/product-1-hover.jpg";
 import product2 from "@/assets/product-2.jpg";
 import product3 from "@/assets/product-3.jpg";
 import product4 from "@/assets/product-4.jpg";
+import type { ShopifyProductNode } from "@/lib/shopify";
 
-const images = [product1, product1Hover, product2, product3, product4];
+const fallbackImages = [product1, product1Hover, product2, product3, product4];
 
-const ProductGallery = () => {
+const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const wishlisted = isWishlisted("midnight-silk-drape-saree");
+  const images = product?.images.edges.map((edge) => edge.node.url).filter(Boolean) ?? fallbackImages;
+  const productId = product?.handle ?? "midnight-silk-drape-saree";
+  const productName = product?.title ?? "Midnight Silk Drape Saree";
+  const firstImage = images[0] ?? product1;
+  const wishlisted = isWishlisted(productId);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
 
@@ -44,7 +49,7 @@ const ProductGallery = () => {
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleItem({ id: "midnight-silk-drape-saree", name: "Midnight Silk Drape Saree", price: "₹18,500", image: product1 });
+    toggleItem({ id: productId, name: productName, price: "", image: firstImage });
   };
 
   const WishlistBtn = (
@@ -110,7 +115,7 @@ const ProductGallery = () => {
           >
             <img
               src={img}
-              alt={`Midnight Silk Drape Saree - View ${i + 1}`}
+              alt={`${productName} - View ${i + 1}`}
               className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
             />
           </div>

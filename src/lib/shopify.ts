@@ -17,7 +17,6 @@ export interface ShopifyProductVariant {
   id: string;
   title: string;
   availableForSale: boolean;
-  quantityAvailable?: number | null;
   price: ShopifyMoney;
   selectedOptions: ShopifySelectedOption[];
 }
@@ -98,7 +97,6 @@ export const PRODUCTS_QUERY = `
                 id
                 title
                 availableForSale
-                quantityAvailable
                 price {
                   amount
                   currencyCode

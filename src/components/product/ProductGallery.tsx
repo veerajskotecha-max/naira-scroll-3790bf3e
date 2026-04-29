@@ -16,7 +16,8 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
   const [selectedImage, setSelectedImage] = useState(0);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const images = product?.images.edges.map((edge) => edge.node.url).filter(Boolean) ?? fallbackImages;
+  const productImages = product?.images.edges.map((edge) => edge.node.url).filter(Boolean) ?? [];
+  const images = productImages.length > 0 ? productImages : fallbackImages;
   const productId = product?.handle ?? "midnight-silk-drape-saree";
   const productName = product?.title ?? "Midnight Silk Drape Saree";
   const firstImage = images[0] ?? product1;

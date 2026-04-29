@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import heroModel1 from "@/assets/hero-model.png";
-import heroModel2 from "@/assets/hero-model-2.png";
-import heroModel3 from "@/assets/hero-model-3.png";
+import heroModel1 from "@/assets/naira-final-hero-1.png";
+import heroModel2 from "@/assets/naira-final-hero-2.png";
+import heroModel3 from "@/assets/naira-final-hero-3.png";
 
 // The 3 hero models — used as both the main carousel and the featured collection previews
 const HERO_MODELS = [heroModel1, heroModel2, heroModel3];

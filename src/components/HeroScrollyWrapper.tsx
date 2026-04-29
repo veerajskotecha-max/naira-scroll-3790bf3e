@@ -8,9 +8,9 @@ import NewArrivals from "./NewArrivals";
 
 gsap.registerPlugin(ScrollTrigger);
 
-import heroModel1 from "@/assets/hero-model.png";
-import heroModel2 from "@/assets/hero-model-2.png";
-import heroModel3 from "@/assets/hero-model-3.png";
+import heroModel1 from "@/assets/naira-final-hero-1.png";
+import heroModel2 from "@/assets/naira-final-hero-2.png";
+import heroModel3 from "@/assets/naira-final-hero-3.png";
 
 export const SCROLL_SLIDES = [
   { hero: heroModel1 },

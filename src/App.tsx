@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "./contexts/CartContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
+import { useCartSync } from "./hooks/useCartSync";
 import Header from "./components/Header";
 import CartDrawer from "./components/CartDrawer";
 import WishlistDrawer from "./components/WishlistDrawer";
@@ -24,6 +25,33 @@ import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
+const AppShell = () => {
+  useCartSync();
+
+  return (
+    <>
+      <ScrollToTop />
+      <Header />
+      <CartDrawer />
+      <WishlistDrawer />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/shop" element={<ShopAll />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/customize" element={<MadeForYou />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/exchange-return-policy" element={<ExchangeReturnPolicy />} />
+        <Route path="/faqs" element={<FAQs />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+};
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
@@ -33,24 +61,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <ScrollToTop />
-              <Header />
-              <CartDrawer />
-              <WishlistDrawer />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/shop" element={<ShopAll />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/customize" element={<MadeForYou />} />
-                <Route path="/about" element={<AboutUs />} />
-                <Route path="/contact" element={<ContactUs />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/exchange-return-policy" element={<ExchangeReturnPolicy />} />
-                <Route path="/faqs" element={<FAQs />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppShell />
             </BrowserRouter>
           </WishlistProvider>
         </CartProvider>

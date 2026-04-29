@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Heart, Star } from "lucide-react";
+import { ShoppingBag, Heart, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
+import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
 
 export interface Product {
   id?: string;
+  handle?: string;
   image: string;
   hoverImage: string;
   name: string;
@@ -14,8 +18,11 @@ export interface Product {
   sizes: string[];
   availability: "In Stock" | "Pre-Order";
   tag?: string;
-  rating?: number;
-  reviewCount?: number;
+  variantId?: string;
+  variantTitle?: string;
+  currencyCode?: string;
+  selectedOptions?: Array<{ name: string; value: string }>;
+  shopifyProduct?: ShopifyProductNode;
 }
 
 interface ProductCardProps {
@@ -27,15 +34,73 @@ interface ProductCardProps {
 const toSlug = (name: string) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+export const productFromShopify = (product: ShopifyProductNode): Product => {
+  const images = product.images.edges.map((edge) => edge.node.url);
+  const firstAvailableVariant = product.variants.edges.find((edge) => edge.node.availableForSale)?.node;
+  const firstVariant = firstAvailableVariant ?? product.variants.edges[0]?.node;
+  const price = firstVariant?.price ?? product.priceRange.minVariantPrice;
+  const sizes = product.options.find((option) => option.name.toLowerCase() === "size")?.values ??
+    firstVariant?.selectedOptions.map((option) => option.value) ??
+    [];
+
+  return {
+    id: product.handle,
+    handle: product.handle,
+    image: images[0] ?? "/placeholder.svg",
+    hoverImage: images[1] ?? images[0] ?? "/placeholder.svg",
+    name: product.title,
+    category: product.productType || product.vendor || "Naira Flore",
+    price: formatShopifyPrice(price),
+    numericPrice: Number(price.amount),
+    sizes,
+    availability: firstVariant?.availableForSale ? "In Stock" : "Pre-Order",
+    tag: product.tags[0] || "New",
+    variantId: firstVariant?.id,
+    variantTitle: firstVariant?.title,
+    currencyCode: price.currencyCode,
+    selectedOptions: firstVariant?.selectedOptions ?? [],
+    shopifyProduct: product,
+  };
+};
+
 const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) => {
   const [hovered, setHovered] = useState(false);
+  const [adding, setAdding] = useState(false);
   const { toggleItem, isWishlisted } = useWishlist();
-  const slug = product.id || toSlug(product.name);
+  const { addItem, setDrawerOpen, isLoading } = useCart();
+  const slug = product.handle || product.id || toSlug(product.name);
   const wishlisted = isWishlisted(slug);
 
-  // Default rating for demo — in production this comes from reviews data
-  const rating = product.rating ?? 4.8;
-  const reviewCount = product.reviewCount ?? 24;
+  const handleAddToCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!product.variantId) {
+      toast.error("This product is currently unavailable.");
+      return;
+    }
+
+    setAdding(true);
+    await addItem({
+      id: slug,
+      variantId: product.variantId,
+      name: product.name,
+      price: product.numericPrice,
+      priceLabel: product.price,
+      currencyCode: product.currencyCode ?? "INR",
+      image: product.image,
+      size: product.selectedOptions?.find((option) => option.name.toLowerCase() === "size")?.value,
+      variantTitle: product.variantTitle,
+      selectedOptions: product.selectedOptions,
+    });
+    setAdding(false);
+    toast("Added to cart", {
+      description: product.name,
+      action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
+    });
+  };
+
+  const disabled = adding || isLoading || !product.variantId || product.availability !== "In Stock";
 
   return (
     <div
@@ -56,7 +121,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           className="relative overflow-hidden transition-all duration-300"
           style={{ aspectRatio: "3/4" }}
         >
-          {/* Primary image */}
           <img
             src={product.image}
             alt={`${product.name} — ${product.category} by Naira Flore`}
@@ -69,7 +133,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             width={400}
             height={533}
           />
-          {/* Hover image */}
           <img
             src={product.hoverImage}
             alt={`${product.name} alternate view`}
@@ -83,7 +146,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             height={533}
           />
 
-          {/* Tag */}
           <span
             className="absolute top-2.5 left-2.5 md:top-3 md:left-3 z-20 text-[8px] md:text-[9px] font-normal uppercase tracking-[0.14em] px-2 py-[3px] md:px-2.5 md:py-1 transition-opacity duration-300"
             style={{
@@ -96,7 +158,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             {product.tag || "New"}
           </span>
 
-          {/* Stock badge */}
           {product.availability === "Pre-Order" && (
             <span
               className="absolute top-2.5 right-10 z-20 text-[8px] font-medium uppercase tracking-[0.1em] px-2 py-[3px]"
@@ -106,7 +167,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             </span>
           )}
 
-          {/* Wishlist icon */}
           <button
             className="absolute top-3 right-3 z-20 w-10 h-10 flex items-center justify-center transition-all duration-200"
             style={{ borderRadius: "50%", backgroundColor: "hsla(0,0%,100%,0.85)" }}
@@ -127,7 +187,6 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             />
           </button>
 
-          {/* Desktop: Add to Cart hover overlay */}
           <div
             className="absolute inset-x-0 bottom-0 z-20 hidden md:flex items-end justify-center pb-4 transition-all duration-300 ease-out"
             style={{
@@ -136,18 +195,19 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             }}
           >
             <button
-              className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200"
+              className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200 disabled:opacity-70"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onClick={handleAddToCart}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
+              disabled={disabled}
+              aria-label={`Add ${product.name} to cart`}
             >
-              <ShoppingBag size={14} />
-              Add to Cart
+              {adding ? <Loader2 size={14} className="animate-spin" /> : <ShoppingBag size={14} />}
+              {product.availability === "In Stock" ? "Add to Cart" : "Unavailable"}
             </button>
           </div>
 
-          {/* Hover gradient */}
           <div
             className="absolute inset-x-0 bottom-0 h-1/3 z-10 transition-opacity duration-300"
             style={{
@@ -157,27 +217,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           />
         </div>
 
-        {/* Product info */}
         <div className="pt-3 px-1">
-          {/* Star rating */}
-          <div className="flex items-center gap-1 mb-1.5">
-            <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={10}
-                  style={{
-                    color: star <= Math.floor(rating) ? "hsl(38 90% 50%)" : "hsl(0 0% 82%)",
-                    fill: star <= Math.floor(rating) ? "hsl(38 90% 50%)" : "none",
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-[11px]" style={{ color: "hsl(0 0% 55%)" }}>
-              {rating} ({reviewCount})
-            </span>
-          </div>
-
           <h3
             className="font-cormorant text-[16px] lg:text-[18px] font-medium leading-snug"
             style={{ color: "hsl(0 0% 18%)" }}
@@ -191,15 +231,15 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             FROM <span className="font-bold">{product.price}</span>
           </p>
 
-          {/* Mobile: always-visible ATC button */}
           <button
-            className="md:hidden w-full mt-3 py-3 flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 min-h-[44px]"
+            className="md:hidden w-full mt-3 py-3 flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 min-h-[44px] disabled:opacity-70"
             style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onClick={handleAddToCart}
+            disabled={disabled}
             aria-label={`Add ${product.name} to cart`}
           >
-            <ShoppingBag size={13} />
-            Add to Cart
+            {adding ? <Loader2 size={13} className="animate-spin" /> : <ShoppingBag size={13} />}
+            {product.availability === "In Stock" ? "Add to Cart" : "Unavailable"}
           </button>
         </div>
       </Link>

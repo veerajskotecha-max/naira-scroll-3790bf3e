@@ -1,62 +1,19 @@
 import { useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
 import FloatingFlower from "@/components/FloatingFlower";
-import ProductCard, { type Product } from "@/components/ProductCard";
-import product1 from "@/assets/product-1.jpg";
-import product1Hover from "@/assets/product-1-hover.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product2Hover from "@/assets/product-2-hover.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product3Hover from "@/assets/product-3-hover.jpg";
-import product4 from "@/assets/product-4.jpg";
-import product4Hover from "@/assets/product-4-hover.jpg";
-
-const products: Product[] = [
-  {
-    image: product1,
-    hoverImage: product1Hover,
-    name: "Midnight Silk Drape Saree",
-    category: "Fusion Sarees",
-    price: "₹18,500",
-    numericPrice: 18500,
-    sizes: ["S", "M", "L", "XL"],
-    availability: "In Stock",
-  },
-  {
-    image: product2,
-    hoverImage: product2Hover,
-    name: "Ivory Embroidered Anarkali",
-    category: "Designer Anarkali",
-    price: "₹22,800",
-    numericPrice: 22800,
-    sizes: ["XS", "S", "M", "L"],
-    availability: "In Stock",
-  },
-  {
-    image: product3,
-    hoverImage: product3Hover,
-    name: "Terracotta Lehenga Set",
-    category: "Contemporary Lehengas",
-    price: "₹28,500",
-    numericPrice: 28500,
-    sizes: ["S", "M", "L"],
-    availability: "Pre-Order",
-  },
-  {
-    image: product4,
-    hoverImage: product4Hover,
-    name: "Lavender Chiffon Kurta Set",
-    category: "Premium Kurtas",
-    price: "₹12,900",
-    numericPrice: 12900,
-    sizes: ["XS", "S", "M", "L", "XL"],
-    availability: "In Stock",
-  },
-];
+import ProductCard, { productFromShopify } from "@/components/ProductCard";
+import { fetchShopifyProducts } from "@/lib/shopify";
 
 const NewArrivals = ({ contentRef }: { contentRef?: RefObject<HTMLDivElement> }) => {
   const sectionRef = useRef<HTMLElement>(null);
+  const { data: shopifyProducts = [], isLoading, isError } = useQuery({
+    queryKey: ["shopify-products", "new-arrivals"],
+    queryFn: () => fetchShopifyProducts(8),
+    staleTime: 1000 * 60 * 5,
+  });
+  const products = shopifyProducts.slice(0, 4).map(productFromShopify);
 
   return (
     <section
@@ -98,17 +55,29 @@ const NewArrivals = ({ contentRef }: { contentRef?: RefObject<HTMLDivElement> })
           </p>
         </div>
 
-        {/* Product grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20">
-          {products.map((product, i) => (
-            <ProductCard
-              key={i}
-              product={product}
-              index={i}
-              visible={true}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20">
+            {[0, 1, 2, 3].map((item) => (
+              <div key={item} className="animate-pulse">
+                <div className="bg-muted" style={{ aspectRatio: "3/4" }} />
+                <div className="h-4 bg-muted mt-3 w-3/4" />
+                <div className="h-3 bg-muted mt-2 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : isError || products.length === 0 ? (
+          <div className="relative z-20 py-14 text-center">
+            <p className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>
+              No products found
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20">
+            {products.map((product, i) => (
+              <ProductCard key={product.handle ?? product.name} product={product} index={i} visible={true} />
+            ))}
+          </div>
+        )}
 
         <div className="flex justify-center mt-10 md:mt-12 lg:mt-14">
           <Link

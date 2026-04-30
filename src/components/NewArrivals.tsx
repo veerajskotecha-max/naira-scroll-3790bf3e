@@ -1,4 +1,4 @@
-import { useRef, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
@@ -6,7 +6,13 @@ import FloatingFlower from "@/components/FloatingFlower";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import { fetchShopifyProducts } from "@/lib/shopify";
 
-const NewArrivals = ({ contentRef }: { contentRef?: RefObject<HTMLDivElement> }) => {
+const NewArrivals = ({
+  contentRef,
+  onProductsReady,
+}: {
+  contentRef?: RefObject<HTMLDivElement>;
+  onProductsReady?: (ready: boolean) => void;
+}) => {
   const sectionRef = useRef<HTMLElement>(null);
   const { data: shopifyProducts = [], isLoading, isError } = useQuery({
     queryKey: ["shopify-products", "new-arrivals"],
@@ -14,6 +20,10 @@ const NewArrivals = ({ contentRef }: { contentRef?: RefObject<HTMLDivElement> })
     staleTime: 1000 * 60 * 5,
   });
   const products = shopifyProducts.slice(0, 4).map(productFromShopify);
+
+  useEffect(() => {
+    onProductsReady?.(!isLoading);
+  }, [isLoading, onProductsReady]);
 
   return (
     <section
@@ -72,7 +82,7 @@ const NewArrivals = ({ contentRef }: { contentRef?: RefObject<HTMLDivElement> })
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20">
+          <div data-arrivals-products className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20 opacity-0">
             {products.map((product, i) => (
               <ProductCard key={product.handle ?? product.name} product={product} index={i} visible={true} />
             ))}

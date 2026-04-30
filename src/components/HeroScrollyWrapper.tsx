@@ -66,7 +66,7 @@ const HeroScrollyWrapper = () => {
       tl
         // 1. Logo reveals while the model travels into its section position
         .to(logoReveal, {
-          opacity: 0.2,
+          opacity: 0.95,
           y: 0,
           scale: 1,
           clipPath: "inset(0 0% 0 0%)",

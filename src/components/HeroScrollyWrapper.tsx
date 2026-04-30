@@ -247,10 +247,10 @@ const HeroScrollyWrapper = () => {
         <div
           ref={logoRevealRef}
           aria-hidden="true"
-          className="absolute inset-x-0 top-[18vh] md:top-[16vh] lg:top-[13vh] pointer-events-none select-none flex justify-center"
+          className="absolute inset-x-0 top-[38vh] md:top-[34vh] lg:top-[30vh] pointer-events-none select-none flex justify-center"
           style={{
             opacity: 0,
-            zIndex: 1,
+            zIndex: 2,
             willChange: "opacity, transform, clip-path",
           }}
         >
@@ -258,7 +258,7 @@ const HeroScrollyWrapper = () => {
             src={nairaLogo}
             alt=""
             className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
-            style={{ filter: "sepia(0.2) saturate(0.75)", opacity: 0.9 }}
+            style={{ filter: "sepia(0.15) saturate(0.85)" }}
             loading="eager"
             decoding="async"
           />

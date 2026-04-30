@@ -238,11 +238,10 @@ const HeroScrollyWrapper = () => {
           style={{
             backgroundImage: `url(${handcraftedFloralPattern})`,
             backgroundSize: "600px",
-            backgroundPosition: "center top",
+            backgroundPosition: "center",
             backgroundRepeat: "repeat",
-            opacity: 0,
+            opacity: 0.5,
             zIndex: 0,
-            willChange: "opacity, transform",
           }}
         />
         <div

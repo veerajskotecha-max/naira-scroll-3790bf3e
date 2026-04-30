@@ -3,24 +3,19 @@ import { Heart } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-import product1 from "@/assets/product-1.jpg";
-import product1Hover from "@/assets/product-1-hover.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product4 from "@/assets/product-4.jpg";
 import type { ShopifyProductNode } from "@/lib/shopify";
 
-const fallbackImages = [product1, product1Hover, product2, product3, product4];
+const placeholderImage = "/placeholder.svg";
 
 const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
   const productImages = product?.images.edges.map((edge) => edge.node.url).filter(Boolean) ?? [];
-  const images = productImages.length > 0 ? productImages : fallbackImages;
-  const productId = product?.handle ?? "midnight-silk-drape-saree";
-  const productName = product?.title ?? "Midnight Silk Drape Saree";
-  const firstImage = images[0] ?? product1;
+  const images = productImages.length > 0 ? productImages : [placeholderImage];
+  const productId = product?.handle ?? "shopify-product";
+  const productName = product?.title ?? "Shopify product";
+  const firstImage = images[0] ?? placeholderImage;
   const wishlisted = isWishlisted(productId);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);

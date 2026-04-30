@@ -149,7 +149,6 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             id
             title
             availableForSale
-            quantityAvailable
             price {
               amount
               currencyCode
@@ -293,6 +292,7 @@ export async function fetchShopifyProducts(first = 20, query?: string): Promise<
 }
 
 export async function fetchShopifyProductByHandle(handle: string): Promise<ShopifyProductNode | null> {
+  if (!handle) return null;
   const data = await storefrontApiRequest<{ data: { product: ShopifyProductNode | null } }>(PRODUCT_BY_HANDLE_QUERY, { handle });
   return data.data.product;
 }

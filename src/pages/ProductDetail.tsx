@@ -10,24 +10,24 @@ import StickyAddToCart from "@/components/StickyAddToCart";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";
-import product1 from "@/assets/product-1.jpg";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 
 const ProductDetail = () => {
   const [selectedSize] = useState("M");
   const { id } = useParams();
-  const { data: product } = useQuery({
+  const { data: product, isLoading, isError } = useQuery({
     queryKey: ["shopify-product", id],
     queryFn: () => fetchShopifyProductByHandle(id ?? ""),
     enabled: Boolean(id),
     staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
 
-  const title = product?.title ?? "Midnight Silk Drape Saree";
-  const description = product?.description || "A contemporary pre-draped silk saree with hand-embroidered pallu. Premium indo-western fusion wear by Naira Flore.";
-  const price = product?.priceRange.minVariantPrice.amount ?? "18500";
-  const priceLabel = product ? formatShopifyPrice(product.priceRange.minVariantPrice) : "₹18,500";
-  const image = product?.images.edges[0]?.node.url ?? product1;
+  const title = product?.title ?? "Product";
+  const description = product?.description || "Shop real handcrafted couture by Naira Flore.";
+  const price = product?.priceRange.minVariantPrice.amount ?? "0";
+  const priceLabel = product ? formatShopifyPrice(product.priceRange.minVariantPrice) : "—";
+  const image = product?.images.edges[0]?.node.url ?? "/placeholder.svg";
   const stickyVariant = product?.variants.edges.find((edge) => edge.node.availableForSale)?.node ?? product?.variants.edges[0]?.node;
 
   const structuredData = {
@@ -44,6 +44,33 @@ const ProductDetail = () => {
       seller: { "@type": "Organization", name: "Naira Flore" },
     },
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-[100px] flex items-center justify-center" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
+        <Helmet>
+          <title>Loading Product | Naira Flore</title>
+        </Helmet>
+        <p className="font-cormorant text-[22px]" style={{ color: "hsl(0 0% 30%)" }}>Loading product…</p>
+      </div>
+    );
+  }
+
+  if (isError || !product) {
+    return (
+      <div className="min-h-screen pt-[100px] flex items-center justify-center px-6" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
+        <Helmet>
+          <title>Product Not Found | Naira Flore</title>
+          <meta name="description" content="This Shopify product could not be found." />
+        </Helmet>
+        <div className="text-center max-w-[520px]">
+          <h1 className="font-cormorant text-[34px] md:text-[42px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>Product not found</h1>
+          <p className="font-cormorant text-[16px] mt-3" style={{ color: "hsl(0 0% 45%)" }}>This product is not available from Shopify right now.</p>
+          <Link to="/shop" className="inline-flex mt-6 px-8 py-3 text-[12px] uppercase tracking-[0.12em]" style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}>Back to Shop</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
@@ -87,7 +114,7 @@ const ProductDetail = () => {
 
       <CustomerReviews />
       <MaterialsCraft />
-      <YouMayAlsoLike />
+      <YouMayAlsoLike currentHandle={product.handle} />
       
       <Footer />
       <StickyAddToCart

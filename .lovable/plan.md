@@ -1,34 +1,45 @@
 ## Goal
-Swap the current `naira-logo.svg` (used as the big logo reveal behind the New Arrivals section during the hero scroll animation) with the new uploaded NAIRA wordmark + floral image.
+Make the new NAIRA webp logo in the New Arrivals scroll-reveal render at the same visual size as the previous SVG. The webp ships on a 1920×1080 canvas with ~60% transparent padding around the wordmark, so when constrained to the SVG's old `max-w-[520/760/980px]`, the visible logo looks roughly 2.5× too small.
 
-## Steps
+## Fix
+In `src/components/HeroScrollyWrapper.tsx`, update the `<img>` inside `logoRevealRef` (currently lines 259–266):
 
-1. **Copy the uploaded asset into the project**
-   - Source: `user-uploads://ppt_nera-11.webp`
-   - Destination: `src/assets/naira-logo-reveal.webp`
-   - (Keep the existing `naira-logo.svg` untouched in case it's used elsewhere — quick check shows it's only imported by `HeroScrollyWrapper.tsx`, so leaving it as a harmless orphan is fine. No other files need updating.)
+**From:**
+```tsx
+<img
+  src={nairaLogo}
+  alt=""
+  className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
+  style={{ filter: "sepia(0.15) saturate(0.85)" }}
+  loading="eager"
+  decoding="async"
+/>
+```
 
-2. **Update `src/components/HeroScrollyWrapper.tsx`**
-   - Replace the import:
-     ```ts
-     import nairaLogo from "@/assets/naira-logo.svg";
-     ```
-     with:
-     ```ts
-     import nairaLogo from "@/assets/naira-logo-reveal.webp";
-     ```
-   - No changes to the `<img>` markup, sizing, GSAP animation, or clip-path reveal — the new image is a wide horizontal wordmark (1920×1080 with lots of whitespace) that will display naturally inside the existing `max-w-[520px] / 760px / 980px` container.
+**To:**
+```tsx
+<img
+  src={nairaLogo}
+  alt=""
+  className="w-full max-w-[1300px] md:max-w-[1900px] lg:max-w-[2450px] h-auto object-contain"
+  loading="eager"
+  decoding="async"
+/>
+```
 
-3. **Optional polish (only if it looks off after swap)**
-   - The uploaded webp has substantial vertical whitespace around the wordmark. If the logo appears too small inside its container, we can either:
-     - Bump the `max-w-*` classes up (e.g. to 720/1000/1280), or
-     - Remove the `sepia(0.15) saturate(0.85)` filter since the new asset already uses the brand sage/peach palette.
-   - I'll review visually after the swap and adjust only if needed.
+### What changes & why
+- **`w-full` instead of `w-[82vw]`** — image fills the parent flex container (already `inset-x-0 flex justify-center`), no intrinsic-resolution clamping.
+- **`max-w` bumped ~2.5×** (520→1300, 760→1900, 980→2450) — compensates for the wordmark only occupying ~40% of the webp's transparent canvas, so the *visible* NAIRA glyphs end up at the same on-screen width the SVG had.
+- **`object-contain`** — guarantees the full image renders without cropping at any aspect ratio.
+- **Removed `filter: sepia/saturate`** — the SVG was a flat sage outline that needed warming; the new webp already uses the correct brand sage + peach palette, so the filter would mute it.
+- **No changes** to the wrapper `<div>`, GSAP timeline, clip-path reveal, positioning (`top-[38vh]/34vh/30vh`), z-index, or `willChange` — animation behaves identically.
 
 ## Files Changed
-- `src/assets/naira-logo-reveal.webp` (new — copied from upload)
-- `src/components/HeroScrollyWrapper.tsx` (1-line import change)
+- `src/components/HeroScrollyWrapper.tsx` (one `<img>` block, lines 259–266)
 
-## Out of Scope
-- Header/footer logos (those use different assets: `naira-logo-footer.svg` and the header's own logo)
-- Removing the old `naira-logo.svg` file
+## Verification
+After the swap, the wordmark should:
+- Span roughly the full content width on desktop (matching the original SVG's commanding presence behind the products grid).
+- Stay centered horizontally via the existing `flex justify-center` parent.
+- Animate in via the same clip-path / opacity / scale GSAP sequence — no layout shift, no animation regression.
+- If on very large monitors (>1600px) the wordmark looks slightly *too* large, we can dial the `lg:max-w` down from 2450 → 2100. I'll review visually after the change.

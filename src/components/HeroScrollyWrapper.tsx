@@ -38,7 +38,6 @@ const HeroScrollyWrapper = () => {
       const leftCards  = cards.slice(0, 2);   // Midnight Saree, Ivory Anarkali → slide left
       const rightCards = cards.slice(2, 4);   // Terracotta, Lavender → slide right
       const heading    = content.querySelector("[data-arrivals-heading]");
-      const transitionBg = transitionBgRef.current;
       const logoReveal = logoRevealRef.current;
 
       // ── PRE-SET starting states so scrub can interpolate correctly ──
@@ -46,8 +45,7 @@ const HeroScrollyWrapper = () => {
       gsap.set(productsGrid, { opacity: 1 });
       gsap.set(leftCards,  { x: "28vw",  opacity: 0, scale: 0.85 });
       gsap.set(rightCards, { x: "-28vw", opacity: 0, scale: 0.85 });
-      gsap.set(transitionBg, { opacity: 0, y: 18, scale: 1.04 });
-      gsap.set(logoReveal, { opacity: 0, y: 30, scale: 0.94, clipPath: "inset(0 50% 0 50%)" });
+      gsap.set(logoReveal, { opacity: 0, y: 36, scale: 0.92, clipPath: "inset(0 50% 0 50%)" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -66,46 +64,40 @@ const HeroScrollyWrapper = () => {
       });
 
       tl
-        // 1. Handcrafted transition atmosphere reveals as model travels down
-        .to(transitionBg, {
-          opacity: 0.48,
-          y: 0,
-          scale: 1,
-          duration: 0.85,
-          ease: "power2.out",
-        }, 0)
+        // 1. Logo reveals while the model travels into its section position
         .to(logoReveal, {
-          opacity: 0.18,
+          opacity: 0.2,
           y: 0,
           scale: 1,
           clipPath: "inset(0 0% 0 0%)",
-          duration: 1.05,
+          duration: 1.25,
           ease: "power3.out",
-        }, 0.08)
+        }, 0)
         // 2. Model shrinks — feet stay grounded
         .to(modelRef.current, {
           scale: 0.72,
           transformOrigin: "bottom center",
-          duration: 1.2,
+          duration: 1.25,
           ease: "power3.inOut",
         }, 0)
+        .to({}, { duration: 0.45 })
         .to(logoReveal, {
           opacity: 0.07,
           y: -12,
-          duration: 0.55,
+          duration: 0.7,
           ease: "power2.out",
-        }, "-=0.2")
+        })
         // 3. Heading drops in
         .to(heading || {}, {
           opacity: 1, y: 0,
-          duration: 0.6, ease: "power2.out",
-        }, "-=0.2")
+          duration: 0.75, ease: "power2.out",
+        }, "+=0.2")
         // 4. Left pair slides from centre → their grid position
         .to(leftCards, {
           x: 0, opacity: 1, scale: 1,
           duration: 1.5, ease: "power2.out",
           stagger: 0.15,
-        }, "-=0.3")
+        }, "+=0.35")
         // 5. Right pair slides simultaneously the other way
         .to(rightCards, {
           x: 0, opacity: 1, scale: 1,
@@ -123,7 +115,7 @@ const HeroScrollyWrapper = () => {
         // 8. Final breathe — pin sits still so scroll has time to decelerate naturally
         .to({}, { duration: 1.2 });
 
-      return () => gsap.set([heading, productsGrid, ...leftCards, ...rightCards, transitionBg, logoReveal], { clearProps: "all" });
+      return () => gsap.set([heading, productsGrid, ...leftCards, ...rightCards, logoReveal], { clearProps: "all" });
     });
 
     // ── MOBILE ─────────────────────────────────────────────────

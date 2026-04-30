@@ -172,9 +172,25 @@ const CampaignFilm = () => {
               </p>
 
               <div className="grid grid-cols-3 gap-4 md:gap-5">
-                {featuredProducts.map((product, i) => (
-                  <FeaturedCard key={i} product={product} index={i} visible={visible} />
-                ))}
+                {featuredProducts.length > 0 ? (
+                  featuredProducts.map((product, i) => (
+                    <FeaturedCard
+                      key={product.handle ?? product.id ?? i}
+                      product={product}
+                      index={i}
+                      visible={visible}
+                    />
+                  ))
+                ) : (
+                  // Skeletons while products load — keeps the layout from jumping.
+                  [0, 1, 2].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="bg-muted rounded-lg" style={{ aspectRatio: "4/5" }} />
+                      <div className="h-3 bg-muted mt-2.5 w-3/4" />
+                      <div className="h-3 bg-muted mt-1.5 w-1/2" />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -189,45 +205,52 @@ const FeaturedCard = ({
   index,
   visible,
 }: {
-  product: (typeof featuredProducts)[0];
+  product: Product;
   index: number;
   visible: boolean;
-}) => (
-  <div
-    className={`group cursor-pointer transition-all ease-out ${
-      visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-    }`}
-    style={{
-      transitionDuration: "0.5s",
-      transitionDelay: visible ? `${0.5 + index * 0.1}s` : "0s",
-    }}
-  >
-    <div
-      className="relative overflow-hidden rounded-lg transition-shadow duration-250 ease-out group-hover:shadow-md"
-      style={{ aspectRatio: "4/5" }}
+}) => {
+  const slug = product.handle ?? product.id ?? "";
+  return (
+    <Link
+      to={`/product/${slug}`}
+      className={`group block cursor-pointer transition-all ease-out ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      }`}
+      style={{
+        transitionDuration: "0.5s",
+        transitionDelay: visible ? `${0.5 + index * 0.1}s` : "0s",
+      }}
     >
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-full h-full object-cover transition-transform duration-250 ease-out group-hover:scale-[1.04]"
-        loading="lazy"
-      />
-    </div>
-    <div className="mt-2.5 px-0.5">
-      <p
-        className="font-cormorant text-[13px] lg:text-[14px] font-medium leading-snug"
-        style={{ color: "hsl(0 0% 20%)" }}
+      <div
+        className="relative overflow-hidden rounded-lg transition-shadow duration-250 ease-out group-hover:shadow-md"
+        style={{ aspectRatio: "4/5" }}
       >
-        {product.name}
-      </p>
-      <p
-        className="font-cormorant text-[12px] lg:text-[13px] mt-1 font-semibold"
-        style={{ color: "hsl(155 18% 48%)" }}
-      >
-        {product.price}
-      </p>
-    </div>
-  </div>
-);
+        <img
+          src={shopifyImage(product.image, 500)}
+          srcSet={shopifySrcSet(product.image, [300, 500, 800])}
+          sizes="(min-width: 1024px) 180px, 30vw"
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-250 ease-out group-hover:scale-[1.04]"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="mt-2.5 px-0.5">
+        <p
+          className="font-cormorant text-[13px] lg:text-[14px] font-medium leading-snug"
+          style={{ color: "hsl(0 0% 20%)" }}
+        >
+          {product.name}
+        </p>
+        <p
+          className="font-cormorant text-[12px] lg:text-[13px] mt-1 font-semibold"
+          style={{ color: "hsl(155 18% 48%)" }}
+        >
+          {product.price}
+        </p>
+      </div>
+    </Link>
+  );
+};
 
 export default CampaignFilm;

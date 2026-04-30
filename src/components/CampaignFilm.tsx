@@ -12,6 +12,14 @@ const CampaignFilm = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
+  // Pull from the same Shopify query as New Arrivals so cards stay in sync.
+  const { data: shopifyProducts = [] } = useQuery({
+    queryKey: ["shopify-products", "new-arrivals"],
+    queryFn: () => fetchShopifyProducts(8),
+    staleTime: 1000 * 60 * 5,
+  });
+  const featuredProducts: Product[] = shopifyProducts.slice(0, 3).map(productFromShopify);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {

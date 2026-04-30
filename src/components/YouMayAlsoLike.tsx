@@ -1,65 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import ProductCard, { type Product } from "@/components/ProductCard";
+import { useQuery } from "@tanstack/react-query";
+import ProductCard, { productFromShopify } from "@/components/ProductCard";
+import { fetchShopifyProducts } from "@/lib/shopify";
 
-import product1 from "@/assets/product-1.jpg";
-import product1Hover from "@/assets/product-1-hover.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product2Hover from "@/assets/product-2-hover.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product3Hover from "@/assets/product-3-hover.jpg";
-import product4 from "@/assets/product-4.jpg";
-import product4Hover from "@/assets/product-4-hover.jpg";
-
-const products: Product[] = [
-  {
-    image: product2,
-    hoverImage: product2Hover,
-    name: "Ivory Embroidered Anarkali",
-    category: "Designer Anarkali",
-    price: "₹22,800",
-    numericPrice: 22800,
-    sizes: ["XS", "S", "M", "L"],
-    availability: "In Stock",
-    tag: "BESTSELLER",
-  },
-  {
-    image: product3,
-    hoverImage: product3Hover,
-    name: "Terracotta Lehenga Set",
-    category: "Contemporary Lehengas",
-    price: "₹28,500",
-    numericPrice: 28500,
-    sizes: ["S", "M", "L"],
-    availability: "Pre-Order",
-    tag: "NEW ARRIVAL",
-  },
-  {
-    image: product4,
-    hoverImage: product4Hover,
-    name: "Lavender Chiffon Kurta Set",
-    category: "Premium Kurtas",
-    price: "₹12,900",
-    numericPrice: 12900,
-    sizes: ["XS", "S", "M", "L", "XL"],
-    availability: "In Stock",
-    tag: "NEW ARRIVAL",
-  },
-  {
-    image: product1,
-    hoverImage: product1Hover,
-    name: "Rose Gold Silk Saree",
-    category: "Classic Sarees",
-    price: "₹16,200",
-    numericPrice: 16200,
-    sizes: ["S", "M", "L", "XL"],
-    availability: "In Stock",
-    tag: "BESTSELLER",
-  },
-];
-
-const YouMayAlsoLike = () => {
+const YouMayAlsoLike = ({ currentHandle }: { currentHandle?: string }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
+  const { data: shopifyProducts = [], isLoading } = useQuery({
+    queryKey: ["shopify-products", "related", currentHandle],
+    queryFn: () => fetchShopifyProducts(8),
+    staleTime: 1000 * 60 * 5,
+  });
+  const products = shopifyProducts
+    .filter((product) => product.handle !== currentHandle)
+    .slice(0, 4)
+    .map(productFromShopify);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -94,21 +49,29 @@ const YouMayAlsoLike = () => {
           You May Also Like
         </h2>
 
-        {/* Desktop/Tablet grid */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product, i) => (
-            <ProductCard key={i} product={product} index={i} visible={visible} />
-          ))}
-        </div>
-
-        {/* Mobile horizontal scroll */}
-        <div className="md:hidden flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
-          {products.map((product, i) => (
-            <div key={i} className="min-w-[260px] snap-start">
-              <ProductCard product={product} index={i} visible={visible} />
+        {isLoading ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {[0, 1, 2, 3].map((item) => <div key={item} className="bg-muted animate-pulse" style={{ aspectRatio: "3/4" }} />)}
+          </div>
+        ) : products.length > 0 ? (
+          <>
+            {/* Desktop/Tablet grid */}
+            <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.map((product, i) => (
+                <ProductCard key={product.handle ?? product.name} product={product} index={i} visible={visible} />
+              ))}
             </div>
-          ))}
-        </div>
+
+            {/* Mobile horizontal scroll */}
+            <div className="md:hidden flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+              {products.map((product, i) => (
+                <div key={product.handle ?? product.name} className="min-w-[260px] snap-start">
+                  <ProductCard product={product} index={i} visible={visible} />
+                </div>
+              ))}
+            </div>
+          </>
+        ) : null}
       </div>
     </section>
   );

@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Brand serif — self-hosted, non-render-blocking. Replaces Cormorant Garamond. */
+@font-face {
+  font-family: 'Velista';
+  src: url('/fonts/Velista.ttf') format('truetype');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

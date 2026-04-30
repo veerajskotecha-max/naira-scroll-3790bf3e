@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import product1 from "@/assets/product-1.jpg";
 import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
 
 const fallbackSizes = ["XS", "S", "M", "L", "XL"];
@@ -38,12 +37,12 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
     ) ?? variants.find((variant) => variant.availableForSale) ?? variants[0];
   }, [product, selectedSize]);
 
-  const title = product?.title ?? "Midnight Silk Drape Saree";
-  const description = product?.description || "The Midnight Silk Drape Saree is a contemporary masterpiece that reimagines the traditional saree for the modern woman.";
-  const image = product?.images.edges[0]?.node.url ?? product1;
+  const title = product?.title ?? "Shopify product";
+  const description = product?.description || "Product details are being loaded from Shopify.";
+  const image = product?.images.edges[0]?.node.url ?? "/placeholder.svg";
   const priceMoney = selectedVariant?.price ?? product?.priceRange.minVariantPrice;
-  const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "₹18,500";
-  const numericPrice = priceMoney ? Number(priceMoney.amount) : 18500;
+  const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "—";
+  const numericPrice = priceMoney ? Number(priceMoney.amount) : 0;
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {

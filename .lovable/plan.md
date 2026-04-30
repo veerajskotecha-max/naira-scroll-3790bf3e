@@ -1,45 +1,66 @@
-## Goal
-Make the new NAIRA webp logo in the New Arrivals scroll-reveal render at the same visual size as the previous SVG. The webp ships on a 1920×1080 canvas with ~60% transparent padding around the wordmark, so when constrained to the SVG's old `max-w-[520/760/980px]`, the visible logo looks roughly 2.5× too small.
+I’ll enhance the existing hero scroll sequence rather than rebuilding it, so the current model movement, New Arrivals reveal, card animation, and final model exit stay intact. (MAKE SURE YOU ARE ONLY EDITING CODE OF HERO SECTION ANIMATION AND NO WHERE ELSE - LAST TIME UPON MAKING THESE CHANGES WE HAD A PROBLEM WITH OUR SHOPIFY INTEGRATION- PLEASE BE VERY MINDFUL
 
-## Fix
-In `src/components/HeroScrollyWrapper.tsx`, update the `<img>` inside `logoRevealRef` (currently lines 259–266):
+Plan:
 
-**From:**
-```tsx
-<img
-  src={nairaLogo}
-  alt=""
-  className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
-  style={{ filter: "sepia(0.15) saturate(0.85)" }}
-  loading="eager"
-  decoding="async"
-/>
+1. Add the handcrafted background layer to the New Arrivals transition area
+
+- Reuse the same floral graphic from the About Us Handcrafted section: `background_image_flora.webp`.
+- Place it inside the pinned New Arrivals wrapper as a lightweight absolute layer behind the model/cards.
+- Keep the existing top-left floating flower and bottom-right floral decoration.
+- Use opacity and transform only for animation, so it remains GPU-friendly and smooth.
+
+2. Add a NAIRA logo reveal layer during the model travel
+
+- Add a large, centered “NAIRA” wordmark behind the model but above the floral background.
+- The logo will begin nearly hidden as the model enters the second section, then reveal itself during the model’s downward/shrink movement.
+- The reveal will use performant properties only: `opacity`, `clip-path`/mask-like reveal, and slight vertical movement.
+- It will fade back/soften before the New Arrivals heading and product cards become the focus, so it does not compete with products.
+
+3. Integrate with the existing GSAP timeline
+
+- Extend `HeroScrollyWrapper.tsx` with refs for:
+  - floral background layer
+  - NAIRA reveal layer
+- On desktop:
+  - initial state: background subtle/hidden, logo masked and low opacity
+  - while model scales into the second section: floral pattern fades in and logo reveals smoothly
+  - before/while New Arrivals heading appears: logo fades to a soft watermark or out
+  - product card timing remains as-is
+  - model still exits right as-is
+- On mobile:
+  - use a lighter/faster version so it does not feel heavy on the 390px viewport
+  - keep the current shorter mobile scroll timing and avoid adding long delays
+
+4. Preserve current hero animations
+
+- No changes to `HeroSection.tsx` headline reveal, cursor glow, watermark parallax, or model image behavior inside the hero.
+- No changes to the existing Shopify product loading or product cards.
+- No changes to hero section animations outside the transition layer requested.
+
+5. Performance safeguards
+
+- Avoid scroll event listeners for the new effect; attach it directly to the existing GSAP ScrollTrigger timeline.
+- Animate only compositor-friendly properties where possible.
+- Keep the background image as one repeated layer, not multiple DOM graphics.
+- Add `pointer-events: none`, `aria-hidden`, and `will-change` only on the animated layers.
+- Ensure z-index order remains clean:
+
+```text
+New Arrivals section background color
+  floral handcrafted pattern layer
+  large NAIRA reveal layer
+  existing decorative flowers
+  product content / New Arrivals text / cards
+  fixed model layer during transition
 ```
 
-**To:**
-```tsx
-<img
-  src={nairaLogo}
-  alt=""
-  className="w-full max-w-[1300px] md:max-w-[1900px] lg:max-w-[2450px] h-auto object-contain"
-  loading="eager"
-  decoding="async"
-/>
-```
+Files to update:
 
-### What changes & why
-- **`w-full` instead of `w-[82vw]`** — image fills the parent flex container (already `inset-x-0 flex justify-center`), no intrinsic-resolution clamping.
-- **`max-w` bumped ~2.5×** (520→1300, 760→1900, 980→2450) — compensates for the wordmark only occupying ~40% of the webp's transparent canvas, so the *visible* NAIRA glyphs end up at the same on-screen width the SVG had.
-- **`object-contain`** — guarantees the full image renders without cropping at any aspect ratio.
-- **Removed `filter: sepia/saturate`** — the SVG was a flat sage outline that needed warming; the new webp already uses the correct brand sage + peach palette, so the filter would mute it.
-- **No changes** to the wrapper `<div>`, GSAP timeline, clip-path reveal, positioning (`top-[38vh]/34vh/30vh`), z-index, or `willChange` — animation behaves identically.
+- `src/components/HeroScrollyWrapper.tsx`
 
-## Files Changed
-- `src/components/HeroScrollyWrapper.tsx` (one `<img>` block, lines 259–266)
+Expected result:
 
-## Verification
-After the swap, the wordmark should:
-- Span roughly the full content width on desktop (matching the original SVG's commanding presence behind the products grid).
-- Stay centered horizontally via the existing `flex justify-center` parent.
-- Animate in via the same clip-path / opacity / scale GSAP sequence — no layout shift, no animation regression.
-- If on very large monitors (>1600px) the wordmark looks slightly *too* large, we can dial the `lg:max-w` down from 2450 → 2100. I'll review visually after the change.
+- As the model travels into the second section, the handcrafted floral pattern appears in the background.
+- A large NAIRA logo reveals smoothly behind the model, giving the transition a more premium editorial feel.
+- Then New Arrivals text and product cards appear exactly in the current sequence, and the model exits right as before.
+- Overall scroll remains smooth and fast, especially on mobile.

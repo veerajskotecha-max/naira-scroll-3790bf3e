@@ -7,7 +7,7 @@ import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
 import heroModel1 from "@/assets/naira-final-hero-1.png";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
-import nairaLogo from "@/assets/naira-logo-reveal.webp";
+import nairaLogo from "@/assets/naira-logo.svg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -259,7 +259,8 @@ const HeroScrollyWrapper = () => {
           <img
             src={nairaLogo}
             alt=""
-            className="w-full max-w-[1300px] md:max-w-[1900px] lg:max-w-[2450px] h-auto object-contain"
+            className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
+            style={{ filter: "sepia(0.15) saturate(0.85)" }}
             loading="eager"
             decoding="async"
           />

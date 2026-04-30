@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
+import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 export interface Product {
   id?: string;

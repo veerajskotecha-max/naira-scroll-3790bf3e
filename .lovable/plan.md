@@ -1,50 +1,66 @@
-I’ll re-wire the Shopify product flow end-to-end again, with special focus on why `/product/royal-enigma` is falling back to the old stock product page.
+I’ll enhance the existing hero scroll sequence rather than rebuilding it, so the current model movement, New Arrivals reveal, card animation, and final model exit stay intact. (MAKE SURE YOU ARE ONLY EDITING CODE OF HERO SECTION ANIMATION AND NO WHERE ELSE - LAST TIME UPON MAKING THESE CHANGES WE HAD A PROBLEM WITH OUR SHOPIFY INTEGRATION- PLEASE BE VERY MINDFUL
 
 Plan:
 
-1. Fix the Shopify product detail query
-   - Update `src/lib/shopify.ts` so the `PRODUCT_BY_HANDLE_QUERY` no longer requests the restricted `quantityAvailable` field.
-   - Keep the Storefront API on version `2025-07` and use the connected store `nc5eti-gp.myshopify.com`.
-   - Add safer handling for Storefront API GraphQL errors so failed product-detail fetches don’t silently render the fake fallback product.
+1. Add the handcrafted background layer to the New Arrivals transition area
 
-2. Remove stock fallback rendering from individual product pages
-   - Update `src/pages/ProductDetail.tsx` so it shows a proper loading state while Shopify is fetching.
-   - If Shopify returns no product for the handle, show a real “Product not found” state instead of the hardcoded “Midnight Silk Drape Saree”.
-   - Use Shopify’s title, description, price, images, handle, variant, and availability in the page metadata and sticky add-to-cart.
+- Reuse the same floral graphic from the About Us Handcrafted section: `background_image_flora.webp`.
+- Place it inside the pinned New Arrivals wrapper as a lightweight absolute layer behind the model/cards.
+- Keep the existing top-left floating flower and bottom-right floral decoration.
+- Use opacity and transform only for animation, so it remains GPU-friendly and smooth.
 
-3. Reconnect Product Gallery and Product Details to real Shopify data only
-   - Remove or isolate the old imported stock images from `ProductGallery` and `ProductDetails` so they are not used for Shopify product pages.
-   - Gallery will render Shopify images from `product.images`; if a Shopify product has no images, it will show a neutral placeholder instead of old stock couture images.
-   - Details will render the actual Shopify description, variants/options, price, and selected size/option state.
+2. Add a NAIRA logo reveal layer during the model travel
 
-4. Verify ProductCard links from New Arrivals and Shop
-   - Ensure `ProductCard` always links using the Shopify `handle`, e.g. `/product/royal-enigma`.
-   - Ensure New Arrivals and Shop continue using `fetchShopifyProducts(...)` and `productFromShopify(...)`, not static arrays.
-   - Keep the card styling, wishlist behavior, and Add to Cart behavior intact.
+- Add a large, centered “NAIRA” wordmark behind the model but above the floral background.
+- The logo will begin nearly hidden as the model enters the second section, then reveal itself during the model’s downward/shrink movement.
+- The reveal will use performant properties only: `opacity`, `clip-path`/mask-like reveal, and slight vertical movement.
+- It will fade back/soften before the New Arrivals heading and product cards become the focus, so it does not compete with products.
 
-5. Restore/confirm Shopify cart checkout
-   - Confirm `CartContext`, `CartDrawer`, `StickyAddToCart`, and `useCartSync` use Storefront API cart mutations only.
-   - Ensure checkout URL is generated from Shopify cart APIs and includes `channel=online_store`.
-   - Do not add manual checkout URLs or direct Shopify product-page redirects.
+3. Integrate with the existing GSAP timeline
 
-6. Clean up remaining stock-product sections that affect product pages
-   - Replace the `YouMayAlsoLike` static stock-product cards on the product detail page with live Shopify products, excluding the current product when possible.
-   - Leave unrelated Hero animation components untouched: no edits to `HeroSection`, `HeroScrollyWrapper`, or scroll/GSAP animation files.
+- Extend `HeroScrollyWrapper.tsx` with refs for:
+  - floral background layer
+  - NAIRA reveal layer
+- On desktop:
+  - initial state: background subtle/hidden, logo masked and low opacity
+  - while model scales into the second section: floral pattern fades in and logo reveals smoothly
+  - before/while New Arrivals heading appears: logo fades to a soft watermark or out
+  - product card timing remains as-is
+  - model still exits right as-is
+- On mobile:
+  - use a lighter/faster version so it does not feel heavy on the 390px viewport
+  - keep the current shorter mobile scroll timing and avoid adding long delays
 
-7. Validation
-   - Check that a Shopify product such as “Royal Enigma” loads at `/product/royal-enigma` with its real Shopify title, description, price, and images.
-   - Check New Arrivals and Shop still list live Shopify products.
-   - Check Add to Cart and Secure Checkout still create/update a Shopify cart rather than using fake/local-only checkout.
+4. Preserve current hero animations
 
-Files expected to change:
-- `src/lib/shopify.ts`
-- `src/pages/ProductDetail.tsx`
-- `src/components/product/ProductGallery.tsx`
-- `src/components/product/ProductDetails.tsx`
-- `src/components/YouMayAlsoLike.tsx`
-- Possibly `src/components/StickyAddToCart.tsx` and `src/components/ProductCard.tsx` if needed for variant/handle consistency
+- No changes to `HeroSection.tsx` headline reveal, cursor glow, watermark parallax, or model image behavior inside the hero.
+- No changes to the existing Shopify product loading or product cards.
+- No changes to hero section animations outside the transition layer requested.
 
-Files I will not touch:
-- `src/components/HeroSection.tsx`
+5. Performance safeguards
+
+- Avoid scroll event listeners for the new effect; attach it directly to the existing GSAP ScrollTrigger timeline.
+- Animate only compositor-friendly properties where possible.
+- Keep the background image as one repeated layer, not multiple DOM graphics.
+- Add `pointer-events: none`, `aria-hidden`, and `will-change` only on the animated layers.
+- Ensure z-index order remains clean:
+
+```text
+New Arrivals section background color
+  floral handcrafted pattern layer
+  large NAIRA reveal layer
+  existing decorative flowers
+  product content / New Arrivals text / cards
+  fixed model layer during transition
+```
+
+Files to update:
+
 - `src/components/HeroScrollyWrapper.tsx`
-- Hero animation or GSAP/scroll-animation files
+
+Expected result:
+
+- As the model travels into the second section, the handcrafted floral pattern appears in the background.
+- A large NAIRA logo reveals smoothly behind the model, giving the transition a more premium editorial feel.
+- Then New Arrivals text and product cards appear exactly in the current sequence, and the model exits right as before.
+- Overall scroll remains smooth and fast, especially on mobile.

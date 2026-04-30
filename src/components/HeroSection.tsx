@@ -80,21 +80,25 @@ const HeroSection = () => {
   }, []);
 
   // ── EFFECT 2: Parallax depth layers ────────────────────────────
+  // We cache `sectionHeight` and update it only on resize, so the scroll
+  // handler never reads layout-triggering geometric properties (which would
+  // force a synchronous reflow on every scroll frame).
   useEffect(() => {
     let ticking = false;
+    let sectionHeight = sectionRef.current?.offsetHeight ?? 0;
+
+    const measure = () => {
+      sectionHeight = sectionRef.current?.offsetHeight ?? 0;
+    };
 
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const section = sectionRef.current;
-        if (!section) { ticking = false; return; }
-
-        const scrollY  = window.scrollY;
-        const sectionH = section.offsetHeight;
+        const scrollY = window.scrollY;
 
         // Only apply within the hero's own height
-        if (scrollY > sectionH) { ticking = false; return; }
+        if (scrollY > sectionHeight) { ticking = false; return; }
 
         // Watermark drifts UP slowly — 0.25× → feels far-away / deep
         if (watermarkRef.current) {
@@ -110,7 +114,11 @@ const HeroSection = () => {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", measure, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+    };
   }, []);
 
   // ── EFFECT 3: Cursor glow with spring lag ───────────────────────
@@ -122,6 +130,10 @@ const HeroSection = () => {
     const glow    = glowRef.current;
     if (!section || !glow) return;
 
+    // Cache the section rect — re-measuring on every mousemove forces a reflow.
+    let rect = section.getBoundingClientRect();
+    const remeasure = () => { rect = section.getBoundingClientRect(); };
+
     const loop = () => {
       pos.current.x = lerp(pos.current.x, mouse.current.x, 0.075);
       pos.current.y = lerp(pos.current.y, mouse.current.y, 0.075);
@@ -131,7 +143,6 @@ const HeroSection = () => {
     rafId.current = requestAnimationFrame(loop);
 
     const onMouseMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
       mouse.current.x = e.clientX - rect.left - 150;
       mouse.current.y = e.clientY - rect.top  - 150;
 
@@ -150,11 +161,15 @@ const HeroSection = () => {
 
     section.addEventListener("mousemove", onMouseMove);
     section.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("scroll", remeasure, { passive: true });
+    window.addEventListener("resize", remeasure, { passive: true });
 
     return () => {
       cancelAnimationFrame(rafId.current);
       section.removeEventListener("mousemove", onMouseMove);
       section.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("scroll", remeasure);
+      window.removeEventListener("resize", remeasure);
     };
   }, []);
   return (

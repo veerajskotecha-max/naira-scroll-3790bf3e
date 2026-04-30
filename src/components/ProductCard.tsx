@@ -123,7 +123,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           style={{ aspectRatio: "3/4" }}
         >
           <img
-            src={product.image}
+            src={shopifyImage(product.image, 600)}
+            srcSet={shopifySrcSet(product.image)}
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             alt={`${product.name} — ${product.category} by Naira Flore`}
             className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
             style={{
@@ -131,11 +133,14 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
             loading="lazy"
+            decoding="async"
             width={400}
             height={533}
           />
           <img
-            src={product.hoverImage}
+            src={shopifyImage(product.hoverImage, 600)}
+            srcSet={shopifySrcSet(product.hoverImage)}
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             alt={`${product.name} alternate view`}
             className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
             style={{
@@ -143,6 +148,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               transform: hovered ? "scale(1.05)" : "scale(1)",
             }}
             loading="lazy"
+            decoding="async"
             width={400}
             height={533}
           />

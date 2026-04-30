@@ -51,7 +51,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
     }
 
     await addItem({
-      id: product?.handle ?? "midnight-silk-drape-saree",
+      id: product?.handle ?? selectedVariant.id,
       variantId: selectedVariant.id,
       name: title,
       price: numericPrice,

@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import featured1 from "@/assets/featured-1.jpg";
-import featured2 from "@/assets/featured-2.jpg";
-import featured3 from "@/assets/featured-3.jpg";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { fetchShopifyProducts } from "@/lib/shopify";
+import { productFromShopify, type Product } from "@/components/ProductCard";
+import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 const INSTAGRAM_REEL_URL =
   "https://www.instagram.com/reel/DWJxV5CsWSt/?igsh=MWtxNnEzdXE4d2NmaQ==";
-
-const featuredProducts = [
-  { image: featured1, name: "Midnight Silk Drape Saree", price: "₹18,500" },
-  { image: featured2, name: "Lavender Chiffon Kurta Set", price: "₹12,900" },
-  { image: featured3, name: "Terracotta Lehenga Set", price: "₹24,500" },
-];
 
 const CampaignFilm = () => {
   const sectionRef = useRef<HTMLElement>(null);

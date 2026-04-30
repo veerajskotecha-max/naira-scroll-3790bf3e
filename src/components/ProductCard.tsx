@@ -204,7 +204,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               aria-label={`Add ${product.name} to cart`}
             >
               {adding ? <Loader2 size={14} className="animate-spin" /> : <ShoppingBag size={14} />}
-              {product.availability === "In Stock" ? "Add to Cart" : "Unavailable"}
+              {product.availability === "In Stock" ? "Add to Cart" : "Sold Out"}
             </button>
           </div>
 
@@ -239,7 +239,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             aria-label={`Add ${product.name} to cart`}
           >
             {adding ? <Loader2 size={13} className="animate-spin" /> : <ShoppingBag size={13} />}
-            {product.availability === "In Stock" ? "Add to Cart" : "Unavailable"}
+            {product.availability === "In Stock" ? "Add to Cart" : "Sold Out"}
           </button>
         </div>
       </Link>

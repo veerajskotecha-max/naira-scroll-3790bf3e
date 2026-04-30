@@ -82,7 +82,7 @@ const HeroScrollyWrapper = () => {
         }, 0)
         .to({}, { duration: 0.45 })
         .to(logoReveal, {
-          opacity: 0.07,
+          opacity: 0.85,
           y: -12,
           duration: 0.7,
           ease: "power2.out",

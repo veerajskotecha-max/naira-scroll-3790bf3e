@@ -217,9 +217,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           />
         </div>
 
-        <div className="pt-3 px-1">
+        <div className="pt-3 px-1 flex flex-col">
           <h3
-            className="font-cormorant text-[16px] lg:text-[18px] font-medium leading-snug"
+            className="font-cormorant text-[16px] lg:text-[18px] font-medium leading-snug min-h-[44px] lg:min-h-[50px]"
             style={{ color: "hsl(0 0% 18%)" }}
           >
             {product.name}

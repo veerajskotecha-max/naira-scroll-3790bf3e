@@ -7,7 +7,7 @@ import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
 import heroModel1 from "@/assets/naira-final-hero-1.png";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
-import nairaLogo from "@/assets/naira-logo.svg";
+import nairaLogo from "@/assets/naira-logo-reveal.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 

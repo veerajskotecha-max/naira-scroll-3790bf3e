@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,6 +19,8 @@ const HeroScrollyWrapper = () => {
   const transitionBgRef    = useRef<HTMLDivElement>(null);
   const logoRevealRef      = useRef<HTMLDivElement>(null);
 
+  const [productsReady, setProductsReady] = useState(false);
+
   const isAnimating = useRef(false);
 
   useGSAP(() => {
@@ -29,6 +31,9 @@ const HeroScrollyWrapper = () => {
       const content = arrivalsContentRef.current;
       if (!content) return;
 
+      if (!productsReady) return;
+
+      const productsGrid = content.querySelector("[data-arrivals-products]");
       const cards      = Array.from(content.querySelectorAll("[data-product-card]"));
       const leftCards  = cards.slice(0, 2);   // Midnight Saree, Ivory Anarkali → slide left
       const rightCards = cards.slice(2, 4);   // Terracotta, Lavender → slide right
@@ -38,6 +43,7 @@ const HeroScrollyWrapper = () => {
 
       // ── PRE-SET starting states so scrub can interpolate correctly ──
       if (heading) gsap.set(heading, { opacity: 0, y: -16 });
+      gsap.set(productsGrid, { opacity: 1 });
       gsap.set(leftCards,  { x: "28vw",  opacity: 0, scale: 0.85 });
       gsap.set(rightCards, { x: "-28vw", opacity: 0, scale: 0.85 });
       gsap.set(transitionBg, { opacity: 0, y: 18, scale: 1.04 });
@@ -117,7 +123,7 @@ const HeroScrollyWrapper = () => {
         // 8. Final breathe — pin sits still so scroll has time to decelerate naturally
         .to({}, { duration: 1.2 });
 
-      return () => gsap.set([heading, ...leftCards, ...rightCards, transitionBg, logoReveal], { clearProps: "all" });
+      return () => gsap.set([heading, productsGrid, ...leftCards, ...rightCards, transitionBg, logoReveal], { clearProps: "all" });
     });
 
     // ── MOBILE ─────────────────────────────────────────────────
@@ -125,12 +131,16 @@ const HeroScrollyWrapper = () => {
       const content = arrivalsContentRef.current;
       if (!content) return;
 
+      if (!productsReady) return;
+
+      const productsGrid = content.querySelector("[data-arrivals-products]");
       const cards   = Array.from(content.querySelectorAll("[data-product-card]"));
       const heading = content.querySelector("[data-arrivals-heading]");
       const transitionBg = transitionBgRef.current;
       const logoReveal = logoRevealRef.current;
 
       if (heading) gsap.set(heading, { opacity: 0, y: -10 });
+      gsap.set(productsGrid, { opacity: 1 });
       gsap.set(cards, { y: "20vh", opacity: 0 });
       gsap.set(transitionBg, { opacity: 0, y: 12, scale: 1.05 });
       gsap.set(logoReveal, { opacity: 0, y: 22, scale: 0.96, clipPath: "inset(0 50% 0 50%)" });
@@ -183,11 +193,15 @@ const HeroScrollyWrapper = () => {
         // Brief final breathe before pin releases
         .to({}, { duration: 0.6 });
 
-      return () => gsap.set([heading, ...cards, transitionBg, logoReveal], { clearProps: "all" });
+      return () => gsap.set([heading, productsGrid, ...cards, transitionBg, logoReveal], { clearProps: "all" });
     });
 
     return () => mm.revert();
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [productsReady] });
+
+  const handleProductsReady = useCallback((ready: boolean) => {
+    setProductsReady(ready);
+  }, []);
 
   return (
     <div ref={containerRef} className="relative w-full flex flex-col overflow-x-hidden">
@@ -266,7 +280,7 @@ const HeroScrollyWrapper = () => {
             decoding="async"
           />
         </div>
-        <NewArrivals contentRef={arrivalsContentRef} />
+        <NewArrivals contentRef={arrivalsContentRef} onProductsReady={handleProductsReady} />
       </div>
     </div>
   );

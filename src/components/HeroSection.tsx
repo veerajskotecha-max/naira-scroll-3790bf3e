@@ -130,6 +130,10 @@ const HeroSection = () => {
     const glow    = glowRef.current;
     if (!section || !glow) return;
 
+    // Cache the section rect — re-measuring on every mousemove forces a reflow.
+    let rect = section.getBoundingClientRect();
+    const remeasure = () => { rect = section.getBoundingClientRect(); };
+
     const loop = () => {
       pos.current.x = lerp(pos.current.x, mouse.current.x, 0.075);
       pos.current.y = lerp(pos.current.y, mouse.current.y, 0.075);
@@ -139,7 +143,6 @@ const HeroSection = () => {
     rafId.current = requestAnimationFrame(loop);
 
     const onMouseMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
       mouse.current.x = e.clientX - rect.left - 150;
       mouse.current.y = e.clientY - rect.top  - 150;
 
@@ -158,11 +161,15 @@ const HeroSection = () => {
 
     section.addEventListener("mousemove", onMouseMove);
     section.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("scroll", remeasure, { passive: true });
+    window.addEventListener("resize", remeasure, { passive: true });
 
     return () => {
       cancelAnimationFrame(rafId.current);
       section.removeEventListener("mousemove", onMouseMove);
       section.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("scroll", remeasure);
+      window.removeEventListener("resize", remeasure);
     };
   }, []);
   return (

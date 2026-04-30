@@ -7,7 +7,7 @@ import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
 import heroModel1 from "@/assets/naira-final-hero-1.png";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
-import nairaLogo from "@/assets/naira-logo.svg";
+import nairaLogo from "@/assets/naira-logo.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -256,14 +256,33 @@ const HeroScrollyWrapper = () => {
             willChange: "opacity, transform, clip-path",
           }}
         >
-          <img
-            src={nairaLogo}
-            alt=""
-            className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
-            style={{ filter: "sepia(0.15) saturate(0.85)" }}
-            loading="eager"
-            decoding="async"
-          />
+          {/*
+            WebP canvas is 1920x1080 with the wordmark occupying a 788x178 region
+            centered inside it. The SVG it replaces was tightly cropped to the
+            wordmark, so to keep the rendered NAIRA wordmark visually identical
+            in size and position, we clip to the wordmark's aspect ratio
+            (788 / 178 ≈ 4.427) at the original responsive widths and overscale
+            the underlying image by 1920/788 ≈ 2.437× so its inner wordmark
+            lands at the same on-screen size as before.
+          */}
+          <div
+            className="relative w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] overflow-hidden"
+            style={{ aspectRatio: "788 / 178" }}
+          >
+            <img
+              src={nairaLogo}
+              alt=""
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-none"
+              style={{
+                width: "243.7%",
+                height: "auto",
+                objectFit: "contain",
+                filter: "sepia(0.15) saturate(0.85)",
+              }}
+              loading="eager"
+              decoding="async"
+            />
+          </div>
         </div>
         <NewArrivals contentRef={arrivalsContentRef} onProductsReady={handleProductsReady} />
       </div>

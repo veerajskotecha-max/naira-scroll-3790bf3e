@@ -1,20 +1,23 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroSection from "./HeroSection";
 import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
+import heroModel1 from "@/assets/naira-final-hero-1.png";
+import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
+import nairaLogo from "@/assets/naira-logo.svg";
 
 gsap.registerPlugin(ScrollTrigger);
-
-import heroModel1 from "@/assets/naira-final-hero-1.png";
 
 const HeroScrollyWrapper = () => {
   const containerRef       = useRef<HTMLDivElement>(null);
   const modelRef           = useRef<HTMLDivElement>(null);
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
+  const transitionBgRef    = useRef<HTMLDivElement>(null);
+  const logoRevealRef      = useRef<HTMLDivElement>(null);
 
   const isAnimating = useRef(false);
 

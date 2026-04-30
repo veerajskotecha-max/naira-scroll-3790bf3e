@@ -193,10 +193,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           toast.error("Your Shopify cart expired. Please add the item again.");
           return;
         }
+        const syncedQuantity = result.quantity ?? quantity;
         setStoredCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-          items: current.items.map((cartItem) => (getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity } : cartItem)),
+          items: current.items.map((cartItem) => (getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem)),
         }));
       }
     } catch (error) {

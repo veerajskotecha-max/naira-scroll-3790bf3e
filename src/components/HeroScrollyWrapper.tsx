@@ -233,6 +233,39 @@ const HeroScrollyWrapper = () => {
         className="relative z-10"
         style={{ backgroundColor: "hsl(33 30% 85%)" }}
       >
+        <div
+          ref={transitionBgRef}
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none select-none"
+          style={{
+            backgroundImage: `url(${handcraftedFloralPattern})`,
+            backgroundSize: "600px",
+            backgroundPosition: "center top",
+            backgroundRepeat: "repeat",
+            opacity: 0,
+            zIndex: 0,
+            willChange: "opacity, transform",
+          }}
+        />
+        <div
+          ref={logoRevealRef}
+          aria-hidden="true"
+          className="absolute inset-x-0 top-[18vh] md:top-[16vh] lg:top-[13vh] pointer-events-none select-none flex justify-center"
+          style={{
+            opacity: 0,
+            zIndex: 1,
+            willChange: "opacity, transform, clip-path",
+          }}
+        >
+          <img
+            src={nairaLogo}
+            alt=""
+            className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
+            style={{ filter: "sepia(0.2) saturate(0.75)", opacity: 0.9 }}
+            loading="eager"
+            decoding="async"
+          />
+        </div>
         <NewArrivals contentRef={arrivalsContentRef} />
       </div>
     </div>

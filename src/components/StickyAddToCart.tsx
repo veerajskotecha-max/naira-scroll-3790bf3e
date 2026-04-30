@@ -14,7 +14,7 @@ interface StickyAddToCartProps {
   currencyCode?: string;
 }
 
-const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = "midnight-silk-drape-saree", variantId, numericPrice = 18500, currencyCode = "INR" }: StickyAddToCartProps) => {
+const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = "", variantId, numericPrice = 0, currencyCode = "INR" }: StickyAddToCartProps) => {
   const [visible, setVisible] = useState(false);
   const { addItem, setDrawerOpen } = useCart();
 

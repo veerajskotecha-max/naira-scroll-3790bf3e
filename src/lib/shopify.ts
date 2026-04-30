@@ -201,6 +201,7 @@ const CART_CREATE_MUTATION = `
           edges {
             node {
               id
+              quantity
               merchandise {
                 ... on ProductVariant {
                   id
@@ -225,6 +226,7 @@ const CART_LINES_ADD_MUTATION = `
           edges {
             node {
               id
+              quantity
               merchandise {
                 ... on ProductVariant {
                   id

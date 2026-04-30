@@ -259,8 +259,7 @@ const HeroScrollyWrapper = () => {
           <img
             src={nairaLogo}
             alt=""
-            className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
-            style={{ filter: "sepia(0.15) saturate(0.85)" }}
+            className="w-full max-w-[1300px] md:max-w-[1900px] lg:max-w-[2450px] h-auto object-contain"
             loading="eager"
             decoding="async"
           />

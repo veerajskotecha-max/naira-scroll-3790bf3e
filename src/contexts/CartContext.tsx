@@ -95,7 +95,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setStoredCart({
           cartId: result.cartId,
           checkoutUrl: result.checkoutUrl,
-          items: [{ ...item, quantity, lineId: result.lineId }],
+          items: [{ ...item, quantity: result.quantity, lineId: result.lineId }],
         });
         return;
       }
@@ -109,11 +109,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           toast.error("Your Shopify cart expired. Please add the item again.");
           return;
         }
+        const syncedQuantity = result.quantity ?? nextQuantity;
         setStoredCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
           items: current.items.map((cartItem) =>
-            getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: nextQuantity } : cartItem
+            getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
           ),
         }));
         return;
@@ -128,7 +129,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setStoredCart((current) => ({
         ...current,
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-        items: [...current.items, { ...item, quantity, lineId: result.lineId ?? null }],
+        items: [...current.items, { ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null }],
       }));
     } catch (error) {
       console.error("Failed to add Shopify item", error);

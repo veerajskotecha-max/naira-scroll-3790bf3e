@@ -1,39 +1,76 @@
+# Replace Cormorant Garamond with Velista (global)
+
 ## Goal
+Switch every typographic surface currently using Cormorant Garamond to **Velista**, with zero layout/spacing/responsiveness regressions and no render-blocking penalty. Visual hierarchy (sizes, weights, line-heights) stays identical.
 
-Swap the NAIRA wordmark asset in the New Arrivals scroll-reveal layer from the current SVG (`src/assets/naira-logo.svg`) to the user-provided WebP, keeping the visual output, animation, sizing, responsiveness, and layout pixel-identical.
-
-## Scope
-
-Only `src/components/HeroScrollyWrapper.tsx` (logo `<img>` inside `logoRevealRef`) and adding the new asset. No other files, no animation changes, no container changes.
+## Key insight
+All 226 usages across the codebase go through a single Tailwind utility: **`font-cormorant`**. So we do **not** need to edit any component. We simply remap that utility to load Velista, and remove the Google Fonts request for Cormorant.
 
 ## Steps
 
-1. **Add the WebP asset**
-   - Copy the uploaded image to `src/assets/naira-logo.webp` via `code--copy user-uploads://ppt_nera-11-2.webp src/assets/naira-logo.webp`.
+### 1. Add the Velista font file to the project
+- Copy uploaded `user-uploads://VELISTA_1.ttf` → `public/fonts/Velista.ttf`
+  (using `public/` so it's served at a stable URL and easy to `@font-face` from CSS, matching the "load efficiently / no render-blocking" requirement).
 
-2. **Update the import in `HeroScrollyWrapper.tsx`**
-   - Replace `import nairaLogo from "@/assets/naira-logo.svg";` with `import nairaLogo from "@/assets/naira-logo.webp";`.
-   - The `<img src={nairaLogo} />` tag stays exactly as-is — same `src` prop name, same parent container, same Tailwind classes (`w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto`), same `filter` style, same `loading`/`decoding` attrs.
+### 2. Register Velista via `@font-face` in `src/index.css`
+Add at the top of the file:
+```css
+@font-face {
+  font-family: 'Velista';
+  src: url('/fonts/Velista.ttf') format('truetype');
+  font-weight: 400 600;          /* covers existing 400/500/600 usage */
+  font-style: normal;
+  font-display: swap;            /* non-blocking, instant fallback */
+}
+```
+- `font-display: swap` ensures no render-blocking; fallback shows immediately, Velista swaps in when ready.
+- Single file covers the 400/500/600 weight range that components currently request.
 
-3. **Prevent intrinsic-size drift from the WebP**
-   - The uploaded WebP is 1920×1080 (16:9 with lots of empty whitespace), while the current SVG is 192×44 (≈4.36:1, tightly cropped to the wordmark). If we just swap the `src`, the visible "NAIRA" text will appear much smaller because the WebP's bounding box includes large transparent margins.
-   - To preserve the exact rendered size of the wordmark, override the `<img>` sizing so the displayed glyphs match the SVG's tight crop:
-     - Keep the existing wrapper unchanged.
-     - On the `<img>`, change classes to render at the same effective wordmark width as today. Concretely: scale up the WebP by the ratio of (WebP aspect / SVG aspect) ≈ 1920/1080 ÷ 192/44 ≈ 4.07×, so the actual NAIRA letters inside the WebP land at the same px width as the SVG did.
-     - Implementation: keep `w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px]` on the `<img>` but multiply each by ~4.07× (e.g. `w-[334vw] max-w-[2116px] md:max-w-[3093px] lg:max-w-[3989px]`) and add `h-auto object-contain`. Then wrap the `<img>` in an `overflow-hidden` clipper sized to the original (`w-[82vw] max-w-[520px] …`) and center the oversized image inside it with negative margins / flex centering, so only the wordmark area is visible — visually identical to the current SVG.
-   - This keeps GSAP targets, refs, container styles, `clip-path` reveal, opacity/transform animations, and z-index untouched. The `logoRevealRef` div and its inline styles stay exactly as they are; only the inner `<img>` gets a fixed-aspect inner clipper.
+### 3. Remove the Cormorant Google Fonts request from `index.html`
+Delete:
+- the `<link rel="stylesheet" ... Cormorant+Garamond ...>` block (with its `media=print` swap trick)
+- the `<noscript>` Cormorant fallback
+- the now-unused `preconnect` to `fonts.googleapis.com` and `fonts.gstatic.com`
 
-4. **Verify**
-   - Visually compare the section before/after at desktop (1114px viewport) and mobile widths to confirm the wordmark is the same size and centered identically.
-   - Confirm the GSAP timeline still runs (no ref/class changes that would break selectors).
+This eliminates an external network request and improves the Speed score we worked on previously.
 
-## Technical notes
+### 4. Remap the Tailwind `font-cormorant` utility to Velista
+In `tailwind.config.ts`, change:
+```ts
+fontFamily: {
+  cormorant: ['"Cormorant Garamond"', 'serif'],
+},
+```
+to:
+```ts
+fontFamily: {
+  cormorant: ['Velista', 'Cormorant Garamond', 'Georgia', 'serif'],
+},
+```
+- Keeping the utility name `font-cormorant` means **no component edits** — all 226 call sites automatically pick up Velista.
+- Fallback chain: Velista → (legacy Cormorant if cached) → Georgia → generic serif. Guarantees a serif-like fallback so layout doesn't shift to a sans-serif during font swap.
 
-- File touched: `src/components/HeroScrollyWrapper.tsx` only.
-- New file: `src/assets/naira-logo.webp`.
-- No changes to: `HeroSection.tsx`, `NewArrivals.tsx`, Shopify integration, GSAP timeline durations/eases, container `logoRevealRef` styles, or any other component.
-- The old `naira-logo.svg` can stay in the repo (unused) to avoid risk; safe to remove later.
+### 5. Optional micro-adjustment for visual balance
+Velista's metrics differ slightly from Cormorant Garamond. To keep the "visually identical structure" requirement safe, add a tiny global tuning rule in `index.css` scoped only to the utility:
+```css
+.font-cormorant {
+  /* Velista runs slightly tighter than Cormorant; nudge for parity */
+  letter-spacing: 0.005em;
+}
+```
+After the change is live we'll visually QA hero/headings/buttons and only keep this rule if needed (remove if Velista already matches).
 
-## Out of scope
+## Files changed
+- `public/fonts/Velista.ttf` (new — copied from upload)
+- `src/index.css` (add `@font-face` + optional letter-spacing nudge)
+- `index.html` (remove Cormorant `<link>`, `<noscript>`, font preconnects)
+- `tailwind.config.ts` (remap `cormorant` family to Velista with fallbacks)
 
-- Animation tuning, layout changes, responsiveness changes, replacing the SVG anywhere else (it isn't used elsewhere — verified by file listing).
+## What does NOT change
+- No component files are modified.
+- All `font-cormorant` class usages, sizes, weights, leading, tracking, and responsive breakpoints stay exactly as-is.
+- Hero LCP preload, Shopify image optimizations, and other Speed-tab fixes from the prior pass are untouched.
+
+## Risk & QA
+- **Risk:** Velista's x-height or width may differ enough to cause a 1–2px shift in tightly-fit headings (e.g., hero wordmark, sticky CTA). Mitigation: `font-display: swap` + serif fallback chain prevents jarring sans-serif flash; optional letter-spacing nudge handles fine balance.
+- **QA after build:** Spot-check Hero, New Arrivals heading, Product card titles, Footer, Buttons, Mobile menu — confirm no overflow/clipping at 375px / 768px / 1114px / 1440px widths.

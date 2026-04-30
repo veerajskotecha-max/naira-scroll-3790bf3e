@@ -3,21 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin />
     <!-- Preload hero LCP image so it starts downloading immediately, before JS executes -->
     <link rel="preload" as="image" href="/src/assets/naira-final-hero-1.png" fetchpriority="high" />
-    <!-- Load Google Fonts asynchronously to avoid render-blocking. JS-disabled fallback below. -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet" />
-    </noscript>
+    <!-- Preload Velista (self-hosted) so headings render with the brand font without blocking -->
+    <link rel="preload" as="font" type="font/ttf" href="/fonts/Velista.ttf" crossorigin />
     <title>NAIRA</title>
     <meta name="description" content="NAIRA — Luxury Handmade Fashion">
     <meta name="author" content="Lovable" />

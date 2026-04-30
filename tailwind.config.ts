@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        cormorant: ['"Cormorant Garamond"', 'serif'],
+        // Utility name kept as `cormorant` to preserve all existing class usages.
+        // Velista is the brand serif; legacy Cormorant + Georgia provide graceful fallback.
+        cormorant: ['Velista', '"Cormorant Garamond"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -66,7 +66,7 @@ const HeroScrollyWrapper = () => {
       tl
         // 1. Logo reveals while the model travels into its section position
         .to(logoReveal, {
-          opacity: 0.2,
+          opacity: 0.95,
           y: 0,
           scale: 1,
           clipPath: "inset(0 0% 0 0%)",
@@ -82,7 +82,7 @@ const HeroScrollyWrapper = () => {
         }, 0)
         .to({}, { duration: 0.45 })
         .to(logoReveal, {
-          opacity: 0.07,
+          opacity: 0.85,
           y: -12,
           duration: 0.7,
           ease: "power2.out",
@@ -153,7 +153,7 @@ const HeroScrollyWrapper = () => {
 
       tl
         .to(logoReveal, {
-          opacity: 0.16,
+          opacity: 0.9,
           y: 0,
           scale: 1,
           clipPath: "inset(0 0% 0 0%)",
@@ -165,7 +165,7 @@ const HeroScrollyWrapper = () => {
           duration: 0.75, ease: "power2.inOut",
         }, 0)
         .to({}, { duration: 0.18 })
-        .to(logoReveal, { opacity: 0.06, y: -8, duration: 0.4, ease: "power2.out" })
+        .to(logoReveal, { opacity: 0.8, y: -8, duration: 0.4, ease: "power2.out" })
         .to(heading || {}, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "+=0.12")
         .to(cards, { y: 0, opacity: 1, duration: 0.8, ease: "power2.out", stagger: 0.08 }, "+=0.18")
         .to({}, { duration: 0.3 })
@@ -247,10 +247,10 @@ const HeroScrollyWrapper = () => {
         <div
           ref={logoRevealRef}
           aria-hidden="true"
-          className="absolute inset-x-0 top-[18vh] md:top-[16vh] lg:top-[13vh] pointer-events-none select-none flex justify-center"
+          className="absolute inset-x-0 top-[38vh] md:top-[34vh] lg:top-[30vh] pointer-events-none select-none flex justify-center"
           style={{
             opacity: 0,
-            zIndex: 1,
+            zIndex: 2,
             willChange: "opacity, transform, clip-path",
           }}
         >
@@ -258,7 +258,7 @@ const HeroScrollyWrapper = () => {
             src={nairaLogo}
             alt=""
             className="w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] h-auto"
-            style={{ filter: "sepia(0.2) saturate(0.75)", opacity: 0.9 }}
+            style={{ filter: "sepia(0.15) saturate(0.85)" }}
             loading="eager"
             decoding="async"
           />

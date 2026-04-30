@@ -326,14 +326,14 @@ export function isCartNotFoundError(userErrors: Array<{ message: string }>): boo
   });
 }
 
-const getLineForVariant = (lines: Array<{ node: { id: string; merchandise: { id: string } } }>, variantId: string) =>
+const getLineForVariant = (lines: Array<{ node: { id: string; quantity?: number; merchandise: { id: string } } }>, variantId: string) =>
   lines.find((line) => line.node.merchandise.id === variantId)?.node;
 
-export async function createShopifyCart(variantId: string, quantity: number): Promise<{ cartId: string; checkoutUrl: string; lineId: string } | null> {
+export async function createShopifyCart(variantId: string, quantity: number): Promise<{ cartId: string; checkoutUrl: string; lineId: string; quantity: number } | null> {
   const data = await storefrontApiRequest<{
     data: {
       cartCreate: {
-        cart: { id: string; checkoutUrl: string; lines: { edges: Array<{ node: { id: string; merchandise: { id: string } } }> } } | null;
+        cart: { id: string; checkoutUrl: string; lines: { edges: Array<{ node: { id: string; quantity: number; merchandise: { id: string } } }> } } | null;
         userErrors: Array<{ message: string }>;
       };
     };
@@ -348,14 +348,14 @@ export async function createShopifyCart(variantId: string, quantity: number): Pr
   const line = cart ? getLineForVariant(cart.lines.edges, variantId) : null;
   if (!cart?.checkoutUrl || !line?.id) return null;
 
-  return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id };
+  return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id, quantity: line.quantity ?? quantity };
 }
 
-export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number): Promise<{ success: boolean; lineId?: string; checkoutUrl?: string; cartNotFound?: boolean }> {
+export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number): Promise<{ success: boolean; lineId?: string; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
   const data = await storefrontApiRequest<{
     data: {
       cartLinesAdd: {
-        cart: { checkoutUrl: string; lines: { edges: Array<{ node: { id: string; merchandise: { id: string } } }> } } | null;
+        cart: { checkoutUrl: string; lines: { edges: Array<{ node: { id: string; quantity: number; merchandise: { id: string } } }> } } | null;
         userErrors: Array<{ message: string }>;
       };
     };
@@ -370,7 +370,7 @@ export async function addLineToShopifyCart(cartId: string, variantId: string, qu
 
   const cart = data.data.cartLinesAdd.cart;
   const line = cart ? getLineForVariant(cart.lines.edges, variantId) : null;
-  return { success: true, lineId: line?.id, checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
+  return { success: true, lineId: line?.id, quantity: line?.quantity, checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
 }
 
 export async function updateShopifyCartLine(cartId: string, lineId: string, quantity: number): Promise<{ success: boolean; checkoutUrl?: string; cartNotFound?: boolean }> {

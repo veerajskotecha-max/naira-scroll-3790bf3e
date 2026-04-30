@@ -127,9 +127,13 @@ const HeroScrollyWrapper = () => {
 
       const cards   = Array.from(content.querySelectorAll("[data-product-card]"));
       const heading = content.querySelector("[data-arrivals-heading]");
+      const transitionBg = transitionBgRef.current;
+      const logoReveal = logoRevealRef.current;
 
       if (heading) gsap.set(heading, { opacity: 0, y: -10 });
       gsap.set(cards, { y: "20vh", opacity: 0 });
+      gsap.set(transitionBg, { opacity: 0, y: 12, scale: 1.05 });
+      gsap.set(logoReveal, { opacity: 0, y: 22, scale: 0.96, clipPath: "inset(0 50% 0 50%)" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -148,10 +152,26 @@ const HeroScrollyWrapper = () => {
       });
 
       tl
+        .to(transitionBg, {
+          opacity: 0.38,
+          y: 0,
+          scale: 1,
+          duration: 0.55,
+          ease: "power2.out",
+        }, 0)
+        .to(logoReveal, {
+          opacity: 0.14,
+          y: 0,
+          scale: 1,
+          clipPath: "inset(0 0% 0 0%)",
+          duration: 0.65,
+          ease: "power3.out",
+        }, 0.05)
         .to(modelRef.current, {
           scale: 0.75, transformOrigin: "bottom center",
           duration: 0.8, ease: "power2.inOut",
-        })
+        }, 0)
+        .to(logoReveal, { opacity: 0.06, y: -8, duration: 0.35, ease: "power2.out" }, "-=0.2")
         .to(heading || {}, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, "-=0.3")
         .to(cards, { y: 0, opacity: 1, duration: 1.0, ease: "power2.out", stagger: 0.1 }, "-=0.4")
         .to({}, { duration: 0.2 })
@@ -163,7 +183,7 @@ const HeroScrollyWrapper = () => {
         // Brief final breathe before pin releases
         .to({}, { duration: 0.6 });
 
-      return () => gsap.set([heading, ...cards], { clearProps: "all" });
+      return () => gsap.set([heading, ...cards, transitionBg, logoReveal], { clearProps: "all" });
     });
 
     return () => mm.revert();

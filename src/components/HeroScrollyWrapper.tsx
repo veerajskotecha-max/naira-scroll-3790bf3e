@@ -166,16 +166,16 @@ const HeroScrollyWrapper = () => {
         .hero-model-layer { position: fixed; top: 98px; bottom: 0; opacity: 1; transform: none; }
         @media (min-width: 768px)  { .hero-model-layer { top: 108px; } }
         @media (min-width: 1024px) { .hero-model-layer { top: 120px; } }
-        /* Model: prominent and visible on mobile */
+        /* Model: smaller, anchored at bottom so she starts below the SHOP COLLECTION button */
         .hero-model-img { 
-          max-width: 96vw; 
-          height: 52vh;
-          max-height: 420px;
+          max-width: 78vw; 
+          height: 38vh;
+          max-height: 320px;
         }
         @media (min-width: 768px)  { 
-          .hero-model-img { max-width: 55vw; height: min(590px, calc(100% - 6vh)); max-height: none; } 
+          .hero-model-img { max-width: 44vw; height: min(500px, calc(100% - 10vh)); max-height: none; } 
         }
-        @media (min-width: 1024px) { .hero-model-img { max-width: 48vw; } }
+        @media (min-width: 1024px) { .hero-model-img { max-width: 38vw; } }
       `}</style>
 
       <div

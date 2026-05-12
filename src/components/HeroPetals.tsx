@@ -243,7 +243,12 @@ const HeroPetals = ({
         }
         // ease the fall slightly so petals decelerate near the bottom
         const fallT = easeInOutSine(localT);
-        const y = -60 + fallT * (vh + 140) * cfg.depth;
+        // origin sits below the SHOP COLLECTION button (~55% of viewport),
+        // and petals only drift a short distance — they nudge near the model
+        // rather than falling all the way down
+        const originY = vh * 0.55;
+        const travel = vh * 0.32 * cfg.depth;
+        const y = originY + fallT * travel;
         const swayX =
           Math.sin(localT * Math.PI * 2 * cfg.swayFreq) * cfg.sway + cfg.driftX * localT;
         const rot = cfg.rot * localT;

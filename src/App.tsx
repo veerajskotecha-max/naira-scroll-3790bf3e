@@ -36,6 +36,7 @@ const AppShell = () => {
       <WishlistDrawer />
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/index" element={<Index />} />
         <Route path="/shop" element={<ShopAll />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/customize" element={<MadeForYou />} />

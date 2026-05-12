@@ -212,15 +212,21 @@ const HeroScrollyWrapper = () => {
         style={{ bottom: 0, willChange: "transform, opacity" }}
         aria-hidden="true"
       >
-        <img
-          src={heroModel1}
-          alt=""
-          className="hero-model-img absolute bottom-0 md:bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
-          style={{ filter: "drop-shadow(0 8px 30px rgba(74,47,34,0.12))" }}
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
+        <div
+          ref={modelInnerRef}
+          className="flex items-end justify-center w-full h-full"
+          style={{ willChange: "transform" }}
+        >
+          <img
+            src={heroModel1}
+            alt=""
+            className="hero-model-img absolute bottom-0 md:bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
+            style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </div>
       </div>
 
       <div>

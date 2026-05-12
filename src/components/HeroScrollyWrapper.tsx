@@ -176,11 +176,11 @@ const HeroScrollyWrapper = () => {
         .hero-model-layer { position: fixed; top: 98px; }
         @media (min-width: 768px)  { .hero-model-layer { top: 108px; } }
         @media (min-width: 1024px) { .hero-model-layer { top: 120px; } }
-        /* Model max-width: wider on small screens so it doesn't look clipped */
+        /* Model: prominent and visible on mobile */
         .hero-model-img { 
-          max-width: 85vw; 
-          height: 40vh;
-          max-height: 320px;
+          max-width: 96vw; 
+          height: 52vh;
+          max-height: 420px;
         }
         @media (min-width: 768px)  { 
           .hero-model-img { max-width: 55vw; height: min(590px, calc(100% - 6vh)); max-height: none; } 

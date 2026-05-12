@@ -182,14 +182,18 @@ const HeroScrollyWrapper = () => {
         .hero-model-layer { position: fixed; top: 98px; bottom: 0; opacity: 1; transform: none; }
         @media (min-width: 768px)  { .hero-model-layer { top: 108px; } }
         @media (min-width: 1024px) { .hero-model-layer { top: 120px; } }
-        /* Model: smaller, anchored at bottom so she starts below the SHOP COLLECTION button */
-        .hero-model-img { 
-          max-width: 78vw; 
-          height: 38vh;
-          max-height: 320px;
+        /* Model: smaller, anchored at bottom so she starts below the SHOP COLLECTION button.
+           On short viewports she shrinks aggressively so she never overlaps the headline / CTA. */
+        .hero-model-img {
+          max-width: 60vw;
+          height: 30vh;
+          max-height: 240px;
         }
-        @media (min-width: 768px)  { 
-          .hero-model-img { max-width: 44vw; height: min(500px, calc(100% - 10vh)); max-height: none; } 
+        @media (min-height: 700px) {
+          .hero-model-img { max-width: 72vw; height: 36vh; max-height: 320px; }
+        }
+        @media (min-width: 768px)  {
+          .hero-model-img { max-width: 44vw; height: min(500px, calc(100% - 10vh)); max-height: none; }
         }
         @media (min-width: 1024px) { .hero-model-img { max-width: 38vw; } }
       `}</style>

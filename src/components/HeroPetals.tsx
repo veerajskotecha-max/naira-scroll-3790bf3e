@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-const PETAL_COUNT = 150;
+const PETAL_COUNT = 75;
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -110,13 +110,13 @@ const HeroPetals = ({
         variant: Math.floor(Math.random() * 3),
         size: sz,
         xPct: rand(2, 98),
-        sway: rand(8, 22),
-        swayFreq: rand(0.6, 1.5),
-        rot: rand(-180, 180),
-        depth: sz < 12 ? 0.7 : sz < 19 ? 0.9 : 1.1,
+        sway: rand(14, 32),         // wider, slower lateral drift
+        swayFreq: rand(0.35, 0.75), // gentler oscillation
+        rot: rand(-90, 90),         // softer rotation
+        depth: sz < 12 ? 0.55 : sz < 19 ? 0.75 : 0.95,
         start,
-        end: Math.min(1.15, start + rand(0.55, 0.95)),
-        driftX: rand(-30, 30),
+        end: Math.min(1.2, start + rand(0.7, 1.1)), // longer, slower fall
+        driftX: rand(-22, 22),
         hue,
       };
     });
@@ -124,6 +124,10 @@ const HeroPetals = ({
 
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number>(0);
+  // smoothed per-petal nudge offsets (lerped each frame for elegance)
+  const nudge = useRef<{ x: number; y: number }[]>(
+    Array.from({ length: PETAL_COUNT }, () => ({ x: 0, y: 0 }))
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: -9999, y: -9999, active: false });
 
@@ -147,12 +151,17 @@ const HeroPetals = ({
   }, []);
 
   useEffect(() => {
-    const tick = () => {
+    let lastT = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(40, now - lastT) / 1000;
+      lastT = now;
       const p = progressRef.current;
       const vw = window.innerWidth;
       const mx = mouse.current.x;
       const my = mouse.current.y;
       const mActive = mouse.current.active;
+      // continuous time-based phase so petals breathe even without scroll
+      const phase = now / 1000;
 
       petals.forEach((cfg, i) => {
         const el = refs.current[i];
@@ -163,29 +172,44 @@ const HeroPetals = ({
           return;
         }
         const fallT = easeInOutSine(localT);
-        // Petals fall from above the viewport down to the bottom of the hero
         const y = -80 + fallT * (vh + 160) * cfg.depth;
-        let swayX =
-          Math.sin(localT * Math.PI * 2 * cfg.swayFreq) * cfg.sway + cfg.driftX * localT;
+        // dual-frequency sway: gentle long arc + subtle micro-wobble
+        const swayBase =
+          Math.sin(phase * cfg.swayFreq + cfg.start * 6.28) * cfg.sway +
+          Math.sin(phase * cfg.swayFreq * 2.3 + i) * (cfg.sway * 0.18) +
+          cfg.driftX * fallT;
 
-        // Interactive nudge — petals near cursor get pushed away
+        // Interactive nudge — silky lerp toward target offset
+        let nudgeTargetX = 0;
+        let nudgeTargetY = 0;
         if (mActive) {
           const baseX = (cfg.xPct / 100) * vw;
-          const dx = baseX + swayX - mx;
+          const dx = baseX + swayBase - mx;
           const dy = y - my;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const radius = 130;
+          const radius = 160;
           if (dist < radius && dist > 0.1) {
-            const force = (1 - dist / radius) * 28;
-            swayX += (dx / dist) * force;
+            const force = Math.pow(1 - dist / radius, 2) * 38;
+            nudgeTargetX = (dx / dist) * force;
+            nudgeTargetY = (dy / dist) * force * 0.4;
           }
         }
+        const k = 1 - Math.exp(-dt * 6); // critically-damped lerp
+        const n = nudge.current[i];
+        n.x += (nudgeTargetX - n.x) * k;
+        n.y += (nudgeTargetY - n.y) * k;
 
-        const rot = cfg.rot * localT;
-        let op = 0.92;
-        if (localT < 0.15) op = easeOutExpo(localT / 0.15) * 0.92;
-        else if (localT > 0.82) op = easeOutExpo(1 - (localT - 0.82) / 0.18) * 0.92;
-        el.style.transform = `translate3d(${swayX}px, ${y}px, 0) rotate(${rot}deg)`;
+        const swayX = swayBase + n.x;
+        // gentle rotation tied to sway for natural feel
+        const rot =
+          cfg.rot * 0.35 * Math.sin(phase * cfg.swayFreq * 0.8 + cfg.start * 3.14) +
+          cfg.rot * 0.6 * fallT;
+
+        let op = 0.94;
+        if (localT < 0.18) op = easeOutExpo(localT / 0.18) * 0.94;
+        else if (localT > 0.8) op = easeOutExpo(1 - (localT - 0.8) / 0.2) * 0.94;
+
+        el.style.transform = `translate3d(${swayX}px, ${y + n.y}px, 0) rotate(${rot}deg)`;
         el.style.opacity = String(op);
       });
       rafRef.current = requestAnimationFrame(tick);

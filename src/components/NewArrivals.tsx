@@ -30,7 +30,7 @@ const NewArrivals = ({
       className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16 pt-[130px] md:pt-[140px] lg:pt-[155px]"
       style={{ minHeight: "100vh" }}
     >
-      <FloatingFlower />
+      
       <img
         src={floralBottomRight}
         alt=""

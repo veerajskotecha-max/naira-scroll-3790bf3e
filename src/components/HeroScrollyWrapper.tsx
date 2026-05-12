@@ -14,7 +14,6 @@ gsap.registerPlugin(ScrollTrigger);
 const HeroScrollyWrapper = () => {
   const containerRef       = useRef<HTMLDivElement>(null);
   const modelRef           = useRef<HTMLDivElement>(null);
-  const modelInnerRef      = useRef<HTMLDivElement>(null);
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
   const transitionBgRef    = useRef<HTMLDivElement>(null);
@@ -52,8 +51,8 @@ const HeroScrollyWrapper = () => {
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
           start: "top top",
-          end: "+=2400",
-          scrub: 1.5,
+          end: "+=1400",
+          scrub: 1,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -188,32 +187,6 @@ const HeroScrollyWrapper = () => {
     setProductsReady(ready);
   }, []);
 
-  // ── Hero model breath (0–30%) + lift & scale (30–65%) ──────────
-  // Reads window.__heroProgress that HeroSection updates every RAF.
-  useGSAP(() => {
-    let raf = 0;
-    const start = performance.now();
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-    const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
-
-    const tick = (now: number) => {
-      const inner = modelInnerRef.current;
-      if (inner) {
-        const p = (window as unknown as { __heroProgress?: number }).__heroProgress ?? 0;
-        // Breath loop — 6s sine, ±3px
-        const breathT = ((now - start) / 6000) * Math.PI * 2;
-        const breath = Math.sin(breathT) * 3;
-        // Lift & scale envelope (peak at ~65%, holds after)
-        const liftT = clamp((p - 0.3) / 0.35);
-        const lift = -easeOutCubic(liftT) * (window.innerHeight * 0.08);
-        const scale = 1 + easeOutCubic(liftT) * 0.04;
-        inner.style.transform = `translate3d(0, ${lift + breath}px, 0) scale(${scale})`;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, { scope: containerRef });
 
   return (
     <div ref={containerRef} className="relative w-full flex flex-col overflow-x-hidden">
@@ -239,21 +212,15 @@ const HeroScrollyWrapper = () => {
         style={{ bottom: 0, willChange: "transform, opacity" }}
         aria-hidden="true"
       >
-        <div
-          ref={modelInnerRef}
-          className="flex items-end justify-center w-full h-full"
-          style={{ willChange: "transform" }}
-        >
-          <img
-            src={heroModel1}
-            alt=""
-            className="hero-model-img absolute bottom-0 md:bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
-            style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </div>
+        <img
+          src={heroModel1}
+          alt=""
+          className="hero-model-img absolute bottom-0 md:bottom-[4vh] w-auto object-contain object-bottom transition-opacity duration-500 ease-in-out"
+          style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+        />
       </div>
 
       <div>

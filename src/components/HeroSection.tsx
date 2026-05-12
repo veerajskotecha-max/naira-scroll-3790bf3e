@@ -1,210 +1,270 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import HeroPetals from "./HeroPetals";
-import nairaLogo from "@/assets/naira-logo.webp";
 
-const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
-const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+// ─── Lerp helper ───────────────────────────────────────────────
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 
+// ─── Headline words — each is a "mask reveal" unit ─────────────
+const HEADLINE = [
+  { text: "Where",        italic: false, delay: 80  },
+  { text: "Tradition",    italic: false, delay: 180 },
+  { text: "Meets",        italic: false, delay: 270 },
+  { text: "Contemporary", italic: true,  delay: 370 },
+  { text: "style",        italic: false, delay: 480 },
+];
+
+const MaskWord = ({
+  text, italic, delay, revealed,
+}: { text: string; italic: boolean; delay: number; revealed: boolean }) => (
+  <span
+    className="block overflow-hidden leading-none"
+    style={{ paddingBottom: "0.08em", marginBottom: "-0.08em" }}
+  >
+    <span
+      className="block"
+      style={{
+        transform: revealed ? "translateY(0)" : "translateY(110%)",
+        transition: `transform ${italic ? "0.85s" : "0.75s"} ${
+          italic
+            ? "cubic-bezier(0.34, 1.56, 0.64, 1)"
+            : "cubic-bezier(0.16, 1, 0.3, 1)"
+        }`,
+        transitionDelay: `${delay}ms`,
+      }}
+    >
+      {italic ? <em className="italic font-normal">{text}</em> : text}
+    </span>
+  </span>
+);
+
 const HeroSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLDivElement>(null);
-  const wordmarkRef = useRef<HTMLDivElement>(null);
-  const bloomRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
-  // smoothed scroll progress 0..1 across the 320vh section
-  const progressRef = useRef(0);
-  const targetProgress = useRef(0);
+  const sectionRef   = useRef<HTMLElement>(null);
+  const watermarkRef = useRef<HTMLDivElement>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
 
-  const [vh, setVh] = useState(
-    typeof window !== "undefined" ? window.innerHeight : 800
-  );
+  const glowRef     = useRef<HTMLDivElement>(null);
+  const mouse       = useRef({ x: -999, y: -999 });
+  const pos         = useRef({ x: -999, y: -999 });
+  const glowVisible = useRef(false);
+  const rafId       = useRef<number>(0);
+
+  // Smoothed scroll progress for petals (0..1 across hero section)
+  const petalProgress = useRef(0);
+  const [vh, setVh] = useState(typeof window !== "undefined" ? window.innerHeight : 800);
 
   useEffect(() => {
-    const onResize = () => setVh(window.innerHeight);
-    window.addEventListener("resize", onResize, { passive: true });
-    return () => window.removeEventListener("resize", onResize);
+    const t = setTimeout(() => setMounted(true), 120);
+    return () => clearTimeout(t);
   }, []);
 
+  // Parallax + petal scroll progress (single RAF)
   useEffect(() => {
-    let raf = 0;
-    let cachedTotal = 0;
-    let cachedTop = 0;
-    let lastMeasure = 0;
+    let ticking = false;
+    let sectionHeight = sectionRef.current?.offsetHeight ?? 0;
 
-    const tick = (now: number) => {
-      const sec = sectionRef.current;
-      if (sec) {
-        // Re-measure layout-bound values at most every 250ms
-        if (now - lastMeasure > 250 || cachedTotal === 0) {
-          const rect = sec.getBoundingClientRect();
-          cachedTop = rect.top + window.scrollY;
-          cachedTotal = sec.offsetHeight - vh;
-          lastMeasure = now;
-        }
-        const scrolled = clamp((window.scrollY - cachedTop) / Math.max(cachedTotal, 1));
-        targetProgress.current = scrolled;
-      }
-      // lerp
-      progressRef.current += (targetProgress.current - progressRef.current) * 0.085;
-      const p = progressRef.current;
-
-      // Headline fades up & out 30–65%
-      if (headlineRef.current) {
-        const t = clamp((p - 0.3) / 0.35);
-        headlineRef.current.style.opacity = String(1 - easeOutExpo(t));
-        headlineRef.current.style.transform = `translateY(${-t * 28}px)`;
-      }
-
-      // Wordmark fades in 30–65%, max 0.7
-      if (wordmarkRef.current) {
-        const t = clamp((p - 0.3) / 0.35);
-        const op = easeOutExpo(t) * 0.7;
-        wordmarkRef.current.style.opacity = String(op);
-        wordmarkRef.current.style.transform = `translateY(-50%) scale(${0.96 + t * 0.04})`;
-      }
-
-      // Bloom 65–100%
-      if (bloomRef.current) {
-        const t = clamp((p - 0.65) / 0.35);
-        bloomRef.current.style.opacity = String(easeOutExpo(t));
-        bloomRef.current.style.transform = `translate(-50%,-50%) scale(${0.5 + easeOutCubic(t) * 0.7})`;
-      }
-
-      // Expose to global so HeroScrollyWrapper can drive the model breath/lift
-      (window as unknown as { __heroProgress?: number }).__heroProgress = p;
-
-      raf = requestAnimationFrame(tick);
+    const measure = () => {
+      sectionHeight = sectionRef.current?.offsetHeight ?? 0;
+      setVh(window.innerHeight);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [vh]);
+
+    let raf = 0;
+    const lerpLoop = () => {
+      const target = clamp(window.scrollY / Math.max(sectionHeight, 1));
+      petalProgress.current += (target - petalProgress.current) * 0.085;
+      raf = requestAnimationFrame(lerpLoop);
+    };
+    raf = requestAnimationFrame(lerpLoop);
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        if (scrollY > sectionHeight) { ticking = false; return; }
+        if (watermarkRef.current) {
+          watermarkRef.current.style.transform = `translateY(${scrollY * 0.25}px)`;
+        }
+        if (textLayerRef.current) {
+          textLayerRef.current.style.transform = `translateY(${scrollY * -0.06}px)`;
+        }
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  // Cursor glow
+  useEffect(() => {
+    const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
+    if (prefersCoarse) return;
+
+    const section = sectionRef.current;
+    const glow    = glowRef.current;
+    if (!section || !glow) return;
+
+    let rect = section.getBoundingClientRect();
+    const remeasure = () => { rect = section.getBoundingClientRect(); };
+
+    const loop = () => {
+      pos.current.x = lerp(pos.current.x, mouse.current.x, 0.075);
+      pos.current.y = lerp(pos.current.y, mouse.current.y, 0.075);
+      glow.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
+      rafId.current = requestAnimationFrame(loop);
+    };
+    rafId.current = requestAnimationFrame(loop);
+
+    const onMouseMove = (e: MouseEvent) => {
+      mouse.current.x = e.clientX - rect.left - 150;
+      mouse.current.y = e.clientY - rect.top  - 150;
+      if (!glowVisible.current) {
+        glowVisible.current = true;
+        glow.style.opacity = "1";
+        pos.current.x = mouse.current.x;
+        pos.current.y = mouse.current.y;
+      }
+    };
+    const onMouseLeave = () => {
+      glowVisible.current = false;
+      glow.style.opacity = "0";
+    };
+
+    section.addEventListener("mousemove", onMouseMove);
+    section.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("scroll", remeasure, { passive: true });
+    window.addEventListener("resize", remeasure, { passive: true });
+    return () => {
+      cancelAnimationFrame(rafId.current);
+      section.removeEventListener("mousemove", onMouseMove);
+      section.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("scroll", remeasure);
+      window.removeEventListener("resize", remeasure);
+    };
+  }, []);
 
   return (
     <section
       ref={sectionRef}
-      data-hero-pinned
-      className="relative w-full"
+      className="relative w-full overflow-hidden"
       style={{
-        height: "320vh",
-        background:
-          "linear-gradient(180deg, #FBF4EA 0%, #F5E9DA 55%, #EFDFCB 100%)",
+        backgroundColor: "#E5B9A4",
+        minHeight: "min(890px, 90vh)",
       }}
     >
+      {/* Cursor glow */}
       <div
-        className="sticky top-0 w-full overflow-hidden"
-        style={{ height: "100vh" }}
-      >
-        {/* ── Film grain overlay ── */}
-        <svg
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ mixBlendMode: "overlay", opacity: 0.045, zIndex: 50 }}
-        >
-          <filter id="hero-grain">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.9"
-              numOctaves="2"
-              stitchTiles="stitch"
-            />
-            <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#hero-grain)" />
-        </svg>
+        ref={glowRef}
+        aria-hidden="true"
+        className="absolute top-0 left-0 pointer-events-none select-none"
+        style={{
+          width: 300, height: 300, borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(255,195,140,0.55) 0%, rgba(229,155,100,0.28) 45%, transparent 72%)",
+          filter: "blur(18px)",
+          opacity: 0,
+          transition: "opacity 0.5s ease",
+          willChange: "transform",
+          zIndex: 5,
+        }}
+      />
 
-        {/* ── NAIRA wordmark behind shoulders ── */}
-        <div
-          ref={wordmarkRef}
-          aria-hidden="true"
-          className="absolute inset-x-0 flex justify-center pointer-events-none"
+      {/* Watermark NAIRA */}
+      <div
+        ref={watermarkRef}
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+        style={{ willChange: "transform", zIndex: 1 }}
+        aria-hidden="true"
+      >
+        <span
+          className="font-cormorant font-semibold uppercase"
           style={{
-            top: "55%",
-            opacity: 0,
-            transform: "translateY(-50%) scale(0.96)",
-            willChange: "opacity, transform",
-            zIndex: 2,
+            fontSize: "clamp(140px, 20vw, 380px)",
+            color: "#8B5E3C",
+            opacity: 0.06,
+            letterSpacing: "0.05em",
           }}
         >
-          <div
-            className="relative w-[92vw] max-w-[560px] md:max-w-[860px] lg:max-w-[1180px] overflow-hidden"
-            style={{ aspectRatio: "788 / 178" }}
-          >
-            <img
-              src={nairaLogo}
-              alt=""
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-none"
+          NAIRA
+        </span>
+      </div>
+
+      {/* Petals overlay — scoped inside hero, falls as user scrolls */}
+      <HeroPetals progressRef={petalProgress} vh={vh} />
+
+      <div
+        className="relative z-10 max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center lg:items-end px-6 md:px-10 lg:px-14 xl:px-16"
+        style={{ minHeight: "min(890px, 90vh)" }}
+      >
+        <div
+          ref={textLayerRef}
+          className="flex-1 z-50 order-1 max-w-[420px] lg:max-w-[440px] relative"
+          style={{ willChange: "transform" }}
+        >
+          <div className="flex flex-col justify-center lg:justify-end pt-4 pb-0 lg:pt-0 lg:pb-24 text-center lg:text-left">
+            <h1
+              className="font-cormorant text-[34px] md:text-[48px] lg:text-[58px] xl:text-[62px] font-medium mb-3 md:mb-6 text-center lg:text-left"
+              style={{ color: "#3D2B1F", lineHeight: 1.18 }}
+            >
+              {HEADLINE.map((word) => (
+                <MaskWord
+                  key={word.text}
+                  text={word.text}
+                  italic={word.italic}
+                  delay={word.delay}
+                  revealed={mounted}
+                />
+              ))}
+            </h1>
+
+            <p
+              className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-[1.6] mb-5 md:mb-10"
               style={{
-                width: "243.7%",
-                height: "auto",
-                filter: "saturate(0.85) brightness(1.04)",
+                color: "rgba(61, 43, 31, 0.7)",
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(10px)",
+                transition: "opacity 0.7s ease, transform 0.7s ease",
+                transitionDelay: "640ms",
               }}
-              loading="eager"
-              decoding="async"
-            />
-            {/* Bloom inside the dot of the I */}
+            >
+              Discover the finest Indo-Western fusion wear,
+              <br className="hidden md:block" />
+              crafted for the modern woman.
+            </p>
+
             <div
-              ref={bloomRef}
-              className="absolute rounded-full"
+              className="flex flex-wrap gap-4 justify-center lg:justify-start"
               style={{
-                left: "50%",
-                top: "26%",
-                width: "5.2%",
-                aspectRatio: "1",
-                background:
-                  "radial-gradient(circle, rgba(244,180,160,0.95) 0%, rgba(244,180,160,0.55) 38%, rgba(244,180,160,0) 75%)",
-                opacity: 0,
-                transform: "translate(-50%,-50%) scale(0.5)",
-                willChange: "opacity, transform",
-                filter: "blur(2px)",
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(14px)",
+                transition: "opacity 0.65s ease, transform 0.65s ease",
+                transitionDelay: "800ms",
               }}
-            />
+            >
+              <Link
+                to="/shop"
+                className="font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.14em] px-7 md:px-8 py-3.5 md:py-[14px] rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                style={{ backgroundColor: "#4A2F22", color: "#FFFFFF" }}
+              >
+                SHOP COLLECTION
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* ── Headline content (top of stage) ── */}
-        <div
-          ref={headlineRef}
-          className="absolute inset-x-0 flex flex-col items-center text-center px-6"
-          style={{
-            top: "9vh",
-            zIndex: 10,
-            willChange: "opacity, transform",
-          }}
-        >
-          <p
-            className="text-[10px] md:text-[12px] tracking-[0.36em] uppercase mb-3 md:mb-5"
-            style={{ color: "#8B6F5A" }}
-          >
-            Spring Mahal
-          </p>
-          <h1
-            className="font-cormorant font-medium leading-[1.04]"
-            style={{
-              color: "#3D2B1F",
-              fontSize: "clamp(34px, 6vw, 68px)",
-            }}
-          >
-            Where Tradition
-            <br />
-            <em className="italic font-normal" style={{ color: "#A06B52" }}>
-              meets
-            </em>
-            <br />
-            Contemporary
-          </h1>
-          <Link
-            to="/shop"
-            className="mt-6 md:mt-9 inline-flex items-center font-cormorant text-[12px] md:text-[13px] uppercase tracking-[0.2em] px-8 py-3 rounded-sm hover:-translate-y-0.5 transition-transform duration-300"
-            style={{ background: "#3D2B1F", color: "#FBF4EA" }}
-          >
-            Shop Collection
-          </Link>
+        {/* Spacer — actual model rendered by HeroScrollyWrapper */}
+        <div className="flex-shrink-0 order-2 self-end" aria-hidden="true">
+          <div className="h-[330px] md:h-[460px] lg:h-[590px] xl:h-[690px] w-[140px] md:w-[210px] lg:w-[290px] xl:w-[360px]" />
         </div>
-
-        {/* ── Petals layer ── */}
-        <HeroPetals progressRef={progressRef} vh={vh} />
       </div>
     </section>
   );

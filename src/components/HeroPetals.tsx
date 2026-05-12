@@ -110,13 +110,13 @@ const HeroPetals = ({
         variant: Math.floor(Math.random() * 3),
         size: sz,
         xPct: rand(2, 98),
-        sway: rand(8, 22),
-        swayFreq: rand(0.6, 1.5),
-        rot: rand(-180, 180),
-        depth: sz < 12 ? 0.7 : sz < 19 ? 0.9 : 1.1,
+        sway: rand(14, 32),         // wider, slower lateral drift
+        swayFreq: rand(0.35, 0.75), // gentler oscillation
+        rot: rand(-90, 90),         // softer rotation
+        depth: sz < 12 ? 0.55 : sz < 19 ? 0.75 : 0.95,
         start,
-        end: Math.min(1.15, start + rand(0.55, 0.95)),
-        driftX: rand(-30, 30),
+        end: Math.min(1.2, start + rand(0.7, 1.1)), // longer, slower fall
+        driftX: rand(-22, 22),
         hue,
       };
     });
@@ -124,6 +124,10 @@ const HeroPetals = ({
 
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number>(0);
+  // smoothed per-petal nudge offsets (lerped each frame for elegance)
+  const nudge = useRef<{ x: number; y: number }[]>(
+    Array.from({ length: PETAL_COUNT }, () => ({ x: 0, y: 0 }))
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: -9999, y: -9999, active: false });
 

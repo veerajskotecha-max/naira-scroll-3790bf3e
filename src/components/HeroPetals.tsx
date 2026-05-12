@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-const PETAL_COUNT = 44;
+const PETAL_COUNT = 150;
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -17,180 +17,71 @@ type PetalCfg = {
   start: number;
   end: number;
   driftX: number;
+  hue: number; // index into BRAND_PALETTE
 };
 
-/* ────────── 6 refined hand-drawn SVG petal variants ────────── */
-const PetalSVG = ({ v, s, id }: { v: number; s: number; id: number }) => {
-  switch (v) {
-    case 0: // 5-petal cherry blossom — soft blush, gold stamen
-      return (
-        <svg width={s} height={s} viewBox="0 0 40 40" fill="none">
-          <defs>
-            <radialGradient id={`pg0-${id}`} cx="50%" cy="55%" r="60%">
-              <stop offset="0%" stopColor="#FFF1E6" />
-              <stop offset="45%" stopColor="#F5D4C0" />
-              <stop offset="100%" stopColor="#D49A82" />
-            </radialGradient>
-            <radialGradient id={`pg0c-${id}`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#E8C079" />
-              <stop offset="100%" stopColor="#9C7A3E" />
-            </radialGradient>
-          </defs>
-          {[0, 72, 144, 216, 288].map((a) => (
-            <ellipse
-              key={a}
-              cx="20"
-              cy="9"
-              rx="5.4"
-              ry="9.4"
-              fill={`url(#pg0-${id})`}
-              transform={`rotate(${a} 20 20)`}
-              opacity="0.95"
-            />
-          ))}
-          {/* stamens */}
-          {[18, 19, 20, 21, 22].map((cx, i) => (
-            <line
-              key={i}
-              x1="20"
-              y1="20"
-              x2={cx}
-              y2={16 + (i % 2)}
-              stroke="#B89968"
-              strokeWidth="0.4"
-              opacity="0.7"
-            />
-          ))}
-          <circle cx="20" cy="20" r="2.4" fill={`url(#pg0c-${id})`} />
-          <circle cx="20" cy="20" r="0.7" fill="#5A3F1C" opacity="0.6" />
-        </svg>
-      );
+// Naira brand-aligned palette: sage, warm beige, off-white, teal accents, soft blush
+const BRAND_PALETTE = [
+  { top: "#FFFBF3", bot: "#E5B9A4", stroke: "#C99680" }, // warm beige
+  { top: "#F5EFE6", bot: "#AEBDB6", stroke: "#7E928A" }, // sage green
+  { top: "#FFFFFF", bot: "#F0E6D8", stroke: "#D9C7AE" }, // off-white
+  { top: "#D8E2DC", bot: "#2F5D63", stroke: "#1F4248" }, // teal accent (rare)
+  { top: "#FFF1E6", bot: "#D49A82", stroke: "#A66E58" }, // blush
+];
 
-    case 1: // single cream petal — translucent w/ soft gold vein
+/* ────────── Refined petal-only variants ────────── */
+const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: number }) => {
+  const c = BRAND_PALETTE[hue];
+  const gid = `pp-${id}`;
+  switch (v) {
+    case 0: // tear-drop petal
       return (
         <svg width={s * 0.55} height={s} viewBox="0 0 24 40" fill="none">
           <defs>
-            <linearGradient id={`pg1-${id}`} x1="50%" y1="0%" x2="50%" y2="100%">
-              <stop offset="0%" stopColor="#FFFBF3" />
-              <stop offset="100%" stopColor="#F2E2C6" />
+            <linearGradient id={gid} x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stopColor={c.top} />
+              <stop offset="100%" stopColor={c.bot} />
             </linearGradient>
           </defs>
           <path
             d="M12 1.5 C19 11 19.5 28 12 38.5 C4.5 28 5 11 12 1.5 Z"
-            fill={`url(#pg1-${id})`}
-            stroke="#D9C49A"
-            strokeWidth="0.5"
-            opacity="0.96"
+            fill={`url(#${gid})`}
+            stroke={c.stroke}
+            strokeWidth="0.4"
+            opacity="0.95"
           />
-          <path d="M12 4.5 L12 35.5" stroke="#B89968" strokeWidth="0.45" opacity="0.55" />
-          <path d="M12 12 Q9 14 8 18" stroke="#B89968" strokeWidth="0.3" opacity="0.35" fill="none" />
-          <path d="M12 22 Q15 24 16 28" stroke="#B89968" strokeWidth="0.3" opacity="0.35" fill="none" />
+          <path d="M12 5 L12 35" stroke={c.stroke} strokeWidth="0.35" opacity="0.5" />
         </svg>
       );
-
-    case 2: // gota-pati bud cluster — soft peach beads with gold dots
+    case 1: // soft oval petal
       return (
-        <svg width={s} height={s * 0.5} viewBox="0 0 40 20" fill="none">
+        <svg width={s * 0.6} height={s} viewBox="0 0 26 40" fill="none">
           <defs>
-            <radialGradient id={`pg2-${id}`} cx="40%" cy="35%" r="65%">
-              <stop offset="0%" stopColor="#F6D9C5" />
-              <stop offset="100%" stopColor="#D9A88E" />
+            <radialGradient id={gid} cx="50%" cy="40%" r="65%">
+              <stop offset="0%" stopColor={c.top} />
+              <stop offset="100%" stopColor={c.bot} />
             </radialGradient>
           </defs>
-          <circle cx="8" cy="11" r="5" fill={`url(#pg2-${id})`} opacity="0.92" />
-          <circle cx="20" cy="8" r="6" fill={`url(#pg2-${id})`} opacity="0.96" />
-          <circle cx="32" cy="11" r="4.5" fill={`url(#pg2-${id})`} opacity="0.92" />
-          <circle cx="8" cy="11" r="1.3" fill="#C9A05A" />
-          <circle cx="20" cy="8" r="1.5" fill="#C9A05A" />
-          <circle cx="32" cy="11" r="1.2" fill="#C9A05A" />
-          <circle cx="8" cy="11" r="0.45" fill="#FFE9B5" />
-          <circle cx="20" cy="8" r="0.5" fill="#FFE9B5" />
-          <circle cx="32" cy="11" r="0.4" fill="#FFE9B5" />
+          <ellipse cx="13" cy="20" rx="11" ry="19" fill={`url(#${gid})`} opacity="0.92" />
         </svg>
       );
-
-    case 3: // sage leaf — refined vein structure
+    case 2: // curved crescent petal
+    default:
       return (
-        <svg width={s * 0.5} height={s} viewBox="0 0 22 40" fill="none">
+        <svg width={s * 0.7} height={s} viewBox="0 0 28 40" fill="none">
           <defs>
-            <linearGradient id={`pg3-${id}`} x1="50%" y1="0%" x2="50%" y2="100%">
-              <stop offset="0%" stopColor="#C2D0C8" />
-              <stop offset="100%" stopColor="#9DAEA5" />
+            <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={c.top} />
+              <stop offset="100%" stopColor={c.bot} />
             </linearGradient>
           </defs>
           <path
-            d="M11 1 C19 12 19 28 11 39 C3 28 3 12 11 1 Z"
-            fill={`url(#pg3-${id})`}
-            opacity="0.9"
+            d="M6 2 C22 8 26 26 14 38 C10 30 4 18 6 2 Z"
+            fill={`url(#${gid})`}
+            stroke={c.stroke}
+            strokeWidth="0.35"
+            opacity="0.93"
           />
-          <path d="M11 3.5 L11 36.5" stroke="#5E6F66" strokeWidth="0.55" opacity="0.7" />
-          {[9, 15, 21, 27, 32].map((y) => (
-            <g key={y} opacity="0.55">
-              <path
-                d={`M11 ${y} Q ${y < 20 ? 7 : 7} ${y + 2} ${y < 20 ? 5.5 : 5.5} ${y + 4}`}
-                stroke="#5E6F66"
-                strokeWidth="0.32"
-                fill="none"
-              />
-              <path
-                d={`M11 ${y} Q ${y < 20 ? 15 : 15} ${y + 2} ${y < 20 ? 16.5 : 16.5} ${y + 4}`}
-                stroke="#5E6F66"
-                strokeWidth="0.32"
-                fill="none"
-              />
-            </g>
-          ))}
-        </svg>
-      );
-
-    case 4: // 3-bud cherry blossom mini cluster
-      return (
-        <svg width={s} height={s} viewBox="0 0 40 40" fill="none">
-          <defs>
-            <radialGradient id={`pg4-${id}`} cx="50%" cy="55%" r="60%">
-              <stop offset="0%" stopColor="#FFF1E6" />
-              <stop offset="45%" stopColor="#F5D4C0" />
-              <stop offset="100%" stopColor="#D49A82" />
-            </radialGradient>
-          </defs>
-          {([
-            [12, 14, 6.5],
-            [27, 12, 5.5],
-            [20, 27, 7],
-          ] as const).map(([cx, cy, r], i) => (
-            <g key={i}>
-              {[0, 72, 144, 216, 288].map((a) => (
-                <ellipse
-                  key={a}
-                  cx={cx}
-                  cy={cy - r * 0.55}
-                  rx={r * 0.34}
-                  ry={r * 0.6}
-                  fill={`url(#pg4-${id})`}
-                  transform={`rotate(${a} ${cx} ${cy})`}
-                  opacity="0.93"
-                />
-              ))}
-              <circle cx={cx} cy={cy} r={r * 0.22} fill="#C9A05A" />
-              <circle cx={cx} cy={cy} r={r * 0.08} fill="#FFE9B5" />
-            </g>
-          ))}
-        </svg>
-      );
-
-    case 5: // gold speck — refined sparkle
-    default:
-      return (
-        <svg width={s * 0.34} height={s * 0.34} viewBox="0 0 10 10">
-          <defs>
-            <radialGradient id={`pg5-${id}`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFE9B5" />
-              <stop offset="60%" stopColor="#D9B873" />
-              <stop offset="100%" stopColor="#9C7A3E" />
-            </radialGradient>
-          </defs>
-          <circle cx="5" cy="5" r="3" fill={`url(#pg5-${id})`} />
-          <circle cx="5" cy="5" r="1" fill="#FFF6D0" opacity="0.9" />
         </svg>
       );
   }
@@ -206,33 +97,63 @@ const HeroPetals = ({
   const petals = useMemo<PetalCfg[]>(() => {
     return Array.from({ length: PETAL_COUNT }).map(() => {
       const bucket = Math.random();
-      // smaller, more refined sizes
-      const sz = bucket < 0.5 ? rand(8, 14) : bucket < 0.88 ? rand(15, 22) : rand(23, 30);
-      const start = rand(-0.05, 0.55);
-      // bias horizontal placement toward the centre (around the model)
-      const center = 50 + rand(-32, 32);
+      const sz = bucket < 0.55 ? rand(7, 12) : bucket < 0.9 ? rand(13, 19) : rand(20, 26);
+      const start = rand(-0.3, 0.6);
+      // bias teal sparingly (only ~10%)
+      const hueRoll = Math.random();
+      const hue =
+        hueRoll < 0.34 ? 0 :
+        hueRoll < 0.62 ? 1 :
+        hueRoll < 0.78 ? 2 :
+        hueRoll < 0.88 ? 4 : 3;
       return {
-        variant: Math.floor(Math.random() * 6),
+        variant: Math.floor(Math.random() * 3),
         size: sz,
-        xPct: Math.max(4, Math.min(96, center)),
-        sway: rand(6, 14),
-        swayFreq: rand(0.6, 1.4),
-        rot: rand(-90, 90),
-        // depth controls travel distance — kept small so petals only nudge
-        depth: sz < 14 ? 0.32 : sz < 22 ? 0.42 : 0.52,
+        xPct: rand(2, 98),
+        sway: rand(8, 22),
+        swayFreq: rand(0.6, 1.5),
+        rot: rand(-180, 180),
+        depth: sz < 12 ? 0.7 : sz < 19 ? 0.9 : 1.1,
         start,
-        end: Math.min(1.05, start + rand(0.45, 0.75)),
-        driftX: rand(-14, 14),
+        end: Math.min(1.15, start + rand(0.55, 0.95)),
+        driftX: rand(-30, 30),
+        hue,
       };
     });
   }, []);
 
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mouse = useRef({ x: -9999, y: -9999, active: false });
+
+  // Track cursor for interactive nudge
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onMove = (e: MouseEvent) => {
+      const r = el.getBoundingClientRect();
+      mouse.current.x = e.clientX - r.left;
+      mouse.current.y = e.clientY - r.top;
+      mouse.current.active = true;
+    };
+    const onLeave = () => { mouse.current.active = false; };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
 
   useEffect(() => {
     const tick = () => {
       const p = progressRef.current;
+      const vw = window.innerWidth;
+      const mx = mouse.current.x;
+      const my = mouse.current.y;
+      const mActive = mouse.current.active;
+
       petals.forEach((cfg, i) => {
         const el = refs.current[i];
         if (!el) return;
@@ -241,20 +162,29 @@ const HeroPetals = ({
           if (el.style.opacity !== "0") el.style.opacity = "0";
           return;
         }
-        // ease the fall slightly so petals decelerate near the bottom
         const fallT = easeInOutSine(localT);
-        // origin sits below the SHOP COLLECTION button (~55% of viewport),
-        // and petals only drift a short distance — they nudge near the model
-        // rather than falling all the way down
-        const originY = vh * 0.55;
-        const travel = vh * 0.32 * cfg.depth;
-        const y = originY + fallT * travel;
-        const swayX =
+        // Petals fall from above the viewport down to the bottom of the hero
+        const y = -80 + fallT * (vh + 160) * cfg.depth;
+        let swayX =
           Math.sin(localT * Math.PI * 2 * cfg.swayFreq) * cfg.sway + cfg.driftX * localT;
+
+        // Interactive nudge — petals near cursor get pushed away
+        if (mActive) {
+          const baseX = (cfg.xPct / 100) * vw;
+          const dx = baseX + swayX - mx;
+          const dy = y - my;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const radius = 130;
+          if (dist < radius && dist > 0.1) {
+            const force = (1 - dist / radius) * 28;
+            swayX += (dx / dist) * force;
+          }
+        }
+
         const rot = cfg.rot * localT;
         let op = 0.92;
-        if (localT < 0.18) op = easeOutExpo(localT / 0.18) * 0.92;
-        else if (localT > 0.78) op = easeOutExpo(1 - (localT - 0.78) / 0.22) * 0.92;
+        if (localT < 0.15) op = easeOutExpo(localT / 0.15) * 0.92;
+        else if (localT > 0.82) op = easeOutExpo(1 - (localT - 0.82) / 0.18) * 0.92;
         el.style.transform = `translate3d(${swayX}px, ${y}px, 0) rotate(${rot}deg)`;
         el.style.opacity = String(op);
       });
@@ -266,6 +196,7 @@ const HeroPetals = ({
 
   return (
     <div
+      ref={containerRef}
       className="absolute inset-0 pointer-events-none overflow-hidden"
       style={{ zIndex: 6 }}
       aria-hidden="true"
@@ -281,12 +212,12 @@ const HeroPetals = ({
             opacity: 0,
             willChange: "transform, opacity",
             filter:
-              cfg.size > 32
-                ? "drop-shadow(0 6px 9px rgba(120,80,50,0.16))"
-                : "drop-shadow(0 2px 4px rgba(120,80,50,0.10))",
+              cfg.size > 18
+                ? "drop-shadow(0 5px 7px rgba(120,80,50,0.14))"
+                : "drop-shadow(0 2px 3px rgba(120,80,50,0.10))",
           }}
         >
-          <PetalSVG v={cfg.variant} s={cfg.size} id={i} />
+          <PetalSVG v={cfg.variant} s={cfg.size} id={i} hue={cfg.hue} />
         </div>
       ))}
     </div>

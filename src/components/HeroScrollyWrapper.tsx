@@ -51,7 +51,7 @@ const HeroScrollyWrapper = () => {
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
           start: "top top",
-          end: "+=1400",
+          end: "+=700",
           scrub: 1,
           pin: true,
           pinSpacing: true,

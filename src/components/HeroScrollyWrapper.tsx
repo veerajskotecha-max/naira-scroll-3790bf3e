@@ -51,7 +51,7 @@ const HeroScrollyWrapper = () => {
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
           start: "top top",
-          end: "+=1400",
+          end: "+=700",
           scrub: 1,
           pin: true,
           pinSpacing: true,
@@ -122,7 +122,7 @@ const HeroScrollyWrapper = () => {
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
           start: "top top",
-          end: "+=600",          // significantly reduced to feel fast and snappy on mobile
+          end: "+=320",          // tight on mobile — straight into the collection
           scrub: 0.8,            // slightly tighter scrub
           pin: true,
           pinSpacing: true,

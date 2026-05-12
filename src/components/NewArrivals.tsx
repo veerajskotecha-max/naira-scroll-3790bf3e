@@ -2,7 +2,6 @@ import { useEffect, useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
-import FloatingFlower from "@/components/FloatingFlower";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import { fetchShopifyProducts } from "@/lib/shopify";
 

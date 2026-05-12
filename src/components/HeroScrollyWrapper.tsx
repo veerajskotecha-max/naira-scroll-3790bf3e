@@ -20,8 +20,24 @@ const HeroScrollyWrapper = () => {
   const logoRevealRef      = useRef<HTMLDivElement>(null);
 
   const [productsReady, setProductsReady] = useState(false);
+  const [modelHidden, setModelHidden] = useState(false);
 
   const isAnimating = useRef(false);
+
+  // Hide the fixed model only once the user scrolls past the hero+arrivals
+  // pinned region — keeps her stagnant and visible throughout the hero.
+  useEffect(() => {
+    const onScroll = () => {
+      const wrapper = arrivalsWrapperRef.current;
+      if (!wrapper) return;
+      const rect = wrapper.getBoundingClientRect();
+      // hide once arrivals section is mostly above the viewport
+      setModelHidden(rect.bottom < window.innerHeight * 0.4);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useGSAP(() => {
     const mm = gsap.matchMedia();

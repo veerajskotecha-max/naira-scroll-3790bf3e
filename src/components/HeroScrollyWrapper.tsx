@@ -14,6 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 const HeroScrollyWrapper = () => {
   const containerRef       = useRef<HTMLDivElement>(null);
   const modelRef           = useRef<HTMLDivElement>(null);
+  const modelInnerRef      = useRef<HTMLDivElement>(null);
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
   const transitionBgRef    = useRef<HTMLDivElement>(null);

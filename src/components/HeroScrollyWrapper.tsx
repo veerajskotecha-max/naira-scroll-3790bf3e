@@ -96,12 +96,7 @@ const HeroScrollyWrapper = () => {
           duration: 1.5, ease: "power2.out",
           stagger: 0.15,
         }, "<")
-        .to({}, { duration: 0.6 })
-        // 4. Model gently fades — stays in place
-        .to(modelRef.current, {
-          opacity: 0,
-          duration: 0.9, ease: "power2.inOut",
-        });
+        .to({}, { duration: 0.6 });
 
       return () => gsap.set([heading, productsGrid, ...leftCards, ...rightCards, logoReveal], { clearProps: "all" });
     });
@@ -152,12 +147,7 @@ const HeroScrollyWrapper = () => {
         .to(logoReveal, { opacity: 0.8, y: -8, duration: 0.4, ease: "power2.out" })
         .to(heading || {}, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "+=0.12")
         .to(cards, { y: 0, opacity: 1, duration: 0.8, ease: "power2.out", stagger: 0.08 }, "+=0.18")
-        .to({}, { duration: 0.3 })
-        // Model fades gracefully — stays in place, no horizontal exit
-        .to(modelRef.current, {
-          opacity: 0,
-          duration: 0.6, ease: "power2.inOut",
-        });
+        .to({}, { duration: 0.3 });
 
       return () => gsap.set([heading, productsGrid, ...cards, logoReveal], { clearProps: "all" });
     });
@@ -173,7 +163,7 @@ const HeroScrollyWrapper = () => {
   return (
     <div ref={containerRef} className="relative w-full flex flex-col overflow-x-hidden">
       <style>{`
-        .hero-model-layer { position: fixed; top: 98px; }
+        .hero-model-layer { position: fixed; top: 98px; bottom: 0; opacity: 1; transform: none; }
         @media (min-width: 768px)  { .hero-model-layer { top: 108px; } }
         @media (min-width: 1024px) { .hero-model-layer { top: 120px; } }
         /* Model: prominent and visible on mobile */

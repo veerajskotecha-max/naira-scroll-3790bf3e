@@ -2,7 +2,6 @@ import { useEffect, useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import floralBottomRight from "@/assets/floral-bottom-right.png";
-import FloatingFlower from "@/components/FloatingFlower";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import { fetchShopifyProducts } from "@/lib/shopify";
 
@@ -31,7 +30,7 @@ const NewArrivals = ({
       className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16 pt-[130px] md:pt-[140px] lg:pt-[155px]"
       style={{ minHeight: "100vh" }}
     >
-      <FloatingFlower />
+      
       <img
         src={floralBottomRight}
         alt=""

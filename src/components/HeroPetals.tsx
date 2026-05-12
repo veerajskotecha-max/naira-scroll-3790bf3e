@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-const PETAL_COUNT = 28;
+const PETAL_COUNT = 44;
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -206,19 +206,23 @@ const HeroPetals = ({
   const petals = useMemo<PetalCfg[]>(() => {
     return Array.from({ length: PETAL_COUNT }).map(() => {
       const bucket = Math.random();
-      const sz = bucket < 0.35 ? rand(14, 22) : bucket < 0.82 ? rand(24, 34) : rand(36, 48);
-      const start = rand(-0.05, 0.7);
+      // smaller, more refined sizes
+      const sz = bucket < 0.5 ? rand(8, 14) : bucket < 0.88 ? rand(15, 22) : rand(23, 30);
+      const start = rand(-0.05, 0.55);
+      // bias horizontal placement toward the centre (around the model)
+      const center = 50 + rand(-32, 32);
       return {
         variant: Math.floor(Math.random() * 6),
         size: sz,
-        xPct: rand(3, 97),
-        sway: rand(10, 20),
-        swayFreq: rand(0.5, 1.3),
-        rot: rand(-160, 160),
-        depth: sz < 22 ? 0.5 : sz < 34 ? 0.78 : 1.05,
+        xPct: Math.max(4, Math.min(96, center)),
+        sway: rand(6, 14),
+        swayFreq: rand(0.6, 1.4),
+        rot: rand(-90, 90),
+        // depth controls travel distance — kept small so petals only nudge
+        depth: sz < 14 ? 0.32 : sz < 22 ? 0.42 : 0.52,
         start,
-        end: Math.min(1.1, start + rand(0.55, 0.9)),
-        driftX: rand(-25, 25),
+        end: Math.min(1.05, start + rand(0.45, 0.75)),
+        driftX: rand(-14, 14),
       };
     });
   }, []);
@@ -239,7 +243,12 @@ const HeroPetals = ({
         }
         // ease the fall slightly so petals decelerate near the bottom
         const fallT = easeInOutSine(localT);
-        const y = -60 + fallT * (vh + 140) * cfg.depth;
+        // origin sits below the SHOP COLLECTION button (~55% of viewport),
+        // and petals only drift a short distance — they nudge near the model
+        // rather than falling all the way down
+        const originY = vh * 0.55;
+        const travel = vh * 0.32 * cfg.depth;
+        const y = originY + fallT * travel;
         const swayX =
           Math.sin(localT * Math.PI * 2 * cfg.swayFreq) * cfg.sway + cfg.driftX * localT;
         const rot = cfg.rot * localT;

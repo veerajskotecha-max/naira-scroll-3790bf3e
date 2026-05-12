@@ -64,7 +64,7 @@ const HeroScrollyWrapper = () => {
       });
 
       tl
-        // 1. Logo reveals while the model travels into its section position
+        // 1. Logo reveals
         .to(logoReveal, {
           opacity: 0.95,
           y: 0,
@@ -73,13 +73,6 @@ const HeroScrollyWrapper = () => {
           duration: 1.25,
           ease: "power3.out",
         }, 0)
-        // 2. Model shrinks — feet stay grounded
-        .to(modelRef.current, {
-          scale: 0.72,
-          transformOrigin: "bottom center",
-          duration: 1.25,
-          ease: "power3.inOut",
-        }, 0)
         .to({}, { duration: 0.45 })
         .to(logoReveal, {
           opacity: 0.85,
@@ -87,33 +80,28 @@ const HeroScrollyWrapper = () => {
           duration: 0.7,
           ease: "power2.out",
         })
-        // 3. Heading drops in
+        // 2. Heading drops in
         .to(heading || {}, {
           opacity: 1, y: 0,
           duration: 0.75, ease: "power2.out",
         }, "+=0.2")
-        // 4. Left pair slides from centre → their grid position
+        // 3. Cards slide in from both sides
         .to(leftCards, {
           x: 0, opacity: 1, scale: 1,
           duration: 1.5, ease: "power2.out",
           stagger: 0.15,
         }, "+=0.35")
-        // 5. Right pair slides simultaneously the other way
         .to(rightCards, {
           x: 0, opacity: 1, scale: 1,
           duration: 1.5, ease: "power2.out",
           stagger: 0.15,
         }, "<")
-        // 6. Hold — let scroll inertia exhale before the pin releases
-        .to({}, { duration: 1.0 })
-        // 7. Model exits stage right
+        .to({}, { duration: 0.6 })
+        // 4. Model gently fades — stays in place
         .to(modelRef.current, {
-          x: "110vw", opacity: 0, rotation: 12,
-          transformOrigin: "bottom center",
-          duration: 1.2, ease: "power1.inOut",
-        })
-        // 8. Final breathe — pin sits still so scroll has time to decelerate naturally
-        .to({}, { duration: 1.2 });
+          opacity: 0,
+          duration: 0.9, ease: "power2.inOut",
+        });
 
       return () => gsap.set([heading, productsGrid, ...leftCards, ...rightCards, logoReveal], { clearProps: "all" });
     });

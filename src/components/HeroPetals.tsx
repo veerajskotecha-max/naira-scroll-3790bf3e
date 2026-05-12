@@ -187,14 +187,14 @@ const HeroPetals = ({
           const dx = baseX + swayBase - mx;
           const dy = y - my;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const radius = 160;
+          const radius = 240;
           if (dist < radius && dist > 0.1) {
-            const force = Math.pow(1 - dist / radius, 2) * 38;
+            const force = Math.pow(1 - dist / radius, 2) * 70;
             nudgeTargetX = (dx / dist) * force;
-            nudgeTargetY = (dy / dist) * force * 0.4;
+            nudgeTargetY = (dy / dist) * force * 0.5;
           }
         }
-        const k = 1 - Math.exp(-dt * 6); // critically-damped lerp
+        const k = 1 - Math.exp(-dt * 9); // snappier critically-damped lerp
         const n = nudge.current[i];
         n.x += (nudgeTargetX - n.x) * k;
         n.y += (nudgeTargetY - n.y) * k;

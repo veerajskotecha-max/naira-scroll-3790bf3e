@@ -148,22 +148,16 @@ const HeroScrollyWrapper = () => {
           duration: 0.75,
           ease: "power3.out",
         }, 0)
-        .to(modelRef.current, {
-          scale: 0.75, transformOrigin: "bottom center",
-          duration: 0.75, ease: "power2.inOut",
-        }, 0)
         .to({}, { duration: 0.18 })
         .to(logoReveal, { opacity: 0.8, y: -8, duration: 0.4, ease: "power2.out" })
         .to(heading || {}, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "+=0.12")
         .to(cards, { y: 0, opacity: 1, duration: 0.8, ease: "power2.out", stagger: 0.08 }, "+=0.18")
         .to({}, { duration: 0.3 })
+        // Model fades gracefully — stays in place, no horizontal exit
         .to(modelRef.current, {
-          x: "110vw", opacity: 0, rotation: 8,
-          transformOrigin: "bottom center",
-          duration: 0.8, ease: "power1.inOut",
-        })
-        // Brief final breathe before pin releases
-        .to({}, { duration: 0.6 });
+          opacity: 0,
+          duration: 0.6, ease: "power2.inOut",
+        });
 
       return () => gsap.set([heading, productsGrid, ...cards, logoReveal], { clearProps: "all" });
     });

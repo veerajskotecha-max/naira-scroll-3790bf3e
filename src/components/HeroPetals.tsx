@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-const PETAL_COUNT = 28;
+const PETAL_COUNT = 44;
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;

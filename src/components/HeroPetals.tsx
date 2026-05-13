@@ -153,6 +153,16 @@ const HeroPetals = ({
 
   useEffect(() => {
     let lastT = performance.now();
+    let petalsEnd = 1;
+    const measureEnd = () => {
+      const el = document.querySelector<HTMLElement>("[data-petals-end]");
+      petalsEnd = el ? Math.max(1, el.offsetTop - 40) : Math.max(1, window.innerHeight);
+    };
+    measureEnd();
+    const onResize = () => measureEnd();
+    window.addEventListener("resize", onResize, { passive: true });
+    const measureTimer = window.setTimeout(measureEnd, 400);
+
     const tick = (now: number) => {
       const dt = Math.min(40, now - lastT) / 1000;
       lastT = now;
@@ -163,6 +173,18 @@ const HeroPetals = ({
       const mActive = mouse.current.active;
       // continuous time-based phase so petals breathe even without scroll
       const phase = now / 1000;
+
+      // Fade out the entire petals layer as the New Arrivals section enters
+      // (so no petals overlap the first SKUs once the logo has faded in).
+      const scrollY = window.scrollY;
+      const fadeStart = Math.max(1, petalsEnd - window.innerHeight * 0.55);
+      const fadeRange = Math.max(1, petalsEnd - fadeStart);
+      const fadeT = Math.max(0, Math.min(1, (scrollY - fadeStart) / fadeRange));
+      const layerOpacity = 1 - fadeT;
+      if (containerRef.current) {
+        containerRef.current.style.opacity = String(layerOpacity);
+        containerRef.current.style.visibility = layerOpacity <= 0.01 ? "hidden" : "visible";
+      }
 
       petals.forEach((cfg, i) => {
         const el = refs.current[i];
@@ -216,7 +238,11 @@ const HeroPetals = ({
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("resize", onResize);
+      window.clearTimeout(measureTimer);
+    };
   }, [petals, vh, progressRef]);
 
   return (

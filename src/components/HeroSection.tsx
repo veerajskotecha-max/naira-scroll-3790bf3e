@@ -65,24 +65,26 @@ const HeroSection = () => {
   useEffect(() => {
     let ticking = false;
     let sectionHeight = sectionRef.current?.offsetHeight ?? 0;
-    // Extend the petal progress only to the start of New Arrivals, then stop.
-    const extraRange = () => (window.innerWidth >= 1024 ? 220 : 110);
+
+    // Petals flow from page top until the New Arrivals section reaches the
+    // viewport top. We re-measure on resize so the range stays accurate.
+    const getPetalsEnd = () => {
+      const el = document.querySelector<HTMLElement>("[data-petals-end]");
+      if (el) return Math.max(1, el.offsetTop - 40);
+      return Math.max(1, sectionHeight + 200);
+    };
+    let petalsEnd = getPetalsEnd();
 
     const measure = () => {
       sectionHeight = sectionRef.current?.offsetHeight ?? 0;
+      petalsEnd = getPetalsEnd();
       setVh(window.innerHeight);
     };
 
     let raf = 0;
     const lerpLoop = () => {
-      const total = Math.max(sectionHeight + extraRange(), 1);
-      if (window.scrollY >= total) {
-        petalProgress.current = 1.25;
-      } else {
-        const target = clamp(window.scrollY / total);
-        const current = petalProgress.current > 1 ? target : petalProgress.current;
-        petalProgress.current = current + (target - current) * 0.1;
-      }
+      const target = clamp(window.scrollY / petalsEnd);
+      petalProgress.current = petalProgress.current + (target - petalProgress.current) * 0.1;
       raf = requestAnimationFrame(lerpLoop);
     };
     raf = requestAnimationFrame(lerpLoop);
@@ -103,10 +105,12 @@ const HeroSection = () => {
       });
     };
 
+    const measureTimer = setTimeout(measure, 300);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", measure, { passive: true });
     return () => {
       cancelAnimationFrame(raf);
+      clearTimeout(measureTimer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
     };

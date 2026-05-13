@@ -101,12 +101,8 @@ const HeroScrollyWrapper = () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
-          start: "top top",
-          end: "+=200",
-          scrub: 0.5,
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
           onEnter:     () => { isAnimating.current = true;  },
           onLeave:     () => { isAnimating.current = false; },
           onEnterBack: () => { isAnimating.current = true;  },
@@ -116,17 +112,11 @@ const HeroScrollyWrapper = () => {
 
       tl
         .to(logoReveal, {
-          opacity: 0.9,
-          y: 0,
-          scale: 1,
-          clipPath: "inset(0 0% 0 0%)",
-          duration: 0.4,
-          ease: "power3.out",
-        }, 0)
-        .to(logoReveal, { opacity: 0.75, y: -6, duration: 0.25, ease: "power2.out" })
-        .to(heading || {}, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, "-=0.1")
-        .to(cards, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out", stagger: 0.05 }, "-=0.1")
-        .to({}, { duration: 0.1 });
+          opacity: 0.9, y: 0, scale: 1, clipPath: "inset(0 0% 0 0%)",
+          duration: 0.5, ease: "power3.out",
+        })
+        .to(heading || {}, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "-=0.15")
+        .to(cards, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.14 }, "-=0.2");
 
       return () => gsap.set([heading, productsGrid, ...cards, logoReveal], { clearProps: "all" });
     });

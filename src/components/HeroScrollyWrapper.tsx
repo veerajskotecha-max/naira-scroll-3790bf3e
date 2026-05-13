@@ -24,32 +24,6 @@ const HeroScrollyWrapper = () => {
 
   const isAnimating = useRef(false);
 
-  // Float the model with the viewport while the hero is in view, then lock her
-  // to the hero's bottom edge (the white TrustStrip line) so she scrolls away
-  // with the page instead of drifting into the collection.
-  useEffect(() => {
-    const onScroll = () => {
-      const hero = heroSectionRef.current;
-      const layer = modelRef.current;
-      if (!hero || !layer) return;
-      const heroRect = hero.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // How far the hero's bottom sits above the viewport bottom (>=0 once it crosses).
-      const overshoot = Math.max(0, vh - heroRect.bottom);
-      // Hide once the hero is fully scrolled past.
-      const hidden = heroRect.bottom <= 0;
-      layer.style.transform = `translate3d(0, ${-overshoot}px, 0)`;
-      layer.style.opacity = hidden ? "0" : "1";
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
@@ -190,9 +164,7 @@ const HeroScrollyWrapper = () => {
   return (
     <div ref={containerRef} className="relative w-full flex flex-col overflow-x-hidden">
       <style>{`
-        .hero-model-layer { position: fixed; top: 98px; bottom: 0; opacity: 1; transform: none; }
-        @media (min-width: 768px)  { .hero-model-layer { top: 108px; } }
-        @media (min-width: 1024px) { .hero-model-layer { top: 120px; } }
+        .hero-model-layer { position: absolute; left: 0; right: 0; bottom: 0; opacity: 1; }
         /* Model: smaller, anchored at bottom so she starts below the SHOP COLLECTION button.
            On short viewports she shrinks aggressively so she never overlaps the headline / CTA. */
         .hero-model-img {
@@ -209,36 +181,30 @@ const HeroScrollyWrapper = () => {
         @media (min-width: 1024px) { .hero-model-img { max-width: 38vw; } }
       `}</style>
 
-      <div
-        ref={modelRef}
-        className="hero-model-layer left-0 w-full z-40 pointer-events-none flex items-end justify-center"
-        style={{
-          bottom: 0,
-          willChange: "transform, opacity",
-          opacity: 1,
-          transition: "opacity 0.4s ease",
-        }}
-        aria-hidden="true"
-      >
-        <img
-          src={heroModel1}
-          alt=""
-          className="hero-model-img absolute bottom-0 md:bottom-[4vh] w-auto object-contain object-bottom"
-          style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
-      </div>
-
-      <div ref={heroSectionRef}>
+      <div ref={heroSectionRef} className="relative">
         <HeroSection />
+        <div
+          ref={modelRef}
+          className="hero-model-layer w-full z-40 pointer-events-none flex items-end justify-center"
+          aria-hidden="true"
+        >
+          <img
+            src={heroModel1}
+            alt=""
+            className="hero-model-img w-auto object-contain object-bottom"
+            style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </div>
       </div>
 
       <TrustStrip />
 
       <div
         ref={arrivalsWrapperRef}
+        data-petals-end
         className="relative z-10"
         style={{ backgroundColor: "hsl(33 30% 85%)" }}
       >

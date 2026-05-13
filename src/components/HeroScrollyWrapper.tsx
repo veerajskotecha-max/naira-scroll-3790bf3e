@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroSection from "./HeroSection";
 import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
-import heroModel1 from "@/assets/naira-final-hero-1.png";
+import heroModel1 from "@/assets/naira-hero-model-optimized.png";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
 import nairaLogo from "@/assets/naira-logo.webp";
 
@@ -185,9 +185,9 @@ const HeroScrollyWrapper = () => {
         /* Model: smaller, anchored at bottom so she starts below the SHOP COLLECTION button.
            On short viewports she shrinks aggressively so she never overlaps the headline / CTA. */
         .hero-model-img {
-          max-width: 60vw;
-          height: 30vh;
-          max-height: 240px;
+          max-width: 64vw;
+          height: 34vh;
+          max-height: 275px;
         }
         @media (min-height: 700px) {
           .hero-model-img { max-width: 72vw; height: 36vh; max-height: 320px; }

@@ -65,10 +65,8 @@ const HeroSection = () => {
   useEffect(() => {
     let ticking = false;
     let sectionHeight = sectionRef.current?.offsetHeight ?? 0;
-    // Extend the petal progress range to include the pinned New Arrivals
-    // trigger (~700px desktop / ~320px mobile) so petals keep falling all
-    // the way until New Arrivals starts revealing.
-    const extraRange = () => (window.innerWidth >= 1024 ? 700 : 320);
+    // Extend the petal progress only to the start of New Arrivals, then stop.
+    const extraRange = () => (window.innerWidth >= 1024 ? 220 : 110);
 
     const measure = () => {
       sectionHeight = sectionRef.current?.offsetHeight ?? 0;
@@ -78,8 +76,13 @@ const HeroSection = () => {
     let raf = 0;
     const lerpLoop = () => {
       const total = Math.max(sectionHeight + extraRange(), 1);
-      const target = clamp(window.scrollY / total);
-      petalProgress.current += (target - petalProgress.current) * 0.1;
+      if (window.scrollY >= total) {
+        petalProgress.current = 1.25;
+      } else {
+        const target = clamp(window.scrollY / total);
+        const current = petalProgress.current > 1 ? target : petalProgress.current;
+        petalProgress.current = current + (target - current) * 0.1;
+      }
       raf = requestAnimationFrame(lerpLoop);
     };
     raf = requestAnimationFrame(lerpLoop);

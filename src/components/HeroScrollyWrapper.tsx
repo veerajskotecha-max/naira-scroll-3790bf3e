@@ -39,11 +39,12 @@ const HeroScrollyWrapper = () => {
       const logoReveal = logoRevealRef.current;
 
       // ── PRE-SET starting states so scrub can interpolate correctly ──
+      // Logo starts already mostly visible — no blank screen on entry.
       if (heading) gsap.set(heading, { opacity: 0, y: -16 });
       gsap.set(productsGrid, { opacity: 1 });
       gsap.set(leftCards,  { x: "28vw",  opacity: 0, scale: 0.85 });
       gsap.set(rightCards, { x: "-28vw", opacity: 0, scale: 0.85 });
-      gsap.set(logoReveal, { opacity: 0, y: 36, scale: 0.92, clipPath: "inset(0 50% 0 50%)" });
+      gsap.set(logoReveal, { opacity: 0.85, y: 8, scale: 0.98, clipPath: "inset(0 6% 0 6%)" });
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -62,19 +63,19 @@ const HeroScrollyWrapper = () => {
       });
 
       tl
-        // 1. Logo reveals — quick, decisive
+        // 1. Logo settles into place (already visible from set())
         .to(logoReveal, {
           opacity: 0.95,
           y: 0,
           scale: 1,
           clipPath: "inset(0 0% 0 0%)",
-          duration: 0.55,
+          duration: 0.35,
           ease: "power3.out",
         }, 0)
         .to(logoReveal, {
           opacity: 0.8,
           y: -10,
-          duration: 0.35,
+          duration: 0.3,
           ease: "power2.out",
         })
         // 2. Heading drops in immediately
@@ -113,7 +114,7 @@ const HeroScrollyWrapper = () => {
       if (heading) gsap.set(heading, { opacity: 0, y: -10 });
       gsap.set(productsGrid, { opacity: 1 });
       gsap.set(cards, { y: "20vh", opacity: 0 });
-      gsap.set(logoReveal, { opacity: 0, y: 26, scale: 0.94, clipPath: "inset(0 50% 0 50%)" });
+      gsap.set(logoReveal, { opacity: 0.85, y: 6, scale: 0.98, clipPath: "inset(0 6% 0 6%)" });
 
       const tl = gsap.timeline({
         scrollTrigger: {

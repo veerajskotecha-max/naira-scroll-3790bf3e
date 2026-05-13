@@ -174,12 +174,12 @@ const HeroPetals = ({
       // continuous time-based phase so petals breathe even without scroll
       const phase = now / 1000;
 
-      // Fade out the entire petals layer as the New Arrivals section enters
-      // (so no petals overlap the first SKUs once the logo has faded in).
+      // Keep petals flowing through the entire transition area; fade only
+      // once the cards have nearly finished arriving — no blank screen.
       const scrollY = window.scrollY;
-      const fadeStart = Math.max(1, petalsEnd - window.innerHeight * 0.55);
-      const fadeRange = Math.max(1, petalsEnd - fadeStart);
-      const fadeT = Math.max(0, Math.min(1, (scrollY - fadeStart) / fadeRange));
+      const fadeStart = petalsEnd + 220; // after logo + heading reveal
+      const fadeEnd   = petalsEnd + 420; // gone by the time cards land
+      const fadeT = Math.max(0, Math.min(1, (scrollY - fadeStart) / Math.max(1, fadeEnd - fadeStart)));
       const layerOpacity = 1 - fadeT;
       if (containerRef.current) {
         containerRef.current.style.opacity = String(layerOpacity);

@@ -281,8 +281,8 @@ const HeroSection = () => {
           <img
             src={heroModel1}
             alt=""
-            className="w-auto object-contain object-bottom h-[280px] max-w-[60vw] md:h-[400px] md:max-w-[42vw] lg:h-[520px] lg:max-w-[36vw] xl:h-[600px]"
-            style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
+            className="w-auto object-contain object-bottom h-[230px] max-w-[52vw] md:h-[330px] md:max-w-[36vw] lg:h-[430px] lg:max-w-[30vw] xl:h-[500px]"
+            style={{ filter: "drop-shadow(0 14px 18px rgba(74, 58, 45, 0.18))" }}
             loading="eager"
             fetchPriority="high"
             decoding="async"

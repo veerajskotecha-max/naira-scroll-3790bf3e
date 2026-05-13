@@ -71,8 +71,10 @@ const HeroSection = () => {
     // viewport top. We re-measure on resize so the range stays accurate.
     const getPetalsEnd = () => {
       const el = document.querySelector<HTMLElement>("[data-petals-end]");
-      if (el) return Math.max(1, el.offsetTop - 40);
-      return Math.max(1, sectionHeight + 200);
+      // Extend past the wrapper top so petals keep flowing through the
+      // pinned logo+cards transition (they fade out via HeroPetals layer).
+      if (el) return Math.max(1, el.offsetTop + 420);
+      return Math.max(1, sectionHeight + 600);
     };
     let petalsEnd = getPetalsEnd();
 

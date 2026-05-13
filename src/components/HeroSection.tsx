@@ -76,8 +76,13 @@ const HeroSection = () => {
     let raf = 0;
     const lerpLoop = () => {
       const total = Math.max(sectionHeight + extraRange(), 1);
-      const target = window.scrollY >= total ? 1 : clamp(window.scrollY / total);
-      petalProgress.current += (target - petalProgress.current) * 0.1;
+      if (window.scrollY >= total) {
+        petalProgress.current = 1.25;
+      } else {
+        const target = clamp(window.scrollY / total);
+        const current = petalProgress.current > 1 ? target : petalProgress.current;
+        petalProgress.current = current + (target - current) * 0.1;
+      }
       raf = requestAnimationFrame(lerpLoop);
     };
     raf = requestAnimationFrame(lerpLoop);

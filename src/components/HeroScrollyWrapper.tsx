@@ -115,10 +115,12 @@ const HeroScrollyWrapper = () => {
       tl
         .to(logoReveal, {
           opacity: 0.9, y: 0, scale: 1, clipPath: "inset(0 0% 0 0%)",
-          duration: 0.5, ease: "power3.out",
+          duration: 0.55, ease: "power3.out",
         })
-        .to(heading || {}, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "-=0.15")
-        .to(cards, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.14 }, "-=0.2");
+        // 1.5s breathing pause before the collection follows
+        .to({}, { duration: 1.5 })
+        .to(heading || {}, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" })
+        .to(cards, { y: 0, opacity: 1, duration: 0.65, ease: "power2.out", stagger: 0.16 }, "-=0.2");
 
       return () => gsap.set([heading, productsGrid, ...cards, logoReveal], { clearProps: "all" });
     });

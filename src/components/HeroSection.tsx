@@ -274,12 +274,12 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Static model — clipped inside hero so it never crosses the trust strip */}
-        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto" aria-hidden="true">
+        {/* Static model — lifted off the trust strip; sits visually below the SHOP COLLECTION CTA */}
+        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto mb-6 md:mb-10 lg:mb-16 xl:mb-20" aria-hidden="true">
           <img
             src={heroModel1}
             alt=""
-            className="w-auto object-contain object-bottom h-[330px] max-w-[64vw] md:h-[460px] md:max-w-[44vw] lg:h-[590px] lg:max-w-[38vw] xl:h-[690px]"
+            className="w-auto object-contain object-bottom h-[280px] max-w-[60vw] md:h-[400px] md:max-w-[42vw] lg:h-[520px] lg:max-w-[36vw] xl:h-[600px]"
             style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
             loading="eager"
             fetchPriority="high"

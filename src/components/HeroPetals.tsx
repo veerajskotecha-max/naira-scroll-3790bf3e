@@ -68,7 +68,7 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
     case 2: // curved crescent petal
     default:
       return (
-        <svg width={s * 0.7} height={s} viewBox="0 0 28 40" fill="none">
+        <svg width={s * 1.15} height={s} viewBox="0 0 46 40" fill="none">
           <defs>
             <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor={c.top} />
@@ -76,12 +76,13 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
             </linearGradient>
           </defs>
           <path
-            d="M6 2 C22 8 26 26 14 38 C10 30 4 18 6 2 Z"
+            d="M4 20 C12 5 32 5 42 19 C31 27 14 28 4 20 Z"
             fill={`url(#${gid})`}
             stroke={c.stroke}
-            strokeWidth="0.35"
-            opacity="0.93"
+            strokeWidth="0.2"
+            opacity="0.62"
           />
+          <path d="M11 20 C21 17 30 17 38 19" stroke={c.stroke} strokeWidth="0.16" opacity="0.22" />
         </svg>
       );
   }

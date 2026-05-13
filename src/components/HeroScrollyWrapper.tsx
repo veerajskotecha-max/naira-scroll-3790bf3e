@@ -214,9 +214,9 @@ const HeroScrollyWrapper = () => {
         className="hero-model-layer left-0 w-full z-40 pointer-events-none flex items-end justify-center"
         style={{
           bottom: 0,
-          willChange: "opacity",
-          opacity: modelHidden ? 0 : 1,
-          transition: "opacity 0.5s ease",
+          willChange: "transform, opacity",
+          opacity: 1,
+          transition: "opacity 0.4s ease",
         }}
         aria-hidden="true"
       >
@@ -231,7 +231,7 @@ const HeroScrollyWrapper = () => {
         />
       </div>
 
-      <div>
+      <div ref={heroSectionRef}>
         <HeroSection />
       </div>
 

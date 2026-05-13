@@ -20,23 +20,34 @@ const HeroScrollyWrapper = () => {
   const logoRevealRef      = useRef<HTMLDivElement>(null);
 
   const [productsReady, setProductsReady] = useState(false);
-  const [modelHidden, setModelHidden] = useState(false);
+  const heroSectionRef = useRef<HTMLDivElement>(null);
 
   const isAnimating = useRef(false);
 
-  // Hide the fixed model only once the user scrolls past the hero+arrivals
-  // pinned region — keeps her stagnant and visible throughout the hero.
+  // Float the model with the viewport while the hero is in view, then lock her
+  // to the hero's bottom edge (the white TrustStrip line) so she scrolls away
+  // with the page instead of drifting into the collection.
   useEffect(() => {
     const onScroll = () => {
-      const wrapper = arrivalsWrapperRef.current;
-      if (!wrapper) return;
-      const rect = wrapper.getBoundingClientRect();
-      // hide once arrivals section is mostly above the viewport
-      setModelHidden(rect.bottom < window.innerHeight * 0.4);
+      const hero = heroSectionRef.current;
+      const layer = modelRef.current;
+      if (!hero || !layer) return;
+      const heroRect = hero.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // How far the hero's bottom sits above the viewport bottom (>=0 once it crosses).
+      const overshoot = Math.max(0, vh - heroRect.bottom);
+      // Hide once the hero is fully scrolled past.
+      const hidden = heroRect.bottom <= 0;
+      layer.style.transform = `translate3d(0, ${-overshoot}px, 0)`;
+      layer.style.opacity = hidden ? "0" : "1";
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useGSAP(() => {

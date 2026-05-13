@@ -59,24 +59,26 @@ const HeroScrollyWrapper = () => {
       });
 
       tl
-        // 1. Logo
+        // 1. Logo settles in
         .to(logoReveal, {
           opacity: 0.95, y: 0, scale: 1, clipPath: "inset(0 0% 0 0%)",
-          duration: 0.55, ease: "power3.out",
+          duration: 0.6, ease: "power3.out",
         })
+        // 1.5s breathing pause before the collection follows
+        .to({}, { duration: 1.5 })
         // 2. Heading
         .to(heading || {}, {
-          opacity: 1, y: 0, duration: 0.5, ease: "power2.out",
-        }, "-=0.15")
-        // 3. Cards — staggered one by one from both sides
+          opacity: 1, y: 0, duration: 0.55, ease: "power2.out",
+        })
+        // 3. Cards — staggered one-by-one from both sides
         .to(leftCards, {
           x: 0, opacity: 1, scale: 1,
-          duration: 0.7, ease: "power2.out", stagger: 0.12,
+          duration: 0.75, ease: "power2.out", stagger: 0.14,
         }, "-=0.2")
         .to(rightCards, {
           x: 0, opacity: 1, scale: 1,
-          duration: 0.7, ease: "power2.out", stagger: 0.12,
-        }, "<0.18");
+          duration: 0.75, ease: "power2.out", stagger: 0.14,
+        }, "<0.2");
 
       return () => gsap.set([heading, productsGrid, ...leftCards, ...rightCards, logoReveal], { clearProps: "all" });
     });

@@ -119,8 +119,8 @@ const HeroScrollyWrapper = () => {
         scrollTrigger: {
           trigger: arrivalsWrapperRef.current,
           start: "top top",
-          end: "+=320",          // tight on mobile — straight into the collection
-          scrub: 0.8,            // slightly tighter scrub
+          end: "+=200",
+          scrub: 0.5,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
@@ -137,14 +137,13 @@ const HeroScrollyWrapper = () => {
           y: 0,
           scale: 1,
           clipPath: "inset(0 0% 0 0%)",
-          duration: 0.75,
+          duration: 0.4,
           ease: "power3.out",
         }, 0)
-        .to({}, { duration: 0.18 })
-        .to(logoReveal, { opacity: 0.8, y: -8, duration: 0.4, ease: "power2.out" })
-        .to(heading || {}, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, "+=0.12")
-        .to(cards, { y: 0, opacity: 1, duration: 0.8, ease: "power2.out", stagger: 0.08 }, "+=0.18")
-        .to({}, { duration: 0.3 });
+        .to(logoReveal, { opacity: 0.75, y: -6, duration: 0.25, ease: "power2.out" })
+        .to(heading || {}, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, "-=0.1")
+        .to(cards, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out", stagger: 0.05 }, "-=0.1")
+        .to({}, { duration: 0.1 });
 
       return () => gsap.set([heading, productsGrid, ...cards, logoReveal], { clearProps: "all" });
     });

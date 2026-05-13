@@ -20,13 +20,13 @@ type PetalCfg = {
   hue: number; // index into BRAND_PALETTE
 };
 
-// Naira brand-aligned palette: sage, warm beige, off-white, teal accents, soft blush
+// Naira pastel palette inspired by soft floating tissue petals: off-white, blush, muted sage, warm beige
 const BRAND_PALETTE = [
-  { top: "#FFFBF3", bot: "#E5B9A4", stroke: "#C99680" }, // warm beige
-  { top: "#F5EFE6", bot: "#AEBDB6", stroke: "#7E928A" }, // sage green
-  { top: "#FFFFFF", bot: "#F0E6D8", stroke: "#D9C7AE" }, // off-white
-  { top: "#D8E2DC", bot: "#2F5D63", stroke: "#1F4248" }, // teal accent (rare)
-  { top: "#FFF1E6", bot: "#D49A82", stroke: "#A66E58" }, // blush
+  { top: "hsl(42 52% 98%)", bot: "hsl(24 48% 84%)", stroke: "hsl(24 28% 74%)" },
+  { top: "hsl(33 42% 94%)", bot: "hsl(91 22% 74%)", stroke: "hsl(91 13% 63%)" },
+  { top: "hsl(0 0% 100%)", bot: "hsl(37 36% 91%)", stroke: "hsl(37 20% 80%)" },
+  { top: "hsl(166 24% 82%)", bot: "hsl(186 20% 57%)", stroke: "hsl(186 18% 49%)" },
+  { top: "hsl(8 70% 95%)", bot: "hsl(13 48% 82%)", stroke: "hsl(13 28% 72%)" },
 ];
 
 /* ────────── Refined petal-only variants ────────── */

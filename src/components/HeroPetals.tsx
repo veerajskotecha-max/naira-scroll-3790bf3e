@@ -36,7 +36,7 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
   switch (v) {
     case 0: // tear-drop petal
       return (
-        <svg width={s * 0.55} height={s} viewBox="0 0 24 40" fill="none">
+        <svg width={s * 0.7} height={s} viewBox="0 0 28 40" fill="none">
           <defs>
             <linearGradient id={gid} x1="50%" y1="0%" x2="50%" y2="100%">
               <stop offset="0%" stopColor={c.top} />
@@ -44,25 +44,25 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
             </linearGradient>
           </defs>
           <path
-            d="M12 1.5 C19 11 19.5 28 12 38.5 C4.5 28 5 11 12 1.5 Z"
+            d="M14 2 C23 9 24 27 13 39 C5 27 6 10 14 2 Z"
             fill={`url(#${gid})`}
             stroke={c.stroke}
-            strokeWidth="0.4"
-            opacity="0.95"
+            strokeWidth="0.22"
+            opacity="0.72"
           />
-          <path d="M12 5 L12 35" stroke={c.stroke} strokeWidth="0.35" opacity="0.5" />
+          <path d="M14 7 C13 16 13 27 13 35" stroke={c.stroke} strokeWidth="0.18" opacity="0.28" />
         </svg>
       );
     case 1: // soft oval petal
       return (
-        <svg width={s * 0.6} height={s} viewBox="0 0 26 40" fill="none">
+        <svg width={s * 0.85} height={s} viewBox="0 0 34 40" fill="none">
           <defs>
             <radialGradient id={gid} cx="50%" cy="40%" r="65%">
               <stop offset="0%" stopColor={c.top} />
               <stop offset="100%" stopColor={c.bot} />
             </radialGradient>
           </defs>
-          <ellipse cx="13" cy="20" rx="11" ry="19" fill={`url(#${gid})`} opacity="0.92" />
+          <ellipse cx="17" cy="20" rx="13" ry="17" fill={`url(#${gid})`} opacity="0.58" />
         </svg>
       );
     case 2: // curved crescent petal

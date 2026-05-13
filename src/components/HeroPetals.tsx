@@ -98,15 +98,15 @@ const HeroPetals = ({
   const petals = useMemo<PetalCfg[]>(() => {
     return Array.from({ length: PETAL_COUNT }).map(() => {
       const bucket = Math.random();
-      const sz = bucket < 0.55 ? rand(7, 12) : bucket < 0.9 ? rand(13, 19) : rand(20, 26);
+      const sz = bucket < 0.45 ? rand(8, 13) : bucket < 0.84 ? rand(14, 24) : rand(28, 44);
       const start = rand(-0.3, 0.6);
-      // bias teal sparingly (only ~10%)
+      // mostly blush/beige/off-white, with rare sage/teal notes like the reference
       const hueRoll = Math.random();
       const hue =
-        hueRoll < 0.34 ? 0 :
-        hueRoll < 0.62 ? 1 :
-        hueRoll < 0.78 ? 2 :
-        hueRoll < 0.88 ? 4 : 3;
+        hueRoll < 0.32 ? 2 :
+        hueRoll < 0.56 ? 0 :
+        hueRoll < 0.76 ? 4 :
+        hueRoll < 0.93 ? 1 : 3;
       return {
         variant: Math.floor(Math.random() * 3),
         size: sz,
@@ -114,7 +114,7 @@ const HeroPetals = ({
         sway: rand(14, 32),         // wider, slower lateral drift
         swayFreq: rand(0.35, 0.75), // gentler oscillation
         rot: rand(-90, 90),         // softer rotation
-        depth: sz < 12 ? 0.55 : sz < 19 ? 0.75 : 0.95,
+        depth: sz < 14 ? 0.5 : sz < 25 ? 0.72 : 0.9,
         start,
         end: Math.min(1.2, start + rand(0.7, 1.1)), // longer, slower fall
         driftX: rand(-22, 22),

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import HeroPetals from "./HeroPetals";
+import heroModel1 from "@/assets/naira-hero-model-optimized.png";
 
 // ─── Lerp helper ───────────────────────────────────────────────
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -273,9 +274,17 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Spacer — actual model rendered by HeroScrollyWrapper */}
-        <div className="flex-shrink-0 order-2 self-end" aria-hidden="true">
-          <div className="h-[330px] md:h-[460px] lg:h-[590px] xl:h-[690px] w-[140px] md:w-[210px] lg:w-[290px] xl:w-[360px]" />
+        {/* Static model — clipped inside hero so it never crosses the trust strip */}
+        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto" aria-hidden="true">
+          <img
+            src={heroModel1}
+            alt=""
+            className="w-auto object-contain object-bottom h-[330px] max-w-[64vw] md:h-[460px] md:max-w-[44vw] lg:h-[590px] lg:max-w-[38vw] xl:h-[690px]"
+            style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
         </div>
       </div>
     </section>

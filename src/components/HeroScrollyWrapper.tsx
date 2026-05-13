@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroSection from "./HeroSection";
 import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
-import heroModel1 from "@/assets/naira-hero-model-optimized.png";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
 import nairaLogo from "@/assets/naira-logo.webp";
 
@@ -13,14 +12,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 const HeroScrollyWrapper = () => {
   const containerRef       = useRef<HTMLDivElement>(null);
-  const modelRef           = useRef<HTMLDivElement>(null);
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
   const transitionBgRef    = useRef<HTMLDivElement>(null);
   const logoRevealRef      = useRef<HTMLDivElement>(null);
 
   const [productsReady, setProductsReady] = useState(false);
-  const heroSectionRef = useRef<HTMLDivElement>(null);
 
   const isAnimating = useRef(false);
 
@@ -163,42 +160,7 @@ const HeroScrollyWrapper = () => {
 
   return (
     <div ref={containerRef} className="relative w-full flex flex-col overflow-x-hidden">
-      <style>{`
-        .hero-model-layer { position: absolute; left: 0; right: 0; bottom: 0; opacity: 1; }
-        /* Model: smaller, anchored at bottom so she starts below the SHOP COLLECTION button.
-           On short viewports she shrinks aggressively so she never overlaps the headline / CTA. */
-        .hero-model-img {
-          max-width: 64vw;
-          height: 34vh;
-          max-height: 275px;
-        }
-        @media (min-height: 700px) {
-          .hero-model-img { max-width: 72vw; height: 36vh; max-height: 320px; }
-        }
-        @media (min-width: 768px)  {
-          .hero-model-img { max-width: 44vw; height: min(500px, calc(100% - 10vh)); max-height: none; }
-        }
-        @media (min-width: 1024px) { .hero-model-img { max-width: 38vw; } }
-      `}</style>
-
-      <div ref={heroSectionRef} className="relative">
-        <HeroSection />
-        <div
-          ref={modelRef}
-          className="hero-model-layer w-full z-40 pointer-events-none flex items-end justify-center"
-          aria-hidden="true"
-        >
-          <img
-            src={heroModel1}
-            alt=""
-            className="hero-model-img w-auto object-contain object-bottom"
-            style={{ filter: "drop-shadow(0 18px 22px rgba(74, 58, 45, 0.20))" }}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </div>
-      </div>
+      <HeroSection />
 
       <TrustStrip />
 

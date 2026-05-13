@@ -20,13 +20,13 @@ type PetalCfg = {
   hue: number; // index into BRAND_PALETTE
 };
 
-// Naira brand-aligned palette: sage, warm beige, off-white, teal accents, soft blush
+// Naira pastel palette inspired by soft floating tissue petals: off-white, blush, muted sage, warm beige
 const BRAND_PALETTE = [
-  { top: "#FFFBF3", bot: "#E5B9A4", stroke: "#C99680" }, // warm beige
-  { top: "#F5EFE6", bot: "#AEBDB6", stroke: "#7E928A" }, // sage green
-  { top: "#FFFFFF", bot: "#F0E6D8", stroke: "#D9C7AE" }, // off-white
-  { top: "#D8E2DC", bot: "#2F5D63", stroke: "#1F4248" }, // teal accent (rare)
-  { top: "#FFF1E6", bot: "#D49A82", stroke: "#A66E58" }, // blush
+  { top: "hsl(42 52% 98%)", bot: "hsl(24 48% 84%)", stroke: "hsl(24 28% 74%)" },
+  { top: "hsl(33 42% 94%)", bot: "hsl(91 22% 74%)", stroke: "hsl(91 13% 63%)" },
+  { top: "hsl(0 0% 100%)", bot: "hsl(37 36% 91%)", stroke: "hsl(37 20% 80%)" },
+  { top: "hsl(166 24% 82%)", bot: "hsl(186 20% 57%)", stroke: "hsl(186 18% 49%)" },
+  { top: "hsl(8 70% 95%)", bot: "hsl(13 48% 82%)", stroke: "hsl(13 28% 72%)" },
 ];
 
 /* ────────── Refined petal-only variants ────────── */
@@ -36,7 +36,7 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
   switch (v) {
     case 0: // tear-drop petal
       return (
-        <svg width={s * 0.55} height={s} viewBox="0 0 24 40" fill="none">
+        <svg width={s * 0.7} height={s} viewBox="0 0 28 40" fill="none">
           <defs>
             <linearGradient id={gid} x1="50%" y1="0%" x2="50%" y2="100%">
               <stop offset="0%" stopColor={c.top} />
@@ -44,31 +44,31 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
             </linearGradient>
           </defs>
           <path
-            d="M12 1.5 C19 11 19.5 28 12 38.5 C4.5 28 5 11 12 1.5 Z"
+            d="M14 2 C23 9 24 27 13 39 C5 27 6 10 14 2 Z"
             fill={`url(#${gid})`}
             stroke={c.stroke}
-            strokeWidth="0.4"
-            opacity="0.95"
+            strokeWidth="0.22"
+            opacity="0.72"
           />
-          <path d="M12 5 L12 35" stroke={c.stroke} strokeWidth="0.35" opacity="0.5" />
+          <path d="M14 7 C13 16 13 27 13 35" stroke={c.stroke} strokeWidth="0.18" opacity="0.28" />
         </svg>
       );
     case 1: // soft oval petal
       return (
-        <svg width={s * 0.6} height={s} viewBox="0 0 26 40" fill="none">
+        <svg width={s * 0.85} height={s} viewBox="0 0 34 40" fill="none">
           <defs>
             <radialGradient id={gid} cx="50%" cy="40%" r="65%">
               <stop offset="0%" stopColor={c.top} />
               <stop offset="100%" stopColor={c.bot} />
             </radialGradient>
           </defs>
-          <ellipse cx="13" cy="20" rx="11" ry="19" fill={`url(#${gid})`} opacity="0.92" />
+          <ellipse cx="17" cy="20" rx="13" ry="17" fill={`url(#${gid})`} opacity="0.58" />
         </svg>
       );
     case 2: // curved crescent petal
     default:
       return (
-        <svg width={s * 0.7} height={s} viewBox="0 0 28 40" fill="none">
+        <svg width={s * 1.15} height={s} viewBox="0 0 46 40" fill="none">
           <defs>
             <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor={c.top} />
@@ -76,12 +76,13 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
             </linearGradient>
           </defs>
           <path
-            d="M6 2 C22 8 26 26 14 38 C10 30 4 18 6 2 Z"
+            d="M4 20 C12 5 32 5 42 19 C31 27 14 28 4 20 Z"
             fill={`url(#${gid})`}
             stroke={c.stroke}
-            strokeWidth="0.35"
-            opacity="0.93"
+            strokeWidth="0.2"
+            opacity="0.62"
           />
+          <path d="M11 20 C21 17 30 17 38 19" stroke={c.stroke} strokeWidth="0.16" opacity="0.22" />
         </svg>
       );
   }
@@ -97,15 +98,15 @@ const HeroPetals = ({
   const petals = useMemo<PetalCfg[]>(() => {
     return Array.from({ length: PETAL_COUNT }).map(() => {
       const bucket = Math.random();
-      const sz = bucket < 0.55 ? rand(7, 12) : bucket < 0.9 ? rand(13, 19) : rand(20, 26);
+      const sz = bucket < 0.45 ? rand(8, 13) : bucket < 0.84 ? rand(14, 24) : rand(28, 44);
       const start = rand(-0.3, 0.6);
-      // bias teal sparingly (only ~10%)
+      // mostly blush/beige/off-white, with rare sage/teal notes like the reference
       const hueRoll = Math.random();
       const hue =
-        hueRoll < 0.34 ? 0 :
-        hueRoll < 0.62 ? 1 :
-        hueRoll < 0.78 ? 2 :
-        hueRoll < 0.88 ? 4 : 3;
+        hueRoll < 0.32 ? 2 :
+        hueRoll < 0.56 ? 0 :
+        hueRoll < 0.76 ? 4 :
+        hueRoll < 0.93 ? 1 : 3;
       return {
         variant: Math.floor(Math.random() * 3),
         size: sz,
@@ -113,7 +114,7 @@ const HeroPetals = ({
         sway: rand(14, 32),         // wider, slower lateral drift
         swayFreq: rand(0.35, 0.75), // gentler oscillation
         rot: rand(-90, 90),         // softer rotation
-        depth: sz < 12 ? 0.55 : sz < 19 ? 0.75 : 0.95,
+        depth: sz < 14 ? 0.5 : sz < 25 ? 0.72 : 0.9,
         start,
         end: Math.min(1.2, start + rand(0.7, 1.1)), // longer, slower fall
         driftX: rand(-22, 22),

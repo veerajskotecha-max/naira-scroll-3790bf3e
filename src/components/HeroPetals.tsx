@@ -249,7 +249,7 @@ const HeroPetals = ({
     <div
       ref={containerRef}
       className="fixed inset-0 pointer-events-none overflow-hidden"
-      style={{ zIndex: 6 }}
+      style={{ zIndex: 6, transition: "opacity 0.35s ease" }}
       aria-hidden="true"
     >
       {petals.map((cfg, i) => (

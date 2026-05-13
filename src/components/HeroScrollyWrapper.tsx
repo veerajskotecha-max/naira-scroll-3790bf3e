@@ -114,7 +114,7 @@ const HeroScrollyWrapper = () => {
       if (heading) gsap.set(heading, { opacity: 0, y: -10 });
       gsap.set(productsGrid, { opacity: 1 });
       gsap.set(cards, { y: "20vh", opacity: 0 });
-      gsap.set(logoReveal, { opacity: 0, y: 26, scale: 0.94, clipPath: "inset(0 50% 0 50%)" });
+      gsap.set(logoReveal, { opacity: 0.85, y: 6, scale: 0.98, clipPath: "inset(0 6% 0 6%)" });
 
       const tl = gsap.timeline({
         scrollTrigger: {

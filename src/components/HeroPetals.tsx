@@ -492,9 +492,9 @@ const HeroPetals = ({
             opacity: 0,
             willChange: "transform, opacity",
             filter:
-              cfg.size > 22
-                ? "drop-shadow(0 6px 9px rgba(120,80,50,0.18))"
-                : "drop-shadow(0 2px 4px rgba(120,80,50,0.12))",
+              cfg.size > 16
+                ? "drop-shadow(0 3px 5px rgba(120,80,50,0.16))"
+                : "drop-shadow(0 1.5px 2.5px rgba(120,80,50,0.1))",
           }}
         >
           <PetalSVG v={cfg.variant} s={cfg.size} id={i} hue={cfg.hue} />

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-const PETAL_COUNT = 75;
+const PETAL_COUNT = 70;
 
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
@@ -13,76 +13,164 @@ type PetalCfg = {
   sway: number;
   swayFreq: number;
   rot: number;
+  spin: number;     // continuous rotation speed
   depth: number;
   start: number;
   end: number;
   driftX: number;
-  hue: number; // index into BRAND_PALETTE
+  hue: number;
+  flip: boolean;
 };
 
-// Naira pastel palette inspired by soft floating tissue petals: off-white, blush, muted sage, warm beige
+/* ─── Naira brand palette ─── rose petals tinted with sage, warm beige,
+   blush peach, teal whisper, and off-white. Each entry defines a
+   gradient (centre→edge) plus a soft vein/stroke colour.            */
 const BRAND_PALETTE = [
-  { top: "hsl(42 52% 98%)", bot: "hsl(24 48% 84%)", stroke: "hsl(24 28% 74%)" },
-  { top: "hsl(33 42% 94%)", bot: "hsl(91 22% 74%)", stroke: "hsl(91 13% 63%)" },
-  { top: "hsl(0 0% 100%)", bot: "hsl(37 36% 91%)", stroke: "hsl(37 20% 80%)" },
-  { top: "hsl(166 24% 82%)", bot: "hsl(186 20% 57%)", stroke: "hsl(186 18% 49%)" },
-  { top: "hsl(8 70% 95%)", bot: "hsl(13 48% 82%)", stroke: "hsl(13 28% 72%)" },
+  // Warm blush / peach — primary brand beige
+  { c1: "hsl(18 78% 96%)", c2: "hsl(16 58% 82%)", c3: "hsl(14 38% 68%)", vein: "hsl(14 32% 56%)" },
+  // Soft sage
+  { c1: "hsl(140 22% 94%)", c2: "hsl(140 18% 78%)", c3: "hsl(146 16% 64%)", vein: "hsl(146 18% 48%)" },
+  // Off-white / cream
+  { c1: "hsl(40 60% 99%)", c2: "hsl(34 36% 92%)", c3: "hsl(30 24% 82%)", vein: "hsl(30 18% 68%)" },
+  // Teal whisper (rare accent)
+  { c1: "hsl(186 28% 92%)", c2: "hsl(188 22% 72%)", c3: "hsl(190 28% 48%)", vein: "hsl(190 32% 36%)" },
+  // Dusty rose
+  { c1: "hsl(8 70% 95%)", c2: "hsl(8 52% 82%)", c3: "hsl(6 38% 68%)", vein: "hsl(6 32% 54%)" },
 ];
 
-/* ────────── Refined petal-only variants ────────── */
+/* ────────── Rose petal variants — heart/teardrop, notched, furled ─────────
+   Each petal has a luminous centre gradient, a soft vein, and a tightly
+   curled base that catches light like real fabric.                       */
 const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: number }) => {
   const c = BRAND_PALETTE[hue];
   const gid = `pp-${id}`;
+  const sid = `ps-${id}`;
+  const sheen = (
+    <radialGradient id={sid} cx="50%" cy="22%" r="60%">
+      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
+      <stop offset="55%" stopColor="#ffffff" stopOpacity="0.08" />
+      <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+    </radialGradient>
+  );
+
   switch (v) {
-    case 0: // tear-drop petal
+    case 0:
+      // Classic rose petal — heart-notched top, tapered base
       return (
-        <svg width={s * 0.7} height={s} viewBox="0 0 28 40" fill="none">
+        <svg width={s * 0.9} height={s} viewBox="0 0 36 40" fill="none">
           <defs>
-            <linearGradient id={gid} x1="50%" y1="0%" x2="50%" y2="100%">
-              <stop offset="0%" stopColor={c.top} />
-              <stop offset="100%" stopColor={c.bot} />
-            </linearGradient>
-          </defs>
-          <path
-            d="M14 2 C23 9 24 27 13 39 C5 27 6 10 14 2 Z"
-            fill={`url(#${gid})`}
-            stroke={c.stroke}
-            strokeWidth="0.22"
-            opacity="0.72"
-          />
-          <path d="M14 7 C13 16 13 27 13 35" stroke={c.stroke} strokeWidth="0.18" opacity="0.28" />
-        </svg>
-      );
-    case 1: // soft oval petal
-      return (
-        <svg width={s * 0.85} height={s} viewBox="0 0 34 40" fill="none">
-          <defs>
-            <radialGradient id={gid} cx="50%" cy="40%" r="65%">
-              <stop offset="0%" stopColor={c.top} />
-              <stop offset="100%" stopColor={c.bot} />
+            <radialGradient id={gid} cx="50%" cy="35%" r="75%">
+              <stop offset="0%" stopColor={c.c1} />
+              <stop offset="55%" stopColor={c.c2} />
+              <stop offset="100%" stopColor={c.c3} />
             </radialGradient>
-          </defs>
-          <ellipse cx="17" cy="20" rx="13" ry="17" fill={`url(#${gid})`} opacity="0.58" />
-        </svg>
-      );
-    case 2: // curved crescent petal
-    default:
-      return (
-        <svg width={s * 1.15} height={s} viewBox="0 0 46 40" fill="none">
-          <defs>
-            <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={c.top} />
-              <stop offset="100%" stopColor={c.bot} />
-            </linearGradient>
+            {sheen}
           </defs>
           <path
-            d="M4 20 C12 5 32 5 42 19 C31 27 14 28 4 20 Z"
+            d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 C16 6 20 6 18 3 Z"
             fill={`url(#${gid})`}
-            stroke={c.stroke}
-            strokeWidth="0.2"
-            opacity="0.62"
+            stroke={c.vein}
+            strokeOpacity="0.35"
+            strokeWidth="0.35"
           />
-          <path d="M11 20 C21 17 30 17 38 19" stroke={c.stroke} strokeWidth="0.16" opacity="0.22" />
+          <path
+            d="M18 8 C16 18 16 28 18 36"
+            stroke={c.vein}
+            strokeOpacity="0.32"
+            strokeWidth="0.4"
+            fill="none"
+          />
+          <path
+            d="M18 12 C14 18 12 26 13 33 M18 12 C22 18 24 26 23 33"
+            stroke={c.vein}
+            strokeOpacity="0.18"
+            strokeWidth="0.3"
+            fill="none"
+          />
+          <path
+            d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 Z"
+            fill={`url(#${sid})`}
+          />
+        </svg>
+      );
+    case 1:
+      // Furled rose petal — curled side suggests volume
+      return (
+        <svg width={s * 0.78} height={s} viewBox="0 0 32 40" fill="none">
+          <defs>
+            <linearGradient id={gid} x1="20%" y1="0%" x2="80%" y2="100%">
+              <stop offset="0%" stopColor={c.c1} />
+              <stop offset="50%" stopColor={c.c2} />
+              <stop offset="100%" stopColor={c.c3} />
+            </linearGradient>
+            {sheen}
+          </defs>
+          <path
+            d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
+            fill={`url(#${gid})`}
+            stroke={c.vein}
+            strokeOpacity="0.32"
+            strokeWidth="0.32"
+          />
+          {/* curled edge highlight */}
+          <path
+            d="M10 8 C6 14 6 24 11 33"
+            stroke={c.c1}
+            strokeOpacity="0.55"
+            strokeWidth="0.7"
+            fill="none"
+          />
+          <path
+            d="M16 6 C15 16 16 26 18 35"
+            stroke={c.vein}
+            strokeOpacity="0.28"
+            strokeWidth="0.35"
+            fill="none"
+          />
+          <path
+            d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
+            fill={`url(#${sid})`}
+          />
+        </svg>
+      );
+    case 2:
+    default:
+      // Wide rounded petal — outer rose petal that catches light
+      return (
+        <svg width={s} height={s * 0.88} viewBox="0 0 40 36" fill="none">
+          <defs>
+            <radialGradient id={gid} cx="50%" cy="30%" r="80%">
+              <stop offset="0%" stopColor={c.c1} />
+              <stop offset="60%" stopColor={c.c2} />
+              <stop offset="100%" stopColor={c.c3} />
+            </radialGradient>
+            {sheen}
+          </defs>
+          <path
+            d="M20 2 C32 4 38 14 36 24 C33 33 24 35 20 33 C16 35 7 33 4 24 C2 14 8 4 20 2 Z"
+            fill={`url(#${gid})`}
+            stroke={c.vein}
+            strokeOpacity="0.3"
+            strokeWidth="0.32"
+          />
+          <path
+            d="M20 6 C18 14 18 22 20 32"
+            stroke={c.vein}
+            strokeOpacity="0.3"
+            strokeWidth="0.36"
+            fill="none"
+          />
+          <path
+            d="M20 10 C14 16 12 24 14 30 M20 10 C26 16 28 24 26 30"
+            stroke={c.vein}
+            strokeOpacity="0.16"
+            strokeWidth="0.28"
+            fill="none"
+          />
+          <path
+            d="M20 2 C32 4 38 14 36 24 C33 33 24 35 20 33 C16 35 7 33 4 24 C2 14 8 4 20 2 Z"
+            fill={`url(#${sid})`}
+          />
         </svg>
       );
   }
@@ -98,41 +186,44 @@ const HeroPetals = ({
   const petals = useMemo<PetalCfg[]>(() => {
     return Array.from({ length: PETAL_COUNT }).map(() => {
       const bucket = Math.random();
-      const sz = bucket < 0.45 ? rand(8, 13) : bucket < 0.84 ? rand(14, 24) : rand(28, 44);
-      const start = rand(-0.3, 0.6);
-      // mostly blush/beige/off-white, with rare sage/teal notes like the reference
+      // slightly larger so the rose detail reads
+      const sz = bucket < 0.4 ? rand(11, 16) : bucket < 0.82 ? rand(18, 28) : rand(30, 46);
+      const start = rand(-0.25, 0.55);
+      // hue distribution — warm blush dominant, sage + cream secondary, teal/dusty rare accents
       const hueRoll = Math.random();
       const hue =
-        hueRoll < 0.32 ? 2 :
-        hueRoll < 0.56 ? 0 :
-        hueRoll < 0.76 ? 4 :
-        hueRoll < 0.93 ? 1 : 3;
+        hueRoll < 0.36 ? 0 :  // blush/peach
+        hueRoll < 0.62 ? 2 :  // off-white cream
+        hueRoll < 0.82 ? 1 :  // sage
+        hueRoll < 0.94 ? 4 :  // dusty rose
+        3;                    // teal whisper (rare)
       return {
         variant: Math.floor(Math.random() * 3),
         size: sz,
         xPct: rand(2, 98),
-        sway: rand(14, 32),         // wider, slower lateral drift
-        swayFreq: rand(0.35, 0.75), // gentler oscillation
-        rot: rand(-90, 90),         // softer rotation
-        depth: sz < 14 ? 0.5 : sz < 25 ? 0.72 : 0.9,
+        sway: rand(12, 28),
+        swayFreq: rand(0.4, 0.85),
+        rot: rand(-120, 120),
+        spin: rand(-40, 40),
+        depth: sz < 16 ? 0.55 : sz < 28 ? 0.78 : 0.95,
         start,
-        end: Math.min(1.2, start + rand(0.7, 1.1)), // longer, slower fall
-        driftX: rand(-22, 22),
+        // FASTER falls — shorter per-petal life cycle
+        end: Math.min(1.15, start + rand(0.42, 0.7)),
+        driftX: rand(-26, 26),
         hue,
+        flip: Math.random() < 0.5,
       };
     });
   }, []);
 
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number>(0);
-  // smoothed per-petal nudge offsets (lerped each frame for elegance)
   const nudge = useRef<{ x: number; y: number }[]>(
     Array.from({ length: PETAL_COUNT }, () => ({ x: 0, y: 0 }))
   );
   const containerRef = useRef<HTMLDivElement>(null);
   const mouse = useRef({ x: -9999, y: -9999, active: false });
 
-  // Track cursor for interactive nudge
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -171,14 +262,11 @@ const HeroPetals = ({
       const mx = mouse.current.x;
       const my = mouse.current.y;
       const mActive = mouse.current.active;
-      // continuous time-based phase so petals breathe even without scroll
       const phase = now / 1000;
 
-      // Keep petals flowing through the entire transition area; fade only
-      // once the cards have nearly finished arriving — no blank screen.
       const scrollY = window.scrollY;
-      const fadeStart = petalsEnd + 220; // after logo + heading reveal
-      const fadeEnd   = petalsEnd + 420; // gone by the time cards land
+      const fadeStart = petalsEnd + 180;
+      const fadeEnd   = petalsEnd + 360;
       const fadeT = Math.max(0, Math.min(1, (scrollY - fadeStart) / Math.max(1, fadeEnd - fadeStart)));
       const layerOpacity = 1 - fadeT;
       if (containerRef.current) {
@@ -195,14 +283,12 @@ const HeroPetals = ({
           return;
         }
         const fallT = easeInOutSine(localT);
-        const y = -80 + fallT * (vh + 160) * cfg.depth;
-        // dual-frequency sway: gentle long arc + subtle micro-wobble
+        const y = -100 + fallT * (vh + 200) * cfg.depth;
         const swayBase =
           Math.sin(phase * cfg.swayFreq + cfg.start * 6.28) * cfg.sway +
-          Math.sin(phase * cfg.swayFreq * 2.3 + i) * (cfg.sway * 0.18) +
+          Math.sin(phase * cfg.swayFreq * 2.3 + i) * (cfg.sway * 0.2) +
           cfg.driftX * fallT;
 
-        // Interactive nudge — silky lerp toward target offset
         let nudgeTargetX = 0;
         let nudgeTargetY = 0;
         if (mActive) {
@@ -217,22 +303,23 @@ const HeroPetals = ({
             nudgeTargetY = (dy / dist) * force * 0.5;
           }
         }
-        const k = 1 - Math.exp(-dt * 9); // snappier critically-damped lerp
+        const k = 1 - Math.exp(-dt * 9);
         const n = nudge.current[i];
         n.x += (nudgeTargetX - n.x) * k;
         n.y += (nudgeTargetY - n.y) * k;
 
         const swayX = swayBase + n.x;
-        // gentle rotation tied to sway for natural feel
         const rot =
           cfg.rot * 0.35 * Math.sin(phase * cfg.swayFreq * 0.8 + cfg.start * 3.14) +
-          cfg.rot * 0.6 * fallT;
+          cfg.rot * 0.6 * fallT +
+          cfg.spin * phase * 0.15;
 
-        let op = 0.94;
-        if (localT < 0.18) op = easeOutExpo(localT / 0.18) * 0.94;
-        else if (localT > 0.8) op = easeOutExpo(1 - (localT - 0.8) / 0.2) * 0.94;
+        let op = 0.96;
+        if (localT < 0.15) op = easeOutExpo(localT / 0.15) * 0.96;
+        else if (localT > 0.82) op = easeOutExpo(1 - (localT - 0.82) / 0.18) * 0.96;
 
-        el.style.transform = `translate3d(${swayX}px, ${y + n.y}px, 0) rotate(${rot}deg)`;
+        const scaleX = cfg.flip ? -1 : 1;
+        el.style.transform = `translate3d(${swayX}px, ${y + n.y}px, 0) rotate(${rot}deg) scaleX(${scaleX})`;
         el.style.opacity = String(op);
       });
       rafRef.current = requestAnimationFrame(tick);
@@ -263,9 +350,9 @@ const HeroPetals = ({
             opacity: 0,
             willChange: "transform, opacity",
             filter:
-              cfg.size > 18
-                ? "drop-shadow(0 5px 7px rgba(120,80,50,0.14))"
-                : "drop-shadow(0 2px 3px rgba(120,80,50,0.10))",
+              cfg.size > 22
+                ? "drop-shadow(0 6px 9px rgba(120,80,50,0.18))"
+                : "drop-shadow(0 2px 4px rgba(120,80,50,0.12))",
           }}
         >
           <PetalSVG v={cfg.variant} s={cfg.size} id={i} hue={cfg.hue} />

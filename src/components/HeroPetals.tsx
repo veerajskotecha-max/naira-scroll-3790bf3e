@@ -241,7 +241,6 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
         </svg>
       );
     case 2:
-    default:
       // Wide outer petal — broad, slightly scalloped, catches light
       return (
         <svg width={s} height={s * 0.88} viewBox="0 0 40 36" fill="none">
@@ -317,7 +316,209 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
           <ellipse cx="16" cy="9" rx="3.2" ry="1.4" fill="#ffffff" opacity="0.28" />
         </svg>
       );
-  }
+    case 3:
+      // Five-point star bloom — jasmine / frangipani inspired tiny flower
+      return (
+        <svg width={s} height={s} viewBox="0 0 40 40" fill="none">
+          <defs>
+            <radialGradient id={gid} cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="35%" stopColor={c.c1} />
+              <stop offset="80%" stopColor={c.c2} />
+              <stop offset="100%" stopColor={c.c3} />
+            </radialGradient>
+            <radialGradient id={eid} cx="50%" cy="50%" r="22%">
+              <stop offset="0%" stopColor="hsl(45 80% 70%)" stopOpacity="0.95" />
+              <stop offset="60%" stopColor="hsl(40 70% 60%)" stopOpacity="0.5" />
+              <stop offset="100%" stopColor={c.c3} stopOpacity="0" />
+            </radialGradient>
+            {sheen}{innerShadow}{tipBlush}
+          </defs>
+          {/* 5 rounded petals arranged around a centre */}
+          <g>
+            {[0, 72, 144, 216, 288].map((deg, idx) => (
+              <g key={idx} transform={`rotate(${deg} 20 20)`}>
+                <path
+                  d="M20 20 C16 16 14 10 16 5 C18 2 22 2 24 5 C26 10 24 16 20 20 Z"
+                  fill={`url(#${gid})`}
+                  stroke={c.vein}
+                  strokeOpacity="0.35"
+                  strokeWidth="0.32"
+                />
+                {/* vein down each petal */}
+                <path
+                  d="M20 18 C20 13 20 9 20 6"
+                  stroke={c.vein}
+                  strokeOpacity="0.32"
+                  strokeWidth="0.32"
+                  fill="none"
+                  strokeLinecap="round"
+                />
+                {/* subtle tip blush */}
+                <path
+                  d="M20 20 C16 16 14 10 16 5 C18 2 22 2 24 5 C26 10 24 16 20 20 Z"
+                  fill={`url(#${tid})`}
+                  opacity="0.7"
+                />
+              </g>
+            ))}
+          </g>
+          {/* glowing golden centre — pollen */}
+          <circle cx="20" cy="20" r="3.6" fill={`url(#${eid})`} />
+          <circle cx="20" cy="20" r="1.4" fill="hsl(42 85% 72%)" opacity="0.9" />
+          {/* tiny stamen dots */}
+          {[0, 60, 120, 180, 240, 300].map((deg, idx) => (
+            <g key={idx} transform={`rotate(${deg} 20 20)`}>
+              <circle cx="20" cy="17.3" r="0.55" fill="hsl(40 70% 55%)" opacity="0.85" />
+            </g>
+          ))}
+          {/* overall sheen */}
+          <circle cx="20" cy="20" r="18" fill={`url(#${sid})`} />
+        </svg>
+      );
+    case 4:
+      // Long slim petal — lily / tulip leaf, elongated and elegant
+      return (
+        <svg width={s * 0.45} height={s * 1.25} viewBox="0 0 18 50" fill="none">
+          <defs>
+            <linearGradient id={gid} x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stopColor={c.c1} />
+              <stop offset="50%" stopColor={c.c2} />
+              <stop offset="100%" stopColor={c.c3} />
+            </linearGradient>
+            <linearGradient id={eid} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={c.c3} stopOpacity="0.45" />
+              <stop offset="50%" stopColor={c.c1} stopOpacity="0" />
+              <stop offset="100%" stopColor={c.c3} stopOpacity="0.45" />
+            </linearGradient>
+            {sheen}{innerShadow}{tipBlush}
+          </defs>
+          {/* slender petal body, pointed both ends */}
+          <path
+            d="M9 1 C13 6 16 18 15 30 C14 40 11 47 9 49 C7 47 4 40 3 30 C2 18 5 6 9 1 Z"
+            fill={`url(#${gid})`}
+            stroke={c.vein}
+            strokeOpacity="0.38"
+            strokeWidth="0.3"
+          />
+          {/* tip blush at top */}
+          <path
+            d="M9 1 C13 6 16 18 15 30 C14 40 11 47 9 49 C7 47 4 40 3 30 C2 18 5 6 9 1 Z"
+            fill={`url(#${tid})`}
+          />
+          {/* central midrib */}
+          <path
+            d="M9 4 C9 16 9 30 9 47"
+            stroke={c.vein}
+            strokeOpacity="0.5"
+            strokeWidth="0.4"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* angled lateral veins */}
+          <path
+            d="M9 10 C7 14 6 18 5.5 24 M9 10 C11 14 12 18 12.5 24 M9 20 C7 24 6 28 5.5 34 M9 20 C11 24 12 28 12.5 34 M9 30 C7.5 33 7 36 6.8 40 M9 30 C10.5 33 11 36 11.2 40"
+            stroke={c.vein}
+            strokeOpacity="0.18"
+            strokeWidth="0.26"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* edge rim */}
+          <path
+            d="M9 1 C13 6 16 18 15 30 C14 40 11 47 9 49 C7 47 4 40 3 30 C2 18 5 6 9 1 Z"
+            fill={`url(#${eid})`}
+            opacity="0.55"
+          />
+          {/* inner cup */}
+          <path
+            d="M9 1 C13 6 16 18 15 30 C14 40 11 47 9 49 C7 47 4 40 3 30 C2 18 5 6 9 1 Z"
+            fill={`url(#${shd})`}
+          />
+          {/* sheen */}
+          <path
+            d="M9 1 C13 6 16 18 15 30 C14 40 11 47 9 49 C7 47 4 40 3 30 C2 18 5 6 9 1 Z"
+            fill={`url(#${sid})`}
+          />
+        </svg>
+      );
+    case 5:
+    default:
+      // Short round petal — cherry-blossom / plum bloom petal, compact
+      return (
+        <svg width={s * 0.95} height={s * 0.82} viewBox="0 0 38 32" fill="none">
+          <defs>
+            <radialGradient id={gid} cx="50%" cy="42%" r="72%">
+              <stop offset="0%" stopColor={c.c1} />
+              <stop offset="55%" stopColor={c.c2} />
+              <stop offset="100%" stopColor={c.c3} />
+            </radialGradient>
+            <linearGradient id={eid} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={c.c1} stopOpacity="0.6" />
+              <stop offset="100%" stopColor={c.c3} stopOpacity="0.3" />
+            </linearGradient>
+            {sheen}{innerShadow}{tipBlush}
+          </defs>
+          {/* compact rounded petal with notched top */}
+          <path
+            d="M19 3 C9 4 3 11 4 19 C5 26 12 30 19 29 C26 30 33 26 34 19 C35 11 29 4 19 3 C17 5.5 21 5.5 19 3 Z"
+            fill={`url(#${gid})`}
+            stroke={c.vein}
+            strokeOpacity="0.35"
+            strokeWidth="0.32"
+          />
+          <path
+            d="M19 3 C9 4 3 11 4 19 C5 26 12 30 19 29 C26 30 33 26 34 19 C35 11 29 4 19 3 Z"
+            fill={`url(#${tid})`}
+            opacity="0.8"
+          />
+          {/* midrib */}
+          <path
+            d="M19 6 C18.5 13 18.5 22 19 28"
+            stroke={c.vein}
+            strokeOpacity="0.42"
+            strokeWidth="0.44"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* fan veins */}
+          <path
+            d="M19 9 C14 13 11 18 12 25 M19 9 C24 13 27 18 26 25 M19 13 C16 16 14 20 14.5 24 M19 13 C22 16 24 20 23.5 24"
+            stroke={c.vein}
+            strokeOpacity="0.2"
+            strokeWidth="0.3"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* small notch */}
+          <path
+            d="M17 5 C18 6.4 20 6.4 21 5"
+            stroke={c.c1}
+            strokeOpacity="0.75"
+            strokeWidth="0.34"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* rim shading */}
+          <path
+            d="M19 3 C9 4 3 11 4 19 C5 26 12 30 19 29 C26 30 33 26 34 19 C35 11 29 4 19 3 Z"
+            fill={`url(#${eid})`}
+            opacity="0.45"
+          />
+          {/* inner cup */}
+          <path
+            d="M19 3 C9 4 3 11 4 19 C5 26 12 30 19 29 C26 30 33 26 34 19 C35 11 29 4 19 3 Z"
+            fill={`url(#${shd})`}
+          />
+          {/* sheen */}
+          <path
+            d="M19 3 C9 4 3 11 4 19 C5 26 12 30 19 29 C26 30 33 26 34 19 C35 11 29 4 19 3 Z"
+            fill={`url(#${sid})`}
+          />
+          {/* specular dot */}
+          <ellipse cx="14" cy="9" rx="2.8" ry="1.2" fill="#ffffff" opacity="0.3" />
+        </svg>
+      );
 };
 
 const HeroPetals = ({
@@ -341,7 +542,7 @@ const HeroPetals = ({
         hueRoll < 0.94 ? 4 :
         3;
       return {
-        variant: Math.floor(Math.random() * 3),
+        variant: Math.floor(Math.random() * 6),
         size: sz,
         xPct: rand(2, 98),
         sway: rand(12, 28),

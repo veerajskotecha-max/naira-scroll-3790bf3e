@@ -1,0 +1,20 @@
+# Naira Flore
+
+> Luxury Indian couture house crafting custom hand-embroidered lehengas, sarees, and occasion wear — designed for brides, weddings, and celebrations.
+
+Naira Flore is a Nashik-based atelier specializing in personalised, hand-crafted Indian couture. Each piece is made-to-order through a guided WhatsApp consultation (+91 9561557935), with intricate zardosi, thread, and embellishment work on premium silks and fabrics.
+
+## Pages
+
+- [Home](/): Naira Flore homepage — new arrivals, brand ethos, and customisation journey.
+- [Shop All](/shop): Browse the full couture collection — lehengas, sarees, sets, and occasion wear.
+- [Customize](/customize): Made-for-you bespoke couture process — share your vision and co-create a one-of-a-kind piece.
+- [About Us](/about): The Naira Flore story, craft philosophy, and atelier values.
+- [Contact](/contact): Reach the atelier via WhatsApp, email, or visit the Nashik studio.
+- [FAQs](/faqs): Answers on sizing, customisation timelines, delivery, and care.
+- [Exchange & Return Policy](/exchange-return-policy): Return windows and rules for custom vs standard orders.
+
+## Optional
+
+- [Privacy Policy](/privacy): How customer data is handled.
+- [Terms of Service](/terms): Terms governing use of the site.

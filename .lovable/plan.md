@@ -1,76 +1,33 @@
-# Replace Cormorant Garamond with Velista (global)
+## Problem
 
-## Goal
-Switch every typographic surface currently using Cormorant Garamond to **Velista**, with zero layout/spacing/responsiveness regressions and no render-blocking penalty. Visual hierarchy (sizes, weights, line-heights) stays identical.
+Clicking "Secure Checkout" opens `https://nairaflore.com/cart/c/hWNCEEs...?key=...&channel=online_store` and the site shows the Naira 404 page.
 
-## Key insight
-All 226 usages across the codebase go through a single Tailwind utility: **`font-cormorant`**. So we do **not** need to edit any component. We simply remap that utility to load Velista, and remove the Google Fonts request for Cormorant.
+## Root cause
 
-## Steps
+`nairaflore.com` is set as the primary domain inside Shopify, so the Storefront API returns `checkoutUrl` values pointing at `https://nairaflore.com/cart/c/...`. But `nairaflore.com` is hosted on Lovable (a React SPA), not Shopify. Lovable's SPA fallback serves `index.html` for `/cart/c/...`, React Router has no matching route, and the 404 page renders.
 
-### 1. Add the Velista font file to the project
-- Copy uploaded `user-uploads://VELISTA_1.ttf` → `public/fonts/Velista.ttf`
-  (using `public/` so it's served at a stable URL and easy to `@font-face` from CSS, matching the "load efficiently / no render-blocking" requirement).
+Shopify's actual checkout pages live on the store's permanent domain: `nc5eti-gp.myshopify.com` (already stored as `SHOPIFY_STORE_PERMANENT_DOMAIN` in `src/lib/shopify.ts`).
 
-### 2. Register Velista via `@font-face` in `src/index.css`
-Add at the top of the file:
-```css
-@font-face {
-  font-family: 'Velista';
-  src: url('/fonts/Velista.ttf') format('truetype');
-  font-weight: 400 600;          /* covers existing 400/500/600 usage */
-  font-style: normal;
-  font-display: swap;            /* non-blocking, instant fallback */
-}
-```
-- `font-display: swap` ensures no render-blocking; fallback shows immediately, Velista swaps in when ready.
-- Single file covers the 400/500/600 weight range that components currently request.
+## Fix
 
-### 3. Remove the Cormorant Google Fonts request from `index.html`
-Delete:
-- the `<link rel="stylesheet" ... Cormorant+Garamond ...>` block (with its `media=print` swap trick)
-- the `<noscript>` Cormorant fallback
-- the now-unused `preconnect` to `fonts.googleapis.com` and `fonts.gstatic.com`
+Update `formatCheckoutUrl()` in `src/lib/shopify.ts` to rewrite the host of any returned `checkoutUrl` to `SHOPIFY_STORE_PERMANENT_DOMAIN`, while preserving the `/cart/c/<token>` path, query string (including `key=...`), and adding `channel=online_store`.
 
-This eliminates an external network request and improves the Speed score we worked on previously.
+After the fix, the same click will open:
+`https://nc5eti-gp.myshopify.com/cart/c/hWNCEEs...?key=...&channel=online_store`
+which is Shopify's real checkout and will load correctly.
 
-### 4. Remap the Tailwind `font-cormorant` utility to Velista
-In `tailwind.config.ts`, change:
-```ts
-fontFamily: {
-  cormorant: ['"Cormorant Garamond"', 'serif'],
-},
-```
-to:
-```ts
-fontFamily: {
-  cormorant: ['Velista', 'Cormorant Garamond', 'Georgia', 'serif'],
-},
-```
-- Keeping the utility name `font-cormorant` means **no component edits** — all 226 call sites automatically pick up Velista.
-- Fallback chain: Velista → (legacy Cormorant if cached) → Georgia → generic serif. Guarantees a serif-like fallback so layout doesn't shift to a sans-serif during font swap.
+No other files need changes — every code path that opens checkout already runs through `formatCheckoutUrl`.
 
-### 5. Optional micro-adjustment for visual balance
-Velista's metrics differ slightly from Cormorant Garamond. To keep the "visually identical structure" requirement safe, add a tiny global tuning rule in `index.css` scoped only to the utility:
-```css
-.font-cormorant {
-  /* Velista runs slightly tighter than Cormorant; nudge for parity */
-  letter-spacing: 0.005em;
-}
-```
-After the change is live we'll visually QA hero/headings/buttons and only keep this rule if needed (remove if Velista already matches).
+## Optional follow-up (recommended, not required for the fix)
 
-## Files changed
-- `public/fonts/Velista.ttf` (new — copied from upload)
-- `src/index.css` (add `@font-face` + optional letter-spacing nudge)
-- `index.html` (remove Cormorant `<link>`, `<noscript>`, font preconnects)
-- `tailwind.config.ts` (remap `cormorant` family to Velista with fallbacks)
+In Shopify Admin → Settings → Domains, either:
+- keep `nairaflore.com` as the Lovable-hosted storefront and set the Shopify store's primary domain to `nc5eti-gp.myshopify.com` (or a different subdomain like `shop.nairaflore.com` pointed at Shopify), or
+- move the whole storefront onto Shopify.
 
-## What does NOT change
-- No component files are modified.
-- All `font-cormorant` class usages, sizes, weights, leading, tracking, and responsive breakpoints stay exactly as-is.
-- Hero LCP preload, Shopify image optimizations, and other Speed-tab fixes from the prior pass are untouched.
+Without one of these, checkout will work but the URL bar will show `nc5eti-gp.myshopify.com` during checkout, which is less branded.
 
-## Risk & QA
-- **Risk:** Velista's x-height or width may differ enough to cause a 1–2px shift in tightly-fit headings (e.g., hero wordmark, sticky CTA). Mitigation: `font-display: swap` + serif fallback chain prevents jarring sans-serif flash; optional letter-spacing nudge handles fine balance.
-- **QA after build:** Spot-check Hero, New Arrivals heading, Product card titles, Footer, Buttons, Mobile menu — confirm no overflow/clipping at 375px / 768px / 1114px / 1440px widths.
+## Verification
+
+1. Add an item to cart on the published site.
+2. Click "Secure Checkout".
+3. Confirm new tab opens on `nc5eti-gp.myshopify.com/cart/c/...` and Shopify checkout loads.

@@ -330,17 +330,16 @@ const HeroPetals = ({
   const petals = useMemo<PetalCfg[]>(() => {
     return Array.from({ length: PETAL_COUNT }).map(() => {
       const bucket = Math.random();
-      // slightly larger so the rose detail reads
-      const sz = bucket < 0.4 ? rand(11, 16) : bucket < 0.82 ? rand(18, 28) : rand(30, 46);
+      // smaller, more delicate scatter — tiny dominant, few mid, rare larger
+      const sz = bucket < 0.55 ? rand(7, 11) : bucket < 0.9 ? rand(12, 18) : rand(19, 26);
       const start = rand(-0.25, 0.55);
-      // hue distribution — warm blush dominant, sage + cream secondary, teal/dusty rare accents
       const hueRoll = Math.random();
       const hue =
-        hueRoll < 0.36 ? 0 :  // blush/peach
-        hueRoll < 0.62 ? 2 :  // off-white cream
-        hueRoll < 0.82 ? 1 :  // sage
-        hueRoll < 0.94 ? 4 :  // dusty rose
-        3;                    // teal whisper (rare)
+        hueRoll < 0.36 ? 0 :
+        hueRoll < 0.62 ? 2 :
+        hueRoll < 0.82 ? 1 :
+        hueRoll < 0.94 ? 4 :
+        3;
       return {
         variant: Math.floor(Math.random() * 3),
         size: sz,
@@ -349,9 +348,8 @@ const HeroPetals = ({
         swayFreq: rand(0.4, 0.85),
         rot: rand(-120, 120),
         spin: rand(-40, 40),
-        depth: sz < 16 ? 0.55 : sz < 28 ? 0.78 : 0.95,
+        depth: sz < 12 ? 0.55 : sz < 18 ? 0.78 : 0.95,
         start,
-        // FASTER falls — shorter per-petal life cycle
         end: Math.min(1.15, start + rand(0.42, 0.7)),
         driftX: rand(-26, 26),
         hue,
@@ -494,9 +492,9 @@ const HeroPetals = ({
             opacity: 0,
             willChange: "transform, opacity",
             filter:
-              cfg.size > 22
-                ? "drop-shadow(0 6px 9px rgba(120,80,50,0.18))"
-                : "drop-shadow(0 2px 4px rgba(120,80,50,0.12))",
+              cfg.size > 16
+                ? "drop-shadow(0 3px 5px rgba(120,80,50,0.16))"
+                : "drop-shadow(0 1.5px 2.5px rgba(120,80,50,0.1))",
           }}
         >
           <PetalSVG v={cfg.variant} s={cfg.size} id={i} hue={cfg.hue} />

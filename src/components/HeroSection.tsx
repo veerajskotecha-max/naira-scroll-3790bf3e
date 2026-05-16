@@ -73,8 +73,9 @@ const HeroSection = () => {
       const el = document.querySelector<HTMLElement>("[data-petals-end]");
       // Extend past the wrapper top so petals keep flowing through the
       // pinned logo+cards transition (they fade out via HeroPetals layer).
-      if (el) return Math.max(1, el.offsetTop + 420);
-      return Math.max(1, sectionHeight + 600);
+      // Tighter range = petals respond faster to scroll
+      if (el) return Math.max(1, el.offsetTop + 180);
+      return Math.max(1, sectionHeight + 300);
     };
     let petalsEnd = getPetalsEnd();
 
@@ -87,7 +88,8 @@ const HeroSection = () => {
     let raf = 0;
     const lerpLoop = () => {
       const target = clamp(window.scrollY / petalsEnd);
-      petalProgress.current = petalProgress.current + (target - petalProgress.current) * 0.1;
+      // snappier follow so petals visibly cascade with scroll
+      petalProgress.current = petalProgress.current + (target - petalProgress.current) * 0.22;
       raf = requestAnimationFrame(lerpLoop);
     };
     raf = requestAnimationFrame(lerpLoop);
@@ -277,7 +279,7 @@ const HeroSection = () => {
         </div>
 
         {/* Static model — lifted off the trust strip; sits visually below the SHOP COLLECTION CTA */}
-        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto mt-8 mb-8 md:mt-10 md:mb-10 lg:mt-0 lg:mb-16 xl:mb-20" aria-hidden="true">
+        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto mt-2 mb-14 md:mt-4 md:mb-16 lg:mt-0 lg:mb-16 xl:mb-20" aria-hidden="true">
           <img
             src={heroModel1}
             alt=""

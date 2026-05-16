@@ -45,88 +45,195 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
   const c = BRAND_PALETTE[hue];
   const gid = `pp-${id}`;
   const sid = `ps-${id}`;
+  const shd = `pd-${id}`;     // inner shadow gradient
+  const eid = `pe-${id}`;     // edge curl highlight
+  const tid = `pt-${id}`;     // tip blush
+
+  // Soft top-light sheen — reads as a glossy silk highlight
   const sheen = (
-    <radialGradient id={sid} cx="50%" cy="22%" r="60%">
-      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.55" />
-      <stop offset="55%" stopColor="#ffffff" stopOpacity="0.08" />
+    <radialGradient id={sid} cx="50%" cy="18%" r="62%">
+      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.62" />
+      <stop offset="45%" stopColor="#ffffff" stopOpacity="0.12" />
       <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+    </radialGradient>
+  );
+  // Inner shadow — gives the petal volume / cupped feel
+  const innerShadow = (
+    <radialGradient id={shd} cx="50%" cy="95%" r="85%">
+      <stop offset="0%" stopColor={c.vein} stopOpacity="0.32" />
+      <stop offset="55%" stopColor={c.vein} stopOpacity="0.08" />
+      <stop offset="100%" stopColor={c.vein} stopOpacity="0" />
+    </radialGradient>
+  );
+  // Warm tip blush — deepens the outer rim like a real rose petal
+  const tipBlush = (
+    <radialGradient id={tid} cx="50%" cy="6%" r="55%">
+      <stop offset="0%" stopColor={c.c3} stopOpacity="0.55" />
+      <stop offset="60%" stopColor={c.c3} stopOpacity="0.12" />
+      <stop offset="100%" stopColor={c.c3} stopOpacity="0" />
     </radialGradient>
   );
 
   switch (v) {
     case 0:
-      // Classic rose petal — heart-notched top, tapered base
+      // Classic rose petal — heart-notched top, tapered base, fine venation
       return (
         <svg width={s * 0.9} height={s} viewBox="0 0 36 40" fill="none">
           <defs>
-            <radialGradient id={gid} cx="50%" cy="35%" r="75%">
+            <radialGradient id={gid} cx="50%" cy="38%" r="78%">
               <stop offset="0%" stopColor={c.c1} />
-              <stop offset="55%" stopColor={c.c2} />
+              <stop offset="48%" stopColor={c.c2} />
               <stop offset="100%" stopColor={c.c3} />
             </radialGradient>
-            {sheen}
+            <linearGradient id={eid} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={c.c3} stopOpacity="0.35" />
+              <stop offset="50%" stopColor={c.c1} stopOpacity="0.0" />
+              <stop offset="100%" stopColor={c.c3} stopOpacity="0.35" />
+            </linearGradient>
+            {sheen}{innerShadow}{tipBlush}
           </defs>
+          {/* base petal */}
           <path
             d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 C16 6 20 6 18 3 Z"
             fill={`url(#${gid})`}
             stroke={c.vein}
-            strokeOpacity="0.35"
+            strokeOpacity="0.4"
             strokeWidth="0.35"
           />
+          {/* tip blush */}
           <path
-            d="M18 8 C16 18 16 28 18 36"
-            stroke={c.vein}
-            strokeOpacity="0.32"
-            strokeWidth="0.4"
-            fill="none"
+            d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 Z"
+            fill={`url(#${tid})`}
           />
+          {/* central midrib */}
           <path
-            d="M18 12 C14 18 12 26 13 33 M18 12 C22 18 24 26 23 33"
+            d="M18 7 C17 17 17 28 18 37"
             stroke={c.vein}
-            strokeOpacity="0.18"
-            strokeWidth="0.3"
+            strokeOpacity="0.45"
+            strokeWidth="0.5"
             fill="none"
+            strokeLinecap="round"
           />
+          {/* primary lateral veins */}
+          <path
+            d="M18 11 C14 16 11 23 12 32 M18 11 C22 16 25 23 24 32"
+            stroke={c.vein}
+            strokeOpacity="0.28"
+            strokeWidth="0.36"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* secondary fine veins */}
+          <path
+            d="M18 14 C15 18 13 22 13 27 M18 14 C21 18 23 22 23 27 M18 18 C16 22 15 26 15 30 M18 18 C20 22 21 26 21 30"
+            stroke={c.vein}
+            strokeOpacity="0.14"
+            strokeWidth="0.22"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* edge rim shading */}
+          <path
+            d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 Z"
+            fill={`url(#${eid})`}
+            opacity="0.6"
+          />
+          {/* inner cup shadow */}
+          <path
+            d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 Z"
+            fill={`url(#${shd})`}
+          />
+          {/* glossy sheen */}
           <path
             d="M18 3 C8 4 2 14 4 24 C6 33 14 39 18 38 C22 39 30 33 32 24 C34 14 28 4 18 3 Z"
             fill={`url(#${sid})`}
           />
+          {/* tiny notch highlight */}
+          <path
+            d="M16 5 C17 6.5 19 6.5 20 5"
+            stroke={c.c1}
+            strokeOpacity="0.7"
+            strokeWidth="0.35"
+            fill="none"
+            strokeLinecap="round"
+          />
         </svg>
       );
     case 1:
-      // Furled rose petal — curled side suggests volume
+      // Furled rose petal — pronounced curled side, layered volume
       return (
         <svg width={s * 0.78} height={s} viewBox="0 0 32 40" fill="none">
           <defs>
-            <linearGradient id={gid} x1="20%" y1="0%" x2="80%" y2="100%">
+            <linearGradient id={gid} x1="18%" y1="4%" x2="82%" y2="98%">
               <stop offset="0%" stopColor={c.c1} />
-              <stop offset="50%" stopColor={c.c2} />
+              <stop offset="45%" stopColor={c.c2} />
               <stop offset="100%" stopColor={c.c3} />
             </linearGradient>
-            {sheen}
+            <linearGradient id={eid} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={c.c1} stopOpacity="0.75" />
+              <stop offset="35%" stopColor={c.c1} stopOpacity="0.0" />
+            </linearGradient>
+            {sheen}{innerShadow}{tipBlush}
           </defs>
+          {/* base petal */}
           <path
             d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
             fill={`url(#${gid})`}
             stroke={c.vein}
-            strokeOpacity="0.32"
+            strokeOpacity="0.36"
             strokeWidth="0.32"
           />
-          {/* curled edge highlight */}
+          {/* tip blush along outer rim */}
+          <path
+            d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
+            fill={`url(#${tid})`}
+          />
+          {/* curled edge — soft fold */}
           <path
             d="M10 8 C6 14 6 24 11 33"
             stroke={c.c1}
-            strokeOpacity="0.55"
-            strokeWidth="0.7"
+            strokeOpacity="0.75"
+            strokeWidth="0.9"
             fill="none"
+            strokeLinecap="round"
           />
           <path
-            d="M16 6 C15 16 16 26 18 35"
+            d="M10.5 9 C7 15 7.2 24 11.5 32"
             stroke={c.vein}
-            strokeOpacity="0.28"
-            strokeWidth="0.35"
+            strokeOpacity="0.22"
+            strokeWidth="0.3"
             fill="none"
           />
+          {/* midrib */}
+          <path
+            d="M16 4 C15 14 16 26 19 36"
+            stroke={c.vein}
+            strokeOpacity="0.42"
+            strokeWidth="0.48"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* lateral veins */}
+          <path
+            d="M16 8 C19 14 22 20 23 28 M16 12 C18 18 20 24 21 30 M16 16 C17 22 18 27 19 32"
+            stroke={c.vein}
+            strokeOpacity="0.2"
+            strokeWidth="0.3"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* edge rim shading */}
+          <path
+            d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
+            fill={`url(#${eid})`}
+            opacity="0.5"
+          />
+          {/* inner cup shadow */}
+          <path
+            d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
+            fill={`url(#${shd})`}
+          />
+          {/* sheen */}
           <path
             d="M16 2 C26 6 30 18 27 30 C24 38 14 40 10 35 C5 28 4 16 10 8 C12 5 14 3 16 2 Z"
             fill={`url(#${sid})`}
@@ -135,42 +242,79 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
       );
     case 2:
     default:
-      // Wide rounded petal — outer rose petal that catches light
+      // Wide outer petal — broad, slightly scalloped, catches light
       return (
         <svg width={s} height={s * 0.88} viewBox="0 0 40 36" fill="none">
           <defs>
-            <radialGradient id={gid} cx="50%" cy="30%" r="80%">
+            <radialGradient id={gid} cx="50%" cy="32%" r="85%">
               <stop offset="0%" stopColor={c.c1} />
-              <stop offset="60%" stopColor={c.c2} />
+              <stop offset="55%" stopColor={c.c2} />
               <stop offset="100%" stopColor={c.c3} />
             </radialGradient>
-            {sheen}
+            <linearGradient id={eid} x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor={c.c3} stopOpacity="0.4" />
+              <stop offset="100%" stopColor={c.c3} stopOpacity="0" />
+            </linearGradient>
+            {sheen}{innerShadow}{tipBlush}
           </defs>
+          {/* scalloped petal body */}
           <path
-            d="M20 2 C32 4 38 14 36 24 C33 33 24 35 20 33 C16 35 7 33 4 24 C2 14 8 4 20 2 Z"
+            d="M20 2 C28 3 34 8 36 14 C38 20 36 28 30 32 C26 35 22 34 20 33 C18 34 14 35 10 32 C4 28 2 20 4 14 C6 8 12 3 20 2 Z"
             fill={`url(#${gid})`}
             stroke={c.vein}
-            strokeOpacity="0.3"
+            strokeOpacity="0.34"
             strokeWidth="0.32"
           />
+          {/* tip blush */}
           <path
-            d="M20 6 C18 14 18 22 20 32"
-            stroke={c.vein}
-            strokeOpacity="0.3"
-            strokeWidth="0.36"
-            fill="none"
+            d="M20 2 C28 3 34 8 36 14 C38 20 36 28 30 32 C26 35 22 34 20 33 C18 34 14 35 10 32 C4 28 2 20 4 14 C6 8 12 3 20 2 Z"
+            fill={`url(#${tid})`}
           />
+          {/* midrib */}
           <path
-            d="M20 10 C14 16 12 24 14 30 M20 10 C26 16 28 24 26 30"
+            d="M20 5 C19 13 19 22 20 32"
             stroke={c.vein}
-            strokeOpacity="0.16"
-            strokeWidth="0.28"
+            strokeOpacity="0.42"
+            strokeWidth="0.48"
             fill="none"
+            strokeLinecap="round"
           />
+          {/* primary veins */}
           <path
-            d="M20 2 C32 4 38 14 36 24 C33 33 24 35 20 33 C16 35 7 33 4 24 C2 14 8 4 20 2 Z"
+            d="M20 9 C14 14 11 21 13 29 M20 9 C26 14 29 21 27 29"
+            stroke={c.vein}
+            strokeOpacity="0.24"
+            strokeWidth="0.34"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* secondary veins */}
+          <path
+            d="M20 13 C16 17 14 22 14 27 M20 13 C24 17 26 22 26 27 M20 17 C17 20 16 24 16 28 M20 17 C23 20 24 24 24 28"
+            stroke={c.vein}
+            strokeOpacity="0.14"
+            strokeWidth="0.24"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* bottom rim shading */}
+          <path
+            d="M20 2 C28 3 34 8 36 14 C38 20 36 28 30 32 C26 35 22 34 20 33 C18 34 14 35 10 32 C4 28 2 20 4 14 C6 8 12 3 20 2 Z"
+            fill={`url(#${eid})`}
+            opacity="0.55"
+          />
+          {/* inner cup */}
+          <path
+            d="M20 2 C28 3 34 8 36 14 C38 20 36 28 30 32 C26 35 22 34 20 33 C18 34 14 35 10 32 C4 28 2 20 4 14 C6 8 12 3 20 2 Z"
+            fill={`url(#${shd})`}
+          />
+          {/* sheen highlight */}
+          <path
+            d="M20 2 C28 3 34 8 36 14 C38 20 36 28 30 32 C26 35 22 34 20 33 C18 34 14 35 10 32 C4 28 2 20 4 14 C6 8 12 3 20 2 Z"
             fill={`url(#${sid})`}
           />
+          {/* small specular dot — silk highlight */}
+          <ellipse cx="16" cy="9" rx="3.2" ry="1.4" fill="#ffffff" opacity="0.28" />
         </svg>
       );
   }

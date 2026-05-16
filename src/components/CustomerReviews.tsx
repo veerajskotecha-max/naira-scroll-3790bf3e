@@ -15,7 +15,7 @@ import reviewTaneesha from "@/assets/review-taneesha.jpeg";
 import reviewNabby from "@/assets/review-nabby.jpeg";
 import reviewAshley from "@/assets/review-ashley.jpeg";
 
-const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby, product1, product2, product3];
+const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
 
 const ratingBreakdown = [
   { stars: 5, count: 184 },
@@ -49,7 +49,7 @@ const reviewsData: Review[] = [
     date: "May 14, 2026",
     text: "Naira has redefined what 'custom' means for me. From the first consultation to the final piece in my hands, every step felt curated with care. The finish, the embroidery, the colours — all so thoughtfully done. Wearing Naira genuinely makes you feel celebrated.",
     hasPhotos: true,
-    images: [reviewAshley],
+    images: [reviewTaneesha],
   },
   {
     name: "Taneesha Kotecha",
@@ -59,7 +59,7 @@ const reviewsData: Review[] = [
     date: "May 8, 2026",
     text: "As an athlete, I value precision — and that's exactly what I found in Naira. Their team understood my style instantly and crafted a look that was bold, detailed, and incredibly comfortable. Naira brings the same discipline to fashion that champions bring to their game.",
     hasPhotos: true,
-    images: [reviewTaneesha],
+    images: [reviewAshley],
   },
   {
     name: "Rashmi Rai",

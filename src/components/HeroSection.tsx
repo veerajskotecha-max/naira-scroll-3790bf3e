@@ -277,7 +277,7 @@ const HeroSection = () => {
         </div>
 
         {/* Static model — lifted off the trust strip; sits visually below the SHOP COLLECTION CTA */}
-        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto mb-6 md:mb-10 lg:mb-16 xl:mb-20" aria-hidden="true">
+        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto mt-8 mb-8 md:mt-10 md:mb-10 lg:mt-0 lg:mb-16 xl:mb-20" aria-hidden="true">
           <img
             src={heroModel1}
             alt=""

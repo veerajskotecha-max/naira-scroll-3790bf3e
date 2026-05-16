@@ -21,6 +21,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 import TermsOfService from "./pages/TermsOfService.tsx";
 import ExchangeReturnPolicy from "./pages/ExchangeReturnPolicy.tsx";
 import FAQs from "./pages/FAQs.tsx";
+import CartCheckoutRedirect from "./pages/CartCheckoutRedirect.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,8 @@ const AppShell = () => {
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/exchange-return-policy" element={<ExchangeReturnPolicy />} />
         <Route path="/faqs" element={<FAQs />} />
+        <Route path="/cart/c/:token" element={<CartCheckoutRedirect />} />
+        <Route path="/cart/c/:token/*" element={<CartCheckoutRedirect />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

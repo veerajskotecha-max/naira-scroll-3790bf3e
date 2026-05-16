@@ -325,12 +325,21 @@ export function formatShopifyPrice(money: ShopifyMoney): string {
 export function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Force the host to Shopify's permanent domain. Shopify returns checkout
-    // URLs on the store's primary domain, which is nairaflore.com — but that
-    // domain is hosted on Lovable (not Shopify), so /cart/c/... 404s.
+    // Force Shopify's permanent domain. The store's primary domain
+    // (nairaflore.com) is hosted on Lovable, not Shopify, so /cart/c/... 404s.
     url.host = SHOPIFY_STORE_PERMANENT_DOMAIN;
     url.protocol = "https:";
     url.port = "";
+
+    // Shopify redirects /cart/c/<token> on the permanent domain back to the
+    // primary domain (nairaflore.com), which then 404s on Lovable. Rewrite to
+    // the direct web checkout route /checkouts/cn/<token>, which stays on the
+    // permanent domain.
+    const cartMatch = url.pathname.match(/^\/cart\/c\/([^/]+)\/?$/);
+    if (cartMatch) {
+      url.pathname = `/checkouts/cn/${cartMatch[1]}`;
+    }
+
     url.searchParams.set("channel", "online_store");
     return url.toString();
   } catch {

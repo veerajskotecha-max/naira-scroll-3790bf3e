@@ -50,7 +50,7 @@ export const productFromShopify = (product: ShopifyProductNode): Product => {
     image: images[0] ?? "/placeholder.svg",
     hoverImage: images[1] ?? images[0] ?? "/placeholder.svg",
     name: product.title,
-    category: product.productType || product.vendor || "Naira Flore",
+    category: product.productType || "Naira Flore",
     price: formatShopifyPrice(price),
     numericPrice: Number(price.amount),
     sizes,

@@ -284,7 +284,7 @@ const HeroSection = () => {
             src={heroModel1}
             alt=""
             className="w-auto object-contain object-bottom h-[230px] max-w-[52vw] md:h-[330px] md:max-w-[36vw] lg:h-[430px] lg:max-w-[30vw] xl:h-[500px]"
-            style={{ filter: "drop-shadow(0 14px 18px rgba(74, 58, 45, 0.18))" }}
+            style={{ filter: "none" }}
             loading="eager"
             fetchPriority="high"
             decoding="async"

@@ -11,8 +11,11 @@ import product3 from "@/assets/product-3.jpg";
 import product4 from "@/assets/product-4.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";
 import product2Hover from "@/assets/product-2-hover.jpg";
+import reviewTaneesha from "@/assets/review-taneesha.jpeg";
+import reviewNabby from "@/assets/review-nabby.jpeg";
+import reviewAshley from "@/assets/review-ashley.jpeg";
 
-const customerPhotos = [product1, product2, product3, product4, product1Hover, product2Hover];
+const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby, product1, product2, product3];
 
 const ratingBreakdown = [
   { stars: 5, count: 184 },
@@ -46,7 +49,7 @@ const reviewsData: Review[] = [
     date: "May 14, 2026",
     text: "Naira has redefined what 'custom' means for me. From the first consultation to the final piece in my hands, every step felt curated with care. The finish, the embroidery, the colours — all so thoughtfully done. Wearing Naira genuinely makes you feel celebrated.",
     hasPhotos: true,
-    images: [product1, product2],
+    images: [reviewAshley],
   },
   {
     name: "Taneesha Kotecha",
@@ -56,7 +59,7 @@ const reviewsData: Review[] = [
     date: "May 8, 2026",
     text: "As an athlete, I value precision — and that's exactly what I found in Naira. Their team understood my style instantly and crafted a look that was bold, detailed, and incredibly comfortable. Naira brings the same discipline to fashion that champions bring to their game.",
     hasPhotos: true,
-    images: [product3],
+    images: [reviewTaneesha],
   },
   {
     name: "Rashmi Rai",
@@ -74,9 +77,9 @@ const reviewsData: Review[] = [
     verified: true,
     rating: 5,
     date: "April 20, 2026",
-    text: "Naira's craftsmanship is intricate yet modern, and the piece fits like it was sketched for my story alone. A brand that truly honours individuality.",
-    hasPhotos: false,
-    images: [],
+    text: "The unboxing alone felt like an experience — the packaging, the little details, the care in every fold. And the outfit inside? Absolute perfection. Naira makes you feel like the moment is yours.",
+    hasPhotos: true,
+    images: [reviewNabby],
   },
   {
     name: "Ananya",

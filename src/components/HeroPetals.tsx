@@ -519,6 +519,7 @@ const PetalSVG = ({ v, s, id, hue }: { v: number; s: number; id: number; hue: nu
           <ellipse cx="14" cy="9" rx="2.8" ry="1.2" fill="#ffffff" opacity="0.3" />
         </svg>
       );
+  }
 };
 
 const HeroPetals = ({

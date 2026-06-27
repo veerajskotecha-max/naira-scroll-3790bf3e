@@ -286,10 +286,18 @@ const HeroSection = () => {
             >
               <Link
                 to="/shop"
-                className="font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.14em] px-7 md:px-8 py-3.5 md:py-[14px] rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="group relative font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.14em] px-7 md:px-8 py-3.5 md:py-[14px] rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ backgroundColor: "#4A2F22", color: "#FFFFFF" }}
               >
                 SHOP COLLECTION
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-2 right-2 -bottom-[6px] h-[1px] origin-left scale-x-100 transition-transform duration-500 group-hover:scale-x-110"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(184,134,11,0) 0%, rgba(184,134,11,0.85) 50%, rgba(184,134,11,0) 100%)",
+                  }}
+                />
               </Link>
             </div>
           </div>

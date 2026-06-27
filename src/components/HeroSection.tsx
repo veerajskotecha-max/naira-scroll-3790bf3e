@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import HeroPetals from "./HeroPetals";
+import HeroFlorals from "./HeroFlorals";
 import heroModel1 from "@/assets/naira-hero-model-optimized.png";
 
 // ─── Lerp helper ───────────────────────────────────────────────

@@ -86,11 +86,36 @@ export default {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        "bloom-bounce": {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-8px) rotate(1.5deg)" },
+        },
+        "bloom-bounce-rev": {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-6px) rotate(-1.2deg)" },
+        },
+        "petal-drift": {
+          "0%, 100%": { transform: "translate(0, 0) rotate(0deg)" },
+          "50%": { transform: "translate(4px, -10px) rotate(6deg)" },
+        },
+        "garland-sway": {
+          "0%, 100%": { transform: "rotate(-2deg)" },
+          "50%": { transform: "rotate(2deg)" },
+        },
+        "hero-bloom-in": {
+          "0%": { opacity: "0", transform: "scale(0.94)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         marquee: "marquee 22s linear infinite",
+        "bloom-bounce": "bloom-bounce 6s ease-in-out infinite",
+        "bloom-bounce-rev": "bloom-bounce-rev 7s ease-in-out infinite",
+        "petal-drift": "petal-drift 9s ease-in-out infinite",
+        "garland-sway": "garland-sway 8s ease-in-out infinite",
+        "hero-bloom-in": "hero-bloom-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both",
       },
     },
   },

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import HeroPetals from "./HeroPetals";
+import HeroFlorals from "./HeroFlorals";
 import heroModel1 from "@/assets/naira-hero-model-optimized.png";
 
 // ─── Lerp helper ───────────────────────────────────────────────
@@ -218,6 +219,10 @@ const HeroSection = () => {
       {/* Petals overlay — scoped inside hero, falls as user scrolls */}
       <HeroPetals progressRef={petalProgress} vh={vh} />
 
+      {/* Elegant bouncing botanical overlays */}
+      <HeroFlorals />
+
+
       <div
         className="relative z-10 max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center lg:items-end px-6 md:px-10 lg:px-14 xl:px-16"
         style={{ minHeight: "min(890px, 90vh)" }}
@@ -228,6 +233,18 @@ const HeroSection = () => {
           style={{ willChange: "transform" }}
         >
           <div className="flex flex-col justify-center lg:justify-end pt-4 pb-0 lg:pt-0 lg:pb-24 text-center lg:text-left">
+            <p
+              className="font-sans text-[10px] md:text-[11px] uppercase mb-3 md:mb-5"
+              style={{
+                color: "rgba(61, 43, 31, 0.65)",
+                letterSpacing: "0.4em",
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(8px)",
+                transition: "opacity 0.6s ease, transform 0.6s ease",
+              }}
+            >
+              Est. MMXXIV &nbsp;·&nbsp; Vol. I
+            </p>
             <h1
               className="font-cormorant text-[34px] md:text-[48px] lg:text-[58px] xl:text-[62px] font-medium mb-3 md:mb-6 text-center lg:text-left"
               style={{ color: "#3D2B1F", lineHeight: 1.18 }}
@@ -269,10 +286,18 @@ const HeroSection = () => {
             >
               <Link
                 to="/shop"
-                className="font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.14em] px-7 md:px-8 py-3.5 md:py-[14px] rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="group relative font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.14em] px-7 md:px-8 py-3.5 md:py-[14px] rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ backgroundColor: "#4A2F22", color: "#FFFFFF" }}
               >
                 SHOP COLLECTION
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-2 right-2 -bottom-[6px] h-[1px] origin-left scale-x-100 transition-transform duration-500 group-hover:scale-x-110"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(184,134,11,0) 0%, rgba(184,134,11,0.85) 50%, rgba(184,134,11,0) 100%)",
+                  }}
+                />
               </Link>
             </div>
           </div>

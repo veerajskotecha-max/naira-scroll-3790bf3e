@@ -219,6 +219,10 @@ const HeroSection = () => {
       {/* Petals overlay — scoped inside hero, falls as user scrolls */}
       <HeroPetals progressRef={petalProgress} vh={vh} />
 
+      {/* Elegant bouncing botanical overlays */}
+      <HeroFlorals />
+
+
       <div
         className="relative z-10 max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center lg:items-end px-6 md:px-10 lg:px-14 xl:px-16"
         style={{ minHeight: "min(890px, 90vh)" }}

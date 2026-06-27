@@ -233,6 +233,18 @@ const HeroSection = () => {
           style={{ willChange: "transform" }}
         >
           <div className="flex flex-col justify-center lg:justify-end pt-4 pb-0 lg:pt-0 lg:pb-24 text-center lg:text-left">
+            <p
+              className="font-sans text-[10px] md:text-[11px] uppercase mb-3 md:mb-5"
+              style={{
+                color: "rgba(61, 43, 31, 0.65)",
+                letterSpacing: "0.4em",
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "translateY(0)" : "translateY(8px)",
+                transition: "opacity 0.6s ease, transform 0.6s ease",
+              }}
+            >
+              Est. MMXXIV &nbsp;·&nbsp; Vol. I
+            </p>
             <h1
               className="font-cormorant text-[34px] md:text-[48px] lg:text-[58px] xl:text-[62px] font-medium mb-3 md:mb-6 text-center lg:text-left"
               style={{ color: "#3D2B1F", lineHeight: 1.18 }}

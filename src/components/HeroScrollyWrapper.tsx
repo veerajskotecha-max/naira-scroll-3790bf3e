@@ -64,8 +64,6 @@ const HeroScrollyWrapper = () => {
           opacity: 0.95, y: 0, scale: 1, clipPath: "inset(0 0% 0 0%)",
           duration: 0.6, ease: "power3.out",
         })
-        // 1.5s breathing pause before the collection follows
-        .to({}, { duration: 1.5 })
         // 2. Heading
         .to(heading || {}, {
           opacity: 1, y: 0, duration: 0.55, ease: "power2.out",
@@ -117,8 +115,6 @@ const HeroScrollyWrapper = () => {
           opacity: 0.9, y: 0, scale: 1, clipPath: "inset(0 0% 0 0%)",
           duration: 0.55, ease: "power3.out",
         })
-        // 1.5s breathing pause before the collection follows
-        .to({}, { duration: 1.5 })
         .to(heading || {}, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" })
         .to(cards, { y: 0, opacity: 1, duration: 0.65, ease: "power2.out", stagger: 0.16 }, "-=0.2");
 

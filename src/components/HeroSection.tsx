@@ -162,12 +162,12 @@ const HeroSection = () => {
               The Spring Capsule
             </span>
           </div>
-          <h1 style={velista} className="text-[3.4rem] lg:text-[6rem] xl:text-[7rem] leading-[0.94] font-normal text-[#1A1614]">
+          <h1 style={editorial} className="text-[3.4rem] lg:text-[6rem] xl:text-[7rem] leading-[0.94] font-normal uppercase text-[#1A1614]">
             <span className="block overflow-hidden">
               <span className="naira-word" style={{ animationDelay: ".55s" }}>Softly,</span>{" "}
               <span className="naira-word" style={{ animationDelay: ".70s" }}>slowly,</span>
             </span>
-            <span style={velista} className="block italic font-normal mt-1 overflow-hidden text-[#1A1614]/85">
+            <span style={editorial} className="block italic font-normal normal-case mt-1 overflow-hidden text-[#1A1614]/85">
               <span className="naira-word" style={{ animationDelay: ".90s" }}>worn.</span>
             </span>
           </h1>

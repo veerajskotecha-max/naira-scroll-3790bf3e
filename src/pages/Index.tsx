@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import HeroScrollyWrapper from "@/components/HeroScrollyWrapper";
-import TrustStrip from "@/components/TrustStrip";
+
 import CustomisationSteps from "@/components/CustomisationSteps";
 import BrandEthos from "@/components/BrandEthos";
 import Craftsmanship from "@/components/Craftsmanship";
@@ -42,7 +42,7 @@ const Index = () => {
       />
       <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
         <HeroScrollyWrapper />
-        <TrustStrip />
+        
         {/* section-reveal + is-visible toggled by IntersectionObserver above */}
         <div ref={revealRef} className="section-reveal">
           <CustomisationSteps />

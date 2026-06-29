@@ -41,7 +41,7 @@ const vocab = [
 
 const HeroSection = () => {
   return (
-    <section className="relative pt-[110px] pb-10 px-5 lg:px-16 lg:pt-[140px] lg:pb-16 overflow-hidden bg-[#FFF8F5] text-[#1A1614]">
+    <section className="relative pt-6 pb-10 px-5 lg:px-16 lg:pt-10 lg:pb-16 overflow-hidden bg-[#FFF8F5] text-[#1A1614]">
       <style>{`
         @keyframes naira-reveal-up {
           from { transform: translateY(22px); opacity: 0; filter: blur(6px); }

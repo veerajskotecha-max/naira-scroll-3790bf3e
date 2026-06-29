@@ -167,7 +167,7 @@ const HeroSection = () => {
               <span className="naira-word" style={{ animationDelay: ".55s" }}>Softly,</span>{" "}
               <span className="naira-word" style={{ animationDelay: ".70s" }}>slowly,</span>
             </span>
-            <span style={editorial} className="block italic font-normal mt-1 overflow-hidden text-[#1A1614]/85">
+            <span style={velista} className="block italic font-normal mt-1 overflow-hidden text-[#1A1614]/85">
               <span className="naira-word" style={{ animationDelay: ".90s" }}>worn.</span>
             </span>
           </h1>

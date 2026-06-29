@@ -228,22 +228,13 @@ const HeroSection = () => {
             Soft tailoring, pressed flowers, and the long quiet of an Indian afternoon.
           </p>
 
-          <div className="mt-7 flex items-center gap-3 max-w-[520px]">
-            <Link to="/shop" className="group relative inline-block flex-1">
+          <div className="mt-7 max-w-[320px]">
+            <Link to="/shop" className="group relative inline-block w-full">
               <span className="relative block text-center px-6 py-4 bg-[#1A1614] overflow-hidden">
                 <span className="absolute inset-0 bg-[#99B4AF] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                 <span style={jost} className="relative text-[11px] tracking-[0.32em] uppercase text-[#FFF8F5] font-light">
-                  The Edit
+                  Shop the Collection
                 </span>
-              </span>
-            </Link>
-            <Link
-              to="/customize"
-              className="shrink-0 px-5 h-14 border border-[#1A1614]/40 flex items-center justify-center"
-              aria-label="Made-to-measure"
-            >
-              <span style={jost} className="text-[10px] tracking-[0.32em] uppercase text-[#1A1614] font-light">
-                Made-to-measure
               </span>
             </Link>
           </div>

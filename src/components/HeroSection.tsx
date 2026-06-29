@@ -1,294 +1,268 @@
-import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import HeroPetals from "./HeroPetals";
-import heroModel1 from "@/assets/naira-hero-model-optimized.png";
+import look1 from "@/assets/exhibition/look-1.png";
+import look2 from "@/assets/exhibition/look-2.png";
+import look3 from "@/assets/exhibition/look-3.png";
+import look4 from "@/assets/exhibition/look-4.png";
+import look5 from "@/assets/exhibition/look-5.png";
+import look6 from "@/assets/exhibition/look-6.png";
+import look7 from "@/assets/exhibition/look-7.png";
+import floralBg from "@/assets/floral-pattern-bg.webp";
 
-// ─── Lerp helper ───────────────────────────────────────────────
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
-
-// ─── Headline words — each is a "mask reveal" unit ─────────────
-const HEADLINE = [
-  { text: "Where",        italic: false, delay: 80  },
-  { text: "Tradition",    italic: false, delay: 180 },
-  { text: "Meets",        italic: false, delay: 270 },
-  { text: "Contemporary", italic: true,  delay: 370 },
-  { text: "style",        italic: false, delay: 480 },
+const exhibition = [
+  { img: look1, name: "Lotus drape" },
+  { img: look2, name: "Indigo zardozi" },
+  { img: look3, name: "Pressed garden" },
+  { img: look4, name: "Patchwork story" },
+  { img: look5, name: "Onyx chiffon" },
+  { img: look6, name: "Marigold flare" },
+  { img: look7, name: "Crimson pichwai" },
 ];
 
-const MaskWord = ({
-  text, italic, delay, revealed,
-}: { text: string; italic: boolean; delay: number; revealed: boolean }) => (
-  <span
-    className="block overflow-hidden leading-none"
-    style={{ paddingBottom: "0.08em", marginBottom: "-0.08em" }}
-  >
-    <span
-      className="block"
-      style={{
-        transform: revealed ? "translateY(0)" : "translateY(110%)",
-        transition: `transform ${italic ? "0.85s" : "0.75s"} ${
-          italic
-            ? "cubic-bezier(0.34, 1.56, 0.64, 1)"
-            : "cubic-bezier(0.16, 1, 0.3, 1)"
-        }`,
-        transitionDelay: `${delay}ms`,
-      }}
-    >
-      {italic ? <em className="italic font-normal">{text}</em> : text}
-    </span>
-  </span>
-);
+/* Brand palette — locked from brand deck
+   Cream  #FFF8F5  paper / primary surface
+   Sage   #99B4AF  secondary, holds the page
+   Blush  #FFBDA8  accent only, warms
+   Ink    #1A1614  type
+*/
+const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
+const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
+const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
+
+const vocab = [
+  "atelier",
+  "edit",
+  "capsule",
+  "hand-finished",
+  "slow-made",
+  "pressed",
+  "salt-washed",
+  "made-to-measure",
+];
 
 const HeroSection = () => {
-  const [mounted, setMounted] = useState(false);
-
-  const sectionRef   = useRef<HTMLElement>(null);
-  const watermarkRef = useRef<HTMLDivElement>(null);
-  const textLayerRef = useRef<HTMLDivElement>(null);
-
-  const glowRef     = useRef<HTMLDivElement>(null);
-  const mouse       = useRef({ x: -999, y: -999 });
-  const pos         = useRef({ x: -999, y: -999 });
-  const glowVisible = useRef(false);
-  const rafId       = useRef<number>(0);
-
-  // Smoothed scroll progress for petals (0..1 across hero section)
-  const petalProgress = useRef(0);
-  const [vh, setVh] = useState(typeof window !== "undefined" ? window.innerHeight : 800);
-
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 120);
-    return () => clearTimeout(t);
-  }, []);
-
-  // Parallax + petal scroll progress (single RAF)
-  useEffect(() => {
-    let ticking = false;
-    let sectionHeight = sectionRef.current?.offsetHeight ?? 0;
-
-    // Petals flow from page top until the New Arrivals section reaches the
-    // viewport top. We re-measure on resize so the range stays accurate.
-    const getPetalsEnd = () => {
-      const el = document.querySelector<HTMLElement>("[data-petals-end]");
-      // Extend past the wrapper top so petals keep flowing through the
-      // pinned logo+cards transition (they fade out via HeroPetals layer).
-      // Tighter range = petals respond faster to scroll
-      if (el) return Math.max(1, el.offsetTop + 180);
-      return Math.max(1, sectionHeight + 300);
-    };
-    let petalsEnd = getPetalsEnd();
-
-    const measure = () => {
-      sectionHeight = sectionRef.current?.offsetHeight ?? 0;
-      petalsEnd = getPetalsEnd();
-      setVh(window.innerHeight);
-    };
-
-    let raf = 0;
-    const lerpLoop = () => {
-      const target = clamp(window.scrollY / petalsEnd);
-      // snappier follow so petals visibly cascade with scroll
-      petalProgress.current = petalProgress.current + (target - petalProgress.current) * 0.22;
-      raf = requestAnimationFrame(lerpLoop);
-    };
-    raf = requestAnimationFrame(lerpLoop);
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        if (scrollY > sectionHeight) { ticking = false; return; }
-        if (watermarkRef.current) {
-          watermarkRef.current.style.transform = `translateY(${scrollY * 0.25}px)`;
-        }
-        if (textLayerRef.current) {
-          textLayerRef.current.style.transform = `translateY(${scrollY * -0.06}px)`;
-        }
-        ticking = false;
-      });
-    };
-
-    const measureTimer = setTimeout(measure, 300);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(measureTimer);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
-
-  // Cursor glow
-  useEffect(() => {
-    const prefersCoarse = window.matchMedia("(pointer: coarse)").matches;
-    if (prefersCoarse) return;
-
-    const section = sectionRef.current;
-    const glow    = glowRef.current;
-    if (!section || !glow) return;
-
-    let rect = section.getBoundingClientRect();
-    const remeasure = () => { rect = section.getBoundingClientRect(); };
-
-    const loop = () => {
-      pos.current.x = lerp(pos.current.x, mouse.current.x, 0.075);
-      pos.current.y = lerp(pos.current.y, mouse.current.y, 0.075);
-      glow.style.transform = `translate(${pos.current.x}px, ${pos.current.y}px)`;
-      rafId.current = requestAnimationFrame(loop);
-    };
-    rafId.current = requestAnimationFrame(loop);
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouse.current.x = e.clientX - rect.left - 150;
-      mouse.current.y = e.clientY - rect.top  - 150;
-      if (!glowVisible.current) {
-        glowVisible.current = true;
-        glow.style.opacity = "1";
-        pos.current.x = mouse.current.x;
-        pos.current.y = mouse.current.y;
-      }
-    };
-    const onMouseLeave = () => {
-      glowVisible.current = false;
-      glow.style.opacity = "0";
-    };
-
-    section.addEventListener("mousemove", onMouseMove);
-    section.addEventListener("mouseleave", onMouseLeave);
-    window.addEventListener("scroll", remeasure, { passive: true });
-    window.addEventListener("resize", remeasure, { passive: true });
-    return () => {
-      cancelAnimationFrame(rafId.current);
-      section.removeEventListener("mousemove", onMouseMove);
-      section.removeEventListener("mouseleave", onMouseLeave);
-      window.removeEventListener("scroll", remeasure);
-      window.removeEventListener("resize", remeasure);
-    };
-  }, []);
-
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full overflow-hidden"
-      style={{
-        backgroundColor: "#E5B9A4",
-        minHeight: "min(890px, 90vh)",
-      }}
-    >
-      {/* Cursor glow */}
+    <section className="relative pt-[110px] pb-10 px-5 lg:px-16 lg:pt-[140px] lg:pb-16 overflow-hidden bg-[#FFF8F5] text-[#1A1614]">
+      <style>{`
+        @keyframes naira-reveal-up {
+          from { transform: translateY(22px); opacity: 0; filter: blur(6px); }
+          to   { transform: translateY(0);    opacity: 1; filter: blur(0); }
+        }
+        @keyframes naira-word-up {
+          from { transform: translateY(34px); opacity: 0; filter: blur(8px); }
+          to   { transform: translateY(0);    opacity: 1; filter: blur(0); }
+        }
+        @keyframes naira-marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        @keyframes naira-drift-a {
+          0%   { transform: translate(0, -8vh) rotate(0); opacity: 0; }
+          12%  { opacity: .65; }
+          100% { transform: translate(18vw, 110vh) rotate(220deg); opacity: 0; }
+        }
+        @keyframes naira-drift-b {
+          0%   { transform: translate(0, -8vh) rotate(0); opacity: 0; }
+          15%  { opacity: .5; }
+          100% { transform: translate(-14vw, 110vh) rotate(-180deg); opacity: 0; }
+        }
+        @keyframes naira-drift-c {
+          0%   { transform: translate(0, -8vh) rotate(0); opacity: 0; }
+          18%  { opacity: .7; }
+          100% { transform: translate(8vw, 110vh) rotate(260deg); opacity: 0; }
+        }
+        @keyframes naira-pattern-pan {
+          0%   { background-position: 0% 0%; }
+          100% { background-position: 100% 100%; }
+        }
+        .naira-reveal > * { opacity: 0; animation: naira-reveal-up 1.1s cubic-bezier(.16,1,.3,1) forwards; }
+        .naira-reveal > *:nth-child(1){ animation-delay:.10s; }
+        .naira-reveal > *:nth-child(2){ animation-delay:.25s; }
+        .naira-reveal > *:nth-child(3){ animation-delay:.40s; }
+        .naira-reveal > *:nth-child(4){ animation-delay:.55s; }
+        .naira-reveal > *:nth-child(5){ animation-delay:.70s; }
+        .naira-reveal > *:nth-child(6){ animation-delay:.85s; }
+        .naira-word { display:inline-block; opacity:0; animation: naira-word-up 1.1s cubic-bezier(.16,1,.3,1) forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .naira-reveal > *, .naira-word { animation: none !important; opacity: 1 !important; }
+          .naira-petal, .naira-pattern { animation: none !important; }
+        }
+      `}</style>
+
+      {/* paper wash — pressed-flower pattern */}
       <div
-        ref={glowRef}
-        aria-hidden="true"
-        className="absolute top-0 left-0 pointer-events-none select-none"
+        className="naira-pattern absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-multiply"
         style={{
-          width: 300, height: 300, borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(255,195,140,0.55) 0%, rgba(229,155,100,0.28) 45%, transparent 72%)",
-          filter: "blur(18px)",
-          opacity: 0,
-          transition: "opacity 0.5s ease",
-          willChange: "transform",
-          zIndex: 5,
+          backgroundImage: `url(${floralBg})`,
+          backgroundSize: "160% auto",
+          animation: "naira-pattern-pan 80s ease-in-out infinite alternate",
         }}
       />
+      {/* warm sun-faded gradient */}
+      <div className="absolute inset-0 pointer-events-none [background:radial-gradient(120%_60%_at_50%_0%,#FFF1E6_0%,transparent_60%),radial-gradient(80%_60%_at_100%_100%,#FFBDA8_0%,transparent_55%)] opacity-90" />
 
-      {/* Watermark NAIRA */}
-      <div
-        ref={watermarkRef}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
-        style={{ willChange: "transform", zIndex: 1 }}
-        aria-hidden="true"
-      >
-        <span
-          className="font-cormorant font-semibold uppercase"
-          style={{
-            fontSize: "clamp(140px, 20vw, 380px)",
-            color: "#8B5E3C",
-            opacity: 0.06,
-            letterSpacing: "0.05em",
-          }}
-        >
-          NAIRA
-        </span>
+      {/* drifting petals */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+        {[
+          { l: "6%",  d: "0s",  dur: "26s", w: 110, op: .75, rot: -22, color: "#FFBDA8", blur: 2, a: "naira-drift-a" },
+          { l: "18%", d: "5s",  dur: "32s", w: 70,  op: .55, rot: 28,  color: "#99B4AF", blur: 3, a: "naira-drift-b" },
+          { l: "30%", d: "2s",  dur: "28s", w: 140, op: .65, rot: -10, color: "#FFBDA8", blur: 2, a: "naira-drift-c" },
+          { l: "42%", d: "9s",  dur: "30s", w: 55,  op: .7,  rot: 36,  color: "#99B4AF", blur: 2, a: "naira-drift-a" },
+          { l: "54%", d: "3s",  dur: "27s", w: 95,  op: .5,  rot: -30, color: "#FFBDA8", blur: 4, a: "naira-drift-b" },
+          { l: "66%", d: "11s", dur: "34s", w: 80,  op: .7,  rot: 18,  color: "#99B4AF", blur: 2, a: "naira-drift-c" },
+          { l: "78%", d: "6s",  dur: "29s", w: 160, op: .45, rot: -16, color: "#FFBDA8", blur: 5, a: "naira-drift-a" },
+          { l: "88%", d: "14s", dur: "31s", w: 48,  op: .8,  rot: 42,  color: "#99B4AF", blur: 2, a: "naira-drift-b" },
+          { l: "12%", d: "18s", dur: "36s", w: 60,  op: .6,  rot: 10,  color: "#FFBDA8", blur: 3, a: "naira-drift-c" },
+          { l: "60%", d: "22s", dur: "33s", w: 120, op: .55, rot: -38, color: "#99B4AF", blur: 3, a: "naira-drift-a" },
+        ].map((p, i) => (
+          <svg
+            key={i}
+            className="naira-petal absolute top-0"
+            viewBox="0 0 100 34"
+            style={{
+              left: p.l,
+              width: p.w,
+              height: p.w * 0.34,
+              opacity: p.op,
+              filter: `blur(${p.blur}px)`,
+              transform: `rotate(${p.rot}deg)`,
+              animation: `${p.a} ${p.dur} linear ${p.d} infinite`,
+            }}
+          >
+            <path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill={p.color} />
+          </svg>
+        ))}
       </div>
 
-      {/* Petals overlay — scoped inside hero, falls as user scrolls */}
-      <HeroPetals progressRef={petalProgress} vh={vh} />
+      <div className="relative max-w-[1320px] mx-auto">
+        {/* meta row */}
+        <div className="relative flex items-center justify-between text-[#1A1614]/70 naira-reveal">
+          <span style={jost} className="text-[9px] tracking-[0.32em] uppercase font-light">
+            Volume One · Spring · MMXXVI
+          </span>
+          <span style={jost} className="text-[9px] tracking-[0.32em] uppercase font-light">
+            № 24
+          </span>
+        </div>
 
-      <div
-        className="relative z-10 max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center lg:items-end px-6 md:px-10 lg:px-14 xl:px-16"
-        style={{ minHeight: "min(890px, 90vh)" }}
-      >
-        <div
-          ref={textLayerRef}
-          className="flex-1 z-50 order-1 max-w-[420px] lg:max-w-[440px] relative"
-          style={{ willChange: "transform" }}
-        >
-          <div className="flex flex-col justify-center lg:justify-end pt-4 pb-0 lg:pt-0 lg:pb-24 text-center lg:text-left">
-            <h1
-              className="font-cormorant text-[34px] md:text-[48px] lg:text-[58px] xl:text-[62px] font-medium mb-3 md:mb-6 text-center lg:text-left"
-              style={{ color: "#3D2B1F", lineHeight: 1.18 }}
-            >
-              {HEADLINE.map((word) => (
-                <MaskWord
-                  key={word.text}
-                  text={word.text}
-                  italic={word.italic}
-                  delay={word.delay}
-                  revealed={mounted}
-                />
-              ))}
-            </h1>
+        {/* outline 06 — sage hairline */}
+        <div className="relative naira-reveal">
+          <span
+            style={velista}
+            className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 text-[14rem] lg:text-[22rem] xl:text-[26rem] leading-none font-light text-transparent select-none"
+            aria-hidden
+          >
+            <span style={{ WebkitTextStroke: "1px rgba(153,180,175,0.45)", color: "transparent" }}>06</span>
+          </span>
+        </div>
 
-            <p
-              className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-[1.6] mb-5 md:mb-10"
-              style={{
-                color: "rgba(61, 43, 31, 0.7)",
-                opacity: mounted ? 1 : 0,
-                transform: mounted ? "translateY(0)" : "translateY(10px)",
-                transition: "opacity 0.7s ease, transform 0.7s ease",
-                transitionDelay: "640ms",
-              }}
-            >
-              Discover the finest Indo-Western fusion wear,
-              <br className="hidden md:block" />
-              crafted for the modern woman.
-            </p>
+        {/* eyebrow + headline */}
+        <div className="relative mt-6 lg:mt-10 naira-reveal">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="block w-8 lg:w-14 h-px bg-[#99B4AF]" />
+            <span style={jost} className="text-[9px] lg:text-[11px] tracking-[0.32em] uppercase text-[#1A1614]/60 font-light">
+              The Spring Capsule
+            </span>
+          </div>
+          <h1 style={velista} className="text-[3.4rem] lg:text-[6rem] xl:text-[7rem] leading-[0.94] font-normal text-[#1A1614]">
+            <span className="block overflow-hidden">
+              <span className="naira-word" style={{ animationDelay: ".55s" }}>Softly,</span>{" "}
+              <span className="naira-word" style={{ animationDelay: ".70s" }}>slowly,</span>
+            </span>
+            <span style={editorial} className="block italic font-normal mt-1 overflow-hidden text-[#1A1614]/85">
+              <span className="naira-word" style={{ animationDelay: ".90s" }}>worn.</span>
+            </span>
+          </h1>
+        </div>
 
+        {/* Floating model procession */}
+        <div className="relative mt-8 lg:mt-12 naira-reveal -mx-5 lg:-mx-16">
+          <div className="absolute left-1 lg:left-4 top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 pointer-events-none">
+            <span style={jost} className="text-[8px] lg:text-[10px] tracking-[0.32em] uppercase text-[#1A1614]/55 whitespace-nowrap font-light">
+              Hand-finished · India
+            </span>
+          </div>
+          <div className="absolute right-1 lg:right-4 top-1/2 -translate-y-1/2 rotate-90 origin-right z-20 pointer-events-none">
+            <span style={jost} className="text-[8px] lg:text-[10px] tracking-[0.32em] uppercase text-[#1A1614]/55 whitespace-nowrap font-light">
+              Slow-made to measure
+            </span>
+          </div>
+
+          <div className="absolute left-6 right-6 lg:left-20 lg:right-20 bottom-6 h-px bg-[#99B4AF]/40 z-0" />
+
+          <div
+            className="relative w-full overflow-hidden"
+            style={{
+              maskImage: "linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%)",
+              WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%)",
+            }}
+          >
             <div
-              className="flex flex-wrap gap-4 justify-center lg:justify-start"
-              style={{
-                opacity: mounted ? 1 : 0,
-                transform: mounted ? "translateY(0)" : "translateY(14px)",
-                transition: "opacity 0.65s ease, transform 0.65s ease",
-                transitionDelay: "800ms",
-              }}
+              className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 w-max"
+              style={{ animation: "naira-marquee 60s linear infinite" }}
             >
-              <Link
-                to="/shop"
-                className="font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.14em] px-7 md:px-8 py-3.5 md:py-[14px] rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-                style={{ backgroundColor: "#4A2F22", color: "#FFFFFF" }}
-              >
-                SHOP COLLECTION
-              </Link>
+              {[0, 1].map((dup) => (
+                <div key={dup} className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 shrink-0" aria-hidden={dup === 1}>
+                  {exhibition.map((look, i) => (
+                    <figure
+                      key={`${dup}-${i}`}
+                      className="relative shrink-0 h-[255px] sm:h-[315px] md:h-[360px] lg:h-[520px] xl:h-[600px] flex items-end"
+                    >
+                      <img
+                        src={look.img}
+                        alt={look.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="block h-full w-auto object-contain object-bottom select-none"
+                      />
+                    </figure>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Static model — lifted off the trust strip; sits visually below the SHOP COLLECTION CTA */}
-        <div className="flex-shrink-0 order-2 self-end relative z-40 flex justify-center w-full lg:w-auto mt-2 mb-14 md:mt-4 md:mb-16 lg:mt-0 lg:mb-16 xl:mb-20" aria-hidden="true">
-          <img
-            src={heroModel1}
-            alt=""
-            className="w-auto object-contain object-bottom h-[230px] max-w-[52vw] md:h-[330px] md:max-w-[36vw] lg:h-[430px] lg:max-w-[30vw] xl:h-[500px]"
-            style={{ filter: "none" }}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
+        {/* description + CTA pair */}
+        <div className="relative mt-14 naira-reveal">
+          <p style={editorial} className="text-[1.05rem] italic leading-[1.55] text-[#1A1614]/80 max-w-[320px]">
+            Soft tailoring, pressed flowers, and the long quiet of an Indian afternoon.
+          </p>
+
+          <div className="mt-7 flex items-center gap-3 max-w-[520px]">
+            <Link to="/shop" className="group relative inline-block flex-1">
+              <span className="relative block text-center px-6 py-4 bg-[#1A1614] overflow-hidden">
+                <span className="absolute inset-0 bg-[#99B4AF] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                <span style={jost} className="relative text-[11px] tracking-[0.32em] uppercase text-[#FFF8F5] font-light">
+                  The Edit
+                </span>
+              </span>
+            </Link>
+            <Link
+              to="/customize"
+              className="shrink-0 px-5 h-14 border border-[#1A1614]/40 flex items-center justify-center"
+              aria-label="Made-to-measure"
+            >
+              <span style={jost} className="text-[10px] tracking-[0.32em] uppercase text-[#1A1614] font-light">
+                Made-to-measure
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* vocabulary marquee */}
+        <div className="relative mt-12 -mx-5 lg:-mx-16 border-y border-[#99B4AF]/40 py-3 overflow-hidden bg-[#FFF8F5]">
+          <div className="flex whitespace-nowrap" style={{ animation: "naira-marquee 38s linear infinite" }}>
+            {[0, 1].map((k) => (
+              <div key={k} className="flex items-center shrink-0">
+                {vocab.map((t, i) => (
+                  <span key={i} className="flex items-center">
+                    <span style={editorial} className="px-6 italic text-lg text-[#1A1614]/80">{t}</span>
+                    <span className="w-1 h-1 rounded-full bg-[#99B4AF]" />
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

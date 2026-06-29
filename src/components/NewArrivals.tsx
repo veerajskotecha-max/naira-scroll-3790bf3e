@@ -27,8 +27,7 @@ const NewArrivals = ({
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16 pt-[130px] md:pt-[140px] lg:pt-[155px]"
-      style={{ minHeight: "100vh" }}
+      className="relative w-full overflow-hidden py-10 md:py-14 lg:py-16 pt-10 md:pt-14 lg:pt-[155px] lg:min-h-screen"
     >
       
       <img

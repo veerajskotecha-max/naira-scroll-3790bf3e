@@ -176,13 +176,13 @@ const HeroSection = () => {
 
         {/* Floating model procession */}
         <div className="relative mt-8 lg:mt-12 naira-reveal -mx-5 lg:-mx-16">
-          <div className="absolute left-1 lg:left-4 top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 pointer-events-none">
-            <span style={jost} className="text-[8px] lg:text-[10px] tracking-[0.32em] uppercase text-[#1A1614]/55 whitespace-nowrap font-light">
+          <div className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 -rotate-90 origin-left z-20 pointer-events-none">
+            <span style={jost} className="text-[10px] tracking-[0.32em] uppercase text-[#1A1614]/55 whitespace-nowrap font-light">
               Hand-finished · India
             </span>
           </div>
-          <div className="absolute right-1 lg:right-4 top-1/2 -translate-y-1/2 rotate-90 origin-right z-20 pointer-events-none">
-            <span style={jost} className="text-[8px] lg:text-[10px] tracking-[0.32em] uppercase text-[#1A1614]/55 whitespace-nowrap font-light">
+          <div className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 rotate-90 origin-right z-20 pointer-events-none">
+            <span style={jost} className="text-[10px] tracking-[0.32em] uppercase text-[#1A1614]/55 whitespace-nowrap font-light">
               Slow-made to measure
             </span>
           </div>

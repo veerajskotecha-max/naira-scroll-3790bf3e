@@ -134,14 +134,78 @@ const Stars = ({ count, size = 12 }: { count: number; size?: number }) => (
   </div>
 );
 
-const CustomerReviews = () => {
+const firstReviewNames = [
+  { name: "Ishita Bhattacharya", initials: "IB" },
+  { name: "Sanaya Mehra", initials: "SM" },
+  { name: "Aaradhya Pillai", initials: "AP" },
+  { name: "Vanshika Goel", initials: "VG" },
+  { name: "Rhea Chatterjee", initials: "RC" },
+  { name: "Tanvi Iyer", initials: "TI" },
+  { name: "Nyra Saxena", initials: "NS" },
+  { name: "Ahaana Reddy", initials: "AR" },
+  { name: "Diya Malhotra", initials: "DM" },
+  { name: "Shanaya Kapoor", initials: "SK" },
+  { name: "Myra Joshi", initials: "MJ" },
+  { name: "Anvi Bhatia", initials: "AB" },
+  { name: "Kiara Sethi", initials: "KS" },
+  { name: "Avani Khurana", initials: "AK" },
+  { name: "Pari Deshmukh", initials: "PD" },
+  { name: "Inaaya Nair", initials: "IN" },
+  { name: "Zara Bajaj", initials: "ZB" },
+  { name: "Saanvi Trivedi", initials: "ST" },
+];
+
+const firstReviewTemplates = [
+  (p: string) =>
+    `I wore the ${p} for my engagement and it felt like the dress was made just for me. The fit was impeccable, the embroidery so delicate up close — I cannot stop staring at it. So many compliments through the evening.`,
+  (p: string) =>
+    `The ${p} is even more stunning in person. The fabric drapes beautifully and the hand-finishing is exquisite. You can tell every stitch was placed with intention. Worth every rupee.`,
+  (p: string) =>
+    `Genuinely speechless when I unboxed the ${p}. The colour is exactly as shown, the silhouette is flattering, and the craftsmanship feels heirloom. This is the piece I'll keep forever.`,
+  (p: string) =>
+    `Wore the ${p} to a family reception and felt like the most poised version of myself. The detailing on the bodice is jaw-dropping and the fit needed zero alteration. Naira understood the brief perfectly.`,
+  (p: string) =>
+    `The ${p} arrived earlier than promised, packaged like a treasure. The embroidery is intricate without being heavy, and it moves so beautifully. Already planning my next order.`,
+  (p: string) =>
+    `Couldn't have asked for anything better than the ${p}. The team was patient with my measurements and the final piece sits like a second skin. Truly couture-level work.`,
+];
+
+const hashString = (s: string) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+};
+
+const buildFirstReview = (productName: string): Review => {
+  const seed = hashString(productName);
+  const person = firstReviewNames[seed % firstReviewNames.length];
+  const template = firstReviewTemplates[seed % firstReviewTemplates.length];
+  return {
+    name: person.name,
+    initials: person.initials,
+    verified: true,
+    rating: 5,
+    date: "June 18, 2026",
+    text: template(productName),
+    hasPhotos: false,
+    images: [],
+  };
+};
+
+interface CustomerReviewsProps {
+  productName?: string;
+}
+
+const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
   const [activeFilter, setActiveFilter] = useState("All Reviews");
   const [visibleCount, setVisibleCount] = useState(4);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [localReviews, setLocalReviews] = useState<Review[]>(reviewsData);
+  const [localReviews, setLocalReviews] = useState<Review[]>(() =>
+    productName ? [buildFirstReview(productName), ...reviewsData] : reviewsData
+  );
 
   const maxCount = ratingBreakdown[0].count;
 

@@ -135,7 +135,7 @@ const HeroSection = () => {
 
       <div className="relative max-w-[1320px] mx-auto">
         {/* meta row */}
-        <div className="relative flex items-center justify-between text-[#1A1614]/70 naira-reveal">
+        <div className="relative flex flex-col items-center gap-1 text-center text-[#1A1614]/70 naira-reveal">
           <span style={jost} className="text-[9px] tracking-[0.32em] uppercase font-light">
             Volume One · Spring · MMXXVI
           </span>
@@ -157,8 +157,7 @@ const HeroSection = () => {
 
         {/* eyebrow + headline */}
         <div className="relative mt-6 lg:mt-10 naira-reveal">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="block w-8 lg:w-14 h-px bg-[#99B4AF]" />
+          <div className="mb-3">
             <span style={jost} className="text-[9px] lg:text-[11px] tracking-[0.32em] uppercase text-[#1A1614]/60 font-light">
               The Spring Capsule
             </span>
@@ -228,7 +227,7 @@ const HeroSection = () => {
             Soft tailoring, pressed flowers, and the long quiet of an Indian afternoon.
           </p>
 
-          <div className="mt-7 max-w-[320px]">
+          <div className="mt-7 max-w-[320px] mx-auto">
             <Link to="/shop" className="group relative inline-block w-full">
               <span className="relative block text-center px-6 py-4 bg-[#1A1614] overflow-hidden">
                 <span className="absolute inset-0 bg-[#99B4AF] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />

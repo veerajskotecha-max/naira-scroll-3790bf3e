@@ -112,7 +112,7 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <CustomerReviews />
+      <CustomerReviews productName={product.title} />
       <MaterialsCraft />
       <YouMayAlsoLike currentHandle={product.handle} />
       

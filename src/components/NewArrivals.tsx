@@ -80,7 +80,7 @@ const NewArrivals = ({
             </p>
           </div>
         ) : (
-          <div data-arrivals-products className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20 opacity-0">
+          <div data-arrivals-products className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20">
             {products.map((product, i) => (
               <ProductCard key={product.handle ?? product.name} product={product} index={i} visible={true} />
             ))}

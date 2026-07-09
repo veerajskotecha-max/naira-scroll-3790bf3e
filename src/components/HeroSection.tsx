@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import look1 from "@/assets/exhibition/look-1.png";
-import look2 from "@/assets/exhibition/look-2.png";
-import look3 from "@/assets/exhibition/look-3.png";
-import look4 from "@/assets/exhibition/look-4.png";
-import look5 from "@/assets/exhibition/look-5.png";
-import look6 from "@/assets/exhibition/look-6.png";
-import look7 from "@/assets/exhibition/look-7.png";
+import look1 from "@/assets/exhibition/look-1.webp";
+import look2 from "@/assets/exhibition/look-2.webp";
+import look3 from "@/assets/exhibition/look-3.webp";
+import look4 from "@/assets/exhibition/look-4.webp";
+import look5 from "@/assets/exhibition/look-5.webp";
+import look6 from "@/assets/exhibition/look-6.webp";
+import look7 from "@/assets/exhibition/look-7.webp";
 import floralBg from "@/assets/floral-pattern-bg.webp";
 
 const exhibition = [
@@ -209,8 +209,9 @@ const HeroSection = () => {
                       <img
                         src={look.img}
                         alt={look.name}
-                        loading="lazy"
+                        loading={dup === 0 && i < 2 ? "eager" : "lazy"}
                         decoding="async"
+                        fetchPriority={dup === 0 && i === 0 ? "high" : "auto"}
                         className="block h-full w-auto object-contain object-bottom select-none"
                       />
                     </figure>

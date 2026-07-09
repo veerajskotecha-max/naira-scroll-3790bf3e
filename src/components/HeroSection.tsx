@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import look1 from "@/assets/exhibition/look-1.webp";
 import look2 from "@/assets/exhibition/look-2.webp";
 import look3 from "@/assets/exhibition/look-3.webp";
@@ -40,6 +41,47 @@ const vocab = [
 ];
 
 const HeroSection = () => {
+  const marqueeTrackRef = useRef<HTMLDivElement>(null);
+  const marqueeViewportRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-driven marquee: translateX follows page scrollY smoothly (lerp).
+  // Loops seamlessly because content is duplicated (translate by -50% = one set).
+  useEffect(() => {
+    const track = marqueeTrackRef.current;
+    const viewport = marqueeViewportRef.current;
+    if (!track || !viewport) return;
+
+    let target = 0;
+    let current = 0;
+    let raf = 0;
+    // pixels of marquee travel per pixel of page scroll — tuned for a gentle drift
+    const SPEED = 0.6;
+
+    const onScroll = () => {
+      target = window.scrollY * SPEED;
+    };
+
+    const tick = () => {
+      // smooth easing toward target
+      current += (target - current) * 0.12;
+      const halfWidth = track.scrollWidth / 2;
+      if (halfWidth > 0) {
+        const wrapped = ((current % halfWidth) + halfWidth) % halfWidth;
+        track.style.transform = `translate3d(${-wrapped}px, 0, 0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    onScroll();
+    current = target;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <section className="relative pt-6 pb-10 px-5 lg:px-16 lg:pt-10 lg:pb-16 overflow-hidden bg-[#FFF8F5] text-[#1A1614]">
       <style>{`
@@ -183,6 +225,7 @@ const HeroSection = () => {
           <div className="absolute left-6 right-6 lg:left-20 lg:right-20 bottom-6 h-px bg-[#99B4AF]/40 z-0" />
 
           <div
+            ref={marqueeViewportRef}
             className="relative w-full overflow-hidden"
             style={{
               maskImage: "linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%)",
@@ -190,8 +233,8 @@ const HeroSection = () => {
             }}
           >
             <div
-              className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 w-max"
-              style={{ animation: "naira-marquee 60s linear infinite" }}
+              ref={marqueeTrackRef}
+              className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 w-max will-change-transform"
             >
               {[0, 1].map((dup) => (
                 <div key={dup} className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 shrink-0" aria-hidden={dup === 1}>

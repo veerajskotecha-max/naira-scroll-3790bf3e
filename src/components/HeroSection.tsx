@@ -225,6 +225,7 @@ const HeroSection = () => {
           <div className="absolute left-6 right-6 lg:left-20 lg:right-20 bottom-6 h-px bg-[#99B4AF]/40 z-0" />
 
           <div
+            ref={marqueeViewportRef}
             className="relative w-full overflow-hidden"
             style={{
               maskImage: "linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%)",
@@ -232,8 +233,8 @@ const HeroSection = () => {
             }}
           >
             <div
-              className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 w-max"
-              style={{ animation: "naira-marquee 60s linear infinite" }}
+              ref={marqueeTrackRef}
+              className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 w-max will-change-transform"
             >
               {[0, 1].map((dup) => (
                 <div key={dup} className="flex items-end gap-3 sm:gap-4 md:gap-5 lg:gap-8 shrink-0" aria-hidden={dup === 1}>

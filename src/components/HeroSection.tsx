@@ -88,31 +88,25 @@ const HeroSection = () => {
         }
       `}</style>
 
-      {/* paper wash — pressed-flower pattern */}
+      {/* paper wash — pressed-flower pattern (static, no animation for perf) */}
       <div
-        className="naira-pattern absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-multiply"
+        className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-multiply"
         style={{
           backgroundImage: `url(${floralBg})`,
           backgroundSize: "160% auto",
-          animation: "naira-pattern-pan 80s ease-in-out infinite alternate",
         }}
       />
       {/* warm sun-faded gradient */}
       <div className="absolute inset-0 pointer-events-none [background:radial-gradient(120%_60%_at_50%_0%,#FFF1E6_0%,transparent_60%),radial-gradient(80%_60%_at_100%_100%,#FFBDA8_0%,transparent_55%)] opacity-90" />
 
-      {/* drifting petals */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+      {/* drifting petals — reduced count, no blur, GPU-friendly (transform/opacity only) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden md:block" aria-hidden>
         {[
-          { l: "6%",  d: "0s",  dur: "26s", w: 110, op: .75, rot: -22, color: "#FFBDA8", blur: 2, a: "naira-drift-a" },
-          { l: "18%", d: "5s",  dur: "32s", w: 70,  op: .55, rot: 28,  color: "#99B4AF", blur: 3, a: "naira-drift-b" },
-          { l: "30%", d: "2s",  dur: "28s", w: 140, op: .65, rot: -10, color: "#FFBDA8", blur: 2, a: "naira-drift-c" },
-          { l: "42%", d: "9s",  dur: "30s", w: 55,  op: .7,  rot: 36,  color: "#99B4AF", blur: 2, a: "naira-drift-a" },
-          { l: "54%", d: "3s",  dur: "27s", w: 95,  op: .5,  rot: -30, color: "#FFBDA8", blur: 4, a: "naira-drift-b" },
-          { l: "66%", d: "11s", dur: "34s", w: 80,  op: .7,  rot: 18,  color: "#99B4AF", blur: 2, a: "naira-drift-c" },
-          { l: "78%", d: "6s",  dur: "29s", w: 160, op: .45, rot: -16, color: "#FFBDA8", blur: 5, a: "naira-drift-a" },
-          { l: "88%", d: "14s", dur: "31s", w: 48,  op: .8,  rot: 42,  color: "#99B4AF", blur: 2, a: "naira-drift-b" },
-          { l: "12%", d: "18s", dur: "36s", w: 60,  op: .6,  rot: 10,  color: "#FFBDA8", blur: 3, a: "naira-drift-c" },
-          { l: "60%", d: "22s", dur: "33s", w: 120, op: .55, rot: -38, color: "#99B4AF", blur: 3, a: "naira-drift-a" },
+          { l: "8%",  d: "0s",  dur: "30s", w: 110, op: .65, rot: -22, color: "#FFBDA8", a: "naira-drift-a" },
+          { l: "32%", d: "6s",  dur: "34s", w: 130, op: .55, rot: -10, color: "#FFBDA8", a: "naira-drift-c" },
+          { l: "56%", d: "3s",  dur: "32s", w: 90,  op: .5,  rot: -30, color: "#99B4AF", a: "naira-drift-b" },
+          { l: "78%", d: "10s", dur: "36s", w: 140, op: .45, rot: -16, color: "#FFBDA8", a: "naira-drift-a" },
+          { l: "90%", d: "16s", dur: "33s", w: 60,  op: .6,  rot: 20,  color: "#99B4AF", a: "naira-drift-b" },
         ].map((p, i) => (
           <svg
             key={i}
@@ -123,9 +117,9 @@ const HeroSection = () => {
               width: p.w,
               height: p.w * 0.34,
               opacity: p.op,
-              filter: `blur(${p.blur}px)`,
               transform: `rotate(${p.rot}deg)`,
               animation: `${p.a} ${p.dur} linear ${p.d} infinite`,
+              willChange: "transform, opacity",
             }}
           >
             <path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill={p.color} />

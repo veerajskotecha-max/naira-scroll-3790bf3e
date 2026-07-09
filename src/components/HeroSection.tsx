@@ -209,8 +209,9 @@ const HeroSection = () => {
                       <img
                         src={look.img}
                         alt={look.name}
-                        loading="lazy"
+                        loading={dup === 0 && i < 2 ? "eager" : "lazy"}
                         decoding="async"
+                        fetchPriority={dup === 0 && i === 0 ? "high" : "auto"}
                         className="block h-full w-auto object-contain object-bottom select-none"
                       />
                     </figure>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import look1 from "@/assets/exhibition/look-1.webp";
 import look2 from "@/assets/exhibition/look-2.webp";
 import look3 from "@/assets/exhibition/look-3.webp";

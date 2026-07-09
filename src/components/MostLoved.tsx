@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingBag, Heart } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
-import floralBottomRight from "@/assets/floral-bottom-right.png";
+import floralBottomRight from "@/assets/floral-bottom-right.webp";
 import FloatingFlower from "@/components/FloatingFlower";
 import product1 from "@/assets/product-1.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";

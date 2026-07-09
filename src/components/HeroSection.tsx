@@ -41,6 +41,47 @@ const vocab = [
 ];
 
 const HeroSection = () => {
+  const marqueeTrackRef = useRef<HTMLDivElement>(null);
+  const marqueeViewportRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-driven marquee: translateX follows page scrollY smoothly (lerp).
+  // Loops seamlessly because content is duplicated (translate by -50% = one set).
+  useEffect(() => {
+    const track = marqueeTrackRef.current;
+    const viewport = marqueeViewportRef.current;
+    if (!track || !viewport) return;
+
+    let target = 0;
+    let current = 0;
+    let raf = 0;
+    // pixels of marquee travel per pixel of page scroll — tuned for a gentle drift
+    const SPEED = 0.6;
+
+    const onScroll = () => {
+      target = window.scrollY * SPEED;
+    };
+
+    const tick = () => {
+      // smooth easing toward target
+      current += (target - current) * 0.12;
+      const halfWidth = track.scrollWidth / 2;
+      if (halfWidth > 0) {
+        const wrapped = ((current % halfWidth) + halfWidth) % halfWidth;
+        track.style.transform = `translate3d(${-wrapped}px, 0, 0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    onScroll();
+    current = target;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
     <section className="relative pt-6 pb-10 px-5 lg:px-16 lg:pt-10 lg:pb-16 overflow-hidden bg-[#FFF8F5] text-[#1A1614]">
       <style>{`

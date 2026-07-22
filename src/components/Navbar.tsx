@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, ShoppingBag, Menu } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, Heart, ShoppingBag, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import nairaLogo from "@/assets/naira-logo.svg";
 import { useCart } from "@/contexts/CartContext";
@@ -20,8 +20,12 @@ const leftLinks = [
 const Navbar = ({ scrolled }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { totalItems, setDrawerOpen } = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: setWishlistOpen } = useWishlist();
+
+  const handleSearch = () => navigate("/shop");
+  const handleAccount = () => navigate("/contact");
 
   return (
     <>
@@ -70,18 +74,27 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           </Link>
 
           {/* Right section */}
-          <div className="flex items-center justify-end gap-[22px]">
+          <div className="flex items-center justify-end gap-[16px] lg:gap-[22px]">
             <Link
               to="/contact"
               className="hidden lg:inline nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80"
             >
               CONTACT
             </Link>
-            <Search
-              size={20}
-              strokeWidth={1.5}
-              className="hidden lg:block cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
-            />
+            <button onClick={handleSearch} aria-label="Search" className="flex items-center">
+              <Search
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              />
+            </button>
+            <button onClick={handleAccount} aria-label="Account" className="hidden md:flex items-center">
+              <User
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              />
+            </button>
             {/* Wishlist icon with dot indicator */}
             <button className="relative" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
               <Heart

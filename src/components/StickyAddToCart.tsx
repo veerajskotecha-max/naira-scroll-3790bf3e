@@ -40,6 +40,11 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
     });
   };
 
+  const handleBuyNow = async () => {
+    await handleAdd();
+    setDrawerOpen(true);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const trigger = document.getElementById("product-actions");
@@ -160,17 +165,30 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
                 {selectedSize}
               </div>
             </div>
-            <button
-              onClick={handleAdd}
-              className="w-full flex items-center justify-center gap-2 py-3 text-[13px] font-medium uppercase tracking-[0.08em]"
-              style={{
-                backgroundColor: "hsl(186 35% 28%)",
-                color: "hsl(0 0% 100%)",
-              }}
-            >
-              <ShoppingBag size={15} />
-              Add to Cart
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleAdd}
+                className="flex items-center justify-center gap-1.5 py-3 text-[11px] font-medium uppercase tracking-[0.1em] border"
+                style={{
+                  borderColor: "hsl(0 0% 20%)",
+                  color: "hsl(0 0% 20%)",
+                  backgroundColor: "transparent",
+                }}
+              >
+                <ShoppingBag size={13} />
+                Add to Cart
+              </button>
+              <button
+                onClick={handleBuyNow}
+                className="flex items-center justify-center py-3 text-[11px] font-medium uppercase tracking-[0.1em]"
+                style={{
+                  backgroundColor: "hsl(0 0% 12%)",
+                  color: "hsl(0 0% 100%)",
+                }}
+              >
+                Buy It Now
+              </button>
+            </div>
           </div>
         </div>
       </div>

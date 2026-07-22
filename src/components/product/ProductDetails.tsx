@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Phone, Mail, MessageCircle, Truck } from "lucide-react";
+import { Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import SizeGuideModal from "@/components/SizeGuideModal";
+import PincodeChecker from "@/components/product/PincodeChecker";
+import PriceBreakup from "@/components/product/PriceBreakup";
+import DetailsTabs from "@/components/product/DetailsTabs";
 import {
   Select,
   SelectContent,
@@ -114,6 +117,25 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       >
         *Prices are inclusive of GST. Handcrafted to order — allow 15–20 business days for delivery.
       </p>
+
+      {/* Trust badges */}
+      <div className="grid grid-cols-3 gap-2 mt-4 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
+        {[
+          { icon: Scissors, label: "Handcrafted" },
+          { icon: ShieldCheck, label: "Quality Assured" },
+          { icon: ReceiptText, label: "Secure Payments" },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} className="flex flex-col items-center gap-1.5 text-center">
+            <Icon size={16} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
+            <span className="text-[10px] uppercase tracking-[0.1em] leading-tight" style={{ color: "hsl(0 0% 30%)" }}>
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Pincode / delivery checker */}
+      <PincodeChecker />
 
       {/* Divider */}
       <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
@@ -265,6 +287,29 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
 
       {/* Divider */}
       <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+
+      {/* Details / Price Breakup tabs */}
+      <DetailsTabs
+        tabs={[
+          {
+            id: "details",
+            label: "Details",
+            content: (
+              <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
+                {description}
+              </p>
+            ),
+          },
+          {
+            id: "price",
+            label: "Price Breakup",
+            content: <PriceBreakup total={numericPrice} currencySymbol={priceMoney?.currencyCode === "INR" ? "₹" : ""} />,
+          },
+        ]}
+      />
+
+      {/* Divider */}
+      <div className="my-5" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
       {/* Accordions */}
       <Accordion type="single" collapsible className="w-full">

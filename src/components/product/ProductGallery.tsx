@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -48,11 +49,28 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     toggleItem({ id: productId, name: productName, price: "", image: firstImage });
   };
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const shareData = { title: productName, text: `Check out ${productName} on Naira Flore`, url };
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator & { share?: (d: ShareData) => Promise<void> }).share) {
+        await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share(shareData);
+      } else if (navigator?.clipboard) {
+        await navigator.clipboard.writeText(url);
+        toast("Link copied", { description: "Product link copied to clipboard." });
+      }
+    } catch {
+      /* user cancelled or share unsupported — silent */
+    }
+  };
+
   const WishlistBtn = (
     <button
       className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200"
       style={{ backgroundColor: "hsla(0,0%,100%,0.85)" }}
       onClick={handleWishlist}
+      aria-label="Add to wishlist"
     >
       <Heart
         size={17}
@@ -62,6 +80,17 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
           fill: wishlisted ? "hsl(0 70% 55%)" : "none",
         }}
       />
+    </button>
+  );
+
+  const ShareBtn = (
+    <button
+      className="absolute bottom-16 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200 shadow-sm"
+      style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
+      onClick={handleShare}
+      aria-label="Share product"
+    >
+      <Share2 size={15} strokeWidth={1.6} style={{ color: "hsl(0 0% 30%)" }} />
     </button>
   );
 

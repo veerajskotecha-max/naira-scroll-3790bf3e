@@ -11,7 +11,7 @@ const GEMS: { id: Gem; label: string; swatch: string }[] = [
 ];
 
 export default function JewelleryProductPage() {
-  const [gem, setGem] = React.useState<Gem>("emerald");
+  const [gem, setGem] = React.useState<Gem>("pearl");
 
   return (
     <section
@@ -20,10 +20,11 @@ export default function JewelleryProductPage() {
     >
       <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 py-12 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Floating ring stage */}
+          {/* Floating ring stage — rotates on scroll */}
           <div className="flex justify-center">
-            <FloatingRing gem={gem} stage="ink" size={520} spin={20} />
+            <FloatingRing gem={gem} stage="cream" size={560} scrollSpeed={260} />
           </div>
+
 
           {/* Details */}
           <div>

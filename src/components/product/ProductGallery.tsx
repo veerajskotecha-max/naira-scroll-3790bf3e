@@ -110,6 +110,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
           ))}
         </div>
         {WishlistBtn}
+        {ShareBtn}
         <div className="flex justify-center gap-2 mt-3 mb-1">
           {images.map((_, i) => (
             <button
@@ -147,6 +148,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
         ))}
       </div>
       {WishlistBtn}
+      {ShareBtn}
     </div>
   );
 };

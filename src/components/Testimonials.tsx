@@ -159,7 +159,7 @@ const Testimonials = () => {
                     boxShadow: "0 14px 40px -18px hsla(20,15%,15%,0.28)",
                   }}
                 >
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={tile.src}
                     alt="Loved by women everywhere"
                     className="w-full h-full object-cover"

@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin />
-    <!-- Preload hero LCP image so it starts downloading immediately, before JS executes -->
-    <link rel="preload" as="image" href="/src/assets/naira-final-hero-1.png" fetchpriority="high" />
+    <!-- Hero LCP image is bundled and marked fetchpriority="high" on the <img> itself. -->
+
     <!-- Preload Velista (self-hosted) so headings render with the brand font without blocking -->
     <link rel="preload" as="font" type="font/ttf" href="/fonts/Velista.ttf" crossorigin />
     <!-- Editorial hero fonts -->

@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Phone, Mail, MessageCircle, Truck } from "lucide-react";
+import { Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import SizeGuideModal from "@/components/SizeGuideModal";
+import PincodeChecker from "@/components/product/PincodeChecker";
+import PriceBreakup from "@/components/product/PriceBreakup";
+import DetailsTabs from "@/components/product/DetailsTabs";
 import {
   Select,
   SelectContent,

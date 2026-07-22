@@ -288,6 +288,29 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       {/* Divider */}
       <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
+      {/* Details / Price Breakup tabs */}
+      <DetailsTabs
+        tabs={[
+          {
+            id: "details",
+            label: "Details",
+            content: (
+              <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
+                {description}
+              </p>
+            ),
+          },
+          {
+            id: "price",
+            label: "Price Breakup",
+            content: <PriceBreakup total={numericPrice} currencySymbol={priceMoney?.currencyCode === "INR" ? "₹" : ""} />,
+          },
+        ]}
+      />
+
+      {/* Divider */}
+      <div className="my-5" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+
       {/* Accordions */}
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="info" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>

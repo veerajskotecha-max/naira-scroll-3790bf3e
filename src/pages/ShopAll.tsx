@@ -697,6 +697,8 @@ const ShopAll = () => {
           </div>
         </div>
       </div>
+        </>
+      )}
 
       {/* Customisation CTA – nudge users who didn't find a fit */}
       <CustomizationCTA />

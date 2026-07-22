@@ -10,9 +10,16 @@ interface NavbarProps {
   scrolled: boolean;
 }
 
-const leftLinks = [
+const leftLinks: { label: string; to: string; children?: { label: string; to: string }[] }[] = [
   { label: "HOME", to: "/" },
-  { label: "SHOP", to: "/shop" },
+  {
+    label: "SHOP",
+    to: "/shop",
+    children: [
+      { label: "Jewellery", to: "/shop/jewellery" },
+      { label: "Indo-Western", to: "/shop/indo-western" },
+    ],
+  },
   { label: "ABOUT", to: "/about" },
   { label: "CUSTOMIZE", to: "/customize" },
 ];
@@ -49,17 +56,53 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               <Menu size={22} strokeWidth={1.5} />
             </button>
             <div className="hidden lg:flex items-center gap-[30px] lg:gap-[34px]">
-              {leftLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.to}
-                  className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80 ${
-                    location.pathname === link.to ? "active" : ""
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {leftLinks.map((link) =>
+                link.children ? (
+                  <div key={link.label} className="relative group">
+                    <Link
+                      to={link.to}
+                      className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80 ${
+                        location.pathname.startsWith(link.to) ? "active" : ""
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                    >
+                      <div
+                        className="min-w-[190px] py-2"
+                        style={{
+                          backgroundColor: "#F4F1ED",
+                          border: "1px solid rgba(0,0,0,0.08)",
+                          boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                        }}
+                      >
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.label}
+                            to={child.to}
+                            className="block px-5 py-2.5 font-cormorant text-[13px] uppercase tracking-[0.12em] transition-colors duration-150 hover:bg-black/5"
+                            style={{ color: "hsl(0 0% 20%)" }}
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={link.label}
+                    to={link.to}
+                    className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80 ${
+                      location.pathname === link.to ? "active" : ""
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
             </div>
           </div>
 

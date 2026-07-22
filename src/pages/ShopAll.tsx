@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -199,6 +199,9 @@ const FilterSidebar = ({
 /* ───── Main Page ───── */
 const ShopAll = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const showJewellery = location.pathname !== "/shop/indo-western";
+  const showIndoWestern = location.pathname !== "/shop/jewellery";
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 50000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);

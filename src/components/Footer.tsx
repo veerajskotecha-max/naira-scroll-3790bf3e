@@ -184,9 +184,56 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Popular Searches — SEO */}
+        <div
+          className="mt-12 pt-6"
+          style={{ borderTop: "1px solid hsla(33,33%,95%,0.18)" }}
+        >
+          <p
+            className="text-[10px] uppercase tracking-[0.16em] mb-3"
+            style={{ color: CREAM_FAINT }}
+          >
+            Popular Searches
+          </p>
+          <p
+            className="text-[12px] leading-[1.9]"
+            style={{ color: CREAM_FAINT }}
+          >
+            {[
+              "Handcrafted Kurtas",
+              "Chikankari Suits",
+              "Cotton Anarkali",
+              "Bridal Lehenga",
+              "Zardosi Embroidery",
+              "Silk Saree",
+              "Made to Measure",
+              "Custom Bridalwear",
+              "Wedding Sets",
+              "Festive Kurtas",
+              "Sustainable Fashion",
+              "Indian Occasion Wear",
+              "Nashik Designer",
+              "Slow Fashion India",
+              "Hand Embroidered",
+              "Luxury Prêt",
+            ].map((term, i, arr) => (
+              <span key={term}>
+                <Link
+                  to={`/shop?search=${encodeURIComponent(term)}`}
+                  className="transition-colors duration-200 hover:opacity-100"
+                  style={{ color: CREAM_FAINT }}
+                >
+                  {term}
+                </Link>
+                {i < arr.length - 1 && <span className="mx-2 opacity-40">·</span>}
+              </span>
+            ))}
+          </p>
+        </div>
+
         {/* Bottom bar */}
         <div
-          className="pt-6 text-center"
+          className="pt-6 mt-8 text-center"
           style={{ borderTop: "1px solid hsla(33,33%,95%,0.22)" }}
         >
           <p

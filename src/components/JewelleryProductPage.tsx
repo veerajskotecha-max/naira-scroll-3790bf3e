@@ -22,7 +22,7 @@ export default function JewelleryProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Floating ring stage — rotates on scroll */}
           <div className="flex justify-center">
-            <FloatingRing gem={gem} stage="cream" size={560} scrollSpeed={260} />
+            <FloatingRing gem={gem} stage="cream" size={560} maxTurn={26} />
           </div>
 
 

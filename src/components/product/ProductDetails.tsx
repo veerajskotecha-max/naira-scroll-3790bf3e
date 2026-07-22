@@ -118,6 +118,25 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         *Prices are inclusive of GST. Handcrafted to order — allow 15–20 business days for delivery.
       </p>
 
+      {/* Trust badges */}
+      <div className="grid grid-cols-3 gap-2 mt-4 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
+        {[
+          { icon: Scissors, label: "Handcrafted" },
+          { icon: ShieldCheck, label: "Quality Assured" },
+          { icon: ReceiptText, label: "Secure Payments" },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} className="flex flex-col items-center gap-1.5 text-center">
+            <Icon size={16} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
+            <span className="text-[10px] uppercase tracking-[0.1em] leading-tight" style={{ color: "hsl(0 0% 30%)" }}>
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Pincode / delivery checker */}
+      <PincodeChecker />
+
       {/* Divider */}
       <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 

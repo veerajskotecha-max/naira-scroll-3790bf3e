@@ -11,7 +11,7 @@ interface MobileMenuProps {
 
 const navItems = [
   { label: "HOME",      to: "/" },
-  { label: "JEWELLERY", to: "/shop/jewellery" },
+  { label: "JEWELLERY", to: "/jewellery" },
   { label: "INDO-WESTERN", to: "/shop/indo-western" },
   { label: "ABOUT",     to: "/about" },
   { label: "CUSTOMIZE", to: "/customize" },

@@ -16,7 +16,7 @@ const leftLinks: { label: string; to: string; children?: { label: string; to: st
     label: "SHOP",
     to: "/shop",
     children: [
-      { label: "Jewellery", to: "/shop/jewellery" },
+      { label: "Jewellery", to: "/jewellery" },
       { label: "Indo-Western", to: "/shop/indo-western" },
     ],
   },

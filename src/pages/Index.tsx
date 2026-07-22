@@ -9,6 +9,9 @@ import CampaignFilm from "@/components/CampaignFilm";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import FounderStoryTeaser from "@/components/FounderStoryTeaser";
+import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
+import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
+import LookbookGallery from "@/components/LookbookGallery";
 
 const Index = () => {
   const revealRef = useRef<HTMLDivElement>(null);
@@ -50,6 +53,9 @@ const Index = () => {
         <BrandEthos />
         <Craftsmanship />
         <FounderStoryTeaser />
+        <LookbookGallery />
+        <ZirconeTurn idAttr="jewellery" />
+        <JewelleryCategories />
         <Testimonials />
         <CampaignFilm />
         <Footer />

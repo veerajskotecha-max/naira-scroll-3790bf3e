@@ -13,12 +13,22 @@ import CartDrawer from "./components/CartDrawer";
 import WishlistDrawer from "./components/WishlistDrawer";
 import Index from "./pages/Index.tsx";
 import ScrollToTop from "./components/ScrollToTop";
+// Global "wow" animation layer — always mounted, so imported eagerly to avoid
+// a flash on first paint (cursor, film grain, page curtain, scroll bloom).
+import FeatherCursor from "./components/wow/FeatherCursor";
+import FilmGrain from "./components/wow/FilmGrain";
+import ScrollBloom from "./components/wow/ScrollBloom";
+import PageCurtain from "./components/wow/PageCurtain";
 
 // Non-home routes are code-split so the homepage bundle stays small.
 const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
+const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
+const Concepts = lazy(() => import("./pages/Concepts.tsx"));
+const RingLab = lazy(() => import("./pages/RingLab.tsx"));
+const RingExample = lazy(() => import("./pages/RingExample.tsx"));
 const AboutUs = lazy(() => import("./pages/AboutUs.tsx"));
 const ContactUs = lazy(() => import("./pages/ContactUs.tsx"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
@@ -35,6 +45,10 @@ const AppShell = () => {
   return (
     <>
       <ScrollToTop />
+      <PageCurtain />
+      <FilmGrain />
+      <ScrollBloom />
+      <FeatherCursor />
       <Header />
       <CartDrawer />
       <WishlistDrawer />
@@ -47,6 +61,10 @@ const AppShell = () => {
           <Route path="/shop/indo-western" element={<ShopAll />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/customize" element={<MadeForYou />} />
+          <Route path="/jewellery" element={<Jewellery />} />
+          <Route path="/concepts" element={<Concepts />} />
+          <Route path="/ring-lab" element={<RingLab />} />
+          <Route path="/ring/:variant" element={<RingExample />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

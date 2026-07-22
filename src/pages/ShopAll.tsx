@@ -344,33 +344,39 @@ const ShopAll = () => {
       />
 
       {/* ── Jewellery (Coming Soon behind feature flag) ── */}
-      <JewellerySection />
+      {showJewellery && <JewellerySection />}
 
       {/* ── Indo-Western Outfits section header ── */}
-      <section
-        id="indo-western"
-        className="w-full"
-        style={{ scrollMarginTop: "120px", backgroundColor: "hsl(0 0% 98%)" }}
-      >
-        <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 pt-12 md:pt-16 lg:pt-20 pb-6 text-center">
-          <span
-            className="text-[10px] md:text-[11px] uppercase tracking-[0.32em] font-medium"
-            style={{ color: "hsl(186 35% 28%)" }}
-          >
-            Ready to Wear
-          </span>
-          <h2
-            className="mt-3 font-cormorant text-[34px] md:text-[46px] lg:text-[56px] font-semibold leading-[1.05] tracking-[-0.01em]"
-            style={{ color: "hsl(0 0% 12%)" }}
-          >
-            Indo-Western Outfits
-          </h2>
-          <div
-            className="mx-auto mt-4"
-            style={{ width: "56px", height: "1px", backgroundColor: "hsl(150 12% 71%)" }}
-          />
-        </div>
-      </section>
+      {showIndoWestern && (
+        <section
+          id="indo-western"
+          className="w-full"
+          style={{ scrollMarginTop: "120px", backgroundColor: "hsl(0 0% 98%)" }}
+        >
+          <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 pt-12 md:pt-16 lg:pt-20 pb-6 text-center">
+            <span
+              className="text-[10px] md:text-[11px] uppercase tracking-[0.32em] font-medium"
+              style={{ color: "hsl(186 35% 28%)" }}
+            >
+              Ready to Wear
+            </span>
+            <h2
+              className="mt-3 font-cormorant text-[34px] md:text-[46px] lg:text-[56px] font-semibold leading-[1.05] tracking-[-0.01em]"
+              style={{ color: "hsl(0 0% 12%)" }}
+            >
+              Indo-Western Outfits
+            </h2>
+            <div
+              className="mx-auto mt-4"
+              style={{ width: "56px", height: "1px", backgroundColor: "hsl(150 12% 71%)" }}
+            />
+          </div>
+        </section>
+      )}
+
+      {showIndoWestern && (
+        <>
+
 
       {/* ── Fixed Shop Toolbar ── */}
       <div

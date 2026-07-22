@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ComingSoonPanel from "@/components/shop/ComingSoonPanel";
+import JewelleryProductPage from "@/components/JewelleryProductPage";
 import { FEATURES } from "@/config/features";
 
 /**
@@ -80,16 +81,9 @@ const JewellerySection = () => {
           </div>
         </div>
 
-        {/* Body */}
+        {/* Body — preview the atelier piece + coming soon panel */}
         {!FEATURES.jewelleryLive ? (
-          <ComingSoonPanel
-            title="Coming Soon"
-            description={
-              active === "all"
-                ? "Our jewellery atelier is being hand-finished. Leave your name on the waitlist and be the first to preview each piece."
-                : `Our ${TABS.find((t) => t.id === active)?.label.toLowerCase()} collection is being hand-finished. Be the first to preview it.`
-            }
-          />
+          <JewelleryProductPage />
         ) : (
           // Placeholder for the live grid — real implementation activates
           // when FEATURES.jewelleryLive is true. Kept minimal on purpose.

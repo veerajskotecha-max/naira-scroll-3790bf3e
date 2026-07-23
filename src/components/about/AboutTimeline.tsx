@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import timeline1 from "@/assets/about-dream-stitched.webp";
-import timeline2 from "@/assets/about-timeline-2.jpg";
-import timeline3 from "@/assets/about-timeline-3.jpg";
 import timeline4 from "@/assets/about-founder.webp";
 import uniquelyYours from "@/assets/about-uniquely-yours.webp";
+
 
 const stories = [
   {
@@ -17,16 +16,17 @@ const stories = [
     label: "B2B ROOTS",
     title: "Trusted by Boutiques Across India",
     text: "Naira initially built its reputation through partnerships with boutiques and retailers who recognized the quality and artistry of our handcrafted pieces.",
-    image: timeline2,
-    alt: "Fashion boutique showcasing Naira designs",
+    image: null,
+    alt: "",
   },
   {
     label: "THE B2C JOURNEY",
     title: "Bringing Couture Directly to You",
     text: "The desire to connect personally with every client led Naira to serve individuals directly — with one-on-one design consultations, custom creations, and a curated experience from first message to final delivery.",
-    image: timeline3,
-    alt: "Design consultation with client",
+    image: null,
+    alt: "",
   },
+
   {
     label: "CUSTOMIZATION VISION",
     title: "Every Piece, Uniquely Yours",
@@ -126,22 +126,24 @@ const AboutTimeline = () => {
                   />
 
                   {/* Image */}
-                  <div className="w-full lg:w-[45%]">
-                    <div
-                      className="rounded-xl overflow-hidden"
-                      style={{ boxShadow: "0 4px 24px -6px hsla(0,0%,0%,0.1)" }}
-                    >
-                      <img
-                        src={story.image}
-                        alt={story.alt}
-                        className="w-full aspect-[4/3] object-cover"
-                        loading="lazy"
-                      />
+                  {story.image && (
+                    <div className="w-full lg:w-[45%]">
+                      <div
+                        className="rounded-xl overflow-hidden"
+                        style={{ boxShadow: "0 4px 24px -6px hsla(0,0%,0%,0.1)" }}
+                      >
+                        <img
+                          src={story.image}
+                          alt={story.alt}
+                          className="w-full aspect-[4/3] object-cover"
+                          loading="lazy"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Text */}
-                  <div className={`w-full lg:w-[45%] text-center lg:text-left ${isEven ? "lg:text-left" : "lg:text-right"}`}>
+                  <div className={`w-full text-center ${story.image ? "lg:w-[45%] lg:text-left" : "lg:w-[70%] lg:mx-auto"} ${isEven && story.image ? "lg:text-left" : ""} ${!isEven && story.image ? "lg:text-right" : ""}`}>
                     <p
                       className="text-[11px] font-medium uppercase tracking-[0.15em] mb-2"
                       style={{ color: "hsl(160 15% 45%)" }}
@@ -155,12 +157,13 @@ const AboutTimeline = () => {
                       {story.title}
                     </h3>
                     <p
-                      className="font-cormorant text-[14px] md:text-[15px] leading-[1.8] max-w-[440px] mx-auto lg:mx-0"
+                      className={`font-cormorant text-[14px] md:text-[15px] leading-[1.8] ${story.image ? "max-w-[440px] mx-auto lg:mx-0" : "max-w-[560px] mx-auto"}`}
                       style={{ color: "hsl(0 0% 48%)" }}
                     >
                       {story.text}
                     </p>
                   </div>
+
                 </div>
               );
             })}

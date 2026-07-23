@@ -1,40 +1,33 @@
 ## Problem
 
-On mobile, in `src/components/jewellery/ZirconeTurn.tsx`, the two benefit labels — **"18K GOLD COATED"** (band) and **"BRILLIANT-CUT ZIRCONE"** (stone) — float far from the ring because they're positioned against the pinned container edges (`top-[18%]` / `top-[24%]`, `left-3` / `right-3`).
+On the home page, the ring section (`ZirconeTurn`) pins for 170% of viewport height with `scrub: 0.6` and starts with `scale: 1.08`. On mobile that creates a visible "break": as the user scrolls into the section, the pin snaps in late, the ring pops from scale 1.08 → 0.96, and the finale + "VIEW ALL" only appear near the end of a long scrubbed timeline. After the pin releases, the next section (`JewelleryCategories`) jumps in abruptly because there's no fade/handoff.
 
-Confirmed via mobile screenshots (394px) on both `/` and `/jewellery`:
-- Before scroll: the "18K GOLD COATED" chip sits near the top of the viewport with a short leader line pointing into empty space, nowhere near the ring.
-- Mid-scroll: the ring turns in the vertical center, but the callouts never appear beside it; the leader lines don't reach the ring.
-- After scroll: the "BRILLIANT-CUT ZIRCONE" chip sits high-right, again disconnected from the stone.
-- The chips also visually collide with the sticky header/marquee band on shorter phones.
+## Goal
 
-Root cause: mobile positioning uses `%` offsets from the pinned section, but the ring is centered by flex. As pin height varies with `100svh`/`min-h`, the callouts drift away from the ring instead of tracking it.
+Make the ring section enter, animate, and exit smoothly on both mobile and desktop — no snap, no late pop, no jarring handoff into the categories grid below.
 
-## Fix
+## Changes (all in `src/components/jewellery/ZirconeTurn.tsx`)
 
-Anchor the callouts to the ring wrapper (not the pinned section) on mobile, and stack them tight above/below the ring so leader lines physically reach the band and the stone.
+1. **Softer pin entry**
+   - Change ScrollTrigger `start` from `"top top"` to `"top top+=1"` and add `pinSpacing: true` (default, but explicit) so the browser reserves the space cleanly and doesn't jump when the pin engages.
+   - Remove the initial `scale: 1.08` on the card so the ring doesn't visibly "pop" as the pin engages. Keep the shrink-to-0.96 finale beat but start from 1.
 
-1. Move `data-call-l` and `data-call-r` **inside** the ring wrapper `div` (the one with `perspective`) so their `absolute` positions are relative to the ring, not the pinned column.
-2. Mobile layout for the two callouts:
-   - Band callout: positioned at the ring's mid-band height on the left, chip flush to the ring edge, short 20px leader touching the band. Use `-left-2` with chip translated left of the ring.
-   - Stone callout: positioned at the stone height on the right, mirrored.
-   - Shrink chip padding and leader length on mobile so nothing extends past the viewport on 360–394px widths.
-3. Preserve current desktop placement (`md:` classes stay as-is).
-4. Ensure the ring wrapper still centers vertically inside the pin so the chips sit inside the pinned frame, not overlapping the sticky header — the header is outside the pin and won't conflict once callouts are ring-relative.
-5. Keep the GSAP data-attribute selectors (`[data-call-l]`, `[data-line-l]`, etc.) unchanged so the existing timeline continues to fade/reveal them.
+2. **Shorter, smoother scrub**
+   - Reduce `end` from `+=170%` to `+=120%` so the pinned section doesn't feel like it "holds" the page for too long.
+   - Increase `scrub` from `0.6` to `1` for a smoother lerp that hides frame-to-frame jitter on mobile.
 
-## Technical details
+3. **Mobile: lighter treatment**
+   - Split the `matchMedia` into `(min-width: 768px)` (full pinned flip timeline as today) and `(max-width: 767px)` (no pin — just a short in-view fade for the callouts + finale). Mobile Safari's pin behavior with `100svh` + address bar resize is the main source of the "break" the user is seeing.
+   - On mobile, show both callouts and the finale via a simple IntersectionObserver-triggered fade so the section reads as a still editorial vignette instead of a broken scrub.
 
-File: `src/components/jewellery/ZirconeTurn.tsx`
-
-- Relocate the two `<div data-call-l>` / `<div data-call-r>` blocks into the `perspective` wrapper alongside the `cardRef` div.
-- Replace mobile classes:
-  - `data-call-l`: `absolute top-[46%] -translate-y-1/2 right-full mr-1 flex items-center` (chip → line → dot, dot touches ring left edge). Desktop overrides via `md:` stay.
-  - `data-call-r`: `absolute top-[42%] -translate-y-1/2 left-full ml-1 flex items-center` (dot → line → chip). Desktop overrides via `md:` stay.
-- Reduce mobile chip padding to `px-2 py-1` and leader `w-3` so total width fits within a 360px viewport when combined with a 260px ring.
-- No changes to `HeroSection`, `NewArrivals`, or animation timings.
+4. **Clean handoff to next section**
+   - Add a short fade-in on the following `JewelleryCategories` via a `section-reveal` wrapper in `src/pages/Index.tsx` (same pattern already used for `CustomisationSteps`) so it eases in after the pin releases instead of snapping.
 
 ## Verification
 
-- Re-run the Playwright mobile capture at 394×800 across scroll offsets and confirm both chips sit beside the ring band/stone with visibly connected leader lines, before and after the turn.
-- Spot-check at 360px and desktop `md` breakpoint to confirm no regression.
+- Playwright at 394×543 (current mobile viewport): scroll from top past the ring section, screenshot at 4 scroll positions, confirm no snap and that the ring, callouts, and "VIEW ALL" are visible together at rest.
+- Repeat at 1280×1800 to confirm the desktop flip animation still plays.
+
+## Out of scope
+
+Visuals of the ring, copy, colors, and the finale layout stay exactly as they are — this is a motion/scroll fix only.

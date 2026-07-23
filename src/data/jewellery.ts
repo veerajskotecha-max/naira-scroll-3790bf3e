@@ -102,7 +102,7 @@ export const jewellery: JewelPiece[] = [
     price: 5200,
     priceLabel: PREORDER_LABEL,
     image: theVine.url,
-    gallery: [theVine.url, theVineUgc.url],
+    gallery: [theVine.url],
     blurb: "Green stones, cradled in white. An open eternity of emerald-cut greens against a rhodium sky.",
     materials: "Rhodium coating · green zirconia · open eternity band",
     tag: "NEW",

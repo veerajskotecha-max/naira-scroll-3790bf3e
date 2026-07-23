@@ -119,8 +119,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex min-h-[520px] flex-col items-center justify-center overflow-hidden px-6 md:h-[100svh] md:min-h-[560px]"
-          style={{ paddingTop: "clamp(24px, 4vh, 64px)", paddingBottom: "clamp(20px, 3vh, 56px)" }}
+          className="relative flex h-[100svh] min-h-[560px] flex-col items-center justify-center overflow-hidden px-6"
+          style={{ paddingTop: "clamp(32px, 5vh, 64px)", paddingBottom: "clamp(24px, 4vh, 56px)" }}
         >
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
@@ -151,8 +151,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
               <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
             </div>
 
-            {/* callout — stone (right) */}
-            <div data-call-r className="absolute right-0 top-[32%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[38%] lg:right-[-56%]">
+            {/* callout — stone (right) — points at the centered zircone */}
+            <div data-call-r className="absolute right-0 top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
               <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
               <span data-line-r className="block h-px w-2 bg-[#C99A4C] md:w-14" aria-hidden />
               <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-1.5 py-1 text-[7.5px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>

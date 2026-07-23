@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ShieldCheck, ReceiptText, MessageSquare } from "lucide-react";
+import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
+
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
@@ -19,9 +20,15 @@ const ringSizes = ["6", "7", "8", "9", "10", "11", "12"];
 
 const JewelDetail = () => {
   const { handle } = useParams();
+  const navigate = useNavigate();
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/jewellery");
+  };
+
   const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "7" : "One Size");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -154,17 +161,36 @@ const JewelDetail = () => {
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
-      {/* Breadcrumb */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:block">
+      {/* Breadcrumb (desktop) */}
+      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:flex items-center justify-between gap-4">
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="hover:text-foreground">Home</Link><span>/</span>
           <Link to="/jewellery" className="hover:text-foreground">Jewellery</Link><span>/</span>
           <span style={{ color: "hsl(0 0% 30%)" }}>{piece.name}</span>
         </nav>
+        <button
+          onClick={goBack}
+          className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] hover:text-foreground transition-colors"
+          style={{ color: "hsl(0 0% 45%)" }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={13} strokeWidth={1.6} /> Back
+        </button>
       </div>
 
       {/* Mobile gallery */}
-      <div className="md:hidden pt-[94px]">{Gallery}</div>
+      <div className="md:hidden pt-[94px] relative">
+        <button
+          onClick={goBack}
+          className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
+          style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={16} strokeWidth={1.6} style={{ color: "hsl(0 0% 20%)" }} />
+        </button>
+        {Gallery}
+      </div>
+
 
       <div className="max-w-[1400px] mx-auto md:px-6 pb-24 md:pb-24">
         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>

@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
@@ -15,6 +17,12 @@ import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 const ProductDetail = () => {
   const [selectedSize] = useState("M");
   const { id } = useParams();
+  const navigate = useNavigate();
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/shop");
+  };
+
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ["shopify-product", id],
     queryFn: () => fetchShopifyProductByHandle(id ?? ""),
@@ -82,7 +90,7 @@ const ProductDetail = () => {
         </script>
       </Helmet>
       {/* Breadcrumb - desktop only */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:block">
+      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:flex items-center justify-between gap-4">
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
@@ -90,10 +98,26 @@ const ProductDetail = () => {
           <span>/</span>
           <span style={{ color: "hsl(0 0% 30%)" }}>{title}</span>
         </nav>
+        <button
+          onClick={goBack}
+          className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] hover:text-foreground transition-colors"
+          style={{ color: "hsl(0 0% 45%)" }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={13} strokeWidth={1.6} /> Back
+        </button>
       </div>
 
       {/* Mobile gallery */}
-      <div className="md:hidden pt-[94px]">
+      <div className="md:hidden pt-[94px] relative">
+        <button
+          onClick={goBack}
+          className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
+          style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={16} strokeWidth={1.6} style={{ color: "hsl(0 0% 20%)" }} />
+        </button>
         <ProductGallery product={product} />
       </div>
 
@@ -104,6 +128,7 @@ const ProductDetail = () => {
           <div className="hidden md:block">
             <ProductGallery product={product} />
           </div>
+
 
           {/* Details */}
           <div className="mt-5 md:mt-0 lg:py-2">

@@ -19,6 +19,7 @@ import theKnotLariat from "@/assets/jewellery/gilded/the-knot-lariat.jpg.asset.j
 import theRondelle from "@/assets/jewellery/gilded/the-rondelle.jpg.asset.json";
 import theAnchorChain from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
 import theCascade from "@/assets/jewellery/gilded/the-cascade.jpg.asset.json";
+import theVineUgc from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
 
 /* ───────────────────────────────────────────────────────────────
    THE GILDED HOUR — Naira Flore's petite jewellery line, first look

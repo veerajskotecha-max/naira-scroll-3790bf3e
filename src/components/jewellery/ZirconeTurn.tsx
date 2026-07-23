@@ -105,8 +105,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex h-[100svh] min-h-[620px] flex-col items-center overflow-hidden px-6"
-          style={{ paddingTop: "clamp(56px, 9vh, 96px)", paddingBottom: "clamp(40px, 6vh, 72px)" }}
+          className="relative flex h-[100svh] min-h-[560px] flex-col items-center justify-center overflow-hidden px-6"
+          style={{ paddingTop: "clamp(40px, 6vh, 72px)", paddingBottom: "clamp(28px, 4vh, 56px)" }}
         >
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
@@ -117,7 +117,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           </p>
 
           {/* the ring — centred in remaining space */}
-          <div className="relative z-10 flex flex-1 items-center justify-center w-full">
+          <div className="relative z-10 mt-4 flex items-center justify-center md:mt-6">
             <div className="relative" style={{ perspective: "1200px" }}>
               <div
                 ref={cardRef}
@@ -174,7 +174,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           </div>
 
           {/* finale — always visible, sits below the ring */}
-          <div className="relative z-20 text-center">
+          <div className="relative z-20 mt-6 text-center md:mt-8">
             <h2 className="text-[clamp(1.5rem,5.6vw,2.6rem)] leading-tight" style={velista}>{solitaire.name}</h2>
             <p className="mt-1.5 text-[12px] italic text-[#1A1614]/60 md:text-[13px]" style={editorial}>{solitaire.materials}</p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-3 md:mt-5 md:gap-4">

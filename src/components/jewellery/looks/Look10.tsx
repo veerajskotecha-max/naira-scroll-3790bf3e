@@ -14,7 +14,7 @@ const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as cons
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 // hero (chandbali) in the middle, others flanking
-const order = ["pressed-petal-drops", "marigold-signet-ring", "chandbali-florale", "sage-vine-band", "bloom-studs"];
+const order = ["the-cascade", "the-halo", "the-braided-hoop", "the-vine", "the-studs"];
 const pieces = order.map((h) => jewellery.find((j) => j.handle === h)!).filter(Boolean);
 
 const Look10 = () => {

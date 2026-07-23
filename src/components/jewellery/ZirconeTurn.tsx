@@ -117,7 +117,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           </p>
 
           {/* the ring — centred in remaining space */}
-          <div className="relative z-10 flex flex-1 items-center justify-center w-full">
+          <div className="relative z-10 mt-4 flex items-center justify-center md:mt-6">
             <div className="relative" style={{ perspective: "1200px" }}>
               <div
                 ref={cardRef}

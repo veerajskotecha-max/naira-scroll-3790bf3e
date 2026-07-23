@@ -17,6 +17,12 @@ import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 const ProductDetail = () => {
   const [selectedSize] = useState("M");
   const { id } = useParams();
+  const navigate = useNavigate();
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/shop");
+  };
+
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ["shopify-product", id],
     queryFn: () => fetchShopifyProductByHandle(id ?? ""),

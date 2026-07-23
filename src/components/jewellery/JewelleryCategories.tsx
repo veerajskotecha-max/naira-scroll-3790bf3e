@@ -31,7 +31,7 @@ const JewelleryCategories = () => (
           The <span className="italic text-[#B0843A]" style={editorial}>edit.</span>
         </h3>
       </div>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-7">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {cats.map((c) => (
           <Link key={c.label} to="/jewellery" className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
             <img src={c.img} alt={`${c.label} — Naira Flore demi-gold`} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.06] sm:aspect-[5/4]" />

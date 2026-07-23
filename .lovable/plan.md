@@ -1,84 +1,57 @@
+# Restore reverted features via cherry-pick
 
-# Mirror Palmonas PDP onto Naira Flore
+The revert commit `a1c1d8b` (main, ~5 min ago) rolled back 18 commits spanning three features. All three should come back as they were.
 
-Add every Palmonas element our PDP is missing, adapted to Naira's couture context and brand tokens (Velista serif, sage/teal palette, 0px radius). Nothing in Palmonas's aesthetic replaces ours — we borrow structure, not style.
+## Approach
 
-## What gets added
+Cherry-pick the 18 commits in chronological order onto the current branch. This reproduces the exact prior code (files, flags, routes) without hand-editing.
 
-### 1. Gallery — floating share button
-- Small circular share FAB, bottom-right of the mobile gallery, mirrors Palmonas.
-- Uses Web Share API on mobile, falls back to copy-link + toast.
-- Edit: `src/components/product/ProductGallery.tsx`.
+## Commits to cherry-pick (in order)
 
-### 2. Trust-badge row (right below price)
-- 3-icon horizontal strip, Naira equivalents of BIS / IGI / Lifetime Buyback:
-  - Handcrafted in Nashik
-  - GST-Invoiced Purchase
-  - 48-hr Response Promise
-- Same sage-tinted panel style already used in TrustStrip, but static (not marquee).
-- Edit: `src/components/product/ProductDetails.tsx`.
+```text
+cf8ac60  Changes
+8c9d74a  Changes
+a3e4a51  Changes
+b547cfa  Added JewellerySection to shop
+46c9a42  Changes
+a1f237e  Changes
+df23ba3  Added FloatingRing & page
+0d90d96  Changes
+8d6e943  Changes
+6528f3f  Changes
+307e676  Changes
+8b250a7  Changes
+9e2e095  Added Shop dropdown & route guard
+de8acb8  Changes
+62a0b94  Anchored ring to hero height
+01127d5  Changes
+1a80612  Changes
+ced5bbd  Implemented clamped ring
+```
 
-### 3. Pincode / delivery ETA checker
-- New component `src/components/product/PincodeChecker.tsx`.
-- "Deliver To: ______ Check" input, 6-digit validation, then shows:
-  - Green tick + "Delivery by <date>" (today + 5 business days for metros, +9 for others — simple heuristic; no external API).
-  - COD availability line ("COD not available — prepaid only" since Naira is prepaid).
-- Remembers last-used pincode in localStorage.
-- Placed between trust-badge row and Size selector.
+## Files that will be restored / modified
 
-### 4. Tabbed spec block ("Details" / "Price Breakup")
-- Replace the top of the accordion stack with a 2-tab switcher above the accordions.
-- **Details tab** (default): the current 4 accordions (Product Information, Delivery Timelines, Disclaimer, Additional Information).
-- **Price Breakup tab**: transparent table
-  - Base Price — ₹X
-  - GST (5% on apparel < ₹1000 else 12%) — auto-computed from variant price
-  - Shipping — Free above ₹2,999 / else ₹150
-  - Total — variant price (since our prices are tax-inclusive; note reads "Prices already include GST; breakup shown for transparency").
-- Edit: `src/components/product/ProductDetails.tsx`; new sub-component `PriceBreakup.tsx`.
+- `src/components/FloatingRing.tsx` (new, ~230 lines)
+- `src/components/JewelleryProductPage.tsx` (new, ~143 lines)
+- `src/components/shop/JewellerySection.tsx` (new, ~104 lines)
+- `src/components/shop/ComingSoonPanel.tsx` (new, ~83 lines)
+- `src/config/features.ts` (new, feature flags)
+- `src/components/Navbar.tsx` (Shop dropdown added back)
+- `src/components/MobileMenu.tsx` (Shop entry updated)
+- `src/pages/ShopAll.tsx` (Jewellery + coming-soon route guard)
+- `src/App.tsx` (Jewellery PDP route)
 
-### 5. Header — search + account icons
-- Add magnifying-glass icon that opens a search overlay filtering `/shop`.
-- Add user icon linking to `/account` if signed in, else `/contact` (no auth yet — icon just links to Contact for now, placeholder).
-- Edit: `src/components/Navbar.tsx`.
-- Keep wishlist + cart untouched.
+## Conflict handling
 
-### 6. Footer — Popular Searches SEO keyword block
-- Add a new section above the copyright row in `src/components/Footer.tsx`.
-- Categories: Fusion Sarees · Co-ord Sets · Dresses · Festive Wear · Bridal · Reception Outfits · Cocktail Wear · Custom Made Outfits · Nashik Designer · Indo-Western Fashion.
-- Each is a link into `/shop?filter=...` where applicable, else `/shop`.
-- Small light-serif text, sage-on-off-white, matches footer color scheme.
+Since the revert put main back to `8108ffb` and no new code has since touched those files, cherry-picks should apply cleanly. If a conflict does surface (most likely `Navbar.tsx` or `App.tsx` interacting with later PDP work), I'll resolve it in favor of keeping both the restored feature and the newer PDP changes, then continue the pick.
 
-### 7. Sticky bottom bar — Buy It Now variant
-- Currently shows only "ADD TO CART" (teal). Add a second black "BUY IT NOW" button next to it, mirroring Palmonas's black CTA.
-- Edit: `src/components/StickyAddToCart.tsx`.
+## Verification
 
-### 8. Price treatment refinement
-- Remove the decorative strikethrough flourish through the price digits — Palmonas shows a clean price. Keep "Taxes included" caption.
-- Edit: `src/components/product/ProductDetails.tsx`.
+After the picks:
+1. Confirm all 5 new files exist and `features.ts` flags are present.
+2. Load `/` (FloatingRing on hero), `/shop` (Jewellery section + coming-soon panel), and the Jewellery PDP route — screenshot each via Playwright to confirm no runtime error.
+3. Report any conflicts resolved.
 
-## Files touched
+## Note
 
-- `src/components/Navbar.tsx` — add search + account icons.
-- `src/components/product/ProductGallery.tsx` — share FAB.
-- `src/components/product/ProductDetails.tsx` — trust row, pincode slot, tabs wrapper, cleaner price.
-- `src/components/product/PincodeChecker.tsx` — new.
-- `src/components/product/PriceBreakup.tsx` — new.
-- `src/components/product/DetailsTabs.tsx` — new (2-tab wrapper).
-- `src/components/StickyAddToCart.tsx` — add Buy It Now button.
-- `src/components/Footer.tsx` — Popular Searches block.
-
-## Deliberately NOT copied from Palmonas
-
-- Their sans-serif typography, black-heavy palette, cluttered look — we keep Velista + sage.
-- Dynamic gold-rate "Calculating price…" — irrelevant to couture.
-- "Download the App" card — no Naira app.
-- Announcement-bar red pill styling — we keep our sage ✦ divider.
-- Full-width search box under the header — hidden behind icon instead.
-- Metal Details / Diamond Details spec tables — Naira products are apparel, structured spec table would look forced.
-
-## Verify
-- Playwright screenshot of `/product/blush-of-dawn` at 390×844 after build, compare against Palmonas capture in `/tmp/browser/compare/`. Confirm every "worth stealing" item is present.
-
-## Ready to build?
-
-Approve and I'll implement in one pass.
+The revert was intentional 5 min ago, so if any of these features had a known issue you wanted fixed *before* restoration, tell me now — otherwise I'll restore them as-is.

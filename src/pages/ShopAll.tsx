@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import ShopHero from "@/components/shop/ShopHero";
+import JewellerySection from "@/components/shop/JewellerySection";
 import CustomizationCTA from "@/components/product/CustomizationCTA";
 import { fetchShopifyProducts } from "@/lib/shopify";
 
@@ -198,6 +199,9 @@ const FilterSidebar = ({
 /* ───── Main Page ───── */
 const ShopAll = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const showJewellery = location.pathname !== "/shop/indo-western";
+  const showIndoWestern = location.pathname !== "/shop/jewellery";
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 50000]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -338,6 +342,41 @@ const ShopAll = () => {
         primaryCta={{ label: "Shop Now", to: "/shop" }}
         secondaryCta={{ label: "Explore Collection", to: "/shop?category=festive" }}
       />
+
+      {/* ── Jewellery (Coming Soon behind feature flag) ── */}
+      {showJewellery && <JewellerySection />}
+
+      {/* ── Indo-Western Outfits section header ── */}
+      {showIndoWestern && (
+        <section
+          id="indo-western"
+          className="w-full"
+          style={{ scrollMarginTop: "120px", backgroundColor: "hsl(0 0% 98%)" }}
+        >
+          <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 pt-12 md:pt-16 lg:pt-20 pb-6 text-center">
+            <span
+              className="text-[10px] md:text-[11px] uppercase tracking-[0.32em] font-medium"
+              style={{ color: "hsl(186 35% 28%)" }}
+            >
+              Ready to Wear
+            </span>
+            <h2
+              className="mt-3 font-cormorant text-[34px] md:text-[46px] lg:text-[56px] font-semibold leading-[1.05] tracking-[-0.01em]"
+              style={{ color: "hsl(0 0% 12%)" }}
+            >
+              Indo-Western Outfits
+            </h2>
+            <div
+              className="mx-auto mt-4"
+              style={{ width: "56px", height: "1px", backgroundColor: "hsl(150 12% 71%)" }}
+            />
+          </div>
+        </section>
+      )}
+
+      {showIndoWestern && (
+        <>
+
 
       {/* ── Fixed Shop Toolbar ── */}
       <div
@@ -658,6 +697,8 @@ const ShopAll = () => {
           </div>
         </div>
       </div>
+        </>
+      )}
 
       {/* Customisation CTA – nudge users who didn't find a fit */}
       <CustomizationCTA />

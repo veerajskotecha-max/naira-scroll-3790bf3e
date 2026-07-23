@@ -20,9 +20,15 @@ const ringSizes = ["6", "7", "8", "9", "10", "11", "12"];
 
 const JewelDetail = () => {
   const { handle } = useParams();
+  const navigate = useNavigate();
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/jewellery");
+  };
+
   const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "7" : "One Size");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);

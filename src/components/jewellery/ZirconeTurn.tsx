@@ -119,19 +119,19 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex h-[100svh] min-h-[560px] flex-col items-center justify-center overflow-hidden px-6"
-          style={{ paddingTop: "clamp(32px, 5vh, 64px)", paddingBottom: "clamp(24px, 4vh, 56px)" }}
+          className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden px-6 md:h-[100svh] md:min-h-[560px]"
+          style={{ paddingTop: "clamp(16px, 3vh, 48px)", paddingBottom: "clamp(16px, 3vh, 48px)" }}
         >
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
 
-          <p className="relative z-20 mb-3 text-[10px] tracking-[0.5em] text-[#B0843A] md:mb-6 md:text-[11px]" style={jost}>
+          <p className="relative z-20 mb-2 text-[10px] tracking-[0.5em] text-[#B0843A] md:mb-6 md:text-[11px]" style={jost}>
             THE ZIRCONE EDIT · DEMI-GOLD
           </p>
 
           {/* the ring — two photos turning */}
-          <div className="relative my-1 md:my-4" style={{ perspective: "1200px" }}>
-            <div ref={cardRef} className="relative aspect-square w-[min(52vw,220px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
+          <div className="relative my-0 md:my-4" style={{ perspective: "1200px" }}>
+            <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
               <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" />
               <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0 }} />
             </div>
@@ -139,33 +139,33 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             <div data-flash aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[3px] -translate-x-1/2 -translate-y-1/2"
               style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #C99A4C 25%, #FFF8F5 50%, #C99A4C 75%, transparent)", boxShadow: "0 0 24px 6px rgba(255,246,222,0.8)" }} />
             {/* contact shadow */}
-            <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-4 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
+            <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
               style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
 
-            {/* callout — band (left) */}
-            <div data-call-l className="absolute left-0 top-[64%] z-20 flex -translate-y-1/2 items-center md:left-[-38%] md:top-[62%] lg:left-[-56%]">
-              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-1.5 py-1 text-[7.5px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
-                18K GOLD COATED
+            {/* callout — band (left) — dot lands on ring band */}
+            <div data-call-l className="absolute left-[-46%] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-[-38%] md:top-[62%] lg:left-[-56%]">
+              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[8px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
+                18K GOLD FINISHED
               </span>
-              <span data-line-l className="block h-px w-2 bg-[#C99A4C] md:w-14" aria-hidden />
+              <span data-line-l className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
               <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
             </div>
 
-            {/* callout — stone (right) — points at the centered zircone */}
-            <div data-call-r className="absolute right-0 top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
+            {/* callout — stone (right) — dot lands on centered zircone */}
+            <div data-call-r className="absolute right-[-46%] top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
               <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
-              <span data-line-r className="block h-px w-2 bg-[#C99A4C] md:w-14" aria-hidden />
-              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-1.5 py-1 text-[7.5px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
+              <span data-line-r className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
+              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[8px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
                 BRILLIANT-CUT ZIRCONE
               </span>
             </div>
           </div>
 
           {/* finale */}
-          <div data-finale className="relative z-20 mt-4 text-center md:mt-8">
+          <div data-finale className="relative z-20 mt-3 text-center md:mt-8">
             <h2 className="text-[clamp(1.4rem,5.4vw,2.6rem)] leading-tight" style={velista}>{solitaire.name}</h2>
-            <p className="mt-1 text-[12px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>{solitaire.materials}</p>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-3 md:mt-4 md:gap-4">
+            <p className="mt-1 text-[12px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>18K Gold Finished · brilliant-cut zircone · 4-prong</p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:mt-4 md:gap-4">
               <span className="text-[15px] tracking-wide md:text-[16px]" style={jost}>{solitaire.priceLabel}</span>
               <button onClick={() => setQv(solitaire)} className="border border-[#1A1614] px-6 py-2.5 text-[10px] tracking-[0.3em] transition-colors duration-300 hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
                 ENQUIRE
@@ -180,6 +180,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
 
           <span data-hint className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] tracking-[0.4em] text-[#1A1614]/35 md:bottom-5" style={jost}>SCROLL — IT TURNS</span>
         </div>
+
       </div>
       <JewelQuickView piece={qv} open={!!qv} onOpenChange={(o) => { if (!o) setQv(null); }} />
     </section>

@@ -5,7 +5,7 @@ import type { JewelPiece } from "@/data/jewellery";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
-const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
+
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 /* A demi-gold jewellery product card: photoreal packshot with a 3D

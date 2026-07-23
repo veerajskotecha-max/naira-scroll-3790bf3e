@@ -65,10 +65,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
   return (
     <article className="jewel-shop-card group flex flex-col" style={{ ["--i" as string]: index }}>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={`Quick view ${piece.name}`}
+      <Link
+        to={`/jewellery/${piece.handle}`}
+        aria-label={`View ${piece.name}`}
         className="block w-full text-left transition-transform duration-200 active:scale-[0.97]"
       >
         <div
@@ -98,13 +97,12 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               {piece.tag}
             </span>
           )}
-          {/* quick-view hint */}
           <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-[#FBF3EC]/90 px-5 py-2 text-[10px] tracking-[0.3em] text-[#1A1614] opacity-0 transition-all duration-400 group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
-            QUICK VIEW
+            VIEW DETAILS
           </span>
           <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/60" />
         </div>
-      </button>
+      </Link>
 
       <div className="flex flex-1 flex-col items-center px-1 pt-4 text-center sm:pt-5">
         <p className="text-[9px] tracking-[0.32em] text-[#B0843A] sm:text-[10px] sm:tracking-[0.34em]" style={jost}>{piece.category.toUpperCase()}</p>

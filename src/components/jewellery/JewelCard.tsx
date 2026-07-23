@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
 import { jewelleryEnquiryUrl } from "@/data/jewellery";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
@@ -107,19 +108,28 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
       <div className="flex flex-1 flex-col items-center px-1 pt-5 text-center">
         <p className="text-[10px] tracking-[0.34em] text-[#B0843A]" style={jost}>{piece.category.toUpperCase()}</p>
-        <h3 className="mt-2 text-[26px] leading-tight text-[#1A1614]" style={velista}>{piece.name}</h3>
+        <h3 className="mt-2 text-[26px] leading-tight text-[#1A1614]" style={velista}>
+          <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
+        </h3>
         <p className="mt-2 text-[13px] italic leading-relaxed text-[#1A1614]/55" style={editorial}>{piece.materials}</p>
         <p className="mt-3 text-[15px] tracking-wide text-[#1A1614]/90" style={jost}>{piece.priceLabel}</p>
-        <a
-          href={jewelleryEnquiryUrl(piece.name)}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to={`/jewellery/${piece.handle}`}
           className="group/btn relative mt-5 inline-flex items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-7 py-3 text-[11px] tracking-[0.3em] text-[#1A1614] transition-colors duration-500 hover:text-[#FBF3EC]"
           style={jost}
         >
           <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-500 ease-out group-hover/btn:scale-x-100" />
-          <span className="relative">ENQUIRE TO ORDER</span>
+          <span className="relative">VIEW &amp; ENQUIRE</span>
           <span className="relative transition-transform duration-500 group-hover/btn:translate-x-1">→</span>
+        </Link>
+        <a
+          href={jewelleryEnquiryUrl(piece.name)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 text-[10px] tracking-[0.3em] text-[#1A1614]/50 underline underline-offset-4 hover:text-[#1A1614]"
+          style={jost}
+        >
+          QUICK WHATSAPP
         </a>
         <p className="mt-2 text-[11px] tracking-wide text-[#1A1614]/40" style={editorial}>Made to order · ships in 2–3 weeks</p>
       </div>

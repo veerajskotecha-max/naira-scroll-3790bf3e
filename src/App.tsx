@@ -26,6 +26,7 @@ const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
 const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
+const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));
 const Concepts = lazy(() => import("./pages/Concepts.tsx"));
 const RingLab = lazy(() => import("./pages/RingLab.tsx"));
 const RingExample = lazy(() => import("./pages/RingExample.tsx"));
@@ -62,6 +63,7 @@ const AppShell = () => {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
+          <Route path="/jewellery/:handle" element={<JewelDetail />} />
           <Route path="/concepts" element={<Concepts />} />
           <Route path="/ring-lab" element={<RingLab />} />
           <Route path="/ring/:variant" element={<RingExample />} />

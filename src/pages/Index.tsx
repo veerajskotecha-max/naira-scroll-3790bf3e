@@ -47,6 +47,8 @@ const Index = () => {
         <HeroScrollyWrapper />
         
         {/* section-reveal + is-visible toggled by IntersectionObserver above */}
+        <ZirconeTurn idAttr="jewellery" />
+        <JewelleryCategories />
         <div ref={revealRef} className="section-reveal">
           <CustomisationSteps />
         </div>
@@ -54,8 +56,6 @@ const Index = () => {
         <Craftsmanship />
         <FounderStoryTeaser />
         <LookbookGallery />
-        <ZirconeTurn idAttr="jewellery" />
-        <JewelleryCategories />
         <Testimonials />
         <CampaignFilm />
         <Footer />

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ShieldCheck, ReceiptText, MessageSquare } from "lucide-react";
+import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
+
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";

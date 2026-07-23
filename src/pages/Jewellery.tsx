@@ -31,12 +31,12 @@ const Jewellery = () => {
 
         {/* filter */}
         <div className="sticky top-[94px] z-20 bg-[#FBF3EC]/85 py-4 backdrop-blur md:top-[100px] md:py-5 lg:top-[116px]">
-          <div className="mx-auto flex max-w-6xl flex-nowrap items-center justify-center gap-1.5 overflow-x-auto px-3 [scrollbar-width:none] sm:gap-2 sm:px-6 [&::-webkit-scrollbar]:hidden">
+          <div className="mx-auto flex max-w-6xl flex-nowrap items-center justify-center gap-1 px-2 sm:gap-2 sm:px-6">
             {filters.map((f) => (
               <button
                 key={f}
                 onClick={() => setActive(f)}
-                className={`shrink-0 border px-3 py-2 text-[9.5px] tracking-[0.22em] transition-colors duration-300 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.3em] ${
+                className={`shrink-0 border px-2 py-1.5 text-[8.5px] tracking-[0.15em] transition-colors duration-300 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.3em] ${
                   active === f ? "border-[#1A1614] bg-[#1A1614] text-[#FBF3EC]" : "border-[#1A1614]/25 text-[#1A1614]/70 hover:border-[#1A1614]/60"
                 }`}
                 style={jost}
@@ -46,6 +46,7 @@ const Jewellery = () => {
             ))}
           </div>
         </div>
+
 
 
         {/* grid */}

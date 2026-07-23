@@ -26,6 +26,7 @@ const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
 const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
+const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));
 const Concepts = lazy(() => import("./pages/Concepts.tsx"));
 const RingLab = lazy(() => import("./pages/RingLab.tsx"));
 const RingExample = lazy(() => import("./pages/RingExample.tsx"));

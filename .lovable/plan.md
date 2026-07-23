@@ -1,57 +1,40 @@
-# Restore reverted features via cherry-pick
+## Problem
 
-The revert commit `a1c1d8b` (main, ~5 min ago) rolled back 18 commits spanning three features. All three should come back as they were.
+On mobile, in `src/components/jewellery/ZirconeTurn.tsx`, the two benefit labels — **"18K GOLD COATED"** (band) and **"BRILLIANT-CUT ZIRCONE"** (stone) — float far from the ring because they're positioned against the pinned container edges (`top-[18%]` / `top-[24%]`, `left-3` / `right-3`).
 
-## Approach
+Confirmed via mobile screenshots (394px) on both `/` and `/jewellery`:
+- Before scroll: the "18K GOLD COATED" chip sits near the top of the viewport with a short leader line pointing into empty space, nowhere near the ring.
+- Mid-scroll: the ring turns in the vertical center, but the callouts never appear beside it; the leader lines don't reach the ring.
+- After scroll: the "BRILLIANT-CUT ZIRCONE" chip sits high-right, again disconnected from the stone.
+- The chips also visually collide with the sticky header/marquee band on shorter phones.
 
-Cherry-pick the 18 commits in chronological order onto the current branch. This reproduces the exact prior code (files, flags, routes) without hand-editing.
+Root cause: mobile positioning uses `%` offsets from the pinned section, but the ring is centered by flex. As pin height varies with `100svh`/`min-h`, the callouts drift away from the ring instead of tracking it.
 
-## Commits to cherry-pick (in order)
+## Fix
 
-```text
-cf8ac60  Changes
-8c9d74a  Changes
-a3e4a51  Changes
-b547cfa  Added JewellerySection to shop
-46c9a42  Changes
-a1f237e  Changes
-df23ba3  Added FloatingRing & page
-0d90d96  Changes
-8d6e943  Changes
-6528f3f  Changes
-307e676  Changes
-8b250a7  Changes
-9e2e095  Added Shop dropdown & route guard
-de8acb8  Changes
-62a0b94  Anchored ring to hero height
-01127d5  Changes
-1a80612  Changes
-ced5bbd  Implemented clamped ring
-```
+Anchor the callouts to the ring wrapper (not the pinned section) on mobile, and stack them tight above/below the ring so leader lines physically reach the band and the stone.
 
-## Files that will be restored / modified
+1. Move `data-call-l` and `data-call-r` **inside** the ring wrapper `div` (the one with `perspective`) so their `absolute` positions are relative to the ring, not the pinned column.
+2. Mobile layout for the two callouts:
+   - Band callout: positioned at the ring's mid-band height on the left, chip flush to the ring edge, short 20px leader touching the band. Use `-left-2` with chip translated left of the ring.
+   - Stone callout: positioned at the stone height on the right, mirrored.
+   - Shrink chip padding and leader length on mobile so nothing extends past the viewport on 360–394px widths.
+3. Preserve current desktop placement (`md:` classes stay as-is).
+4. Ensure the ring wrapper still centers vertically inside the pin so the chips sit inside the pinned frame, not overlapping the sticky header — the header is outside the pin and won't conflict once callouts are ring-relative.
+5. Keep the GSAP data-attribute selectors (`[data-call-l]`, `[data-line-l]`, etc.) unchanged so the existing timeline continues to fade/reveal them.
 
-- `src/components/FloatingRing.tsx` (new, ~230 lines)
-- `src/components/JewelleryProductPage.tsx` (new, ~143 lines)
-- `src/components/shop/JewellerySection.tsx` (new, ~104 lines)
-- `src/components/shop/ComingSoonPanel.tsx` (new, ~83 lines)
-- `src/config/features.ts` (new, feature flags)
-- `src/components/Navbar.tsx` (Shop dropdown added back)
-- `src/components/MobileMenu.tsx` (Shop entry updated)
-- `src/pages/ShopAll.tsx` (Jewellery + coming-soon route guard)
-- `src/App.tsx` (Jewellery PDP route)
+## Technical details
 
-## Conflict handling
+File: `src/components/jewellery/ZirconeTurn.tsx`
 
-Since the revert put main back to `8108ffb` and no new code has since touched those files, cherry-picks should apply cleanly. If a conflict does surface (most likely `Navbar.tsx` or `App.tsx` interacting with later PDP work), I'll resolve it in favor of keeping both the restored feature and the newer PDP changes, then continue the pick.
+- Relocate the two `<div data-call-l>` / `<div data-call-r>` blocks into the `perspective` wrapper alongside the `cardRef` div.
+- Replace mobile classes:
+  - `data-call-l`: `absolute top-[46%] -translate-y-1/2 right-full mr-1 flex items-center` (chip → line → dot, dot touches ring left edge). Desktop overrides via `md:` stay.
+  - `data-call-r`: `absolute top-[42%] -translate-y-1/2 left-full ml-1 flex items-center` (dot → line → chip). Desktop overrides via `md:` stay.
+- Reduce mobile chip padding to `px-2 py-1` and leader `w-3` so total width fits within a 360px viewport when combined with a 260px ring.
+- No changes to `HeroSection`, `NewArrivals`, or animation timings.
 
 ## Verification
 
-After the picks:
-1. Confirm all 5 new files exist and `features.ts` flags are present.
-2. Load `/` (FloatingRing on hero), `/shop` (Jewellery section + coming-soon panel), and the Jewellery PDP route — screenshot each via Playwright to confirm no runtime error.
-3. Report any conflicts resolved.
-
-## Note
-
-The revert was intentional 5 min ago, so if any of these features had a known issue you wanted fixed *before* restoration, tell me now — otherwise I'll restore them as-is.
+- Re-run the Playwright mobile capture at 394×800 across scroll offsets and confirm both chips sit beside the ring band/stone with visibly connected leader lines, before and after the turn.
+- Spot-check at 360px and desktop `md` breakpoint to confirm no regression.

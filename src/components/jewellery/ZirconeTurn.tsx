@@ -145,25 +145,26 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             {/* contact shadow */}
             <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-6 left-1/2 h-4 w-[58%] -translate-x-1/2 rounded-full opacity-60"
               style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
+
+            {/* callout — band (left) — anchored to ring on mobile, band height */}
+            <div data-call-l className="absolute right-full top-[62%] z-20 mr-1 flex -translate-y-1/2 items-center md:right-auto md:mr-0 md:left-[-38%] md:top-[62%] lg:left-[-56%]">
+              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[8px] tracking-[0.22em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
+                18K GOLD COATED
+              </span>
+              <span data-line-l className="block h-px w-3 bg-[#C99A4C] md:w-14" aria-hidden />
+              <span className="block h-1.5 w-1.5 rounded-full bg-[#C99A4C]" aria-hidden />
+            </div>
+
+            {/* callout — stone (right) — anchored to ring on mobile, stone height */}
+            <div data-call-r className="absolute left-full top-[30%] z-20 ml-1 flex -translate-y-1/2 items-center md:left-auto md:ml-0 md:right-[-38%] md:top-[38%] lg:right-[-56%]">
+              <span className="block h-1.5 w-1.5 rounded-full bg-[#C99A4C]" aria-hidden />
+              <span data-line-r className="block h-px w-3 bg-[#C99A4C] md:w-14" aria-hidden />
+              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[8px] tracking-[0.22em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
+                BRILLIANT-CUT ZIRCONE
+              </span>
+            </div>
           </div>
 
-          {/* callout — band (left) — pushed to viewport edge on mobile so it never overlaps the ring */}
-          <div data-call-l className="absolute left-3 top-[18%] z-20 flex items-center md:left-[16%] md:top-[56%] lg:left-[24%]">
-            <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[8px] tracking-[0.24em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
-              18K GOLD COATED
-            </span>
-            <span data-line-l className="block h-px w-5 bg-[#C99A4C] md:w-14" aria-hidden />
-            <span className="block h-1.5 w-1.5 rounded-full bg-[#C99A4C]" aria-hidden />
-          </div>
-
-          {/* callout — stone (right) */}
-          <div data-call-r className="absolute right-3 top-[24%] z-20 flex items-center md:right-[16%] md:top-[36%] lg:right-[24%]">
-            <span className="block h-1.5 w-1.5 rounded-full bg-[#C99A4C]" aria-hidden />
-            <span data-line-r className="block h-px w-5 bg-[#C99A4C] md:w-14" aria-hidden />
-            <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[8px] tracking-[0.24em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
-              BRILLIANT-CUT ZIRCONE
-            </span>
-          </div>
 
           {/* finale */}
           <div data-finale className="relative z-20 mt-6 text-center md:mt-9">

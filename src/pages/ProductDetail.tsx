@@ -90,11 +90,6 @@ const ProductDetail = () => {
         </script>
       </Helmet>
       {/* Breadcrumb - desktop only */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:block">
-        <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
-          <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
-          <span>/</span>
-      {/* Breadcrumb - desktop only */}
       <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:flex items-center justify-between gap-4">
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
@@ -126,9 +121,14 @@ const ProductDetail = () => {
         <ProductGallery product={product} />
       </div>
 
+      {/* Main Product Section */}
+      <div className="max-w-[1400px] mx-auto md:px-6 pb-16 md:pb-24">
+        <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          {/* Desktop gallery */}
           <div className="hidden md:block">
             <ProductGallery product={product} />
           </div>
+
 
           {/* Details */}
           <div className="mt-5 md:mt-0 lg:py-2">

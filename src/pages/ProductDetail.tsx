@@ -94,21 +94,38 @@ const ProductDetail = () => {
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
+      {/* Breadcrumb - desktop only */}
+      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:flex items-center justify-between gap-4">
+        <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
+          <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
+          <span>/</span>
           <Link to="/shop" className="transition-colors hover:text-foreground">Shop</Link>
           <span>/</span>
           <span style={{ color: "hsl(0 0% 30%)" }}>{title}</span>
         </nav>
+        <button
+          onClick={goBack}
+          className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] hover:text-foreground transition-colors"
+          style={{ color: "hsl(0 0% 45%)" }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={13} strokeWidth={1.6} /> Back
+        </button>
       </div>
 
       {/* Mobile gallery */}
-      <div className="md:hidden pt-[94px]">
+      <div className="md:hidden pt-[94px] relative">
+        <button
+          onClick={goBack}
+          className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
+          style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={16} strokeWidth={1.6} style={{ color: "hsl(0 0% 20%)" }} />
+        </button>
         <ProductGallery product={product} />
       </div>
 
-      {/* Main Product Section */}
-      <div className="max-w-[1400px] mx-auto md:px-6 pb-16 md:pb-24">
-        <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-          {/* Desktop gallery */}
           <div className="hidden md:block">
             <ProductGallery product={product} />
           </div>

@@ -25,7 +25,7 @@ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif"
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
-const solitaire = jewellery.find((j) => j.handle === "zircone-solitaire")!;
+const solitaire = jewellery.find((j) => j.handle === "the-vow")!;
 
 /* 4-point zircon fire star */
 const Star = ({ className = "", size = 18 }: { className?: string; size?: number }) => (

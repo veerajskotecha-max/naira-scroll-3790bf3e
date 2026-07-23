@@ -19,11 +19,11 @@ const byHandle = (h: string) => jewellery.find((j) => j.handle === h)!;
 
 // position + depth + size for each floating medallion
 const medallions = [
-  { piece: byHandle("marigold-signet-ring"), cls: "left-[4%] top-[16%] lg:left-[8%] lg:top-[14%]", size: "h-28 w-28 lg:h-44 lg:w-44", depth: 2.4, delay: "0s" },
-  { piece: byHandle("chandbali-florale"),    cls: "right-[5%] top-[12%] lg:right-[9%] lg:top-[10%]", size: "h-24 w-24 lg:h-40 lg:w-40", depth: 3.1, delay: "1.1s" },
-  { piece: byHandle("pressed-petal-drops"),  cls: "left-[7%] bottom-[12%] lg:left-[12%] lg:bottom-[14%]", size: "h-24 w-24 lg:h-36 lg:w-36", depth: 1.7, delay: "0.5s" },
-  { piece: byHandle("bloom-studs"),          cls: "right-[6%] bottom-[14%] lg:right-[13%] lg:bottom-[16%]", size: "h-20 w-20 lg:h-32 lg:w-32", depth: 2.0, delay: "1.6s" },
-  { piece: byHandle("sage-vine-band"),       cls: "left-1/2 top-[6%] hidden -translate-x-1/2 lg:block", size: "lg:h-28 lg:w-28", depth: 3.6, delay: "0.8s" },
+  { piece: byHandle("the-halo"), cls: "left-[4%] top-[16%] lg:left-[8%] lg:top-[14%]", size: "h-28 w-28 lg:h-44 lg:w-44", depth: 2.4, delay: "0s" },
+  { piece: byHandle("the-braided-hoop"),    cls: "right-[5%] top-[12%] lg:right-[9%] lg:top-[10%]", size: "h-24 w-24 lg:h-40 lg:w-40", depth: 3.1, delay: "1.1s" },
+  { piece: byHandle("the-cascade"),  cls: "left-[7%] bottom-[12%] lg:left-[12%] lg:bottom-[14%]", size: "h-24 w-24 lg:h-36 lg:w-36", depth: 1.7, delay: "0.5s" },
+  { piece: byHandle("the-studs"),          cls: "right-[6%] bottom-[14%] lg:right-[13%] lg:bottom-[16%]", size: "h-20 w-20 lg:h-32 lg:w-32", depth: 2.0, delay: "1.6s" },
+  { piece: byHandle("the-vine"),       cls: "left-1/2 top-[6%] hidden -translate-x-1/2 lg:block", size: "lg:h-28 lg:w-28", depth: 3.6, delay: "0.8s" },
 ];
 
 const JewelleryFeature = () => {

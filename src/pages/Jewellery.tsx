@@ -9,7 +9,7 @@ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif"
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
-const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Earrings"];
+const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
 const Jewellery = () => {
   const [active, setActive] = useState<"All" | JewelCategory>("All");

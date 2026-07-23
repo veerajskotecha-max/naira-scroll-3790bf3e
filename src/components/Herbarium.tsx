@@ -21,13 +21,13 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 type Meta = { no: string; binomial: string; span: string; rot: string; hero?: boolean; note?: string };
 
 const META: Record<string, Meta> = {
-  "marigold-signet-ring": { no: "NF-01", binomial: "Tagetes aurea", span: "lg:col-span-5", rot: "-0.6deg", hero: true, note: "a single blush crystal, hand-set" },
-  "chandbali-florale":    { no: "NF-05", binomial: "Luna filigrana", span: "lg:col-span-7", rot: "0.4deg" },
-  "pressed-petal-drops":  { no: "NF-03", binomial: "Petala pressa",  span: "lg:col-span-4", rot: "0.5deg" },
-  "sage-vine-band":       { no: "NF-02", binomial: "Vitis salvii",   span: "lg:col-span-4", rot: "-0.4deg" },
-  "bloom-studs":          { no: "NF-04", binomial: "Flos octopetalus", span: "lg:col-span-4", rot: "0.3deg" },
+  "the-halo": { no: "NF-01", binomial: "Tagetes aurea", span: "lg:col-span-5", rot: "-0.6deg", hero: true, note: "a single blush crystal, hand-set" },
+  "the-braided-hoop":    { no: "NF-05", binomial: "Luna filigrana", span: "lg:col-span-7", rot: "0.4deg" },
+  "the-cascade":  { no: "NF-03", binomial: "Petala pressa",  span: "lg:col-span-4", rot: "0.5deg" },
+  "the-vine":       { no: "NF-02", binomial: "Vitis salvii",   span: "lg:col-span-4", rot: "-0.4deg" },
+  "the-studs":          { no: "NF-04", binomial: "Flos octopetalus", span: "lg:col-span-4", rot: "0.3deg" },
 };
-const ORDER = ["marigold-signet-ring", "chandbali-florale", "pressed-petal-drops", "sage-vine-band", "bloom-studs"];
+const ORDER = ["the-halo", "the-braided-hoop", "the-cascade", "the-vine", "the-studs"];
 const specimens = ORDER.map((h) => ({ piece: jewellery.find((j) => j.handle === h)!, meta: META[h] })).filter((s) => s.piece);
 
 /* ── one mounted specimen plate ───────────────────────────── */

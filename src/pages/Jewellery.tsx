@@ -46,7 +46,7 @@ const Jewellery = () => {
         </div>
 
         {/* grid */}
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 pb-24 pt-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-24 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
           {pieces.map((piece, i) => (
             <JewelCard key={piece.handle} piece={piece} index={i} />
           ))}

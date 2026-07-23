@@ -16,7 +16,12 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER } from "@/data/jewellery";
 
-const ringSizes = ["6", "7", "8", "9", "10", "11", "12"];
+const ringSizes: { value: string; label: string }[] = [
+  { value: "5", label: "US 5 · 4.9 cm" },
+  { value: "6", label: "US 6 · 5.2 cm" },
+  { value: "7", label: "US 7 · 5.4 cm" },
+  { value: "8", label: "US 8 · 5.7 cm" },
+];
 
 const JewelDetail = () => {
   const { handle } = useParams();
@@ -264,7 +269,7 @@ const JewelDetail = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-none">
-                    {ringSizes.map((s) => <SelectItem key={s} value={s} className="text-[13px] rounded-none">US {s}</SelectItem>)}
+                    {ringSizes.map((s) => <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">{s.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
               ) : (

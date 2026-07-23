@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
-import { jewelleryEnquiryUrl } from "@/data/jewellery";
+
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;

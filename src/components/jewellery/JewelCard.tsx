@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
-import { jewelleryEnquiryUrl } from "@/data/jewellery";
+
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
-const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
+
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 /* A demi-gold jewellery product card: photoreal packshot with a 3D
@@ -106,33 +106,23 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         </div>
       </button>
 
-      <div className="flex flex-1 flex-col items-center px-1 pt-5 text-center">
-        <p className="text-[10px] tracking-[0.34em] text-[#B0843A]" style={jost}>{piece.category.toUpperCase()}</p>
-        <h3 className="mt-2 text-[26px] leading-tight text-[#1A1614]" style={velista}>
+      <div className="flex flex-1 flex-col items-center px-1 pt-4 text-center sm:pt-5">
+        <p className="text-[9px] tracking-[0.32em] text-[#B0843A] sm:text-[10px] sm:tracking-[0.34em]" style={jost}>{piece.category.toUpperCase()}</p>
+        <h3 className="mt-1.5 text-[18px] leading-tight text-[#1A1614] sm:mt-2 sm:text-[24px] md:text-[26px]" style={velista}>
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
-        <p className="mt-2 text-[13px] italic leading-relaxed text-[#1A1614]/55" style={editorial}>{piece.materials}</p>
-        <p className="mt-3 text-[15px] tracking-wide text-[#1A1614]/90" style={jost}>{piece.priceLabel}</p>
+        <p className="mt-2 text-[13px] tracking-wide text-[#1A1614]/90 sm:mt-3 sm:text-[15px]" style={jost}>{piece.priceLabel}</p>
         <Link
           to={`/jewellery/${piece.handle}`}
-          className="group/btn relative mt-5 inline-flex items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-7 py-3 text-[11px] tracking-[0.3em] text-[#1A1614] transition-colors duration-500 hover:text-[#FBF3EC]"
+          className="group/btn relative mt-3 inline-flex items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-4 py-2 text-[9.5px] tracking-[0.25em] text-[#1A1614] transition-colors duration-500 hover:text-[#FBF3EC] sm:mt-4 sm:px-6 sm:py-2.5 sm:text-[10.5px] sm:tracking-[0.3em]"
           style={jost}
         >
           <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-500 ease-out group-hover/btn:scale-x-100" />
-          <span className="relative">VIEW &amp; ENQUIRE</span>
+          <span className="relative">VIEW</span>
           <span className="relative transition-transform duration-500 group-hover/btn:translate-x-1">→</span>
         </Link>
-        <a
-          href={jewelleryEnquiryUrl(piece.name)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 text-[10px] tracking-[0.3em] text-[#1A1614]/50 underline underline-offset-4 hover:text-[#1A1614]"
-          style={jost}
-        >
-          QUICK WHATSAPP
-        </a>
-        <p className="mt-2 text-[11px] tracking-wide text-[#1A1614]/40" style={editorial}>Made to order · ships in 2–3 weeks</p>
       </div>
+
 
       <JewelQuickView piece={piece} open={open} onOpenChange={setOpen} />
     </article>

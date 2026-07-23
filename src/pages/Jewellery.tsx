@@ -55,14 +55,8 @@ const Jewellery = () => {
           ))}
         </div>
 
-        {/* care / made-to-order note */}
-        <div className="mx-auto max-w-2xl border-t border-[#1A1614]/12 px-6 py-16 text-center">
-          <p className="text-[11px] tracking-[0.4em] text-[#B0843A]" style={jost}>MADE TO ORDER</p>
-          <p className="mx-auto mt-4 max-w-md text-[16px] leading-relaxed text-[#1A1614]/70" style={editorial}>
-            Each piece is plated and finished to order over 2–3 weeks. Enquire on
-            WhatsApp and our atelier will confirm sizing, finish, and delivery.
-          </p>
-        </div>
+
+
 
         <Footer />
       </div>

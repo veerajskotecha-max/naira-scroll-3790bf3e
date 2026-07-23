@@ -125,17 +125,17 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
   return (
     <section id={idAttr} className="relative bg-[#FBF3EC] text-[#1A1614]">
       <div ref={rootRef}>
-        <div ref={pinRef} className="relative flex h-[100svh] flex-col items-center justify-center overflow-hidden px-6">
+        <div ref={pinRef} className="relative flex h-[100svh] min-h-[640px] flex-col items-center justify-center overflow-hidden px-6 py-10">
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
 
-          <p className="relative z-20 mb-8 text-[10px] tracking-[0.5em] text-[#B0843A] md:text-[11px]" style={jost}>
+          <p className="relative z-20 mb-4 text-[10px] tracking-[0.5em] text-[#B0843A] md:mb-8 md:text-[11px]" style={jost}>
             THE ZIRCONE EDIT · DEMI-GOLD
           </p>
 
           {/* the ring — two photos turning, nothing else */}
           <div className="relative" style={{ perspective: "1200px" }}>
-            <div ref={cardRef} className="relative aspect-square w-[min(74vw,330px)] will-change-transform md:w-[min(36vw,400px)]" style={{ transformStyle: "preserve-3d" }}>
+            <div ref={cardRef} className="relative aspect-square w-[min(62vw,260px)] will-change-transform md:w-[min(36vw,400px)]" style={{ transformStyle: "preserve-3d" }}>
               <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" />
               <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0 }} />
             </div>
@@ -147,31 +147,31 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
               style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
           </div>
 
-          {/* callout — band (left, viewport-anchored so it never clips) */}
-          <div data-call-l className="absolute left-4 top-[56%] z-20 flex items-center md:left-[16%] lg:left-[24%]">
-            <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-3 py-2 text-[9px] tracking-[0.26em] text-[#9A7634] md:px-4 md:text-[10px]" style={jost}>
+          {/* callout — band (left) — pushed to viewport edge on mobile so it never overlaps the ring */}
+          <div data-call-l className="absolute left-3 top-[18%] z-20 flex items-center md:left-[16%] md:top-[56%] lg:left-[24%]">
+            <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[8px] tracking-[0.24em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
               18K GOLD COATED
             </span>
-            <span data-line-l className="block h-px w-7 bg-[#C99A4C] md:w-14" aria-hidden />
+            <span data-line-l className="block h-px w-5 bg-[#C99A4C] md:w-14" aria-hidden />
             <span className="block h-1.5 w-1.5 rounded-full bg-[#C99A4C]" aria-hidden />
           </div>
 
-          {/* callout — stone (right, viewport-anchored) */}
-          <div data-call-r className="absolute right-4 top-[36%] z-20 flex items-center md:right-[16%] lg:right-[24%]">
+          {/* callout — stone (right) */}
+          <div data-call-r className="absolute right-3 top-[24%] z-20 flex items-center md:right-[16%] md:top-[36%] lg:right-[24%]">
             <span className="block h-1.5 w-1.5 rounded-full bg-[#C99A4C]" aria-hidden />
-            <span data-line-r className="block h-px w-7 bg-[#C99A4C] md:w-14" aria-hidden />
-            <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-3 py-2 text-[9px] tracking-[0.26em] text-[#9A7634] md:px-4 md:text-[10px]" style={jost}>
+            <span data-line-r className="block h-px w-5 bg-[#C99A4C] md:w-14" aria-hidden />
+            <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[8px] tracking-[0.24em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
               BRILLIANT-CUT ZIRCONE
             </span>
           </div>
 
           {/* finale */}
-          <div data-finale className="relative z-20 mt-9 text-center">
-            <h2 className="text-[clamp(1.7rem,6vw,2.7rem)] leading-tight" style={velista}>{solitaire.name}</h2>
-            <p className="mt-1 text-[13px] italic text-[#1A1614]/55" style={editorial}>{solitaire.materials}</p>
-            <div className="mt-4 flex items-center justify-center gap-4">
-              <span className="text-[16px] tracking-wide" style={jost}>{solitaire.priceLabel}</span>
-              <button onClick={() => setQv(solitaire)} className="border border-[#1A1614] px-7 py-2.5 text-[10px] tracking-[0.3em] transition-colors duration-300 hover:bg-[#1A1614] hover:text-[#FBF3EC]" style={jost}>
+          <div data-finale className="relative z-20 mt-6 text-center md:mt-9">
+            <h2 className="text-[clamp(1.5rem,6vw,2.7rem)] leading-tight" style={velista}>{solitaire.name}</h2>
+            <p className="mt-1 text-[12px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>{solitaire.materials}</p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 md:gap-4">
+              <span className="text-[15px] tracking-wide md:text-[16px]" style={jost}>{solitaire.priceLabel}</span>
+              <button onClick={() => setQv(solitaire)} className="border border-[#1A1614] px-6 py-2.5 text-[10px] tracking-[0.3em] transition-colors duration-300 hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
                 ENQUIRE
               </button>
               {showViewAll && (
@@ -182,7 +182,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             </div>
           </div>
 
-          <span data-hint className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] tracking-[0.4em] text-[#1A1614]/35" style={jost}>SCROLL — IT TURNS</span>
+          <span data-hint className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 text-[9px] tracking-[0.4em] text-[#1A1614]/35 md:bottom-5" style={jost}>SCROLL — IT TURNS</span>
         </div>
       </div>
       <JewelQuickView piece={qv} open={!!qv} onOpenChange={(o) => { if (!o) setQv(null); }} />

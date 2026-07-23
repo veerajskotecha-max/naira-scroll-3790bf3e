@@ -1,20 +1,26 @@
 import { Link } from "react-router-dom";
 import { jewellery } from "@/data/jewellery";
-import zirconeSolitaire from "@/assets/jewellery/zircone-solitaire.jpg";
-import chandbali from "@/assets/jewellery/chandbali.jpg";
+import ringImg from "@/assets/jewellery/gilded/the-vow.jpg.asset.json";
+import braceletImg from "@/assets/jewellery/gilded/the-sugar-tennis.jpg.asset.json";
+import earringImg from "@/assets/jewellery/gilded/the-braided-hoop.jpg.asset.json";
+import necklaceImg from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
-   Two quiet category cards (Rings / Earrings) with live piece counts,
-   hover zoom + gold frame, linking into the collection. */
+   Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
+   with live piece counts, hover zoom + gold frame, linking into the
+   collection. */
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 const cats = [
-  { label: "Rings", img: zirconeSolitaire, count: jewellery.filter((j) => j.category === "Rings").length, note: "solitaires & signets" },
-  { label: "Earrings", img: chandbali, count: jewellery.filter((j) => j.category === "Earrings").length, note: "studs, drops & chandbali" },
+  { label: "Rings", img: ringImg.url, count: jewellery.filter((j) => j.category === "Rings").length, note: "solitaires, halo & stack" },
+  { label: "Bracelets", img: braceletImg.url, count: jewellery.filter((j) => j.category === "Bracelets").length, note: "tennis, bow & baroque pearl" },
+  { label: "Earrings", img: earringImg.url, count: jewellery.filter((j) => j.category === "Earrings").length, note: "hoops & the studs, three ways" },
+  { label: "Necklaces", img: necklaceImg.url, count: jewellery.filter((j) => j.category === "Necklaces").length, note: "lariats, chains & a cascade" },
 ];
+
 
 const JewelleryCategories = () => (
   <section className="bg-[#FBF3EC] pb-20 pt-4 text-[#1A1614] lg:pb-28">

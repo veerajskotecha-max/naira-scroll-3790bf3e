@@ -48,7 +48,9 @@ const Index = () => {
         
         {/* section-reveal + is-visible toggled by IntersectionObserver above */}
         <ZirconeTurn idAttr="jewellery" />
-        <JewelleryCategories />
+        <div className="section-reveal is-visible">
+          <JewelleryCategories />
+        </div>
         <div ref={revealRef} className="section-reveal">
           <CustomisationSteps />
         </div>

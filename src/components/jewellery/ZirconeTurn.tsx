@@ -36,8 +36,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
-    // Desktop / tablet — full pinned flip timeline
-    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
       const root = rootRef.current, pin = pinRef.current, card = cardRef.current;
       if (!root || !pin || !card) return;
 
@@ -57,7 +56,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       gsap.set(lineL, { transformOrigin: "100% 50%" });
       gsap.set(lineR, { transformOrigin: "0% 50%" });
       gsap.set(finale, { opacity: 0, y: 18 });
-      gsap.set(card, { scale: 1 });
+      gsap.set(card, { scale: 1.08 });
       gsap.set(faceA, { rotationY: 0, opacity: 1 });
       gsap.set(faceB, { rotationY: 46, opacity: 0 });
       gsap.set(flash, { opacity: 0, scaleY: 0.3, transformOrigin: "50% 50%" });
@@ -65,11 +64,10 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: root,
-          start: "top top+=1",
-          end: "+=120%",
-          scrub: 1,
+          start: "top top",
+          end: "+=170%",
+          scrub: 0.6,
           pin: pin,
-          pinSpacing: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
@@ -102,43 +100,6 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
         .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.9);
 
       return () => { tl.scrollTrigger?.kill(); tl.kill(); };
-    });
-
-    // Mobile — no pin, simple in-view fade of callouts + finale (avoids
-    // the visible "break" that pinned scrubs cause on mobile Safari as the
-    // address bar resizes 100svh mid-scroll).
-    mm.add("(max-width: 767px)", () => {
-      const pin = pinRef.current;
-      if (!pin) return;
-
-      const callL = pin.querySelector<HTMLElement>("[data-call-l]");
-      const callR = pin.querySelector<HTMLElement>("[data-call-r]");
-      const lineL = pin.querySelector<HTMLElement>("[data-line-l]");
-      const lineR = pin.querySelector<HTMLElement>("[data-line-r]");
-      const finale = pin.querySelector<HTMLElement>("[data-finale]");
-      const hint = pin.querySelector<HTMLElement>("[data-hint]");
-
-      gsap.set([callL, callR, finale], { opacity: 0, y: 12 });
-      gsap.set([lineL, lineR], { scaleX: 0 });
-      gsap.set(lineL, { transformOrigin: "100% 50%" });
-      gsap.set(lineR, { transformOrigin: "0% 50%" });
-      gsap.set(hint, { opacity: 0 });
-
-      const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            gsap.to([callL, callR], { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power2.out" });
-            gsap.to([lineL, lineR], { scaleX: 1, duration: 0.5, stagger: 0.15, ease: "power2.out", delay: 0.1 });
-            gsap.to(finale, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out", delay: 0.25 });
-            io.disconnect();
-          });
-        },
-        { threshold: 0.25 }
-      );
-      io.observe(pin);
-
-      return () => io.disconnect();
     });
 
     mm.add("(prefers-reduced-motion: reduce)", () => {

@@ -19,6 +19,7 @@ import theKnotLariat from "@/assets/jewellery/gilded/the-knot-lariat.jpg.asset.j
 import theRondelle from "@/assets/jewellery/gilded/the-rondelle.jpg.asset.json";
 import theAnchorChain from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
 import theCascade from "@/assets/jewellery/gilded/the-cascade.jpg.asset.json";
+import theVineUgc from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
 
 /* ───────────────────────────────────────────────────────────────
    THE GILDED HOUR — Naira Flore's petite jewellery line, first look
@@ -101,7 +102,7 @@ export const jewellery: JewelPiece[] = [
     price: 5200,
     priceLabel: PREORDER_LABEL,
     image: theVine.url,
-    gallery: [theVine.url],
+    gallery: [theVine.url, theVineUgc.url],
     blurb: "Green stones, cradled in white. An open eternity of emerald-cut greens against a rhodium sky.",
     materials: "Rhodium coating · green zirconia · open eternity band",
     tag: "NEW",

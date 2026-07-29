@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import Footer from "@/components/Footer";
 
 const sections = [
@@ -136,6 +137,11 @@ const sections = [
 const TermsOfService = () => {
   return (
     <>
+      <PageSEO
+        title="Terms of Service"
+        description="The terms that apply when you browse, order or place a custom request with Naira Flore."
+        canonical="https://nairaflore.com/terms"
+      />
       <section
         className="w-full flex flex-col items-center justify-center text-center"
         style={{

@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
 
@@ -61,6 +62,11 @@ const sections = [
 const ExchangeReturnPolicy = () => {
   return (
     <>
+      <PageSEO
+        title="Exchange & Return Policy"
+        description="Naira Flore's exchange and return policy: 48-hour window on standard pieces, and why made-to-measure custom orders are non-returnable."
+        canonical="https://nairaflore.com/exchange-return-policy"
+      />
       {/* Hero header */}
       <section
         className="w-full flex flex-col items-center justify-center text-center"

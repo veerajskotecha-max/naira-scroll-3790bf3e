@@ -81,10 +81,8 @@ const Jewellery = () => {
           <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
             Demi-Fine Jewellery
           </h1>
-          <p className="mt-4 max-w-3xl text-[15px] leading-[1.85] text-[#1A1614]/70 md:text-[17px]" style={editorial}>
-            Hand-set brilliant-cut zircone in an 18K gold or rhodium finish, sealed against tarnish and built on a
-            hypoallergenic, nickel-free base. Rings, earrings, bracelets and necklaces made to order in small batches
-            at our Nashik atelier, demi-fine, which means fine-jewellery construction at a price you can wear daily.
+          <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-[#1A1614]/60 md:text-[16px]" style={editorial}>
+            Hand-set zircone in an 18K gold finish. Made to order in Nashik.
           </p>
         </header>
 

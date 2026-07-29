@@ -4,6 +4,28 @@ import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import { jewellery, type JewelCategory } from "@/data/jewellery";
+import { categoryLandings, SITE_URL } from "@/data/seoContent";
+import { breadcrumbLd, faqLd } from "@/components/PageSEO";
+import { Link } from "react-router-dom";
+
+const hubFaqs = [
+  {
+    q: "What is demi-fine jewellery?",
+    a: "Demi-fine jewellery sits between costume and solid gold: real construction — prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base — with lab-grown zircone in place of diamonds.",
+  },
+  {
+    q: "Does Naira Flore jewellery tarnish?",
+    a: "Every piece is anti-tarnish sealed over an 18K gold or rhodium finish and built on a nickel-free base, so it will not green or dull under everyday wear in Indian humidity.",
+  },
+  {
+    q: "Is the jewellery waterproof?",
+    a: "It is waterproof-sealed for incidental contact such as rain or washing hands. Remove pieces before swimming, as chlorine and salt water degrade any plated finish over time.",
+  },
+  {
+    q: "What ring sizes do you make?",
+    a: "US 5 (4.9 cm), US 6 (5.2 cm), US 7 (5.4 cm) and US 8 (5.7 cm) inner circumference. Message the atelier on WhatsApp if you are between sizes.",
+  },
+];
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
@@ -21,13 +43,50 @@ const Jewellery = () => {
   return (
     <>
       <PageSEO
-        title="The Demi-Gold Jewellery Atelier — Naira Flore"
-        description="Pressed-flower rings & earrings in 18k gold-plated demi-fine. Cast from real blooms, made to order by Naira Flore."
-        canonical="https://nairaflore.com/jewellery"
+        title="Demi-Fine Jewellery Online India — Anti-Tarnish 18K Gold Finish"
+        description="Shop demi-fine jewellery by Naira Flore: hand-set brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches in Nashik."
+        canonical={`${SITE_URL}/jewellery`}
+        image={jewellery[0]?.image}
+        jsonLd={[
+          breadcrumbLd([
+            { name: "Home", url: `${SITE_URL}/` },
+            { name: "Jewellery", url: `${SITE_URL}/jewellery` },
+          ]),
+          faqLd(hubFaqs),
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "Demi-Fine Jewellery — The Gilded Hour",
+            url: `${SITE_URL}/jewellery`,
+            mainEntity: {
+              "@type": "ItemList",
+              numberOfItems: jewellery.length,
+              itemListElement: jewellery.map((p, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: p.name,
+                url: `${SITE_URL}/jewellery/${p.handle}`,
+              })),
+            },
+          },
+        ]}
       />
       <div className="bg-[#FBF3EC] pt-[94px] text-[#1A1614] md:pt-[100px] lg:pt-[116px]">
         {/* hero — the clean scroll-turned solitaire */}
         <ZirconeTurn showViewAll={false} />
+
+        {/* indexable header */}
+        <header className="mx-auto max-w-6xl px-4 pb-2 pt-6 sm:px-6 md:pt-10">
+          <p className="text-[10px] tracking-[0.4em] text-[#9A7634]" style={jost}>THE GILDED HOUR</p>
+          <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
+            Demi-Fine Jewellery
+          </h1>
+          <p className="mt-4 max-w-3xl text-[15px] leading-[1.85] text-[#1A1614]/70 md:text-[17px]" style={editorial}>
+            Hand-set brilliant-cut zircone in an 18K gold or rhodium finish, sealed against tarnish and built on a
+            hypoallergenic, nickel-free base. Rings, earrings, bracelets and necklaces made to order in small batches
+            at our Nashik atelier — demi-fine, which means fine-jewellery construction at a price you can wear daily.
+          </p>
+        </header>
 
         {/* filter */}
         <div className="sticky top-[94px] z-20 bg-[#FBF3EC]/85 py-4 backdrop-blur md:top-[100px] md:py-5 lg:top-[116px]">
@@ -58,6 +117,36 @@ const Jewellery = () => {
 
 
 
+
+        {/* collections — internal linking */}
+        <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
+          <h2 className="text-[22px] md:text-[30px]" style={velista}>Shop by collection</h2>
+          <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-3">
+            {categoryLandings.map((c) => (
+              <Link
+                key={c.slug}
+                to={`/jewellery/collections/${c.slug}`}
+                className="border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+                style={jost}
+              >
+                {(c.crumb ?? c.category ?? c.h1).toUpperCase()}
+              </Link>
+            ))}
+          </nav>
+        </section>
+
+        {/* faq */}
+        <section className="mx-auto max-w-6xl border-t border-[#1A1614]/10 px-4 py-14 sm:px-6">
+          <h2 className="text-[24px] md:text-[34px]" style={velista}>Demi-fine jewellery — common questions</h2>
+          <dl className="mt-7 max-w-3xl space-y-6">
+            {hubFaqs.map((f) => (
+              <div key={f.q}>
+                <dt className="text-[14px] tracking-[0.04em] md:text-[16px]" style={jost}>{f.q}</dt>
+                <dd className="mt-2 text-[14px] leading-[1.85] text-[#1A1614]/65 md:text-[15px]" style={editorial}>{f.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <Footer />
       </div>

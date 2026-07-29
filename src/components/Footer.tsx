@@ -12,6 +12,11 @@ const shopLinks = [
   { label: "Earrings", to: "/jewellery/collections/earrings" },
   { label: "Bracelets", to: "/jewellery/collections/bracelets" },
   { label: "Necklaces", to: "/jewellery/collections/necklaces" },
+  { label: "Demi-Fine Jewellery", to: "/jewellery/collections/demi-fine-jewellery" },
+  { label: "Anti-Tarnish Jewellery", to: "/jewellery/collections/anti-tarnish-jewellery" },
+  { label: "American Diamond", to: "/jewellery/collections/american-diamond-jewellery" },
+  { label: "18K Gold Plated", to: "/jewellery/collections/18k-gold-plated-jewellery" },
+  { label: "Office Wear Jewellery", to: "/jewellery/collections/office-wear-jewellery" },
 ];
 
 const careLinks = [
@@ -19,6 +24,9 @@ const careLinks = [
   { label: "The Journal", to: "/journal" },
   { label: "Ring Size Guide", to: "/journal/ring-size-guide-india" },
   { label: "Jewellery Care", to: "/journal/how-to-care-for-gold-plated-jewellery" },
+  { label: "Anti-Tarnish Explained", to: "/journal/anti-tarnish-jewellery-guide" },
+  { label: "American Diamond vs Moissanite", to: "/journal/american-diamond-vs-cubic-zirconia-vs-moissanite" },
+  { label: "Choosing a Demi-Fine Brand", to: "/journal/best-demi-fine-jewellery-brands-india" },
   { label: "Return & Exchange Policy", to: "/exchange-return-policy" },
   { label: "FAQs", to: "/faqs" },
 ];

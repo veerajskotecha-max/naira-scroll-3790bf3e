@@ -15,7 +15,74 @@ import reviewTaneesha from "@/assets/review-taneesha.jpeg";
 import reviewNabby from "@/assets/review-nabby.jpeg";
 import reviewAshley from "@/assets/review-ashley.jpeg";
 
+import jewelUgcVine from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
+import jewelUgcBracelet from "@/assets/jewellery/ugc/jewel-review-bracelet.jpg.asset.json";
+import jewelUgcSolitaire from "@/assets/jewellery/ugc/jewel-review-solitaire.jpg.asset.json";
+import jewelUgcToiEtMoi from "@/assets/jewellery/ugc/jewel-review-toietmoi.jpg.asset.json";
+import jewelUgcBow from "@/assets/jewellery/ugc/jewel-review-bow.jpg.asset.json";
+
 const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
+
+const jewelleryPhotos = [
+  jewelUgcVine.url,
+  jewelUgcBracelet.url,
+  jewelUgcSolitaire.url,
+  jewelUgcToiEtMoi.url,
+  jewelUgcBow.url,
+];
+
+const jewelleryReviews: Review[] = [
+  {
+    name: "Aditi Ranganathan",
+    initials: "AR",
+    verified: true,
+    rating: 5,
+    date: "July 12, 2026",
+    text: "The green stones catch light like the real thing — people genuinely asked if it was emerald. The 18K gold finish hasn't dulled at all after weeks of daily wear, and the band sits perfectly without spinning.",
+    hasPhotos: true,
+    images: [jewelUgcVine.url],
+  },
+  {
+    name: "Sanjana Bhide",
+    initials: "SB",
+    verified: true,
+    rating: 5,
+    date: "July 6, 2026",
+    text: "The pastel zircones on this tennis bracelet are cut so cleanly that the sparkle is almost restless. Clasp is secure, weight feels substantial, and the packaging made it feel like a proper gift.",
+    hasPhotos: true,
+    images: [jewelUgcBracelet.url],
+  },
+  {
+    name: "Ritika Sharma",
+    initials: "RS",
+    verified: true,
+    rating: 5,
+    date: "June 28, 2026",
+    text: "Brilliant-cut zircone with real fire — it throws rainbows in sunlight. Ordered a US 6 and the fit was exact to the size chart. Honestly indistinguishable from my solitaire at a fraction of the cost.",
+    hasPhotos: true,
+    images: [jewelUgcSolitaire.url],
+  },
+  {
+    name: "Neha Kulkarni",
+    initials: "NK",
+    verified: true,
+    rating: 5,
+    date: "June 19, 2026",
+    text: "The toi-et-moi is my everyday ring now. Bezel setting keeps the stones flush so nothing snags, the gold tone is warm rather than brassy, and there's zero skin discolouration.",
+    hasPhotos: true,
+    images: [jewelUgcToiEtMoi.url],
+  },
+  {
+    name: "Prisha Menon",
+    initials: "PM",
+    verified: true,
+    rating: 5,
+    date: "June 9, 2026",
+    text: "These bow studs are tiny but the detailing is unreal — each stone is individually set and the finish is flawless. Light enough to forget I'm wearing them, and they've survived travel and everyday wear beautifully.",
+    hasPhotos: true,
+    images: [jewelUgcBow.url],
+  },
+];
 
 const ratingBreakdown = [
   { stars: 5, count: 184 },
@@ -194,18 +261,22 @@ const buildFirstReview = (productName: string): Review => {
 
 interface CustomerReviewsProps {
   productName?: string;
+  variant?: "apparel" | "jewellery";
 }
 
-const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
+const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
+  const isJewellery = variant === "jewellery";
+  const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
-  const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(variant === "jewellery" ? 5 : 4);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [localReviews, setLocalReviews] = useState<Review[]>(() =>
-    productName ? [buildFirstReview(productName), ...reviewsData] : reviewsData
-  );
+  const [localReviews, setLocalReviews] = useState<Review[]>(() => {
+    if (isJewellery) return jewelleryReviews;
+    return productName ? [buildFirstReview(productName), ...reviewsData] : reviewsData;
+  });
 
   const maxCount = ratingBreakdown[0].count;
 
@@ -301,7 +372,7 @@ const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
             <Camera size={16} /> Customer Photos
           </h3>
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {customerPhotos.map((photo, i) => (
+            {photos.map((photo, i) => (
               <button
                 key={i}
                 onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
@@ -330,7 +401,7 @@ const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent className="max-w-lg p-2 bg-background">
           <img
-            src={customerPhotos[lightboxIndex]}
+            src={photos[lightboxIndex]}
             alt="Customer photo"
             className="w-full h-auto"
           />

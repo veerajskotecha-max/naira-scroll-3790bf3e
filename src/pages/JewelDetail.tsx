@@ -434,7 +434,7 @@ const JewelDetail = () => {
         </div>
       </div>
 
-      <CustomerReviews productName={piece.name} />
+      <CustomerReviews productName={piece.name} variant="jewellery" />
       <MaterialsCraft />
 
       {/* Related jewellery */}

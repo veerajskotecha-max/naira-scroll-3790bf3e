@@ -66,7 +66,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           trigger: root,
           start: "top top",
           end: "+=170%",
-          scrub: 0.6,
+          scrub: 1,
+
           pin: pin,
           anticipatePin: 1,
           invalidateOnRefresh: true,

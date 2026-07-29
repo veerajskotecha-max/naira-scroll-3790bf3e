@@ -261,18 +261,22 @@ const buildFirstReview = (productName: string): Review => {
 
 interface CustomerReviewsProps {
   productName?: string;
+  variant?: "apparel" | "jewellery";
 }
 
-const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
+const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
+  const isJewellery = variant === "jewellery";
+  const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
   const [visibleCount, setVisibleCount] = useState(4);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [localReviews, setLocalReviews] = useState<Review[]>(() =>
-    productName ? [buildFirstReview(productName), ...reviewsData] : reviewsData
-  );
+  const [localReviews, setLocalReviews] = useState<Review[]>(() => {
+    const base = isJewellery ? jewelleryReviews : reviewsData;
+    return productName ? [buildFirstReview(productName), ...base] : base;
+  });
 
   const maxCount = ratingBreakdown[0].count;
 
@@ -368,7 +372,7 @@ const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
             <Camera size={16} /> Customer Photos
           </h3>
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {customerPhotos.map((photo, i) => (
+            {photos.map((photo, i) => (
               <button
                 key={i}
                 onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
@@ -397,7 +401,7 @@ const CustomerReviews = ({ productName }: CustomerReviewsProps = {}) => {
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
         <DialogContent className="max-w-lg p-2 bg-background">
           <img
-            src={customerPhotos[lightboxIndex]}
+            src={photos[lightboxIndex]}
             alt="Customer photo"
             className="w-full h-auto"
           />

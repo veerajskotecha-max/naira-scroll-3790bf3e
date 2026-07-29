@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Home, ShoppingBag, Compass } from "lucide-react";
@@ -10,6 +11,7 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#F4F1ED" }}>
+      <PageSEO title="Page Not Found" description="This page could not be found." noindex />
       <div className="flex-1 flex items-center justify-center px-5 pt-28 pb-20">
         <div className="text-center max-w-[480px] animate-fade-in">
           {/* Decorative element */}

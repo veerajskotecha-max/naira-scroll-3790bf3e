@@ -268,14 +268,14 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   const isJewellery = variant === "jewellery";
   const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
-  const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(variant === "jewellery" ? 5 : 4);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [localReviews, setLocalReviews] = useState<Review[]>(() => {
-    const base = isJewellery ? jewelleryReviews : reviewsData;
-    return productName ? [buildFirstReview(productName), ...base] : base;
+    if (isJewellery) return jewelleryReviews;
+    return productName ? [buildFirstReview(productName), ...reviewsData] : reviewsData;
   });
 
   const maxCount = ratingBreakdown[0].count;

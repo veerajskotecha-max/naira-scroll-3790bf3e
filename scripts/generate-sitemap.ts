@@ -2,7 +2,7 @@
 
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { categoryLandings, journal } from "../src/data/seoContent";
+import { allLandings as categoryLandings, allArticles as journal } from "../src/data/seoContent";
 
 // Product handles are read from the data file directly — importing the module
 // would pull in Vite asset imports that tsx cannot resolve outside the bundler.

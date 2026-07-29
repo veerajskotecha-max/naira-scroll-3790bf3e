@@ -4,7 +4,7 @@ import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import { jewellery, type JewelCategory } from "@/data/jewellery";
-import { categoryLandings, SITE_URL } from "@/data/seoContent";
+import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import { Link } from "react-router-dom";
 

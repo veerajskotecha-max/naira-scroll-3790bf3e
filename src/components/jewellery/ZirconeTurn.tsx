@@ -119,15 +119,15 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden px-6 md:h-[100svh] md:min-h-[560px]"
-          style={{ paddingTop: "clamp(16px, 3vh, 48px)", paddingBottom: "clamp(16px, 3vh, 48px)" }}
+          className="relative flex min-h-[560px] flex-col items-center justify-center px-6 pb-8 pt-[84px] md:h-[100svh] md:min-h-[560px] md:pb-10 md:pt-[96px]"
         >
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
 
-          <p className="relative z-20 mb-2 text-[10px] tracking-[0.5em] text-[#B0843A] md:mb-6 md:text-[11px]" style={jost}>
+          <p className="relative z-20 mb-3 text-center text-[10px] leading-relaxed tracking-[0.4em] text-[#B0843A] md:mb-6 md:text-[11px] md:tracking-[0.5em]" style={jost}>
             THE ZIRCONE EDIT · DEMI-GOLD
           </p>
+
 
           {/* the ring — two photos turning */}
           <div className="relative my-0 md:my-4" style={{ perspective: "1200px" }}>

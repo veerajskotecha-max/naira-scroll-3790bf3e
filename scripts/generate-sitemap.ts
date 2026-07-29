@@ -1,9 +1,14 @@
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks); writes public/sitemap.xml.
 
-import { writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { jewellery } from "../src/data/jewellery";
 import { categoryLandings, journal } from "../src/data/seoContent";
+
+// Product handles are read from the data file directly — importing the module
+// would pull in Vite asset imports that tsx cannot resolve outside the bundler.
+const jewelleryHandles = [
+  ...readFileSync(resolve("src/data/jewellery.ts"), "utf8").matchAll(/handle:\s*"([^"]+)"/g),
+].map((m) => m[1]);
 
 const BASE_URL = "https://nairaflore.com";
 
@@ -23,8 +28,8 @@ const entries: SitemapEntry[] = [
     changefreq: "weekly",
     priority: "0.9",
   })),
-  ...jewellery.map<SitemapEntry>((p) => ({
-    path: `/jewellery/${p.handle}`,
+  ...jewelleryHandles.map<SitemapEntry>((handle) => ({
+    path: `/jewellery/${handle}`,
     changefreq: "monthly",
     priority: "0.8",
   })),

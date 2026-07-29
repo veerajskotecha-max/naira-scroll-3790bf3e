@@ -8,12 +8,17 @@ const shopLinks = [
   { label: "Fusion Sarees", to: "/shop?category=fusion-sarees" },
   { label: "Festive Collection", to: "/shop?category=festive" },
   { label: "New Arrivals", to: "/shop?category=new" },
+  { label: "Zircone Rings", to: "/jewellery/collections/rings" },
+  { label: "Earrings", to: "/jewellery/collections/earrings" },
+  { label: "Bracelets", to: "/jewellery/collections/bracelets" },
+  { label: "Necklaces", to: "/jewellery/collections/necklaces" },
 ];
 
 const careLinks = [
   { label: "Contact Us", to: "/contact" },
-  { label: "Track Your Order", to: "/track-order" },
-  { label: "Shipping & Delivery", to: "/shipping" },
+  { label: "The Journal", to: "/journal" },
+  { label: "Ring Size Guide", to: "/journal/ring-size-guide-india" },
+  { label: "Jewellery Care", to: "/journal/how-to-care-for-gold-plated-jewellery" },
   { label: "Return & Exchange Policy", to: "/exchange-return-policy" },
   { label: "FAQs", to: "/faqs" },
 ];

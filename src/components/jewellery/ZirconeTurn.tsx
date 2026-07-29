@@ -67,6 +67,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           start: "top top",
           end: "+=170%",
           scrub: 1,
+          fastScrollEnd: true,
 
           pin: pin,
           anticipatePin: 1,
@@ -167,7 +168,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           {/* finale */}
           <div data-finale className="relative z-20 mt-3 text-center md:mt-8">
             <h2 className="text-[clamp(1.4rem,5.4vw,2.6rem)] leading-tight" style={velista}>{solitaire.name}</h2>
-            <p className="mt-1 text-[12px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>18K Gold Finished · brilliant-cut zircone · 4-prong</p>
+            <p className="mt-1 text-[13px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>18K Gold Finished · brilliant-cut zircone · 4-prong</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:mt-4 md:gap-4">
               <span className="text-[15px] tracking-wide md:text-[16px]" style={jost}>{solitaire.priceLabel}</span>
               <button onClick={() => setQv(solitaire)} className="border border-[#1A1614] px-6 py-2.5 text-[10px] tracking-[0.3em] transition-colors duration-300 hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
@@ -181,7 +182,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             </div>
           </div>
 
-          <span data-hint className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[9px] tracking-[0.4em] text-[#1A1614]/35 md:bottom-5" style={jost}>SCROLL — IT TURNS</span>
+          <span data-hint className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.4em] text-[#1A1614]/35 md:bottom-5" style={jost}>SCROLL — IT TURNS</span>
         </div>
 
       </div>

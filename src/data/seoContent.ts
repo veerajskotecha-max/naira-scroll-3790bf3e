@@ -5,6 +5,8 @@
    ─────────────────────────────────────────────────────────────── */
 
 import type { JewelCategory } from "./jewellery";
+import { extraLandings } from "./seoLandings.extra";
+import { extraJournal } from "./seoJournal.extra";
 
 export const SITE_URL = "https://nairaflore.com";
 
@@ -431,8 +433,10 @@ export const categoryLandings: CategoryLanding[] = [
   },
 ];
 
+export const allLandings: CategoryLanding[] = [...categoryLandings, ...extraLandings];
+
 export const categoryBySlug = (slug?: string) =>
-  categoryLandings.find((c) => c.slug === slug);
+  allLandings.find((c) => c.slug === slug);
 
 /* ── JOURNAL ─────────────────────────────────────────────────── */
 
@@ -947,5 +951,7 @@ export const journal: JournalArticle[] = [
   },
 ];
 
+export const allArticles: JournalArticle[] = [...journal, ...extraJournal];
+
 export const articleBySlug = (slug?: string) =>
-  journal.find((a) => a.slug === slug);
+  allArticles.find((a) => a.slug === slug);

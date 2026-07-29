@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
   addLineToShopifyCart,
@@ -208,10 +208,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart, removeItem]);
 
+  const isSyncingRef = useRef(false);
   const syncCart = useCallback(async () => {
     const latest = loadCart();
-    if (!latest.cartId || isSyncing) return;
+    if (!latest.cartId || isSyncingRef.current) return;
 
+    isSyncingRef.current = true;
     setIsSyncing(true);
     try {
       const cart = await fetchShopifyCart(latest.cartId);
@@ -223,9 +225,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error("Failed to sync Shopify cart", error);
     } finally {
+      isSyncingRef.current = false;
       setIsSyncing(false);
     }
-  }, [clearCart, isSyncing]);
+  }, [clearCart]);
 
   const checkout = useCallback(() => {
     const latestUrl = loadCart().checkoutUrl ?? checkoutUrl;

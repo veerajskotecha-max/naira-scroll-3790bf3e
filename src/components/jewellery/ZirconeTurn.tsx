@@ -66,7 +66,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           trigger: root,
           start: "top top",
           end: "+=170%",
-          scrub: 0.6,
+          scrub: 1,
+
           pin: pin,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -119,15 +120,15 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden px-6 md:h-[100svh] md:min-h-[560px]"
-          style={{ paddingTop: "clamp(16px, 3vh, 48px)", paddingBottom: "clamp(16px, 3vh, 48px)" }}
+          className="relative flex min-h-[560px] flex-col items-center justify-center px-6 pb-8 pt-[84px] md:h-[100svh] md:min-h-[560px] md:pb-10 md:pt-[96px]"
         >
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
 
-          <p className="relative z-20 mb-2 text-[10px] tracking-[0.5em] text-[#B0843A] md:mb-6 md:text-[11px]" style={jost}>
+          <p className="relative z-20 mb-3 text-center text-[10px] leading-relaxed tracking-[0.4em] text-[#B0843A] md:mb-6 md:text-[11px] md:tracking-[0.5em]" style={jost}>
             THE ZIRCONE EDIT · DEMI-GOLD
           </p>
+
 
           {/* the ring — two photos turning */}
           <div className="relative my-0 md:my-4" style={{ perspective: "1200px" }}>
@@ -144,7 +145,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
 
             {/* callout — band (left) — dot lands on ring band */}
             <div data-call-l className="absolute left-[-46%] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-[-38%] md:top-[62%] lg:left-[-56%]">
-              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[8px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
+              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[10px] tracking-[0.14em] text-[#9A7634] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.2em]" style={jost}>
                 18K GOLD FINISHED
               </span>
               <span data-line-l className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
@@ -155,10 +156,11 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             <div data-call-r className="absolute right-[-46%] top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
               <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
               <span data-line-r className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
-              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[8px] tracking-[0.2em] text-[#9A7634] md:px-4 md:py-2 md:text-[10px]" style={jost}>
+              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[10px] tracking-[0.14em] text-[#9A7634] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.2em]" style={jost}>
                 BRILLIANT-CUT ZIRCONE
               </span>
             </div>
+
           </div>
 
           {/* finale */}

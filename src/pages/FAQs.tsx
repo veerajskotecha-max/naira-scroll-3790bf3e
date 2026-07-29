@@ -1,3 +1,4 @@
+import PageSEO, { faqLd } from "@/components/PageSEO";
 import { Link } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Footer from "@/components/Footer";
@@ -94,6 +95,12 @@ const faqSections = [
 const FAQs = () => {
   return (
     <>
+      <PageSEO
+        title="FAQs — Custom Orders, Sizing, Shipping & Returns"
+        description="Answers on custom order timelines, sizing and measurements, jewellery care, shipping across India and worldwide, and the Naira Flore exchange policy."
+        canonical="https://nairaflore.com/faqs"
+        jsonLd={faqLd(faqSections.flatMap((s) => s.items))}
+      />
       {/* Hero header */}
       <section
         className="w-full flex flex-col items-center justify-center text-center"

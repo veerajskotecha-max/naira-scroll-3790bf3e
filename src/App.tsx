@@ -37,6 +37,9 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService.tsx"));
 const ExchangeReturnPolicy = lazy(() => import("./pages/ExchangeReturnPolicy.tsx"));
 const FAQs = lazy(() => import("./pages/FAQs.tsx"));
 const CartCheckoutRedirect = lazy(() => import("./pages/CartCheckoutRedirect.tsx"));
+const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
+const Journal = lazy(() => import("./pages/Journal.tsx"));
+const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -63,7 +66,10 @@ const AppShell = () => {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
+          <Route path="/jewellery/collections/:slug" element={<JewelleryCategory />} />
           <Route path="/jewellery/:handle" element={<JewelDetail />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/journal/:slug" element={<JournalArticle />} />
           <Route path="/concepts" element={<Concepts />} />
           <Route path="/ring-lab" element={<RingLab />} />
           <Route path="/ring/:variant" element={<RingExample />} />

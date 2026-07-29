@@ -24,7 +24,7 @@ const RingExample = () => {
 
   return (
     <>
-      <PageSEO title={`Ring Effect ${v.n} — ${v.label}`} description={v.note} canonical={`https://nairaflore.com/ring/${variant}`} />
+      <PageSEO title={`Ring Effect ${v.n} — ${v.label}`} description={v.note} canonical={`https://nairaflore.com/ring/${variant}`} noindex />
       <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
         {/* label + switcher */}
         <div className="flex flex-wrap items-center justify-center gap-3 bg-[#1A1614] px-6 py-4 text-center">

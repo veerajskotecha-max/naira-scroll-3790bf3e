@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/customize-hero.jpg";
 import floralPattern from "@/assets/background_image_flora.webp";
@@ -9,6 +10,11 @@ const MadeForYou = () => {
 
   return (
     <div className="pt-[98px] md:pt-[108px] lg:pt-[120px]">
+      <PageSEO
+        title="Custom Made-to-Measure Outfits — Design Your Own"
+        description="Design a made-to-measure Indo-Western outfit with the Naira Flore atelier: share a reference, approve a sketch, and we hand-craft it to your measurements."
+        canonical="https://nairaflore.com/customize"
+      />
       {/* ═══════════ SECTION 1 — Hero Banner (floral bg) ═══════════ */}
       <section
         className="customize-hero-viewport relative w-full overflow-hidden flex items-center justify-center"

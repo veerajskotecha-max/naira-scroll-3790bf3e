@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import Footer from "@/components/Footer";
 
 const sections = [
@@ -163,6 +164,11 @@ const sections = [
 const PrivacyPolicy = () => {
   return (
     <>
+      <PageSEO
+        title="Privacy Policy"
+        description="How Naira Flore collects, uses and protects your personal information when you shop, enquire or place a custom order."
+        canonical="https://nairaflore.com/privacy"
+      />
       {/* Hero header */}
       <section
         className="w-full flex flex-col items-center justify-center text-center"

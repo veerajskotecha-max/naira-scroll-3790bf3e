@@ -1,3 +1,4 @@
+import PageSEO from "@/components/PageSEO";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail, MessageCircle, HelpCircle, Send } from "lucide-react";
@@ -52,6 +53,11 @@ const ContactUs = () => {
 
   return (
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+      <PageSEO
+        title="Contact Naira Flore — Nashik Atelier & WhatsApp Support"
+        description="Talk to the Naira Flore atelier in Nashik about custom orders, sizing, jewellery pre-orders or an existing order. WhatsApp +91 95615 57935."
+        canonical="https://nairaflore.com/contact"
+      />
       {/* ── SECTION 1 — Hero ── */}
       <section className={`relative ${sectionPadding} overflow-hidden`} style={{ backgroundColor: "hsl(30 30% 97%)" }}>
         <div className="absolute inset-0 pointer-events-none" style={floralBg(0.06)} />

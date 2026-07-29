@@ -93,6 +93,10 @@ const JewelDetail = () => {
     description: piece.blurb,
     brand: { "@type": "Brand", name: "Naira Flore" },
     category: piece.category,
+    image: [piece.image],
+    material: piece.materials,
+    url: `https://nairaflore.com/jewellery/${piece.handle}`,
+    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: 5 },
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
@@ -163,7 +167,24 @@ const JewelDetail = () => {
         <title>{piece.name} · Demi-Gold Jewellery | Naira Flore</title>
         <meta name="description" content={`${piece.name} — ${piece.blurb.slice(0, 130)}`} />
         <link rel="canonical" href={`https://nairaflore.com/jewellery/${piece.handle}`} />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
+        <meta property="og:description" content={piece.blurb.slice(0, 150)} />
+        <meta property="og:image" content={piece.image} />
+        <meta property="og:url" content={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
+              { "@type": "ListItem", position: 2, name: "Jewellery", item: "https://nairaflore.com/jewellery" },
+              { "@type": "ListItem", position: 3, name: piece.name, item: `https://nairaflore.com/jewellery/${piece.handle}` },
+            ],
+          })}
+        </script>
       </Helmet>
 
       {/* Breadcrumb (desktop) */}

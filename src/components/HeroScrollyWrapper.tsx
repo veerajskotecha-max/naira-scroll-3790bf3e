@@ -5,7 +5,7 @@ import NewArrivals from "./NewArrivals";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
 import nairaLogo from "@/assets/naira-logo.webp";
 
-const HeroScrollyWrapper = () => {
+const HeroScrollyWrapper = ({ beforeArrivals }: { beforeArrivals?: React.ReactNode }) => {
   const containerRef       = useRef<HTMLDivElement>(null);
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
@@ -22,6 +22,9 @@ const HeroScrollyWrapper = () => {
       <HeroSection />
 
       <TrustStrip />
+
+      {beforeArrivals}
+
 
       <div
         ref={arrivalsWrapperRef}

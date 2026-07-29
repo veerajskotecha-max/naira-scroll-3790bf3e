@@ -36,6 +36,31 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/collections/demi-fine-jewellery</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/collections/anti-tarnish-jewellery</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/collections/american-diamond-jewellery</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/collections/18k-gold-plated-jewellery</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/collections/office-wear-jewellery</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/the-vow</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -152,6 +177,30 @@
   <url>
     <loc>https://nairaflore.com/journal/demi-fine-jewellery-explained</loc>
     <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/journal/anti-tarnish-jewellery-guide</loc>
+    <lastmod>2026-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/journal/american-diamond-vs-cubic-zirconia-vs-moissanite</loc>
+    <lastmod>2026-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/journal/best-demi-fine-jewellery-brands-india</loc>
+    <lastmod>2026-05-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/journal/everyday-dainty-jewellery-styling</loc>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

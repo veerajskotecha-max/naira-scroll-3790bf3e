@@ -15,7 +15,10 @@ const JewelleryCategory = () => {
 
   if (!landing) return <Navigate to="/jewellery" replace />;
 
-  const pieces = jewellery.filter((p) => p.category === landing.category);
+  const label = landing.crumb ?? landing.category ?? "Collection";
+  const pieces = landing.category
+    ? jewellery.filter((p) => p.category === landing.category)
+    : jewellery;
   const url = `${SITE_URL}/jewellery/collections/${landing.slug}`;
 
   return (
@@ -29,7 +32,7 @@ const JewelleryCategory = () => {
           breadcrumbLd([
             { name: "Home", url: `${SITE_URL}/` },
             { name: "Jewellery", url: `${SITE_URL}/jewellery` },
-            { name: landing.category, url },
+            { name: label, url },
           ]),
           faqLd(landing.faqs),
           {
@@ -60,7 +63,7 @@ const JewelleryCategory = () => {
             <span className="px-2">/</span>
             <Link to="/jewellery" className="hover:text-[#1A1614]">JEWELLERY</Link>
             <span className="px-2">/</span>
-            <span className="text-[#1A1614]/80">{landing.category.toUpperCase()}</span>
+            <span className="text-[#1A1614]/80">{label.toUpperCase()}</span>
           </nav>
 
           {/* header */}
@@ -75,7 +78,7 @@ const JewelleryCategory = () => {
           </header>
 
           {/* grid */}
-          <section aria-label={`${landing.category} collection`} className="grid grid-cols-2 gap-4 pt-10 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+          <section aria-label={`${label} collection`} className="grid grid-cols-2 gap-4 pt-10 sm:gap-6 lg:grid-cols-3 lg:gap-8">
             {pieces.map((piece, i) => (
               <JewelCard key={piece.handle} piece={piece} index={i} />
             ))}
@@ -94,7 +97,7 @@ const JewelleryCategory = () => {
           {/* faq */}
           <section className="border-t border-[#1A1614]/10 py-14 md:py-20">
             <h2 className="text-[26px] md:text-[36px]" style={velista}>
-              {landing.category} — questions we get asked
+              {label} — questions we get asked
             </h2>
             <dl className="mt-8 max-w-3xl space-y-7">
               {landing.faqs.map((f) => (

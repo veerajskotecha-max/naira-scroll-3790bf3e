@@ -144,7 +144,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
               style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
 
             {/* callout — band (left) — dot lands on ring band */}
-            <div data-call-l className="absolute left-[-52%] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-[-38%] md:top-[62%] lg:left-[-56%]">
+            <div data-call-l className="absolute left-[-46%] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-[-38%] md:top-[62%] lg:left-[-56%]">
               <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[10px] tracking-[0.14em] text-[#9A7634] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.2em]" style={jost}>
                 18K GOLD FINISHED
               </span>
@@ -153,7 +153,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             </div>
 
             {/* callout — stone (right) — dot lands on centered zircone */}
-            <div data-call-r className="absolute right-[-52%] top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
+            <div data-call-r className="absolute right-[-46%] top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
               <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
               <span data-line-r className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
               <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[10px] tracking-[0.14em] text-[#9A7634] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.2em]" style={jost}>

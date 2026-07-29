@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
-import { articleBySlug, journal, SITE_URL } from "@/data/seoContent";
+import { articleBySlug, allArticles as journal, SITE_URL } from "@/data/seoContent";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;

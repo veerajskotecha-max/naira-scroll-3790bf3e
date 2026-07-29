@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import { jewellery } from "@/data/jewellery";
-import { categoryBySlug, categoryLandings, SITE_URL } from "@/data/seoContent";
+import { categoryBySlug, allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;

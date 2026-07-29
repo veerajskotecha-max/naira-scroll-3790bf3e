@@ -15,7 +15,10 @@ export interface FaqItem {
 
 export interface CategoryLanding {
   slug: string;
-  category: JewelCategory;
+  /** Omitted on topic landings, which show the full collection. */
+  category?: JewelCategory;
+  /** Breadcrumb / section label. Falls back to the category name. */
+  crumb?: string;
   h1: string;
   kicker: string;
   metaTitle: string;
@@ -192,6 +195,237 @@ export const categoryLandings: CategoryLanding[] = [
       {
         q: "Can I shower wearing the necklace?",
         a: "The finish is waterproof-sealed, but soap and shampoo residue dulls any plated surface. We recommend taking it off before a shower and wiping it dry after wear.",
+      },
+    ],
+  },
+  /* ── TOPIC LANDINGS — head-term demi-fine queries ─────────── */
+  {
+    slug: "demi-fine-jewellery",
+    crumb: "Demi-Fine",
+    h1: "Demi-Fine Jewellery in India",
+    kicker: "THE GILDED HOUR · DEMI-FINE",
+    metaTitle: "Demi-Fine Jewellery India — 18K Gold Finished, Anti-Tarnish",
+    metaDescription:
+      "Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier in Nashik.",
+    intro: [
+      "Demi-fine jewellery sits between costume and solid gold. It is built like fine jewellery — stones set in real prongs, solid construction, a thick precious-metal finish over a hypoallergenic base — but priced so you can own several pieces instead of one.",
+      "Everything in The Gilded Hour is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped, and every piece carries an edition number.",
+      "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make in small batches at our Nashik atelier.",
+    ],
+    bullets: [
+      {
+        title: "Built like fine jewellery",
+        body: "Prong-set stones, soldered joins and finished backs. The construction is the difference between demi-fine and costume — not just the price.",
+      },
+      {
+        title: "18K gold finished, sealed",
+        body: "A thick gold or rhodium layer over a hypoallergenic base, then an anti-tarnish seal. No greening, no nickel itch, no dull grey after a monsoon.",
+      },
+      {
+        title: "Priced to actually wear",
+        body: "Solid gold sits in a locker. Demi-fine goes to work, to dinner and on the flight, which is the only reason to own jewellery at all.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What is demi-fine jewellery?",
+        a: "Demi-fine jewellery is the tier between costume and fine jewellery. It uses real construction techniques — prong-set stones, soldered joins, a thick 18K gold or rhodium plating over a hypoallergenic base — but substitutes lab-grown stones like zircone for diamonds, so the price stays in reach.",
+      },
+      {
+        q: "Is demi-fine jewellery worth it in India?",
+        a: "Yes, if you want pieces you wear rather than store. Demi-fine survives Indian humidity far better than plated costume jewellery because the finish is thicker and sealed, and it costs a fraction of 18K solid gold at the same visual weight.",
+      },
+      {
+        q: "How is demi-fine different from artificial jewellery?",
+        a: "Artificial or costume jewellery is usually a thin flash-plate over brass with glued stones — it discolours within weeks. Demi-fine uses a heavy plating, a hypoallergenic base metal and set stones, which is why it holds up for years.",
+      },
+      {
+        q: "Does demi-fine jewellery tarnish?",
+        a: "Ours does not under normal wear. Every piece gets an anti-tarnish seal over the gold finish. Keep it away from perfume, chlorine and abrasive cleaners and the colour holds.",
+      },
+      {
+        q: "Is demi-fine jewellery safe for sensitive skin?",
+        a: "Yes. The base metal is hypoallergenic and nickel-free, which is the usual cause of reactions with cheaper plated jewellery.",
+      },
+    ],
+  },
+  {
+    slug: "anti-tarnish-jewellery",
+    crumb: "Anti-Tarnish",
+    h1: "Anti-Tarnish Jewellery for Daily Wear",
+    kicker: "THE GILDED HOUR · ANTI-TARNISH",
+    metaTitle: "Anti-Tarnish Jewellery Online — Waterproof, Sealed 18K Finish",
+    metaDescription:
+      "Anti-tarnish jewellery that survives Indian humidity: sealed 18K gold and rhodium finishes over a hypoallergenic, nickel-free base. Rings, studs, bracelets and chains that will not green, dull or itch.",
+    intro: [
+      "Tarnish is a chemical reaction, not bad luck. Sweat, perfume, humidity and chlorine strip a thin plating and oxidise the base metal underneath — which is why most plated jewellery in India turns dull or green within a monsoon.",
+      "Every Gilded Hour piece is finished in 18K gold or rhodium over a hypoallergenic, nickel-free base and then sealed with an anti-tarnish coat. That seal is the layer that does the real work: it keeps skin acids and moisture off the plating so the colour stays where it should.",
+      "Waterproof-sealed for incidental contact — rain, washing hands, a spilt drink. We still ask you to take pieces off before a pool or the sea, because chlorine and salt beat any finish on earth given long enough.",
+    ],
+    bullets: [
+      {
+        title: "Sealed, not just plated",
+        body: "The anti-tarnish layer sits above the gold. It is the difference between a finish that lasts a season and one that lasts years.",
+      },
+      {
+        title: "Nickel-free base",
+        body: "Green skin and itchy earlobes are usually a nickel reaction. Our base metal is hypoallergenic, so neither happens.",
+      },
+      {
+        title: "Built for humidity",
+        body: "Made and tested in Nashik. If a finish can hold through an Indian monsoon it can hold anywhere.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What does anti-tarnish jewellery mean?",
+        a: "It means the piece has a protective seal over its plating that blocks moisture, sweat and air from reaching the base metal. Without that barrier, the metal oxidises and the piece darkens or greens.",
+      },
+      {
+        q: "Is anti-tarnish jewellery waterproof?",
+        a: "Ours is waterproof-sealed for incidental contact like rain or washing hands. Remove pieces before swimming — chlorine and salt water will degrade any plated finish over time.",
+      },
+      {
+        q: "How long does anti-tarnish jewellery last?",
+        a: "With normal wear and basic care — off before perfume, wiped after wear, stored dry — the finish on our pieces holds its colour for years rather than months.",
+      },
+      {
+        q: "Will anti-tarnish jewellery turn my skin green?",
+        a: "No. Green skin comes from copper in the base alloy reacting with sweat. Our nickel-free, sealed pieces keep the base metal away from skin entirely.",
+      },
+    ],
+  },
+  {
+    slug: "american-diamond-jewellery",
+    crumb: "American Diamond",
+    h1: "American Diamond Jewellery",
+    kicker: "THE GILDED HOUR · AMERICAN DIAMOND",
+    metaTitle: "American Diamond Jewellery — Brilliant-Cut Zircone, 18K Finish",
+    metaDescription:
+      "American diamond jewellery hand-set with 57-facet brilliant-cut zircone in an 18K gold or rhodium finish. Solitaire rings, studs, tennis bracelets and pendants that read like the real thing.",
+    intro: [
+      "American diamond is the Indian trade name for cubic zirconia — a lab-grown stone cut with the same 57-facet brilliant pattern used on diamonds. Cut well and set properly, the light return is close enough that most people cannot tell across a dinner table.",
+      "We call ours zircone. Each stone is hand-checked for fire before it is set, held in real prongs rather than glued into a cup, and finished with 18K gold or rhodium. That is the entire difference between American diamond jewellery that looks expensive and the kind that looks like plastic.",
+      "Solitaires, halos, eternity bands, tennis bracelets and studs — the classical diamond vocabulary, made in small batches so the setting work stays slow.",
+    ],
+    bullets: [
+      {
+        title: "57-facet brilliant cut",
+        body: "The same facet map as a round brilliant diamond. Fire comes from the cut, not the carat, which is why cut quality is the only spec worth arguing about.",
+      },
+      {
+        title: "Prong-set by hand",
+        body: "Glue yellows and lets stones drop. Every stone we use sits in metal, checked level under light before the piece is sealed.",
+      },
+      {
+        title: "Bridal-ready, daily-wearable",
+        body: "Heavy enough for a reception, light enough for a Tuesday. Most clients buy for an occasion and then never take the piece off.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What is American diamond jewellery?",
+        a: "American diamond is the Indian market term for cubic zirconia — a hard, colourless lab-grown stone cut in the brilliant style. It is not a diamond, but it is a real crystal, not glass or plastic.",
+      },
+      {
+        q: "Does American diamond look like a real diamond?",
+        a: "A well-cut, well-set stone is very difficult to tell apart in normal light. Under direct sunlight a zircone throws slightly more rainbow fire and slightly less white sparkle than a diamond.",
+      },
+      {
+        q: "Does American diamond lose its shine?",
+        a: "The stone itself does not. What dulls is the film of oils and product that builds on it. A soft brush, warm water and mild soap restores it in a minute.",
+      },
+      {
+        q: "Is American diamond jewellery good for weddings?",
+        a: "It is one of the most popular bridal choices in India — the scale you want for a reception at a price that does not need a locker afterwards.",
+      },
+    ],
+  },
+  {
+    slug: "18k-gold-plated-jewellery",
+    crumb: "18K Gold Plated",
+    h1: "18K Gold Plated Jewellery",
+    kicker: "THE GILDED HOUR · 18K GOLD FINISH",
+    metaTitle: "18K Gold Plated Jewellery Online — Sealed, Nickel-Free Finish",
+    metaDescription:
+      "18K gold plated jewellery with a thick, sealed finish over a hypoallergenic nickel-free base. Rings, earrings, bracelets and chains that keep their colour through daily wear in Indian humidity.",
+    intro: [
+      "Not all gold plating is the same. Thickness, base metal and seal decide whether a piece looks like gold in two years or in two weeks — and almost nobody selling plated jewellery online will tell you which of the three they cut corners on.",
+      "Our finish is an 18K gold layer over a hypoallergenic, nickel-free base, sealed with an anti-tarnish coat. It is heavier than the flash-plating used on costume jewellery, which is why our pieces cost more and last considerably longer.",
+      "Every piece in The Gilded Hour carries the same finish specification, whether it is a ₹1,500 stud or a full pavé bracelet. Care instructions ship with the box.",
+    ],
+    bullets: [
+      {
+        title: "Thick plating, not flash",
+        body: "Flash-plating measures in fractions of a micron and wears through at contact points within weeks. Ours is built for daily contact.",
+      },
+      {
+        title: "Hypoallergenic base",
+        body: "Nickel-free throughout, so the piece is safe for sensitive skin and freshly pierced ears.",
+      },
+      {
+        title: "Sealed against tarnish",
+        body: "A protective coat over the gold that keeps sweat, humidity and perfume off the plating underneath.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How long does 18K gold plated jewellery last?",
+        a: "A thick, sealed plating like ours holds its colour for years of regular wear. Thin flash-plated costume jewellery typically shows wear at contact points within a few weeks.",
+      },
+      {
+        q: "Is 18K gold plated jewellery real gold?",
+        a: "The outer layer is real 18K gold bonded to a base metal. It is not solid gold, and it should not be priced or resold as such — but visually and in wear it behaves like gold.",
+      },
+      {
+        q: "Can I wear gold plated jewellery every day?",
+        a: "Yes. Put it on last after perfume and lotion, take it off before swimming or the shower, and wipe it with a dry soft cloth after wear.",
+      },
+      {
+        q: "Does gold plated jewellery come with a guarantee?",
+        a: "Message the atelier on WhatsApp before ordering and we will confirm the finish warranty that applies to the specific piece you are considering.",
+      },
+    ],
+  },
+  {
+    slug: "office-wear-jewellery",
+    crumb: "Office & Everyday",
+    h1: "Office Wear & Everyday Jewellery",
+    kicker: "THE GILDED HOUR · EVERYDAY",
+    metaTitle: "Office Wear Jewellery — Dainty Gold Pieces for Every Day",
+    metaDescription:
+      "Dainty, understated jewellery for work: fine chains, small studs, slim bands and thin bracelets in a sealed 18K gold finish. Light enough for a keyboard, finished enough for a meeting.",
+    intro: [
+      "Work jewellery has one job: to be noticed only after the person wearing it. That means scale before sparkle — a thin band, a small stud, a chain that sits above the collar rather than under it.",
+      "These are the Gilded Hour pieces we make for daily rotation. Nothing catches on a sleeve, nothing needs to come off to type, and the anti-tarnish seal means the piece survives the commute, the sanitiser and the air conditioning.",
+      "Most clients start here, buy one more, and end up wearing three pieces they never take off. That is the correct outcome.",
+    ],
+    bullets: [
+      {
+        title: "Dainty by design",
+        body: "Slim profiles and small stones. Weight is deliberately low so pieces disappear on the hand and neck.",
+      },
+      {
+        title: "Stacks cleanly",
+        body: "Bands, chains and bracelets are proportioned to layer with each other without crowding.",
+      },
+      {
+        title: "Survives the day",
+        body: "Sealed finish, snag-free settings and secure backs — built around a working day, not a photoshoot.",
+      },
+    ],
+    faqs: [
+      {
+        q: "What jewellery is appropriate for the office?",
+        a: "Small studs, a fine chain, one or two slim rings and a thin bracelet. Keep drop earrings short and avoid pieces that make noise when you type.",
+      },
+      {
+        q: "Can I wear this jewellery every day?",
+        a: "Yes — these pieces are designed for it. Sealed 18K gold finish, hypoallergenic base and low-profile settings that do not snag on clothing.",
+      },
+      {
+        q: "Is dainty jewellery fragile?",
+        a: "Slim is not the same as weak. Our thin bands and chains are solid rather than hollow, so they take daily wear without deforming.",
       },
     ],
   },
@@ -473,6 +707,241 @@ export const journal: JournalArticle[] = [
       {
         q: "How long does demi-fine jewellery last?",
         a: "A well-made, sealed piece kept away from perfume and chlorine holds its finish through years of regular wear. Costume jewellery at the same care level lasts months.",
+      },
+    ],
+  },
+  {
+    slug: "anti-tarnish-jewellery-guide",
+    title: "Anti-Tarnish Jewellery: What It Actually Means",
+    metaTitle: "Anti-Tarnish Jewellery — What It Means and How to Check",
+    metaDescription:
+      "Why plated jewellery tarnishes, what an anti-tarnish seal really does, and the four questions to ask a brand before you buy anti-tarnish jewellery online in India.",
+    excerpt:
+      "Half the jewellery sold as anti-tarnish in India is flash-plated brass with a marketing line. Here is how the seal actually works and how to test a claim before you pay for it.",
+    published: "2026-04-08",
+    readTime: "6 min read",
+    intro:
+      "Tarnish is oxidation. When sweat, humidity or perfume reaches the base metal under a plating, the metal reacts and the piece darkens or turns green. Anti-tarnish jewellery is simply jewellery built so that contact never happens.",
+    sections: [
+      {
+        h: "The three layers that decide everything",
+        p: [
+          "A plated piece is three things: a base metal, a precious-metal plating, and — on good pieces — a protective seal above the plating. The base decides whether your skin reacts. The plating thickness decides how long the colour survives friction. The seal decides how long moisture stays out.",
+          "Cheap costume jewellery skips the seal entirely and flash-plates a brass base at a fraction of a micron. That is why it looks perfect in the box and grey at the contact points three weeks later.",
+        ],
+      },
+      {
+        h: "Why Indian humidity is the hard test",
+        p: [
+          "Humid air carries more moisture and more airborne sulphur, both of which speed oxidation. A finish that holds fine in a dry climate can fail within one monsoon here.",
+          "This is the single best reason to buy demi-fine rather than costume jewellery in India: the thicker plating and seal are built for exactly this environment.",
+        ],
+      },
+      {
+        h: "Four questions to ask before buying",
+        p: [
+          "What is the base metal? You want a nickel-free, hypoallergenic alloy or sterling silver — not unspecified brass.",
+          "How thick is the plating? Anything described as flash or micron-plated without a number is usually the thinnest option available.",
+          "Is there a protective seal above the plating? If the brand cannot answer this, there almost certainly is not one.",
+          "Is the piece waterproof-sealed, and to what degree? Incidental contact and swimming are very different asks.",
+        ],
+      },
+      {
+        h: "Care that actually extends the finish",
+        p: [
+          "Put jewellery on last, after perfume, lotion and hairspray, and take it off first at night. Perfume alcohol is the most common finish-killer we see.",
+          "Wipe pieces with a dry, soft cloth after wear — not a silver polishing cloth, which is abrasive and will cut through plating.",
+          "Store pieces separately in a dry pouch or box. Loose jewellery in a shared bowl scratches its own finish off.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is anti-tarnish jewellery really tarnish-proof?",
+        a: "No finish is permanent. Anti-tarnish means the piece is sealed so that oxidation is delayed for years rather than weeks under normal wear.",
+      },
+      {
+        q: "Can I shower with anti-tarnish jewellery?",
+        a: "Better not to. Shampoo and soap residue build a film that dulls the surface, and hot water accelerates the breakdown of any seal.",
+      },
+      {
+        q: "How do I clean anti-tarnish jewellery?",
+        a: "Warm water, a drop of mild soap, a very soft brush, then dry completely with a lint-free cloth. Never use silver dip, toothpaste or baking soda on plated pieces.",
+      },
+    ],
+  },
+  {
+    slug: "american-diamond-vs-cubic-zirconia-vs-moissanite",
+    title: "American Diamond vs Cubic Zirconia vs Moissanite",
+    metaTitle: "American Diamond vs Cubic Zirconia vs Moissanite — Compared",
+    metaDescription:
+      "American diamond, cubic zirconia, zircon and moissanite explained: hardness, sparkle, price and how each one holds up in daily wear. A plain-language buying comparison.",
+    excerpt:
+      "American diamond and cubic zirconia are the same stone under two names. Moissanite is not. Here is what actually separates them — and which one to buy for what.",
+    published: "2026-04-22",
+    readTime: "7 min read",
+    intro:
+      "Four names get used interchangeably in Indian jewellery listings, and only two of them describe the same material. Sorting them out takes about five minutes and saves a lot of money.",
+    sections: [
+      {
+        h: "American diamond and cubic zirconia are one stone",
+        p: [
+          "American diamond is the Indian trade name for cubic zirconia — lab-grown zirconium dioxide, colourless, hard, and cut in the brilliant style. Zircone is our house name for the same material.",
+          "So a listing offering you an American diamond ring and one offering cubic zirconia are offering the same stone. Judge them on cut quality and setting, not on the label.",
+        ],
+      },
+      {
+        h: "Zircon is a different mineral entirely",
+        p: [
+          "Natural zircon is a mined gemstone with its own chemistry and a slightly softer, more brittle character. It is often confused with cubic zirconia because the names look alike.",
+          "If a listing says zircon at cubic-zirconia pricing, it almost certainly means cubic zirconia.",
+        ],
+      },
+      {
+        h: "Moissanite: harder, brighter, pricier",
+        p: [
+          "Moissanite is silicon carbide, roughly 9.25 on the Mohs scale against cubic zirconia's 8 to 8.5, and considerably more expensive. It also throws far more rainbow fire, which some people love and others find obviously non-diamond.",
+          "For an engagement ring you intend to wear for decades, moissanite is the more durable choice. For a wardrobe of demi-fine pieces you rotate, cubic zirconia gives you five pieces for the price of one.",
+        ],
+      },
+      {
+        h: "What to look for when buying",
+        p: [
+          "Cut first. A poorly cut stone at any price looks glassy. Facets should be crisp and symmetric, and the stone should sit level in the setting.",
+          "Setting second. Prongs beat glue every time — glue yellows, dries out and drops stones.",
+          "Finish third. The metal around the stone fails long before the stone does, so a sealed 18K gold finish over a nickel-free base is what determines how the piece ages.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is American diamond the same as cubic zirconia?",
+        a: "Yes. American diamond is simply the Indian market name for cubic zirconia, a lab-grown colourless stone cut in the brilliant style.",
+      },
+      {
+        q: "Which is better, moissanite or American diamond?",
+        a: "Moissanite is harder and more brilliant, and costs many times more. American diamond gives close-to-diamond looks at demi-fine pricing, which suits pieces you rotate rather than wear for decades.",
+      },
+      {
+        q: "Do cubic zirconia stones scratch?",
+        a: "They can over years of hard wear, since they are softer than diamond or moissanite. Storing pieces separately prevents most of it.",
+      },
+    ],
+  },
+  {
+    slug: "best-demi-fine-jewellery-brands-india",
+    title: "How to Judge a Demi-Fine Jewellery Brand in India",
+    metaTitle: "Demi-Fine Jewellery Brands India — How to Judge One",
+    metaDescription:
+      "A buyer's checklist for demi-fine jewellery brands in India: base metal, plating thickness, stone setting, warranty and returns — plus the red flags that mean costume jewellery at demi-fine prices.",
+    excerpt:
+      "Every brand now calls itself demi-fine. Six checks separate the ones building real jewellery from the ones re-labelling costume stock.",
+    published: "2026-05-06",
+    readTime: "6 min read",
+    intro:
+      "Demi-fine has become a marketing word in India. The category is real and worth buying into, but the label alone guarantees nothing — these are the specifics to check before you spend.",
+    sections: [
+      {
+        h: "1. The base metal is stated",
+        p: [
+          "A serious brand names it: sterling silver, or a hypoallergenic nickel-free alloy. If a listing only says alloy or metal, assume brass.",
+        ],
+      },
+      {
+        h: "2. The plating is described in more than adjectives",
+        p: [
+          "18K gold finished tells you the colour. What you also want is some sense of thickness and, critically, whether there is a protective anti-tarnish seal above the gold.",
+        ],
+      },
+      {
+        h: "3. Stones are set, not glued",
+        p: [
+          "Look closely at product photography. Prongs, bezels and channel settings hold metal around the stone. Glued stones sit in a shallow cup and are the single most common failure point in cheap jewellery.",
+        ],
+      },
+      {
+        h: "4. There is a real human to ask",
+        p: [
+          "Small ateliers answer sizing and finish questions directly. If nobody will tell you the base metal over chat, that is your answer.",
+        ],
+      },
+      {
+        h: "5. The returns policy is specific",
+        p: [
+          "Look for a stated window, and honest language about made-to-order pieces. Custom and made-to-measure work is genuinely non-returnable almost everywhere — a brand that pretends otherwise is not reading its own operations.",
+        ],
+      },
+      {
+        h: "6. The pricing makes sense",
+        p: [
+          "Demi-fine sits well above costume and well below solid gold. A full pavé bracelet at costume pricing is not demi-fine, whatever the listing says.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What should demi-fine jewellery cost in India?",
+        a: "Typically a few thousand rupees for studs and slim bands, rising for larger pavé work. Considerably more than costume jewellery, and a small fraction of solid gold at similar visual weight.",
+      },
+      {
+        q: "Is demi-fine jewellery a good gift?",
+        a: "It is one of the safest gifts in jewellery — it looks substantial, it is not size-critical for earrings and bracelets, and it does not carry the price anxiety of solid gold.",
+      },
+    ],
+  },
+  {
+    slug: "everyday-dainty-jewellery-styling",
+    title: "Styling Dainty Jewellery for Everyday and Office Wear",
+    metaTitle: "Dainty Jewellery Styling — Everyday & Office Wear Guide",
+    metaDescription:
+      "How to stack dainty rings, layer fine chains and choose office-appropriate earrings, with the proportion rules that keep everyday jewellery looking deliberate rather than accidental.",
+    excerpt:
+      "Three pieces, one focal point, and a rule about chain length. The whole of everyday jewellery styling fits on a postcard.",
+    published: "2026-05-20",
+    readTime: "5 min read",
+    intro:
+      "Everyday jewellery fails in one of two directions: too little, so it reads as forgotten, or too much, so it reads as costume. The fix is proportion, not restraint.",
+    sections: [
+      {
+        h: "Pick one focal point",
+        p: [
+          "Decide whether the hand, the ear or the neck is doing the talking, then keep the other two quiet. A statement ring pairs with small studs and a bare neck; a layered chain set pairs with a plain band.",
+        ],
+      },
+      {
+        h: "Layer chains at different lengths",
+        p: [
+          "Two chains at the same length tangle and read as one thick chain. Separate them by at least 5 cm so each reads on its own.",
+          "For collared shirts, keep the shortest chain above the collar line rather than fighting it.",
+        ],
+      },
+      {
+        h: "Stack rings with a size hierarchy",
+        p: [
+          "Three rings maximum across both hands for office wear, and only one with a raised stone. Slim bands stack cleanly on adjacent fingers; a solitaire wants space either side.",
+        ],
+      },
+      {
+        h: "Earrings that work in meetings",
+        p: [
+          "Small studs and short drops that stay above the jawline. Anything that swings will pull focus on video calls and catch on a headset.",
+        ],
+      },
+      {
+        h: "Metal mixing is fine — matching finishes is not optional",
+        p: [
+          "Mixing gold and rhodium works when it looks intentional: repeat each metal at least twice across the outfit. What does not work is one worn-out finish next to a fresh one, which is an argument for buying sealed pieces in the first place.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "How many pieces of jewellery should I wear to work?",
+        a: "Three is a reliable ceiling — for example small studs, one fine chain and a slim ring. Add a thin bracelet only if the sleeves allow it.",
+      },
+      {
+        q: "Can I mix gold and silver jewellery?",
+        a: "Yes, provided each metal appears at least twice so the mix looks deliberate. A single odd-metal piece reads as a mistake.",
       },
     ],
   },

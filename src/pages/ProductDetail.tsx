@@ -83,10 +83,27 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
       <Helmet>
-        <title>{title} | Naira Flore</title>
+        <title>{`${title} | Naira Flore`}</title>
         <meta name="description" content={`Shop ${title} by Naira Flore — ${description.slice(0, 110)}`} />
+        <link rel="canonical" href={`https://nairaflore.com/product/${id}`} />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={`${title} | Naira Flore`} />
+        <meta property="og:description" content={`Shop ${title} by Naira Flore — ${description.slice(0, 110)}`} />
+        <meta property="og:url" content={`https://nairaflore.com/product/${id}`} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
+              { "@type": "ListItem", position: 2, name: "Shop", item: "https://nairaflore.com/shop" },
+              { "@type": "ListItem", position: 3, name: title, item: `https://nairaflore.com/product/${id}` },
+            ],
+          })}
         </script>
       </Helmet>
       {/* Breadcrumb - desktop only */}

@@ -120,7 +120,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex min-h-[560px] flex-col items-center justify-center px-6 pb-8 pt-[84px] md:h-[100svh] md:min-h-[560px] md:pb-10 md:pt-[96px]"
+          className="relative flex flex-col items-center justify-center px-6 pb-6 pt-[84px] md:h-[100svh] md:min-h-[560px] md:pb-10 md:pt-[96px]"
         >
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />

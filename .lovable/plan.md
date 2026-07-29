@@ -1,33 +1,36 @@
 ## Problem
 
-On the home page, the ring section (`ZirconeTurn`) pins for 170% of viewport height with `scrub: 0.6` and starts with `scale: 1.08`. On mobile that creates a visible "break": as the user scrolls into the section, the pin snaps in late, the ring pops from scale 1.08 → 0.96, and the finale + "VIEW ALL" only appear near the end of a long scrubbed timeline. After the pin releases, the next section (`JewelleryCategories`) jumps in abruptly because there's no fade/handoff.
+On mobile, the ring section (`src/components/jewellery/ZirconeTurn.tsx`) has two issues during the pinned scroll:
 
-## Goal
+1. The callouts are absolutely positioned relative to the ring at `left/right: -46%`. With a ~190px ring on a 394px screen, the "BRILLIANT-CUT ZIRCONE" label runs past the right viewport edge and gets clipped, and the header line above the ring scrolls out of the pinned frame.
+2. Label text at 10px is too small to read comfortably.
 
-Make the ring section enter, animate, and exit smoothly on both mobile and desktop — no snap, no late pop, no jarring handoff into the categories grid below.
+## Plan
 
-## Changes (all in `src/components/jewellery/ZirconeTurn.tsx`)
+### 1. Mobile callout layout — stack instead of side-arms
+Below the `md` breakpoint, stop hanging the labels off the left/right of the ring. Instead:
+- Keep the pointer dot + short connector line anchored to the band and the stone as they are now.
+- Place the label itself in a fixed-width, viewport-safe position (left label pinned near the left gutter, right label near the right gutter, both within `px-4` of the section), with the connector line stretching from the label to the dot.
+- This guarantees no horizontal clipping at 360-430px widths.
 
-1. **Softer pin entry**
-   - Change ScrollTrigger `start` from `"top top"` to `"top top+=1"` and add `pinSpacing: true` (default, but explicit) so the browser reserves the space cleanly and doesn't jump when the pin engages.
-   - Remove the initial `scale: 1.08` on the card so the ring doesn't visibly "pop" as the pin engages. Keep the shrink-to-0.96 finale beat but start from 1.
+Desktop layout stays exactly as it is.
 
-2. **Shorter, smoother scrub**
-   - Reduce `end` from `+=170%` to `+=120%` so the pinned section doesn't feel like it "holds" the page for too long.
-   - Increase `scrub` from `0.6` to `1` for a smoother lerp that hides frame-to-frame jitter on mobile.
+### 2. Keep the header visible while pinned
+The "THE ZIRCONE EDIT · DEMI-GOLD" line stays inside the pinned frame at all times: keep it in the pinned flex column with fixed top padding clearing the navbar, and never animate its opacity. Confirm on a 394px viewport that it stays on screen for the full scrub.
 
-3. **Mobile: lighter treatment**
-   - Split the `matchMedia` into `(min-width: 768px)` (full pinned flip timeline as today) and `(max-width: 767px)` (no pin — just a short in-view fade for the callouts + finale). Mobile Safari's pin behavior with `100svh` + address bar resize is the main source of the "break" the user is seeing.
-   - On mobile, show both callouts and the finale via a simple IntersectionObserver-triggered fade so the section reads as a still editorial vignette instead of a broken scrub.
+### 3. Readable type on mobile
+- Callout labels: 10px → 12px, tracking loosened slightly, padding bumped so the chips stay balanced.
+- Finale sub-line ("18K Gold Finished · brilliant-cut zircone · 4-prong"): 12px → 13px.
+- "SCROLL — IT TURNS" hint: 9px → 10px.
 
-4. **Clean handoff to next section**
-   - Add a short fade-in on the following `JewelleryCategories` via a `section-reveal` wrapper in `src/pages/Index.tsx` (same pattern already used for `CustomisationSteps`) so it eases in after the pin releases instead of snapping.
+### 4. Smooth scrub on mobile
+- Keep the pinned flip animation intact — no change to the timeline structure.
+- Verify the pinned element height fits within a mobile viewport (including browser chrome) so the pin never jumps; if the taller type pushes it over, reduce ring width slightly rather than cutting animation.
+- Keep `scrub: 1` and `anticipatePin: 1`, add `fastScrollEnd` so flicky flick-scrolls settle cleanly.
 
-## Verification
+### 5. Verify
+Screenshot the section at 394px at several scroll offsets (start, mid-flip, callout hold, finale) and confirm: header visible, both labels fully on screen, dots landing on band and stone, no layout jump at pin start/end. Same check on the `/jewellery` page since it uses the same component.
 
-- Playwright at 394×543 (current mobile viewport): scroll from top past the ring section, screenshot at 4 scroll positions, confirm no snap and that the ring, callouts, and "VIEW ALL" are visible together at rest.
-- Repeat at 1280×1800 to confirm the desktop flip animation still plays.
+## Technical notes
 
-## Out of scope
-
-Visuals of the ring, copy, colors, and the finale layout stay exactly as they are — this is a motion/scroll fix only.
+Single file: `src/components/jewellery/ZirconeTurn.tsx`. No animation-timeline rewrite — only positioning, sizing, and ScrollTrigger config touches.

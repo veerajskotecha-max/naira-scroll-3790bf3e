@@ -44,13 +44,17 @@ const Index = () => {
         canonical="https://nairaflore.com/"
       />
       <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
-        <HeroScrollyWrapper />
-        
-        {/* section-reveal + is-visible toggled by IntersectionObserver above */}
-        <ZirconeTurn idAttr="jewellery" />
-        <div className="section-reveal is-visible">
-          <JewelleryCategories />
-        </div>
+        <HeroScrollyWrapper
+          beforeArrivals={
+            <>
+              <ZirconeTurn idAttr="jewellery" />
+              <div className="section-reveal is-visible">
+                <JewelleryCategories />
+              </div>
+            </>
+          }
+        />
+
         <div ref={revealRef} className="section-reveal">
           <CustomisationSteps />
         </div>

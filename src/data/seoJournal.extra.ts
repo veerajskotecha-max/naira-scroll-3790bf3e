@@ -1,5 +1,5 @@
 /* ───────────────────────────────────────────────────────────────
-   SEO CONTENT — additional journal articles.
+   SEO CONTENT, additional journal articles.
    Types imported type-only from seoContent.ts (no runtime cycle).
    ─────────────────────────────────────────────────────────────── */
 
@@ -9,7 +9,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "how-to-clean-artificial-jewellery-at-home",
     title: "How to Clean Artificial Jewellery at Home Without Ruining It",
-    metaTitle: "How to Clean Artificial Jewellery at Home — Safe Method",
+    metaTitle: "How to Clean Artificial Jewellery at Home, Safe Method",
     metaDescription:
       "The safe way to clean artificial and gold plated jewellery at home, what to never use, and how to bring back shine on tarnished pieces.",
     excerpt:
@@ -17,7 +17,7 @@ export const extraJournal: JournalArticle[] = [
     published: "2026-04-02",
     readTime: "6 min read",
     intro:
-      "Almost every home remedy circulating for artificial jewellery is abrasive, acidic, or both. They work — they remove the tarnish along with the finish underneath it.",
+      "Almost every home remedy circulating for artificial jewellery is abrasive, acidic, or both. They work, they remove the tarnish along with the finish underneath it.",
     sections: [
       {
         h: "What you should never use",
@@ -30,7 +30,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "The method that works",
         p: [
-          "Mix a drop of pH-neutral dish soap into lukewarm water. Dip a soft cloth — not the jewellery — and wipe the surface. For a setting, use a soft baby toothbrush with almost no pressure.",
+          "Mix a drop of pH-neutral dish soap into lukewarm water. Dip a soft cloth, not the jewellery, and wipe the surface. For a setting, use a soft baby toothbrush with almost no pressure.",
           "Rinse the cloth, wipe again with plain water, then dry completely with a second dry cloth. Moisture trapped behind a stone is the most common cause of a dull setting.",
           "Do not soak plated pieces. Water sitting at the join between stone and metal is what lifts a finish over time.",
         ],
@@ -39,7 +39,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Bringing shine back to a dull piece",
         p: [
           "Most dullness is skin oil and product residue, not tarnish. A dry microfibre cloth, buffed firmly for thirty seconds, recovers more shine than any liquid.",
-          "If the piece is genuinely tarnished — grey rather than dull — the plating has been breached and no cleaning will restore it. That is a manufacturing outcome, and it is why a sealed finish costs more up front.",
+          "If the piece is genuinely tarnished, grey rather than dull, the plating has been breached and no cleaning will restore it. That is a manufacturing outcome, and it is why a sealed finish costs more up front.",
         ],
       },
       {
@@ -68,7 +68,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "gold-plated-vs-gold-filled-vs-solid-gold",
     title: "Gold Plated vs Gold Filled vs Solid Gold: What You Are Paying For",
-    metaTitle: "Gold Plated vs Gold Filled vs Solid Gold — Full Comparison",
+    metaTitle: "Gold Plated vs Gold Filled vs Solid Gold, Full Comparison",
     metaDescription:
       "The real differences between gold plated, gold filled, vermeil and solid gold jewellery: thickness, lifespan, price and which one makes sense for daily wear.",
     excerpt:
@@ -81,7 +81,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Gold plated",
         p: [
-          "A layer of gold deposited electrically onto a base metal. Thickness varies enormously — flash plating can be under 0.5 microns, while a proper demi-fine plating runs several times that and is sealed on top.",
+          "A layer of gold deposited electrically onto a base metal. Thickness varies enormously, flash plating can be under 0.5 microns, while a proper demi-fine plating runs several times that and is sealed on top.",
           "Because the term covers both, 'gold plated' on a label tells you nothing on its own. Ask for the base metal and whether the finish is sealed; those two answers predict lifespan better than any number on the tag.",
         ],
       },
@@ -102,7 +102,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Solid gold",
         p: [
-          "Gold all the way through, alloyed for hardness — 22K, 18K, 14K. It never wears off, holds resale value, and costs accordingly.",
+          "Gold all the way through, alloyed for hardness, 22K, 18K, 14K. It never wears off, holds resale value, and costs accordingly.",
           "The honest case for solid gold is investment and heirloom. The honest case against it is that you will own two pieces instead of twelve, and you will be nervous every time you travel.",
         ],
       },
@@ -132,7 +132,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "how-to-choose-earrings-for-face-shape",
     title: "How to Choose Earrings for Your Face Shape",
-    metaTitle: "How to Choose Earrings for Your Face Shape — Simple Guide",
+    metaTitle: "How to Choose Earrings for Your Face Shape, Simple Guide",
     metaDescription:
       "Which earrings suit round, oval, square, heart and long faces, why the rule is about contrast, and the three shapes that work on everyone.",
     excerpt:
@@ -140,7 +140,7 @@ export const extraJournal: JournalArticle[] = [
     published: "2026-04-22",
     readTime: "5 min read",
     intro:
-      "Every face-shape earring chart reduces to a single rule — an earring that repeats the outline of your face flattens it, and one that contrasts it adds definition.",
+      "Every face-shape earring chart reduces to a single rule, an earring that repeats the outline of your face flattens it, and one that contrasts it adds definition.",
     sections: [
       {
         h: "Round faces",
@@ -152,7 +152,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Oval faces",
         p: [
-          "Oval is the shape all the charts are secretly written for — almost everything works. Use that freedom on scale rather than shape: this is the face that carries a genuine statement earring.",
+          "Oval is the shape all the charts are secretly written for, almost everything works. Use that freedom on scale rather than shape: this is the face that carries a genuine statement earring.",
           "The one thing to watch is very long drops, which can pull the face longer than intended.",
         ],
       },
@@ -181,7 +181,7 @@ export const extraJournal: JournalArticle[] = [
     faqs: [
       {
         q: "Which earrings suit a round face?",
-        a: "Long, linear designs — drop earrings, thin elongated hoops, bar studs. They add vertical length and offset width.",
+        a: "Long, linear designs, drop earrings, thin elongated hoops, bar studs. They add vertical length and offset width.",
       },
       {
         q: "Do earrings really depend on face shape?",
@@ -196,7 +196,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "how-to-layer-necklaces",
     title: "How to Layer Necklaces So They Do Not Tangle",
-    metaTitle: "How to Layer Necklaces — Lengths, Spacing, No Tangles",
+    metaTitle: "How to Layer Necklaces, Lengths, Spacing, No Tangles",
     metaDescription:
       "A practical guide to layering necklaces: the length spacing that prevents tangling, how many chains to wear, and how to layer over Indian necklines.",
     excerpt:
@@ -209,7 +209,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Space the lengths by at least 5 cm",
         p: [
-          "The reliable trio is 40 cm, 45 cm and 50 cm. Each sits in its own plane — throat, collarbone, just below — and they do not share space when you move.",
+          "The reliable trio is 40 cm, 45 cm and 50 cm. Each sits in its own plane, throat, collarbone, just below, and they do not share space when you move.",
           "If two chains are within 2 cm of each other, they will tangle regardless of the clasp, the weight or the metal.",
         ],
       },
@@ -217,7 +217,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Vary the texture, not the metal",
         p: [
           "A flat snake chain next to a rope chain slides past instead of catching. Two identical fine cables catch on each other constantly.",
-          "Keep the metal consistent, though — one gold tone across the stack is what makes it read as a designed set rather than an accident.",
+          "Keep the metal consistent, though, one gold tone across the stack is what makes it read as a designed set rather than an accident.",
         ],
       },
       {
@@ -253,9 +253,9 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "bridal-jewellery-checklist-india",
     title: "Bridal Jewellery Checklist for an Indian Wedding",
-    metaTitle: "Bridal Jewellery Checklist India — Function by Function",
+    metaTitle: "Bridal Jewellery Checklist India, Function by Function",
     metaDescription:
-      "What jewellery you actually need for each Indian wedding function — haldi, mehendi, sangeet, ceremony and reception — and where demi-fine makes more sense than gold.",
+      "What jewellery you actually need for each Indian wedding function, haldi, mehendi, sangeet, ceremony and reception, and where demi-fine makes more sense than gold.",
     excerpt:
       "Brides over-buy for the ceremony and under-plan for the four functions around it. Here is the checklist we work from at the atelier.",
     published: "2026-05-18",
@@ -281,7 +281,7 @@ export const extraJournal: JournalArticle[] = [
         h: "The ceremony",
         p: [
           "This is the one look for family gold, the traditional set, and whatever has been kept aside for it. Plan the rest of the wardrobe around it, not the other way round.",
-          "If a piece of the set is missing — matching earrings, a second bangle — demi-fine fills the gap far better than a mismatched gold piece will.",
+          "If a piece of the set is missing, matching earrings, a second bangle, demi-fine fills the gap far better than a mismatched gold piece will.",
         ],
       },
       {
@@ -295,7 +295,7 @@ export const extraJournal: JournalArticle[] = [
         h: "The practical checklist",
         p: [
           "Two pairs of everyday studs. One pair of statement earrings. One fine chain and one pendant. One cocktail ring and one slim band. One bracelet with an extender.",
-          "That set, in a consistent finish, covers every function except the ceremony — and it travels in a pouch rather than a safe.",
+          "That set, in a consistent finish, covers every function except the ceremony, and it travels in a pouch rather than a safe.",
         ],
       },
     ],
@@ -317,7 +317,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "how-to-store-jewellery-to-prevent-tarnish",
     title: "How to Store Jewellery So It Does Not Tarnish",
-    metaTitle: "How to Store Jewellery to Prevent Tarnish — Practical Guide",
+    metaTitle: "How to Store Jewellery to Prevent Tarnish, Practical Guide",
     metaDescription:
       "Humidity, not wear, is what tarnishes most jewellery in India. How to store rings, chains and earrings properly, and the cheap fix that does most of the work.",
     excerpt:
@@ -337,7 +337,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "The cheap fix",
         p: [
-          "Drop two silica gel sachets — the ones that come in shoe boxes and handbags — into your jewellery box. They cost nothing and remove the moisture that drives the reaction.",
+          "Drop two silica gel sachets, the ones that come in shoe boxes and handbags, into your jewellery box. They cost nothing and remove the moisture that drives the reaction.",
           "Replace them every few months, or dry them in the sun for an hour to reset them.",
         ],
       },
@@ -345,7 +345,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Store pieces separately",
         p: [
           "Metal against metal scratches, and a faceted stone will mark a softer finish. Individual pouches or a partitioned box solves it.",
-          "Chains should be laid flat or hung, never coiled loose in a pile — that is how fine chains knot and how links get stressed open.",
+          "Chains should be laid flat or hung, never coiled loose in a pile, that is how fine chains knot and how links get stressed open.",
         ],
       },
       {
@@ -374,7 +374,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "evil-eye-jewellery-meaning",
     title: "Evil Eye Jewellery: Meaning, Placement and How to Wear It",
-    metaTitle: "Evil Eye Jewellery Meaning — Which Wrist and Why",
+    metaTitle: "Evil Eye Jewellery Meaning, Which Wrist and Why",
     metaDescription:
       "What the evil eye symbol means, which hand to wear it on, what the colours signify, and how to style an evil eye bracelet without it looking costume.",
     excerpt:
@@ -387,14 +387,14 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "What it means",
         p: [
-          "The eye is not a charm for luck. It is understood as a deflector — it absorbs or reflects the envy directed at the wearer, which is why the motif is a staring eye rather than a decorative shape.",
+          "The eye is not a charm for luck. It is understood as a deflector, it absorbs or reflects the envy directed at the wearer, which is why the motif is a staring eye rather than a decorative shape.",
           "In Indian practice, nazar is guarded against with a black thread, kajal or lemon-and-chilli. The blue glass eye is the Mediterranean version of the same instinct, and the two have merged comfortably in modern Indian jewellery.",
         ],
       },
       {
         h: "Which hand to wear it on",
         p: [
-          "Most traditions place protective jewellery on the left — the receiving side of the body. That is the convention rather than a rule.",
+          "Most traditions place protective jewellery on the left, the receiving side of the body. That is the convention rather than a rule.",
           "The practical answer is the wrist you knock against a desk less. A protective charm that gets scratched every day stops looking protective quite quickly.",
         ],
       },
@@ -402,7 +402,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Colour meanings",
         p: [
           "Dark blue is the classic form, associated with general protection and good karma. Light blue is linked to clarity and calm.",
-          "Red and orange are read as protection for courage and energy, while white is associated with a clean slate. These are folk associations, not fixed doctrine — buy the colour you will wear.",
+          "Red and orange are read as protection for courage and energy, while white is associated with a clean slate. These are folk associations, not fixed doctrine, buy the colour you will wear.",
         ],
       },
       {
@@ -424,14 +424,14 @@ export const extraJournal: JournalArticle[] = [
       },
       {
         q: "Can I wear an evil eye bracelet every day?",
-        a: "Yes — that is what it is for. Choose one with a metal-set motif and a sealed finish so daily wear does not dull it.",
+        a: "Yes, that is what it is for. Choose one with a metal-set motif and a sealed finish so daily wear does not dull it.",
       },
     ],
   },
   {
     slug: "rose-gold-vs-yellow-gold-vs-white-gold",
     title: "Rose Gold vs Yellow Gold vs White Gold: Which Suits You",
-    metaTitle: "Rose Gold vs Yellow Gold vs White Gold — How to Choose",
+    metaTitle: "Rose Gold vs Yellow Gold vs White Gold, How to Choose",
     metaDescription:
       "How the three gold tones differ, which suits warm and cool Indian skin tones, how each behaves over time, and when mixing metals works.",
     excerpt:
@@ -465,7 +465,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Mixing metals",
         p: [
-          "Mixing works when it is repeated. Each metal should appear at least twice across the look — two gold pieces and two rhodium pieces reads deliberate; one of each reads accidental.",
+          "Mixing works when it is repeated. Each metal should appear at least twice across the look, two gold pieces and two rhodium pieces reads deliberate; one of each reads accidental.",
           "The exception is a single mixed-metal piece, which does the repetition for you and is the easiest way to wear both.",
         ],
       },
@@ -488,7 +488,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "how-to-buy-jewellery-online-in-india",
     title: "How to Buy Jewellery Online in India Without Getting Burned",
-    metaTitle: "How to Buy Jewellery Online in India — What to Check",
+    metaTitle: "How to Buy Jewellery Online in India, What to Check",
     metaDescription:
       "The seven things to check before buying jewellery online in India: base metal, plating, settings, sizing, returns, photography and seller responsiveness.",
     excerpt:
@@ -537,7 +537,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Message the seller before ordering",
         p: [
           "Ask one specific question about the piece. The speed and specificity of the reply tells you what a post-purchase problem will feel like.",
-          "Brands that make to order — as we do — will usually walk you through sizing before anything is produced. That conversation is free and prevents most exchanges.",
+          "Brands that make to order, as we do, will usually walk you through sizing before anything is produced. That conversation is free and prevents most exchanges.",
         ],
       },
     ],
@@ -559,7 +559,7 @@ export const extraJournal: JournalArticle[] = [
   {
     slug: "how-to-build-a-jewellery-capsule-wardrobe",
     title: "How to Build a Jewellery Capsule You Actually Wear",
-    metaTitle: "Jewellery Capsule Wardrobe — The 7 Pieces That Cover Everything",
+    metaTitle: "Jewellery Capsule Wardrobe, The 7 Pieces That Cover Everything",
     metaDescription:
       "The seven demi-fine pieces that cover work, weddings and everyday in India, the order to buy them in, and the pieces most people over-buy.",
     excerpt:
@@ -579,7 +579,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Buy in this order",
         p: [
-          "Studs first — they get worn most. Then the chain, then the hoops. Those three cover roughly eighty percent of days.",
+          "Studs first, they get worn most. Then the chain, then the hoops. Those three cover roughly eighty percent of days.",
           "The statement ring and the pendant come next, for occasions. The stacking band and the bracelet are the refinement layer, and there is no hurry.",
         ],
       },
@@ -587,7 +587,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Commit to one finish",
         p: [
           "The single highest-leverage decision is picking one metal tone and buying into it. It is what makes pieces bought a year apart work together.",
-          "If you want both tones, build the full capsule in one first, then add a second capsule later — do not alternate.",
+          "If you want both tones, build the full capsule in one first, then add a second capsule later, do not alternate.",
         ],
       },
       {
@@ -609,7 +609,7 @@ export const extraJournal: JournalArticle[] = [
       },
       {
         q: "Is demi-fine jewellery a good basis for a capsule?",
-        a: "It is the ideal basis — you can complete the full capsule for the price of one solid gold piece, and sealed finishes survive daily rotation.",
+        a: "It is the ideal basis, you can complete the full capsule for the price of one solid gold piece, and sealed finishes survive daily rotation.",
       },
     ],
   },

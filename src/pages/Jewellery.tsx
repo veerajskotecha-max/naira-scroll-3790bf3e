@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const hubFaqs = [
   {
     q: "What is demi-fine jewellery?",
-    a: "Demi-fine jewellery sits between costume and solid gold: real construction — prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base — with lab-grown zircone in place of diamonds.",
+    a: "Demi-fine jewellery sits between costume and solid gold: real construction, prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base, with lab-grown zircone in place of diamonds.",
   },
   {
     q: "Does Naira Flore jewellery tarnish?",
@@ -43,7 +43,7 @@ const Jewellery = () => {
   return (
     <>
       <PageSEO
-        title="Demi-Fine Jewellery Online India — Anti-Tarnish 18K Gold Finish"
+        title="Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish"
         description="Shop demi-fine jewellery by Naira Flore: hand-set brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches in Nashik."
         canonical={`${SITE_URL}/jewellery`}
         image={jewellery[0]?.image}
@@ -56,7 +56,7 @@ const Jewellery = () => {
           {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: "Demi-Fine Jewellery — The Gilded Hour",
+            name: "Demi-Fine Jewellery, The Gilded Hour",
             url: `${SITE_URL}/jewellery`,
             mainEntity: {
               "@type": "ItemList",
@@ -72,7 +72,7 @@ const Jewellery = () => {
         ]}
       />
       <div className="bg-[#FBF3EC] pt-[94px] text-[#1A1614] md:pt-[100px] lg:pt-[116px]">
-        {/* hero — the clean scroll-turned solitaire */}
+        {/* hero, the clean scroll-turned solitaire */}
         <ZirconeTurn showViewAll={false} />
 
         {/* indexable header */}
@@ -84,7 +84,7 @@ const Jewellery = () => {
           <p className="mt-4 max-w-3xl text-[15px] leading-[1.85] text-[#1A1614]/70 md:text-[17px]" style={editorial}>
             Hand-set brilliant-cut zircone in an 18K gold or rhodium finish, sealed against tarnish and built on a
             hypoallergenic, nickel-free base. Rings, earrings, bracelets and necklaces made to order in small batches
-            at our Nashik atelier — demi-fine, which means fine-jewellery construction at a price you can wear daily.
+            at our Nashik atelier, demi-fine, which means fine-jewellery construction at a price you can wear daily.
           </p>
         </header>
 
@@ -118,7 +118,7 @@ const Jewellery = () => {
 
 
 
-        {/* collections — internal linking */}
+        {/* collections, internal linking */}
         <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
           <h2 className="text-[22px] md:text-[30px]" style={velista}>Shop by collection</h2>
           <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-3">
@@ -137,7 +137,7 @@ const Jewellery = () => {
 
         {/* faq */}
         <section className="mx-auto max-w-6xl border-t border-[#1A1614]/10 px-4 py-14 sm:px-6">
-          <h2 className="text-[24px] md:text-[34px]" style={velista}>Demi-fine jewellery — common questions</h2>
+          <h2 className="text-[24px] md:text-[34px]" style={velista}>Demi-fine jewellery, common questions</h2>
           <dl className="mt-7 max-w-3xl space-y-6">
             {hubFaqs.map((f) => (
               <div key={f.q}>

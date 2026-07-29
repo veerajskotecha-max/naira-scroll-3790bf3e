@@ -10,7 +10,7 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 const Journal = () => (
   <>
     <PageSEO
-      title="The Journal — Jewellery Care, Sizing & Styling Guides"
+      title="The Journal, Jewellery Care, Sizing & Styling Guides"
       description="Practical guides from the Naira Flore atelier: ring sizing for India, caring for gold plated jewellery, zirconia versus diamond, and styling Indo-Western outfits."
       canonical={`${SITE_URL}/journal`}
       jsonLd={[

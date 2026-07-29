@@ -74,7 +74,7 @@ const JewelDetail = () => {
   const related = jewellery.filter((j) => j.handle !== piece.handle).slice(0, 4);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore — I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
+    `Hi Naira Flore, I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
 
   const handleWishlist = () => toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
@@ -165,7 +165,7 @@ const JewelDetail = () => {
     <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>
       <Helmet>
         <title>{piece.name} · Demi-Gold Jewellery | Naira Flore</title>
-        <meta name="description" content={`${piece.name} — ${piece.blurb.slice(0, 130)}`} />
+        <meta name="description" content={`${piece.name}, ${piece.blurb.slice(0, 130)}`} />
         <link rel="canonical" href={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta property="og:type" content="product" />
@@ -395,7 +395,7 @@ const JewelDetail = () => {
                 <AccordionTrigger className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline" style={{ color: "hsl(0 0% 20%)" }}>Delivery Timelines</AccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Made to order — plated &amp; finished in 2–3 weeks.</p>
+                    <p>• Made to order, plated &amp; finished in 2–3 weeks.</p>
                     <p>• Shipped free across India, insured in transit.</p>
                   </div>
                 </AccordionContent>
@@ -404,7 +404,7 @@ const JewelDetail = () => {
                 <AccordionTrigger className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline" style={{ color: "hsl(0 0% 20%)" }}>Disclaimer</AccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Handcrafted pieces carry gentle variation — part of their character.</p>
+                    <p>• Handcrafted pieces carry gentle variation, part of their character.</p>
                     <p>• Stone tone may vary slightly from screen colours.</p>
                   </div>
                 </AccordionContent>

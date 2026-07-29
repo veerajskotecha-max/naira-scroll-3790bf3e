@@ -97,7 +97,7 @@ const JewelleryCategory = () => {
           {/* faq */}
           <section className="border-t border-[#1A1614]/10 py-14 md:py-20">
             <h2 className="text-[26px] md:text-[36px]" style={velista}>
-              {label} — questions we get asked
+              Questions we get asked
             </h2>
             <dl className="mt-8 max-w-3xl space-y-7">
               {landing.faqs.map((f) => (
@@ -109,7 +109,7 @@ const JewelleryCategory = () => {
             </dl>
           </section>
 
-          {/* sibling links — internal linking for crawl depth */}
+          {/* sibling links, internal linking for crawl depth */}
           <nav aria-label="Other jewellery collections" className="flex flex-wrap gap-3 border-t border-[#1A1614]/10 py-10">
             {categoryLandings
               .filter((c) => c.slug !== landing.slug)

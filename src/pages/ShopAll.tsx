@@ -335,7 +335,7 @@ const ShopAll = () => {
   return (
     <div className="min-h-screen flex flex-col pt-[94px] md:pt-[100px] lg:pt-[116px]">
       <PageSEO
-        title="Shop All — Indo-Western Dresses, Co-ord Sets & Fusion Sarees"
+        title="Shop All, Indo-Western Dresses, Co-ord Sets & Fusion Sarees"
         description="Shop handcrafted Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore. Made to measure in India, with custom fits and worldwide shipping."
         canonical="https://nairaflore.com/shop"
       />
@@ -344,7 +344,7 @@ const ShopAll = () => {
         eyebrow="New Arrivals"
         title="The Festive"
         titleAccent="Edit"
-        description="Curated silhouettes for the season — handwoven textures, refined embroidery, and contemporary drape."
+        description="Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape."
         primaryCta={{ label: "Shop Now", to: "/shop" }}
         secondaryCta={{ label: "Explore Collection", to: "/shop?category=festive" }}
       />

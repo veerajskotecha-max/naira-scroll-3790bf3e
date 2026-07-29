@@ -10,7 +10,7 @@ const faqSections = [
     items: [
       {
         q: "How does the customization process work?",
-        a: "Our customization process begins with a consultation on WhatsApp, where you share your vision — reference images, preferred fabrics, colours, and embroidery styles. Our design team then creates a sketch and detailed plan for your approval before we begin handcrafting your piece.",
+        a: "Our customization process begins with a consultation on WhatsApp, where you share your vision, reference images, preferred fabrics, colours, and embroidery styles. Our design team then creates a sketch and detailed plan for your approval before we begin handcrafting your piece.",
       },
       {
         q: "How long do custom orders take?",
@@ -32,7 +32,7 @@ const faqSections = [
       },
       {
         q: "Do you offer express shipping?",
-        a: "Currently, we do not offer express shipping for custom orders due to the handcrafted nature of our pieces. For standard orders, expedited shipping may be available — please contact us on WhatsApp for options.",
+        a: "Currently, we do not offer express shipping for custom orders due to the handcrafted nature of our pieces. For standard orders, expedited shipping may be available, please contact us on WhatsApp for options.",
       },
       {
         q: "How can I track my order?",
@@ -96,7 +96,7 @@ const FAQs = () => {
   return (
     <>
       <PageSEO
-        title="FAQs — Custom Orders, Sizing, Shipping & Returns"
+        title="FAQs, Custom Orders, Sizing, Shipping & Returns"
         description="Answers on custom order timelines, sizing and measurements, jewellery care, shipping across India and worldwide, and the Naira Flore exchange policy."
         canonical="https://nairaflore.com/faqs"
         jsonLd={faqLd(faqSections.flatMap((s) => s.items))}

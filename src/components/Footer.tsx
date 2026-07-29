@@ -197,7 +197,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Popular Searches — SEO */}
+        {/* Popular Searches, SEO */}
         <div
           className="mt-12 pt-6"
           style={{ borderTop: "1px solid hsla(33,33%,95%,0.18)" }}

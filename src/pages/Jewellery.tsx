@@ -116,34 +116,42 @@ const Jewellery = () => {
 
 
 
-        {/* collections, internal linking */}
-        <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
-          <h2 className="text-[22px] md:text-[30px]" style={velista}>Shop by collection</h2>
-          <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-3">
-            {categoryLandings.map((c) => (
-              <Link
-                key={c.slug}
-                to={`/jewellery/collections/${c.slug}`}
-                className="border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
-                style={jost}
-              >
-                {(c.crumb ?? c.category ?? c.h1).toUpperCase()}
-              </Link>
-            ))}
-          </nav>
+        {/* collections, internal linking (collapsed, still in the DOM for crawlers) */}
+        <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
+          <details className="group border-t border-[#1A1614]/10 pt-6">
+            <summary className="cursor-pointer list-none text-[11px] tracking-[0.28em] text-[#1A1614]/55 transition-colors hover:text-[#1A1614]" style={jost}>
+              SHOP BY COLLECTION
+            </summary>
+            <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-2.5">
+              {categoryLandings.map((c) => (
+                <Link
+                  key={c.slug}
+                  to={`/jewellery/collections/${c.slug}`}
+                  className="border border-[#1A1614]/20 px-3.5 py-2 text-[9.5px] tracking-[0.2em] text-[#1A1614]/60 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+                  style={jost}
+                >
+                  {(c.crumb ?? c.category ?? c.h1).toUpperCase()}
+                </Link>
+              ))}
+            </nav>
+          </details>
         </section>
 
-        {/* faq */}
-        <section className="mx-auto max-w-6xl border-t border-[#1A1614]/10 px-4 py-14 sm:px-6">
-          <h2 className="text-[24px] md:text-[34px]" style={velista}>Demi-fine jewellery, common questions</h2>
-          <dl className="mt-7 max-w-3xl space-y-6">
-            {hubFaqs.map((f) => (
-              <div key={f.q}>
-                <dt className="text-[14px] tracking-[0.04em] md:text-[16px]" style={jost}>{f.q}</dt>
-                <dd className="mt-2 text-[14px] leading-[1.85] text-[#1A1614]/65 md:text-[15px]" style={editorial}>{f.a}</dd>
-              </div>
-            ))}
-          </dl>
+        {/* faq, collapsed by default so the page stays quiet */}
+        <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+          <details className="border-t border-[#1A1614]/10 pt-6">
+            <summary className="cursor-pointer list-none text-[11px] tracking-[0.28em] text-[#1A1614]/55 transition-colors hover:text-[#1A1614]" style={jost}>
+              GOOD TO KNOW
+            </summary>
+            <dl className="mt-6 max-w-3xl space-y-6">
+              {hubFaqs.map((f) => (
+                <div key={f.q}>
+                  <dt className="text-[14px] tracking-[0.04em] md:text-[16px]" style={jost}>{f.q}</dt>
+                  <dd className="mt-2 text-[14px] leading-[1.85] text-[#1A1614]/65 md:text-[15px]" style={editorial}>{f.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
         </section>
 
         <Footer />

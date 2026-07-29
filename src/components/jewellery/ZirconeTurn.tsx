@@ -130,38 +130,39 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           </p>
 
 
-          {/* the ring — two photos turning */}
-          <div className="relative my-0 md:my-4" style={{ perspective: "1200px" }}>
+          {/* the ring — two photos turning (wrapper spans full width so callouts never clip) */}
+          <div className="relative flex w-full max-w-[520px] justify-center md:max-w-[900px]" style={{ perspective: "1200px" }}>
             <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
               <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" />
               <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0 }} />
+              {/* glint flash */}
+              <div data-flash aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[3px] -translate-x-1/2 -translate-y-1/2"
+                style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #C99A4C 25%, #FFF8F5 50%, #C99A4C 75%, transparent)", boxShadow: "0 0 24px 6px rgba(255,246,222,0.8)" }} />
+              {/* contact shadow */}
+              <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
+                style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
             </div>
-            {/* glint flash */}
-            <div data-flash aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[3px] -translate-x-1/2 -translate-y-1/2"
-              style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #C99A4C 25%, #FFF8F5 50%, #C99A4C 75%, transparent)", boxShadow: "0 0 24px 6px rgba(255,246,222,0.8)" }} />
-            {/* contact shadow */}
-            <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
-              style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
 
             {/* callout — band (left) — dot lands on ring band */}
-            <div data-call-l className="absolute left-[-46%] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-[-38%] md:top-[62%] lg:left-[-56%]">
-              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[10px] tracking-[0.14em] text-[#9A7634] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.2em]" style={jost}>
+            <div data-call-l className="absolute left-1 right-[calc(50%+19vw)] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-6 md:right-[calc(50%+13vw)] lg:left-10">
+              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#9A7634] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
                 18K GOLD FINISHED
               </span>
-              <span data-line-l className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
-              <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
+              <span data-line-l className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
+              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
             </div>
 
             {/* callout — stone (right) — dot lands on centered zircone */}
-            <div data-call-r className="absolute right-[-46%] top-[44%] z-20 flex -translate-y-1/2 items-center md:right-[-38%] md:top-[46%] lg:right-[-56%]">
-              <span className="block h-1 w-1 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
-              <span data-line-r className="block h-px w-4 bg-[#C99A4C] md:w-14" aria-hidden />
-              <span className="whitespace-nowrap border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[10px] tracking-[0.14em] text-[#9A7634] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.2em]" style={jost}>
+            <div data-call-r className="absolute left-[calc(50%+6vw)] right-1 top-[42%] z-20 flex -translate-y-1/2 items-center md:left-[calc(50%+5vw)] md:right-6 md:top-[46%] lg:right-10">
+              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
+              <span data-line-r className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
+              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#9A7634] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
                 BRILLIANT-CUT ZIRCONE
               </span>
             </div>
 
           </div>
+
 
           {/* finale */}
           <div data-finale className="relative z-20 mt-3 text-center md:mt-8">

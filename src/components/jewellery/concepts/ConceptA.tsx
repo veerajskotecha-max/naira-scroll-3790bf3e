@@ -4,7 +4,7 @@ import SplitText from "@/components/wow/SplitText";
 import SpinStage from "@/components/jewellery/SpinStage";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
-import modelIvory from "@/assets/jewellery/model-ivory.jpg";
+import modelIvory from "@/assets/jewellery/model-ivory.webp";
 
 /* CONCEPT A — THE IVORY ATELIER
    Brand-light and exact: on-model campaign portrait on the left, a big

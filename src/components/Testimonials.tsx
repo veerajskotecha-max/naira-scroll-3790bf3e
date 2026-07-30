@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import bride1 from "@/assets/carousel-bride-1.jpg";
-import bride2 from "@/assets/carousel-bride-2.jpg";
+import bride2 from "@/assets/carousel-bride-2.webp";
 import festive1 from "@/assets/carousel-festive-1.jpg";
 import festive2 from "@/assets/carousel-festive-2.jpg";
 import fusion1 from "@/assets/carousel-fusion-1.jpg";

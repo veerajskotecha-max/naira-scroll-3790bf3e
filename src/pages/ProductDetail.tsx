@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
+import JudgeMeReviews, { judgeMeEnabled } from "@/components/JudgeMeReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 import StickyAddToCart from "@/components/StickyAddToCart";
@@ -153,7 +154,13 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <CustomerReviews productName={product.title} />
+      {/* Real order-verified reviews once Judge.me is connected; curated
+          testimonials until then */}
+      {judgeMeEnabled ? (
+        <JudgeMeReviews productId={product.id} productTitle={product.title} />
+      ) : (
+        <CustomerReviews productName={product.title} />
+      )}
       <MaterialsCraft />
       <YouMayAlsoLike currentHandle={product.handle} />
       

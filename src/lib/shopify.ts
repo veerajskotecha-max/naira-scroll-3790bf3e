@@ -322,22 +322,37 @@ export function formatShopifyPrice(money: ShopifyMoney): string {
   }).format(amount);
 }
 
+/**
+ * Domain that web checkout should run on.
+ *
+ * Default: Shopify's permanent domain (works everywhere, but shows an
+ * unbranded nc5eti-gp.myshopify.com URL at the payment step).
+ *
+ * Branded checkout: connect a dedicated subdomain (e.g. shop.nairaflore.com)
+ * to Shopify (Settings > Domains, CNAME to shops.myshopify.com), make it the
+ * store's PRIMARY domain, then set VITE_CHECKOUT_DOMAIN=shop.nairaflore.com.
+ * The main site domains (nairaflore.com / www) stay on Lovable, which is why
+ * checkout cannot use them: Shopify /cart/c/... paths 404 there.
+ */
+export const CHECKOUT_DOMAIN =
+  (import.meta.env.VITE_CHECKOUT_DOMAIN ?? "").toString().trim() || SHOPIFY_STORE_PERMANENT_DOMAIN;
+
 export function formatCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
-    // Force Shopify's permanent domain. The store's primary domain
-    // (nairaflore.com) is hosted on Lovable, not Shopify, so /cart/c/... 404s.
-    url.host = SHOPIFY_STORE_PERMANENT_DOMAIN;
+    url.host = CHECKOUT_DOMAIN;
     url.protocol = "https:";
     url.port = "";
 
-    // Shopify redirects /cart/c/<token> on the permanent domain back to the
-    // primary domain (nairaflore.com), which then 404s on Lovable. Rewrite to
-    // the direct web checkout route /checkouts/cn/<token>, which stays on the
-    // permanent domain.
-    const cartMatch = url.pathname.match(/^\/cart\/c\/([^/]+)\/?$/);
-    if (cartMatch) {
-      url.pathname = `/checkouts/cn/${cartMatch[1]}`;
+    // On the permanent domain, Shopify redirects /cart/c/<token> back to the
+    // store's primary domain, which 404s on Lovable. Rewriting to the direct
+    // web checkout route /checkouts/cn/<token> avoids that hop. On a branded
+    // checkout domain that IS the primary domain, /cart/c works as-is.
+    if (CHECKOUT_DOMAIN === SHOPIFY_STORE_PERMANENT_DOMAIN) {
+      const cartMatch = url.pathname.match(/^\/cart\/c\/([^/]+)\/?$/);
+      if (cartMatch) {
+        url.pathname = `/checkouts/cn/${cartMatch[1]}`;
+      }
     }
 
     url.searchParams.set("channel", "online_store");

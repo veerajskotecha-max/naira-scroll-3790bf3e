@@ -11,9 +11,9 @@ import product3 from "@/assets/product-3.jpg";
 import product4 from "@/assets/product-4.jpg";
 import product1Hover from "@/assets/product-1-hover.jpg";
 import product2Hover from "@/assets/product-2-hover.jpg";
-import reviewTaneesha from "@/assets/review-taneesha.jpeg";
-import reviewNabby from "@/assets/review-nabby.jpeg";
-import reviewAshley from "@/assets/review-ashley.jpeg";
+import reviewTaneesha from "@/assets/review-taneesha.webp";
+import reviewNabby from "@/assets/review-nabby.webp";
+import reviewAshley from "@/assets/review-ashley.webp";
 
 import jewelUgcVine from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
 import jewelUgcBracelet from "@/assets/jewellery/ugc/jewel-review-bracelet.jpg.asset.json";

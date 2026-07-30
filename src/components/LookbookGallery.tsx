@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import look1 from "@/assets/lookbook/look-1.jpg";
-import look2 from "@/assets/lookbook/look-2.jpg";
-import look3 from "@/assets/lookbook/look-3.jpg";
-import look4 from "@/assets/lookbook/look-4.jpg";
-import look5 from "@/assets/lookbook/look-5.jpg";
-import look6 from "@/assets/lookbook/look-6.jpg";
-import brandFlower from "@/assets/lookbook/brand-flower.png";
+import look1 from "@/assets/lookbook/look-1.webp";
+import look2 from "@/assets/lookbook/look-2.webp";
+import look3 from "@/assets/lookbook/look-3.webp";
+import look4 from "@/assets/lookbook/look-4.webp";
+import look5 from "@/assets/lookbook/look-5.webp";
+import look6 from "@/assets/lookbook/look-6.webp";
+import brandFlower from "@/assets/lookbook/brand-flower.webp";
 import SplitText from "@/components/wow/SplitText";
 
 /* ───────────────────────────────────────────────────────────────

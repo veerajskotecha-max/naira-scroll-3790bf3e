@@ -1,4 +1,4 @@
-import ringFront from "@/assets/jewellery/ring-cut-front.png";
+import ringFront from "@/assets/jewellery/ring-cut-front.webp";
 import heroSilk from "@/assets/jewellery/zircone-hero.jpg";
 
 /* VARIATION 3 — CINEMATIC MACRO

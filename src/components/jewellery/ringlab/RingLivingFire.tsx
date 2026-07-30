@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import ringFront from "@/assets/jewellery/ring-cut-front.png";
+import ringFront from "@/assets/jewellery/ring-cut-front.webp";
 
 /* VARIATION 1 — LIVING FIRE
    The stone is the star: slow rotating light-caustic rays radiate from

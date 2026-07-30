@@ -1,4 +1,4 @@
-import ringFront from "@/assets/jewellery/ring-cut-front.png";
+import ringFront from "@/assets/jewellery/ring-cut-front.webp";
 
 /* VARIATION 2 — MIRROR PLINTH
    Boutique glass-shelf presentation: the ring stands on a polished

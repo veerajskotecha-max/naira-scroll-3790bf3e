@@ -5,8 +5,8 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
-import ringFront from "@/assets/jewellery/ring-cut-front.png";
-import ring34 from "@/assets/jewellery/ring-cut-34.png";
+import ringFront from "@/assets/jewellery/ring-cut-front.webp";
+import ring34 from "@/assets/jewellery/ring-cut-34.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 

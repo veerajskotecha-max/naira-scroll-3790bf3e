@@ -4,7 +4,7 @@ import SplitText from "@/components/wow/SplitText";
 import SpinStage from "@/components/jewellery/SpinStage";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
-import modelTerracotta from "@/assets/jewellery/model-terracotta.jpg";
+import modelTerracotta from "@/assets/jewellery/model-terracotta.webp";
 
 /* CONCEPT C — GOLDEN HOUR
    Sun-baked terracotta courtyard. The hand-with-marigold campaign shot

@@ -4,7 +4,7 @@ import SplitText from "@/components/wow/SplitText";
 import SpinStage from "@/components/jewellery/SpinStage";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
-import modelEmerald from "@/assets/jewellery/model-emerald.jpg";
+import modelEmerald from "@/assets/jewellery/model-emerald.webp";
 
 /* CONCEPT B — THE EMERALD JEWEL BOX
    Deep emerald velvet night. The dramatic rim-lit campaign portrait on

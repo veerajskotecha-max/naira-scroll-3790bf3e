@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageSquare, Palette, SlidersHorizontal, Phone, Package } from "lucide-react";
 import { Link } from "react-router-dom";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const featureCards = [
   {
@@ -49,10 +50,13 @@ const CustomisationSteps = () => {
           obs.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   // Once section is visible, start the sequential highlight cycle

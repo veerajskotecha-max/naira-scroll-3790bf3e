@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import HeroScrollyWrapper from "@/components/HeroScrollyWrapper";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 import CustomisationSteps from "@/components/CustomisationSteps";
 import BrandEthos from "@/components/BrandEthos";
@@ -33,7 +34,10 @@ const Index = () => {
       { threshold: 0.01 } // trigger earlier to ensure it fires on mobile
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(el)) el.classList.add("is-visible");
+    });
+    return () => { observer.disconnect(); disposeFallback(); };
   }, []);
 
   return (

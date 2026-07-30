@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/about-crafting.webp";
 import heroBg from "@/assets/about-hero-bg.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const AboutHero = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -10,10 +11,13 @@ const AboutHero = () => {
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   return (

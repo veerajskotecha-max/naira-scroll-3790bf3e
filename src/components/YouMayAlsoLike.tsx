@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import { fetchShopifyProducts } from "@/lib/shopify";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const YouMayAlsoLike = ({ currentHandle }: { currentHandle?: string }) => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -24,10 +25,13 @@ const YouMayAlsoLike = ({ currentHandle }: { currentHandle?: string }) => {
           observer.disconnect();
         }
       },
-      { threshold: 0.08 }
+      { threshold: 0.03 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(sectionRef.current)) setVisible(true);
+    });
+    return () => { observer.disconnect(); disposeFallback(); };
   }, []);
 
   return (

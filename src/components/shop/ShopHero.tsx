@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import floralPattern from "@/assets/floral-pattern-bg.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 export interface ShopHeroProps {
   eyebrow?: string;
@@ -37,10 +38,13 @@ const ShopHero = ({
           obs.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   useEffect(() => {

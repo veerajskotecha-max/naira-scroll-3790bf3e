@@ -30,7 +30,7 @@ const JewellerySection = () => {
       className="w-full"
       style={{ scrollMarginTop: "120px", backgroundColor: "hsl(0 0% 100%)" }}
     >
-      <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 py-12 md:py-16 lg:py-20">
+      <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 py-10 md:py-12 lg:py-14">
         {/* Section header */}
         <div className="text-center mb-8 md:mb-10">
           <span

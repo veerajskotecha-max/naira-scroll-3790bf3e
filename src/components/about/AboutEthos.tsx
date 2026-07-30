@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pencil, Scissors, Flower2 } from "lucide-react";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 
 const pillars = [
@@ -30,10 +31,13 @@ const AboutEthos = () => {
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.15 }
+      { threshold: 0.03 }
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   const scrollTo = (id: string) => {

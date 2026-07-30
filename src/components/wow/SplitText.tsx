@@ -28,7 +28,7 @@ const SplitText = ({ text, className, style, delay = 0, step = 0.03, as = "span"
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { el.classList.add("is-in"); return; }
     const io = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { el.classList.add("is-in"); io.disconnect(); clearTimeout(fallback); } },
-      { threshold: 0.2 }
+      { threshold: 0.03 }
     );
     io.observe(el);
     // Safety net: never leave a headline invisible if the observer never fires

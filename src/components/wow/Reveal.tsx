@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 /* ───────────────────────────────────────────────────────────────
    REVEAL
@@ -35,10 +36,20 @@ const Reveal = ({
           io.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+      // Any sliver of the element entering the viewport reveals it; a ratio
+      // threshold can strand tall blocks invisible on short screens.
+      { threshold: 0.01 }
     );
     io.observe(el);
-    return () => io.disconnect();
+    // Observers can miss their initial record around route transitions and
+    // image-settling layout shifts; never leave in-view content invisible.
+    const dispose = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setShown(true);
+    });
+    return () => {
+      io.disconnect();
+      dispose();
+    };
   }, [shown]);
 
   return (

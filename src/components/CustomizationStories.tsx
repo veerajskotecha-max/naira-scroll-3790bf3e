@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Play } from "lucide-react";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const reels = [
   {
@@ -31,10 +32,13 @@ const CustomizationStories = () => {
           obs.disconnect();
         }
       },
-      { threshold: 0.08 }
+      { threshold: 0.03 }
     );
     if (sectionRef.current) obs.observe(sectionRef.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(sectionRef.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   return (

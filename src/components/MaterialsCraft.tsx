@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import PremiumSilkIcon from "./icons/PremiumSilkIcon";
 import EmbroideryIcon from "./icons/EmbroideryIcon";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const steps: { number: string; title: string; icon: ReactNode }[] = [
   {
@@ -40,10 +41,13 @@ const MaterialsCraft = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(sectionRef.current)) setVisible(true);
+    });
+    return () => { observer.disconnect(); disposeFallback(); };
   }, []);
 
   return (

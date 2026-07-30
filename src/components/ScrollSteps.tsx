@@ -4,6 +4,7 @@ import step01Img from "@/assets/step-01-dream.jpg";
 import step02Img from "@/assets/step-02-design.jpg";
 import step03Img from "@/assets/step-03-consultation.jpg";
 import step04Img from "@/assets/7da639b9-dbe2-483c-a607-0c8381819967.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const steps = [
   {
@@ -135,25 +136,36 @@ const ScrollSteps = () => {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.03 }
     );
 
     stepRefs.current.forEach((ref) => {
       if (ref) observer.observe(ref);
     });
 
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      stepRefs.current.forEach((ref, idx) => {
+        if (isInViewport(ref)) {
+          setVisibleSteps((prev) => (prev.has(idx) ? prev : new Set(prev).add(idx)));
+        }
+      });
+    });
+
+    return () => {
+      observer.disconnect();
+      disposeFallback();
+    };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden py-16 md:py-24 lg:py-32"
+      className="relative w-full overflow-hidden py-12 md:py-16 lg:py-20"
       style={{ backgroundColor: "hsl(30 20% 96%)" }}
     >
       <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 lg:px-16">
         {/* Heading */}
-        <div className="text-center mb-16 md:mb-24">
+        <div className="text-center mb-10 md:mb-14">
           <p
             className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
             style={{ color: "hsl(160 15% 45%)" }}
@@ -186,7 +198,7 @@ const ScrollSteps = () => {
         </div>
 
         {/* Steps */}
-        <div className="flex flex-col gap-16 md:gap-24 lg:gap-32">
+        <div className="flex flex-col gap-10 md:gap-14 lg:gap-16">
           {steps.map((step, i) => (
             <div
               key={step.number}
@@ -200,9 +212,9 @@ const ScrollSteps = () => {
                 isVisible={visibleSteps.has(i)}
               />
               {i < steps.length - 1 && (
-                <div className="flex justify-center mt-16 md:mt-24">
+                <div className="flex justify-center mt-10 md:mt-14">
                   <div
-                    className="w-px h-12 md:h-16"
+                    className="w-px h-8 md:h-10"
                     style={{ backgroundColor: "hsl(160 12% 80%)" }}
                   />
                 </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
 import { Sparkles, Palette, Gift, MessageSquare, SlidersHorizontal, Phone, Package } from "lucide-react";
 import { Link } from "react-router-dom";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const steps = [
   {
@@ -64,15 +65,19 @@ const CoutureExperience = () => {
   useEffect(() => {
     const obs1 = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setTopVisible(true); obs1.disconnect(); } },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     const obs2 = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setBottomVisible(true); obs2.disconnect(); } },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (topRef.current) obs1.observe(topRef.current);
     if (bottomRef.current) obs2.observe(bottomRef.current);
-    return () => { obs1.disconnect(); obs2.disconnect(); };
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(topRef.current)) setTopVisible(true);
+      if (isInViewport(bottomRef.current)) setBottomVisible(true);
+    });
+    return () => { obs1.disconnect(); obs2.disconnect(); disposeFallback(); };
   }, []);
 
   return (

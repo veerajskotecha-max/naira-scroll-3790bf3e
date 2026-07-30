@@ -8,6 +8,7 @@ import look5 from "@/assets/lookbook/look-5.webp";
 import look6 from "@/assets/lookbook/look-6.webp";
 import brandFlower from "@/assets/lookbook/brand-flower.webp";
 import SplitText from "@/components/wow/SplitText";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 /* ───────────────────────────────────────────────────────────────
    THE LOOKBOOK
@@ -100,10 +101,13 @@ const LookbookGallery = () => {
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { el.classList.add("is-revealed"); io.disconnect(); } },
-      { threshold: 0.12 }
+      { threshold: 0.03 }
     );
     io.observe(el);
-    return () => io.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(el)) el.classList.add("is-revealed");
+    });
+    return () => { io.disconnect(); disposeFallback(); };
   }, []);
 
   return (

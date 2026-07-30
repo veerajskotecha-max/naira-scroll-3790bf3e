@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import craftsmanshipMain from "@/assets/about-crafting.webp";
 import craftsmanshipOverlay from "@/assets/about-uniquely-yours.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const Craftsmanship = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,10 +16,13 @@ const Craftsmanship = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(sectionRef.current)) setVisible(true);
+    });
+    return () => { observer.disconnect(); disposeFallback(); };
   }, []);
 
   return (

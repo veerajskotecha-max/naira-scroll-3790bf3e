@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts } from "@/lib/shopify";
 import { productFromShopify, type Product } from "@/components/ProductCard";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const INSTAGRAM_REEL_URL =
   "https://www.instagram.com/reel/DWJxV5CsWSt/?igsh=MWtxNnEzdXE4d2NmaQ==";
@@ -28,10 +29,13 @@ const CampaignFilm = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.03 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(sectionRef.current)) setVisible(true);
+    });
+    return () => { observer.disconnect(); disposeFallback(); };
   }, []);
 
   return (

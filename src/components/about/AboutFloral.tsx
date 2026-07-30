@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import floralImg from "@/assets/about-uniquely-yours.webp";
 import floralPatternBg from "@/assets/floral-pattern-bg.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const AboutFloral = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -9,10 +10,13 @@ const AboutFloral = () => {
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.15 }
+      { threshold: 0.03 }
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   return (

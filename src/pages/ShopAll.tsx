@@ -358,7 +358,7 @@ const ShopAll = () => {
           className="w-full"
           style={{ scrollMarginTop: "120px", backgroundColor: "hsl(0 0% 98%)" }}
         >
-          <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 pt-12 md:pt-16 lg:pt-20 pb-6 text-center">
+          <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 pt-8 md:pt-10 lg:pt-12 pb-6 text-center">
             <span
               className="text-[10px] md:text-[11px] uppercase tracking-[0.32em] font-medium"
               style={{ color: "hsl(186 35% 28%)" }}

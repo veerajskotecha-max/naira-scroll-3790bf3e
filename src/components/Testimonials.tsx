@@ -14,6 +14,7 @@ import botEvening from "@/assets/testimonials-bot-evening.webp";
 import t2Festive from "@/assets/testimonials-t2-festive.webp";
 import trFusion from "@/assets/testimonials-tr-fusion.webp";
 import topBlushAnarkali from "@/assets/testimonials-top-blush-anarkali.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 type Tile = {
   src: string;
@@ -57,10 +58,13 @@ const Testimonials = () => {
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.03 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(sectionRef.current)) setVisible(true);
+    });
+    return () => { observer.disconnect(); disposeFallback(); };
   }, []);
 
   return (

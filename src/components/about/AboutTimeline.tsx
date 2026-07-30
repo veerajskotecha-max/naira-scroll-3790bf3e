@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import timeline1 from "@/assets/about-dream-stitched.webp";
 import timeline4 from "@/assets/about-founder.webp";
 import uniquelyYours from "@/assets/about-uniquely-yours.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 
 const stories = [
@@ -58,12 +59,27 @@ const AboutTimeline = () => {
             obs.disconnect();
           }
         },
-        { threshold: 0.15 }
+        { threshold: 0.03 }
       );
       obs.observe(el);
       observers.push(obs);
     });
-    return () => observers.forEach((o) => o.disconnect());
+    const disposeFallback = armRevealFallback(() => {
+      refs.current.forEach((el, i) => {
+        if (isInViewport(el)) {
+          setVisible((prev) => {
+            if (prev[i]) return prev;
+            const n = [...prev];
+            n[i] = true;
+            return n;
+          });
+        }
+      });
+    });
+    return () => {
+      observers.forEach((o) => o.disconnect());
+      disposeFallback();
+    };
   }, []);
 
   return (

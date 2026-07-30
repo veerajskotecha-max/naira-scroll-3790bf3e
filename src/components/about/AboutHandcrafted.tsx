@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import craftingImg from "@/assets/about-crafting.webp";
 import floralPattern from "@/assets/background_image_flora.webp";
+import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
 
 const AboutHandcrafted = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -11,10 +12,13 @@ const AboutHandcrafted = () => {
       ([e]) => {
         if (e.isIntersecting) { setVisible(true); obs.disconnect(); }
       },
-      { threshold: 0.15 }
+      { threshold: 0.03 }
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const disposeFallback = armRevealFallback(() => {
+      if (isInViewport(ref.current)) setVisible(true);
+    });
+    return () => { obs.disconnect(); disposeFallback(); };
   }, []);
 
   return (

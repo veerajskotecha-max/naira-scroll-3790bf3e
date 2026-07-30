@@ -2,8 +2,11 @@
    FILM GRAIN + VIGNETTE
    A fixed, full-screen overlay that adds tactile film grain and a
    whisper of vignette — the "pressed paper" feel of an editorial.
-   Pure CSS/SVG noise, GPU-cheap, pointer-events-none. Honours
-   prefers-reduced-motion (grain holds still).
+   Pure CSS/SVG noise, pointer-events-none. Honours
+   prefers-reduced-motion (grain holds still). Desktop-only: the
+   full-viewport mix-blend layer forces whole-screen recomposits every
+   frame, which tanks scroll smoothness on mobile GPUs — phones get
+   the clean page instead.
    ─────────────────────────────────────────────────────────────── */
 
 const grainSvg = encodeURIComponent(
@@ -14,7 +17,7 @@ const grainSvg = encodeURIComponent(
 );
 
 const FilmGrain = () => (
-  <div aria-hidden className="pointer-events-none fixed inset-0 z-[9000]">
+  <div aria-hidden className="pointer-events-none fixed inset-0 z-[9000] hidden lg:block">
     <div
       className="film-grain absolute inset-0 opacity-[0.05] mix-blend-overlay"
       style={{ backgroundImage: `url("data:image/svg+xml,${grainSvg}")`, backgroundSize: "160px 160px" }}

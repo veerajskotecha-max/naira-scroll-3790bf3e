@@ -11,8 +11,14 @@ import { useEffect, useRef, useState } from "react";
 const ScrollBloom = () => {
   const [p, setP] = useState(0); // 0..1
   const raf = useRef(0);
+  // The rail is lg-only; skip the scroll listener + per-frame re-renders
+  // entirely on smaller screens instead of just hiding the output.
+  const [enabled] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches
+  );
 
   useEffect(() => {
+    if (!enabled) return;
     const onScroll = () => {
       cancelAnimationFrame(raf.current);
       raf.current = requestAnimationFrame(() => {
@@ -28,10 +34,12 @@ const ScrollBloom = () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [enabled]);
 
   const bloom = 0.35 + p * 0.65; // petal scale
   const petals = [0, 72, 144, 216, 288];
+
+  if (!enabled) return null;
 
   return (
     <div aria-hidden className="pointer-events-none fixed right-5 top-1/2 z-[8000] hidden h-[42vh] -translate-y-1/2 lg:flex flex-col items-center">

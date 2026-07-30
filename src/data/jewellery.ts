@@ -52,7 +52,7 @@ export const WHATSAPP_NUMBER = "919561557935";
 
 export const jewelleryEnquiryUrl = (name: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore — I'd love to pre-order the "${name}" from The Gilded Hour. Could you share availability and details?`
+    `Hi Naira Flore, I'd love to pre-order the "${name}" from The Gilded Hour. Could you share availability and details?`
   )}`;
 
 export const jewellery: JewelPiece[] = [
@@ -212,14 +212,14 @@ export const jewellery: JewelPiece[] = [
   },
   {
     handle: "the-studs",
-    name: "The Studs — Three Ways",
+    name: "The Studs · Three Ways",
     category: "Earrings",
     number: "13",
     price: 3400,
     priceLabel: PREORDER_LABEL,
     image: theStuds.url,
     gallery: [theStuds.url, theStuds2.url, theStuds3.url],
-    blurb: "A pearl, a halo, a bow. One goes with everything — chosen as a set or singly.",
+    blurb: "A pearl, a halo, a bow. One goes with everything, chosen as a set or singly.",
     materials: "18k gold coating · pearl / halo zirconia / bow zirconia",
     tag: "SET OF THREE",
   },

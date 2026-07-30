@@ -111,7 +111,7 @@ const AboutHero = () => {
             >
               <img
                 src={heroImage}
-                alt="Naira atelier — artisan working on embroidered fabric"
+                alt="Naira atelier, artisan working on embroidered fabric"
                 className="w-full max-h-[24dvh] md:max-h-[32dvh] lg:max-h-[62dvh] aspect-[4/3] object-cover"
               />
             </div>

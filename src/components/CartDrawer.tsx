@@ -136,7 +136,7 @@ const CartDrawer = () => {
               {/* Trust badges */}
               <div className="flex flex-col items-center gap-2">
                 <div className="flex items-center gap-2 flex-wrap justify-center">
-                  {["UPI", "VISA", "MC", "RAZORPAY", "COD"].map((b) => (
+                  {["UPI", "VISA", "MC", "RAZORPAY"].map((b) => (
                     <span key={b} className="px-2 py-1 text-[10px] font-bold border rounded tracking-wide" style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 45%)" }}>{b}</span>
                   ))}
                 </div>

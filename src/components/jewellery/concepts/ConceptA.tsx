@@ -26,7 +26,7 @@ const ConceptA = () => {
       <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 lg:grid-cols-2 lg:gap-14">
         {/* model */}
         <div className="relative order-2 lg:order-1">
-          <img src={modelIvory} alt="Chandbali Florale worn — Naira Flore demi-gold campaign" className="w-full object-cover shadow-[0_30px_60px_-30px_rgba(122,90,40,0.5)]" />
+          <img src={modelIvory} alt="Chandbali Florale worn, Naira Flore demi-gold campaign" className="w-full object-cover shadow-[0_30px_60px_-30px_rgba(122,90,40,0.5)]" />
           <span className="absolute bottom-4 left-4 bg-[#FBF3EC]/90 px-3 py-1.5 text-[9px] tracking-[0.3em] text-[#9A7634]" style={jost}>WORN · CHANDBALI FLORALE</span>
         </div>
 

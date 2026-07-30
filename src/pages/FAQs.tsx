@@ -28,7 +28,7 @@ const faqSections = [
     items: [
       {
         q: "What are the delivery timelines?",
-        a: "Standard (ready-to-ship) orders are delivered within 3–7 working days. Custom orders are delivered within 45–60 days, depending on the complexity of the piece.",
+        a: "Standard (ready-to-ship) orders are delivered within 3–7 working days. Custom orders take 4–8 weeks, depending on the complexity of the piece.",
       },
       {
         q: "Do you offer express shipping?",

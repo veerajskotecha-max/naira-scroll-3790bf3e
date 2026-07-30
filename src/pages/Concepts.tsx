@@ -18,7 +18,7 @@ const Divider = ({ label, note }: { label: string; note: string }) => (
 
 const Concepts = () => (
   <>
-    <PageSEO title="Jewellery Section Concepts — Naira Flore" description="Internal design review: three concepts." canonical="https://nairaflore.com/concepts" noindex />
+    <PageSEO title="Jewellery Section Concepts | Naira Flore" description="Internal design review: three concepts." canonical="https://nairaflore.com/concepts" noindex />
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
       <Divider label="CONCEPT A" note="THE IVORY ATELIER · BRAND-LIGHT · DRAG TO SPIN" />
       <ConceptA />

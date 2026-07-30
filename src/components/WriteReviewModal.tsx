@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, X, ImagePlus } from "lucide-react";
+import { Star, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -120,15 +120,8 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
         />
       </div>
 
-      {/* Photo Upload (visual only) */}
-      <button
-        type="button"
-        className="self-start flex items-center gap-2 px-4 py-2 border text-[13px] font-cormorant transition-colors duration-200 hover:bg-secondary"
-        style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
-      >
-        <ImagePlus size={15} />
-        Add Photo (optional)
-      </button>
+      {/* Photo upload arrives with the reviews backend; until then customers
+          can share photos over WhatsApp, so no dead button is shown here. */}
 
       {/* Submit */}
       <button

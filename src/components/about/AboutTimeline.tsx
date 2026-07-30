@@ -22,7 +22,7 @@ const stories = [
   {
     label: "THE B2C JOURNEY",
     title: "Bringing Couture Directly to You",
-    text: "The desire to connect personally with every client led Naira to serve individuals directly — with one-on-one design consultations, custom creations, and a curated experience from first message to final delivery.",
+    text: "The desire to connect personally with every client led Naira to serve individuals directly, with one-on-one design consultations, custom creations, and a curated experience from first message to final delivery.",
     image: null,
     alt: "",
   },

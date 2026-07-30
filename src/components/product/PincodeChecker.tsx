@@ -75,7 +75,7 @@ const PincodeChecker = () => {
           value={pincode}
           onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
           placeholder="Enter pincode"
-          className="flex-1 h-11 px-3 text-[13px] tracking-[0.02em] border outline-none bg-transparent"
+          className="flex-1 h-11 px-3 text-[16px] md:text-[13px] tracking-[0.02em] border outline-none bg-transparent"
           style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}
         />
         <button
@@ -105,8 +105,8 @@ const PincodeChecker = () => {
           <div className="flex items-center gap-2">
             <CheckCircle2 size={13} style={{ color: "hsl(142 50% 38%)" }} />
             <span className="text-[12px]" style={{ color: "hsl(0 0% 25%)" }}>
-              Delivery to <strong className="font-medium">{result.pincode}</strong> by{" "}
-              <strong className="font-medium">{result.eta}</strong>
+              Estimated delivery to <strong className="font-medium">{result.pincode}</strong> by{" "}
+              <strong className="font-medium">{result.eta}</strong> · confirmed at checkout
             </span>
           </div>
           <p className="text-[11px] pl-[21px]" style={{ color: "hsl(0 0% 50%)" }}>

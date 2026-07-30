@@ -2,6 +2,7 @@ import { Link, useParams, Navigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
+import Reveal from "@/components/wow/Reveal";
 import { jewellery } from "@/data/jewellery";
 import { categoryBySlug, allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 
@@ -67,47 +68,57 @@ const JewelleryCategory = () => {
           </nav>
 
           {/* header */}
-          <header className="border-b border-[#1A1614]/10 pb-10 pt-8">
-            <p className="text-[10px] tracking-[0.4em] text-[#9A7634]" style={jost}>{landing.kicker}</p>
-            <h1 className="mt-4 text-[34px] leading-[1.05] md:text-[54px]" style={velista}>{landing.h1}</h1>
-            <div className="mt-6 max-w-3xl space-y-4">
+          <Reveal as="header" className="relative border-b border-[#1A1614]/10 pb-10 pt-8">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-8 left-1/2 h-[240px] w-[120%] -translate-x-1/2 [background:radial-gradient(50%_60%_at_50%_30%,rgba(255,224,205,0.45)_0%,transparent_70%)]"
+            />
+            <p className="relative text-[10px] tracking-[0.4em] text-[#9A7634]" style={jost}>{landing.kicker}</p>
+            <h1 className="relative mt-4 text-[34px] leading-[1.05] md:text-[54px]" style={velista}>{landing.h1}</h1>
+            <div className="relative mt-6 max-w-3xl space-y-4">
               {landing.intro.map((p) => (
                 <p key={p} className="text-[15px] leading-[1.85] text-[#1A1614]/70 md:text-[17px]" style={editorial}>{p}</p>
               ))}
             </div>
-          </header>
+          </Reveal>
 
-          {/* grid */}
+          {/* grid, cards drift in with a small stagger */}
           <section aria-label={`${label} collection`} className="grid grid-cols-2 gap-4 pt-10 sm:gap-6 lg:grid-cols-3 lg:gap-8">
             {pieces.map((piece, i) => (
-              <JewelCard key={piece.handle} piece={piece} index={i} />
+              <Reveal key={piece.handle} delay={(i % 3) * 110}>
+                <JewelCard piece={piece} index={i} />
+              </Reveal>
             ))}
           </section>
 
           {/* why */}
           <section className="grid gap-8 border-t border-[#1A1614]/10 py-14 md:grid-cols-3 md:py-20">
-            {landing.bullets.map((b) => (
-              <div key={b.title}>
-                <h2 className="text-[20px] md:text-[24px]" style={velista}>{b.title}</h2>
+            {landing.bullets.map((b, i) => (
+              <Reveal key={b.title} delay={i * 120}>
+                <span aria-hidden className="text-[24px] leading-none text-[#C99A4C]/50" style={velista}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h2 className="mt-3 text-[20px] md:text-[24px]" style={velista}>{b.title}</h2>
+                <span aria-hidden className="mt-3 block h-px w-8 bg-[#C99A4C]/60" />
                 <p className="mt-3 text-[14px] leading-[1.8] text-[#1A1614]/65 md:text-[15px]" style={editorial}>{b.body}</p>
-              </div>
+              </Reveal>
             ))}
           </section>
 
           {/* faq */}
-          <section className="border-t border-[#1A1614]/10 py-14 md:py-20">
+          <Reveal as="section" className="border-t border-[#1A1614]/10 py-14 md:py-20">
             <h2 className="text-[26px] md:text-[36px]" style={velista}>
               Questions we get asked
             </h2>
             <dl className="mt-8 max-w-3xl space-y-7">
               {landing.faqs.map((f) => (
-                <div key={f.q}>
+                <div key={f.q} className="border-l border-[#C99A4C]/30 pl-4 transition-colors duration-300 hover:border-[#C99A4C]">
                   <dt className="text-[15px] tracking-[0.04em] md:text-[17px]" style={jost}>{f.q}</dt>
                   <dd className="mt-2 text-[14px] leading-[1.85] text-[#1A1614]/65 md:text-[15px]" style={editorial}>{f.a}</dd>
                 </div>
               ))}
             </dl>
-          </section>
+          </Reveal>
 
           {/* sibling links, internal linking for crawl depth */}
           <nav aria-label="Other jewellery collections" className="flex flex-wrap gap-3 border-t border-[#1A1614]/10 py-10">

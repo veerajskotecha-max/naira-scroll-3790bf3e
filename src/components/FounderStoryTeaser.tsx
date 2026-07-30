@@ -15,7 +15,7 @@ const FounderStoryTeaser = () => (
           <div className="relative overflow-hidden" style={{ borderRadius: "2px", aspectRatio: "3/4" }}>
             <img
               src={founderImg}
-              alt="Founder of Naira Flore — crafting Indo-Western fashion in Nashik"
+              alt="Founder of Naira Flore, crafting Indo-Western fashion in Nashik"
               className="w-full h-full object-cover"
               width={400}
               height={533}

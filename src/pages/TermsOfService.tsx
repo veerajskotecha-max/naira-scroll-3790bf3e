@@ -123,10 +123,10 @@ const sections = [
         <p style={{ marginTop: "12px" }}>
           <strong>Email:</strong>{" "}
           <a
-            href="mailto:support@naira.com"
+            href="mailto:shopatnaira@gmail.com"
             className="underline underline-offset-4 transition-opacity duration-200 hover:opacity-70"
           >
-            support@naira.com
+            shopatnaira@gmail.com
           </a>
         </p>
       </>

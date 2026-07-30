@@ -243,25 +243,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
 
+  // Stable value identity so useCart consumers only re-render when a field
+  // they read actually changes, not on every provider render.
+  const contextValue = useMemo(
+    () => ({
+      items,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      syncCart,
+      checkout,
+      totalItems,
+      subtotal,
+      isDrawerOpen,
+      setDrawerOpen,
+      isLoading,
+      isSyncing,
+      checkoutUrl,
+    }),
+    [items, addItem, removeItem, updateQuantity, clearCart, syncCart, checkout, totalItems, subtotal, isDrawerOpen, isLoading, isSyncing, checkoutUrl]
+  );
+
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        syncCart,
-        checkout,
-        totalItems,
-        subtotal,
-        isDrawerOpen,
-        setDrawerOpen,
-        isLoading,
-        isSyncing,
-        checkoutUrl,
-      }}
-    >
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   );

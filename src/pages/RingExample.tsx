@@ -30,7 +30,7 @@ const RingExample = () => {
         <div className="flex flex-wrap items-center justify-center gap-3 bg-[#1A1614] px-6 py-4 text-center">
           <span className="bg-[#E8C57E] px-3 py-1 text-[11px] font-medium tracking-[0.3em] text-[#1A1614]" style={jost}>VARIATION {v.n}</span>
           <span className="text-[13px] tracking-[0.2em] text-[#FBF3EC]" style={jost}>{v.label}</span>
-          <span className="hidden text-[11px] tracking-[0.15em] text-[#FBF3EC]/60 sm:inline" style={jost}>— {v.note}</span>
+          <span className="hidden text-[11px] tracking-[0.15em] text-[#FBF3EC]/60 sm:inline" style={jost}>· {v.note}</span>
           <span className="ml-2 flex gap-2">
             {ORDER.map((k) => (
               <Link key={k} to={`/ring/${k}`}

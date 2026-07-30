@@ -8,11 +8,11 @@ const faqCategories = [
     items: [
       {
         q: "How does the customization process work?",
-        a: "Our customization process begins when you share your design inspiration — a photo, sketch, or idea — via WhatsApp. Our design team then creates tailored suggestions including fabric options, color palettes, and embroidery styles. After a consultation call to finalize measurements and details, our artisans handcraft your outfit with care.",
+        a: "Our customization process begins when you share your design inspiration (a photo, sketch, or idea) via WhatsApp. Our design team then creates tailored suggestions including fabric options, color palettes, and embroidery styles. After a consultation call to finalize measurements and details, our artisans handcraft your outfit with care.",
       },
       {
         q: "Can I customize an existing design from your collection?",
-        a: "Absolutely! You can choose any piece from our collection and customize it to your preferences — whether it's a different color, fabric, neckline, length, or embroidery pattern. Our team will guide you through all the options.",
+        a: "Absolutely! You can choose any piece from our collection and customize it to your preferences, whether it's a different color, fabric, neckline, length, or embroidery pattern. Our team will guide you through all the options.",
       },
       {
         q: "Can I send my own design inspiration?",

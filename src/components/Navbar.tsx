@@ -68,7 +68,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                       {link.label}
                     </Link>
                     <div
-                      className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                      className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50"
                     >
                       <div
                         className="min-w-[190px] py-2"

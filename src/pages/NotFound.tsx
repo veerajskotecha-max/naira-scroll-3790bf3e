@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 
 const NotFound = () => {
   useEffect(() => {
-    document.title = "Page Not Found — NAIRA";
+    document.title = "Page Not Found | Naira Flore";
   }, []);
 
   return (
@@ -63,7 +63,7 @@ const NotFound = () => {
           </div>
 
           <Link
-            to="/customize"
+            to="/shop"
             className="inline-flex items-center gap-1.5 mt-6 font-cormorant text-[14px] underline transition-opacity duration-200 hover:opacity-70"
             style={{ color: "hsl(186 35% 28%)" }}
           >

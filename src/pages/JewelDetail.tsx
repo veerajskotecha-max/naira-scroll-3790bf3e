@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
-import UrgencyNotification from "@/components/UrgencyNotification";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import DetailsTabs from "@/components/product/DetailsTabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -429,7 +428,7 @@ const JewelDetail = () => {
               <div className="flex flex-col md:flex-row w-full">
                 {[
                   { icon: Phone, label: "Call Us", href: `tel:+${WHATSAPP_NUMBER}` },
-                  { icon: Mail, label: "Email Us", href: "mailto:hello@nairaflore.com" },
+                  { icon: Mail, label: "Email Us", href: "mailto:shopatnaira@gmail.com" },
                   { icon: MessageCircle, label: "WhatsApp", href: enquiryHref },
                 ].map(({ icon: Icon, label, href }, idx) => (
                   <a
@@ -501,7 +500,6 @@ const JewelDetail = () => {
         </a>
       </div>
 
-      <UrgencyNotification />
     </div>
   );
 };

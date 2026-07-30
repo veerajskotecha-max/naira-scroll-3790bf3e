@@ -11,7 +11,7 @@ const MadeForYou = () => {
   return (
     <div className="pt-[98px] md:pt-[108px] lg:pt-[120px]">
       <PageSEO
-        title="Custom Made-to-Measure Outfits — Design Your Own"
+        title="Custom Made-to-Measure Outfits | Design Your Own"
         description="Design a made-to-measure Indo-Western outfit with the Naira Flore atelier: share a reference, approve a sketch, and we hand-craft it to your measurements."
         canonical="https://nairaflore.com/customize"
       />
@@ -83,8 +83,12 @@ const MadeForYou = () => {
               Over 2,500+ custom pieces handcrafted for brides, celebrations,
               and once-in-a-lifetime moments.
             </p>
-            <Link
-              to="/custom"
+            <a
+              href="#custom-journey"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("custom-journey")?.scrollIntoView({ behavior: "smooth" });
+              }}
               className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
               style={{
                 backgroundColor: "hsl(0 0% 100%)",
@@ -93,7 +97,7 @@ const MadeForYou = () => {
               }}
             >
               Get Customized Design
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -103,8 +107,9 @@ const MadeForYou = () => {
 
       {/* ═══════════ SECTION 3 — Start Your Custom Journey ═══════════ */}
       <section
+        id="custom-journey"
         className="relative w-full overflow-hidden py-[32px] md:py-[44px] lg:py-[60px]"
-        style={{ backgroundColor: "hsl(30 25% 96%)" }}
+        style={{ backgroundColor: "hsl(30 25% 96%)", scrollMarginTop: "110px" }}
       >
         <div
           className="absolute inset-0 pointer-events-none select-none"
@@ -140,7 +145,7 @@ const MadeForYou = () => {
             and let's create something beautiful together.
           </p>
           <a
-            href="https://wa.me/919876543210"
+            href="https://wa.me/919561557935"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-12 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"

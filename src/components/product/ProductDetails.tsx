@@ -106,7 +106,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div className="flex items-center gap-2 mt-2">
         <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-          Ships in <strong className="font-medium">3–5 days</strong> · Free above ₹2,999
+          Ships in <strong className="font-medium">3–7 working days</strong> · Free above ₹2,999
         </span>
       </div>
 
@@ -115,7 +115,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         className="text-[12px] mt-2 leading-relaxed"
         style={{ color: "hsl(0 0% 50%)" }}
       >
-        *Prices are inclusive of GST. Handcrafted to order — allow 15–20 business days for delivery.
+        *Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; custom orders take 4–8 weeks.
       </p>
 
       {/* Trust badges */}
@@ -244,6 +244,13 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
 
       {/* Secondary CTA */}
       <button
+        onClick={() =>
+          window.open(
+            `https://wa.me/919561557935?text=${encodeURIComponent("Hi Naira Flore, I'd like to customize a piece from your collection. Could you tell me more?")}`,
+            "_blank",
+            "noopener,noreferrer"
+          )
+        }
         className="w-full h-[44px] mt-3 text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200"
         style={{
           borderColor: "hsl(0 0% 78%)",
@@ -384,26 +391,23 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         </span>
         <div className="flex flex-col md:flex-row w-full">
           {[
-            { icon: Phone, label: "Call Us" },
-            { icon: Mail, label: "Email Us" },
-            { icon: MessageCircle, label: "WhatsApp" },
-          ].map(({ icon: Icon, label }, idx) => (
-            <button
+            { icon: Phone, label: "Call Us", href: "tel:+919561557935" },
+            { icon: Mail, label: "Email Us", href: "mailto:shopatnaira@gmail.com" },
+            { icon: MessageCircle, label: "WhatsApp", href: "https://wa.me/919561557935" },
+          ].map(({ icon: Icon, label, href }) => (
+            <a
               key={label}
-              className="flex-1 flex items-center justify-center gap-2 py-3 text-[12px] tracking-[0.02em] transition-colors duration-200"
-              style={{
-                color: "hsl(0 0% 35%)",
-                borderTop: "1px solid hsl(0 0% 90%)",
-                borderBottom: "1px solid hsl(0 0% 90%)",
-                borderLeft: idx === 0 ? "1px solid hsl(0 0% 90%)" : "none",
-                borderRight: "1px solid hsl(0 0% 90%)",
-              }}
+              href={href}
+              target={href.startsWith("http") ? "_blank" : undefined}
+              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="flex-1 flex items-center justify-center gap-2 py-3 text-[12px] tracking-[0.02em] transition-colors duration-200 border border-[hsl(0_0%_90%)] md:border-l-0 md:first:border-l"
+              style={{ color: "hsl(0 0% 35%)" }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(0 0% 96%)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               <Icon size={15} strokeWidth={1.5} />
               {label}
-            </button>
+            </a>
           ))}
         </div>
       </div>

@@ -67,7 +67,7 @@ const ConceptB = () => {
 
         {/* model */}
         <div className="relative">
-          <img src={modelEmerald} alt="Pressed Petal Drops worn — Naira Flore demi-gold campaign" className="w-full object-cover shadow-[0_36px_70px_-30px_rgba(0,0,0,0.8)]" style={{ outline: "1px solid rgba(232,197,126,.35)", outlineOffset: "10px" }} />
+          <img src={modelEmerald} alt="Pressed Petal Drops worn, Naira Flore demi-gold campaign" className="w-full object-cover shadow-[0_36px_70px_-30px_rgba(0,0,0,0.8)]" style={{ outline: "1px solid rgba(232,197,126,.35)", outlineOffset: "10px" }} />
           <span className="absolute bottom-4 left-4 bg-[#082820]/85 px-3 py-1.5 text-[9px] tracking-[0.3em] text-[#E8C57E]" style={jost}>WORN · PRESSED PETAL DROPS</span>
         </div>
       </div>

@@ -6,7 +6,7 @@ const items = [
   { icon: MessageCircle, label: "Free Design Consultation" },
   { icon: Sparkles, label: "Premium Quality Fabrics" },
   { icon: ShieldCheck, label: "Secure Payments" },
-  { icon: Scissors, label: "5,000+ Custom Pieces Made" },
+  { icon: Scissors, label: "2,500+ Custom Pieces Made" },
 ];
 
 const ItemRow = () => (

@@ -23,7 +23,7 @@ const steps = [
     number: "03",
     title: "Unveiled, Just for You",
     description:
-      "Your one-of-a-kind piece arrives — crafted, wrapped, and ready for your moment.",
+      "Your one-of-a-kind piece arrives crafted, wrapped, and ready for your moment.",
   },
 ];
 

@@ -20,7 +20,7 @@ const ShopHero = ({
   eyebrow = "New Arrivals",
   title = "The Festive",
   titleAccent = "Edit",
-  description = "Curated silhouettes crafted for the season — handwoven textures, refined embroidery, contemporary drape.",
+  description = "Curated silhouettes crafted for the season. Handwoven textures, refined embroidery, contemporary drape.",
   badge,
   primaryCta = { label: "Shop Now", to: "/shop" },
   secondaryCta,

@@ -9,7 +9,6 @@ import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 import StickyAddToCart from "@/components/StickyAddToCart";
-import UrgencyNotification from "@/components/UrgencyNotification";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
@@ -169,7 +168,6 @@ const ProductDetail = () => {
         numericPrice={stickyVariant ? Number(stickyVariant.price.amount) : Number(price)}
         currencyCode={stickyVariant?.price.currencyCode}
       />
-      <UrgencyNotification />
     </div>
   );
 };

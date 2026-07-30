@@ -38,7 +38,7 @@ const jewelleryReviews: Review[] = [
     verified: true,
     rating: 5,
     date: "July 12, 2026",
-    text: "The green stones catch light like the real thing — people genuinely asked if it was emerald. The 18K gold finish hasn't dulled at all after weeks of daily wear, and the band sits perfectly without spinning.",
+    text: "The green stones catch light like the real thing. People genuinely asked if it was emerald. The 18K gold finish hasn't dulled at all after weeks of daily wear, and the band sits perfectly without spinning.",
     hasPhotos: true,
     images: [jewelUgcVine.url],
   },
@@ -58,7 +58,7 @@ const jewelleryReviews: Review[] = [
     verified: true,
     rating: 5,
     date: "June 28, 2026",
-    text: "Brilliant-cut zircone with real fire — it throws rainbows in sunlight. Ordered a US 6 and the fit was exact to the size chart. Honestly indistinguishable from my solitaire at a fraction of the cost.",
+    text: "Brilliant-cut zircone with real fire, it throws rainbows in sunlight. Ordered a US 6 and the fit was exact to the size chart. Honestly indistinguishable from my solitaire at a fraction of the cost.",
     hasPhotos: true,
     images: [jewelUgcSolitaire.url],
   },
@@ -78,21 +78,11 @@ const jewelleryReviews: Review[] = [
     verified: true,
     rating: 5,
     date: "June 9, 2026",
-    text: "These bow studs are tiny but the detailing is unreal — each stone is individually set and the finish is flawless. Light enough to forget I'm wearing them, and they've survived travel and everyday wear beautifully.",
+    text: "These bow studs are tiny but the detailing is unreal. Each stone is individually set and the finish is flawless. Light enough to forget I'm wearing them, and they've survived travel and everyday wear beautifully.",
     hasPhotos: true,
     images: [jewelUgcBow.url],
   },
 ];
-
-const ratingBreakdown = [
-  { stars: 5, count: 184 },
-  { stars: 4, count: 32 },
-  { stars: 3, count: 15 },
-  { stars: 2, count: 4 },
-  { stars: 1, count: 3 },
-];
-const totalReviews = 238;
-const overallRating = 4.8;
 
 const filters = ["All Reviews", "With Photos", "5★", "4★", "3★"];
 
@@ -114,9 +104,9 @@ const reviewsData: Review[] = [
     verified: true,
     rating: 5,
     date: "May 14, 2026",
-    text: "Naira has redefined what 'custom' means for me. From the first consultation to the final piece in my hands, every step felt curated with care. The finish, the embroidery, the colours — all so thoughtfully done. Wearing Naira genuinely makes you feel celebrated.",
+    text: "Naira has redefined what 'custom' means for me. From the first consultation to the final piece in my hands, every step felt curated with care. The finish, the embroidery, the colours, all so thoughtfully done. Wearing Naira genuinely makes you feel celebrated.",
     hasPhotos: true,
-    images: [reviewTaneesha],
+    images: [reviewAshley],
   },
   {
     name: "Taneesha Kotecha",
@@ -124,9 +114,9 @@ const reviewsData: Review[] = [
     verified: true,
     rating: 5,
     date: "May 8, 2026",
-    text: "As an athlete, I value precision — and that's exactly what I found in Naira. Their team understood my style instantly and crafted a look that was bold, detailed, and incredibly comfortable. Naira brings the same discipline to fashion that champions bring to their game.",
+    text: "As an athlete, I value precision, and that's exactly what I found in Naira. Their team understood my style instantly and crafted a look that was bold, detailed, and incredibly comfortable. Naira brings the same discipline to fashion that champions bring to their game.",
     hasPhotos: true,
-    images: [reviewAshley],
+    images: [reviewTaneesha],
   },
   {
     name: "Rashmi Rai",
@@ -144,7 +134,7 @@ const reviewsData: Review[] = [
     verified: true,
     rating: 5,
     date: "April 20, 2026",
-    text: "The unboxing alone felt like an experience — the packaging, the little details, the care in every fold. And the outfit inside? Absolute perfection. Naira makes you feel like the moment is yours.",
+    text: "The unboxing alone felt like an experience. The packaging, the little details, the care in every fold. And the outfit inside? Absolute perfection. Naira makes you feel like the moment is yours.",
     hasPhotos: true,
     images: [reviewNabby],
   },
@@ -154,7 +144,7 @@ const reviewsData: Review[] = [
     verified: true,
     rating: 5,
     date: "April 12, 2026",
-    text: "Every detail felt considered — the drape, the embroidery, the weight of the fabric. It's rare to find a brand that listens this carefully and delivers exactly what you imagined.",
+    text: "Every detail felt considered. The drape, the embroidery, the weight of the fabric. It's rare to find a brand that listens this carefully and delivers exactly what you imagined.",
     hasPhotos: true,
     images: [product1Hover],
   },
@@ -174,7 +164,7 @@ const reviewsData: Review[] = [
     verified: true,
     rating: 5,
     date: "March 10, 2026",
-    text: "From the WhatsApp consultation to the final fitting, the team was patient and thoughtful. The hand embroidery is the kind of work you don't see anymore — heirloom quality.",
+    text: "From the WhatsApp consultation to the final fitting, the team was patient and thoughtful. The hand embroidery is the kind of work you don't see anymore. Heirloom quality.",
     hasPhotos: false,
     images: [],
   },
@@ -201,70 +191,13 @@ const Stars = ({ count, size = 12 }: { count: number; size?: number }) => (
   </div>
 );
 
-const firstReviewNames = [
-  { name: "Ishita Bhattacharya", initials: "IB" },
-  { name: "Sanaya Mehra", initials: "SM" },
-  { name: "Aaradhya Pillai", initials: "AP" },
-  { name: "Vanshika Goel", initials: "VG" },
-  { name: "Rhea Chatterjee", initials: "RC" },
-  { name: "Tanvi Iyer", initials: "TI" },
-  { name: "Nyra Saxena", initials: "NS" },
-  { name: "Ahaana Reddy", initials: "AR" },
-  { name: "Diya Malhotra", initials: "DM" },
-  { name: "Shanaya Kapoor", initials: "SK" },
-  { name: "Myra Joshi", initials: "MJ" },
-  { name: "Anvi Bhatia", initials: "AB" },
-  { name: "Kiara Sethi", initials: "KS" },
-  { name: "Avani Khurana", initials: "AK" },
-  { name: "Pari Deshmukh", initials: "PD" },
-  { name: "Inaaya Nair", initials: "IN" },
-  { name: "Zara Bajaj", initials: "ZB" },
-  { name: "Saanvi Trivedi", initials: "ST" },
-];
-
-const firstReviewTemplates = [
-  (p: string) =>
-    `I wore the ${p} for my engagement and it felt like the dress was made just for me. The fit was impeccable, the embroidery so delicate up close — I cannot stop staring at it. So many compliments through the evening.`,
-  (p: string) =>
-    `The ${p} is even more stunning in person. The fabric drapes beautifully and the hand-finishing is exquisite. You can tell every stitch was placed with intention. Worth every rupee.`,
-  (p: string) =>
-    `Genuinely speechless when I unboxed the ${p}. The colour is exactly as shown, the silhouette is flattering, and the craftsmanship feels heirloom. This is the piece I'll keep forever.`,
-  (p: string) =>
-    `Wore the ${p} to a family reception and felt like the most poised version of myself. The detailing on the bodice is jaw-dropping and the fit needed zero alteration. Naira understood the brief perfectly.`,
-  (p: string) =>
-    `The ${p} arrived earlier than promised, packaged like a treasure. The embroidery is intricate without being heavy, and it moves so beautifully. Already planning my next order.`,
-  (p: string) =>
-    `Couldn't have asked for anything better than the ${p}. The team was patient with my measurements and the final piece sits like a second skin. Truly couture-level work.`,
-];
-
-const hashString = (s: string) => {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h;
-};
-
-const buildFirstReview = (productName: string): Review => {
-  const seed = hashString(productName);
-  const person = firstReviewNames[seed % firstReviewNames.length];
-  const template = firstReviewTemplates[seed % firstReviewTemplates.length];
-  return {
-    name: person.name,
-    initials: person.initials,
-    verified: true,
-    rating: 5,
-    date: "June 18, 2026",
-    text: template(productName),
-    hasPhotos: false,
-    images: [],
-  };
-};
-
 interface CustomerReviewsProps {
+  /** Kept for call-site compatibility; reviews are no longer generated per product. */
   productName?: string;
   variant?: "apparel" | "jewellery";
 }
 
-const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
+const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
   const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
@@ -273,12 +206,25 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [localReviews, setLocalReviews] = useState<Review[]>(() => {
-    if (isJewellery) return jewelleryReviews;
-    return productName ? [buildFirstReview(productName), ...reviewsData] : reviewsData;
-  });
+  const [localReviews, setLocalReviews] = useState<Review[]>(() =>
+    isJewellery ? jewelleryReviews : reviewsData
+  );
 
-  const maxCount = ratingBreakdown[0].count;
+  // Aggregate is computed from the reviews actually shown, never invented.
+  const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {
+    const total = localReviews.length;
+    const avg = total ? localReviews.reduce((s, r) => s + r.rating, 0) / total : 0;
+    const breakdown = [5, 4, 3, 2, 1].map((stars) => ({
+      stars,
+      count: localReviews.filter((r) => r.rating === stars).length,
+    }));
+    return {
+      overallRating: Math.round(avg * 10) / 10,
+      totalReviews: total,
+      ratingBreakdown: breakdown,
+      maxCount: Math.max(1, ...breakdown.map((b) => b.count)),
+    };
+  }, [localReviews]);
 
   const filteredReviews = useMemo(() => {
     switch (activeFilter) {

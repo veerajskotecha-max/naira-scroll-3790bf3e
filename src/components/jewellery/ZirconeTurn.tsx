@@ -182,7 +182,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
             </div>
           </div>
 
-          <span data-hint className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.4em] text-[#1A1614]/35 md:bottom-5" style={jost}>SCROLL — IT TURNS</span>
+          <span data-hint className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.4em] text-[#1A1614]/35 md:bottom-5" style={jost}>SCROLL · IT TURNS</span>
         </div>
 
       </div>

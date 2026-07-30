@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 const AboutUs = () => (
   <>
     <PageSEO
-      title="About Naira Flore — A Nashik Atelier for Handmade Fashion"
+      title="About Naira Flore | A Nashik Atelier for Handmade Fashion"
       description="From B2B roots to a made-to-measure label: the story of Naira Flore, the Nashik atelier behind our Indo-Western wear and demi-fine zircone jewellery."
       canonical="https://nairaflore.com/about"
     />

@@ -2,7 +2,6 @@ import PageSEO from "@/components/PageSEO";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useLocation } from "react-router-dom";
-import UrgencyNotification from "@/components/UrgencyNotification";
 import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
@@ -711,7 +710,6 @@ const ShopAll = () => {
 
       {/* Footer at root level – full width */}
       <Footer />
-      <UrgencyNotification />
     </div>
   );
 };

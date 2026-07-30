@@ -31,7 +31,7 @@ const ConceptC = () => {
         {/* model in arch */}
         <div className="relative order-2 lg:order-1">
           <div className="overflow-hidden" style={{ borderRadius: "999px 999px 0 0", boxShadow: "0 30px 60px -28px rgba(58,32,22,.65), inset 0 0 0 6px #F3E4CE" }}>
-            <img src={modelTerracotta} alt="Marigold Signet Ring worn — Naira Flore demi-gold campaign" className="w-full object-cover" />
+            <img src={modelTerracotta} alt="Marigold Signet Ring worn, Naira Flore demi-gold campaign" className="w-full object-cover" />
           </div>
           <span className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#3A2016]/85 px-3 py-1.5 text-[9px] tracking-[0.3em] text-[#F3E4CE]" style={jost}>WORN · MARIGOLD SIGNET</span>
         </div>

@@ -22,7 +22,7 @@ const contactCards = [
   {
     icon: Mail,
     title: "Email Support",
-    lines: ["hello@naira.in", "orders@naira.in"],
+    lines: ["shopatnaira@gmail.com", "Replies within 24 to 48 hours"],
   },
 ];
 
@@ -36,8 +36,22 @@ const ContactUs = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Route the enquiry to the atelier's WhatsApp line with the form
+    // contents prefilled, so every message actually reaches the team.
+    const lines = [
+      `Hi Naira Flore, I'm ${form.name.trim() || "a visitor"} and I'd like to get in touch.`,
+      form.subject.trim() && `Subject: ${form.subject.trim()}`,
+      form.message.trim() && `Message: ${form.message.trim()}`,
+      form.email.trim() && `Email: ${form.email.trim()}`,
+      form.phone.trim() && `Phone: ${form.phone.trim()}`,
+    ].filter(Boolean);
+    window.open(
+      `https://wa.me/919561557935?text=${encodeURIComponent(lines.join("\n"))}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
+    setTimeout(() => setSubmitted(false), 6000);
     setForm({ name: "", email: "", phone: "", subject: "", message: "" });
   };
 
@@ -54,7 +68,7 @@ const ContactUs = () => {
   return (
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
       <PageSEO
-        title="Contact Naira Flore — Nashik Atelier & WhatsApp Support"
+        title="Contact Naira Flore | Nashik Atelier & WhatsApp Support"
         description="Talk to the Naira Flore atelier in Nashik about custom orders, sizing, jewellery pre-orders or an existing order. WhatsApp +91 95615 57935."
         canonical="https://nairaflore.com/contact"
       />
@@ -153,6 +167,7 @@ const ContactUs = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <Input
                 name="name"
+                aria-label="Full name"
                 placeholder="Full Name"
                 value={form.name}
                 onChange={handleChange}
@@ -162,6 +177,7 @@ const ContactUs = () => {
               <Input
                 name="email"
                 type="email"
+                aria-label="Email address"
                 placeholder="Email Address"
                 value={form.email}
                 onChange={handleChange}
@@ -172,6 +188,7 @@ const ContactUs = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <Input
                 name="phone"
+                aria-label="Phone number"
                 placeholder="Phone Number"
                 value={form.phone}
                 onChange={handleChange}
@@ -179,6 +196,7 @@ const ContactUs = () => {
               />
               <Input
                 name="subject"
+                aria-label="Subject"
                 placeholder="Subject"
                 value={form.subject}
                 onChange={handleChange}
@@ -188,6 +206,7 @@ const ContactUs = () => {
             </div>
             <Textarea
               name="message"
+              aria-label="Message"
               placeholder="Your Message"
               value={form.message}
               onChange={handleChange}
@@ -209,7 +228,7 @@ const ContactUs = () => {
 
             {submitted && (
               <p className="text-center font-cormorant text-[15px]" style={{ color: "hsl(143 14% 50%)" }}>
-                Thank you! Your message has been sent.
+                Thank you! WhatsApp is opening with your message, just press send there.
               </p>
             )}
 
@@ -283,7 +302,7 @@ const ContactUs = () => {
             Visit our FAQ page to find answers to common questions.
           </p>
           <Link
-            to="/shop"
+            to="/faqs"
             className="inline-flex items-center gap-2 font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
             style={{
               border: "1.5px solid hsl(143 14% 63%)",

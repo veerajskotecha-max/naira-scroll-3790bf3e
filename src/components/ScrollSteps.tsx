@@ -11,7 +11,7 @@ const steps = [
     number: "01",
     title: "Send Us Your Dream Outfit",
     description:
-      "Share your inspiration with us on WhatsApp — a photo, sketch, or even just an idea. We'll take it from there and begin bringing your vision to life.",
+      "Share your inspiration with us on WhatsApp: a photo, a sketch, or even just an idea. We'll take it from there and begin bringing your vision to life.",
     image: step01Img,
   },
   {
@@ -19,7 +19,7 @@ const steps = [
     number: "02",
     title: "Explore Design Options",
     description:
-      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea — so you can see the possibilities before we begin.",
+      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin.",
     image: step02Img,
   },
   {
@@ -35,7 +35,7 @@ const steps = [
     number: "04",
     title: "Delivered To You",
     description:
-      "Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep — ready to wear.",
+      "Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep, ready to wear.",
     image: step04Img,
   },
 ];

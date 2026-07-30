@@ -34,13 +34,13 @@ type Tile = {
  *   bl   bot  bot  bot  bot  tall
  */
 const tiles: Tile[] = [
-  { src: t1Zardozi, outfit: "​", by: "Ananya · Mumbai",     area: "t1",  quote: "Perfect fit.",          quoteAlign: "left" },
-  { src: topBlushAnarkali, outfit: "​",        by: "Priya · London",      area: "top" },
+  { src: t1Zardozi, outfit: "", by: "Ananya · Mumbai",     area: "t1",  quote: "Perfect fit.",          quoteAlign: "left" },
+  { src: topBlushAnarkali, outfit: "",        by: "Priya · London",      area: "top" },
   { src: trFusion, outfit: "Modern Fusion",         by: "Tanvi · Bangalore",   area: "tr" },
   { src: centerNaira, outfit: "Loved by Women",        by: "",                    area: "ctr" }, // center hero tile
   { src: t2Festive, outfit: "Festive Edit",          by: "Meera · Pune",        area: "t2" },
   { src: mrBridal, outfit: "Bridal Couture",        by: "Riya · Delhi",        area: "mr",  quote: "Exactly how I imagined.", quoteAlign: "right" },
-  { src: tallPink, outfit: "​",      by: "Sarah · Dubai",       area: "tall" },
+  { src: tallPink, outfit: "",      by: "Sarah · Dubai",       area: "tall" },
   { src: blLehenga, outfit: "Soft Pastel Drape",     by: "Naina · Jaipur",      area: "bl" },
   { src: botEvening, outfit: "Evening Edit",          by: "Aanya · Hyderabad",   area: "bot", quote: "Felt like art.", quoteAlign: "left" },
 ];

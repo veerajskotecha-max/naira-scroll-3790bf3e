@@ -99,7 +99,7 @@ const NairaPhilosophy = () => {
               style={{ color: "hsl(0 0% 15%)" }}
             >
               Every piece begins with a{" "}
-              <em style={{ color: "hsl(20 60% 70%)", fontStyle: "italic" }}>conversation</em> —
+              <em style={{ color: "hsl(20 60% 70%)", fontStyle: "italic" }}>conversation</em>:
               <br className="hidden md:block" />
               your memories, your milestones, your moment.
             </h3>

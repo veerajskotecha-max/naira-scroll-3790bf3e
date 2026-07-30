@@ -134,7 +134,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
           {/* Divider + WhatsApp quick contact */}
           <a
-            href="https://wa.me/919876543210"
+            href="https://wa.me/919561557935"
             target="_blank"
             rel="noopener noreferrer"
             className="ml-auto font-cormorant text-[13px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity duration-200"

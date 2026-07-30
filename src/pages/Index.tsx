@@ -39,7 +39,7 @@ const Index = () => {
   return (
     <>
       <PageSEO
-        title="Naira Flore — Handcrafted Indo-Western Fashion"
+        title="Naira Flore | Handcrafted Indo-Western Fashion"
         description="Discover handmade embroidered sarees, lehengas & anarkalis by Naira Flore. Premium Indo-Western fusion wear crafted for the modern woman. Free shipping above ₹2,999."
         canonical="https://nairaflore.com/"
       />

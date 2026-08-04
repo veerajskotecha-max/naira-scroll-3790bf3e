@@ -35,7 +35,7 @@ const ProductDetail = () => {
   const title = product?.title ?? "Product";
   const description = product?.description || "Shop real handcrafted couture by Naira Flore.";
   const price = product?.priceRange.minVariantPrice.amount ?? "0";
-  const priceLabel = product ? formatShopifyPrice(product.priceRange.minVariantPrice) : ", ";
+  const priceLabel = product ? formatShopifyPrice(product.priceRange.minVariantPrice) : "·";
   const image = product?.images.edges[0]?.node.url ?? "/placeholder.svg";
   const stickyVariant = product?.variants.edges.find((edge) => edge.node.availableForSale)?.node ?? product?.variants.edges[0]?.node;
 

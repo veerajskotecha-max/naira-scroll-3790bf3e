@@ -31,7 +31,7 @@ const featureCards = [
   {
     icon: Package,
     title: "Delivered to You",
-    description: "Your customized outfit, delivered to your doorstep.",
+    description: "Your customised outfit, delivered to your doorstep.",
     step: "05",
   },
 ];
@@ -101,7 +101,7 @@ const CustomisationSteps = () => {
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
             style={{ color: "hsl(0 0% 18%)" }}
           >
-            Customize Your Dress
+            Customise Your Dress
           </h2>
         </div>
 

@@ -14,7 +14,7 @@ const navItems = [
   { label: "JEWELLERY", to: "/jewellery" },
   { label: "INDO-WESTERN", to: "/shop/indo-western" },
   { label: "ABOUT",     to: "/about" },
-  { label: "CUSTOMIZE", to: "/customize" },
+  { label: "CUSTOMISE", to: "/customize" },
   { label: "CONTACT",   to: "/contact" },
 ];
 

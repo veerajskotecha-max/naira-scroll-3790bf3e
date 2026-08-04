@@ -56,7 +56,7 @@ const CartDrawer = () => {
               className="mt-4 inline-flex items-center min-h-[44px] px-2 font-cormorant text-[14px] underline underline-offset-4 transition-colors duration-200"
               style={{ color: "hsl(0 0% 45%)" }}
             >
-              Explore the jewellery
+              View the jewellery
             </Link>
           </div>
         ) : (
@@ -75,7 +75,7 @@ const CartDrawer = () => {
               ) : (
                 <p className="text-[12px] mb-2 flex items-center gap-1.5 font-medium" style={{ color: "hsl(142 60% 30%)" }}>
                   <Truck size={13} strokeWidth={1.5} />
-                  Free shipping unlocked on this order
+                  This order ships free
                 </p>
               )}
               <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: "hsl(0 0% 88%)" }}>

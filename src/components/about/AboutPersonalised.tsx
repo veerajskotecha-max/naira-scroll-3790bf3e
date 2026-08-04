@@ -65,7 +65,7 @@ const AboutPersonalised = () => {
               className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[460px] mx-auto lg:mx-0"
               style={{ color: "hsl(0 0% 48%)" }}
             >
-              Share a sketch, a Pinterest board, or simply describe your vision — our designers translate your ideas into bespoke garments that are uniquely yours. From fabric selection to final fitting, personalization is at the heart of everything we do.
+              Share a sketch, a Pinterest board, or simply describe your vision. Our designers translate your ideas into bespoke garments that are uniquely yours. From fabric selection to final fitting, personalisation is at the heart of everything we do.
             </p>
           </div>
 

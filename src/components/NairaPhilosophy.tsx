@@ -113,7 +113,7 @@ const NairaPhilosophy = () => {
               style={{ color: "hsl(0 0% 45%)" }}
             >
               At Naira, we believe that true luxury lies not in logos, but in the love woven into every stitch.
-              Our artisans bring centuries-old embroidery traditions to life, creating garments that honor your heritage
+              Our artisans bring centuries-old embroidery traditions to life, creating garments that honour your heritage
               while celebrating your individuality.
             </p>
           </div>

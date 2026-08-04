@@ -52,8 +52,8 @@ const FounderStoryTeaser = () => (
             style={{ color: "hsl(0 0% 38%)" }}
           >
             Naira Flore started in a small studio in Nashik, where every stitch was placed by hand 
-            and every silhouette was imagined fresh. We believe that truly beautiful clothing shouldn't 
-            compromise — it should be both rooted in tradition and alive to the moment.
+            and every silhouette was imagined fresh. We believe that truly beautiful clothing shouldn't
+            compromise. It should be both rooted in tradition and alive to the moment.
           </p>
 
           <p

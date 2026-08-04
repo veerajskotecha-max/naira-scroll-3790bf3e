@@ -36,8 +36,8 @@ const AboutCTA = () => (
         className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[480px] mx-auto mb-10"
         style={{ color: "hsl(0 0% 48%)" }}
       >
-        From bridal ensembles to modern fusion wear, explore pieces crafted with
-        love, heritage, and your story in mind.
+        From bridal ensembles to modern fusion wear, each piece is crafted
+        with care, heritage, and your story in mind.
       </p>
       <Link
         to="/shop"

@@ -84,7 +84,7 @@ const AboutHero = () => {
                 transitionDelay: visible ? "0.2s" : "0s",
               }}
             >
-              Naira is a couture label built on heritage craft and personal stories. Every outfit we create is a conversation between artisan hands and your unique story — from bridal dreams to celebration-ready silhouettes.
+              Naira is a couture label built on heritage craft and personal stories. Every outfit we create is a conversation between artisan hands and your own story, from bridal dreams to celebration-ready silhouettes.
             </p>
 
             <Link
@@ -98,7 +98,7 @@ const AboutHero = () => {
                 transitionDelay: visible ? "0.3s" : "0s",
               }}
             >
-              Explore the Craft
+              Shop the Collection
             </Link>
           </div>
 

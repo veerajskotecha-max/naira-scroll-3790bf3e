@@ -6,11 +6,11 @@ import Footer from "@/components/Footer";
 const faqSections = [
   {
     id: "orders-customization",
-    title: "Orders & Customization",
+    title: "Orders & Customisation",
     items: [
       {
-        q: "How does the customization process work?",
-        a: "Our customization process begins with a consultation on WhatsApp, where you share your vision, reference images, preferred fabrics, colours, and embroidery styles. Our design team then creates a sketch and detailed plan for your approval before we begin handcrafting your piece.",
+        q: "How does the customisation process work?",
+        a: "It begins with a consultation on WhatsApp, where you share your vision, reference images, preferred fabrics, colours and embroidery styles. Our design team then creates a sketch and a detailed plan for your approval before we begin handcrafting your piece.",
       },
       {
         q: "How long do custom orders take?",
@@ -67,7 +67,7 @@ const faqSections = [
         a: "We recommend dry cleaning only for all Naira garments. Store your pieces in a cool, dry place away from direct sunlight. Use muslin or cotton garment bags to protect the fabric and embroidery.",
       },
       {
-        q: "Will the color match exactly what I see online?",
+        q: "Will the colour match exactly what I see online?",
         a: "While we strive for accurate colour representation, slight variations may occur due to photographic lighting, screen settings, and display calibration. These are not considered defects.",
       },
       {
@@ -85,8 +85,8 @@ const faqSections = [
         a: "You can reach us via WhatsApp at +91 9561557935, or email us. Our team is available Monday to Saturday, 10 AM – 7 PM IST.",
       },
       {
-        q: "Do you offer styling or customization assistance?",
-        a: "Absolutely. Our design team is available for one-on-one styling consultations to help you choose the right silhouette, fabric, and embroidery for your occasion. Simply reach out on WhatsApp to schedule a session.",
+        q: "Do you offer styling or customisation assistance?",
+        a: "Yes. Our design team holds one-on-one styling consultations to help you choose the right silhouette, fabric and embroidery for your occasion. Write to us on WhatsApp to schedule a session.",
       },
     ],
   },
@@ -221,7 +221,7 @@ const FAQs = () => {
             className="font-cormorant leading-relaxed mb-6"
             style={{ fontSize: "clamp(14px, 1.2vw, 16px)", color: "hsl(0 0% 40%)" }}
           >
-            Can't find what you're looking for? Reach out to us directly on WhatsApp.
+            Can't find what you're looking for? Write to us on WhatsApp.
           </p>
           <a
             href="https://wa.me/919561557935"

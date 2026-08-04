@@ -68,7 +68,7 @@ const NotFound = () => {
             style={{ color: "hsl(186 35% 28%)" }}
           >
             <Compass size={13} />
-            Explore Collection
+            View the Collection
           </Link>
         </div>
       </div>

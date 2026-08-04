@@ -101,7 +101,7 @@ const SpinStage = ({ piece, onTap, className = "", hintColor = "#1A1614", chipBg
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       role="button"
-      aria-label={`${piece.name} — drag to spin, tap for details`}
+      aria-label={`${piece.name}, drag to spin, tap for details`}
       tabIndex={0}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTap?.(); } }}
     >

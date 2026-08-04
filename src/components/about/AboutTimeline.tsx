@@ -16,7 +16,7 @@ const stories = [
   {
     label: "B2B ROOTS",
     title: "Trusted by Boutiques Across India",
-    text: "Naira initially built its reputation through partnerships with boutiques and retailers who recognized the quality and artistry of our handcrafted pieces.",
+    text: "Naira initially built its reputation through partnerships with boutiques and retailers who recognised the quality and artistry of our handcrafted pieces.",
     image: null,
     alt: "",
   },
@@ -29,7 +29,7 @@ const stories = [
   },
 
   {
-    label: "CUSTOMIZATION VISION",
+    label: "CUSTOMISATION VISION",
     title: "Every Piece, Uniquely Yours",
     text: "We believe every person deserves an outfit that reflects their personality, their celebration, and their story. Over 2,500 custom pieces later, this belief only grows stronger.",
     image: uniquelyYours,

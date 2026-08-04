@@ -7,28 +7,28 @@ const faqCategories = [
     label: "Custom Designs",
     items: [
       {
-        q: "How does the customization process work?",
-        a: "Our customization process begins when you share your design inspiration (a photo, sketch, or idea) via WhatsApp. Our design team then creates tailored suggestions including fabric options, color palettes, and embroidery styles. After a consultation call to finalize measurements and details, our artisans handcraft your outfit with care.",
+        q: "How does the customisation process work?",
+        a: "It begins on WhatsApp, with whatever you have: a photograph, a sketch, an idea. Our design team responds with fabric options, colour palettes and embroidery styles suited to it. A consultation call settles measurements and details, and then our artisans begin.",
       },
       {
-        q: "Can I customize an existing design from your collection?",
-        a: "Absolutely! You can choose any piece from our collection and customize it to your preferences, whether it's a different color, fabric, neckline, length, or embroidery pattern. Our team will guide you through all the options.",
+        q: "Can I customise an existing design from your collection?",
+        a: "Yes. Choose any piece from our collection and adjust it to your preference: a different colour, fabric, neckline, length or embroidery pattern. Our team walks you through each option.",
       },
       {
         q: "Can I send my own design inspiration?",
-        a: "Yes, we encourage it! You can share reference images, Pinterest boards, sketches, or even a verbal description of what you envision. Our designers will work with you to bring your vision to life.",
+        a: "Please do. Reference images, Pinterest boards, sketches, or simply a description of what you envision. Our designers work from whatever you bring.",
       },
       {
-        q: "How long does a customized outfit take to create?",
+        q: "How long does a customised outfit take to create?",
         a: "Depending on the complexity of the design, most custom outfits take 4–8 weeks to complete. Heavily embroidered bridal pieces may take up to 10–12 weeks. We recommend starting early, especially for weddings and special occasions.",
       },
       {
         q: "Can I select my own fabrics and embroidery styles?",
-        a: "Yes! We offer a curated selection of premium fabrics including silk, organza, georgette, velvet, and more. You can also choose from various embroidery techniques such as zardosi, thread work, sequin work, and mirror work.",
+        a: "Yes. We keep a curated selection of fabrics, silk, organza, georgette and velvet among them, alongside embroidery techniques such as zardosi, thread work, sequin work and mirror work.",
       },
       {
         q: "Do you offer virtual consultations?",
-        a: "Yes, we offer virtual consultations via video call for clients who are unable to visit in person. Our design team will walk you through fabric swatches, color options, and design details to ensure your outfit is exactly as you envisioned.",
+        a: "Yes. For clients who cannot visit in person, we hold consultations over video call. Our design team walks you through fabric swatches, colour options and design details until the outfit is exactly as you envisioned.",
       },
     ],
   },
@@ -37,19 +37,19 @@ const faqCategories = [
     items: [
       {
         q: "Do you accept bulk custom orders for boutiques or events?",
-        a: "Yes, we work with boutiques, event planners, and designers for bulk custom orders. Whether it's a wedding trousseau, a boutique collection, or coordinated outfits for an event, our team can handle large-scale customization.",
+        a: "Yes. We work with boutiques, event planners and designers on bulk custom orders, from a wedding trousseau to a boutique collection to coordinated outfits for an event.",
       },
       {
-        q: "What is the minimum order quantity for B2B customization?",
-        a: "Our minimum order quantity varies depending on the design complexity and customization level. Generally, we accept B2B orders starting from 10 pieces. Contact us for specific requirements and pricing.",
+        q: "What is the minimum order quantity for B2B customisation?",
+        a: "It varies with the design and the level of customisation. As a rule, B2B orders begin at 10 pieces. Write to us with your requirements and we will share pricing.",
       },
       {
         q: "Can boutiques collaborate with Naira for exclusive designs?",
-        a: "Absolutely! We welcome collaborations with boutiques looking for exclusive collections. Our design team can work with you to create unique pieces that align with your brand identity and customer preferences.",
+        a: "Yes. We welcome collaborations with boutiques seeking exclusive collections. Our design team works with you on pieces that sit well with your brand and your clientele.",
       },
       {
         q: "Do you provide wholesale pricing for bulk orders?",
-        a: "Yes, we offer competitive wholesale pricing for bulk orders. Pricing depends on factors such as design complexity, fabric choice, and order volume. Reach out to our B2B team for a customized quote.",
+        a: "Yes. Wholesale pricing depends on design complexity, fabric choice and order volume. Write to our B2B team for a quote made to your order.",
       },
     ],
   },
@@ -75,7 +75,7 @@ const CustomFAQ = () => {
             className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
             style={{ color: "hsl(160 15% 45%)" }}
           >
-            HELP CENTER
+            HELP CENTRE
           </p>
           <h2
             className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"

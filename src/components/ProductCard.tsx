@@ -134,7 +134,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             src={shopifyImage(product.image, 600)}
             srcSet={shopifySrcSet(product.image)}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            alt={`${product.name} — ${product.category} by Naira Flore`}
+            alt={`${product.name} · ${product.category} by Naira Flore`}
             className="absolute inset-0 w-full h-full object-cover transition-[opacity,transform] duration-500 ease-out"
             style={{
               opacity: hovered ? 0 : 1,

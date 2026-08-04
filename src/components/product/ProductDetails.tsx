@@ -260,7 +260,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <button
         onClick={() =>
           window.open(
-            `https://wa.me/919561557935?text=${encodeURIComponent("Hi Naira Flore, I'd like to customize a piece from your collection. Could you tell me more?")}`,
+            `https://wa.me/919561557935?text=${encodeURIComponent("Hi Naira Flore, I'd like to customise a piece from your collection. Could you tell me more?")}`,
             "_blank",
             "noopener,noreferrer"
           )
@@ -280,7 +280,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           e.currentTarget.style.color = "hsl(0 0% 40%)";
         }}
       >
-        Inquire About Customization
+        Enquire About Customisation
       </button>
 
       {/* Policy & FAQ links */}
@@ -356,7 +356,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           <AccordionContent>
             <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
               <p>• Dry clean only.</p>
-              <p>• Product color may slightly vary due to photographic lighting sources or your screen settings.</p>
+              <p>• Product colour may slightly vary due to photographic lighting sources or your screen settings.</p>
             </div>
           </AccordionContent>
         </AccordionItem>

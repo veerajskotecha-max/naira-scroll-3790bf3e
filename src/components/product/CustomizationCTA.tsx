@@ -38,8 +38,8 @@ const CustomizationCTA = () => (
         className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[520px] mx-auto mb-10"
         style={{ color: "hsl(0 0% 48%)" }}
       >
-        From bespoke silhouettes to handpicked fabrics and personalised embroidery —
-        let our atelier craft a piece that's entirely yours.
+        From bespoke silhouettes to handpicked fabrics and personalised embroidery,
+        our atelier will craft a piece that's entirely yours.
       </p>
       <Link
         to="/customize"

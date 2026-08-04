@@ -228,7 +228,7 @@ const ContactUs = () => {
 
             {submitted && (
               <p className="text-center font-cormorant text-[15px]" style={{ color: "hsl(143 14% 50%)" }}>
-                Thank you! WhatsApp is opening with your message, just press send there.
+                Thank you. WhatsApp is opening with your message, just press send there.
               </p>
             )}
 

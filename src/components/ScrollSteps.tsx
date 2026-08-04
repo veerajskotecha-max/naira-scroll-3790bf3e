@@ -20,7 +20,7 @@ const steps = [
     number: "02",
     title: "Explore Design Options",
     description:
-      "Our team will send you design suggestions, color palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin.",
+      "Our team will send you design suggestions, colour palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin.",
     image: step02Img,
   },
   {

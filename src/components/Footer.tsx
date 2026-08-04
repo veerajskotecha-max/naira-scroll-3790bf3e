@@ -117,8 +117,8 @@ const Footer = () => {
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"
               style={{ color: CREAM_MUTED }}
             >
-              Where tradition meets contemporary. Premium Indo-Western fashion
-              for the modern woman who embraces her heritage with style.
+              Where tradition meets the contemporary. Indo-Western fashion,
+              handcrafted for the modern woman who carries her heritage with ease.
             </p>
             <div className="flex gap-3">
               <SocialIcon href="https://www.instagram.com/nairaflore/" label="Instagram">
@@ -163,7 +163,7 @@ const Footer = () => {
               className="font-cormorant text-[14px] leading-relaxed mb-5"
               style={{ color: CREAM_MUTED }}
             >
-              Subscribe to receive updates, access to exclusive deals, and more.
+              Occasional letters from the atelier: new pieces, previews and early access.
             </p>
             <form
               onSubmit={(e) => {

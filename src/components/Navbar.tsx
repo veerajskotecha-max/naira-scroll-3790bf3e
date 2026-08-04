@@ -21,7 +21,7 @@ const leftLinks: { label: string; to: string; children?: { label: string; to: st
     ],
   },
   { label: "ABOUT", to: "/about" },
-  { label: "CUSTOMIZE", to: "/customize" },
+  { label: "CUSTOMISE", to: "/customize" },
 ];
 
 const Navbar = ({ scrolled }: NavbarProps) => {

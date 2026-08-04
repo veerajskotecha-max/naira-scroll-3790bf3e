@@ -59,7 +59,7 @@ const NewArrivals = ({
             className="font-cormorant text-[14px] md:text-[15px] lg:text-[16px]"
             style={{ color: "hsl(0 0% 43%)" }}
           >
-            The latest trends straight from our studio.
+            The latest pieces, straight from our studio.
           </p>
         </div>
 

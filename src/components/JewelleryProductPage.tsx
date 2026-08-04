@@ -49,7 +49,7 @@ export default function JewelleryProductPage() {
               style={{ color: "hsl(0 0% 40%)" }}
             >
               A hand-set solitaire on a softly hammered 18k band. Photographed here
-              in slow rotation — every facet catches its own hour of light.
+              in slow rotation, every facet catches its own hour of light.
             </p>
 
             {/* Stone selector */}
@@ -102,7 +102,7 @@ export default function JewelleryProductPage() {
             >
               {[
                 ["Metal", "18k Recycled Gold"],
-                ["Stone", GEMS.find((g) => g.id === gem)?.label ?? "—"],
+                ["Stone", GEMS.find((g) => g.id === gem)?.label ?? "·"],
                 ["Setting", "Four-prong solitaire"],
                 ["Made in", "Nashik, India"],
               ].map(([k, v]) => (

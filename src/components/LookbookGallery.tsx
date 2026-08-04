@@ -75,7 +75,7 @@ const TiltFrame = ({ frame, index }: { frame: Frame; index: number }) => {
       >
         <img
           src={frame.img}
-          alt={`${frame.name} — Naira campaign`}
+          alt={`${frame.name} · Naira campaign`}
           loading="lazy"
           className="aspect-[3/4] w-full object-cover transition-transform duration-1200 ease-out group-hover:scale-[1.08]"
         />
@@ -143,7 +143,7 @@ const LookbookGallery = () => {
           <SplitText text="Indian afternoon." as="div" className="block italic text-[#99B4AF]" style={editorial} delay={0.4} step={0.04} />
         </h2>
         <p className="mx-auto mt-7 max-w-md text-[15px] leading-relaxed text-[#1A1614]/65" style={editorial}>
-          This season&rsquo;s campaign — indigo and saffron, hand-embroidered and
+          This season&rsquo;s campaign: indigo and saffron, hand-embroidered and
           worn slowly. Photographed for Naira Flore.
         </p>
         <span className="lookbook-rule mx-auto mt-8 block h-px w-0 bg-gradient-to-r from-transparent via-[#C99A4C] to-transparent" />

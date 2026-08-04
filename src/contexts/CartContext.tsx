@@ -106,7 +106,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const result = await updateShopifyCartLine(latest.cartId, existing.lineId, nextQuantity);
         if (result.cartNotFound) {
           clearCart();
-          toast.error("Your Shopify cart expired. Please add the item again.");
+          toast.error("Your cart timed out. Please add the piece again.");
           return;
         }
         const syncedQuantity = result.quantity ?? nextQuantity;
@@ -123,7 +123,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity);
       if (result.cartNotFound) {
         clearCart();
-        toast.error("Your Shopify cart expired. Please add the item again.");
+        toast.error("Your cart timed out. Please add the piece again.");
         return;
       }
       setStoredCart((current) => ({
@@ -190,7 +190,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const result = await updateShopifyCartLine(latest.cartId, item.lineId, quantity);
         if (result.cartNotFound) {
           clearCart();
-          toast.error("Your Shopify cart expired. Please add the item again.");
+          toast.error("Your cart timed out. Please add the piece again.");
           return;
         }
         const syncedQuantity = result.quantity ?? quantity;

@@ -63,7 +63,7 @@ const MadeForYou = () => {
               className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em] mb-4"
               style={{ color: "hsl(30 30% 82%)" }}
             >
-              CUSTOMIZE
+              CUSTOMISE
             </p>
             <h1
               className="font-cormorant text-[30px] md:text-[42px] lg:text-[54px] font-medium leading-[1.15] mb-5"
@@ -80,7 +80,7 @@ const MadeForYou = () => {
               className="font-cormorant text-[14px] md:text-[16px] lg:text-[17px] leading-relaxed max-w-[480px] mx-auto mb-8"
               style={{ color: "hsl(0 0% 82%)" }}
             >
-              Over 2,500+ custom pieces handcrafted for brides, celebrations,
+              Over 2,500 custom pieces handcrafted for brides, celebrations,
               and once-in-a-lifetime moments.
             </p>
             <a
@@ -96,7 +96,7 @@ const MadeForYou = () => {
                 boxShadow: "0 4px 20px -4px hsla(0,0%,0%,0.25)",
               }}
             >
-              Get Customized Design
+              Begin Your Design
             </a>
           </div>
         </div>
@@ -141,8 +141,8 @@ const MadeForYou = () => {
             className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[480px] mx-auto mb-6"
             style={{ color: "hsl(0 0% 22%)" }}
           >
-            Ready to bring your dream outfit to life? Chat with our design team
-            and let's create something beautiful together.
+            Ready to bring your outfit to life? Chat with our design team
+            and we will shape it together.
           </p>
           <a
             href="https://wa.me/919561557935"
@@ -178,7 +178,7 @@ const MadeForYou = () => {
             className="font-cormorant text-[14px] md:text-[16px] leading-relaxed mb-8"
             style={{ color: "hsl(0 0% 40%)" }}
           >
-            Find answers about customization, shipping, returns, and more in our comprehensive FAQ section.
+            Find answers on customisation, shipping and returns in our FAQ section.
           </p>
           <Link
             to="/faqs"

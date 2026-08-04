@@ -70,7 +70,7 @@ const Craftsmanship = () => {
             >
               <img
                 src={craftsmanshipOverlay}
-                alt="Uniquely yours customization"
+                alt="Uniquely yours customisation"
                 className="w-full aspect-square object-cover object-center rounded-lg"
                 loading="lazy"
               />

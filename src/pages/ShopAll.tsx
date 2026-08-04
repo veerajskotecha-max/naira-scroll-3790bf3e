@@ -346,7 +346,7 @@ const ShopAll = () => {
         titleAccent="Edit"
         description="Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape."
         primaryCta={{ label: "Shop Now", to: "/shop" }}
-        secondaryCta={{ label: "Explore Collection", to: "/shop?category=festive" }}
+        secondaryCta={{ label: "View the Festive Edit", to: "/shop?category=festive" }}
       />
 
       {/* ── Jewellery (Coming Soon behind feature flag) ── */}

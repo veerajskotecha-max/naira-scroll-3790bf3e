@@ -10,7 +10,7 @@ const steps = [
     number: "01",
     title: "Share Your Vision",
     description:
-      "Tell us about your occasion, your colors, your dreams. Every detail matters.",
+      "Tell us about your occasion, your colours, your dreams. Every detail matters.",
   },
   {
     icon: Palette,
@@ -52,7 +52,7 @@ const featureCards = [
   {
     icon: Package,
     title: "Delivered to You",
-    description: "Your customized outfit, delivered to your doorstep.",
+    description: "Your customised outfit, delivered to your doorstep.",
   },
 ];
 
@@ -99,7 +99,7 @@ const CoutureExperience = () => {
               className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.15em] mb-3"
               style={{ color: "hsl(16 30% 55%)" }}
             >
-              CUSTOMIZE
+              CUSTOMISE
             </p>
             <h2
               className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
@@ -241,7 +241,7 @@ const CoutureExperience = () => {
               className="font-cormorant text-[28px] md:text-[36px] lg:text-[46px] font-medium leading-tight"
               style={{ color: "hsl(0 0% 18%)" }}
             >
-              Customize Your Dress
+              Customise Your Dress
             </h2>
           </div>
 

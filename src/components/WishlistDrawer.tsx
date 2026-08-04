@@ -49,7 +49,7 @@ const WishlistDrawer = () => {
               className="mt-7 px-9 min-h-[48px] text-[12px] font-medium uppercase tracking-[0.14em] transition-colors duration-200 inline-flex items-center"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             >
-              Explore Jewellery
+              View Jewellery
             </Link>
             <Link
               to="/shop"

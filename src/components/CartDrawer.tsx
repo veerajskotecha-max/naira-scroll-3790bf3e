@@ -28,54 +28,64 @@ const CartDrawer = () => {
 
         <Separator />
 
-        {/* Free Shipping Progress */}
-        <div className="px-5 py-3" style={{ backgroundColor: "hsl(33 30% 97%)" }}>
-          {amountToFreeShipping > 0 ? (
-            <p className="text-[12px] mb-2 flex items-center gap-1.5" style={{ color: "hsl(0 0% 38%)" }}>
-              <Truck size={13} strokeWidth={1.5} />
-              Add{" "}
-              <strong className="font-semibold" style={{ color: "hsl(186 35% 28%)" }}>
-                {formatPrice(amountToFreeShipping)}
-              </strong>{" "}
-              more for <strong className="font-semibold">FREE shipping</strong>
-            </p>
-          ) : (
-            <p className="text-[12px] mb-2 flex items-center gap-1.5 font-medium" style={{ color: "hsl(142 60% 35%)" }}>
-              <Truck size={13} strokeWidth={1.5} />
-              🎉 You've unlocked FREE shipping!
-            </p>
-          )}
-          <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: "hsl(0 0% 88%)" }}>
-            <div
-              className="h-full rounded-full transition-all duration-500 ease-out"
-              style={{
-                width: `${shippingProgress}%`,
-                backgroundColor: shippingProgress >= 100 ? "hsl(142 60% 40%)" : "hsl(186 35% 38%)",
-              }}
-            />
-          </div>
-        </div>
-
-        <Separator />
-
         {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
-            <div className="w-14 h-14 flex items-center justify-center" style={{ borderRadius: "50%", backgroundColor: "hsl(0 0% 96%)" }}>
-              <ShoppingBag size={24} style={{ color: "hsl(0 0% 60%)" }} />
+          <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
+            <div className="w-16 h-16 flex items-center justify-center border" style={{ borderColor: "hsl(36 47% 46% / 0.35)", backgroundColor: "hsl(33 41% 95%)" }}>
+              <ShoppingBag size={24} strokeWidth={1.3} style={{ color: "hsl(36 47% 46%)" }} />
             </div>
-            <p className="font-cormorant text-[18px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Your cart is empty</p>
-            <p className="font-cormorant text-[14px] text-center" style={{ color: "hsl(0 0% 55%)" }}>Start adding items to your cart</p>
+            <p className="mt-5 font-cormorant text-[22px] font-semibold" style={{ color: "hsl(0 0% 18%)" }}>Your cart is empty</p>
+            <p className="mt-2 font-cormorant text-[15px] leading-[1.7] max-w-[240px]" style={{ color: "hsl(0 0% 50%)" }}>
+              Pieces you choose will gather here, ready when you are.
+            </p>
             <Link
               to="/shop"
               onClick={() => setDrawerOpen(false)}
-              className="mt-2 px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 min-h-[44px] flex items-center"
+              className="mt-7 px-9 min-h-[48px] text-[12px] font-medium uppercase tracking-[0.14em] transition-colors duration-200 inline-flex items-center"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             >
               Continue Shopping
             </Link>
+            <Link
+              to="/jewellery"
+              onClick={() => setDrawerOpen(false)}
+              className="mt-4 inline-flex items-center min-h-[44px] px-2 font-cormorant text-[14px] underline underline-offset-4 transition-colors duration-200"
+              style={{ color: "hsl(0 0% 45%)" }}
+            >
+              Explore the jewellery
+            </Link>
           </div>
         ) : (
           <>
+            {/* Free Shipping Progress */}
+            <div className="px-5 py-3" style={{ backgroundColor: "hsl(33 30% 97%)" }}>
+              {amountToFreeShipping > 0 ? (
+                <p className="text-[12px] mb-2 flex items-center gap-1.5" style={{ color: "hsl(0 0% 38%)" }}>
+                  <Truck size={13} strokeWidth={1.5} />
+                  Add{" "}
+                  <strong className="font-semibold" style={{ color: "hsl(186 35% 28%)" }}>
+                    {formatPrice(amountToFreeShipping)}
+                  </strong>{" "}
+                  more for <strong className="font-semibold">free shipping</strong>
+                </p>
+              ) : (
+                <p className="text-[12px] mb-2 flex items-center gap-1.5 font-medium" style={{ color: "hsl(142 60% 30%)" }}>
+                  <Truck size={13} strokeWidth={1.5} />
+                  Free shipping unlocked on this order
+                </p>
+              )}
+              <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: "hsl(0 0% 88%)" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    width: `${shippingProgress}%`,
+                    backgroundColor: shippingProgress >= 100 ? "hsl(142 60% 40%)" : "hsl(186 35% 38%)",
+                  }}
+                />
+              </div>
+            </div>
+
+            <Separator />
+
             {/* Items */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
               {items.map((item) => (
@@ -95,9 +105,9 @@ const CartDrawer = () => {
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
-                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} className="w-10 h-10 flex items-center justify-center transition-colors hover:bg-muted" aria-label="Decrease quantity"><Minus size={12} /></button>
+                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} className="w-11 h-11 flex items-center justify-center transition-colors hover:bg-muted" aria-label="Decrease quantity"><Minus size={12} /></button>
                         <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} className="w-10 h-10 flex items-center justify-center transition-colors hover:bg-muted" aria-label="Increase quantity"><Plus size={12} /></button>
+                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} className="w-11 h-11 flex items-center justify-center transition-colors hover:bg-muted" aria-label="Increase quantity"><Plus size={12} /></button>
                       </div>
                       <button onClick={() => removeItem(item.id, item.size)} className="p-2 transition-colors hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label={`Remove ${item.name}`}>
                         <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
@@ -145,7 +155,7 @@ const CartDrawer = () => {
                   <span className="text-[11px]" style={{ color: "hsl(0 0% 55%)" }}>256-bit SSL encrypted · 100% secure</span>
                 </div>
               </div>
-              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="block text-center font-cormorant text-[14px] underline transition-colors py-1" style={{ color: "hsl(0 0% 45%)" }}>
+              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[44px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>
                 Continue Shopping
               </Link>
             </div>

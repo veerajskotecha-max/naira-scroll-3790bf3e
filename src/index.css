@@ -196,6 +196,14 @@ a, button, [role="button"], input, select, textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 2b. Consistent brand focus ring: keyboard focus only, gold on every
+      interactive element. :where() keeps specificity at zero so component
+      level focus styles (shadcn rings) can still override it. */
+:where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid #B0843A;
+  outline-offset: 2px;
+}
+
 /* 3. Prevent iOS Safari from auto-zooming on input focus
       (triggered when input font-size < 16px) */
 input, select, textarea {

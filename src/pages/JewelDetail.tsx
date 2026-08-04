@@ -116,17 +116,17 @@ const JewelDetail = () => {
 
   const WishlistBtn = (
     <button
-      className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200"
+      className="absolute top-4 right-4 z-10 w-11 h-11 flex items-center justify-center transition-all duration-200"
       style={{ backgroundColor: "hsla(0,0%,100%,0.85)" }}
       onClick={handleWishlist}
-      aria-label="Add to wishlist"
+      aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
     >
       <Heart size={17} style={{ color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)", fill: wishlisted ? "hsl(0 70% 55%)" : "none" }} />
     </button>
   );
   const ShareBtn = (
     <button
-      className="absolute bottom-16 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200 shadow-sm"
+      className="absolute bottom-16 right-4 z-10 w-11 h-11 flex items-center justify-center transition-all duration-200 shadow-sm"
       style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
       onClick={handleShare}
       aria-label="Share piece"
@@ -154,10 +154,14 @@ const JewelDetail = () => {
       {WishlistBtn}
       {ShareBtn}
       {images.length > 1 && (
-        <div className="flex justify-center gap-2 mt-3 mb-1">
+        <div className="flex justify-center gap-1 mt-2 mb-1">
           {images.map((_, i) => (
-            <button key={i} onClick={() => scrollToImage(i)} aria-label={`View ${i + 1}`} className="w-1.5 h-1.5 transition-all duration-200"
-              style={{ borderRadius: "50%", backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)", transform: selectedImage === i ? "scale(1.4)" : "scale(1)" }} />
+            <button key={i} onClick={() => scrollToImage(i)} aria-label={`View image ${i + 1}`} className="w-8 h-8 flex items-center justify-center">
+              <span
+                className="w-1.5 h-1.5 transition-all duration-200"
+                style={{ borderRadius: "50%", backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)", transform: selectedImage === i ? "scale(1.4)" : "scale(1)" }}
+              />
+            </button>
           ))}
         </div>
       )}
@@ -230,7 +234,7 @@ const JewelDetail = () => {
       <div className="md:hidden pt-[94px] relative">
         <button
           onClick={goBack}
-          className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
+          className="absolute top-4 left-4 z-10 w-11 h-11 flex items-center justify-center shadow-sm"
           style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
           aria-label="Go back"
         >
@@ -256,30 +260,27 @@ const JewelDetail = () => {
               {piece.name}
             </h1>
 
-            {/* Price */}
-            <div className="mt-2 md:mt-3">
-              <span className="font-cormorant text-[22px] md:text-[24px] font-bold" style={{ color: "hsl(0 0% 15%)" }}>
+            {/* Pre-order status: a quiet label, not a price */}
+            <div className="mt-3 flex items-center gap-2">
+              <span aria-hidden className="h-[7px] w-[7px] shrink-0" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
+              <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
                 {piece.priceLabel}
               </span>
-              <span className="ml-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
-                Made to order · price shared on enquiry
-              </span>
             </div>
+            <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
+              Made to order · price shared on WhatsApp enquiry
+            </p>
 
             {/* Delivery badge */}
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-3">
               <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
               <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
                 Plated &amp; finished in <strong className="font-medium">2–3 weeks</strong> · free sizing
               </span>
             </div>
 
-            <p className="text-[12px] mt-2 leading-relaxed" style={{ color: "hsl(0 0% 50%)" }}>
-              *Pre-order pricing available on WhatsApp. Each piece is hand-finished in the Naira atelier.
-            </p>
-
             {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-2 mt-4 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
+            <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
               {[
                 { icon: Scissors, label: "Hand-finished" },
                 { icon: ShieldCheck, label: "18k Demi-Gold" },
@@ -302,7 +303,7 @@ const JewelDetail = () => {
                 <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
                   {piece.category === "Rings" ? "Ring Size (US)" : "Size"}
                 </span>
-                <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="text-[11px] underline tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
+                <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
                   Sizing help
                 </a>
               </div>
@@ -326,55 +327,56 @@ const JewelDetail = () => {
             <div className="mt-4">
               <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-2.5" style={{ color: "hsl(0 0% 25%)" }}>Quantity</span>
               <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 80%)" }}>
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center hover:bg-muted">
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="w-11 h-11 flex items-center justify-center hover:bg-muted">
                   <Minus size={13} style={{ color: "hsl(0 0% 30%)" }} />
                 </button>
-                <span className="w-12 text-center text-[13px] font-medium" style={{ color: "hsl(0 0% 20%)" }}>{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 flex items-center justify-center hover:bg-muted">
+                <span className="w-12 text-center text-[13px] font-medium" style={{ color: "hsl(0 0% 20%)" }} aria-live="polite">{quantity}</span>
+                <button onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity" className="w-11 h-11 flex items-center justify-center hover:bg-muted">
                   <Plus size={13} style={{ color: "hsl(0 0% 30%)" }} />
                 </button>
               </div>
             </div>
 
-            {/* CTA Row */}
-            <div id="product-actions" className="flex gap-3 mt-5">
-              <button
-                onClick={handleWishlist}
-                className="flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 inline-flex items-center justify-center gap-2"
-                style={{ borderColor: "hsl(0 0% 20%)", color: "hsl(0 0% 20%)", backgroundColor: "transparent" }}
-              >
-                <Heart size={14} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 20%)" }} />
-                {wishlisted ? "Saved" : "Add to Wishlist"}
-              </button>
+            {/* CTA block: WhatsApp pre-order leads, everything else supports */}
+            <div id="product-actions" className="mt-6">
               <a
                 href={sizedEnquiryHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-200"
+                className="w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                <MessageSquare size={14} /> Enquire on WhatsApp
+                <MessageSquare size={15} /> Pre-order on WhatsApp
               </a>
+              <div className="flex gap-3 mt-3">
+                <button
+                  onClick={handleWishlist}
+                  className="flex-1 h-[46px] text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 inline-flex items-center justify-center gap-2 hover:border-[hsl(0_0%_45%)]"
+                  style={{ borderColor: "hsl(0 0% 74%)", color: "hsl(0 0% 30%)", backgroundColor: "transparent" }}
+                >
+                  <Heart size={14} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 30%)" }} />
+                  {wishlisted ? "Saved" : "Wishlist"}
+                </button>
+                <a
+                  href={enquiryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 h-[46px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 hover:border-[hsl(0_0%_45%)]"
+                  style={{ borderColor: "hsl(0 0% 74%)", color: "hsl(0 0% 30%)" }}
+                >
+                  Custom design
+                </a>
+              </div>
             </div>
-
-            <a
-              href={enquiryHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-[44px] mt-3 inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200"
-              style={{ borderColor: "hsl(0 0% 78%)", color: "hsl(0 0% 40%)" }}
-            >
-              Request custom design
-            </a>
 
             {/* Jewellery assurances */}
             <JewelTrustStrip />
 
             {/* Policy links */}
             <div className="flex items-center justify-center gap-4 mt-3">
-              <Link to="/exchange-return-policy" className="font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>Exchange &amp; Return Policy</Link>
+              <Link to="/exchange-return-policy" className="inline-flex items-center min-h-[44px] font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>Exchange &amp; Return Policy</Link>
               <span className="text-[10px]" style={{ color: "hsl(0 0% 75%)" }}>|</span>
-              <Link to="/faqs" className="font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>FAQs</Link>
+              <Link to="/faqs" className="inline-flex items-center min-h-[44px] font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>FAQs</Link>
             </div>
 
             <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
@@ -462,7 +464,7 @@ const JewelDetail = () => {
                     href={href}
                     target={label === "WhatsApp" ? "_blank" : undefined}
                     rel={label === "WhatsApp" ? "noopener noreferrer" : undefined}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 text-[12px] tracking-[0.02em] transition-colors duration-200"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] text-[12px] tracking-[0.02em] transition-colors duration-200 hover:text-foreground"
                     style={{
                       color: "hsl(0 0% 35%)",
                       borderTop: "1px solid hsl(0 0% 90%)",
@@ -496,7 +498,10 @@ const JewelDetail = () => {
                 </div>
                 <p className="mt-3 text-[10px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>{r.category.toUpperCase()}</p>
                 <h3 className="mt-1 font-cormorant text-[18px] md:text-[20px]" style={{ color: "#1A1614" }}>{r.name}</h3>
-                <p className="mt-1 text-[12px]" style={{ color: "hsl(0 0% 50%)" }}>{r.priceLabel}</p>
+                <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                  <span aria-hidden className="h-[5px] w-[5px]" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
+                  {r.priceLabel}
+                </p>
               </Link>
             ))}
           </div>
@@ -506,23 +511,26 @@ const JewelDetail = () => {
       <Footer />
 
       {/* Sticky mobile enquire bar */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-white/95 backdrop-blur px-3 py-2 flex items-center gap-2" style={{ borderColor: "hsl(0 0% 90%)" }}>
+      <div
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-white/95 backdrop-blur px-3 pt-2 flex items-center gap-2"
+        style={{ borderColor: "hsl(0 0% 90%)", paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom, 0px))" }}
+      >
         <button
           onClick={handleWishlist}
-          aria-label="Wishlist"
-          className="h-[46px] w-[46px] flex items-center justify-center border"
-          style={{ borderColor: "hsl(0 0% 20%)" }}
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="h-[48px] w-[48px] shrink-0 flex items-center justify-center border"
+          style={{ borderColor: "hsl(0 0% 74%)" }}
         >
-          <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 20%)" }} />
+          <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 25%)" }} />
         </button>
         <a
           href={sizedEnquiryHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 h-[46px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em]"
+          className="flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          <MessageSquare size={14} /> Enquire on WhatsApp
+          <MessageSquare size={14} /> Pre-order on WhatsApp
         </a>
       </div>
 

@@ -109,10 +109,13 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         <h3 className="mt-1.5 text-[18px] leading-tight text-[#1A1614] sm:mt-2 sm:text-[24px] md:text-[26px]" style={velista}>
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
-        <p className="mt-2 text-[13px] tracking-wide text-[#1A1614]/90 sm:mt-3 sm:text-[15px]" style={jost}>{piece.priceLabel}</p>
+        <p className="mt-2 inline-flex items-center gap-1.5 text-[9.5px] uppercase tracking-[0.18em] text-[#9A7634] sm:mt-2.5 sm:text-[10.5px]" style={jost}>
+          <span aria-hidden className="h-[5px] w-[5px] rounded-full bg-[#C99A4C]" />
+          {piece.priceLabel}
+        </p>
         <Link
           to={`/jewellery/${piece.handle}`}
-          className="group/btn relative mt-3 inline-flex items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-4 py-2 text-[9.5px] tracking-[0.25em] text-[#1A1614] transition-colors duration-500 hover:text-[#FBF3EC] sm:mt-4 sm:px-6 sm:py-2.5 sm:text-[10.5px] sm:tracking-[0.3em]"
+          className="group/btn relative mt-2.5 inline-flex min-h-[44px] items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-5 text-[9.5px] tracking-[0.25em] text-[#1A1614] transition-colors duration-500 hover:text-[#FBF3EC] sm:mt-3 sm:px-6 sm:text-[10.5px] sm:tracking-[0.3em]"
           style={jost}
         >
           <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-500 ease-out group-hover/btn:scale-x-100" />

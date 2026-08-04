@@ -2,7 +2,7 @@ import PageSEO from "@/components/PageSEO";
 import { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useLocation } from "react-router-dom";
-import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, ArrowUpDown, X, Check, Columns2, LayoutGrid, LayoutList, ChevronDown, ShoppingBag } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -212,7 +212,7 @@ const ShopAll = () => {
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
-  const { data: shopifyProducts = [], isLoading, isError } = useQuery({
+  const { data: shopifyProducts = [], isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["shopify-products", "shop-all"],
     queryFn: () => fetchShopifyProducts(50),
     staleTime: 1000 * 60 * 5,
@@ -457,7 +457,7 @@ const ShopAll = () => {
           <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
             <SheetTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 min-h-[44px] border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -476,14 +476,14 @@ const ShopAll = () => {
                 <FilterSidebar {...filterProps} />
                 <div className="flex gap-3 mt-8">
                   <button
-                    className="flex-1 py-3 border font-cormorant text-[14px] font-medium"
+                    className="flex-1 min-h-[48px] border font-cormorant text-[14px] font-medium"
                     style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 40%)" }}
                     onClick={resetFilters}
                   >
                     Reset
                   </button>
                   <button
-                    className="flex-1 py-3 font-cormorant text-[14px] font-medium"
+                    className="flex-1 min-h-[48px] font-cormorant text-[14px] font-medium"
                     style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                     onClick={() => setMobileFiltersOpen(false)}
                   >
@@ -497,7 +497,7 @@ const ShopAll = () => {
           <Dialog open={mobileSortOpen} onOpenChange={setMobileSortOpen}>
             <DialogTrigger asChild>
               <button
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border font-cormorant text-[14px] font-medium transition-colors duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 min-h-[44px] border font-cormorant text-[14px] font-medium transition-colors duration-200"
                 style={{
                   borderColor: "hsl(0 0% 82%)",
                   color: "hsl(0 0% 25%)",
@@ -542,24 +542,26 @@ const ShopAll = () => {
             style={{ borderColor: "hsl(0 0% 82%)", backgroundColor: "hsl(0 0% 100%)" }}
           >
             <button
-              className="p-2.5 transition-colors duration-150"
+              className="w-11 h-11 flex items-center justify-center transition-colors duration-150"
               style={{
                 backgroundColor: mobileLayout === "grid" ? "hsl(0 0% 92%)" : "transparent",
                 color: mobileLayout === "grid" ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
               }}
               onClick={() => setMobileLayout("grid")}
               title="Grid view"
+              aria-label="Grid view"
             >
               <LayoutGrid size={14} />
             </button>
             <button
-              className="p-2.5 transition-colors duration-150"
+              className="w-11 h-11 flex items-center justify-center transition-colors duration-150"
               style={{
                 backgroundColor: mobileLayout === "list" ? "hsl(0 0% 92%)" : "transparent",
                 color: mobileLayout === "list" ? "hsl(0 0% 15%)" : "hsl(0 0% 55%)",
               }}
               onClick={() => setMobileLayout("list")}
               title="List view"
+              aria-label="List view"
             >
               <LayoutList size={14} />
             </button>
@@ -587,7 +589,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-cat-${cat}`}
                     onClick={() => toggleCategory(cat)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3.5 min-h-[44px] font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -601,7 +603,7 @@ const ShopAll = () => {
                 {(priceRange[0] !== 0 || priceRange[1] !== 50000) && (
                   <button
                     onClick={() => setPriceRange([0, 50000])}
-                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3.5 min-h-[44px] font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -616,7 +618,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-size-${size}`}
                     onClick={() => toggleSize(size)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3.5 min-h-[44px] font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -631,7 +633,7 @@ const ShopAll = () => {
                   <button
                     key={`chip-avail-${a}`}
                     onClick={() => toggleAvailability(a)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 font-cormorant text-[13px] font-medium border transition-colors duration-150"
+                    className="flex items-center gap-1.5 px-3.5 min-h-[44px] font-cormorant text-[13px] font-medium border transition-colors duration-150"
                     style={{
                       borderColor: "hsl(186 35% 28%)",
                       color: "hsl(186 35% 28%)",
@@ -644,7 +646,7 @@ const ShopAll = () => {
                 ))}
                 <button
                   onClick={resetFilters}
-                  className="px-3 py-1.5 font-cormorant text-[13px] font-medium transition-colors duration-150"
+                  className="px-3 min-h-[44px] font-cormorant text-[13px] font-medium underline underline-offset-4 transition-colors duration-150"
                   style={{ color: "hsl(0 0% 45%)" }}
                 >
                   Clear All
@@ -669,17 +671,49 @@ const ShopAll = () => {
                   </div>
                 ))}
               </div>
-            ) : filteredProducts.length === 0 || isError ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <p className="font-cormorant text-[22px] font-semibold mb-2" style={{ color: "hsl(0 0% 25%)" }}>
-                  No products found
+            ) : isError ? (
+              <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
+                <div
+                  className="mb-5 flex h-14 w-14 items-center justify-center border"
+                  style={{ borderColor: "hsl(36 47% 46% / 0.4)", backgroundColor: "hsl(33 41% 95%)" }}
+                >
+                  <ShoppingBag size={20} strokeWidth={1.4} style={{ color: "hsl(36 47% 46%)" }} />
+                </div>
+                <p className="font-cormorant text-[24px] font-semibold mb-2" style={{ color: "hsl(0 0% 18%)" }}>
+                  The boutique did not load
                 </p>
-                <p className="font-cormorant text-[15px] mb-6" style={{ color: "hsl(0 0% 50%)" }}>
-                  {isError ? "Shopify products could not be loaded right now." : "Try adjusting your filters to discover more pieces."}
+                <p className="font-cormorant text-[15px] mb-7 max-w-[320px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                  Our pieces could not be fetched just now. Check your connection and try again, or write to us and we will help.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <button
+                    onClick={() => refetch()}
+                    disabled={isRefetching}
+                    className="px-8 min-h-[48px] text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 disabled:opacity-60"
+                    style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+                  >
+                    {isRefetching ? "Retrying" : "Try Again"}
+                  </button>
+                  <a
+                    href="mailto:shopatnaira@gmail.com"
+                    className="inline-flex items-center min-h-[44px] px-2 font-cormorant text-[14px] underline underline-offset-4"
+                    style={{ color: "hsl(0 0% 45%)" }}
+                  >
+                    shopatnaira@gmail.com
+                  </a>
+                </div>
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
+                <p className="font-cormorant text-[24px] font-semibold mb-2" style={{ color: "hsl(0 0% 18%)" }}>
+                  No pieces match these filters
+                </p>
+                <p className="font-cormorant text-[15px] mb-7 max-w-[300px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                  Loosen a filter or two and more of the collection will appear.
                 </p>
                 <button
                   onClick={resetFilters}
-                  className="px-6 py-2.5 font-cormorant text-[14px] font-medium transition-colors duration-200"
+                  className="px-8 min-h-[48px] text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-200"
                   style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 >
                   Reset All Filters

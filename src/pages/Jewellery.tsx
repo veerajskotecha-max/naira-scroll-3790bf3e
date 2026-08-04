@@ -88,12 +88,13 @@ const Jewellery = () => {
 
         {/* filter */}
         <div className="sticky top-[94px] z-20 bg-[#FBF3EC]/85 py-4 backdrop-blur md:top-[100px] md:py-5 lg:top-[116px]">
-          <div className="mx-auto flex max-w-6xl flex-nowrap items-center justify-center gap-1 px-2 sm:gap-2 sm:px-6">
+          <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
             {filters.map((f) => (
               <button
                 key={f}
                 onClick={() => setActive(f)}
-                className={`shrink-0 border px-2 py-1.5 text-[8.5px] tracking-[0.15em] transition-colors duration-300 sm:px-5 sm:py-2.5 sm:text-[11px] sm:tracking-[0.3em] ${
+                aria-pressed={active === f}
+                className={`shrink-0 border px-4 min-h-[44px] text-[10px] tracking-[0.18em] transition-colors duration-300 sm:px-5 sm:text-[11px] sm:tracking-[0.3em] ${
                   active === f ? "border-[#1A1614] bg-[#1A1614] text-[#FBF3EC]" : "border-[#1A1614]/25 text-[#1A1614]/70 hover:border-[#1A1614]/60"
                 }`}
                 style={jost}
@@ -107,11 +108,29 @@ const Jewellery = () => {
 
 
         {/* grid */}
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-24 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
-          {pieces.map((piece, i) => (
-            <JewelCard key={piece.handle} piece={piece} index={i} />
-          ))}
-        </div>
+        {pieces.length === 0 ? (
+          <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pb-24 pt-16 text-center">
+            <h2 className="text-[26px] leading-[1.15] md:text-[32px]" style={velista}>
+              Nothing in this edit yet
+            </h2>
+            <p className="mt-3 max-w-sm text-[14px] leading-[1.8] text-[#1A1614]/60" style={editorial}>
+              New pieces join The Gilded Hour in small batches. The full collection is a step away.
+            </p>
+            <button
+              onClick={() => setActive("All")}
+              className="mt-7 border border-[#1A1614] px-7 min-h-[48px] text-[10.5px] tracking-[0.28em] text-[#1A1614] transition-colors duration-300 hover:bg-[#1A1614] hover:text-[#FBF3EC]"
+              style={jost}
+            >
+              VIEW ALL PIECES
+            </button>
+          </div>
+        ) : (
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-24 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
+            {pieces.map((piece, i) => (
+              <JewelCard key={piece.handle} piece={piece} index={i} />
+            ))}
+          </div>
+        )}
 
 
 
@@ -119,7 +138,7 @@ const Jewellery = () => {
         {/* collections, internal linking (collapsed, still in the DOM for crawlers) */}
         <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
           <details className="group border-t border-[#1A1614]/10 pt-6">
-            <summary className="cursor-pointer list-none text-[11px] tracking-[0.28em] text-[#1A1614]/55 transition-colors hover:text-[#1A1614]" style={jost}>
+            <summary className="flex min-h-[44px] cursor-pointer list-none items-center text-[11px] tracking-[0.28em] text-[#1A1614]/55 transition-colors hover:text-[#1A1614]" style={jost}>
               SHOP BY COLLECTION
             </summary>
             <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-2.5">
@@ -140,7 +159,7 @@ const Jewellery = () => {
         {/* faq, collapsed by default so the page stays quiet */}
         <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
           <details className="border-t border-[#1A1614]/10 pt-6">
-            <summary className="cursor-pointer list-none text-[11px] tracking-[0.28em] text-[#1A1614]/55 transition-colors hover:text-[#1A1614]" style={jost}>
+            <summary className="flex min-h-[44px] cursor-pointer list-none items-center text-[11px] tracking-[0.28em] text-[#1A1614]/55 transition-colors hover:text-[#1A1614]" style={jost}>
               GOOD TO KNOW
             </summary>
             <dl className="mt-6 max-w-3xl space-y-6">

@@ -9,7 +9,10 @@ import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import DetailsTabs from "@/components/product/DetailsTabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
+import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
+import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -36,6 +39,12 @@ const JewelDetail = () => {
   const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "7" : "One Size");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const openLightbox = useCallback((index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
 
@@ -130,9 +139,16 @@ const JewelDetail = () => {
     <div className="relative">
       <div ref={scrollRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {images.map((img, i) => (
-          <div key={i} className="w-full shrink-0 snap-center" style={{ aspectRatio: "1/1", backgroundColor: "#F4EBE2" }}>
+          <button
+            type="button"
+            key={i}
+            onClick={() => openLightbox(i)}
+            className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
+            style={{ aspectRatio: "1/1", backgroundColor: "#F4EBE2" }}
+            aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+          >
             <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
-          </div>
+          </button>
         ))}
       </div>
       {WishlistBtn}
@@ -150,9 +166,16 @@ const JewelDetail = () => {
     <div className="relative w-full h-full min-h-full">
       <div className="grid grid-cols-2 grid-rows-2 gap-[4px] h-full min-h-full">
         {[0, 1, 0, 1].map((idx, i) => (
-          <div key={i} className="overflow-hidden relative min-h-0" style={{ backgroundColor: "#F4EBE2", height: "100%" }}>
+          <button
+            type="button"
+            key={i}
+            onClick={() => openLightbox(images[idx] ? idx : 0)}
+            className="overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in"
+            style={{ backgroundColor: "#F4EBE2", height: "100%" }}
+            aria-label={`Open ${piece.name} image ${(images[idx] ? idx : 0) + 1} full screen`}
+          >
             <img src={images[idx] ?? images[0]} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
-          </div>
+          </button>
         ))}
       </div>
       {WishlistBtn}
@@ -344,6 +367,9 @@ const JewelDetail = () => {
               Request custom design
             </a>
 
+            {/* Jewellery assurances */}
+            <JewelTrustStrip />
+
             {/* Policy links */}
             <div className="flex items-center justify-center gap-4 mt-3">
               <Link to="/exchange-return-policy" className="font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>Exchange &amp; Return Policy</Link>
@@ -387,11 +413,11 @@ const JewelDetail = () => {
             {/* Accordions */}
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="info" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AccordionTrigger className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline" style={{ color: "hsl(0 0% 20%)" }}>Materials</AccordionTrigger>
+                <AtelierAccordionTrigger>Materials</AtelierAccordionTrigger>
                 <AccordionContent><p className="text-[13px] leading-[1.7] pb-2" style={{ color: "hsl(0 0% 45%)" }}>{piece.materials}</p></AccordionContent>
               </AccordionItem>
               <AccordionItem value="delivery" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AccordionTrigger className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline" style={{ color: "hsl(0 0% 20%)" }}>Delivery Timelines</AccordionTrigger>
+                <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• Made to order, plated &amp; finished in 2–3 weeks.</p>
@@ -400,7 +426,7 @@ const JewelDetail = () => {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="disclaimer" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AccordionTrigger className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline" style={{ color: "hsl(0 0% 20%)" }}>Disclaimer</AccordionTrigger>
+                <AtelierAccordionTrigger>Disclaimer</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• Handcrafted pieces carry gentle variation, part of their character.</p>
@@ -409,7 +435,7 @@ const JewelDetail = () => {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="additional" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AccordionTrigger className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline" style={{ color: "hsl(0 0% 20%)" }}>Additional Information</AccordionTrigger>
+                <AtelierAccordionTrigger>Additional Information</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• WhatsApp / WhatsApp Call: <span className="font-semibold" style={{ color: "hsl(0 0% 20%)" }}>+91 9561557935</span></p>
@@ -499,6 +525,14 @@ const JewelDetail = () => {
           <MessageSquare size={14} /> Enquire on WhatsApp
         </a>
       </div>
+
+      <ImageLightbox
+        images={images}
+        name={piece.name}
+        open={lightboxOpen}
+        initialIndex={lightboxIndex}
+        onOpenChange={setLightboxOpen}
+      />
 
     </div>
   );

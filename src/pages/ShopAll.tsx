@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import ShopHero from "@/components/shop/ShopHero";
@@ -660,10 +661,11 @@ const ShopAll = () => {
                 }`}
               >
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-muted" style={{ aspectRatio: "3/4" }} />
-                    <div className="h-4 bg-muted mt-3 w-3/4" />
-                    <div className="h-3 bg-muted mt-2 w-1/2" />
+                  <div key={i} aria-hidden="true">
+                    <AtelierSkeleton className="w-full" style={{ aspectRatio: "3/4" }} />
+                    <AtelierSkeleton className="mt-4 h-[10px] w-1/3" />
+                    <AtelierSkeleton className="mt-2.5 h-[16px] w-3/4" />
+                    <AtelierSkeleton className="mt-2 h-[12px] w-1/4" />
                   </div>
                 ))}
               </div>

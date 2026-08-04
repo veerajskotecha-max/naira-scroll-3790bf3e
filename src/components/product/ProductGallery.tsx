@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Heart, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -20,6 +21,12 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
   const wishlisted = isWishlisted(productId);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const openLightbox = useCallback((index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  }, []);
 
   const scrollToImage = useCallback((index: number) => {
     if (!scrollRef.current) return;
@@ -94,6 +101,16 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     </button>
   );
 
+  const Lightbox = (
+    <ImageLightbox
+      images={images}
+      name={productName}
+      open={lightboxOpen}
+      initialIndex={lightboxIndex}
+      onOpenChange={setLightboxOpen}
+    />
+  );
+
   // Mobile: swipeable carousel
   if (isMobile) {
     return (
@@ -104,9 +121,16 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
           style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
           {images.map((img, i) => (
-            <div key={i} className="w-full shrink-0 snap-center" style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 96%)" }}>
+            <button
+              type="button"
+              key={i}
+              onClick={() => openLightbox(i)}
+              className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
+              style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 96%)" }}
+              aria-label={`Open ${productName} image ${i + 1} full screen`}
+            >
               <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
-            </div>
+            </button>
           ))}
         </div>
         {WishlistBtn}
@@ -125,6 +149,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
             />
           ))}
         </div>
+        {Lightbox}
       </div>
     );
   }
@@ -134,21 +159,25 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     <div className="relative w-full h-full min-h-full">
       <div className="grid grid-cols-2 grid-rows-2 gap-[4px] h-full min-h-full">
         {images.slice(0, 4).map((img, i) => (
-          <div
+          <button
+            type="button"
             key={i}
-            className="overflow-hidden relative min-h-0"
+            onClick={() => openLightbox(i)}
+            className="overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in"
             style={{ backgroundColor: "hsl(0 0% 96%)", height: "100%" }}
+            aria-label={`Open ${productName} image ${i + 1} full screen`}
           >
             <img
               src={img}
               alt={`${productName} - View ${i + 1}`}
               className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
             />
-          </div>
+          </button>
         ))}
       </div>
       {WishlistBtn}
       {ShareBtn}
+      {Lightbox}
     </div>
   );
 };

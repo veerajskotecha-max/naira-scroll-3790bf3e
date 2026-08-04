@@ -12,6 +12,7 @@ import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 import StickyAddToCart from "@/components/StickyAddToCart";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";
+import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 
 const ProductDetail = () => {
@@ -55,11 +56,61 @@ const ProductDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-[100px] flex items-center justify-center" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
+      <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
         <Helmet>
           <title>Loading Product | Naira Flore</title>
         </Helmet>
-        <p className="font-cormorant text-[22px]" style={{ color: "hsl(0 0% 30%)" }}>Loading product…</p>
+        <span className="sr-only" role="status">Loading product</span>
+
+        {/* Breadcrumb placeholder (desktop) */}
+        <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:block" aria-hidden="true">
+          <AtelierSkeleton className="h-3 w-56" />
+        </div>
+
+        {/* Mobile gallery placeholder */}
+        <div className="md:hidden pt-[94px]" aria-hidden="true">
+          <AtelierSkeleton className="w-full" style={{ aspectRatio: "3/4" }} />
+          <div className="flex justify-center gap-2 mt-3 mb-1">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <AtelierSkeleton key={i} className="w-1.5 h-1.5" style={{ borderRadius: "50%" }} />
+            ))}
+          </div>
+        </div>
+
+        <div className="max-w-[1400px] mx-auto md:px-6 pb-16 md:pb-24" aria-hidden="true">
+          <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            {/* Desktop gallery placeholder */}
+            <div className="hidden md:grid grid-cols-2 gap-[4px]">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <AtelierSkeleton key={i} className="w-full" style={{ aspectRatio: "3/4" }} />
+              ))}
+            </div>
+
+            {/* Details placeholder */}
+            <div className="mt-6 md:mt-8 lg:mt-0 lg:py-2 px-4 lg:px-8 xl:px-10">
+              <AtelierSkeleton className="h-8 w-4/5" />
+              <AtelierSkeleton className="mt-4 h-6 w-1/3" />
+              <AtelierSkeleton className="mt-3 h-3 w-3/5" />
+              <div className="grid grid-cols-3 gap-2 mt-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <AtelierSkeleton key={i} className="h-14" />
+                ))}
+              </div>
+              <AtelierSkeleton className="mt-6 h-11 w-full" />
+              <AtelierSkeleton className="mt-4 h-11 w-40" />
+              <div className="flex gap-3 mt-6">
+                <AtelierSkeleton className="h-[48px] flex-1" />
+                <AtelierSkeleton className="h-[48px] flex-1" />
+              </div>
+              <AtelierSkeleton className="mt-3 h-[44px] w-full" />
+              <div className="mt-6 space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <AtelierSkeleton key={i} className="h-4 w-full" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

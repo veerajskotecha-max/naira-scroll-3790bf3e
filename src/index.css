@@ -119,6 +119,24 @@ All colors MUST be HSL.
   }
 }
 
+/* ─── Atelier shimmer skeleton ────────────────────────────────
+   Ivory base (#F4EBE2) with a soft #FBF3EC sheen drifting across.
+   Used by src/components/ui/atelier-skeleton.tsx. */
+@keyframes atelier-shimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+.atelier-shimmer {
+  background-color: #F4EBE2;
+  background-image: linear-gradient(100deg, #F4EBE2 36%, #FBF3EC 50%, #F4EBE2 64%);
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  animation: atelier-shimmer 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .atelier-shimmer { animation: none; }
+}
+
 /* Nav link underline hover effect */
 .nav-link {
   position: relative;

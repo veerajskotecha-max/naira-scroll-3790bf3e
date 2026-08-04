@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
+import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import SizeGuideModal from "@/components/SizeGuideModal";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import PriceBreakup from "@/components/product/PriceBreakup";
@@ -44,7 +45,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const description = product?.description || "Product details are being loaded from Shopify.";
   const image = product?.images.edges[0]?.node.url ?? "/placeholder.svg";
   const priceMoney = selectedVariant?.price ?? product?.priceRange.minVariantPrice;
-  const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "—";
+  const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "·";
   const numericPrice = priceMoney ? Number(priceMoney.amount) : 0;
 
   const handleAddToCart = async () => {
@@ -321,12 +322,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       {/* Accordions */}
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="info" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-          <AccordionTrigger
-            className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline"
-            style={{ color: "hsl(0 0% 20%)" }}
-          >
-            Product Information
-          </AccordionTrigger>
+          <AtelierAccordionTrigger>Product Information</AtelierAccordionTrigger>
           <AccordionContent>
             <p className="text-[13px] leading-[1.7] pb-2" style={{ color: "hsl(0 0% 45%)" }}>
               {description}
@@ -334,12 +330,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="delivery" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-          <AccordionTrigger
-            className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline"
-            style={{ color: "hsl(0 0% 20%)" }}
-          >
-            Delivery Timelines
-          </AccordionTrigger>
+          <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
           <AccordionContent>
             <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
               <p>• All orders from the website are delivered within 3–7 working days.</p>
@@ -348,12 +339,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="disclaimer" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-          <AccordionTrigger
-            className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline"
-            style={{ color: "hsl(0 0% 20%)" }}
-          >
-            Disclaimer
-          </AccordionTrigger>
+          <AtelierAccordionTrigger>Disclaimer</AtelierAccordionTrigger>
           <AccordionContent>
             <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
               <p>• Dry clean only.</p>
@@ -362,12 +348,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="additional" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-          <AccordionTrigger
-            className="py-4 text-[12px] uppercase tracking-[0.12em] font-medium hover:no-underline"
-            style={{ color: "hsl(0 0% 20%)" }}
-          >
-            Additional Information
-          </AccordionTrigger>
+          <AtelierAccordionTrigger>Additional Information</AtelierAccordionTrigger>
           <AccordionContent>
             <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
               <p>• For queries or assistance, please WhatsApp / WhatsApp Call on: <span className="font-semibold" style={{ color: "hsl(0 0% 20%)" }}>+91 9561557935</span></p>

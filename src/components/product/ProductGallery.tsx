@@ -74,7 +74,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
 
   const WishlistBtn = (
     <button
-      className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200"
+      className="press-scale absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center"
       style={{ backgroundColor: "hsla(0,0%,100%,0.85)" }}
       onClick={handleWishlist}
       aria-label="Add to wishlist"
@@ -92,7 +92,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
 
   const ShareBtn = (
     <button
-      className="absolute bottom-16 right-4 z-10 w-10 h-10 flex items-center justify-center transition-all duration-200 shadow-sm"
+      className="press-scale absolute bottom-16 right-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
       style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
       onClick={handleShare}
       aria-label="Share product"
@@ -140,7 +140,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
             <button
               key={i}
               onClick={() => scrollToImage(i)}
-              className="w-1.5 h-1.5 transition-all duration-200"
+              className="w-1.5 h-1.5 transition-[transform,background-color] duration-200 ease-out"
               style={{
                 borderRadius: '50%',
                 backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)",

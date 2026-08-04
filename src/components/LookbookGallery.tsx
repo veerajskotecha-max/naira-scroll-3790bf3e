@@ -77,7 +77,7 @@ const TiltFrame = ({ frame, index }: { frame: Frame; index: number }) => {
           src={frame.img}
           alt={`${frame.name} — Naira campaign`}
           loading="lazy"
-          className="aspect-[3/4] w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.08]"
+          className="aspect-[3/4] w-full object-cover transition-transform duration-1200 ease-out group-hover:scale-[1.08]"
         />
         {/* cursor-following glass sheen */}
         <div ref={sheenRef} aria-hidden className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-300" />

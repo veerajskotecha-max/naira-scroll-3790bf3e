@@ -73,6 +73,20 @@ export default {
         "3xl": "0px",
         full: "0px",
       },
+      transitionDuration: {
+        "250": "250ms",
+        "400": "400ms",
+        "600": "600ms",
+        "1200": "1200ms",
+      },
+      transitionTimingFunction: {
+        // Enter curve for drawers and sheets (iOS-like, from Ionic).
+        drawer: "cubic-bezier(0.32, 0.72, 0, 1)",
+        // Quick exit curve: accelerate away, get out of the way fast.
+        "exit-in": "cubic-bezier(0.4, 0, 1, 1)",
+        // Shared reveal curve used by scroll-in content.
+        reveal: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

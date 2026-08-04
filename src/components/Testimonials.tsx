@@ -246,7 +246,7 @@ const CollageTile = ({
         src={tile.src}
         alt={tile.outfit}
         loading="lazy"
-        className="w-full h-full object-cover transition-transform duration-[400ms] ease-out group-hover:scale-[1.04]"
+        className="w-full h-full object-cover transition-transform duration-400 ease-out group-hover:scale-[1.04]"
       />
       {/* Hover overlay */}
       <div

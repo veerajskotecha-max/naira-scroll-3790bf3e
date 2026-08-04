@@ -37,11 +37,11 @@ const YouMayAlsoLike = ({ currentHandle }: { currentHandle?: string }) => {
   return (
     <section
       ref={sectionRef}
-      className="py-20 md:py-28 transition-all duration-700"
+      className="py-20 md:py-28 transition-[opacity,transform] duration-600 ease-reveal"
       style={{
         backgroundColor: "hsl(0 0% 100%)",
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transform: visible ? "translateY(0)" : "translateY(16px)",
       }}
     >
       <div className="max-w-[1200px] mx-auto px-4">

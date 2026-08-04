@@ -46,7 +46,7 @@ const NotFound = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] transition-all duration-[250ms] ease-in-out hover:shadow-md hover:-translate-y-[1px]"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] transition-all duration-250 ease-in-out hover:shadow-md hover:-translate-y-[1px]"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             >
               <Home size={14} />
@@ -54,7 +54,7 @@ const NotFound = () => {
             </Link>
             <Link
               to="/shop"
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-[250ms] ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-[13px] font-medium uppercase tracking-[0.1em] border transition-all duration-250 ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
               style={{ borderColor: "hsl(var(--foreground))", color: "hsl(var(--foreground))" }}
             >
               <ShoppingBag size={14} />

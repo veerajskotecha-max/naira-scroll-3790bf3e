@@ -85,7 +85,7 @@ const JewelleryCategory = () => {
           {/* grid, cards drift in with a small stagger */}
           <section aria-label={`${label} collection`} className="grid grid-cols-2 gap-4 pt-10 sm:gap-6 lg:grid-cols-3 lg:gap-8">
             {pieces.map((piece, i) => (
-              <Reveal key={piece.handle} delay={(i % 3) * 110}>
+              <Reveal key={piece.handle} delay={(i % 3) * 70}>
                 <JewelCard piece={piece} index={i} />
               </Reveal>
             ))}
@@ -94,7 +94,7 @@ const JewelleryCategory = () => {
           {/* why */}
           <section className="grid gap-8 border-t border-[#1A1614]/10 py-14 md:grid-cols-3 md:py-20">
             {landing.bullets.map((b, i) => (
-              <Reveal key={b.title} delay={i * 120}>
+              <Reveal key={b.title} delay={i * 80}>
                 <span aria-hidden className="text-[24px] leading-none text-[#C99A4C]/50" style={velista}>
                   {String(i + 1).padStart(2, "0")}
                 </span>

@@ -103,7 +103,7 @@ const Jewellery = () => {
                 onClick={() => setActive(f)}
                 aria-pressed={active === f}
                 aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
-                className={`shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-[0.18em] transition-colors duration-300 sm:px-5 sm:text-[11px] sm:tracking-[0.3em] ${
+                className={`press-scale shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-[0.18em] transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-[0.3em] ${
                   active === f ? "border-[#1A1614] bg-[#1A1614] text-[#FBF3EC]" : "border-[#1A1614]/25 text-[#1A1614]/70 hover:border-[#1A1614]/60"
                 }`}
                 style={jost}
@@ -133,7 +133,7 @@ const Jewellery = () => {
             </p>
             <button
               onClick={() => setActive("All")}
-              className="mt-7 border border-[#1A1614] px-7 min-h-[48px] text-[10.5px] tracking-[0.28em] text-[#1A1614] transition-colors duration-300 hover:bg-[#1A1614] hover:text-[#FBF3EC]"
+              className="press-scale mt-7 border border-[#1A1614] px-7 min-h-[48px] text-[10.5px] tracking-[0.28em] text-[#1A1614] transition-colors duration-200 hover:bg-[#1A1614] hover:text-[#FBF3EC]"
               style={jost}
             >
               VIEW ALL PIECES

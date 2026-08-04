@@ -80,7 +80,7 @@ const CartDrawer = () => {
               )}
               <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: "hsl(0 0% 88%)" }}>
                 <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  className="h-full rounded-full transition-[width,background-color] duration-500 ease-out"
                   style={{
                     width: `${shippingProgress}%`,
                     backgroundColor: shippingProgress >= 100 ? "hsl(142 60% 40%)" : "hsl(186 35% 38%)",
@@ -110,9 +110,9 @@ const CartDrawer = () => {
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
-                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} className="w-11 h-11 flex items-center justify-center transition-colors hover:bg-muted" aria-label="Decrease quantity"><Minus size={12} /></button>
+                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} className="press-scale w-11 h-11 flex items-center justify-center hover:bg-muted" aria-label="Decrease quantity"><Minus size={12} /></button>
                         <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} className="w-11 h-11 flex items-center justify-center transition-colors hover:bg-muted" aria-label="Increase quantity"><Plus size={12} /></button>
+                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} className="press-scale w-11 h-11 flex items-center justify-center hover:bg-muted" aria-label="Increase quantity"><Plus size={12} /></button>
                       </div>
                       <button onClick={() => removeItem(item.id, item.size)} className="p-2 transition-colors hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label={`Remove ${item.name}`}>
                         <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
@@ -141,7 +141,7 @@ const CartDrawer = () => {
               <button
                 onClick={checkout}
                 disabled={isLoading || isSyncing}
-                className="w-full py-4 text-[13px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
+                className="press-scale w-full py-4 text-[13px] font-medium uppercase tracking-[0.1em] flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}

@@ -119,6 +119,56 @@ All colors MUST be HSL.
   }
 }
 
+/* ─── Motion system ───────────────────────────────────────────────
+   Shared micro-interaction primitives. Transform + opacity only,
+   ease-out enters, everything under 300ms, nothing blocks intent. */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Tactile press feedback for buttons, chips and tappable cards.
+   Owns the transition shorthand, so it also carries the standard
+   200ms colour transitions for elements that pair it with hover
+   colour changes (transition-colors utilities on the same element
+   are superseded by this, deliberately). */
+.press-scale {
+  transition:
+    color 200ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease,
+    opacity 200ms ease,
+    transform 140ms var(--ease-out-strong);
+}
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* Success pop: swapped-in check/label content (add-to-cart confirm). */
+@keyframes check-pop {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.check-pop {
+  animation: check-pop 200ms var(--ease-out-strong);
+}
+
+/* Wishlist heart pop when a piece is saved. */
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+.heart-pop {
+  animation: heart-pop 260ms var(--ease-out-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-scale { transition: none; }
+  .press-scale:active { transform: none; }
+  .check-pop, .heart-pop { animation: none; }
+}
+
 /* ─── Atelier shimmer skeleton ────────────────────────────────
    Ivory base (#F4EBE2) with a soft #FBF3EC sheen drifting across.
    Used by src/components/ui/atelier-skeleton.tsx. */
@@ -228,9 +278,9 @@ img {
    animation-timeline:view() which clashes with GSAP pin spacers. */
 .section-reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateY(16px);
+  transition: opacity 0.6s ease,
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .section-reveal.is-visible {
   opacity: 1;

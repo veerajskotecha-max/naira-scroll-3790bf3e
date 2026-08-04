@@ -104,7 +104,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               {piece.tag}
             </span>
           )}
-          <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-[#FBF3EC]/90 px-5 py-2 text-[10px] tracking-[0.3em] text-[#1A1614] opacity-0 transition-all duration-400 group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
+          <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-[#FBF3EC]/90 px-5 py-2 text-[10px] tracking-[0.3em] text-[#1A1614] opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
             VIEW DETAILS
           </span>
           <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/60" />
@@ -124,12 +124,12 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         </p>
         <Link
           to={`/jewellery/${piece.handle}`}
-          className="group/btn relative mt-2.5 inline-flex min-h-[44px] items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-5 text-[9.5px] tracking-[0.25em] text-[#1A1614] transition-colors duration-500 hover:text-[#FBF3EC] sm:mt-3 sm:px-6 sm:text-[10.5px] sm:tracking-[0.3em]"
+          className="press-scale group/btn relative mt-2.5 inline-flex min-h-[44px] items-center gap-2 overflow-hidden border border-[#1A1614]/35 px-5 text-[9.5px] tracking-[0.25em] text-[#1A1614] hover:text-[#FBF3EC] sm:mt-3 sm:px-6 sm:text-[10.5px] sm:tracking-[0.3em]"
           style={jost}
         >
-          <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-500 ease-out group-hover/btn:scale-x-100" />
+          <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
           <span className="relative">VIEW</span>
-          <span className="relative transition-transform duration-500 group-hover/btn:translate-x-1">→</span>
+          <span className="relative transition-transform duration-300 ease-out group-hover/btn:translate-x-1">→</span>
         </Link>
       </div>
 

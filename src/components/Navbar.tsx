@@ -139,7 +139,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
             </button>
             {/* Wishlist icon with dot indicator */}
-            <button className="relative" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
+            <button className="press-scale relative" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
               <Heart
                 size={20}
                 strokeWidth={1.5}
@@ -152,7 +152,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                 />
               )}
             </button>
-            <button className="relative" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
+            <button className="press-scale relative" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
               <ShoppingBag
                 size={20}
                 strokeWidth={1.5}

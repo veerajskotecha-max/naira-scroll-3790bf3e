@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
+import { Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -32,7 +32,11 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   }, [selectedSize, sizeOptions]);
   const [quantity, setQuantity] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [added, setAdded] = useState(false);
+  const addedTimer = useRef<number>();
   const { addItem, setDrawerOpen } = useCart();
+
+  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
   const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
     const variants = product?.variants.edges.map((edge) => edge.node) ?? [];
@@ -66,6 +70,9 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       variantTitle: selectedVariant.title,
       selectedOptions: selectedVariant.selectedOptions,
     }, quantity);
+    setAdded(true);
+    window.clearTimeout(addedTimer.current);
+    addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
     toast("Added to cart", {
       description: `${quantity}× ${title}${selectedSize ? ` (${selectedSize})` : ""}`,
       action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
@@ -212,7 +219,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div id="product-actions" className="flex gap-3 mt-5">
         <button
           onClick={handleAddToCart}
-          className="flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200"
+          className="press-scale flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200"
           style={{
             borderColor: "hsl(0 0% 20%)",
             color: "hsl(0 0% 20%)",
@@ -227,11 +234,17 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
             e.currentTarget.style.color = "hsl(0 0% 20%)";
           }}
         >
-          Add to Cart
+          {added ? (
+            <span className="check-pop inline-flex items-center justify-center gap-2">
+              <Check size={14} /> Added
+            </span>
+          ) : (
+            "Add to Cart"
+          )}
         </button>
         <button
           onClick={handleBuyNow}
-          className="flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-200"
+          className="press-scale flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-200"
           style={{
             backgroundColor: "hsl(0 0% 12%)",
             color: "hsl(0 0% 100%)",

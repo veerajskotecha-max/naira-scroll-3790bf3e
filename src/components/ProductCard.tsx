@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Heart, Loader2 } from "lucide-react";
+import { ShoppingBag, Heart, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
@@ -67,10 +67,15 @@ export const productFromShopify = (product: ShopifyProductNode): Product => {
 const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) => {
   const [hovered, setHovered] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [heartPopped, setHeartPopped] = useState(false);
+  const addedTimer = useRef<number>();
   const { toggleItem, isWishlisted } = useWishlist();
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const slug = product.handle || product.id || toSlug(product.name);
   const wishlisted = isWishlisted(slug);
+
+  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
   const handleAddToCart = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -95,6 +100,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
       selectedOptions: product.selectedOptions,
     });
     setAdding(false);
+    setAdded(true);
+    window.clearTimeout(addedTimer.current);
+    addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
     toast("Added to cart", {
       description: product.name,
       action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
@@ -106,11 +114,11 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
   return (
     <div
       data-product-card
-      className={`group transition-all ease-out ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      className={`group transition-[opacity,transform] ease-out ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       }`}
       style={{
-        transitionDelay: visible ? `${index * 0.1 + 0.15}s` : "0s",
+        transitionDelay: visible ? `${index * 0.06 + 0.1}s` : "0s",
         transitionDuration: "0.6s",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -127,7 +135,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             srcSet={shopifySrcSet(product.image)}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             alt={`${product.name} — ${product.category} by Naira Flore`}
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
+            className="absolute inset-0 w-full h-full object-cover transition-[opacity,transform] duration-500 ease-out"
             style={{
               opacity: hovered ? 0 : 1,
               transform: hovered ? "scale(1.05)" : "scale(1)",
@@ -142,7 +150,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             srcSet={shopifySrcSet(product.hoverImage)}
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
             alt={`${product.name} alternate view`}
-            className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out"
+            className="absolute inset-0 w-full h-full object-cover transition-[opacity,transform] duration-500 ease-out"
             style={{
               opacity: hovered ? 1 : 0,
               transform: hovered ? "scale(1.05)" : "scale(1)",
@@ -175,18 +183,20 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           )}
 
           <button
-            className="absolute top-3 right-3 z-20 w-10 h-10 flex items-center justify-center transition-all duration-200"
+            className="press-scale absolute top-3 right-3 z-20 w-10 h-10 flex items-center justify-center"
             style={{ borderRadius: "50%", backgroundColor: "hsla(0,0%,100%,0.85)" }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              if (!wishlisted) setHeartPopped(true);
               toggleItem({ id: slug, name: product.name, price: product.price, image: product.image });
             }}
             aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           >
             <Heart
               size={15}
-              className="transition-colors duration-200"
+              className={`transition-colors duration-200 ${heartPopped ? "heart-pop" : ""}`}
+              onAnimationEnd={() => setHeartPopped(false)}
               style={{
                 color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)",
                 fill: wishlisted ? "hsl(0 70% 55%)" : "none",
@@ -195,14 +205,14 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           </button>
 
           <div
-            className="absolute inset-x-0 bottom-0 z-20 hidden md:flex items-end justify-center pb-4 transition-all duration-300 ease-out"
+            className="absolute inset-x-0 bottom-0 z-20 hidden md:flex items-end justify-center pb-4 transition-[opacity,transform] duration-200 ease-out"
             style={{
               opacity: hovered ? 1 : 0,
               transform: hovered ? "translateY(0)" : "translateY(8px)",
             }}
           >
             <button
-              className="flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200 disabled:opacity-70"
+              className="press-scale flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium uppercase tracking-[0.08em] transition-colors duration-200 disabled:opacity-70"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
               onClick={handleAddToCart}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
@@ -210,8 +220,16 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               disabled={disabled}
               aria-label={`Add ${product.name} to cart`}
             >
-              {adding ? <Loader2 size={14} className="animate-spin" /> : <ShoppingBag size={14} />}
-              {product.availability === "In Stock" ? "Add to Cart" : "Sold Out"}
+              {added ? (
+                <span className="check-pop flex items-center gap-2">
+                  <Check size={14} /> Added
+                </span>
+              ) : (
+                <>
+                  {adding ? <Loader2 size={14} className="animate-spin" /> : <ShoppingBag size={14} />}
+                  {product.availability === "In Stock" ? "Add to Cart" : "Sold Out"}
+                </>
+              )}
             </button>
           </div>
 
@@ -239,14 +257,22 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
           </p>
 
           <button
-            className="md:hidden w-full mt-3 py-3 flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 min-h-[44px] disabled:opacity-70"
+            className="press-scale md:hidden w-full mt-3 py-3 flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.1em] transition-colors duration-200 min-h-[44px] disabled:opacity-70"
             style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             onClick={handleAddToCart}
             disabled={disabled}
             aria-label={`Add ${product.name} to cart`}
           >
-            {adding ? <Loader2 size={13} className="animate-spin" /> : <ShoppingBag size={13} />}
-            {product.availability === "In Stock" ? "Add to Cart" : "Sold Out"}
+            {added ? (
+              <span className="check-pop flex items-center gap-2">
+                <Check size={13} /> Added
+              </span>
+            ) : (
+              <>
+                {adding ? <Loader2 size={13} className="animate-spin" /> : <ShoppingBag size={13} />}
+                {product.availability === "In Stock" ? "Add to Cart" : "Sold Out"}
+              </>
+            )}
           </button>
         </div>
       </Link>

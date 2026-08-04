@@ -66,6 +66,7 @@ const JewelDetail = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
   const [stickyBarVisible, setStickyBarVisible] = useState(false);
+  const [heartPopped, setHeartPopped] = useState(false);
 
   /* The mobile pre-order bar stays out of the way until the main CTA
      block has scrolled up past the viewport, then slides in. */
@@ -126,7 +127,10 @@ const JewelDetail = () => {
     `Hi Naira Flore, I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
 
-  const handleWishlist = () => toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+  const handleWishlist = () => {
+    if (!wishlisted) setHeartPopped(true);
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+  };
   const handleShare = async () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
     try {
@@ -157,17 +161,22 @@ const JewelDetail = () => {
 
   const WishlistBtn = (
     <button
-      className="absolute top-4 right-4 z-10 w-11 h-11 flex items-center justify-center transition-all duration-200"
+      className="press-scale absolute top-4 right-4 z-10 w-11 h-11 flex items-center justify-center"
       style={{ backgroundColor: "hsla(0,0%,100%,0.85)" }}
       onClick={handleWishlist}
       aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
     >
-      <Heart size={17} style={{ color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)", fill: wishlisted ? "hsl(0 70% 55%)" : "none" }} />
+      <Heart
+        size={17}
+        className={heartPopped ? "heart-pop" : undefined}
+        onAnimationEnd={() => setHeartPopped(false)}
+        style={{ color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 40%)", fill: wishlisted ? "hsl(0 70% 55%)" : "none" }}
+      />
     </button>
   );
   const ShareBtn = (
     <button
-      className="absolute bottom-16 right-4 z-10 w-11 h-11 flex items-center justify-center transition-all duration-200 shadow-sm"
+      className="press-scale absolute bottom-16 right-4 z-10 w-11 h-11 flex items-center justify-center shadow-sm"
       style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
       onClick={handleShare}
       aria-label="Share piece"
@@ -199,7 +208,7 @@ const JewelDetail = () => {
           {images.map((_, i) => (
             <button key={i} onClick={() => scrollToImage(i)} aria-label={`View image ${i + 1}`} className="w-8 h-8 flex items-center justify-center">
               <span
-                className="w-1.5 h-1.5 transition-all duration-200"
+                className="w-1.5 h-1.5 transition-[transform,background-color] duration-200 ease-out"
                 style={{ borderRadius: "50%", backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)", transform: selectedImage === i ? "scale(1.4)" : "scale(1)" }}
               />
             </button>
@@ -398,7 +407,7 @@ const JewelDetail = () => {
                 href={sizedEnquiryHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
+                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
                 <MessageSquare size={15} /> Pre-order on WhatsApp
@@ -406,7 +415,7 @@ const JewelDetail = () => {
               <div className="flex gap-3 mt-3">
                 <button
                   onClick={handleWishlist}
-                  className="flex-1 h-[46px] text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 inline-flex items-center justify-center gap-2 hover:border-[hsl(0_0%_45%)]"
+                  className="press-scale flex-1 h-[46px] text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 inline-flex items-center justify-center gap-2 hover:border-[hsl(0_0%_45%)]"
                   style={{ borderColor: "hsl(0 0% 74%)", color: "hsl(0 0% 30%)", backgroundColor: "transparent" }}
                 >
                   <Heart size={14} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 30%)" }} />
@@ -582,7 +591,7 @@ const JewelDetail = () => {
         <button
           onClick={handleWishlist}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className="h-[48px] w-[48px] shrink-0 flex items-center justify-center border"
+          className="press-scale h-[48px] w-[48px] shrink-0 flex items-center justify-center border"
           style={{ borderColor: "hsl(0 0% 74%)" }}
         >
           <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 25%)" }} />
@@ -591,7 +600,7 @@ const JewelDetail = () => {
           href={sizedEnquiryHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
+          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
           <MessageSquare size={14} /> Pre-order on WhatsApp

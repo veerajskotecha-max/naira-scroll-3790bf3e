@@ -59,8 +59,10 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        className={`fixed inset-y-0 left-0 z-[70] w-[85%] max-w-sm flex flex-col transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-[70] w-[85%] max-w-sm flex flex-col transition-transform ${
+          isOpen
+            ? "translate-x-0 duration-300 ease-drawer"
+            : "-translate-x-full duration-250 ease-exit-in"
         }`}
         style={{ backgroundColor: "#F4F1ED" }}
       >

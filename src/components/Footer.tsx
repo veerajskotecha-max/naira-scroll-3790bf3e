@@ -36,12 +36,13 @@ const policyLinks = [
   { label: "Terms of Service", to: "/terms" },
 ];
 
-// Brand palette derived from Naira logo
-const SAGE = "hsl(162 14% 61%)";        // ~ #8aada4
-const SAGE_DEEP = "hsl(162 18% 38%)";   // deeper sage for button
-const CREAM = "hsl(33 33% 95%)";        // ~ #f9f5f0
-const CREAM_MUTED = "hsla(33,33%,95%,0.78)";
-const CREAM_FAINT = "hsla(33,33%,95%,0.6)";
+// Brand palette derived from Naira logo. Values live in the component
+// layer of the Naira Flore tokens (src/index.css, docs/design-tokens.md).
+const SAGE = "var(--nf-footer-surface)";        // hsl(162 14% 61%), ~ #8aada4
+const SAGE_DEEP = "var(--nf-footer-cta)";       // deeper sage for button
+const CREAM = "var(--nf-footer-text)";          // hsl(33 33% 95%), ~ #f9f5f0
+const CREAM_MUTED = "var(--nf-footer-text-muted)";
+const CREAM_FAINT = "var(--nf-footer-text-faint)";
 
 const SocialIcon = ({
   children,
@@ -58,12 +59,12 @@ const SocialIcon = ({
     rel="noopener noreferrer"
     aria-label={label}
     className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
-    style={{ borderRadius: '50%', backgroundColor: "hsla(33,33%,95%,0.12)" }}
+    style={{ borderRadius: '50%', backgroundColor: "var(--nf-footer-chip-bg)" }}
     onMouseEnter={(e) =>
-      (e.currentTarget.style.backgroundColor = "hsla(33,33%,95%,0.25)")
+      (e.currentTarget.style.backgroundColor = "var(--nf-footer-chip-bg-hover)")
     }
     onMouseLeave={(e) =>
-      (e.currentTarget.style.backgroundColor = "hsla(33,33%,95%,0.12)")
+      (e.currentTarget.style.backgroundColor = "var(--nf-footer-chip-bg)")
     }
   >
     {children}
@@ -76,7 +77,7 @@ const Footer = () => {
   const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
     <div>
       <h4
-        className="font-cormorant text-[16px] font-semibold uppercase tracking-[0.1em] mb-5"
+        className="font-cormorant text-[16px] font-semibold uppercase tracking-nf-10 mb-5"
         style={{ color: CREAM }}
       >
         {title}
@@ -154,7 +155,7 @@ const Footer = () => {
           {/* Newsletter */}
           <div>
             <h4
-              className="font-cormorant text-[16px] font-semibold uppercase tracking-[0.1em] mb-5"
+              className="font-cormorant text-[16px] font-semibold uppercase tracking-nf-10 mb-5"
               style={{ color: CREAM }}
             >
               Newsletter
@@ -189,18 +190,18 @@ const Footer = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="w-full px-4 py-2.5 rounded-md text-[13px] font-cormorant outline-none transition-colors duration-200 placeholder:text-[hsla(33,33%,95%,0.85)]"
+                className="w-full px-4 py-2.5 rounded-md text-[13px] font-cormorant outline-none transition-colors duration-200 placeholder:text-nf-cream/85"
                 style={{
-                  backgroundColor: "hsla(0,0%,100%,0.18)",
-                  border: "1.5px solid hsl(33 33% 95%)",
+                  backgroundColor: "var(--nf-footer-input-bg)",
+                  border: "1.5px solid var(--nf-footer-text)",
                   color: CREAM,
                 }}
-                onFocus={(e) => (e.currentTarget.style.backgroundColor = "hsla(0,0%,100%,0.28)")}
-                onBlur={(e) => (e.currentTarget.style.backgroundColor = "hsla(0,0%,100%,0.18)")}
+                onFocus={(e) => (e.currentTarget.style.backgroundColor = "var(--nf-footer-input-bg-focus)")}
+                onBlur={(e) => (e.currentTarget.style.backgroundColor = "var(--nf-footer-input-bg)")}
               />
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-md font-cormorant text-[13px] font-medium uppercase tracking-[0.08em] transition-all duration-200 hover:opacity-90"
+                className="w-full py-2.5 rounded-md font-cormorant text-[13px] font-medium uppercase tracking-nf-8 transition-all duration-200 hover:opacity-90"
                 style={{
                   backgroundColor: SAGE_DEEP,
                   color: CREAM,
@@ -215,10 +216,10 @@ const Footer = () => {
         {/* Popular Searches, SEO */}
         <div
           className="mt-12 pt-6"
-          style={{ borderTop: "1px solid hsla(33,33%,95%,0.18)" }}
+          style={{ borderTop: "1px solid var(--nf-footer-hairline)" }}
         >
           <p
-            className="text-[10px] uppercase tracking-[0.16em] mb-3"
+            className="text-[10px] uppercase tracking-nf-16 mb-3"
             style={{ color: CREAM_FAINT }}
           >
             Popular Searches
@@ -262,7 +263,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div
           className="pt-6 mt-8 text-center"
-          style={{ borderTop: "1px solid hsla(33,33%,95%,0.22)" }}
+          style={{ borderTop: "1px solid var(--nf-footer-hairline-strong)" }}
         >
           <p
             className="font-cormorant text-[13px]"

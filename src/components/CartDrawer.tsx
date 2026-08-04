@@ -1,13 +1,18 @@
+import { useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 
 const FREE_SHIPPING_THRESHOLD = 2999;
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing } = useCart();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
+  useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -16,7 +21,7 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent className="w-full sm:max-w-[420px] flex flex-col p-0">
+      <SheetContent ref={contentRef} className="w-full sm:max-w-[420px] flex flex-col p-0">
         {/* Header */}
         <SheetHeader className="px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">

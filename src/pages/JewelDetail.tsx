@@ -16,7 +16,25 @@ import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER } from "@/data/jewellery";
+import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
+
+/* Key facts distilled from the approved data model: finish and stone are
+   read out of the materials line, edition from the engraved number. */
+const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] => {
+  const m = piece.materials.toLowerCase();
+  const hasGold = m.includes("18k gold");
+  const hasRhodium = m.includes("rhodium");
+  const finish = hasGold && hasRhodium ? "18k gold & rhodium" : hasGold ? "18k gold" : hasRhodium ? "Rhodium" : "Demi-gold";
+  const hasPearl = m.includes("pearl");
+  const hasZircone = m.includes("zircon");
+  const stone = hasPearl && hasZircone ? "Pearl & zircone" : hasPearl ? "Freshwater pearl" : hasZircone ? "Hand-set zircone" : "Polished metal";
+  return [
+    { label: "Finish", value: finish },
+    { label: "Stone", value: stone },
+    { label: "Category", value: piece.category },
+    { label: "Edition", value: `No. ${piece.number} of ${jewellery.length}` },
+  ];
+};
 
 const ringSizes: { value: string; label: string }[] = [
   { value: "5", label: "US 5 · 4.9 cm" },
@@ -47,6 +65,24 @@ const JewelDetail = () => {
   }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
+  const [stickyBarVisible, setStickyBarVisible] = useState(false);
+
+  /* The mobile pre-order bar stays out of the way until the main CTA
+     block has scrolled up past the viewport, then slides in. */
+  useEffect(() => {
+    const check = () => {
+      const target = document.getElementById("product-actions");
+      if (!target) return;
+      setStickyBarVisible(target.getBoundingClientRect().bottom < 0);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, [handle]);
 
   const images = useMemo(() => {
     if (!piece) return [];
@@ -79,7 +115,12 @@ const JewelDetail = () => {
   if (!piece) return <Navigate to="/jewellery" replace />;
 
   const wishlisted = isWishlisted(piece.handle);
-  const related = jewellery.filter((j) => j.handle !== piece.handle).slice(0, 4);
+  const keyFacts = deriveKeyFacts(piece);
+  /* Same-category pieces lead the recommendations; the atelier's other
+     work fills any remaining slots. */
+  const sameCategory = jewellery.filter((j) => j.handle !== piece.handle && j.category === piece.category);
+  const otherPieces = jewellery.filter((j) => j.handle !== piece.handle && j.category !== piece.category);
+  const related = [...sameCategory, ...otherPieces].slice(0, 4);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
@@ -270,6 +311,20 @@ const JewelDetail = () => {
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
               Made to order · price shared on WhatsApp enquiry
             </p>
+
+            {/* Key facts, at a glance */}
+            <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
+              {keyFacts.map((fact) => (
+                <div key={fact.label} className="border px-3 py-1.5" style={{ borderColor: "hsl(36 30% 84%)", backgroundColor: "hsl(33 41% 97%)" }}>
+                  <dt className="text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                    {fact.label}
+                  </dt>
+                  <dd className="mt-0.5 text-[12px] leading-tight tracking-[0.01em]" style={{ color: "hsl(0 0% 22%)" }}>
+                    {fact.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
 
             {/* Delivery badge */}
             <div className="flex items-center gap-2 mt-3">
@@ -488,8 +543,10 @@ const JewelDetail = () => {
       {/* Related jewellery */}
       <section className="py-16 md:py-20" style={{ backgroundColor: "#FBF3EC" }}>
         <div className="max-w-[1400px] mx-auto px-4 md:px-6">
-          <h2 className="font-cormorant text-[26px] md:text-[34px] text-center" style={{ color: "#1A1614" }}>You may also love</h2>
-          <p className="text-center mt-2 text-[12px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>FROM THE DEMI-GOLD ATELIER</p>
+          <h2 className="font-cormorant text-[26px] md:text-[34px] text-center" style={{ color: "#1A1614" }}>You may also like</h2>
+          <p className="text-center mt-2 text-[12px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+            {sameCategory.length >= 2 ? `MORE ${piece.category.toUpperCase()} FROM THE ATELIER` : "FROM THE DEMI-GOLD ATELIER"}
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-8">
             {related.map((r) => (
               <Link key={r.handle} to={`/jewellery/${r.handle}`} className="group">
@@ -510,10 +567,17 @@ const JewelDetail = () => {
 
       <Footer />
 
-      {/* Sticky mobile enquire bar */}
+      {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}
       <div
-        className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-white/95 backdrop-blur px-3 pt-2 flex items-center gap-2"
-        style={{ borderColor: "hsl(0 0% 90%)", paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom, 0px))" }}
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-white/95 backdrop-blur px-3 pt-2 flex items-center gap-2 transition-[transform,visibility] duration-300 ease-out"
+        style={{
+          borderColor: "hsl(0 0% 90%)",
+          paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom, 0px))",
+          transform: stickyBarVisible ? "translateY(0)" : "translateY(110%)",
+          visibility: stickyBarVisible ? "visible" : "hidden",
+          pointerEvents: stickyBarVisible ? "auto" : "none",
+        }}
+        aria-hidden={!stickyBarVisible}
       >
         <button
           onClick={handleWishlist}

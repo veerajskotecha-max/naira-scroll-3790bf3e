@@ -1,19 +1,24 @@
+import { useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { X, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { jewellery, PREORDER_LABEL } from "@/data/jewellery";
+import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 
 /* Jewellery is wishlisted by handle; route those to the jewellery PDP. */
 const jewelHandles = new Set(jewellery.map((j) => j.handle));
 
 const WishlistDrawer = () => {
   const { items, removeItem, isDrawerOpen, setDrawerOpen } = useWishlist();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
+  useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent className="w-full sm:max-w-[420px] flex flex-col p-0">
+      <SheetContent ref={contentRef} className="w-full sm:max-w-[420px] flex flex-col p-0">
         <SheetHeader className="px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">
             <SheetTitle className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>

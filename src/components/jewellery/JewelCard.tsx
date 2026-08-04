@@ -93,7 +93,14 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           )}
           <div ref={sheenRef} aria-hidden className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-300" />
           {piece.tag && (
-            <span className="absolute left-4 top-4 border border-[#C99A4C]/50 bg-[#FBF3EC] px-3 py-1 text-[9px] tracking-[0.3em] text-[#9A7634]" style={jost}>
+            <span
+              className={`absolute left-3 top-3 border bg-[#FBF3EC]/95 px-2.5 py-1 text-[8.5px] tracking-[0.24em] sm:left-4 sm:top-4 sm:px-3 sm:text-[9px] sm:tracking-[0.3em] ${
+                piece.tag === "NEW" || piece.tag === "BESTSELLER"
+                  ? "border-[#C99A4C] text-[#9A7634]"
+                  : "border-[#1A1614]/15 text-[#1A1614]/60"
+              }`}
+              style={jost}
+            >
               {piece.tag}
             </span>
           )}
@@ -105,7 +112,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
       </Link>
 
       <div className="flex flex-1 flex-col items-center px-1 pt-4 text-center sm:pt-5">
-        <p className="text-[9px] tracking-[0.32em] text-[#B0843A] sm:text-[10px] sm:tracking-[0.34em]" style={jost}>{piece.category.toUpperCase()}</p>
+        <p className="text-[9px] tracking-[0.32em] text-[#B0843A] sm:text-[10px] sm:tracking-[0.34em]" style={jost}>
+          {piece.category.toUpperCase()} <span aria-hidden className="text-[#B0843A]/50">·</span> <span className="text-[#1A1614]/45">NO. {piece.number}</span>
+        </p>
         <h3 className="mt-1.5 text-[18px] leading-tight text-[#1A1614] sm:mt-2 sm:text-[24px] md:text-[26px]" style={velista}>
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>

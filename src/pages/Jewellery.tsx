@@ -33,6 +33,14 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
+const filterCounts: Record<"All" | JewelCategory, number> = filters.reduce(
+  (acc, f) => {
+    acc[f] = f === "All" ? jewellery.length : jewellery.filter((p) => p.category === f).length;
+    return acc;
+  },
+  {} as Record<"All" | JewelCategory, number>
+);
+
 const Jewellery = () => {
   const [active, setActive] = useState<"All" | JewelCategory>("All");
   const pieces = useMemo(
@@ -94,12 +102,19 @@ const Jewellery = () => {
                 key={f}
                 onClick={() => setActive(f)}
                 aria-pressed={active === f}
-                className={`shrink-0 border px-4 min-h-[44px] text-[10px] tracking-[0.18em] transition-colors duration-300 sm:px-5 sm:text-[11px] sm:tracking-[0.3em] ${
+                aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
+                className={`shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-[0.18em] transition-colors duration-300 sm:px-5 sm:text-[11px] sm:tracking-[0.3em] ${
                   active === f ? "border-[#1A1614] bg-[#1A1614] text-[#FBF3EC]" : "border-[#1A1614]/25 text-[#1A1614]/70 hover:border-[#1A1614]/60"
                 }`}
                 style={jost}
               >
-                {f.toUpperCase()}
+                <span className="self-center">{f.toUpperCase()}</span>
+                <span
+                  aria-hidden
+                  className={`self-center text-[9px] tracking-[0.08em] sm:text-[9.5px] ${active === f ? "text-[#FBF3EC]/60" : "text-[#1A1614]/40"}`}
+                >
+                  {filterCounts[f]}
+                </span>
               </button>
             ))}
           </div>

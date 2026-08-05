@@ -189,9 +189,33 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
       const y = e.clientY - r.top;
       if (x < 0 || y < 0 || x > r.width || y > r.height) return;
       const id = ++seq.current;
-      setBlooms((prev) => [...prev.slice(-4), { id, x, y }]);
-      window.setTimeout(() => setBlooms((prev) => prev.filter((b) => b.id !== id)), 1500);
+
+      // never repeat the same botanical twice in a row
+      let idx = Math.floor(Math.random() * SPECIES.length);
+      if (idx === lastSpecies.current) idx = (idx + 1 + Math.floor(Math.random() * (SPECIES.length - 1))) % SPECIES.length;
+      lastSpecies.current = idx;
+
+      const species = SPECIES[idx];
+      const dew = Array.from({ length: 3 + Math.floor(Math.random() * 3) }).map(() => ({
+        a: Math.random() * 360,
+        d: species.spread * (0.75 + Math.random() * 0.7),
+        s: 2 + Math.random() * 2.5,
+        delay: 0.1 + Math.random() * 0.35,
+      }));
+
+      const bloom: Bloom = {
+        id,
+        x,
+        y,
+        species,
+        tilt: Math.random() * 360,
+        scale: 0.82 + Math.random() * 0.36,
+        dew,
+      };
+      setBlooms((prev) => [...prev.slice(-4), bloom]);
+      window.setTimeout(() => setBlooms((prev) => prev.filter((b) => b.id !== id)), (species.dur + 0.5) * 1000);
     };
+
 
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);

@@ -339,15 +339,17 @@ const ShopAll = () => {
         description="Shop handcrafted Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore. Made to measure in India, with custom fits and worldwide shipping."
         canonical="https://nairaflore.com/shop"
       />
-      {/* ── Campaign Hero ── */}
-      <ShopHero
-        eyebrow="New Arrivals"
-        title="The Festive"
-        titleAccent="Edit"
-        description="Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape."
-        primaryCta={{ label: "Shop Now", to: "/shop" }}
-        secondaryCta={{ label: "View the Festive Edit", to: "/shop?category=festive" }}
-      />
+      {/* ── Campaign Hero (only on the main /shop landing, not category views) ── */}
+      {location.pathname === "/shop" && !searchParams.get("category") && (
+        <ShopHero
+          eyebrow="New Arrivals"
+          title="The Festive"
+          titleAccent="Edit"
+          description="Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape."
+          primaryCta={{ label: "Shop Now", to: "/shop" }}
+          secondaryCta={{ label: "View the Festive Edit", to: "/shop?category=festive" }}
+        />
+      )}
 
       {/* ── Jewellery (Coming Soon behind feature flag) ── */}
       {showJewellery && <JewellerySection />}

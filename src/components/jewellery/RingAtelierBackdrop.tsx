@@ -345,58 +345,135 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
         </div>
       </div>
 
-      {/* touch blooms */}
-      {blooms.map((b) => (
-        <div key={b.id} className="absolute" style={{ left: b.x, top: b.y }}>
-          <span
-            className="absolute block rounded-full border"
-            style={{
-              width: 90,
-              height: 90,
-              marginLeft: -45,
-              marginTop: -45,
-              borderColor: "rgba(201,154,76,0.45)",
-              animation: "naira-bloom-ring 1.2s cubic-bezier(.16,1,.3,1) forwards",
-            }}
-          />
-          <span
-            className="absolute block rounded-full"
-            style={{
-              width: 16,
-              height: 16,
-              marginLeft: -8,
-              marginTop: -8,
-              background: "radial-gradient(circle, #FFF6E2 0%, #E5B9A4 60%, transparent 72%)",
-              animation: "naira-bloom-core 1.1s ease-out forwards",
-            }}
-          />
-          {Array.from({ length: 8 }).map((_, i) => (
-            <svg
-              key={i}
-              viewBox="0 0 40 80"
-              style={
-                {
-                  position: "absolute",
-                  width: 18,
-                  height: 36,
-                  marginLeft: -9,
-                  marginTop: -18,
-                  transformOrigin: "50% 50%",
-                  "--a": `${i * 45}deg`,
-                  "--d": `${44 + (i % 3) * 10}px`,
-                  animation: `naira-bloom-petal 1.35s cubic-bezier(.16,1,.3,1) ${i * 0.03}s forwards`,
-                } as React.CSSProperties
-              }
-            >
-              <path
-                d="M20,2 C33,20 34,50 20,78 C6,50 7,20 20,2 Z"
-                fill={i % 3 === 0 ? "#AEBDB6" : i % 3 === 1 ? "#E5B9A4" : "#F3D9C6"}
-                opacity="0.85"
+      {/* touch blooms — a different botanical, palette and tilt every tap */}
+      {blooms.map((b) => {
+        const s = b.species;
+        const innerCount = s.inner ? Math.max(3, Math.round(s.petals * 0.6)) : 0;
+        return (
+          <div
+            key={b.id}
+            className="absolute"
+            style={
+              {
+                left: b.x,
+                top: b.y,
+                "--t": `${b.tilt}deg`,
+                transform: `rotate(${b.tilt}deg) scale(${b.scale})`,
+                animation: `naira-bloom-turn ${s.dur}s cubic-bezier(.16,1,.3,1) forwards`,
+              } as React.CSSProperties
+            }
+          >
+            {/* twin dew rings */}
+            <span
+              className="absolute block rounded-full border"
+              style={{
+                width: 88,
+                height: 88,
+                marginLeft: -44,
+                marginTop: -44,
+                borderColor: s.halo,
+                animation: `naira-bloom-ring ${s.dur * 0.85}s cubic-bezier(.16,1,.3,1) forwards`,
+              }}
+            />
+            <span
+              className="absolute block rounded-full border"
+              style={{
+                width: 64,
+                height: 64,
+                marginLeft: -32,
+                marginTop: -32,
+                borderColor: s.halo,
+                animation: `naira-bloom-ring-2 ${s.dur}s cubic-bezier(.16,1,.3,1) .1s forwards`,
+              }}
+            />
+            {/* pollen core */}
+            <span
+              className="absolute block rounded-full"
+              style={{
+                width: 15,
+                height: 15,
+                marginLeft: -7.5,
+                marginTop: -7.5,
+                background: s.core,
+                animation: `naira-bloom-core ${s.dur * 0.8}s ease-out forwards`,
+              }}
+            />
+
+            {/* outer whorl */}
+            {Array.from({ length: s.petals }).map((_, i) => (
+              <svg
+                key={`o-${i}`}
+                viewBox="0 0 40 80"
+                style={
+                  {
+                    position: "absolute",
+                    width: s.size * 0.5,
+                    height: s.size,
+                    marginLeft: -s.size * 0.25,
+                    marginTop: -s.size * 0.5,
+                    transformOrigin: "50% 50%",
+                    "--a": `${(i * 360) / s.petals}deg`,
+                    "--d": `${s.spread + (i % 3) * 7}px`,
+                    animation: `naira-bloom-petal ${s.dur}s cubic-bezier(.16,1,.3,1) ${i * 0.025}s forwards`,
+                  } as React.CSSProperties
+                }
+              >
+                <path d={s.d} fill={s.palette[i % s.palette.length]} opacity="0.88" />
+                <path
+                  d="M20,10 C22,32 22,52 20,70"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="1.1"
+                  fill="none"
+                />
+              </svg>
+            ))}
+
+            {/* inner whorl, offset half a step for depth */}
+            {Array.from({ length: innerCount }).map((_, i) => (
+              <svg
+                key={`i-${i}`}
+                viewBox="0 0 40 80"
+                style={
+                  {
+                    position: "absolute",
+                    width: s.size * 0.34,
+                    height: s.size * 0.68,
+                    marginLeft: -s.size * 0.17,
+                    marginTop: -s.size * 0.34,
+                    transformOrigin: "50% 50%",
+                    "--a": `${(i * 360) / innerCount + 180 / innerCount}deg`,
+                    "--d": `${s.spread * s.inner}px`,
+                    animation: `naira-bloom-inner ${s.dur * 1.1}s cubic-bezier(.16,1,.3,1) ${0.06 + i * 0.03}s forwards`,
+                  } as React.CSSProperties
+                }
+              >
+                <path d={s.d} fill={s.palette[(i + 1) % s.palette.length]} opacity="0.7" />
+              </svg>
+            ))}
+
+            {/* dew sparkles drifting off the bloom */}
+            {b.dew.map((d, i) => (
+              <span
+                key={`d-${i}`}
+                className="absolute block rounded-full"
+                style={
+                  {
+                    width: d.s,
+                    height: d.s,
+                    marginLeft: -d.s / 2,
+                    marginTop: -d.s / 2,
+                    background: "radial-gradient(circle, #FFFDF4 0%, rgba(201,154,76,0.6) 70%, transparent 74%)",
+                    "--a": `${d.a}deg`,
+                    "--d": `${d.d}px`,
+                    animation: `naira-bloom-dew ${s.dur * 1.2}s cubic-bezier(.16,1,.3,1) ${d.delay}s forwards`,
+                  } as React.CSSProperties
+                }
               />
-            </svg>
-          ))}
-        </div>
-      ))}
+            ))}
+          </div>
+        );
+      })}
+
     </div>
   );
 };

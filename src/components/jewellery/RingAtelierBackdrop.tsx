@@ -240,20 +240,44 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
           50%  { transform: translate3d(-16px, 18px, 0) scale(1.08); opacity: .5; }
           100% { transform: translate3d(0,0,0) scale(1); opacity: .35; }
         }
+        /* outer whorl: unfurls outward, tips curling as it opens, then fades */
         @keyframes naira-bloom-petal {
-          0%   { transform: rotate(var(--a)) translateY(0) scale(.2); opacity: 0; }
-          22%  { opacity: .9; }
-          100% { transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1); opacity: 0; }
+          0%   { transform: rotate(var(--a)) translateY(0) scale(.14) rotate(-12deg); opacity: 0; }
+          18%  { opacity: .95; }
+          62%  { transform: rotate(var(--a)) translateY(calc(-0.86 * var(--d))) scale(1.02) rotate(2deg); opacity: .8; }
+          100% { transform: rotate(var(--a)) translateY(calc(-1.06 * var(--d))) scale(.94) rotate(6deg); opacity: 0; }
+        }
+        /* inner whorl: slower, tighter, offset half a step */
+        @keyframes naira-bloom-inner {
+          0%   { transform: rotate(var(--a)) translateY(0) scale(.1); opacity: 0; }
+          26%  { opacity: .85; }
+          100% { transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(.86); opacity: 0; }
         }
         @keyframes naira-bloom-ring {
-          0%   { transform: scale(.2); opacity: .55; }
-          100% { transform: scale(1.6); opacity: 0; }
+          0%   { transform: scale(.18); opacity: .6; }
+          55%  { opacity: .3; }
+          100% { transform: scale(1.75); opacity: 0; }
+        }
+        @keyframes naira-bloom-ring-2 {
+          0%   { transform: scale(.1); opacity: .35; }
+          100% { transform: scale(2.4); opacity: 0; }
         }
         @keyframes naira-bloom-core {
-          0%   { transform: scale(0); opacity: .9; }
-          60%  { transform: scale(1); opacity: .6; }
-          100% { transform: scale(1.3); opacity: 0; }
+          0%   { transform: scale(0); opacity: .95; }
+          45%  { transform: scale(1.05); opacity: .7; }
+          100% { transform: scale(1.45); opacity: 0; }
         }
+        @keyframes naira-bloom-dew {
+          0%   { transform: rotate(var(--a)) translateY(0) scale(.4); opacity: 0; }
+          35%  { opacity: .9; }
+          100% { transform: rotate(var(--a)) translateY(calc(-1 * var(--d))) scale(1); opacity: 0; }
+        }
+        /* whole bloom breathes open with a slow quarter turn */
+        @keyframes naira-bloom-turn {
+          0%   { transform: rotate(var(--t)) scale(.9); }
+          100% { transform: rotate(calc(var(--t) + 16deg)) scale(1); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .naira-ring-motion { animation: none !important; }
         }

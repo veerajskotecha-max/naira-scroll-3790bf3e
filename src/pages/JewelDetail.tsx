@@ -575,6 +575,8 @@ const JewelDetail = () => {
         </div>
       </section>
 
+      <CollectionCarousel excludeHandle={piece?.handle} />
+
       <Footer />
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}

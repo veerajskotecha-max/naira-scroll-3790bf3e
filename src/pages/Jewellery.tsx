@@ -85,26 +85,29 @@ const Jewellery = () => {
           },
         ]}
       />
-      <div className="relative pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
-        {/* atelier backdrop — pressed-flower wash, 3D drift, touch blooms (whole page) */}
-        <RingAtelierBackdrop variant="page" />
+      <div className="relative bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+        {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
+        <div className="relative overflow-hidden bg-[#FBF3EC]">
+          <RingAtelierBackdrop />
 
-        {/* hero, the clean scroll-turned solitaire */}
-        <ZirconeTurn showViewAll={false} inheritBackdrop />
+          {/* hero, the clean scroll-turned solitaire */}
+          <ZirconeTurn showViewAll={false} inheritBackdrop />
 
-        {/* indexable header */}
-        <header className="mx-auto max-w-6xl px-4 pb-2 pt-6 sm:px-6 md:pt-10">
-          <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>THE GILDED HOUR</p>
-          <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
-            Demi-Fine Jewellery
-          </h1>
-          <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
-            Hand-set zircone in an 18K gold finish.
-          </p>
-        </header>
+          {/* indexable header */}
+          <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
+            <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>THE GILDED HOUR</p>
+            <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
+              Demi-Fine Jewellery
+            </h1>
+            <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
+              Hand-set zircone in an 18K gold finish.
+            </p>
+          </header>
+        </div>
 
         {/* filter */}
-        <div className="sticky top-[94px] z-20 bg-nf-ivory/85 py-4 backdrop-blur md:top-[100px] md:py-5 lg:top-[116px]">
+        <div className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
+
           <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
             {filters.map((f) => (
               <button

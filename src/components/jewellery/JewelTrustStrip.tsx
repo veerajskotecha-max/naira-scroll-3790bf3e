@@ -6,7 +6,7 @@ const items = [
   { icon: ShieldCheck, label: "Anti-tarnish coating" },
   { icon: Droplets, label: "Waterproof sealed" },
   { icon: Gem, label: "18k gold / rhodium finish" },
-  { icon: MapPin, label: "Made to order in Nashik" },
+  { icon: MapPin, label: "Finished in small batches" },
 ] as const;
 
 /**

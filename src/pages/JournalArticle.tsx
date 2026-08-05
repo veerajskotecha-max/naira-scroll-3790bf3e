@@ -149,7 +149,7 @@ const JournalArticle = () => {
                 />
                 <p className="text-[10px] tracking-[0.32em] text-[#9A7634]" style={jost}>THE GILDED HOUR</p>
                 <p className="mt-3 text-[16px] leading-[1.7] md:text-[18px]" style={editorial}>
-                  Hand-set zircone in an 18K gold finish, made to order at our Nashik atelier.
+                  Hand-set zircone in an 18K gold finish, finished at our atelier.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   <Link

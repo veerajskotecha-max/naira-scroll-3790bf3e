@@ -41,7 +41,7 @@ export const categoryLandings: CategoryLanding[] = [
       "Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–8. Anti-tarnish, waterproof-sealed.",
     intro: [
       "A ring is the piece people see first. Ours are cut and set the way fine jewellery is, a brilliant-cut zircone held in real prongs, a band filed thin enough to sit flush against the finger, and an 18K gold or rhodium finish sealed against water and daily wear.",
-      "The Gilded Hour rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set in small batches at our Nashik atelier, numbered, and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
+      "The Gilded Hour rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set in small batches at our atelier, numbered, and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
       "Sizes run US 5 (4.9 cm inner circumference) through US 8 (5.7 cm). If you are between sizes, message the atelier and we will guide you before the piece is made.",
     ],
     bullets: [
@@ -208,11 +208,11 @@ export const categoryLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · DEMI-FINE",
     metaTitle: "Demi-Fine Jewellery India, 18K Gold Finished, Anti-Tarnish",
     metaDescription:
-      "Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier in Nashik.",
+      "Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier.",
     intro: [
       "Demi-fine jewellery sits between costume and solid gold. It is built like fine jewellery, stones set in real prongs, solid construction, a thick precious-metal finish over a hypoallergenic base, but priced so you can own several pieces instead of one.",
       "Everything in The Gilded Hour is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped, and every piece carries an edition number.",
-      "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make in small batches at our Nashik atelier.",
+      "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make in small batches at our atelier.",
     ],
     bullets: [
       {
@@ -275,7 +275,7 @@ export const categoryLandings: CategoryLanding[] = [
       },
       {
         title: "Built for humidity",
-        body: "Made and tested in Nashik. If a finish can hold through an Indian monsoon it can hold anywhere.",
+        body: "Made and tested in India. If a finish can hold through an Indian monsoon it can hold anywhere.",
       },
     ],
     faqs: [
@@ -698,8 +698,8 @@ export const journal: JournalArticle[] = [
       {
         h: "Why we build the way we do",
         p: [
-          "The Gilded Hour is made to order in small numbered batches at our Nashik atelier. Every zircone is hand-set and levelled, every chain link soldered, and every surface sealed against tarnish before it is boxed.",
-          "Made to order means no dead inventory, which is what lets us spend the time on the setting rather than the volume.",
+          "The Gilded Hour is made in small numbered batches at our atelier. Every zircone is hand-set and levelled, every chain link soldered, and every surface sealed against tarnish before it is boxed.",
+          "Making in small batches means no dead inventory, which is what lets us spend the time on the setting rather than the volume.",
         ],
       },
     ],

@@ -80,7 +80,7 @@ const IndoWesternCarousel = () => {
               filter: `brightness(${(0.62 + near * 0.38).toFixed(3)})`,
             });
             const label = card.querySelector<HTMLElement>("[data-label]");
-            if (label) gsap.set(label, { opacity: Math.max(0, near * 1.6 - 0.5), y: 10 - near * 10 });
+            if (label) gsap.set(label, { opacity: Math.max(0, near * 2.6 - 1.4), y: 10 - near * 10 });
           });
         };
 

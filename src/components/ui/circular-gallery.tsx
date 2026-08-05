@@ -110,7 +110,7 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
       >
         <div
           className="relative mx-auto w-full"
-          style={{ height: stageH, perspective: isPhone ? "700px" : "1300px" }}
+          style={{ height: stageH, perspective: isPhone ? "900px" : "1300px" }}
         >
           <div
             className="absolute left-1/2 top-1/2 h-0 w-0"

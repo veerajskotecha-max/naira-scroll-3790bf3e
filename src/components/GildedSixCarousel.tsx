@@ -103,25 +103,46 @@ const GildedSixCarousel = () => {
 
         place(0);
 
+        // A stable viewport height captured once, so the pin distance does not
+        // change when the mobile URL bar collapses mid-scroll.
+        const stableVH = window.innerHeight;
+
         const st = ScrollTrigger.create({
           trigger: root,
           start: "top top",
           // ~one viewport of scroll per piece, then the section releases
-          end: () => `+=${Math.round(window.innerHeight * 0.55 * cards.length + window.innerHeight * 0.2)}`,
+          end: `+=${Math.round(stableVH * 0.55 * cards.length + stableVH * 0.2)}`,
           pin: pin,
-          scrub: 0.6,
+          pinType: "fixed",
+          pinSpacing: true,
+          scrub: 0.45,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          fastScrollEnd: true,
-          onRefresh: () => {
+          onRefresh: (self) => {
             ({ step, focus, drop } = layout());
+            place(self.progress);
           },
           onUpdate: (self) => place(self.progress),
         });
 
+        // Images are decoded before the deck is scrolled into view, so no
+        // late layout shift / stall when the pin engages.
+        const imgs = Array.from(track.querySelectorAll("img"));
+        let pending = imgs.length;
+        const done = () => {
+          if (--pending <= 0) ScrollTrigger.refresh();
+        };
+        imgs.forEach((img) => {
+          if (img.complete) done();
+          else {
+            img.addEventListener("load", done, { once: true });
+            img.addEventListener("error", done, { once: true });
+          }
+        });
 
         return () => st.kill();
       });
+
 
       mm.add("(prefers-reduced-motion: reduce)", () => {
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);

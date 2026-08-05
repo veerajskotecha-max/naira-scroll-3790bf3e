@@ -248,7 +248,7 @@ const HeroSection = () => {
                         alt={look.name}
                         loading={dup === 0 && i < 2 ? "eager" : "lazy"}
                         decoding="async"
-                        fetchpriority={dup === 0 && i === 0 ? "high" : "auto"}
+                        fetchPriority={dup === 0 && i === 0 ? "high" : "auto"}
                         className="block h-full w-auto object-contain object-bottom select-none"
                       />
                     </figure>

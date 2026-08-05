@@ -89,8 +89,9 @@ const Jewellery = () => {
         {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
         <div className="relative overflow-hidden bg-[#FBF3EC]">
           <div className="pointer-events-none absolute inset-0 z-0">
-            <RingAtelierBackdrop variant="sticky" />
+            <RingAtelierBackdrop variant="section" />
           </div>
+
 
           {/* hero, the clean scroll-turned solitaire */}
           <ZirconeTurn showViewAll={false} inheritBackdrop />

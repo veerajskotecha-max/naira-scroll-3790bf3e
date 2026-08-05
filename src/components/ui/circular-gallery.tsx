@@ -86,7 +86,7 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
 
     const isPhone = vw < 640;
     const cardW = Math.round(
-      Math.max(126, Math.min(isPhone ? vw * 0.42 : vw * 0.16, 220)),
+      Math.max(120, Math.min(isPhone ? vw * 0.34 : vw * 0.16, 220)),
     );
     const cardH = Math.round(cardW * (4 / 3));
     const textBlock = isPhone ? 46 : 54;

@@ -6,8 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
-import ringFront from "@/assets/jewellery/ring-cut-front-silver.webp";
-import ring34 from "@/assets/jewellery/ring-cut-34-silver.webp";
+import ringFront from "@/assets/jewellery/ring-cut-front.webp";
+import ring34 from "@/assets/jewellery/ring-cut-34.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +18,7 @@ gsap.registerPlugin(ScrollTrigger);
    flash hides the photo swap at max foreshortening; the 3/4 face
    continues from the same edge and reveals the stone's depth, holds for
    the callout, then flips home. Benefit callouts point at the band
-   (RHODIUM FINISHED) and the stone (BRILLIANT-CUT ZIRCONE).
+   (18K GOLD FINISHED) and the stone (BRILLIANT-CUT ZIRCONE).
    Reduced-motion: everything shown, no pin.
    ─────────────────────────────────────────────────────────────── */
 
@@ -151,18 +151,18 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
             {/* callout — band (left) — dot lands on ring band */}
             <div data-call-l className="absolute left-1 right-[calc(50%+19vw)] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-6 md:right-[calc(50%+13vw)] lg:left-10">
-              <span className="border border-[#8C9BA5]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#5F707B] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
-                RHODIUM FINISHED
+              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#8A6A2F] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
+                18K GOLD FINISHED
               </span>
-              <span data-line-l className="block h-px flex-1 bg-[#8C9BA5]" aria-hidden />
-              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#8C9BA5] md:h-1.5 md:w-1.5" aria-hidden />
+              <span data-line-l className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
+              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
             </div>
 
             {/* callout — stone (right) — dot lands on centered zircone */}
             <div data-call-r className="absolute left-[calc(50%+6vw)] right-1 top-[42%] z-20 flex -translate-y-1/2 items-center md:left-[calc(50%+5vw)] md:right-6 md:top-[46%] lg:right-10">
-              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#8C9BA5] md:h-1.5 md:w-1.5" aria-hidden />
-              <span data-line-r className="block h-px flex-1 bg-[#8C9BA5]" aria-hidden />
-              <span className="border border-[#8C9BA5]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#5F707B] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
+              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
+              <span data-line-r className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
+              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#8A6A2F] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
                 BRILLIANT-CUT ZIRCONE
               </span>
             </div>
@@ -180,7 +180,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
                 ENQUIRE
               </button>
               {showViewAll && (
-                <Link to="/jewellery" className="border-b border-[#B0843A] pb-0.5 text-[10px] tracking-[0.25em] text-[#5F707B]" style={jost}>
+                <Link to="/jewellery" className="border-b border-[#B0843A] pb-0.5 text-[10px] tracking-[0.25em] text-[#8A6A2F]" style={jost}>
                   VIEW ALL →
                 </Link>
               )}

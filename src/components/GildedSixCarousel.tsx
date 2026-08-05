@@ -50,10 +50,11 @@ const GildedSixCarousel = () => {
           const vw = window.innerWidth;
           const step = cards[0].offsetWidth * (vw < 700 ? 1.05 : vw < 1100 ? 0.95 : 0.86);
           const focus = vw * 0.5;
-          return { step, focus };
+          const drop = vw < 700 ? 48 : vw < 1100 ? 30 : 0; // clear the headline
+          return { step, focus, drop };
         };
 
-        let { step, focus } = layout();
+        let { step, focus, drop } = layout();
 
         cards.forEach((card, i) => {
           gsap.set(card, { position: "absolute", top: "50%", left: 0, xPercent: -50, yPercent: -50, zIndex: i });
@@ -83,7 +84,7 @@ const GildedSixCarousel = () => {
             const near = Math.max(0, 1 - Math.abs(d) / 0.9);
             gsap.set(card, {
               x,
-              y: 0,
+              y: drop,
               rotationY: gsap.utils.clamp(-26, 26, -d * 26),
               rotationZ: 0,
               scale: 0.62 + near * 0.46,
@@ -109,7 +110,7 @@ const GildedSixCarousel = () => {
           invalidateOnRefresh: true,
           fastScrollEnd: true,
           onRefresh: () => {
-            ({ step, focus } = layout());
+            ({ step, focus, drop } = layout());
           },
           onUpdate: (self) => place(self.progress),
         });

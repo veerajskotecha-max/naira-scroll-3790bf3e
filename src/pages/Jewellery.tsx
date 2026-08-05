@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
+import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { jewellery, type JewelCategory } from "@/data/jewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";

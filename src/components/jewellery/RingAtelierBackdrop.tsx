@@ -117,7 +117,7 @@ const RingAtelierBackdrop = () => {
 
       {/* pressed-flower paper wash */}
       <div
-        className="absolute inset-0 opacity-[0.07] mix-blend-multiply"
+        className="absolute inset-0 opacity-[0.05] mix-blend-multiply"
         style={{ backgroundImage: `url(${floralBg})`, backgroundSize: "150% auto" }}
       />
       {/* warm sun-faded gradient */}

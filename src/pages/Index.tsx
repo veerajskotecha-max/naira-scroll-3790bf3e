@@ -59,13 +59,20 @@ const Index = () => {
           }
         />
 
-        <div ref={revealRef} className="section-reveal">
-          <CustomisationSteps />
+        {/* pressed-flower wash continues from the hero all the way down to The Flore Edit */}
+        <div className="relative isolate overflow-hidden bg-[#FBF3EC] [&_section]:!bg-transparent">
+          <RingAtelierBackdrop />
+          <div className="relative z-[1]">
+            <div ref={revealRef} className="section-reveal">
+              <CustomisationSteps />
+            </div>
+            <BrandEthos />
+            <Craftsmanship />
+            <FounderStoryTeaser />
+          </div>
         </div>
-        <BrandEthos />
-        <Craftsmanship />
-        <FounderStoryTeaser />
         <IndoWesternCarousel />
+
         <Testimonials />
         <CampaignFilm />
         <Footer />

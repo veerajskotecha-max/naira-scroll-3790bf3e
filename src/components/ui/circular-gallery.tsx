@@ -115,6 +115,8 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                     transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
                     opacity,
                     transition: "opacity 200ms linear",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
                   }}
                 >
                   <div

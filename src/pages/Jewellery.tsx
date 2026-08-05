@@ -85,7 +85,7 @@ const Jewellery = () => {
           },
         ]}
       />
-      <div className="relative bg-[#FBF3EC] pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+      <div className="relative pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
         {/* atelier backdrop — pressed-flower wash, 3D drift, touch blooms (whole page) */}
         <RingAtelierBackdrop variant="page" />
 

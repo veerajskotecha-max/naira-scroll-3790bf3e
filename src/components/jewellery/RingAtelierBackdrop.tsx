@@ -25,11 +25,12 @@ const ORBS = [
   { l: "62%", t: "18%", s: 110, z: -400, dur: "32s", delay: "-4s" },
 ];
 
-const RingAtelierBackdrop = () => {
+const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "page" }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const [blooms, setBlooms] = useState<Bloom[]>([]);
   const seq = useRef(0);
+  const isPage = variant === "page";
 
   // pointer parallax on the 3D layer
   useEffect(() => {
@@ -38,7 +39,6 @@ const RingAtelierBackdrop = () => {
     if (!root || !layer) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const host = root.parentElement ?? root;
     let raf = 0;
     let tx = 0;
     let ty = 0;
@@ -53,38 +53,45 @@ const RingAtelierBackdrop = () => {
     };
 
     const onMove = (e: PointerEvent) => {
-      const r = host.getBoundingClientRect();
+      const r = root.getBoundingClientRect();
       tx = ((e.clientX - r.left) / r.width - 0.5) * 8;
       ty = -((e.clientY - r.top) / r.height - 0.5) * 6;
     };
 
-    host.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointermove", onMove, { passive: true });
     raf = requestAnimationFrame(tick);
     return () => {
-      host.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointermove", onMove);
       cancelAnimationFrame(raf);
     };
   }, []);
 
-  // flower bloom on tap / click, anywhere on this screen
+  // flower bloom wherever the client taps
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const host = root.parentElement ?? root;
 
     const onDown = (e: PointerEvent) => {
-      const r = host.getBoundingClientRect();
+      const r = root.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) return;
       const id = ++seq.current;
-      setBlooms((prev) => [...prev.slice(-4), { id, x: e.clientX - r.left, y: e.clientY - r.top }]);
+      setBlooms((prev) => [...prev.slice(-4), { id, x, y }]);
       window.setTimeout(() => setBlooms((prev) => prev.filter((b) => b.id !== id)), 1500);
     };
 
-    host.addEventListener("pointerdown", onDown, { passive: true });
-    return () => host.removeEventListener("pointerdown", onDown);
+    window.addEventListener("pointerdown", onDown, { passive: true });
+    return () => window.removeEventListener("pointerdown", onDown);
   }, []);
 
   return (
-    <div ref={rootRef} className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+    <div
+      ref={rootRef}
+      className={`pointer-events-none overflow-hidden ${isPage ? "fixed inset-0 -z-10" : "absolute inset-0"}`}
+      style={isPage ? { backgroundColor: "#FBF3EC" } : undefined}
+      aria-hidden
+    >
       <style>{`
         @keyframes naira-ring-float {
           0%   { transform: translate3d(0,0,0) rotate(var(--r, 0deg)); }

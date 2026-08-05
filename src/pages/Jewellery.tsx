@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
+import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { jewellery, type JewelCategory } from "@/data/jewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
@@ -84,9 +85,12 @@ const Jewellery = () => {
           },
         ]}
       />
-      <div className="bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+      <div className="relative pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+        {/* atelier backdrop — pressed-flower wash, 3D drift, touch blooms (whole page) */}
+        <RingAtelierBackdrop variant="page" />
+
         {/* hero, the clean scroll-turned solitaire */}
-        <ZirconeTurn showViewAll={false} />
+        <ZirconeTurn showViewAll={false} inheritBackdrop />
 
         {/* indexable header */}
         <header className="mx-auto max-w-6xl px-4 pb-2 pt-6 sm:px-6 md:pt-10">

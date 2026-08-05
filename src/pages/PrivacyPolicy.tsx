@@ -166,7 +166,7 @@ const PrivacyPolicy = () => {
     <>
       <PageSEO
         title="Privacy Policy"
-        description="How Naira Flore collects, uses and protects your personal information when you shop, enquire or place a custom order."
+        description="How Naira Flore collects, uses and protects your personal information when you shop, enquire or place a made-to-measure piece."
         canonical="https://nairaflore.com/privacy"
       />
       {/* Hero header */}

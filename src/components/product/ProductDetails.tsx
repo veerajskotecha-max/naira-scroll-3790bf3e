@@ -123,7 +123,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         className="text-[12px] mt-2 leading-relaxed"
         style={{ color: "hsl(0 0% 50%)" }}
       >
-        *Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; custom orders take 4–8 weeks.
+        *Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks.
       </p>
 
       {/* Trust badges */}
@@ -347,7 +347,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           <AccordionContent>
             <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
               <p>• All orders from the website are delivered within 3–7 working days.</p>
-              <p>• Custom orders are delivered in 45–60 days.</p>
+              <p>• Made-to-measure pieces are delivered in 45–60 days.</p>
             </div>
           </AccordionContent>
         </AccordionItem>

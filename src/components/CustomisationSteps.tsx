@@ -223,7 +223,7 @@ const CustomisationSteps = () => {
               (e.currentTarget.style.backgroundColor = "hsl(20 18% 28%)")
             }
           >
-            BEGIN MY CUSTOM ORDER
+            BEGIN MY MADE TO MEASURE
           </Link>
         </div>
       </div>

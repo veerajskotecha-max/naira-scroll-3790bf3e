@@ -36,8 +36,8 @@ const faqCategories = [
     label: "B2B Orders",
     items: [
       {
-        q: "Do you accept bulk custom orders for boutiques or events?",
-        a: "Yes. We work with boutiques, event planners and designers on bulk custom orders, from a wedding trousseau to a boutique collection to coordinated outfits for an event.",
+        q: "Do you accept bulk made-to-measure pieces for boutiques or events?",
+        a: "Yes. We work with boutiques, event planners and designers on bulk made-to-measure pieces, from a wedding trousseau to a boutique collection to coordinated outfits for an event.",
       },
       {
         q: "What is the minimum order quantity for B2B customisation?",

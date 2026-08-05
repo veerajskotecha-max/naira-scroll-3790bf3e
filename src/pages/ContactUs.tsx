@@ -69,7 +69,7 @@ const ContactUs = () => {
     <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
       <PageSEO
         title="Contact Naira Flore | Nashik Atelier & WhatsApp Support"
-        description="Talk to the Naira Flore atelier in Nashik about custom orders, sizing, jewellery pre-orders or an existing order. WhatsApp +91 95615 57935."
+        description="Talk to the Naira Flore atelier in Nashik about made-to-measure pieces, sizing, jewellery pre-orders or an existing order. WhatsApp +91 95615 57935."
         canonical="https://nairaflore.com/contact"
       />
       {/* ── SECTION 1 — Hero ── */}

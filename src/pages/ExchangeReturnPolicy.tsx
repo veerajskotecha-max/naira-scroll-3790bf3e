@@ -5,12 +5,12 @@ import Footer from "@/components/Footer";
 const sections = [
   {
     id: "custom-orders",
-    title: "Custom Orders (Made for You)",
+    title: "Made-to-Measure Pieces (Made for You)",
     content: (
       <>
         <ul>
           <li>All custom-designed pieces are made to your unique specifications and are therefore <strong>non-returnable and non-exchangeable</strong>.</li>
-          <li>Since each garment is crafted exclusively for you, we cannot accept returns, exchanges, or offer refunds on custom orders.</li>
+          <li>Since each garment is crafted exclusively for you, we cannot accept returns, exchanges, or offer refunds on made-to-measure pieces.</li>
         </ul>
       </>
     ),
@@ -64,7 +64,7 @@ const ExchangeReturnPolicy = () => {
     <>
       <PageSEO
         title="Exchange & Return Policy"
-        description="Naira Flore's exchange and return policy: 48-hour window on standard pieces, and why made-to-measure custom orders are non-returnable."
+        description="Naira Flore's exchange and return policy: 48-hour window on standard pieces, and why made-to-measure made-to-measure pieces are non-returnable."
         canonical="https://nairaflore.com/exchange-return-policy"
       />
       {/* Hero header */}

@@ -13,8 +13,8 @@ const faqSections = [
         a: "It begins with a consultation on WhatsApp, where you share your vision, reference images, preferred fabrics, colours and embroidery styles. Our design team then creates a sketch and a detailed plan for your approval before we begin handcrafting your piece.",
       },
       {
-        q: "How long do custom orders take?",
-        a: "Custom orders typically take 4–8 weeks depending on the complexity of the design, embroidery work, and fabric sourcing. We'll provide a more specific timeline during your consultation.",
+        q: "How long do made-to-measure pieces take?",
+        a: "Made-to-measure pieces typically take 4–8 weeks depending on the complexity of the design, embroidery work, and fabric sourcing. We'll provide a more specific timeline during your consultation.",
       },
       {
         q: "Can I modify my order after placing it?",
@@ -28,11 +28,11 @@ const faqSections = [
     items: [
       {
         q: "What are the delivery timelines?",
-        a: "Standard (ready-to-ship) orders are delivered within 3–7 working days. Custom orders take 4–8 weeks, depending on the complexity of the piece.",
+        a: "Standard (ready-to-ship) orders are delivered within 3–7 working days. Made-to-measure pieces take 4–8 weeks, depending on the complexity of the piece.",
       },
       {
         q: "Do you offer express shipping?",
-        a: "Currently, we do not offer express shipping for custom orders due to the handcrafted nature of our pieces. For standard orders, expedited shipping may be available, please contact us on WhatsApp for options.",
+        a: "Currently, we do not offer express shipping for made-to-measure pieces due to the handcrafted nature of our pieces. For standard orders, expedited shipping may be available, please contact us on WhatsApp for options.",
       },
       {
         q: "How can I track my order?",
@@ -49,8 +49,8 @@ const faqSections = [
         a: "Standard orders with manufacturing defects (damaged embroidery, incorrect stitching, fabric flaws, or staining) may be returned within 48 hours of delivery. After review, we offer repair, replacement, or store credit. Refunds to the original payment method are considered case-by-case.",
       },
       {
-        q: "Are custom orders returnable?",
-        a: "No. All custom-designed pieces are made to your unique specifications and are therefore non-returnable and non-exchangeable. Since each garment is crafted exclusively for you, we cannot accept returns, exchanges, or offer refunds on custom orders.",
+        q: "Are made-to-measure pieces returnable?",
+        a: "No. All custom-designed pieces are made to your unique specifications and are therefore non-returnable and non-exchangeable. Since each garment is crafted exclusively for you, we cannot accept returns, exchanges, or offer refunds on made-to-measure pieces.",
       },
       {
         q: "What if I receive a defective product?",
@@ -96,8 +96,8 @@ const FAQs = () => {
   return (
     <>
       <PageSEO
-        title="FAQs, Custom Orders, Sizing, Shipping & Returns"
-        description="Answers on custom order timelines, sizing and measurements, jewellery care, shipping across India and worldwide, and the Naira Flore exchange policy."
+        title="FAQs, Made-to-Measure Pieces, Sizing, Shipping & Returns"
+        description="Answers on made-to-measure piece timelines, sizing and measurements, jewellery care, shipping across India and worldwide, and the Naira Flore exchange policy."
         canonical="https://nairaflore.com/faqs"
         jsonLd={faqLd(faqSections.flatMap((s) => s.items))}
       />

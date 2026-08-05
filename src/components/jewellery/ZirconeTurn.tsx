@@ -143,7 +143,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
               <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0 }} />
               {/* glint flash */}
               <div data-flash aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[3px] -translate-x-1/2 -translate-y-1/2"
-                style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #9FB0BA 25%, #FFFFFF 50%, #9FB0BA 75%, transparent)", boxShadow: "0 0 24px 6px rgba(238,244,248,0.85)" }} />
+                style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #E8C27A 25%, #FFFFFF 50%, #E8C27A 75%, transparent)", boxShadow: "0 0 24px 6px rgba(255,226,168,0.85)" }} />
               {/* contact shadow */}
               <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
                 style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />

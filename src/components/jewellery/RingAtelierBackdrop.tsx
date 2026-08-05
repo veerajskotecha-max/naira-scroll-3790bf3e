@@ -141,6 +141,7 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
   const layerRef = useRef<HTMLDivElement>(null);
   const [blooms, setBlooms] = useState<Bloom[]>([]);
   const seq = useRef(0);
+  const lastSpecies = useRef(-1);
   const isPage = variant === "page";
   const isSticky = variant === "sticky";
 

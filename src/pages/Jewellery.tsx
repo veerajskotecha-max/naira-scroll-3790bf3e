@@ -84,9 +84,12 @@ const Jewellery = () => {
           },
         ]}
       />
-      <div className="bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+      <div className="relative bg-[#FBF3EC] pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+        {/* atelier backdrop — pressed-flower wash, 3D drift, touch blooms (whole page) */}
+        <RingAtelierBackdrop variant="page" />
+
         {/* hero, the clean scroll-turned solitaire */}
-        <ZirconeTurn showViewAll={false} />
+        <ZirconeTurn showViewAll={false} inheritBackdrop />
 
         {/* indexable header */}
         <header className="mx-auto max-w-6xl px-4 pb-2 pt-6 sm:px-6 md:pt-10">

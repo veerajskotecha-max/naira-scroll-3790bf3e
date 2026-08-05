@@ -53,9 +53,16 @@ const Index = () => {
         <HeroScrollyWrapper
           beforeArrivals={
             <>
-              <ZirconeTurn idAttr="jewellery" />
-              <div className="section-reveal is-visible">
-                <JewelleryCategories />
+              <div className="relative isolate overflow-hidden bg-[#FBF3EC] [&_section]:!bg-transparent">
+                <div className="pointer-events-none absolute inset-0 z-0">
+                  <RingAtelierBackdrop variant="sticky" />
+                </div>
+                <div className="relative z-[1]">
+                  <ZirconeTurn idAttr="jewellery" inheritBackdrop />
+                  <div className="section-reveal is-visible">
+                    <JewelleryCategories />
+                  </div>
+                </div>
               </div>
             </>
           }
@@ -63,7 +70,9 @@ const Index = () => {
 
         {/* pressed-flower wash continues from the hero all the way down to The Flore Edit */}
         <div className="relative isolate overflow-hidden bg-[#FBF3EC] [&_section]:!bg-transparent">
-          <RingAtelierBackdrop />
+          <div className="pointer-events-none absolute inset-0 z-0">
+            <RingAtelierBackdrop variant="sticky" />
+          </div>
           <div className="relative z-[1]">
             <div ref={revealRef} className="section-reveal">
               <CustomisationSteps />

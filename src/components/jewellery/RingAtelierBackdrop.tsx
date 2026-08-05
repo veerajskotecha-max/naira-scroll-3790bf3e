@@ -25,12 +25,13 @@ const ORBS = [
   { l: "62%", t: "18%", s: 110, z: -400, dur: "32s", delay: "-4s" },
 ];
 
-const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "page" }) => {
+const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "page" | "sticky" }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const [blooms, setBlooms] = useState<Bloom[]>([]);
   const seq = useRef(0);
   const isPage = variant === "page";
+  const isSticky = variant === "sticky";
 
   // pointer parallax on the 3D layer
   useEffect(() => {
@@ -88,7 +89,7 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
   return (
     <div
       ref={rootRef}
-      className={`pointer-events-none overflow-hidden ${isPage ? "fixed inset-0 -z-10" : "absolute inset-0"}`}
+      className={`pointer-events-none overflow-hidden ${isPage ? "fixed inset-0 -z-10" : isSticky ? "sticky top-0 h-[100svh] w-full" : "absolute inset-0"}`}
       style={isPage ? { backgroundColor: "#FBF3EC" } : undefined}
       aria-hidden
     >

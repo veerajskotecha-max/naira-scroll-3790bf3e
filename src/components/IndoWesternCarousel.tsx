@@ -51,12 +51,14 @@ const IndoWesternCarousel = () => {
 
         const layout = () => {
           const vw = window.innerWidth;
-          const step = cards[0].offsetWidth * (vw < 700 ? 0.46 : 0.42);
-          const focus = vw < 700 ? vw * 0.42 : vw * 0.36;
-          return { step, focus };
+          const step = cards[0].offsetWidth * (vw < 700 ? 0.52 : 0.46);
+          const focus = vw < 700 ? vw * 0.5 : vw * 0.38;
+          // diagonal rise: cards travel up-left as they approach the focus
+          const slope = vw < 700 ? 0.3 : 0.34;
+          return { step, focus, slope };
         };
 
-        let { step, focus } = layout();
+        let { step, focus, slope } = layout();
 
         cards.forEach((card, i) => {
           gsap.set(card, { position: "absolute", top: "50%", left: 0, xPercent: -50, yPercent: -50, zIndex: cards.length - i });
@@ -73,13 +75,16 @@ const IndoWesternCarousel = () => {
             const x = head + i * step;
             const d = (x - focus) / step; // distance from the focus zone, in card steps
             const near = Math.max(0, 1 - Math.abs(d) / 1.25);
+            // diagonal path: lower-right → upper-left, easing flat at the focus
+            const y = (x - focus) * slope * (1 - near * 0.55);
             gsap.set(card, {
               x,
-              rotationY: -26 + near * 24,
-              rotationZ: -2.5 + near * 2.5,
-              scale: 0.78 + near * 0.3,
-              opacity: gsap.utils.clamp(0, 1, 1 - Math.max(0, Math.abs(d) - 2.4) * 0.55),
-              filter: `brightness(${(0.62 + near * 0.38).toFixed(3)})`,
+              y,
+              rotationY: -30 + near * 28,
+              rotationZ: -7 + near * 6,
+              scale: 0.74 + near * 0.34,
+              opacity: gsap.utils.clamp(0, 1, 1 - Math.max(0, Math.abs(d) - 2.2) * 0.6),
+              filter: `brightness(${(0.6 + near * 0.4).toFixed(3)})`,
             });
             const label = card.querySelector<HTMLElement>("[data-label]");
             if (label) gsap.set(label, { opacity: Math.max(0, near * 2.6 - 1.4), y: 10 - near * 10 });
@@ -91,13 +96,15 @@ const IndoWesternCarousel = () => {
         const st = ScrollTrigger.create({
           trigger: root,
           start: "top top",
-          end: () => `+=${Math.max(1400, window.innerHeight * 2.4)}`,
+          // ~one viewport of scroll per piece, then the section releases
+          end: () => `+=${Math.round(window.innerHeight * 0.42 * cards.length + window.innerHeight * 0.2)}`,
           pin: pin,
-          scrub: 0.6,
+          scrub: 0.5,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
           onRefresh: () => {
-            ({ step, focus } = layout());
+            ({ step, focus, slope } = layout());
           },
           onUpdate: (self) => place(self.progress),
         });

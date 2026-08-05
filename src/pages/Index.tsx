@@ -65,7 +65,7 @@ const Index = () => {
         <BrandEthos />
         <Craftsmanship />
         <FounderStoryTeaser />
-        <LookbookGallery />
+        <IndoWesternCarousel />
         <Testimonials />
         <CampaignFilm />
         <Footer />

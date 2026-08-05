@@ -234,8 +234,9 @@ const GildedSixCarousel = () => {
                 <img
                   src={p.image}
                   alt={`${p.name}, demi-fine jewellery by Naira Flore`}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
+                  fetchPriority="low"
                   className="h-full w-full object-cover"
                 />
                 <div

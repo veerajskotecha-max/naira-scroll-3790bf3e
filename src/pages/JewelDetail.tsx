@@ -340,7 +340,7 @@ const JewelDetail = () => {
             <div className="flex items-center gap-2 mt-3">
               <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
               <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                Plated &amp; finished in <strong className="font-medium">2–3 weeks</strong> · free sizing
+                Plated &amp; finished in <strong className="font-medium">2–3 weeks</strong>
               </span>
             </div>
 

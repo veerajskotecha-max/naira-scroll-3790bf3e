@@ -118,16 +118,18 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
   }, { scope: rootRef });
 
   return (
-    <section id={idAttr} className="relative bg-[#FBF3EC] text-[#1A1614]">
+    <section id={idAttr} className={`relative text-[#1A1614] ${inheritBackdrop ? "" : "bg-[#FBF3EC]"}`}>
       <div ref={rootRef}>
         <div
           ref={pinRef}
           className="relative flex flex-col items-center justify-center px-4 pb-6 pt-[124px] md:h-[100svh] md:min-h-[560px] md:px-6 md:pb-10 md:pt-[120px]"
         >
           {/* atelier backdrop — paper wash, 3D drift, touch blooms */}
-          <RingAtelierBackdrop />
+          {!inheritBackdrop && <RingAtelierBackdrop />}
           {/* quiet wash */}
-          <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
+          {!inheritBackdrop && (
+            <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
+          )}
 
           <p className="relative z-20 mb-3 text-center text-[10px] leading-relaxed tracking-[0.4em] text-[#B0843A] md:mb-6 md:text-[11px] md:tracking-[0.5em]" style={jost}>
             THE ZIRCONE EDIT · DEMI-GOLD

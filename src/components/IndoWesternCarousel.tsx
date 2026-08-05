@@ -129,8 +129,33 @@ const IndoWesternCarousel = () => {
   if (pieces.length === 0) return null;
 
   return (
-    <section ref={rootRef} aria-label="The Flore Edit" style={{ backgroundColor: "#171513" }}>
-      <div ref={pinRef} className="relative overflow-hidden" style={{ height: "100svh", backgroundColor: "#171513" }}>
+    <section ref={rootRef} aria-label="The Flore Edit" style={{ backgroundColor: "#14211F" }}>
+      <div
+        ref={pinRef}
+        className="relative overflow-hidden"
+        style={{
+          height: "100svh",
+          backgroundColor: "#14211F",
+          backgroundImage:
+            "radial-gradient(90% 70% at 78% 18%, rgba(47,93,99,0.55) 0%, transparent 62%)," +
+            "radial-gradient(70% 60% at 12% 88%, rgba(229,185,164,0.20) 0%, transparent 66%)," +
+            "radial-gradient(120% 90% at 50% 50%, rgba(174,189,182,0.10) 0%, transparent 70%)," +
+            "linear-gradient(150deg, #16241F 0%, #12191B 48%, #1B1512 100%)",
+        }}
+      >
+        {/* diagonal atelier rules */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.16]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(118deg, rgba(243,238,231,0.10) 0px, rgba(243,238,231,0.10) 1px, transparent 1px, transparent 120px)",
+          }}
+        />
+        {/* soft vignette */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "radial-gradient(120% 80% at 50% 50%, transparent 40%, rgba(8,10,10,0.62) 100%)" }}
+        />
         {/* Heading */}
         <div className="absolute left-0 top-0 z-30 px-5 pt-[120px] md:px-14 md:pt-[140px]">
           <p className="text-[9px] uppercase tracking-[0.34em]" style={{ ...jost, color: "#AEBDB6" }}>

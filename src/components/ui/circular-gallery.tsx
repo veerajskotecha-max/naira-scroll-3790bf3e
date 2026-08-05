@@ -73,6 +73,29 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
       };
     }, [autoRotateSpeed]);
 
+    // Track viewport width so the ring geometry (card size + radius) can be
+    // recomputed for phones, where a fixed radius made the 3D read flat.
+    const [vw, setVw] = useState(
+      typeof window === "undefined" ? 1280 : window.innerWidth,
+    );
+    useEffect(() => {
+      const onResize = () => setVw(window.innerWidth);
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const isPhone = vw < 640;
+    const cardW = Math.round(
+      Math.max(126, Math.min(isPhone ? vw * 0.42 : vw * 0.16, 220)),
+    );
+    const cardH = Math.round(cardW * (4 / 3));
+    const textBlock = isPhone ? 46 : 54;
+    // Radius derived from the circumference the cards need, so they never
+    // overlap regardless of how many items are passed in.
+    const autoRadius = Math.round((items.length * cardW * 1.12) / (2 * Math.PI));
+    const ringRadius = Math.max(isPhone ? 190 : 300, Math.min(autoRadius, radius));
+    const stageH = cardH + textBlock + (isPhone ? 90 : 140);
+
     const anglePerItem = items.length ? 360 / items.length : 0;
 
     return (
@@ -86,21 +109,21 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
         {...props}
       >
         <div
-          className="relative mx-auto h-[420px] w-full md:h-[520px]"
-          style={{ perspective: "1400px" }}
+          className="relative mx-auto w-full"
+          style={{ height: stageH, perspective: isPhone ? "700px" : "1300px" }}
         >
           <div
             className="absolute left-1/2 top-1/2 h-0 w-0"
             style={{
               transformStyle: "preserve-3d",
-              transform: `translate(-50%, -50%) rotateX(-6deg) rotateY(${rotation}deg)`,
+              transform: `translate(-50%, -50%) rotateX(${isPhone ? -4 : -6}deg) rotateY(${rotation}deg)`,
             }}
           >
             {items.map((item, i) => {
               const itemAngle = i * anglePerItem;
               const relative = (itemAngle + (rotation % 360) + 360) % 360;
               const normalized = relative > 180 ? 360 - relative : relative;
-              const opacity = Math.max(0.22, 1 - normalized / 150);
+              const opacity = Math.max(0.18, 1 - normalized / 130);
               const Tag = item.href ? "a" : "div";
 
               return (
@@ -109,10 +132,10 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                   {...(item.href ? { href: item.href } : {})}
                   className="absolute block"
                   style={{
-                    width: "clamp(150px, 20vw, 230px)",
-                    marginLeft: "calc(clamp(150px, 20vw, 230px) / -2)",
-                    marginTop: "calc(clamp(200px, 27vw, 306px) / -2)",
-                    transform: `rotateY(${itemAngle}deg) translateZ(${radius}px)`,
+                    width: cardW,
+                    marginLeft: -cardW / 2,
+                    marginTop: -(cardH + textBlock) / 2,
+                    transform: `rotateY(${itemAngle}deg) translateZ(${ringRadius}px)`,
                     opacity,
                     transition: "opacity 200ms linear",
                     backfaceVisibility: "hidden",
@@ -121,7 +144,7 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                 >
                   <div
                     className="overflow-hidden"
-                    style={{ backgroundColor: "#F4EBE2", aspectRatio: "3 / 4" }}
+                    style={{ backgroundColor: "#F4EBE2", height: cardH, width: cardW }}
                   >
                     <img
                       src={item.photo.url}
@@ -132,16 +155,23 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                       style={{ objectPosition: item.photo.pos ?? "50% 50%" }}
                     />
                   </div>
-                  <div className="mt-3 text-center">
+                  <div
+                    className="pt-2 text-center"
+                    style={{ height: textBlock, overflow: "hidden" }}
+                  >
                     <p
-                      className="font-cormorant text-[16px] md:text-[18px]"
-                      style={{ color: "#1A1614" }}
+                      className="font-cormorant leading-tight"
+                      style={{ color: "#1A1614", fontSize: isPhone ? 14 : 17 }}
                     >
                       {item.common}
                     </p>
                     <p
-                      className="mt-1 text-[9px] uppercase tracking-[0.24em]"
-                      style={{ color: "#9A7634" }}
+                      className="mt-1 uppercase leading-none"
+                      style={{
+                        color: "#9A7634",
+                        fontSize: isPhone ? 8 : 9,
+                        letterSpacing: "0.22em",
+                      }}
                     >
                       {item.binomial}
                     </p>

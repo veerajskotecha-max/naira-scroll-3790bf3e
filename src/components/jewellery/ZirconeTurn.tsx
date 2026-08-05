@@ -6,8 +6,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
-import ringFront from "@/assets/jewellery/ring-cut-front.webp";
-import ring34 from "@/assets/jewellery/ring-cut-34.webp";
+import ringFront from "@/assets/jewellery/ring-cut-front-silver.webp";
+import ring34 from "@/assets/jewellery/ring-cut-34-silver.webp";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +18,7 @@ gsap.registerPlugin(ScrollTrigger);
    flash hides the photo swap at max foreshortening; the 3/4 face
    continues from the same edge and reveals the stone's depth, holds for
    the callout, then flips home. Benefit callouts point at the band
-   (18K GOLD COATED) and the stone (BRILLIANT-CUT ZIRCONE).
+   (RHODIUM FINISHED) and the stone (BRILLIANT-CUT ZIRCONE).
    Reduced-motion: everything shown, no pin.
    ─────────────────────────────────────────────────────────────── */
 
@@ -132,7 +132,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           )}
 
           <p className="relative z-20 mb-3 text-center text-[10px] leading-relaxed tracking-[0.4em] text-[#B0843A] md:mb-6 md:text-[11px] md:tracking-[0.5em]" style={jost}>
-            THE ZIRCONE EDIT · DEMI-GOLD
+            THE ZIRCONE EDIT · DEMI-FINE
           </p>
 
 
@@ -143,7 +143,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
               <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0 }} />
               {/* glint flash */}
               <div data-flash aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[3px] -translate-x-1/2 -translate-y-1/2"
-                style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #C99A4C 25%, #FFF8F5 50%, #C99A4C 75%, transparent)", boxShadow: "0 0 24px 6px rgba(255,246,222,0.8)" }} />
+                style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #9FB0BA 25%, #FFFFFF 50%, #9FB0BA 75%, transparent)", boxShadow: "0 0 24px 6px rgba(238,244,248,0.85)" }} />
               {/* contact shadow */}
               <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
                 style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />
@@ -151,18 +151,18 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
             {/* callout — band (left) — dot lands on ring band */}
             <div data-call-l className="absolute left-1 right-[calc(50%+19vw)] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-6 md:right-[calc(50%+13vw)] lg:left-10">
-              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#9A7634] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
-                18K GOLD FINISHED
+              <span className="border border-[#8C9BA5]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#5F707B] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
+                RHODIUM FINISHED
               </span>
-              <span data-line-l className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
-              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
+              <span data-line-l className="block h-px flex-1 bg-[#8C9BA5]" aria-hidden />
+              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#8C9BA5] md:h-1.5 md:w-1.5" aria-hidden />
             </div>
 
             {/* callout — stone (right) — dot lands on centered zircone */}
             <div data-call-r className="absolute left-[calc(50%+6vw)] right-1 top-[42%] z-20 flex -translate-y-1/2 items-center md:left-[calc(50%+5vw)] md:right-6 md:top-[46%] lg:right-10">
-              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
-              <span data-line-r className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
-              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#9A7634] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
+              <span className="block h-1 w-1 shrink-0 rounded-full bg-[#8C9BA5] md:h-1.5 md:w-1.5" aria-hidden />
+              <span data-line-r className="block h-px flex-1 bg-[#8C9BA5]" aria-hidden />
+              <span className="border border-[#8C9BA5]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#5F707B] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
                 BRILLIANT-CUT ZIRCONE
               </span>
             </div>
@@ -173,14 +173,14 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           {/* finale */}
           <div data-finale className="relative z-20 mt-3 text-center md:mt-8">
             <h2 className="text-[clamp(1.4rem,5.4vw,2.6rem)] leading-tight" style={velista}>{solitaire.name}</h2>
-            <p className="mt-1 text-[13px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>18K Gold Finished · brilliant-cut zircone · 4-prong</p>
+            <p className="mt-1 text-[13px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>Rhodium finished · brilliant-cut zircone · 4-prong</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:mt-4 md:gap-4">
               <span className="text-[15px] tracking-wide md:text-[16px]" style={jost}>{solitaire.priceLabel}</span>
               <button onClick={() => setQv(solitaire)} className="press-scale border border-[#1A1614] px-6 py-2.5 text-[10px] tracking-[0.3em] hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
                 ENQUIRE
               </button>
               {showViewAll && (
-                <Link to="/jewellery" className="border-b border-[#B0843A] pb-0.5 text-[10px] tracking-[0.25em] text-[#9A7634]" style={jost}>
+                <Link to="/jewellery" className="border-b border-[#B0843A] pb-0.5 text-[10px] tracking-[0.25em] text-[#5F707B]" style={jost}>
                   VIEW ALL →
                 </Link>
               )}

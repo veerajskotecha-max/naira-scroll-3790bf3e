@@ -9,7 +9,118 @@ import floralBg from "@/assets/floral-pattern-bg.webp";
    taps. Scoped to this section only. Reduced motion: static wash.
    ─────────────────────────────────────────────────────────────── */
 
-type Bloom = { id: number; x: number; y: number };
+type BloomSpecies = {
+  name: string;
+  /** petal outline path in a 40x80 viewBox */
+  d: string;
+  /** number of petals in the outer whorf */
+  petals: number;
+  /** petal length in px */
+  size: number;
+  /** travel distance of each petal from the tap point */
+  spread: number;
+  /** palette used for petals, cycled */
+  palette: string[];
+  /** inner whorl petal ratio (0 = none) */
+  inner: number;
+  /** halo ring tint */
+  halo: string;
+  /** core gradient */
+  core: string;
+  /** open duration in seconds */
+  dur: number;
+};
+
+/* Six botanicals, each with its own silhouette, petal count and palette,
+   so no two taps look the same. Colours stay inside the Naira palette:
+   blush, warm beige, sage, cream, faded teal, antique gold. */
+const SPECIES: BloomSpecies[] = [
+  {
+    name: "rose",
+    d: "M20,3 C34,20 35,52 20,77 C5,52 6,20 20,3 Z",
+    petals: 9,
+    size: 34,
+    spread: 46,
+    palette: ["#F3D9C6", "#E5B9A4", "#FFC9B4", "#EFCDBB"],
+    inner: 0.58,
+    halo: "rgba(229,185,164,0.42)",
+    core: "radial-gradient(circle, #FFF6E2 0%, #E5B9A4 58%, transparent 74%)",
+    dur: 1.5,
+  },
+  {
+    name: "wild five",
+    d: "M20,4 C36,22 38,54 20,76 C2,54 4,22 20,4 Z",
+    petals: 5,
+    size: 40,
+    spread: 52,
+    palette: ["#AEBDB6", "#C9D5CE", "#DCE6E1"],
+    inner: 0,
+    halo: "rgba(174,189,182,0.45)",
+    core: "radial-gradient(circle, #FFFDF6 0%, #C9A44C 62%, transparent 76%)",
+    dur: 1.35,
+  },
+  {
+    name: "jasmine star",
+    d: "M20,2 C26,24 30,40 20,78 C10,40 14,24 20,2 Z",
+    petals: 6,
+    size: 44,
+    spread: 58,
+    palette: ["#FFF6EA", "#F6E4D5", "#FFEFE2"],
+    inner: 0.5,
+    halo: "rgba(201,154,76,0.36)",
+    core: "radial-gradient(circle, #FFFBF0 0%, #E8C88A 60%, transparent 76%)",
+    dur: 1.6,
+  },
+  {
+    name: "marigold",
+    d: "M20,6 C30,22 31,48 20,74 C9,48 10,22 20,6 Z",
+    petals: 14,
+    size: 26,
+    spread: 40,
+    palette: ["#E9C79B", "#DCB07E", "#F2D9B6", "#C99A4C"],
+    inner: 0.62,
+    halo: "rgba(201,154,76,0.4)",
+    core: "radial-gradient(circle, #FFF3D8 0%, #C99A4C 60%, transparent 76%)",
+    dur: 1.7,
+  },
+  {
+    name: "camellia",
+    d: "M20,4 C39,18 40,56 20,78 C0,56 1,18 20,4 Z",
+    petals: 7,
+    size: 38,
+    spread: 48,
+    palette: ["#FFD6C6", "#F0BCA8", "#FFE6DA", "#E5B9A4"],
+    inner: 0.55,
+    halo: "rgba(255,189,168,0.42)",
+    core: "radial-gradient(circle, #FFF8EE 0%, #F0BCA8 58%, transparent 74%)",
+    dur: 1.45,
+  },
+  {
+    name: "teal bud",
+    d: "M20,3 C31,26 32,52 20,77 C8,52 9,26 20,3 Z",
+    petals: 8,
+    size: 30,
+    spread: 44,
+    palette: ["#8FB0AE", "#B7CCC6", "#2F5D63", "#D6E3DE"],
+    inner: 0.5,
+    halo: "rgba(47,93,99,0.32)",
+    core: "radial-gradient(circle, #F4FBF8 0%, #8FB0AE 58%, transparent 74%)",
+    dur: 1.55,
+  },
+];
+
+type Bloom = {
+  id: number;
+  x: number;
+  y: number;
+  species: BloomSpecies;
+  /** whole-bloom rotation so repeats never align */
+  tilt: number;
+  /** 0.82 – 1.18 scale jitter */
+  scale: number;
+  /** dew sparkle offsets */
+  dew: { a: number; d: number; s: number; delay: number }[];
+};
 
 const PETALS = [
   { l: "6%", t: "12%", w: 130, rot: -18, z: -220, color: "#FFBDA8", op: 0.5, dur: "26s", delay: "0s" },

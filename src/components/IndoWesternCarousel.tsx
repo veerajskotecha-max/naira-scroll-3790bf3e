@@ -33,7 +33,7 @@ const IndoWesternCarousel = () => {
 
   const pieces = useMemo(() => {
     const pool = shopifyProducts.map(productFromShopify);
-    return [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    return [...pool].sort(() => Math.random() - 0.5).slice(0, 6);
   }, [shopifyProducts]);
 
   useGSAP(
@@ -51,12 +51,14 @@ const IndoWesternCarousel = () => {
 
         const layout = () => {
           const vw = window.innerWidth;
-          const step = cards[0].offsetWidth * (vw < 700 ? 0.46 : 0.42);
-          const focus = vw < 700 ? vw * 0.42 : vw * 0.36;
-          return { step, focus };
+          const step = cards[0].offsetWidth * (vw < 700 ? 0.52 : 0.46);
+          const focus = vw < 700 ? vw * 0.5 : vw * 0.38;
+          // diagonal rise: cards travel up-left as they approach the focus
+          const slope = vw < 700 ? 0.3 : 0.34;
+          return { step, focus, slope };
         };
 
-        let { step, focus } = layout();
+        let { step, focus, slope } = layout();
 
         cards.forEach((card, i) => {
           gsap.set(card, { position: "absolute", top: "50%", left: 0, xPercent: -50, yPercent: -50, zIndex: cards.length - i });
@@ -73,13 +75,16 @@ const IndoWesternCarousel = () => {
             const x = head + i * step;
             const d = (x - focus) / step; // distance from the focus zone, in card steps
             const near = Math.max(0, 1 - Math.abs(d) / 1.25);
+            // diagonal path: lower-right → upper-left, easing flat at the focus
+            const y = (x - focus) * slope * (1 - near * 0.55);
             gsap.set(card, {
               x,
-              rotationY: -26 + near * 24,
-              rotationZ: -2.5 + near * 2.5,
-              scale: 0.78 + near * 0.3,
-              opacity: gsap.utils.clamp(0, 1, 1 - Math.max(0, Math.abs(d) - 2.4) * 0.55),
-              filter: `brightness(${(0.62 + near * 0.38).toFixed(3)})`,
+              y,
+              rotationY: -30 + near * 28,
+              rotationZ: -7 + near * 6,
+              scale: 0.74 + near * 0.34,
+              opacity: gsap.utils.clamp(0, 1, 1 - Math.max(0, Math.abs(d) - 2.2) * 0.6),
+              filter: `brightness(${(0.6 + near * 0.4).toFixed(3)})`,
             });
             const label = card.querySelector<HTMLElement>("[data-label]");
             if (label) gsap.set(label, { opacity: Math.max(0, near * 2.6 - 1.4), y: 10 - near * 10 });
@@ -91,13 +96,15 @@ const IndoWesternCarousel = () => {
         const st = ScrollTrigger.create({
           trigger: root,
           start: "top top",
-          end: () => `+=${Math.max(1400, window.innerHeight * 2.4)}`,
+          // ~one viewport of scroll per piece, then the section releases
+          end: () => `+=${Math.round(window.innerHeight * 0.42 * cards.length + window.innerHeight * 0.2)}`,
           pin: pin,
-          scrub: 0.6,
+          scrub: 0.5,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
           onRefresh: () => {
-            ({ step, focus } = layout());
+            ({ step, focus, slope } = layout());
           },
           onUpdate: (self) => place(self.progress),
         });
@@ -108,7 +115,7 @@ const IndoWesternCarousel = () => {
       mm.add("(prefers-reduced-motion: reduce)", () => {
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
         cards.forEach((card) => {
-          gsap.set(card, { position: "relative", x: 0, rotationY: 0, rotationZ: 0, scale: 1, opacity: 1, filter: "none" });
+          gsap.set(card, { position: "relative", x: 0, y: 0, rotationY: 0, rotationZ: 0, scale: 1, opacity: 1, filter: "none" });
           const label = card.querySelector<HTMLElement>("[data-label]");
           if (label) gsap.set(label, { opacity: 1, y: 0 });
         });
@@ -122,8 +129,33 @@ const IndoWesternCarousel = () => {
   if (pieces.length === 0) return null;
 
   return (
-    <section ref={rootRef} aria-label="The Flore Edit" style={{ backgroundColor: "#171513" }}>
-      <div ref={pinRef} className="relative overflow-hidden" style={{ height: "100svh", backgroundColor: "#171513" }}>
+    <section ref={rootRef} aria-label="The Flore Edit" style={{ backgroundColor: "#14211F" }}>
+      <div
+        ref={pinRef}
+        className="relative overflow-hidden"
+        style={{
+          height: "100svh",
+          backgroundColor: "#14211F",
+          backgroundImage:
+            "radial-gradient(90% 70% at 78% 18%, rgba(47,93,99,0.55) 0%, transparent 62%)," +
+            "radial-gradient(70% 60% at 12% 88%, rgba(229,185,164,0.20) 0%, transparent 66%)," +
+            "radial-gradient(120% 90% at 50% 50%, rgba(174,189,182,0.10) 0%, transparent 70%)," +
+            "linear-gradient(150deg, #16241F 0%, #12191B 48%, #1B1512 100%)",
+        }}
+      >
+        {/* diagonal atelier rules */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.16]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(118deg, rgba(243,238,231,0.10) 0px, rgba(243,238,231,0.10) 1px, transparent 1px, transparent 120px)",
+          }}
+        />
+        {/* soft vignette */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "radial-gradient(120% 80% at 50% 50%, transparent 40%, rgba(8,10,10,0.62) 100%)" }}
+        />
         {/* Heading */}
         <div className="absolute left-0 top-0 z-30 px-5 pt-[120px] md:px-14 md:pt-[140px]">
           <p className="text-[9px] uppercase tracking-[0.34em]" style={{ ...jost, color: "#AEBDB6" }}>
@@ -199,7 +231,7 @@ const IndoWesternCarousel = () => {
         </div>
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-          style={{ background: "linear-gradient(to top, rgba(23,21,19,0.9), rgba(23,21,19,0))" }}
+          style={{ background: "linear-gradient(to top, rgba(14,20,20,0.92), rgba(14,20,20,0))" }}
         />
       </div>
     </section>

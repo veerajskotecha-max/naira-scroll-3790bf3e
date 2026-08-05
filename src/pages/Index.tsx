@@ -55,7 +55,7 @@ const Index = () => {
             <>
               <div className="relative isolate overflow-hidden bg-[#FBF3EC] [&_section]:!bg-transparent">
                 <div className="pointer-events-none absolute inset-0 z-0">
-                  <RingAtelierBackdrop variant="sticky" />
+                  <RingAtelierBackdrop variant="section" />
                 </div>
                 <div className="relative z-[1]">
                   <ZirconeTurn idAttr="jewellery" inheritBackdrop />
@@ -71,7 +71,7 @@ const Index = () => {
         {/* pressed-flower wash continues from the hero all the way down to The Flore Edit */}
         <div className="relative isolate overflow-hidden bg-[#FBF3EC] [&_section]:!bg-transparent">
           <div className="pointer-events-none absolute inset-0 z-0">
-            <RingAtelierBackdrop variant="sticky" />
+            <RingAtelierBackdrop variant="section" />
           </div>
           <div className="relative z-[1]">
             <div ref={revealRef} className="section-reveal">

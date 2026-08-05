@@ -7,6 +7,10 @@ import { jewellery } from "@/data/jewellery";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* Mobile browsers resize the viewport when the URL bar hides/shows. Without
+   this, ScrollTrigger refreshes mid-scroll and the pinned deck visibly jumps. */
+ScrollTrigger.config({ ignoreMobileResize: true });
+
 /* ───────────────────────────────────────────────────────────────
    THE GILDED SIX — a 3D "scroll to surf" deck of bestselling jewellery.
    Cards ride a perspective track from right to left as the section is

@@ -190,7 +190,7 @@ const GildedSixCarousel = () => {
         <div
           ref={trackRef}
           className="absolute inset-0"
-          style={{ perspective: "1100px", perspectiveOrigin: "40% 55%" }}
+          style={{ perspective: "1100px", perspectiveOrigin: "50% 52%" }}
         >
           {pieces.map((p) => (
             <Link
@@ -199,7 +199,7 @@ const GildedSixCarousel = () => {
               data-card
               className="block will-change-transform"
               style={{
-                width: "clamp(210px, 46vw, 380px)",
+                width: "clamp(190px, 52vw, 340px)",
                 transformStyle: "preserve-3d",
                 backfaceVisibility: "hidden",
               }}

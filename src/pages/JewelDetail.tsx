@@ -38,10 +38,10 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
 };
 
 const ringSizes: { value: string; label: string }[] = [
-  { value: "5", label: "US 5 · 4.9 cm" },
-  { value: "6", label: "US 6 · 5.2 cm" },
-  { value: "7", label: "US 7 · 5.4 cm" },
-  { value: "8", label: "US 8 · 5.7 cm" },
+  { value: "5", label: "US 5" },
+  { value: "6", label: "US 6" },
+  { value: "7", label: "US 7" },
+  { value: "8", label: "US 8" },
 ];
 
 const JewelDetail = () => {
@@ -319,7 +319,7 @@ const JewelDetail = () => {
               </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Made to order · price shared on WhatsApp enquiry
+              Price shared on WhatsApp enquiry
             </p>
 
             {/* Key facts, at a glance */}
@@ -383,7 +383,7 @@ const JewelDetail = () => {
                 </Select>
               ) : (
                 <div className="w-full h-11 flex items-center px-3 border text-[13px]" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
-                  One Size · adjustable on request
+                  One Size · adjustable
                 </div>
               )}
             </div>
@@ -487,7 +487,7 @@ const JewelDetail = () => {
                 <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Made to order, plated &amp; finished in 2–3 weeks.</p>
+                    <p>• Plated &amp; finished, dispatched in 2–3 weeks.</p>
                     <p>• Shipped free across India, insured in transit.</p>
                   </div>
                 </AccordionContent>
@@ -496,7 +496,7 @@ const JewelDetail = () => {
                 <AtelierAccordionTrigger>Disclaimer</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Handcrafted pieces carry gentle variation, part of their character.</p>
+                    <p>• Each piece carries gentle variation, part of its character.</p>
                     <p>• Stone tone may vary slightly from screen colours.</p>
                   </div>
                 </AccordionContent>
@@ -507,7 +507,7 @@ const JewelDetail = () => {
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• WhatsApp / WhatsApp Call: <span className="font-semibold" style={{ color: "hsl(0 0% 20%)" }}>+91 9561557935</span></p>
                     <p>• Manufactured and marketed by Naira Flore</p>
-                    <p>• Address: Flat 7, Veeraj Blossom, Karanyogi Nagar, Nashik – 422002</p>
+                    <p>• Address: Flat 7, Veeraj Blossom, Karanyogi Nagar, Maharashtra – 422002</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>

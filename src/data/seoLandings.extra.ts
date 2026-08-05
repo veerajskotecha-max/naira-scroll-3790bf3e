@@ -14,7 +14,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · ARTIFICIAL JEWELLERY",
     metaTitle: "Artificial Jewellery for Women, Anti-Tarnish, 18K Finished",
     metaDescription:
-      "Artificial jewellery that does not turn green. Hand-set zircone rings, earrings, bracelets and necklaces in a sealed 18K gold finish over a nickel-free base. Made in Nashik.",
+      "Artificial jewellery that does not turn green. Hand-set zircone rings, earrings, bracelets and necklaces in a sealed 18K gold finish over a nickel-free base. Made in small batches.",
     intro: [
       "Most artificial jewellery in India is built to survive a photoshoot, not a season. Thin flash plating over a soft alloy, glue-set stones, and a clasp that gives way in a month. That is the category we set out to leave behind.",
       "Naira Flore artificial jewellery is finished the way demi-fine is: a nickel-free brass base, a thick 18K gold or rhodium coat, an anti-tarnish seal on top, and brilliant-cut zircone held in real prongs rather than adhesive.",
@@ -60,7 +60,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · IMITATION JEWELLERY",
     metaTitle: "Imitation Jewellery Online, Sealed Gold Finish | Naira Flore",
     metaDescription:
-      "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in Nashik. Anti-tarnish, nickel-free and made in small numbered batches.",
+      "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and made in small numbered batches.",
     intro: [
       "Imitation jewellery earned its reputation honestly, most of it is made to a price, not to a standard. But the idea behind it is sound: you should not need to spend a month's salary to wear something beautiful.",
       "We kept the idea and rebuilt the execution. Same brilliant facet pattern used on diamonds, cut into lab-grown zircone. Same prong settings used in fine jewellery. Same finishing tolerances we hold on our couture embroidery.",
@@ -77,7 +77,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         title: "Numbered small batches",
-        body: "We make to order rather than to warehouse. Each piece carries an edition number from the Nashik atelier.",
+        body: "We make to order rather than to warehouse. Each piece carries an edition number from the atelier.",
       },
     ],
     faqs: [
@@ -95,7 +95,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         q: "Do you ship imitation jewellery across India?",
-        a: "Yes, we ship pan-India from Nashik, and the atelier can be reached on WhatsApp for sizing or styling before you order.",
+        a: "Yes, we ship pan-India, and the atelier can be reached on WhatsApp for sizing or styling before you order.",
       },
     ],
   },
@@ -152,11 +152,11 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · BRIDAL",
     metaTitle: "Bridal Jewellery Online, Zircone & Gold Finish | Naira Flore",
     metaDescription:
-      "Bridal jewellery for sangeet, mehendi, reception and court weddings: hand-set brilliant-cut zircone in an 18K gold finish. Made to order in Nashik.",
+      "Bridal jewellery for sangeet, mehendi, reception and court weddings: hand-set brilliant-cut zircone in an 18K gold finish. Finished in small batches.",
     intro: [
       "A wedding is not one look, it is five. The heavy family set comes out once, and the other four days need jewellery that photographs beautifully, sits light through fourteen hours, and does not have to be locked in a hotel safe.",
       "That is the gap the Gilded Hour bridal edit fills. Brilliant-cut zircone hand-set in an 18K gold finish, built light enough for a full sangeet and bright enough to hold up under photographers' lighting.",
-      "Pieces are made to order, so a set can be matched across earrings, ring and necklace for a single function, message the atelier and we will build the combination with you.",
+      "Pieces are finished in small batches, so a set can be matched across earrings, ring and necklace for a single function, message the atelier and we will build the combination with you.",
     ],
     bullets: [
       {
@@ -183,7 +183,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         q: "How far in advance should I order bridal jewellery?",
-        a: "Pieces are made to order, so allow two to three weeks before the first function. For a full multi-piece set, message us four weeks out.",
+        a: "Pieces are finished on request, so allow two to three weeks before the first function. For a full multi-piece set, message us four weeks out.",
       },
       {
         q: "Will it survive a full function?",
@@ -199,7 +199,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · COUPLE RINGS",
     metaTitle: "Couple Rings & Promise Rings Online | Naira Flore",
     metaDescription:
-      "Couple rings and promise rings in an 18K gold finish with hand-set zircone. US sizes 5–8, anti-tarnish sealed, made to order at our Nashik atelier.",
+      "Couple rings and promise rings in an 18K gold finish with hand-set zircone. US sizes 5–8, anti-tarnish sealed, finished at our atelier.",
     intro: [
       "A couple ring is worn every day by someone who did not choose it, which is why comfort matters more than drama. Slim bands, flush settings, and a finish that does not dull against a keyboard or a steering wheel.",
       "Our rings work as pairs because the finish is consistent: the same 18K gold or rhodium across the collection, so two rings ordered together match, and a replacement ordered a year later still does.",
@@ -215,7 +215,7 @@ export const extraLandings: CategoryLanding[] = [
         body: "One gold formulation across the collection means a pair bought together, or apart, reads as a set.",
       },
       {
-        title: "Made to order in pairs",
+        title: "Finished in pairs",
         body: "Tell us both sizes on WhatsApp and we make the pair together, numbered from the same batch.",
       },
     ],
@@ -246,11 +246,11 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · ADJUSTABLE",
     metaTitle: "Adjustable Rings for Women, Gold Finished | Naira Flore",
     metaDescription:
-      "Adjustable rings that hold their shape: 18K gold finished, anti-tarnish sealed, hand-set zircone. Free-size options plus fixed US 5–8 sizing.",
+      "Adjustable rings that hold their shape: 18K gold finished, anti-tarnish sealed, hand-set zircone. Available in US 5 to US 8.",
     intro: [
       "Adjustable rings solve a real problem, fingers change size between morning and evening, summer and winter, and create a new one when the band is soft enough to lose its shape after a week.",
       "Ours are made from a firm alloy that opens and closes at a designed point rather than flexing along the whole shank. Adjust it twice and it stays where you put it.",
-      "If you already know your size, the same designs are available in fixed US 5 to US 8, which always sits more securely than a free-size band.",
+      "If you already know your size, the same designs are available in fixed US 5 to US 8, which always sits more securely than an adjustable band.",
     ],
     bullets: [
       {
@@ -276,7 +276,7 @@ export const extraLandings: CategoryLanding[] = [
         a: "Hold the two ends and open or close them gently and evenly, off the finger. Never twist the band sideways or force it over the knuckle while it is closed.",
       },
       {
-        q: "Is a free-size ring better than a sized ring?",
+        q: "Is an adjustable ring better than a sized ring?",
         a: "For gifting or an in-between finger, yes. For everyday wear, a fixed size sits more securely and takes less handling, so the finish lasts longer.",
       },
       {
@@ -293,7 +293,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · ZIRCONIA EARRINGS",
     metaTitle: "Zirconia Earrings Online, Studs, Hoops, Drops | Naira Flore",
     metaDescription:
-      "Hand-set cubic zirconia earrings in an 18K gold finish. Studs, hoops and drops built light, prong-set and sealed against tarnish. Made in Nashik.",
+      "Hand-set cubic zirconia earrings in an 18K gold finish. Studs, hoops and drops built light, prong-set and sealed against tarnish. Made in small batches.",
     intro: [
       "Earrings are the piece that gets worn most and inspected least, until one goes dull or the post starts irritating the ear. Both are construction problems.",
       "Our zirconia earrings use prong-set brilliant-cut stones on a nickel-free post, with the same sealed 18K gold finish as the rest of the Gilded Hour. Weight is designed out at the setting stage so drops do not pull on the lobe.",
@@ -434,7 +434,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · SOLITAIRE",
     metaTitle: "Solitaire Rings for Women, Zircone Solitaires | Naira Flore",
     metaDescription:
-      "Single-stone solitaire rings with hand-set brilliant-cut zircone in an 18K gold or rhodium finish. US sizes 5–8, made to order in Nashik.",
+      "Single-stone solitaire rings with hand-set brilliant-cut zircone in an 18K gold or rhodium finish. Available in US sizes 5 to 8.",
     intro: [
       "A solitaire has nowhere to hide. One stone, four to six prongs, and a band, every proportion is visible, which is why it is the hardest ring to make well and the easiest to make badly.",
       "Ours are set by hand with the stone checked level under light before the ring leaves the bench. The prongs are filed down to the minimum that will hold, so the stone reads larger than its measurement.",
@@ -481,7 +481,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · COCKTAIL",
     metaTitle: "Cocktail Rings for Women, Statement Zircone | Naira Flore",
     metaDescription:
-      "Statement cocktail rings with clustered brilliant-cut zircone in a sealed 18K gold finish. Made to order in US sizes 5–8 at our Nashik atelier.",
+      "Statement cocktail rings with clustered brilliant-cut zircone in a sealed 18K gold finish. Available in US sizes 5 to 8 from our atelier.",
     intro: [
       "A cocktail ring exists to be looked at. That gives it licence on scale and none at all on weight, a statement ring that turns on the finger by the second hour has failed at its only job.",
       "Ours are built with hollowed galleries and a balanced shank, so a wide clustered face sits upright without a counterweight or a ring adjuster.",

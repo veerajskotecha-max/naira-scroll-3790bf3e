@@ -89,6 +89,7 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
     <div
       ref={rootRef}
       className={`pointer-events-none overflow-hidden ${isPage ? "fixed inset-0 -z-10" : "absolute inset-0"}`}
+      style={isPage ? { backgroundColor: "#FBF3EC" } : undefined}
       aria-hidden
     >
       <style>{`

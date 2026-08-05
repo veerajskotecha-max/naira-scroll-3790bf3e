@@ -28,7 +28,7 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 const solitaire = jewellery.find((j) => j.handle === "the-vow")!;
 
-const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showViewAll?: boolean }) => {
+const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { idAttr?: string; showViewAll?: boolean; inheritBackdrop?: boolean }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);

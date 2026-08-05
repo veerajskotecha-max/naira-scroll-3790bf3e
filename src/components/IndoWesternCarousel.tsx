@@ -123,7 +123,7 @@ const IndoWesternCarousel = () => {
     <section ref={rootRef} aria-label="The Flore Edit" style={{ backgroundColor: "#171513" }}>
       <div ref={pinRef} className="relative overflow-hidden" style={{ height: "100svh", backgroundColor: "#171513" }}>
         {/* Heading */}
-        <div className="absolute left-0 top-0 z-30 px-5 pt-12 md:px-14 md:pt-16">
+        <div className="absolute left-0 top-0 z-30 px-5 pt-[120px] md:px-14 md:pt-[140px]">
           <p className="text-[9px] uppercase tracking-[0.34em]" style={{ ...jost, color: "#AEBDB6" }}>
             Indo-Western
           </p>

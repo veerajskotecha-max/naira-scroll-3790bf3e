@@ -214,6 +214,7 @@ const ProductDetail = () => {
       )}
       <MaterialsCraft />
       <YouMayAlsoLike currentHandle={product.handle} />
+      <CollectionCarousel />
       
       <Footer />
       <StickyAddToCart

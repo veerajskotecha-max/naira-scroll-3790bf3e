@@ -115,7 +115,7 @@ const IndoWesternCarousel = () => {
       mm.add("(prefers-reduced-motion: reduce)", () => {
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
         cards.forEach((card) => {
-          gsap.set(card, { position: "relative", x: 0, rotationY: 0, rotationZ: 0, scale: 1, opacity: 1, filter: "none" });
+          gsap.set(card, { position: "relative", x: 0, y: 0, rotationY: 0, rotationZ: 0, scale: 1, opacity: 1, filter: "none" });
           const label = card.querySelector<HTMLElement>("[data-label]");
           if (label) gsap.set(label, { opacity: 1, y: 0 });
         });

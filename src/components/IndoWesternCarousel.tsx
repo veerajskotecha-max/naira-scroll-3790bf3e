@@ -231,7 +231,7 @@ const IndoWesternCarousel = () => {
         </div>
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-          style={{ background: "linear-gradient(to top, rgba(23,21,19,0.9), rgba(23,21,19,0))" }}
+          style={{ background: "linear-gradient(to top, rgba(14,20,20,0.92), rgba(14,20,20,0))" }}
         />
       </div>
     </section>

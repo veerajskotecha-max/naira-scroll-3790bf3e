@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import CollectionCarousel from "@/components/CollectionCarousel";
 import CustomerReviews from "@/components/CustomerReviews";
-import MaterialsCraft from "@/components/MaterialsCraft";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import DetailsTabs from "@/components/product/DetailsTabs";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -549,7 +548,6 @@ const JewelDetail = () => {
       </div>
 
       <CustomerReviews productName={piece.name} variant="jewellery" />
-      <MaterialsCraft />
 
       {/* Related jewellery */}
       <section className="py-16 md:py-20" style={{ backgroundColor: "#FBF3EC" }}>

@@ -33,7 +33,7 @@ const IndoWesternCarousel = () => {
 
   const pieces = useMemo(() => {
     const pool = shopifyProducts.map(productFromShopify);
-    return [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    return [...pool].sort(() => Math.random() - 0.5).slice(0, 6);
   }, [shopifyProducts]);
 
   useGSAP(

@@ -181,7 +181,7 @@ const ProductDetail = () => {
       <div className="md:hidden pt-[94px] relative">
         <button
           onClick={goBack}
-          className="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
+          className="absolute top-[106px] left-4 z-20 w-11 h-11 flex items-center justify-center shadow-md"
           style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
           aria-label="Go back"
         >

@@ -5,6 +5,7 @@ import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
+import CollectionCarousel from "@/components/CollectionCarousel";
 import CustomerReviews from "@/components/CustomerReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import PincodeChecker from "@/components/product/PincodeChecker";

@@ -9,6 +9,7 @@ import CustomerReviews from "@/components/CustomerReviews";
 import JudgeMeReviews, { judgeMeEnabled } from "@/components/JudgeMeReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
+import CollectionCarousel from "@/components/CollectionCarousel";
 import StickyAddToCart from "@/components/StickyAddToCart";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";

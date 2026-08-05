@@ -48,43 +48,52 @@ const GildedSixCarousel = () => {
 
         const layout = () => {
           const vw = window.innerWidth;
-          const step = cards[0].offsetWidth * (vw < 700 ? 0.52 : 0.46);
-          const focus = vw < 700 ? vw * 0.5 : vw * 0.38;
-          // diagonal rise: cards travel up-left as they approach the focus
-          const slope = vw < 700 ? 0.3 : 0.34;
-          return { step, focus, slope };
+          const step = cards[0].offsetWidth * (vw < 700 ? 1.05 : vw < 1100 ? 0.95 : 0.86);
+          const focus = vw * 0.5;
+          const drop = vw < 700 ? 48 : vw < 1100 ? 30 : 0; // clear the headline
+          return { step, focus, drop };
         };
 
-        let { step, focus, slope } = layout();
+        let { step, focus, drop } = layout();
 
         cards.forEach((card, i) => {
-          gsap.set(card, { position: "absolute", top: "50%", left: 0, xPercent: -50, yPercent: -50, zIndex: cards.length - i });
+          gsap.set(card, { position: "absolute", top: "50%", left: 0, xPercent: -50, yPercent: -50, zIndex: i });
         });
 
+        // dwell easing: each piece holds in the focus zone, then flips to the next
+        const dwell = (p: number) => {
+          const n = cards.length - 1;
+          if (n <= 0) return 0;
+          const t = gsap.utils.clamp(0, n, p * n);
+          const seg = Math.min(Math.floor(t), n - 1);
+          const f = t - seg;
+          const hold = 0.34; // portion of each segment spent resting on the piece
+          const move = gsap.utils.clamp(0, 1, (f - hold) / (1 - hold * 2));
+          const eased = move * move * (3 - 2 * move); // smoothstep
+          return seg + eased;
+        };
+
         const place = (progress: number) => {
-          const vw = window.innerWidth;
-          const start = vw * 1.05;
-          // end with the final piece resting in the focus zone
-          const travel = start - focus + step * (cards.length - 1);
-          const head = start - travel * progress;
+          const t = dwell(progress);
+          // left → right travel: head slides right, piece i rests at focus when t === i
+          const head = focus + t * step;
 
           cards.forEach((card, i) => {
-            const x = head + i * step;
-            const d = (x - focus) / step; // distance from the focus zone, in card steps
-            const near = Math.max(0, 1 - Math.abs(d) / 1.25);
-            // diagonal path: lower-right → upper-left, easing flat at the focus
-            const y = (x - focus) * slope * (1 - near * 0.55);
+            const x = head - i * step;
+            const d = (x - focus) / step; // steps away from the focus zone
+            const near = Math.max(0, 1 - Math.abs(d) / 0.9);
             gsap.set(card, {
               x,
-              y,
-              rotationY: -30 + near * 28,
-              rotationZ: -7 + near * 6,
-              scale: 0.74 + near * 0.34,
-              opacity: gsap.utils.clamp(0, 1, 1 - Math.max(0, Math.abs(d) - 2.2) * 0.6),
-              filter: `brightness(${(0.6 + near * 0.4).toFixed(3)})`,
+              y: drop,
+              rotationY: gsap.utils.clamp(-26, 26, -d * 26),
+              rotationZ: 0,
+              scale: 0.62 + near * 0.46,
+              opacity: gsap.utils.clamp(0, 1, 1 - Math.max(0, Math.abs(d) - 1.15) * 1.1),
+              filter: `brightness(${(0.62 + near * 0.38).toFixed(3)})`,
+              zIndex: Math.round(100 - Math.abs(d) * 10),
             });
             const label = card.querySelector<HTMLElement>("[data-label]");
-            if (label) gsap.set(label, { opacity: Math.max(0, near * 2.6 - 1.4), y: 10 - near * 10 });
+            if (label) gsap.set(label, { opacity: Math.max(0, near * 2.6 - 1.3), y: 10 - near * 10 });
           });
         };
 
@@ -94,17 +103,18 @@ const GildedSixCarousel = () => {
           trigger: root,
           start: "top top",
           // ~one viewport of scroll per piece, then the section releases
-          end: () => `+=${Math.round(window.innerHeight * 0.42 * cards.length + window.innerHeight * 0.2)}`,
+          end: () => `+=${Math.round(window.innerHeight * 0.55 * cards.length + window.innerHeight * 0.2)}`,
           pin: pin,
-          scrub: 0.5,
+          scrub: 0.6,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
           onRefresh: () => {
-            ({ step, focus, slope } = layout());
+            ({ step, focus, drop } = layout());
           },
           onUpdate: (self) => place(self.progress),
         });
+
 
         return () => st.kill();
       });
@@ -181,7 +191,7 @@ const GildedSixCarousel = () => {
         <div
           ref={trackRef}
           className="absolute inset-0"
-          style={{ perspective: "1100px", perspectiveOrigin: "40% 55%" }}
+          style={{ perspective: "1100px", perspectiveOrigin: "50% 52%" }}
         >
           {pieces.map((p) => (
             <Link
@@ -190,7 +200,7 @@ const GildedSixCarousel = () => {
               data-card
               className="block will-change-transform"
               style={{
-                width: "clamp(210px, 46vw, 380px)",
+                width: "clamp(190px, 52vw, 340px)",
                 transformStyle: "preserve-3d",
                 backfaceVisibility: "hidden",
               }}

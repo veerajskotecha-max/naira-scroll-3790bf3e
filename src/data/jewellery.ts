@@ -19,6 +19,16 @@ import theKnotLariat from "@/assets/jewellery/gilded/the-knot-lariat.jpg.asset.j
 import theRondelle from "@/assets/jewellery/gilded/the-rondelle.jpg.asset.json";
 import theAnchorChain from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
 import theCascade from "@/assets/jewellery/gilded/the-cascade.jpg.asset.json";
+import solitaireDrop from "@/assets/jewellery/gilded/the-solitaire-drop.png.asset.json";
+import solitaireDrop2 from "@/assets/jewellery/gilded/the-solitaire-drop-2.png.asset.json";
+import solitaireDrop3 from "@/assets/jewellery/gilded/the-solitaire-drop-3.png.asset.json";
+import solitaireDrop4 from "@/assets/jewellery/gilded/the-solitaire-drop-4.png.asset.json";
+import rippleHoop from "@/assets/jewellery/gilded/the-ripple-hoop.png.asset.json";
+import rippleHoop2 from "@/assets/jewellery/gilded/the-ripple-hoop-2.png.asset.json";
+import rippleHoop3 from "@/assets/jewellery/gilded/the-ripple-hoop-3.png.asset.json";
+import rippleHoop4 from "@/assets/jewellery/gilded/the-ripple-hoop-4.png.asset.json";
+import rosewaterLine from "@/assets/jewellery/gilded/the-rosewater-line.png.asset.json";
+import rosewaterLine2 from "@/assets/jewellery/gilded/the-rosewater-line-2.png.asset.json";
 import theVineUgc from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
 
 /* ───────────────────────────────────────────────────────────────
@@ -38,6 +48,7 @@ export interface JewelPiece {
   handle: string;
   name: string;
   category: JewelCategory;
+  sku: string;             // atelier stock code
   number: string;           // "01"–"17" — engraved edition number
   price: number;            // INR — internal record only; not displayed during pre-order
   priceLabel: string;       // displayed status/label (currently PREORDER_LABEL)
@@ -297,5 +308,48 @@ export const jewellery: JewelPiece[] = [
     gallery: [theCascade.url],
     blurb: "A marquise held high, then three more falling in a line.",
     materials: "18k gold coating · marquise zirconia · four-stone drop",
+  },
+
+  {
+    handle: "the-ripple-hoop",
+    name: "The Ripple Hoop",
+    category: "Earrings",
+    sku: "NF-GH-E20-RPL",
+    number: "20",
+    price: 4400,
+    priceLabel: PREORDER_LABEL,
+    image: rippleHoop.url,
+    gallery: [rippleHoop.url, rippleHoop2.url, rippleHoop3.url, rippleHoop4.url],
+    blurb: "A hoop caught mid wave. Molten gold curves that catch light from every turn, light enough for all day.",
+    materials: "18k gold coating · wave-form hoop · hinged snap closure · 20mm",
+    tag: "NEW",
+  },
+  {
+    handle: "the-rosewater-line",
+    name: "The Rosewater Line",
+    category: "Bracelets",
+    sku: "NF-GH-B21-RSW",
+    number: "21",
+    price: 7400,
+    priceLabel: PREORDER_LABEL,
+    image: rosewaterLine.url,
+    gallery: [rosewaterLine.url, rosewaterLine2.url],
+    blurb: "Rose zirconia in graduated bezels, running large to small along the wrist like water in soft light.",
+    materials: "18k gold coating · rose zirconia · bezel set · lobster clasp with 5cm extender",
+    tag: "NEW",
+  },
+  {
+    handle: "the-solitaire-drop",
+    name: "The Solitaire Drop",
+    category: "Necklaces",
+    sku: "NF-GH-N22-SLD",
+    number: "22",
+    price: 5600,
+    priceLabel: PREORDER_LABEL,
+    image: solitaireDrop.url,
+    gallery: [solitaireDrop.url, solitaireDrop2.url, solitaireDrop3.url, solitaireDrop4.url],
+    blurb: "One cushion-cut stone on a fine snake chain. The quietest thing in the collection, and the one worn most.",
+    materials: "Rhodium coating · cushion-cut zirconia · 4-prong bail · snake chain with extender",
+    tag: "NEW",
   },
 ];

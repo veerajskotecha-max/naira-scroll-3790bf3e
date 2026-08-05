@@ -12,7 +12,7 @@ import PageSEO from "@/components/PageSEO";
 import FounderStoryTeaser from "@/components/FounderStoryTeaser";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
-import IndoWesternCarousel from "@/components/IndoWesternCarousel";
+import GildedSixCarousel from "@/components/GildedSixCarousel";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 
 
@@ -82,7 +82,7 @@ const Index = () => {
             <FounderStoryTeaser />
           </div>
         </div>
-        <IndoWesternCarousel />
+        <GildedSixCarousel />
 
         <Testimonials />
         <CampaignFilm />

@@ -1,16 +1,14 @@
 import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { productFromShopify } from "@/components/ProductCard";
-import { fetchShopifyProducts } from "@/lib/shopify";
+import { jewellery } from "@/data/jewellery";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /* ───────────────────────────────────────────────────────────────
-   THE FLORE EDIT — a 3D "scroll to surf" deck of Indo-Western pieces.
+   THE GILDED SIX — a 3D "scroll to surf" deck of bestselling jewellery.
    Cards ride a perspective track from right to left as the section is
    pinned; the piece passing the focus zone zooms forward, straightens
    and reveals its name, so the collection is read one piece at a time.
@@ -20,21 +18,20 @@ gsap.registerPlugin(ScrollTrigger);
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
-const IndoWesternCarousel = () => {
+const GildedSixCarousel = () => {
   const rootRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const { data: shopifyProducts = [] } = useQuery({
-    queryKey: ["shopify-products", "flore-edit"],
-    queryFn: () => fetchShopifyProducts(12),
-    staleTime: 1000 * 60 * 5,
-  });
+  const bestsellers = ["the-vow", "the-halo", "the-solitaire-drop", "the-ripple-hoop", "the-sugar-tennis", "the-rosewater-line"];
 
-  const pieces = useMemo(() => {
-    const pool = shopifyProducts.map(productFromShopify);
-    return [...pool].sort(() => Math.random() - 0.5).slice(0, 6);
-  }, [shopifyProducts]);
+  const pieces = useMemo(
+    () =>
+      bestsellers
+        .map((handle) => jewellery.find((j) => j.handle === handle))
+        .filter((j): j is (typeof jewellery)[number] => Boolean(j)),
+    []
+  );
 
   useGSAP(
     () => {
@@ -129,7 +126,7 @@ const IndoWesternCarousel = () => {
   if (pieces.length === 0) return null;
 
   return (
-    <section ref={rootRef} aria-label="The Flore Edit" style={{ backgroundColor: "#14211F" }}>
+    <section ref={rootRef} aria-label="The Gilded Six" style={{ backgroundColor: "#14211F" }}>
       <div
         ref={pinRef}
         className="relative overflow-hidden"
@@ -159,7 +156,7 @@ const IndoWesternCarousel = () => {
         {/* Heading */}
         <div className="absolute left-0 top-0 z-30 px-5 pt-[120px] md:px-14 md:pt-[140px]">
           <p className="text-[9px] uppercase tracking-[0.34em]" style={{ ...jost, color: "#AEBDB6" }}>
-            Indo-Western
+            Jewellery Bestsellers
           </p>
           <h2
             className="mt-3 leading-[0.92] uppercase"
@@ -171,9 +168,9 @@ const IndoWesternCarousel = () => {
               fontSize: "clamp(38px, 9vw, 96px)",
             }}
           >
-            The Flore
+            The Gilded
             <br />
-            Edit{" "}
+            Six{" "}
             <span className="align-super text-[0.34em]" style={{ ...jost, color: "#E5B9A4" }}>
               ({pieces.length})
             </span>
@@ -189,7 +186,7 @@ const IndoWesternCarousel = () => {
           {pieces.map((p) => (
             <Link
               key={p.handle}
-              to={`/product/${p.handle}`}
+              to={`/jewellery/${p.handle}`}
               data-card
               className="block will-change-transform"
               style={{
@@ -201,7 +198,7 @@ const IndoWesternCarousel = () => {
               <div className="relative overflow-hidden" style={{ aspectRatio: "3/4", backgroundColor: "#201D1A" }}>
                 <img
                   src={p.image}
-                  alt={`${p.name}, Indo-Western piece by Naira Flore`}
+                  alt={`${p.name}, demi-fine jewellery by Naira Flore`}
                   loading="lazy"
                   decoding="async"
                   className="h-full w-full object-cover"
@@ -216,7 +213,7 @@ const IndoWesternCarousel = () => {
                   {p.name}
                 </p>
                 <p className="mt-1 text-[9px] uppercase tracking-[0.24em]" style={{ ...jost, color: "#AEBDB6" }}>
-                  {p.category} · {p.price}
+                  {p.category} · {p.priceLabel}
                 </p>
               </div>
             </Link>
@@ -238,4 +235,4 @@ const IndoWesternCarousel = () => {
   );
 };
 
-export default IndoWesternCarousel;
+export default GildedSixCarousel;

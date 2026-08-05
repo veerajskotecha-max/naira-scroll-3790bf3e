@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
+import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
 import ringFront from "@/assets/jewellery/ring-cut-front.webp";
 import ring34 from "@/assets/jewellery/ring-cut-34.webp";
@@ -123,6 +124,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true }: { idAttr?: string; showView
           ref={pinRef}
           className="relative flex flex-col items-center justify-center px-4 pb-6 pt-[124px] md:h-[100svh] md:min-h-[560px] md:px-6 md:pb-10 md:pt-[120px]"
         >
+          {/* atelier backdrop — paper wash, 3D drift, touch blooms */}
+          <RingAtelierBackdrop />
           {/* quiet wash */}
           <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_46%_at_50%_42%,rgba(255,224,205,0.45)_0%,transparent_66%)]" />
 

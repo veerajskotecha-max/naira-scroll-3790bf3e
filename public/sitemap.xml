@@ -266,6 +266,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/the-ripple-hoop</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/the-rosewater-line</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/the-solitaire-drop</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/journal</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

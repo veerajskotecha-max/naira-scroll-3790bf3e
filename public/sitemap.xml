@@ -231,7 +231,17 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/the-studs</loc>
+    <loc>https://nairaflore.com/jewellery/the-pearl-stud</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/the-halo-stud</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/the-bow-stud</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

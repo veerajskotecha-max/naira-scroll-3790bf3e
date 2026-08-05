@@ -13,6 +13,8 @@ import FounderStoryTeaser from "@/components/FounderStoryTeaser";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
 import IndoWesternCarousel from "@/components/IndoWesternCarousel";
+import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
+
 
 const Index = () => {
   const revealRef = useRef<HTMLDivElement>(null);

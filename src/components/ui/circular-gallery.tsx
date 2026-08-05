@@ -89,7 +89,7 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
       Math.max(120, Math.min(isPhone ? vw * 0.34 : vw * 0.16, 220)),
     );
     const cardH = Math.round(cardW * (4 / 3));
-    const textBlock = isPhone ? 46 : 54;
+    const textBlock = isPhone ? 58 : 64;
     // Radius derived from the circumference the cards need, so they never
     // overlap regardless of how many items are passed in.
     const autoRadius = Math.round((items.length * cardW * 1.12) / (2 * Math.PI));

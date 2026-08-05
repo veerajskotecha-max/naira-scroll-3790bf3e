@@ -64,8 +64,10 @@ const IndoWesternCarousel = () => {
 
         const place = (progress: number) => {
           const vw = window.innerWidth;
-          const travel = step * (cards.length - 1) + vw * 0.9;
-          const head = vw * 1.05 - travel * progress;
+          const start = vw * 1.05;
+          // end with the final piece resting in the focus zone
+          const travel = start - focus + step * (cards.length - 1);
+          const head = start - travel * progress;
 
           cards.forEach((card, i) => {
             const x = head + i * step;

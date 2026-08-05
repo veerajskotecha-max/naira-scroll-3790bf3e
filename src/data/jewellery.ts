@@ -19,6 +19,16 @@ import theKnotLariat from "@/assets/jewellery/gilded/the-knot-lariat.jpg.asset.j
 import theRondelle from "@/assets/jewellery/gilded/the-rondelle.jpg.asset.json";
 import theAnchorChain from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
 import theCascade from "@/assets/jewellery/gilded/the-cascade.jpg.asset.json";
+import solitaireDrop from "@/assets/jewellery/gilded/the-solitaire-drop.png.asset.json";
+import solitaireDrop2 from "@/assets/jewellery/gilded/the-solitaire-drop-2.png.asset.json";
+import solitaireDrop3 from "@/assets/jewellery/gilded/the-solitaire-drop-3.png.asset.json";
+import solitaireDrop4 from "@/assets/jewellery/gilded/the-solitaire-drop-4.png.asset.json";
+import rippleHoop from "@/assets/jewellery/gilded/the-ripple-hoop.png.asset.json";
+import rippleHoop2 from "@/assets/jewellery/gilded/the-ripple-hoop-2.png.asset.json";
+import rippleHoop3 from "@/assets/jewellery/gilded/the-ripple-hoop-3.png.asset.json";
+import rippleHoop4 from "@/assets/jewellery/gilded/the-ripple-hoop-4.png.asset.json";
+import rosewaterLine from "@/assets/jewellery/gilded/the-rosewater-line.png.asset.json";
+import rosewaterLine2 from "@/assets/jewellery/gilded/the-rosewater-line-2.png.asset.json";
 import theVineUgc from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
 
 /* ───────────────────────────────────────────────────────────────
@@ -38,6 +48,7 @@ export interface JewelPiece {
   handle: string;
   name: string;
   category: JewelCategory;
+  sku: string;             // atelier stock code
   number: string;           // "01"–"17" — engraved edition number
   price: number;            // INR — internal record only; not displayed during pre-order
   priceLabel: string;       // displayed status/label (currently PREORDER_LABEL)
@@ -61,6 +72,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-vow",
     name: "The Vow",
     category: "Rings",
+    sku: "NF-GH-R01-VXX",
     number: "01",
     price: 4500,
     priceLabel: PREORDER_LABEL,
@@ -74,6 +86,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-halo",
     name: "The Halo",
     category: "Rings",
+    sku: "NF-GH-R02-HXX",
     number: "02",
     price: 4800,
     priceLabel: PREORDER_LABEL,
@@ -86,6 +99,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-whirl",
     name: "The Whirl",
     category: "Rings",
+    sku: "NF-GH-R03-WXX",
     number: "03",
     price: 4600,
     priceLabel: PREORDER_LABEL,
@@ -98,6 +112,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-vine",
     name: "The Vine",
     category: "Rings",
+    sku: "NF-GH-R04-VXX",
     number: "04",
     price: 5200,
     priceLabel: PREORDER_LABEL,
@@ -111,6 +126,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-dew-ring",
     name: "The Dew Ring",
     category: "Rings",
+    sku: "NF-GH-R05-DRX",
     number: "05",
     price: 3900,
     priceLabel: PREORDER_LABEL,
@@ -123,6 +139,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-toi-et-moi",
     name: "The Toi et Moi",
     category: "Rings",
+    sku: "NF-GH-R06-TEM",
     number: "06",
     price: 5400,
     priceLabel: PREORDER_LABEL,
@@ -136,6 +153,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-chevron-stack",
     name: "The Chevron Stack",
     category: "Rings",
+    sku: "NF-GH-R07-CSX",
     number: "07",
     price: 4200,
     priceLabel: PREORDER_LABEL,
@@ -150,6 +168,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-sugar-tennis",
     name: "The Sugar Tennis",
     category: "Bracelets",
+    sku: "NF-GH-B08-STX",
     number: "08",
     price: 8900,
     priceLabel: PREORDER_LABEL,
@@ -163,6 +182,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-bow",
     name: "The Bow",
     category: "Bracelets",
+    sku: "NF-GH-B09-BXX",
     number: "09",
     price: 4600,
     priceLabel: PREORDER_LABEL,
@@ -175,6 +195,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-tideline",
     name: "The Tideline",
     category: "Bracelets",
+    sku: "NF-GH-B10-TXX",
     number: "10",
     price: 6800,
     priceLabel: PREORDER_LABEL,
@@ -188,6 +209,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-keepsake",
     name: "The Keepsake",
     category: "Bracelets",
+    sku: "NF-GH-B11-KXX",
     number: "11",
     price: 4200,
     priceLabel: PREORDER_LABEL,
@@ -202,6 +224,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-braided-hoop",
     name: "The Braided Hoop",
     category: "Earrings",
+    sku: "NF-GH-E12-BHX",
     number: "12",
     price: 5200,
     priceLabel: PREORDER_LABEL,
@@ -214,6 +237,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-pearl-stud",
     name: "The Pearl Stud",
     category: "Earrings",
+    sku: "NF-GH-E13-PSX",
     number: "13",
     price: 3400,
     priceLabel: PREORDER_LABEL,
@@ -226,6 +250,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-halo-stud",
     name: "The Halo Stud",
     category: "Earrings",
+    sku: "NF-GH-E14-HSX",
     number: "14",
     price: 3400,
     priceLabel: PREORDER_LABEL,
@@ -238,6 +263,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-bow-stud",
     name: "The Bow Stud",
     category: "Earrings",
+    sku: "NF-GH-E15-BSX",
     number: "15",
     price: 3400,
     priceLabel: PREORDER_LABEL,
@@ -253,6 +279,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-knot-lariat",
     name: "The Knot Lariat",
     category: "Necklaces",
+    sku: "NF-GH-N16-KLX",
     number: "16",
     price: 7200,
     priceLabel: PREORDER_LABEL,
@@ -265,6 +292,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-rondelle",
     name: "The Rondelle",
     category: "Necklaces",
+    sku: "NF-GH-N17-RXX",
     number: "17",
     price: 6400,
     priceLabel: PREORDER_LABEL,
@@ -277,6 +305,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-anchor-chain",
     name: "The Anchor Chain",
     category: "Necklaces",
+    sku: "NF-GH-N18-ACX",
     number: "18",
     price: 7800,
     priceLabel: PREORDER_LABEL,
@@ -290,6 +319,7 @@ export const jewellery: JewelPiece[] = [
     handle: "the-cascade",
     name: "The Cascade",
     category: "Necklaces",
+    sku: "NF-GH-N19-CXX",
     number: "19",
     price: 8600,
     priceLabel: PREORDER_LABEL,
@@ -297,5 +327,48 @@ export const jewellery: JewelPiece[] = [
     gallery: [theCascade.url],
     blurb: "A marquise held high, then three more falling in a line.",
     materials: "18k gold coating · marquise zirconia · four-stone drop",
+  },
+
+  {
+    handle: "the-ripple-hoop",
+    name: "The Ripple Hoop",
+    category: "Earrings",
+    sku: "NF-GH-E20-RPL",
+    number: "20",
+    price: 4400,
+    priceLabel: PREORDER_LABEL,
+    image: rippleHoop.url,
+    gallery: [rippleHoop.url, rippleHoop2.url, rippleHoop3.url, rippleHoop4.url],
+    blurb: "A hoop caught mid wave. Molten gold curves that catch light from every turn, light enough for all day.",
+    materials: "18k gold coating · wave-form hoop · hinged snap closure · 20mm",
+    tag: "NEW",
+  },
+  {
+    handle: "the-rosewater-line",
+    name: "The Rosewater Line",
+    category: "Bracelets",
+    sku: "NF-GH-B21-RSW",
+    number: "21",
+    price: 7400,
+    priceLabel: PREORDER_LABEL,
+    image: rosewaterLine.url,
+    gallery: [rosewaterLine.url, rosewaterLine2.url],
+    blurb: "Rose zirconia in graduated bezels, running large to small along the wrist like water in soft light.",
+    materials: "18k gold coating · rose zirconia · bezel set · lobster clasp with 5cm extender",
+    tag: "NEW",
+  },
+  {
+    handle: "the-solitaire-drop",
+    name: "The Solitaire Drop",
+    category: "Necklaces",
+    sku: "NF-GH-N22-SLD",
+    number: "22",
+    price: 5600,
+    priceLabel: PREORDER_LABEL,
+    image: solitaireDrop.url,
+    gallery: [solitaireDrop.url, solitaireDrop2.url, solitaireDrop3.url, solitaireDrop4.url],
+    blurb: "One cushion-cut stone on a fine snake chain. The quietest thing in the collection, and the one worn most.",
+    materials: "Rhodium coating · cushion-cut zirconia · 4-prong bail · snake chain with extender",
+    tag: "NEW",
   },
 ];

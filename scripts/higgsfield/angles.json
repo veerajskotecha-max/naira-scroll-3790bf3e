@@ -1,5 +1,5 @@
 {
-  "_comment": "One 12-angle contact grid per SKU. Each is a single Nano Banana Pro generation at 1:1 / 4k — 4 credits — holding a 3x4 grid of twelve camera angles of the same piece on the cream plaster e-com set. Native 4096x4096, so each tile lands near 1365x1024 and stands on its own as a PDP still. Split them with `python3 scripts/higgsfield/split_angles.py --all`.",
+  "_comment": "One 12-angle contact grid per SKU. Each is a single Nano Banana Pro generation at 1:1 / 4k \u2014 4 credits \u2014 holding a 3x4 grid of twelve camera angles of the same piece on the cream plaster e-com set. Native 4096x4096, so each tile lands near 1365x1024 and stands on its own as a PDP still. Split them with `python3 scripts/higgsfield/split_angles.py --all`.",
   "_angles": "Rings and stacks: front, 3/4 left, 3/4 right, profile, rear 3/4, overhead, low hero, high 3/4, tilted, standing, macro stone, macro band. Bracelets: flat overhead, relaxed curve, coiled, draped over the edge, low hero, clasp macro, end-on, stone macro, standing curve, high 3/4, half-on-half-off, link macro. Earrings: pair front, pair 3/4, single front, single profile, single rear, pair overhead, low hero, high 3/4, leaning, face macro, closure macro, tilted pair. Necklaces: open loop overhead, loop 3/4, pendant macro, pendant profile, chain macro, clasp macro, draped, low hero, coiled, high 3/4, bail macro, full lay.",
   "the-vow": {
     "sku": "NF-GH-R01-VXX",
@@ -88,5 +88,10 @@
   "the-solitaire-drop": {
     "sku": "NF-GH-N22-SLD",
     "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_e0647d13-8ca4-463a-8edf-71e1584029d9.png"
+  },
+  "_shoot_variant": {
+    "note": "Second angle mode. Same 12-tile grid and the same locked product, but the surface and light vary tile to tile inside one house palette, so the set reads as an editorial shoot rather than a spec sheet. Surfaces drawn only from: cream plaster block, ivory silk drape, travertine, blush linen, handmade deckled paper, bare ivory sweep. Light varies across soft north window, hard afternoon sun, dappled leaf shade and low warm rake, with nothing repeating more than twice.",
+    "the-rosewater-line": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_140053_4140a6c8-2cbf-485f-8ea2-209182a78073.png",
+    "the-ripple-hoop": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_140053_9dc45995-f3db-450e-8ad2-6a02c23ecd9f.png"
   }
 }

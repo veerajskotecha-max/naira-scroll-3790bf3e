@@ -1,28 +1,38 @@
 {
-  "_comment": "Progress tracker for the 66 finalised supplier styles. Source photos live in Drive under 'supplier photos' (folder 1ABavj7cy3cp0GWCWP0oR_Pa_fCBTcYaF), shared with shopatnaira@gmail.com — the account the Drive connector authenticates as. Each SKU gets the same three frames as the Gilded Hour line: ecom on the cream plaster block, worn on its category's model plate, and a different-angle frame.",
+  "_comment": "Progress tracker for the 66 finalised supplier styles. Source photos live in Drive under 'supplier photos' (folder 1ABavj7cy3cp0GWCWP0oR_Pa_fCBTcYaF), shared with shopatnaira@gmail.com \u2014 the account the Drive connector authenticates as. Each SKU gets the same three frames as the Gilded Hour line: ecom on the cream plaster block, worn on its category's model plate, and a different-angle frame.",
   "_pipeline": "Drive files are access-restricted, so they cannot be fetched by URL. Route: Google_Drive download_file_content (base64 lands on disk, never in context) -> base64 decode -> higgsfield media_upload for presigned URLs -> curl PUT the bytes -> use the returned media_id as IMAGE 1.",
   "_source_photo_note": "Supplier photos come in three kinds and the prompt must handle each: spec sheets with printed measurements and callout arrows (strip all text and annotation, keep only the object), on-model shots (discard the model, skin and background entirely, keep only the jewellery), and plain packshots. Printed dimensions on the spec sheets are the authoritative size for that SKU.",
-
   "folders": {
-    "yiss_fera": { "drive_id": "1MY_deqihABGGCn0MgSl2EJ25b_GS9Vvz", "layout": "flat, one file per SKU", "skus_found": 19, "photos": 21 },
-    "yiwu_jd": { "drive_id": "1kJVtaMGrTlDl2qZ-F2KhKaaLKRoQwrbU", "layout": "one folder per SKU, numbered photos inside", "skus_found": 16 },
-    "kavnar": { "drive_id": "1QmbsJMz8DtSWLbLbsRA0im87_JE9Un5d", "layout": "one folder per SKU", "skus_found": 27 }
+    "yiss_fera": {
+      "drive_id": "1MY_deqihABGGCn0MgSl2EJ25b_GS9Vvz",
+      "layout": "flat, one file per SKU",
+      "skus_found": 19,
+      "photos": 21
+    },
+    "yiwu_jd": {
+      "drive_id": "1kJVtaMGrTlDl2qZ-F2KhKaaLKRoQwrbU",
+      "layout": "one folder per SKU, numbered photos inside",
+      "skus_found": 16
+    },
+    "kavnar": {
+      "drive_id": "1QmbsJMz8DtSWLbLbsRA0im87_JE9Un5d",
+      "layout": "one folder per SKU",
+      "skus_found": 27
+    }
   },
-
   "sizing_from_supplier_spec_sheets": {
-    "_note": "Read directly off the printed dimensions in the supplier photos — the per-SKU sizing that was missing from the finalised book.",
-    "YF5143": "chain 4mm · toggle 15mm · length 50cm/19.7in · 12g · 18K PVD gold plated stainless",
-    "YF5146": "chain 2.5mm · charm 10mm · length 50cm/19.6in · 12.3g · PVD gold plated stainless",
-    "YF6403": "pendant 15mm · length 42cm + 5cm extender (16.5in + 1.96in) · 4g · 18K PVD gold plated",
-    "YF6671": "cuff 6cm x 5.5cm · pearl 1.8 x 0.7cm · zircon 1.7cm · bezel 0.25cm · 5.9g · PVD 18K gold",
-    "YF8439": "length 40cm + 5cm extender (15.75in + 2in) · 10g · 18K PVD gold plated stainless"
+    "_note": "Read directly off the printed dimensions in the supplier photos \u2014 the per-SKU sizing that was missing from the finalised book.",
+    "YF5143": "chain 4mm \u00b7 toggle 15mm \u00b7 length 50cm/19.7in \u00b7 12g \u00b7 18K PVD gold plated stainless",
+    "YF5146": "chain 2.5mm \u00b7 charm 10mm \u00b7 length 50cm/19.6in \u00b7 12.3g \u00b7 PVD gold plated stainless",
+    "YF6403": "pendant 15mm \u00b7 length 42cm + 5cm extender (16.5in + 1.96in) \u00b7 4g \u00b7 18K PVD gold plated",
+    "YF6671": "cuff 6cm x 5.5cm \u00b7 pearl 1.8 x 0.7cm \u00b7 zircon 1.7cm \u00b7 bezel 0.25cm \u00b7 5.9g \u00b7 PVD 18K gold",
+    "YF8439": "length 40cm + 5cm extender (15.75in + 2in) \u00b7 10g \u00b7 18K PVD gold plated stainless"
   },
-
   "done": {
     "YF5143": {
       "name": "Non-Tarnish Round Push Clasp Necklace",
       "category": "Necklaces",
-      "size": "50cm · 4mm chain · 15mm toggle",
+      "size": "50cm \u00b7 4mm chain \u00b7 15mm toggle",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_1a9792d2-5e7d-4e1e-a4b4-8af3897fa5e5.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_1e509121-b7b3-4e7b-b7c8-601c44449f56.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_6b7092bb-a1ca-488e-a7ae-b7e55b24859a.png"
@@ -30,7 +40,7 @@
     "YF8453": {
       "name": "Irregular Hoop Glass Zircon Ring",
       "category": "Rings",
-      "size": "US-7 band · two faceted stones, amber and champagne",
+      "size": "US-7 band \u00b7 two faceted stones, amber and champagne",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_1c612b14-defe-49c1-9c1f-634db6e78f71.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_f1124dc3-ff80-4ccf-80cd-d6d1e7ed88f4.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_6f2fd72f-f55a-4942-9742-01d9c99145ba.png"
@@ -38,7 +48,7 @@
     "YF5215": {
       "name": "OT Clasp Pearlescent Heart Pendant Beaded Bracelet",
       "category": "Bracelets",
-      "size": "20cm strand · 8mm beads · one gold heart",
+      "size": "20cm strand \u00b7 8mm beads \u00b7 one gold heart",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142920_aa28896e-99be-4614-9972-32c26f7ed161.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142006_20f3260f-349a-4909-8c85-3d494d6998a5.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_9ad93245-5eb4-493f-822f-da30042153d8.png"
@@ -46,34 +56,109 @@
     "YF8333": {
       "name": "Heart Pendant Pearl Stud Earrings",
       "category": "Earrings",
-      "size": "~20mm drop · 8mm pearl above a 10mm gold sphere",
+      "size": "~20mm drop \u00b7 8mm pearl above a 10mm gold sphere",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_2c824b74-f1b2-4085-a8d5-06148411aff7.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_ecc1c7b9-c145-44ac-a5ed-489851d5adf6.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142920_5c91ff95-b762-4c15-87e0-8dbc0f04f9a5.png"
+    },
+    "YF3925": {
+      "name": "OT Buckle Chain Baroque Pearl Bracelet",
+      "category": "Bracelets",
+      "size": "20cm strand \u00b7 baroque pearls 10-13mm",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_144705_ff2081e4-cb12-4e25-a1f7-c91e21b5150c.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_827c28f0-1803-4b36-ba46-83932b875bee.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_7e802db5-886e-444f-a16e-99967c5e7cdc.png"
+    },
+    "YF3952": {
+      "name": "Paper Clip Chain Heart Zircon Necklace",
+      "category": "Necklaces",
+      "size": "42cm at the collarbone \u00b7 5mm heart stations",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_5e670d00-1ef8-4a37-9588-5c004857b4b0.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_c3940697-a48c-449e-9c5c-de99e8e18d57.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145021_d74882d3-7315-4190-9a54-066208411226.png"
+    },
+    "YF5144-necklace": {
+      "name": "Statement Thick Caper Chain Necklace",
+      "category": "Necklaces",
+      "size": "45cm \u00b7 links ~20mm \u00b7 one pave link",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_926ee28a-2f76-4417-8fc4-010aea2398d5.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_144705_ae8e5e18-370b-4720-9015-a88e5a4fd6b5.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_9d091a6d-a605-48e8-9ef7-7c595f3d9eb2.png"
+    },
+    "YF5144-bracelet": {
+      "name": "Statement Thick Caper Chain Bracelet",
+      "category": "Bracelets",
+      "size": "20.5cm \u00b7 links ~20mm \u00b7 one pave link",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_9c16c4f6-2c98-421a-a19e-1cec35961ab9.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_1a2b9479-1ed5-4895-a70d-751660ccca10.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_de60ea68-619d-48b6-bbac-c492514dd7cd.png"
     }
   },
-
   "pending": {
     "yiss_fera_uploaded_ready_to_shoot": [
-      "YF3925", "YF3952", "YF5144-necklace", "YF5144-bracelet", "YF5146", "YF5214",
-      "YF5244", "YF6403", "YF6667", "YF6671-style1", "YF7085", "YF8147", "YF8156",
-      "YF8396", "YF8439", "YF8457"
+      "YF5146",
+      "YF5214",
+      "YF5244",
+      "YF6403",
+      "YF6667",
+      "YF6671-style1",
+      "YF7085",
+      "YF8147",
+      "YF8156",
+      "YF8396",
+      "YF8439",
+      "YF8457"
     ],
     "yiwu_jd_photos_not_yet_pulled": [
-      "JDB0104010", "JDBW2410021", "JDB2409013", "JDB201210-GN", "JDB201210", "JDB201083",
-      "JDR0104342-PS", "JDR0104342", "JDR0104337", "JDR0104337-S", "JDR0104333",
-      "JDS0204301-set", "JDB0103317-PK", "JDR0303312-7", "JDE0201327", "JDE0110042"
+      "JDB0104010",
+      "JDBW2410021",
+      "JDB2409013",
+      "JDB201210-GN",
+      "JDB201210",
+      "JDB201083",
+      "JDR0104342-PS",
+      "JDR0104342",
+      "JDR0104337",
+      "JDR0104337-S",
+      "JDR0104333",
+      "JDS0204301-set",
+      "JDB0103317-PK",
+      "JDR0303312-7",
+      "JDE0201327",
+      "JDE0110042"
     ],
     "kavnar_photos_not_yet_pulled": [
-      "B00681C", "E11857B", "E14066B", "E14776S", "E16075B", "E16355C", "E16676C",
-      "E19263B", "E19269B", "E20267O", "E20997C", "E21572E1", "FE02847B", "FE03586B",
-      "FR03136B", "R15464K", "R18345A1", "WE14387B", "WE24089B", "WR10170K7",
-      "WR10914B2", "WR12518B", "WR19333K8", "WR20902K8", "WR22648B7", "WR23024K", "WR23569K8"
+      "B00681C",
+      "E11857B",
+      "E14066B",
+      "E14776S",
+      "E16075B",
+      "E16355C",
+      "E16676C",
+      "E19263B",
+      "E19269B",
+      "E20267O",
+      "E20997C",
+      "E21572E1",
+      "FE02847B",
+      "FE03586B",
+      "FR03136B",
+      "R15464K",
+      "R18345A1",
+      "WE14387B",
+      "WE24089B",
+      "WR10170K7",
+      "WR10914B2",
+      "WR12518B",
+      "WR19333K8",
+      "WR20902K8",
+      "WR22648B7",
+      "WR23024K",
+      "WR23569K8"
     ]
   },
-
   "yiss_fera_media_ids": {
-    "_note": "Already uploaded to Higgsfield — these 20 need no re-fetch from Drive.",
+    "_note": "Already uploaded to Higgsfield \u2014 these 20 need no re-fetch from Drive.",
     "YF3925": "7b27a0f1-e272-4288-b303-5817032174c3",
     "YF3952": "f095b79a-ba7c-44ab-8676-83dfa5a64e4d",
     "YF5143": "81c85571-c1ca-48c1-be4a-3f0b7e491c04",
@@ -94,5 +179,6 @@
     "YF8439": "3116e3b3-f409-41db-9ef6-cfa719cf3305",
     "YF8453": "412a6637-9262-4485-b50b-574e1ad72fa8",
     "YF8457": "ca6367ed-8478-4a66-8a6f-09ca6cd4c7dc"
-  }
+  },
+  "_status": "8 of 62 supplier SKUs shot (all Yiss Fera). 12 Yiss Fera remain and need no further Drive access \u2014 their photos are already uploaded. Yiwu J&D and KAVNAR photos still to pull."
 }

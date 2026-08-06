@@ -136,13 +136,14 @@
       "catalogue_name": "Dewdrop Bezel Necklace"
     },
     "YF7085": {
-      "name": "Zircon Tennis Necklace and Bracelet Set",
-      "category": "Necklaces",
-      "size": "necklace 40cm - bracelet 18cm - 3mm zircons - 12mm buckle station",
-      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_cff93809-7ca0-4f4a-a11a-41117b6841a2.png",
-      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_4c595525-1ac6-49b2-97a8-7b4588294e6f.png",
+      "name": "Zircon Tennis Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 3mm square-cut zircons in four-claw gold settings - 12mm flat buckle station",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_174346_fe0ec60d-659c-4f80-8591-e3188c27cf69.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_174346_52178ace-c12f-44d6-a3a8-20c3f15c12f8.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_385b24be-2e21-4879-a1ed-ed51e44a8d30.png",
-      "catalogue_name": "Rivière Eternal Bracelet"
+      "catalogue_name": "Rivière Eternal Bracelet",
+      "accuracy_correction": "the supplier photo shows a matching necklace and bracelet worn together, and the catalogue lists them as two SKUs. The set frames were split: this row now shows the bracelet alone."
     },
     "YF6667": {
       "name": "Oval Link Pearl Station Bracelet",
@@ -607,6 +608,16 @@
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_173146_7f71d9d0-a60c-4790-9f4f-ffdc256b347b.png",
       "catalogue_name": "Vintage Halo Ring",
       "accuracy_correction": "first angle rendered the single oval centre stone as two stacked stones; re-shot in profile with the stone count stated explicitly"
+    },
+    "YF7085-NEC": {
+      "name": "Zircon Tennis Necklace",
+      "category": "Necklaces",
+      "size": "40cm - 3mm square-cut zircons in four-claw gold settings - 12mm flat buckle station at the front",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_174346_d8169a2b-b114-4d30-bb56-c984752aa1d7.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_4c595525-1ac6-49b2-97a8-7b4588294e6f.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_174346_6e1004be-98e7-4bd3-9ddd-e658cfde1f47.png",
+      "catalogue_name": "Rivière Eternal Necklace",
+      "accuracy_correction": "split out of the YF7085 set shot; the worn frame is the original neck frame, which already showed the necklace alone."
     }
   },
   "pending": {
@@ -801,8 +812,7 @@
       "YF5144-necklace": "YF5144",
       "YF5144-bracelet": "YF5144-BRA",
       "YF6671-style1": "YF6671",
-      "YF3925": "YF3925-NEC",
-      "YF7085": "YF7085-NEC"
+      "YF3925": "YF3925-NEC"
     },
     "_no_catalogue_row": [
       "E11857B",
@@ -811,13 +821,13 @@
     "_naming_queries": {
       "E14066B": "catalogue calls it 'Noir Huggie', but the Drive photo is a pave letter-D stud with a swagged curb chain, not a huggie hoop - worth confirming the row",
       "YF8147": "catalogue calls it 'Clover Fringe Earrings', but the Drive photo is a filigree flower stud with a pearl centre - worth confirming the row",
-      "YF7085": "catalogue splits this into YF7085 'Rivière Eternal Bracelet' and YF7085-NEC 'Rivière Eternal Necklace'. It was shot as one set; splitting it into two catalogue SKUs needs one more frame set",
-      "YF3925": "catalogue splits this into YF3925 (bracelet) and YF3925-NEC 'Pearl Legacy Necklace'. Only the bracelet has been shot"
+      "YF3925": "catalogue splits this into YF3925 'Pearl Legacy Bracelet' and YF3925-NEC 'Pearl Legacy Necklace'. The only photo in the Drive is the bracelet - searched by SKU and by title and there is no necklace image. YF3925-NEC needs a packshot before it can be shot."
     },
     "_unshootable": {
       "YF-DIYChain": "Petite Pearl Chain",
       "YF-PeachHoop": "Peach Heart Hoops",
-      "YF6618": "Clover Charm"
+      "YF6618": "Clover Charm",
+      "YF3925-NEC": "Pearl Legacy Necklace"
     },
     "_unshootable_note": "These three catalogue rows have no supplier photo anywhere in the shared Drive - searched by SKU and by title across every shared folder. Nothing to shoot from until a packshot is added."
   }

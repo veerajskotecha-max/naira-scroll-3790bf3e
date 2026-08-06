@@ -395,6 +395,30 @@
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_c0ca0390-7a0a-41b9-850e-80086ed38649.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_c078e5e3-90e6-4772-8d5b-57c0c149b441.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_e0e6546b-f415-49dc-8a74-99f386951aaf.png"
+    },
+    "E20267O": {
+      "name": "Braided Chunky Hoops",
+      "category": "Earrings",
+      "size": "hoop ~25mm across - thick braided gold rope with a flat tab at the hinge",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_23de4ea2-32ff-4350-9e60-ac94c790588f.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_f3b062e0-13d9-447a-ae50-1ba1646a5b3a.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_1e7fe5cf-a02d-4f85-96f6-9ec2e17dec4f.png"
+    },
+    "E21572E1": {
+      "name": "Green Cushion Drop Earrings",
+      "category": "Earrings",
+      "size": "drop ~25mm - 9mm cushion-cut blue-green stone in four claws on a silver 925 ear wire",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_b6dae19f-f706-40b8-bc14-7ad6f739a703.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_51b9afdb-2ebb-461e-8b41-ff069b8a572f.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_7c4fa657-48f8-4e3a-b880-65d256408d0d.png"
+    },
+    "FE02847B": {
+      "name": "Green Stone Circlet Pearl Studs",
+      "category": "Earrings",
+      "size": "stud ~20mm tall - 10mm cushion emerald-green stone, zircon circlet, 6mm white pearl",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162357_b3f35c85-db85-47e3-93ca-197a6ea10447.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162357_72db58e7-61d9-47d4-a078-177ee498a8df.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162357_7596329e-13b5-4726-b694-aa0437ddbe00.png"
     }
   },
   "pending": {
@@ -454,9 +478,17 @@
     "YF8453": "412a6637-9262-4485-b50b-574e1ad72fa8",
     "YF8457": "ca6367ed-8478-4a66-8a6f-09ca6cd4c7dc"
   },
-  "_status": "45 supplier SKUs delivered at three frames each. Yiss Fera 20/20. Yiwu J&D 16/16. KAVNAR 9/27, all 27 photos pulled, 13 uploaded to Higgsfield.",
+  "_status": "48 supplier SKUs delivered at three frames each. Yiss Fera 20/20, Yiwu J&D 16/16, KAVNAR 12/27.",
   "in_progress": {
-    "_note": "Frames already delivered; the shot marked 'regenerating' is being re-run after a model-side failure."
+    "_note": "Frames already delivered; the shot marked 'regenerating' is being re-run after a model-side failure.",
+    "E20997C": {
+      "name": "Pave Bow Pearl Studs",
+      "category": "Earrings",
+      "size": "stud ~18mm tall - pave bow above a 9mm white pearl in an open pave circle",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_ac6122af-3a86-43a6-a06c-8b117e574ac3.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_162203_9ddd73c0-265d-4728-b01f-6cc7177a700f.png",
+      "angle": "in flight"
+    }
   },
   "yiwu_jd": {
     "_finding": "The supplier supplied ONE photo set for several different SKU codes. Verified by md5: the three photos in JDB201083, JDB201210 and JDB201210-GN are byte-identical to each other, as are those in JDB0104010 and JDBW2410021; file sizes match across JDR0104337/-S and JDR0104342/-PS. 16 codes, 11 distinct photo sets.",
@@ -509,7 +541,12 @@
       "E20267O": "3daf3f9c-5310-4ab7-9d39-06bc4e3b0863",
       "E20997C": "3b2bfdda-c77d-4019-8072-0e971d23d662",
       "E21572E1": "9d41e9f6-1ddf-4924-ac1f-831ef6b696b3",
-      "FE02847B": "ada1f264-a5b1-478f-8ec4-ff0bd69d6fa3"
+      "FE02847B": "ada1f264-a5b1-478f-8ec4-ff0bd69d6fa3",
+      "FE03586B": "adb12665-ae77-4511-b6b8-3690337c0300",
+      "FR03136B": "935ff861-1c22-49aa-a6bd-f3c787482e53",
+      "R15464K": "fe9097d7-288e-4d5e-b4a4-bef1efc0e9e2",
+      "WR20902K8": "fe9097d7-288e-4d5e-b4a4-bef1efc0e9e2",
+      "R18345A1": "a68194ac-0c8c-477e-87ec-3050f62383d9"
     },
     "products": {
       "B00681C": "pastel cushion-bezel tennis bracelet, silver tone",
@@ -539,6 +576,25 @@
       "WR22648B7": "gold band flush-set with scattered round zircons",
       "WR23024K": "silver open eternity ring with oval green stones in scalloped settings",
       "WR23569K8": "silver ring, oval zircon in a pave halo on a twisted shank"
+    }
+  },
+  "sizing_audit": {
+    "_method": "Every worn frame is checked against a body feature of known size: a finger is ~16mm across at the base, an adult earlobe ~18mm tall, and the collarbone sits at a known depth. On the plaster block a piece has no reference object, so scale drift is invisible there; on the body the skin is the ruler. That is why the audit runs on the worn frames.",
+    "_sizing_sources_in_order_of_authority": [
+      "printed dimensions on the supplier spec sheet (exact; available for 5 Yiss Fera SKUs)",
+      "the finalised SKU book",
+      "the size guide published on nairaflore.com (see sizing.md)",
+      "proportion read directly off the supplier packshot"
+    ],
+    "_alibaba": "The live listings could not be reached. Tried three independent routes - curl through the environment proxy, headless Chromium through the proxy, and a web-fetch service - and all three return a captcha or an empty page. Public search does not index the private wholesale codes (JDB2409013, E19263B and the rest). If a listing's spec panel is pasted in, the real numbers can replace the derived ones.",
+    "round_1_2026_08_06": {
+      "frames_checked": 20,
+      "passed": 18,
+      "failed_and_reshot": {
+        "JDR0104342": "the two bezel stones rendered well over the stated 10mm and overhung the finger; re-shot with the scale given as a ratio - a 10mm bezel against a 16mm finger",
+        "JDR0104342-PS": "same failure as its gold twin; re-shot the same way",
+        "E14066B": "the pave letter came out under its stated 18mm; re-shot anchored to 'the letter is as tall as the whole lobe'"
+      }
     }
   }
 }

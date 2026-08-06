@@ -1,5 +1,5 @@
 {
-  "_comment": "Generated frames per SKU. Three shots each, Nano Banana Pro 4:5 2K. `source_mismatch` flags SKUs whose packshot in src/data/jewellery.ts does not depict the product its name describes \u2014 the four earring SKUs are rotated by one. Frames were rendered faithful to each SKU's own photo, so they stay correct once the image-to-name mapping is fixed.",
+  "_comment": "Generated frames per SKU. Three shots each, Nano Banana Pro 4:5 2K. `source_mismatch` flags SKUs whose packshot in src/data/jewellery.ts does not depict the product its name describes \u2014 the four earring SKUs are rotated by one. `sizing_correction` flags frames re-shot after the sizing audit against NAIRA_JEWELLERY___Finalised_SKUs. See sizing.md.",
   "the-vow": {
     "sku": "NF-GH-R01-VXX",
     "name": "The Vow",
@@ -11,13 +11,14 @@
       },
       "worn": {
         "plate": "hand",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_6e005e7d-14fc-4825-b67c-90dd3fb8dcc8.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_131000_2c15c334-02b3-4325-a20f-3be4b850a8e6.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_0f59bf60-2433-40c2-a231-58fabcb88332.png"
       }
-    }
+    },
+    "sizing_correction": "worn reshot \u2014 stone was reading ~3ct; locked to 6mm stone on a size-7 band"
   },
   "the-halo": {
     "sku": "NF-GH-R02-HXX",
@@ -182,13 +183,14 @@
       },
       "worn": {
         "plate": "wrist",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_124559_c91482cc-4b2f-48cb-abff-84dc4505870c.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_131000_4da4dd9a-8180-412f-86d3-2b156269ae66.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_a301f9ef-25b7-4203-8989-621f196c3cb2.png"
       }
-    }
+    },
+    "sizing_correction": "worn reshot \u2014 baroque pearls were reading ~16mm; locked to 9-11mm on a 20cm strand"
   },
   "the-keepsake": {
     "sku": "NF-GH-B11-KXX",
@@ -260,14 +262,15 @@
       },
       "worn": {
         "plate": "ear",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_d0febef5-10e7-41ba-8e90-1031bf92ca6b.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_131000_96398097-2306-40e6-bb0d-5e7b12c7ae2b.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_6b70f6b3-d8b5-4ef0-89d2-24f1b7e146be.png"
       }
     },
-    "source_mismatch": "Packshot shows a PAVE BOW STUD in gold, not a halo. Frames follow the photo."
+    "source_mismatch": "Packshot shows a PAVE BOW STUD in gold, not a halo. Frames follow the photo.",
+    "sizing_correction": "worn reshot \u2014 crop had drifted off the shared ear plate"
   },
   "the-bow-stud": {
     "sku": "NF-GH-E15-BSX",
@@ -280,14 +283,15 @@
       },
       "worn": {
         "plate": "ear",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_93cd1243-d472-4339-91b9-24f6f850eee7.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_131000_98e15dd2-21fb-4f3c-8ad3-34336fb76dfe.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_e519c4e8-448b-4cf9-a3ee-d872ebe62a1a.png"
       }
     },
-    "source_mismatch": "Packshot shows a pair of BRAIDED GOLD HOOPS, not a bow stud. Frames follow the photo."
+    "source_mismatch": "Packshot shows a pair of BRAIDED GOLD HOOPS, not a bow stud. Frames follow the photo.",
+    "sizing_correction": "worn reshot \u2014 hoop was reading ~30mm; locked to a 20mm hoop"
   },
   "the-knot-lariat": {
     "sku": "NF-GH-N16-KLX",
@@ -338,13 +342,14 @@
       },
       "worn": {
         "plate": "neck",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_b8f4709e-c02f-409e-b430-1395926f2cd8.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_131000_85b060bb-1108-41a3-9906-8e981c31abfc.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_65a1826e-ef79-4ff0-9827-3495327b5463.png"
       }
-    }
+    },
+    "sizing_correction": "worn reshot \u2014 links were reading as a heavy curb chain; locked to 8mm links on a 43cm chain"
   },
   "the-cascade": {
     "sku": "NF-GH-N19-CXX",
@@ -357,13 +362,14 @@
       },
       "worn": {
         "plate": "neck",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_d4bd66e3-fa05-44fe-b87e-0b12f3f5e7ad.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_131000_b055dc81-9bec-484b-ac79-e8ba24bf7a61.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_ea9f09e2-0449-4118-bde5-ee4770271d60.png"
       }
-    }
+    },
+    "sizing_correction": "worn reshot \u2014 drop was reaching the sternum; locked to a 4cm drop on a 43cm chain"
   },
   "the-ripple-hoop": {
     "sku": "NF-GH-E20-RPL",

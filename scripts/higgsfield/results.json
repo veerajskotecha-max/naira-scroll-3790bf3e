@@ -1,0 +1,425 @@
+{
+  "_comment": "Generated frames per SKU. Three shots each, Nano Banana Pro 4:5 2K. `source_mismatch` flags SKUs whose packshot in src/data/jewellery.ts does not depict the product its name describes \u2014 the four earring SKUs are rotated by one. Frames were rendered faithful to each SKU's own photo, so they stay correct once the image-to-name mapping is fixed.",
+  "the-vow": {
+    "sku": "NF-GH-R01-VXX",
+    "name": "The Vow",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_e0cfd957-fcc2-4525-8360-22286b7b3af8.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_6e005e7d-14fc-4825-b67c-90dd3fb8dcc8.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_0f59bf60-2433-40c2-a231-58fabcb88332.png"
+      }
+    }
+  },
+  "the-halo": {
+    "sku": "NF-GH-R02-HXX",
+    "name": "The Halo",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_31a4882a-999c-476b-bc5f-dd0ddfc69f39.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_5736c5ff-b2c1-492e-a152-b921f58cbe44.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_842c32f5-66b6-404e-8491-87a0ecfc4135.png"
+      }
+    }
+  },
+  "the-whirl": {
+    "sku": "NF-GH-R03-WXX",
+    "name": "The Whirl",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_dd83b54f-7f8d-4e0d-bdc8-22d7aa809a37.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123120_2d1834de-4f12-4578-bb2a-983490b758fd.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_7f8a64c0-bd9f-45d4-9bbc-e4515c95644e.png"
+      }
+    }
+  },
+  "the-vine": {
+    "sku": "NF-GH-R04-VXX",
+    "name": "The Vine",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_5bf10bd2-da67-4688-ba1e-e7ebfacbd3d7.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_0a15f54b-a913-4d03-8424-b1e11f7a65f6.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_53a41991-5e24-4a3b-93cf-491d01f7a1f0.png"
+      }
+    }
+  },
+  "the-dew-ring": {
+    "sku": "NF-GH-R05-DRX",
+    "name": "The Dew Ring",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_c6a2dff0-877a-4885-851b-977d9148c946.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_c959fb1c-7bd3-4b21-9d57-5ba4858a8488.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123119_c82fce98-a49c-4d43-9abf-3ac07175c293.png"
+      }
+    }
+  },
+  "the-toi-et-moi": {
+    "sku": "NF-GH-R06-TEM",
+    "name": "The Toi et Moi",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_4c92f7f7-e3a3-411a-9e06-326418ffbcb7.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123353_e5b4fbdb-6ff4-4608-8988-b2825ffdd013.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_124507_755f0bf0-cf1d-4c6f-b7a1-bbdad2868f6e.png"
+      }
+    }
+  },
+  "the-chevron-stack": {
+    "sku": "NF-GH-R07-CSX",
+    "name": "The Chevron Stack",
+    "category": "Rings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123353_855c8122-371c-4280-a762-85bfb1e429fa.png"
+      },
+      "worn": {
+        "plate": "hand",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_446e80f6-eeb4-48da-a272-5078e07b694f.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123353_0a2d30b0-228f-426a-9ca7-74ee4563ee79.png"
+      }
+    }
+  },
+  "the-sugar-tennis": {
+    "sku": "NF-GH-B08-STX",
+    "name": "The Sugar Tennis",
+    "category": "Bracelets",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_fdaf291e-80a5-40ed-adc5-5d1529d086e1.png"
+      },
+      "worn": {
+        "plate": "wrist",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_30a0ae49-ac37-4c73-afdf-0d767f6895f6.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_c537c532-3527-4076-891e-9dbb538e1396.png"
+      }
+    }
+  },
+  "the-bow": {
+    "sku": "NF-GH-B09-BXX",
+    "name": "The Bow",
+    "category": "Bracelets",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_f0265b96-74a0-4674-bd0d-d3783a9ac0e2.png"
+      },
+      "worn": {
+        "plate": "wrist",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123353_8e7cd8c6-fb26-4eb3-a22f-f0105ef80463.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_b6e78e3d-acfc-4932-ad29-99046edef1ab.png"
+      }
+    }
+  },
+  "the-tideline": {
+    "sku": "NF-GH-B10-TXX",
+    "name": "The Tideline",
+    "category": "Bracelets",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123353_b662cd17-9503-4b28-9fb5-023763cb162c.png"
+      },
+      "worn": {
+        "plate": "wrist",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_124559_c91482cc-4b2f-48cb-abff-84dc4505870c.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_a301f9ef-25b7-4203-8989-621f196c3cb2.png"
+      }
+    }
+  },
+  "the-keepsake": {
+    "sku": "NF-GH-B11-KXX",
+    "name": "The Keepsake",
+    "category": "Bracelets",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123530_b2f42ea8-f122-45cf-a14b-6fa32b8e9045.png"
+      },
+      "worn": {
+        "plate": "wrist",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123530_6b6d5761-762a-4c5d-9ada-f366db2777ad.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123530_41f9ec32-abb5-49fa-b66f-2bfd3fcfb530.png"
+      }
+    }
+  },
+  "the-braided-hoop": {
+    "sku": "NF-GH-E12-BHX",
+    "name": "The Braided Hoop",
+    "category": "Earrings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_e1981388-8d8d-452b-bb92-06d0514ccc7e.png"
+      },
+      "worn": {
+        "plate": "ear",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_28c2f55a-d201-4c70-9284-7dc78b636d6d.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_f75c3ada-08ef-48d7-967b-03c641b8e9bc.png"
+      }
+    },
+    "source_mismatch": "Packshot shows a PEARL STUD in a braided gold rope surround, not a hoop. Frames follow the photo."
+  },
+  "the-pearl-stud": {
+    "sku": "NF-GH-E13-PSX",
+    "name": "The Pearl Stud",
+    "category": "Earrings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_4d607361-417f-4539-9984-84cf441976ae.png"
+      },
+      "worn": {
+        "plate": "ear",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_511f29a0-fcf8-4c0b-b27f-f1cd08442542.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_dab80f19-0cf3-4a9d-b8ec-3c04484fe054.png"
+      }
+    },
+    "source_mismatch": "Packshot shows a PAVE HALO STUD in white rhodium, not a pearl. Frames follow the photo."
+  },
+  "the-halo-stud": {
+    "sku": "NF-GH-E14-HSX",
+    "name": "The Halo Stud",
+    "category": "Earrings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_7bc5e276-a6d7-4770-9c5e-096848863f64.png"
+      },
+      "worn": {
+        "plate": "ear",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_d0febef5-10e7-41ba-8e90-1031bf92ca6b.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_6b70f6b3-d8b5-4ef0-89d2-24f1b7e146be.png"
+      }
+    },
+    "source_mismatch": "Packshot shows a PAVE BOW STUD in gold, not a halo. Frames follow the photo."
+  },
+  "the-bow-stud": {
+    "sku": "NF-GH-E15-BSX",
+    "name": "The Bow Stud",
+    "category": "Earrings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_8fdf0cba-3947-49af-814f-229cd35d0ec5.png"
+      },
+      "worn": {
+        "plate": "ear",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_93cd1243-d472-4339-91b9-24f6f850eee7.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_e519c4e8-448b-4cf9-a3ee-d872ebe62a1a.png"
+      }
+    },
+    "source_mismatch": "Packshot shows a pair of BRAIDED GOLD HOOPS, not a bow stud. Frames follow the photo."
+  },
+  "the-knot-lariat": {
+    "sku": "NF-GH-N16-KLX",
+    "name": "The Knot Lariat",
+    "category": "Necklaces",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_c49c3edf-8791-407c-ae2f-f5acd155590d.png"
+      },
+      "worn": {
+        "plate": "neck",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_978c9c24-f70e-40bf-87e4-b0be0af85bca.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_3d17c9d0-5e7e-47d0-aec2-8898f2c879df.png"
+      }
+    }
+  },
+  "the-rondelle": {
+    "sku": "NF-GH-N17-RXX",
+    "name": "The Rondelle",
+    "category": "Necklaces",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_371f55b7-2a2e-4969-9b77-912380da998a.png"
+      },
+      "worn": {
+        "plate": "neck",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_127cb57b-6292-4383-9dec-16007fee8fa4.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_bee02290-4cf4-4022-9a3c-91655f8e4165.png"
+      }
+    }
+  },
+  "the-anchor-chain": {
+    "sku": "NF-GH-N18-ACX",
+    "name": "The Anchor Chain",
+    "category": "Necklaces",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_699ce485-ebdf-4a91-b592-cf75064e7fe8.png"
+      },
+      "worn": {
+        "plate": "neck",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_b8f4709e-c02f-409e-b430-1395926f2cd8.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_65a1826e-ef79-4ff0-9827-3495327b5463.png"
+      }
+    }
+  },
+  "the-cascade": {
+    "sku": "NF-GH-N19-CXX",
+    "name": "The Cascade",
+    "category": "Necklaces",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_3734b173-3827-49fc-b986-6ade36fde3e9.png"
+      },
+      "worn": {
+        "plate": "neck",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_d4bd66e3-fa05-44fe-b87e-0b12f3f5e7ad.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_ea9f09e2-0449-4118-bde5-ee4770271d60.png"
+      }
+    }
+  },
+  "the-ripple-hoop": {
+    "sku": "NF-GH-E20-RPL",
+    "name": "The Ripple Hoop",
+    "category": "Earrings",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_5aa9813c-a532-4945-948e-5ba0a9acffa4.png"
+      },
+      "worn": {
+        "plate": "ear",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_bceb52ac-1178-487e-8081-676e39c8033d.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_3f47d698-3d77-428b-9463-76d3edbde0b7.png"
+      }
+    }
+  },
+  "the-rosewater-line": {
+    "sku": "NF-GH-B21-RSW",
+    "name": "The Rosewater Line",
+    "category": "Bracelets",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_a5232a24-196e-47e3-b5c1-b2cc20db2a17.png"
+      },
+      "worn": {
+        "plate": "wrist",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_2e5233bb-9685-4d8d-b99a-08c2f3b32f6c.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_829b9eab-54a3-4a0e-9aa0-41b1d8e99aa4.png"
+      }
+    }
+  },
+  "the-solitaire-drop": {
+    "sku": "NF-GH-N22-SLD",
+    "name": "The Solitaire Drop",
+    "category": "Necklaces",
+    "shots": {
+      "ecom": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_eb0578cf-4e45-4266-90b9-68882537250a.png"
+      },
+      "worn": {
+        "plate": "neck",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_23d51fea-29ab-4ca6-8de1-d9eac7eceb57.png"
+      },
+      "angle": {
+        "plate": "ecom",
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_07567670-b11a-484b-8da5-0028c22e074c.png"
+      }
+    }
+  }
+}

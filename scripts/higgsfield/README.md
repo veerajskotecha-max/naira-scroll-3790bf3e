@@ -39,6 +39,30 @@ macro for necklaces.
 | `plates.json` | The five staging plates, with the `job_id` passed as IMAGE 2 |
 | `prompt.ts` | The lock, the per-category staging, the prompt builder |
 | `jobs.json` | 66 expanded frames — generated, not hand-edited |
+| `results.json` | The delivered frames: 22 SKUs × 3, with their CDN URLs |
+| `download.ts` | Pulls every frame in `results.json` down to a local folder |
+
+## Known catalogue issue — the four earring SKUs
+
+The packshots for the earrings are **rotated by one** against their names in
+`src/data/jewellery.ts`:
+
+| SKU | Name in the catalogue | What its packshot actually shows |
+|---|---|---|
+| NF-GH-E12-BHX | The Braided Hoop | a pearl stud in a braided gold rope surround |
+| NF-GH-E13-PSX | The Pearl Stud | a pavé halo stud in white rhodium |
+| NF-GH-E14-HSX | The Halo Stud | a pavé bow stud in gold |
+| NF-GH-E15-BSX | The Bow Stud | a pair of braided gold hoops |
+
+Each name's true product is sitting one slot away. The frames were rendered
+**faithful to each SKU's own photograph**, not to its name — so every product
+page stays internally consistent today, and the frames remain correct once the
+image-to-name mapping is fixed. `results.json` flags the four with
+`source_mismatch`.
+
+Three of the four packshots are also on-model ear shots rather than clean
+product-only photos, so the `ecom` frames for those SKUs are derived from a
+worn photo. A proper packshot would tighten them further.
 
 ## Running it
 

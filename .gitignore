@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Downloaded Higgsfield product frames (see scripts/higgsfield/download.ts)
+gilded-hour-shots/

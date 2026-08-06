@@ -1,4 +1,11 @@
 {
+  "enabledPlugins": {
+    "claude-mem@thedotmack": true,
+    "ponytail@ponytail": true,
+    "document-skills@anthropic-agent-skills": true,
+    "example-skills@anthropic-agent-skills": true,
+    "claude-api@anthropic-agent-skills": true
+  },
   "extraKnownMarketplaces": {
     "thedotmack": {
       "source": {
@@ -17,20 +24,6 @@
         "source": "github",
         "repo": "anthropics/skills"
       }
-    },
-    "obsidian-skills": {
-      "source": {
-        "source": "github",
-        "repo": "qhuang20/obsidian-skills"
-      }
     }
-  },
-  "enabledPlugins": {
-    "claude-mem@thedotmack": true,
-    "ponytail@ponytail": true,
-    "document-skills@anthropic-agent-skills": true,
-    "example-skills@anthropic-agent-skills": true,
-    "claude-api@anthropic-agent-skills": true,
-    "obsidian-skills@obsidian-skills": true
   }
 }

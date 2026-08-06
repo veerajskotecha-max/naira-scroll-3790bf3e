@@ -6,7 +6,7 @@
 
 ## Plugins
 
-`settings.json` registers four plugin marketplaces and enables six plugins.
+`settings.json` registers three plugin marketplaces and enables five plugins.
 When you next open this repo in Claude Code you'll be prompted to trust the
 folder and install them. Nothing is vendored into this repo — each plugin is
 cloned into `~/.claude/plugins/` per machine.
@@ -18,9 +18,8 @@ cloned into `~/.claude/plugins/` per machine.
 | `document-skills` | `anthropic-agent-skills` | [anthropics/skills](https://github.com/anthropics/skills) | ~1,028 tok |
 | `example-skills` | `anthropic-agent-skills` | [anthropics/skills](https://github.com/anthropics/skills) | ~1,221 tok |
 | `claude-api` | `anthropic-agent-skills` | [anthropics/skills](https://github.com/anthropics/skills) | ~471 tok |
-| `obsidian-skills` | `obsidian-skills` | [qhuang20/obsidian-skills](https://github.com/qhuang20/obsidian-skills) | ~98 tok |
 
-**Total: ~5,577 tokens added to every session** before any skill fires. Re-check
+**Total: ~5,479 tokens added to every session** before any skill fires. Re-check
 with `claude plugin details <name>`.
 
 ## claude-mem
@@ -80,13 +79,6 @@ Anthropic's official open-source skills, split across three plugins:
 >
 > `example-skills` is worth keeping either way — 11 of its 12 skills are not
 > duplicated.
-
-## obsidian-skills
-
-Loads a note-taking working style when a session starts inside an Obsidian
-vault. It is a no-op for this repo, which is not a vault — it's enabled here
-only so it travels with your setup. Move it to your user-level
-`~/.claude/settings.json` if you'd rather it not ship to teammates.
 
 ## Vendored skills
 

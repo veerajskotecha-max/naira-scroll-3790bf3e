@@ -1,5 +1,5 @@
 {
-  "_comment": "Generated frames per SKU. Three shots each, Nano Banana Pro 4:5 2K. `source_mismatch` flags SKUs whose packshot in src/data/jewellery.ts does not depict the product its name describes \u2014 the four earring SKUs are rotated by one. `sizing_correction` flags frames re-shot after the sizing audit against NAIRA_JEWELLERY___Finalised_SKUs. See sizing.md.",
+  "_comment": "Generated frames per SKU. Three shots each, Nano Banana Pro 4:5 2K. `source_mismatch` flags SKUs whose packshot in src/data/jewellery.ts does not depict the product its name describes \u2014 the four earring SKUs are rotated by one. `sizing_correction` flags frames re-shot after the sizing audit against the size guide published on nairaflore.com. See sizing.md.",
   "the-vow": {
     "sku": "NF-GH-R01-VXX",
     "name": "The Vow",
@@ -18,7 +18,7 @@
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_122329_0f59bf60-2433-40c2-a231-58fabcb88332.png"
       }
     },
-    "sizing_correction": "worn reshot \u2014 stone was reading ~3ct; locked to 6mm stone on a size-7 band"
+    "sizing_correction": "worn reshot \u2014 stone was ~3ct; locked to a 4-6mm stone on a US-7 band"
   },
   "the-halo": {
     "sku": "NF-GH-R02-HXX",
@@ -190,7 +190,7 @@
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123354_a301f9ef-25b7-4203-8989-621f196c3cb2.png"
       }
     },
-    "sizing_correction": "worn reshot \u2014 baroque pearls were reading ~16mm; locked to 9-11mm on a 20cm strand"
+    "sizing_correction": "worn reshot \u2014 baroque pearls were ~16mm; locked to 9-11mm on a 20cm strand for a 15-18cm wrist"
   },
   "the-keepsake": {
     "sku": "NF-GH-B11-KXX",
@@ -222,14 +222,15 @@
       },
       "worn": {
         "plate": "ear",
-        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_28c2f55a-d201-4c70-9284-7dc78b636d6d.png"
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132059_985c639e-f6a7-46c4-ba50-b255e8744eac.png"
       },
       "angle": {
         "plate": "ecom",
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_125749_f75c3ada-08ef-48d7-967b-03c641b8e9bc.png"
       }
     },
-    "source_mismatch": "Packshot shows a PEARL STUD in a braided gold rope surround, not a hoop. Frames follow the photo."
+    "source_mismatch": "Packshot shows a PEARL STUD in a braided gold rope surround, not a hoop. Frames follow the photo.",
+    "sizing_correction": "worn reshot \u2014 pearl read ~7mm against the published 4-6mm stud rule; locked to a 6mm pearl in a 10mm stud"
   },
   "the-pearl-stud": {
     "sku": "NF-GH-E13-PSX",
@@ -270,7 +271,7 @@
       }
     },
     "source_mismatch": "Packshot shows a PAVE BOW STUD in gold, not a halo. Frames follow the photo.",
-    "sizing_correction": "worn reshot \u2014 crop had drifted off the shared ear plate"
+    "sizing_correction": "worn reshot \u2014 crop had drifted off the shared ear plate; bow locked to 10mm"
   },
   "the-bow-stud": {
     "sku": "NF-GH-E15-BSX",
@@ -291,7 +292,7 @@
       }
     },
     "source_mismatch": "Packshot shows a pair of BRAIDED GOLD HOOPS, not a bow stud. Frames follow the photo.",
-    "sizing_correction": "worn reshot \u2014 hoop was reading ~30mm; locked to a 20mm hoop"
+    "sizing_correction": "worn reshot \u2014 hoop was ~30mm; locked to 20mm, inside the published 20-25mm everyday range"
   },
   "the-knot-lariat": {
     "sku": "NF-GH-N16-KLX",
@@ -349,7 +350,7 @@
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123707_65a1826e-ef79-4ff0-9827-3495327b5463.png"
       }
     },
-    "sizing_correction": "worn reshot \u2014 links were reading as a heavy curb chain; locked to 8mm links on a 43cm chain"
+    "sizing_correction": "worn reshot \u2014 links read as a heavy curb chain; locked to 8mm links on a 45cm collarbone chain"
   },
   "the-cascade": {
     "sku": "NF-GH-N19-CXX",
@@ -369,7 +370,7 @@
         "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_123801_ea9f09e2-0449-4118-bde5-ee4770271d60.png"
       }
     },
-    "sizing_correction": "worn reshot \u2014 drop was reaching the sternum; locked to a 4cm drop on a 43cm chain"
+    "sizing_correction": "worn reshot \u2014 drop reached the sternum; locked to a short drop on a 45cm collarbone chain"
   },
   "the-ripple-hoop": {
     "sku": "NF-GH-E20-RPL",

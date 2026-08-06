@@ -26,3 +26,8 @@ dist-ssr
 # Downloaded Higgsfield product frames (see scripts/higgsfield/download.ts)
 gilded-hour-shots/
 gilded-hour-angles/
+
+# Designer handoff package - HD contact book and the frames behind it
+naira-flore-shots.pdf
+naira-flore-shots-*.pdf
+naira-flore-shots/

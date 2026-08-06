@@ -25,3 +25,4 @@ dist-ssr
 
 # Downloaded Higgsfield product frames (see scripts/higgsfield/download.ts)
 gilded-hour-shots/
+gilded-hour-angles/

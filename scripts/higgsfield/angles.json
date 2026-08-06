@@ -1,0 +1,92 @@
+{
+  "_comment": "One 12-angle contact grid per SKU. Each is a single Nano Banana Pro generation at 1:1 / 4k — 4 credits — holding a 3x4 grid of twelve camera angles of the same piece on the cream plaster e-com set. Native 4096x4096, so each tile lands near 1365x1024 and stands on its own as a PDP still. Split them with `python3 scripts/higgsfield/split_angles.py --all`.",
+  "_angles": "Rings and stacks: front, 3/4 left, 3/4 right, profile, rear 3/4, overhead, low hero, high 3/4, tilted, standing, macro stone, macro band. Bracelets: flat overhead, relaxed curve, coiled, draped over the edge, low hero, clasp macro, end-on, stone macro, standing curve, high 3/4, half-on-half-off, link macro. Earrings: pair front, pair 3/4, single front, single profile, single rear, pair overhead, low hero, high 3/4, leaning, face macro, closure macro, tilted pair. Necklaces: open loop overhead, loop 3/4, pendant macro, pendant profile, chain macro, clasp macro, draped, low hero, coiled, high 3/4, bail macro, full lay.",
+  "the-vow": {
+    "sku": "NF-GH-R01-VXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132456_9a37b5c5-9aa2-4b62-a84a-9ec4015fe225.png"
+  },
+  "the-halo": {
+    "sku": "NF-GH-R02-HXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_134520_e2cd883f-376c-4c65-bb70-25a6694c910c.png"
+  },
+  "the-chevron-stack": {
+    "sku": "NF-GH-R07-CSX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_134520_43236769-225e-4b66-ae1a-ab8498e97a6c.png"
+  },
+  "the-whirl": {
+    "sku": "NF-GH-R03-WXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_ce3c85a4-a7ed-4c1f-9b72-5d016aa4a865.png"
+  },
+  "the-vine": {
+    "sku": "NF-GH-R04-VXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_8840772f-8dea-426d-97d8-27760953f35d.png"
+  },
+  "the-dew-ring": {
+    "sku": "NF-GH-R05-DRX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_4279a39e-f1ee-4ce9-80d6-361e0163caaa.png"
+  },
+  "the-toi-et-moi": {
+    "sku": "NF-GH-R06-TEM",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_260e5e60-a683-4bfe-bf9e-ed865bfd2571.png"
+  },
+  "the-sugar-tennis": {
+    "sku": "NF-GH-B08-STX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_9b0df6b3-a2b8-4424-9ab7-d27a1210f41a.png"
+  },
+  "the-bow": {
+    "sku": "NF-GH-B09-BXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_a166e709-9ecf-47fd-a7ca-835b56cc2260.png"
+  },
+  "the-tideline": {
+    "sku": "NF-GH-B10-TXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_b89205c0-dfb2-430b-8581-c6bcd056e67c.png"
+  },
+  "the-keepsake": {
+    "sku": "NF-GH-B11-KXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132923_f47dd21a-0970-45b8-9269-218409a14186.png"
+  },
+  "the-rosewater-line": {
+    "sku": "NF-GH-B21-RSW",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_132922_059b3b8a-d4ca-4ec0-b75f-b009846b338d.png"
+  },
+  "the-braided-hoop": {
+    "sku": "NF-GH-E12-BHX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_5e71e19a-9004-4abf-b8fc-69f6ed835f60.png"
+  },
+  "the-pearl-stud": {
+    "sku": "NF-GH-E13-PSX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_96d03b56-7db3-4298-841f-d88c5c13571c.png"
+  },
+  "the-halo-stud": {
+    "sku": "NF-GH-E14-HSX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_b66ccf99-7f68-4e95-a801-3262f8f1c4fb.png"
+  },
+  "the-bow-stud": {
+    "sku": "NF-GH-E15-BSX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_924b1b3e-f107-42d5-8bbf-dac7007d8fe2.png"
+  },
+  "the-ripple-hoop": {
+    "sku": "NF-GH-E20-RPL",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_2db6b1e4-7322-4a85-af76-130111679d99.png"
+  },
+  "the-knot-lariat": {
+    "sku": "NF-GH-N16-KLX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_7d9aad23-da91-45ac-b1ca-bc46b0e0edeb.png"
+  },
+  "the-rondelle": {
+    "sku": "NF-GH-N17-RXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_715ac842-697c-405e-ac46-ce68e61fa70c.png"
+  },
+  "the-anchor-chain": {
+    "sku": "NF-GH-N18-ACX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_fe9db903-644c-44d1-9917-b26443b2cd60.png"
+  },
+  "the-cascade": {
+    "sku": "NF-GH-N19-CXX",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_629dfbef-890c-48e6-b5c8-aeff58e48394.png"
+  },
+  "the-solitaire-drop": {
+    "sku": "NF-GH-N22-SLD",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_133046_e0647d13-8ca4-463a-8edf-71e1584029d9.png"
+  }
+}

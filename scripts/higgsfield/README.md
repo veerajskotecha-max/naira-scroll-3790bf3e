@@ -41,6 +41,31 @@ macro for necklaces.
 | `jobs.json` | 66 expanded frames — generated, not hand-edited |
 | `results.json` | The delivered frames: 22 SKUs × 3, with their CDN URLs |
 | `download.ts` | Pulls every frame in `results.json` down to a local folder |
+| `angles.json` | One 12-angle contact grid per SKU, with its CDN URL |
+| `split_angles.py` | Cuts each grid into twelve individual stills |
+| `sizing.md` | The published size standard and the audit against it |
+
+## Twelve angles for the price of one generation
+
+The e-com set has a second mode. Asking Nano Banana Pro for a **3×4 grid of
+twelve camera angles in a single 1:1 / 4K image** returns all twelve in one
+generation — 4 credits, native 4096×4096, so each tile lands near
+**1349×1011** and stands on its own as a PDP still.
+
+That is 4 credits for twelve usable angles, against 24 credits if each were
+generated separately at 2K. The product stays locked across all twelve
+because they are rendered together in one pass; only the camera moves.
+
+```sh
+python3 scripts/higgsfield/split_angles.py --all        # 22 grids -> 264 stills
+python3 scripts/higgsfield/split_angles.py grid.png out # one grid
+```
+
+Requires Pillow (`pip install pillow`). Output lands in `gilded-hour-angles/`
+(gitignored), one folder per SKU, named `<handle>--angle-01.png` … `-12`.
+
+At 2K the same grid costs 2 credits but each tile is only ~680×512 — fine as
+a proof sheet, too small for a product page. 4K is the tier worth paying for.
 
 ## Known catalogue issue — the four earring SKUs
 

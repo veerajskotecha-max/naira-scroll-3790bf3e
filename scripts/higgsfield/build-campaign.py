@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 SCRATCH = ("/tmp/claude-0/-home-user-naira-scroll-3790bf3e/"
            "1171b414-e279-55a3-bd3a-591f6de1e021/scratchpad")
-AD = os.path.join(SCRATCH, "ad")
+AD = os.path.join(SCRATCH, "ad-branded")
 OUT = "/home/user/naira-scroll-3790bf3e/naira-flore-campaign-softly-slowly-worn.pdf"
 SELECTS = "/home/user/naira-scroll-3790bf3e/naira-flore-campaign/softly-slowly-worn"
 

@@ -71,3 +71,49 @@ the same request with `declined_preset_id` set to the offered preset.
 
 - `video-pad-916.py` — 4:5 stills to 9:16 plates
 - `video-cut-long-quiet.py` — endcard, concat, VO lay-down, and the 15s and 6s pulls
+
+---
+
+# Branding the frames
+
+The brand deck (14pp, supplied 6 August 2026) is the source. Two assets were
+lifted straight out of it rather than redrawn — no font file needed, and the
+shapes stay the deck's own:
+
+- `assets/brand/wordmark-cream.png` — NAIRA, high-contrast Velista serif, the
+  pressed-flower glyph nested between the A and the R
+- `assets/brand/flower-cream.png` — the stand-alone floral mark
+
+Both are keyed off the deck's flat sage panels to white-with-alpha, so they can
+be tinted to any one of the five approved voices at use time.
+
+## Rules followed, literally
+
+| Deck rule | How it is enforced |
+|---|---|
+| On photography, **cream only** | The mark is tinted to `#FFF8F5` and never to sage, blush or ink on any photographic frame |
+| Clear-space = height of the "A" | Padding is set to the wordmark's own cap height on every side |
+| Never stretch or condense | Only ever scaled uniformly from the extracted artwork |
+| Never tilt, rotate or set on a curve | No rotation anywhere in the pipeline |
+| Never recolour outside the palette | Only the deck's cream is used on frames; the endcard uses the primary cream-on-sage lockup |
+
+## Where the mark goes — and where it does not
+
+**Branded: the 50 ad frames.** All four reference-led campaigns plus SOFTLY,
+SLOWLY, WORN. Placement is measured, not guessed: each frame is scored cell by
+cell for quietness (local detail) and for how well cream will read against it,
+with the worst cell in a candidate block weighted above the average so the mark
+never straddles a busy edge, plus a bias toward the frame's edges — a logo in
+the middle reads as a watermark, not a signature. A soft low-opacity shadow lets
+cream hold on the pale frames without breaking the colour rule. The floral seal
+goes on every fifth frame only; the deck calls it "the only ornament we allow
+ourselves" and it stops being that if it is on everything.
+
+**Not branded: the 189 e-commerce SKU frames.** Those go to Shopify and to
+Meta's dynamic catalogue units, which inject the product name and price
+themselves — the ad-format research is explicit that a baked-in logo collides
+with the auto-rendered card. Adding it there would be actively wrong, so the
+`naira-flore-shots/` originals stay clean.
+
+**The film endcard** is now the primary lockup — cream wordmark on sage —
+replacing the typed stand-in.

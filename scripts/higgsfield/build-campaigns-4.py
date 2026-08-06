@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 SCRATCH = ("/tmp/claude-0/-home-user-naira-scroll-3790bf3e/"
            "1171b414-e279-55a3-bd3a-591f6de1e021/scratchpad")
-CAMP = os.path.join(SCRATCH, "camp")
+CAMP = os.path.join(SCRATCH, "camp-branded")
 ROOT = "/home/user/naira-scroll-3790bf3e"
 SELECTS = os.path.join(ROOT, "naira-flore-campaign")
 

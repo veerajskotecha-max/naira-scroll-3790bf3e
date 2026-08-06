@@ -25,16 +25,29 @@ def font(sz, bold=False):
     return ImageFont.truetype(base + ("-Bold" if bold else "") + ".ttf", sz)
 
 
+BRAND = ("/tmp/claude-0/-home-user-naira-scroll-3790bf3e/"
+         "1171b414-e279-55a3-bd3a-591f6de1e021/scratchpad/brand")
+
+
 def endcard(path):
-    im = Image.new("RGB", (W, H), CREAM)
+    """The primary lockup from the brand deck: cream wordmark on sage."""
+    im = Image.new("RGBA", (W, H), SAGE + (255,))
+    mark = Image.open(os.path.join(BRAND, "wordmark-cream.png")).convert("RGBA")
+    mw = round(W * 0.62)
+    mark = mark.resize((mw, round(mw * mark.height / mark.width)), Image.LANCZOS)
+    r, g, b, a = mark.split()
+    solid = Image.new("RGB", mark.size, CREAM)
+    solid.putalpha(a)
+    mx, my = (W - mark.width) // 2, (H - mark.height) // 2 - 40
+    im.alpha_composite(solid.convert("RGBA"), (mx, my))
+
+    # clear-space below the mark equals its own cap height before the line sits
     d = ImageDraw.Draw(im)
-    f1, f2 = font(96, True), font(46)
-    for text, f, y, fill in (("NAIRA FLORE", f1, 840, INK),
-                             ("Softly, slowly, worn.", f2, 990, (95, 89, 83))):
-        d.text(((W - d.textlength(text, font=f)) / 2, y), text, font=f, fill=fill)
-    d.rectangle([W // 2 - 70, 950, W // 2 + 70, 954], fill=SAGE)
-    d.ellipse([W // 2 - 6, 1120, W // 2 + 6, 1132], fill=CORAL)
-    im.save(path)
+    f = font(44)
+    line = "Softly, slowly, worn."
+    d.text(((W - d.textlength(line, font=f)) / 2, my + mark.height + mark.height),
+           line, font=f, fill=CREAM)
+    im.convert("RGB").save(path)
 
 
 def run(args):

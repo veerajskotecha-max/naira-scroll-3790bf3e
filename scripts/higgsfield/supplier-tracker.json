@@ -363,6 +363,38 @@
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_4c2ecd35-ecd6-4159-874d-137841612bb6.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_97e21aac-6230-4b76-8f9a-6187b33e4e95.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_198ff7f3-e19c-4b82-a9c3-6f90a8ade5ad.png"
+    },
+    "E16075B": {
+      "name": "Bow Zircon Studs",
+      "category": "Earrings",
+      "size": "bow ~15mm wide - pear-cut and tapered clear zircons in gold claws",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_bdc467a3-1beb-4a74-8550-f1a5cfd01e6d.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_7a2f2099-7b71-4309-9840-e06dbe8ffc41.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_e3f084e2-f325-4138-8a2b-5cd110714510.png"
+    },
+    "JDR0303312-7": {
+      "name": "Pave Chevron Ring",
+      "category": "Rings",
+      "size": "US 7 - double-V band, two fine pave lines of round zircons meeting in a chevron",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_9817a626-9b14-4912-8517-3d4f8cf9cb06.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_e511055d-d7ae-45ad-8441-b0ca332739ef.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_a66dc73b-aab0-4251-ab75-6d28ec65ba43.png"
+    },
+    "JDS0204301-set": {
+      "name": "Solitaire Pendant and Stud Set",
+      "category": "Necklaces",
+      "size": "necklace 42cm on a 1mm cable chain with a 4mm round zircon, plus matching 4mm studs",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_443908c7-cc3a-4e25-aa81-7b84698e1dae.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_4fddc916-877b-4549-b059-d4bdb19b1904.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_056f0425-875a-449d-8b7c-4bb6d4628f07.png"
+    },
+    "E19269B": {
+      "name": "Flower Pearl Drop Studs",
+      "category": "Earrings",
+      "size": "stud ~20mm tall - 14mm three-petal fluted flower, 6mm oval zircon, 8mm white pearl",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_c0ca0390-7a0a-41b9-850e-80086ed38649.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_c078e5e3-90e6-4772-8d5b-57c0c149b441.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161722_e0e6546b-f415-49dc-8a74-99f386951aaf.png"
     }
   },
   "pending": {
@@ -422,17 +454,9 @@
     "YF8453": "412a6637-9262-4485-b50b-574e1ad72fa8",
     "YF8457": "ca6367ed-8478-4a66-8a6f-09ca6cd4c7dc"
   },
-  "_status": "41 supplier SKUs delivered at three frames each, 1 part-delivered. Yiss Fera 20/20. Yiwu J&D 14/16 (JDR0303312-7 and JDS0204301-set to go). KAVNAR 6/27 shot, all 27 photos pulled, 9 uploaded to Higgsfield.",
+  "_status": "45 supplier SKUs delivered at three frames each. Yiss Fera 20/20. Yiwu J&D 16/16. KAVNAR 9/27, all 27 photos pulled, 13 uploaded to Higgsfield.",
   "in_progress": {
-    "_note": "Frames already delivered; the shot marked 'regenerating' is being re-run after a model-side failure.",
-    "E16075B": {
-      "name": "Bow Zircon Studs",
-      "category": "Earrings",
-      "size": "bow ~15mm wide - pear-cut and tapered clear zircons in gold claws",
-      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_bdc467a3-1beb-4a74-8550-f1a5cfd01e6d.png",
-      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161229_7a2f2099-7b71-4309-9840-e06dbe8ffc41.png",
-      "angle": "in flight"
-    }
+    "_note": "Frames already delivered; the shot marked 'regenerating' is being re-run after a model-side failure."
   },
   "yiwu_jd": {
     "_finding": "The supplier supplied ONE photo set for several different SKU codes. Verified by md5: the three photos in JDB201083, JDB201210 and JDB201210-GN are byte-identical to each other, as are those in JDB0104010 and JDBW2410021; file sizes match across JDR0104337/-S and JDR0104342/-PS. 16 codes, 11 distinct photo sets.",
@@ -481,7 +505,11 @@
       "E16355C": "f4e6c159-7583-425e-9a43-d5980c16a0b0",
       "E16676C": "1663501e-6151-49c4-a5ad-388bb4c604bf",
       "E19263B": "e2b18bee-d2ee-45de-8566-1462eff36329",
-      "E19269B": "6ae65689-5b1f-4e5d-8c8a-6a2ceef29f73"
+      "E19269B": "6ae65689-5b1f-4e5d-8c8a-6a2ceef29f73",
+      "E20267O": "3daf3f9c-5310-4ab7-9d39-06bc4e3b0863",
+      "E20997C": "3b2bfdda-c77d-4019-8072-0e971d23d662",
+      "E21572E1": "9d41e9f6-1ddf-4924-ac1f-831ef6b696b3",
+      "FE02847B": "ada1f264-a5b1-478f-8ec4-ff0bd69d6fa3"
     },
     "products": {
       "B00681C": "pastel cushion-bezel tennis bracelet, silver tone",

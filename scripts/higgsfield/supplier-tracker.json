@@ -1,5 +1,5 @@
 {
-  "_comment": "Progress tracker for the 66 finalised supplier styles. Source photos live in Drive under 'supplier photos' (folder 1ABavj7cy3cp0GWCWP0oR_Pa_fCBTcYaF), shared with shopatnaira@gmail.com \u2014 the account the Drive connector authenticates as. Each SKU gets the same three frames as the Gilded Hour line: ecom on the cream plaster block, worn on its category's model plate, and a different-angle frame.",
+  "_comment": "Progress tracker for the 66 finalised supplier styles. Source photos live in Drive under 'supplier photos' (folder 1ABavj7cy3cp0GWCWP0oR_Pa_fCBTcYaF), shared with shopatnaira@gmail.com — the account the Drive connector authenticates as. Each SKU gets the same three frames as the Gilded Hour line: ecom on the cream plaster block, worn on its category's model plate, and a different-angle frame.",
   "_pipeline": "Drive files are access-restricted, so they cannot be fetched by URL. Route: Google_Drive download_file_content (base64 lands on disk, never in context) -> base64 decode -> higgsfield media_upload for presigned URLs -> curl PUT the bytes -> use the returned media_id as IMAGE 1.",
   "_source_photo_note": "Supplier photos come in three kinds and the prompt must handle each: spec sheets with printed measurements and callout arrows (strip all text and annotation, keep only the object), on-model shots (discard the model, skin and background entirely, keep only the jewellery), and plain packshots. Printed dimensions on the spec sheets are the authoritative size for that SKU.",
   "folders": {
@@ -21,18 +21,25 @@
     }
   },
   "sizing_from_supplier_spec_sheets": {
-    "_note": "Read directly off the printed dimensions in the supplier photos \u2014 the per-SKU sizing that was missing from the finalised book.",
-    "YF5143": "chain 4mm \u00b7 toggle 15mm \u00b7 length 50cm/19.7in \u00b7 12g \u00b7 18K PVD gold plated stainless",
-    "YF5146": "chain 2.5mm \u00b7 charm 10mm \u00b7 length 50cm/19.6in \u00b7 12.3g \u00b7 PVD gold plated stainless",
-    "YF6403": "pendant 15mm \u00b7 length 42cm + 5cm extender (16.5in + 1.96in) \u00b7 4g \u00b7 18K PVD gold plated",
-    "YF6671": "cuff 6cm x 5.5cm \u00b7 pearl 1.8 x 0.7cm \u00b7 zircon 1.7cm \u00b7 bezel 0.25cm \u00b7 5.9g \u00b7 PVD 18K gold",
-    "YF8439": "length 40cm + 5cm extender (15.75in + 2in) \u00b7 10g \u00b7 18K PVD gold plated stainless"
+    "_note": "Read directly off the printed dimensions in the supplier photos — the per-SKU sizing that was missing from the finalised book.",
+    "YF5143": "chain 4mm · toggle 15mm · length 50cm/19.7in · 12g · 18K PVD gold plated stainless",
+    "YF5146": "chain 2.5mm · charm 10mm · length 50cm/19.6in · 12.3g · PVD gold plated stainless",
+    "YF6403": "pendant 15mm · length 42cm + 5cm extender (16.5in + 1.96in) · 4g · 18K PVD gold plated",
+    "YF6671": "cuff 6cm x 5.5cm · pearl 1.8 x 0.7cm · zircon 1.7cm · bezel 0.25cm · 5.9g · PVD 18K gold",
+    "YF8439": "length 40cm + 5cm extender (15.75in + 2in) · 10g · 18K PVD gold plated stainless",
+    "YF5214": "star-motif band ring, band ~6mm, US 6/7/8/9, gold and steel colourways",
+    "YF5244": "set of 2 - 40cm chain with a 10 x 5mm marquise zircon, plus a Y-lariat with 5mm marquise stations; 1.2mm cable chain",
+    "YF6667": "18cm - oval paperclip links ~12mm - white rice pearls ~7 x 5mm",
+    "YF7085": "tennis set - necklace 40cm, bracelet 18cm - 3mm round zircons - 12mm rectangular gold buckle station",
+    "YF8147": "filigree flower stud ~20mm across - 8mm round white freshwater pearl centre",
+    "YF8156": "18cm - 1.2mm satellite chain with 2mm gold beads - two 5mm heart-cut zircons",
+    "YF8396": "2.4mm gold ball-bead chain lariat - two pave zircon teardrops ~15mm"
   },
   "done": {
     "YF5143": {
       "name": "Non-Tarnish Round Push Clasp Necklace",
       "category": "Necklaces",
-      "size": "50cm \u00b7 4mm chain \u00b7 15mm toggle",
+      "size": "50cm · 4mm chain · 15mm toggle",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_1a9792d2-5e7d-4e1e-a4b4-8af3897fa5e5.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_1e509121-b7b3-4e7b-b7c8-601c44449f56.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_6b7092bb-a1ca-488e-a7ae-b7e55b24859a.png"
@@ -40,7 +47,7 @@
     "YF8453": {
       "name": "Irregular Hoop Glass Zircon Ring",
       "category": "Rings",
-      "size": "US-7 band \u00b7 two faceted stones, amber and champagne",
+      "size": "US-7 band · two faceted stones, amber and champagne",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_1c612b14-defe-49c1-9c1f-634db6e78f71.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_f1124dc3-ff80-4ccf-80cd-d6d1e7ed88f4.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_6f2fd72f-f55a-4942-9742-01d9c99145ba.png"
@@ -48,7 +55,7 @@
     "YF5215": {
       "name": "OT Clasp Pearlescent Heart Pendant Beaded Bracelet",
       "category": "Bracelets",
-      "size": "20cm strand \u00b7 8mm beads \u00b7 one gold heart",
+      "size": "20cm strand · 8mm beads · one gold heart",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142920_aa28896e-99be-4614-9972-32c26f7ed161.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142006_20f3260f-349a-4909-8c85-3d494d6998a5.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_9ad93245-5eb4-493f-822f-da30042153d8.png"
@@ -56,7 +63,7 @@
     "YF8333": {
       "name": "Heart Pendant Pearl Stud Earrings",
       "category": "Earrings",
-      "size": "~20mm drop \u00b7 8mm pearl above a 10mm gold sphere",
+      "size": "~20mm drop · 8mm pearl above a 10mm gold sphere",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_2c824b74-f1b2-4085-a8d5-06148411aff7.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142007_ecc1c7b9-c145-44ac-a5ed-489851d5adf6.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_142920_5c91ff95-b762-4c15-87e0-8dbc0f04f9a5.png"
@@ -64,7 +71,7 @@
     "YF3925": {
       "name": "OT Buckle Chain Baroque Pearl Bracelet",
       "category": "Bracelets",
-      "size": "20cm strand \u00b7 baroque pearls 10-13mm",
+      "size": "20cm strand · baroque pearls 10-13mm",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_144705_ff2081e4-cb12-4e25-a1f7-c91e21b5150c.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_827c28f0-1803-4b36-ba46-83932b875bee.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_7e802db5-886e-444f-a16e-99967c5e7cdc.png"
@@ -72,7 +79,7 @@
     "YF3952": {
       "name": "Paper Clip Chain Heart Zircon Necklace",
       "category": "Necklaces",
-      "size": "42cm at the collarbone \u00b7 5mm heart stations",
+      "size": "42cm at the collarbone · 5mm heart stations",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_5e670d00-1ef8-4a37-9588-5c004857b4b0.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_c3940697-a48c-449e-9c5c-de99e8e18d57.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145021_d74882d3-7315-4190-9a54-066208411226.png"
@@ -80,7 +87,7 @@
     "YF5144-necklace": {
       "name": "Statement Thick Caper Chain Necklace",
       "category": "Necklaces",
-      "size": "45cm \u00b7 links ~20mm \u00b7 one pave link",
+      "size": "45cm · links ~20mm · one pave link",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_926ee28a-2f76-4417-8fc4-010aea2398d5.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_144705_ae8e5e18-370b-4720-9015-a88e5a4fd6b5.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_9d091a6d-a605-48e8-9ef7-7c595f3d9eb2.png"
@@ -88,44 +95,207 @@
     "YF5144-bracelet": {
       "name": "Statement Thick Caper Chain Bracelet",
       "category": "Bracelets",
-      "size": "20.5cm \u00b7 links ~20mm \u00b7 one pave link",
+      "size": "20.5cm · links ~20mm · one pave link",
       "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_9c16c4f6-2c98-421a-a19e-1cec35961ab9.png",
       "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_1a2b9479-1ed5-4895-a70d-751660ccca10.png",
       "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_143826_de60ea68-619d-48b6-bbac-c492514dd7cd.png"
+    },
+    "YF5146": {
+      "name": "Box Chain Pave Barrel Charm Necklace",
+      "category": "Necklaces",
+      "size": "50cm - 2.5mm box chain - 10mm pave barrel charm - 12.3g",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145518_0244c1d8-f00c-475f-8e6c-2993bfa67e06.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145518_03dfd72e-8aaf-427d-8438-1abc02757eef.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145518_ca05f349-e4cf-418a-87a0-302346678fcf.png"
+    },
+    "YF5214": {
+      "name": "Four-Point Star Zircon Band Ring",
+      "category": "Rings",
+      "size": "band ~6mm - US 6/7/8/9 - gold and steel",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145517_23945ac4-8a29-46d6-a51c-64e81934fcbd.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145517_8d543594-c065-4553-8840-bae98a14bc81.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145517_37da3126-60e9-48a8-8b61-db078e450a87.png"
+    },
+    "YF6403": {
+      "name": "Bezel Teardrop Zircon Necklace",
+      "category": "Necklaces",
+      "size": "42cm + 5cm extender - 15mm teardrop zircon - 4g",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145518_809b3b94-1f3b-4d8b-9a49-33b4a23adceb.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_145518_1f3d0dd7-49fd-42a1-a28a-d2ea6167e85d.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150352_5bb9da92-7c2d-4a3d-9909-8826a293475d.png"
+    },
+    "YF7085": {
+      "name": "Zircon Tennis Necklace and Bracelet Set",
+      "category": "Necklaces",
+      "size": "necklace 40cm - bracelet 18cm - 3mm zircons - 12mm buckle station",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_cff93809-7ca0-4f4a-a11a-41117b6841a2.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_4c595525-1ac6-49b2-97a8-7b4588294e6f.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_385b24be-2e21-4879-a1ed-ed51e44a8d30.png"
+    },
+    "YF6667": {
+      "name": "Oval Link Pearl Station Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 12mm oval links - 7 x 5mm rice pearls",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_1069f170-abe7-4663-9228-f2d4d544dfd8.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150246_df128bcc-02ad-4387-a297-917da0c4c0e1.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151003_e4c27557-a882-4369-ad64-777353522b4a.png"
+    },
+    "YF6671-style1": {
+      "name": "Baroque Pearl and Zircon Open Cuff",
+      "category": "Bracelets",
+      "size": "cuff 6 x 5.5cm - pearl 1.8 x 0.7cm - zircon terminal 1.7cm - bezel 0.25cm - 5.9g",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151004_b3811e9e-4b48-456d-946e-012630cea14f.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151003_ab54cf12-a944-4526-9e2a-d129c9e29872.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_7747079e-35a7-444b-8f97-ce82fac44536.png"
+    },
+    "YF8147": {
+      "name": "Filigree Flower Pearl Stud Earrings",
+      "category": "Earrings",
+      "size": "20mm flower - 8mm pearl centre",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151002_38cc973d-598a-4403-b884-3ecedab52ffc.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150247_2862653b-7dd5-4651-9996-28c336209458.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151003_bb18d387-c4e8-454f-80ec-6848ff479ada.png"
+    },
+    "YF5244": {
+      "name": "Marquise Zircon Layering Set",
+      "category": "Necklaces",
+      "size": "set of 2 - 40cm with a 10 x 5mm marquise - Y-lariat with 5mm marquise stations",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151408_55019074-468a-429f-9043-3eafae735b5a.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150744_aec73083-60c7-4af1-add1-0b4a157ec65d.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_151408_d52441f7-ae12-455e-a75a-a81a5bdbbb15.png"
+    },
+    "YF8156": {
+      "name": "Twin Heart Zircon Satellite Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 1.2mm satellite chain - two 5mm heart zircons",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150744_e1991d3f-22be-4971-8000-d8471d9a502c.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_bba82582-8d8e-455c-a883-7e6376d7c254.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150744_bff9ae99-0e2f-4dfd-a22e-f2eddaa2e78b.png"
+    },
+    "YF8396": {
+      "name": "Pave Teardrop Ball Chain Lariat",
+      "category": "Necklaces",
+      "size": "2.4mm ball chain lariat - two 15mm pave teardrops",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150744_7e59d5f6-c579-4a55-be10-fc3b6251bd76.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_ded62aa9-4d24-4e8b-abaa-db8cf81c63d9.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150745_50e9f734-c307-40a9-835a-1b3e659ab741.png"
+    },
+    "YF8439": {
+      "name": "Cushion Zircon Snake Chain Necklace",
+      "category": "Necklaces",
+      "size": "40cm + 5cm extender - 2mm snake chain - 10mm cushion zircon - 10g",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150745_f07d98fc-aff3-472d-8035-9318731ccfed.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150745_3adda2d4-0f2b-4666-a595-4b2eac69f9cd.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_150745_a5ca3407-7e37-47fa-80ca-db31f72fcfe1.png"
+    },
+    "YF8457": {
+      "name": "Baroque Pearl Ring Slider Lariat",
+      "category": "Necklaces",
+      "size": "1.5mm snake chain lariat - 20mm open oval ring with a 6mm pearl - 15mm baroque pearl drop",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154708_8299de64-16b1-4372-8afe-12df59ae45da.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154708_4ff4af8b-3c75-45b6-b902-edfa4e0377b6.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154707_8dda368d-02b3-4353-a2dc-7a214b918a3a.png"
+    },
+    "JDB0104010": {
+      "name": "Hammered Molten Wide Cuff",
+      "category": "Bracelets",
+      "size": "band ~2cm tall - inner opening ~5.5 x 4.5cm",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_24b03a21-35db-4960-8a5e-f2450539cac7.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_89af8da2-fd18-4401-8cb8-bae99376dcf9.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_69e30ccb-3dbd-4541-bc4d-ca2364f6aaab.png"
+    },
+    "JDBW2410021": {
+      "name": "Wave Sculptural Cuff",
+      "category": "Bracelets",
+      "size": "band ~6mm at its fullest - inner opening ~5.5 x 4.5cm",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_2e9007b3-ebdc-4f4f-b124-768f50d0e7c8.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_e43bb737-887f-472e-b087-be4e23ae2b77.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_154706_531bf86d-dea7-4d0e-a534-86537106d56c.png"
+    },
+    "JDB201083": {
+      "name": "Round Zircon Tennis Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 3mm round brilliant zircons in four-prong settings",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_587f663f-d3dd-4092-9ee2-23f9cba5ab5a.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_324f5279-69c1-49ef-a632-88e2ea7c76e9.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_fc6fb123-0dbf-4946-be0d-5685da71550e.png"
+    },
+    "JDB201210": {
+      "name": "Baguette Zircon Tennis Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 3 x 2mm baguette zircons channel-set in gold",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_2050cac9-1ba1-498c-ba2c-d16e2514b69f.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_78a45124-a285-4f93-8545-66103db4c73c.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_63ca3357-bb59-498a-80b5-547b7eab783a.png"
+    },
+    "JDB201210-GN": {
+      "name": "Green Zircon Tennis Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 4 x 3mm emerald-green step-cut zircons",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_d53b456a-78c2-4ac8-84d3-d3acee340fe0.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_2bdf1e05-487c-4187-9216-46d95dbefcf5.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_f6328ae0-c88f-43b2-b9dd-4bfb13a6d15a.png"
+    },
+    "JDB2409013": {
+      "name": "Pearl and Green Heart Mixed Link Set",
+      "category": "Necklaces",
+      "size": "necklace 45cm + bracelet 19cm - 12mm paperclip links - 8mm green heart zircons - 7mm pearls",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_87dd0aae-e722-4e0c-b6df-0faba5fba3bc.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_c6f82478-9cdf-4e54-875e-26b4dc6d2d9d.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155118_442e4c7c-9a66-4fb7-9361-09f8e7dec014.png"
+    },
+    "JDB0103317-PK": {
+      "name": "Pink Bezel Stone Bracelet",
+      "category": "Bracelets",
+      "size": "18cm + 5cm extender - 8 x 4mm marquise pale rose stones alternating with 3mm round pink stones",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_c98d0b6d-d8d3-47ce-8d45-e72336f5856b.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_4d61031a-f382-4bc9-b160-f725ff0d4299.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_6bfb6704-56df-4d32-95a7-132d78951c1b.png"
+    },
+    "JDE0201327": {
+      "name": "Clover Zircon Earring Set",
+      "category": "Earrings",
+      "size": "three pairs - 12mm huggies with 8mm clover charms, 8mm clover studs, 5mm solitaire studs",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_e667ff41-6663-46c8-9d92-e605094168c2.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_54b47a37-8f16-430c-87e0-2547ca75f247.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_cb643125-bce1-4505-822b-16e64eeefcad.png"
+    },
+    "JDE0110042": {
+      "name": "Molten Irregular Huggie Hoops",
+      "category": "Earrings",
+      "size": "hoop ~15mm across - thick irregular molten band",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_ac3952f2-a68d-4e2f-b2c3-34cb2f9937f0.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_8895eeb5-8f3d-473e-ae64-6a578538f45c.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155633_18240292-8d85-484e-b59e-7fd019fe0dbe.png"
+    },
+    "JDR0104333": {
+      "name": "Marquise and Princess Open Ring",
+      "category": "Rings",
+      "size": "US 6-8 adjustable - 10 x 5mm marquise zircon and 6mm princess zircon terminals",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155633_06e9114d-904e-484c-b4bd-2f02be46c548.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_37cbfdc4-b1b6-4fb3-8673-6202019d6d14.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_d28f54b9-0fc8-49e0-81d4-2523032c349c.png"
+    },
+    "B00681C": {
+      "name": "Pastel Bezel Tennis Bracelet",
+      "category": "Bracelets",
+      "size": "18cm - 5mm cushion pastel stones in square bezels, aqua/pink/yellow/lilac repeating",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160425_fcef3a04-3dc7-4f2f-a203-922a7c447639.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160425_a62b0fff-eada-419f-bbe2-4f0f97d79d19.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160425_89f76bf3-3cca-4312-a496-70418112fe51.png"
+    },
+    "E11857B": {
+      "name": "Pave Star Chain Drop Earrings",
+      "category": "Earrings",
+      "size": "total drop ~5cm - 8mm pave star stud - 15mm pave star drop",
+      "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160425_9a04d1ee-a0d8-4624-8261-e32a5ee0c1ab.png",
+      "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160425_a64d51f0-1fda-4deb-9f72-4b016900c832.png",
+      "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160425_1725d185-5061-4ecb-bf56-e8eb220e6dca.png"
     }
   },
   "pending": {
     "yiss_fera_uploaded_ready_to_shoot": [
-      "YF5146",
-      "YF5214",
-      "YF5244",
-      "YF6403",
-      "YF6667",
-      "YF6671-style1",
-      "YF7085",
-      "YF8147",
-      "YF8156",
-      "YF8396",
-      "YF8439",
       "YF8457"
-    ],
-    "yiwu_jd_photos_not_yet_pulled": [
-      "JDB0104010",
-      "JDBW2410021",
-      "JDB2409013",
-      "JDB201210-GN",
-      "JDB201210",
-      "JDB201083",
-      "JDR0104342-PS",
-      "JDR0104342",
-      "JDR0104337",
-      "JDR0104337-S",
-      "JDR0104333",
-      "JDS0204301-set",
-      "JDB0103317-PK",
-      "JDR0303312-7",
-      "JDE0201327",
-      "JDE0110042"
     ],
     "kavnar_photos_not_yet_pulled": [
       "B00681C",
@@ -158,7 +328,7 @@
     ]
   },
   "yiss_fera_media_ids": {
-    "_note": "Already uploaded to Higgsfield \u2014 these 20 need no re-fetch from Drive.",
+    "_note": "Already uploaded to Higgsfield — these 20 need no re-fetch from Drive.",
     "YF3925": "7b27a0f1-e272-4288-b303-5817032174c3",
     "YF3952": "f095b79a-ba7c-44ab-8676-83dfa5a64e4d",
     "YF5143": "81c85571-c1ca-48c1-be4a-3f0b7e491c04",
@@ -180,5 +350,83 @@
     "YF8453": "412a6637-9262-4485-b50b-574e1ad72fa8",
     "YF8457": "ca6367ed-8478-4a66-8a6f-09ca6cd4c7dc"
   },
-  "_status": "8 of 62 supplier SKUs shot (all Yiss Fera). 12 Yiss Fera remain and need no further Drive access \u2014 their photos are already uploaded. Yiwu J&D and KAVNAR photos still to pull."
+  "_status": "32 supplier SKUs delivered at three frames each.",
+  "in_progress": {
+    "_note": "Frames already delivered; the listed shot is still being regenerated after a model-side failure."
+  },
+  "yiwu_jd": {
+    "_finding": "The supplier supplied ONE photo set for several different SKU codes. Verified by md5: the three photos in JDB201083, JDB201210 and JDB201210-GN are byte-identical to each other, as are those in JDB0104010 and JDBW2410021; file sizes match across JDR0104337/-S and JDR0104342/-PS. 16 codes, 11 distinct photo sets.",
+    "_selection": "Where one photo shows a range of styles, each SKU code is mapped to a distinct piece VISIBLE IN THAT PHOTO rather than inventing a colourway. The mapping below is inferred from the code suffix (-GN green, -PK pink, -S silver, -PS two-tone) and should be confirmed against the supplier's listing.",
+    "media_ids": {
+      "JDB0104010 / JDBW2410021": "59c86a01-ee91-468a-9dbf-242517fe072c",
+      "JDB201083 / JDB201210 / JDB201210-GN": "9b5443a1-fb84-4747-88aa-fc233927a344",
+      "JDB2409013": "70d33db9-1586-4343-a53b-a06ee2b4a71b",
+      "JDB0103317-PK": "7cad0ab6-7ff4-4b05-80c0-d3483cc13eb2",
+      "JDE0110042": "d600de69-61a5-4512-85ff-84ffe6556558",
+      "JDE0201327": "da8bb807-0155-4c17-804e-334315aa7627",
+      "JDR0104333": "5b9134f1-e790-4e15-be57-f1537de93e7d",
+      "JDR0104337 / JDR0104337-S": "331dc48f-ac14-4d71-86dd-99dfec476d9a",
+      "JDR0104342 / JDR0104342-PS": "69f799e9-1b6c-4041-ad87-de384e74b316",
+      "JDR0303312-7": "cafc716e-5f82-464f-88da-476774f0db46",
+      "JDS0204301-set": "a40bab11-4c51-4773-855b-579457530a7b"
+    },
+    "products": {
+      "JDB0104010": "wide hammered molten-texture gold cuff",
+      "JDBW2410021": "wavy sculptural gold cuff (W = wave)",
+      "JDB201083": "round brilliant zircon tennis bracelet",
+      "JDB201210": "clear baguette zircon tennis bracelet",
+      "JDB201210-GN": "green emerald-cut zircon tennis bracelet",
+      "JDB2409013": "paperclip and oval mixed-link chain necklace with green heart zircon stations and freshwater pearls, plus matching bracelet",
+      "JDB0103317-PK": "pink marquise and round bezel-set stone bracelet with extender",
+      "JDE0110042": "chunky irregular molten open hoop huggies, ~15mm",
+      "JDE0201327": "three-pair set - plain gold huggies with detachable clover zircon charms, clover zircon studs, round solitaire zircon studs",
+      "JDR0104333": "open adjustable ring with a marquise zircon at one terminal and a princess-cut zircon at the other",
+      "JDR0104337": "chunky granulated gold dome open ring set with zircon",
+      "JDR0104337-S": "chunky pave dome open ring in steel/white",
+      "JDR0104342": "open toi-et-moi ring, two round bezel-set zircons, all gold",
+      "JDR0104342-PS": "open toi-et-moi ring, two round bezel-set zircons, two-tone gold and steel",
+      "JDR0303312-7": "pave zircon double-V chevron ring, size 7",
+      "JDS0204301-set": "fine chain necklace with a small zircon pendant, plus matching zircon studs"
+    }
+  },
+  "kavnar": {
+    "_finding": "27 folders, 27 distinct SKUs, but R15464K and WR20902K8 share byte-identical photos (md5 494a22c5...) - the same cushion halo solitaire supplied under two codes.",
+    "_source_note": "KAVNAR packshots carry a printed KAVNAR wordmark above the product, and E20997C is a marketing card rather than a packshot. Prompts state positively that only the jewellery is photographed.",
+    "media_ids": {
+      "B00681C": "ae7b3ba3-12e3-4b18-a271-f3917dd21fa8",
+      "E11857B": "7c4d57a2-cc01-47d6-beb4-e73f54c3e98d",
+      "E14066B": "8be08860-5bc9-4aeb-948d-f2fd5796fdf6",
+      "E14776S": "e07f8b16-bcf1-4fec-86b1-98283903f3d7",
+      "E16075B": "2365bed9-4be1-4f4f-b503-a1100a9d7c01"
+    },
+    "products": {
+      "B00681C": "pastel cushion-bezel tennis bracelet, silver tone",
+      "E11857B": "pave star stud with chain drop to a larger pave star",
+      "E14066B": "pave letter D stud with a swagged flat curb chain",
+      "E14776S": "small brushed satin gold chunky huggies",
+      "E16075B": "gold bow studs set with pear and marquise clear zircons",
+      "E16355C": "silver cushion halo studs, round brilliant centre",
+      "E16676C": "silver linked oval drop earrings with baguette zircons",
+      "E19263B": "gold twisted-rope circle studs with a large white pearl centre",
+      "E19269B": "gold three-petal flower stud, oval zircon centre, pearl below",
+      "E20267O": "chunky gold braided hoop huggies",
+      "E20997C": "silver pave bow and pearl circle studs",
+      "E21572E1": "silver 925 ear-wire drops with a cushion green stone",
+      "FE02847B": "gold stud, cushion green stone above a zircon circlet and pearl",
+      "FE03586B": "gold half-hoop with fluted discs and zircon clusters",
+      "FR03136B": "gold baguette bow ring with a large white pearl",
+      "R15464K": "silver cushion halo solitaire ring with pave shoulders",
+      "R18345A1": "rose gold multi-band open ring with round green stones",
+      "WE14387B": "gold C-hoops channel-set with baguette zircons",
+      "WE24089B": "small studs, round claw-set zircon above a white pearl",
+      "WR10170K7": "silver cushion halo solitaire with pave shoulders",
+      "WR10914B2": "gold ring with a pink flower cluster",
+      "WR12518B": "gold open multi-band ring, two pave lines",
+      "WR19333K8": "silver ring, round claw-set zircon on a stepped pave band",
+      "WR20902K8": "silver cushion halo solitaire (shares R15464K's photo)",
+      "WR22648B7": "gold band flush-set with scattered round zircons",
+      "WR23024K": "silver open eternity ring with oval green stones in scalloped settings",
+      "WR23569K8": "silver ring, oval zircon in a pave halo on a twisted shank"
+    }
+  }
 }

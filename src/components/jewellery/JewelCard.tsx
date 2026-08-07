@@ -24,9 +24,31 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const sheenRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
-  const { addItem, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const [buying, setBuying] = useState(false);
+  const { addItem, setDrawerOpen, checkout, isLoading: cartLoading } = useCart();
   const altImg = piece.gallery && piece.gallery.length > 1 ? piece.gallery[1] : null;
   const zircone = piece.handle.startsWith("zircone");
+
+  const cartItem = () => ({
+    id: piece.handle,
+    variantId: piece.variantId,
+    name: piece.name,
+    price: piece.price,
+    priceLabel: piece.priceLabel,
+    currencyCode: "INR" as const,
+    image: piece.image,
+  });
+
+  /* Straight to Shopify's secure checkout with this piece in the cart. */
+  const handleBuyNow = async () => {
+    setBuying(true);
+    try {
+      await addItem(cartItem());
+      checkout();
+    } finally {
+      setBuying(false);
+    }
+  };
 
   /* Shopify-backed pre-order add: real variant, real cart. */
   const handleAdd = async () => {
@@ -164,15 +186,16 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           >
             {adding ? "ADDING…" : "ADD TO CART"}
           </button>
-          <Link
-            to={`/jewellery/${piece.handle}`}
-            className="press-scale group/btn relative inline-flex min-h-[40px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
+          <button
+            onClick={handleBuyNow}
+            disabled={buying || adding || cartLoading}
+            className="press-scale group/btn relative inline-flex min-h-[40px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory disabled:opacity-60 sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
             style={jost}
           >
             <span className="absolute inset-0 origin-left scale-x-0 bg-nf-ink transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
-            <span className="relative">VIEW</span>
+            <span className="relative">{buying ? "OPENING…" : "SHOP NOW"}</span>
             <span className="relative transition-transform duration-300 ease-out group-hover/btn:translate-x-1">→</span>
-          </Link>
+          </button>
         </div>
 
       </div>

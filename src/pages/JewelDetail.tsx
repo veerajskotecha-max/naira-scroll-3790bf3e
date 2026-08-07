@@ -395,7 +395,7 @@ const JewelDetail = () => {
             <div className="flex items-center gap-2 mt-3">
               <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
               <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong> · dispatch begins at launch
+                <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
               </span>
             </div>
 
@@ -466,7 +466,7 @@ const JewelDetail = () => {
                 className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                {buying ? "Opening checkout…" : "Pre-order now · Shop"}
+                {buying ? "Opening checkout…" : "Shop Now"}
               </button>
               <button
                 onClick={handleAddToCart}

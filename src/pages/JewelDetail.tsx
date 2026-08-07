@@ -456,17 +456,27 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* CTA block: WhatsApp pre-order leads, everything else supports */}
+            {/* CTA block: live Shopify cart + checkout, WhatsApp supports */}
             <div id="product-actions" className="mt-6">
-              <a
-                href={sizedEnquiryHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
+              <button
+                onClick={handleBuyNow}
+                disabled={buying || cartLoading}
+                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                <MessageSquare size={15} /> Order on WhatsApp
-              </a>
+                {buying ? "Opening checkout…" : "Pre-order now · Shop"}
+              </button>
+              <button
+                onClick={handleAddToCart}
+                disabled={buying || cartLoading}
+                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)] disabled:opacity-60"
+                style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)", backgroundColor: "transparent" }}
+              >
+                Add to Cart
+              </button>
+              <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
+                Secure payments · {PREORDER_NOTE_SHORT}
+              </p>
               <div className="flex gap-3 mt-3">
                 <button
                   onClick={handleWishlist}
@@ -477,16 +487,17 @@ const JewelDetail = () => {
                   {wishlisted ? "Saved" : "Wishlist"}
                 </button>
                 <a
-                  href={enquiryHref}
+                  href={sizedEnquiryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 h-[46px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 hover:border-[hsl(0_0%_45%)]"
+                  className="flex-1 h-[46px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 hover:border-[hsl(0_0%_45%)]"
                   style={{ borderColor: "hsl(0 0% 74%)", color: "hsl(0 0% 30%)" }}
                 >
-                  Custom design
+                  <MessageSquare size={13} /> WhatsApp
                 </a>
               </div>
             </div>
+
 
             {/* Jewellery assurances */}
             <JewelTrustStrip />

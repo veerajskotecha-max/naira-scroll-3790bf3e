@@ -216,6 +216,26 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               {piece.tag}
             </span>
           )}
+          {off > 0 && (
+            <span
+              className="absolute right-3 top-3 bg-nf-gold-deep px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
+              style={jost}
+            >
+              {off}% OFF
+            </span>
+          )}
+          {/* Wishlist heart — saving a piece must never navigate away. */}
+          <button
+            type="button"
+            onClick={toggleWishlist}
+            aria-label={saved ? `Remove ${piece.name} from wishlist` : `Add ${piece.name} to wishlist`}
+            aria-pressed={saved}
+            className={`press-scale absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center border bg-nf-ivory/92 transition-colors duration-200 sm:bottom-4 sm:right-4 ${
+              saved ? "border-nf-gold text-nf-gold-deep" : "border-nf-ink/15 text-nf-ink/55 hover:border-nf-ink/50 hover:text-nf-ink"
+            }`}
+          >
+            <Heart size={15} strokeWidth={1.5} fill={saved ? "currentColor" : "none"} />
+          </button>
           <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-nf-ivory/90 px-5 py-2 text-[10px] tracking-nf-30 text-nf-ink opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
             VIEW DETAILS
           </span>

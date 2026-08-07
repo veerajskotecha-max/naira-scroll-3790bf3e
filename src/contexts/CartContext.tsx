@@ -78,12 +78,29 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCart));
   }, [storedCart]);
 
-  const clearCart = useCallback(() => setStoredCart(emptyCart), []);
+  /* Persist synchronously AND update React state. The synchronous write matters:
+     "Buy now" reads the cart back from storage right after adding, before React
+     has flushed the state update + effect. Without it checkout saw a stale cart
+     and wrongly reported "Add an item before checkout". */
+  const commitCart = useCallback((next: StoredCart | ((current: StoredCart) => StoredCart)) => {
+    const resolved = typeof next === "function" ? (next as (c: StoredCart) => StoredCart)(loadCart()) : next;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(resolved));
+    } catch {
+      /* storage full / private mode — state still updates */
+    }
+    setStoredCart(resolved);
+    return resolved;
+  }, []);
 
-  const addItem = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
+  const clearCart = useCallback(() => {
+    commitCart(emptyCart);
+  }, [commitCart]);
+
+  const addItem = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1): Promise<string | null> => {
     if (!item.variantId) {
       toast.error("This product is not available for checkout yet.");
-      return;
+      return null;
     }
 
     setIsLoading(true);
@@ -95,52 +112,58 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       if (!latest.cartId) {
         const result = await createShopifyCart(item.variantId, quantity);
         if (!result) throw new Error("Could not create Shopify cart.");
-        setStoredCart({
+        commitCart({
           cartId: result.cartId,
           checkoutUrl: result.checkoutUrl,
           items: [{ ...item, quantity: result.quantity, lineId: result.lineId }],
         });
-        return;
+        return result.checkoutUrl;
       }
 
-      if (existing) {
-        if (!existing.lineId) throw new Error("Cart line is missing. Please add the item again.");
+      if (existing?.lineId) {
         const nextQuantity = existing.quantity + quantity;
         const result = await updateShopifyCartLine(latest.cartId, existing.lineId, nextQuantity);
         if (result.cartNotFound) {
           clearCart();
           toast.error("Your cart timed out. Please add the piece again.");
-          return;
+          return null;
         }
         const syncedQuantity = result.quantity ?? nextQuantity;
-        setStoredCart((current) => ({
+        const committed = commitCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
           items: current.items.map((cartItem) =>
             getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
           ),
         }));
-        return;
+        return committed.checkoutUrl;
       }
 
       const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity);
       if (result.cartNotFound) {
         clearCart();
         toast.error("Your cart timed out. Please add the piece again.");
-        return;
+        return null;
       }
-      setStoredCart((current) => ({
+      const committed = commitCart((current) => ({
         ...current,
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-        items: [...current.items, { ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null }],
+        // An orphaned local row (no lineId) for the same piece would double-count.
+        items: [
+          ...current.items.filter((cartItem) => getCartKey(cartItem.id, cartItem.size) !== key),
+          { ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null },
+        ],
       }));
+      return committed.checkoutUrl;
     } catch (error) {
       console.error("Failed to add Shopify item", error);
       toast.error("Could not add this item to cart.");
+      return null;
     } finally {
       setIsLoading(false);
     }
-  }, [clearCart]);
+  }, [clearCart, commitCart]);
+
 
   const removeItem = useCallback(async (id: string, size?: string) => {
     const latest = loadCart();

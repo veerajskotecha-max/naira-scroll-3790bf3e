@@ -11,8 +11,8 @@ export type JewelCategory = "Rings" | "Bracelets" | "Earrings" | "Necklaces";
 export const PREORDER_LABEL = "Pre-order open";
 export const LAUNCH_DATE_LABEL = "15 August";
 export const PREORDER_NOTE =
-  "Pre-order open — we launch on 15 August. All orders are dispatched after 15 August.";
-export const PREORDER_NOTE_SHORT = "Ships after 15 August";
+  "Pre-order open — delivery will start 15 August.";
+export const PREORDER_NOTE_SHORT = "Delivery starts 15 August";
 
 export interface JewelPiece {
   handle: string;

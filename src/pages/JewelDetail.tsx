@@ -363,10 +363,20 @@ const JewelDetail = () => {
             </h1>
 
             {/* Live price from the Shopify listing */}
-            <div className="mt-3 flex items-baseline gap-2">
+            <div className="mt-3 flex flex-wrap items-baseline gap-2">
               <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
                 {piece.priceLabel}
               </span>
+              {piece.compareAtLabel && (
+                <>
+                  <span className="text-[14px] line-through" style={{ color: "hsl(0 0% 55%)" }}>
+                    {piece.compareAtLabel}
+                  </span>
+                  <span className="text-[11.5px] font-medium tracking-[0.04em]" style={{ color: "#8A6A2A" }}>
+                    {Math.round(((piece.compareAtPrice! - piece.price) / piece.compareAtPrice!) * 100)}% OFF
+                  </span>
+                </>
+              )}
               <span className="text-[11px] tracking-[0.06em]" style={{ color: "hsl(0 0% 48%)" }}>
                 inclusive of all taxes
               </span>
@@ -386,6 +396,37 @@ const JewelDetail = () => {
                 cart and checkout are fully live.
               </p>
             </div>
+
+            {/* Offers — the coupon hub shoppers expect before they commit */}
+            <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
+              <p className="text-[9px] tracking-[0.24em]" style={{ color: "hsl(0 0% 45%)", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                AVAILABLE OFFERS
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {[
+                  { code: "NAIRA10", text: "10% off your first order" },
+                  { code: null, text: "Free insured shipping on every order across India" },
+                  { code: null, text: "6-month plating assurance on all demi-fine pieces" },
+                ].map((o) => (
+                  <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                    <span aria-hidden="true" style={{ color: "#B0843A" }}>✦</span>
+                    <span>
+                      {o.code && (
+                        <strong
+                          className="mr-1.5 border px-1.5 py-[1px] text-[10.5px] tracking-[0.1em] font-medium"
+                          style={{ borderColor: "hsl(36 40% 76%)", color: "#8A6A2A" }}
+                        >
+                          {o.code}
+                        </strong>
+                      )}
+                      {o.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+
 
 
 

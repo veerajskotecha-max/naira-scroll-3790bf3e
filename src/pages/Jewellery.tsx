@@ -4,6 +4,11 @@ import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
+import JewelFilterBar, {
+  applyJewelFilters,
+  SORT_OPTIONS,
+  type JewelFilters,
+} from "@/components/jewellery/JewelFilterBar";
 import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";

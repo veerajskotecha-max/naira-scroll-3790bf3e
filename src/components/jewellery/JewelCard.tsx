@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
-import { PREORDER_LABEL, PREORDER_NOTE_SHORT } from "@/data/jewellery";
+
+/* Shopify CDN images ship at their upload size; asking the CDN for a
+   grid-sized render keeps packshots crisp on retina without the weight. */
+const cdn = (url: string, w: number) => {
+  if (!url.includes("cdn.shopify.com")) return url;
+  const [base, q] = url.split("?");
+  const params = new URLSearchParams(q);
+  params.set("width", String(w));
+  return `${base}?${params.toString()}`;
+};
+
 import { useCart } from "@/contexts/CartContext";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
@@ -94,6 +104,10 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
   // Mobile "greet turn": no hover on touch — the piece flashes its 3/4 angle
   // once as the card scrolls into view, so the second angle is never hidden.
+  // Timing follows the pattern used by Mejuri/Zara-style grids: a short settle
+  // after the card lands, a hold long enough to actually read the second
+  // angle, then a return. The alt frame is decoded first so the swap never
+  // flashes an empty tile.
   useEffect(() => {
     if (!altImg) return;
     if (window.matchMedia("(hover: hover)").matches) return;
@@ -102,17 +116,32 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     const back = root?.querySelector<HTMLElement>(".jc-back");
     const front = root?.querySelector<HTMLElement>(".jc-front");
     if (!root || !back || !front) return;
+    const timers: number[] = [];
     const io = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
       io.disconnect();
-      setTimeout(() => {
-        back.style.opacity = "1"; front.style.opacity = "0";
-        setTimeout(() => { back.style.opacity = "0"; front.style.opacity = "1"; }, 1100);
-      }, 420);
-    }, { threshold: 0.65 });
+      const pre = new Image();
+      pre.src = cdn(altImg, 800);
+      const run = () => {
+        timers.push(
+          window.setTimeout(() => {
+            back.style.opacity = "1";
+            front.style.opacity = "0";
+            timers.push(
+              window.setTimeout(() => {
+                back.style.opacity = "0";
+                front.style.opacity = "1";
+              }, 1600)
+            );
+          }, 650)
+        );
+      };
+      pre.decode?.().then(run).catch(run) ?? run();
+    }, { threshold: 0.6 });
     io.observe(root);
-    return () => io.disconnect();
+    return () => { io.disconnect(); timers.forEach(clearTimeout); };
   }, [altImg]);
+
 
   return (
     <article className="jewel-shop-card group flex flex-col" style={{ ["--i" as string]: index }}>
@@ -126,10 +155,30 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           className="relative overflow-hidden bg-nf-ivory-deep shadow-nf-card transition-transform duration-500 ease-out will-change-transform"
           style={{ transform: "perspective(900px)" }}
         >
-          <img src={piece.image} alt={piece.name} loading="lazy" className="jc-front aspect-square w-full object-cover transition-opacity duration-500 group-hover:opacity-0" style={{ transitionProperty: "opacity, transform" }} />
+          <img
+            src={cdn(piece.image, 800)}
+            srcSet={`${cdn(piece.image, 500)} 500w, ${cdn(piece.image, 800)} 800w, ${cdn(piece.image, 1100)} 1100w`}
+            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+            alt={piece.name}
+            loading="lazy"
+            decoding="async"
+            width={800}
+            height={800}
+            className="jc-front aspect-square w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
+          />
           {altImg && (
-            <img src={altImg} alt="" aria-hidden loading="lazy" className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <img
+              src={cdn(altImg, 800)}
+              srcSet={`${cdn(altImg, 500)} 500w, ${cdn(altImg, 800)} 800w`}
+              sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+              alt=""
+              aria-hidden
+              loading="lazy"
+              decoding="async"
+              className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+            />
           )}
+
           {zircone && (
             <span aria-hidden className="pointer-events-none absolute inset-0">
               <svg className="jc-tw absolute left-[20%] top-[22%]" width="15" height="15" viewBox="0 0 20 20"><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
@@ -169,13 +218,16 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         <h3 className="mt-1.5 text-[18px] leading-tight text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]" style={velista}>
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
-        <p className="mt-2 inline-flex items-center gap-1.5 text-[9.5px] uppercase tracking-nf-18 text-nf-gold-shadow sm:mt-2.5 sm:text-[10.5px]" style={jost}>
-          <span aria-hidden className="h-[5px] w-[5px] rounded-full bg-nf-gold" />
+        {/* Price: the single most-scanned element on a grid card, so it reads
+            at title weight in ink rather than as a faint gold caption. */}
+        <p
+          className="mt-2 text-[15px] font-medium leading-none text-nf-ink sm:mt-2.5 sm:text-[17px]"
+          style={{ ...jost, fontVariantNumeric: "tabular-nums" }}
+        >
           {piece.priceLabel}
         </p>
-        <p className="mt-1 text-[8.5px] uppercase tracking-nf-18 text-nf-ink/45 sm:text-[9.5px]" style={jost}>
-          {PREORDER_LABEL} · {PREORDER_NOTE_SHORT}
-        </p>
+        {/* Pre-order / delivery wording lives on the product page only. */}
+
         <div className="mt-2.5 flex w-full flex-col items-center gap-2 sm:mt-3">
           <button
             onClick={handleAdd}

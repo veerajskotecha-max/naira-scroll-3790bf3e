@@ -265,7 +265,8 @@ const Footer = () => {
 
                 {i < arr.length - 1 && <span className="mx-2 opacity-40">·</span>}
               </span>
-            ))}
+            );})}
+
           </p>
         </div>
 

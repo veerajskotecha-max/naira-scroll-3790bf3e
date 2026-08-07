@@ -7,8 +7,12 @@
 
 export type JewelCategory = "Rings" | "Bracelets" | "Earrings" | "Necklaces";
 
-/** Legacy label, kept for wishlist entries saved during the pre-order window. */
+/** Pre-order window: orders are open now, dispatch begins at launch. */
 export const PREORDER_LABEL = "Pre-order open";
+export const LAUNCH_DATE_LABEL = "15 August";
+export const PREORDER_NOTE =
+  "Pre-order open — we launch on 15 August. All orders are dispatched after 15 August.";
+export const PREORDER_NOTE_SHORT = "Ships after 15 August";
 
 export interface JewelPiece {
   handle: string;
@@ -18,9 +22,17 @@ export interface JewelPiece {
   number: string;
   price: number;
   priceLabel: string;
+  /** Shopify variant GID — used for Add to Cart and checkout. */
+  variantId: string;
+  availableForSale: boolean;
   image: string;
   gallery?: string[];
   blurb: string;
+  /** Full Shopify listing description. */
+  description?: string;
+  stylingTip?: string;
+  details?: string;
+  care?: string;
   materials: string;
   tag?: string;
 }
@@ -29,8 +41,9 @@ export const WHATSAPP_NUMBER = "919561557935";
 
 export const jewelleryEnquiryUrl = (name: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to order the "${name}" from The Gilded Hour. Could you share availability and details?`
+    `Hi Naira Flore, I'd love to pre-order the "${name}" from The Gilded Hour. Could you share availability and details?`
   )}`;
+
 
 export const formatJewelPrice = (v: number) =>
   `₹${v.toLocaleString("en-IN")}`;

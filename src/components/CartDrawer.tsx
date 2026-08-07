@@ -96,41 +96,46 @@ const CartDrawer = () => {
               </div>
             </div>
 
-            <Separator />
+            <Separator className="shrink-0" />
 
-            {/* Items */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-              {items.map((item) => (
-                <div key={`${item.id}-${item.size}`} className="flex gap-3">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-[80px] h-[100px] object-cover shrink-0"
-                    width={80}
-                    height={100}
-                  />
-                  <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                    <div>
-                      <p className="font-cormorant text-[15px] font-semibold truncate" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
-                      {item.selectedOptions?.length ? <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>{item.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(" · ")}</p> : item.size && <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>Size: {item.size}</p>}
-                      <p className="font-cormorant text-[15px] font-bold mt-1" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
-                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} className="press-scale w-11 h-11 flex items-center justify-center hover:bg-muted" aria-label="Decrease quantity"><Minus size={12} /></button>
-                        <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} className="press-scale w-11 h-11 flex items-center justify-center hover:bg-muted" aria-label="Increase quantity"><Plus size={12} /></button>
+            {/* Scroll region: items + upsell share one scroller so the footer
+                CTA always stays visible, even on short mobile screens. */}
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+              <div className="px-5 py-4 space-y-4">
+                {items.map((item) => (
+                  <div key={`${item.id}-${item.size}`} className="flex gap-3">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-[72px] h-[90px] object-cover shrink-0"
+                      width={72}
+                      height={90}
+                      loading="lazy"
+                    />
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                      <div>
+                        <p className="font-cormorant text-[15px] font-semibold truncate" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
+                        {item.selectedOptions?.length ? <p className="text-[12px] mt-0.5 truncate" style={{ color: "hsl(0 0% 55%)" }}>{item.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(" · ")}</p> : item.size && <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>Size: {item.size}</p>}
+                        <p className="font-cormorant text-[15px] font-bold mt-1" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
                       </div>
-                      <button onClick={() => removeItem(item.id, item.size)} className="p-2 transition-colors hover:bg-muted min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label={`Remove ${item.name}`}>
-                        <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
-                      </button>
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
+                          <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Decrease quantity"><Minus size={12} /></button>
+                          <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Increase quantity"><Plus size={12} /></button>
+                        </div>
+                        <button onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="p-2 transition-colors hover:bg-muted min-h-[40px] min-w-[40px] flex items-center justify-center disabled:opacity-50" aria-label={`Remove ${item.name}`}>
+                          <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <CartUpsell />
             </div>
 
-            <CartUpsell />
 
             {/* Footer */}
             <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: "hsl(0 0% 90%)" }}>

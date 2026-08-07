@@ -246,11 +246,10 @@ const JewelDetail = () => {
             key={i}
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-            style={{ aspectRatio: "4/5", backgroundColor: "#F4EBE2" }}
+            style={{ aspectRatio: "3/4", backgroundColor: "#F4EBE2" }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            {/* contain keeps the whole piece in frame on phones — no cropped pendants */}
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain" />
+            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
           </button>
         ))}
       </div>
@@ -281,7 +280,7 @@ const JewelDetail = () => {
             style={{ backgroundColor: "#F4EBE2", height: "100%" }}
             aria-label={`Open ${piece.name} image ${(images[idx] ? idx : 0) + 1} full screen`}
           >
-            <img src={images[idx] ?? images[0]} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain p-2 transition-transform duration-700 ease-out hover:scale-[1.03]" />
+            <img src={images[idx] ?? images[0]} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
           </button>
         ))}
       </div>

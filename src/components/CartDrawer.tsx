@@ -137,10 +137,13 @@ const CartDrawer = () => {
             </div>
 
 
-            {/* Footer */}
-            <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: "hsl(0 0% 90%)" }}>
+            {/* Footer — always visible above the fold */}
+            <div
+              className="shrink-0 border-t px-5 pt-3 space-y-2.5 pb-[max(12px,env(safe-area-inset-bottom))]"
+              style={{ borderColor: "hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 100%)" }}
+            >
               {/* Delivery */}
-              <div className="flex items-center gap-2 py-2 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
+              <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
                   Estimated delivery: <strong className="font-semibold">3–7 working days</strong>
@@ -158,29 +161,27 @@ const CartDrawer = () => {
               <button
                 onClick={checkout}
                 disabled={isLoading || isSyncing}
-                className="press-scale w-full py-4 text-[13px] font-medium uppercase tracking-[0.1em] flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
+                className="press-scale w-full py-3.5 text-[13px] font-medium uppercase tracking-[0.1em] flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
-              {/* Trust badges */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center gap-2 flex-wrap justify-center">
-                  {["UPI", "VISA", "MC", "RAZORPAY"].map((b) => (
-                    <span key={b} className="px-2 py-1 text-[10px] font-bold border rounded tracking-wide" style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 45%)" }}>{b}</span>
-                  ))}
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Shield size={11} strokeWidth={1.5} style={{ color: "hsl(0 0% 55%)" }} />
-                  <span className="text-[11px]" style={{ color: "hsl(0 0% 55%)" }}>256-bit SSL encrypted · 100% secure</span>
-                </div>
+              {/* Trust row */}
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                {["UPI", "VISA", "MC", "RAZORPAY"].map((b) => (
+                  <span key={b} className="px-1.5 py-0.5 text-[9px] font-bold border rounded tracking-wide" style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 45%)" }}>{b}</span>
+                ))}
+                <span className="flex items-center gap-1 text-[10px]" style={{ color: "hsl(0 0% 55%)" }}>
+                  <Shield size={10} strokeWidth={1.5} /> Secure checkout
+                </span>
               </div>
-              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[44px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>
+              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[36px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>
                 Continue Shopping
               </Link>
             </div>
+
           </>
         )}
       </SheetContent>

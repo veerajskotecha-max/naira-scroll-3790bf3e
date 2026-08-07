@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
-import { PREORDER_LABEL, PREORDER_NOTE_SHORT } from "@/data/jewellery";
+
+/* Shopify CDN images ship at their upload size; asking the CDN for a
+   grid-sized render keeps packshots crisp on retina without the weight. */
+const cdn = (url: string, w: number) => {
+  if (!url.includes("cdn.shopify.com")) return url;
+  const [base, q] = url.split("?");
+  const params = new URLSearchParams(q);
+  params.set("width", String(w));
+  return `${base}?${params.toString()}`;
+};
+
 import { useCart } from "@/contexts/CartContext";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";

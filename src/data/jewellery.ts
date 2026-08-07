@@ -38,6 +38,8 @@ export interface JewelPiece {
   care?: string;
   materials: string;
   tag?: string;
+  /** Shopify tags — power the style/occasion filters on the listing page. */
+  tags?: string[];
 }
 
 export const WHATSAPP_NUMBER = "919561557935";

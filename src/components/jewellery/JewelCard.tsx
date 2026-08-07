@@ -155,10 +155,30 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           className="relative overflow-hidden bg-nf-ivory-deep shadow-nf-card transition-transform duration-500 ease-out will-change-transform"
           style={{ transform: "perspective(900px)" }}
         >
-          <img src={piece.image} alt={piece.name} loading="lazy" className="jc-front aspect-square w-full object-cover transition-opacity duration-500 group-hover:opacity-0" style={{ transitionProperty: "opacity, transform" }} />
+          <img
+            src={cdn(piece.image, 800)}
+            srcSet={`${cdn(piece.image, 500)} 500w, ${cdn(piece.image, 800)} 800w, ${cdn(piece.image, 1100)} 1100w`}
+            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+            alt={piece.name}
+            loading="lazy"
+            decoding="async"
+            width={800}
+            height={800}
+            className="jc-front aspect-square w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
+          />
           {altImg && (
-            <img src={altImg} alt="" aria-hidden loading="lazy" className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <img
+              src={cdn(altImg, 800)}
+              srcSet={`${cdn(altImg, 500)} 500w, ${cdn(altImg, 800)} 800w`}
+              sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+              alt=""
+              aria-hidden
+              loading="lazy"
+              decoding="async"
+              className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+            />
           )}
+
           {zircone && (
             <span aria-hidden className="pointer-events-none absolute inset-0">
               <svg className="jc-tw absolute left-[20%] top-[22%]" width="15" height="15" viewBox="0 0 20 20"><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>

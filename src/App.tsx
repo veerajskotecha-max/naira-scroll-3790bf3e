@@ -41,6 +41,8 @@ const CartCheckoutRedirect = lazy(() => import("./pages/CartCheckoutRedirect.tsx
 const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
 const Journal = lazy(() => import("./pages/Journal.tsx"));
 const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
+const Gifting = lazy(() => import("./pages/Gifting.tsx"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 
 const queryClient = new QueryClient();
 

@@ -39,8 +39,17 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const [adding, setAdding] = useState(false);
   const [buying, setBuying] = useState(false);
   const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { toggleItem, isWishlisted } = useWishlist();
+  const saved = isWishlisted(piece.handle);
+  const off = discountPercent(piece);
   const altImg = piece.gallery && piece.gallery.length > 1 ? piece.gallery[1] : null;
   const zircone = piece.handle.startsWith("zircone");
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+  };
 
   const cartItem = () => ({
     id: piece.handle,

@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
-import { CartPromoField, CartUpsell } from "@/components/cart/CartExtras";
+import { CartPromoField } from "@/components/cart/CartExtras";
 
 const FREE_SHIPPING_THRESHOLD = 2999;
 
@@ -132,9 +132,8 @@ const CartDrawer = () => {
                   </div>
                 ))}
               </div>
-
-              <CartUpsell />
             </div>
+
 
 
             {/* Footer — always visible above the fold */}

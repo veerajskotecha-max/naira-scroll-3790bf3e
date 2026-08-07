@@ -12,14 +12,19 @@ const PageCurtain = () => {
   const { pathname, search } = useLocation();
   const [key, setKey] = useState(0);
   const first = useRef(true);
+  const lastPath = useRef(pathname);
 
   useEffect(() => {
+    const pathChanged = lastPath.current !== pathname;
+    lastPath.current = pathname;
     if (first.current) { first.current = false; return; }
+    if (!pathChanged) return; // filter chips only rewrite the query — never curtain them
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const isCategoryView = new URLSearchParams(search).has("category");
     if (!isCategoryView) return;
     setKey((k) => k + 1);
   }, [pathname, search]);
+
 
   if (key === 0) return null;
 

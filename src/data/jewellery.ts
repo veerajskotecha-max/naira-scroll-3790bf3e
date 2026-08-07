@@ -43,7 +43,7 @@ export const jewellery: JewelPiece[] = [
     sku: "WR10914B2",
     number: "01",
     price: 1999,
-    priceLabel: "₹1,999"
+    priceLabel: "₹1,999",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_1_main.jpg?v=1786123161",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_1_main.jpg?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_3_alt.jpg?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_4_alt.jpg?v=1786123161"],
     blurb: "Soft pink, gathered into a flower. The front of this ring holds a round pink cubic zirconia of about 5mm at the centre, ringed by eight smaller pink stones of about 2.5mm, with one more set on the shoulder to o",
@@ -56,7 +56,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDR0303312-7",
     number: "02",
     price: 1449,
-    priceLabel: "₹1,449"
+    priceLabel: "₹1,449",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_1_main.jpg?v=1786123101",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_1_main.jpg?v=1786123101", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_2_worn.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_3_alt.jpg?v=1786123103", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_4_alt.jpg?v=1786123097"],
     blurb: "A band that comes to a soft point. This ring is shaped as a double V, with two fine pave lines of small round clear cubic zirconia running along the band and meeting at the chevron.",
@@ -69,7 +69,7 @@ export const jewellery: JewelPiece[] = [
     sku: "WR20902K8",
     number: "03",
     price: 1499,
-    priceLabel: "₹1,499"
+    priceLabel: "₹1,499",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_1_main.jpg?v=1786118446",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_1_main.jpg?v=1786118446", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_1_main_24b2196c-37d8-458f-ab35-6cebc2c11eea.jpg?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_2_worn.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_3_alt.jpg?v=1786123097"],
     blurb: "Cool silver tone, built around one clear centre. An 8mm round brilliant clear cubic zirconia sits in four claws at the heart of a cushion shaped pave halo of about 12mm, with pave running down both shoulders an",
@@ -82,7 +82,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDR0104342-PS",
     number: "04",
     price: 1899,
-    priceLabel: "₹1,899"
+    priceLabel: "₹1,899",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_1_main.jpg?v=1786123228",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_1_main.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_2_worn.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_3_alt.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_4_alt.jpg?v=1786123228"],
     blurb: "Two metals, meeting on one hand. This open ring sets two round clear cubic zirconia of about 10mm each in deep bezels, one side finished in cool steel tone and the other in warm gold tone, with the two tone fin",
@@ -95,7 +95,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDR0104342",
     number: "05",
     price: 1399,
-    priceLabel: "₹1,399"
+    priceLabel: "₹1,399",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_1_main.jpg?v=1786123097",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_1_main.jpg?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_2_worn.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_3_alt.jpg?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_4_alt.jpg?v=1786123097"],
     blurb: "Two stones, sitting slightly apart. This open ring carries two round clear cubic zirconia of about 10mm each, set in deep polished gold bezels at either end of a slim round shank in the toi et moi form.",
@@ -108,7 +108,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDR0104337",
     number: "06",
     price: 1949,
-    priceLabel: "₹1,949"
+    priceLabel: "₹1,949",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_1_main.jpg?v=1786123228",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_1_main.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_3_alt.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_4_alt.jpg?v=1786123228"],
     blurb: "A surface you notice before you notice the stones. The dome on this open ring measures about 18mm long and 14mm wide, its whole face covered in fine raised gold granulation with small clear cubic zirconia set a",
@@ -121,7 +121,7 @@ export const jewellery: JewelPiece[] = [
     sku: "FR03136B",
     number: "07",
     price: 1099,
-    priceLabel: "₹1,099"
+    priceLabel: "₹1,099",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_1_main.jpg?v=1786123098",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_1_main.jpg?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_2_worn.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_3_alt.jpg?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_4_alt.jpg?v=1786123098"],
     blurb: "A bow, tied once and kept. The front of this ring is formed from two flat gold loops channel set along their length with rectangular baguette clear cubic zirconia, tied at a polished gold knot, with a round whi",
@@ -134,7 +134,7 @@ export const jewellery: JewelPiece[] = [
     sku: "R18345A1",
     number: "08",
     price: 1999,
-    priceLabel: "₹1,999"
+    priceLabel: "₹1,999",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_1_main.jpg?v=1786123246",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_1_main.jpg?v=1786123246", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_2_worn.png?v=1786123246", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_3_alt.jpg?v=1786123246", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_4_alt.jpg?v=1786123246"],
     blurb: "Four fine lines, warmed to rose. This open ring is built from four parallel bands, two pave set and two plain, with four round emerald green cubic zirconia of about 4mm placed at staggered points.",
@@ -147,7 +147,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF5214",
     number: "09",
     price: 999,
-    priceLabel: "₹999"
+    priceLabel: "₹999",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_1_main.jpg?v=1786123161",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_1_main.jpg?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_3_alt.jpg?v=1786123160", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_4_alt.jpg?v=1786123160"],
     blurb: "A wide band, marked with small points of light. The surface carries repeating four pointed star motifs in low relief, each one centred on a small clear cubic zirconia, so the pattern runs the whole way around t",
@@ -160,7 +160,7 @@ export const jewellery: JewelPiece[] = [
     sku: "WR23024K",
     number: "10",
     price: 1899,
-    priceLabel: "₹1,899"
+    priceLabel: "₹1,899",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_1_main.jpg?v=1786123229",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_1_main.jpg?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_2_worn.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_3_alt.jpg?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_4_alt.jpg?v=1786123229"],
     blurb: "Green and clear, alternating all the way round. Oval emerald green cubic zirconia of about 5mm by 4mm are claw set around the band, each cradled by a scalloped pave setting of small clear stones.",
@@ -173,7 +173,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDB201083",
     number: "11",
     price: 1549,
-    priceLabel: "₹1,549"
+    priceLabel: "₹1,549",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_1_main.png?v=1786123161",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_1_main.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_2_worn.png?v=1786123160", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_3_alt.png?v=1786123161"],
     blurb: "A cleaner kind of shine, cut in straight lines. This 18cm bracelet sets rectangular step cut clear cubic zirconia of about 3mm by 2mm flush into a fine gold channel, so there are no raised claws anywhere along ",
@@ -186,7 +186,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF6671",
     number: "12",
     price: 1849,
-    priceLabel: "₹1,849"
+    priceLabel: "₹1,849",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_1_main.png?v=1786122969",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_1_main.png?v=1786122969", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_2_worn.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_4_alt.png?v=1786122968"],
     blurb: "Two different endings on one open circle. The cuff measures about 6cm by 5.5cm on 1.5mm wire, one terminal set with an irregular white mother of pearl slab of about 1.8cm by 0.7cm in a slim bezel, and the other",
@@ -199,7 +199,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF3925",
     number: "13",
     price: 1549,
-    priceLabel: "₹1,549"
+    priceLabel: "₹1,549",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_1_main.png?v=1786123098",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_1_main.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_2_worn.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_3_alt.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_4_alt.png?v=1786123098"],
     blurb: "Irregular shapes, strung with a little gold between them. This bracelet links large baroque shell pearls with short runs of gold chain, closing with a gold toggle bar and ring clasp that sits neatly on the wris",
@@ -212,7 +212,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF5144-BRA",
     number: "14",
     price: 1999,
-    priceLabel: "₹1,999"
+    priceLabel: "₹1,999",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_1_main.png?v=1786123096",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_1_main.png?v=1786123096", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_2_worn.png?v=1786123096", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_3_alt.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_4_alt.png?v=1786123097"],
     blurb: "Weight, worn plainly. This 18cm bracelet is a thick flat curb link chain in warm gold tone, closing with a lobster clasp and a short extender chain so the fit can move a little.",
@@ -225,7 +225,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF6667",
     number: "15",
     price: 1649,
-    priceLabel: "₹1,649"
+    priceLabel: "₹1,649",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_1_main.png?v=1786123097",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_1_main.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_2_worn.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_3_alt.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_4_alt.png?v=1786123097"],
     blurb: "Pearls, but with a little structure around them. This 18cm bracelet alternates polished oval paperclip links of about 12mm with small white rice shaped freshwater pearls of about 7mm by 5mm, so the chain reads ",
@@ -238,7 +238,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF7085",
     number: "16",
     price: 1449,
-    priceLabel: "₹1,449"
+    priceLabel: "₹1,449",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_1_main.png?v=1786122748",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_4_alt.png?v=1786122749"],
     blurb: "A single line of light around the wrist. This 18cm bracelet runs a continuous row of round brilliant clear cubic zirconia of about 3mm, each stone held in a fine four prong gold setting, with one polished recta",
@@ -251,7 +251,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDB201210",
     number: "17",
     price: 1049,
-    priceLabel: "₹1,049"
+    priceLabel: "₹1,049",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_1_main.png?v=1786122749",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_1_main.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_2_worn.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_3_alt.png?v=1786122749"],
     blurb: "Nothing sparkles quite like an unbroken line. This 18cm bracelet holds round brilliant clear cubic zirconia of about 3mm, every stone in a fine four prong gold setting that links straight into the next, with no",
@@ -264,7 +264,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDB201210-GN",
     number: "18",
     price: 999,
-    priceLabel: "₹999"
+    priceLabel: "₹999",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_1_main.png?v=1786123161",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_1_main.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_3_alt.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_4_alt.png?v=1786123161"],
     blurb: "Deep green, running the length of the wrist. This 18cm bracelet is set with rectangular step cut emerald green cubic zirconia of about 4mm by 3mm, placed side by side in fine gold so the colour reads as one con",
@@ -277,7 +277,7 @@ export const jewellery: JewelPiece[] = [
     sku: "WE14387B",
     number: "19",
     price: 2849,
-    priceLabel: "₹2,849"
+    priceLabel: "₹2,849",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_1_main.png?v=1786123162",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_1_main.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_2_worn.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_3_alt.png?v=1786123163", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_4_alt.png?v=1786123162"],
     blurb: "A curve of straight lines. These open hoops measure about 20mm across and are channel set the whole way round with baguette cut clear cubic zirconia, laid flush so no claws break the surface.",
@@ -290,7 +290,7 @@ export const jewellery: JewelPiece[] = [
     sku: "E14776S",
     number: "20",
     price: 1449,
-    priceLabel: "₹1,449"
+    priceLabel: "₹1,449",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_1_main.png?v=1786123228",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_1_main.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_3_alt.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_4_alt.png?v=1786123228"],
     blurb: "A soft satin finish instead of a mirror shine. These huggie hoops measure about 12mm across with a wide flat band roughly 6mm deep, so they read as chunky without adding much weight.",
@@ -303,7 +303,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDE0201327",
     number: "21",
     price: 2749,
-    priceLabel: "₹2,749"
+    priceLabel: "₹2,749",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_1_main.png?v=1786122748",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_4_alt.png?v=1786122748"],
     blurb: "Three ways to wear one idea. This set brings together gold huggie hoops of about 12mm with detachable four petal clover charms of about 8mm, a pair of clover studs, and round solitaire studs of about 5mm.",
@@ -316,7 +316,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF8147",
     number: "22",
     price: 1949,
-    priceLabel: "₹1,949"
+    priceLabel: "₹1,949",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_1_main.png?v=1786123162",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_1_main.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_2_worn.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_3_alt.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_4_alt.png?v=1786123162"],
     blurb: "Fine gold wire, opened out like a flower. Each stud is a flat five petal bloom of about 20mm across, worked in radiating gold wire filigree with a round white freshwater pearl of about 8mm seated at the centre.",
@@ -329,7 +329,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDE0110042",
     number: "23",
     price: 2949,
-    priceLabel: "₹2,949"
+    priceLabel: "₹2,949",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_1_main.png?v=1786122748",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_2_worn.png?v=1786122747", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_3_alt.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_4_editorial.jpg?v=1786122747"],
     blurb: "Some shapes look like they were poured rather than made. These chunky open huggie hoops measure about 15mm across, with a thick irregular band that swells and narrows as it travels around the circle.",
@@ -342,7 +342,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF8333",
     number: "24",
     price: 1899,
-    priceLabel: "₹1,899"
+    priceLabel: "₹1,899",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_1_main.png?v=1786123227",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_1_main.png?v=1786123227", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_2_worn.png?v=1786123227", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_3_alt.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_4_alt.png?v=1786123228"],
     blurb: "A pearl, and a small weight below it. Each stud seats a round white shell pearl on the lobe with a polished gold sphere suspended directly beneath, so the drop swings gently as you move.",
@@ -355,7 +355,7 @@ export const jewellery: JewelPiece[] = [
     sku: "WE24089B",
     number: "25",
     price: 1399,
-    priceLabel: "₹1,399"
+    priceLabel: "₹1,399",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_1_main.png?v=1786123247",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_1_main.png?v=1786123247", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_2_worn.png?v=1786123247", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_3_alt.png?v=1786123247", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_4_alt.png?v=1786123247"],
     blurb: "Two textures, stacked close to the lobe. Each stud stands about 12mm tall, with a round clear cubic zirconia of about 5mm held in four claws above a round white freshwater pearl of about 7mm.",
@@ -368,7 +368,7 @@ export const jewellery: JewelPiece[] = [
     sku: "E16075B",
     number: "26",
     price: 2299,
-    priceLabel: "₹2,299"
+    priceLabel: "₹2,299",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_1_main.png?v=1786122967",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_1_main.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_2_worn.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_4_alt.png?v=1786122967"],
     blurb: "A ribbon, held still in gold. These studs measure about 15mm wide and are shaped as a soft bow, built from pear cut and tapered clear cubic zirconia held in fine gold claws so the whole form reads as one contin",
@@ -381,7 +381,7 @@ export const jewellery: JewelPiece[] = [
     sku: "E16355C",
     number: "27",
     price: 1899,
-    priceLabel: "₹1,899"
+    priceLabel: "₹1,899",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_1_main.png?v=1786123162",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_1_main.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_2_worn.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_3_alt.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_4_alt.png?v=1786123162"],
     blurb: "Cool silver tone, close to the lobe. Each stud measures about 12mm square and holds a round brilliant clear cubic zirconia of about 7mm at the centre, framed by a cushion shaped pave halo of smaller clear stone",
@@ -394,7 +394,7 @@ export const jewellery: JewelPiece[] = [
     sku: "FE03586B",
     number: "28",
     price: 2849,
-    priceLabel: "₹2,849"
+    priceLabel: "₹2,849",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_1_main.png?v=1786123161",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_1_main.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_3_alt.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_4_alt.png?v=1786123161"],
     blurb: "An arc that builds as it climbs. These open half hoops measure about 22mm across, each one made from alternating fluted gold discs of about 6mm and clusters of small round clear cubic zirconia, so texture and s",
@@ -407,7 +407,7 @@ export const jewellery: JewelPiece[] = [
     sku: "FE02847B",
     number: "29",
     price: 1499,
-    priceLabel: "₹1,499"
+    priceLabel: "₹1,499",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_1_main.png?v=1786123229",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_1_main.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_2_worn.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_3_alt.png?v=1786123230", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_4_alt.png?v=1786123229"],
     blurb: "Colour above, and a soft white centre below. Each stud stands about 20mm tall, with a cushion cut emerald green cubic zirconia of about 10mm set over an open circlet of small clear cubic zirconia and gold point",
@@ -420,7 +420,7 @@ export const jewellery: JewelPiece[] = [
     sku: "E20267O",
     number: "30",
     price: 2349,
-    priceLabel: "₹2,349"
+    priceLabel: "₹2,349",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_1_main.png?v=1786122748",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_4_alt.png?v=1786122748"],
     blurb: "Texture does the talking here. These hoops measure about 25mm across and each one is a thick braided rope of gold strands, worked so the surface reads as raised ridge and shadow rather than a single smooth curv",
@@ -433,7 +433,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF5144",
     number: "31",
     price: 2449,
-    priceLabel: "₹2,449"
+    priceLabel: "₹2,449",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_2_worn.png?v=1786123099", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_3_alt.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_4_alt.png?v=1786123099"],
     blurb: "A chain with enough presence to be the whole outfit. This necklace is built from bold elongated oval paperclip links in warm gold tone, with one link pave set with clear cubic zirconia so a single point of spar",
@@ -446,7 +446,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF5146",
     number: "32",
     price: 2149,
-    priceLabel: "₹2,149"
+    priceLabel: "₹2,149",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_1_main.png?v=1786123228",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_1_main.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_3_alt.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_4_alt.png?v=1786123228"],
     blurb: "One small stone on a very neat chain. This necklace uses a fine gold box chain, built from square links that hold their shape and resist twisting through the day, carrying a small rectangular clear cubic zircon",
@@ -459,7 +459,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF6618",
     number: "33",
     price: 1299,
-    priceLabel: "₹1,299"
+    priceLabel: "₹1,299",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_1_main.png?v=1786122967",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_1_main.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_2_worn.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_3_alt.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_4_alt.png?v=1786122967"],
     blurb: "A small motif that has never gone out of style. The pendant is a four leaf clover charm of about 10mm, each rounded petal set with a small round clear cubic zirconia and a fifth stone at the centre, hanging fro",
@@ -472,7 +472,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF6403",
     number: "34",
     price: 1299,
-    priceLabel: "₹1,299"
+    priceLabel: "₹1,299",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_1_main.png?v=1786122969",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_1_main.png?v=1786122969", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_2_worn.png?v=1786122969", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_4_alt.png?v=1786122969"],
     blurb: "The quietest version of a good idea. A very fine gold chain carries one small teardrop cut clear cubic zirconia held in a slim bezel, with an adjustable extender chain at the clasp so the length can shift with ",
@@ -485,7 +485,7 @@ export const jewellery: JewelPiece[] = [
     sku: "JDS0204301-set",
     number: "35",
     price: 1799,
-    priceLabel: "₹1,799"
+    priceLabel: "₹1,799",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_1_main.png?v=1786122748",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_4_alt.png?v=1786122748"],
     blurb: "A first piece of gold, and a quiet one. The set pairs a fine 1mm cable chain carrying a round clear cubic zirconia of about 4mm in a gold four prong setting with matching studs of the same 4mm size.",
@@ -498,7 +498,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF3952",
     number: "36",
     price: 2449,
-    priceLabel: "₹2,449"
+    priceLabel: "₹2,449",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_1_main.png?v=1786122968",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_1_main.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_2_worn.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_4_alt.png?v=1786122968"],
     blurb: "Small hearts, spaced out along the light. This necklace is built from fine gold paperclip links, set at intervals with small heart shaped clear cubic zirconia stations rather than clustering them at the front.",
@@ -511,7 +511,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF7085-NEC",
     number: "37",
     price: 1799,
-    priceLabel: "₹1,799"
+    priceLabel: "₹1,799",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_3_alt.png?v=1786122749"],
     blurb: "Light, laid in a single row. This 40cm necklace is set with square cut clear cubic zirconia of about 3mm, each stone in its own four claw gold setting linked directly to the next so the line never breaks.",
@@ -524,7 +524,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF8439",
     number: "38",
     price: 1849,
-    priceLabel: "₹1,849"
+    priceLabel: "₹1,849",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_1_main.png?v=1786122967",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_1_main.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_2_worn.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_4_alt.png?v=1786122968"],
     blurb: "One stone, one smooth line of gold. This necklace runs a 2mm snake chain measuring 40cm with a 5cm extender, finished at the front with a single cushion cut clear cubic zirconia of about 10mm held in a fine gol",
@@ -537,7 +537,7 @@ export const jewellery: JewelPiece[] = [
     sku: "YF5143",
     number: "39",
     price: 1999,
-    priceLabel: "₹1,999"
+    priceLabel: "₹1,999",
     image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_1_main.png?v=1786123228",
     gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_1_main.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_3_alt.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_4_alt.png?v=1786123228"],
     blurb: "A chain that closes with a turn rather than a catch. This necklace runs 50cm in a 4mm width, finished with a gold toggle bar and ring clasp of about 15mm that sits at the front or the side as you prefer.",

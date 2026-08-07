@@ -26,7 +26,11 @@ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif"
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
-const solitaire = jewellery.find((j) => j.handle === "the-vow")!;
+const solitaire =
+  jewellery.find((j) => j.handle === "golden-duet-ring") ??
+  jewellery.find((j) => j.category === "Rings") ??
+  jewellery[0];
+
 
 const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { idAttr?: string; showViewAll?: boolean; inheritBackdrop?: boolean }) => {
   const rootRef = useRef<HTMLDivElement>(null);

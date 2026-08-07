@@ -169,13 +169,16 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         <h3 className="mt-1.5 text-[18px] leading-tight text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]" style={velista}>
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
-        <p className="mt-2 inline-flex items-center gap-1.5 text-[9.5px] uppercase tracking-nf-18 text-nf-gold-shadow sm:mt-2.5 sm:text-[10.5px]" style={jost}>
-          <span aria-hidden className="h-[5px] w-[5px] rounded-full bg-nf-gold" />
+        {/* Price: the single most-scanned element on a grid card, so it reads
+            at title weight in ink rather than as a faint gold caption. */}
+        <p
+          className="mt-2 text-[15px] font-medium leading-none text-nf-ink sm:mt-2.5 sm:text-[17px]"
+          style={{ ...jost, fontVariantNumeric: "tabular-nums" }}
+        >
           {piece.priceLabel}
         </p>
-        <p className="mt-1 text-[8.5px] uppercase tracking-nf-18 text-nf-ink/45 sm:text-[9.5px]" style={jost}>
-          {PREORDER_LABEL} · {PREORDER_NOTE_SHORT}
-        </p>
+        {/* Pre-order / delivery wording lives on the product page only. */}
+
         <div className="mt-2.5 flex w-full flex-col items-center gap-2 sm:mt-3">
           <button
             onClick={handleAdd}

@@ -41,6 +41,8 @@ const CartCheckoutRedirect = lazy(() => import("./pages/CartCheckoutRedirect.tsx
 const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
 const Journal = lazy(() => import("./pages/Journal.tsx"));
 const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
+const Gifting = lazy(() => import("./pages/Gifting.tsx"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -72,7 +74,10 @@ const AppShell = () => {
           <Route path="/jewellery/:handle" element={<JewelDetail />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
+          <Route path="/gifting" element={<Gifting />} />
+          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/concepts" element={<Concepts />} />
+
           <Route path="/ring-lab" element={<RingLab />} />
           <Route path="/ring/:variant" element={<RingExample />} />
           <Route path="/about" element={<AboutUs />} />

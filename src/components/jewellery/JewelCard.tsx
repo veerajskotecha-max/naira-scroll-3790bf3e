@@ -13,6 +13,9 @@ const cdn = (url: string, w: number) => {
 };
 
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { Heart } from "lucide-react";
+import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
@@ -36,8 +39,17 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const [adding, setAdding] = useState(false);
   const [buying, setBuying] = useState(false);
   const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { toggleItem, isWishlisted } = useWishlist();
+  const saved = isWishlisted(piece.handle);
+  const off = discountPercent(piece);
   const altImg = piece.gallery && piece.gallery.length > 1 ? piece.gallery[1] : null;
   const zircone = piece.handle.startsWith("zircone");
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+  };
 
   const cartItem = () => ({
     id: piece.handle,
@@ -204,6 +216,26 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               {piece.tag}
             </span>
           )}
+          {off > 0 && (
+            <span
+              className="absolute right-3 top-3 bg-nf-gold-deep px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
+              style={jost}
+            >
+              {off}% OFF
+            </span>
+          )}
+          {/* Wishlist heart — saving a piece must never navigate away. */}
+          <button
+            type="button"
+            onClick={toggleWishlist}
+            aria-label={saved ? `Remove ${piece.name} from wishlist` : `Add ${piece.name} to wishlist`}
+            aria-pressed={saved}
+            className={`press-scale absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center border bg-nf-ivory/92 transition-colors duration-200 sm:bottom-4 sm:right-4 ${
+              saved ? "border-nf-gold text-nf-gold-deep" : "border-nf-ink/15 text-nf-ink/55 hover:border-nf-ink/50 hover:text-nf-ink"
+            }`}
+          >
+            <Heart size={15} strokeWidth={1.5} fill={saved ? "currentColor" : "none"} />
+          </button>
           <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-nf-ivory/90 px-5 py-2 text-[10px] tracking-nf-30 text-nf-ink opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
             VIEW DETAILS
           </span>
@@ -219,13 +251,10 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
         {/* Price: the single most-scanned element on a grid card, so it reads
-            at title weight in ink rather than as a faint gold caption. */}
-        <p
-          className="mt-2 text-[15px] font-medium leading-none text-nf-ink sm:mt-2.5 sm:text-[17px]"
-          style={{ ...jost, fontVariantNumeric: "tabular-nums" }}
-        >
-          {piece.priceLabel}
-        </p>
+            at title weight in ink, with the MRP struck through beside it. */}
+        <div className="mt-2 sm:mt-2.5">
+          <JewelPriceTag piece={piece} />
+        </div>
         {/* Pre-order / delivery wording lives on the product page only. */}
 
         <div className="mt-2.5 flex w-full flex-col items-center gap-2 sm:mt-3">

@@ -4,6 +4,11 @@ import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
+import JewelFilterBar, {
+  applyJewelFilters,
+  SORT_OPTIONS,
+  type JewelFilters,
+} from "@/components/jewellery/JewelFilterBar";
 import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
@@ -70,6 +75,29 @@ const Jewellery = () => {
     setSearchParams(params, { replace: true });
   };
   const { jewellery } = useLiveJewellery();
+
+  /* Sort + filters live in the URL so a filtered edit is shareable, and are
+     written with replace so the grid never jumps back to the top. */
+  const activeFilters: JewelFilters = useMemo(() => {
+    const sortParam = searchParams.get("sort");
+    const max = searchParams.get("under");
+    return {
+      sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
+      maxPrice: max ? Number(max) : null,
+      inStockOnly: searchParams.get("stock") === "in",
+      tag: searchParams.get("tag"),
+    };
+  }, [searchParams]);
+
+  const setFilters = (next: JewelFilters) => {
+    const params = new URLSearchParams(searchParams);
+    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
+    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
+    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
+    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    setSearchParams(params, { replace: true });
+  };
+
   const filterCounts = useMemo(
     () =>
       filters.reduce((acc, f) => {
@@ -78,10 +106,11 @@ const Jewellery = () => {
       }, {} as Record<"All" | JewelCategory, number>),
     [jewellery]
   );
-  const pieces = useMemo(
+  const inCategory = useMemo(
     () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
+  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters), [inCategory, activeFilters]);
 
   return (
     <>
@@ -164,6 +193,16 @@ const Jewellery = () => {
           </div>
         </div>
 
+        {/* sort + filters */}
+        <JewelFilterBar
+          pieces={inCategory}
+          value={activeFilters}
+          onChange={setFilters}
+          resultCount={pieces.length}
+        />
+
+
+
 
 
         {/* grid */}
@@ -176,7 +215,12 @@ const Jewellery = () => {
               New pieces join The Gilded Hour in small batches. The full collection is a step away.
             </p>
             <button
-              onClick={() => selectCategory("All")}
+              onClick={() => {
+                // One write: clearing filters and the category in two calls
+                // would race on the same stale search params.
+                setActive("All");
+                setSearchParams(new URLSearchParams(), { replace: true });
+              }}
               className="press-scale mt-7 border border-nf-ink px-7 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
               style={jost}
             >

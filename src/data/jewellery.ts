@@ -22,6 +22,9 @@ export interface JewelPiece {
   number: string;
   price: number;
   priceLabel: string;
+  /** MRP from Shopify's compare-at price, when the piece is on offer. */
+  compareAtPrice?: number;
+  compareAtLabel?: string;
   /** Shopify variant GID — used for Add to Cart and checkout. */
   variantId: string;
   availableForSale: boolean;
@@ -35,6 +38,8 @@ export interface JewelPiece {
   care?: string;
   materials: string;
   tag?: string;
+  /** Shopify tags — power the style/occasion filters on the listing page. */
+  tags?: string[];
 }
 
 export const WHATSAPP_NUMBER = "919561557935";

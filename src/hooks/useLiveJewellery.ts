@@ -13,17 +13,23 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
   const images = node.images.edges.map((e) => e.node.url);
   const variant = node.variants.edges[0]?.node;
   const price = variant ? Math.round(Number(variant.price.amount)) : piece.price;
+  // MRP only counts when Shopify actually has a higher compare-at price set.
+  const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
+  const compareAtPrice = compareRaw > price ? compareRaw : undefined;
 
   return {
     ...piece,
     name: node.title || piece.name,
     price,
     priceLabel: `₹${price.toLocaleString("en-IN")}`,
+    compareAtPrice,
+    compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
     variantId: variant?.id ?? piece.variantId,
     availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
     image: images[0] ?? piece.image,
     gallery: images.length ? images : piece.gallery,
     description: node.description || piece.description,
+    tags: node.tags?.length ? node.tags : piece.tags,
   };
 };
 

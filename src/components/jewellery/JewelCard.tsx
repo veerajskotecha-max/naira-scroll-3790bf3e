@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
+import { PREORDER_LABEL, PREORDER_NOTE_SHORT } from "@/data/jewellery";
+import { useCart } from "@/contexts/CartContext";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
+
 
 /* NOTE, deliberate: --font-cormorant is defined nowhere, so this whole
    declaration is invalid at computed-value time and these headings inherit

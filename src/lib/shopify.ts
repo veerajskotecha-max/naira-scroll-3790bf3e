@@ -18,6 +18,8 @@ export interface ShopifyProductVariant {
   title: string;
   availableForSale: boolean;
   price: ShopifyMoney;
+  /** Shopify "compare at" price — the MRP struck through on cards and PDPs. */
+  compareAtPrice?: ShopifyMoney | null;
   selectedOptions: ShopifySelectedOption[];
 }
 

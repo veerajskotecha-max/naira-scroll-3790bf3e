@@ -33,10 +33,88 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
   };
 };
 
+/** Shopify productType → the four listing categories used on /jewellery. */
+const CATEGORY_BY_TYPE: Record<string, JewelPiece["category"]> = {
+  ring: "Rings",
+  rings: "Rings",
+  bracelet: "Bracelets",
+  bracelets: "Bracelets",
+  anklet: "Bracelets",
+  earring: "Earrings",
+  earrings: "Earrings",
+  necklace: "Necklaces",
+  necklaces: "Necklaces",
+  pendant: "Necklaces",
+  "jewellery set": "Necklaces",
+  "jewelry set": "Necklaces",
+  set: "Necklaces",
+};
+
+const guessCategory = (node: ShopifyProductNode): JewelPiece["category"] => {
+  const byType = CATEGORY_BY_TYPE[(node.productType || "").trim().toLowerCase()];
+  if (byType) return byType;
+  const t = node.title.toLowerCase();
+  if (/ring|band/.test(t)) return "Rings";
+  if (/bracelet|cuff|anklet/.test(t)) return "Bracelets";
+  if (/earring|stud|hoop|huggie|drop/.test(t)) return "Earrings";
+  return "Necklaces";
+};
+
+/** Splits a Shopify listing description into the blurb / tip / details / care blocks. */
+const parseDescription = (raw: string) => {
+  const text = (raw || "").replace(/You will receive your piece in a Naira Petite box\.?/i, "").trim();
+  const tipMatch = text.match(/STYLING TIP:\s*([\s\S]*?)(?=Details\s|Care[A-Z]|$)/i);
+  const detailsMatch = text.match(/Details\s+([\s\S]*?)(?=Care[A-Z]|$)/);
+  const careMatch = text.match(/Care([A-Z][\s\S]*)$/);
+  const blurb = text.split(/STYLING TIP:|Details\s/)[0].trim();
+  return {
+    blurb: blurb || text,
+    stylingTip: tipMatch?.[1]?.trim(),
+    details: detailsMatch?.[1]?.trim(),
+    care: careMatch?.[1]?.trim(),
+  };
+};
+
+/** Builds a full piece for a live Shopify listing that isn't in the bundled file. */
+const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
+  const variant = node.variants.edges[0]?.node;
+  const price = variant ? Math.round(Number(variant.price.amount)) : Math.round(Number(node.priceRange.minVariantPrice.amount));
+  const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
+  const compareAtPrice = compareRaw > price ? compareRaw : undefined;
+  const images = node.images.edges.map((e) => e.node.url);
+  const parsed = parseDescription(node.description);
+
+  return {
+    handle: node.handle,
+    name: node.title,
+    category: guessCategory(node),
+    sku: "",
+    number: String(index + 1).padStart(2, "0"),
+    price,
+    priceLabel: `₹${price.toLocaleString("en-IN")}`,
+    compareAtPrice,
+    compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
+    variantId: variant?.id ?? "",
+    availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
+    image: images[0] ?? "",
+    gallery: images,
+    blurb: parsed.blurb,
+    description: node.description,
+    stylingTip: parsed.stylingTip,
+    details: parsed.details,
+    care: parsed.care,
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+    tags: node.tags,
+  };
+};
+
+/** The Shopify vendor that holds the demi-fine jewellery line. */
+const JEWELLERY_VENDOR = "naira petite";
+
 export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean } => {
   const { data } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
-    queryFn: () => fetchShopifyProducts(100),
+    queryFn: () => fetchShopifyProducts(250),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -48,8 +126,18 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean }
     .filter((piece) => byHandle.has(piece.handle))
     .map((piece) => mergeLive(piece, byHandle.get(piece.handle)));
 
-  return { jewellery: merged.length ? merged : staticJewellery, isLive: true };
+  // Every other live Naira Petite listing (added in Shopify after the bundled
+  // file was generated) is built straight from the API so nothing is missing.
+  const known = new Set(merged.map((piece) => piece.handle));
+  const extras = data
+    .filter((node) => node.vendor?.trim().toLowerCase() === JEWELLERY_VENDOR && !known.has(node.handle))
+    .map((node, i) => fromShopify(node, merged.length + i));
+
+  const all = [...merged, ...extras];
+
+  return { jewellery: all.length ? all : staticJewellery, isLive: true };
 };
+
 
 export const useLiveJewel = (handle?: string): JewelPiece | undefined => {
   const { jewellery } = useLiveJewellery();

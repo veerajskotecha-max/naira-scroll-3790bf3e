@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
@@ -8,7 +8,7 @@ import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewelle
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const hubFaqs = [
   {
@@ -41,7 +41,34 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
 const Jewellery = () => {
-  const [active, setActive] = useState<"All" | JewelCategory>("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramCategory = searchParams.get("category");
+  const initialCategory = (filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase()) ?? "All") as
+    | "All"
+    | JewelCategory;
+  const [active, setActive] = useState<"All" | JewelCategory>(initialCategory);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const didScrollToGrid = useRef(false);
+
+  /* Deep links such as /jewellery?category=Rings (the home category cards)
+     preselect the filter and drop the shopper straight onto the grid. */
+  useEffect(() => {
+    const match = filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase());
+    if (match && match !== active) setActive(match);
+    if (match && match !== "All" && !didScrollToGrid.current) {
+      didScrollToGrid.current = true;
+      window.setTimeout(() => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 260);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramCategory]);
+
+  const selectCategory = (next: "All" | JewelCategory) => {
+    setActive(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "All") params.delete("category");
+    else params.set("category", next);
+    setSearchParams(params, { replace: true });
+  };
   const { jewellery } = useLiveJewellery();
   const filterCounts = useMemo(
     () =>
@@ -111,13 +138,13 @@ const Jewellery = () => {
         </div>
 
         {/* filter */}
-        <div className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
+        <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
 
           <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
             {filters.map((f) => (
               <button
                 key={f}
-                onClick={() => setActive(f)}
+                onClick={() => selectCategory(f)}
                 aria-pressed={active === f}
                 aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
                 className={`press-scale shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
@@ -149,7 +176,7 @@ const Jewellery = () => {
               New pieces join The Gilded Hour in small batches. The full collection is a step away.
             </p>
             <button
-              onClick={() => setActive("All")}
+              onClick={() => selectCategory("All")}
               className="press-scale mt-7 border border-nf-ink px-7 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
               style={jost}
             >

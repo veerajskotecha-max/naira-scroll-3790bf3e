@@ -133,6 +133,38 @@ const JewelDetail = () => {
     `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
 
+  /* Shopify-backed pre-order: real variant, real cart, real checkout. */
+  const addToCart = async () => {
+    await addItem(
+      {
+        id: piece.handle,
+        variantId: piece.variantId,
+        name: piece.name,
+        price: piece.price,
+        priceLabel: piece.priceLabel,
+        currencyCode: "INR",
+        image: piece.image,
+        size: piece.category === "Rings" ? `US ${selectedSize}` : undefined,
+      },
+      quantity
+    );
+  };
+
+  const handleAddToCart = async () => {
+    await addToCart();
+    setDrawerOpen(true);
+  };
+
+  const handleBuyNow = async () => {
+    setBuying(true);
+    try {
+      await addToCart();
+      checkout();
+    } finally {
+      setBuying(false);
+    }
+  };
+
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });

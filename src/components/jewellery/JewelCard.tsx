@@ -13,6 +13,9 @@ const cdn = (url: string, w: number) => {
 };
 
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { Heart } from "lucide-react";
+import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 

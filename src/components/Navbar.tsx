@@ -152,6 +152,8 @@ const Navbar = ({ scrolled }: NavbarProps) => {
       </nav>
 
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+
     </>
   );
 };

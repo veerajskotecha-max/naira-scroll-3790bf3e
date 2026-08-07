@@ -262,7 +262,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         </div>
         {/* Pre-order / delivery wording lives on the product page only. */}
 
-        <div className="mt-2.5 flex w-full flex-col items-center gap-2 pt-1 sm:mt-3 [margin-top:auto]">
+        <div className="mt-auto flex w-full flex-col items-center gap-2 pt-3">
 
           <button
             onClick={handleAdd}

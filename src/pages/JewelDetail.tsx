@@ -37,7 +37,6 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
     { label: "Stone", value: stone },
     { label: "Category", value: piece.category },
     { label: "SKU", value: piece.sku },
-    { label: "SKU", value: piece.sku },
   ];
 };
 

@@ -125,7 +125,7 @@ const JewelDetail = () => {
   const related = [...sameCategory, ...otherPieces].slice(0, 4);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
+    `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
 
   const handleWishlist = () => {
@@ -311,16 +311,19 @@ const JewelDetail = () => {
               {piece.name}
             </h1>
 
-            {/* Pre-order status: a quiet label, not a price */}
-            <div className="mt-3 flex items-center gap-2">
-              <span aria-hidden className="h-[7px] w-[7px] shrink-0" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
-              <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+            {/* Live price from the Shopify listing */}
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
                 {piece.priceLabel}
+              </span>
+              <span className="text-[11px] tracking-[0.06em]" style={{ color: "hsl(0 0% 48%)" }}>
+                inclusive of all taxes
               </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Price shared on WhatsApp enquiry
+              Order or ask anything on WhatsApp — we reply within the hour.
             </p>
+
 
             {/* Key facts, at a glance */}
             <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
@@ -411,7 +414,7 @@ const JewelDetail = () => {
                 className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                <MessageSquare size={15} /> Pre-order on WhatsApp
+                <MessageSquare size={15} /> Order on WhatsApp
               </a>
               <div className="flex gap-3 mt-3">
                 <button
@@ -605,7 +608,7 @@ const JewelDetail = () => {
           className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          <MessageSquare size={14} /> Pre-order on WhatsApp
+          <MessageSquare size={14} /> Order on WhatsApp
         </a>
       </div>
 

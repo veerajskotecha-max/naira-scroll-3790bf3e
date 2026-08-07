@@ -27,15 +27,27 @@ const GildedSixCarousel = () => {
   const pinRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const bestsellers = ["the-vow", "the-halo", "the-solitaire-drop", "the-ripple-hoop", "the-sugar-tennis", "the-rosewater-line"];
+  const bestsellers = [
+    "cushion-halo-ring",
+    "solitaire-whisper-studs",
+    "riviere-eternal-bracelet",
+    "molten-bloom-hoops",
+    "riviere-eternal-necklace",
+    "baroque-bloom-cuff",
+  ];
 
   const pieces = useMemo(
-    () =>
-      bestsellers
+    () => {
+      const picked = bestsellers
         .map((handle) => jewellery.find((j) => j.handle === handle))
-        .filter((j): j is (typeof jewellery)[number] => Boolean(j)),
+        .filter((j): j is (typeof jewellery)[number] => Boolean(j));
+      // Top up from the live catalogue if any bestseller was delisted.
+      const extra = jewellery.filter((j) => !picked.includes(j)).slice(0, 6 - picked.length);
+      return [...picked, ...extra];
+    },
     []
   );
+
 
   useGSAP(
     () => {

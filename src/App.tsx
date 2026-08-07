@@ -74,7 +74,10 @@ const AppShell = () => {
           <Route path="/jewellery/:handle" element={<JewelDetail />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
+          <Route path="/gifting" element={<Gifting />} />
+          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/concepts" element={<Concepts />} />
+
           <Route path="/ring-lab" element={<RingLab />} />
           <Route path="/ring/:variant" element={<RingExample />} />
           <Route path="/about" element={<AboutUs />} />

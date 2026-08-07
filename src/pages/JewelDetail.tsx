@@ -358,8 +358,21 @@ const JewelDetail = () => {
               </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Order or ask anything on WhatsApp — we reply within the hour.
+              MRP inclusive of all taxes · free insured shipping across India
             </p>
+
+            {/* Pre-order note — the line launches 15 August */}
+            <div
+              className="mt-3 flex items-start gap-2 border px-3 py-2.5"
+              style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
+            >
+              <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
+              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now to reserve your piece — payment,
+                cart and checkout are fully live.
+              </p>
+            </div>
+
 
 
             {/* Key facts, at a glance */}

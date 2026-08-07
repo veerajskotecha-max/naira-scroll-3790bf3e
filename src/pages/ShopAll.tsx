@@ -14,7 +14,6 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 import ShopHero from "@/components/shop/ShopHero";
-import JewellerySection from "@/components/shop/JewellerySection";
 import CustomizationCTA from "@/components/product/CustomizationCTA";
 import { fetchShopifyProducts } from "@/lib/shopify";
 
@@ -201,7 +200,6 @@ const FilterSidebar = ({
 const ShopAll = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const showJewellery = location.pathname !== "/shop/indo-western";
   const showIndoWestern = location.pathname !== "/shop/jewellery";
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 50000]);
@@ -349,9 +347,6 @@ const ShopAll = () => {
           primaryCta={{ label: "Shop the Festive Edit", to: "/shop?category=festive" }}
         />
       )}
-
-      {/* ── Jewellery (Coming Soon behind feature flag) ── */}
-      {showJewellery && <JewellerySection />}
 
       {/* ── Indo-Western Outfits section header ── */}
       {showIndoWestern && (

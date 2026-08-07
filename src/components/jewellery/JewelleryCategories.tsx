@@ -33,7 +33,7 @@ const JewelleryCategories = () => (
       </div>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {cats.map((c) => (
-          <Link key={c.label} to="/jewellery" className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
+          <Link key={c.label} to={`/jewellery?category=${c.label}`} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
             <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-1200 ease-out group-hover:scale-[1.06] sm:aspect-[5/4]" />
             <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1A1614]/45 via-transparent to-transparent" />
             <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/70" />

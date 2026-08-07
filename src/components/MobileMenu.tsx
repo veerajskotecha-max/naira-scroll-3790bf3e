@@ -1,22 +1,30 @@
-import { useEffect } from "react";
-import { X, Heart, ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Heart, ShoppingBag, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { menuCategories, menuEdits, menuOccasions, menuApparel } from "@/data/navigation";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const navItems = [
-  { label: "HOME",      to: "/" },
-  { label: "JEWELLERY", to: "/jewellery" },
-  { label: "INDO-WESTERN", to: "/shop/indo-western" },
-  { label: "ABOUT",     to: "/about" },
+type Section = { label: string; to?: string; links?: { label: string; to: string }[] };
+
+const sections: Section[] = [
+  { label: "HOME", to: "/" },
+  { label: "JEWELLERY", links: menuCategories.map((c) => ({ label: c.label, to: c.to })) },
+  { label: "THE EDITS", links: menuEdits },
+  { label: "OCCASION", links: menuOccasions },
+  { label: "APPAREL", links: menuApparel },
+  { label: "GIFTING", to: "/gifting" },
+  { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },
-  { label: "CONTACT",   to: "/contact" },
+  { label: "TRACK ORDER", to: "/track-order" },
+  { label: "CONTACT", to: "/contact" },
 ];
+
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { totalItems, setDrawerOpen: openCart }       = useCart();

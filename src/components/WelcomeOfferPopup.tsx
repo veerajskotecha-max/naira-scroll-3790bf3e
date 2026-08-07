@@ -7,6 +7,7 @@ import {
   savePromoLead,
   setPromoCode,
 } from "@/lib/promo";
+import { useCart } from "@/contexts/CartContext";
 
 type Channel = "email" | "whatsapp";
 
@@ -22,12 +23,14 @@ const WelcomeOfferPopup = () => {
   const [error, setError] = useState("");
   const [claimed, setClaimed] = useState(false);
   const [copied, setCopied] = useState(false);
+  const { isDrawerOpen, totalItems } = useCart();
 
   useEffect(() => {
     if (hasSeenPromoPopup()) return;
     const timer = window.setTimeout(() => setOpen(true), 9000);
     return () => window.clearTimeout(timer);
   }, []);
+
 
   const close = () => {
     markPromoPopupSeen();

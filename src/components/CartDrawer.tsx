@@ -69,7 +69,7 @@ const CartDrawer = () => {
         ) : (
           <>
             {/* Free Shipping Progress */}
-            <div className="px-5 py-3" style={{ backgroundColor: "hsl(33 30% 97%)" }}>
+            <div className="shrink-0 px-5 py-2.5" style={{ backgroundColor: "hsl(33 30% 97%)" }}>
               {amountToFreeShipping > 0 ? (
                 <p className="text-[12px] mb-2 flex items-center gap-1.5" style={{ color: "hsl(0 0% 38%)" }}>
                   <Truck size={13} strokeWidth={1.5} />

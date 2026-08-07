@@ -35,7 +35,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>();
-  const { addItem, setDrawerOpen } = useCart();
+  const { addItem, buyNow, setDrawerOpen } = useCart();
 
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
@@ -81,9 +81,24 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
     });
   };
 
+  /* Straight to Shopify checkout with this piece added. */
   const handleBuyNow = async () => {
-    await handleAddToCart();
-    setDrawerOpen(true);
+    if (!selectedVariant?.id) {
+      toast.error("This product is currently unavailable.");
+      return;
+    }
+    await buyNow({
+      id: product?.handle ?? selectedVariant.id,
+      variantId: selectedVariant.id,
+      name: title,
+      price: numericPrice,
+      priceLabel,
+      currencyCode: priceMoney?.currencyCode ?? "INR",
+      image,
+      size: selectedSize,
+      variantTitle: selectedVariant.title,
+      selectedOptions: selectedVariant.selectedOptions,
+    }, quantity);
   };
 
   return (

@@ -22,7 +22,10 @@ export interface JewelPiece {
   number: string;
   price: number;
   priceLabel: string;
-  /** Shopify variant GID — used for Add to Cart and checkout. */
+  /** MRP from Shopify's compare-at price, when the piece is on offer. */
+  compareAtPrice?: number;
+  compareAtLabel?: string;
+
   variantId: string;
   availableForSale: boolean;
   image: string;

@@ -22,7 +22,6 @@ gsap.registerPlugin(ScrollTrigger);
    Reduced-motion: everything shown, no pin.
    ─────────────────────────────────────────────────────────────── */
 
-const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 

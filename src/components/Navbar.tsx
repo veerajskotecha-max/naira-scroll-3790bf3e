@@ -104,7 +104,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             >
               CONTACT
             </Link>
-            <button onClick={handleSearch} aria-label="Search" className="flex items-center">
+            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="flex items-center">
               <Search
                 size={20}
                 strokeWidth={1.5}

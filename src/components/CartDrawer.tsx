@@ -10,10 +10,16 @@ import { CartPromoField, CartUpsell } from "@/components/cart/CartExtras";
 const FREE_SHIPPING_THRESHOLD = 2999;
 
 const CartDrawer = () => {
-  const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing } = useCart();
+  const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
   const contentRef = useRef<HTMLDivElement>(null);
   const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
   useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
+
+  // Reconcile with the real Shopify cart whenever the drawer opens, so lines
+  // left over from an older session can never surprise the shopper.
+  useEffect(() => {
+    if (isDrawerOpen) syncCart();
+  }, [isDrawerOpen, syncCart]);
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -22,9 +28,9 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent ref={contentRef} className="w-full sm:max-w-[420px] flex flex-col p-0">
+      <SheetContent ref={contentRef} className="w-full sm:max-w-[420px] h-full max-h-[100dvh] flex flex-col p-0 gap-0">
         {/* Header */}
-        <SheetHeader className="px-5 pt-5 pb-3">
+        <SheetHeader className="shrink-0 px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">
             <SheetTitle className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
               Your Cart ({totalItems})
@@ -32,7 +38,7 @@ const CartDrawer = () => {
           </div>
         </SheetHeader>
 
-        <Separator />
+        <Separator className="shrink-0" />
 
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">

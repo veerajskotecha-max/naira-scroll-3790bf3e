@@ -8,6 +8,7 @@ import {
   removeLineFromShopifyCart,
   updateShopifyCartLine,
 } from "@/lib/shopify";
+import { applyPromoToCheckoutUrl } from "@/lib/promo";
 
 export interface CartItem {
   id: string;
@@ -236,7 +237,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       toast.error("Add an item before checkout.");
       return;
     }
-    window.open(formatCheckoutUrl(latestUrl), "_blank", "noopener,noreferrer");
+    window.open(applyPromoToCheckoutUrl(formatCheckoutUrl(latestUrl)), "_blank", "noopener,noreferrer");
     setDrawerOpen(false);
   }, [checkoutUrl]);
 

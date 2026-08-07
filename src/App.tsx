@@ -19,6 +19,7 @@ import FeatherCursor from "./components/wow/FeatherCursor";
 import FilmGrain from "./components/wow/FilmGrain";
 import ScrollBloom from "./components/wow/ScrollBloom";
 import PageCurtain from "./components/wow/PageCurtain";
+import WelcomeOfferPopup from "./components/WelcomeOfferPopup";
 
 // Non-home routes are code-split so the homepage bundle stays small.
 const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
@@ -56,6 +57,7 @@ const AppShell = () => {
       <Header />
       <CartDrawer />
       <WishlistDrawer />
+      <WelcomeOfferPopup />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Index />} />

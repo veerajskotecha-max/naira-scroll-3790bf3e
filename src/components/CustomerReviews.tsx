@@ -265,7 +265,7 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
   };
 
   return (
-    <section className="max-w-[1200px] mx-auto px-4 pb-20">
+    <section id="customer-reviews" className="max-w-[1200px] mx-auto px-4 pb-20" style={{ scrollMarginTop: "120px" }}>
       <h2
         className="font-cormorant text-[28px] md:text-[32px] font-semibold"
         style={{ color: "hsl(var(--foreground))" }}

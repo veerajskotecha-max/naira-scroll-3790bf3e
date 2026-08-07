@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
+import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -27,7 +27,7 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
   const finish = hasGold && hasRhodium ? "18k gold & rhodium" : hasGold ? "18k gold" : hasRhodium ? "Rhodium" : "Demi-gold";
   const hasPearl = m.includes("pearl");
   const hasZircone = m.includes("zircon");
-  const stone = hasPearl && hasZircone ? "Pearl & zircone" : hasPearl ? "Freshwater pearl" : hasZircone ? "Hand-set zircone" : "Polished metal";
+  const stone = hasPearl && hasZircone ? "Pearl & zircone" : hasPearl ? "Freshwater pearl" : hasZircone ? "Brilliant-cut zircone" : "Polished metal";
   return [
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
@@ -347,7 +347,7 @@ const JewelDetail = () => {
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
               {[
-                { icon: Scissors, label: "Hand-finished" },
+                { icon: Sparkles, label: "Anti-Tarnish Sealed" },
                 { icon: ShieldCheck, label: "18k Demi-Gold" },
                 { icon: ReceiptText, label: "Secure Payments" },
               ].map(({ icon: Icon, label }) => (

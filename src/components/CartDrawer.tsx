@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
+import { CartPromoField, CartUpsell } from "@/components/cart/CartExtras";
 
 const FREE_SHIPPING_THRESHOLD = 2999;
 
@@ -123,6 +124,8 @@ const CartDrawer = () => {
               ))}
             </div>
 
+            <CartUpsell />
+
             {/* Footer */}
             <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: "hsl(0 0% 90%)" }}>
               {/* Delivery */}
@@ -132,6 +135,9 @@ const CartDrawer = () => {
                   Estimated delivery: <strong className="font-semibold">3–7 working days</strong>
                 </p>
               </div>
+              {/* Promo code */}
+              <CartPromoField />
+
               {/* Subtotal */}
               <div className="flex items-center justify-between">
                 <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Subtotal</span>

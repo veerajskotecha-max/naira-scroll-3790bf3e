@@ -70,6 +70,29 @@ const Jewellery = () => {
     setSearchParams(params, { replace: true });
   };
   const { jewellery } = useLiveJewellery();
+
+  /* Sort + filters live in the URL so a filtered edit is shareable, and are
+     written with replace so the grid never jumps back to the top. */
+  const activeFilters: JewelFilters = useMemo(() => {
+    const sortParam = searchParams.get("sort");
+    const max = searchParams.get("under");
+    return {
+      sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
+      maxPrice: max ? Number(max) : null,
+      inStockOnly: searchParams.get("stock") === "in",
+      tag: searchParams.get("tag"),
+    };
+  }, [searchParams]);
+
+  const setFilters = (next: JewelFilters) => {
+    const params = new URLSearchParams(searchParams);
+    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
+    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
+    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
+    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    setSearchParams(params, { replace: true });
+  };
+
   const filterCounts = useMemo(
     () =>
       filters.reduce((acc, f) => {
@@ -78,10 +101,11 @@ const Jewellery = () => {
       }, {} as Record<"All" | JewelCategory, number>),
     [jewellery]
   );
-  const pieces = useMemo(
+  const inCategory = useMemo(
     () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
+  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters), [inCategory, activeFilters]);
 
   return (
     <>

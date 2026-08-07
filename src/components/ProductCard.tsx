@@ -161,17 +161,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
             height={533}
           />
 
-          <span
-            className="absolute top-2.5 left-2.5 md:top-3 md:left-3 z-20 text-[8px] md:text-[9px] font-normal uppercase tracking-[0.14em] px-2 py-[3px] md:px-2.5 md:py-1 transition-opacity duration-300"
-            style={{
-              backgroundColor: "hsla(0, 0%, 100%, 0.55)",
-              color: "hsl(0 0% 32%)",
-              backdropFilter: "blur(6px)",
-              opacity: hovered ? 0.4 : 0.85,
-            }}
-          >
-            {product.tag || "New"}
-          </span>
+          {/* Shopify's internal tags (YS, YF…) are merchandising codes, not
+              shopper-facing copy — no badge is rendered from them. */}
+
 
           {product.availability === "Pre-Order" && (
             <span

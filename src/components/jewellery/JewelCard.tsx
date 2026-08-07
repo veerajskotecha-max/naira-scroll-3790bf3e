@@ -127,15 +127,29 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           <span aria-hidden className="h-[5px] w-[5px] rounded-full bg-nf-gold" />
           {piece.priceLabel}
         </p>
-        <Link
-          to={`/jewellery/${piece.handle}`}
-          className="press-scale group/btn relative mt-2.5 inline-flex min-h-[44px] items-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory sm:mt-3 sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
-          style={jost}
-        >
-          <span className="absolute inset-0 origin-left scale-x-0 bg-nf-ink transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
-          <span className="relative">VIEW</span>
-          <span className="relative transition-transform duration-300 ease-out group-hover/btn:translate-x-1">→</span>
-        </Link>
+        <p className="mt-1 text-[8.5px] uppercase tracking-nf-18 text-nf-ink/45 sm:text-[9.5px]" style={jost}>
+          {PREORDER_LABEL} · {PREORDER_NOTE_SHORT}
+        </p>
+        <div className="mt-2.5 flex w-full flex-col items-center gap-2 sm:mt-3">
+          <button
+            onClick={handleAdd}
+            disabled={adding || cartLoading}
+            className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 disabled:opacity-60 sm:text-[10.5px] sm:tracking-nf-30"
+            style={jost}
+          >
+            {adding ? "ADDING…" : "ADD TO CART"}
+          </button>
+          <Link
+            to={`/jewellery/${piece.handle}`}
+            className="press-scale group/btn relative inline-flex min-h-[40px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
+            style={jost}
+          >
+            <span className="absolute inset-0 origin-left scale-x-0 bg-nf-ink transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
+            <span className="relative">VIEW</span>
+            <span className="relative transition-transform duration-300 ease-out group-hover/btn:translate-x-1">→</span>
+          </Link>
+        </div>
+
       </div>
 
 

@@ -176,6 +176,12 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             decoding="async"
             width={800}
             height={800}
+            /* Earrings read as tiny specks in a square crop — zoom into the ear line. */
+            style={
+              piece.category === "Earrings"
+                ? { objectPosition: "center 32%", transform: "scale(1.22)" }
+                : undefined
+            }
             className="jc-front aspect-square w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
           />
           {altImg && (
@@ -187,9 +193,11 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
-              className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+              /* Second frame is usually the packshot — show the whole piece. */
+              className="jc-back absolute inset-0 aspect-square w-full object-contain p-3 opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}
+
 
           {zircone && (
             <span aria-hidden className="pointer-events-none absolute inset-0">

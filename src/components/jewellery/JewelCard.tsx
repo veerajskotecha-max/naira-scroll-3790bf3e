@@ -25,7 +25,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const [buying, setBuying] = useState(false);
-  const { addItem, setDrawerOpen, checkout, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
   const altImg = piece.gallery && piece.gallery.length > 1 ? piece.gallery[1] : null;
   const zircone = piece.handle.startsWith("zircone");
 
@@ -43,8 +43,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const handleBuyNow = async () => {
     setBuying(true);
     try {
-      await addItem(cartItem());
-      checkout();
+      await buyNow(cartItem());
     } finally {
       setBuying(false);
     }

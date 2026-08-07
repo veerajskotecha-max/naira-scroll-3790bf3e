@@ -60,7 +60,8 @@ const WelcomeOfferPopup = () => {
     }
   };
 
-  if (!open) return null;
+  // Never sit on top of the cart or interrupt a shopper mid-checkout.
+  if (!open || isDrawerOpen || totalItems > 0) return null;
 
   return (
     <div

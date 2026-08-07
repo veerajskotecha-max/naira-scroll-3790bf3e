@@ -103,6 +103,10 @@ export const PRODUCTS_QUERY = `
                   amount
                   currencyCode
                 }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
                 selectedOptions {
                   name
                   value

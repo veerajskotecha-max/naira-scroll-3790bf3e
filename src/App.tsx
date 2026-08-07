@@ -83,6 +83,8 @@ const AppShell = () => {
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/cart/c/:token" element={<CartCheckoutRedirect />} />
           <Route path="/cart/c/:token/*" element={<CartCheckoutRedirect />} />
+          <Route path="/checkouts/cn/:token" element={<CartCheckoutRedirect />} />
+          <Route path="/checkouts/cn/:token/*" element={<CartCheckoutRedirect />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

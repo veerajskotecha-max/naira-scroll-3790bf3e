@@ -54,7 +54,7 @@ const JewelDetail = () => {
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, setDrawerOpen, checkout, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
   const [buying, setBuying] = useState(false);
 
   const goBack = () => {
@@ -135,6 +135,17 @@ const JewelDetail = () => {
     `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
 
+  const cartItem = () => ({
+    id: piece.handle,
+    variantId: piece.variantId,
+    name: piece.name,
+    price: piece.price,
+    priceLabel: piece.priceLabel,
+    currencyCode: "INR",
+    image: piece.image,
+    size: piece.category === "Rings" ? `US ${selectedSize}` : undefined,
+  });
+
   /* Shopify-backed pre-order: real variant, real cart, real checkout. */
   const addToCart = async () => {
     await addItem(
@@ -157,11 +168,12 @@ const JewelDetail = () => {
     setDrawerOpen(true);
   };
 
+  /* Pre-order now: adds to the Shopify cart and opens Shopify checkout in one
+     step, using the checkout URL the add returned (no stale-cart race). */
   const handleBuyNow = async () => {
     setBuying(true);
     try {
-      await addToCart();
-      checkout();
+      await buyNow(cartItem(), quantity);
     } finally {
       setBuying(false);
     }

@@ -216,8 +216,10 @@ const Jewellery = () => {
             </p>
             <button
               onClick={() => {
-                setFilters({ sort: "featured", maxPrice: null, inStockOnly: false, tag: null });
-                selectCategory("All");
+                // One write: clearing filters and the category in two calls
+                // would race on the same stale search params.
+                setActive("All");
+                setSearchParams(new URLSearchParams(), { replace: true });
               }}
               className="press-scale mt-7 border border-nf-ink px-7 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
               style={jost}

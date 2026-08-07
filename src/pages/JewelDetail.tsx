@@ -564,11 +564,13 @@ const JewelDetail = () => {
                 <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Plated &amp; finished, dispatched in 2–3 weeks.</p>
+                    <p>• {PREORDER_NOTE}</p>
+                    <p>• Orders placed now are reserved and dispatched from 15 August onwards.</p>
                     <p>• Shipped free across India, insured in transit.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
               <AccordionItem value="disclaimer" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
                 <AtelierAccordionTrigger>Disclaimer</AtelierAccordionTrigger>
                 <AccordionContent>

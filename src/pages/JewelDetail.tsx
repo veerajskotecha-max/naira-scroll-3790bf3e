@@ -13,11 +13,12 @@ import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/acco
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, PREORDER_NOTE_SHORT, type JewelPiece } from "@/data/jewellery";
+import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, PREORDER_NOTE_SHORT, type JewelPiece } from "@/data/jewellery";
 
 
 /* Key facts distilled from the approved data model: finish and stone are
@@ -34,7 +35,7 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
     { label: "Category", value: piece.category },
-    { label: "Edition", value: `No. ${piece.number} of ${jewellery.length}` },
+    { label: "Edition", value: `No. ${piece.number} of ${staticJewellery.length}` },
     { label: "SKU", value: piece.sku },
   ];
 };
@@ -49,7 +50,8 @@ const ringSizes: { value: string; label: string }[] = [
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();
-  const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle]);
+  const { jewellery } = useLiveJewellery();
+  const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
   const { addItem, setDrawerOpen, checkout, isLoading: cartLoading } = useCart();

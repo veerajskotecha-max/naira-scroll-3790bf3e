@@ -4,7 +4,8 @@ import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
-import { jewellery, type JewelCategory } from "@/data/jewellery";
+import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewellery";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import { Link } from "react-router-dom";
@@ -39,19 +40,20 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
-const filterCounts: Record<"All" | JewelCategory, number> = filters.reduce(
-  (acc, f) => {
-    acc[f] = f === "All" ? jewellery.length : jewellery.filter((p) => p.category === f).length;
-    return acc;
-  },
-  {} as Record<"All" | JewelCategory, number>
-);
-
 const Jewellery = () => {
   const [active, setActive] = useState<"All" | JewelCategory>("All");
+  const { jewellery } = useLiveJewellery();
+  const filterCounts = useMemo(
+    () =>
+      filters.reduce((acc, f) => {
+        acc[f] = f === "All" ? jewellery.length : jewellery.filter((p) => p.category === f).length;
+        return acc;
+      }, {} as Record<"All" | JewelCategory, number>),
+    [jewellery]
+  );
   const pieces = useMemo(
     () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
-    [active]
+    [active, jewellery]
   );
 
   return (
@@ -60,7 +62,7 @@ const Jewellery = () => {
         title="Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish"
         description="Shop demi-fine jewellery by Naira Flore: brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches."
         canonical={`${SITE_URL}/jewellery`}
-        image={jewellery[0]?.image}
+        image={staticJewellery[0]?.image}
         jsonLd={[
           breadcrumbLd([
             { name: "Home", url: `${SITE_URL}/` },

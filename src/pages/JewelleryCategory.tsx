@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import Reveal from "@/components/wow/Reveal";
-import { jewellery } from "@/data/jewellery";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { categoryBySlug, allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
@@ -13,6 +13,7 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 const JewelleryCategory = () => {
   const { slug } = useParams();
   const landing = categoryBySlug(slug);
+  const { jewellery } = useLiveJewellery();
 
   if (!landing) return <Navigate to="/jewellery" replace />;
 

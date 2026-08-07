@@ -520,6 +520,15 @@ const JewelDetail = () => {
                   content: (
                     <div className="space-y-3">
                       <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.blurb}</p>
+                      {piece.details && (
+                        <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.details}</p>
+                      )}
+                      {piece.stylingTip && (
+                        <p className="text-[12.5px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
+                          <span className="uppercase tracking-[0.14em] text-[10px] mr-1.5" style={{ color: "#9A7634" }}>Styling tip</span>
+                          {piece.stylingTip}
+                        </p>
+                      )}
                       <p className="text-[12px] italic leading-[1.7]" style={{ color: "hsl(0 0% 50%)", fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
                         {piece.materials}
                       </p>
@@ -529,7 +538,9 @@ const JewelDetail = () => {
                 {
                   id: "care",
                   label: "Care",
-                  content: (
+                  content: piece.care ? (
+                    <p className="text-[13px] leading-[1.8]" style={{ color: "hsl(0 0% 40%)" }}>{piece.care}</p>
+                  ) : (
                     <ul className="text-[13px] leading-[1.8] list-disc pl-4" style={{ color: "hsl(0 0% 40%)" }}>
                       <li>Store in the pouch provided, away from moisture.</li>
                       <li>Avoid contact with perfume, lotion, and chlorinated water.</li>
@@ -537,6 +548,7 @@ const JewelDetail = () => {
                     </ul>
                   ),
                 },
+
               ]}
             />
 

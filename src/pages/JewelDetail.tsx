@@ -246,10 +246,11 @@ const JewelDetail = () => {
             key={i}
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-            style={{ aspectRatio: "1/1", backgroundColor: "#F4EBE2" }}
+            style={{ aspectRatio: "4/5", backgroundColor: "#F4EBE2" }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
+            {/* contain keeps the whole piece in frame on phones — no cropped pendants */}
+            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain" />
           </button>
         ))}
       </div>

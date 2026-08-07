@@ -15,8 +15,10 @@ import { ImageLightbox } from "@/components/ui/image-lightbox";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
+import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, PREORDER_NOTE_SHORT, type JewelPiece } from "@/data/jewellery";
+
 
 /* Key facts distilled from the approved data model: finish and stone are
    read out of the materials line, edition from the engraved number. */

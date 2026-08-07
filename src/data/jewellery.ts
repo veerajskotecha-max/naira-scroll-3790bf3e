@@ -1,59 +1,25 @@
-import theVow from "@/assets/jewellery/gilded/the-vow.jpg.asset.json";
-import theHalo from "@/assets/jewellery/gilded/the-halo.jpg.asset.json";
-import theWhirl from "@/assets/jewellery/gilded/the-whirl.jpg.asset.json";
-import theVine from "@/assets/jewellery/gilded/the-vine.jpg.asset.json";
-import theDewRing from "@/assets/jewellery/gilded/the-dew-ring.jpg.asset.json";
-import theToiEtMoi from "@/assets/jewellery/gilded/the-toi-et-moi.jpg.asset.json";
-import theChevronStack from "@/assets/jewellery/gilded/the-chevron-stack.jpg.asset.json";
-import theSugarTennis from "@/assets/jewellery/gilded/the-sugar-tennis.jpg.asset.json";
-import theSugarTennis2 from "@/assets/jewellery/gilded/the-sugar-tennis-2.jpg.asset.json";
-import theBow from "@/assets/jewellery/gilded/the-bow.jpg.asset.json";
-import theTideline from "@/assets/jewellery/gilded/the-tideline.jpg.asset.json";
-import theKeepsake from "@/assets/jewellery/gilded/the-keepsake.jpg.asset.json";
-import theKeepsake2 from "@/assets/jewellery/gilded/the-keepsake-2.jpg.asset.json";
-import theBraidedHoop from "@/assets/jewellery/gilded/the-braided-hoop.jpg.asset.json";
-import theStuds from "@/assets/jewellery/gilded/the-studs.jpg.asset.json";
-import theStuds2 from "@/assets/jewellery/gilded/the-studs-2.jpg.asset.json";
-import theStuds3 from "@/assets/jewellery/gilded/the-studs-3.jpg.asset.json";
-import theKnotLariat from "@/assets/jewellery/gilded/the-knot-lariat.jpg.asset.json";
-import theRondelle from "@/assets/jewellery/gilded/the-rondelle.jpg.asset.json";
-import theAnchorChain from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
-import theCascade from "@/assets/jewellery/gilded/the-cascade.jpg.asset.json";
-import solitaireDrop from "@/assets/jewellery/gilded/the-solitaire-drop.png.asset.json";
-import solitaireDrop2 from "@/assets/jewellery/gilded/the-solitaire-drop-2.png.asset.json";
-import solitaireDrop3 from "@/assets/jewellery/gilded/the-solitaire-drop-3.png.asset.json";
-import solitaireDrop4 from "@/assets/jewellery/gilded/the-solitaire-drop-4.png.asset.json";
-import rippleHoop from "@/assets/jewellery/gilded/the-ripple-hoop.png.asset.json";
-import rippleHoop2 from "@/assets/jewellery/gilded/the-ripple-hoop-2.png.asset.json";
-import rippleHoop3 from "@/assets/jewellery/gilded/the-ripple-hoop-3.png.asset.json";
-import rippleHoop4 from "@/assets/jewellery/gilded/the-ripple-hoop-4.png.asset.json";
-import rosewaterLine from "@/assets/jewellery/gilded/the-rosewater-line.png.asset.json";
-import rosewaterLine2 from "@/assets/jewellery/gilded/the-rosewater-line-2.png.asset.json";
-import theVineUgc from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
-
 /* ───────────────────────────────────────────────────────────────
-   THE GILDED HOUR — Naira Flore's petite jewellery line, first look
-   Seventeen numbered pieces from the private teaser. 18k gold /
-   silver / rhodium coatings, hand-set zirconia, anti-tarnish and
-   waterproof-sealed. Pre-order launch — prices hidden, orders run
-   through the atelier's WhatsApp enquiry line.
+   THE GILDED HOUR — Naira Flore's demi-fine jewellery line.
+   Generated from the live Shopify catalogue: every piece below is an
+   ACTIVE listing (Naira Petite). Pieces removed from Shopify are
+   removed here too.
    ─────────────────────────────────────────────────────────────── */
 
 export type JewelCategory = "Rings" | "Bracelets" | "Earrings" | "Necklaces";
 
-/** Shown in place of a price while the collection is in pre-order. */
+/** Legacy label, kept for wishlist entries saved during the pre-order window. */
 export const PREORDER_LABEL = "Pre-order open";
 
 export interface JewelPiece {
   handle: string;
   name: string;
   category: JewelCategory;
-  sku: string;             // atelier stock code
-  number: string;           // "01"–"17" — engraved edition number
-  price: number;            // INR — internal record only; not displayed during pre-order
-  priceLabel: string;       // displayed status/label (currently PREORDER_LABEL)
-  image: string;            // primary packshot (grid + first gallery frame)
-  gallery?: string[];       // additional angles for the quick-view
+  sku: string;
+  number: string;
+  price: number;
+  priceLabel: string;
+  image: string;
+  gallery?: string[];
   blurb: string;
   materials: string;
   tag?: string;
@@ -63,312 +29,518 @@ export const WHATSAPP_NUMBER = "919561557935";
 
 export const jewelleryEnquiryUrl = (name: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to pre-order the "${name}" from The Gilded Hour. Could you share availability and details?`
+    `Hi Naira Flore, I'd love to order the "${name}" from The Gilded Hour. Could you share availability and details?`
   )}`;
 
+export const formatJewelPrice = (v: number) =>
+  `₹${v.toLocaleString("en-IN")}`;
+
 export const jewellery: JewelPiece[] = [
-  // ── THE RINGS ────────────────────────────────────────────────
   {
-    handle: "the-vow",
-    name: "The Vow",
+    handle: "blush-halo-ring",
+    name: "Blush Cluster Ring",
     category: "Rings",
-    sku: "NF-GH-R01-VXX",
+    sku: "WR10914B2",
     number: "01",
-    price: 4500,
-    priceLabel: PREORDER_LABEL,
-    image: theVow.url,
-    gallery: [theVow.url],
-    blurb: "A round stone, a thin band. One brilliant-cut zirconia on a hairline of rhodium, worn like a promise.",
-    materials: "Rhodium coating · brilliant-cut zirconia · 4-prong",
-    tag: "THE CLASSIC",
+    price: 1999,
+    priceLabel: "₹1,999"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_1_main.jpg?v=1786123161",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_1_main.jpg?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_3_alt.jpg?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR10914B2_4_alt.jpg?v=1786123161"],
+    blurb: "Soft pink, gathered into a flower. The front of this ring holds a round pink cubic zirconia of about 5mm at the centre, ringed by eight smaller pink stones of about 2.5mm, with one more set on the shoulder to o",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-halo",
-    name: "The Halo",
+    handle: "chevron-whisper-ring",
+    name: "Chevron Whisper Ring",
     category: "Rings",
-    sku: "NF-GH-R02-HXX",
+    sku: "JDR0303312-7",
     number: "02",
-    price: 4800,
-    priceLabel: PREORDER_LABEL,
-    image: theHalo.url,
-    gallery: [theHalo.url],
-    blurb: "A stone ringed in pave. A brilliant centre held inside a whisper of smaller stones.",
-    materials: "Rhodium coating · zirconia halo · pavé shoulders",
+    price: 1449,
+    priceLabel: "₹1,449"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_1_main.jpg?v=1786123101",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_1_main.jpg?v=1786123101", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_2_worn.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_3_alt.jpg?v=1786123103", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0303312-7_4_alt.jpg?v=1786123097"],
+    blurb: "A band that comes to a soft point. This ring is shaped as a double V, with two fine pave lines of small round clear cubic zirconia running along the band and meeting at the chevron.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-whirl",
-    name: "The Whirl",
+    handle: "cushion-halo-ring",
+    name: "Cushion Halo Ring",
     category: "Rings",
-    sku: "NF-GH-R03-WXX",
+    sku: "WR20902K8",
     number: "03",
-    price: 4600,
-    priceLabel: PREORDER_LABEL,
-    image: theWhirl.url,
-    gallery: [theWhirl.url],
-    blurb: "Spinning in a coil of pave. A single stone held inside a turning band of light.",
-    materials: "Rhodium coating · zirconia · pavé coil",
+    price: 1499,
+    priceLabel: "₹1,499"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_1_main.jpg?v=1786118446",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_1_main.jpg?v=1786118446", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_1_main_24b2196c-37d8-458f-ab35-6cebc2c11eea.jpg?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_2_worn.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR20902K8_3_alt.jpg?v=1786123097"],
+    blurb: "Cool silver tone, built around one clear centre. An 8mm round brilliant clear cubic zirconia sits in four claws at the heart of a cushion shaped pave halo of about 12mm, with pave running down both shoulders an",
+    materials: "Rhodium silver tone · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-vine",
-    name: "The Vine",
+    handle: "duet-of-dawn-ring",
+    name: "Duet of Dawn Ring",
     category: "Rings",
-    sku: "NF-GH-R04-VXX",
+    sku: "JDR0104342-PS",
     number: "04",
-    price: 5200,
-    priceLabel: PREORDER_LABEL,
-    image: theVine.url,
-    gallery: [theVine.url],
-    blurb: "Green stones, cradled in white. An open eternity of emerald-cut greens against a rhodium sky.",
-    materials: "Rhodium coating · green zirconia · open eternity band",
-    tag: "NEW",
+    price: 1899,
+    priceLabel: "₹1,899"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_1_main.jpg?v=1786123228",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_1_main.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_2_worn.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_3_alt.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342-PS_4_alt.jpg?v=1786123228"],
+    blurb: "Two metals, meeting on one hand. This open ring sets two round clear cubic zirconia of about 10mm each in deep bezels, one side finished in cool steel tone and the other in warm gold tone, with the two tone fin",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-dew-ring",
-    name: "The Dew Ring",
+    handle: "golden-duet-ring",
+    name: "Golden Duet Ring",
     category: "Rings",
-    sku: "NF-GH-R05-DRX",
+    sku: "JDR0104342",
     number: "05",
-    price: 3900,
-    priceLabel: PREORDER_LABEL,
-    image: theDewRing.url,
-    gallery: [theDewRing.url],
-    blurb: "Two beaded drops, one gold, one rhodium, on an open band. Worn the way water beads on a leaf.",
-    materials: "18k gold coating · rhodium · open band",
+    price: 1399,
+    priceLabel: "₹1,399"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_1_main.jpg?v=1786123097",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_1_main.jpg?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_2_worn.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_3_alt.jpg?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104342_4_alt.jpg?v=1786123097"],
+    blurb: "Two stones, sitting slightly apart. This open ring carries two round clear cubic zirconia of about 10mm each, set in deep polished gold bezels at either end of a slim round shank in the toi et moi form.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-toi-et-moi",
-    name: "The Toi et Moi",
+    handle: "amber-dome-ring",
+    name: "Granule Dome Ring",
     category: "Rings",
-    sku: "NF-GH-R06-TEM",
+    sku: "JDR0104337",
     number: "06",
-    price: 5400,
-    priceLabel: PREORDER_LABEL,
-    image: theToiEtMoi.url,
-    gallery: [theToiEtMoi.url],
-    blurb: "Two stones that never quite touch. A cushion and a pear held in a two-tone bezel.",
-    materials: "18k gold + rhodium · cushion & pear zirconia",
-    tag: "STATEMENT",
+    price: 1949,
+    priceLabel: "₹1,949"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_1_main.jpg?v=1786123228",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_1_main.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_3_alt.jpg?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDR0104337_4_alt.jpg?v=1786123228"],
+    blurb: "A surface you notice before you notice the stones. The dome on this open ring measures about 18mm long and 14mm wide, its whole face covered in fine raised gold granulation with small clear cubic zirconia set a",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-chevron-stack",
-    name: "The Chevron Stack",
+    handle: "pearl-ribbon-ring",
+    name: "Pearl Ribbon Ring",
     category: "Rings",
-    sku: "NF-GH-R07-CSX",
+    sku: "FR03136B",
     number: "07",
-    price: 4200,
-    priceLabel: PREORDER_LABEL,
-    image: theChevronStack.url,
-    gallery: [theChevronStack.url],
-    blurb: "Three rings that arrive together and rarely part. A pavé chevron above two slim gold bands.",
-    materials: "18k gold coating · pavé chevron · stack of three",
+    price: 1099,
+    priceLabel: "₹1,099"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_1_main.jpg?v=1786123098",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_1_main.jpg?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_2_worn.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_3_alt.jpg?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FR03136B_4_alt.jpg?v=1786123098"],
+    blurb: "A bow, tied once and kept. The front of this ring is formed from two flat gold loops channel set along their length with rectangular baguette clear cubic zirconia, tied at a polished gold knot, with a round whi",
+    materials: "18K gold tone plated · brilliant-cut zircone · pearl · surgical stainless steel · waterproof, anti-tarnish",
   },
-
-  // ── THE WRIST ────────────────────────────────────────────────
   {
-    handle: "the-sugar-tennis",
-    name: "The Sugar Tennis",
-    category: "Bracelets",
-    sku: "NF-GH-B08-STX",
+    handle: "rose-emerald-band",
+    name: "Rose Verdant Band",
+    category: "Rings",
+    sku: "R18345A1",
     number: "08",
-    price: 8900,
-    priceLabel: PREORDER_LABEL,
-    image: theSugarTennis.url,
-    gallery: [theSugarTennis.url, theSugarTennis2.url],
-    blurb: "Pastel zirconia in rhodium, cool against the skin. A soft tennis line of sugared blues, pinks and yellows.",
-    materials: "Rhodium coating · pastel zirconia · box-clasp",
-    tag: "BESTSELLER",
+    price: 1999,
+    priceLabel: "₹1,999"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_1_main.jpg?v=1786123246",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_1_main.jpg?v=1786123246", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_2_worn.png?v=1786123246", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_3_alt.jpg?v=1786123246", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/R18345A1_4_alt.jpg?v=1786123246"],
+    blurb: "Four fine lines, warmed to rose. This open ring is built from four parallel bands, two pave set and two plain, with four round emerald green cubic zirconia of about 4mm placed at staggered points.",
+    materials: "brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-bow",
-    name: "The Bow",
-    category: "Bracelets",
-    sku: "NF-GH-B09-BXX",
+    handle: "star-point-band",
+    name: "Star Point Band",
+    category: "Rings",
+    sku: "YF5214",
     number: "09",
-    price: 4600,
-    priceLabel: PREORDER_LABEL,
-    image: theBow.url,
-    gallery: [theBow.url],
-    blurb: "Two hearts of zirconia tied at the wrist, on a chain of small gold beads.",
-    materials: "18k gold coating · heart-cut zirconia · beaded chain",
+    price: 999,
+    priceLabel: "₹999"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_1_main.jpg?v=1786123161",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_1_main.jpg?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_3_alt.jpg?v=1786123160", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5214_4_alt.jpg?v=1786123160"],
+    blurb: "A wide band, marked with small points of light. The surface carries repeating four pointed star motifs in low relief, each one centred on a small clear cubic zirconia, so the pattern runs the whole way around t",
+    materials: "Rhodium silver tone · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-tideline",
-    name: "The Tideline",
-    category: "Bracelets",
-    sku: "NF-GH-B10-TXX",
+    handle: "emerald-eternity-band",
+    name: "Verdant Eternity Band",
+    category: "Rings",
+    sku: "WR23024K",
     number: "10",
-    price: 6800,
-    priceLabel: PREORDER_LABEL,
-    image: theTideline.url,
-    gallery: [theTideline.url],
-    blurb: "Baroque pearls, no two alike, gathered on a single gold toggle.",
-    materials: "Baroque freshwater pearls · 18k gold toggle",
-    tag: "NEW",
+    price: 1899,
+    priceLabel: "₹1,899"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_1_main.jpg?v=1786123229",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_1_main.jpg?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_2_worn.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_3_alt.jpg?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WR23024K_4_alt.jpg?v=1786123229"],
+    blurb: "Green and clear, alternating all the way round. Oval emerald green cubic zirconia of about 5mm by 4mm are claw set around the band, each cradled by a scalloped pave setting of small clear stones.",
+    materials: "Rhodium silver tone · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-keepsake",
-    name: "The Keepsake",
+    handle: "baguette-eclat-bracelet",
+    name: "Baguette Éclat Bracelet",
     category: "Bracelets",
-    sku: "NF-GH-B11-KXX",
+    sku: "JDB201083",
     number: "11",
-    price: 4200,
-    priceLabel: PREORDER_LABEL,
-    image: theKeepsake.url,
-    gallery: [theKeepsake.url, theKeepsake2.url],
-    blurb: "Steel beads, cool as river stones, a gold heart caught at the clasp.",
-    materials: "Rhodium-coated steel beads · 18k gold heart · toggle",
-  },
-
-  // ── THE EARS ─────────────────────────────────────────────────
-  {
-    handle: "the-braided-hoop",
-    name: "The Braided Hoop",
-    category: "Earrings",
-    sku: "NF-GH-E12-BHX",
-    number: "12",
-    price: 5200,
-    priceLabel: PREORDER_LABEL,
-    image: theBraidedHoop.url,
-    gallery: [theBraidedHoop.url],
-    blurb: "Gold woven the way our hems are. A generous braid, hinged closed.",
-    materials: "18k gold coating · braided hoop · hinged clasp",
+    price: 1549,
+    priceLabel: "₹1,549"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_1_main.png?v=1786123161",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_1_main.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_2_worn.png?v=1786123160", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201083_3_alt.png?v=1786123161"],
+    blurb: "A cleaner kind of shine, cut in straight lines. This 18cm bracelet sets rectangular step cut clear cubic zirconia of about 3mm by 2mm flush into a fine gold channel, so there are no raised claws anywhere along ",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-pearl-stud",
-    name: "The Pearl Stud",
-    category: "Earrings",
-    sku: "NF-GH-E13-PSX",
-    number: "13",
-    price: 3400,
-    priceLabel: PREORDER_LABEL,
-    image: theStuds.url,
-    gallery: [theStuds.url],
-    blurb: "A single freshwater pearl on a fine gold post. The one that goes with everything.",
-    materials: "18k gold coating · freshwater pearl · butterfly back",
-  },
-  {
-    handle: "the-halo-stud",
-    name: "The Halo Stud",
-    category: "Earrings",
-    sku: "NF-GH-E14-HSX",
-    number: "14",
-    price: 3400,
-    priceLabel: PREORDER_LABEL,
-    image: theStuds2.url,
-    gallery: [theStuds2.url],
-    blurb: "A centre stone ringed in pave, small enough for every day, bright enough for evening.",
-    materials: "18k gold coating · brilliant-cut zircone · pave halo",
-  },
-  {
-    handle: "the-bow-stud",
-    name: "The Bow Stud",
-    category: "Earrings",
-    sku: "NF-GH-E15-BSX",
-    number: "15",
-    price: 3400,
-    priceLabel: PREORDER_LABEL,
-    image: theStuds3.url,
-    gallery: [theStuds3.url],
-    blurb: "A ribbon tied in gold, set with zircone along the loops.",
-    materials: "18k gold coating · bow silhouette · zircone set",
-  },
-
-
-  // ── THE THROAT ───────────────────────────────────────────────
-  {
-    handle: "the-knot-lariat",
-    name: "The Knot Lariat",
-    category: "Necklaces",
-    sku: "NF-GH-N16-KLX",
-    number: "16",
-    price: 7200,
-    priceLabel: PREORDER_LABEL,
-    image: theKnotLariat.url,
-    gallery: [theKnotLariat.url],
-    blurb: "A snake chain looped once, a pearl caught in the turn.",
-    materials: "18k gold coating · snake chain · freshwater pearl",
-  },
-  {
-    handle: "the-rondelle",
-    name: "The Rondelle",
-    category: "Necklaces",
-    sku: "NF-GH-N17-RXX",
-    number: "17",
-    price: 6400,
-    priceLabel: PREORDER_LABEL,
-    image: theRondelle.url,
-    gallery: [theRondelle.url],
-    blurb: "A barrel of pave beside a smooth gold ring, sliding on a fine box chain.",
-    materials: "18k gold coating · pavé barrel · box chain",
-  },
-  {
-    handle: "the-anchor-chain",
-    name: "The Anchor Chain",
-    category: "Necklaces",
-    sku: "NF-GH-N18-ACX",
-    number: "18",
-    price: 7800,
-    priceLabel: PREORDER_LABEL,
-    image: theAnchorChain.url,
-    gallery: [theAnchorChain.url],
-    blurb: "Heavy links, one paved in white, worn close.",
-    materials: "18k gold coating · anchor links · single pavé link",
-    tag: "STATEMENT",
-  },
-  {
-    handle: "the-cascade",
-    name: "The Cascade",
-    category: "Necklaces",
-    sku: "NF-GH-N19-CXX",
-    number: "19",
-    price: 8600,
-    priceLabel: PREORDER_LABEL,
-    image: theCascade.url,
-    gallery: [theCascade.url],
-    blurb: "A marquise held high, then three more falling in a line.",
-    materials: "18k gold coating · marquise zirconia · four-stone drop",
-  },
-
-  {
-    handle: "the-ripple-hoop",
-    name: "The Ripple Hoop",
-    category: "Earrings",
-    sku: "NF-GH-E20-RPL",
-    number: "20",
-    price: 4400,
-    priceLabel: PREORDER_LABEL,
-    image: rippleHoop.url,
-    gallery: [rippleHoop.url, rippleHoop2.url, rippleHoop3.url, rippleHoop4.url],
-    blurb: "A hoop caught mid wave. Molten gold curves that catch light from every turn, light enough for all day.",
-    materials: "18k gold coating · wave-form hoop · hinged snap closure · 20mm",
-    tag: "NEW",
-  },
-  {
-    handle: "the-rosewater-line",
-    name: "The Rosewater Line",
+    handle: "baroque-bloom-cuff",
+    name: "Baroque Bloom Cuff",
     category: "Bracelets",
-    sku: "NF-GH-B21-RSW",
-    number: "21",
-    price: 7400,
-    priceLabel: PREORDER_LABEL,
-    image: rosewaterLine.url,
-    gallery: [rosewaterLine.url, rosewaterLine2.url],
-    blurb: "Rose zirconia in graduated bezels, running large to small along the wrist like water in soft light.",
-    materials: "18k gold coating · rose zirconia · bezel set · lobster clasp with 5cm extender",
-    tag: "NEW",
+    sku: "YF6671",
+    number: "12",
+    price: 1849,
+    priceLabel: "₹1,849"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_1_main.png?v=1786122969",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_1_main.png?v=1786122969", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_2_worn.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6671_4_alt.png?v=1786122968"],
+    blurb: "Two different endings on one open circle. The cuff measures about 6cm by 5.5cm on 1.5mm wire, one terminal set with an irregular white mother of pearl slab of about 1.8cm by 0.7cm in a slim bezel, and the other",
+    materials: "18K gold tone plated · brilliant-cut zircone · pearl · surgical stainless steel · waterproof, anti-tarnish",
   },
   {
-    handle: "the-solitaire-drop",
-    name: "The Solitaire Drop",
-    category: "Necklaces",
-    sku: "NF-GH-N22-SLD",
+    handle: "pearl-legacy-bracelet",
+    name: "Baroque-Style Bracelet",
+    category: "Bracelets",
+    sku: "YF3925",
+    number: "13",
+    price: 1549,
+    priceLabel: "₹1,549"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_1_main.png?v=1786123098",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_1_main.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_2_worn.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_3_alt.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3925_4_alt.png?v=1786123098"],
+    blurb: "Irregular shapes, strung with a little gold between them. This bracelet links large baroque shell pearls with short runs of gold chain, closing with a gold toggle bar and ring clasp that sits neatly on the wris",
+    materials: "18K gold tone plated · pearl · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "bold-nocturne-bracelet",
+    name: "Bold Nocturne Bracelet",
+    category: "Bracelets",
+    sku: "YF5144-BRA",
+    number: "14",
+    price: 1999,
+    priceLabel: "₹1,999"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_1_main.png?v=1786123096",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_1_main.png?v=1786123096", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_2_worn.png?v=1786123096", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_3_alt.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_4_alt.png?v=1786123097"],
+    blurb: "Weight, worn plainly. This 18cm bracelet is a thick flat curb link chain in warm gold tone, closing with a lobster clasp and a short extender chain so the fit can move a little.",
+    materials: "18K gold tone plated · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "cuban-pearl-bracelet",
+    name: "Pearl Link Bracelet",
+    category: "Bracelets",
+    sku: "YF6667",
+    number: "15",
+    price: 1649,
+    priceLabel: "₹1,649"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_1_main.png?v=1786123097",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_1_main.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_2_worn.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_3_alt.png?v=1786123097", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6667_4_alt.png?v=1786123097"],
+    blurb: "Pearls, but with a little structure around them. This 18cm bracelet alternates polished oval paperclip links of about 12mm with small white rice shaped freshwater pearls of about 7mm by 5mm, so the chain reads ",
+    materials: "18K gold tone plated · pearl · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "riviere-eternal-bracelet",
+    name: "Rivière Eternal Bracelet",
+    category: "Bracelets",
+    sku: "YF7085",
+    number: "16",
+    price: 1449,
+    priceLabel: "₹1,449"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_1_main.png?v=1786122748",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085_4_alt.png?v=1786122749"],
+    blurb: "A single line of light around the wrist. This 18cm bracelet runs a continuous row of round brilliant clear cubic zirconia of about 3mm, each stone held in a fine four prong gold setting, with one polished recta",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "riviere-of-light-bracelet",
+    name: "Rivière of Light Bracelet",
+    category: "Bracelets",
+    sku: "JDB201210",
+    number: "17",
+    price: 1049,
+    priceLabel: "₹1,049"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_1_main.png?v=1786122749",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_1_main.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_2_worn.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210_3_alt.png?v=1786122749"],
+    blurb: "Nothing sparkles quite like an unbroken line. This 18cm bracelet holds round brilliant clear cubic zirconia of about 3mm, every stone in a fine four prong gold setting that links straight into the next, with no",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "emerald-riviere-bracelet",
+    name: "Verdant Riviere Bracelet",
+    category: "Bracelets",
+    sku: "JDB201210-GN",
+    number: "18",
+    price: 999,
+    priceLabel: "₹999"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_1_main.png?v=1786123161",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_1_main.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_3_alt.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDB201210-GN_4_alt.png?v=1786123161"],
+    blurb: "Deep green, running the length of the wrist. This 18cm bracelet is set with rectangular step cut emerald green cubic zirconia of about 4mm by 3mm, placed side by side in fine gold so the colour reads as one con",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "clover-bloom-studs",
+    name: "Baguette Arc Hoops",
+    category: "Earrings",
+    sku: "WE14387B",
+    number: "19",
+    price: 2849,
+    priceLabel: "₹2,849"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_1_main.png?v=1786123162",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_1_main.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_2_worn.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_3_alt.png?v=1786123163", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE14387B_4_alt.png?v=1786123162"],
+    blurb: "A curve of straight lines. These open hoops measure about 20mm across and are channel set the whole way round with baguette cut clear cubic zirconia, laid flush so no claws break the surface.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "golden-nugget-studs",
+    name: "Brushed Gold Huggies",
+    category: "Earrings",
+    sku: "E14776S",
+    number: "20",
+    price: 1449,
+    priceLabel: "₹1,449"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_1_main.png?v=1786123228",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_1_main.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_3_alt.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E14776S_4_alt.png?v=1786123228"],
+    blurb: "A soft satin finish instead of a mirror shine. These huggie hoops measure about 12mm across with a wide flat band roughly 6mm deep, so they read as chunky without adding much weight.",
+    materials: "18K gold tone plated · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "clover-trio-edit",
+    name: "Clover Trio Edit",
+    category: "Earrings",
+    sku: "JDE0201327",
+    number: "21",
+    price: 2749,
+    priceLabel: "₹2,749"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_1_main.png?v=1786122748",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0201327_4_alt.png?v=1786122748"],
+    blurb: "Three ways to wear one idea. This set brings together gold huggie hoops of about 12mm with detachable four petal clover charms of about 8mm, a pair of clover studs, and round solitaire studs of about 5mm.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "clover-fringe-earrings",
+    name: "Filigree Bloom Studs",
+    category: "Earrings",
+    sku: "YF8147",
     number: "22",
-    price: 5600,
-    priceLabel: PREORDER_LABEL,
-    image: solitaireDrop.url,
-    gallery: [solitaireDrop.url, solitaireDrop2.url, solitaireDrop3.url, solitaireDrop4.url],
-    blurb: "One cushion-cut stone on a fine snake chain. The quietest thing in the collection, and the one worn most.",
-    materials: "Rhodium coating · cushion-cut zirconia · 4-prong bail · snake chain with extender",
-    tag: "NEW",
+    price: 1949,
+    priceLabel: "₹1,949"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_1_main.png?v=1786123162",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_1_main.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_2_worn.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_3_alt.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8147_4_alt.png?v=1786123162"],
+    blurb: "Fine gold wire, opened out like a flower. Each stud is a flat five petal bloom of about 20mm across, worked in radiating gold wire filigree with a round white freshwater pearl of about 8mm seated at the centre.",
+    materials: "18K gold tone plated · pearl · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "molten-bloom-hoops",
+    name: "Molten Bloom Hoops",
+    category: "Earrings",
+    sku: "JDE0110042",
+    number: "23",
+    price: 2949,
+    priceLabel: "₹2,949"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_1_main.png?v=1786122748",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_2_worn.png?v=1786122747", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_3_alt.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDE0110042_4_editorial.jpg?v=1786122747"],
+    blurb: "Some shapes look like they were poured rather than made. These chunky open huggie hoops measure about 15mm across, with a thick irregular band that swells and narrows as it travels around the circle.",
+    materials: "18K gold tone plated · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "heart-whisper-studs",
+    name: "Pearl Drop Studs",
+    category: "Earrings",
+    sku: "YF8333",
+    number: "24",
+    price: 1899,
+    priceLabel: "₹1,899"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_1_main.png?v=1786123227",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_1_main.png?v=1786123227", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_2_worn.png?v=1786123227", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_3_alt.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8333_4_alt.png?v=1786123228"],
+    blurb: "A pearl, and a small weight below it. Each stud seats a round white shell pearl on the lobe with a polished gold sphere suspended directly beneath, so the drop swings gently as you move.",
+    materials: "18K gold tone plated · pearl · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "pearl-halo-studs",
+    name: "Pearl Halo Studs",
+    category: "Earrings",
+    sku: "WE24089B",
+    number: "25",
+    price: 1399,
+    priceLabel: "₹1,399"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_1_main.png?v=1786123247",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_1_main.png?v=1786123247", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_2_worn.png?v=1786123247", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_3_alt.png?v=1786123247", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/WE24089B_4_alt.png?v=1786123247"],
+    blurb: "Two textures, stacked close to the lobe. Each stud stands about 12mm tall, with a round clear cubic zirconia of about 5mm held in four claws above a round white freshwater pearl of about 7mm.",
+    materials: "18K gold tone plated · brilliant-cut zircone · pearl · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "ribbon-bow-earrings",
+    name: "Ribbon Bow Earrings",
+    category: "Earrings",
+    sku: "E16075B",
+    number: "26",
+    price: 2299,
+    priceLabel: "₹2,299"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_1_main.png?v=1786122967",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_1_main.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_2_worn.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16075B_4_alt.png?v=1786122967"],
+    blurb: "A ribbon, held still in gold. These studs measure about 15mm wide and are shaped as a soft bow, built from pear cut and tapered clear cubic zirconia held in fine gold claws so the whole form reads as one contin",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "solitaire-whisper-studs",
+    name: "Solitaire Whisper Studs",
+    category: "Earrings",
+    sku: "E16355C",
+    number: "27",
+    price: 1899,
+    priceLabel: "₹1,899"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_1_main.png?v=1786123162",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_1_main.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_2_worn.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_3_alt.png?v=1786123162", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E16355C_4_alt.png?v=1786123162"],
+    blurb: "Cool silver tone, close to the lobe. Each stud measures about 12mm square and holds a round brilliant clear cubic zirconia of about 7mm at the centre, framed by a cushion shaped pave halo of smaller clear stone",
+    materials: "Rhodium silver tone · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "textured-gold-hoops",
+    name: "Textured Gold Hoops",
+    category: "Earrings",
+    sku: "FE03586B",
+    number: "28",
+    price: 2849,
+    priceLabel: "₹2,849"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_1_main.png?v=1786123161",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_1_main.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_2_worn.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_3_alt.png?v=1786123161", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE03586B_4_alt.png?v=1786123161"],
+    blurb: "An arc that builds as it climbs. These open half hoops measure about 22mm across, each one made from alternating fluted gold discs of about 6mm and clusters of small round clear cubic zirconia, so texture and s",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "emerald-cluster-studs",
+    name: "Verdant Circlet Studs",
+    category: "Earrings",
+    sku: "FE02847B",
+    number: "29",
+    price: 1499,
+    priceLabel: "₹1,499"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_1_main.png?v=1786123229",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_1_main.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_2_worn.png?v=1786123229", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_3_alt.png?v=1786123230", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FE02847B_4_alt.png?v=1786123229"],
+    blurb: "Colour above, and a soft white centre below. Each stud stands about 20mm tall, with a cushion cut emerald green cubic zirconia of about 10mm set over an open circlet of small clear cubic zirconia and gold point",
+    materials: "18K gold tone plated · brilliant-cut zircone · pearl · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "woven-gold-hoops",
+    name: "Woven Gold Hoops",
+    category: "Earrings",
+    sku: "E20267O",
+    number: "30",
+    price: 2349,
+    priceLabel: "₹2,349"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_1_main.png?v=1786122748",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/E20267O_4_alt.png?v=1786122748"],
+    blurb: "Texture does the talking here. These hoops measure about 25mm across and each one is a thick braided rope of gold strands, worked so the surface reads as raised ridge and shadow rather than a single smooth curv",
+    materials: "18K gold tone plated · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "bold-nocturne-chain",
+    name: "Bold Nocturne Chain",
+    category: "Necklaces",
+    sku: "YF5144",
+    number: "31",
+    price: 2449,
+    priceLabel: "₹2,449"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_2_worn.png?v=1786123099", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_3_alt.png?v=1786123098", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_4_alt.png?v=1786123099"],
+    blurb: "A chain with enough presence to be the whole outfit. This necklace is built from bold elongated oval paperclip links in warm gold tone, with one link pave set with clear cubic zirconia so a single point of spar",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "charm-box-chain",
+    name: "Charm Box Chain",
+    category: "Necklaces",
+    sku: "YF5146",
+    number: "32",
+    price: 2149,
+    priceLabel: "₹2,149"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_1_main.png?v=1786123228",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_1_main.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_3_alt.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5146_4_alt.png?v=1786123228"],
+    blurb: "One small stone on a very neat chain. This necklace uses a fine gold box chain, built from square links that hold their shape and resist twisting through the day, carrying a small rectangular clear cubic zircon",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "clover-charm",
+    name: "Clover Charm Necklace",
+    category: "Necklaces",
+    sku: "YF6618",
+    number: "33",
+    price: 1299,
+    priceLabel: "₹1,299"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_1_main.png?v=1786122967",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_1_main.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_2_worn.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_3_alt.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6618_4_alt.png?v=1786122967"],
+    blurb: "A small motif that has never gone out of style. The pendant is a four leaf clover charm of about 10mm, each rounded petal set with a small round clear cubic zirconia and a fifth stone at the centre, hanging fro",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "dewdrop-bezel-necklace",
+    name: "Dewdrop Bezel Necklace",
+    category: "Necklaces",
+    sku: "YF6403",
+    number: "34",
+    price: 1299,
+    priceLabel: "₹1,299"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_1_main.png?v=1786122969",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_1_main.png?v=1786122969", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_2_worn.png?v=1786122969", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF6403_4_alt.png?v=1786122969"],
+    blurb: "The quietest version of a good idea. A very fine gold chain carries one small teardrop cut clear cubic zirconia held in a slim bezel, with an adjustable extender chain at the clasp so the length can shift with ",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "first-light-set",
+    name: "First Light Set",
+    category: "Necklaces",
+    sku: "JDS0204301-set",
+    number: "35",
+    price: 1799,
+    priceLabel: "₹1,799"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_1_main.png?v=1786122748",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_1_main.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_3_alt.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/JDS0204301-set_4_alt.png?v=1786122748"],
+    blurb: "A first piece of gold, and a quiet one. The set pairs a fine 1mm cable chain carrying a round clear cubic zirconia of about 4mm in a gold four prong setting with matching studs of the same 4mm size.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "heartline-paperclip-necklace",
+    name: "Heartline Paperclip Necklace",
+    category: "Necklaces",
+    sku: "YF3952",
+    number: "36",
+    price: 2449,
+    priceLabel: "₹2,449"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_1_main.png?v=1786122968",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_1_main.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_2_worn.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF3952_4_alt.png?v=1786122968"],
+    blurb: "Small hearts, spaced out along the light. This necklace is built from fine gold paperclip links, set at intervals with small heart shaped clear cubic zirconia stations rather than clustering them at the front.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "riviere-eternal-necklace",
+    name: "Rivière Eternal Necklace",
+    category: "Necklaces",
+    sku: "YF7085-NEC",
+    number: "37",
+    price: 1799,
+    priceLabel: "₹1,799"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_2_worn.png?v=1786122748", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_3_alt.png?v=1786122749"],
+    blurb: "Light, laid in a single row. This 40cm necklace is set with square cut clear cubic zirconia of about 3mm, each stone in its own four claw gold setting linked directly to the next so the line never breaks.",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "serpentine-whisper-chain",
+    name: "Serpentine Whisper Chain",
+    category: "Necklaces",
+    sku: "YF8439",
+    number: "38",
+    price: 1849,
+    priceLabel: "₹1,849"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_1_main.png?v=1786122967",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_1_main.png?v=1786122967", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_2_worn.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_3_alt.png?v=1786122968", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF8439_4_alt.png?v=1786122968"],
+    blurb: "One stone, one smooth line of gold. This necklace runs a 2mm snake chain measuring 40cm with a 5cm extender, finished at the front with a single cushion cut clear cubic zirconia of about 10mm held in a fine gol",
+    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+  },
+  {
+    handle: "ivory-clasp-chain",
+    name: "Toggle Link Chain",
+    category: "Necklaces",
+    sku: "YF5143",
+    number: "39",
+    price: 1999,
+    priceLabel: "₹1,999"
+    image: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_1_main.png?v=1786123228",
+    gallery: ["https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_1_main.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_2_worn.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_3_alt.png?v=1786123228", "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5143_4_alt.png?v=1786123228"],
+    blurb: "A chain that closes with a turn rather than a catch. This necklace runs 50cm in a 4mm width, finished with a gold toggle bar and ring clasp of about 15mm that sits at the front or the side as you prefer.",
+    materials: "18K gold tone plated · surgical stainless steel · waterproof, anti-tarnish",
   },
 ];

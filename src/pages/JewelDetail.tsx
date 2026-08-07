@@ -52,6 +52,9 @@ const JewelDetail = () => {
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
+  const { addItem, setDrawerOpen, checkout, isLoading: cartLoading } = useCart();
+  const [buying, setBuying] = useState(false);
+
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
     else navigate("/jewellery");

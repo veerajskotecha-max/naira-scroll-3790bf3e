@@ -77,7 +77,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         title: "Numbered small batches",
-        body: "We make to order rather than to warehouse. Each piece carries an edition number from the atelier.",
+        body: "We make to order rather than to warehouse.",
       },
     ],
     faqs: [

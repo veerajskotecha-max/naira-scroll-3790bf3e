@@ -305,7 +305,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       >
         {[
           { icon: RotateCcw, title: "48-hr returns", copy: "On ready-to-ship pieces" },
-          { icon: BadgeCheck, title: "6-month assurance", copy: "Stitching & embellishment" },
+          { icon: BadgeCheck, title: "2-year assurance", copy: "Stitching & embellishment" },
           { icon: ShieldCheck, title: "Secure payment", copy: "UPI, cards & wallets" },
         ].map(({ icon: Icon, title: label, copy }) => (
           <div key={label} className="flex flex-col items-center gap-1 text-center px-2 py-2.5" style={{ backgroundColor: "hsl(0 0% 100%)" }}>

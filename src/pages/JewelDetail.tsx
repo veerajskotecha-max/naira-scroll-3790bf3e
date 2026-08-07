@@ -36,7 +36,6 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
     { label: "Category", value: piece.category },
-    { label: "Edition", value: `No. ${piece.number} of ${staticJewellery.length}` },
     { label: "SKU", value: piece.sku },
   ];
 };
@@ -407,7 +406,7 @@ const JewelDetail = () => {
                 {[
                   { code: "NAIRA10", text: "10% off your first order" },
                   { code: null, text: "Free insured shipping on every order across India" },
-                  { code: null, text: "6-month plating assurance on all demi-fine pieces" },
+                  { code: null, text: "2-year plating assurance on all demi-fine pieces" },
                 ].map((o) => (
                   <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
                     <span aria-hidden="true" style={{ color: "#B0843A" }}>✦</span>

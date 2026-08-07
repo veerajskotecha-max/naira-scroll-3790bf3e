@@ -27,6 +27,7 @@ const sections: Section[] = [
 
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const [openSection, setOpenSection] = useState<string | null>("JEWELLERY");
   const { totalItems, setDrawerOpen: openCart }       = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: openWishlist } = useWishlist();
 

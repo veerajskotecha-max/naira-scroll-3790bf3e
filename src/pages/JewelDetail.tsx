@@ -311,16 +311,19 @@ const JewelDetail = () => {
               {piece.name}
             </h1>
 
-            {/* Pre-order status: a quiet label, not a price */}
-            <div className="mt-3 flex items-center gap-2">
-              <span aria-hidden className="h-[7px] w-[7px] shrink-0" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
-              <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+            {/* Live price from the Shopify listing */}
+            <div className="mt-3 flex items-baseline gap-2">
+              <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
                 {piece.priceLabel}
+              </span>
+              <span className="text-[11px] tracking-[0.06em]" style={{ color: "hsl(0 0% 48%)" }}>
+                inclusive of all taxes
               </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Price shared on WhatsApp enquiry
+              Order or ask anything on WhatsApp — we reply within the hour.
             </p>
+
 
             {/* Key facts, at a glance */}
             <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">

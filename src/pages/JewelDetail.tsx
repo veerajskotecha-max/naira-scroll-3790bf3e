@@ -677,15 +677,23 @@ const JewelDetail = () => {
         >
           <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 25%)" }} />
         </button>
-        <a
-          href={sizedEnquiryHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
+        <button
+          onClick={handleAddToCart}
+          disabled={buying || cartLoading}
+          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
+          style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+        >
+          Add to Cart
+        </button>
+        <button
+          onClick={handleBuyNow}
+          disabled={buying || cartLoading}
+          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          <MessageSquare size={14} /> Order on WhatsApp
-        </a>
+          {buying ? "Opening…" : "Pre-order now"}
+        </button>
+
       </div>
 
       <ImageLightbox

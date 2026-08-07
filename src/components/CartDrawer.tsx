@@ -98,9 +98,9 @@ const CartDrawer = () => {
 
             <Separator className="shrink-0" />
 
-            {/* Scroll region: items + upsell share one scroller so the footer
-                CTA always stays visible, even on short mobile screens. */}
+            {/* Scroll region: cart items only — footer CTA always stays visible */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+
               <div className="px-5 py-4 space-y-4">
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} className="flex gap-3">
@@ -133,7 +133,6 @@ const CartDrawer = () => {
                 ))}
               </div>
             </div>
-
 
 
             {/* Footer — always visible above the fold */}

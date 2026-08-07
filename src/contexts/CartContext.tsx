@@ -27,7 +27,8 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<void>;
+  addItem: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<string | null>;
+  buyNow: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<void>;
   removeItem: (id: string, size?: string) => Promise<void>;
   updateQuantity: (id: string, size: string | undefined, quantity: number) => Promise<void>;
   clearCart: () => void;
@@ -41,6 +42,7 @@ interface CartContextType {
   isSyncing: boolean;
   checkoutUrl: string | null;
 }
+
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 const STORAGE_KEY = "naira-shopify-cart";

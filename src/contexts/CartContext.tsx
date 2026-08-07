@@ -179,14 +179,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           clearCart();
           return;
         }
-        setStoredCart((current) => {
+        commitCart((current) => {
           const nextItems = current.items.filter((cartItem) => getCartKey(cartItem.id, cartItem.size) !== key);
           return nextItems.length === 0
             ? emptyCart
             : { ...current, checkoutUrl: result.checkoutUrl ?? current.checkoutUrl, items: nextItems };
         });
       } else {
-        setStoredCart((current) => ({
+        commitCart((current) => ({
           ...current,
           items: current.items.filter((cartItem) => getCartKey(cartItem.id, cartItem.size) !== key),
         }));
@@ -197,7 +197,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [clearCart]);
+  }, [clearCart, commitCart]);
 
   const updateQuantity = useCallback(async (id: string, size: string | undefined, quantity: number) => {
     if (quantity <= 0) {
@@ -220,7 +220,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         const syncedQuantity = result.quantity ?? quantity;
-        setStoredCart((current) => ({
+        commitCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
           items: current.items.map((cartItem) => (getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem)),
@@ -232,9 +232,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [clearCart, removeItem]);
+  }, [clearCart, commitCart, removeItem]);
 
   const isSyncingRef = useRef(false);
+  /**
+   * Reconcile the local cart with the real Shopify cart.
+   *
+   * The Shopify cart lives server-side and outlives localStorage, so the two can
+   * drift: lines added in an older session (or on another device) stayed on the
+   * Shopify cart and reappeared at checkout even though the drawer looked empty.
+   * We now make Shopify match exactly what the drawer shows — stale server lines
+   * are deleted, quantities are pulled from Shopify, and local rows whose line no
+   * longer exists are dropped.
+   */
   const syncCart = useCallback(async () => {
     const latest = loadCart();
     if (!latest.cartId || isSyncingRef.current) return;
@@ -243,18 +253,53 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsSyncing(true);
     try {
       const cart = await fetchShopifyCart(latest.cartId);
-      if (!cart || cart.totalQuantity === 0) {
+      if (!cart) {
         clearCart();
         return;
       }
-      setStoredCart((current) => ({ ...current, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl) }));
+
+      const serverLines = cart.lines.edges.map((edge) => edge.node);
+      const knownLineIds = new Set(latest.items.map((item) => item.lineId).filter(Boolean) as string[]);
+      const orphanLines = serverLines.filter((line) => !knownLineIds.has(line.id));
+
+      let checkoutUrlValue = cart.checkoutUrl;
+      for (const orphan of orphanLines) {
+        const removal = await removeLineFromShopifyCart(latest.cartId, orphan.id);
+        if (removal.checkoutUrl) checkoutUrlValue = removal.checkoutUrl;
+      }
+
+      const serverById = new Map(serverLines.map((line) => [line.id, line]));
+      const reconciled = latest.items
+        .filter((item) => item.lineId && serverById.has(item.lineId))
+        .map((item) => ({ ...item, quantity: serverById.get(item.lineId!)!.quantity }));
+
+      if (reconciled.length === 0) {
+        clearCart();
+        return;
+      }
+
+      commitCart((current) => ({
+        ...current,
+        cartId: latest.cartId,
+        checkoutUrl: formatCheckoutUrl(checkoutUrlValue),
+        items: reconciled,
+      }));
     } catch (error) {
       console.error("Failed to sync Shopify cart", error);
     } finally {
       isSyncingRef.current = false;
       setIsSyncing(false);
     }
-  }, [clearCart]);
+  }, [clearCart, commitCart]);
+
+  const openCheckout = useCallback((url: string) => {
+    const target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));
+    const opened = window.open(target, "_blank", "noopener,noreferrer");
+    // Popup blockers reject window.open outside a direct click (Buy now awaits
+    // a network call first) — fall back to same-tab navigation.
+    if (!opened || opened.closed) window.location.assign(target);
+    setDrawerOpen(false);
+  }, []);
 
   const checkout = useCallback(() => {
     const latestUrl = loadCart().checkoutUrl ?? checkoutUrl;
@@ -262,9 +307,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       toast.error("Add an item before checkout.");
       return;
     }
-    window.open(applyPromoToCheckoutUrl(formatCheckoutUrl(latestUrl)), "_blank", "noopener,noreferrer");
-    setDrawerOpen(false);
-  }, [checkoutUrl]);
+    openCheckout(latestUrl);
+  }, [checkoutUrl, openCheckout]);
+
+  /* One-tap "Pre-order now / Shop now": add to the Shopify cart, then go straight
+     to Shopify checkout using the URL that add returned (no stale-state race). */
+  const buyNow = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
+    const url = await addItem(item, quantity);
+    const target = url ?? loadCart().checkoutUrl;
+    if (!target) {
+      toast.error("Could not open checkout. Please try again.");
+      return;
+    }
+    openCheckout(target);
+  }, [addItem, openCheckout]);
 
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
@@ -275,6 +331,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       items,
       addItem,
+      buyNow,
       removeItem,
       updateQuantity,
       clearCart,
@@ -288,8 +345,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       isSyncing,
       checkoutUrl,
     }),
-    [items, addItem, removeItem, updateQuantity, clearCart, syncCart, checkout, totalItems, subtotal, isDrawerOpen, isLoading, isSyncing, checkoutUrl]
+    [items, addItem, buyNow, removeItem, updateQuantity, clearCart, syncCart, checkout, totalItems, subtotal, isDrawerOpen, isLoading, isSyncing, checkoutUrl]
   );
+
 
   return (
     <CartContext.Provider value={contextValue}>

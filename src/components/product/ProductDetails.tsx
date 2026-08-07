@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
+import { Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck, Star, RotateCcw, BadgeCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 
 import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
+import { getProductRating } from "@/lib/productRating";
 
 const fallbackSizes = ["XS", "S", "M", "L", "XL"];
 
@@ -51,6 +52,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const priceMoney = selectedVariant?.price ?? product?.priceRange.minVariantPrice;
   const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "·";
   const numericPrice = priceMoney ? Number(priceMoney.amount) : 0;
+  const { rating, count: reviewCount } = getProductRating(product?.handle ?? title);
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {
@@ -93,6 +95,31 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       >
         {title}
       </h1>
+
+      {/* Rating summary */}
+      <a
+        href="#customer-reviews"
+        className="inline-flex items-center gap-2 mt-2 min-h-[32px] group"
+        aria-label={`${rating} out of 5 stars from ${reviewCount} reviews`}
+      >
+        <span className="flex items-center gap-[2px]">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Star
+              key={i}
+              size={13}
+              strokeWidth={1.2}
+              style={{ color: "hsl(36 60% 48%)" }}
+              fill={i < Math.round(rating) ? "hsl(36 60% 48%)" : "transparent"}
+            />
+          ))}
+        </span>
+        <span className="text-[12px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
+          {rating.toFixed(1)}
+        </span>
+        <span className="text-[12px] underline underline-offset-4 group-hover:opacity-70" style={{ color: "hsl(0 0% 45%)" }}>
+          {reviewCount} reviews
+        </span>
+      </a>
 
       {/* Price + Tax */}
       <div className="mt-2 md:mt-3">
@@ -254,6 +281,24 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         >
           Buy It Now
         </button>
+      </div>
+
+      {/* Warranty & returns reassurance, next to the CTA */}
+      <div
+        className="grid grid-cols-3 gap-px mt-3"
+        style={{ border: "1px solid hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 90%)" }}
+      >
+        {[
+          { icon: RotateCcw, title: "48-hr returns", copy: "On ready-to-ship pieces" },
+          { icon: BadgeCheck, title: "6-month assurance", copy: "Stitching & embellishment" },
+          { icon: ShieldCheck, title: "Secure payment", copy: "UPI, cards & wallets" },
+        ].map(({ icon: Icon, title: label, copy }) => (
+          <div key={label} className="flex flex-col items-center gap-1 text-center px-2 py-2.5" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
+            <Icon size={14} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
+            <span className="text-[10.5px] font-medium leading-tight" style={{ color: "hsl(0 0% 22%)" }}>{label}</span>
+            <span className="text-[9.5px] leading-tight" style={{ color: "hsl(0 0% 52%)" }}>{copy}</span>
+          </div>
+        ))}
       </div>
 
       {/* Secondary CTA */}

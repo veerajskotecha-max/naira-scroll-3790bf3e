@@ -245,15 +245,24 @@ const Footer = () => {
               "Slow Fashion India",
               "Hand Embroidered",
               "Luxury Prêt",
-            ].map((term, i, arr) => (
+            ].map((term, i, arr) => {
+              const customTerms = ["Made to Measure", "Custom Bridalwear"];
+              const jewelTerms = ["Wedding Sets"];
+              const to = customTerms.includes(term)
+                ? "/customize"
+                : jewelTerms.includes(term)
+                ? "/jewellery"
+                : `/shop?search=${encodeURIComponent(term)}`;
+              return (
               <span key={term}>
                 <Link
-                  to={`/shop?search=${encodeURIComponent(term)}`}
+                  to={to}
                   className="transition-colors duration-200 hover:opacity-100"
                   style={{ color: CREAM_FAINT }}
                 >
                   {term}
                 </Link>
+
                 {i < arr.length - 1 && <span className="mx-2 opacity-40">·</span>}
               </span>
             ))}

@@ -125,7 +125,7 @@ const JewelDetail = () => {
   const related = [...sameCategory, ...otherPieces].slice(0, 4);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
+    `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
 
   const handleWishlist = () => {
@@ -414,7 +414,7 @@ const JewelDetail = () => {
                 className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                <MessageSquare size={15} /> Pre-order on WhatsApp
+                <MessageSquare size={15} /> Order on WhatsApp
               </a>
               <div className="flex gap-3 mt-3">
                 <button
@@ -608,7 +608,7 @@ const JewelDetail = () => {
           className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          <MessageSquare size={14} /> Pre-order on WhatsApp
+          <MessageSquare size={14} /> Order on WhatsApp
         </a>
       </div>
 

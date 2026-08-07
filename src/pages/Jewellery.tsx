@@ -193,6 +193,16 @@ const Jewellery = () => {
           </div>
         </div>
 
+        {/* sort + filters */}
+        <JewelFilterBar
+          pieces={inCategory}
+          value={activeFilters}
+          onChange={setFilters}
+          resultCount={pieces.length}
+        />
+
+
+
 
 
         {/* grid */}

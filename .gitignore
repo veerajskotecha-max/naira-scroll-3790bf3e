@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Downloaded Higgsfield product frames (see scripts/higgsfield/download.ts)
+gilded-hour-shots/
+gilded-hour-angles/
+
+# Designer handoff package - HD contact book and the frames behind it
+naira-flore-shots.pdf
+naira-flore-shots-*.pdf
+naira-flore-shots/
+naira-flore-review.pdf
+naira-flore-rings.pdf
+naira-flore-earrings.pdf
+naira-flore-bracelets-necklaces.pdf
+
+naira-flore-campaign-softly-slowly-worn.pdf
+naira-flore-campaign/
+naira-flore-campaign-*.pdf
+naira-flore-film/
+naira-flore-campaign-branded/

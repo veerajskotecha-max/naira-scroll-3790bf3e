@@ -22,7 +22,6 @@ gsap.registerPlugin(ScrollTrigger);
    Reduced-motion: everything shown, no pin.
    ─────────────────────────────────────────────────────────────── */
 
-const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -177,10 +176,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
           {/* finale */}
           <div data-finale className="relative z-20 mt-3 text-center md:mt-8">
-            <h2 className="text-[clamp(1.4rem,5.4vw,2.6rem)] leading-tight" style={velista}>{solitaire.name}</h2>
             <p className="mt-1 text-[13px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>Rhodium finished · brilliant-cut zircone · 4-prong</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:mt-4 md:gap-4">
-              <span className="text-[15px] tracking-wide md:text-[16px]" style={jost}>{solitaire.priceLabel}</span>
               <button onClick={() => setQv(solitaire)} className="press-scale border border-[#1A1614] px-6 py-2.5 text-[10px] tracking-[0.3em] hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
                 ENQUIRE
               </button>

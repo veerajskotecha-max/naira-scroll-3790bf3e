@@ -70,7 +70,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "+=110%",
+          // Mobile gets a shorter pin so the grid is reachable in one flick.
+          end: window.matchMedia("(max-width: 767px)").matches ? "+=70%" : "+=110%",
           scrub: 1,
           fastScrollEnd: true,
 
@@ -126,7 +127,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex flex-col items-center justify-center px-4 pb-6 pt-[124px] md:h-[100svh] md:min-h-[560px] md:px-6 md:pb-10 md:pt-[120px]"
+          className="relative flex flex-col items-center justify-center px-4 pb-4 pt-[96px] md:h-[100svh] md:min-h-[560px] md:px-6 md:pb-10 md:pt-[120px]"
         >
           {/* atelier backdrop — paper wash, 3D drift, touch blooms */}
           {!inheritBackdrop && <RingAtelierBackdrop />}

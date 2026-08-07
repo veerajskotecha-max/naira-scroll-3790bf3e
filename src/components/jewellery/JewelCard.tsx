@@ -156,7 +156,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
 
   return (
-    <article className="jewel-shop-card group flex flex-col" style={{ ["--i" as string]: index }}>
+    <article className="jewel-shop-card group flex h-full flex-col" style={{ ["--i" as string]: index }}>
       <Link
         to={`/jewellery/${piece.handle}`}
         aria-label={`View ${piece.name}`}
@@ -245,9 +245,14 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
       <div className="flex flex-1 flex-col items-center px-1 pt-4 text-center sm:pt-5">
         <p className="text-[9px] tracking-nf-32 text-nf-gold-deep sm:text-[10px] sm:tracking-nf-34" style={jost}>
-          {piece.category.toUpperCase()} <span aria-hidden className="text-nf-gold-deep/50">·</span> <span className="text-nf-ink/45">NO. {piece.number}</span>
+          {piece.category.toUpperCase()}
         </p>
-        <h3 className="mt-1.5 text-[18px] leading-tight text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]" style={velista}>
+        {/* Two-line clamp keeps every card in a row the same height, so the
+            price and CTAs line up across the grid instead of staggering. */}
+        <h3
+          className="mt-1.5 line-clamp-2 min-h-[2.2em] text-[18px] leading-tight text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]"
+          style={velista}
+        >
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
         {/* Price: the single most-scanned element on a grid card, so it reads
@@ -257,7 +262,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         </div>
         {/* Pre-order / delivery wording lives on the product page only. */}
 
-        <div className="mt-2.5 flex w-full flex-col items-center gap-2 sm:mt-3">
+        <div className="mt-auto flex w-full flex-col items-center gap-2 pt-3">
+
           <button
             onClick={handleAdd}
             disabled={adding || cartLoading}

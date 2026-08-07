@@ -55,7 +55,7 @@ export const categoryLandings: CategoryLanding[] = [
       },
       {
         title: "Made in small batches",
-        body: "Each ring carries an edition number. We make to order rather than to inventory, which keeps the setting work slow and the finish consistent.",
+        body: "We make to order rather than to inventory, which keeps the setting work slow and the finish consistent.",
       },
     ],
     faqs: [
@@ -211,7 +211,7 @@ export const categoryLandings: CategoryLanding[] = [
       "Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier.",
     intro: [
       "Demi-fine jewellery sits between costume and solid gold. It is built like fine jewellery, stones set in real prongs, solid construction, a thick precious-metal finish over a hypoallergenic base, but priced so you can own several pieces instead of one.",
-      "Everything in The Gilded Hour is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped, and every piece carries an edition number.",
+      "Everything in The Gilded Hour is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped.",
       "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make in small batches at our atelier.",
     ],
     bullets: [

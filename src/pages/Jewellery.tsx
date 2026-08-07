@@ -215,7 +215,10 @@ const Jewellery = () => {
               New pieces join The Gilded Hour in small batches. The full collection is a step away.
             </p>
             <button
-              onClick={() => selectCategory("All")}
+              onClick={() => {
+                setFilters({ sort: "featured", maxPrice: null, inStockOnly: false, tag: null });
+                selectCategory("All");
+              }}
               className="press-scale mt-7 border border-nf-ink px-7 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
               style={jost}
             >

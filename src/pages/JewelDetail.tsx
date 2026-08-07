@@ -710,6 +710,19 @@ const JewelDetail = () => {
 
       <CollectionCarousel excludeHandle={piece?.handle} />
 
+      <RecentlyViewed
+        current={
+          piece && {
+            handle: piece.handle,
+            name: piece.name,
+            price: piece.priceLabel,
+            image: piece.image,
+            to: `/jewellery/${piece.handle}`,
+          }
+        }
+      />
+
+
       <Footer />
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}

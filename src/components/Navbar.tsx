@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Search, Heart, ShoppingBag, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
+import MegaMenu from "./nav/MegaMenu";
+import SearchOverlay from "./nav/SearchOverlay";
 import nairaLogo from "@/assets/naira-logo.svg";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -10,29 +12,24 @@ interface NavbarProps {
   scrolled: boolean;
 }
 
-const leftLinks: { label: string; to: string; children?: { label: string; to: string }[] }[] = [
+const leftLinks: { label: string; to: string; mega?: boolean }[] = [
   { label: "HOME", to: "/" },
-  {
-    label: "SHOP",
-    to: "/shop",
-    children: [
-      { label: "Jewellery", to: "/jewellery" },
-      { label: "Indo-Western", to: "/shop/indo-western" },
-    ],
-  },
+  { label: "SHOP", to: "/jewellery", mega: true },
+  { label: "GIFTING", to: "/gifting" },
   { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },
 ];
 
 const Navbar = ({ scrolled }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { totalItems, setDrawerOpen } = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: setWishlistOpen } = useWishlist();
 
-  const handleSearch = () => navigate("/shop");
-  const handleAccount = () => navigate("/contact");
+  const handleAccount = () => navigate("/track-order");
+
 
   return (
     <>

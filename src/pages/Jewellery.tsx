@@ -58,7 +58,7 @@ const Jewellery = () => {
     <>
       <PageSEO
         title="Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish"
-        description="Shop demi-fine jewellery by Naira Flore: hand-set brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches."
+        description="Shop demi-fine jewellery by Naira Flore: brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches."
         canonical={`${SITE_URL}/jewellery`}
         image={jewellery[0]?.image}
         jsonLd={[
@@ -103,7 +103,7 @@ const Jewellery = () => {
               Demi-Fine Jewellery
             </h1>
             <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
-              Hand-set zircone in an 18K gold finish.
+              Brilliant-cut zircone in an 18K gold finish.
             </p>
           </header>
         </div>

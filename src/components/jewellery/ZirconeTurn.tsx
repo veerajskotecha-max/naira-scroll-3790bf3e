@@ -66,7 +66,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "+=170%",
+          end: "+=110%",
           scrub: 1,
           fastScrollEnd: true,
 

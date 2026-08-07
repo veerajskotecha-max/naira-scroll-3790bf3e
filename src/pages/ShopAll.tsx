@@ -346,8 +346,7 @@ const ShopAll = () => {
           title="The Festive"
           titleAccent="Edit"
           description="Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape."
-          primaryCta={{ label: "Shop Now", to: "/shop" }}
-          secondaryCta={{ label: "View the Festive Edit", to: "/shop?category=festive" }}
+          primaryCta={{ label: "Shop the Festive Edit", to: "/shop?category=festive" }}
         />
       )}
 

@@ -393,9 +393,10 @@ const JewelDetail = () => {
             <div className="flex items-center gap-2 mt-3">
               <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
               <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                Plated &amp; finished in <strong className="font-medium">2–3 weeks</strong>
+                <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong> · dispatch begins at launch
               </span>
             </div>
+
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>

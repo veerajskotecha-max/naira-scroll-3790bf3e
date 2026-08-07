@@ -347,7 +347,7 @@ const JewelDetail = () => {
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
               {[
-                { icon: Scissors, label: "Hand-finished" },
+                { icon: Sparkles, label: "Anti-Tarnish Sealed" },
                 { icon: ShieldCheck, label: "18k Demi-Gold" },
                 { icon: ReceiptText, label: "Secure Payments" },
               ].map(({ icon: Icon, label }) => (

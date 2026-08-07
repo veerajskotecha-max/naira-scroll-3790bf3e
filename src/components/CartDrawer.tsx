@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
-import { CartPromoField, CartUpsell } from "@/components/cart/CartExtras";
+import { CartPromoField } from "@/components/cart/CartExtras";
 
 const FREE_SHIPPING_THRESHOLD = 2999;
 
@@ -98,9 +98,9 @@ const CartDrawer = () => {
 
             <Separator className="shrink-0" />
 
-            {/* Scroll region: items + upsell share one scroller so the footer
-                CTA always stays visible, even on short mobile screens. */}
+            {/* Scroll region: cart items only — footer CTA always stays visible */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+
               <div className="px-5 py-4 space-y-4">
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} className="flex gap-3">
@@ -132,8 +132,6 @@ const CartDrawer = () => {
                   </div>
                 ))}
               </div>
-
-              <CartUpsell />
             </div>
 
 

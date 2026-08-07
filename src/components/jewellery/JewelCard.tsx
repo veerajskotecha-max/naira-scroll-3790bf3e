@@ -193,8 +193,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
-              /* Second frame is usually the packshot — show the whole piece. */
-              className="jc-back absolute inset-0 aspect-square w-full object-contain p-3 opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+              className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}
 

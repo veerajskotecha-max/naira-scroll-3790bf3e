@@ -23,8 +23,30 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const tiltRef = useRef<HTMLDivElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const { addItem, setDrawerOpen, isLoading: cartLoading } = useCart();
   const altImg = piece.gallery && piece.gallery.length > 1 ? piece.gallery[1] : null;
   const zircone = piece.handle.startsWith("zircone");
+
+  /* Shopify-backed pre-order add: real variant, real cart. */
+  const handleAdd = async () => {
+    setAdding(true);
+    try {
+      await addItem({
+        id: piece.handle,
+        variantId: piece.variantId,
+        name: piece.name,
+        price: piece.price,
+        priceLabel: piece.priceLabel,
+        currencyCode: "INR",
+        image: piece.image,
+      });
+      setDrawerOpen(true);
+    } finally {
+      setAdding(false);
+    }
+  };
+
 
   useEffect(() => {
     const el = tiltRef.current;

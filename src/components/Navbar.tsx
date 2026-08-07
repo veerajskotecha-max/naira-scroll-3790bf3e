@@ -66,7 +66,10 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                     </Link>
                     {/* Mega panel is anchored to the viewport, not the trigger,
                         so the four-column grid stays centred on every width. */}
-                    <div className="fixed left-1/2 -translate-x-1/2 top-[var(--header-h,120px)] pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50">
+                    <div
+                      className="fixed left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50"
+                      style={{ top: "calc(var(--announcement-h) + var(--navbar-h))" }}
+                    >
                       <MegaMenu />
                     </div>
                   </div>

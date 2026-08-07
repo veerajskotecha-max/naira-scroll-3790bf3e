@@ -23,7 +23,9 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['lucide-react']
+          ui: ['lucide-react'],
+          gsap: ['gsap'],
+          query: ['@tanstack/react-query'],
         }
       }
     }

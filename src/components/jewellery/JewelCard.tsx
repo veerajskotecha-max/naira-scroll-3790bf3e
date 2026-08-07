@@ -251,13 +251,10 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
         {/* Price: the single most-scanned element on a grid card, so it reads
-            at title weight in ink rather than as a faint gold caption. */}
-        <p
-          className="mt-2 text-[15px] font-medium leading-none text-nf-ink sm:mt-2.5 sm:text-[17px]"
-          style={{ ...jost, fontVariantNumeric: "tabular-nums" }}
-        >
-          {piece.priceLabel}
-        </p>
+            at title weight in ink, with the MRP struck through beside it. */}
+        <div className="mt-2 sm:mt-2.5">
+          <JewelPriceTag piece={piece} />
+        </div>
         {/* Pre-order / delivery wording lives on the product page only. */}
 
         <div className="mt-2.5 flex w-full flex-col items-center gap-2 sm:mt-3">

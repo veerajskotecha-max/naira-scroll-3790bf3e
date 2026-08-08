@@ -203,7 +203,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               decoding="async"
               style={
                 piece.category === "Earrings"
-                  ? { objectPosition: "center 10%", transform: "scale(1.3)" }
+                  ? { objectPosition: "center top" }
                   : undefined
               }
               className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
@@ -224,30 +224,24 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             </span>
           )}
           <div ref={sheenRef} aria-hidden className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-300" />
-          {/* Badges sit along the bottom-left so they never cover the ear /
-              neckline on the on-model teaser shots. */}
-          {(piece.tag || off > 0) && (
-            <span className="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 sm:bottom-4 sm:left-4">
-              {piece.tag && (
-                <span
-                  className={`border bg-nf-ivory/90 px-2 py-[3px] text-[8px] tracking-nf-24 backdrop-blur-[2px] sm:px-2.5 sm:text-[8.5px] ${
-                    piece.tag === "NEW" || piece.tag === "BESTSELLER"
-                      ? "border-nf-gold text-nf-gold-shadow"
-                      : "border-nf-ink/15 text-nf-ink/60"
-                  }`}
-                  style={jost}
-                >
-                  {piece.tag}
-                </span>
-              )}
-              {off > 0 && (
-                <span
-                  className="bg-nf-gold-deep/90 px-2 py-[3px] text-[8px] tracking-nf-20 text-nf-ivory backdrop-blur-[2px] sm:px-2.5 sm:text-[8.5px]"
-                  style={jost}
-                >
-                  {off}% OFF
-                </span>
-              )}
+          {piece.tag && (
+            <span
+              className={`absolute left-3 top-3 border bg-nf-ivory/95 px-2.5 py-1 text-[8.5px] tracking-nf-24 sm:left-4 sm:top-4 sm:px-3 sm:text-[9px] sm:tracking-nf-30 ${
+                piece.tag === "NEW" || piece.tag === "BESTSELLER"
+                  ? "border-nf-gold text-nf-gold-shadow"
+                  : "border-nf-ink/15 text-nf-ink/60"
+              }`}
+              style={jost}
+            >
+              {piece.tag}
+            </span>
+          )}
+          {off > 0 && (
+            <span
+              className="absolute right-3 top-3 bg-nf-gold-deep px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
+              style={jost}
+            >
+              {off}% OFF
             </span>
           )}
 

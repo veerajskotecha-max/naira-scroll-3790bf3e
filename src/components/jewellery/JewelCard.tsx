@@ -176,15 +176,12 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             decoding="async"
             width={800}
             height={800}
-            /* On-model and small-piece shots read as specks in a square crop —
-               zoom the frame per category so the product fills the tile with
-               no letterboxed bands on either side. */
+            /* Only the on-model (person) shots get zoomed so the piece reads
+               big on the body. Earring packshots stay at their natural crop. */
             style={
-              piece.category === "Earrings"
-                ? { objectPosition: "center 36%", transform: "scale(1.5)" }
-                : piece.category === "Necklaces"
-                  ? { objectPosition: "center 38%", transform: "scale(1.14)" }
-                  : undefined
+              piece.category === "Necklaces"
+                ? { objectPosition: "center 38%", transform: "scale(1.14)" }
+                : undefined
             }
             className="jc-front aspect-square w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
 
@@ -198,6 +195,11 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
+              style={
+                piece.category === "Earrings"
+                  ? { objectPosition: "center 34%", transform: "scale(1.5)" }
+                  : undefined
+              }
               className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}

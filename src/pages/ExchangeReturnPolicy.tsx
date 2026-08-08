@@ -64,7 +64,7 @@ const ExchangeReturnPolicy = () => {
     <>
       <PageSEO
         title="Exchange & Return Policy"
-        description="Naira Flore's exchange and return policy: 48-hour window on standard pieces, and why made-to-measure made-to-measure pieces are non-returnable."
+        description="Naira Flore's exchange and return policy: 48-hour window on standard pieces, and why made-to-measure pieces are non-returnable."
         canonical="https://nairaflore.com/exchange-return-policy"
       />
       {/* Hero header */}

@@ -12,9 +12,11 @@ interface StickyAddToCartProps {
   variantId?: string;
   numericPrice?: number;
   currencyCode?: string;
+  /** False when the shown variant is sold out — keeps the bar honest with the PDP. */
+  inStock?: boolean;
 }
 
-const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = "", variantId, numericPrice = 0, currencyCode = "INR" }: StickyAddToCartProps) => {
+const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = "", variantId, numericPrice = 0, currencyCode = "INR", inStock = true }: StickyAddToCartProps) => {
   const [visible, setVisible] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>();
@@ -25,6 +27,10 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
   const handleAdd = async () => {
     if (!variantId) {
       toast.error("This product is currently unavailable.");
+      return;
+    }
+    if (!inStock) {
+      toast.error(`${title} is sold out${selectedSize ? ` in size ${selectedSize}` : ""}.`);
       return;
     }
 

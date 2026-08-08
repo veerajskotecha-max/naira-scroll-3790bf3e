@@ -319,6 +319,29 @@ export const wornFirst = (product: ShopifyProductNode | null): ShopifyProductNod
   return { ...product, images: { ...product.images, edges: reordered } };
 };
 
+/**
+ * Which of a product's option values are actually buyable.
+ *
+ * `options` lists every value the product was ever configured with, including
+ * sizes whose variant has since sold out. Selling state lives on the variants,
+ * so the two have to be reconciled before a size list is rendered — otherwise a
+ * sold-out size stays selectable and the shopper only discovers it at checkout.
+ */
+export const availabilityByOption = (
+  product: ShopifyProductNode | null | undefined,
+  optionName = "size",
+): Record<string, boolean> => {
+  const key = optionName.toLowerCase();
+  const out: Record<string, boolean> = {};
+  for (const { node } of product?.variants?.edges ?? []) {
+    const value = node.selectedOptions.find((o) => o.name.toLowerCase() === key)?.value;
+    if (value === undefined) continue;
+    // A value is buyable if ANY variant carrying it is for sale.
+    out[value] = (out[value] ?? false) || node.availableForSale;
+  }
+  return out;
+};
+
 export async function fetchShopifyProducts(first = 20, query?: string): Promise<ShopifyProductNode[]> {
   const data = await storefrontApiRequest<{ data: { products: { edges: ShopifyProductEdge[] } } }>(PRODUCTS_QUERY, {
     first,

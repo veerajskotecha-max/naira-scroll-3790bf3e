@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { wornFirst } from "./shopify";
+import { availabilityByOption, wornFirst } from "./shopify";
 import type { ShopifyProductNode } from "./shopify";
 
 const CDN = "https://cdn.shopify.com/s/files/1/0/files";
@@ -51,5 +51,44 @@ describe("wornFirst", () => {
     expect(wornFirst(null)).toBeNull();
     expect(filesOf(wornFirst(productWith([])) ?? productWith([]))).toEqual([]);
     expect(filesOf(wornFirst(productWith(["solo_2_worn.png"])))).toEqual(["solo_2_worn.png"]);
+  });
+});
+
+const withVariants = (v: Array<{ size?: string; ok: boolean }>) =>
+  ({
+    variants: {
+      edges: v.map((x) => ({
+        node: {
+          availableForSale: x.ok,
+          selectedOptions: x.size === undefined ? [] : [{ name: "Size", value: x.size }],
+        },
+      })),
+    },
+  }) as unknown as ShopifyProductNode;
+
+describe("availabilityByOption", () => {
+  it("marks sold-out sizes false and in-stock sizes true", () => {
+    expect(
+      availabilityByOption(withVariants([{ size: "S", ok: true }, { size: "M", ok: false }])),
+    ).toEqual({ S: true, M: false });
+  });
+
+  it("treats a size as buyable if any variant carrying it is for sale", () => {
+    expect(
+      availabilityByOption(withVariants([{ size: "M", ok: false }, { size: "M", ok: true }])),
+    ).toEqual({ M: true });
+  });
+
+  it("matches the option name case-insensitively", () => {
+    const p = { variants: { edges: [{ node: { availableForSale: true, selectedOptions: [{ name: "SIZE", value: "L" }] } }] } } as unknown as ShopifyProductNode;
+    expect(availabilityByOption(p, "size")).toEqual({ L: true });
+  });
+
+  it("returns an empty map for products with no size option, so they are not blocked", () => {
+    expect(availabilityByOption(withVariants([{ ok: true }]))).toEqual({});
+  });
+
+  it("handles null products", () => {
+    expect(availabilityByOption(null)).toEqual({});
   });
 });

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
+import { availabilityByOption, formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
 
 const fallbackSizes = ["XS", "S", "M", "L", "XL"];
 
@@ -45,6 +45,11 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
     ) ?? variants.find((variant) => variant.availableForSale) ?? variants[0];
   }, [product, selectedSize]);
 
+  const sizeAvailability = useMemo(() => availabilityByOption(product, "size"), [product]);
+  // Treat "unknown" as buyable: products with no size option (most jewellery)
+  // have no entry here and must not be blocked.
+  const selectedInStock = sizeAvailability[selectedSize] ?? selectedVariant?.availableForSale ?? true;
+
   const title = product?.title ?? "Shopify product";
   const description = product?.description || "Product details are being loaded from Shopify.";
   const image = product?.images.edges[0]?.node.url ?? "/placeholder.svg";
@@ -55,6 +60,10 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {
       toast.error("This product is currently unavailable.");
+      return;
+    }
+    if (!selectedInStock) {
+      toast.error(`${title} is sold out in size ${selectedSize}.`);
       return;
     }
 
@@ -173,11 +182,24 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-none">
-            {sizeOptions.map((size) => (
-              <SelectItem key={size} value={size} className="text-[13px] rounded-none">
-                {size}
-              </SelectItem>
-            ))}
+            {sizeOptions.map((size) => {
+              const inStock = sizeAvailability[size] ?? true;
+              return (
+                <SelectItem
+                  key={size}
+                  value={size}
+                  disabled={!inStock}
+                  className="text-[13px] rounded-none"
+                >
+                  {size}
+                  {!inStock && (
+                    <span className="ml-2 text-[11px]" style={{ color: "hsl(0 0% 55%)" }}>
+                      — Sold out
+                    </span>
+                  )}
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
@@ -219,22 +241,27 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div id="product-actions" className="flex gap-3 mt-5">
         <button
           onClick={handleAddToCart}
-          className="press-scale flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200"
+          disabled={!selectedInStock}
+          className="press-scale flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 disabled:cursor-not-allowed"
           style={{
-            borderColor: "hsl(0 0% 20%)",
-            color: "hsl(0 0% 20%)",
+            borderColor: selectedInStock ? "hsl(0 0% 20%)" : "hsl(0 0% 82%)",
+            color: selectedInStock ? "hsl(0 0% 20%)" : "hsl(0 0% 55%)",
             backgroundColor: "transparent",
           }}
           onMouseEnter={(e) => {
+            if (!selectedInStock) return;
             e.currentTarget.style.backgroundColor = "hsl(0 0% 20%)";
             e.currentTarget.style.color = "hsl(0 0% 100%)";
           }}
           onMouseLeave={(e) => {
+            if (!selectedInStock) return;
             e.currentTarget.style.backgroundColor = "transparent";
             e.currentTarget.style.color = "hsl(0 0% 20%)";
           }}
         >
-          {added ? (
+          {!selectedInStock ? (
+            "Sold Out"
+          ) : added ? (
             <span className="check-pop inline-flex items-center justify-center gap-2">
               <Check size={14} /> Added
             </span>
@@ -243,16 +270,28 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           )}
         </button>
         <button
-          onClick={handleBuyNow}
+          onClick={
+            selectedInStock
+              ? handleBuyNow
+              : () =>
+                  window.open(
+                    `https://wa.me/919561557935?text=${encodeURIComponent(
+                      `Hi Naira Flore, please let me know when "${title}"${selectedSize ? ` (size ${selectedSize})` : ""} is back in stock.`
+                    )}`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+          }
           className="press-scale flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-200"
           style={{
-            backgroundColor: "hsl(0 0% 12%)",
+            backgroundColor: selectedInStock ? "hsl(0 0% 12%)" : "hsl(186 35% 28%)",
             color: "hsl(0 0% 100%)",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(0 0% 20%)")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(0 0% 12%)")}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = selectedInStock ? "hsl(0 0% 20%)" : "hsl(186 35% 22%)")}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = selectedInStock ? "hsl(0 0% 12%)" : "hsl(186 35% 28%)")}
         >
-          Buy It Now
+          {/* A sold-out size is otherwise a dead end at peak intent — capture the lead instead. */}
+          {selectedInStock ? "Buy It Now" : "Notify Me on WhatsApp"}
         </button>
       </div>
 

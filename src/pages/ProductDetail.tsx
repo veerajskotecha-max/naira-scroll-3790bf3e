@@ -227,6 +227,7 @@ const ProductDetail = () => {
         variantId={stickyVariant?.id}
         numericPrice={stickyVariant ? Number(stickyVariant.price.amount) : Number(price)}
         currencyCode={stickyVariant?.price.currencyCode}
+        inStock={stickyVariant?.availableForSale ?? true}
       />
     </div>
   );

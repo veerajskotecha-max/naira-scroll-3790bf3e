@@ -5,6 +5,8 @@ import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
+
 import type { ShopifyProductNode } from "@/lib/shopify";
 
 const placeholderImage = "/placeholder.svg";
@@ -101,9 +103,13 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     </button>
   );
 
+  // 1600px is ample for full-screen zoom and avoids shipping the source PNG,
+  // which runs to several MB on some SKUs.
+  const lightboxImages = images.map((img) => shopifyImage(img, 1600));
+
   const Lightbox = (
     <ImageLightbox
-      images={images}
+      images={lightboxImages}
       name={productName}
       open={lightboxOpen}
       initialIndex={lightboxIndex}
@@ -129,7 +135,19 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
               style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 96%)" }}
               aria-label={`Open ${productName} image ${i + 1} full screen`}
             >
-              <img src={img} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
+              <img
+                src={shopifyImage(img, 800)}
+                srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
+                sizes="100vw"
+                alt={`View ${i + 1}`}
+                className="w-full h-full object-cover"
+                // First slide is the mobile LCP element — it must not be lazy.
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : undefined}
+                decoding="async"
+                width={800}
+                height={1067}
+              />
             </button>
           ))}
         </div>
@@ -168,9 +186,16 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
             aria-label={`Open ${productName} image ${i + 1} full screen`}
           >
             <img
-              src={img}
+              src={shopifyImage(img, 800)}
+              srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
+              // 2x2 grid inside the gallery half of the PDP → each cell ≈ a quarter
+              // of the viewport on desktop.
+              sizes="(min-width: 768px) 25vw, 50vw"
               alt={`${productName} - View ${i + 1}`}
               className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : undefined}
+              decoding="async"
             />
           </button>
         ))}

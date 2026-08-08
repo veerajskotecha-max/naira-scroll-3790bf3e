@@ -111,11 +111,11 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         {title}
       </h1>
 
-      {/* Rating summary */}
+      {/* Rating summary — no fabricated review counts shown */}
       <a
         href="#customer-reviews"
         className="inline-flex items-center gap-2 mt-2 min-h-[32px] group"
-        aria-label={`${rating} out of 5 stars from ${reviewCount} reviews`}
+        aria-label="Read customer reviews"
       >
         <span className="flex items-center gap-[2px]">
           {[0, 1, 2, 3, 4].map((i) => (
@@ -128,13 +128,11 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
             />
           ))}
         </span>
-        <span className="text-[12px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
-          {rating.toFixed(1)}
-        </span>
         <span className="text-[12px] underline underline-offset-4 group-hover:opacity-70" style={{ color: "hsl(0 0% 45%)" }}>
-          {reviewCount} reviews
+          Read reviews
         </span>
       </a>
+
 
       {/* Price + Tax */}
       <div className="mt-2 md:mt-3">

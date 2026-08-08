@@ -203,7 +203,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               decoding="async"
               style={
                 piece.category === "Earrings"
-                  ? { objectPosition: "center 16%", transform: "scale(1.3)" }
+                  ? { objectPosition: "center 15%", transform: "scale(1.75)" }
                   : undefined
               }
               className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"

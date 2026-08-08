@@ -176,13 +176,18 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             decoding="async"
             width={800}
             height={800}
-            /* Earrings read as tiny specks in a square crop — zoom into the ear line. */
+            /* On-model and small-piece shots read as specks in a square crop —
+               zoom the frame per category so the product fills the tile with
+               no letterboxed bands on either side. */
             style={
               piece.category === "Earrings"
                 ? { objectPosition: "center 32%", transform: "scale(1.22)" }
-                : undefined
+                : piece.category === "Necklaces"
+                  ? { objectPosition: "center 38%", transform: "scale(1.14)" }
+                  : undefined
             }
             className="jc-front aspect-square w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
+
           />
           {altImg && (
             <img

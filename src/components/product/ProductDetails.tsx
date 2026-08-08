@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
+import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Wallet, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -124,6 +124,15 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
           Ships in <strong className="font-medium">3–7 working days</strong> · Free above ₹2,999
+        </span>
+      </div>
+
+      {/* Payment options — COD is a decisive signal for Indian shoppers, so it
+          sits with the price rather than being buried in the cart. */}
+      <div className="flex items-center gap-2 mt-1.5">
+        <Wallet size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
+        <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
+          <strong className="font-medium">Cash on Delivery</strong> available · UPI, cards &amp; net banking
         </span>
       </div>
 

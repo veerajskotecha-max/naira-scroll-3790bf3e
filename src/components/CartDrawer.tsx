@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
 
-const FREE_SHIPPING_THRESHOLD = 2999;
+const SHIPPING_CHARGE = 150;
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
@@ -23,8 +23,7 @@ const CartDrawer = () => {
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const shippingProgress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const orderTotal = subtotal + SHIPPING_CHARGE;
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
@@ -68,33 +67,18 @@ const CartDrawer = () => {
           </div>
         ) : (
           <>
-            {/* Free Shipping Progress */}
+            {/* Flat shipping notice */}
             <div className="shrink-0 px-5 py-2.5" style={{ backgroundColor: "hsl(33 30% 97%)" }}>
-              {amountToFreeShipping > 0 ? (
-                <p className="text-[12px] mb-2 flex items-center gap-1.5" style={{ color: "hsl(0 0% 38%)" }}>
-                  <Truck size={13} strokeWidth={1.5} />
-                  Add{" "}
-                  <strong className="font-semibold" style={{ color: "hsl(186 35% 28%)" }}>
-                    {formatPrice(amountToFreeShipping)}
-                  </strong>{" "}
-                  more for <strong className="font-semibold">free shipping</strong>
-                </p>
-              ) : (
-                <p className="text-[12px] mb-2 flex items-center gap-1.5 font-medium" style={{ color: "hsl(142 60% 30%)" }}>
-                  <Truck size={13} strokeWidth={1.5} />
-                  This order ships free
-                </p>
-              )}
-              <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ backgroundColor: "hsl(0 0% 88%)" }}>
-                <div
-                  className="h-full rounded-full transition-[width,background-color] duration-500 ease-out"
-                  style={{
-                    width: `${shippingProgress}%`,
-                    backgroundColor: shippingProgress >= 100 ? "hsl(142 60% 40%)" : "hsl(186 35% 38%)",
-                  }}
-                />
-              </div>
+              <p className="text-[12px] flex items-center gap-1.5" style={{ color: "hsl(0 0% 38%)" }}>
+                <Truck size={13} strokeWidth={1.5} />
+                Flat shipping of{" "}
+                <strong className="font-semibold" style={{ color: "hsl(186 35% 28%)" }}>
+                  {formatPrice(SHIPPING_CHARGE)}
+                </strong>{" "}
+                applies to every order
+              </p>
             </div>
+
 
             <Separator className="shrink-0" />
 
@@ -152,9 +136,20 @@ const CartDrawer = () => {
 
               {/* Subtotal */}
               <div className="flex items-center justify-between">
-                <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Subtotal</span>
-                <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(subtotal)}</span>
+                <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Subtotal</span>
+                <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(subtotal)}</span>
               </div>
+              {/* Shipping */}
+              <div className="flex items-center justify-between">
+                <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Shipping</span>
+                <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(SHIPPING_CHARGE)}</span>
+              </div>
+              {/* Total */}
+              <div className="flex items-center justify-between pt-1.5 border-t" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Total</span>
+                <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(orderTotal)}</span>
+              </div>
+
               {/* CTA */}
               <button
                 onClick={checkout}

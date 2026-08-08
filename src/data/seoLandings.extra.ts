@@ -14,7 +14,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · ARTIFICIAL JEWELLERY",
     metaTitle: "Artificial Jewellery for Women, Anti-Tarnish, 18K Finished",
     metaDescription:
-      "Artificial jewellery that does not turn green. Hand-set zircone rings, earrings, bracelets and necklaces in a sealed 18K gold finish over a nickel-free base. Made in small batches.",
+      "Artificial jewellery that does not turn green. Hand-set zircone rings, earrings, bracelets and necklaces in a sealed 18K gold finish over a nickel-free base. Hand-set at our atelier.",
     intro: [
       "Most artificial jewellery in India is built to survive a photoshoot, not a season. Thin flash plating over a soft alloy, glue-set stones, and a clasp that gives way in a month. That is the category we set out to leave behind.",
       "Naira Flore artificial jewellery is finished the way demi-fine is: a nickel-free brass base, a thick 18K gold or rhodium coat, an anti-tarnish seal on top, and brilliant-cut zircone held in real prongs rather than adhesive.",
@@ -60,7 +60,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · IMITATION JEWELLERY",
     metaTitle: "Imitation Jewellery Online, Sealed Gold Finish | Naira Flore",
     metaDescription:
-      "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and made in small numbered batches.",
+      "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and hand-finished to order.",
     intro: [
       "Imitation jewellery earned its reputation honestly, most of it is made to a price, not to a standard. But the idea behind it is sound: you should not need to spend a month's salary to wear something beautiful.",
       "We kept the idea and rebuilt the execution. Same brilliant facet pattern used on diamonds, cut into lab-grown zircone. Same prong settings used in fine jewellery. Same finishing tolerances we hold on our couture embroidery.",
@@ -76,7 +76,7 @@ export const extraLandings: CategoryLanding[] = [
         body: "18K gold or rhodium over a hypoallergenic base, sealed. Flash plating measures in fractions of a micron; ours is built to survive contact.",
       },
       {
-        title: "Numbered small batches",
+        title: "Made to order",
         body: "We make to order rather than to warehouse.",
       },
     ],
@@ -152,11 +152,11 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · BRIDAL",
     metaTitle: "Bridal Jewellery Online, Zircone & Gold Finish | Naira Flore",
     metaDescription:
-      "Bridal jewellery for sangeet, mehendi, reception and court weddings: hand-set brilliant-cut zircone in an 18K gold finish. Finished in small batches.",
+      "Bridal jewellery for sangeet, mehendi, reception and court weddings: hand-set brilliant-cut zircone in an 18K gold finish. Hand-finished at our atelier.",
     intro: [
       "A wedding is not one look, it is five. The heavy family set comes out once, and the other four days need jewellery that photographs beautifully, sits light through fourteen hours, and does not have to be locked in a hotel safe.",
       "That is the gap the Gilded Hour bridal edit fills. Brilliant-cut zircone hand-set in an 18K gold finish, built light enough for a full sangeet and bright enough to hold up under photographers' lighting.",
-      "Pieces are finished in small batches, so a set can be matched across earrings, ring and necklace for a single function, message the atelier and we will build the combination with you.",
+      "Pieces are hand-finished to order, so a set can be matched across earrings, ring and necklace for a single function, message the atelier and we will build the combination with you.",
     ],
     bullets: [
       {
@@ -216,7 +216,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         title: "Finished in pairs",
-        body: "Tell us both sizes on WhatsApp and we make the pair together, numbered from the same batch.",
+        body: "Tell us both sizes on WhatsApp and we make the pair together in the same finish.",
       },
     ],
     faqs: [
@@ -293,7 +293,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · ZIRCONIA EARRINGS",
     metaTitle: "Zirconia Earrings Online, Studs, Hoops, Drops | Naira Flore",
     metaDescription:
-      "Hand-set cubic zirconia earrings in an 18K gold finish. Studs, hoops and drops built light, prong-set and sealed against tarnish. Made in small batches.",
+      "Hand-set cubic zirconia earrings in an 18K gold finish. Studs, hoops and drops built light, prong-set and sealed against tarnish. Hand-set at our atelier.",
     intro: [
       "Earrings are the piece that gets worn most and inspected least, until one goes dull or the post starts irritating the ear. Both are construction problems.",
       "Our zirconia earrings use prong-set brilliant-cut stones on a nickel-free post, with the same sealed 18K gold finish as the rest of the Gilded Hour. Weight is designed out at the setting stage so drops do not pull on the lobe.",

@@ -85,3 +85,42 @@ boolean `availableForSale`, which the site already has.
 Shopify has 52 jewellery SKUs; `src/data/jewellery.ts` has 22. Category
 pages render the local 22, so roughly 30 live SKUs are absent from
 /jewellery/collections/*.
+
+## 5. Baroque Shell Bracelet is showing a different bracelet
+
+`/pearl-legacy-bracelet` — "Baroque Shell Bracelet", SKU YF3925. Five images,
+two of which are not this product.
+
+The real piece, per the packshot and the on-model shot, is baroque freshwater
+pearls with small round gold spacer beads and a **T-bar toggle clasp**.
+
+| Image | File | Verdict |
+| --- | --- | --- |
+| 1 | `YF3925_1_main.png` | Correct — toggle clasp, spacer beads |
+| 2 | `YF3925_2_worn.png` | Correct — same piece, on model |
+| 3 | `YF3925_3_alt.png` | **Wrong product.** Bolt-ring clasp and double-interlocking-ring gold links. Not this bracelet |
+| 4 | `YF3925_4_alt.png` | **Wrong.** Has a dangling pearl charm on a long cable chain that this product does not have |
+| 5 | `YF3925_5_alt.png` | Correct — toggle clasp, spacer beads |
+
+Delete images 3 and 4 in Shopify admin. That leaves three accurate photos
+(main, worn, alt), which is enough for the PDP gallery — it renders up to four
+on desktop and all of them in the mobile carousel.
+
+This cannot be fixed from the codebase: product media lives in Shopify and the
+site holds a read-only Storefront token.
+
+### Why an automated sweep will not find the rest of these
+
+All five files carry the same `YF3925` prefix, so the supplier's own shoot
+mixed two different bracelets under one SKU code. A filename or metadata check
+cannot detect that — only looking at the images can.
+
+A prefix scan across all 70 products found exactly one listing drawing on more
+than one SKU prefix, and it is a different issue:
+
+- `molten-bloom-hoops` mixes `hf` and `JDE0110042` prefixed files. The `hf`
+  prefix indicates a Higgsfield-generated asset already in the catalogue.
+
+So: 1 listing confirmed mixed by filename, 1 confirmed mixed by eye. The
+remaining 68 have consistent prefixes but have **not** been visually verified,
+and this defect class would not show up if present.

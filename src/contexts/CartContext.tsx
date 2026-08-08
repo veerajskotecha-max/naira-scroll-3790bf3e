@@ -26,12 +26,12 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<void>;
+  addItem: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<boolean>;
   removeItem: (id: string, size?: string) => Promise<void>;
   updateQuantity: (id: string, size: string | undefined, quantity: number) => Promise<void>;
   clearCart: () => void;
   syncCart: () => Promise<void>;
-  checkout: () => void;
+  checkout: () => Promise<void>;
   totalItems: number;
   subtotal: number;
   isDrawerOpen: boolean;
@@ -80,7 +80,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const addItem = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
     if (!item.variantId) {
       toast.error("This product is not available for checkout yet.");
-      return;
+      return false;
     }
 
     setIsLoading(true);
@@ -97,7 +97,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           checkoutUrl: result.checkoutUrl,
           items: [{ ...item, quantity: result.quantity, lineId: result.lineId }],
         });
-        return;
+        return true;
       }
 
       if (existing) {
@@ -107,7 +107,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (result.cartNotFound) {
           clearCart();
           toast.error("Your cart timed out. Please add the piece again.");
-          return;
+          return false;
         }
         const syncedQuantity = result.quantity ?? nextQuantity;
         setStoredCart((current) => ({
@@ -117,23 +117,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
           ),
         }));
-        return;
+        return true;
       }
 
       const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity);
       if (result.cartNotFound) {
         clearCart();
         toast.error("Your cart timed out. Please add the piece again.");
-        return;
+        return false;
       }
       setStoredCart((current) => ({
         ...current,
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
         items: [...current.items, { ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null }],
       }));
+      return true;
     } catch (error) {
       console.error("Failed to add Shopify item", error);
       toast.error("Could not add this item to cart.");
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -230,15 +232,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart]);
 
-  const checkout = useCallback(() => {
-    const latestUrl = loadCart().checkoutUrl ?? checkoutUrl;
-    if (!latestUrl) {
+  const checkout = useCallback(async () => {
+    const latest = loadCart();
+    const storedUrl = latest.checkoutUrl ?? checkoutUrl;
+    if (!latest.cartId || latest.items.length === 0) {
       toast.error("Add an item before checkout.");
       return;
     }
-    window.open(formatCheckoutUrl(latestUrl), "_blank", "noopener,noreferrer");
-    setDrawerOpen(false);
-  }, [checkoutUrl]);
+
+    setIsSyncing(true);
+    try {
+      // Mint the checkout URL fresh instead of trusting the one in
+      // localStorage. Shopify carts expire, and a stale URL fails at the worst
+      // possible moment — after the customer has committed to paying.
+      const cart = await fetchShopifyCart(latest.cartId);
+      if (!cart || cart.totalQuantity === 0) {
+        clearCart();
+        toast.error("Your cart timed out. Please add the piece again.");
+        return;
+      }
+      setDrawerOpen(false);
+      // Same tab, deliberately. window.open() after an await has lost its
+      // user-gesture credit, so Safari and most mobile browsers swallow it and
+      // the button appears to do nothing — which is what "Buy It Now sometimes
+      // fails" looks like from the customer's side.
+      window.location.assign(formatCheckoutUrl(cart.checkoutUrl));
+    } catch (error) {
+      console.error("Failed to open checkout", error);
+      // A network blip on the refresh is no reason to strand someone who is
+      // ready to pay; the stored URL is usually still good.
+      if (storedUrl) {
+        setDrawerOpen(false);
+        window.location.assign(formatCheckoutUrl(storedUrl));
+        return;
+      }
+      toast.error("Could not open checkout. Please try again.");
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [checkoutUrl, clearCart]);
 
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);

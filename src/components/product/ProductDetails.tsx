@@ -34,7 +34,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>();
-  const { addItem, setDrawerOpen } = useCart();
+  const { addItem, setDrawerOpen, checkout } = useCart();
 
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
@@ -55,10 +55,10 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {
       toast.error("This product is currently unavailable.");
-      return;
+      return false;
     }
 
-    await addItem({
+    const ok = await addItem({
       id: product?.handle ?? selectedVariant.id,
       variantId: selectedVariant.id,
       name: title,
@@ -70,6 +70,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       variantTitle: selectedVariant.title,
       selectedOptions: selectedVariant.selectedOptions,
     }, quantity);
+    if (!ok) return false;
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
@@ -77,11 +78,15 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       description: `${quantity}× ${title}${selectedSize ? ` (${selectedSize})` : ""}`,
       action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
     });
+    return true;
   };
 
+  // Buy It Now buys. It used to add the piece and open the cart drawer, which
+  // left the customer one more click from paying on the button that promises
+  // the opposite.
   const handleBuyNow = async () => {
-    await handleAddToCart();
-    setDrawerOpen(true);
+    if (!(await handleAddToCart())) return;
+    await checkout();
   };
 
   return (

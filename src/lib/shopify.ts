@@ -325,17 +325,35 @@ export function formatShopifyPrice(money: ShopifyMoney): string {
 /**
  * Domain that web checkout should run on.
  *
- * Default: Shopify's permanent domain (works everywhere, but shows an
- * unbranded nc5eti-gp.myshopify.com URL at the payment step).
+ * This is the single most important setting on the storefront, so the reasoning
+ * is written out rather than left to be rediscovered.
  *
- * Branded checkout: connect a dedicated subdomain (e.g. shop.nairaflore.com)
- * to Shopify (Settings > Domains, CNAME to shops.myshopify.com), make it the
- * store's PRIMARY domain, then set VITE_CHECKOUT_DOMAIN=shop.nairaflore.com.
- * The main site domains (nairaflore.com / www) stay on Lovable, which is why
- * checkout cannot use them: Shopify /cart/c/... paths 404 there.
+ * The site (nairaflore.com and www) is served by Lovable; only Shopify can
+ * serve checkout. So checkout has to run on some host Shopify actually answers
+ * for, and which host that is decides whether checkout works at all:
+ *
+ *   · A *.myshopify.com host is cross-site relative to nairaflore.com, so the
+ *     checkout session cookie is a third-party cookie. Browsers that block or
+ *     partition third-party cookies — Safari and iOS by default, Firefox by
+ *     default, Chrome incognito — never persist it, and Shopify answers every
+ *     retry with a fresh token and another 302. Measured: an endless redirect
+ *     loop that ends up dumping the customer back on the homepage. With cookies
+ *     enabled the same URL is 302 → 200 and checkout loads. That split is why
+ *     checkout "sometimes" fails: it fails per-browser, not at random.
+ *
+ *   · A subdomain of nairaflore.com shares the site's registrable domain, so
+ *     the same cookie is first-party and every browser keeps it.
+ *
+ * The fix is therefore to run checkout on a subdomain, which also removes the
+ * Shopify-branded URL from the payment step. See docs/checkout-domain.md; once
+ * DNS and the Shopify primary domain are in place, set
+ * VITE_CHECKOUT_DOMAIN=shop.nairaflore.com.
  */
 export const CHECKOUT_DOMAIN =
   (import.meta.env.VITE_CHECKOUT_DOMAIN ?? "").toString().trim() || SHOPIFY_STORE_PERMANENT_DOMAIN;
+
+/** True once checkout runs on a subdomain of the storefront's own domain. */
+export const CHECKOUT_IS_FIRST_PARTY = CHECKOUT_DOMAIN.endsWith(".nairaflore.com");
 
 export function formatCheckoutUrl(checkoutUrl: string): string {
   try {
@@ -344,11 +362,15 @@ export function formatCheckoutUrl(checkoutUrl: string): string {
     url.protocol = "https:";
     url.port = "";
 
-    // On the permanent domain, Shopify redirects /cart/c/<token> back to the
-    // store's primary domain, which 404s on Lovable. Rewriting to the direct
-    // web checkout route /checkouts/cn/<token> avoids that hop. On a branded
-    // checkout domain that IS the primary domain, /cart/c works as-is.
-    if (CHECKOUT_DOMAIN === SHOPIFY_STORE_PERMANENT_DOMAIN) {
+    // Load-bearing, and not the tidy-up it looks like. Shopify hands back
+    // /cart/c/<token>, but on the permanent domain that path 301s to whatever
+    // the store's primary domain is — today www.nairaflore.com, which Lovable
+    // serves, so the customer lands on the site instead of on checkout.
+    // /checkouts/cn/<token> is answered directly and skips that hop. Measured:
+    // /cart/c is 301 → 302 → the storefront, /checkouts/cn is 302 → 200.
+    // Once the checkout domain IS the primary domain there is no hop to skip
+    // and Shopify's own URL is used untouched.
+    if (!CHECKOUT_IS_FIRST_PARTY) {
       const cartMatch = url.pathname.match(/^\/cart\/c\/([^/]+)\/?$/);
       if (cartMatch) {
         url.pathname = `/checkouts/cn/${cartMatch[1]}`;

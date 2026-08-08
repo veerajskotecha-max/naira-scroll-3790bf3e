@@ -276,7 +276,7 @@
   "JDB0103317-PK": {
    "name": "Pink Bezel Stone Bracelet",
    "category": "Bracelets",
-   "size": "18cm + 5cm extender - 8 x 4mm marquise pale rose stones alternating with 3mm round pink stones",
+   "size": "18cm + 5cm extender - eight ~15 x 7mm marquise checkerboard pale-rose stones strictly alternating with eight ~4.5mm round brilliant mid-pink stones, each in a satin gold bezel, lobster clasp, extender finished with a flat rectangular paddle tag",
    "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_c98d0b6d-d8d3-47ce-8d45-e72336f5856b.png",
    "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_4d61031a-f382-4bc9-b160-f725ff0d4299.png",
    "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_155632_6bfb6704-56df-4d32-95a7-132d78951c1b.png",
@@ -350,7 +350,7 @@
   "JDR0104342-PS": {
    "name": "Two-Tone Double Bezel Open Ring",
    "category": "Rings",
-   "size": "US 6-8 adjustable - two 10mm round zircons in deep bezels, one side steel one side gold",
+   "size": "US 6-8 adjustable - two 10mm round zircons in deep bezels, steel band with BOTH bezels gold",
    "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_165706_a7a0c87b-c879-44ba-b0b1-30671a2875fc.png",
    "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_163908_e8bf36b2-215a-4a00-b81c-d7da8a5fab5e.png",
    "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160602_11d99e8d-86ad-4b59-a5c4-d417a1b9b1cc.png",
@@ -370,7 +370,7 @@
   "JDR0104337": {
    "name": "Granulated Gold Dome Open Ring",
    "category": "Rings",
-   "size": "US 7 open-back - dome ~18 x 14mm, granulated gold with zircons",
+   "size": "US 7 open-back - dome ~18 x 14mm, openwork lattice of tiny gold metal beads, NO stones",
    "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160602_84717213-ff0e-44fb-9e13-1fdda0e5a5ac.png",
    "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160602_48fce5ad-31cd-4493-ad7e-fd9fa2d6d18d.png",
    "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161322_1901273f-19c4-4f4d-a7b9-fe16edf065bb.png",
@@ -379,7 +379,7 @@
   "JDR0104337-S": {
    "name": "Pave Dome Open Ring, Steel",
    "category": "Rings",
-   "size": "US 7 open-back - dome ~18 x 14mm, pave-set clear zircons",
+   "size": "US 7 open-back - dome ~18 x 14mm, openwork lattice of tiny rhodium-silver metal beads, NO stones",
    "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160602_ef09a481-9ebf-43f5-8950-044c2555782c.png",
    "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_161321_2c6c6892-4512-4364-b621-b07a8ed92c05.png",
    "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_160603_e761935a-19ed-4650-800b-f8ea875056fc.png",
@@ -713,8 +713,8 @@
    "JDE0110042": "chunky irregular molten open hoop huggies, ~15mm",
    "JDE0201327": "three-pair set - plain gold huggies with detachable clover zircon charms, clover zircon studs, round solitaire zircon studs",
    "JDR0104333": "open adjustable ring with a marquise zircon at one terminal and a princess-cut zircon at the other",
-   "JDR0104337": "chunky granulated gold dome open ring set with zircon",
-   "JDR0104337-S": "chunky pave dome open ring in steel/white",
+   "JDR0104337": "chunky granulated gold open dome ring - beaded openwork mesh, no gemstones",
+   "JDR0104337-S": "chunky granulated open dome ring in steel/white - beaded openwork mesh, no gemstones",
    "JDR0104342": "open toi-et-moi ring, two round bezel-set zircons, all gold",
    "JDR0104342-PS": "open toi-et-moi ring, two round bezel-set zircons, two-tone gold and steel",
    "JDR0303312-7": "pave zircon double-V chevron ring, size 7",
@@ -924,5 +924,13 @@
    "YF5214": "neither adjustable nor a single size - a fixed closed band offered in US 6/7/8/9. Needs its own size list, not the 5/6/7 set."
   },
   "unverified_shared_photo_family": "R15464K, WR20902K8 and WR10170K7 all carry an identical size string and the same product description, and R15464K's supplier photos are md5-identical to WR20902K8's. All three are closed bands so the sizing call holds, but WHICH physical piece each code points at is unverified. This is a third shared-photo family alongside the JDR0104337/-S and JDR0104342/-PS pairs, and JDB201083 has already shown what that can hide."
+ },
+ "corrections_8_aug_2026": {
+  "_comment": "Found by auditing the delivered frames against the supplier packshots rather than against the tracker text. Where the two disagree the photograph wins, except where a photo set is shared across codes - then the supplier's product text is the only thing that separates them.",
+  "dome_pair_had_no_stones": "JDR0104337 and -S were both recorded as carrying zircons. Neither does. The dome on both is an openwork lattice of soldered metal beads with visible holes through the mesh; the codes differ only in plating. The silver hero had been rendered as a pave field of faceted stones with two horn terminals and a gap at the bottom, which is why it read as the gold one twice over. The real ring has ONE smooth rounded teardrop terminal and the gap sits beside the dome.",
+  "blush_station_is_the_marquise_design": "JDB0103317-PK's packshot is a range shot - two designs in four colourways. Design A is all round stones; Design B alternates marquise with round. The two on-model photos show only Design A, so anyone working from those builds the wrong bracelet, which is what happened. -PK is Design B.",
+  "golden_duet_worn_frame": "The band is a segmented bamboo-style shank of short articulated bar links. The worn frame lost the segmentation entirely, fused the two bezel heads into one block with a solid bridge, drew claws instead of the fluted collar, and ran the pair ~24mm across a ~16mm finger.",
+  "catalogue_row_mismatches": "YF8396 is titled 'Pearl Ceremony Set' and contains no pearls. YF5244 is titled 'Teardrop Reverie Necklace' and every stone on it is a marquise. The Yiss Fera catalogue rows look shuffled and want re-checking against the CSV.",
+  "branding_step_was_a_no_op": "naira-flore-campaign-branded/ is byte-identical to naira-flore-campaign/ on all 50 pairs - the frames in both already carry the wordmark. The only unbranded originals live in scratchpad/camp/ and scratchpad/ad/ and were never copied out."
  }
 }

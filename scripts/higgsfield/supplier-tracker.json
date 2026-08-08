@@ -236,14 +236,15 @@
    "catalogue_name": "Whisper Twist Cuff"
   },
   "JDB201083": {
-   "name": "Fine Chain Circle Station Bracelet",
+   "name": "Round Brilliant Zircon Tennis Bracelet",
    "category": "Bracelets",
-   "size": "~17cm - 1mm fine gold cable chain with a single 8mm open circle station ringed in tiny round zircons",
+   "size": "~16.5cm - continuous line of round brilliant clear zircons in fine gold four-claw settings, box clasp",
    "ecom": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_182356_c8bdf869-df36-4a5a-8394-e521bb89c10c.png",
    "worn": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_182356_23be3264-b5b6-4300-987d-93822441abdd.png",
    "angle": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_182356_c6331947-3d97-42bd-975e-b8e7d2dc975d.png",
-   "catalogue_name": "Baguette Éclat Bracelet",
-   "accuracy_correction": "wrong product. The first two photos for this code are a stacked-wrist shot shared with JDB201210 and JDB201210-GN, and the frames were built from one of the tennis bracelets in that stack. The third photo is a single-product shot and shows something else entirely: a fine chain carrying one small open circle station. Re-shot from that photo, which was uploaded to Higgsfield as its own reference."
+   "catalogue_name": "Riviere of Light Bracelet",
+   "accuracy_correction": "SUPERSEDED - the round-4 call on this SKU was wrong. Round 4 read the third supplier photo (a fine chain with one 8mm circle station) as this product and re-shot it that way. That photo is byte-identical across JDB201083, JDB201210 and JDB201210-GN (md5 416095a90ae6), so it identifies none of them - it is a shared family shot. The supplier's own product text is the reliable source and says JDB201083 is a round brilliant zircon tennis bracelet. Looking at the delivered frames confirmed the real defect: JDB201083 and JDB201210 were transposed on Shopify. The baguette line was listed under JDB201083 and the round brilliant line under JDB201210. Fixed by swapping the two SKUs on 8 Aug 2026; titles, copy and images were already coherent and were left alone. The fine-chain re-shoot was pushed to the live product and has been deleted again.",
+   "frames_note": "ecom/worn/angle below are the fine-chain re-shoot and do NOT show this SKU. The correct frames are the ones already on Shopify under JDB201210_*.png. Re-shoot from the right reference before reusing these."
   },
   "JDB201210": {
    "name": "Baguette Zircon Tennis Bracelet",
@@ -870,13 +871,13 @@
    "_comment": "The round-4 audit re-shot four SKUs, but the bulk upload predates it, so three of the four corrections had never reached the store. Confirmed by downloading both and comparing 256-bit difference hashes: distances were 65-132, nowhere near the <=12 that would mean the same image.",
    "E21572E1": "DRAFT, so replaced outright - 3 corrected frames in, 4 stale ones deleted",
    "JDE0110042": "LIVE - corrected frames added and moved to positions 0-2 so the silver ecom is featured; the 5 old gold frames are left in place behind them, reversible, and still want deleting",
-   "JDB201083": "LIVE - same treatment; the 3 old frames show a different product entirely and still want deleting",
+   "JDB201083": "REVERTED - the correction itself was wrong, see done.JDB201083. The three fine-chain frames added on 8 Aug were deleted the same day and the product is back to its original three images. The real defect was a SKU transposition with JDB201210, now swapped.",
    "JDR0104333": "was never uploaded before, so it went up correct first time"
   },
   "open": {
    "no_supplier_photo": "YF3925-NEC (Pearl Legacy Necklace) and YF-PeachHoop (Peach Heart Hoops) have no supplier photo at all, so there is nothing to shoot from and they cannot be listed.",
    "low_resolution": "Around 40 of the 54 live products lead with a 896x1200 hero - a 1k generation, not the 2k 1856x2304 standard. Shopify wants 2048px+; at 896 wide the PDP zoom is soft on any retina screen.",
-   "title_mismatch_JDB201083": "Shopify calls it 'Baguette Eclat Bracelet' but the SKU is actually a fine 1mm gold cable chain with one 8mm open circle station. The images are now right and the title is still wrong."
+   "sku_transposition_fixed": "JDB201083 and JDB201210 were swapped on Shopify and have been corrected. JDB201210-GN was checked at the same time and is right. Worth re-checking the other shared-photo families in yiwu_jd.media_ids for the same failure: JDB0104010/JDBW2410021, JDR0104337/-S and JDR0104342/-PS each share one photo set across two codes."
   }
  }
 }

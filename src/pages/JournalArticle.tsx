@@ -147,7 +147,7 @@ const JournalArticle = () => {
                   aria-hidden
                   className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 [background:radial-gradient(closest-side,rgba(201,154,76,0.16)_0%,transparent_75%)]"
                 />
-                <p className="text-[10px] tracking-[0.32em] text-[#9A7634]" style={jost}>THE GILDED HOUR</p>
+                <p className="text-[10px] tracking-[0.32em] text-[#9A7634]" style={jost}>NAIRA PETITE</p>
                 <p className="mt-3 text-[16px] leading-[1.7] md:text-[18px]" style={editorial}>
                   Hand-set zircone in an 18K gold finish, finished at our atelier.
                 </p>

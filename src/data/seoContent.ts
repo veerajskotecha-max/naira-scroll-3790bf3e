@@ -35,13 +35,13 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "rings",
     category: "Rings",
     h1: "Zircone Rings for Women",
-    kicker: "THE GILDED HOUR · RINGS",
+    kicker: "NAIRA PETITE · RINGS",
     metaTitle: "Zircone Rings for Women, 18K Gold Finished | Naira Flore",
     metaDescription:
       "Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–8. Anti-tarnish, waterproof-sealed.",
     intro: [
       "A ring is the piece people see first. Ours are cut and set the way fine jewellery is, a brilliant-cut zircone held in real prongs, a band filed thin enough to sit flush against the finger, and an 18K gold or rhodium finish sealed against water and daily wear.",
-      "The Gilded Hour rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set in small batches at our atelier, numbered, and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
+      "Naira Petite rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set in small batches at our atelier, numbered, and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
       "Sizes run US 5 (4.9 cm inner circumference) through US 8 (5.7 cm). If you are between sizes, message the atelier and we will guide you before the piece is made.",
     ],
     bullets: [
@@ -81,12 +81,12 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "earrings",
     category: "Earrings",
     h1: "Zircone Earrings & Studs",
-    kicker: "THE GILDED HOUR · EARRINGS",
+    kicker: "NAIRA PETITE · EARRINGS",
     metaTitle: "Zircone Earrings & Gold Studs for Women | Naira Flore",
     metaDescription:
       "Bow studs, braided hoops and pavé drops in 18K gold finish with hand-set zircone. Lightweight, anti-tarnish and made to order by the Naira Flore atelier.",
     intro: [
-      "Earrings get worn more than anything else in a jewellery box, so weight matters as much as sparkle. The Gilded Hour studs and hoops are built light, hollow-formed where we can, with posts and backs sized for all-day wear rather than for the photograph.",
+      "Earrings get worn more than anything else in a jewellery box, so weight matters as much as sparkle. Naira Petite studs and hoops are built light, hollow-formed where we can, with posts and backs sized for all-day wear rather than for the photograph.",
       "The range covers everyday studs, a braided hoop that reads gold from across a room, and drop styles set with graduated zircone for evening. Each is 18K gold finished and sealed against tarnish.",
     ],
     bullets: [
@@ -122,7 +122,7 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "bracelets",
     category: "Bracelets",
     h1: "Tennis Bracelets & Gold Cuffs",
-    kicker: "THE GILDED HOUR · BRACELETS",
+    kicker: "NAIRA PETITE · BRACELETS",
     metaTitle: "Zircone Tennis Bracelets & Gold Cuffs for Women | Naira Flore",
     metaDescription:
       "Hand-set tennis bracelets, chevron stacks and gold-finished cuffs with brilliant-cut zircone. Adjustable, anti-tarnish, made to order in India by Naira Flore.",
@@ -163,7 +163,7 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "necklaces",
     category: "Necklaces",
     h1: "Gold Finished Necklaces & Pendants",
-    kicker: "THE GILDED HOUR · NECKLACES",
+    kicker: "NAIRA PETITE · NECKLACES",
     metaTitle: "Gold Finished Necklaces & Zircone Pendants | Naira Flore",
     metaDescription:
       "Lariats, rondelle chains and zircone pendants in an 18K gold finish. Layerable lengths, anti-tarnish sealing, made to order by the Naira Flore atelier.",
@@ -205,13 +205,13 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "demi-fine-jewellery",
     crumb: "Demi-Fine",
     h1: "Demi-Fine Jewellery in India",
-    kicker: "THE GILDED HOUR · DEMI-FINE",
+    kicker: "NAIRA PETITE · DEMI-FINE",
     metaTitle: "Demi-Fine Jewellery India, 18K Gold Finished, Anti-Tarnish",
     metaDescription:
       "Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier.",
     intro: [
       "Demi-fine jewellery sits between costume and solid gold. It is built like fine jewellery, stones set in real prongs, solid construction, a thick precious-metal finish over a hypoallergenic base, but priced so you can own several pieces instead of one.",
-      "Everything in The Gilded Hour is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped, and every piece carries an edition number.",
+      "Everything in Naira Petite is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped, and every piece carries an edition number.",
       "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make in small batches at our atelier.",
     ],
     bullets: [
@@ -255,13 +255,13 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "anti-tarnish-jewellery",
     crumb: "Anti-Tarnish",
     h1: "Anti-Tarnish Jewellery for Daily Wear",
-    kicker: "THE GILDED HOUR · ANTI-TARNISH",
+    kicker: "NAIRA PETITE · ANTI-TARNISH",
     metaTitle: "Anti-Tarnish Jewellery Online, Waterproof, Sealed 18K Finish",
     metaDescription:
       "Anti-tarnish jewellery that survives Indian humidity: sealed 18K gold and rhodium finishes over a hypoallergenic, nickel-free base. Rings, studs, bracelets and chains that will not green, dull or itch.",
     intro: [
       "Tarnish is a chemical reaction, not bad luck. Sweat, perfume, humidity and chlorine strip a thin plating and oxidise the base metal underneath, which is why most plated jewellery in India turns dull or green within a monsoon.",
-      "Every Gilded Hour piece is finished in 18K gold or rhodium over a hypoallergenic, nickel-free base and then sealed with an anti-tarnish coat. That seal is the layer that does the real work: it keeps skin acids and moisture off the plating so the colour stays where it should.",
+      "Every Naira Petite piece is finished in 18K gold or rhodium over a hypoallergenic, nickel-free base and then sealed with an anti-tarnish coat. That seal is the layer that does the real work: it keeps skin acids and moisture off the plating so the colour stays where it should.",
       "Waterproof-sealed for incidental contact, rain, washing hands, a spilt drink. We still ask you to take pieces off before a pool or the sea, because chlorine and salt beat any finish on earth given long enough.",
     ],
     bullets: [
@@ -301,7 +301,7 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "american-diamond-jewellery",
     crumb: "American Diamond",
     h1: "American Diamond Jewellery",
-    kicker: "THE GILDED HOUR · AMERICAN DIAMOND",
+    kicker: "NAIRA PETITE · AMERICAN DIAMOND",
     metaTitle: "American Diamond Jewellery, Brilliant-Cut Zircone, 18K Finish",
     metaDescription:
       "American diamond jewellery hand-set with 57-facet brilliant-cut zircone in an 18K gold or rhodium finish. Solitaire rings, studs, tennis bracelets and pendants that read like the real thing.",
@@ -347,14 +347,14 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "18k-gold-plated-jewellery",
     crumb: "18K Gold Plated",
     h1: "18K Gold Plated Jewellery",
-    kicker: "THE GILDED HOUR · 18K GOLD FINISH",
+    kicker: "NAIRA PETITE · 18K GOLD FINISH",
     metaTitle: "18K Gold Plated Jewellery Online, Sealed, Nickel-Free Finish",
     metaDescription:
       "18K gold plated jewellery with a thick, sealed finish over a hypoallergenic nickel-free base. Rings, earrings, bracelets and chains that keep their colour through daily wear in Indian humidity.",
     intro: [
       "Not all gold plating is the same. Thickness, base metal and seal decide whether a piece looks like gold in two years or in two weeks, and almost nobody selling plated jewellery online will tell you which of the three they cut corners on.",
       "Our finish is an 18K gold layer over a hypoallergenic, nickel-free base, sealed with an anti-tarnish coat. It is heavier than the flash-plating used on costume jewellery, which is why our pieces cost more and last considerably longer.",
-      "Every piece in The Gilded Hour carries the same finish specification, whether it is a ₹1,500 stud or a full pavé bracelet. Care instructions ship with the box.",
+      "Every piece in Naira Petite carries the same finish specification, whether it is a ₹1,500 stud or a full pavé bracelet. Care instructions ship with the box.",
     ],
     bullets: [
       {
@@ -393,13 +393,13 @@ export const categoryLandings: CategoryLanding[] = [
     slug: "office-wear-jewellery",
     crumb: "Office & Everyday",
     h1: "Office Wear & Everyday Jewellery",
-    kicker: "THE GILDED HOUR · EVERYDAY",
+    kicker: "NAIRA PETITE · EVERYDAY",
     metaTitle: "Office Wear Jewellery, Dainty Gold Pieces for Every Day",
     metaDescription:
       "Dainty, understated jewellery for work: fine chains, small studs, slim bands and thin bracelets in a sealed 18K gold finish. Light enough for a keyboard, finished enough for a meeting.",
     intro: [
       "Work jewellery has one job: to be noticed only after the person wearing it. That means scale before sparkle, a thin band, a small stud, a chain that sits above the collar rather than under it.",
-      "These are the Gilded Hour pieces we make for daily rotation. Nothing catches on a sleeve, nothing needs to come off to type, and the anti-tarnish seal means the piece survives the commute, the sanitiser and the air conditioning.",
+      "These are the Naira Petite pieces we make for daily rotation. Nothing catches on a sleeve, nothing needs to come off to type, and the anti-tarnish seal means the piece survives the commute, the sanitiser and the air conditioning.",
       "Most clients start here, buy one more, and end up wearing three pieces they never take off. That is the correct outcome.",
     ],
     bullets: [
@@ -513,7 +513,7 @@ export const journal: JournalArticle[] = [
     metaDescription:
       "What actually strips a gold plated finish, how to clean demi-fine jewellery safely, and the storage habit that adds years to an 18K gold finished piece.",
     excerpt:
-      "Plating does not simply wear off, it is stripped, usually by perfume, sweat and the wrong cloth. Here is the routine we give every Gilded Hour client.",
+      "Plating does not simply wear off, it is stripped, usually by perfume, sweat and the wrong cloth. Here is the routine we give every Naira Petite client.",
     published: "2026-03-04",
     readTime: "6 min read",
     intro:
@@ -698,7 +698,7 @@ export const journal: JournalArticle[] = [
       {
         h: "Why we build the way we do",
         p: [
-          "The Gilded Hour is made in small numbered batches at our atelier. Every zircone is hand-set and levelled, every chain link soldered, and every surface sealed against tarnish before it is boxed.",
+          "Naira Petite is made in small numbered batches at our atelier. Every zircone is hand-set and levelled, every chain link soldered, and every surface sealed against tarnish before it is boxed.",
           "Making in small batches means no dead inventory, which is what lets us spend the time on the setting rather than the volume.",
         ],
       },

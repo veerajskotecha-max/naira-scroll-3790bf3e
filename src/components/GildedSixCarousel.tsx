@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
 /* ───────────────────────────────────────────────────────────────
-   THE GILDED SIX — a 3D "scroll to surf" deck of bestselling jewellery.
+   THE PETITE SIX — a 3D "scroll to surf" deck of bestselling jewellery.
    Cards ride a perspective track from right to left as the section is
    pinned; the piece passing the focus zone zooms forward, straightens
    and reveals its name, so the collection is read one piece at a time.
@@ -161,7 +161,7 @@ const GildedSixCarousel = () => {
   if (pieces.length === 0) return null;
 
   return (
-    <section ref={rootRef} aria-label="The Gilded Six" style={{ backgroundColor: "#14211F" }}>
+    <section ref={rootRef} aria-label="The Petite Six" style={{ backgroundColor: "#14211F" }}>
       <div
         ref={pinRef}
         className="relative overflow-hidden"
@@ -203,7 +203,7 @@ const GildedSixCarousel = () => {
               fontSize: "clamp(38px, 9vw, 96px)",
             }}
           >
-            The Gilded
+            The Petite
             <br />
             Six{" "}
             <span className="align-super text-[0.34em]" style={{ ...jost, color: "#E5B9A4" }}>

@@ -70,7 +70,7 @@ const Jewellery = () => {
           {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: "Demi-Fine Jewellery, The Gilded Hour",
+            name: "Demi-Fine Jewellery, Naira Petite",
             url: `${SITE_URL}/jewellery`,
             mainEntity: {
               "@type": "ItemList",
@@ -98,7 +98,7 @@ const Jewellery = () => {
 
           {/* indexable header */}
           <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
-            <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>THE GILDED HOUR</p>
+            <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>NAIRA PETITE</p>
             <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
               Demi-Fine Jewellery
             </h1>
@@ -144,7 +144,7 @@ const Jewellery = () => {
               Nothing in this edit yet
             </h2>
             <p className="mt-3 max-w-sm text-[14px] leading-[1.8] text-nf-ink/60" style={editorial}>
-              New pieces join The Gilded Hour in small batches. The full collection is a step away.
+              New pieces join Naira Petite in small batches. The full collection is a step away.
             </p>
             <button
               onClick={() => setActive("All")}

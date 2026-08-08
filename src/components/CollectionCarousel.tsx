@@ -33,7 +33,7 @@ const CollectionCarousel = ({
     <section className="py-14 md:py-20" style={{ backgroundColor: "#FBF7F2" }} aria-label={title}>
       <div className="text-center px-4">
         <p className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "#B0843A" }}>
-          The Gilded Hour
+          Naira Petite
         </p>
         <h2 className="mt-2 font-cormorant text-[26px] md:text-[34px]" style={{ color: "#1A1614" }}>
           {title}

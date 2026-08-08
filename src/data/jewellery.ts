@@ -32,7 +32,7 @@ import rosewaterLine2 from "@/assets/jewellery/gilded/the-rosewater-line-2.png.a
 import theVineUgc from "@/assets/jewellery/ugc/the-vine-ugc.jpg.asset.json";
 
 /* ───────────────────────────────────────────────────────────────
-   THE GILDED HOUR — Naira Flore's petite jewellery line, first look
+   NAIRA PETITE — Naira Flore's petite jewellery line, first look
    Seventeen numbered pieces from the private teaser. 18k gold /
    silver / rhodium coatings, hand-set zirconia, anti-tarnish and
    waterproof-sealed. Pre-order launch — prices hidden, orders run
@@ -63,7 +63,7 @@ export const WHATSAPP_NUMBER = "919561557935";
 
 export const jewelleryEnquiryUrl = (name: string) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to pre-order the "${name}" from The Gilded Hour. Could you share availability and details?`
+    `Hi Naira Flore, I'd love to pre-order the "${name}" from Naira Petite. Could you share availability and details?`
   )}`;
 
 export const jewellery: JewelPiece[] = [

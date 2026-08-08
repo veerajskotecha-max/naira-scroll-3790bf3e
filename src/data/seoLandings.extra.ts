@@ -11,7 +11,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "artificial-jewellery",
     crumb: "Artificial Jewellery",
     h1: "Artificial Jewellery for Women, Made Properly",
-    kicker: "THE GILDED HOUR · ARTIFICIAL JEWELLERY",
+    kicker: "NAIRA PETITE · ARTIFICIAL JEWELLERY",
     metaTitle: "Artificial Jewellery for Women, Anti-Tarnish, 18K Finished",
     metaDescription:
       "Artificial jewellery that does not turn green. Hand-set zircone rings, earrings, bracelets and necklaces in a sealed 18K gold finish over a nickel-free base. Made in small batches.",
@@ -49,7 +49,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         q: "What is the price range?",
-        a: "The Gilded Hour pieces sit in the accessible demi-fine bracket, considerably below gold, well above mall-cart imitation, and priced for the construction rather than the sparkle.",
+        a: "Naira Petite pieces sit in the accessible demi-fine bracket, considerably below gold, well above mall-cart imitation, and priced for the construction rather than the sparkle.",
       },
     ],
   },
@@ -57,7 +57,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "imitation-jewellery",
     crumb: "Imitation Jewellery",
     h1: "Imitation Jewellery That Reads Real",
-    kicker: "THE GILDED HOUR · IMITATION JEWELLERY",
+    kicker: "NAIRA PETITE · IMITATION JEWELLERY",
     metaTitle: "Imitation Jewellery Online, Sealed Gold Finish | Naira Flore",
     metaDescription:
       "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and made in small numbered batches.",
@@ -103,7 +103,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "gold-plated-jewellery",
     crumb: "Gold Plated",
     h1: "Gold Plated Jewellery for Women",
-    kicker: "THE GILDED HOUR · GOLD PLATED",
+    kicker: "NAIRA PETITE · GOLD PLATED",
     metaTitle: "Gold Plated Jewellery Online for Women | Naira Flore",
     metaDescription:
       "Gold plated jewellery built to keep its colour: thick 18K gold finish over a nickel-free base, sealed against tarnish. Rings, earrings, bracelets and necklaces.",
@@ -149,13 +149,13 @@ export const extraLandings: CategoryLanding[] = [
     slug: "bridal-jewellery",
     crumb: "Bridal",
     h1: "Bridal Jewellery for the Modern Indian Wedding",
-    kicker: "THE GILDED HOUR · BRIDAL",
+    kicker: "NAIRA PETITE · BRIDAL",
     metaTitle: "Bridal Jewellery Online, Zircone & Gold Finish | Naira Flore",
     metaDescription:
       "Bridal jewellery for sangeet, mehendi, reception and court weddings: hand-set brilliant-cut zircone in an 18K gold finish. Finished in small batches.",
     intro: [
       "A wedding is not one look, it is five. The heavy family set comes out once, and the other four days need jewellery that photographs beautifully, sits light through fourteen hours, and does not have to be locked in a hotel safe.",
-      "That is the gap the Gilded Hour bridal edit fills. Brilliant-cut zircone hand-set in an 18K gold finish, built light enough for a full sangeet and bright enough to hold up under photographers' lighting.",
+      "That is the gap the Naira Petite bridal edit fills. Brilliant-cut zircone hand-set in an 18K gold finish, built light enough for a full sangeet and bright enough to hold up under photographers' lighting.",
       "Pieces are finished in small batches, so a set can be matched across earrings, ring and necklace for a single function, message the atelier and we will build the combination with you.",
     ],
     bullets: [
@@ -196,7 +196,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Rings",
     crumb: "Couple Rings",
     h1: "Couple Rings and Promise Rings",
-    kicker: "THE GILDED HOUR · COUPLE RINGS",
+    kicker: "NAIRA PETITE · COUPLE RINGS",
     metaTitle: "Couple Rings & Promise Rings Online | Naira Flore",
     metaDescription:
       "Couple rings and promise rings in an 18K gold finish with hand-set zircone. US sizes 5–8, anti-tarnish sealed, finished at our atelier.",
@@ -243,7 +243,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Rings",
     crumb: "Adjustable Rings",
     h1: "Adjustable Rings for Women",
-    kicker: "THE GILDED HOUR · ADJUSTABLE",
+    kicker: "NAIRA PETITE · ADJUSTABLE",
     metaTitle: "Adjustable Rings for Women, Gold Finished | Naira Flore",
     metaDescription:
       "Adjustable rings that hold their shape: 18K gold finished, anti-tarnish sealed, hand-set zircone. Available in US 5 to US 8.",
@@ -290,13 +290,13 @@ export const extraLandings: CategoryLanding[] = [
     category: "Earrings",
     crumb: "Zirconia Earrings",
     h1: "Zirconia Earrings, Studs, Hoops and Drops",
-    kicker: "THE GILDED HOUR · ZIRCONIA EARRINGS",
+    kicker: "NAIRA PETITE · ZIRCONIA EARRINGS",
     metaTitle: "Zirconia Earrings Online, Studs, Hoops, Drops | Naira Flore",
     metaDescription:
       "Hand-set cubic zirconia earrings in an 18K gold finish. Studs, hoops and drops built light, prong-set and sealed against tarnish. Made in small batches.",
     intro: [
       "Earrings are the piece that gets worn most and inspected least, until one goes dull or the post starts irritating the ear. Both are construction problems.",
-      "Our zirconia earrings use prong-set brilliant-cut stones on a nickel-free post, with the same sealed 18K gold finish as the rest of the Gilded Hour. Weight is designed out at the setting stage so drops do not pull on the lobe.",
+      "Our zirconia earrings use prong-set brilliant-cut stones on a nickel-free post, with the same sealed 18K gold finish as the rest of Naira Petite. Weight is designed out at the setting stage so drops do not pull on the lobe.",
       "The range covers everyday studs, mid-size hoops and occasion drops, priced so you can own the set rather than choosing between them.",
     ],
     bullets: [
@@ -337,7 +337,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Earrings",
     crumb: "Hoop Earrings",
     h1: "Gold Hoop Earrings for Women",
-    kicker: "THE GILDED HOUR · HOOPS",
+    kicker: "NAIRA PETITE · HOOPS",
     metaTitle: "Gold Hoop Earrings for Women, 18K Finished | Naira Flore",
     metaDescription:
       "Gold hoop earrings in small, medium and statement sizes. 18K gold finished, nickel-free, anti-tarnish sealed and light enough for all-day wear.",
@@ -384,14 +384,14 @@ export const extraLandings: CategoryLanding[] = [
     category: "Earrings",
     crumb: "Studs",
     h1: "Stud Earrings for Daily Wear",
-    kicker: "THE GILDED HOUR · STUDS",
+    kicker: "NAIRA PETITE · STUDS",
     metaTitle: "Stud Earrings for Women, Daily Wear Gold Finish | Naira Flore",
     metaDescription:
       "Everyday stud earrings with hand-set brilliant-cut zircone in an 18K gold finish. Nickel-free posts, secure backs, anti-tarnish sealed.",
     intro: [
       "A stud is the only piece of jewellery most people wear seven days a week, which makes it the piece where construction matters most and where the market cuts the most corners.",
       "Our studs are prong-set, not glued, on a nickel-free post with a machined friction back. The stone sits low so it clears a phone screen, a helmet strap and a pillow.",
-      "They are the natural starting point of the Gilded Hour, the piece you buy first and end up wearing longest.",
+      "They are the natural starting point of Naira Petite, the piece you buy first and end up wearing longest.",
     ],
     bullets: [
       {
@@ -431,7 +431,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Rings",
     crumb: "Solitaire",
     h1: "Solitaire Rings in 18K Gold Finish",
-    kicker: "THE GILDED HOUR · SOLITAIRE",
+    kicker: "NAIRA PETITE · SOLITAIRE",
     metaTitle: "Solitaire Rings for Women, Zircone Solitaires | Naira Flore",
     metaDescription:
       "Single-stone solitaire rings with hand-set brilliant-cut zircone in an 18K gold or rhodium finish. Available in US sizes 5 to 8.",
@@ -478,7 +478,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Rings",
     crumb: "Cocktail Rings",
     h1: "Cocktail Rings and Statement Rings",
-    kicker: "THE GILDED HOUR · COCKTAIL",
+    kicker: "NAIRA PETITE · COCKTAIL",
     metaTitle: "Cocktail Rings for Women, Statement Zircone | Naira Flore",
     metaDescription:
       "Statement cocktail rings with clustered brilliant-cut zircone in a sealed 18K gold finish. Available in US sizes 5 to 8 from our atelier.",
@@ -525,7 +525,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Necklaces",
     crumb: "Layered Necklaces",
     h1: "Layered Necklaces and Chain Sets",
-    kicker: "THE GILDED HOUR · LAYERING",
+    kicker: "NAIRA PETITE · LAYERING",
     metaTitle: "Layered Necklaces for Women, Gold Chain Layers | Naira Flore",
     metaDescription:
       "Layered necklaces and fine gold chains designed to sit at staggered lengths without tangling. Sealed 18K finish, soldered links, nickel-free.",
@@ -572,7 +572,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Necklaces",
     crumb: "Pendant Sets",
     h1: "Pendant Sets with Matching Earrings",
-    kicker: "THE GILDED HOUR · PENDANT SETS",
+    kicker: "NAIRA PETITE · PENDANT SETS",
     metaTitle: "Pendant Sets for Women, Pendant & Earring Sets | Naira Flore",
     metaDescription:
       "Matching pendant and earring sets in a sealed 18K gold finish with hand-set zircone. Light enough for daily wear, finished for occasions.",
@@ -619,7 +619,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Necklaces",
     crumb: "Gold Chains",
     h1: "Gold Chains for Women",
-    kicker: "THE GILDED HOUR · CHAINS",
+    kicker: "NAIRA PETITE · CHAINS",
     metaTitle: "Gold Chain for Women, Fine Sealed Chains | Naira Flore",
     metaDescription:
       "Fine gold chains for women in 40, 45 and 50 cm lengths. Soldered links, sealed 18K gold finish, nickel-free and built for daily wear.",
@@ -666,14 +666,14 @@ export const extraLandings: CategoryLanding[] = [
     category: "Bracelets",
     crumb: "Evil Eye",
     h1: "Evil Eye Bracelets and Protective Charms",
-    kicker: "THE GILDED HOUR · EVIL EYE",
+    kicker: "NAIRA PETITE · EVIL EYE",
     metaTitle: "Evil Eye Bracelet Online, Gold Finished | Naira Flore",
     metaDescription:
       "Evil eye bracelets in a sealed 18K gold finish with hand-set stones. Nickel-free, anti-tarnish and built for the wrist you actually use.",
     intro: [
       "The evil eye is the rare motif that survives changing taste, worn for meaning as much as for looks, which means it gets worn constantly and has to be built for it.",
       "Ours set the motif in metal rather than resin, on a chain with soldered links and a secure closure, finished in sealed 18K gold over a nickel-free base.",
-      "It layers cleanly with a watch and with the rest of the Gilded Hour bracelets, which share the same finish.",
+      "It layers cleanly with a watch and with the rest of the Naira Petite bracelets, which share the same finish.",
     ],
     bullets: [
       {
@@ -713,7 +713,7 @@ export const extraLandings: CategoryLanding[] = [
     category: "Bracelets",
     crumb: "Charm Bracelets",
     h1: "Charm Bracelets in Gold Finish",
-    kicker: "THE GILDED HOUR · CHARMS",
+    kicker: "NAIRA PETITE · CHARMS",
     metaTitle: "Charm Bracelets for Women, Gold Finished | Naira Flore",
     metaDescription:
       "Charm bracelets with soldered links, secure closures and a sealed 18K gold finish. Nickel-free and built to be added to over time.",
@@ -759,7 +759,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "rose-gold-jewellery",
     crumb: "Rose Gold",
     h1: "Rose Gold Finished Jewellery",
-    kicker: "THE GILDED HOUR · ROSE GOLD",
+    kicker: "NAIRA PETITE · ROSE GOLD",
     metaTitle: "Rose Gold Jewellery for Women, Sealed Finish | Naira Flore",
     metaDescription:
       "Rose gold finished jewellery: rings, earrings, bracelets and necklaces with hand-set zircone, nickel-free bases and anti-tarnish sealing.",
@@ -805,7 +805,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "minimal-jewellery",
     crumb: "Minimal",
     h1: "Minimal Jewellery for Everyday",
-    kicker: "THE GILDED HOUR · MINIMAL",
+    kicker: "NAIRA PETITE · MINIMAL",
     metaTitle: "Minimal Jewellery for Women, Everyday Gold | Naira Flore",
     metaDescription:
       "Minimal, dainty jewellery for everyday: thin bands, small studs and fine chains in a sealed 18K gold finish. Nickel-free and built solid, not hollow.",
@@ -851,14 +851,14 @@ export const extraLandings: CategoryLanding[] = [
     slug: "jewellery-for-saree",
     crumb: "For Saree",
     h1: "Jewellery to Wear With a Saree",
-    kicker: "THE GILDED HOUR · SAREE",
+    kicker: "NAIRA PETITE · SAREE",
     metaTitle: "Jewellery for Saree, What to Wear and Why | Naira Flore",
     metaDescription:
       "How to choose jewellery for a saree: neckline, blouse and fabric decide the piece. Gold finished zircone earrings, necklaces and rings from Naira Flore.",
     intro: [
       "With a saree, the blouse decides the jewellery, not the saree. A high neck rules out a necklace and hands the look to the earrings; a deep neck does the opposite.",
       "The second variable is fabric. Silk carries weight and pattern; chiffon and organza do not, and a heavy set on a light saree drags the drape visibly.",
-      "This edit gathers the pieces from the Gilded Hour that work hardest with a saree, long earrings for high necks, staggered chains for deep ones, and rings that read against a pallu.",
+      "This edit gathers the pieces from Naira Petite that work hardest with a saree, long earrings for high necks, staggered chains for deep ones, and rings that read against a pallu.",
     ],
     bullets: [
       {
@@ -897,7 +897,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "jewellery-for-lehenga",
     crumb: "For Lehenga",
     h1: "Jewellery to Wear With a Lehenga",
-    kicker: "THE GILDED HOUR · LEHENGA",
+    kicker: "NAIRA PETITE · LEHENGA",
     metaTitle: "Jewellery for Lehenga, Sangeet & Reception Picks | Naira Flore",
     metaDescription:
       "Choosing jewellery for a lehenga: how much the choli neckline, embroidery density and function decide. Gold finished zircone pieces from Naira Flore.",
@@ -943,7 +943,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "jewellery-gifts",
     crumb: "Gifting",
     h1: "Jewellery Gifts for Her",
-    kicker: "THE GILDED HOUR · GIFTING",
+    kicker: "NAIRA PETITE · GIFTING",
     metaTitle: "Jewellery Gifts for Her, Birthday & Anniversary | Naira Flore",
     metaDescription:
       "Jewellery gifts for wife, girlfriend, sister or mother: pendants, studs and bracelets that need no sizing, in a sealed 18K gold finish with gift packaging.",
@@ -989,7 +989,7 @@ export const extraLandings: CategoryLanding[] = [
     slug: "pearl-jewellery",
     crumb: "Pearl",
     h1: "Pearl and Zircone Jewellery",
-    kicker: "THE GILDED HOUR · PEARL",
+    kicker: "NAIRA PETITE · PEARL",
     metaTitle: "Pearl Jewellery for Women, Pearl & Zircone | Naira Flore",
     metaDescription:
       "Pearl jewellery paired with brilliant-cut zircone in a sealed 18K gold finish. Drop earrings, pendants and bracelets built for daily and occasion wear.",

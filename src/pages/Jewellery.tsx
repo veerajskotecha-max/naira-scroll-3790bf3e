@@ -116,7 +116,7 @@ const Jewellery = () => {
     <>
       <PageSEO
         title="Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish"
-        description="Shop demi-fine jewellery by Naira Flore: brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches."
+        description="Shop demi-fine jewellery by Naira Flore: brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Hand-set and hand-finished at our atelier."
         canonical={`${SITE_URL}/jewellery`}
         image={staticJewellery[0]?.image}
         jsonLd={[
@@ -212,7 +212,7 @@ const Jewellery = () => {
               Nothing in this edit yet
             </h2>
             <p className="mt-3 max-w-sm text-[14px] leading-[1.8] text-nf-ink/60" style={editorial}>
-              New pieces join The Gilded Hour in small batches. The full collection is a step away.
+              New pieces join The Gilded Hour regularly. The full collection is a step away.
             </p>
             <button
               onClick={() => {

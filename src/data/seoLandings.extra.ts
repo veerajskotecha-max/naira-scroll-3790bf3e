@@ -60,7 +60,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "THE GILDED HOUR · IMITATION JEWELLERY",
     metaTitle: "Imitation Jewellery Online, Sealed Gold Finish | Naira Flore",
     metaDescription:
-      "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and made in small numbered batches.",
+      "Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and hand-finished to order.",
     intro: [
       "Imitation jewellery earned its reputation honestly, most of it is made to a price, not to a standard. But the idea behind it is sound: you should not need to spend a month's salary to wear something beautiful.",
       "We kept the idea and rebuilt the execution. Same brilliant facet pattern used on diamonds, cut into lab-grown zircone. Same prong settings used in fine jewellery. Same finishing tolerances we hold on our couture embroidery.",
@@ -216,7 +216,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         title: "Finished in pairs",
-        body: "Tell us both sizes on WhatsApp and we make the pair together, numbered from the same batch.",
+        body: "Tell us both sizes on WhatsApp and we make the pair together in the same finish.",
       },
     ],
     faqs: [

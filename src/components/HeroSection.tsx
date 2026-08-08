@@ -130,6 +130,13 @@ const HeroSection = () => {
         }
       `}</style>
 
+      {/*
+        The paper wash below is the mobile LCP element. As a CSS background it
+        is only discovered after the stylesheet parses and the element is laid
+        out. It is preloaded from index.html — this is a client-rendered SPA,
+        so a Helmet preload would only land after hydration, far too late to
+        help. Keep the two in sync if this asset is renamed.
+      */}
       {/* paper wash — pressed-flower pattern (static, no animation for perf) */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.07] mix-blend-multiply"

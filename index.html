@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin />
     <!-- Hero LCP image is bundled and marked fetchpriority="high" on the <img> itself. -->
+    <!--
+      The hero paper wash is the mobile LCP element. It is a CSS background, so
+      the browser cannot discover it until the stylesheet has parsed and the
+      element is laid out. Preloading here starts the fetch with the initial
+      HTML. Vite rewrites this to the hashed build URL.
+    -->
+    <link rel="preload" as="image" href="/src/assets/floral-pattern-bg.webp" fetchpriority="high" />
 
     <!-- Preload Velista (self-hosted) so headings render with the brand font without blocking -->
     <link rel="preload" as="font" type="font/ttf" href="/fonts/Velista.ttf" crossorigin />

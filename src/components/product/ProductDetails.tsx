@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
+import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -150,6 +150,23 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           </div>
         ))}
       </div>
+
+      {/*
+        Above-fold social proof. Deliberately a jump link and not a rating:
+        the reviews it points at are brand-level and identical on every
+        product, so any number here would read as a per-product score the
+        data cannot support. Once Judge.me is connected (VITE_JUDGEME_SCRIPT_URL)
+        its widget renders genuine per-product ratings at the same anchor and
+        a star summary can live here honestly.
+      */}
+      <a
+        href="#reviews"
+        className="flex items-center gap-2 mt-3 text-[12px] underline underline-offset-4 min-h-[44px]"
+        style={{ color: "hsl(186 35% 28%)" }}
+      >
+        <Camera size={13} strokeWidth={1.5} />
+        See customer photos &amp; reviews
+      </a>
 
       {/* Pincode / delivery checker */}
       <PincodeChecker />

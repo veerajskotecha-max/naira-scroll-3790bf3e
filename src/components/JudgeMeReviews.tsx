@@ -44,7 +44,7 @@ const JudgeMeReviews = ({
   const numericId = productId.replace(/^gid:\/\/shopify\/Product\//, "");
 
   return (
-    <section className="max-w-[1200px] mx-auto px-4 pb-20">
+    <section id="reviews" className="max-w-[1200px] mx-auto px-4 pb-20 scroll-mt-24">
       <h2
         className="font-cormorant text-[28px] md:text-[32px] font-semibold"
         style={{ color: "hsl(var(--foreground))" }}

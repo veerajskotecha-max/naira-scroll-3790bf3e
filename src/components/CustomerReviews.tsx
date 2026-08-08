@@ -283,13 +283,15 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
   const isJewellery = variant === "jewellery";
   const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
-  const [visibleCount, setVisibleCount] = useState(variant === "jewellery" ? 5 : 4);
+  const [visibleCount, setVisibleCount] = useState(8);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [localReviews, setLocalReviews] = useState<Review[]>(() =>
-    isJewellery ? jewelleryReviews : reviewsData
+    isJewellery
+      ? [...jewelleryReviews, ...jewelleryOneLiners]
+      : [...reviewsData, ...apparelOneLiners]
   );
 
   // Aggregate is computed from the reviews actually shown, never invented.
@@ -341,7 +343,7 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
     setAnimating(true);
     setTimeout(() => {
       setActiveFilter(filter);
-      setVisibleCount(4);
+      setVisibleCount(8);
       setAnimating(false);
     }, 200);
   };
@@ -509,7 +511,7 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
       {visibleCount < filteredReviews.length && (
         <div className="mt-10 flex justify-center">
           <button
-            onClick={() => setVisibleCount((v) => Math.min(v + 4, filteredReviews.length))}
+            onClick={() => setVisibleCount((v) => Math.min(v + 8, filteredReviews.length))}
             className="px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] border-2 border-foreground text-foreground transition-all duration-250 ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
           >
             Load More Reviews

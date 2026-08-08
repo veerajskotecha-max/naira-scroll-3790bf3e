@@ -136,9 +136,20 @@ const CartDrawer = () => {
 
               {/* Subtotal */}
               <div className="flex items-center justify-between">
-                <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Subtotal</span>
-                <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(subtotal)}</span>
+                <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Subtotal</span>
+                <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(subtotal)}</span>
               </div>
+              {/* Shipping */}
+              <div className="flex items-center justify-between">
+                <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Shipping</span>
+                <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(SHIPPING_CHARGE)}</span>
+              </div>
+              {/* Total */}
+              <div className="flex items-center justify-between pt-1.5 border-t" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Total</span>
+                <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(orderTotal)}</span>
+              </div>
+
               {/* CTA */}
               <button
                 onClick={checkout}

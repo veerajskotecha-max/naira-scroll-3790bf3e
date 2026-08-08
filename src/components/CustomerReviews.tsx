@@ -253,6 +253,23 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
       images: [],
     };
     setLocalReviews((prev) => [newReview, ...prev]);
+
+    // Show it immediately, but also deliver it. Until Judge.me is activated
+    // (VITE_JUDGEME_SCRIPT_URL) this state is local-only and lost on refresh,
+    // so route the review to the atelier the same way the contact and
+    // newsletter forms do — otherwise the shopper sees their review appear
+    // and the team never receives it.
+    window.open(
+      `https://wa.me/919561557935?text=${encodeURIComponent(
+        [
+          `New review from ${review.name}`,
+          `Rating: ${review.rating}/5`,
+          `Review: ${review.text}`,
+        ].join("\n")
+      )}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   const handleFilterChange = (filter: string) => {

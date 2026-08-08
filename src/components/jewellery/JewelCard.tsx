@@ -181,7 +181,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
                no letterboxed bands on either side. */
             style={
               piece.category === "Earrings"
-                ? { objectPosition: "center 32%", transform: "scale(1.22)" }
+                ? { objectPosition: "center 36%", transform: "scale(1.5)" }
                 : piece.category === "Necklaces"
                   ? { objectPosition: "center 38%", transform: "scale(1.14)" }
                   : undefined

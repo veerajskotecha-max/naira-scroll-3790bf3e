@@ -150,7 +150,8 @@ const JewelDetail = () => {
     image: [piece.image],
     material: piece.materials,
     url: `https://nairaflore.com/jewellery/${piece.handle}`,
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: 5 },
+    // ponytail: no aggregateRating until real per-product reviews exist — emitting a
+    // site-wide constant here is fabricated structured data. Re-add from Judge.me data.
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",

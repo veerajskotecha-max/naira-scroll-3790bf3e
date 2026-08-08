@@ -103,15 +103,30 @@ const GildedSixCarousel = () => {
 
         place(0);
 
-        // A stable viewport height captured once, so the pin distance does not
-        // change when the mobile URL bar collapses mid-scroll.
-        const stableVH = window.innerHeight;
+        // Mobile URL-bar collapse changes window.innerHeight mid-scroll, which
+        // would otherwise fire a refresh and make the pin jump. Height-only
+        // resizes are ignored; a real orientation change still refreshes.
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        // Measure the pinned box itself rather than the window. The box is sized
+        // in CSS `svh`, which does not equal window.innerHeight on mobile — the
+        // browser chrome accounts for the difference. Driving the scroll distance
+        // from innerHeight therefore left the pin spacer and the pinned element
+        // disagreeing, which is what opened the gap below the deck.
+        //
+        // This has to be a function, not a string: `end` is evaluated once at
+        // creation, so a template literal freezes the value it was built from and
+        // invalidateOnRefresh has nothing to recompute.
+        const distance = () => {
+          const h = pin.offsetHeight || window.innerHeight;
+          return `+=${Math.round(h * 0.55 * cards.length + h * 0.2)}`;
+        };
 
         const st = ScrollTrigger.create({
           trigger: root,
           start: "top top",
           // ~one viewport of scroll per piece, then the section releases
-          end: `+=${Math.round(stableVH * 0.55 * cards.length + stableVH * 0.2)}`,
+          end: distance,
           pin: pin,
           pinType: "fixed",
           pinSpacing: true,
@@ -146,8 +161,37 @@ const GildedSixCarousel = () => {
 
       mm.add("(prefers-reduced-motion: reduce)", () => {
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
+        // The track is absolutely positioned and its parent clips overflow, so
+        // simply un-absoluting the cards left them stacked vertically with every
+        // one after the first cut off. Lay them out as a swipeable row instead,
+        // which needs no scroll animation to work.
+        gsap.set(track, {
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          gap: 24,
+          overflowX: "auto",
+          overflowY: "hidden",
+          padding: "0 24px",
+          perspective: "none",
+        });
         cards.forEach((card) => {
-          gsap.set(card, { position: "relative", x: 0, y: 0, rotationY: 0, rotationZ: 0, scale: 1, opacity: 1, filter: "none" });
+          gsap.set(card, {
+            position: "relative",
+            flex: "0 0 auto",
+            top: "auto",
+            left: "auto",
+            xPercent: 0,
+            yPercent: 0,
+            x: 0,
+            y: 0,
+            rotationY: 0,
+            rotationZ: 0,
+            scale: 1,
+            opacity: 1,
+            filter: "none",
+            zIndex: 1,
+          });
           const label = card.querySelector<HTMLElement>("[data-label]");
           if (label) gsap.set(label, { opacity: 1, y: 0 });
         });

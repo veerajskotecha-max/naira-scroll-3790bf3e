@@ -52,7 +52,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const priceMoney = selectedVariant?.price ?? product?.priceRange.minVariantPrice;
   const priceLabel = priceMoney ? formatShopifyPrice(priceMoney) : "·";
   const numericPrice = priceMoney ? Number(priceMoney.amount) : 0;
-  const { rating, count: reviewCount } = getProductRating(product?.handle ?? title);
+  const { rating } = getProductRating(product?.handle ?? title);
 
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) {

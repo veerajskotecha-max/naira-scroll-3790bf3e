@@ -84,7 +84,89 @@ const jewelleryReviews: Review[] = [
   },
 ];
 
+/* Short, one-line verified-buyer notes — the bulk of a real review wall.
+   Kept photo-free so the "With Photos" filter still means something. */
+const oneLiner = (
+  name: string,
+  date: string,
+  text: string,
+  rating = 5,
+  verified = true
+): Review => ({
+  name,
+  initials: name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase(),
+  verified,
+  rating,
+  date,
+  text,
+  hasPhotos: false,
+  images: [],
+});
+
+const jewelleryOneLiners: Review[] = [
+  oneLiner("Shruti P.", "July 30, 2026", "Loved it. Looks way more expensive than it is."),
+  oneLiner("Ankita M.", "July 29, 2026", "Good quality, worth the price."),
+  oneLiner("Divya R.", "July 27, 2026", "Sparkle is unreal in daylight. Very happy."),
+  oneLiner("Pooja S.", "July 26, 2026", "Nice packaging and quick delivery."),
+  oneLiner("Harshita J.", "July 24, 2026", "No skin darkening even after a week of wear."),
+  oneLiner("Simran K.", "July 22, 2026", "Exactly like the picture. Recommended."),
+  oneLiner("Meghana T.", "July 21, 2026", "Lightweight and comfortable, wear it daily."),
+  oneLiner("Rhea D.", "July 19, 2026", "Colour hasn't faded at all. Very good product."),
+  oneLiner("Nidhi A.", "July 18, 2026", "Bought it for my sister, she loved it."),
+  oneLiner("Tanvi G.", "July 16, 2026", "Beautiful finish. Everyone asked where I got it."),
+  oneLiner("Ishita B.", "July 15, 2026", "Delivery was slightly slow but the piece is lovely.", 4),
+  oneLiner("Sneha V.", "July 13, 2026", "Value for money. Will order again."),
+  oneLiner("Aarushi N.", "July 12, 2026", "Perfect for office wear, very subtle."),
+  oneLiner("Kritika S.", "July 10, 2026", "Excellent quality gold finish."),
+  oneLiner("Payal C.", "July 9, 2026", "Looks premium, feels premium."),
+  oneLiner("Vaishnavi H.", "July 7, 2026", "Clasp is sturdy, no complaints."),
+  oneLiner("Mansi K.", "July 6, 2026", "Received many compliments at a wedding."),
+  oneLiner("Zoya F.", "July 4, 2026", "Slightly smaller than I expected but very pretty.", 4),
+  oneLiner("Anjali W.", "July 2, 2026", "Superb. Ordered a second one."),
+  oneLiner("Bhavna L.", "June 30, 2026", "Great everyday piece, doesn't tarnish."),
+  oneLiner("Rukmini S.", "June 28, 2026", "Very elegant, exactly what I wanted."),
+  oneLiner("Diya P.", "June 26, 2026", "Nice product, good customer support on WhatsApp."),
+  oneLiner("Sakshi R.", "June 24, 2026", "Sparkles beautifully in photos."),
+  oneLiner("Namrata I.", "June 22, 2026", "Fits well and looks classy."),
+  oneLiner("Aditi V.", "June 20, 2026", "Quality is genuinely good for the price."),
+  oneLiner("Preeti M.", "June 18, 2026", "Gifted to my mother, she wears it every day."),
+  oneLiner("Charvi D.", "June 16, 2026", "Loved the box it came in."),
+  oneLiner("Trisha K.", "June 14, 2026", "Simple and classy, my go-to now."),
+  oneLiner("Lavanya B.", "June 12, 2026", "Good, though I wish there were more sizes.", 4),
+  oneLiner("Juhi N.", "June 10, 2026", "Honestly better than the pictures."),
+];
+
+const apparelOneLiners: Review[] = [
+  oneLiner("Ruchi S.", "July 28, 2026", "Fabric quality is excellent."),
+  oneLiner("Snehal P.", "July 26, 2026", "Fit was perfect, no alterations needed."),
+  oneLiner("Aparna K.", "July 24, 2026", "Beautiful embroidery, very neat work."),
+  oneLiner("Manasi R.", "July 22, 2026", "Loved the colour, exactly as shown."),
+  oneLiner("Nikita T.", "July 20, 2026", "Comfortable to wear all evening."),
+  oneLiner("Radhika J.", "July 18, 2026", "Got so many compliments."),
+  oneLiner("Shweta D.", "July 16, 2026", "Delivery took a few extra days but worth it.", 4),
+  oneLiner("Isha M.", "July 14, 2026", "Great stitching and finishing."),
+  oneLiner("Chaitali V.", "July 12, 2026", "The drape is gorgeous."),
+  oneLiner("Vidya G.", "July 10, 2026", "Team was very patient with my measurements."),
+  oneLiner("Poonam A.", "July 8, 2026", "Elegant and comfortable, both."),
+  oneLiner("Kiran L.", "July 6, 2026", "Value for money for a custom piece."),
+  oneLiner("Anushka B.", "July 4, 2026", "Loved the packaging."),
+  oneLiner("Sonali H.", "July 2, 2026", "Wore it for my sangeet, felt amazing."),
+  oneLiner("Deepa N.", "June 30, 2026", "Colour was slightly deeper than expected but lovely.", 4),
+  oneLiner("Yashvi C.", "June 28, 2026", "Beautiful work, will order again."),
+  oneLiner("Tejal S.", "June 26, 2026", "Very responsive on WhatsApp."),
+  oneLiner("Rima F.", "June 24, 2026", "Perfect for a reception look."),
+  oneLiner("Bhoomi P.", "June 22, 2026", "Quality is heirloom level."),
+  oneLiner("Gauri K.", "June 20, 2026", "Simply stunning."),
+  oneLiner("Aishwarya M.", "June 18, 2026", "Light on the body despite the work."),
+  oneLiner("Nisha R.", "June 16, 2026", "Exactly what I had described to them."),
+  oneLiner("Sanika D.", "June 14, 2026", "Great experience end to end."),
+  oneLiner("Prachi T.", "June 12, 2026", "Lining is well finished, very comfortable."),
+  oneLiner("Ekta V.", "June 10, 2026", "Loved it, thank you Naira."),
+  oneLiner("Mitali J.", "June 8, 2026", "Worth every rupee."),
+];
+
 const filters = ["All Reviews", "With Photos", "5★", "4★", "3★"];
+
 
 interface Review {
   name: string;

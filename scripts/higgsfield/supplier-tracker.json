@@ -879,5 +879,50 @@
    "low_resolution": "Around 40 of the 54 live products lead with a 896x1200 hero - a 1k generation, not the 2k 1856x2304 standard. Shopify wants 2048px+; at 896 wide the PDP zoom is soft on any retina screen.",
    "sku_transposition_fixed": "JDB201083 and JDB201210 were swapped on Shopify and have been corrected. JDB201210-GN was checked at the same time and is right. Worth re-checking the other shared-photo families in yiwu_jd.media_ids for the same failure: JDB0104010/JDBW2410021, JDR0104337/-S and JDR0104342/-PS each share one photo set across two codes."
   }
+ },
+ "house_set": {
+  "_comment": "The e-commerce set is fixed and must not be reinvented per shot: a pale plaster stone block, matte and lightly textured, on a warm cream seamless ground, soft directional daylight from the upper left, one clean soft-edged shadow. Sand, limestone slabs, coloured fabric, velvet, foliage, water and dark grounds are all off-set and read as errors on a PDP. Editorial and campaign work is where other grounds belong.",
+  "reshot_onto_house_set_8_aug_2026": {
+   "WR23569K8": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260808_024308_1f35a844-4b02-438e-bf55-3399fa3e9e33.png",
+   "JDR0104337-S": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260808_024436_8d8ab329-fc2b-43e7-b504-07250635ccd0.png",
+   "YF8396": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260808_024700_3ebfa992-4366-4c8d-9fd5-f9f58110fbc7.png"
+  },
+  "defects_fixed": {
+   "WR23569K8": "hero was shot from the underside, looking into the hollow of the setting at the backs of the prongs. Now face-on with the full pave halo reading.",
+   "JDR0104337-S": "dome was rendered granulated, which is the Amber Dome's texture, and the band was drawn closed. This is a pave dome on an OPEN-BACK band; both terminals and the gap between them must show.",
+   "YF8396": "plinth dominated and the two pave drops were too small to read. Also took two passes: the first house-set version invented a THIRD pave teardrop in the coil. Stating the count as a check the model must perform - 'count the teardrops before finishing: there must be two' - fixed it."
+  }
+ },
+ "ring_sizing": {
+  "_comment": "Adjustability decides which rings can carry size variants at all. Audited 8 Aug 2026 against the tracker size strings AND the supplier photographs, because the two disagree in places. 9 adjustable, 10 fixed.",
+  "adjustable_no_size_variants": [
+   "JDR0104342",
+   "JDR0104342-PS",
+   "R18345A1",
+   "JDR0104337",
+   "JDR0104337-S",
+   "WR23024K",
+   "YF8453",
+   "WR12518B",
+   "JDR0104333"
+  ],
+  "fixed_size": [
+   "WR20902K8",
+   "JDR0303312-7",
+   "WR22648B7",
+   "FR03136B",
+   "YF5214",
+   "WR10914B2",
+   "R15464K",
+   "WR19333K8",
+   "WR23569K8",
+   "WR10170K7"
+  ],
+  "exceptions": {
+   "YF8453": "tracker says 'US-7 band' but the supplier photo is unmistakably an OPEN bypass ring - fine gold wire shank, two faceted stone terminals, clear air between them. Treat as adjustable; the tracker string is wrong.",
+   "JDR0104337 / JDR0104337-S": "tracker reads 'US 7 open-back'. The prose is right and the number is misleading: any rule keying on the numeric size will size these two wrong. They are adjustable.",
+   "YF5214": "neither adjustable nor a single size - a fixed closed band offered in US 6/7/8/9. Needs its own size list, not the 5/6/7 set."
+  },
+  "unverified_shared_photo_family": "R15464K, WR20902K8 and WR10170K7 all carry an identical size string and the same product description, and R15464K's supplier photos are md5-identical to WR20902K8's. All three are closed bands so the sizing call holds, but WHICH physical piece each code points at is unverified. This is a third shared-photo family alongside the JDR0104337/-S and JDR0104342/-PS pairs, and JDB201083 has already shown what that can hide."
  }
 }

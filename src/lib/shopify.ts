@@ -296,18 +296,41 @@ export async function storefrontApiRequest<T = any>(query: string, variables: Re
   return data;
 }
 
+/**
+ * Lead with the on-body shot.
+ *
+ * Jewellery media follows a fixed naming convention out of the studio:
+ * `<SKU>_1_main`, `<SKU>_2_worn`, `<SKU>_3_alt`, … so the packshot sorts
+ * first and the worn shot sits at index 1. On-body imagery converts better,
+ * so promote it to the hero position and leave the rest of the order intact.
+ *
+ * Products with no worn shot are returned untouched.
+ */
+export const wornFirst = (product: ShopifyProductNode | null): ShopifyProductNode | null => {
+  const edges = product?.images?.edges;
+  if (!edges || edges.length < 2) return product;
+
+  const wornIndex = edges.findIndex((e) => /_worn\b|_worn\./i.test(e.node.url));
+  if (wornIndex < 1) return product; // absent, or already leading
+
+  const reordered = [...edges];
+  const [worn] = reordered.splice(wornIndex, 1);
+  reordered.unshift(worn);
+  return { ...product, images: { ...product.images, edges: reordered } };
+};
+
 export async function fetchShopifyProducts(first = 20, query?: string): Promise<ShopifyProductNode[]> {
   const data = await storefrontApiRequest<{ data: { products: { edges: ShopifyProductEdge[] } } }>(PRODUCTS_QUERY, {
     first,
     query,
   });
-  return data.data.products.edges.map((edge) => edge.node);
+  return data.data.products.edges.map((edge) => wornFirst(edge.node) as ShopifyProductNode);
 }
 
 export async function fetchShopifyProductByHandle(handle: string): Promise<ShopifyProductNode | null> {
   if (!handle) return null;
   const data = await storefrontApiRequest<{ data: { product: ShopifyProductNode | null } }>(PRODUCT_BY_HANDLE_QUERY, { handle });
-  return data.data.product;
+  return wornFirst(data.data.product);
 }
 
 export function formatShopifyPrice(money: ShopifyMoney): string {

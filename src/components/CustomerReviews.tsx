@@ -20,16 +20,25 @@ import jewelUgcBracelet from "@/assets/jewellery/ugc/jewel-review-bracelet.jpg.a
 import jewelUgcSolitaire from "@/assets/jewellery/ugc/jewel-review-solitaire.jpg.asset.json";
 import jewelUgcToiEtMoi from "@/assets/jewellery/ugc/jewel-review-toietmoi.jpg.asset.json";
 import jewelUgcBow from "@/assets/jewellery/ugc/jewel-review-bow.jpg.asset.json";
+import jewelUgcPearlStuds from "@/assets/jewellery/ugc/jewel-review-pearl-studs.jpg.asset.json";
+import jewelUgcBraidedHoop from "@/assets/jewellery/ugc/jewel-review-braided-hoop.jpg.asset.json";
+import jewelUgcPearPendant from "@/assets/jewellery/ugc/jewel-review-pear-pendant.jpg.asset.json";
+import jewelUgcHaloRing from "@/assets/jewellery/ugc/jewel-review-halo-ring.jpg.asset.json";
 
 const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
 
 const jewelleryPhotos = [
   jewelUgcVine.url,
+  jewelUgcBraidedHoop.url,
+  jewelUgcPearPendant.url,
+  jewelUgcHaloRing.url,
+  jewelUgcPearlStuds.url,
   jewelUgcBracelet.url,
   jewelUgcSolitaire.url,
   jewelUgcToiEtMoi.url,
   jewelUgcBow.url,
 ];
+
 
 const jewelleryReviews: Review[] = [
   {

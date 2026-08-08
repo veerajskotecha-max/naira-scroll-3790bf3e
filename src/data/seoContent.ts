@@ -955,3 +955,42 @@ export const allArticles: JournalArticle[] = [...journal, ...extraJournal];
 
 export const articleBySlug = (slug?: string) =>
   allArticles.find((a) => a.slug === slug);
+
+/**
+ * Site-wide Organization node.
+ *
+ * Every value below is taken from something already published on the site
+ * (the PDP "Additional Information" block and the footer), so the schema and
+ * the visible page agree — which is what Google checks.
+ *
+ * Deliberately omitted: `founder` and `foundingDate`. Both are recommended
+ * for a brand Organization, but neither appears anywhere in the codebase and
+ * inventing them would be fabricated markup. Fill them in and uncomment.
+ */
+export const organizationLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Naira Flore",
+  url: SITE_URL,
+  logo: `${SITE_URL}/favicon.ico`,
+  email: "shopatnaira@gmail.com",
+  telephone: "+91-9561557935",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Flat 7, Veeraj Blossom, Karanyogi Nagar",
+    addressLocality: "Nashik",
+    addressRegion: "Maharashtra",
+    postalCode: "422002",
+    addressCountry: "IN",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+91-9561557935",
+    contactType: "customer service",
+    areaServed: "IN",
+    availableLanguage: ["en", "hi", "mr"],
+  },
+  sameAs: ["https://www.instagram.com/nairaflore/"],
+  // founder: { "@type": "Person", name: "<founder name>" },
+  // foundingDate: "<YYYY>",
+} as const;

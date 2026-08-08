@@ -9,6 +9,7 @@ import Testimonials from "@/components/Testimonials";
 import CampaignFilm from "@/components/CampaignFilm";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
+import { organizationLd } from "@/data/seoContent";
 import FounderStoryTeaser from "@/components/FounderStoryTeaser";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
@@ -48,6 +49,7 @@ const Index = () => {
         title="Naira Flore | Handcrafted Indo-Western Fashion"
         description="Discover handmade embroidered sarees, lehengas & anarkalis by Naira Flore. Premium Indo-Western fusion wear crafted for the modern woman. Free shipping above ₹2,999."
         canonical="https://nairaflore.com/"
+        jsonLd={organizationLd as unknown as Record<string, unknown>}
       />
       <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
         <HeroScrollyWrapper

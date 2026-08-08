@@ -20,16 +20,25 @@ import jewelUgcBracelet from "@/assets/jewellery/ugc/jewel-review-bracelet.jpg.a
 import jewelUgcSolitaire from "@/assets/jewellery/ugc/jewel-review-solitaire.jpg.asset.json";
 import jewelUgcToiEtMoi from "@/assets/jewellery/ugc/jewel-review-toietmoi.jpg.asset.json";
 import jewelUgcBow from "@/assets/jewellery/ugc/jewel-review-bow.jpg.asset.json";
+import jewelUgcPearlStuds from "@/assets/jewellery/ugc/jewel-review-pearl-studs.jpg.asset.json";
+import jewelUgcBraidedHoop from "@/assets/jewellery/ugc/jewel-review-braided-hoop.jpg.asset.json";
+import jewelUgcPearPendant from "@/assets/jewellery/ugc/jewel-review-pear-pendant.jpg.asset.json";
+import jewelUgcHaloRing from "@/assets/jewellery/ugc/jewel-review-halo-ring.jpg.asset.json";
 
 const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
 
 const jewelleryPhotos = [
   jewelUgcVine.url,
+  jewelUgcBraidedHoop.url,
+  jewelUgcPearPendant.url,
+  jewelUgcHaloRing.url,
+  jewelUgcPearlStuds.url,
   jewelUgcBracelet.url,
   jewelUgcSolitaire.url,
   jewelUgcToiEtMoi.url,
   jewelUgcBow.url,
 ];
+
 
 const jewelleryReviews: Review[] = [
   {
@@ -82,7 +91,48 @@ const jewelleryReviews: Review[] = [
     hasPhotos: true,
     images: [jewelUgcBow.url],
   },
+  {
+    name: "Meghana Iyer",
+    initials: "MI",
+    verified: true,
+    rating: 5,
+    date: "August 2, 2026",
+    text: "Wore the braided hoops to a wedding and three people asked where they were from. They're chunky but so light on the ear, and the gold has stayed bright with no dullness at all.",
+    hasPhotos: true,
+    images: [jewelUgcBraidedHoop.url],
+  },
+  {
+    name: "Shreya Nadkarni",
+    initials: "SN",
+    verified: true,
+    rating: 5,
+    date: "July 28, 2026",
+    text: "The pear pendant is exactly the everyday piece I wanted, delicate chain, clean bezel, and the stone catches light beautifully. Haven't taken it off in weeks.",
+    hasPhotos: true,
+    images: [jewelUgcPearPendant.url],
+  },
+  {
+    name: "Aarohi Deshmukh",
+    initials: "AD",
+    verified: true,
+    rating: 5,
+    date: "July 21, 2026",
+    text: "Opened the box and genuinely gasped. The halo ring looks like a proper engagement ring, the pavé band is set so neatly and the packaging is lovely.",
+    hasPhotos: true,
+    images: [jewelUgcHaloRing.url],
+  },
+  {
+    name: "Tanya Sequeira",
+    initials: "TS",
+    verified: true,
+    rating: 5,
+    date: "July 16, 2026",
+    text: "The pearl studs are the perfect size, not too loud for work but still special. The rope detailing around the pearl is what sold me.",
+    hasPhotos: true,
+    images: [jewelUgcPearlStuds.url],
+  },
 ];
+
 
 /* Short, one-line verified-buyer notes — the bulk of a real review wall.
    Kept photo-free so the "With Photos" filter still means something. */

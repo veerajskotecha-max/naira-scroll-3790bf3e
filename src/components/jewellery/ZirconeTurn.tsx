@@ -86,15 +86,17 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
             }
           : {
               // Mobile: no pin (the section sits inside an overflow-hidden
-              // wrapper, which pinning cannot handle) — play once on entry.
+              // wrapper, which pinning cannot handle) — but stay scroll-linked
+              // so the ring keeps turning both ways as the user scrolls.
               trigger: root,
-              start: "top 72%",
-              once: true,
+              start: "top 90%",
+              end: "bottom 10%",
+              scrub: 1,
+              invalidateOnRefresh: true,
             },
         defaults: { ease: "none" },
       });
 
-      if (!isDesktop) tl.timeScale(0.32);
 
 
       tl

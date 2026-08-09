@@ -35,14 +35,13 @@ const ScrollToTop = () => {
     if (navigationType === "POP") {
       const target = positions.get(key);
       if (target != null && target > 0) {
-        // Content (grids, images) may still be mounting — retry briefly
-        // until the document is tall enough to honour the offset.
-        let frames = 0;
+        // Content (grids, images) may still be mounting — keep re-applying
+        // the offset for a short window so late layout shifts can't win.
+        const until = performance.now() + 900;
         let raf = 0;
         const restore = () => {
           window.scrollTo(0, target);
-          frames += 1;
-          if (Math.abs(window.scrollY - target) > 2 && frames < 40) {
+          if (performance.now() < until) {
             raf = requestAnimationFrame(restore);
           } else {
             html.style.scrollBehavior = prev;
@@ -55,6 +54,7 @@ const ScrollToTop = () => {
         };
       }
     }
+
 
     window.scrollTo(0, 0);
     html.style.scrollBehavior = prev;

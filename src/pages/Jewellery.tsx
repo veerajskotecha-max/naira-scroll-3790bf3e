@@ -56,11 +56,13 @@ const Jewellery = () => {
   const didScrollToGrid = useRef(false);
 
   /* Deep links such as /jewellery?category=Rings (the home category cards)
-     preselect the filter and drop the shopper straight onto the grid. */
+     preselect the filter and drop the shopper straight onto the grid.
+     On a back navigation we leave the scroll alone so the shopper returns
+     to the exact card they opened. */
   useEffect(() => {
     const match = filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase());
     if (match && match !== active) setActive(match);
-    if (match && match !== "All" && !didScrollToGrid.current) {
+    if (navigationType !== "POP" && match && match !== "All" && !didScrollToGrid.current) {
       didScrollToGrid.current = true;
       window.setTimeout(() => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 260);
     }

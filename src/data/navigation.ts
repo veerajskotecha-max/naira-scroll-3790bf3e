@@ -14,7 +14,7 @@ export const menuEdits: Array<{ label: string; to: string }> = [
   { label: "Bestsellers", to: "/jewellery?sort=best" },
   { label: "Under ₹1,500", to: "/jewellery?under=1500" },
   { label: "The Gilded Six", to: "/jewellery" },
-  { label: "Shop All Jewellery", to: "/jewellery" },
+  
 ];
 
 export const menuOccasions: Array<{ label: string; to: string }> = [

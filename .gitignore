@@ -46,3 +46,6 @@ naira-flore-image-approval.pdf
 # Python bytecode, produced when one script importlib-loads another
 __pycache__/
 *.pyc
+
+# Campaign production briefs - deliverables, not website code
+naira-campaign-*.pdf

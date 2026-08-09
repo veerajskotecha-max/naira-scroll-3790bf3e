@@ -184,7 +184,9 @@ const GildedSixCarousel = () => {
         ref={pinRef}
         className="relative overflow-hidden"
         style={{
-          height: "100svh",
+          height: isMobile ? "auto" : "100svh",
+          minHeight: isMobile ? "auto" : undefined,
+          paddingBottom: isMobile ? 56 : undefined,
           backgroundColor: "#14211F",
           backgroundImage:
             "radial-gradient(90% 70% at 78% 18%, rgba(47,93,99,0.55) 0%, transparent 62%)," +
@@ -193,6 +195,7 @@ const GildedSixCarousel = () => {
             "linear-gradient(150deg, #16241F 0%, #12191B 48%, #1B1512 100%)",
         }}
       >
+
         {/* diagonal atelier rules */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.16]"

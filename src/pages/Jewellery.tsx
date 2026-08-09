@@ -13,7 +13,7 @@ import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewelle
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigationType, useSearchParams } from "react-router-dom";
 
 const hubFaqs = [
   {
@@ -47,6 +47,7 @@ const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Ear
 
 const Jewellery = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigationType = useNavigationType();
   const paramCategory = searchParams.get("category");
   const initialCategory = (filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase()) ?? "All") as
     | "All"

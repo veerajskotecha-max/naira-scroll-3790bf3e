@@ -233,6 +233,11 @@ const Jewellery = () => {
           </div>
         )}
 
+        {/* shop by category, after the full grid */}
+        <JewelleryCategories />
+
+
+
 
 
 

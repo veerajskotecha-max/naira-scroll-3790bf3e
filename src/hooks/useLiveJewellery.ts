@@ -34,29 +34,54 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
 };
 
 /**
- * Silver SKUs are rhodium coated, never sterling silver — and their copy must
- * not mention gold. Shopify listing text is normalised on the way in.
+ * Metal copy hygiene for Shopify listing text:
+ *  - "silver" / "sterling silver" is never claimed — those pieces are rhodium coated.
+ *  - A single-metal piece must not mention the other metal anywhere in its copy
+ *    (a gold piece can't suggest "pair with silver-tone studs", and vice versa).
+ *    Genuine two-tone pieces (both metals named in the Plating line) are left alone.
  */
+const platingLine = (raw: string) => (raw.match(/Plating:\s*([^]{0,120})/i)?.[1] ?? "").split(/Material:/i)[0];
+
 const normalizeMetalCopy = (raw: string): string => {
   if (!raw) return raw;
+
+  // 1. Silver wording → rhodium coated, everywhere.
   let text = raw
-    .replace(/rhodium plated silver tone/gi, "rhodium coated")
+    .replace(/rhodium plated silver[- ]tone/gi, "rhodium coated")
     .replace(/sterling silver/gi, "rhodium coated metal")
     .replace(/silver[- ]tone/gi, "rhodium coated")
     .replace(/\bsilver\b/gi, "rhodium coated")
     .replace(/rhodium coated plated/gi, "rhodium coated");
-  const isSilverPiece = /rhodium/i.test(text);
-  const mentionsBothTones = /gold tone (?:plated )?(?:or|and)/i.test(raw);
-  if (isSilverPiece && !mentionsBothTones) {
+
+  // 2. Decide the piece's actual metal from its Plating line.
+  const plating = platingLine(raw);
+  const platingGold = /gold/i.test(plating);
+  const platingCool = /rhodium|silver|steel/i.test(plating);
+  const twoTone = (platingGold && platingCool) || /two[- ]tone/i.test(raw);
+  if (twoTone) return text;
+
+  if (platingCool && !platingGold) {
+    // Rhodium piece — drop every gold reference.
     text = text
-      .replace(/18k gold tone plated/gi, "rhodium coated")
+      .replace(/18k gold[- ]tone plated/gi, "rhodium coated")
       .replace(/gold[- ]tone/gi, "rhodium coated")
       .replace(/\bgold\b/gi, "rhodium coated");
+  } else if (platingGold && !platingCool) {
+    // Gold piece — drop every rhodium/steel reference.
+    text = text
+      .replace(/rhodium coated metal/gi, "18k gold tone plated metal")
+      .replace(/rhodium coated/gi, "gold tone")
+      .replace(/\b(?:steel|cool)[- ]tone\b/gi, "gold tone")
+      .replace(/\brhodium\b/gi, "gold tone");
   }
-  return text;
+
+  return text
+    .replace(/(gold tone[, ]+)+gold tone/gi, "gold tone")
+    .replace(/(rhodium coated[, ]+)+rhodium coated/gi, "rhodium coated");
 };
 
-const isRhodium = (text: string) => /rhodium/i.test(text || "");
+const isRhodium = (text: string) => /rhodium/i.test(text || "") && !/gold/i.test(text || "");
+
 
 /** Shopify productType → the four listing categories used on /jewellery. */
 const CATEGORY_BY_TYPE: Record<string, JewelPiece["category"]> = {

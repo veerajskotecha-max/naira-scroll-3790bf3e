@@ -4,6 +4,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { jewellery } from "@/data/jewellery";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,6 +51,8 @@ const GildedSixCarousel = () => {
   );
 
 
+  const isMobile = useIsMobile();
+
   useGSAP(
     () => {
       const root = rootRef.current;
@@ -58,7 +62,8 @@ const GildedSixCarousel = () => {
 
       const mm = gsap.matchMedia();
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
         if (!cards.length) return;
 
@@ -156,18 +161,19 @@ const GildedSixCarousel = () => {
       });
 
 
-      mm.add("(prefers-reduced-motion: reduce)", () => {
+      mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
         cards.forEach((card) => {
-          gsap.set(card, { position: "relative", x: 0, y: 0, rotationY: 0, rotationZ: 0, scale: 1, opacity: 1, filter: "none" });
+          gsap.set(card, { clearProps: "all" });
           const label = card.querySelector<HTMLElement>("[data-label]");
-          if (label) gsap.set(label, { opacity: 1, y: 0 });
+          if (label) gsap.set(label, { clearProps: "all" });
         });
       });
 
+
       return () => mm.revert();
     },
-    { scope: rootRef, dependencies: [pieces.length] }
+    { scope: rootRef, dependencies: [pieces.length, isMobile] }
   );
 
   if (pieces.length === 0) return null;
@@ -178,7 +184,9 @@ const GildedSixCarousel = () => {
         ref={pinRef}
         className="relative overflow-hidden"
         style={{
-          height: "100svh",
+          height: isMobile ? "auto" : "100svh",
+          minHeight: isMobile ? "auto" : undefined,
+          paddingBottom: isMobile ? 56 : undefined,
           backgroundColor: "#14211F",
           backgroundImage:
             "radial-gradient(90% 70% at 78% 18%, rgba(47,93,99,0.55) 0%, transparent 62%)," +
@@ -187,6 +195,7 @@ const GildedSixCarousel = () => {
             "linear-gradient(150deg, #16241F 0%, #12191B 48%, #1B1512 100%)",
         }}
       >
+
         {/* diagonal atelier rules */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -201,7 +210,13 @@ const GildedSixCarousel = () => {
           style={{ background: "radial-gradient(120% 80% at 50% 50%, transparent 40%, rgba(8,10,10,0.62) 100%)" }}
         />
         {/* Heading */}
-        <div className="absolute left-0 top-0 z-30 px-5 pt-[120px] md:px-14 md:pt-[140px]">
+        <div
+          className={
+            isMobile
+              ? "relative z-30 px-5 pt-[72px]"
+              : "absolute left-0 top-0 z-30 px-5 pt-[120px] md:px-14 md:pt-[140px]"
+          }
+        >
           <p className="text-[9px] uppercase tracking-[0.34em]" style={{ ...jost, color: "#AEBDB6" }}>
             Jewellery Bestsellers
           </p>
@@ -224,29 +239,37 @@ const GildedSixCarousel = () => {
           </h2>
         </div>
 
-        {/* 3D track */}
+        {/* Track — 3D deck on desktop, native snap scroller on mobile */}
         <div
           ref={trackRef}
-          className="absolute inset-0"
-          style={{ perspective: "1100px", perspectiveOrigin: "50% 52%" }}
+          className={
+            isMobile
+              ? "relative z-20 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              : "absolute inset-0"
+          }
+          style={isMobile ? undefined : { perspective: "1100px", perspectiveOrigin: "50% 52%" }}
         >
           {pieces.map((p) => (
             <Link
               key={p.handle}
               to={`/jewellery/${p.handle}`}
               data-card
-              className="block will-change-transform"
-              style={{
-                width: "clamp(190px, 52vw, 340px)",
-                transformStyle: "preserve-3d",
-                backfaceVisibility: "hidden",
-              }}
+              className={isMobile ? "block shrink-0 snap-center" : "block will-change-transform"}
+              style={
+                isMobile
+                  ? { width: "66vw", maxWidth: 300 }
+                  : {
+                      width: "clamp(190px, 52vw, 340px)",
+                      transformStyle: "preserve-3d",
+                      backfaceVisibility: "hidden",
+                    }
+              }
             >
               <div className="relative overflow-hidden" style={{ aspectRatio: "3/4", backgroundColor: "#201D1A" }}>
                 <img
                   src={p.image}
                   alt={`${p.name}, demi-fine jewellery by Naira Flore`}
-                  loading="eager"
+                  loading={isMobile ? "lazy" : "eager"}
                   decoding="async"
                   fetchPriority="low"
                   className="h-full w-full object-cover"
@@ -269,15 +292,24 @@ const GildedSixCarousel = () => {
         </div>
 
         {/* Scroll hint */}
-        <div className="absolute bottom-7 right-5 z-30 md:bottom-10 md:right-14">
+        <div
+          className={
+            isMobile
+              ? "relative z-30 mt-5 px-5"
+              : "absolute bottom-7 right-5 z-30 md:bottom-10 md:right-14"
+          }
+        >
           <p className="text-[9px] uppercase tracking-[0.34em]" style={{ ...jost, color: "#8E8A84" }}>
-            Scroll to surf
+            {isMobile ? "Swipe to browse" : "Scroll to surf"}
           </p>
         </div>
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
-          style={{ background: "linear-gradient(to top, rgba(14,20,20,0.92), rgba(14,20,20,0))" }}
-        />
+        {!isMobile && (
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+            style={{ background: "linear-gradient(to top, rgba(14,20,20,0.92), rgba(14,20,20,0))" }}
+          />
+        )}
+
       </div>
     </section>
   );

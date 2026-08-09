@@ -4,6 +4,8 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { jewellery } from "@/data/jewellery";
+import { useIsMobile } from "@/hooks/use-mobile";
+
 
 gsap.registerPlugin(ScrollTrigger);
 

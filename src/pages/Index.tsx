@@ -82,7 +82,6 @@ const Index = () => {
             <FounderStoryTeaser />
           </div>
         </div>
-        <GildedSixCarousel />
 
         <Testimonials />
         <CampaignFilm />

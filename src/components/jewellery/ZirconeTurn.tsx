@@ -40,9 +40,16 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
+    mm.add(
+      {
+        desktop: "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+        mobile: "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
+      },
+      (ctx) => {
+      const isDesktop = !!ctx.conditions?.desktop;
       const root = rootRef.current, pin = pinRef.current, card = cardRef.current;
       if (!root || !pin || !card) return;
+
 
       const faceA = pin.querySelector<HTMLElement>("[data-face-a]");
       const faceB = pin.querySelector<HTMLElement>("[data-face-b]");

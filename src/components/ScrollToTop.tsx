@@ -17,7 +17,7 @@ const ScrollToTop = () => {
 
   // Continuously record the scroll position for this history entry.
   useEffect(() => {
-    const save = () => positions.set(key, window.scrollY);
+    const save = () => { positions.set(key, window.scrollY); (window as any).__pos = Object.fromEntries(positions); };
     window.addEventListener("scroll", save, { passive: true });
     return () => {
       save();
@@ -34,6 +34,7 @@ const ScrollToTop = () => {
 
     if (navigationType === "POP") {
       const target = positions.get(key);
+      console.log("[scroll-restore]", key, target, Object.fromEntries(positions));
       if (target != null && target > 0) {
         // Content (grids, images) may still be mounting — keep re-applying
         // the offset for a short window so late layout shifts can't win.

@@ -14,7 +14,13 @@ type Section = { label: string; to?: string; links?: { label: string; to: string
 
 const sections: Section[] = [
   { label: "HOME", to: "/" },
-  { label: "JEWELLERY", links: menuCategories.map((c) => ({ label: c.label, to: c.to })) },
+  {
+    label: "JEWELLERY",
+    links: [
+      { label: "Shop All", to: "/jewellery" },
+      ...menuCategories.map((c) => ({ label: c.label, to: c.to })),
+    ],
+  },
   { label: "THE EDITS", links: menuEdits },
   { label: "OCCASION", links: menuOccasions },
   { label: "APPAREL", links: menuApparel },

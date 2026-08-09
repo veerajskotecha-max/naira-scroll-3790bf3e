@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
-import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
+import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
 import JewelFilterBar, {
   applyJewelFilters,
   SORT_OPTIONS,
@@ -151,8 +151,6 @@ const Jewellery = () => {
           </div>
 
 
-          {/* hero, the clean scroll-turned solitaire */}
-          <ZirconeTurn showViewAll={false} inheritBackdrop />
 
           {/* indexable header */}
           <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
@@ -228,7 +226,7 @@ const Jewellery = () => {
             </button>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-24 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-16 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
             {pieces.map((piece, i) => (
               <JewelCard key={piece.handle} piece={piece} index={i} />
             ))}

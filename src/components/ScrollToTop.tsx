@@ -2,28 +2,65 @@ import { useEffect } from "react";
 import { useLocation, useNavigationType } from "react-router-dom";
 
 /**
- * Scroll the window to the top on every navigation — including clicks
- * that push the same path (e.g. clicking "Home" from the homepage).
- * In-page state written to the URL (filter chips using `replace`, such as
- * /jewellery?category=Rings) must NOT jump the shopper back to the top,
- * so replace-navigations on the same path are ignored.
+ * Scroll management on navigation.
+ * - PUSH: jump to the top of the new page.
+ * - REPLACE (filter chips writing to the URL): leave the scroll alone.
+ * - POP (browser back / navigate(-1)): restore the scroll position the
+ *   shopper had on that entry, so coming back from a product page lands
+ *   on the card they clicked instead of the top of the grid.
  */
+const positions = new Map<string, number>();
+
 const ScrollToTop = () => {
   const { pathname, key } = useLocation();
   const navigationType = useNavigationType();
 
+  // Continuously record the scroll position for this history entry.
+  useEffect(() => {
+    const save = () => positions.set(key, window.scrollY);
+    window.addEventListener("scroll", save, { passive: true });
+    return () => {
+      save();
+      window.removeEventListener("scroll", save);
+    };
+  }, [key]);
+
   useEffect(() => {
     if (navigationType === "REPLACE") return;
-    // Disable any CSS smooth-scroll for the jump, then restore.
+
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto";
+
+    if (navigationType === "POP") {
+      const target = positions.get(key);
+      if (target != null && target > 0) {
+        // Content (grids, images) may still be mounting — retry briefly
+        // until the document is tall enough to honour the offset.
+        let frames = 0;
+        let raf = 0;
+        const restore = () => {
+          window.scrollTo(0, target);
+          frames += 1;
+          if (Math.abs(window.scrollY - target) > 2 && frames < 40) {
+            raf = requestAnimationFrame(restore);
+          } else {
+            html.style.scrollBehavior = prev;
+          }
+        };
+        restore();
+        return () => {
+          cancelAnimationFrame(raf);
+          html.style.scrollBehavior = prev;
+        };
+      }
+    }
+
     window.scrollTo(0, 0);
     html.style.scrollBehavior = prev;
   }, [pathname, key, navigationType]);
 
   return null;
 };
-
 
 export default ScrollToTop;

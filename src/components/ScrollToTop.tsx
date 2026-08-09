@@ -43,7 +43,6 @@ const ScrollToTop = () => {
 
     if (navigationType === "POP") {
       const target = positions.get(key);
-      console.log("[scroll-restore]", key, target, Object.fromEntries(positions));
       if (target != null && target > 0) {
         // Content (grids, images) may still be mounting — keep re-applying
         // the offset for a short window so late layout shifts can't win.

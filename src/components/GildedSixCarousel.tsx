@@ -49,6 +49,8 @@ const GildedSixCarousel = () => {
   );
 
 
+  const isMobile = useIsMobile();
+
   useGSAP(
     () => {
       const root = rootRef.current;
@@ -58,7 +60,8 @@ const GildedSixCarousel = () => {
 
       const mm = gsap.matchMedia();
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+
         const cards = gsap.utils.toArray<HTMLElement>("[data-card]", track);
         if (!cards.length) return;
 

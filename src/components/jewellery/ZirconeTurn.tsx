@@ -87,10 +87,11 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           : {
               // Mobile: no pin (the section sits inside an overflow-hidden
               // wrapper, which pinning cannot handle) — but stay scroll-linked
-              // so the ring keeps turning both ways as the user scrolls.
+              // over a full viewport of travel so the ring is still turning
+              // while it is actually on screen.
               trigger: root,
-              start: "top 90%",
-              end: "bottom 10%",
+              start: "top 75%",
+              end: "+=120%",
               scrub: 1,
               invalidateOnRefresh: true,
             },

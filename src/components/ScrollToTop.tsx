@@ -16,14 +16,23 @@ const ScrollToTop = () => {
   const navigationType = useNavigationType();
 
   // Continuously record the scroll position for this history entry.
+  // A sudden programmatic jump to the very top (which happens as the next
+  // page mounts) must not overwrite a real position, so it is ignored.
   useEffect(() => {
-    const save = () => { positions.set(key, window.scrollY); (window as any).__pos = Object.fromEntries(positions); };
+    let lastY = window.scrollY;
+    const save = () => {
+      const y = window.scrollY;
+      if (y === 0 && lastY > 200) return;
+      lastY = y;
+      positions.set(key, y);
+    };
     window.addEventListener("scroll", save, { passive: true });
     return () => {
       save();
       window.removeEventListener("scroll", save);
     };
   }, [key]);
+
 
   useEffect(() => {
     if (navigationType === "REPLACE") return;

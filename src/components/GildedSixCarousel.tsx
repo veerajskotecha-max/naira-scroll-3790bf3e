@@ -173,7 +173,7 @@ const GildedSixCarousel = () => {
 
       return () => mm.revert();
     },
-    { scope: rootRef, dependencies: [pieces.length] }
+    { scope: rootRef, dependencies: [pieces.length, isMobile] }
   );
 
   if (pieces.length === 0) return null;

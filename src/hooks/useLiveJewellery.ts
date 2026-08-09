@@ -28,10 +28,35 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
     image: images[0] ?? piece.image,
     gallery: images.length ? images : piece.gallery,
-    description: node.description || piece.description,
+    description: normalizeMetalCopy(node.description) || piece.description,
     tags: node.tags?.length ? node.tags : piece.tags,
   };
 };
+
+/**
+ * Silver SKUs are rhodium coated, never sterling silver — and their copy must
+ * not mention gold. Shopify listing text is normalised on the way in.
+ */
+const normalizeMetalCopy = (raw: string): string => {
+  if (!raw) return raw;
+  let text = raw
+    .replace(/rhodium plated silver tone/gi, "rhodium coated")
+    .replace(/sterling silver/gi, "rhodium coated metal")
+    .replace(/silver[- ]tone/gi, "rhodium coated")
+    .replace(/\bsilver\b/gi, "rhodium coated")
+    .replace(/rhodium coated plated/gi, "rhodium coated");
+  const isSilverPiece = /rhodium/i.test(text);
+  const mentionsBothTones = /gold tone (?:plated )?(?:or|and)/i.test(raw);
+  if (isSilverPiece && !mentionsBothTones) {
+    text = text
+      .replace(/18k gold tone plated/gi, "rhodium coated")
+      .replace(/gold[- ]tone/gi, "rhodium coated")
+      .replace(/\bgold\b/gi, "rhodium coated");
+  }
+  return text;
+};
+
+const isRhodium = (text: string) => /rhodium/i.test(text || "");
 
 /** Shopify productType → the four listing categories used on /jewellery. */
 const CATEGORY_BY_TYPE: Record<string, JewelPiece["category"]> = {
@@ -82,7 +107,8 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
   const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
   const compareAtPrice = compareRaw > price ? compareRaw : undefined;
   const images = node.images.edges.map((e) => e.node.url);
-  const parsed = parseDescription(node.description);
+  const description = normalizeMetalCopy(node.description);
+  const parsed = parseDescription(description);
 
   return {
     handle: node.handle,
@@ -99,11 +125,13 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
     image: images[0] ?? "",
     gallery: images,
     blurb: parsed.blurb,
-    description: node.description,
+    description,
     stylingTip: parsed.stylingTip,
     details: parsed.details,
     care: parsed.care,
-    materials: "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+    materials: isRhodium(description)
+      ? "Rhodium coated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish"
+      : "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
     tags: node.tags,
   };
 };

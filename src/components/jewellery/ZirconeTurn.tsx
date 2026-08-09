@@ -73,20 +73,29 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(flash, { opacity: 0, scaleY: 0.3, transformOrigin: "50% 50%" });
 
       const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: root,
-          start: "top top",
-          // Mobile gets a shorter pin so the grid is reachable in one flick.
-          end: window.matchMedia("(max-width: 767px)").matches ? "+=70%" : "+=110%",
-          scrub: 1,
-          fastScrollEnd: true,
-
-          pin: pin,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
+        scrollTrigger: isDesktop
+          ? {
+              trigger: root,
+              start: "top top",
+              end: "+=110%",
+              scrub: 1,
+              fastScrollEnd: true,
+              pin: pin,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            }
+          : {
+              // Mobile: no pin (the section sits inside an overflow-hidden
+              // wrapper, which pinning cannot handle) — play once on entry.
+              trigger: root,
+              start: "top 72%",
+              once: true,
+            },
         defaults: { ease: "none" },
       });
+
+      if (!isDesktop) tl.timeScale(0.32);
+
 
       tl
         .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.06)

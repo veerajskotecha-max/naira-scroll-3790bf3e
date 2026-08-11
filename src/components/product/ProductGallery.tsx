@@ -154,16 +154,25 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     );
   }
 
-  // Desktop: two large images, full viewport height, sticky
+  // Desktop: unique images only, layout adapts to how many exist
+  const uniqueImages = Array.from(new Set(images)).slice(0, 4);
+  const count = uniqueImages.length;
+  const gridClass =
+    count <= 1
+      ? "grid grid-cols-1 grid-rows-1"
+      : count === 2
+        ? "grid grid-cols-1 grid-rows-2"
+        : "grid grid-cols-2 grid-rows-2";
+
   return (
     <div className="relative w-full h-full min-h-full">
-      <div className="grid grid-cols-2 grid-rows-2 gap-[4px] h-full min-h-full">
-        {images.slice(0, 4).map((img, i) => (
+      <div className={`${gridClass} gap-[4px] h-full min-h-full`}>
+        {uniqueImages.map((img, i) => (
           <button
             type="button"
-            key={i}
+            key={img}
             onClick={() => openLightbox(i)}
-            className="overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in"
+            className={`overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in ${count === 3 && i === 0 ? "col-span-2" : ""}`}
             style={{ backgroundColor: "hsl(0 0% 96%)", height: "100%" }}
             aria-label={`Open ${productName} image ${i + 1} full screen`}
           >
@@ -181,5 +190,6 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     </div>
   );
 };
+
 
 export default ProductGallery;

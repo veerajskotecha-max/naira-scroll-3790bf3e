@@ -4,7 +4,8 @@
     "ponytail@ponytail": true,
     "document-skills@anthropic-agent-skills": true,
     "example-skills@anthropic-agent-skills": true,
-    "claude-api@anthropic-agent-skills": true
+    "claude-api@anthropic-agent-skills": true,
+    "claude-seo@agricidaniel-claude-seo": true
   },
   "extraKnownMarketplaces": {
     "thedotmack": {
@@ -23,6 +24,12 @@
       "source": {
         "source": "github",
         "repo": "anthropics/skills"
+      }
+    },
+    "agricidaniel-claude-seo": {
+      "source": {
+        "source": "github",
+        "repo": "AgriciDaniel/claude-seo"
       }
     }
   }

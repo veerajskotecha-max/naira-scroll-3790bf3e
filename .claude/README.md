@@ -6,7 +6,7 @@
 
 ## Plugins
 
-`settings.json` registers three plugin marketplaces and enables five plugins.
+`settings.json` registers four plugin marketplaces and enables six plugins.
 When you next open this repo in Claude Code you'll be prompted to trust the
 folder and install them. Nothing is vendored into this repo — each plugin is
 cloned into `~/.claude/plugins/` per machine.
@@ -18,9 +18,14 @@ cloned into `~/.claude/plugins/` per machine.
 | `document-skills` | `anthropic-agent-skills` | [anthropics/skills](https://github.com/anthropics/skills) | ~1,028 tok |
 | `example-skills` | `anthropic-agent-skills` | [anthropics/skills](https://github.com/anthropics/skills) | ~1,221 tok |
 | `claude-api` | `anthropic-agent-skills` | [anthropics/skills](https://github.com/anthropics/skills) | ~471 tok |
+| `claude-seo` | `agricidaniel-claude-seo` | [AgriciDaniel/claude-seo](https://github.com/AgriciDaniel/claude-seo) | ~4,871 tok |
 
-**Total: ~5,479 tokens added to every session** before any skill fires. Re-check
+**Total: ~10,350 tokens added to every session** before any skill fires. Re-check
 with `claude plugin details <name>`.
+
+`claude-seo` alone is roughly half that. If SEO work is bursty rather than
+constant, disabling it between projects halves the standing overhead:
+`claude plugin disable claude-seo@agricidaniel-claude-seo`.
 
 ## claude-mem
 
@@ -79,6 +84,31 @@ Anthropic's official open-source skills, split across three plugins:
 >
 > `example-skills` is worth keeping either way — 11 of its 12 skills are not
 > duplicated.
+
+## claude-seo
+
+The plugin behind [claude-seo.md](https://claude-seo.md). MIT, v2.2.4 at time of
+writing. **25 skills, 18 agents, 1 PostToolUse hook.**
+
+Agents: `seo-backlinks`, `seo-cluster`, `seo-content`, `seo-dataforseo`,
+`seo-drift`, `seo-ecommerce`, `seo-flow`, `seo-geo`, `seo-google`,
+`seo-image-gen`, `seo-local`, `seo-maps`, `seo-performance`, `seo-schema`,
+`seo-sitemap`, `seo-sxo`, `seo-technical`, `seo-visual`.
+
+Relevant to known issues in this repo: `seo-schema` (the Organization node still
+has `founder` and `foundingDate` commented out, and per-product
+`aggregateRating` was removed pending real reviews), `seo-sitemap` (83 generated
+entries, unverified against the router), `seo-performance` (mobile Lighthouse
+~74, with roughly 4s of LCP render delay), and `seo-ecommerce` (52 live
+jewellery SKUs against 22 in `src/data/jewellery.ts`).
+
+Two caveats:
+
+- It ships a **PostToolUse hook**, so it observes tool activity on every session
+  for anyone who opens this repo — the same consideration as claude-mem.
+- Its 8 optional MCP extensions (DataForSEO, Firecrawl, Ahrefs, SE Ranking,
+  Profound, Bing Webmaster, Unlighthouse, Banana) are **paid third-party APIs**.
+  The core plugin works without them; agents may still ask for keys.
 
 ## Vendored skills
 

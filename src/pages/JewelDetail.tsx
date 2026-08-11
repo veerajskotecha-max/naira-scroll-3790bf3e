@@ -269,25 +269,41 @@ const JewelDetail = () => {
       )}
     </div>
   ) : (
-    <div className="relative w-full h-full min-h-full">
-      <div className="grid grid-cols-2 grid-rows-2 gap-[4px] h-full min-h-full">
-        {[0, 1, 0, 1].map((idx, i) => (
-          <button
-            type="button"
-            key={i}
-            onClick={() => openLightbox(images[idx] ? idx : 0)}
-            className="overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in"
-            style={{ backgroundColor: "#F4EBE2", height: "100%" }}
-            aria-label={`Open ${piece.name} image ${(images[idx] ? idx : 0) + 1} full screen`}
-          >
-            <img src={images[idx] ?? images[0]} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
-          </button>
-        ))}
-      </div>
-      {WishlistBtn}
-      {ShareBtn}
-    </div>
+    (() => {
+      /* Desktop/tablet: only ever show each photo once. Layout adapts to how
+         many unique images the piece actually has (1 → full bleed, 2 → split,
+         3 → hero + pair, 4 → 2×2). */
+      const unique = Array.from(new Set(images)).slice(0, 4);
+      const count = unique.length;
+      const gridClass =
+        count <= 1
+          ? "grid grid-cols-1 grid-rows-1"
+          : count === 2
+            ? "grid grid-cols-1 grid-rows-2"
+            : "grid grid-cols-2 grid-rows-2";
+      return (
+        <div className="relative w-full h-full min-h-full">
+          <div className={`${gridClass} gap-[4px] h-full min-h-full`}>
+            {unique.map((img, i) => (
+              <button
+                type="button"
+                key={img}
+                onClick={() => openLightbox(i)}
+                className={`overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in ${count === 3 && i === 0 ? "col-span-2" : ""}`}
+                style={{ backgroundColor: "#F4EBE2", height: "100%" }}
+                aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+              >
+                <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
+              </button>
+            ))}
+          </div>
+          {WishlistBtn}
+          {ShareBtn}
+        </div>
+      );
+    })()
   );
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>

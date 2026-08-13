@@ -49,3 +49,6 @@ __pycache__/
 
 # Campaign production briefs - deliverables, not website code
 naira-campaign-*.pdf
+
+# Sourcing / catalogue working files - deliverables, not website code
+naira-sku-corrections.xlsx

@@ -497,14 +497,25 @@ const JewelDetail = () => {
                 </a>
               </div>
               {piece.category === "Rings" ? (
-                <Select value={selectedSize} onValueChange={setSelectedSize}>
-                  <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    {ringSizes.map((s) => <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">{s.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      {ringSizes.map((s) => (
+                        <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {selectedSize === "6"
+                      ? "US 6 is in stock and ships now."
+                      : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                  </p>
+                </>
               ) : (
                 <div className="w-full h-11 flex items-center px-3 border text-[13px]" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
                   One Size · adjustable

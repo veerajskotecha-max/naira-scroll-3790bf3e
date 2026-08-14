@@ -73,28 +73,17 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(flash, { opacity: 0, scaleY: 0.3, transformOrigin: "50% 50%" });
 
       const tl = gsap.timeline({
-        scrollTrigger: isDesktop
-          ? {
-              trigger: root,
-              start: "top top",
-              end: "+=110%",
-              scrub: 1,
-              fastScrollEnd: true,
-              pin: pin,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            }
-          : {
-              // Mobile: no pin (the section sits inside an overflow-hidden
-              // wrapper, which pinning cannot handle) — but stay scroll-linked
-              // over a full viewport of travel so the ring is still turning
-              // while it is actually on screen.
-              trigger: root,
-              start: "top 75%",
-              end: "+=120%",
-              scrub: 1,
-              invalidateOnRefresh: true,
-            },
+        // No pinning on any breakpoint: this section lives inside an
+        // overflow-hidden / isolated wrapper, and pinning there makes the
+        // page jump and flicker. The ring stays scroll-linked instead, so it
+        // keeps turning while it travels through the viewport.
+        scrollTrigger: {
+          trigger: root,
+          start: isDesktop ? "top 85%" : "top 75%",
+          end: isDesktop ? "+=110%" : "+=120%",
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
         defaults: { ease: "none" },
       });
 

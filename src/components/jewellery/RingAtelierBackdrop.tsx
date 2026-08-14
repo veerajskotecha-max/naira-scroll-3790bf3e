@@ -298,7 +298,7 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
       >
         <div
           ref={layerRef}
-          className="absolute inset-0 transition-transform duration-500 ease-out"
+          className="absolute inset-0 will-change-transform"
           style={{ transformStyle: "preserve-3d" }}
         >
           {ORBS.map((o, i) => (

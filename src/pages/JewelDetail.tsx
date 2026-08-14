@@ -40,11 +40,10 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
   ];
 };
 
-const ringSizes: { value: string; label: string }[] = [
-  { value: "5", label: "US 5" },
-  { value: "6", label: "US 6" },
-  { value: "7", label: "US 7" },
-  { value: "8", label: "US 8" },
+const ringSizes: { value: string; label: string; status: "available" | "preorder" }[] = [
+  { value: "5", label: "US 5 (Pre-order · 45 days delivery)", status: "preorder" },
+  { value: "6", label: "US 6", status: "available" },
+  { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
 const JewelDetail = () => {

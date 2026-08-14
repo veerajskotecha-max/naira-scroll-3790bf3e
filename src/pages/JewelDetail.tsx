@@ -40,11 +40,10 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
   ];
 };
 
-const ringSizes: { value: string; label: string }[] = [
-  { value: "5", label: "US 5" },
-  { value: "6", label: "US 6" },
-  { value: "7", label: "US 7" },
-  { value: "8", label: "US 8" },
+const ringSizes: { value: string; label: string; status: "available" | "preorder" }[] = [
+  { value: "5", label: "US 5 (Pre-order · 45 days delivery)", status: "preorder" },
+  { value: "6", label: "US 6", status: "available" },
+  { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
 const JewelDetail = () => {
@@ -62,7 +61,7 @@ const JewelDetail = () => {
     else navigate("/jewellery");
   };
 
-  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "7" : "One Size");
+  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "6" : "One Size");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -498,14 +497,25 @@ const JewelDetail = () => {
                 </a>
               </div>
               {piece.category === "Rings" ? (
-                <Select value={selectedSize} onValueChange={setSelectedSize}>
-                  <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    {ringSizes.map((s) => <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">{s.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      {ringSizes.map((s) => (
+                        <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {selectedSize === "6"
+                      ? "US 6 is in stock and ships now."
+                      : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                  </p>
+                </>
               ) : (
                 <div className="w-full h-11 flex items-center px-3 border text-[13px]" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
                   One Size · adjustable

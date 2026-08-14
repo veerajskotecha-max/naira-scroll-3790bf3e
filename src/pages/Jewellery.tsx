@@ -30,7 +30,7 @@ const hubFaqs = [
   },
   {
     q: "What ring sizes do you make?",
-    a: "US 5 (4.9 cm), US 6 (5.2 cm), US 7 (5.4 cm) and US 8 (5.7 cm) inner circumference. Message the atelier on WhatsApp if you are between sizes.",
+    a: "We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.",
   },
 ];
 

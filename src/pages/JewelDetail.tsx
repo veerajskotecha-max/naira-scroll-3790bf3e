@@ -61,7 +61,7 @@ const JewelDetail = () => {
     else navigate("/jewellery");
   };
 
-  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "7" : "One Size");
+  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "6" : "One Size");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);

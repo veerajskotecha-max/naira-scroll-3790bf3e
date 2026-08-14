@@ -68,8 +68,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(lineR, { transformOrigin: "0% 50%" });
       gsap.set(finale, { opacity: 0, y: 18 });
       gsap.set(card, { scale: 1.08 });
-      gsap.set(faceA, { rotationY: 0, opacity: 1 });
-      gsap.set(faceB, { rotationY: 46, opacity: 0 });
+      gsap.set(faceA, { rotationY: 0, opacity: 1, force3D: true });
+      gsap.set(faceB, { rotationY: 46, opacity: 0, force3D: true });
       gsap.set(flash, { opacity: 0, scaleY: 0.3, transformOrigin: "50% 50%" });
 
       const tl = gsap.timeline({
@@ -81,8 +81,9 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           trigger: root,
           start: isDesktop ? "top 85%" : "top 75%",
           end: isDesktop ? "+=110%" : "+=120%",
-          scrub: 1,
+          scrub: 0.45,
           invalidateOnRefresh: true,
+          fastScrollEnd: true,
         },
         defaults: { ease: "none" },
       });
@@ -94,20 +95,19 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.08)
         .to([callL, lineL], { opacity: 0, duration: 0.04 }, 0.24)
         .to(faceA, { rotationY: 46, duration: 0.26, ease: "power1.in" }, 0.05)
-        .to(flash, { opacity: 1, scaleY: 1, duration: 0.03, ease: "power2.out" }, 0.29)
-        .to(flash, { opacity: 0, scaleY: 0.3, duration: 0.05 }, 0.33)
-        .to(faceA, { opacity: 0, duration: 0.02 }, 0.305)
-        .to(faceB, { opacity: 1, duration: 0.02 }, 0.315)
+        // Cross-fade the two angles while the ring is narrow. The previous
+        // near-instant opacity swap and bright glint read as a full-frame
+        // flicker on desktop compositors.
+        .to(faceA, { opacity: 0, duration: 0.08 }, 0.27)
+        .to(faceB, { opacity: 1, duration: 0.08 }, 0.27)
         .to(faceB, { rotationY: 0, duration: 0.24, ease: "power1.out" }, 0.33)
         .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.5)
         .to(lineR, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.52)
         .to([callR, lineR], { opacity: 0, duration: 0.04 }, 0.66)
         .to(faceB, { rotationY: 46, duration: 0.12, ease: "power1.in" }, 0.7)
-        .to(flash, { opacity: 1, scaleY: 1, duration: 0.03, ease: "power2.out" }, 0.79)
-        .to(flash, { opacity: 0, scaleY: 0.3, duration: 0.05 }, 0.83)
-        .to(faceB, { opacity: 0, duration: 0.02 }, 0.805)
+        .to(faceB, { opacity: 0, duration: 0.08 }, 0.77)
         .set(faceA, { rotationY: 46 }, 0.805)
-        .to(faceA, { opacity: 1, duration: 0.02 }, 0.815)
+        .to(faceA, { opacity: 1, duration: 0.08 }, 0.77)
         .to(faceA, { rotationY: 0, duration: 0.1, ease: "power1.out" }, 0.83)
         .to(card, { scale: 0.96, duration: 0.5, ease: "power1.out" }, 0.4)
         .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.14 }, 0.8)
@@ -150,9 +150,9 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
           {/* the ring — two photos turning (wrapper spans full width so callouts never clip) */}
           <div className="relative flex w-full max-w-[520px] justify-center md:max-w-[900px]" style={{ perspective: "1200px" }}>
-            <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
-              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" />
-              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0 }} />
+            <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d", contain: "layout paint" }}>
+              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ backfaceVisibility: "hidden", transform: "translateZ(0)" }} />
+              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain will-change-transform" style={{ opacity: 0, backfaceVisibility: "hidden", transform: "translateZ(0)" }} />
               {/* glint flash */}
               <div data-flash aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[86%] w-[3px] -translate-x-1/2 -translate-y-1/2"
                 style={{ opacity: 0, background: "linear-gradient(180deg, transparent, #E8C27A 25%, #FFFFFF 50%, #E8C27A 75%, transparent)", boxShadow: "0 0 24px 6px rgba(255,226,168,0.85)" }} />

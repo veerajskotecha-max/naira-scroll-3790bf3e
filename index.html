@@ -36,9 +36,13 @@
   <meta name="twitter:title" content="Naira Flore, Handcrafted Indo-Western Wear & Demi-Fine Jewellery">
   <meta property="og:description" content="Made-to-measure Indo-Western wear and 18K gold finished zircone jewellery, handcrafted in Nashik, India.">
   <meta name="twitter:description" content="Made-to-measure Indo-Western wear and 18K gold finished zircone jewellery, handcrafted in Nashik, India.">
-  <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"Organization","name":"Naira Flore","url":"https://nairaflore.com/","description":"Handcrafted Indo-Western wear and 18K gold finished demi-fine jewellery, made to order in Nashik, India.","address":{"@type":"PostalAddress","addressLocality":"Nashik","addressRegion":"Maharashtra","addressCountry":"IN"},"contactPoint":{"@type":"ContactPoint","telephone":"+91-9561557935","contactType":"customer service","areaServed":"IN","availableLanguage":["en","hi","mr"]}}
-  </script>
+  <!--
+    The Organization node is emitted by src/pages/Index.tsx via `organizationLd`
+    (src/data/seoContent.ts). It is deliberately NOT duplicated here: Helmet only
+    manages tags it renders itself, so a static copy here cannot be merged or
+    removed at runtime and would ship two conflicting Organization nodes.
+    The WebSite/SearchAction block below has no React equivalent, so it stays.
+  -->
   <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"WebSite","name":"Naira Flore","url":"https://nairaflore.com/","potentialAction":{"@type":"SearchAction","target":"https://nairaflore.com/shop?q={search_term_string}","query-input":"required name=search_term_string"}}
   </script>

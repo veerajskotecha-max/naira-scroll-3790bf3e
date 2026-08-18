@@ -46,11 +46,19 @@ const ProductDetail = () => {
     name: title,
     description,
     brand: { "@type": "Brand", name: "Naira Flore" },
+    // Google treats image as required for Product rich results. Without it none
+    // of the Shopify-backed pages were eligible, whatever else was correct.
+    image: product?.images.edges.map((edge) => edge.node.url) ?? [],
+    url: `https://nairaflore.com/product/${id}`,
     offers: {
       "@type": "Offer",
       price,
       priceCurrency: "INR",
-      availability: "https://schema.org/InStock",
+      // Read the real selling state rather than asserting InStock. Hardcoding it
+      // kept telling Google a sold-out SKU was buyable.
+      availability: product?.availableForSale
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
       seller: { "@type": "Organization", name: "Naira Flore" },
     },
   };

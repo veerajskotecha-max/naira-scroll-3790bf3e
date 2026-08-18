@@ -152,10 +152,13 @@ const JewelDetail = () => {
     url: `https://nairaflore.com/jewellery/${piece.handle}`,
     // ponytail: no aggregateRating until real per-product reviews exist — emitting a
     // site-wide constant here is fabricated structured data. Re-add from Judge.me data.
+    sku: piece.sku,
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
-      price: piece.price,
+      // No price. jewellery.ts marks it "internal record only; not displayed
+      // during pre-order", and the page shows "Price shared on WhatsApp enquiry"
+      // instead — publishing it here contradicted the visible page.
       availability: "https://schema.org/PreOrder",
       seller: { "@type": "Organization", name: "Naira Flore" },
     },

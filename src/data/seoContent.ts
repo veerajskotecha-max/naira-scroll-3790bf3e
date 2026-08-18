@@ -972,7 +972,8 @@ export const organizationLd = {
   "@type": "Organization",
   name: "Naira Flore",
   url: SITE_URL,
-  logo: `${SITE_URL}/favicon.ico`,
+  // Google accepts JPG, PNG or WEBP for Organization.logo — not .ico.
+  logo: `${SITE_URL}/logo.png`,
   email: "shopatnaira@gmail.com",
   telephone: "+91-9561557935",
   address: {

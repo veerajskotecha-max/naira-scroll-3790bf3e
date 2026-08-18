@@ -69,8 +69,23 @@ const JournalArticle = () => {
             datePublished: article.published,
             dateModified: article.published,
             mainEntityOfPage: url,
-            author: { "@type": "Organization", name: "Naira Flore" },
-            publisher: { "@type": "Organization", name: "Naira Flore", url: SITE_URL },
+            // Google treats image as required for Article rich results and none
+            // of these articles carried one. Falls back to the brand photograph
+            // until an article sets its own coverImage.
+            image: [article.coverImage ?? `${SITE_URL}/og-image.jpg`],
+            author: article.author
+              ? {
+                  "@type": "Person",
+                  name: article.author.name,
+                  ...(article.author.credential ? { jobTitle: article.author.credential } : {}),
+                }
+              : { "@type": "Organization", name: "Naira Flore" },
+            publisher: {
+              "@type": "Organization",
+              name: "Naira Flore",
+              url: SITE_URL,
+              logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+            },
           },
           ...(article.faqs ? [faqLd(article.faqs)] : []),
         ]}

@@ -28,9 +28,11 @@ const PageSEO = ({
   const fullTitle = title.includes("Naira Flore")
     ? title
     : `${title} | Naira Flore`;
-  const ogImage =
-    image ||
-    "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d9f51973-2ec0-4d49-a69e-f13e9fffd76c/id-preview-2d7a8ea8--65257c60-b4a2-459e-a774-14078a2a16e3.lovable.app-1773403558374.png";
+  // The previous default was a Lovable preview screenshot on an R2 bucket — a
+  // build-tool artifact, not a chosen asset, and it was the social card for
+  // every page that did not pass its own image. public/og-image.jpg is a real
+  // brand photograph.
+  const ogImage = image || "https://nairaflore.com/og-image.jpg";
 
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 

@@ -20,22 +20,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
     <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" /></noscript>
+    <!--
+      No canonical, description, OG or Twitter tags here on purpose. Every route
+      sets its own through PageSEO (react-helmet-async), and Helmet can only
+      manage tags it rendered itself — a static copy here is not replaced, it is
+      duplicated. That produced two canonicals on every page, one of them
+      pointing at the homepage. The title element below is the only exception:
+      Helmet treats title as a singleton and replaces it cleanly, so it stays
+      as the fallback for any route that sets none.
+    -->
     <title>Naira Flore, Handcrafted Indo-Western Wear & Demi-Fine Jewellery</title>
-    <meta name="description" content="Naira Flore crafts made-to-measure Indo-Western outfits and 18K gold finished zircone jewellery in Nashik, India. Hand-set stones, custom fits, worldwide shipping.">
     <meta name="author" content="Naira Flore" />
-    <link rel="canonical" href="https://nairaflore.com/" />
 
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://nairaflore.com/" />
-    <meta property="og:image" content="https://nairaflore.com/og-image.jpg">
 
-    <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="twitter:image" content="https://nairaflore.com/og-image.jpg">
-    <meta property="og:title" content="Naira Flore, Handcrafted Indo-Western Wear & Demi-Fine Jewellery">
-  <meta name="twitter:title" content="Naira Flore, Handcrafted Indo-Western Wear & Demi-Fine Jewellery">
-  <meta property="og:description" content="Made-to-measure Indo-Western wear and 18K gold finished zircone jewellery, handcrafted in Nashik, India.">
-  <meta name="twitter:description" content="Made-to-measure Indo-Western wear and 18K gold finished zircone jewellery, handcrafted in Nashik, India.">
   <!--
     The Organization node is emitted by src/pages/Index.tsx via `organizationLd`
     (src/data/seoContent.ts). It is deliberately NOT duplicated here: Helmet only

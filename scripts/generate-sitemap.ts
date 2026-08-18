@@ -1,55 +1,23 @@
-// Runs before `vite dev` and `vite build` (predev/prebuild hooks); writes public/sitemap.xml.
+// Runs before `vite dev` and `vite build` (predev/prebuild hooks).
+// Writes public/sitemap.xml and public/llms.txt from the same route list the
+// prerenderer uses, so none of the three can describe a different site.
 
-import { readFileSync, writeFileSync } from "fs";
+import { writeFileSync } from "fs";
 import { resolve } from "path";
-import { allLandings as categoryLandings, allArticles as journal } from "../src/data/seoContent";
+import { BASE_URL, siteRoutes, type SiteRoute } from "./routes";
+import { allLandings, allArticles } from "../src/data/seoContent";
 
-// Product handles are read from the data file directly — importing the module
-// would pull in Vite asset imports that tsx cannot resolve outside the bundler.
-const jewelleryHandles = [
-  ...readFileSync(resolve("src/data/jewellery.ts"), "utf8").matchAll(/handle:\s*"([^"]+)"/g),
-].map((m) => m[1]);
+/*
+  One sentence describing the business, used verbatim here, in the footer, and
+  in the Organization schema. It was previously three different sentences:
+  llms.txt called it a bridal couture house, the footer tagline said
+  Indo-Western fashion and led with clothing, and the schema said demi-fine
+  jewellery — while 71 of the ~100 indexed URLs are jewellery.
+*/
+export const BRAND_SENTENCE =
+  "Handcrafted Indo-Western wear and 18K gold finished demi-fine jewellery, made to order in Nashik, India.";
 
-const BASE_URL = "https://nairaflore.com";
-
-interface SitemapEntry {
-  path: string;
-  lastmod?: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
-}
-
-const entries: SitemapEntry[] = [
-  { path: "/", changefreq: "weekly", priority: "1.0" },
-  { path: "/shop", changefreq: "weekly", priority: "0.9" },
-  { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
-  ...categoryLandings.map<SitemapEntry>((c) => ({
-    path: `/jewellery/collections/${c.slug}`,
-    changefreq: "weekly",
-    priority: "0.9",
-  })),
-  ...jewelleryHandles.map<SitemapEntry>((handle) => ({
-    path: `/jewellery/${handle}`,
-    changefreq: "monthly",
-    priority: "0.8",
-  })),
-  { path: "/journal", changefreq: "weekly", priority: "0.7" },
-  ...journal.map<SitemapEntry>((a) => ({
-    path: `/journal/${a.slug}`,
-    lastmod: a.published,
-    changefreq: "monthly",
-    priority: "0.7",
-  })),
-  { path: "/customize", changefreq: "monthly", priority: "0.8" },
-  { path: "/about", changefreq: "monthly", priority: "0.6" },
-  { path: "/contact", changefreq: "monthly", priority: "0.6" },
-  { path: "/faqs", changefreq: "monthly", priority: "0.6" },
-  { path: "/exchange-return-policy", changefreq: "yearly", priority: "0.3" },
-  { path: "/privacy", changefreq: "yearly", priority: "0.3" },
-  { path: "/terms", changefreq: "yearly", priority: "0.3" },
-];
-
-function generateSitemap(list: SitemapEntry[]) {
+function generateSitemap(list: SiteRoute[]) {
   const urls = list.map((e) =>
     [
       `  <url>`,
@@ -71,5 +39,53 @@ function generateSitemap(list: SitemapEntry[]) {
   ].join("\n");
 }
 
-writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));
-console.log(`sitemap.xml written (${entries.length} entries)`);
+function generateLlmsTxt() {
+  const line = (path: string, label: string, desc: string) => `- [${label}](${path}): ${desc}`;
+
+  return [
+    "# Naira Flore",
+    "",
+    `> ${BRAND_SENTENCE}`,
+    "",
+    "Naira Flore is a Nashik-based atelier. The catalogue is led by Naira Petite,",
+    "a demi-fine jewellery line of hand-set brilliant-cut zircone and shell pearl",
+    "in an 18K gold or rhodium finish, sealed anti-tarnish and waterproof. It also",
+    "makes made-to-measure Indo-Western wear. Jewellery ships ready-to-wear in 3-7",
+    "working days; made-to-measure pieces take 4-8 weeks. Enquiries and",
+    "customisation run through WhatsApp on +91 9561557935.",
+    "",
+    "## Core pages",
+    "",
+    line("/", "Home", "New arrivals, the jewellery line, and the customisation journey."),
+    line("/shop", "Shop All", "The full catalogue — jewellery and Indo-Western wear, filterable by category."),
+    line("/jewellery", "Naira Petite", "The demi-fine jewellery line: rings, earrings, bracelets and necklaces."),
+    line("/journal", "The Journal", "Guides on sizing, materials, care and choosing demi-fine jewellery."),
+    line("/customize", "Customise", "Made-to-measure process — share a brief and co-create a piece."),
+    line("/about", "About", "The atelier story, craft philosophy and values."),
+    line("/contact", "Contact", "WhatsApp, email and the Nashik studio."),
+    line("/faqs", "FAQs", "Sizing, customisation timelines, delivery and care."),
+    "",
+    "## Jewellery collections",
+    "",
+    ...allLandings.map((c) =>
+      line(`/jewellery/collections/${c.slug}`, c.h1, c.metaDescription),
+    ),
+    "",
+    "## Journal",
+    "",
+    ...allArticles.map((a) => line(`/journal/${a.slug}`, a.title, a.metaDescription)),
+    "",
+    "## Policies",
+    "",
+    line("/exchange-return-policy", "Exchange & Return Policy", "Return windows and rules for made-to-measure versus ready-to-ship orders."),
+    line("/privacy", "Privacy Policy", "How customer data is handled."),
+    line("/terms", "Terms of Service", "Terms governing use of the site."),
+    "",
+  ].join("\n");
+}
+
+writeFileSync(resolve("public/sitemap.xml"), generateSitemap(siteRoutes));
+console.log(`sitemap.xml written (${siteRoutes.length} entries)`);
+
+writeFileSync(resolve("public/llms.txt"), generateLlmsTxt());
+console.log(`llms.txt written (${allLandings.length} collections, ${allArticles.length} articles)`);

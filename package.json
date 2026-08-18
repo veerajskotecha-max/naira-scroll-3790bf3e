@@ -7,12 +7,14 @@
     "predev": "bunx tsx scripts/generate-sitemap.ts || npx tsx scripts/generate-sitemap.ts",
     "dev": "vite",
     "prebuild": "bunx tsx scripts/generate-sitemap.ts || npx tsx scripts/generate-sitemap.ts",
-    "build": "vite build",
+    "build": "vite build && npm run prerender",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:nossg": "vite build",
+    "prerender": "tsx scripts/prerender.ts"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

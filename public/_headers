@@ -1,0 +1,41 @@
+# Response headers for Cloudflare Pages / Netlify-style hosts.
+#
+# The audit found no Content-Security-Policy and no X-Frame-Options on a site
+# that takes payments, and no cache-control at all on the non-hashed assets.
+# HSTS, X-Content-Type-Options and Referrer-Policy were already set correctly by
+# the host and are not repeated here.
+#
+# Every origin below was taken from what the code actually loads, not from a
+# template — an over-tight CSP breaks the site silently:
+#   fonts.googleapis.com / fonts.gstatic.com  the Google Fonts stylesheet + faces
+#   cdn.shopify.com                            all product imagery
+#   *.myshopify.com                            the Storefront GraphQL API
+#   www.instagram.com                          the embedded Reels in CampaignFilm
+#                                              and CustomizationStories
+#   pub-*.r2.dev                               the current default OG image
+#
+# 'unsafe-inline' is required for both script and style: the app inlines its
+# JSON-LD via <script> and this codebase styles almost everything with inline
+# style objects. Removing it needs a nonce-based build, which is a larger change
+# than this file.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.instagram.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://cdn.shopify.com https://*.r2.dev https://www.instagram.com https://*.cdninstagram.com; connect-src 'self' https://*.myshopify.com https://cdn.shopify.com; frame-src https://www.instagram.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://*.myshopify.com; object-src 'none'; upgrade-insecure-requests
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self)
+
+# Hashed bundles already carry immutable caching from the build. These two are
+# not content-hashed, so they cannot take a one-year immutable policy without a
+# way to bust it — a week with revalidation beats the host's heuristic default.
+/fonts/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/og-image.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/llms.txt
+  Cache-Control: public, max-age=3600
+  Content-Type: text/plain; charset=utf-8
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600

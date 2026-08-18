@@ -1,20 +1,83 @@
 # Naira Flore
 
-> Luxury Indian couture house crafting custom hand-embroidered lehengas, sarees, and occasion wear — designed for brides, weddings, and celebrations.
+> Handcrafted Indo-Western wear and 18K gold finished demi-fine jewellery, made to order in Nashik, India.
 
-Naira Flore is a Nashik-based atelier specializing in personalised, hand-crafted Indian couture. Each piece is made-to-order through a guided WhatsApp consultation (+91 9561557935), with intricate zardosi, thread, and embellishment work on premium silks and fabrics.
+Naira Flore is a Nashik-based atelier. The catalogue is led by Naira Petite,
+a demi-fine jewellery line of hand-set brilliant-cut zircone and shell pearl
+in an 18K gold or rhodium finish, sealed anti-tarnish and waterproof. It also
+makes made-to-measure Indo-Western wear. Jewellery ships ready-to-wear in 3-7
+working days; made-to-measure pieces take 4-8 weeks. Enquiries and
+customisation run through WhatsApp on +91 9561557935.
 
-## Pages
+## Core pages
 
-- [Home](/): Naira Flore homepage — new arrivals, brand ethos, and customisation journey.
-- [Shop All](/shop): Browse the full couture collection — lehengas, sarees, sets, and occasion wear.
-- [Customize](/customize): Made-for-you bespoke couture process — share your vision and co-create a one-of-a-kind piece.
-- [About Us](/about): The Naira Flore story, craft philosophy, and atelier values.
-- [Contact](/contact): Reach the atelier via WhatsApp, email, or visit the Nashik studio.
-- [FAQs](/faqs): Answers on sizing, customisation timelines, delivery, and care.
-- [Exchange & Return Policy](/exchange-return-policy): Return windows and rules for custom vs standard orders.
+- [Home](/): New arrivals, the jewellery line, and the customisation journey.
+- [Shop All](/shop): The full catalogue — jewellery and Indo-Western wear, filterable by category.
+- [Naira Petite](/jewellery): The demi-fine jewellery line: rings, earrings, bracelets and necklaces.
+- [The Journal](/journal): Guides on sizing, materials, care and choosing demi-fine jewellery.
+- [Customise](/customize): Made-to-measure process — share a brief and co-create a piece.
+- [About](/about): The atelier story, craft philosophy and values.
+- [Contact](/contact): WhatsApp, email and the Nashik studio.
+- [FAQs](/faqs): Sizing, customisation timelines, delivery and care.
 
-## Optional
+## Jewellery collections
 
+- [Zircone Rings for Women](/jewellery/collections/rings): Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–8. Anti-tarnish, waterproof-sealed.
+- [Zircone Earrings & Studs](/jewellery/collections/earrings): Bow studs, braided hoops and pavé drops in 18K gold finish with hand-set zircone. Lightweight, anti-tarnish and made to order by the Naira Flore atelier.
+- [Tennis Bracelets & Gold Cuffs](/jewellery/collections/bracelets): Hand-set tennis bracelets, chevron stacks and gold-finished cuffs with brilliant-cut zircone. Adjustable, anti-tarnish, made to order in India by Naira Flore.
+- [Gold Finished Necklaces & Pendants](/jewellery/collections/necklaces): Lariats, rondelle chains and zircone pendants in an 18K gold finish. Layerable lengths, anti-tarnish sealing, made to order by the Naira Flore atelier.
+- [Demi-Fine Jewellery in India](/jewellery/collections/demi-fine-jewellery): Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier.
+- [Anti-Tarnish Jewellery for Daily Wear](/jewellery/collections/anti-tarnish-jewellery): Anti-tarnish jewellery that survives Indian humidity: sealed 18K gold and rhodium finishes over a hypoallergenic, nickel-free base. Rings, studs, bracelets and chains that will not green, dull or itch.
+- [American Diamond Jewellery](/jewellery/collections/american-diamond-jewellery): American diamond jewellery hand-set with 57-facet brilliant-cut zircone in an 18K gold or rhodium finish. Solitaire rings, studs, tennis bracelets and pendants that read like the real thing.
+- [18K Gold Plated Jewellery](/jewellery/collections/18k-gold-plated-jewellery): 18K gold plated jewellery with a thick, sealed finish over a hypoallergenic nickel-free base. Rings, earrings, bracelets and chains that keep their colour through daily wear in Indian humidity.
+- [Office Wear & Everyday Jewellery](/jewellery/collections/office-wear-jewellery): Dainty, understated jewellery for work: fine chains, small studs, slim bands and thin bracelets in a sealed 18K gold finish. Light enough for a keyboard, finished enough for a meeting.
+- [Artificial Jewellery for Women, Made Properly](/jewellery/collections/artificial-jewellery): Artificial jewellery that does not turn green. Hand-set zircone rings, earrings, bracelets and necklaces in a sealed 18K gold finish over a nickel-free base. Made in small batches.
+- [Imitation Jewellery That Reads Real](/jewellery/collections/imitation-jewellery): Imitation jewellery online for women: brilliant-cut zircone in an 18K gold finish, hand-set in our atelier. Anti-tarnish, nickel-free and made in small numbered batches.
+- [Gold Plated Jewellery for Women](/jewellery/collections/gold-plated-jewellery): Gold plated jewellery built to keep its colour: thick 18K gold finish over a nickel-free base, sealed against tarnish. Rings, earrings, bracelets and necklaces.
+- [Bridal Jewellery for the Modern Indian Wedding](/jewellery/collections/bridal-jewellery): Bridal jewellery for sangeet, mehendi, reception and court weddings: hand-set brilliant-cut zircone in an 18K gold finish. Finished in small batches.
+- [Couple Rings and Promise Rings](/jewellery/collections/couple-rings): Couple rings and promise rings in an 18K gold finish with hand-set zircone. US sizes 5–8, anti-tarnish sealed, finished at our atelier.
+- [Adjustable Rings for Women](/jewellery/collections/adjustable-rings): Adjustable rings that hold their shape: 18K gold finished, anti-tarnish sealed, hand-set zircone. Available in US 5 to US 8.
+- [Zirconia Earrings, Studs, Hoops and Drops](/jewellery/collections/zirconia-earrings): Hand-set cubic zirconia earrings in an 18K gold finish. Studs, hoops and drops built light, prong-set and sealed against tarnish. Made in small batches.
+- [Gold Hoop Earrings for Women](/jewellery/collections/hoop-earrings): Gold hoop earrings in small, medium and statement sizes. 18K gold finished, nickel-free, anti-tarnish sealed and light enough for all-day wear.
+- [Stud Earrings for Daily Wear](/jewellery/collections/stud-earrings): Everyday stud earrings with hand-set brilliant-cut zircone in an 18K gold finish. Nickel-free posts, secure backs, anti-tarnish sealed.
+- [Solitaire Rings in 18K Gold Finish](/jewellery/collections/solitaire-rings): Single-stone solitaire rings with hand-set brilliant-cut zircone in an 18K gold or rhodium finish. Available in US sizes 5 to 8.
+- [Cocktail Rings and Statement Rings](/jewellery/collections/cocktail-rings): Statement cocktail rings with clustered brilliant-cut zircone in a sealed 18K gold finish. Available in US sizes 5 to 8 from our atelier.
+- [Layered Necklaces and Chain Sets](/jewellery/collections/layered-necklaces): Layered necklaces and fine gold chains designed to sit at staggered lengths without tangling. Sealed 18K finish, soldered links, nickel-free.
+- [Pendant Sets with Matching Earrings](/jewellery/collections/pendant-sets): Matching pendant and earring sets in a sealed 18K gold finish with hand-set zircone. Light enough for daily wear, finished for occasions.
+- [Gold Chains for Women](/jewellery/collections/chain-for-women): Fine gold chains for women in 40, 45 and 50 cm lengths. Soldered links, sealed 18K gold finish, nickel-free and built for daily wear.
+- [Evil Eye Bracelets and Protective Charms](/jewellery/collections/evil-eye-bracelets): Evil eye bracelets in a sealed 18K gold finish with hand-set stones. Nickel-free, anti-tarnish and built for the wrist you actually use.
+- [Charm Bracelets in Gold Finish](/jewellery/collections/charm-bracelets): Charm bracelets with soldered links, secure closures and a sealed 18K gold finish. Nickel-free and built to be added to over time.
+- [Rose Gold Finished Jewellery](/jewellery/collections/rose-gold-jewellery): Rose gold finished jewellery: rings, earrings, bracelets and necklaces with hand-set zircone, nickel-free bases and anti-tarnish sealing.
+- [Minimal Jewellery for Everyday](/jewellery/collections/minimal-jewellery): Minimal, dainty jewellery for everyday: thin bands, small studs and fine chains in a sealed 18K gold finish. Nickel-free and built solid, not hollow.
+- [Jewellery to Wear With a Saree](/jewellery/collections/jewellery-for-saree): How to choose jewellery for a saree: neckline, blouse and fabric decide the piece. Gold finished zircone earrings, necklaces and rings from Naira Flore.
+- [Jewellery to Wear With a Lehenga](/jewellery/collections/jewellery-for-lehenga): Choosing jewellery for a lehenga: how much the choli neckline, embroidery density and function decide. Gold finished zircone pieces from Naira Flore.
+- [Jewellery Gifts for Her](/jewellery/collections/jewellery-gifts): Jewellery gifts for wife, girlfriend, sister or mother: pendants, studs and bracelets that need no sizing, in a sealed 18K gold finish with gift packaging.
+- [Pearl and Zircone Jewellery](/jewellery/collections/pearl-jewellery): Pearl jewellery paired with brilliant-cut zircone in a sealed 18K gold finish. Drop earrings, pendants and bracelets built for daily and occasion wear.
+
+## Journal
+
+- [Ring Size Guide for India: How to Measure at Home](/journal/ring-size-guide-india): How to find your ring size at home in minutes, with a US-to-cm conversion chart for Indian sizes and the mistakes that make rings come back too loose.
+- [How to Care for Gold Plated Jewellery So It Lasts](/journal/how-to-care-for-gold-plated-jewellery): What actually strips a gold plated finish, how to clean demi-fine jewellery safely, and the storage habit that adds years to an 18K gold finished piece.
+- [Zirconia vs Diamond: What You Are Actually Buying](/journal/zirconia-vs-diamond): An honest comparison of cubic zirconia and diamond: brilliance, fire, hardness, price and how to tell them apart, and when zircone is the smarter buy.
+- [How to Style Indo-Western Outfits Without Overthinking It](/journal/how-to-style-indo-western-outfits): Silhouette, fabric and jewellery rules for styling Indo-Western outfits for weddings, receptions and work events, from the Naira Flore atelier.
+- [Demi-Fine Jewellery Explained: Between Costume and Fine](/journal/demi-fine-jewellery-explained): What demi-fine jewellery means, how it differs from costume and fine jewellery, and what to check before buying an 18K gold finished piece.
+- [Anti-Tarnish Jewellery: What It Actually Means](/journal/anti-tarnish-jewellery-guide): Why plated jewellery tarnishes, what an anti-tarnish seal really does, and the four questions to ask a brand before you buy anti-tarnish jewellery online in India.
+- [American Diamond vs Cubic Zirconia vs Moissanite](/journal/american-diamond-vs-cubic-zirconia-vs-moissanite): American diamond, cubic zirconia, zircon and moissanite explained: hardness, sparkle, price and how each one holds up in daily wear. A plain-language buying comparison.
+- [How to Judge a Demi-Fine Jewellery Brand in India](/journal/best-demi-fine-jewellery-brands-india): A buyer's checklist for demi-fine jewellery brands in India: base metal, plating thickness, stone setting, warranty and returns, plus the red flags that mean costume jewellery at demi-fine prices.
+- [Styling Dainty Jewellery for Everyday and Office Wear](/journal/everyday-dainty-jewellery-styling): How to stack dainty rings, layer fine chains and choose office-appropriate earrings, with the proportion rules that keep everyday jewellery looking deliberate rather than accidental.
+- [How to Clean Artificial Jewellery at Home Without Ruining It](/journal/how-to-clean-artificial-jewellery-at-home): The safe way to clean artificial and gold plated jewellery at home, what to never use, and how to bring back shine on tarnished pieces.
+- [Gold Plated vs Gold Filled vs Solid Gold: What You Are Paying For](/journal/gold-plated-vs-gold-filled-vs-solid-gold): The real differences between gold plated, gold filled, vermeil and solid gold jewellery: thickness, lifespan, price and which one makes sense for daily wear.
+- [How to Choose Earrings for Your Face Shape](/journal/how-to-choose-earrings-for-face-shape): Which earrings suit round, oval, square, heart and long faces, why the rule is about contrast, and the three shapes that work on everyone.
+- [How to Layer Necklaces So They Do Not Tangle](/journal/how-to-layer-necklaces): A practical guide to layering necklaces: the length spacing that prevents tangling, how many chains to wear, and how to layer over Indian necklines.
+- [Bridal Jewellery Checklist for an Indian Wedding](/journal/bridal-jewellery-checklist-india): What jewellery you actually need for each Indian wedding function, haldi, mehendi, sangeet, ceremony and reception, and where demi-fine makes more sense than gold.
+- [How to Store Jewellery So It Does Not Tarnish](/journal/how-to-store-jewellery-to-prevent-tarnish): Humidity, not wear, is what tarnishes most jewellery in India. How to store rings, chains and earrings properly, and the cheap fix that does most of the work.
+- [Evil Eye Jewellery: Meaning, Placement and How to Wear It](/journal/evil-eye-jewellery-meaning): What the evil eye symbol means, which hand to wear it on, what the colours signify, and how to style an evil eye bracelet without it looking costume.
+- [Rose Gold vs Yellow Gold vs White Gold: Which Suits You](/journal/rose-gold-vs-yellow-gold-vs-white-gold): How the three gold tones differ, which suits warm and cool Indian skin tones, how each behaves over time, and when mixing metals works.
+- [How to Buy Jewellery Online in India Without Getting Burned](/journal/how-to-buy-jewellery-online-in-india): The seven things to check before buying jewellery online in India: base metal, plating, settings, sizing, returns, photography and seller responsiveness.
+- [How to Build a Jewellery Capsule You Actually Wear](/journal/how-to-build-a-jewellery-capsule-wardrobe): The seven demi-fine pieces that cover work, weddings and everyday in India, the order to buy them in, and the pieces most people over-buy.
+
+## Policies
+
+- [Exchange & Return Policy](/exchange-return-policy): Return windows and rules for made-to-measure versus ready-to-ship orders.
 - [Privacy Policy](/privacy): How customer data is handled.
 - [Terms of Service](/terms): Terms governing use of the site.

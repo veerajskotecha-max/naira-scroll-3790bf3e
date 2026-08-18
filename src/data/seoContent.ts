@@ -456,6 +456,20 @@ export interface JournalArticle {
   intro: string;
   sections: JournalSection[];
   faqs?: FaqItem[];
+  /**
+   * Article-specific cover image. Google treats `image` as required for Article
+   * rich results, and none of these articles had one. Until a real asset exists
+   * per article the schema falls back to the brand OG photograph — set this to
+   * a genuine article image and the fallback stops applying.
+   */
+  coverImage?: string;
+  /**
+   * Named human author. Left optional deliberately: the schema currently
+   * credits the Organization, which is valid but weak for E-E-A-T. Inventing a
+   * byline would be worse than the gap, so fill this in with a real person and
+   * the Article schema will credit them instead.
+   */
+  author?: { name: string; credential?: string };
 }
 
 export const journal: JournalArticle[] = [

@@ -72,14 +72,17 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       const tl = gsap.timeline({
         // No pinning on any breakpoint: this section lives inside an
         // overflow-hidden / isolated wrapper, and pinning there makes the
-        // page jump and flicker. The ring stays scroll-linked instead, so it
-        // keeps turning while it travels through the viewport.
+        // page jump and flicker. Instead the turn is mapped onto the whole
+        // travel of the section through the viewport — the ring starts
+        // turning the moment it appears and lands its full revolution just as
+        // the section leaves, so rotation speed always matches scroll speed.
         scrollTrigger: {
           trigger: root,
-          start: isDesktop ? "top 85%" : "top 75%",
-          end: isDesktop ? "+=110%" : "+=120%",
-          scrub: 0.55,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.5,
           invalidateOnRefresh: true,
+          fastScrollEnd: true,
         },
         defaults: { ease: "none" },
       });
@@ -87,21 +90,19 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
 
       tl
-        .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.06)
-        .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.08)
-        .to([callL, lineL], { opacity: 0, duration: 0.04 }, 0.24)
-        // Rotate one physical two-sided card instead of cross-fading two GPU
-        // layers. Backface culling guarantees that one face remains rendered
-        // through the turn and avoids the desktop alpha-compositor flash.
-        .to(card, { rotationY: 180, duration: 0.45, ease: "power1.inOut" }, 0.05)
-        .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.5)
-        .to(lineR, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.52)
-        .to([callR, lineR], { opacity: 0, duration: 0.04 }, 0.66)
-        .to(card, { rotationY: 360, duration: 0.24, ease: "power1.inOut" }, 0.7)
-        .to(card, { scale: 0.96, duration: 0.5, ease: "power1.out" }, 0.4)
-        .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.14 }, 0.8)
-        .to(hint, { opacity: 0, duration: 0.08 }, 0.78)
-        .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.9);
+        // one continuous, linear revolution across the entire scroll range
+        .fromTo(card, { rotationY: 0 }, { rotationY: 360, duration: 0.94 }, 0.03)
+        .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.14)
+        .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.16)
+        .to([callL, lineL], { opacity: 0, duration: 0.05 }, 0.34)
+        .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.56)
+        .to(lineR, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.58)
+        .to([callR, lineR], { opacity: 0, duration: 0.05 }, 0.74)
+        .to(card, { scale: 0.96, duration: 0.55, ease: "power1.out" }, 0.3)
+        .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.16 }, 0.8)
+        .to(hint, { opacity: 0, duration: 0.08 }, 0.4)
+        .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.62);
+
 
       return () => { tl.scrollTrigger?.kill(); tl.kill(); };
     });

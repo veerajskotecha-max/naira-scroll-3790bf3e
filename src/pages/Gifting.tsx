@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd } from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { SITE_URL } from "@/data/seoContent";
+import { SITE_URL } from "@/data/siteMeta";
 import { WHATSAPP_NUMBER } from "@/data/jewellery";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;

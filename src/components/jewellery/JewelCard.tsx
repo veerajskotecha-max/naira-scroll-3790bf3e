@@ -42,14 +42,22 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const { toggleItem, isWishlisted } = useWishlist();
   const saved = isWishlisted(piece.handle);
   const off = discountPercent(piece);
-  /* The second frame is the on-model "teaser". For earrings the worn shot is
-     what sells the piece, so prefer an explicitly worn/model image whenever the
-     gallery has one — this keeps working for every product added later. */
+  /* Earrings: frame one must be the product packshot (the earrings alone) and
+     frame two the on-model shot, zoomed to the ear. Everything else keeps the
+     plain gallery order. */
   const gallery = piece.gallery ?? [];
-  const wornImg = gallery.find((g) => /worn|model|onmodel|_2_/i.test(g)) ?? null;
+  const isWorn = (g: string) => /worn|model|onmodel|_2_/i.test(g);
+  const wornImg = gallery.find(isWorn) ?? null;
   const isEarrings = piece.category === "Earrings";
-  const altImg = (isEarrings ? wornImg : null) ?? (gallery.length > 1 ? gallery[1] : null);
+  const packshot = gallery.find((g) => !isWorn(g)) ?? null;
+  const frontImg =
+    isEarrings && isWorn(piece.image) && packshot ? packshot : piece.image;
+  const altImg =
+    (isEarrings ? (wornImg && wornImg !== frontImg ? wornImg : null) : null) ??
+    gallery.filter((g) => g !== frontImg)[0] ??
+    null;
   const zircone = piece.handle.startsWith("zircone");
+
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();

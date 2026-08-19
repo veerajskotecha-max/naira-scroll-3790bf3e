@@ -1,26 +1,15 @@
 import { useEffect, useState } from "react";
-import { MapPin, CheckCircle2, AlertCircle } from "lucide-react";
+import { MapPin, CheckCircle2, AlertCircle, Info } from "lucide-react";
+import {
+  getServiceability,
+  isValidPincode,
+  addWorkingDays,
+  formatDeliveryDate,
+  type Serviceability,
+} from "@/lib/serviceability";
 
-const METRO_PREFIXES = ["11", "40", "56", "60", "70", "50", "38", "20", "12", "16", "62"]; // Delhi, Mumbai, Blr, Chennai, Kol, Hyd, Ahmedabad, Noida, Faridabad, Gurgaon, Chandigarh
-
-const addBusinessDays = (start: Date, days: number) => {
-  const d = new Date(start);
-  let added = 0;
-  while (added < days) {
-    d.setDate(d.getDate() + 1);
-    const day = d.getDay();
-    if (day !== 0 && day !== 6) added++;
-  }
-  return d;
-};
-
-const formatDate = (d: Date) =>
-  d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
-
-interface Result {
-  pincode: string;
+interface Result extends Serviceability {
   eta: string;
-  isMetro: boolean;
 }
 
 const PincodeChecker = () => {
@@ -31,7 +20,7 @@ const PincodeChecker = () => {
   useEffect(() => {
     try {
       const saved = localStorage.getItem("naira-pincode");
-      if (saved && /^\d{6}$/.test(saved)) {
+      if (saved && isValidPincode(saved)) {
         setPincode(saved);
         check(saved, false);
       }
@@ -41,20 +30,21 @@ const PincodeChecker = () => {
 
   const check = (value: string, save = true) => {
     setError(null);
-    if (!/^\d{6}$/.test(value)) {
+    const info = getServiceability(value);
+    if (!info) {
       setError("Enter a valid 6-digit pincode.");
       setResult(null);
       return;
     }
-    const isMetro = METRO_PREFIXES.some((p) => value.startsWith(p));
-    const eta = formatDate(addBusinessDays(new Date(), isMetro ? 5 : 9));
-    setResult({ pincode: value, eta, isMetro });
+    const eta = formatDeliveryDate(addWorkingDays(new Date(), info.days));
+    setResult({ ...info, eta });
     if (save) {
       try {
         localStorage.setItem("naira-pincode", value);
       } catch {}
     }
   };
+
 
   return (
     <div className="mt-4">

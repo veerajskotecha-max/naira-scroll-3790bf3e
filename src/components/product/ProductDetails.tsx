@@ -169,7 +169,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div className="flex items-center gap-2 mt-1.5">
         <Wallet size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-          <strong className="font-medium">Cash on Delivery</strong> available · UPI, cards &amp; net banking
+          <strong className="font-medium">Cash on Delivery</strong> on serviceable pincodes · UPI, cards &amp; net banking
         </span>
       </div>
 

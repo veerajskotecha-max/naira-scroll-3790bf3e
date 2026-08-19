@@ -404,14 +404,14 @@ const JewelDetail = () => {
               MRP inclusive of all taxes · free insured shipping across India
             </p>
 
-            {/* Pre-order note — the line launches 15 August */}
+            {/* Delivery note — the line is live */}
             <div
               className="mt-3 flex items-start gap-2 border px-3 py-2.5"
               style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
             >
               <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
               <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now to reserve your piece — payment,
+                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now — payment,
                 cart and checkout are fully live.
               </p>
             </div>
@@ -650,7 +650,7 @@ const JewelDetail = () => {
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• {PREORDER_NOTE}</p>
-                    <p>• Orders placed now are reserved and dispatched from 15 August onwards.</p>
+                    <p>• Orders placed now are dispatched within 3–5 working days.</p>
                     <p>• Shipped free across India, insured in transit.</p>
                   </div>
                 </AccordionContent>
@@ -789,7 +789,7 @@ const JewelDetail = () => {
           className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          {buying ? "Opening…" : "Pre-order now"}
+          {buying ? "Opening…" : "Buy it now"}
         </button>
 
       </div>

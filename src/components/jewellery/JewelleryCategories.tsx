@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { jewellery } from "@/data/jewellery";
-import ringImg from "@/assets/jewellery/gilded/the-vow.jpg.asset.json";
-import braceletImg from "@/assets/jewellery/gilded/the-sugar-tennis.jpg.asset.json";
-import earringImg from "@/assets/jewellery/gilded/the-braided-hoop.jpg.asset.json";
-import necklaceImg from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
+import ringImg from "@/assets/categories/rings.jpg.asset.json";
+import braceletImg from "@/assets/categories/bracelets.jpg.asset.json";
+import earringImg from "@/assets/categories/earrings.jpg.asset.json";
+import necklaceImg from "@/assets/categories/necklaces.jpg.asset.json";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
    Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
@@ -20,6 +20,7 @@ const cats = [
   { label: "Earrings", img: earringImg.url, count: jewellery.filter((j) => j.category === "Earrings").length, note: "hoops & the studs, three ways" },
   { label: "Necklaces", img: necklaceImg.url, count: jewellery.filter((j) => j.category === "Necklaces").length, note: "lariats, chains & a cascade" },
 ];
+
 
 
 const JewelleryCategories = () => (

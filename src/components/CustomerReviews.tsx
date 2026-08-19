@@ -325,12 +325,12 @@ const Stars = ({ count, size = 12 }: { count: number; size?: number }) => (
 );
 
 interface CustomerReviewsProps {
-  /** Kept for call-site compatibility; reviews are no longer generated per product. */
+  /** Drives the product's own numbered one-line reviews. */
   productName?: string;
   variant?: "apparel" | "jewellery";
 }
 
-const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => {
+const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
   const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
@@ -339,11 +339,31 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [localReviews, setLocalReviews] = useState<Review[]>(() =>
-    isJewellery
-      ? [...jewelleryReviews, ...jewelleryOneLiners]
-      : [...reviewsData, ...apparelOneLiners]
+  // Each product carries its own numbered one-liners, shown first.
+  const ownReviews = useMemo<Review[]>(
+    () =>
+      getProductReviews(productName).map((r) => ({
+        no: r.no,
+        name: r.name,
+        initials: r.initials,
+        verified: r.verified,
+        rating: r.rating,
+        date: r.date,
+        text: r.text,
+        hasPhotos: false,
+        images: [],
+      })),
+    [productName]
   );
+  const [localReviews, setLocalReviews] = useState<Review[]>([]);
+  useEffect(() => {
+    setLocalReviews([
+      ...ownReviews,
+      ...(isJewellery
+        ? [...jewelleryReviews, ...jewelleryOneLiners]
+        : [...reviewsData, ...apparelOneLiners]),
+    ]);
+  }, [ownReviews, isJewellery]);
 
   // Aggregate is computed from the reviews actually shown, never invented.
   const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {

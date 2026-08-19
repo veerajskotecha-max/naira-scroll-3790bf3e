@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { jewellery } from "@/data/jewellery";
-import ringImg from "@/assets/jewellery/gilded/the-vow.jpg.asset.json";
-import braceletImg from "@/assets/jewellery/gilded/the-sugar-tennis.jpg.asset.json";
-import earringImg from "@/assets/jewellery/gilded/the-braided-hoop.jpg.asset.json";
-import necklaceImg from "@/assets/jewellery/gilded/the-anchor-chain.jpg.asset.json";
+import ringImg from "@/assets/categories/rings.jpg.asset.json";
+import braceletImg from "@/assets/categories/bracelets.jpg.asset.json";
+import earringImg from "@/assets/categories/earrings.jpg.asset.json";
+import necklaceImg from "@/assets/categories/necklaces.jpg.asset.json";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
    Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
@@ -22,6 +22,7 @@ const cats = [
 ];
 
 
+
 const JewelleryCategories = () => (
   <section className="bg-[#FBF3EC] pb-20 pt-4 text-[#1A1614] lg:pb-28">
     <div className="mx-auto max-w-6xl px-6">
@@ -35,15 +36,19 @@ const JewelleryCategories = () => (
         {cats.map((c) => (
           <Link key={c.label} to={`/jewellery?category=${c.label}`} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
             <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-1200 ease-out group-hover:scale-[1.06] sm:aspect-[5/4]" />
-            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1A1614]/45 via-transparent to-transparent" />
+            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1A1614]/65 via-[#1A1614]/10 to-transparent" />
             <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/70" />
-            <span className="absolute bottom-5 left-5">
-              <span className="block text-[26px] leading-tight text-[#FBF3EC] md:text-[30px]" style={velista}>{c.label}</span>
-              <span className="mt-0.5 block text-[11px] italic text-[#FBF3EC]/80" style={editorial}>{c.note}</span>
+            {/* stacked so the label and the count never collide on small screens */}
+            <span className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2 md:inset-x-5 md:bottom-5">
+              <span className="block">
+                <span className="block text-[24px] leading-tight text-[#FBF3EC] md:text-[30px]" style={velista}>{c.label}</span>
+                <span className="mt-0.5 block text-[11px] italic text-[#FBF3EC]/80" style={editorial}>{c.note}</span>
+              </span>
+              <span className="border border-[#FBF3EC]/50 px-2.5 py-1 text-[9px] tracking-[0.28em] text-[#FBF3EC] transition-colors duration-300 group-hover:bg-[#FBF3EC] group-hover:text-[#1A1614] md:px-3 md:py-1.5" style={jost}>
+                {c.count} PIECES →
+              </span>
             </span>
-            <span className="absolute bottom-5 right-5 border border-[#FBF3EC]/50 px-3 py-1.5 text-[9px] tracking-[0.3em] text-[#FBF3EC] transition-colors duration-300 group-hover:bg-[#FBF3EC] group-hover:text-[#1A1614]" style={jost}>
-              {c.count} PIECES →
-            </span>
+
           </Link>
         ))}
       </div>

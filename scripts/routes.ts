@@ -51,6 +51,8 @@ export const siteRoutes: SiteRoute[] = [
   { path: "/customize", changefreq: "monthly", priority: "0.8" },
   { path: "/gifting", changefreq: "monthly", priority: "0.7" },
   { path: "/track-order", changefreq: "monthly", priority: "0.4" },
+  { path: "/innercircle", changefreq: "monthly", priority: "0.5" },
+
   { path: "/about", changefreq: "monthly", priority: "0.6" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/faqs", changefreq: "monthly", priority: "0.6" },

@@ -46,7 +46,6 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         mobile: "(max-width: 767px) and (prefers-reduced-motion: no-preference)",
       },
       (ctx) => {
-      const isDesktop = !!ctx.conditions?.desktop;
       const root = rootRef.current, pin = pinRef.current, card = cardRef.current;
       if (!root || !pin || !card) return;
 
@@ -66,7 +65,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(lineL, { transformOrigin: "100% 50%" });
       gsap.set(lineR, { transformOrigin: "0% 50%" });
       gsap.set(finale, { opacity: 0, y: 18 });
-      gsap.set(card, { scale: 1.08, rotationY: 0, force3D: true });
+      gsap.set(card, { scale: 1.08, rotationX: 0, rotationY: 0, force3D: true });
       gsap.set([faceA, faceB], { opacity: 1, force3D: true });
 
       const tl = gsap.timeline({
@@ -90,14 +89,15 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
 
       tl
-        // original cadence: face turns to its side edge, passes through, the
-        // second face lands straight on, turns to side again, back to the first
+         // Full atelier tumble: horizontal turn and vertical flip travel
+         // together, so the ring rolls in space rather than sliding sideways.
         .fromTo(
           card,
-          { rotationY: 0 },
+           { rotationX: 0, rotationY: 0 },
           {
             keyframes: {
               rotationY: [0, 46, 180, 226, 360],
+               rotationX: [0, -34, -180, -214, -360],
               easeEach: "power1.inOut",
             },
             duration: 0.94,

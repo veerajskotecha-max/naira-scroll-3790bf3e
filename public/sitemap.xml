@@ -510,6 +510,11 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/innercircle</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

@@ -92,6 +92,19 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       tl
         // one continuous, linear revolution across the entire scroll range
         .fromTo(card, { rotationY: 0 }, { rotationY: 360, duration: 0.94 }, 0.03)
+        // ...plus a vertical tilt so the ring turns in both axes, like before
+        .fromTo(
+          card,
+          { rotationX: 0 },
+          {
+            keyframes: {
+              rotationX: [0, -16, 0, 14, 0, -8, 0],
+              easeEach: "sine.inOut",
+            },
+            duration: 0.94,
+          },
+          0.03
+        )
         .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.14)
         .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.16)
         .to([callL, lineL], { opacity: 0, duration: 0.05 }, 0.34)
@@ -102,6 +115,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.16 }, 0.8)
         .to(hint, { opacity: 0, duration: 0.08 }, 0.4)
         .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.62);
+
 
 
       return () => { tl.scrollTrigger?.kill(); tl.kill(); };

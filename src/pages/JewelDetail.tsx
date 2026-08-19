@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
+import { absoluteUrl } from "@/lib/absoluteUrl";
 import { Helmet } from "react-helmet-async";
 import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
 

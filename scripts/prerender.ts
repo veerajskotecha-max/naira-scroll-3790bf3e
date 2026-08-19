@@ -117,10 +117,35 @@ async function main() {
 
   try {
     await waitForServer();
-    const browser = await chromium.launch({
-      ...(EXECUTABLE ? { executablePath: EXECUTABLE } : {}),
-      args: ["--no-sandbox"],
-    });
+
+    /*
+      Two different failures, deliberately treated differently.
+
+      No browser available means this environment cannot prerender at all — a
+      build host without Chromium installed, for instance. Failing the build
+      there would block every deploy for a step that is an enhancement, so warn
+      loudly and ship the SPA exactly as it built. Degraded, not broken.
+
+      A browser that launches but cannot render a route is a real defect, and
+      that still fails the build below.
+    */
+    let browser: Browser;
+    try {
+      browser = await chromium.launch({
+        ...(EXECUTABLE ? { executablePath: EXECUTABLE } : {}),
+        args: ["--no-sandbox"],
+      });
+    } catch (err) {
+      console.warn(
+        "\nprerender: could not launch a browser, skipping.\n" +
+          "  The build is a client-rendered SPA — valid, but crawlers that do not\n" +
+          "  execute JavaScript will see an empty shell on every route.\n" +
+          "  Install Playwright's Chromium (npx playwright install chromium) or set\n" +
+          "  PLAYWRIGHT_CHROMIUM_PATH to enable prerendering here.\n" +
+          `  Reason: ${err instanceof Error ? err.message.split("\n")[0] : String(err)}\n`,
+      );
+      return;
+    }
     const { written, failures } = await renderAll(browser);
     await browser.close();
 

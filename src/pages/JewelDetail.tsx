@@ -650,7 +650,7 @@ const JewelDetail = () => {
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• {PREORDER_NOTE}</p>
-                    <p>• Orders placed now are reserved and dispatched from 15 August onwards.</p>
+                    <p>• Orders placed now are dispatched within 3–5 working days.</p>
                     <p>• Shipped free across India, insured in transit.</p>
                   </div>
                 </AccordionContent>

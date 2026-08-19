@@ -1,19 +1,30 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2 } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
+import { joinInnerCircle } from "@/lib/innerCircle";
+import { supabase } from "@/integrations/supabase/client";
 
 const SHIPPING_CHARGE = 150;
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
+  const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
   useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
+
+  // Inner Circle opt-in shown at checkout.
+  const [optIn, setOptIn] = useState(true);
+  const [optEmail, setOptEmail] = useState("");
+  useEffect(() => {
+    if (user?.email) setOptEmail(user.email);
+  }, [user]);
 
   // Reconcile with the real Shopify cart whenever the drawer opens, so lines
   // left over from an older session can never surprise the shopper.
@@ -24,6 +35,39 @@ const CartDrawer = () => {
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
   const orderTotal = subtotal + SHIPPING_CHARGE;
+
+  /* Capture the opt-in email and log the order against the member account,
+     then hand over to the Shopify checkout as before. */
+  const handleCheckout = async () => {
+    try {
+      if (optIn && optEmail.trim()) {
+        await joinInnerCircle({
+          email: optEmail,
+          source: "checkout",
+          userId: user?.id ?? null,
+        });
+      }
+      if (user) {
+        await supabase.from("member_orders").insert({
+          user_id: user.id,
+          email: user.email ?? optEmail.trim() ?? null,
+          items: items.map((i) => ({
+            name: i.name,
+            quantity: i.quantity,
+            size: i.size ?? null,
+            image: i.image,
+            price: i.priceLabel,
+          })),
+          item_count: totalItems,
+          total: orderTotal,
+        });
+      }
+    } catch {
+      /* never block the checkout on the members-list write */
+    }
+    checkout();
+  };
+
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
@@ -150,9 +194,47 @@ const CartDrawer = () => {
                 <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(orderTotal)}</span>
               </div>
 
+              {/* Inner Circle opt-in */}
+              <div className="border px-3 py-2.5" style={{ borderColor: "hsl(36 47% 46% / 0.3)", backgroundColor: "hsl(33 41% 96%)" }}>
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={optIn}
+                    onChange={(e) => setOptIn(e.target.checked)}
+                    className="mt-0.5 h-3.5 w-3.5 accent-[hsl(186_35%_28%)]"
+                  />
+                  <span className="text-[12px] leading-[1.5]" style={{ color: "hsl(0 0% 35%)" }}>
+                    <Sparkles size={11} className="inline mb-0.5 mr-1" style={{ color: "hsl(36 47% 46%)" }} />
+                    Register me for the <strong className="font-semibold">Inner Circle</strong> — pre-launch access and members-only pricing.
+                  </span>
+                </label>
+                {optIn && (
+                  <input
+                    type="email"
+                    value={optEmail}
+                    onChange={(e) => setOptEmail(e.target.value)}
+                    placeholder="Email address"
+                    maxLength={255}
+                    className="mt-2 w-full border-b bg-transparent px-1 py-2 text-[12px] outline-none"
+                    style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 25%)" }}
+                  />
+                )}
+                {!user && (
+                  <Link
+                    to="/auth"
+                    onClick={() => setDrawerOpen(false)}
+                    className="mt-1.5 inline-block text-[11px] underline underline-offset-2"
+                    style={{ color: "hsl(36 47% 38%)" }}
+                  >
+                    Create an account to track your orders
+                  </Link>
+                )}
+              </div>
+
               {/* CTA */}
               <button
-                onClick={checkout}
+                onClick={handleCheckout}
+
                 disabled={isLoading || isSyncing}
                 className="press-scale w-full py-3.5 text-[13px] font-medium uppercase tracking-[0.1em] flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}

@@ -1,0 +1,2 @@
+DELETE FROM auth.users WHERE email IN ('naira.member.qa1@example.com','naira.member.qa2@example.com');
+DELETE FROM public.inner_circle_signups WHERE email LIKE 'naira.member.qa%@example.com' OR email LIKE 'member.test%@example.com';

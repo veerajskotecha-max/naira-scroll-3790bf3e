@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { useCartSync } from "./hooks/useCartSync";
 import Header from "./components/Header";
 import CartDrawer from "./components/CartDrawer";
@@ -44,6 +45,8 @@ const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
 const Gifting = lazy(() => import("./pages/Gifting.tsx"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 const InnerCircle = lazy(() => import("./pages/InnerCircle.tsx"));
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const Account = lazy(() => import("./pages/Account.tsx"));
 
 
 const queryClient = new QueryClient();
@@ -80,6 +83,8 @@ const AppShell = () => {
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/innercircle" element={<InnerCircle />} />
           <Route path="/inner-circle" element={<InnerCircle />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/account" element={<Account />} />
 
           <Route path="/concepts" element={<Concepts />} />
 
@@ -107,6 +112,7 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <AuthProvider>
         <CartProvider>
           <WishlistProvider>
             <Toaster />
@@ -116,6 +122,7 @@ const App = () => (
             </BrowserRouter>
           </WishlistProvider>
         </CartProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </HelmetProvider>

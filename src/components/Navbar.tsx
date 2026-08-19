@@ -7,6 +7,7 @@ import SearchOverlay from "./nav/SearchOverlay";
 import nairaLogo from "@/assets/naira-logo.svg";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavbarProps {
   scrolled: boolean;
@@ -28,7 +29,8 @@ const Navbar = ({ scrolled }: NavbarProps) => {
   const { totalItems, setDrawerOpen } = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: setWishlistOpen } = useWishlist();
 
-  const handleAccount = () => navigate("/track-order");
+  const { user } = useAuth();
+  const handleAccount = () => navigate(user ? "/account" : "/auth");
 
 
   return (
@@ -114,7 +116,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
             </button>
-            <button onClick={handleAccount} aria-label="Account" className="hidden md:flex items-center">
+            <button onClick={handleAccount} aria-label={user ? "My account" : "Sign in"} className="flex items-center">
               <User
                 size={20}
                 strokeWidth={1.5}

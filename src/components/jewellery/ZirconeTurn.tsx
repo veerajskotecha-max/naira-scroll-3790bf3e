@@ -90,21 +90,21 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
 
       tl
-        // one continuous, linear revolution across the entire scroll range
-        .fromTo(card, { rotationY: 0 }, { rotationY: 360, duration: 0.94 }, 0.03)
-        // ...plus a vertical tilt so the ring turns in both axes, like before
+        // original cadence: face turns to its side edge, passes through, the
+        // second face lands straight on, turns to side again, back to the first
         .fromTo(
           card,
-          { rotationX: 0 },
+          { rotationY: 0 },
           {
             keyframes: {
-              rotationX: [0, -16, 0, 14, 0, -8, 0],
-              easeEach: "sine.inOut",
+              rotationY: [0, 46, 180, 226, 360],
+              easeEach: "power1.inOut",
             },
             duration: 0.94,
           },
           0.03
         )
+
         .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.14)
         .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.16)
         .to([callL, lineL], { opacity: 0, duration: 0.05 }, 0.34)

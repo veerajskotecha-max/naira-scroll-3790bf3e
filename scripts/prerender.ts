@@ -17,7 +17,7 @@
 */
 
 import { spawn } from "child_process";
-import { mkdirSync, writeFileSync, existsSync } from "fs";
+import { mkdirSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { resolve, join } from "path";
 import { chromium, type Browser } from "playwright";
 import { siteRoutes } from "./routes";
@@ -28,6 +28,32 @@ const DIST = resolve("dist");
 // Playwright's bundled Chromium is not always on the default lookup path in CI
 // images; honour an explicit override when one is provided.
 const EXECUTABLE = process.env.PLAYWRIGHT_CHROMIUM_PATH;
+
+/*
+  Playwright pins an exact Chromium build number per release, and a prebaked
+  image ships whichever build its own Playwright wanted. A patch bump inside a
+  caret range is enough to make the two disagree, and then launch() fails
+  looking for a directory that was never installed — prerendering silently
+  switches off while the build still exits 0.
+
+  So: if the pinned build is missing, use whatever chromium IS installed. A
+  build or two apart does not matter for rendering static markup.
+*/
+const findInstalledChromium = (): string | undefined => {
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH;
+  if (!root || !existsSync(root)) return undefined;
+  const candidates = readdirSync(root)
+    .filter((d) => d.startsWith("chromium"))
+    // Prefer the full browser over headless_shell, then the newest build.
+    .sort((a, b) => Number(a.includes("headless")) - Number(b.includes("headless")) || b.localeCompare(a, undefined, { numeric: true }));
+  for (const dir of candidates) {
+    for (const bin of ["chrome-linux/chrome", "chrome-linux/headless_shell"]) {
+      const full = join(root, dir, bin);
+      if (existsSync(full)) return full;
+    }
+  }
+  return undefined;
+};
 
 const waitForServer = async (timeoutMs = 60_000) => {
   const deadline = Date.now() + timeoutMs;
@@ -129,12 +155,19 @@ async function main() {
       A browser that launches but cannot render a route is a real defect, and
       that still fails the build below.
     */
+    const launch = (executablePath?: string) =>
+      chromium.launch({ ...(executablePath ? { executablePath } : {}), args: ["--no-sandbox"] });
+
     let browser: Browser;
     try {
-      browser = await chromium.launch({
-        ...(EXECUTABLE ? { executablePath: EXECUTABLE } : {}),
-        args: ["--no-sandbox"],
-      });
+      try {
+        browser = await launch(EXECUTABLE);
+      } catch (first) {
+        const found = EXECUTABLE ? undefined : findInstalledChromium();
+        if (!found) throw first;
+        console.warn(`prerender: pinned Chromium missing, using ${found}`);
+        browser = await launch(found);
+      }
     } catch (err) {
       console.warn(
         "\nprerender: could not launch a browser, skipping.\n" +

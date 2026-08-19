@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Scissors, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
+import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import CollectionCarousel from "@/components/CollectionCarousel";
+import RecentlyViewed from "@/components/RecentlyViewed";
 import CustomerReviews from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import DetailsTabs from "@/components/product/DetailsTabs";
@@ -13,10 +14,13 @@ import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/acco
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { jewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
+import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, PREORDER_NOTE_SHORT, type JewelPiece } from "@/data/jewellery";
+
 
 /* Key facts distilled from the approved data model: finish and stone are
    read out of the materials line, edition from the engraved number. */
@@ -27,35 +31,37 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
   const finish = hasGold && hasRhodium ? "18k gold & rhodium" : hasGold ? "18k gold" : hasRhodium ? "Rhodium" : "Demi-gold";
   const hasPearl = m.includes("pearl");
   const hasZircone = m.includes("zircon");
-  const stone = hasPearl && hasZircone ? "Pearl & zircone" : hasPearl ? "Freshwater pearl" : hasZircone ? "Hand-set zircone" : "Polished metal";
+  const stone = hasPearl && hasZircone ? "Pearl & zircone" : hasPearl ? "Freshwater pearl" : hasZircone ? "Brilliant-cut zircone" : "Polished metal";
   return [
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
     { label: "Category", value: piece.category },
-    { label: "Edition", value: `No. ${piece.number} of ${jewellery.length}` },
     { label: "SKU", value: piece.sku },
   ];
 };
 
-const ringSizes: { value: string; label: string }[] = [
-  { value: "5", label: "US 5" },
-  { value: "6", label: "US 6" },
-  { value: "7", label: "US 7" },
-  { value: "8", label: "US 8" },
+const ringSizes: { value: string; label: string; status: "available" | "preorder" }[] = [
+  { value: "5", label: "US 5 (Pre-order · 45 days delivery)", status: "preorder" },
+  { value: "6", label: "US 6", status: "available" },
+  { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();
-  const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle]);
+  const { jewellery } = useLiveJewellery();
+  const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
+  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const [buying, setBuying] = useState(false);
+
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
     else navigate("/jewellery");
   };
 
-  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "7" : "One Size");
+  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "6" : "One Size");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -125,8 +131,52 @@ const JewelDetail = () => {
   const related = [...sameCategory, ...otherPieces].slice(0, 4);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to pre-order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
+    `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
+
+  const cartItem = () => ({
+    id: piece.handle,
+    variantId: piece.variantId,
+    name: piece.name,
+    price: piece.price,
+    priceLabel: piece.priceLabel,
+    currencyCode: "INR",
+    image: piece.image,
+    size: piece.category === "Rings" ? `US ${selectedSize}` : undefined,
+  });
+
+  /* Shopify-backed pre-order: real variant, real cart, real checkout. */
+  const addToCart = async () => {
+    await addItem(
+      {
+        id: piece.handle,
+        variantId: piece.variantId,
+        name: piece.name,
+        price: piece.price,
+        priceLabel: piece.priceLabel,
+        currencyCode: "INR",
+        image: piece.image,
+        size: piece.category === "Rings" ? `US ${selectedSize}` : undefined,
+      },
+      quantity
+    );
+  };
+
+  const handleAddToCart = async () => {
+    await addToCart();
+    setDrawerOpen(true);
+  };
+
+  /* Pre-order now: adds to the Shopify cart and opens Shopify checkout in one
+     step, using the checkout URL the add returned (no stale-cart race). */
+  const handleBuyNow = async () => {
+    setBuying(true);
+    try {
+      await buyNow(cartItem(), quantity);
+    } finally {
+      setBuying(false);
+    }
+  };
 
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
@@ -199,7 +249,7 @@ const JewelDetail = () => {
             key={i}
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-            style={{ aspectRatio: "1/1", backgroundColor: "#F4EBE2" }}
+            style={{ aspectRatio: "3/4", backgroundColor: "#F4EBE2" }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
             <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
@@ -222,25 +272,41 @@ const JewelDetail = () => {
       )}
     </div>
   ) : (
-    <div className="relative w-full h-full min-h-full">
-      <div className="grid grid-cols-2 grid-rows-2 gap-[4px] h-full min-h-full">
-        {[0, 1, 0, 1].map((idx, i) => (
-          <button
-            type="button"
-            key={i}
-            onClick={() => openLightbox(images[idx] ? idx : 0)}
-            className="overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in"
-            style={{ backgroundColor: "#F4EBE2", height: "100%" }}
-            aria-label={`Open ${piece.name} image ${(images[idx] ? idx : 0) + 1} full screen`}
-          >
-            <img src={images[idx] ?? images[0]} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
-          </button>
-        ))}
-      </div>
-      {WishlistBtn}
-      {ShareBtn}
-    </div>
+    (() => {
+      /* Desktop/tablet: only ever show each photo once. Layout adapts to how
+         many unique images the piece actually has (1 → full bleed, 2 → split,
+         3 → hero + pair, 4 → 2×2). */
+      const unique = Array.from(new Set(images)).slice(0, 4);
+      const count = unique.length;
+      const gridClass =
+        count <= 1
+          ? "grid grid-cols-1 grid-rows-1"
+          : count === 2
+            ? "grid grid-cols-1 grid-rows-2"
+            : "grid grid-cols-2 grid-rows-2";
+      return (
+        <div className="relative w-full h-full min-h-full">
+          <div className={`${gridClass} gap-[4px] h-full min-h-full`}>
+            {unique.map((img, i) => (
+              <button
+                type="button"
+                key={img}
+                onClick={() => openLightbox(i)}
+                className={`overflow-hidden relative min-h-0 block w-full p-0 cursor-zoom-in ${count === 3 && i === 0 ? "col-span-2" : ""}`}
+                style={{ backgroundColor: "#F4EBE2", height: "100%" }}
+                aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+              >
+                <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
+              </button>
+            ))}
+          </div>
+          {WishlistBtn}
+          {ShareBtn}
+        </div>
+      );
+    })()
   );
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>
@@ -315,16 +381,73 @@ const JewelDetail = () => {
               {piece.name}
             </h1>
 
-            {/* Pre-order status: a quiet label, not a price */}
-            <div className="mt-3 flex items-center gap-2">
-              <span aria-hidden className="h-[7px] w-[7px] shrink-0" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
-              <span className="text-[11px] uppercase tracking-[0.22em] font-medium" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+            {/* Live price from the Shopify listing */}
+            <div className="mt-3 flex flex-wrap items-baseline gap-2">
+              <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
                 {piece.priceLabel}
+              </span>
+              {piece.compareAtLabel && (
+                <>
+                  <span className="text-[14px] line-through" style={{ color: "hsl(0 0% 55%)" }}>
+                    {piece.compareAtLabel}
+                  </span>
+                  <span className="text-[11.5px] font-medium tracking-[0.04em]" style={{ color: "#8A6A2A" }}>
+                    {Math.round(((piece.compareAtPrice! - piece.price) / piece.compareAtPrice!) * 100)}% OFF
+                  </span>
+                </>
+              )}
+              <span className="text-[11px] tracking-[0.06em]" style={{ color: "hsl(0 0% 48%)" }}>
+                inclusive of all taxes
               </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Price shared on WhatsApp enquiry
+              MRP inclusive of all taxes · free insured shipping across India
             </p>
+
+            {/* Pre-order note — the line launches 15 August */}
+            <div
+              className="mt-3 flex items-start gap-2 border px-3 py-2.5"
+              style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
+            >
+              <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
+              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now to reserve your piece — payment,
+                cart and checkout are fully live.
+              </p>
+            </div>
+
+            {/* Offers — the coupon hub shoppers expect before they commit */}
+            <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
+              <p className="text-[9px] tracking-[0.24em]" style={{ color: "hsl(0 0% 45%)", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                AVAILABLE OFFERS
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {[
+                  { code: "NAIRA10", text: "10% off your first order" },
+                  { code: null, text: "Free insured shipping on every order across India" },
+                  { code: null, text: "2-year plating assurance on all demi-fine pieces" },
+                ].map((o) => (
+                  <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                    <span aria-hidden="true" style={{ color: "#B0843A" }}>✦</span>
+                    <span>
+                      {o.code && (
+                        <strong
+                          className="mr-1.5 border px-1.5 py-[1px] text-[10.5px] tracking-[0.1em] font-medium"
+                          style={{ borderColor: "hsl(36 40% 76%)", color: "#8A6A2A" }}
+                        >
+                          {o.code}
+                        </strong>
+                      )}
+                      {o.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+
+
+
 
             {/* Key facts, at a glance */}
             <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
@@ -344,14 +467,15 @@ const JewelDetail = () => {
             <div className="flex items-center gap-2 mt-3">
               <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
               <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                Plated &amp; finished in <strong className="font-medium">2–3 weeks</strong>
+                <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
               </span>
             </div>
+
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
               {[
-                { icon: Scissors, label: "Hand-finished" },
+                { icon: Sparkles, label: "Anti-Tarnish Sealed" },
                 { icon: ShieldCheck, label: "18k Demi-Gold" },
                 { icon: ReceiptText, label: "Secure Payments" },
               ].map(({ icon: Icon, label }) => (
@@ -377,14 +501,25 @@ const JewelDetail = () => {
                 </a>
               </div>
               {piece.category === "Rings" ? (
-                <Select value={selectedSize} onValueChange={setSelectedSize}>
-                  <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    {ringSizes.map((s) => <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">{s.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select value={selectedSize} onValueChange={setSelectedSize}>
+                    <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      {ringSizes.map((s) => (
+                        <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {selectedSize === "6"
+                      ? "US 6 is in stock and ships now."
+                      : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                  </p>
+                </>
               ) : (
                 <div className="w-full h-11 flex items-center px-3 border text-[13px]" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
                   One Size · adjustable
@@ -406,17 +541,27 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* CTA block: WhatsApp pre-order leads, everything else supports */}
+            {/* CTA block: live Shopify cart + checkout, WhatsApp supports */}
             <div id="product-actions" className="mt-6">
-              <a
-                href={sizedEnquiryHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
+              <button
+                onClick={handleBuyNow}
+                disabled={buying || cartLoading}
+                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                <MessageSquare size={15} /> Pre-order on WhatsApp
-              </a>
+                {buying ? "Opening checkout…" : "Shop Now"}
+              </button>
+              <button
+                onClick={handleAddToCart}
+                disabled={buying || cartLoading}
+                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)] disabled:opacity-60"
+                style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)", backgroundColor: "transparent" }}
+              >
+                Add to Cart
+              </button>
+              <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
+                Secure payments · {PREORDER_NOTE_SHORT}
+              </p>
               <div className="flex gap-3 mt-3">
                 <button
                   onClick={handleWishlist}
@@ -427,16 +572,17 @@ const JewelDetail = () => {
                   {wishlisted ? "Saved" : "Wishlist"}
                 </button>
                 <a
-                  href={enquiryHref}
+                  href={sizedEnquiryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 h-[46px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 hover:border-[hsl(0_0%_45%)]"
+                  className="flex-1 h-[46px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 hover:border-[hsl(0_0%_45%)]"
                   style={{ borderColor: "hsl(0 0% 74%)", color: "hsl(0 0% 30%)" }}
                 >
-                  Custom design
+                  <MessageSquare size={13} /> WhatsApp
                 </a>
               </div>
             </div>
+
 
             {/* Jewellery assurances */}
             <JewelTrustStrip />
@@ -459,6 +605,15 @@ const JewelDetail = () => {
                   content: (
                     <div className="space-y-3">
                       <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.blurb}</p>
+                      {piece.details && (
+                        <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.details}</p>
+                      )}
+                      {piece.stylingTip && (
+                        <p className="text-[12.5px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
+                          <span className="uppercase tracking-[0.14em] text-[10px] mr-1.5" style={{ color: "#9A7634" }}>Styling tip</span>
+                          {piece.stylingTip}
+                        </p>
+                      )}
                       <p className="text-[12px] italic leading-[1.7]" style={{ color: "hsl(0 0% 50%)", fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
                         {piece.materials}
                       </p>
@@ -468,7 +623,9 @@ const JewelDetail = () => {
                 {
                   id: "care",
                   label: "Care",
-                  content: (
+                  content: piece.care ? (
+                    <p className="text-[13px] leading-[1.8]" style={{ color: "hsl(0 0% 40%)" }}>{piece.care}</p>
+                  ) : (
                     <ul className="text-[13px] leading-[1.8] list-disc pl-4" style={{ color: "hsl(0 0% 40%)" }}>
                       <li>Store in the pouch provided, away from moisture.</li>
                       <li>Avoid contact with perfume, lotion, and chlorinated water.</li>
@@ -476,6 +633,7 @@ const JewelDetail = () => {
                     </ul>
                   ),
                 },
+
               ]}
             />
 
@@ -491,11 +649,13 @@ const JewelDetail = () => {
                 <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Plated &amp; finished, dispatched in 2–3 weeks.</p>
+                    <p>• {PREORDER_NOTE}</p>
+                    <p>• Orders placed now are reserved and dispatched from 15 August onwards.</p>
                     <p>• Shipped free across India, insured in transit.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
               <AccordionItem value="disclaimer" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
                 <AtelierAccordionTrigger>Disclaimer</AtelierAccordionTrigger>
                 <AccordionContent>
@@ -580,6 +740,19 @@ const JewelDetail = () => {
 
       <CollectionCarousel excludeHandle={piece?.handle} />
 
+      <RecentlyViewed
+        current={
+          piece && {
+            handle: piece.handle,
+            name: piece.name,
+            price: piece.priceLabel,
+            image: piece.image,
+            to: `/jewellery/${piece.handle}`,
+          }
+        }
+      />
+
+
       <Footer />
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}
@@ -602,15 +775,23 @@ const JewelDetail = () => {
         >
           <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 25%)" }} />
         </button>
-        <a
-          href={sizedEnquiryHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em]"
+        <button
+          onClick={handleAddToCart}
+          disabled={buying || cartLoading}
+          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
+          style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+        >
+          Add to Cart
+        </button>
+        <button
+          onClick={handleBuyNow}
+          disabled={buying || cartLoading}
+          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          <MessageSquare size={14} /> Pre-order on WhatsApp
-        </a>
+          {buying ? "Opening…" : "Pre-order now"}
+        </button>
+
       </div>
 
       <ImageLightbox

@@ -19,6 +19,7 @@ import FeatherCursor from "./components/wow/FeatherCursor";
 import FilmGrain from "./components/wow/FilmGrain";
 import ScrollBloom from "./components/wow/ScrollBloom";
 import PageCurtain from "./components/wow/PageCurtain";
+import WelcomeOfferPopup from "./components/WelcomeOfferPopup";
 
 // Non-home routes are code-split so the homepage bundle stays small.
 const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
@@ -40,6 +41,8 @@ const CartCheckoutRedirect = lazy(() => import("./pages/CartCheckoutRedirect.tsx
 const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
 const Journal = lazy(() => import("./pages/Journal.tsx"));
 const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
+const Gifting = lazy(() => import("./pages/Gifting.tsx"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -56,6 +59,7 @@ const AppShell = () => {
       <Header />
       <CartDrawer />
       <WishlistDrawer />
+      <WelcomeOfferPopup />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -70,7 +74,10 @@ const AppShell = () => {
           <Route path="/jewellery/:handle" element={<JewelDetail />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
+          <Route path="/gifting" element={<Gifting />} />
+          <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/concepts" element={<Concepts />} />
+
           <Route path="/ring-lab" element={<RingLab />} />
           <Route path="/ring/:variant" element={<RingExample />} />
           <Route path="/about" element={<AboutUs />} />
@@ -81,6 +88,8 @@ const AppShell = () => {
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/cart/c/:token" element={<CartCheckoutRedirect />} />
           <Route path="/cart/c/:token/*" element={<CartCheckoutRedirect />} />
+          <Route path="/checkouts/cn/:token" element={<CartCheckoutRedirect />} />
+          <Route path="/checkouts/cn/:token/*" element={<CartCheckoutRedirect />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

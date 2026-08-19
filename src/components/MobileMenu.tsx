@@ -1,24 +1,39 @@
-import { useEffect } from "react";
-import { X, Heart, ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, Heart, ShoppingBag, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { menuCategories, menuEdits, menuOccasions, menuApparel } from "@/data/navigation";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const navItems = [
-  { label: "HOME",      to: "/" },
-  { label: "JEWELLERY", to: "/jewellery" },
-  { label: "INDO-WESTERN", to: "/shop/indo-western" },
-  { label: "ABOUT",     to: "/about" },
+type Section = { label: string; to?: string; links?: { label: string; to: string }[] };
+
+const sections: Section[] = [
+  { label: "HOME", to: "/" },
+  {
+    label: "JEWELLERY",
+    links: [
+      { label: "Shop All", to: "/jewellery" },
+      ...menuCategories.map((c) => ({ label: c.label, to: c.to })),
+    ],
+  },
+  { label: "THE EDITS", links: menuEdits },
+  { label: "OCCASION", links: menuOccasions },
+  { label: "APPAREL", links: menuApparel },
+  { label: "GIFTING", to: "/gifting" },
+  { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },
-  { label: "CONTACT",   to: "/contact" },
+  { label: "TRACK ORDER", to: "/track-order" },
+  { label: "CONTACT", to: "/contact" },
 ];
 
+
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+  const [openSection, setOpenSection] = useState<string | null>("JEWELLERY");
   const { totalItems, setDrawerOpen: openCart }       = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: openWishlist } = useWishlist();
 
@@ -77,19 +92,52 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           </button>
         </div>
 
-        {/* Nav links */}
-        <nav aria-label="Main navigation" className="flex flex-col gap-6 px-8 pt-2 flex-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              onClick={onClose}
-              className="font-cormorant text-[20px] font-medium uppercase tracking-[0.14em] opacity-80 hover:opacity-100 transition-opacity duration-200"
-            >
-              {item.label}
-            </Link>
-          ))}
+        {/* Nav — flat links plus accordions for the shopping axes */}
+        <nav aria-label="Main navigation" className="flex flex-1 flex-col gap-1 overflow-y-auto px-8 pb-6 pt-2">
+          {sections.map((item) =>
+            item.links ? (
+              <div key={item.label} className="border-b border-black/5 last:border-0">
+                <button
+                  onClick={() => setOpenSection(openSection === item.label ? null : item.label)}
+                  aria-expanded={openSection === item.label}
+                  className="flex min-h-[52px] w-full items-center justify-between font-cormorant text-[19px] font-medium uppercase tracking-[0.14em] opacity-80"
+                >
+                  {item.label}
+                  <ChevronDown
+                    size={17}
+                    strokeWidth={1.5}
+                    className={`transition-transform duration-200 ${openSection === item.label ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {openSection === item.label && (
+                  <ul className="animate-fade-in pb-4 pl-1">
+                    {item.links.map((l) => (
+                      <li key={l.label}>
+                        <Link
+                          to={l.to}
+                          onClick={onClose}
+                          className="block min-h-[42px] py-2 font-cormorant text-[15px] uppercase tracking-[0.1em] opacity-60"
+                        >
+                          {l.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ) : (
+              <Link
+                key={item.label}
+                to={item.to!}
+                onClick={onClose}
+                className="flex min-h-[52px] items-center border-b border-black/5 font-cormorant text-[19px] font-medium uppercase tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 last:border-0"
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
+
 
         {/* Bottom action row — Cart + Wishlist, now functional */}
         <div

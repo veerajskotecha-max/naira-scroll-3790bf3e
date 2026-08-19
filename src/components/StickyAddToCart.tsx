@@ -20,7 +20,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
   const [visible, setVisible] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>();
-  const { addItem, setDrawerOpen } = useCart();
+  const { addItem, buyNow, setDrawerOpen } = useCart();
 
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
@@ -54,8 +54,20 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
   };
 
   const handleBuyNow = async () => {
-    await handleAdd();
-    setDrawerOpen(true);
+    if (!variantId) {
+      toast.error("This product is currently unavailable.");
+      return;
+    }
+    await buyNow({
+      id: productHandle,
+      variantId,
+      name: title,
+      price: numericPrice,
+      priceLabel: price,
+      currencyCode,
+      image,
+      size: selectedSize,
+    });
   };
 
   useEffect(() => {

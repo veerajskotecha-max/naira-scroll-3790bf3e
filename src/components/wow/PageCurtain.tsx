@@ -3,25 +3,31 @@ import { useLocation } from "react-router-dom";
 
 /* ───────────────────────────────────────────────────────────────
    PAGE CURTAIN
-   An editorial route transition: on every navigation a sage curtain
-   sweeps down to cover, a blush flota blooms at centre, then it lifts
-   away to reveal the new page. Pointer-events-none throughout, so it
-   never blocks interaction. Skips the very first load (the preloader
-   already owns that moment) and honours reduced-motion.
+   Reserved for category browsing only: it plays when the client opens
+   a filtered category view (e.g. /jewellery?category=Rings) so the new
+   edit reveals with a bloom. Every other route change navigates plainly.
    ─────────────────────────────────────────────────────────────── */
 
 const PageCurtain = () => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [key, setKey] = useState(0);
   const first = useRef(true);
+  const lastPath = useRef(pathname);
 
   useEffect(() => {
+    const pathChanged = lastPath.current !== pathname;
+    lastPath.current = pathname;
     if (first.current) { first.current = false; return; }
+    if (!pathChanged) return; // filter chips only rewrite the query — never curtain them
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const isCategoryView = new URLSearchParams(search).has("category");
+    if (!isCategoryView) return;
     setKey((k) => k + 1);
-  }, [pathname]);
+  }, [pathname, search]);
+
 
   if (key === 0) return null;
+
 
   return (
     <div key={key} aria-hidden className="page-curtain pointer-events-none fixed inset-0 z-[9500]">

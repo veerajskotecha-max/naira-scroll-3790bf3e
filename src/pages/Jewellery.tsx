@@ -1,13 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
-import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
-import { jewellery, type JewelCategory } from "@/data/jewellery";
+import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
+import JewelFilterBar, {
+  applyJewelFilters,
+  SORT_OPTIONS,
+  type JewelFilters,
+} from "@/components/jewellery/JewelFilterBar";
+import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewellery";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
-import { Link } from "react-router-dom";
+import { Link, useNavigationType, useSearchParams } from "react-router-dom";
 
 const hubFaqs = [
   {
@@ -24,7 +30,7 @@ const hubFaqs = [
   },
   {
     q: "What ring sizes do you make?",
-    a: "US 5 (4.9 cm), US 6 (5.2 cm), US 7 (5.4 cm) and US 8 (5.7 cm) inner circumference. Message the atelier on WhatsApp if you are between sizes.",
+    a: "We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.",
   },
 ];
 
@@ -39,28 +45,83 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
-const filterCounts: Record<"All" | JewelCategory, number> = filters.reduce(
-  (acc, f) => {
-    acc[f] = f === "All" ? jewellery.length : jewellery.filter((p) => p.category === f).length;
-    return acc;
-  },
-  {} as Record<"All" | JewelCategory, number>
-);
-
 const Jewellery = () => {
-  const [active, setActive] = useState<"All" | JewelCategory>("All");
-  const pieces = useMemo(
-    () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
-    [active]
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigationType = useNavigationType();
+  const paramCategory = searchParams.get("category");
+  const initialCategory = (filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase()) ?? "All") as
+    | "All"
+    | JewelCategory;
+  const [active, setActive] = useState<"All" | JewelCategory>(initialCategory);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const didScrollToGrid = useRef(false);
+
+  /* Deep links such as /jewellery?category=Rings (the home category cards)
+     preselect the filter and drop the shopper straight onto the grid.
+     On a back navigation we leave the scroll alone so the shopper returns
+     to the exact card they opened. */
+  useEffect(() => {
+    const match = filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase());
+    if (match && match !== active) setActive(match);
+    if (navigationType !== "POP" && match && match !== "All" && !didScrollToGrid.current) {
+      didScrollToGrid.current = true;
+      window.setTimeout(() => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 260);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramCategory]);
+
+  const selectCategory = (next: "All" | JewelCategory) => {
+    setActive(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "All") params.delete("category");
+    else params.set("category", next);
+    setSearchParams(params, { replace: true });
+  };
+  const { jewellery } = useLiveJewellery();
+
+  /* Sort + filters live in the URL so a filtered edit is shareable, and are
+     written with replace so the grid never jumps back to the top. */
+  const activeFilters: JewelFilters = useMemo(() => {
+    const sortParam = searchParams.get("sort");
+    const max = searchParams.get("under");
+    return {
+      sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
+      maxPrice: max ? Number(max) : null,
+      inStockOnly: searchParams.get("stock") === "in",
+      tag: searchParams.get("tag"),
+    };
+  }, [searchParams]);
+
+  const setFilters = (next: JewelFilters) => {
+    const params = new URLSearchParams(searchParams);
+    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
+    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
+    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
+    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    setSearchParams(params, { replace: true });
+  };
+
+  const filterCounts = useMemo(
+    () =>
+      filters.reduce((acc, f) => {
+        acc[f] = f === "All" ? jewellery.length : jewellery.filter((p) => p.category === f).length;
+        return acc;
+      }, {} as Record<"All" | JewelCategory, number>),
+    [jewellery]
   );
+  const inCategory = useMemo(
+    () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
+    [active, jewellery]
+  );
+  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters), [inCategory, activeFilters]);
 
   return (
     <>
       <PageSEO
         title="Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish"
-        description="Shop demi-fine jewellery by Naira Flore: hand-set brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Made in small batches."
+        description="Shop demi-fine jewellery by Naira Flore: brilliant-cut zircone rings, earrings, bracelets and necklaces in an anti-tarnish 18K gold finish over a nickel-free base. Hand-set and hand-finished at our atelier."
         canonical={`${SITE_URL}/jewellery`}
-        image={jewellery[0]?.image}
+        image={staticJewellery[0]?.image}
         jsonLd={[
           breadcrumbLd([
             { name: "Home", url: `${SITE_URL}/` },
@@ -93,8 +154,6 @@ const Jewellery = () => {
           </div>
 
 
-          {/* hero, the clean scroll-turned solitaire */}
-          <ZirconeTurn showViewAll={false} inheritBackdrop />
 
           {/* indexable header */}
           <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
@@ -103,19 +162,19 @@ const Jewellery = () => {
               Demi-Fine Jewellery
             </h1>
             <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
-              Hand-set zircone in an 18K gold finish.
+              Brilliant-cut zircone in an 18K gold finish.
             </p>
           </header>
         </div>
 
         {/* filter */}
-        <div className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
+        <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
 
           <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
             {filters.map((f) => (
               <button
                 key={f}
-                onClick={() => setActive(f)}
+                onClick={() => selectCategory(f)}
                 aria-pressed={active === f}
                 aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
                 className={`press-scale shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
@@ -135,6 +194,16 @@ const Jewellery = () => {
           </div>
         </div>
 
+        {/* sort + filters */}
+        <JewelFilterBar
+          pieces={inCategory}
+          value={activeFilters}
+          onChange={setFilters}
+          resultCount={pieces.length}
+        />
+
+
+
 
 
         {/* grid */}
@@ -144,10 +213,15 @@ const Jewellery = () => {
               Nothing in this edit yet
             </h2>
             <p className="mt-3 max-w-sm text-[14px] leading-[1.8] text-nf-ink/60" style={editorial}>
-              New pieces join Naira Petite in small batches. The full collection is a step away.
+              New pieces join Naira Petite regularly. The full collection is a step away.
             </p>
             <button
-              onClick={() => setActive("All")}
+              onClick={() => {
+                // One write: clearing filters and the category in two calls
+                // would race on the same stale search params.
+                setActive("All");
+                setSearchParams(new URLSearchParams(), { replace: true });
+              }}
               className="press-scale mt-7 border border-nf-ink px-7 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
               style={jost}
             >
@@ -155,12 +229,17 @@ const Jewellery = () => {
             </button>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-24 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-16 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
             {pieces.map((piece, i) => (
               <JewelCard key={piece.handle} piece={piece} index={i} />
             ))}
           </div>
         )}
+
+        {/* shop by category, after the full grid */}
+        <JewelleryCategories />
+
+
 
 
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Wallet, Scissors, ReceiptText, ShieldCheck } from "lucide-react";
+import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Wallet, Scissors, ReceiptText, ShieldCheck, RotateCcw, BadgeCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -34,7 +34,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>();
-  const { addItem, setDrawerOpen } = useCart();
+  const { addItem, buyNow, setDrawerOpen } = useCart();
 
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
@@ -88,9 +88,24 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
     });
   };
 
+  /* Straight to Shopify checkout with this piece added. */
   const handleBuyNow = async () => {
-    await handleAddToCart();
-    setDrawerOpen(true);
+    if (!selectedVariant?.id) {
+      toast.error("This product is currently unavailable.");
+      return;
+    }
+    await buyNow({
+      id: product?.handle ?? selectedVariant.id,
+      variantId: selectedVariant.id,
+      name: title,
+      price: numericPrice,
+      priceLabel,
+      currencyCode: priceMoney?.currencyCode ?? "INR",
+      image,
+      size: selectedSize,
+      variantTitle: selectedVariant.title,
+      selectedOptions: selectedVariant.selectedOptions,
+    }, quantity);
   };
 
   return (
@@ -102,6 +117,24 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       >
         {title}
       </h1>
+
+      {/*
+        Above-fold social proof. Deliberately a jump link and not a star
+        rating: the reviews it points at are brand-level and identical on
+        every product, so any score here would read as a per-product rating
+        the data cannot support. Once Judge.me is connected
+        (VITE_JUDGEME_SCRIPT_URL) its widget renders genuine per-product
+        ratings at the same anchor and a star summary can live here honestly.
+      */}
+      <a
+        href="#customer-reviews"
+        className="flex items-center gap-2 mt-2 text-[12px] underline underline-offset-4 min-h-[44px]"
+        style={{ color: "hsl(186 35% 28%)" }}
+      >
+        <Camera size={13} strokeWidth={1.5} />
+        See customer photos &amp; reviews
+      </a>
+
 
       {/* Price + Tax */}
       <div className="mt-2 md:mt-3">
@@ -127,12 +160,14 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         </span>
       </div>
 
-      {/* Payment options — COD is a decisive signal for Indian shoppers, so it
-          sits with the price rather than being buried in the cart. */}
+      {/* Payment options, stated with the price rather than buried in the cart.
+          Checkout runs a single Razorpay gateway — UPI, cards, wallets and net
+          banking. No COD: promising it here and not offering it at checkout is
+          worse than not mentioning payment at all. */}
       <div className="flex items-center gap-2 mt-1.5">
-        <Wallet size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
+        <Wallet size={12} strokeWidth={1.5} style={{ color: "hsl(0 0% 55%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-          <strong className="font-medium">Cash on Delivery</strong> available · UPI, cards &amp; net banking
+          UPI, cards, wallets &amp; net banking · secure checkout
         </span>
       </div>
 
@@ -159,23 +194,6 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           </div>
         ))}
       </div>
-
-      {/*
-        Above-fold social proof. Deliberately a jump link and not a rating:
-        the reviews it points at are brand-level and identical on every
-        product, so any number here would read as a per-product score the
-        data cannot support. Once Judge.me is connected (VITE_JUDGEME_SCRIPT_URL)
-        its widget renders genuine per-product ratings at the same anchor and
-        a star summary can live here honestly.
-      */}
-      <a
-        href="#reviews"
-        className="flex items-center gap-2 mt-3 text-[12px] underline underline-offset-4 min-h-[44px]"
-        style={{ color: "hsl(186 35% 28%)" }}
-      >
-        <Camera size={13} strokeWidth={1.5} />
-        See customer photos &amp; reviews
-      </a>
 
       {/* Pincode / delivery checker */}
       <PincodeChecker />
@@ -319,6 +337,24 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           {/* A sold-out size is otherwise a dead end at peak intent — capture the lead instead. */}
           {selectedInStock ? "Buy It Now" : "Notify Me on WhatsApp"}
         </button>
+      </div>
+
+      {/* Warranty & returns reassurance, next to the CTA */}
+      <div
+        className="grid grid-cols-3 gap-px mt-3"
+        style={{ border: "1px solid hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 90%)" }}
+      >
+        {[
+          { icon: RotateCcw, title: "48-hr returns", copy: "On ready-to-ship pieces" },
+          { icon: BadgeCheck, title: "2-year assurance", copy: "Stitching & embellishment" },
+          { icon: ShieldCheck, title: "Secure payment", copy: "UPI, cards & wallets" },
+        ].map(({ icon: Icon, title: label, copy }) => (
+          <div key={label} className="flex flex-col items-center gap-1 text-center px-2 py-2.5" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
+            <Icon size={14} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
+            <span className="text-[10.5px] font-medium leading-tight" style={{ color: "hsl(0 0% 22%)" }}>{label}</span>
+            <span className="text-[9.5px] leading-tight" style={{ color: "hsl(0 0% 52%)" }}>{copy}</span>
+          </div>
+        ))}
       </div>
 
       {/* Secondary CTA */}

@@ -41,7 +41,7 @@ export const categoryLandings: CategoryLanding[] = [
       "Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–8. Anti-tarnish, waterproof-sealed.",
     intro: [
       "A ring is the piece people see first. Ours are cut and set the way fine jewellery is, a brilliant-cut zircone held in real prongs, a band filed thin enough to sit flush against the finger, and an 18K gold or rhodium finish sealed against water and daily wear.",
-      "Naira Petite rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set in small batches at our atelier, numbered, and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
+      "Naira Petite rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set at our atelier and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
       "Sizes run US 5 (4.9 cm inner circumference) through US 8 (5.7 cm). If you are between sizes, message the atelier and we will guide you before the piece is made.",
     ],
     bullets: [
@@ -54,8 +54,8 @@ export const categoryLandings: CategoryLanding[] = [
         body: "A thick gold or rhodium coating over a hypoallergenic base, sealed with an anti-tarnish layer so the shank does not green or dull with daily wear.",
       },
       {
-        title: "Made in small batches",
-        body: "Each ring carries an edition number. We make to order rather than to inventory, which keeps the setting work slow and the finish consistent.",
+        title: "Hand-set at our atelier",
+        body: "We make to order rather than to inventory, which keeps the setting work slow and the finish consistent.",
       },
     ],
     faqs: [
@@ -211,8 +211,8 @@ export const categoryLandings: CategoryLanding[] = [
       "Demi-fine jewellery made the way fine jewellery is: hand-set brilliant-cut zircone, 18K gold finish over a hypoallergenic base, anti-tarnish sealed. Rings, earrings, bracelets and necklaces from the Naira Flore atelier.",
     intro: [
       "Demi-fine jewellery sits between costume and solid gold. It is built like fine jewellery, stones set in real prongs, solid construction, a thick precious-metal finish over a hypoallergenic base, but priced so you can own several pieces instead of one.",
-      "Everything in Naira Petite is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped, and every piece carries an edition number.",
-      "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make in small batches at our atelier.",
+      "Everything in Naira Petite is demi-fine by that definition. Brilliant-cut zircone hand-set stone by stone, an 18K gold or rhodium finish, and an anti-tarnish seal that keeps the colour honest through daily wear. Nothing is glued, nothing is hollow-stamped.",
+      "If you have been buying artificial jewellery that greens in a month, demi-fine is the step up you are looking for. It is the category most global jewellery houses now build their everyday lines around, and it is what we make at our atelier.",
     ],
     bullets: [
       {
@@ -308,7 +308,7 @@ export const categoryLandings: CategoryLanding[] = [
     intro: [
       "American diamond is the Indian trade name for cubic zirconia, a lab-grown stone cut with the same 57-facet brilliant pattern used on diamonds. Cut well and set properly, the light return is close enough that most people cannot tell across a dinner table.",
       "We call ours zircone. Each stone is hand-checked for fire before it is set, held in real prongs rather than glued into a cup, and finished with 18K gold or rhodium. That is the entire difference between American diamond jewellery that looks expensive and the kind that looks like plastic.",
-      "Solitaires, halos, eternity bands, tennis bracelets and studs, the classical diamond vocabulary, made in small batches so the setting work stays slow.",
+      "Solitaires, halos, eternity bands, tennis bracelets and studs, the classical diamond vocabulary, made so the setting work stays slow.",
     ],
     bullets: [
       {
@@ -712,8 +712,8 @@ export const journal: JournalArticle[] = [
       {
         h: "Why we build the way we do",
         p: [
-          "Naira Petite is made in small numbered batches at our atelier. Every zircone is hand-set and levelled, every chain link soldered, and every surface sealed against tarnish before it is boxed.",
-          "Making in small batches means no dead inventory, which is what lets us spend the time on the setting rather than the volume.",
+          "Naira Petite is made at our atelier. Every zircone is hand-set and levelled, every chain link soldered, and every surface sealed against tarnish before it is boxed.",
+          "Making to order rather than to inventory is what lets us spend the time on the setting rather than the volume.",
         ],
       },
     ],

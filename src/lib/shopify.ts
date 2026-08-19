@@ -18,6 +18,8 @@ export interface ShopifyProductVariant {
   title: string;
   availableForSale: boolean;
   price: ShopifyMoney;
+  /** Shopify "compare at" price — the MRP struck through on cards and PDPs. */
+  compareAtPrice?: ShopifyMoney | null;
   selectedOptions: ShopifySelectedOption[];
 }
 
@@ -101,6 +103,10 @@ export const PRODUCTS_QUERY = `
                   amount
                   currencyCode
                 }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
                 selectedOptions {
                   name
                   value
@@ -150,6 +156,10 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             title
             availableForSale
             price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
               amount
               currencyCode
             }

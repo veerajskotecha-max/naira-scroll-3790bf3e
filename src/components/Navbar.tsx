@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Search, Heart, ShoppingBag, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
+import MegaMenu from "./nav/MegaMenu";
+import SearchOverlay from "./nav/SearchOverlay";
 import nairaLogo from "@/assets/naira-logo.svg";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -10,29 +12,24 @@ interface NavbarProps {
   scrolled: boolean;
 }
 
-const leftLinks: { label: string; to: string; children?: { label: string; to: string }[] }[] = [
+const leftLinks: { label: string; to: string; mega?: boolean }[] = [
   { label: "HOME", to: "/" },
-  {
-    label: "SHOP",
-    to: "/shop",
-    children: [
-      { label: "Jewellery", to: "/jewellery" },
-      { label: "Indo-Western", to: "/shop/indo-western" },
-    ],
-  },
+  { label: "SHOP", to: "/jewellery", mega: true },
+  { label: "GIFTING", to: "/gifting" },
   { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },
 ];
 
 const Navbar = ({ scrolled }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { totalItems, setDrawerOpen } = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: setWishlistOpen } = useWishlist();
 
-  const handleSearch = () => navigate("/shop");
-  const handleAccount = () => navigate("/contact");
+  const handleAccount = () => navigate("/track-order");
+
 
   return (
     <>
@@ -57,40 +54,26 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             </button>
             <div className="hidden lg:flex items-center gap-[30px] lg:gap-[34px]">
               {leftLinks.map((link) =>
-                link.children ? (
+                link.mega ? (
                   <div key={link.label} className="relative group">
                     <Link
                       to={link.to}
                       className={`nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80 ${
-                        location.pathname.startsWith(link.to) ? "active" : ""
+                        location.pathname.startsWith("/jewellery") || location.pathname.startsWith("/shop") ? "active" : ""
                       }`}
                     >
                       {link.label}
                     </Link>
+                    {/* Mega panel is anchored to the viewport, not the trigger,
+                        so the four-column grid stays centred on every width. */}
                     <div
-                      className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50"
+                      className="fixed left-1/2 -translate-x-1/2 pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 z-50"
+                      style={{ top: "calc(var(--announcement-h) + var(--navbar-h))" }}
                     >
-                      <div
-                        className="min-w-[190px] py-2"
-                        style={{
-                          backgroundColor: "#F4F1ED",
-                          border: "1px solid rgba(0,0,0,0.08)",
-                          boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
-                        }}
-                      >
-                        {link.children.map((child) => (
-                          <Link
-                            key={child.label}
-                            to={child.to}
-                            className="block px-5 py-2.5 font-cormorant text-[13px] uppercase tracking-[0.12em] transition-colors duration-150 hover:bg-black/5"
-                            style={{ color: "hsl(0 0% 20%)" }}
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
+                      <MegaMenu />
                     </div>
                   </div>
+
                 ) : (
                   <Link
                     key={link.label}
@@ -124,7 +107,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             >
               CONTACT
             </Link>
-            <button onClick={handleSearch} aria-label="Search" className="flex items-center">
+            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="flex items-center">
               <Search
                 size={20}
                 strokeWidth={1.5}
@@ -172,6 +155,8 @@ const Navbar = ({ scrolled }: NavbarProps) => {
       </nav>
 
       <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+
     </>
   );
 };

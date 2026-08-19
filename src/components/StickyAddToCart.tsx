@@ -227,7 +227,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
                   color: "hsl(0 0% 100%)",
                 }}
               >
-                Buy It Now
+                Shop Now
               </button>
             </div>
           </div>

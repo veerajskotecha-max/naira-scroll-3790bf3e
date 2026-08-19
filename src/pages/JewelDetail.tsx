@@ -788,7 +788,7 @@ const JewelDetail = () => {
           className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          {buying ? "Opening…" : "Buy it now"}
+          {buying ? "Opening…" : "Shop now"}
         </button>
 
       </div>

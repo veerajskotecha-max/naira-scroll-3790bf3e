@@ -29,11 +29,12 @@ const JoinInnerCircleForm = ({
     setState("busy");
     setMessage(null);
     const result = await joinInnerCircle({ email, name, source, userId: user?.id ?? null });
-    if (!result.ok) {
+    if (result.ok === false) {
       setState("idle");
       setMessage(result.message);
       return;
     }
+
     setState("done");
     setMessage(result.already ? "You are already on the list." : "You're in. Watch your inbox.");
   };

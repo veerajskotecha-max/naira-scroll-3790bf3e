@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
+import { absoluteUrl } from "@/lib/absoluteUrl";
 import { Helmet } from "react-helmet-async";
 import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
 
@@ -317,8 +318,14 @@ const JewelDetail = () => {
         <meta property="og:type" content="product" />
         <meta property="og:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
         <meta property="og:description" content={piece.blurb.slice(0, 150)} />
-        <meta property="og:image" content={piece.image} />
+        <meta property="og:image" content={absoluteUrl(piece.image)} />
+        <meta property="og:image:alt" content={piece.name} />
         <meta property="og:url" content={`https://nairaflore.com/jewellery/${piece.handle}`} />
+        <meta property="og:site_name" content="Naira Flore" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
+        <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
+        <meta name="twitter:image" content={absoluteUrl(piece.image)} />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
         <script type="application/ld+json">
           {JSON.stringify({

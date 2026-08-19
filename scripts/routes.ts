@@ -72,7 +72,15 @@ export const siteRoutes: SiteRoute[] = [
 const STOREFRONT_URL = "https://nc5eti-gp.myshopify.com/api/2025-07/graphql.json";
 const STOREFRONT_TOKEN = "0f6fd83502924ac437a5d19180bb08c3";
 
-const fetchLiveHandles = async (): Promise<Set<string> | null> => {
+interface LiveProduct {
+  handle: string;
+  vendor: string;
+}
+
+/** The Shopify vendor holding the jewellery line; everything else is clothing. */
+const JEWELLERY_VENDOR = "naira petite";
+
+const fetchLiveProducts = async (): Promise<LiveProduct[] | null> => {
   try {
     const res = await fetch(STOREFRONT_URL, {
       method: "POST",
@@ -81,27 +89,28 @@ const fetchLiveHandles = async (): Promise<Set<string> | null> => {
         "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
       },
       body: JSON.stringify({
-        query: `{ products(first: 250) { edges { node { handle } } } }`,
+        query: `{ products(first: 250) { edges { node { handle vendor } } } }`,
       }),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as {
-      data?: { products?: { edges?: { node: { handle: string } }[] } };
+      data?: { products?: { edges?: { node: LiveProduct }[] } };
     };
     const edges = json.data?.products?.edges;
     if (!edges?.length) return null;
-    return new Set(edges.map((e) => e.node.handle));
+    return edges.map((e) => e.node);
   } catch {
     return null;
   }
 };
 
 export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
-  const live = await fetchLiveHandles();
-  if (!live) {
+  const products = await fetchLiveProducts();
+  if (!products) {
     console.warn("routes: could not reach Shopify, keeping all product routes");
     return siteRoutes;
   }
+  const live = new Set(products.map((p) => p.handle));
   const dropped: string[] = [];
   const kept = siteRoutes.filter((route) => {
     const match = route.path.match(/^\/jewellery\/([^/]+)$/);
@@ -113,8 +122,19 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   if (dropped.length) {
     console.log(`routes: skipping ${dropped.length} delisted product route(s)`);
   }
-  return kept;
+
+  // Clothing listings live at /product/<handle>. They are read straight from
+  // Shopify so every shareable product URL is prerendered with its own title,
+  // description and preview image, and appears in the sitemap.
+  const jewellerySet = new Set(jewelleryHandles);
+  const clothing = products
+    .filter((p) => (p.vendor || "").trim().toLowerCase() !== JEWELLERY_VENDOR && !jewellerySet.has(p.handle))
+    .map<SiteRoute>((p) => ({ path: `/product/${p.handle}`, changefreq: "monthly", priority: "0.8" }));
+  if (clothing.length) console.log(`routes: adding ${clothing.length} clothing product route(s)`);
+
+  return [...kept, ...clothing];
 };
+
 
 /*
   Deliberately absent, though App.tsx routes them:

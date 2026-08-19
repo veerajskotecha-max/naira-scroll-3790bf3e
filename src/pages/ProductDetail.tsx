@@ -151,6 +151,13 @@ const ProductDetail = () => {
         <meta property="og:title" content={`${title} | Naira Flore`} />
         <meta property="og:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
         <meta property="og:url" content={`https://nairaflore.com/product/${id}`} />
+        <meta property="og:site_name" content="Naira Flore" />
+        <meta property="og:image" content={absoluteUrl(image)} />
+        <meta property="og:image:alt" content={title} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${title} | Naira Flore`} />
+        <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <meta name="twitter:image" content={absoluteUrl(image)} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>

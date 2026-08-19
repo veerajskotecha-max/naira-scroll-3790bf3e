@@ -212,7 +212,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               /* Earrings: push into the head/ear area so the worn piece reads. */
               style={
                 piece.category === "Earrings"
-                  ? { objectPosition: "center 14%", transform: "scale(1.6)" }
+                  ? { objectPosition: "center 10%", transform: "scale(1.5)" }
                   : undefined
               }
 

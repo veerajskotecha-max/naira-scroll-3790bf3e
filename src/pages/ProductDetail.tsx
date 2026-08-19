@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
+import { absoluteUrl } from "@/lib/absoluteUrl";
 import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";

@@ -28,6 +28,8 @@ export interface SiteRoute {
 export const siteRoutes: SiteRoute[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/shop", changefreq: "weekly", priority: "0.9" },
+  { path: "/shop/indo-western", changefreq: "weekly", priority: "0.8" },
+  { path: "/shop/jewellery", changefreq: "weekly", priority: "0.8" },
   { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
   ...categoryLandings.map<SiteRoute>((c) => ({
     path: `/jewellery/collections/${c.slug}`,
@@ -47,6 +49,8 @@ export const siteRoutes: SiteRoute[] = [
     priority: "0.7",
   })),
   { path: "/customize", changefreq: "monthly", priority: "0.8" },
+  { path: "/gifting", changefreq: "monthly", priority: "0.7" },
+  { path: "/track-order", changefreq: "monthly", priority: "0.4" },
   { path: "/about", changefreq: "monthly", priority: "0.6" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/faqs", changefreq: "monthly", priority: "0.6" },
@@ -54,3 +58,12 @@ export const siteRoutes: SiteRoute[] = [
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },
   { path: "/terms", changefreq: "yearly", priority: "0.3" },
 ];
+
+/*
+  Deliberately absent, though App.tsx routes them:
+    /index      renders the same component as "/", so listing it invites
+                Google to pick between two URLs for one page
+    /concepts   unlinked from any nav or footer
+    /ring-lab   likewise
+  Add them here if they ever become pages meant to be found.
+*/

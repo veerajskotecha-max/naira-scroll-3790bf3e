@@ -96,13 +96,25 @@ async function renderAll(browser: Browser) {
 
   for (const route of siteRoutes) {
     try {
+      /*
+        Deliberately not "networkidle". Product imagery comes from Shopify's
+        CDN, and on any host that cannot reach it those requests never settle,
+        so networkidle burns the full timeout on every catalogue route and
+        writes nothing. What matters here is that React has mounted and Helmet
+        has committed the head — the settle wait and the word count below
+        check that directly.
+      */
       const res = await page.goto(`${ORIGIN}${route.path}`, {
-        waitUntil: "networkidle",
-        timeout: 45_000,
+        waitUntil: "domcontentloaded",
+        timeout: 30_000,
       });
       if (!res || !res.ok()) throw new Error(`HTTP ${res?.status() ?? "no response"}`);
 
-      // Let Helmet commit the per-route <head> and the first paint settle.
+      // Let the router resolve, React mount, and Helmet commit the <head>.
+      // state:"attached" on purpose — the default is "visible", and the app's
+      // outermost node has no box of its own, so waiting for visibility times
+      // out on every route while the DOM underneath is perfectly complete.
+      await page.waitForSelector("#root > *", { state: "attached", timeout: 15_000 });
       await page.waitForTimeout(900);
 
       // A route that fell through to the catch-all redirect is not a real page.

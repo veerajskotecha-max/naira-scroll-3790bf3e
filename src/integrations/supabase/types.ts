@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      inner_circle_signups: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          phone: string | null
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name?: string | null
+          phone?: string | null
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          phone?: string | null
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      member_orders: {
+        Row: {
+          checkout_url: string | null
+          created_at: string
+          currency: string
+          email: string | null
+          id: string
+          item_count: number
+          items: Json
+          status: string
+          total: number
+          user_id: string
+        }
+        Insert: {
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          item_count?: number
+          items?: Json
+          status?: string
+          total?: number
+          user_id: string
+        }
+        Update: {
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          email?: string | null
+          id?: string
+          item_count?: number
+          items?: Json
+          status?: string
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          birthday: string | null
+          city: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          birthday?: string | null
+          city?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          birthday?: string | null
+          city?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

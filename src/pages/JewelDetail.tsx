@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
+import { absoluteUrl } from "@/lib/absoluteUrl";
 import { Helmet } from "react-helmet-async";
 import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
 
@@ -36,7 +37,6 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
     { label: "Category", value: piece.category },
-    { label: "SKU", value: piece.sku },
   ];
 };
 
@@ -318,8 +318,14 @@ const JewelDetail = () => {
         <meta property="og:type" content="product" />
         <meta property="og:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
         <meta property="og:description" content={piece.blurb.slice(0, 150)} />
-        <meta property="og:image" content={piece.image} />
+        <meta property="og:image" content={absoluteUrl(piece.image)} />
+        <meta property="og:image:alt" content={piece.name} />
         <meta property="og:url" content={`https://nairaflore.com/jewellery/${piece.handle}`} />
+        <meta property="og:site_name" content="Naira Flore" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
+        <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
+        <meta name="twitter:image" content={absoluteUrl(piece.image)} />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
         <script type="application/ld+json">
           {JSON.stringify({
@@ -810,7 +816,7 @@ const JewelDetail = () => {
           className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
           style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
         >
-          {buying ? "Opening…" : "Buy it now"}
+          {buying ? "Opening…" : "Shop now"}
         </button>
 
       </div>

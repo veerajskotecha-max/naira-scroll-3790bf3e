@@ -1,4 +1,4 @@
-import { ShieldCheck, Droplets, Gem, MapPin } from "lucide-react";
+import { ShieldCheck, Droplets, Gem, Package } from "lucide-react";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -6,7 +6,7 @@ const items = [
   { icon: ShieldCheck, label: "Anti-tarnish coating" },
   { icon: Droplets, label: "Waterproof sealed" },
   { icon: Gem, label: "18k gold / rhodium finish" },
-  { icon: MapPin, label: "Hand-finished at our atelier" },
+  { icon: Package, label: "Limited batches only" },
 ] as const;
 
 /**

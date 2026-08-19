@@ -42,14 +42,22 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const { toggleItem, isWishlisted } = useWishlist();
   const saved = isWishlisted(piece.handle);
   const off = discountPercent(piece);
-  /* The second frame is the on-model "teaser". For earrings the worn shot is
-     what sells the piece, so prefer an explicitly worn/model image whenever the
-     gallery has one — this keeps working for every product added later. */
+  /* Earrings: frame one must be the product packshot (the earrings alone) and
+     frame two the on-model shot, zoomed to the ear. Everything else keeps the
+     plain gallery order. */
   const gallery = piece.gallery ?? [];
-  const wornImg = gallery.find((g) => /worn|model|onmodel|_2_/i.test(g)) ?? null;
+  const isWorn = (g: string) => /worn|model|onmodel|_2_/i.test(g);
+  const wornImg = gallery.find(isWorn) ?? null;
   const isEarrings = piece.category === "Earrings";
-  const altImg = (isEarrings ? wornImg : null) ?? (gallery.length > 1 ? gallery[1] : null);
+  const packshot = gallery.find((g) => !isWorn(g)) ?? null;
+  const frontImg =
+    isEarrings && isWorn(piece.image) && packshot ? packshot : piece.image;
+  const altImg =
+    (isEarrings ? (wornImg && wornImg !== frontImg ? wornImg : null) : null) ??
+    gallery.filter((g) => g !== frontImg)[0] ??
+    null;
   const zircone = piece.handle.startsWith("zircone");
+
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -174,8 +182,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           style={{ transform: "perspective(900px)" }}
         >
           <img
-            src={cdn(piece.image, 800)}
-            srcSet={`${cdn(piece.image, 500)} 500w, ${cdn(piece.image, 800)} 800w, ${cdn(piece.image, 1100)} 1100w`}
+            src={cdn(frontImg, 800)}
+            srcSet={`${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 800)} 800w, ${cdn(frontImg, 1100)} 1100w`}
             sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
             alt={piece.name}
             loading="lazy"
@@ -201,11 +209,13 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
+              /* Earrings: push into the head/ear area so the worn piece reads. */
               style={
                 piece.category === "Earrings"
-                  ? { objectPosition: "center top" }
+                  ? { objectPosition: "center 10%", transform: "scale(1.5)" }
                   : undefined
               }
+
               className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}

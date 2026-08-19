@@ -4,7 +4,7 @@
 
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import { BASE_URL, siteRoutes, type SiteRoute } from "./routes";
+import { BASE_URL, resolveSiteRoutes, type SiteRoute } from "./routes";
 import { allLandings, allArticles } from "../src/data/seoContent";
 
 /*
@@ -84,8 +84,9 @@ function generateLlmsTxt() {
   ].join("\n");
 }
 
-writeFileSync(resolve("public/sitemap.xml"), generateSitemap(siteRoutes));
-console.log(`sitemap.xml written (${siteRoutes.length} entries)`);
+const routes = await resolveSiteRoutes();
+writeFileSync(resolve("public/sitemap.xml"), generateSitemap(routes));
+console.log(`sitemap.xml written (${routes.length} entries)`);
 
 writeFileSync(resolve("public/llms.txt"), generateLlmsTxt());
 console.log(`llms.txt written (${allLandings.length} collections, ${allArticles.length} articles)`);

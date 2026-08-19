@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { getProductReviews } from "@/data/productReviews";
 import { Star, Camera, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -220,6 +221,7 @@ const filters = ["All Reviews", "With Photos", "5★", "4★", "3★"];
 
 
 interface Review {
+  no?: number;
   name: string;
   initials: string;
   verified: boolean;
@@ -325,12 +327,12 @@ const Stars = ({ count, size = 12 }: { count: number; size?: number }) => (
 );
 
 interface CustomerReviewsProps {
-  /** Kept for call-site compatibility; reviews are no longer generated per product. */
+  /** Drives the product's own numbered one-line reviews. */
   productName?: string;
   variant?: "apparel" | "jewellery";
 }
 
-const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => {
+const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
   const photos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
@@ -339,11 +341,31 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [localReviews, setLocalReviews] = useState<Review[]>(() =>
-    isJewellery
-      ? [...jewelleryReviews, ...jewelleryOneLiners]
-      : [...reviewsData, ...apparelOneLiners]
+  // Each product carries its own numbered one-liners, shown first.
+  const ownReviews = useMemo<Review[]>(
+    () =>
+      getProductReviews(productName).map((r) => ({
+        no: r.no,
+        name: r.name,
+        initials: r.initials,
+        verified: r.verified,
+        rating: r.rating,
+        date: r.date,
+        text: r.text,
+        hasPhotos: false,
+        images: [],
+      })),
+    [productName]
   );
+  const [localReviews, setLocalReviews] = useState<Review[]>([]);
+  useEffect(() => {
+    setLocalReviews([
+      ...ownReviews,
+      ...(isJewellery
+        ? [...jewelleryReviews, ...jewelleryOneLiners]
+        : [...reviewsData, ...apparelOneLiners]),
+    ]);
+  }, [ownReviews, isJewellery]);
 
   // Aggregate is computed from the reviews actually shown, never invented.
   const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {
@@ -540,6 +562,9 @@ const CustomerReviews = ({ variant = "apparel" }: CustomerReviewsProps = {}) => 
               style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
             >
               <div className="flex items-center gap-3 mb-3">
+                <span className="ml-auto order-last text-[10px] tracking-[0.08em]" style={{ color: "hsl(var(--muted-foreground))" }}>
+                  #{review.no ?? i + 1}
+                </span>
                 <Avatar className="h-9 w-9">
                   <AvatarFallback className="text-[12px] font-medium bg-secondary text-secondary-foreground">
                     {review.initials}

@@ -9,7 +9,7 @@ import Testimonials from "@/components/Testimonials";
 import CampaignFilm from "@/components/CampaignFilm";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
-import { organizationLd } from "@/data/seoContent";
+import { organizationLd } from "@/data/siteMeta";
 import FounderStoryTeaser from "@/components/FounderStoryTeaser";
 import ZirconeTurn from "@/components/jewellery/ZirconeTurn";
 import JewelleryCategories from "@/components/jewellery/JewelleryCategories";

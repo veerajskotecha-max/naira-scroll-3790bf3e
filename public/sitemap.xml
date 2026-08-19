@@ -191,27 +191,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/bold-nocturne-chain</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/serpentine-whisper-chain</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/dewdrop-bezel-necklace</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/charm-box-chain</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/ivory-clasp-chain</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -241,27 +226,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/clover-bloom-studs</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/clover-fringe-earrings</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/solitaire-whisper-studs</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/heart-whisper-studs</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/golden-nugget-studs</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -276,37 +241,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/riviere-of-light-bracelet</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/bold-nocturne-bracelet</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/baroque-bloom-cuff</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/cuban-pearl-bracelet</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/pearl-legacy-bracelet</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/baguette-eclat-bracelet</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/emerald-riviere-bracelet</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -321,11 +261,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/golden-duet-ring</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/pearl-ribbon-ring</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -336,42 +271,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/jewellery/blush-halo-ring</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/rose-emerald-band</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/amber-dome-ring</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/duet-of-dawn-ring</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/emerald-eternity-band</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/emerald-cluster-studs</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery/first-light-set</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/jewellery/clover-charm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -543,5 +443,95 @@
     <loc>https://nairaflore.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/blush-of-dawn</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/ethereal-lilac</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/royal-enigma</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/amber-bloom-set</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/amber-radiance</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/golden-blossom</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/midnight-bloom</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/ivory-whisper-co-ord-set</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/sunset-reverie</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/lilac-whisper</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/crimson-legacy-set</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/heritage-mosaic</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/noir-mela</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/tangerine-bloom</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/gulaal-mirage</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/midnight-eclat</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/nocturne-veil</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/product/celeste-bloom</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

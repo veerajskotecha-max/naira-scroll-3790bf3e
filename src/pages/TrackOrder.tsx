@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd } from "@/components/PageSEO";
-import { SITE_URL } from "@/data/seoContent";
+import { SITE_URL } from "@/data/siteMeta";
 import { WHATSAPP_NUMBER } from "@/data/jewellery";
 import { SHOPIFY_STORE_PERMANENT_DOMAIN } from "@/lib/shopify";
 

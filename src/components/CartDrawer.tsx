@@ -1,19 +1,30 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2 } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
+import { joinInnerCircle } from "@/lib/innerCircle";
+import { supabase } from "@/integrations/supabase/client";
 
 const SHIPPING_CHARGE = 150;
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
+  const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
   useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
+
+  // Inner Circle opt-in shown at checkout.
+  const [optIn, setOptIn] = useState(true);
+  const [optEmail, setOptEmail] = useState("");
+  useEffect(() => {
+    if (user?.email) setOptEmail(user.email);
+  }, [user]);
 
   // Reconcile with the real Shopify cart whenever the drawer opens, so lines
   // left over from an older session can never surprise the shopper.
@@ -24,6 +35,39 @@ const CartDrawer = () => {
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
   const orderTotal = subtotal + SHIPPING_CHARGE;
+
+  /* Capture the opt-in email and log the order against the member account,
+     then hand over to the Shopify checkout as before. */
+  const handleCheckout = async () => {
+    try {
+      if (optIn && optEmail.trim()) {
+        await joinInnerCircle({
+          email: optEmail,
+          source: "checkout",
+          userId: user?.id ?? null,
+        });
+      }
+      if (user) {
+        await supabase.from("member_orders").insert({
+          user_id: user.id,
+          email: user.email ?? optEmail.trim() ?? null,
+          items: items.map((i) => ({
+            name: i.name,
+            quantity: i.quantity,
+            size: i.size ?? null,
+            image: i.image,
+            price: i.priceLabel,
+          })),
+          item_count: totalItems,
+          total: orderTotal,
+        });
+      }
+    } catch {
+      /* never block the checkout on the members-list write */
+    }
+    checkout();
+  };
+
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>

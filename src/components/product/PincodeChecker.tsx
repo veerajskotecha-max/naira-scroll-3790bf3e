@@ -91,19 +91,31 @@ const PincodeChecker = () => {
       )}
 
       {result && !error && (
-        <div className="mt-2.5 space-y-1">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 size={13} style={{ color: "hsl(142 50% 38%)" }} />
+        <div className="mt-2.5 space-y-1.5">
+          <div className="flex items-start gap-2">
+            <CheckCircle2 size={13} className="mt-[2px] shrink-0" style={{ color: "hsl(142 50% 38%)" }} />
             <span className="text-[12px]" style={{ color: "hsl(0 0% 25%)" }}>
-              Estimated delivery to <strong className="font-medium">{result.pincode}</strong> by{" "}
-              <strong className="font-medium">{result.eta}</strong> · confirmed at checkout
+              Delivery to <strong className="font-medium">{result.pincode}</strong> in{" "}
+              <strong className="font-medium">{result.days} working days</strong> · by{" "}
+              <strong className="font-medium">{result.eta}</strong>
             </span>
           </div>
-          <p className="text-[11px] pl-[21px]" style={{ color: "hsl(0 0% 50%)" }}>
-            Cash on Delivery available · UPI, cards, wallets and net banking accepted
-          </p>
+          {result.cod === "blocked" ? (
+            <div className="flex items-start gap-2">
+              <Info size={12} className="mt-[3px] shrink-0" style={{ color: "hsl(28 70% 42%)" }} />
+              <p className="text-[11px]" style={{ color: "hsl(0 0% 40%)" }}>
+                Cash on Delivery is unavailable for this pincode ({result.codReason}). Prepaid only ·
+                UPI, cards, wallets and net banking accepted.
+              </p>
+            </div>
+          ) : (
+            <p className="text-[11px] pl-[21px]" style={{ color: "hsl(0 0% 50%)" }}>
+              Cash on Delivery available · UPI, cards, wallets and net banking accepted
+            </p>
+          )}
         </div>
       )}
+
     </div>
   );
 };

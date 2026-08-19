@@ -62,6 +62,61 @@ export const siteRoutes: SiteRoute[] = [
 ];
 
 /*
+  A /jewellery/<handle> page only resolves when Shopify still lists that handle;
+  the app redirects delisted pieces back to /jewellery. Advertising or
+  prerendering those URLs is what makes the build fail and the sitemap lie, so
+  the live handle set is fetched once at build time and used to filter.
+  If Shopify is unreachable, fall back to the full static list — degraded, not
+  broken.
+*/
+const STOREFRONT_URL = "https://nc5eti-gp.myshopify.com/api/2025-07/graphql.json";
+const STOREFRONT_TOKEN = "0f6fd83502924ac437a5d19180bb08c3";
+
+const fetchLiveHandles = async (): Promise<Set<string> | null> => {
+  try {
+    const res = await fetch(STOREFRONT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
+      },
+      body: JSON.stringify({
+        query: `{ products(first: 250) { edges { node { handle } } } }`,
+      }),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      data?: { products?: { edges?: { node: { handle: string } }[] } };
+    };
+    const edges = json.data?.products?.edges;
+    if (!edges?.length) return null;
+    return new Set(edges.map((e) => e.node.handle));
+  } catch {
+    return null;
+  }
+};
+
+export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
+  const live = await fetchLiveHandles();
+  if (!live) {
+    console.warn("routes: could not reach Shopify, keeping all product routes");
+    return siteRoutes;
+  }
+  const dropped: string[] = [];
+  const kept = siteRoutes.filter((route) => {
+    const match = route.path.match(/^\/jewellery\/([^/]+)$/);
+    if (!match || match[1] === "collections") return true;
+    if (live.has(match[1])) return true;
+    dropped.push(route.path);
+    return false;
+  });
+  if (dropped.length) {
+    console.log(`routes: skipping ${dropped.length} delisted product route(s)`);
+  }
+  return kept;
+};
+
+/*
   Deliberately absent, though App.tsx routes them:
     /index      renders the same component as "/", so listing it invites
                 Google to pick between two URLs for one page

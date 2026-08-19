@@ -20,7 +20,7 @@ import { spawn } from "child_process";
 import { mkdirSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { resolve, join } from "path";
 import { chromium, type Browser } from "playwright";
-import { siteRoutes } from "./routes";
+import { resolveSiteRoutes, type SiteRoute } from "./routes";
 
 const PORT = Number(process.env.PRERENDER_PORT ?? 4180);
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -89,12 +89,12 @@ const clean = (html: string) =>
 const routeToFile = (routePath: string) =>
   routePath === "/" ? join(DIST, "index.html") : join(DIST, routePath, "index.html");
 
-async function renderAll(browser: Browser) {
+async function renderAll(browser: Browser, routes: SiteRoute[]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
 
-  for (const route of siteRoutes) {
+  for (const route of routes) {
     try {
       /*
         Deliberately not "networkidle". Product imagery comes from Shopify's
@@ -191,10 +191,11 @@ async function main() {
       );
       return;
     }
-    const { written, failures } = await renderAll(browser);
+    const routes = await resolveSiteRoutes();
+    const { written, failures } = await renderAll(browser, routes);
     await browser.close();
 
-    console.log(`prerendered ${written}/${siteRoutes.length} routes`);
+    console.log(`prerendered ${written}/${routes.length} routes`);
     if (failures.length) {
       console.error(`\n${failures.length} route(s) failed:`);
       for (const f of failures) console.error(`  ${f.path} — ${f.reason}`);

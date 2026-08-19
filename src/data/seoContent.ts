@@ -8,7 +8,8 @@ import type { JewelCategory } from "./jewellery";
 import { extraLandings } from "./seoLandings.extra";
 import { extraJournal } from "./seoJournal.extra";
 
-export const SITE_URL = "https://nairaflore.com";
+export { SITE_URL, organizationLd } from "./siteMeta";
+import { SITE_URL } from "./siteMeta";
 
 export interface FaqItem {
   q: string;
@@ -981,31 +982,4 @@ export const articleBySlug = (slug?: string) =>
  * for a brand Organization, but neither appears anywhere in the codebase and
  * inventing them would be fabricated markup. Fill them in and uncomment.
  */
-export const organizationLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Naira Flore",
-  url: SITE_URL,
-  // Google accepts JPG, PNG or WEBP for Organization.logo — not .ico.
-  logo: `${SITE_URL}/logo.png`,
-  email: "shopatnaira@gmail.com",
-  telephone: "+91-9561557935",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "Flat 7, Veeraj Blossom, Karanyogi Nagar",
-    addressLocality: "Nashik",
-    addressRegion: "Maharashtra",
-    postalCode: "422002",
-    addressCountry: "IN",
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    telephone: "+91-9561557935",
-    contactType: "customer service",
-    areaServed: "IN",
-    availableLanguage: ["en", "hi", "mr"],
-  },
-  sameAs: ["https://www.instagram.com/nairaflore/"],
-  // founder: { "@type": "Person", name: "<founder name>" },
-  // foundingDate: "<YYYY>",
-} as const;
+

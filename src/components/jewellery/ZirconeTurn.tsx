@@ -12,14 +12,31 @@ import ring34 from "@/assets/jewellery/ring-cut-34.webp";
 gsap.registerPlugin(ScrollTrigger);
 
 /* ───────────────────────────────────────────────────────────────
-   ZIRCONE TURN — two ring photos turning & flipping on scroll
-   The background-removed solitaire (front + true 3/4 angle) rides the
-   front/back of a 3D card. Scroll turns it out to edge-on; a gold glint
-   flash hides the photo swap at max foreshortening; the 3/4 face
-   continues from the same edge and reveals the stone's depth, holds for
-   the callout, then flips home. Benefit callouts point at the band
-   (18K GOLD FINISHED) and the stone (BRILLIANT-CUT ZIRCONE).
-   Reduced-motion: everything shown, no pin.
+   ZIRCONE TURN — two ring photos turning on scroll
+
+   The illusion: the background-removed solitaire turns away to 46°, the
+   photo is swapped for the true 3/4 angle at that extreme, and that face
+   turns back to square-on. The eye reads one ring rotating and revealing
+   its depth. It holds there for the stone callout, then runs home the
+   same way.
+
+   Two rules this section keeps breaking, so they are written down.
+
+   1. The turn NEVER passes 90°. These are flat photos: at 90° a plane is
+      edge-on and has zero width, so the ring vanishes. A full 360° spin
+      (which is what shipped on 18-19 Aug) makes it disappear twice per
+      scroll. backface-visibility does not save this — there is genuinely
+      nothing to draw. 46° is the limit because it is the angle the 3/4
+      photograph was actually shot at.
+
+   2. The swap never fades both faces at once. Whichever face is arriving
+      fades up ON TOP of a fully opaque outgoing face, and only then is the
+      outgoing one hidden. Cross-fading both at once lets the background
+      through at the midpoint, and that dip is the "desktop flicker" the
+      earlier fixes were chasing.
+
+   Callouts point at the band (18K GOLD FINISHED) and the stone
+   (BRILLIANT-CUT ZIRCONE). Reduced-motion: everything shown, no motion.
    ─────────────────────────────────────────────────────────────── */
 
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
@@ -66,8 +83,11 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(lineL, { transformOrigin: "100% 50%" });
       gsap.set(lineR, { transformOrigin: "0% 50%" });
       gsap.set(finale, { opacity: 0, y: 18 });
-      gsap.set(card, { scale: 1.08, rotationY: 0, force3D: true });
-      gsap.set([faceA, faceB], { opacity: 1, force3D: true });
+      gsap.set(card, { scale: 1.08 });
+      // Each face carries its own rotationY. The card itself never rotates —
+      // rotating one shared card is what forced the 360° flip-card version.
+      gsap.set(faceA, { rotationY: 0, autoAlpha: 1, force3D: true });
+      gsap.set(faceB, { rotationY: 46, autoAlpha: 0, force3D: true });
 
       const tl = gsap.timeline({
         // No pinning on any breakpoint: this section lives inside an
@@ -78,9 +98,9 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         // the section leaves, so rotation speed always matches scroll speed.
         scrollTrigger: {
           trigger: root,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.5,
+          start: isDesktop ? "top 85%" : "top 75%",
+          end: isDesktop ? "+=110%" : "+=120%",
+          scrub: 0.45,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
         },
@@ -90,18 +110,34 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
 
       tl
-        // one continuous, linear revolution across the entire scroll range
-        .fromTo(card, { rotationY: 0 }, { rotationY: 360, duration: 0.94 }, 0.03)
-        .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.14)
-        .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.16)
-        .to([callL, lineL], { opacity: 0, duration: 0.05 }, 0.34)
-        .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.56)
-        .to(lineR, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.58)
-        .to([callR, lineR], { opacity: 0, duration: 0.05 }, 0.74)
-        .to(card, { scale: 0.96, duration: 0.55, ease: "power1.out" }, 0.3)
-        .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.16 }, 0.8)
-        .to(hint, { opacity: 0, duration: 0.08 }, 0.4)
-        .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.62);
+        .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.06)
+        .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.08)
+        .to([callL, lineL], { opacity: 0, duration: 0.04 }, 0.24)
+
+        // out to the 3/4 angle
+        .to(faceA, { rotationY: 46, duration: 0.26, ease: "power1.in" }, 0.05)
+        // faceB sits above faceA in the DOM, so it fades up over a face that
+        // is still fully opaque — the background is never visible between
+        // them. Only once B is solid is A dropped, in one frame.
+        .to(faceB, { autoAlpha: 1, duration: 0.08 }, 0.31)
+        .set(faceA, { autoAlpha: 0 }, 0.39)
+        .to(faceB, { rotationY: 0, duration: 0.22, ease: "power1.out" }, 0.39)
+
+        .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.5)
+        .to(lineR, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.52)
+        .to([callR, lineR], { opacity: 0, duration: 0.04 }, 0.66)
+
+        // and home. The same rule in reverse: restore A underneath while B
+        // still covers it, then fade B out to reveal it.
+        .to(faceB, { rotationY: 46, duration: 0.12, ease: "power1.in" }, 0.7)
+        .set(faceA, { rotationY: 46, autoAlpha: 1 }, 0.82)
+        .to(faceB, { autoAlpha: 0, duration: 0.08 }, 0.82)
+        .to(faceA, { rotationY: 0, duration: 0.1, ease: "power1.out" }, 0.9)
+
+        .to(card, { scale: 0.96, duration: 0.5, ease: "power1.out" }, 0.4)
+        .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.14 }, 0.8)
+        .to(hint, { opacity: 0, duration: 0.08 }, 0.78)
+        .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.9);
 
 
       return () => { tl.scrollTrigger?.kill(); tl.kill(); };
@@ -140,9 +176,12 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
           {/* the ring — two photos turning (wrapper spans full width so callouts never clip) */}
           <div className="relative flex w-full max-w-[520px] justify-center md:max-w-[900px]" style={{ perspective: "1200px" }}>
-            <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d", contain: "layout paint", isolation: "isolate" }}>
-              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(1px)" }} />
-              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg) translateZ(1px)" }} />
+            {/* No `contain: paint` and no `isolation` here: both force a fresh
+                paint context on a 3D-transformed subtree, which is what made
+                the faces re-rasterise mid-turn and flash. */}
+            <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
+              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ willChange: "transform, opacity", transform: "translateZ(0)" }} />
+              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ opacity: 0, willChange: "transform, opacity", transform: "translateZ(0)" }} />
               {/* contact shadow */}
               <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
                 style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />

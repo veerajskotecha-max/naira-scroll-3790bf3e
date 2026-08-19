@@ -110,6 +110,23 @@ const guessCategory = (node: ShopifyProductNode): JewelPiece["category"] => {
   return "Necklaces";
 };
 
+/*
+  Shopify's plain-text `description` has already had the HTML stripped, so the
+  <li> items of the Details list arrive run together: "Length: 40cm Stone: ...".
+  Rendered as one paragraph that is unreadable, which is what shipped.
+
+  Split them back apart on the "Label: " boundaries. If a description ever
+  turns up that does not follow that shape, this returns the single original
+  string and the page reads exactly as it does today — degraded, not broken.
+*/
+const SPEC_BOUNDARY = /(?=\b[A-Z][A-Za-z]*(?: [a-z]+){0,2}:\s)/;
+
+const splitSpecs = (raw?: string): string[] | undefined => {
+  if (!raw) return undefined;
+  const parts = raw.split(SPEC_BOUNDARY).map((p) => p.trim()).filter(Boolean);
+  return parts.length > 1 ? parts : [raw];
+};
+
 /** Splits a Shopify listing description into the blurb / tip / details / care blocks. */
 const parseDescription = (raw: string) => {
   const text = (raw || "").replace(/You will receive your piece in a Naira Petite box\.?/i, "").trim();
@@ -152,7 +169,7 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
     blurb: parsed.blurb,
     description,
     stylingTip: parsed.stylingTip,
-    details: parsed.details,
+    details: splitSpecs(parsed.details),
     care: parsed.care,
     materials: isRhodium(description)
       ? "Rhodium coated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish"

@@ -605,9 +605,30 @@ const JewelDetail = () => {
                   content: (
                     <div className="space-y-3">
                       <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.blurb}</p>
-                      {piece.details && (
-                        <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.details}</p>
-                      )}
+                      {piece.details?.length ? (
+                        <dl className="space-y-1">
+                          {piece.details.map((spec) => {
+                            const at = spec.indexOf(":");
+                            // A spec that lost its label still gets shown, just unlabelled.
+                            if (at < 0) return (
+                              <dd key={spec} className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{spec}</dd>
+                            );
+                            return (
+                              <div key={spec} className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
+                                <dt
+                                  className="shrink-0 pt-[3px] text-[10px] uppercase tracking-[0.14em] sm:w-[92px]"
+                                  style={{ color: "#9A7634" }}
+                                >
+                                  {spec.slice(0, at)}
+                                </dt>
+                                <dd className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
+                                  {spec.slice(at + 1).trim()}
+                                </dd>
+                              </div>
+                            );
+                          })}
+                        </dl>
+                      ) : null}
                       {piece.stylingTip && (
                         <p className="text-[12.5px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
                           <span className="uppercase tracking-[0.14em] text-[10px] mr-1.5" style={{ color: "#9A7634" }}>Styling tip</span>

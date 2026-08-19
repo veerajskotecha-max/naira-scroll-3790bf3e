@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => ({
           ui: ['lucide-react'],
           gsap: ['gsap'],
           query: ['@tanstack/react-query'],
+          supabase: ['@supabase/supabase-js'],
         }
       }
     }

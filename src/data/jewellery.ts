@@ -7,12 +7,12 @@
 
 export type JewelCategory = "Rings" | "Bracelets" | "Earrings" | "Necklaces";
 
-/** Pre-order window: orders are open now, dispatch begins at launch. */
+/** Live now: orders ship in 3–5 working days. */
 export const PREORDER_LABEL = "Pre-order open";
-export const LAUNCH_DATE_LABEL = "15 August";
+export const LAUNCH_DATE_LABEL = "3–5 working days";
 export const PREORDER_NOTE =
-  "Pre-order open — delivery will start 15 August.";
-export const PREORDER_NOTE_SHORT = "Delivery starts 15 August";
+  "Delivery in 3–5 working days.";
+export const PREORDER_NOTE_SHORT = "Delivery in 3–5 working days";
 
 export interface JewelPiece {
   handle: string;

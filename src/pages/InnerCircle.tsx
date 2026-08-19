@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import PageSEO from "@/components/PageSEO";
 import Footer from "@/components/Footer";
+import JoinInnerCircleForm from "@/components/members/JoinInnerCircleForm";
+
 
 /* The Inner Circle — a quiet holding page for the members' list.
    Live at /innercircle (and /inner-circle) so the link can be shared now. */

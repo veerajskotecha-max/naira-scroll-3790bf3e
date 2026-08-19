@@ -194,9 +194,47 @@ const CartDrawer = () => {
                 <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(orderTotal)}</span>
               </div>
 
+              {/* Inner Circle opt-in */}
+              <div className="border px-3 py-2.5" style={{ borderColor: "hsl(36 47% 46% / 0.3)", backgroundColor: "hsl(33 41% 96%)" }}>
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={optIn}
+                    onChange={(e) => setOptIn(e.target.checked)}
+                    className="mt-0.5 h-3.5 w-3.5 accent-[hsl(186_35%_28%)]"
+                  />
+                  <span className="text-[12px] leading-[1.5]" style={{ color: "hsl(0 0% 35%)" }}>
+                    <Sparkles size={11} className="inline mb-0.5 mr-1" style={{ color: "hsl(36 47% 46%)" }} />
+                    Register me for the <strong className="font-semibold">Inner Circle</strong> — pre-launch access and members-only pricing.
+                  </span>
+                </label>
+                {optIn && (
+                  <input
+                    type="email"
+                    value={optEmail}
+                    onChange={(e) => setOptEmail(e.target.value)}
+                    placeholder="Email address"
+                    maxLength={255}
+                    className="mt-2 w-full border-b bg-transparent px-1 py-2 text-[12px] outline-none"
+                    style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 25%)" }}
+                  />
+                )}
+                {!user && (
+                  <Link
+                    to="/auth"
+                    onClick={() => setDrawerOpen(false)}
+                    className="mt-1.5 inline-block text-[11px] underline underline-offset-2"
+                    style={{ color: "hsl(36 47% 38%)" }}
+                  >
+                    Create an account to track your orders
+                  </Link>
+                )}
+              </div>
+
               {/* CTA */}
               <button
-                onClick={checkout}
+                onClick={handleCheckout}
+
                 disabled={isLoading || isSyncing}
                 className="press-scale w-full py-3.5 text-[13px] font-medium uppercase tracking-[0.1em] flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
                 style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}

@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { getProductReviews } from "@/data/productReviews";
 import { Star, Camera, X } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -220,6 +221,7 @@ const filters = ["All Reviews", "With Photos", "5★", "4★", "3★"];
 
 
 interface Review {
+  no?: number;
   name: string;
   initials: string;
   verified: boolean;
@@ -560,6 +562,9 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
               style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
             >
               <div className="flex items-center gap-3 mb-3">
+                <span className="ml-auto order-last text-[10px] tracking-[0.08em]" style={{ color: "hsl(var(--muted-foreground))" }}>
+                  #{review.no ?? i + 1}
+                </span>
                 <Avatar className="h-9 w-9">
                   <AvatarFallback className="text-[12px] font-medium bg-secondary text-secondary-foreground">
                     {review.initials}

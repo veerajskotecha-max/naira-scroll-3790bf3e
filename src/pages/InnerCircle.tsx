@@ -41,26 +41,26 @@ const InnerCircle = () => (
           OPENING SOON
         </p>
 
-        <div className="mt-10 flex w-full max-w-[320px] flex-col items-stretch gap-3">
+        <div className="mt-10 flex w-full max-w-[360px] flex-col items-center gap-4">
+          <JoinInnerCircleForm source="inner-circle" cta="Join the Inner Circle" />
+          <Link
+            to="/auth"
+            className="border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
+            style={jost}
+          >
+            REGISTER NOW / SIGN IN →
+          </Link>
           <a
             href={WHATSAPP}
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative block overflow-hidden bg-[#1A1614] px-6 py-4 text-center"
-          >
-            <span className="absolute inset-0 translate-y-full bg-[#99B4AF] transition-transform duration-500 ease-out group-hover:translate-y-0" />
-            <span className="relative text-[11px] font-light uppercase tracking-[0.32em] text-[#FFF8F5]" style={jost}>
-              Request an invitation
-            </span>
-          </a>
-          <Link
-            to="/jewellery"
-            className="border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
+            className="text-[10px] tracking-[0.3em] text-[#1A1614]/45"
             style={jost}
           >
-            MEANWHILE, BROWSE THE JEWELLERY →
-          </Link>
+            OR REQUEST AN INVITATION ON WHATSAPP
+          </a>
         </div>
+
       </section>
       <Footer />
     </main>

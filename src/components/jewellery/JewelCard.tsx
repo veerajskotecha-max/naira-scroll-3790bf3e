@@ -182,8 +182,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           style={{ transform: "perspective(900px)" }}
         >
           <img
-            src={cdn(piece.image, 800)}
-            srcSet={`${cdn(piece.image, 500)} 500w, ${cdn(piece.image, 800)} 800w, ${cdn(piece.image, 1100)} 1100w`}
+            src={cdn(frontImg, 800)}
+            srcSet={`${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 800)} 800w, ${cdn(frontImg, 1100)} 1100w`}
             sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
             alt={piece.name}
             loading="lazy"
@@ -209,11 +209,13 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
+              /* Earrings: push into the head/ear area so the worn piece reads. */
               style={
                 piece.category === "Earrings"
-                  ? { objectPosition: "center top" }
+                  ? { objectPosition: "center 14%", transform: "scale(1.6)" }
                   : undefined
               }
+
               className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}

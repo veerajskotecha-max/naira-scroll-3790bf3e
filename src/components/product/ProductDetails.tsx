@@ -161,13 +161,15 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       </div>
 
       {/* Payment options, stated with the price rather than buried in the cart.
-          Checkout runs a single Razorpay gateway — UPI, cards, wallets and net
-          banking. No COD: promising it here and not offering it at checkout is
-          worse than not mentioning payment at all. */}
+          COD is the decisive signal for a lot of Indian shoppers, so it leads.
+          It is a Shopify manual payment method, enabled 19 Aug 2026; prepaid
+          runs through Razorpay. If COD is ever switched off in Shopify, this
+          line and the two below have to come down with it — a payment promise
+          the checkout cannot honour is worse than saying nothing. */}
       <div className="flex items-center gap-2 mt-1.5">
-        <Wallet size={12} strokeWidth={1.5} style={{ color: "hsl(0 0% 55%)" }} />
+        <Wallet size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-          UPI, cards, wallets &amp; net banking · secure checkout
+          <strong className="font-medium">Cash on Delivery</strong> available · UPI, cards &amp; net banking
         </span>
       </div>
 

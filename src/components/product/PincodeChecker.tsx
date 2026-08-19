@@ -110,7 +110,7 @@ const PincodeChecker = () => {
             </span>
           </div>
           <p className="text-[11px] pl-[21px]" style={{ color: "hsl(0 0% 50%)" }}>
-            Prepaid only · UPI, cards, wallets and net banking accepted
+            Cash on Delivery available · UPI, cards, wallets and net banking accepted
           </p>
         </div>
       )}

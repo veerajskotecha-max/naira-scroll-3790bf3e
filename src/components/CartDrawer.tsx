@@ -163,7 +163,7 @@ const CartDrawer = () => {
               </button>
               {/* Trust row */}
               <div className="flex items-center justify-center gap-2 flex-wrap">
-                {["UPI", "VISA", "MC", "RAZORPAY"].map((b) => (
+                {["UPI", "COD", "VISA", "MC", "RAZORPAY"].map((b) => (
                   <span key={b} className="px-1.5 py-0.5 text-[9px] font-bold border rounded tracking-wide" style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 45%)" }}>{b}</span>
                 ))}
                 <span className="flex items-center gap-1 text-[10px]" style={{ color: "hsl(0 0% 55%)" }}>

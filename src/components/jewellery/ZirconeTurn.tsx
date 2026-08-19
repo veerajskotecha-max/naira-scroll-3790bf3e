@@ -82,25 +82,42 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set([lineL, lineR], { scaleX: 0 });
       gsap.set(lineL, { transformOrigin: "100% 50%" });
       gsap.set(lineR, { transformOrigin: "0% 50%" });
-      gsap.set(finale, { opacity: 0, y: 18 });
+      gsap.set(finale, { opacity: 0, y: 14 });
       gsap.set(card, { scale: 1.08 });
       // Each face carries its own rotationY. The card itself never rotates —
       // rotating one shared card is what forced the 360° flip-card version.
       gsap.set(faceA, { rotationY: 0, autoAlpha: 1, force3D: true });
       gsap.set(faceB, { rotationY: 46, autoAlpha: 0, force3D: true });
 
+      /*
+        The turn is triggered by the RING, not the section.
+
+        Triggering on the section root meant the clock started as soon as its
+        top edge crossed 75% of the viewport — while the ring itself was still
+        below the fold. Measured on a 393x780 phone, the ring sat motionless at
+        0° for the first ~240px of visible scrolling, did its entire turn in
+        about 120px, and was home again before the section was even centred.
+        That is the "too late, then too fast" this kept being described as.
+
+        Anchoring to the ring's own box makes the mapping honest: the turn
+        begins as the ring enters the lower edge of the screen and finishes as
+        it leaves the top, so every degree of rotation is spent on screen and
+        rotation speed tracks scroll speed at any section height.
+
+        Still no pinning — this section sits inside an overflow-hidden wrapper
+        where pinning makes the page jump.
+      */
       const tl = gsap.timeline({
-        // No pinning on any breakpoint: this section lives inside an
-        // overflow-hidden / isolated wrapper, and pinning there makes the
-        // page jump and flicker. Instead the turn is mapped onto the whole
-        // travel of the section through the viewport — the ring starts
-        // turning the moment it appears and lands its full revolution just as
-        // the section leaves, so rotation speed always matches scroll speed.
         scrollTrigger: {
-          trigger: root,
-          start: isDesktop ? "top 85%" : "top 75%",
-          end: isDesktop ? "+=110%" : "+=120%",
-          scrub: 0.45,
+          trigger: card,
+          // Not the ring's full edge-to-edge travel: at 88%/12% the arc spent
+          // its first and last beats with the ring hugging the bottom or top
+          // of the screen, so the band callout landed at 0.75 of the viewport
+          // and the stone callout at 0.30. Pulling the range in keeps every
+          // beat inside the comfortable middle band where the ring reads.
+          start: "top 78%",
+          end: "bottom 22%",
+          scrub: isDesktop ? 0.5 : 0.35,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
         },
@@ -110,37 +127,63 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
 
 
       tl
-        .to(callL, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.06)
-        .to(lineL, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.08)
-        .to([callL, lineL], { opacity: 0, duration: 0.04 }, 0.24)
+        // ── out to the 3/4 angle ──────────────────────────────────────────
+        .to(faceA, { rotationY: 46, duration: 0.30 }, 0.02)
+        .to(callL, { opacity: 1, y: 0, duration: 0.06, ease: "power2.out" }, 0.18)
+        .to(lineL, { scaleX: 1, duration: 0.06, ease: "power2.out" }, 0.20)
+        .to(hint, { opacity: 0, duration: 0.08 }, 0.22)
+        .to([callL, lineL], { opacity: 0, duration: 0.05 }, 0.34)
 
-        // out to the 3/4 angle
-        .to(faceA, { rotationY: 46, duration: 0.26, ease: "power1.in" }, 0.05)
         // faceB sits above faceA in the DOM, so it fades up over a face that
         // is still fully opaque — the background is never visible between
         // them. Only once B is solid is A dropped, in one frame.
-        .to(faceB, { autoAlpha: 1, duration: 0.08 }, 0.31)
-        .set(faceA, { autoAlpha: 0 }, 0.39)
-        .to(faceB, { rotationY: 0, duration: 0.22, ease: "power1.out" }, 0.39)
+        .to(faceB, { autoAlpha: 1, duration: 0.07 }, 0.30)
+        .set(faceA, { autoAlpha: 0 }, 0.37)
+        .to(faceB, { rotationY: 0, duration: 0.23, ease: "power1.out" }, 0.37)
 
-        .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.5)
-        .to(lineR, { scaleX: 1, duration: 0.05, ease: "power2.out" }, 0.52)
-        .to([callR, lineR], { opacity: 0, duration: 0.04 }, 0.66)
+        // ── the reveal: square-on, centred, held for the stone callout ────
+        .to(callR, { opacity: 1, y: 0, duration: 0.06, ease: "power2.out" }, 0.60)
+        .to(lineR, { scaleX: 1, duration: 0.06, ease: "power2.out" }, 0.62)
+        .to([callR, lineR], { opacity: 0, duration: 0.05 }, 0.80)
 
-        // and home. The same rule in reverse: restore A underneath while B
-        // still covers it, then fade B out to reveal it.
-        .to(faceB, { rotationY: 46, duration: 0.12, ease: "power1.in" }, 0.7)
-        .set(faceA, { rotationY: 46, autoAlpha: 1 }, 0.82)
-        .to(faceB, { autoAlpha: 0, duration: 0.08 }, 0.82)
-        .to(faceA, { rotationY: 0, duration: 0.1, ease: "power1.out" }, 0.9)
+        // ── and home, the same rule in reverse: restore A underneath while
+        //    B still covers it, then fade B out to reveal it ───────────────
+        .to(faceB, { rotationY: 46, duration: 0.14, ease: "power1.in" }, 0.78)
+        .set(faceA, { rotationY: 46, autoAlpha: 1 }, 0.92)
+        .to(faceB, { autoAlpha: 0, duration: 0.06 }, 0.92)
+        .to(faceA, { rotationY: 0, duration: 0.08, ease: "power1.out" }, 0.94)
 
-        .to(card, { scale: 0.96, duration: 0.5, ease: "power1.out" }, 0.4)
-        .to(shadow, { scaleX: 0.7, opacity: 0.4, duration: 0.14 }, 0.8)
-        .to(hint, { opacity: 0, duration: 0.08 }, 0.78)
-        .to(finale, { opacity: 1, y: 0, duration: 0.08, ease: "power2.out" }, 0.9);
+        .to(card, { scale: 0.98, duration: 0.6, ease: "power1.out" }, 0.3)
+        .to(shadow, { scaleX: 0.78, opacity: 0.45, duration: 0.2 }, 0.7);
 
 
-      return () => { tl.scrollTrigger?.kill(); tl.kill(); };
+      /*
+        The finale carries the only call to action in this section, so it is
+        deliberately NOT on the scrubbed timeline. It used to fade in at 0.9 of
+        the turn, which on a phone meant it was still invisible for 18 of the
+        20 sampled scroll positions where the section was on screen — the block
+        holds its layout space either way, so what the visitor actually saw was
+        a tall empty gap above "SCROLL - IT TURNS", with the Enquire button
+        never appearing at all.
+
+        It now reveals itself the moment it enters the viewport and stays.
+      */
+      const finaleIn = gsap.fromTo(
+        finale,
+        { opacity: 0, y: 14 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: { trigger: finale, start: "top 94%", once: true },
+        },
+      );
+
+      return () => {
+        tl.scrollTrigger?.kill(); tl.kill();
+        finaleIn.scrollTrigger?.kill(); finaleIn.kill();
+      };
     });
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
@@ -188,8 +231,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
             </div>
 
             {/* callout — band (left) — dot lands on ring band */}
-            <div data-call-l className="absolute left-1 right-[calc(50%+19vw)] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-6 md:right-[calc(50%+13vw)] lg:left-10">
-              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#8A6A2F] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
+            <div data-call-l className="absolute left-1 right-[calc(50%+27vw)] top-[62%] z-20 flex -translate-y-1/2 items-center md:left-6 md:right-[calc(50%+13vw)] lg:left-10">
+              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[10px] leading-[1.35] tracking-[0.07em] text-[#8A6A2F] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
                 18K GOLD FINISHED
               </span>
               <span data-line-l className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
@@ -197,10 +240,10 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
             </div>
 
             {/* callout — stone (right) — dot lands on centered zircone */}
-            <div data-call-r className="absolute left-[calc(50%+6vw)] right-1 top-[42%] z-20 flex -translate-y-1/2 items-center md:left-[calc(50%+5vw)] md:right-6 md:top-[46%] lg:right-10">
+            <div data-call-r className="absolute left-[calc(50%+26vw)] right-1 top-[42%] z-20 flex -translate-y-1/2 items-center md:left-[calc(50%+5vw)] md:right-6 md:top-[46%] lg:right-10">
               <span className="block h-1 w-1 shrink-0 rounded-full bg-[#C99A4C] md:h-1.5 md:w-1.5" aria-hidden />
               <span data-line-r className="block h-px flex-1 bg-[#C99A4C]" aria-hidden />
-              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2.5 py-1.5 text-[12px] leading-tight tracking-[0.12em] text-[#8A6A2F] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
+              <span className="border border-[#C99A4C]/60 bg-[#FBF3EC]/95 px-2 py-1 text-[10px] leading-[1.35] tracking-[0.07em] text-[#8A6A2F] md:whitespace-nowrap md:px-4 md:py-2 md:text-[12px] md:tracking-[0.2em]" style={jost}>
                 BRILLIANT-CUT ZIRCONE
               </span>
             </div>

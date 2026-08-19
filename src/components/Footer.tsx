@@ -112,8 +112,11 @@ const Footer = () => {
             <img
               src={nairaLogo}
               alt="NAIRA"
+              loading="lazy"
+              decoding="async"
               className="w-[100px] md:w-[120px] lg:w-[150px] h-auto max-w-full mb-4 brightness-0 invert"
             />
+
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"
               style={{ color: CREAM_MUTED }}

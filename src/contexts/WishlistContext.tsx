@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { trackPixel } from "@/lib/pixel";
 
 export interface WishlistItem {
   id: string;
@@ -42,6 +43,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   const addItem = useCallback((item: WishlistItem) => {
     setItems((prev) => {
       if (prev.some((i) => i.id === item.id)) return prev;
+      trackPixel("AddToWishlist", { content_ids: [item.id], content_name: item.name, content_type: "product" });
       return [...prev, item];
     });
   }, []);
@@ -55,6 +57,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
       if (prev.some((i) => i.id === item.id)) {
         return prev.filter((i) => i.id !== item.id);
       }
+      trackPixel("AddToWishlist", { content_ids: [item.id], content_name: item.name, content_type: "product" });
       return [...prev, item];
     });
   }, []);

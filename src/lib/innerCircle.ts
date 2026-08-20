@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPixel } from "@/lib/pixel";
 
 export const memberEmailSchema = z
   .string()
@@ -52,5 +53,9 @@ export const joinInnerCircle = async ({
     if (error.code === "23505") return { ok: true, already: true };
     return { ok: false, message: "Something went wrong. Please try again." };
   }
+  /* Meta Pixel: an email handed over for future contact is a Lead, and the
+     Inner Circle list itself is an opt-in subscription. */
+  trackPixel("Lead", { content_name: "Inner Circle", content_category: source });
+  trackPixel("Subscribe", { value: "0.00", currency: "INR", predicted_ltv: "0.00" });
   return { ok: true, already: false };
 };

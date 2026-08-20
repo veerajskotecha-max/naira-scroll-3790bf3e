@@ -14,6 +14,7 @@ import CartDrawer from "./components/CartDrawer";
 import WishlistDrawer from "./components/WishlistDrawer";
 import Index from "./pages/Index.tsx";
 import ScrollToTop from "./components/ScrollToTop";
+import PixelEvents from "./components/PixelEvents";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
 // a flash on first paint (cursor, film grain, page curtain, scroll bloom).
 import FeatherCursor from "./components/wow/FeatherCursor";
@@ -57,6 +58,7 @@ const AppShell = () => {
   return (
     <>
       <ScrollToTop />
+      <PixelEvents />
       <PageCurtain />
       <FilmGrain />
       <ScrollBloom />

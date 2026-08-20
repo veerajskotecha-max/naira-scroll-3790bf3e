@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Tag, Check, X, Plus, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { fetchShopifyProducts, formatShopifyPrice } from "@/lib/shopify";
-import { getPromoCode, setPromoCode, clearPromoCode, PROMO_EVENT, WELCOME_PROMO_CODE } from "@/lib/promo";
+import { getPromoCode, setPromoCode, clearPromoCode, PROMO_EVENT, ACCEPTED_PROMO_CODES } from "@/lib/promo";
 
-const VALID_CODES = [WELCOME_PROMO_CODE];
+const VALID_CODES = ACCEPTED_PROMO_CODES;
 
 export const CartPromoField = () => {
   const [applied, setApplied] = useState<string | null>(() => getPromoCode());

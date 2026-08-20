@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
+import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
 import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
 
@@ -74,6 +75,17 @@ const JewelDetail = () => {
   const isScrolling = useRef(false);
   const [stickyBarVisible, setStickyBarVisible] = useState(false);
   const [heartPopped, setHeartPopped] = useState(false);
+
+  /* Meta Pixel ViewContent — once per piece viewed. */
+  useEffect(() => {
+    if (!piece) return;
+    trackPixel("ViewContent", productParams({
+      id: piece.handle,
+      name: piece.name,
+      price: piece.price,
+      category: piece.category,
+    }));
+  }, [piece?.handle]);
 
   /* The mobile pre-order bar stays out of the way until the main CTA
      block has scrolled up past the viewport, then slides in. */

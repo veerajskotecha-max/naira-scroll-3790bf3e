@@ -17,9 +17,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { productParams, trackPixel } from "@/lib/pixel";
 import { availabilityByOption, formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
 
 const fallbackSizes = ["XS", "S", "M", "L", "XL"];
+
 
 const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) => {
   const sizeOptions = useMemo(() => product?.options.find((option) => option.name.toLowerCase() === "size")?.values ?? fallbackSizes, [product]);
@@ -37,6 +39,18 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const { addItem, buyNow, setDrawerOpen } = useCart();
 
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
+
+  /* Meta Pixel ViewContent — fires once the Shopify product has resolved. */
+  useEffect(() => {
+    if (!product) return;
+    trackPixel("ViewContent", productParams({
+      id: product.handle,
+      name: product.title,
+      price: Number(product.priceRange.minVariantPrice.amount),
+      category: product.productType || undefined,
+      currencyCode: product.priceRange.minVariantPrice.currencyCode,
+    }));
+  }, [product?.handle]);
 
   const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
     const variants = product?.variants.edges.map((edge) => edge.node) ?? [];

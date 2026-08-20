@@ -9,6 +9,7 @@ import {
   updateShopifyCartLine,
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl } from "@/lib/promo";
+import { productParams, trackPixel } from "@/lib/pixel";
 
 export interface CartItem {
   id: string;
@@ -97,7 +98,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     commitCart(emptyCart);
   }, [commitCart]);
 
-  const addItem = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1): Promise<string | null> => {
+  const addItemToCart = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1): Promise<string | null> => {
     if (!item.variantId) {
       toast.error("This product is not available for checkout yet.");
       return null;
@@ -164,6 +165,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart, commitCart]);
 
+  /* Meta Pixel AddToCart — only on a successful add (a checkout URL came back). */
+  const addItem = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
+    const url = await addItemToCart(item, quantity);
+    if (url) {
+      trackPixel("AddToCart", productParams({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        currencyCode: item.currencyCode,
+        quantity,
+      }));
+    }
+    return url;
+  }, [addItemToCart]);
 
   const removeItem = useCallback(async (id: string, size?: string) => {
     const latest = loadCart();
@@ -293,6 +308,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [clearCart, commitCart]);
 
   const openCheckout = useCallback((url: string) => {
+    const latest = loadCart();
+    trackPixel("InitiateCheckout", {
+      currency: latest.items[0]?.currencyCode || "INR",
+      value: latest.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      num_items: latest.items.reduce((sum, i) => sum + i.quantity, 0),
+      content_ids: latest.items.map((i) => i.id),
+      content_type: "product",
+    });
     const target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));
     const opened = window.open(target, "_blank", "noopener,noreferrer");
     // Popup blockers reject window.open outside a direct click (Buy now awaits

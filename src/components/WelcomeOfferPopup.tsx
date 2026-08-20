@@ -8,6 +8,7 @@ import {
   setPromoCode,
 } from "@/lib/promo";
 import { useCart } from "@/contexts/CartContext";
+import { trackPixel } from "@/lib/pixel";
 
 type Channel = "email" | "whatsapp";
 
@@ -45,6 +46,7 @@ const WelcomeOfferPopup = () => {
     }
     setError("");
     savePromoLead({ channel, value: value.trim() });
+    trackPixel("Lead", { content_name: "Welcome offer", content_category: channel });
     setPromoCode(WELCOME_PROMO_CODE);
     markPromoPopupSeen();
     setClaimed(true);

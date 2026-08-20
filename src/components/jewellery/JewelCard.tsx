@@ -248,7 +248,15 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               {piece.tag}
             </span>
           )}
-          {off > 0 && (
+          {soldOut && (
+            <span
+              className="absolute right-3 top-3 bg-nf-ink px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
+              style={jost}
+            >
+              SOLD OUT
+            </span>
+          )}
+          {off > 0 && !soldOut && (
             <span
               className="absolute right-3 top-3 bg-nf-gold-deep px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
               style={jost}

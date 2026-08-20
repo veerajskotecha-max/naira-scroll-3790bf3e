@@ -307,22 +307,24 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
           <button
             onClick={handleAdd}
-            disabled={adding || cartLoading}
+            disabled={soldOut || adding || cartLoading}
             className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 disabled:opacity-60 sm:text-[10.5px] sm:tracking-nf-30"
             style={jost}
           >
-            {adding ? "ADDING…" : "ADD TO CART"}
+            {soldOut ? "SOLD OUT" : adding ? "ADDING…" : "ADD TO CART"}
           </button>
-          <button
-            onClick={handleBuyNow}
-            disabled={buying || adding || cartLoading}
-            className="press-scale group/btn relative inline-flex min-h-[40px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory disabled:opacity-60 sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
-            style={jost}
-          >
-            <span className="absolute inset-0 origin-left scale-x-0 bg-nf-ink transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
-            <span className="relative">{buying ? "OPENING…" : "SHOP NOW"}</span>
-            <span className="relative transition-transform duration-300 ease-out group-hover/btn:translate-x-1">→</span>
-          </button>
+          {!soldOut && (
+            <button
+              onClick={handleBuyNow}
+              disabled={buying || adding || cartLoading}
+              className="press-scale group/btn relative inline-flex min-h-[40px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory disabled:opacity-60 sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
+              style={jost}
+            >
+              <span className="absolute inset-0 origin-left scale-x-0 bg-nf-ink transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />
+              <span className="relative">{buying ? "OPENING…" : "SHOP NOW"}</span>
+              <span className="relative transition-transform duration-300 ease-out group-hover/btn:translate-x-1">→</span>
+            </button>
+          )}
         </div>
 
       </div>

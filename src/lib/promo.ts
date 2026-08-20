@@ -5,6 +5,9 @@
 export const WELCOME_PROMO_CODE = "NAIRA10";
 export const WELCOME_PROMO_LABEL = "10% off your first order";
 
+/** Codes the cart promo field accepts; Shopify still applies the real discount. */
+export const ACCEPTED_PROMO_CODES = [WELCOME_PROMO_CODE, "FRIENDSANDFAMILY"];
+
 const CODE_KEY = "naira-promo-code";
 const SEEN_KEY = "naira-promo-popup-seen";
 const LEAD_KEY = "naira-promo-lead";

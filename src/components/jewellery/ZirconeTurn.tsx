@@ -105,7 +105,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           end: isDesktop ? "+=110%" : "+=120%",
           scrub: 0.45,
           invalidateOnRefresh: true,
-          fastScrollEnd: true,
+          // fastScrollEnd removed: it snaps the timeline forward in one frame
+          // after a fast flick, which reads as a pop/flash on desktop.
         },
         defaults: { ease: "none" },
       });
@@ -122,8 +123,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         // faceB sits above faceA in the DOM, so it fades up over a face that
         // is still fully opaque — the background is never visible between
         // them. Only once B is solid is A dropped, in one frame.
-        .to(faceB, { autoAlpha: 1, duration: 0.08 }, 0.31)
-        .set(faceA, { autoAlpha: 0 }, 0.39)
+        .to(faceB, { opacity: 1, duration: 0.08 }, 0.31)
+        .set(faceA, { opacity: 0 }, 0.39)
         .to(faceB, { rotationY: 0, duration: 0.22, ease: "power1.out" }, 0.39)
 
         .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.5)
@@ -133,8 +134,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         // and home. The same rule in reverse: restore A underneath while B
         // still covers it, then fade B out to reveal it.
         .to(faceB, { rotationY: 46, duration: 0.12, ease: "power1.in" }, 0.7)
-        .set(faceA, { rotationY: 46, autoAlpha: 1 }, 0.82)
-        .to(faceB, { autoAlpha: 0, duration: 0.08 }, 0.82)
+        .set(faceA, { rotationY: 46, opacity: 1 }, 0.82)
+        .to(faceB, { opacity: 0, duration: 0.08 }, 0.82)
         .to(faceA, { rotationY: 0, duration: 0.1, ease: "power1.out" }, 0.9)
 
         .to(card, { scale: 0.96, duration: 0.5, ease: "power1.out" }, 0.4)

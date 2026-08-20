@@ -471,12 +471,23 @@ const JewelDetail = () => {
               ))}
             </dl>
 
-            {/* Delivery badge */}
+            {/* Availability / delivery badge — live from Shopify */}
             <div className="flex items-center gap-2 mt-3">
-              <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
-              <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
-              </span>
+              {soldOut ? (
+                <>
+                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(0 65% 50%)" }} />
+                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(0 65% 42%)" }}>
+                    Sold Out
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
+                  <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
+                  </span>
+                </>
+              )}
             </div>
 
 

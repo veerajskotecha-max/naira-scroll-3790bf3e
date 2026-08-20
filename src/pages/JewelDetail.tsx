@@ -211,7 +211,7 @@ const JewelDetail = () => {
       // No price. jewellery.ts marks it "internal record only; not displayed
       // during pre-order", and the page shows "Price shared on WhatsApp enquiry"
       // instead — publishing it here contradicted the visible page.
-      availability: "https://schema.org/PreOrder",
+      availability: soldOut ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       seller: { "@type": "Organization", name: "Naira Flore" },
     },
   };

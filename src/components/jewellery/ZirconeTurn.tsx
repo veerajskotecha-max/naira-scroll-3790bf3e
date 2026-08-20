@@ -86,8 +86,11 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(card, { scale: 1.08 });
       // Each face carries its own rotationY. The card itself never rotates —
       // rotating one shared card is what forced the 360° flip-card version.
-      gsap.set(faceA, { rotationY: 0, autoAlpha: 1, force3D: true });
-      gsap.set(faceB, { rotationY: 46, autoAlpha: 0, force3D: true });
+      // Plain opacity, never autoAlpha: toggling `visibility` on a 3D-transformed
+      // layer makes Chrome drop and re-create the composited layer, and that
+      // re-rasterisation is the one-frame flash seen on desktop/tablet.
+      gsap.set(faceA, { rotationY: 0, opacity: 1, force3D: true });
+      gsap.set(faceB, { rotationY: 46, opacity: 0, force3D: true });
 
       const tl = gsap.timeline({
         // No pinning on any breakpoint: this section lives inside an

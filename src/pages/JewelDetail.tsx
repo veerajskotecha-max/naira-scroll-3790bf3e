@@ -123,6 +123,8 @@ const JewelDetail = () => {
   if (!piece) return <Navigate to="/jewellery" replace />;
 
   const wishlisted = isWishlisted(piece.handle);
+  /* Live Shopify stock state, refreshed by useLiveJewel. */
+  const soldOut = piece.availableForSale === false;
   const keyFacts = deriveKeyFacts(piece);
   /* Same-category pieces lead the recommendations; the atelier's other
      work fills any remaining slots. */

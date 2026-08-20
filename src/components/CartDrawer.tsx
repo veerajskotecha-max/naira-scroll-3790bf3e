@@ -9,6 +9,7 @@ import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import { joinInnerCircle } from "@/lib/innerCircle";
 import { supabase } from "@/integrations/supabase/client";
+import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
 
 const SHIPPING_CHARGE = 150;
 
@@ -22,9 +23,15 @@ const CartDrawer = () => {
   // Inner Circle opt-in shown at checkout.
   const [optIn, setOptIn] = useState(true);
   const [optEmail, setOptEmail] = useState("");
+  const [promoCode, setActivePromoCode] = useState<string | null>(() => getPromoCode());
   useEffect(() => {
     if (user?.email) setOptEmail(user.email);
   }, [user]);
+  useEffect(() => {
+    const syncPromo = () => setActivePromoCode(getPromoCode());
+    window.addEventListener(PROMO_EVENT, syncPromo);
+    return () => window.removeEventListener(PROMO_EVENT, syncPromo);
+  }, []);
 
   // Reconcile with the real Shopify cart whenever the drawer opens, so lines
   // left over from an older session can never surprise the shopper.
@@ -34,7 +41,9 @@ const CartDrawer = () => {
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
-  const orderTotal = subtotal + SHIPPING_CHARGE;
+  const discountRate = getPromoDiscountRate(promoCode);
+  const discountAmount = Math.round(subtotal * discountRate);
+  const orderTotal = subtotal - discountAmount + SHIPPING_CHARGE;
 
   /* Capture the opt-in email and log the order against the member account,
      then hand over to the Shopify checkout as before. */
@@ -188,6 +197,14 @@ const CartDrawer = () => {
                 <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Shipping</span>
                 <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(SHIPPING_CHARGE)}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px]" style={{ color: "hsl(142 50% 32%)" }}>
+                    {promoCode} ({Math.round(discountRate * 100)}% off)
+                  </span>
+                  <span className="text-[13px] font-medium" style={{ color: "hsl(142 50% 32%)" }}>−{formatPrice(discountAmount)}</span>
+                </div>
+              )}
               {/* Total */}
               <div className="flex items-center justify-between pt-1.5 border-t" style={{ borderColor: "hsl(0 0% 90%)" }}>
                 <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Total</span>

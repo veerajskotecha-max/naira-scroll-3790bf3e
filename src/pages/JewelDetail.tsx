@@ -806,22 +806,44 @@ const JewelDetail = () => {
         >
           <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 25%)" }} />
         </button>
-        <button
-          onClick={handleAddToCart}
-          disabled={buying || cartLoading}
-          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
-          style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
-        >
-          Add to Cart
-        </button>
-        <button
-          onClick={handleBuyNow}
-          disabled={buying || cartLoading}
-          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
-          style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
-        >
-          {buying ? "Opening…" : "Shop now"}
-        </button>
+        {soldOut ? (
+          <>
+            <span
+              className="flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border"
+              style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 45%)" }}
+            >
+              Sold Out
+            </span>
+            <a
+              href={sizedEnquiryHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em]"
+              style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
+            >
+              Notify me
+            </a>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={handleAddToCart}
+              disabled={buying || cartLoading}
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
+              style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={buying || cartLoading}
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
+              style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
+            >
+              {buying ? "Opening…" : "Shop now"}
+            </button>
+          </>
+        )}
 
       </div>
 

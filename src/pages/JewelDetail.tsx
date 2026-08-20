@@ -123,6 +123,8 @@ const JewelDetail = () => {
   if (!piece) return <Navigate to="/jewellery" replace />;
 
   const wishlisted = isWishlisted(piece.handle);
+  /* Live Shopify stock state, refreshed by useLiveJewel. */
+  const soldOut = piece.availableForSale === false;
   const keyFacts = deriveKeyFacts(piece);
   /* Same-category pieces lead the recommendations; the atelier's other
      work fills any remaining slots. */
@@ -209,7 +211,7 @@ const JewelDetail = () => {
       // No price. jewellery.ts marks it "internal record only; not displayed
       // during pre-order", and the page shows "Price shared on WhatsApp enquiry"
       // instead — publishing it here contradicted the visible page.
-      availability: "https://schema.org/PreOrder",
+      availability: soldOut ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       seller: { "@type": "Organization", name: "Naira Flore" },
     },
   };
@@ -469,12 +471,23 @@ const JewelDetail = () => {
               ))}
             </dl>
 
-            {/* Delivery badge */}
+            {/* Availability / delivery badge — live from Shopify */}
             <div className="flex items-center gap-2 mt-3">
-              <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
-              <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
-              </span>
+              {soldOut ? (
+                <>
+                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(0 65% 50%)" }} />
+                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(0 65% 42%)" }}>
+                    Sold Out
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
+                  <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
+                  </span>
+                </>
+              )}
             </div>
 
 
@@ -551,22 +564,34 @@ const JewelDetail = () => {
             <div id="product-actions" className="mt-6">
               <button
                 onClick={handleBuyNow}
-                disabled={buying || cartLoading}
+                disabled={soldOut || buying || cartLoading}
                 className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
                 style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
               >
-                {buying ? "Opening checkout…" : "Shop Now"}
+                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
               </button>
-              <button
-                onClick={handleAddToCart}
-                disabled={buying || cartLoading}
-                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)] disabled:opacity-60"
-                style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)", backgroundColor: "transparent" }}
-              >
-                Add to Cart
-              </button>
+              {soldOut ? (
+                <a
+                  href={sizedEnquiryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
+                  style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+                >
+                  <MessageSquare size={13} /> Notify me on WhatsApp
+                </a>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  disabled={buying || cartLoading}
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)] disabled:opacity-60"
+                  style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)", backgroundColor: "transparent" }}
+                >
+                  Add to Cart
+                </button>
+              )}
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
-                Secure payments · {PREORDER_NOTE_SHORT}
+                {soldOut ? "This piece is currently sold out — we'll let you know the moment it's back." : `Secure payments · ${PREORDER_NOTE_SHORT}`}
               </p>
               <div className="flex gap-3 mt-3">
                 <button
@@ -781,22 +806,44 @@ const JewelDetail = () => {
         >
           <Heart size={16} style={{ fill: wishlisted ? "hsl(0 70% 55%)" : "none", color: wishlisted ? "hsl(0 70% 55%)" : "hsl(0 0% 25%)" }} />
         </button>
-        <button
-          onClick={handleAddToCart}
-          disabled={buying || cartLoading}
-          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
-          style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
-        >
-          Add to Cart
-        </button>
-        <button
-          onClick={handleBuyNow}
-          disabled={buying || cartLoading}
-          className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
-          style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
-        >
-          {buying ? "Opening…" : "Shop now"}
-        </button>
+        {soldOut ? (
+          <>
+            <span
+              className="flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border"
+              style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 45%)" }}
+            >
+              Sold Out
+            </span>
+            <a
+              href={sizedEnquiryHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em]"
+              style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
+            >
+              Notify me
+            </a>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={handleAddToCart}
+              disabled={buying || cartLoading}
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
+              style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={buying || cartLoading}
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
+              style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
+            >
+              {buying ? "Opening…" : "Shop now"}
+            </button>
+          </>
+        )}
 
       </div>
 

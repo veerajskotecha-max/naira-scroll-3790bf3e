@@ -13,10 +13,15 @@ const PixelEvents = () => {
   const { pathname, search } = useLocation();
 
   // The very first PageView is fired by the inline snippet in index.html.
+  const firstRender = useRef(true);
   useEffect(() => {
-    if (window.history.state?.idx === 0 && pathname === "/") return;
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
     trackPageView();
   }, [pathname, search]);
+
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {

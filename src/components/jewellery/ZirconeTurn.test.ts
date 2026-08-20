@@ -44,8 +44,20 @@ describe("ZirconeTurn rotation limits", () => {
 
   it("never leaves both faces part-transparent at once", () => {
     // Whichever face arrives fades up over an opaque outgoing face; the
-    // outgoing one is only dropped afterwards, in a single frame.
-    expect(code).toMatch(/\.set\(faceA,\s*\{\s*autoAlpha:\s*0\s*\}/);
-    expect(code).not.toMatch(/to\(\s*\[\s*faceA\s*,\s*faceB\s*\][^)]*autoAlpha/);
+    // outgoing one is only dropped afterwards, in a single frame. Asserted on
+    // the shape rather than the property name, because the fade moved from
+    // autoAlpha to plain opacity for a separate reason (below).
+    expect(code).toMatch(/\.set\(faceA,\s*\{\s*(?:autoAlpha|opacity):\s*0\s*\}/);
+    expect(code).not.toMatch(/to\(\s*\[\s*faceA\s*,\s*faceB\s*\][^)]*(?:autoAlpha|opacity)/);
+  });
+
+  it("fades the faces with opacity, not autoAlpha", () => {
+    /*
+      autoAlpha writes visibility:hidden at zero. On a 3D-transformed layer
+      that makes Chrome discard and re-create the composited layer, and the
+      re-rasterisation on the way back is a one-frame flash on desktop. Plain
+      opacity keeps both faces on stable layers for the whole turn.
+    */
+    expect(code).not.toMatch(/autoAlpha/);
   });
 });

@@ -3,9 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Tag, Check, X, Plus, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { fetchShopifyProducts, formatShopifyPrice } from "@/lib/shopify";
-import { getPromoCode, setPromoCode, clearPromoCode, PROMO_EVENT, WELCOME_PROMO_CODE } from "@/lib/promo";
-
-const VALID_CODES = [WELCOME_PROMO_CODE];
+import { getPromoCode, setPromoCode, clearPromoCode, PROMO_EVENT, isAcceptedPromoCode, normalizePromoCode } from "@/lib/promo";
 
 export const CartPromoField = () => {
   const [applied, setApplied] = useState<string | null>(() => getPromoCode());
@@ -21,8 +19,8 @@ export const CartPromoField = () => {
 
   const apply = (event: React.FormEvent) => {
     event.preventDefault();
-    const code = value.trim().toUpperCase();
-    if (!VALID_CODES.includes(code)) {
+    const code = normalizePromoCode(value);
+    if (!isAcceptedPromoCode(code)) {
       setError("That code isn't valid right now.");
       return;
     }
@@ -40,7 +38,7 @@ export const CartPromoField = () => {
       >
         <span className="flex items-center gap-2 text-[12px]" style={{ color: "hsl(186 35% 24%)" }}>
           <Check size={13} strokeWidth={2} />
-          <strong className="font-semibold tracking-[0.08em]">{applied}</strong> applies at checkout
+          <strong className="font-semibold tracking-[0.08em]">{applied}</strong> applied
         </span>
         <button
           onClick={() => {

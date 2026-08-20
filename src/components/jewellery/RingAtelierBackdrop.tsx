@@ -145,7 +145,14 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
   const isPage = variant === "page";
   const isSticky = variant === "sticky";
 
-  // pointer parallax on the 3D layer
+  /* Pointer parallax on the 3D layer.
+     Two guards here exist purely to stop desktop/tablet flicker: the rAF loop
+     used to run forever on every mounted backdrop (the home page mounts two),
+     repainting full-viewport 3D layers every frame even while the section was
+     off-screen. That constant compositor churn is what made the ring section
+     shimmer while scrolling. Now the loop only runs while the backdrop is
+     visible AND the layer is still settling, and it parks itself the moment
+     the target is reached. Visually identical — same drift, same angles. */
   useEffect(() => {
     const root = rootRef.current;
     const layer = layerRef.current;
@@ -157,27 +164,53 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
     let ty = 0;
     let cx = 0;
     let cy = 0;
+    let visible = false;
 
     const tick = () => {
-      cx += (tx - cx) * 0.08;
-      cy += (ty - cy) * 0.08;
+      raf = 0;
+      const dx = tx - cx;
+      const dy = ty - cy;
+      cx += dx * 0.08;
+      cy += dy * 0.08;
       layer.style.transform = `rotateX(${cy.toFixed(2)}deg) rotateY(${cx.toFixed(2)}deg)`;
-      raf = requestAnimationFrame(tick);
+      // settled — stop burning frames until the pointer moves again
+      if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) return;
+      if (visible) raf = requestAnimationFrame(tick);
+    };
+
+    const wake = () => {
+      if (visible && !raf) raf = requestAnimationFrame(tick);
     };
 
     const onMove = (e: PointerEvent) => {
+      if (!visible) return;
       const r = root.getBoundingClientRect();
       tx = ((e.clientX - r.left) / r.width - 0.5) * 8;
       ty = -((e.clientY - r.top) / r.height - 0.5) * 6;
+      wake();
     };
 
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        // Pausing the decorative CSS keyframes off-screen keeps the compositor
+        // idle while the client is elsewhere on the page.
+        root.style.setProperty("--naira-ring-play", visible ? "running" : "paused");
+        if (visible) wake();
+        else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      },
+      { rootMargin: "120px" }
+    );
+    io.observe(root);
+
     window.addEventListener("pointermove", onMove, { passive: true });
-    raf = requestAnimationFrame(tick);
     return () => {
+      io.disconnect();
       window.removeEventListener("pointermove", onMove);
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
+
 
   // flower bloom wherever the client taps
   useEffect(() => {
@@ -278,9 +311,14 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
           100% { transform: rotate(calc(var(--t) + 16deg)) scale(1); }
         }
 
+        /* Off-screen the drift is parked (see the IntersectionObserver above) so
+           the compositor stays idle — no visual difference while in view. */
+        .naira-ring-motion { animation-play-state: var(--naira-ring-play, running); }
+
         @media (prefers-reduced-motion: reduce) {
           .naira-ring-motion { animation: none !important; }
         }
+
       `}</style>
 
       {/* pressed-flower paper wash */}

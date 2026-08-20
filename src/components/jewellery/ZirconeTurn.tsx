@@ -86,8 +86,11 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       gsap.set(card, { scale: 1.08 });
       // Each face carries its own rotationY. The card itself never rotates —
       // rotating one shared card is what forced the 360° flip-card version.
-      gsap.set(faceA, { rotationY: 0, autoAlpha: 1, force3D: true });
-      gsap.set(faceB, { rotationY: 46, autoAlpha: 0, force3D: true });
+      // Plain opacity, never autoAlpha: toggling `visibility` on a 3D-transformed
+      // layer makes Chrome drop and re-create the composited layer, and that
+      // re-rasterisation is the one-frame flash seen on desktop/tablet.
+      gsap.set(faceA, { rotationY: 0, opacity: 1, force3D: true });
+      gsap.set(faceB, { rotationY: 46, opacity: 0, force3D: true });
 
       const tl = gsap.timeline({
         // No pinning on any breakpoint: this section lives inside an
@@ -102,7 +105,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           end: isDesktop ? "+=110%" : "+=120%",
           scrub: 0.45,
           invalidateOnRefresh: true,
-          fastScrollEnd: true,
+          // fastScrollEnd removed: it snaps the timeline forward in one frame
+          // after a fast flick, which reads as a pop/flash on desktop.
         },
         defaults: { ease: "none" },
       });
@@ -119,8 +123,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         // faceB sits above faceA in the DOM, so it fades up over a face that
         // is still fully opaque — the background is never visible between
         // them. Only once B is solid is A dropped, in one frame.
-        .to(faceB, { autoAlpha: 1, duration: 0.08 }, 0.31)
-        .set(faceA, { autoAlpha: 0 }, 0.39)
+        .to(faceB, { opacity: 1, duration: 0.08 }, 0.31)
+        .set(faceA, { opacity: 0 }, 0.39)
         .to(faceB, { rotationY: 0, duration: 0.22, ease: "power1.out" }, 0.39)
 
         .to(callR, { opacity: 1, y: 0, duration: 0.05, ease: "power2.out" }, 0.5)
@@ -130,8 +134,8 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
         // and home. The same rule in reverse: restore A underneath while B
         // still covers it, then fade B out to reveal it.
         .to(faceB, { rotationY: 46, duration: 0.12, ease: "power1.in" }, 0.7)
-        .set(faceA, { rotationY: 46, autoAlpha: 1 }, 0.82)
-        .to(faceB, { autoAlpha: 0, duration: 0.08 }, 0.82)
+        .set(faceA, { rotationY: 46, opacity: 1 }, 0.82)
+        .to(faceB, { opacity: 0, duration: 0.08 }, 0.82)
         .to(faceA, { rotationY: 0, duration: 0.1, ease: "power1.out" }, 0.9)
 
         .to(card, { scale: 0.96, duration: 0.5, ease: "power1.out" }, 0.4)
@@ -180,8 +184,10 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
                 paint context on a 3D-transformed subtree, which is what made
                 the faces re-rasterise mid-turn and flash. */}
             <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
-              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ willChange: "transform, opacity", transform: "translateZ(0)" }} />
-              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ opacity: 0, willChange: "transform, opacity", transform: "translateZ(0)" }} />
+              {/* backfaceVisibility keeps each face on one stable composited
+                  layer through the turn, so Chrome never re-rasterises it. */}
+              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} decoding="sync" className="absolute inset-0 h-full w-full object-contain" style={{ willChange: "transform, opacity", transform: "translateZ(0)", backfaceVisibility: "hidden" }} />
+              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} decoding="sync" className="absolute inset-0 h-full w-full object-contain" style={{ opacity: 0, willChange: "transform, opacity", transform: "translateZ(0)", backfaceVisibility: "hidden" }} />
               {/* contact shadow */}
               <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
                 style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />

@@ -311,9 +311,14 @@ const RingAtelierBackdrop = ({ variant = "section" }: { variant?: "section" | "p
           100% { transform: rotate(calc(var(--t) + 16deg)) scale(1); }
         }
 
+        /* Off-screen the drift is parked (see the IntersectionObserver above) so
+           the compositor stays idle — no visual difference while in view. */
+        .naira-ring-motion { animation-play-state: var(--naira-ring-play, running); }
+
         @media (prefers-reduced-motion: reduce) {
           .naira-ring-motion { animation: none !important; }
         }
+
       `}</style>
 
       {/* pressed-flower paper wash */}

@@ -5,8 +5,25 @@
 export const WELCOME_PROMO_CODE = "NAIRA10";
 export const WELCOME_PROMO_LABEL = "10% off your first order";
 
-/** Codes the cart promo field accepts; Shopify still applies the real discount. */
-export const ACCEPTED_PROMO_CODES = [WELCOME_PROMO_CODE, "FRIENDSANDFAMILY"];
+export const PROMO_DISCOUNTS = {
+  NAIRA10: 0.1,
+  FRIENDSANDFAMILY: 0.2,
+} as const;
+
+export type PromoCode = keyof typeof PROMO_DISCOUNTS;
+export const ACCEPTED_PROMO_CODES = Object.keys(PROMO_DISCOUNTS) as PromoCode[];
+
+/** Removes pasted whitespace and punctuation so mobile autofill cannot invalidate a real code. */
+export const normalizePromoCode = (code: string) =>
+  code.normalize("NFKC").toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+export const isAcceptedPromoCode = (code: string): code is PromoCode =>
+  Object.prototype.hasOwnProperty.call(PROMO_DISCOUNTS, code);
+
+export const getPromoDiscountRate = (code: string | null): number => {
+  const normalized = normalizePromoCode(code ?? "");
+  return isAcceptedPromoCode(normalized) ? PROMO_DISCOUNTS[normalized] : 0;
+};
 
 const CODE_KEY = "naira-promo-code";
 const SEEN_KEY = "naira-promo-popup-seen";
@@ -32,7 +49,7 @@ export const getPromoCode = (): string | null => {
 
 export const setPromoCode = (code: string) => {
   try {
-    localStorage.setItem(CODE_KEY, code.trim().toUpperCase());
+    localStorage.setItem(CODE_KEY, normalizePromoCode(code));
   } catch {
     /* noop */
   }

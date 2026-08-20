@@ -57,6 +57,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     gallery.filter((g) => g !== frontImg)[0] ??
     null;
   const zircone = piece.handle.startsWith("zircone");
+  /* Live Shopify stock state — sold-out pieces stay visible but can't be bought. */
+  const soldOut = piece.availableForSale === false;
 
 
   const toggleWishlist = (e: React.MouseEvent) => {

@@ -184,8 +184,10 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
                 paint context on a 3D-transformed subtree, which is what made
                 the faces re-rasterise mid-turn and flash. */}
             <div ref={cardRef} className="relative aspect-square w-[min(48vw,200px)] will-change-transform md:w-[min(34vw,380px)]" style={{ transformStyle: "preserve-3d" }}>
-              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ willChange: "transform, opacity", transform: "translateZ(0)" }} />
-              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} className="absolute inset-0 h-full w-full object-contain" style={{ opacity: 0, willChange: "transform, opacity", transform: "translateZ(0)" }} />
+              {/* backfaceVisibility keeps each face on one stable composited
+                  layer through the turn, so Chrome never re-rasterises it. */}
+              <img data-face-a src={ringFront} alt={solitaire.name} draggable={false} decoding="sync" className="absolute inset-0 h-full w-full object-contain" style={{ willChange: "transform, opacity", transform: "translateZ(0)", backfaceVisibility: "hidden" }} />
+              <img data-face-b src={ring34} alt="" aria-hidden draggable={false} decoding="sync" className="absolute inset-0 h-full w-full object-contain" style={{ opacity: 0, willChange: "transform, opacity", transform: "translateZ(0)", backfaceVisibility: "hidden" }} />
               {/* contact shadow */}
               <div data-shadow aria-hidden className="pointer-events-none absolute -bottom-3 left-1/2 h-3 w-[58%] -translate-x-1/2 rounded-full opacity-60 md:-bottom-6 md:h-4"
                 style={{ background: "radial-gradient(ellipse, rgba(122,90,40,0.38) 0%, transparent 70%)", filter: "blur(4px)" }} />

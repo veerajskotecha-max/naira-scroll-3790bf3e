@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { Helmet } from "react-helmet-async";
@@ -398,7 +399,7 @@ const JewelDetail = () => {
                     {piece.compareAtLabel}
                   </span>
                   <span className="text-[11.5px] font-medium tracking-[0.04em]" style={{ color: "#8A6A2A" }}>
-                    {Math.round(((piece.compareAtPrice! - piece.price) / piece.compareAtPrice!) * 100)}% OFF
+                    {discountPercent(piece)}% OFF
                   </span>
                 </>
               )}

@@ -309,11 +309,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const openCheckout = useCallback((url: string) => {
     const latest = loadCart();
+    const value = Number(latest.items.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
     trackPixel("InitiateCheckout", {
       currency: latest.items[0]?.currencyCode || "INR",
-      value: latest.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      // Meta requires a positive numeric value.
+      ...(value > 0 ? { value } : {}),
       num_items: latest.items.reduce((sum, i) => sum + i.quantity, 0),
       content_ids: latest.items.map((i) => i.id),
+      contents: latest.items.map((i) => ({ id: i.id, quantity: i.quantity, item_price: Number(i.price.toFixed(2)) })),
       content_type: "product",
     });
     const target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));

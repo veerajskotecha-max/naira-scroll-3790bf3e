@@ -62,12 +62,18 @@ type ProductLike = {
   quantity?: number;
 };
 
-export const productParams = ({ id, name, price, category, currencyCode, quantity }: ProductLike) => ({
-  content_ids: [id],
-  content_name: name,
-  content_type: "product",
-  content_category: category,
-  ...(typeof price === "number" ? { value: price * (quantity ?? 1) } : {}),
-  currency: currencyCode || CURRENCY,
-  ...(quantity ? { contents: [{ id, quantity }] } : {}),
-});
+export const productParams = ({ id, name, price, category, currencyCode, quantity }: ProductLike) => {
+  const qty = quantity && quantity > 0 ? quantity : 1;
+  // Meta requires `value` to be a positive number (decimals allowed).
+  const value = typeof price === "number" && price > 0 ? Number((price * qty).toFixed(2)) : undefined;
+  return {
+    content_ids: [id],
+    content_name: name,
+    content_type: "product",
+    content_category: category,
+    contents: [{ id, quantity: qty, ...(value ? { item_price: Number((value / qty).toFixed(2)) } : {}) }],
+    ...(value ? { value } : {}),
+    currency: currencyCode || CURRENCY,
+  };
+};
+

@@ -316,18 +316,37 @@ export async function storefrontApiRequest<T = any>(query: string, variables: Re
  *
  * Products with no worn shot are returned untouched.
  */
+/**
+ * Image 1 on every product is a 1:1 square crop that exists purely for the
+ * Shopify/Meta product feed (only the first image syncs to the catalogue, and
+ * portrait shots get white-padded there). It is tagged `catalog-square` in
+ * Shopify and is never shown on the site — the storefront keeps the original
+ * portrait gallery it always had.
+ */
+export const dropCatalogSquare = (product: ShopifyProductNode | null): ShopifyProductNode | null => {
+  const edges = product?.images?.edges;
+  if (!edges?.length) return product;
+  const kept = edges.filter((e) => (e.node.altText ?? "").trim().toLowerCase() !== "catalog-square");
+  if (kept.length === edges.length || !kept.length) return product;
+  return { ...product, images: { ...product.images, edges: kept } };
+};
+
 export const wornFirst = (product: ShopifyProductNode | null): ShopifyProductNode | null => {
   const edges = product?.images?.edges;
   if (!edges || edges.length < 2) return product;
 
-  const wornIndex = edges.findIndex((e) => /_worn\b|_worn\./i.test(e.node.url));
-  if (wornIndex < 1) return product; // absent, or already leading
+  // Studio naming (`<SKU>_2_worn`) when present; otherwise the worn shot is the
+  // second image, which is how the galleries are ordered.
+  const named = edges.findIndex((e) => /_worn\b|_worn\./i.test(e.node.url));
+  const wornIndex = named === -1 ? 1 : named;
+  if (wornIndex < 1) return product; // already leading
 
   const reordered = [...edges];
   const [worn] = reordered.splice(wornIndex, 1);
   reordered.unshift(worn);
   return { ...product, images: { ...product.images, edges: reordered } };
 };
+
 
 /**
  * Which of a product's option values are actually buyable.

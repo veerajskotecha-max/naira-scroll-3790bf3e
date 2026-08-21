@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { trackPixel } from "@/lib/pixel";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -102,6 +103,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
   const remember = (term: string) => {
     const clean = term.trim();
     if (clean.length < 2) return;
+    trackPixel("Search", { search_string: clean, content_type: "product" });
     const next = [clean, ...recent.filter((r) => r.toLowerCase() !== clean.toLowerCase())].slice(0, 5);
     setRecent(next);
     localStorage.setItem(RECENT_KEY, JSON.stringify(next));

@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
+import { trackPixel } from "@/lib/pixel";
 import { joinInnerCircle } from "@/lib/innerCircle";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
@@ -58,6 +59,7 @@ const Auth = () => {
         setError(signUpError.message);
         return;
       }
+      trackPixel("CompleteRegistration", { content_name: "Member account", status: true });
       await joinInnerCircle({
         email: parsed.data.email,
         name: parsed.data.name,

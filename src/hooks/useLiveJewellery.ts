@@ -185,7 +185,11 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean }
   const { data } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
     queryFn: () => fetchShopifyProducts(250),
-    staleTime: 1000 * 60 * 5,
+    // Stock state must read live: refresh often and whenever the tab regains
+    // focus so a piece that sells out in Shopify shows Sold Out here quickly.
+    staleTime: 1000 * 30,
+    refetchInterval: 1000 * 60,
+    refetchOnWindowFocus: true,
   });
 
   if (!data?.length) return { jewellery: staticJewellery, isLive: false };

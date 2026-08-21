@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import { joinInnerCircle } from "@/lib/innerCircle";
+import { trackPixel } from "@/lib/pixel";
 import { supabase } from "@/integrations/supabase/client";
 import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
 
@@ -48,6 +49,8 @@ const CartDrawer = () => {
   /* Capture the opt-in email and log the order against the member account,
      then hand over to the Shopify checkout as before. */
   const handleCheckout = async () => {
+    /* The shopper is handing over to Shopify's payment step. */
+    trackPixel("AddPaymentInfo", { currency: "INR", value: orderTotal, num_items: totalItems });
     try {
       if (optIn && optEmail.trim()) {
         await joinInnerCircle({

@@ -357,14 +357,15 @@ export async function fetchShopifyProducts(first = 20, query?: string): Promise<
     first,
     query,
   });
-  return data.data.products.edges.map((edge) => wornFirst(edge.node) as ShopifyProductNode);
+  return data.data.products.edges.map((edge) => wornFirst(dropCatalogSquare(edge.node)) as ShopifyProductNode);
 }
 
 export async function fetchShopifyProductByHandle(handle: string): Promise<ShopifyProductNode | null> {
   if (!handle) return null;
   const data = await storefrontApiRequest<{ data: { product: ShopifyProductNode | null } }>(PRODUCT_BY_HANDLE_QUERY, { handle });
-  return wornFirst(data.data.product);
+  return wornFirst(dropCatalogSquare(data.data.product));
 }
+
 
 export function formatShopifyPrice(money: ShopifyMoney): string {
   const amount = Number(money.amount);

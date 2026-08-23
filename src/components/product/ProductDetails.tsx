@@ -45,6 +45,9 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
     if (!product) return;
     trackPixel("ViewContent", productParams({
       id: product.handle,
+      // No size is chosen yet on first paint, so key the event on the variant
+      // the shopper would actually get: the first one still in stock.
+      variantId: (product.variants.edges.find((e) => e.node.availableForSale) ?? product.variants.edges[0])?.node.id,
       name: product.title,
       price: Number(product.priceRange.minVariantPrice.amount),
       category: product.productType || undefined,

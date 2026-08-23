@@ -75,6 +75,11 @@ const AppShell = () => {
           <Route path="/shop/jewellery" element={<ShopAll />} />
           <Route path="/shop/indo-western" element={<ShopAll />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          {/* Meta and Google product feeds emit Shopify's canonical
+              /products/<handle> URLs. ProductDetail resolves its :id param by
+              handle, so alias the feed path onto it — without this every
+              catalogue ad click falls through to the "*" NotFound route. */}
+          <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
           <Route path="/jewellery/collections/:slug" element={<JewelleryCategory />} />

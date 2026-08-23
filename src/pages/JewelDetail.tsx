@@ -82,6 +82,7 @@ const JewelDetail = () => {
     if (!piece) return;
     trackPixel("ViewContent", productParams({
       id: piece.handle,
+      variantId: piece.variantId,
       name: piece.name,
       price: piece.price,
       category: piece.category,

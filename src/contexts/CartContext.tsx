@@ -9,7 +9,7 @@ import {
   updateShopifyCartLine,
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl } from "@/lib/promo";
-import { productParams, trackPixel } from "@/lib/pixel";
+import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 
 export interface CartItem {
   id: string;
@@ -171,6 +171,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (url) {
       trackPixel("AddToCart", productParams({
         id: item.id,
+        variantId: item.variantId,
         name: item.name,
         price: item.price,
         currencyCode: item.currencyCode,
@@ -315,8 +316,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       // Meta requires a positive numeric value.
       ...(value > 0 ? { value } : {}),
       num_items: latest.items.reduce((sum, i) => sum + i.quantity, 0),
-      content_ids: latest.items.map((i) => i.id),
-      contents: latest.items.map((i) => ({ id: i.id, quantity: i.quantity, item_price: Number(i.price.toFixed(2)) })),
+      content_ids: latest.items.map((i) => shopifyNumericId(i.variantId) ?? i.id),
+      contents: latest.items.map((i) => ({
+        id: shopifyNumericId(i.variantId) ?? i.id,
+        quantity: i.quantity,
+        item_price: Number(i.price.toFixed(2)),
+      })),
       content_type: "product",
     });
     const target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));

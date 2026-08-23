@@ -53,8 +53,23 @@ export const trackPageView = () => {
   }
 };
 
+/**
+ * Meta keys every catalogue row on `retailer_id`, and Shopify's Facebook &
+ * Instagram channel sets that to the bare numeric variant ID ("45794971222178").
+ * The Storefront API hands us the GID form, so strip it back to digits. Sending
+ * anything else — a handle, a slug — matches no catalogue row, which silently
+ * costs both dynamic retargeting and conversion attribution.
+ */
+export const shopifyNumericId = (gid?: string | null): string | undefined => {
+  if (!gid) return undefined;
+  const match = /(\d+)\s*$/.exec(gid);
+  return match ? match[1] : undefined;
+};
+
 type ProductLike = {
   id: string;
+  /** Shopify variant GID. Preferred over `id` as the catalogue content id. */
+  variantId?: string | null;
   name: string;
   price?: number;
   category?: string;
@@ -62,16 +77,19 @@ type ProductLike = {
   quantity?: number;
 };
 
-export const productParams = ({ id, name, price, category, currencyCode, quantity }: ProductLike) => {
+export const productParams = ({ id, variantId, name, price, category, currencyCode, quantity }: ProductLike) => {
   const qty = quantity && quantity > 0 ? quantity : 1;
   // Meta requires `value` to be a positive number (decimals allowed).
   const value = typeof price === "number" && price > 0 ? Number((price * qty).toFixed(2)) : undefined;
+  // Fall back to the handle only when no variant is known — it will not match
+  // the catalogue, but a malformed event is worse than an unmatched one.
+  const contentId = shopifyNumericId(variantId) ?? id;
   return {
-    content_ids: [id],
+    content_ids: [contentId],
     content_name: name,
     content_type: "product",
     content_category: category,
-    contents: [{ id, quantity: qty, ...(value ? { item_price: Number((value / qty).toFixed(2)) } : {}) }],
+    contents: [{ id: contentId, quantity: qty, ...(value ? { item_price: Number((value / qty).toFixed(2)) } : {}) }],
     ...(value ? { value } : {}),
     currency: currencyCode || CURRENCY,
   };

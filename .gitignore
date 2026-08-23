@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Campaign, sourcing and shoot deliverables. These are produced in this repo's
+# working directory for convenience but are not part of the website, and must
+# never be committed to it.
+naira-campaign-*.pdf
+naira-flore-*.pdf
+naira-flore-campaign*/
+naira-flore-shots*/
+naira-flore-film/
+naira-inventory-margin-ledger.pdf
+naira-pricing-benchmark.pdf
+naira-sku-corrections.xlsx
+
+# Higgsfield image-generation tooling — campaign work, not website code.
+scripts/higgsfield/

@@ -32,9 +32,9 @@ describe("wornFirst", () => {
     ]);
   });
 
-  it("leaves products without a worn shot untouched", () => {
+  it("promotes the second image when no filename says which is worn", () => {
     const input = productWith(["x_1_main.png", "x_3_alt.png"]);
-    expect(filesOf(wornFirst(input))).toEqual(["x_1_main.png", "x_3_alt.png"]);
+    expect(filesOf(wornFirst(input))).toEqual(["x_3_alt.png", "x_1_main.png"]);
   });
 
   it("is a no-op when the worn shot already leads", () => {
@@ -42,10 +42,11 @@ describe("wornFirst", () => {
     expect(wornFirst(input)).toBe(input);
   });
 
-  it("does not match 'worn' appearing elsewhere in the path", () => {
-    const input = productWith(["worn-out-collection/y_1_main.png", "worn-out-collection/y_3_alt.png"]);
-    expect(filesOf(wornFirst(input))).toEqual(["y_1_main.png", "y_3_alt.png"]);
+  it("prefers a named worn shot over the second image", () => {
+    const out = wornFirst(productWith(["y_1_main.png", "y_3_alt.png", "y_2_worn.png"]));
+    expect(filesOf(out)).toEqual(["y_2_worn.png", "y_1_main.png", "y_3_alt.png"]);
   });
+
 
   it("handles null, empty and single-image products", () => {
     expect(wornFirst(null)).toBeNull();

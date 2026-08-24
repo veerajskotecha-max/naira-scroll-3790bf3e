@@ -93,6 +93,7 @@ const AppShell = () => {
           <Route path="/inner-circle" element={<InnerCircle />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
           <Route path="/concepts" element={<Concepts />} />
 

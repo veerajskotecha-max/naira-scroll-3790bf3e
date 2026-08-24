@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "sdk_version": "0.27.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://xlsejigpjlqfvzfhhntf.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "naira",
+      "version": "0.1.0",
+      "title": "Naira"
+    },
+    "tools": [
+      {
+        "name": "search_products",
+        "title": "Search Naira Flore pieces",
+        "description": "Search the live Naira Flore catalogue (jewellery and indo-western pieces) by keyword, returning titles, prices, availability and product links.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 120,
+              "description": "Keyword such as 'earrings', 'ring', 'zircone'. Omit to list current pieces."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 12,
+              "description": "How many pieces to return."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_product",
+        "title": "Get a piece by handle",
+        "description": "Fetch full detail for one Naira Flore piece by its product handle, including description, variants, sizes and availability.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "handle": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "description": "Shopify product handle, e.g. 'the-vine-ring'."
+            }
+          },
+          "required": [
+            "handle"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "my_profile",
+        "title": "My member profile",
+        "description": "Read the signed-in Naira Flore member's profile (name, phone, city, birthday).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "my_orders",
+        "title": "My orders",
+        "description": "List the signed-in Naira Flore member's orders, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "How many orders to return."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "join_inner_circle",
+        "title": "Join the Inner Circle",
+        "description": "Add the signed-in member's email to the Naira Flore Inner Circle list for pre-launch collection access.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "maxLength": 80,
+              "description": "Name to store with the signup."
+            },
+            "phone": {
+              "type": "string",
+              "maxLength": 20,
+              "description": "Optional phone number."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

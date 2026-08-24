@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import PageSEO from "@/components/PageSEO";
@@ -22,6 +22,11 @@ const credentials = z.object({
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // A consent flow (MCP / OAuth clients) sends the member here with ?next=,
+  // and must land back on that exact URL after every sign-in method.
+  const rawNext = searchParams.get("next") ?? "";
+  const nextPath = /^\/(?!\/)/.test(rawNext) ? rawNext : "/account";
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -32,7 +37,7 @@ const Auth = () => {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && session) navigate("/account", { replace: true });
+    if (!loading && session) navigate(nextPath, { replace: true });
   }, [loading, session, navigate]);
 
   const submit = async (e: FormEvent) => {
@@ -50,7 +55,7 @@ const Auth = () => {
         email: parsed.data.email,
         password: parsed.data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/account`,
+          emailRedirectTo: `${window.location.origin}${nextPath}`,
           data: { full_name: parsed.data.name || null },
         },
       });
@@ -74,7 +79,7 @@ const Auth = () => {
         setNotice("Almost there — check your email to confirm your account.");
         return;
       }
-      navigate("/account", { replace: true });
+      navigate(nextPath, { replace: true });
       return;
     }
 
@@ -87,20 +92,20 @@ const Auth = () => {
       setError(signInError.message);
       return;
     }
-    navigate("/account", { replace: true });
+    navigate(nextPath, { replace: true });
   };
 
   const google = async () => {
     setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/auth?next=${encodeURIComponent(nextPath)}`,
     });
     if (result.error) {
       setError("Google sign-in could not start. Please try again.");
       return;
     }
     if (result.redirected) return;
-    navigate("/account", { replace: true });
+    navigate(nextPath, { replace: true });
   };
 
   const field =

@@ -48,6 +48,7 @@ const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 const InnerCircle = lazy(() => import("./pages/InnerCircle.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
 const Account = lazy(() => import("./pages/Account.tsx"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent.tsx"));
 
 
 const queryClient = new QueryClient();
@@ -92,6 +93,7 @@ const AppShell = () => {
           <Route path="/inner-circle" element={<InnerCircle />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
           <Route path="/concepts" element={<Concepts />} />
 

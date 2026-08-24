@@ -267,6 +267,8 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           </SelectContent>
         </Select>
       </div>
+      )}
+
 
       {/* Quantity */}
       <div className="mt-4">

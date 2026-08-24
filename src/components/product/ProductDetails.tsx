@@ -63,6 +63,20 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   }, [product, selectedSize]);
 
   const sizeAvailability = useMemo(() => availabilityByOption(product, "size"), [product]);
+
+  /* Jewellery is sized by the piece, not by garment size: no XS–XL picker,
+     no stitching copy. Vendor is the source of truth, productType a backup. */
+  const isJewellery = useMemo(() => {
+    const vendor = (product?.vendor ?? "").trim().toLowerCase();
+    const type = (product?.productType ?? "").trim().toLowerCase();
+    return vendor === "naira petite" || /ring|earring|necklace|bracelet|pendant|jewel/.test(type);
+  }, [product?.vendor, product?.productType]);
+
+  const hasRealSizeOption = Boolean(
+    product?.options.some((option) => option.name.toLowerCase() === "size" && option.values.length > 0)
+  );
+  const showSize = !isJewellery && hasRealSizeOption;
+
   // Treat "unknown" as buyable: products with no size option (most jewellery)
   // have no entry here and must not be blocked.
   const selectedInStock = sizeAvailability[selectedSize] ?? selectedVariant?.availableForSale ?? true;

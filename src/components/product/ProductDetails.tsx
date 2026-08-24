@@ -220,7 +220,8 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       {/* Divider */}
       <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
-      {/* Size Selector */}
+      {/* Size Selector — jewellery has no garment sizing, so it is hidden there */}
+      {showSize && (
       <div>
         <div className="flex items-center justify-between mb-2.5">
           <span

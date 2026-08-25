@@ -98,6 +98,7 @@ const ContactUs = () => {
         title="Contact Naira Flore | Nashik Atelier & WhatsApp Support"
         description="Talk to the Naira Flore atelier in Nashik about made-to-measure pieces, sizing, jewellery pre-orders or an existing order. WhatsApp +91 95615 57935."
         canonical="https://nairaflore.com/contact"
+        jsonLd={contactLocalBusinessLd}
       />
       {/* ── SECTION 1 — Hero ── */}
       <section className={`relative ${sectionPadding} overflow-hidden`} style={{ backgroundColor: "hsl(30 30% 97%)" }}>

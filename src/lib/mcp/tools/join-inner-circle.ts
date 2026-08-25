@@ -6,7 +6,7 @@ export default defineTool({
   name: "join_inner_circle",
   title: "Join the Inner Circle",
   description:
-    "Add the signed-in member's email to the Naira Flore Inner Circle list for pre-launch collection access.",
+    "Add the signed-in member's email to the Naira Flore Inner Circle list for first access to new collections.",
   inputSchema: {
     name: z.string().trim().max(80).optional().describe("Name to store with the signup."),
     phone: z.string().trim().max(20).optional().describe("Optional phone number."),

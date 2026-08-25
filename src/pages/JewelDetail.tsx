@@ -554,15 +554,16 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* Delivery note — the line is live */}
+            {/* Delivery + shipping reassurance */}
             <div
               className="mt-5 flex items-start gap-2 border px-3 py-2.5"
               style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
             >
               <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
               <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now — payment,
-                cart and checkout are fully live.
+                <strong className="font-medium">{PREORDER_NOTE}</strong> Free insured
+                shipping across India, with easy 48-hour returns.
+
               </p>
             </div>
 

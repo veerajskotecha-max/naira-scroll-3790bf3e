@@ -169,7 +169,7 @@ const Account = () => {
     <>
       <PageSEO
         title="My Naira Flore Account"
-        description="Your Naira Flore members portal — order history, saved pieces, Inner Circle pre-launch access and private styling."
+        description="Your Naira Flore members portal — order history, saved pieces, Inner Circle first access and private styling."
         canonical="https://nairaflore.com/account"
         noindex
       />
@@ -261,7 +261,7 @@ const Account = () => {
 
           {/* Pre-launch portal */}
           <Panel
-            title="The pre-launch room"
+            title="The private preview room"
             eyebrow="MEMBERS ONLY"
             icon={<Sparkles size={18} strokeWidth={1.4} />}
             soon

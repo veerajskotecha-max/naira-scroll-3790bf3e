@@ -225,7 +225,7 @@ const CartDrawer = () => {
                   />
                   <span className="text-[12px] leading-[1.5]" style={{ color: "hsl(0 0% 35%)" }}>
                     <Sparkles size={11} className="inline mb-0.5 mr-1" style={{ color: "hsl(36 47% 46%)" }} />
-                    Register me for the <strong className="font-semibold">Inner Circle</strong> — pre-launch access and members-only pricing.
+                    Add me to the <strong className="font-semibold">Inner Circle</strong> — first access to new drops and members-only pricing.
                   </span>
                 </label>
                 {optIn && (

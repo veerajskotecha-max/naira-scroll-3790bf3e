@@ -385,7 +385,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         style={{ border: "1px solid hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 90%)" }}
       >
         {[
-          { icon: RotateCcw, title: "48-hr returns", copy: "On ready-to-ship pieces" },
+          { icon: RotateCcw, title: "7-day returns", copy: "On ready-to-ship pieces" },
           isJewellery
             ? { icon: BadgeCheck, title: "2-year plating assurance", copy: "Anti-tarnish finish" }
             : { icon: BadgeCheck, title: "2-year assurance", copy: "Stitching & embellishment" },

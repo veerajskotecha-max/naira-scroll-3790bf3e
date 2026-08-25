@@ -1,25 +1,38 @@
 import { Link } from "react-router-dom";
 import { jewellery } from "@/data/jewellery";
-import ringImg from "@/assets/categories/rings.jpg.asset.json";
-import braceletImg from "@/assets/categories/bracelets.jpg.asset.json";
-import earringImg from "@/assets/categories/earrings.jpg.asset.json";
-import necklaceImg from "@/assets/categories/necklaces.jpg.asset.json";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
    Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
    with live piece counts, hover zoom + gold frame, linking into the
-   collection. */
+   collection. Imagery is pulled straight from the live catalogue —
+   the on-model ("worn") shot of a hero piece per category. */
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
+/** Hero piece per category — on-model shot preferred, product shot as fallback. */
+const heroHandles: Record<string, string> = {
+  Rings: "cushion-halo-ring",
+  Bracelets: "riviere-of-light-bracelet",
+  Earrings: "molten-bloom-hoops",
+  Necklaces: "dewdrop-bezel-necklace",
+};
+
+const categoryImage = (category: string) => {
+  const hero = jewellery.find((j) => j.handle === heroHandles[category]);
+  const piece = hero ?? jewellery.find((j) => j.category === category);
+  const worn = piece?.gallery?.find((u) => /_2_worn/i.test(u));
+  return worn ?? piece?.image ?? "";
+};
+
 const cats = [
-  { label: "Rings", img: ringImg.url, count: jewellery.filter((j) => j.category === "Rings").length, note: "solitaires, halo & stack" },
-  { label: "Bracelets", img: braceletImg.url, count: jewellery.filter((j) => j.category === "Bracelets").length, note: "tennis, bow & baroque pearl" },
-  { label: "Earrings", img: earringImg.url, count: jewellery.filter((j) => j.category === "Earrings").length, note: "hoops & the studs, three ways" },
-  { label: "Necklaces", img: necklaceImg.url, count: jewellery.filter((j) => j.category === "Necklaces").length, note: "lariats, chains & a cascade" },
+  { label: "Rings", img: categoryImage("Rings"), count: jewellery.filter((j) => j.category === "Rings").length, note: "solitaires, halo & stack" },
+  { label: "Bracelets", img: categoryImage("Bracelets"), count: jewellery.filter((j) => j.category === "Bracelets").length, note: "tennis, bow & baroque pearl" },
+  { label: "Earrings", img: categoryImage("Earrings"), count: jewellery.filter((j) => j.category === "Earrings").length, note: "hoops & the studs, three ways" },
+  { label: "Necklaces", img: categoryImage("Necklaces"), count: jewellery.filter((j) => j.category === "Necklaces").length, note: "lariats, chains & a cascade" },
 ];
+
 
 
 

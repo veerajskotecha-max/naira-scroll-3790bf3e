@@ -139,19 +139,16 @@ const ProductDetail = () => {
 
   if (isError || !product) {
     return (
-      <div className="min-h-screen pt-[100px] flex items-center justify-center px-6" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
-        <Helmet>
-          <title>Product Not Found | Naira Flore</title>
-          <meta name="description" content="This Shopify product could not be found." />
-        </Helmet>
-        <div className="text-center max-w-[520px]">
-          <h1 className="font-cormorant text-[34px] md:text-[42px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>Product not found</h1>
-          <p className="font-cormorant text-[16px] mt-3" style={{ color: "hsl(0 0% 45%)" }}>This product is not available from Shopify right now.</p>
-          <Link to="/shop" className="inline-flex mt-6 px-8 py-3 text-[12px] uppercase tracking-[0.12em]" style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}>Back to Shop</Link>
-        </div>
-      </div>
+      <ComingSoon
+        eyebrow="This piece has moved"
+        heading="Coming soon"
+        body="This piece isn't available right now. The rest of the collection is live and shipping in 3–5 working days."
+        primaryTo="/shop"
+        primaryLabel="Back to shop"
+      />
     );
   }
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>

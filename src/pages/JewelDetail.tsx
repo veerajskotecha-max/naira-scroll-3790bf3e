@@ -20,6 +20,8 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
+import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -102,6 +104,8 @@ const JewelDetail = () => {
   };
 
   const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "6" : "One Size");
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -486,9 +490,21 @@ const JewelDetail = () => {
                 <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
                   {piece.category === "Rings" ? "Ring Size (US)" : "Size"}
                 </span>
-                <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
-                  Sizing help
-                </a>
+                {piece.category === "Rings" ? (
+                  <button
+                    type="button"
+                    onClick={() => setSizeGuideOpen(true)}
+                    className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2"
+                    style={{ color: "hsl(186 35% 28%)" }}
+                  >
+                    Size chart
+                  </button>
+                ) : (
+                  <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
+                    Sizing help
+                  </a>
+                )}
+
               </div>
               {piece.category === "Rings" ? (
                 <>
@@ -519,6 +535,8 @@ const JewelDetail = () => {
                 </div>
               )}
             </div>
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
+
 
             {/* Quantity */}
             <div className="mt-4">

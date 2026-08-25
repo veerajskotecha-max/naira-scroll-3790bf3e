@@ -17,6 +17,7 @@ import ProductDetails from "@/components/product/ProductDetails";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import ComingSoon from "./ComingSoon";
 
 const ProductDetail = () => {
   const [selectedSize] = useState("M");

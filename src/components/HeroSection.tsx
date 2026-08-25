@@ -273,7 +273,7 @@ const HeroSection = () => {
           </p>
 
           <div className="mt-7 max-w-[320px] mx-auto">
-            <Link to="/shop" className="group relative inline-block w-full">
+            <Link to="/jewellery" className="group relative inline-block w-full">
               <span className="relative block text-center px-6 py-4 bg-[#1A1614] overflow-hidden">
                 <span className="absolute inset-0 bg-[#99B4AF] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                 <span style={jost} className="relative text-[11px] tracking-[0.32em] uppercase text-[#FFF8F5] font-light">

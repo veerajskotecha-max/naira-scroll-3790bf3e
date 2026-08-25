@@ -45,6 +45,13 @@ const platingLine = (raw: string) => (raw.match(/Plating:\s*([^]{0,120})/i)?.[1]
 const normalizeMetalCopy = (raw: string): string => {
   if (!raw) return raw;
 
+  /* A piece that carries a real silver hallmark is describing actual silver,
+     not a supplier calling rhodium plating "silver tone". Verdant Drop Earrings
+     discloses 925 sterling silver ear posts on a copper alloy body — the rules
+     below were rewriting that true statement into "925 rhodium coated metal
+     posts", which is false. Leave hallmarked copy exactly as written. */
+  if (/\b925\b/.test(raw)) return raw;
+
   // 1. Silver wording → rhodium coated, everywhere.
   let text = raw
     .replace(/rhodium plated silver[- ]tone/gi, "rhodium coated")

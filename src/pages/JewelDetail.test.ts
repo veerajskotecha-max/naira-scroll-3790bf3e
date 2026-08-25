@@ -42,3 +42,22 @@ describe("useLiveJewellery loading contract", () => {
     expect(hook).toMatch(/if \(!data\?\.length\) return \{[^}]*isLoading[^}]*\}/);
   });
 });
+
+/*
+  The metal normaliser rewrites supplier copy that loosely calls rhodium
+  plating "silver". It must not touch a piece that carries a real hallmark:
+  Verdant Drop Earrings discloses 925 sterling silver ear posts on a copper
+  alloy body, and the blanket rule turned that into "925 rhodium coated metal
+  posts" — a true material statement rewritten into a false one.
+*/
+describe("metal normaliser", () => {
+  const hook = readFileSync(resolve(__dirname, "../hooks/useLiveJewellery.ts"), "utf8");
+
+  it("bails out before rewriting hallmarked silver", () => {
+    const fn = hook.match(/const normalizeMetalCopy[\s\S]*?\n\};/)![0];
+    const guard = fn.indexOf("925");
+    const firstRewrite = fn.indexOf("sterling silver");
+    expect(guard, "expected a 925 hallmark guard").toBeGreaterThan(-1);
+    expect(guard).toBeLessThan(firstRewrite);
+  });
+});

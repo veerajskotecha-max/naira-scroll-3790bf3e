@@ -28,7 +28,7 @@ const FounderStoryTeaser = () => (
             >
               <img
                 src={founderImg}
-                alt="Sonal, founder of Naira Flore, in her Nashik studio"
+                alt="Vandana, founder of Naira Flore, in her Nashik studio"
                 className="w-full h-full object-cover"
                 width={430}
                 height={538}
@@ -42,7 +42,7 @@ const FounderStoryTeaser = () => (
               className="font-cormorant text-[15px] md:text-[16px] leading-none"
               style={{ color: "hsl(0 0% 18%)" }}
             >
-              Sonal Kotecha
+              Vandana Kotecha
             </p>
             <p
               className="font-cormorant text-[10px] uppercase tracking-[0.2em] mt-2"

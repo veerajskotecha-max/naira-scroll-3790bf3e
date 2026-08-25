@@ -20,7 +20,7 @@ const sections = [
     title: "Standard (Ready-to-Ship) Orders",
     content: (
       <>
-        <p>If you receive a standard product with a manufacturing defect (such as damaged embroidery, incorrect stitching, fabric flaws, or staining), you may request a return <strong>within 48 hours of delivery</strong>.</p>
+        <p>If you receive a standard product with a manufacturing defect (such as damaged embroidery, incorrect stitching, fabric flaws, or staining), you may request a return <strong>within 7 days of delivery</strong>.</p>
         <p>To initiate a return, contact us via WhatsApp with:</p>
         <ul>
           <li>Order number</li>
@@ -64,7 +64,7 @@ const ExchangeReturnPolicy = () => {
     <>
       <PageSEO
         title="Exchange & Return Policy"
-        description="Naira Flore's exchange and return policy: 48-hour window on standard pieces, and why made-to-measure pieces are non-returnable."
+        description="Naira Flore's exchange and return policy: 7-day window on standard pieces, and why made-to-measure pieces are non-returnable."
         canonical="https://nairaflore.com/exchange-return-policy"
       />
       {/* Hero header */}

@@ -46,7 +46,7 @@ const faqSections = [
     items: [
       {
         q: "What is your return policy?",
-        a: "Standard orders with manufacturing defects (damaged embroidery, incorrect stitching, fabric flaws, or staining) may be returned within 48 hours of delivery. After review, we offer repair, replacement, or store credit. Refunds to the original payment method are considered case-by-case.",
+        a: "Standard orders with manufacturing defects (damaged embroidery, incorrect stitching, fabric flaws, or staining) may be returned within 7 days of delivery. After review, we offer repair, replacement, or store credit. Refunds to the original payment method are considered case-by-case.",
       },
       {
         q: "Are made-to-measure pieces returnable?",
@@ -54,7 +54,7 @@ const faqSections = [
       },
       {
         q: "What if I receive a defective product?",
-        a: "Contact us via WhatsApp within 48 hours of delivery with your order number, photos of the defect, and a brief description of the issue. Our team will review and resolve the matter promptly.",
+        a: "Contact us via WhatsApp within 7 days of delivery with your order number, photos of the defect, and a brief description of the issue. Our team will review and resolve the matter promptly.",
       },
     ],
   },

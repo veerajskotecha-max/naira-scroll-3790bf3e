@@ -16,13 +16,14 @@ import DetailsTabs from "@/components/product/DetailsTabs";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
+import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, PREORDER_NOTE_SHORT, type JewelPiece } from "@/data/jewellery";
+import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 
 /* Key facts distilled from the approved data model: finish and stone are
@@ -48,10 +49,35 @@ const ringSizes: { value: string; label: string; status: "available" | "preorder
   { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
+/* Shown only while the Shopify catalogue is still in flight and the handle
+   hasn't resolved yet — mirrors the PDP's two-column shape so the layout
+   doesn't jump when the real piece arrives. */
+const JewelDetailSkeleton = () => (
+  <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>
+    <Helmet>
+      <title>Loading piece | Naira Flore</title>
+      <meta name="robots" content="noindex" />
+    </Helmet>
+    <span className="sr-only" role="status">Loading piece</span>
+    <div className="max-w-[1400px] mx-auto md:px-6 pt-[94px] md:pt-[112px] pb-16" aria-hidden="true">
+      <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <AtelierSkeleton className="w-full" style={{ aspectRatio: "3/4" }} />
+        <div className="mt-6 lg:mt-0 px-4 lg:px-8 xl:px-10">
+          <AtelierSkeleton className="h-8 w-4/5" />
+          <AtelierSkeleton className="mt-4 h-6 w-1/3" />
+          <AtelierSkeleton className="mt-3 h-3 w-3/5" />
+          <AtelierSkeleton className="mt-8 h-12 w-full" />
+          <AtelierSkeleton className="mt-3 h-12 w-full" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();
-  const { jewellery } = useLiveJewellery();
+  const { jewellery, isLoading: catalogueLoading } = useLiveJewellery();
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
@@ -88,13 +114,16 @@ const JewelDetail = () => {
     }));
   }, [piece?.handle]);
 
-  /* The mobile pre-order bar stays out of the way until the main CTA
-     block has scrolled up past the viewport, then slides in. */
+  /* The mobile buy bar shows whenever the inline CTA block is off screen —
+     below the fold on landing as well as scrolled past above. It used to wait
+     for `bottom < 0` only, so the whole stretch from the fold down to the CTA
+     (~750px on a 852px phone) offered no way to buy at all. */
   useEffect(() => {
     const check = () => {
       const target = document.getElementById("product-actions");
       if (!target) return;
-      setStickyBarVisible(target.getBoundingClientRect().bottom < 0);
+      const r = target.getBoundingClientRect();
+      setStickyBarVisible(r.bottom < 0 || r.top > window.innerHeight);
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
@@ -133,7 +162,15 @@ const JewelDetail = () => {
     return () => { el.removeEventListener("scroll", onScroll); clearTimeout(t); };
   }, [isMobile]);
 
-  if (!piece) return <Navigate to="/jewellery" replace />;
+  /* The live Shopify catalogue only lands after first paint, so on a cold load
+     (ad click, shared link, search result) a handle that exists solely in
+     Shopify is not in `jewellery` yet. Redirecting here bounced 25 of the 44
+     product links straight back to the listing — wait for the query to settle
+     before deciding the piece really doesn't exist. */
+  if (!piece) {
+    if (catalogueLoading) return <JewelDetailSkeleton />;
+    return <Navigate to="/jewellery" replace />;
+  }
 
   const wishlisted = isWishlisted(piece.handle);
   /* Live Shopify stock state, refreshed by useLiveJewel. */
@@ -422,7 +459,7 @@ const JewelDetail = () => {
               </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              MRP inclusive of all taxes · free insured shipping across India
+              MRP inclusive of all taxes · flat ₹150 insured shipping across India
             </p>
 
             {/* Delivery note — the line is live */}
@@ -432,8 +469,8 @@ const JewelDetail = () => {
             >
               <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
               <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now — payment,
-                cart and checkout are fully live.
+                <strong className="font-medium">{PREORDER_NOTE}</strong> Dispatched insured from
+                our Mumbai atelier.
               </p>
             </div>
 
@@ -445,7 +482,7 @@ const JewelDetail = () => {
               <ul className="mt-2 space-y-1.5">
                 {[
                   { code: "NAIRA10", text: "10% off your first order" },
-                  { code: null, text: "Free insured shipping on every order across India" },
+                  { code: null, text: "Flat ₹150 insured shipping — anywhere in India, any order size" },
                   { code: null, text: "2-year plating assurance on all demi-fine pieces" },
                 ].map((o) => (
                   <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
@@ -495,9 +532,9 @@ const JewelDetail = () => {
                 </>
               ) : (
                 <>
-                  <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
-                  <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                    <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
+                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(142 50% 40%)" }} />
+                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(142 50% 30%)" }}>
+                    In Stock
                   </span>
                 </>
               )}
@@ -604,7 +641,7 @@ const JewelDetail = () => {
                 </button>
               )}
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
-                {soldOut ? "This piece is currently sold out — we'll let you know the moment it's back." : `Secure payments · ${PREORDER_NOTE_SHORT}`}
+                {soldOut ? "This piece is currently sold out — we'll let you know the moment it's back." : "Secure payments · Insured delivery · Easy returns"}
               </p>
               <div className="flex gap-3 mt-3">
                 <button
@@ -715,8 +752,8 @@ const JewelDetail = () => {
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>• {PREORDER_NOTE}</p>
-                    <p>• Orders placed now are dispatched within 3–5 working days.</p>
-                    <p>• Shipped free across India, insured in transit.</p>
+                    <p>• Flat ₹150 shipping across India, insured in transit.</p>
+                    <p>• Enter your pincode above for a dated delivery estimate.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>

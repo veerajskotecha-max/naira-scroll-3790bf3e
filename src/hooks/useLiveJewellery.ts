@@ -181,8 +181,8 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
 /** The Shopify vendor that holds the demi-fine jewellery line. */
 const JEWELLERY_VENDOR = "naira petite";
 
-export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean } => {
-  const { data } = useQuery({
+export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
+  const { data, isLoading } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
     queryFn: () => fetchShopifyProducts(250),
     // Stock state must read live: refresh often and whenever the tab regains
@@ -192,7 +192,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean }
     refetchOnWindowFocus: true,
   });
 
-  if (!data?.length) return { jewellery: staticJewellery, isLive: false };
+  if (!data?.length) return { jewellery: staticJewellery, isLive: false, isLoading };
 
   const byHandle = new Map(data.map((node) => [node.handle, node]));
   // Only keep pieces that are still live listings in Shopify.
@@ -209,7 +209,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean }
 
   const all = [...merged, ...extras];
 
-  return { jewellery: all.length ? all : staticJewellery, isLive: true };
+  return { jewellery: all.length ? all : staticJewellery, isLive: true, isLoading: false };
 };
 
 

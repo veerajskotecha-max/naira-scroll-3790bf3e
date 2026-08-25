@@ -1,3 +1,5 @@
+import { SHIPPING_CHARGE } from "@/lib/serviceability";
+
 interface Props {
   total: number;
   currencySymbol?: string;
@@ -12,7 +14,10 @@ const PriceBreakup = ({ total, currencySymbol = "₹" }: Props) => {
   const gstRate = total < 1000 ? 0.05 : 0.12;
   const base = total / (1 + gstRate);
   const gst = total - base;
-  const shipping = total >= 2999 ? 0 : 150;
+  // Shopify charges a flat ₹150 domestic rate with no free-shipping threshold.
+  // This used to zero out above ₹2,999, so the breakup promised free shipping
+  // and checkout then charged for it.
+  const shipping = SHIPPING_CHARGE;
   const finalTotal = total + shipping;
 
   const Row = ({ label, value, muted = false, bold = false }: { label: string; value: string; muted?: boolean; bold?: boolean }) => (
@@ -42,17 +47,8 @@ const PriceBreakup = ({ total, currencySymbol = "₹" }: Props) => {
       </p>
       <Row label="Base Price" value={format(base, currencySymbol)} />
       <Row label={`GST (${(gstRate * 100).toFixed(0)}%)`} value={format(gst, currencySymbol)} />
-      <Row
-        label="Shipping"
-        value={shipping === 0 ? "Free" : format(shipping, currencySymbol)}
-        muted={shipping === 0}
-      />
+      <Row label="Shipping" value={format(shipping, currencySymbol)} />
       <Row label="Total" value={format(finalTotal, currencySymbol)} bold />
-      {shipping === 0 && (
-        <p className="text-[11px] mt-2" style={{ color: "hsl(142 50% 38%)" }}>
-          ✓ Free shipping applied (order above ₹2,999)
-        </p>
-      )}
     </div>
   );
 };

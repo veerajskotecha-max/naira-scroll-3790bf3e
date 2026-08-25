@@ -12,6 +12,13 @@
  * (Shiprocket / Delhivery / Bluedart risk lists) keep on prepaid-only.
  */
 
+/**
+ * Flat domestic shipping, mirroring Shopify's General profile → Domestic →
+ * Standard rate. There is no free-shipping threshold configured in Shopify, so
+ * nothing on the site may promise one.
+ */
+export const SHIPPING_CHARGE = 150;
+
 export type CodStatus = "available" | "blocked";
 
 export interface Serviceability {

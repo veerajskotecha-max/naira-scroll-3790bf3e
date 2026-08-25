@@ -47,7 +47,7 @@ const Index = () => {
     <>
       <PageSEO
         title="Naira Flore | Handcrafted Indo-Western Fashion"
-        description="Discover handmade embroidered sarees, lehengas & anarkalis by Naira Flore. Premium Indo-Western fusion wear crafted for the modern woman. Free shipping above ₹2,999."
+        description="Discover handmade embroidered sarees, lehengas & anarkalis by Naira Flore. Premium Indo-Western fusion wear crafted for the modern woman. Flat ₹150 shipping across India."
         canonical="https://nairaflore.com/"
         jsonLd={organizationLd as unknown as Record<string, unknown>}
       />

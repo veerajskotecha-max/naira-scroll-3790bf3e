@@ -11,8 +11,7 @@ import { joinInnerCircle } from "@/lib/innerCircle";
 import { trackPixel } from "@/lib/pixel";
 import { supabase } from "@/integrations/supabase/client";
 import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
-
-const SHIPPING_CHARGE = 150;
+import { SHIPPING_CHARGE } from "@/lib/serviceability";
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
@@ -21,8 +20,10 @@ const CartDrawer = () => {
   const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
   useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
 
-  // Inner Circle opt-in shown at checkout.
-  const [optIn, setOptIn] = useState(true);
+  // Inner Circle opt-in shown at checkout. Starts unticked: pre-ticked marketing
+  // consent is a named dark pattern under the CCPA Dark Patterns Guidelines 2023
+  // and isn't valid consent anywhere.
+  const [optIn, setOptIn] = useState(false);
   const [optEmail, setOptEmail] = useState("");
   const [promoCode, setActivePromoCode] = useState<string | null>(() => getPromoCode());
   useEffect(() => {

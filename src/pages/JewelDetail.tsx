@@ -48,6 +48,13 @@ const ringSizes: { value: string; label: string; status: "available" | "preorder
   { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
+/** Size list for a specific ring: open-back styles flag US 6 as adjustable. */
+const ringSizesFor = (handle?: string) =>
+  isAdjustableRing(handle)
+    ? ringSizes.map((s) => (s.value === "6" ? { ...s, label: "US 6 — Adjustable (fits US 6–8)" } : s))
+    : ringSizes;
+
+
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();

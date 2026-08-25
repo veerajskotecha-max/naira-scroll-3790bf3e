@@ -48,18 +48,25 @@ export const applyJewelFilters = (pieces: JewelPiece[], f: JewelFilters) => {
 
   switch (f.sort) {
     case "price-asc":
-      return out.sort((a, b) => a.price - b.price);
+      out.sort((a, b) => a.price - b.price);
+      break;
     case "price-desc":
-      return out.sort((a, b) => b.price - a.price);
+      out.sort((a, b) => b.price - a.price);
+      break;
     case "best":
       // Shopify has no storefront sales rank here, so the house bestseller and
       // new tags stand in — flagged pieces float, the rest keep house order.
-      return out.sort((a, b) => rank(b) - rank(a));
+      out.sort((a, b) => rank(b) - rank(a));
+      break;
     case "newest":
-      return out.sort((a, b) => (b.tag === "NEW" ? 1 : 0) - (a.tag === "NEW" ? 1 : 0));
-    default:
-      return out;
+      out.sort((a, b) => (b.tag === "NEW" ? 1 : 0) - (a.tag === "NEW" ? 1 : 0));
+      break;
   }
+
+  // A sold-out piece must never lead the grid, whatever the sort — the first
+  // card on /jewellery was a zero-inventory necklace. Array#sort is stable, so
+  // this only sinks them; the chosen order survives inside each group.
+  return out.sort((a, b) => Number(a.availableForSale === false) - Number(b.availableForSale === false));
 };
 
 const rank = (p: JewelPiece) => (p.tag === "BESTSELLER" ? 2 : p.tag === "NEW" ? 1 : 0);

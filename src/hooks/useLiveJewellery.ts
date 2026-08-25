@@ -46,6 +46,13 @@ const platingLine = (raw: string) => (raw.match(/Plating:\s*([^]{0,120})/i)?.[1]
 const normalizeMetalCopy = (raw: string): string => {
   if (!raw) return raw;
 
+  /* A piece that carries a real silver hallmark is describing actual silver,
+     not a supplier calling rhodium plating "silver tone". Verdant Drop Earrings
+     discloses 925 sterling silver ear posts on a copper alloy body — the rules
+     below were rewriting that true statement into "925 rhodium coated metal
+     posts", which is false. Leave hallmarked copy exactly as written. */
+  if (/\b925\b/.test(raw)) return raw;
+
   // 1. Silver wording → rhodium coated, everywhere.
   let text = raw
     .replace(/rhodium plated silver[- ]tone/gi, "rhodium coated")
@@ -181,8 +188,8 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
 
 
 
-export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean } => {
-  const { data } = useQuery({
+export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
+  const { data, isLoading } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
     queryFn: () => fetchShopifyProducts(250),
     // Stock state must read live: refresh often and whenever the tab regains
@@ -192,7 +199,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean }
     refetchOnWindowFocus: true,
   });
 
-  if (!data?.length) return { jewellery: staticJewellery, isLive: false };
+  if (!data?.length) return { jewellery: staticJewellery, isLive: false, isLoading };
 
   const byHandle = new Map(data.map((node) => [node.handle, node]));
   // Only keep pieces that are still live listings in Shopify.
@@ -209,7 +216,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean }
 
   const all = [...merged, ...extras];
 
-  return { jewellery: all.length ? all : staticJewellery, isLive: true };
+  return { jewellery: all.length ? all : staticJewellery, isLive: true, isLoading: false };
 };
 
 

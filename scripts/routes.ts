@@ -123,6 +123,18 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
     console.log(`routes: skipping ${dropped.length} delisted product route(s)`);
   }
 
+  // Jewellery listings added in Shopify after the bundled file was generated
+  // still render fine at runtime (the app merges static + live), but they were
+  // never prerendered or listed in the sitemap because routes were seeded from
+  // the bundled file alone. Only 18 of 68 live pieces had a static page. Seed
+  // from Shopify too, so every sellable piece is crawlable and shareable.
+  const routed = new Set(kept.map((r) => r.path));
+  const jewellery = products
+    .filter((p) => (p.vendor || "").trim().toLowerCase() === JEWELLERY_VENDOR)
+    .map<SiteRoute>((p) => ({ path: `/jewellery/${p.handle}`, changefreq: "weekly", priority: "0.8" }))
+    .filter((r) => !routed.has(r.path));
+  if (jewellery.length) console.log(`routes: adding ${jewellery.length} live jewellery route(s)`);
+
   // Clothing listings live at /product/<handle>. They are read straight from
   // Shopify so every shareable product URL is prerendered with its own title,
   // description and preview image, and appears in the sitemap.
@@ -132,7 +144,7 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
     .map<SiteRoute>((p) => ({ path: `/product/${p.handle}`, changefreq: "monthly", priority: "0.8" }));
   if (clothing.length) console.log(`routes: adding ${clothing.length} clothing product route(s)`);
 
-  return [...kept, ...clothing];
+  return [...kept, ...jewellery, ...clothing];
 };
 
 

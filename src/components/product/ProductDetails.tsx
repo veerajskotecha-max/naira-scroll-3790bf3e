@@ -185,7 +185,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div className="flex items-center gap-2 mt-2">
         <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-          Ships in <strong className="font-medium">3–7 working days</strong> · Free above ₹2,999
+          Ships in <strong className="font-medium">3–7 working days</strong> · Flat ₹150 shipping
         </span>
       </div>
 
@@ -208,7 +208,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         style={{ color: "hsl(0 0% 50%)" }}
       >
         {isJewellery
-          ? "*Prices are inclusive of GST. Delivery in 3–5 working days, with free insured shipping across India."
+          ? "*Prices are inclusive of GST. Delivery in 3–5 working days, insured in transit, with flat ₹150 shipping across India."
           : "*Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks."}
       </p>
 

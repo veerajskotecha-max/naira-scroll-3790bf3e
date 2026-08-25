@@ -96,7 +96,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const handleAdd = async () => {
     setAdding(true);
     try {
-      await addItem({
+      const added = await addItem({
         id: piece.handle,
         variantId: piece.variantId,
         name: piece.name,
@@ -105,7 +105,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         currencyCode: "INR",
         image: piece.image,
       });
-      setDrawerOpen(true);
+      /* Opening the drawer on a failed add showed the shopper an empty cart. */
+      if (added) setDrawerOpen(true);
     } finally {
       setAdding(false);
     }

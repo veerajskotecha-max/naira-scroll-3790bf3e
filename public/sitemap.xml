@@ -11,16 +11,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://nairaflore.com/shop/indo-western</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://nairaflore.com/shop/jewellery</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://nairaflore.com/jewellery</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

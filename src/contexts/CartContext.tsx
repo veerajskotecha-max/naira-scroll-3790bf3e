@@ -111,7 +111,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const existing = latest.items.find((cartItem) => getCartKey(cartItem.id, cartItem.size) === key);
 
       if (!latest.cartId) {
-        const result = await createShopifyCart(item.variantId, quantity);
+        const result = await createShopifyCart(item.variantId, quantity, item.size);
         if (!result) throw new Error("Could not create Shopify cart.");
         commitCart({
           cartId: result.cartId,
@@ -140,7 +140,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return committed.checkoutUrl;
       }
 
-      const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity);
+      const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity, item.size);
       if (result.cartNotFound) {
         clearCart();
         toast.error("Your cart timed out. Please add the piece again.");

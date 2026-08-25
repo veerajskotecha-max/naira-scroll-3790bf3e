@@ -24,7 +24,22 @@ import { availabilityByOption, formatShopifyPrice, type ShopifyProductNode, type
 const fallbackSizes = ["XS", "S", "M", "L", "XL"];
 
 
-const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) => {
+/* The sticky buy bar lives on the page, the size picker lives here. Without
+   this the bar kept its own frozen "M" and added the first in-stock variant,
+   so a shopper who chose XL was sold whatever size happened to be in stock. */
+export interface ProductSelection {
+  size: string;
+  variant?: ShopifyProductVariant;
+  inStock: boolean;
+}
+
+const ProductDetails = ({
+  product,
+  onSelectionChange,
+}: {
+  product?: ShopifyProductNode | null;
+  onSelectionChange?: (selection: ProductSelection) => void;
+}) => {
   const sizeOptions = useMemo(() => product?.options.find((option) => option.name.toLowerCase() === "size")?.values ?? fallbackSizes, [product]);
   const [selectedSize, setSelectedSize] = useState(sizeOptions[0] ?? "M");
 
@@ -37,7 +52,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number>();
-  const { addItem, buyNow, setDrawerOpen } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isLoading: cartBusy } = useCart();
 
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
@@ -64,6 +79,14 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
   }, [product, selectedSize]);
 
   const sizeAvailability = useMemo(() => availabilityByOption(product, "size"), [product]);
+
+  useEffect(() => {
+    onSelectionChange?.({
+      size: selectedSize,
+      variant: selectedVariant,
+      inStock: sizeAvailability[selectedSize] ?? selectedVariant?.availableForSale ?? true,
+    });
+  }, [selectedSize, selectedVariant, sizeAvailability, onSelectionChange]);
 
   /* Jewellery is sized by the piece, not by garment size: no XS–XL picker,
      no stitching copy. Vendor is the source of truth, productType a backup. */
@@ -96,7 +119,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       return;
     }
 
-    await addItem({
+    const added = await addItem({
       id: product?.handle ?? selectedVariant.id,
       variantId: selectedVariant.id,
       name: title,
@@ -108,6 +131,9 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       variantTitle: selectedVariant.title,
       selectedOptions: selectedVariant.selectedOptions,
     }, quantity);
+    /* addItem returns null on every failure path. Showing the tick and the
+       "View Cart" toast regardless sent shoppers to an empty cart. */
+    if (!added) return;
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
@@ -325,7 +351,7 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div id="product-actions" className="flex gap-3 mt-5">
         <button
           onClick={handleAddToCart}
-          disabled={!selectedInStock}
+          disabled={!selectedInStock || cartBusy}
           className="press-scale flex-1 h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 disabled:cursor-not-allowed"
           style={{
             borderColor: selectedInStock ? "hsl(0 0% 20%)" : "hsl(0 0% 82%)",
@@ -489,8 +515,8 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
           <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
           <AccordionContent>
             <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-              <p>• All orders from the website are delivered within 3–7 working days.</p>
-              <p>• Made-to-measure pieces are delivered in 45–60 days.</p>
+              <p>• {isJewellery ? "Jewellery orders are delivered within 3–5 working days." : "Ready-to-ship orders are delivered within 3–7 working days."}</p>
+              {!isJewellery && <p>• Made-to-measure pieces are delivered in 4–8 weeks.</p>}
             </div>
           </AccordionContent>
         </AccordionItem>

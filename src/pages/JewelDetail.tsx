@@ -88,6 +88,10 @@ const JewelDetailSkeleton = () => (
   </div>
 );
 
+/* Google wants a validity horizon on an Offer. Rolling twelve months keeps the
+   markup fresh without anyone having to remember to edit a hardcoded date. */
+const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
+
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();
@@ -103,7 +107,14 @@ const JewelDetail = () => {
     else navigate("/jewellery");
   };
 
-  const [selectedSize, setSelectedSize] = useState<string>(piece?.category === "Rings" ? "6" : "One Size");
+  /* `piece` is null on the first render of a Shopify-only handle, so seeding
+     this from it locked 6 of 10 rings to "One Size" for the whole visit — a
+     blank dropdown on every cold load (ad click, shared link, search). */
+  const [selectedSize, setSelectedSize] = useState<string>("One Size");
+  const sizedCategory = piece?.category === "Rings";
+  useEffect(() => {
+    setSelectedSize(sizedCategory ? "6" : "One Size");
+  }, [sizedCategory, piece?.handle]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   const [quantity, setQuantity] = useState(1);
@@ -275,11 +286,15 @@ const JewelDetail = () => {
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
-      // No price. jewellery.ts marks it "internal record only; not displayed
-      // during pre-order", and the page shows "Price shared on WhatsApp enquiry"
-      // instead — publishing it here contradicted the visible page.
+      /* The pre-order era is over: Shopify prices arrive through useLiveJewellery
+         and the page renders them. An Offer without a price is invalid, so Google
+         was dropping the Product rich result across every jewellery page. */
+      price: piece.price,
+      priceValidUntil: PRICE_VALID_UNTIL,
       availability: soldOut ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
       seller: { "@type": "Organization", name: "Naira Flore" },
+      url: `https://nairaflore.com/jewellery/${piece.handle}`,
     },
   };
 

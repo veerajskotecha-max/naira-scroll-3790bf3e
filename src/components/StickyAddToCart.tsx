@@ -34,7 +34,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
       return;
     }
 
-    await addItem({
+    const added = await addItem({
       id: productHandle,
       variantId,
       name: title,
@@ -44,6 +44,9 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
       image,
       size: selectedSize,
     });
+    /* addItem returns null on every failure path. Showing the tick and the
+       "View Cart" toast regardless sent shoppers to an empty cart. */
+    if (!added) return;
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
@@ -56,6 +59,12 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
   const handleBuyNow = async () => {
     if (!variantId) {
       toast.error("This product is currently unavailable.");
+      return;
+    }
+    /* handleAdd guarded stock, this did not — so Shop Now on a sold-out piece
+       built a cart and handed off to a checkout that then refused the line. */
+    if (!inStock) {
+      toast.error(`${title} is sold out${selectedSize ? ` in size ${selectedSize}` : ""}.`);
       return;
     }
     await buyNow({

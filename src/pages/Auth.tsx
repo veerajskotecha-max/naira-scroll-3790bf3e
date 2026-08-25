@@ -117,6 +117,7 @@ const Auth = () => {
         title="Members Sign In | Naira Flore"
         description="Sign in to your Naira Flore account for order history, saved pieces and Inner Circle first access to new jewellery."
         canonical="https://nairaflore.com/auth"
+        noindex
       />
       <main className="min-h-[100svh] bg-[#FBF3EC] pt-[110px] text-[#1A1614] md:pt-[130px]">
         <section className="mx-auto flex max-w-md flex-col items-center px-6 py-14 text-center md:py-20">

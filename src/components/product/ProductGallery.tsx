@@ -139,7 +139,7 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
                 src={shopifyImage(img, 800)}
                 srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
                 sizes="100vw"
-                alt={`View ${i + 1}`}
+                alt={`${productName} - View ${i + 1}`}
                 className="w-full h-full object-cover"
                 // First slide is the mobile LCP element — it must not be lazy.
                 loading={i === 0 ? "eager" : "lazy"}

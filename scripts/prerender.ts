@@ -125,9 +125,39 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
         throw new Error(`redirected to ${landed} — route does not resolve`);
       }
 
+      /* Wait for the page to actually resolve rather than trusting a fixed
+         delay. A PDP whose Shopify query is still in flight renders a loading
+         skeleton that carries robots=noindex — and the word floor below is
+         satisfied by the shared header and footer alone, so the skeleton used
+         to pass silently. That shipped 47 of 65 product pages as noindex
+         "Loading…" HTML while the build reported success. */
+      await page
+        .waitForFunction(
+          () => !document.querySelector('meta[name="robots"][content*="noindex"]'),
+          undefined,
+          { timeout: 10_000 }
+        )
+        .catch(() => {
+          /* fall through — the assertion below reports it properly */
+        });
+
       const html = clean(await page.content());
       const words = await page.evaluate(() => (document.body.innerText || "").trim().split(/\s+/).filter(Boolean).length);
       if (words < 20) throw new Error(`only ${words} words rendered`);
+
+      /* Assert on real markers, not a word count. A page that still declares
+         noindex, or has no h1, is a skeleton we must not write to disk. */
+      const shape = await page.evaluate(() => ({
+        noindex: !!document.querySelector('meta[name="robots"][content*="noindex"]'),
+        h1: document.querySelectorAll("h1").length,
+        title: document.title,
+      }));
+      if (shape.noindex) {
+        throw new Error(`still noindex after load — captured a skeleton ("${shape.title}")`);
+      }
+      if (shape.h1 === 0) {
+        throw new Error(`no <h1> rendered ("${shape.title}")`);
+      }
 
       const file = routeToFile(route.path);
       mkdirSync(resolve(file, ".."), { recursive: true });

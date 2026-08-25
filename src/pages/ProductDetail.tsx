@@ -13,14 +13,14 @@ import YouMayAlsoLike from "@/components/YouMayAlsoLike";
 import CollectionCarousel from "@/components/CollectionCarousel";
 import StickyAddToCart from "@/components/StickyAddToCart";
 import ProductGallery from "@/components/product/ProductGallery";
-import ProductDetails from "@/components/product/ProductDetails";
+import ProductDetails, { type ProductSelection } from "@/components/product/ProductDetails";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import ComingSoon from "./ComingSoon";
 
 const ProductDetail = () => {
-  const [selectedSize] = useState("M");
+  const [selection, setSelection] = useState<ProductSelection | null>(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const goBack = () => {
@@ -227,7 +227,7 @@ const ProductDetail = () => {
 
           {/* Details */}
           <div className="mt-5 md:mt-0 lg:py-2">
-            <ProductDetails product={product} />
+            <ProductDetails product={product} onSelectionChange={setSelection} />
           </div>
         </div>
       </div>
@@ -248,12 +248,12 @@ const ProductDetail = () => {
         image={image}
         title={title}
         price={priceLabel}
-        selectedSize={hasRealSizeOption ? selectedSize : ""}
+        selectedSize={hasRealSizeOption ? selection?.size ?? "" : ""}
         productHandle={product?.handle}
-        variantId={stickyVariant?.id}
-        numericPrice={stickyVariant ? Number(stickyVariant.price.amount) : Number(price)}
-        currencyCode={stickyVariant?.price.currencyCode}
-        inStock={stickyVariant?.availableForSale ?? true}
+        variantId={(selection?.variant ?? stickyVariant)?.id}
+        numericPrice={Number((selection?.variant ?? stickyVariant)?.price.amount ?? price)}
+        currencyCode={(selection?.variant ?? stickyVariant)?.price.currencyCode}
+        inStock={selection?.inStock ?? stickyVariant?.availableForSale ?? true}
       />
     </div>
   );

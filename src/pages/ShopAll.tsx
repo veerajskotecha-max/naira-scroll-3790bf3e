@@ -26,7 +26,7 @@ const categorySlugMap: Record<string, string> = {
   "festive": "Festive Collection",
   "new": "",
 };
-const availabilityOptions = ["In Stock", "Pre-Order"];
+const availabilityOptions = ["In Stock", "Sold Out"];
 
 /* ───── Collapsible Filter Section ───── */
 const FilterSection = ({
@@ -337,6 +337,18 @@ const ShopAll = () => {
         description="Shop handcrafted Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore. Made to measure in India, with custom fits and worldwide shipping."
         canonical="https://nairaflore.com/shop"
       />
+      {/* The hero renders only on bare /shop, and it carries no heading element —
+          so every shop view shipped without an h1. Visually hidden so the page
+          keeps its current look, and worded to match the view being shown. */}
+      <h1 className="sr-only">
+        {location.pathname === "/shop/jewellery"
+          ? "Shop demi-fine jewellery by Naira Flore"
+          : location.pathname === "/shop/indo-western"
+            ? "Shop Indo-Western dresses and co-ord sets by Naira Flore"
+            : searchParams.get("category")
+              ? `Shop ${searchParams.get("category")} by Naira Flore`
+              : "Shop all Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore"}
+      </h1>
       {/* ── Campaign Hero (only on the main /shop landing, not category views) ── */}
       {location.pathname === "/shop" && !searchParams.get("category") && (
         <ShopHero

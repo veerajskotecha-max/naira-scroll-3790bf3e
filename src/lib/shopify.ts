@@ -212,6 +212,7 @@ const CART_CREATE_MUTATION = `
             node {
               id
               quantity
+              attributes { key value }
               merchandise {
                 ... on ProductVariant {
                   id
@@ -237,6 +238,7 @@ const CART_LINES_ADD_MUTATION = `
             node {
               id
               quantity
+              attributes { key value }
               merchandise {
                 ... on ProductVariant {
                   id
@@ -445,10 +447,37 @@ export function isCartNotFoundError(userErrors: Array<{ message: string }>): boo
   });
 }
 
-const getLineForVariant = (lines: Array<{ node: { id: string; quantity?: number; merchandise: { id: string } } }>, variantId: string) =>
-  lines.find((line) => line.node.merchandise.id === variantId)?.node;
+/** The attribute Shopify carries the chosen size on, so it reaches the order. */
+export const SIZE_ATTRIBUTE = "Size";
 
-export async function createShopifyCart(variantId: string, quantity: number): Promise<{ cartId: string; checkoutUrl: string; lineId: string; quantity: number } | null> {
+export const sizeAttributes = (size?: string) =>
+  size && size.trim() ? [{ key: SIZE_ATTRIBUTE, value: size.trim() }] : [];
+
+type CartLineNode = {
+  id: string;
+  quantity?: number;
+  attributes?: Array<{ key: string; value: string }>;
+  merchandise: { id: string };
+};
+
+const lineSize = (node: CartLineNode) =>
+  node.attributes?.find((a) => a.key === SIZE_ATTRIBUTE)?.value ?? "";
+
+/* Every ring in the catalogue is a single "Default Title" variant, so size can
+   only be told apart by the line attribute. Matching on merchandise id alone
+   handed both sizes the same lineId — the drawer then showed two rows against
+   one Shopify line and doubled the subtotal. */
+export const getLineForVariant = (
+  lines: Array<{ node: CartLineNode }>,
+  variantId: string,
+  size?: string
+) => {
+  const want = (size ?? "").trim();
+  const forVariant = lines.filter((line) => line.node.merchandise.id === variantId);
+  return (forVariant.find((line) => lineSize(line.node) === want) ?? forVariant[0])?.node;
+};
+
+export async function createShopifyCart(variantId: string, quantity: number, size?: string): Promise<{ cartId: string; checkoutUrl: string; lineId: string; quantity: number } | null> {
   const data = await storefrontApiRequest<{
     data: {
       cartCreate: {
@@ -457,20 +486,20 @@ export async function createShopifyCart(variantId: string, quantity: number): Pr
       };
     };
   }>(CART_CREATE_MUTATION, {
-    input: { lines: [{ quantity, merchandiseId: variantId }] },
+    input: { lines: [{ quantity, merchandiseId: variantId, attributes: sizeAttributes(size) }] },
   });
 
   const userErrors = data.data.cartCreate.userErrors;
   if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
 
   const cart = data.data.cartCreate.cart;
-  const line = cart ? getLineForVariant(cart.lines.edges, variantId) : null;
+  const line = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
   if (!cart?.checkoutUrl || !line?.id) return null;
 
   return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id, quantity: line.quantity ?? quantity };
 }
 
-export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number): Promise<{ success: boolean; lineId?: string; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
+export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number, size?: string): Promise<{ success: boolean; lineId?: string; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
   const data = await storefrontApiRequest<{
     data: {
       cartLinesAdd: {
@@ -480,7 +509,7 @@ export async function addLineToShopifyCart(cartId: string, variantId: string, qu
     };
   }>(CART_LINES_ADD_MUTATION, {
     cartId,
-    lines: [{ quantity, merchandiseId: variantId }],
+    lines: [{ quantity, merchandiseId: variantId, attributes: sizeAttributes(size) }],
   });
 
   const userErrors = data.data.cartLinesAdd.userErrors;
@@ -488,7 +517,7 @@ export async function addLineToShopifyCart(cartId: string, variantId: string, qu
   if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
 
   const cart = data.data.cartLinesAdd.cart;
-  const line = cart ? getLineForVariant(cart.lines.edges, variantId) : null;
+  const line = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
   return { success: true, lineId: line?.id, quantity: line?.quantity, checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
 }
 

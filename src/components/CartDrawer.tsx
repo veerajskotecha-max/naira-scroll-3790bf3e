@@ -13,6 +13,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
 import { SHIPPING_CHARGE } from "@/lib/serviceability";
 
+/* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
+   — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
+   "Title: Default Title" on the last screen before payment. */
+const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: string }>; size?: string }) => {
+  const real = (item.selectedOptions ?? []).filter(
+    (o) => o.name.toLowerCase() !== "title" && o.value.toLowerCase() !== "default title"
+  );
+  if (real.length) return real.map((o) => `${o.name}: ${o.value}`).join(" · ");
+  return item.size ? `Size: ${item.size}` : "";
+};
+
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
   const { user } = useAuth();
@@ -156,7 +167,7 @@ const CartDrawer = () => {
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div>
                         <p className="font-cormorant text-[15px] font-semibold truncate" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
-                        {item.selectedOptions?.length ? <p className="text-[12px] mt-0.5 truncate" style={{ color: "hsl(0 0% 55%)" }}>{item.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(" · ")}</p> : item.size && <p className="text-[12px] mt-0.5" style={{ color: "hsl(0 0% 55%)" }}>Size: {item.size}</p>}
+                        {lineOptions(item) ? <p className="text-[12px] mt-0.5 truncate" style={{ color: "hsl(0 0% 55%)" }}>{lineOptions(item)}</p> : null}
                         <p className="font-cormorant text-[15px] font-bold mt-1" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
@@ -185,7 +196,7 @@ const CartDrawer = () => {
               <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
-                  Free insured delivery in <strong className="font-semibold">3–5 working days</strong>
+                  Insured delivery in <strong className="font-semibold">3–5 working days</strong>
                 </p>
               </div>
               {/* Promo code */}

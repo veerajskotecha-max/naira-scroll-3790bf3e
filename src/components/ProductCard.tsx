@@ -17,7 +17,7 @@ export interface Product {
   price: string;
   numericPrice: number;
   sizes: string[];
-  availability: "In Stock" | "Pre-Order";
+  availability: "In Stock" | "Sold Out";
   tag?: string;
   variantId?: string;
   variantTitle?: string;
@@ -54,7 +54,11 @@ export const productFromShopify = (product: ShopifyProductNode): Product => {
     price: formatShopifyPrice(price),
     numericPrice: Number(price.amount),
     sizes,
-    availability: firstVariant?.availableForSale ? "In Stock" : "Pre-Order",
+    /* This is stock state, not a pre-order programme — there is no pre-order
+       concept in the data. Calling a sold-out piece "Pre-Order" put an orange
+       invitation next to a disabled button, and made the Pre-Order filter
+       return nothing but unbuyable tiles. */
+    availability: firstVariant?.availableForSale ? "In Stock" : "Sold Out",
     tag: product.tags[0] || "New",
     variantId: firstVariant?.id,
     variantTitle: firstVariant?.title,
@@ -87,7 +91,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
     }
 
     setAdding(true);
-    await addItem({
+    const added = await addItem({
       id: slug,
       variantId: product.variantId,
       name: product.name,
@@ -100,6 +104,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
       selectedOptions: product.selectedOptions,
     });
     setAdding(false);
+    /* addItem returns null on every failure path. Showing the tick and the
+       "View Cart" toast regardless sent shoppers to an empty cart. */
+    if (!added) return;
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
@@ -165,14 +172,9 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               shopper-facing copy — no badge is rendered from them. */}
 
 
-          {product.availability === "Pre-Order" && (
-            <span
-              className="absolute top-2.5 right-10 z-20 text-[8px] font-medium uppercase tracking-[0.1em] px-2 py-[3px]"
-              style={{ backgroundColor: "hsl(35 90% 55%)", color: "#fff" }}
-            >
-              Pre-Order
-            </span>
-          )}
+          {/* The CTA below already reads "Sold Out"; a second badge saying the
+              same thing is noise, and the orange "Pre-Order" pill it replaced
+              was inviting shoppers to reserve stock that does not exist. */}
 
           <button
             className="press-scale absolute top-3 right-3 z-20 w-10 h-10 flex items-center justify-center"

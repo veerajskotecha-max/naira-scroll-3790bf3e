@@ -13,4 +13,13 @@ Allow: /
 User-agent: *
 Allow: /
 
+# Private and transactional routes. The checkout/cart token paths mint a unique
+# URL every time a link is shared or scraped, so leaving them open produced an
+# unbounded crawl surface with nothing indexable behind it.
+Disallow: /account
+Disallow: /auth
+Disallow: /cart/c/
+Disallow: /checkouts/
+Disallow: /oauth
+
 Sitemap: https://nairaflore.com/sitemap.xml

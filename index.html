@@ -58,10 +58,13 @@
     (src/data/seoContent.ts). It is deliberately NOT duplicated here: Helmet only
     manages tags it renders itself, so a static copy here cannot be merged or
     removed at runtime and would ship two conflicting Organization nodes.
-    The WebSite/SearchAction block below has no React equivalent, so it stays.
+    The WebSite block below has no React equivalent, so it stays. Its SearchAction
+    was removed: it advertised /shop?q=, but ShopAll reads only `category` and site
+    search is an in-overlay filter that never navigates — so the sitelinks-searchbox
+    claim was false and the URL returned the unfiltered shop.
   -->
   <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"WebSite","name":"Naira Flore","url":"https://nairaflore.com/","potentialAction":{"@type":"SearchAction","target":"https://nairaflore.com/shop?q={search_term_string}","query-input":"required name=search_term_string"}}
+    {"@context":"https://schema.org","@type":"WebSite","name":"Naira Flore","url":"https://nairaflore.com/"}
   </script>
 </head>
 

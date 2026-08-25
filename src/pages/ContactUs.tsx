@@ -26,6 +26,33 @@ const contactCards = [
   },
 ];
 
+/* LocalBusiness schema — every value below is visible on this page (the
+   contact cards above), so the markup and the page agree. */
+const contactLocalBusinessLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "Naira Flore",
+  url: "https://nairaflore.com/contact",
+  image: "https://nairaflore.com/logo.png",
+  telephone: "+91-9561557935",
+  email: "shopatnaira@gmail.com",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Flat 7, Veeraj Blossom, Karanyogi Nagar",
+    addressLocality: "Nashik",
+    addressRegion: "Maharashtra",
+    postalCode: "422002",
+    addressCountry: "IN",
+  },
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    opens: "10:00",
+    closes: "19:00",
+  },
+  sameAs: ["https://www.instagram.com/nairaflore/"],
+};
+
 const ContactUs = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);

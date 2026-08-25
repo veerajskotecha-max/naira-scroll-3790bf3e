@@ -488,9 +488,21 @@ const JewelDetail = () => {
                 <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
                   {piece.category === "Rings" ? "Ring Size (US)" : "Size"}
                 </span>
-                <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
-                  Sizing help
-                </a>
+                {piece.category === "Rings" ? (
+                  <button
+                    type="button"
+                    onClick={() => setSizeGuideOpen(true)}
+                    className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2"
+                    style={{ color: "hsl(186 35% 28%)" }}
+                  >
+                    Size chart
+                  </button>
+                ) : (
+                  <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
+                    Sizing help
+                  </a>
+                )}
+
               </div>
               {piece.category === "Rings" ? (
                 <>

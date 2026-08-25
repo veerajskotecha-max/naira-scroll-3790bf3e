@@ -20,6 +20,8 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
+import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";

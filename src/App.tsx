@@ -26,7 +26,8 @@ import WelcomeOfferPopup from "./components/WelcomeOfferPopup";
 // Non-home routes are code-split so the homepage bundle stays small.
 const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+// Unknown / retired URLs land on a brand "Coming soon" page instead of a raw 404.
+const ComingSoon = lazy(() => import("./pages/ComingSoon.tsx"));
 const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
 const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
 const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));

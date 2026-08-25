@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Wallet, Scissors, ReceiptText, ShieldCheck, RotateCcw, BadgeCheck } from "lucide-react";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Wallet, Scissors, ReceiptText, ShieldCheck, Gem, RotateCcw, BadgeCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -66,11 +67,8 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
 
   /* Jewellery is sized by the piece, not by garment size: no XS–XL picker,
      no stitching copy. Vendor is the source of truth, productType a backup. */
-  const isJewellery = useMemo(() => {
-    const vendor = (product?.vendor ?? "").trim().toLowerCase();
-    const type = (product?.productType ?? "").trim().toLowerCase();
-    return vendor === "naira petite" || /ring|earring|necklace|bracelet|pendant|jewel/.test(type);
-  }, [product?.vendor, product?.productType]);
+  const isJewellery = useMemo(() => isJewelleryProduct(product), [product?.vendor, product?.productType]);
+
 
   const hasRealSizeOption = Boolean(
     product?.options.some((option) => option.name.toLowerCase() === "size" && option.values.length > 0)
@@ -209,14 +207,18 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
         className="text-[12px] mt-2 leading-relaxed"
         style={{ color: "hsl(0 0% 50%)" }}
       >
-        *Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks.
+        {isJewellery
+          ? "*Prices are inclusive of GST. Delivery in 3–5 working days, with free insured shipping across India."
+          : "*Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks."}
       </p>
 
       {/* Trust badges */}
       <div className="grid grid-cols-3 gap-2 mt-4 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
         {[
-          { icon: Scissors, label: "Handcrafted" },
-          { icon: ShieldCheck, label: "Quality Assured" },
+          isJewellery
+            ? { icon: Gem, label: "Hand-finished" }
+            : { icon: Scissors, label: "Handcrafted" },
+          { icon: ShieldCheck, label: isJewellery ? "Anti-tarnish" : "Quality Assured" },
           { icon: ReceiptText, label: "Secure Payments" },
         ].map(({ icon: Icon, label }) => (
           <div key={label} className="flex flex-col items-center gap-1.5 text-center">

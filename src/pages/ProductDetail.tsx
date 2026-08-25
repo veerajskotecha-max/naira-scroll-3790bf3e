@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ import ProductGallery from "@/components/product/ProductGallery";
 import ProductDetails from "@/components/product/ProductDetails";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
 const ProductDetail = () => {
   const [selectedSize] = useState("M");
@@ -33,6 +34,13 @@ const ProductDetail = () => {
     staleTime: 1000 * 60 * 5,
     retry: 1,
   });
+
+  /* Ads and the Shopify catalogue link to /product/<handle>. Jewellery must
+     never render inside the apparel template, so send it to its own page. */
+  const isJewellery = isJewelleryProduct(product);
+  const hasRealSizeOption = Boolean(
+    product?.options?.some((option) => option.name.toLowerCase() === "size" && option.values.length > 0)
+  );
 
   const title = product?.title ?? "Product";
   const description = product?.description || "Shop real handcrafted couture by Naira Flore.";
@@ -63,6 +71,10 @@ const ProductDetail = () => {
       seller: { "@type": "Organization", name: "Naira Flore" },
     },
   };
+
+  if (product && isJewellery) {
+    return <Navigate to={`/jewellery/${product.handle}`} replace />;
+  }
 
   if (isLoading) {
     return (
@@ -227,7 +239,7 @@ const ProductDetail = () => {
       {judgeMeEnabled ? (
         <JudgeMeReviews productId={product.id} productTitle={product.title} />
       ) : (
-        <CustomerReviews productName={product.title} />
+        <CustomerReviews productName={product.title} variant={isJewellery ? "jewellery" : "apparel"} />
       )}
       <MaterialsCraft />
       <YouMayAlsoLike currentHandle={product.handle} />
@@ -238,7 +250,7 @@ const ProductDetail = () => {
         image={image}
         title={title}
         price={priceLabel}
-        selectedSize={selectedSize}
+        selectedSize={hasRealSizeOption ? selectedSize : ""}
         productHandle={product?.handle}
         variantId={stickyVariant?.id}
         numericPrice={stickyVariant ? Number(stickyVariant.price.amount) : Number(price)}

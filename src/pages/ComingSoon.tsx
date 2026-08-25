@@ -10,7 +10,6 @@ import Footer from "@/components/Footer";
    with clear routes back into the collection. Kept noindex so search
    engines never index a placeholder. */
 
-const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -47,7 +46,7 @@ const ComingSoon = ({
             {eyebrow.toUpperCase()}
           </p>
 
-          <h1 className="mt-4 text-[clamp(2.2rem,7vw,3.4rem)] leading-[1.05]" style={velista}>
+          <h1 className="font-cormorant mt-4 text-[clamp(2.2rem,7vw,3.4rem)] font-normal leading-[1.05]">
             {heading}
           </h1>
 

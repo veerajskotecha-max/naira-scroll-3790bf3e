@@ -73,10 +73,10 @@ const RingSizeGuideModal = ({ isOpen, onClose, highlightSize }: Props) => {
             US sizes with the inner diameter and inner circumference of the band, in mm and cm.
           </p>
           <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[420px] text-left border-collapse">
+            <table className="w-full min-w-[330px] text-left border-collapse">
               <thead>
                 <tr style={{ borderBottom: "1px solid hsl(0 0% 88%)" }}>
-                  {["US Size", "Diameter (mm)", "Diameter (cm)", "Circumference (mm)", "Circumference (cm)"].map((h) => (
+                  {["US Size", "Inner diameter", "Inner circumference"].map((h) => (
                     <th key={h} className="py-2.5 pr-4 text-[10px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(0 0% 35%)" }}>
                       {h}
                     </th>
@@ -97,10 +97,8 @@ const RingSizeGuideModal = ({ isOpen, onClose, highlightSize }: Props) => {
                       <td className="py-2.5 pr-4 text-[13px] font-medium" style={{ color: active ? "#8A6526" : "hsl(0 0% 18%)" }}>
                         US {r.us}
                       </td>
-                      <td className="py-2.5 pr-4 text-[13px]" style={{ color: "hsl(0 0% 35%)" }}>{r.diaMm}</td>
-                      <td className="py-2.5 pr-4 text-[13px]" style={{ color: "hsl(0 0% 35%)" }}>{r.diaCm}</td>
-                      <td className="py-2.5 pr-4 text-[13px]" style={{ color: "hsl(0 0% 35%)" }}>{r.circMm}</td>
-                      <td className="py-2.5 pr-4 text-[13px]" style={{ color: "hsl(0 0% 35%)" }}>{r.circCm}</td>
+                      <td className="py-2.5 pr-4 text-[13px]" style={{ color: "hsl(0 0% 35%)" }}>{r.diaCm} cm <span style={{ color: "hsl(0 0% 55%)" }}>({r.diaMm} mm)</span></td>
+                      <td className="py-2.5 pr-4 text-[13px]" style={{ color: "hsl(0 0% 35%)" }}>{r.circCm} cm <span style={{ color: "hsl(0 0% 55%)" }}>({r.circMm} mm)</span></td>
                     </tr>
                   );
                 })}

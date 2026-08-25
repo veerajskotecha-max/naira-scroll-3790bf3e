@@ -18,6 +18,8 @@ import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
@@ -38,15 +40,25 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
   return [
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
-    { label: "Category", value: piece.category },
+    piece.category === "Rings"
+      ? { label: "Fit", value: isAdjustableRing(piece.handle) ? "Adjustable · US 6–8" : "Fixed size" }
+      : { label: "Category", value: piece.category },
   ];
 };
+
 
 const ringSizes: { value: string; label: string; status: "available" | "preorder" }[] = [
   { value: "5", label: "US 5 (Pre-order · 45 days delivery)", status: "preorder" },
   { value: "6", label: "US 6", status: "available" },
   { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
+
+/** Size list for a specific ring: open-back styles flag US 6 as adjustable. */
+const ringSizesFor = (handle?: string) =>
+  isAdjustableRing(handle)
+    ? ringSizes.map((s) => (s.value === "6" ? { ...s, label: "US 6 — Adjustable (fits US 6–8)" } : s))
+    : ringSizes;
+
 
 const JewelDetail = () => {
   const { handle } = useParams();
@@ -448,7 +460,7 @@ const JewelDetail = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-none">
-                      {ringSizes.map((s) => (
+                      {ringSizesFor(piece.handle).map((s) => (
                         <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">
                           {s.label}
                         </SelectItem>
@@ -457,9 +469,12 @@ const JewelDetail = () => {
                   </Select>
                   <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
                     {selectedSize === "6"
-                      ? "US 6 is in stock and ships now."
+                      ? isAdjustableRing(piece.handle)
+                        ? `US 6 is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
+                        : "US 6 is in stock and ships now."
                       : `US ${selectedSize} is a pre-order — 45 days delivery.`}
                   </p>
+
                 </>
               ) : (
                 <div className="w-full h-11 flex items-center px-3 border text-[13px]" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>

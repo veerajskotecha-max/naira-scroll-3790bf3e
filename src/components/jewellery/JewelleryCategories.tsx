@@ -48,23 +48,22 @@ const JewelleryCategories = () => (
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {cats.map((c) => (
           <Link key={c.label} to={`/jewellery?category=${c.label}`} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
-            <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-1200 ease-out group-hover:scale-[1.06] sm:aspect-[5/4]" />
-            <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1A1614]/65 via-[#1A1614]/10 to-transparent" />
-            <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/70" />
-            {/* stacked so the label and the count never collide on small screens */}
-            <span className="absolute inset-x-4 bottom-4 flex flex-col items-start gap-2 md:inset-x-5 md:bottom-5">
-              <span className="block">
-                <span className="block text-[24px] leading-tight text-[#FBF3EC] md:text-[30px]" style={velista}>{c.label}</span>
-                <span className="mt-0.5 block text-[11px] italic text-[#FBF3EC]/80" style={editorial}>{c.note}</span>
-              </span>
-              <span className="border border-[#FBF3EC]/50 px-2.5 py-1 text-[9px] tracking-[0.28em] text-[#FBF3EC] transition-colors duration-300 group-hover:bg-[#FBF3EC] group-hover:text-[#1A1614] md:px-3 md:py-1.5" style={jost}>
+            {/* portrait crop matches the source ratio, so the piece on the model is never cut away */}
+            <div className="relative overflow-hidden">
+              <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[3/4] w-full object-cover object-top transition-transform duration-1200 ease-out group-hover:scale-[1.05]" />
+              <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/70" />
+            </div>
+            <span className="block bg-[#FFFBF7] px-3 py-3 md:px-4 md:py-4">
+              <span className="block text-[20px] leading-tight text-[#1A1614] md:text-[24px]" style={velista}>{c.label}</span>
+              <span className="mt-0.5 block text-[11px] italic text-[#6C6259]" style={editorial}>{c.note}</span>
+              <span className="mt-2.5 inline-block border border-[#1A1614]/25 px-2.5 py-1 text-[9px] tracking-[0.28em] text-[#1A1614] transition-colors duration-300 group-hover:border-[#B0843A] group-hover:bg-[#B0843A] group-hover:text-[#FFFBF7] md:px-3 md:py-1.5" style={jost}>
                 {c.count} PIECES →
               </span>
             </span>
-
           </Link>
         ))}
       </div>
+
     </div>
   </section>
 );

@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -26,7 +26,8 @@ import WelcomeOfferPopup from "./components/WelcomeOfferPopup";
 // Non-home routes are code-split so the homepage bundle stays small.
 const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+// Unknown / retired URLs land on a brand "Coming soon" page instead of a raw 404.
+const ComingSoon = lazy(() => import("./pages/ComingSoon.tsx"));
 const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
 const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
 const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));
@@ -79,7 +80,7 @@ const AppShell = () => {
           {/* Meta and Google product feeds emit Shopify's canonical
               /products/<handle> URLs. ProductDetail resolves its :id param by
               handle, so alias the feed path onto it — without this every
-              catalogue ad click falls through to the "*" NotFound route. */}
+              catalogue ad click falls through to the "*" Coming Soon route. */}
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
@@ -109,8 +110,24 @@ const AppShell = () => {
           <Route path="/cart/c/:token/*" element={<CartCheckoutRedirect />} />
           <Route path="/checkouts/cn/:token" element={<CartCheckoutRedirect />} />
           <Route path="/checkouts/cn/:token/*" element={<CartCheckoutRedirect />} />
+          {/* Legacy / Shopify-shaped URLs (ads, old links, storefront exports)
+              map onto the real pages instead of dead-ending. */}
+          <Route path="/collections" element={<Navigate to="/jewellery" replace />} />
+          <Route path="/collections/all" element={<Navigate to="/shop" replace />} />
+          <Route path="/collections/:slug" element={<JewelleryCategory />} />
+          <Route path="/blogs" element={<Navigate to="/journal" replace />} />
+          <Route path="/blogs/:blog" element={<Navigate to="/journal" replace />} />
+          <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
+          <Route path="/jewelry" element={<Navigate to="/jewellery" replace />} />
+          <Route path="/jewelry/:handle" element={<JewelDetail />} />
+          <Route path="/pages/about" element={<Navigate to="/about" replace />} />
+          <Route path="/pages/contact" element={<Navigate to="/contact" replace />} />
+          <Route path="/pages/faqs" element={<Navigate to="/faqs" replace />} />
+          <Route path="/policies/privacy-policy" element={<Navigate to="/privacy" replace />} />
+          <Route path="/policies/terms-of-service" element={<Navigate to="/terms" replace />} />
+          <Route path="/policies/refund-policy" element={<Navigate to="/exchange-return-policy" replace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<ComingSoon />} />
         </Routes>
       </Suspense>
     </>

@@ -11,20 +11,20 @@ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif"
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
-/** Hero piece per category — on-model shot preferred, product shot as fallback. */
-const heroHandles: Record<string, string> = {
-  Rings: "cushion-halo-ring",
-  Bracelets: "riviere-of-light-bracelet",
-  Earrings: "molten-bloom-hoops",
-  Necklaces: "dewdrop-bezel-necklace",
+/** Still-life product shots per category — no on-model imagery here, the piece leads. */
+const categoryImages: Record<string, string> = {
+  Rings:
+    "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624",
+  Bracelets:
+    "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295",
+  Earrings:
+    "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536",
+  Necklaces:
+    "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333",
 };
 
-const categoryImage = (category: string) => {
-  const hero = jewellery.find((j) => j.handle === heroHandles[category]);
-  const piece = hero ?? jewellery.find((j) => j.category === category);
-  const worn = piece?.gallery?.find((u) => /_2_worn/i.test(u));
-  return worn ?? piece?.image ?? "";
-};
+const categoryImage = (category: string) => categoryImages[category] ?? "";
+
 
 const cats = [
   { label: "Rings", img: categoryImage("Rings"), count: jewellery.filter((j) => j.category === "Rings").length, note: "solitaires, halo & stack" },

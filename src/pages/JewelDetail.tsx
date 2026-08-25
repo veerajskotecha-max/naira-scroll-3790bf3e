@@ -426,100 +426,8 @@ const JewelDetail = () => {
               MRP inclusive of all taxes · free insured shipping across India
             </p>
 
-            {/* Delivery note — the line is live */}
-            <div
-              className="mt-3 flex items-start gap-2 border px-3 py-2.5"
-              style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
-            >
-              <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
-              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now — payment,
-                cart and checkout are fully live.
-              </p>
-            </div>
+            {/* Size / Quantity / CTA moved directly under the price for conversion */}
 
-            {/* Offers — the coupon hub shoppers expect before they commit */}
-            <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
-              <p className="text-[9px] tracking-[0.24em]" style={{ color: "hsl(0 0% 45%)", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-                AVAILABLE OFFERS
-              </p>
-              <ul className="mt-2 space-y-1.5">
-                {[
-                  { code: "NAIRA10", text: "10% off your first order" },
-                  { code: null, text: "Free insured shipping on every order across India" },
-                  { code: null, text: "2-year plating assurance on all demi-fine pieces" },
-                ].map((o) => (
-                  <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                    <span aria-hidden="true" style={{ color: "#B0843A" }}>✦</span>
-                    <span>
-                      {o.code && (
-                        <strong
-                          className="mr-1.5 border px-1.5 py-[1px] text-[10.5px] tracking-[0.1em] font-medium"
-                          style={{ borderColor: "hsl(36 40% 76%)", color: "#8A6A2A" }}
-                        >
-                          {o.code}
-                        </strong>
-                      )}
-                      {o.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-
-
-
-
-            {/* Key facts, at a glance */}
-            <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
-              {keyFacts.map((fact) => (
-                <div key={fact.label} className="border px-3 py-1.5" style={{ borderColor: "hsl(36 30% 84%)", backgroundColor: "hsl(33 41% 97%)" }}>
-                  <dt className="text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-                    {fact.label}
-                  </dt>
-                  <dd className="mt-0.5 text-[12px] leading-tight tracking-[0.01em]" style={{ color: "hsl(0 0% 22%)" }}>
-                    {fact.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
-            {/* Availability / delivery badge — live from Shopify */}
-            <div className="flex items-center gap-2 mt-3">
-              {soldOut ? (
-                <>
-                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(0 65% 50%)" }} />
-                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(0 65% 42%)" }}>
-                    Sold Out
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
-                  <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-                    <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
-                  </span>
-                </>
-              )}
-            </div>
-
-
-            {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
-              {[
-                { icon: Sparkles, label: "Anti-Tarnish Sealed" },
-                { icon: ShieldCheck, label: "18k Demi-Gold" },
-                { icon: ReceiptText, label: "Secure Payments" },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex flex-col items-center gap-1.5 text-center">
-                  <Icon size={16} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
-                  <span className="text-[10px] uppercase tracking-[0.1em] leading-tight" style={{ color: "hsl(0 0% 30%)" }}>{label}</span>
-                </div>
-              ))}
-            </div>
-
-            <PincodeChecker />
 
             <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
@@ -574,22 +482,16 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* CTA block: live Shopify cart + checkout, WhatsApp supports */}
+            {/* CTA block: live Shopify cart + checkout, WhatsApp supports.
+                Add to Cart leads in brand gold — a warm, high-contrast primary
+                converts better than an outline ghost button. */}
             <div id="product-actions" className="mt-6">
-              <button
-                onClick={handleBuyNow}
-                disabled={soldOut || buying || cartLoading}
-                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
-              >
-                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
-              </button>
               {soldOut ? (
                 <a
                   href={sizedEnquiryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
                   style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
                 >
                   <MessageSquare size={13} /> Notify me on WhatsApp
@@ -598,12 +500,21 @@ const JewelDetail = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={buying || cartLoading}
-                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)] disabled:opacity-60"
-                  style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)", backgroundColor: "transparent" }}
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
                 >
                   Add to Cart
                 </button>
               )}
+              <button
+                onClick={handleBuyNow}
+                disabled={soldOut || buying || cartLoading}
+                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+              >
+                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
+              </button>
+
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
                 {soldOut ? "This piece is currently sold out — we'll let you know the moment it's back." : `Secure payments · ${PREORDER_NOTE_SHORT}`}
               </p>
@@ -627,6 +538,99 @@ const JewelDetail = () => {
                 </a>
               </div>
             </div>
+
+            {/* Delivery note — the line is live */}
+            <div
+              className="mt-5 flex items-start gap-2 border px-3 py-2.5"
+              style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
+            >
+              <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
+              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                <strong className="font-medium">{PREORDER_NOTE}</strong> Order now — payment,
+                cart and checkout are fully live.
+              </p>
+            </div>
+
+            {/* Offers — the coupon hub shoppers expect before they commit */}
+            <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
+              <p className="text-[9px] tracking-[0.24em]" style={{ color: "hsl(0 0% 45%)", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                AVAILABLE OFFERS
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {[
+                  { code: "NAIRA10", text: "10% off your first order" },
+                  { code: null, text: "Free insured shipping on every order across India" },
+                  { code: null, text: "2-year plating assurance on all demi-fine pieces" },
+                ].map((o) => (
+                  <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                    <span aria-hidden="true" style={{ color: "#B0843A" }}>✦</span>
+                    <span>
+                      {o.code && (
+                        <strong
+                          className="mr-1.5 border px-1.5 py-[1px] text-[10.5px] tracking-[0.1em] font-medium"
+                          style={{ borderColor: "hsl(36 40% 76%)", color: "#8A6A2A" }}
+                        >
+                          {o.code}
+                        </strong>
+                      )}
+                      {o.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Key facts, at a glance */}
+            <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
+              {keyFacts.map((fact) => (
+                <div key={fact.label} className="border px-3 py-1.5" style={{ borderColor: "hsl(36 30% 84%)", backgroundColor: "hsl(33 41% 97%)" }}>
+                  <dt className="text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                    {fact.label}
+                  </dt>
+                  <dd className="mt-0.5 text-[12px] leading-tight tracking-[0.01em]" style={{ color: "hsl(0 0% 22%)" }}>
+                    {fact.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            {/* Availability / delivery badge — live from Shopify */}
+            <div className="flex items-center gap-2 mt-3">
+              {soldOut ? (
+                <>
+                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(0 65% 50%)" }} />
+                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(0 65% 42%)" }}>
+                    Sold Out
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
+                  <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <strong className="font-medium">{PREORDER_NOTE_SHORT}</strong>
+                  </span>
+                </>
+              )}
+            </div>
+
+            {/* Trust badges */}
+            <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
+              {[
+                { icon: Sparkles, label: "Anti-Tarnish Sealed" },
+                { icon: ShieldCheck, label: "18k Demi-Gold" },
+                { icon: ReceiptText, label: "Secure Payments" },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="flex flex-col items-center gap-1.5 text-center">
+                  <Icon size={16} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
+                  <span className="text-[10px] uppercase tracking-[0.1em] leading-tight" style={{ color: "hsl(0 0% 30%)" }}>{label}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <PincodeChecker />
+            </div>
+
 
 
             {/* Jewellery assurances */}

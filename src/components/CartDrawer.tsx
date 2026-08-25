@@ -184,7 +184,7 @@ const CartDrawer = () => {
               <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
-                  Estimated delivery: <strong className="font-semibold">3–7 working days</strong>
+                  Free insured delivery in <strong className="font-semibold">3–5 working days</strong>
                 </p>
               </div>
               {/* Promo code */}

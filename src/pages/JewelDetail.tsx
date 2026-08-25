@@ -40,9 +40,12 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
   return [
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
-    { label: "Category", value: piece.category },
+    piece.category === "Rings"
+      ? { label: "Fit", value: isAdjustableRing(piece.handle) ? "Adjustable · US 6–8" : "Fixed size" }
+      : { label: "Category", value: piece.category },
   ];
 };
+
 
 const ringSizes: { value: string; label: string; status: "available" | "preorder" }[] = [
   { value: "5", label: "US 5 (Pre-order · 45 days delivery)", status: "preorder" },

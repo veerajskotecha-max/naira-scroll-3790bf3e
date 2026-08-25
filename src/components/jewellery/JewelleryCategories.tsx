@@ -48,9 +48,9 @@ const JewelleryCategories = () => (
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {cats.map((c) => (
           <Link key={c.label} to={`/jewellery?category=${c.label}`} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
-            {/* portrait crop matches the source ratio, so the piece on the model is never cut away */}
+            {/* still-life crop — product centred */}
             <div className="relative overflow-hidden">
-              <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[3/4] w-full object-cover object-top transition-transform duration-1200 ease-out group-hover:scale-[1.05]" />
+              <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[4/5] w-full object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]" />
               <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/70" />
             </div>
             <span className="block bg-[#FFFBF7] px-3 py-3 md:px-4 md:py-4">

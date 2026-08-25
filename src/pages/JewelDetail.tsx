@@ -18,6 +18,8 @@ import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";

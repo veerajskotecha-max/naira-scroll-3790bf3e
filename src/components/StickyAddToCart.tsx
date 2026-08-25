@@ -48,7 +48,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
     toast("Added to cart", {
-      description: `1× ${title} (${selectedSize})`,
+      description: selectedSize ? `1× ${title} (${selectedSize})` : `1× ${title}`,
       action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
     });
   };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 

@@ -226,7 +226,7 @@ import { z as z4 } from "npm:zod@^3.25.76";
 var join_inner_circle_default = defineTool5({
   name: "join_inner_circle",
   title: "Join the Inner Circle",
-  description: "Add the signed-in member's email to the Naira Flore Inner Circle list for pre-launch collection access.",
+  description: "Add the signed-in member's email to the Naira Flore Inner Circle list for first access to new collections.",
   inputSchema: {
     name: z4.string().trim().max(80).optional().describe("Name to store with the signup."),
     phone: z4.string().trim().max(20).optional().describe("Optional phone number.")

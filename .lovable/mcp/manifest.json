@@ -117,7 +117,7 @@
       {
         "name": "join_inner_circle",
         "title": "Join the Inner Circle",
-        "description": "Add the signed-in member's email to the Naira Flore Inner Circle list for pre-launch collection access.",
+        "description": "Add the signed-in member's email to the Naira Flore Inner Circle list for first access to new collections.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,

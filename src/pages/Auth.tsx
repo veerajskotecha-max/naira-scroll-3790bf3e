@@ -115,7 +115,7 @@ const Auth = () => {
     <>
       <PageSEO
         title="Members Sign In | Naira Flore"
-        description="Sign in to your Naira Flore account for order history, saved pieces and Inner Circle access to pre-launch jewellery."
+        description="Sign in to your Naira Flore account for order history, saved pieces and Inner Circle first access to new jewellery."
         canonical="https://nairaflore.com/auth"
       />
       <main className="min-h-[100svh] bg-[#FBF3EC] pt-[110px] text-[#1A1614] md:pt-[130px]">

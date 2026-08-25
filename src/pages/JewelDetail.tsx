@@ -554,7 +554,7 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* Delivery note — the line is live */}
+            {/* Delivery + shipping reassurance */}
             <div
               className="mt-5 flex items-start gap-2 border px-3 py-2.5"
               style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}

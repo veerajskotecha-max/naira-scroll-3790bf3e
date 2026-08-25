@@ -13,7 +13,7 @@ const FounderStoryTeaser = () => (
     style={{ backgroundColor: "hsl(30 25% 96%)" }}
     aria-labelledby="founder-heading"
   >
-    <div className="max-w-[1100px] mx-auto px-5 md:px-8 lg:px-10">
+    <div className="max-w-[980px] mx-auto px-5 md:px-8 lg:px-10">
       <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-14 lg:gap-20">
 
         {/* Portrait — small, framed inset */}
@@ -67,7 +67,7 @@ const FounderStoryTeaser = () => (
             className="font-cormorant text-[26px] md:text-[32px] lg:text-[38px] font-medium leading-[1.2] mb-4 md:mb-5"
             style={{ color: "hsl(0 0% 14%)" }}
           >
-            Born from a love of
+            Born from a love of<br className="hidden md:block" />
             <em className="italic font-normal"> craft and colour</em>
           </h2>
 

@@ -110,8 +110,24 @@ const AppShell = () => {
           <Route path="/cart/c/:token/*" element={<CartCheckoutRedirect />} />
           <Route path="/checkouts/cn/:token" element={<CartCheckoutRedirect />} />
           <Route path="/checkouts/cn/:token/*" element={<CartCheckoutRedirect />} />
+          {/* Legacy / Shopify-shaped URLs (ads, old links, storefront exports)
+              map onto the real pages instead of dead-ending. */}
+          <Route path="/collections" element={<Navigate to="/jewellery" replace />} />
+          <Route path="/collections/all" element={<Navigate to="/shop" replace />} />
+          <Route path="/collections/:slug" element={<JewelleryCategory />} />
+          <Route path="/blogs" element={<Navigate to="/journal" replace />} />
+          <Route path="/blogs/:blog" element={<Navigate to="/journal" replace />} />
+          <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
+          <Route path="/jewelry" element={<Navigate to="/jewellery" replace />} />
+          <Route path="/jewelry/:handle" element={<JewelDetail />} />
+          <Route path="/pages/about" element={<Navigate to="/about" replace />} />
+          <Route path="/pages/contact" element={<Navigate to="/contact" replace />} />
+          <Route path="/pages/faqs" element={<Navigate to="/faqs" replace />} />
+          <Route path="/policies/privacy-policy" element={<Navigate to="/privacy" replace />} />
+          <Route path="/policies/terms-of-service" element={<Navigate to="/terms" replace />} />
+          <Route path="/policies/refund-policy" element={<Navigate to="/exchange-return-policy" replace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<ComingSoon />} />
         </Routes>
       </Suspense>
     </>

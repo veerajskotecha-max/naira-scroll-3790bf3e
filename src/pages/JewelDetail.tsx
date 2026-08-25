@@ -482,22 +482,16 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* CTA block: live Shopify cart + checkout, WhatsApp supports */}
+            {/* CTA block: live Shopify cart + checkout, WhatsApp supports.
+                Add to Cart leads in brand gold — a warm, high-contrast primary
+                converts better than an outline ghost button. */}
             <div id="product-actions" className="mt-6">
-              <button
-                onClick={handleBuyNow}
-                disabled={soldOut || buying || cartLoading}
-                className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
-              >
-                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
-              </button>
               {soldOut ? (
                 <a
                   href={sizedEnquiryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
                   style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
                 >
                   <MessageSquare size={13} /> Notify me on WhatsApp
@@ -506,12 +500,21 @@ const JewelDetail = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={buying || cartLoading}
-                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)] disabled:opacity-60"
-                  style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)", backgroundColor: "transparent" }}
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
                 >
                   Add to Cart
                 </button>
               )}
+              <button
+                onClick={handleBuyNow}
+                disabled={soldOut || buying || cartLoading}
+                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+              >
+                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
+              </button>
+
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
                 {soldOut ? "This piece is currently sold out — we'll let you know the moment it's back." : `Secure payments · ${PREORDER_NOTE_SHORT}`}
               </p>

@@ -83,7 +83,28 @@ describe("ProductDetails stock gating", () => {
   it("still renders the price and delivery promise when sold out", () => {
     renderPDP(makeProduct([{ value: "S", ok: false }]));
     expect(screen.getByText(/Taxes included/)).toBeTruthy();
-    // Appears in both the delivery badge and the delivery accordion.
-    expect(screen.getAllByText(/3–7 working days/).length).toBeGreaterThan(0);
+    // The fixture is productType "Ring", so this renders the jewellery window.
+    expect(screen.getAllByText(/3–5 working days/).length).toBeGreaterThan(0);
+  });
+
+  /*
+    The delivery badge and the info line below it are rendered separately, and
+    only the info line was made jewellery-aware. A ring showed "Ships in 3–7
+    working days" directly above "Delivery in 3–5 working days" — the same page
+    stating two windows. They must agree, whichever product type renders.
+  */
+  it("quotes one delivery window, not two", () => {
+    for (const [productType, expected, wrong] of [
+      ["Ring", "3–5 working days", "3–7 working days"],
+      ["Saree", "3–7 working days", "3–5 working days"],
+    ] as const) {
+      const { unmount } = renderPDP({
+        ...makeProduct([{ value: "S", ok: true }]),
+        productType,
+      } as ShopifyProductNode);
+      expect(screen.getAllByText(new RegExp(expected)).length).toBeGreaterThan(0);
+      expect(screen.queryAllByText(new RegExp(wrong)).length).toBe(0);
+      unmount();
+    }
   });
 });

@@ -185,7 +185,9 @@ const ProductDetails = ({ product }: { product?: ShopifyProductNode | null }) =>
       <div className="flex items-center gap-2 mt-2">
         <Truck size={12} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
-          Ships in <strong className="font-medium">3–7 working days</strong> · Flat ₹150 shipping
+          {/* The info line below is jewellery-aware; this badge has to agree with
+              it, or the same page states two different delivery windows. */}
+          Ships in <strong className="font-medium">{isJewellery ? "3–5 working days" : "3–7 working days"}</strong> · Flat ₹150 shipping
         </span>
       </div>
 

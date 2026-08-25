@@ -535,6 +535,8 @@ const JewelDetail = () => {
                 </div>
               )}
             </div>
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
+
 
             {/* Quantity */}
             <div className="mt-4">

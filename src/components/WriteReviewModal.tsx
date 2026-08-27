@@ -119,13 +119,26 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
   return (
     <form
       className="flex flex-col gap-5"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        if (!isValid) return;
-        onSubmit({ name: name.trim(), rating, text: text.trim() });
-        setSubmitted(true);
+        if (!isValid || uploading) return;
+        setUploading(true);
+        try {
+          const images = photos.length ? await uploadPhotos() : [];
+          onSubmit({ name: name.trim(), rating, text: text.trim(), images });
+          setSubmitted(true);
+        } catch (err) {
+          toast({
+            title: "Could not upload your photos",
+            description: err instanceof Error ? err.message : "Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setUploading(false);
+        }
       }}
     >
+
       {/* Star Rating */}
       <div className="flex flex-col gap-2">
         <label className="text-[12px] uppercase tracking-[0.1em] font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>

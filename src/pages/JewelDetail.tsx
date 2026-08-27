@@ -26,6 +26,7 @@ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 
@@ -147,6 +148,28 @@ const JewelDetail = () => {
   const isScrolling = useRef(false);
   const [stickyBarVisible, setStickyBarVisible] = useState(false);
   const stickyBarRef = useRef<HTMLDivElement>(null);
+
+  /* Baymard: 41% of sites quote a shipping speed rather than a date, and test
+     participants opened calendars to count business days themselves, reaching
+     conflicting conclusions from identical wording. Amazon and Flipkart have
+     trained Indian shoppers to expect a date, and 11 of 17 Indian D2C product
+     pages surveyed carry one.
+
+     Five working days is the rest-of-India figure — the conservative end, since
+     Baymard found a shown date is read as a promise and a missed one does more
+     damage than a vague range.
+
+     Held back from the prerenderer. Prerendering drives a real headless browser,
+     so effects run and whatever this sets is captured into the static HTML — I
+     checked, and a build today baked "arrives by Thu, 3 Sept" into the file. That
+     HTML can sit for weeks, so crawlers and no-JS visitors would read a delivery
+     date that has already passed. Automated captures keep the range; every real
+     visitor recomputes the date on load. */
+  const [arrivesBy, setArrivesBy] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.webdriver) return;
+    setArrivesBy(formatDeliveryDate(addWorkingDays(new Date(), 5)));
+  }, []);
   const [heartPopped, setHeartPopped] = useState(false);
 
   /* Meta Pixel ViewContent — once per piece viewed. */
@@ -745,8 +768,10 @@ const JewelDetail = () => {
             >
               <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
               <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="font-medium">{PREORDER_NOTE}</strong> Dispatched insured from
-                our Mumbai atelier, with easy 7-day returns.
+                <strong className="font-medium">
+                  {arrivesBy ? `Order today, arrives by ${arrivesBy}.` : PREORDER_NOTE}
+                </strong>{" "}
+                Dispatched insured from our Mumbai atelier, with easy 7-day returns.
               </p>
             </div>
 

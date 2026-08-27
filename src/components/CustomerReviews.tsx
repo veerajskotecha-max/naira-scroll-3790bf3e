@@ -359,13 +359,48 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   );
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   useEffect(() => {
-    setLocalReviews([
+    let cancelled = false;
+    const seed = [
       ...ownReviews,
       ...(isJewellery
         ? [...jewelleryReviews, ...jewelleryOneLiners]
         : [...reviewsData, ...apparelOneLiners]),
-    ]);
-  }, [ownReviews, isJewellery]);
+    ];
+    setLocalReviews(seed);
+
+    // Approved shopper-submitted reviews (with their own photos) lead the list.
+    (async () => {
+      let query = supabase
+        .from("customer_reviews")
+        .select("name, rating, text, images, created_at")
+        .eq("approved", true)
+        .order("created_at", { ascending: false })
+        .limit(60);
+      if (productName) query = query.eq("product_name", productName);
+      const { data } = await query;
+      if (cancelled || !data?.length) return;
+      const submitted: Review[] = data.map((r) => ({
+        name: r.name,
+        initials: r.name.slice(0, 2).toUpperCase(),
+        verified: true,
+        rating: r.rating,
+        date: new Date(r.created_at).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        text: r.text,
+        hasPhotos: (r.images ?? []).length > 0,
+        images: r.images ?? [],
+      }));
+      setLocalReviews([...submitted, ...seed]);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [ownReviews, isJewellery, productName]);
+
 
   // Aggregate is computed from the reviews actually shown, never invented.
   const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {

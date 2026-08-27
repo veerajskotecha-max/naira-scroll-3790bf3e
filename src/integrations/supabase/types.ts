@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      customer_reviews: {
+        Row: {
+          approved: boolean
+          created_at: string
+          id: string
+          images: string[]
+          name: string
+          product_name: string | null
+          rating: number
+          text: string
+          variant: string
+        }
+        Insert: {
+          approved?: boolean
+          created_at?: string
+          id?: string
+          images?: string[]
+          name: string
+          product_name?: string | null
+          rating: number
+          text: string
+          variant?: string
+        }
+        Update: {
+          approved?: boolean
+          created_at?: string
+          id?: string
+          images?: string[]
+          name?: string
+          product_name?: string | null
+          rating?: number
+          text?: string
+          variant?: string
+        }
+        Relationships: []
+      }
       inner_circle_signups: {
         Row: {
           created_at: string

@@ -53,8 +53,45 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isValid = rating > 0 && name.trim().length > 0 && text.trim().length > 0;
+
+  const addPhotos = (files: FileList | null) => {
+    if (!files) return;
+    const picked = Array.from(files)
+      .filter((f) => f.type.startsWith("image/") && f.size <= 8 * 1024 * 1024)
+      .slice(0, MAX_PHOTOS - photos.length);
+    if (picked.length < files.length) {
+      toast({
+        title: "Some photos were skipped",
+        description: `Up to ${MAX_PHOTOS} images, 8MB each.`,
+      });
+    }
+    setPhotos((prev) => [...prev, ...picked.map((file) => ({ file, preview: URL.createObjectURL(file) }))]);
+  };
+
+  const uploadPhotos = async () => {
+    const urls: string[] = [];
+    for (const { file } of photos) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("review-photos").upload(path, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data, error: signError } = await supabase.storage
+        .from("review-photos")
+        .createSignedUrl(path, TEN_YEARS);
+      if (signError || !data) throw signError ?? new Error("Could not read uploaded photo");
+      urls.push(data.signedUrl);
+    }
+    return urls;
+  };
+
 
   if (submitted) {
     return (

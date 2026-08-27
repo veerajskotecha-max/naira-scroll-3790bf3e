@@ -102,9 +102,10 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
         <p className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(var(--foreground))" }}>
           Thank you for your review
         </p>
-        <p className="text-[13px] font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
-          Your feedback helps other customers
+        <p className="text-[13px] font-cormorant text-center max-w-[300px]" style={{ color: "hsl(var(--muted-foreground))" }}>
+          Our team will publish it shortly, once it has been checked.
         </p>
+
         <button
           onClick={onClose}
           className="mt-2 px-6 py-2.5 text-[13px] font-medium transition-colors duration-200"

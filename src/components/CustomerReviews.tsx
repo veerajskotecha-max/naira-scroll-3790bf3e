@@ -398,7 +398,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
     }
   }, [activeFilter, localReviews]);
 
-  const handleNewReview = (review: { name: string; rating: number; text: string }) => {
+  const handleNewReview = async (review: { name: string; rating: number; text: string; images: string[] }) => {
     const newReview: Review = {
       name: review.name,
       initials: review.name.slice(0, 2).toUpperCase(),
@@ -406,28 +406,29 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
       rating: review.rating,
       date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       text: review.text,
-      hasPhotos: false,
-      images: [],
+      hasPhotos: review.images.length > 0,
+      images: review.images,
     };
     setLocalReviews((prev) => [newReview, ...prev]);
 
-    // Show it immediately, but also deliver it. Until Judge.me is activated
-    // (VITE_JUDGEME_SCRIPT_URL) this state is local-only and lost on refresh,
-    // so route the review to the atelier the same way the contact and
-    // newsletter forms do — otherwise the shopper sees their review appear
-    // and the team never receives it.
-    window.open(
-      `https://wa.me/919561557935?text=${encodeURIComponent(
-        [
-          `New review from ${review.name}`,
-          `Rating: ${review.rating}/5`,
-          `Review: ${review.text}`,
-        ].join("\n")
-      )}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    // Persisted for moderation — it becomes visible to everyone once approved.
+    const { error } = await supabase.from("customer_reviews").insert({
+      product_name: productName ?? null,
+      variant,
+      name: review.name,
+      rating: review.rating,
+      text: review.text,
+      images: review.images,
+    });
+    if (error) {
+      toast({
+        title: "We couldn't save your review",
+        description: "Please try again, or share it with us on WhatsApp.",
+        variant: "destructive",
+      });
+    }
   };
+
 
   const handleFilterChange = (filter: string) => {
     setAnimating(true);

@@ -177,21 +177,65 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
         />
       </div>
 
-      {/* Photo upload arrives with the reviews backend; until then customers
-          can share photos over WhatsApp, so no dead button is shown here. */}
+      {/* Photos */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[12px] uppercase tracking-[0.1em] font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
+          Photos <span className="normal-case tracking-normal">(optional, up to {MAX_PHOTOS})</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {photos.map((p, i) => (
+            <div key={p.preview} className="relative w-[64px] h-[64px] overflow-hidden border" style={{ borderColor: "hsl(var(--border))" }}>
+              <img src={p.preview} alt={`Review photo ${i + 1}`} className="w-full h-full object-cover" />
+              <button
+                type="button"
+                aria-label="Remove photo"
+                onClick={() => setPhotos((prev) => prev.filter((_, idx) => idx !== i))}
+                className="absolute top-0 right-0 p-0.5"
+                style={{ backgroundColor: "hsla(0,0%,0%,0.55)", color: "hsl(0 0% 100%)" }}
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          {photos.length < MAX_PHOTOS && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-[64px] h-[64px] flex flex-col items-center justify-center gap-1 border border-dashed transition-colors duration-200 hover:border-primary"
+              style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
+            >
+              <Camera size={16} />
+              <span className="text-[10px]">Add</span>
+            </button>
+          )}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            addPhotos(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </div>
 
       {/* Submit */}
       <button
         type="submit"
-        disabled={!isValid}
-        className="press-scale w-full h-[48px] text-[13px] font-medium uppercase tracking-[0.1em] disabled:opacity-40 disabled:cursor-not-allowed"
+        disabled={!isValid || uploading}
+        className="press-scale w-full h-[48px] flex items-center justify-center gap-2 text-[13px] font-medium uppercase tracking-[0.1em] disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
-          backgroundColor: isValid ? "hsl(186 35% 28%)" : "hsl(186 35% 28%)",
+          backgroundColor: "hsl(186 35% 28%)",
           color: "hsl(0 0% 100%)",
         }}
       >
-        Submit Review
+        {uploading && <Loader2 size={14} className="animate-spin" />}
+        {uploading ? "Submitting…" : "Submit Review"}
       </button>
+
     </form>
   );
 };

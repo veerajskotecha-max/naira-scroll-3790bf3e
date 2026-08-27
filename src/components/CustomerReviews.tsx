@@ -5,6 +5,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import WriteReviewModal from "@/components/WriteReviewModal";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";
@@ -359,7 +361,7 @@ export const reviewSummary = (productName?: string, variant: "apparel" | "jewell
 
 const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
-  const photos = isJewellery ? jewelleryPhotos : customerPhotos;
+  const basePhotos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
   const [visibleCount, setVisibleCount] = useState(8);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -384,13 +386,57 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   );
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   useEffect(() => {
-    setLocalReviews([
+    let cancelled = false;
+    const seed = [
       ...ownReviews,
       ...(isJewellery
         ? [...jewelleryReviews, ...jewelleryOneLiners]
         : [...reviewsData, ...apparelOneLiners]),
-    ]);
-  }, [ownReviews, isJewellery]);
+    ];
+    setLocalReviews(seed);
+
+    // Approved shopper-submitted reviews (with their own photos) lead the list.
+    (async () => {
+      let query = supabase
+        .from("customer_reviews")
+        .select("name, rating, text, images, created_at")
+        .eq("approved", true)
+        .order("created_at", { ascending: false })
+        .limit(60);
+      if (productName) query = query.eq("product_name", productName);
+      const { data } = await query;
+      if (cancelled || !data?.length) return;
+      const submitted: Review[] = data.map((r) => ({
+        name: r.name,
+        initials: r.name.slice(0, 2).toUpperCase(),
+        verified: true,
+        rating: r.rating,
+        date: new Date(r.created_at).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        text: r.text,
+        hasPhotos: (r.images ?? []).length > 0,
+        images: r.images ?? [],
+      }));
+      setLocalReviews([...submitted, ...seed]);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [ownReviews, isJewellery, productName]);
+
+
+  // Shopper-uploaded photos lead the strip, curated shots fill the rest.
+  const photos = useMemo(
+    () => [
+      ...localReviews.filter((r) => r.hasPhotos).flatMap((r) => r.images),
+      ...basePhotos,
+    ].filter((p, i, arr) => arr.indexOf(p) === i),
+    [localReviews, basePhotos]
+  );
 
   // Aggregate is computed from the reviews actually shown, never invented.
   const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {
@@ -427,7 +473,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
     }
   }, [activeFilter, localReviews]);
 
-  const handleNewReview = (review: { name: string; rating: number; text: string }) => {
+  const handleNewReview = async (review: { name: string; rating: number; text: string; images: string[] }) => {
     const newReview: Review = {
       name: review.name,
       initials: review.name.slice(0, 2).toUpperCase(),
@@ -435,28 +481,29 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
       rating: review.rating,
       date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       text: review.text,
-      hasPhotos: false,
-      images: [],
+      hasPhotos: review.images.length > 0,
+      images: review.images,
     };
     setLocalReviews((prev) => [newReview, ...prev]);
 
-    // Show it immediately, but also deliver it. Until Judge.me is activated
-    // (VITE_JUDGEME_SCRIPT_URL) this state is local-only and lost on refresh,
-    // so route the review to the atelier the same way the contact and
-    // newsletter forms do — otherwise the shopper sees their review appear
-    // and the team never receives it.
-    window.open(
-      `https://wa.me/919561557935?text=${encodeURIComponent(
-        [
-          `New review from ${review.name}`,
-          `Rating: ${review.rating}/5`,
-          `Review: ${review.text}`,
-        ].join("\n")
-      )}`,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    // Persisted for moderation — it becomes visible to everyone once approved.
+    const { error } = await supabase.from("customer_reviews").insert({
+      product_name: productName ?? null,
+      variant,
+      name: review.name,
+      rating: review.rating,
+      text: review.text,
+      images: review.images,
+    });
+    if (error) {
+      toast({
+        title: "We couldn't save your review",
+        description: "Please try again, or share it with us on WhatsApp.",
+        variant: "destructive",
+      });
+    }
   };
+
 
   const handleFilterChange = (filter: string) => {
     setAnimating(true);

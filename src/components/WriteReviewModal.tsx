@@ -1,8 +1,13 @@
-import { useState } from "react";
-import { Star, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { Star, X, Camera, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+const MAX_PHOTOS = 4;
+const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
 
 interface WriteReviewModalProps {
   open: boolean;
@@ -11,8 +16,10 @@ interface WriteReviewModalProps {
     name: string;
     rating: number;
     text: string;
+    images: string[];
   }) => void;
 }
+
 
 const StarSelector = ({ rating, onChange }: { rating: number; onChange: (r: number) => void }) => {
   const [hovered, setHovered] = useState(0);
@@ -46,8 +53,45 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isValid = rating > 0 && name.trim().length > 0 && text.trim().length > 0;
+
+  const addPhotos = (files: FileList | null) => {
+    if (!files) return;
+    const picked = Array.from(files)
+      .filter((f) => f.type.startsWith("image/") && f.size <= 8 * 1024 * 1024)
+      .slice(0, MAX_PHOTOS - photos.length);
+    if (picked.length < files.length) {
+      toast({
+        title: "Some photos were skipped",
+        description: `Up to ${MAX_PHOTOS} images, 8MB each.`,
+      });
+    }
+    setPhotos((prev) => [...prev, ...picked.map((file) => ({ file, preview: URL.createObjectURL(file) }))]);
+  };
+
+  const uploadPhotos = async () => {
+    const urls: string[] = [];
+    for (const { file } of photos) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("review-photos").upload(path, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data, error: signError } = await supabase.storage
+        .from("review-photos")
+        .createSignedUrl(path, TEN_YEARS);
+      if (signError || !data) throw signError ?? new Error("Could not read uploaded photo");
+      urls.push(data.signedUrl);
+    }
+    return urls;
+  };
+
 
   if (submitted) {
     return (
@@ -58,9 +102,10 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
         <p className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(var(--foreground))" }}>
           Thank you for your review
         </p>
-        <p className="text-[13px] font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
-          Your feedback helps other customers
+        <p className="text-[13px] font-cormorant text-center max-w-[300px]" style={{ color: "hsl(var(--muted-foreground))" }}>
+          Our team will publish it shortly, once it has been checked.
         </p>
+
         <button
           onClick={onClose}
           className="mt-2 px-6 py-2.5 text-[13px] font-medium transition-colors duration-200"
@@ -75,13 +120,26 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
   return (
     <form
       className="flex flex-col gap-5"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        if (!isValid) return;
-        onSubmit({ name: name.trim(), rating, text: text.trim() });
-        setSubmitted(true);
+        if (!isValid || uploading) return;
+        setUploading(true);
+        try {
+          const images = photos.length ? await uploadPhotos() : [];
+          onSubmit({ name: name.trim(), rating, text: text.trim(), images });
+          setSubmitted(true);
+        } catch (err) {
+          toast({
+            title: "Could not upload your photos",
+            description: err instanceof Error ? err.message : "Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setUploading(false);
+        }
       }}
     >
+
       {/* Star Rating */}
       <div className="flex flex-col gap-2">
         <label className="text-[12px] uppercase tracking-[0.1em] font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
@@ -120,21 +178,65 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
         />
       </div>
 
-      {/* Photo upload arrives with the reviews backend; until then customers
-          can share photos over WhatsApp, so no dead button is shown here. */}
+      {/* Photos */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[12px] uppercase tracking-[0.1em] font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
+          Photos <span className="normal-case tracking-normal">(optional, up to {MAX_PHOTOS})</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {photos.map((p, i) => (
+            <div key={p.preview} className="relative w-[64px] h-[64px] overflow-hidden border" style={{ borderColor: "hsl(var(--border))" }}>
+              <img src={p.preview} alt={`Review photo ${i + 1}`} className="w-full h-full object-cover" />
+              <button
+                type="button"
+                aria-label="Remove photo"
+                onClick={() => setPhotos((prev) => prev.filter((_, idx) => idx !== i))}
+                className="absolute top-0 right-0 p-0.5"
+                style={{ backgroundColor: "hsla(0,0%,0%,0.55)", color: "hsl(0 0% 100%)" }}
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+          {photos.length < MAX_PHOTOS && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-[64px] h-[64px] flex flex-col items-center justify-center gap-1 border border-dashed transition-colors duration-200 hover:border-primary"
+              style={{ borderColor: "hsl(var(--border))", color: "hsl(var(--muted-foreground))" }}
+            >
+              <Camera size={16} />
+              <span className="text-[10px]">Add</span>
+            </button>
+          )}
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            addPhotos(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </div>
 
       {/* Submit */}
       <button
         type="submit"
-        disabled={!isValid}
-        className="press-scale w-full h-[48px] text-[13px] font-medium uppercase tracking-[0.1em] disabled:opacity-40 disabled:cursor-not-allowed"
+        disabled={!isValid || uploading}
+        className="press-scale w-full h-[48px] flex items-center justify-center gap-2 text-[13px] font-medium uppercase tracking-[0.1em] disabled:opacity-40 disabled:cursor-not-allowed"
         style={{
-          backgroundColor: isValid ? "hsl(186 35% 28%)" : "hsl(186 35% 28%)",
+          backgroundColor: "hsl(186 35% 28%)",
           color: "hsl(0 0% 100%)",
         }}
       >
-        Submit Review
+        {uploading && <Loader2 size={14} className="animate-spin" />}
+        {uploading ? "Submitting…" : "Submit Review"}
       </button>
+
     </form>
   );
 };

@@ -404,6 +404,15 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   }, [ownReviews, isJewellery, productName]);
 
 
+  // Shopper-uploaded photos lead the strip, curated shots fill the rest.
+  const photos = useMemo(
+    () => [
+      ...localReviews.filter((r) => r.hasPhotos).flatMap((r) => r.images),
+      ...basePhotos,
+    ].filter((p, i, arr) => arr.indexOf(p) === i),
+    [localReviews, basePhotos]
+  );
+
   // Aggregate is computed from the reviews actually shown, never invented.
   const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {
     const total = localReviews.length;

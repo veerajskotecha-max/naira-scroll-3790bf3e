@@ -75,7 +75,7 @@ const JewelDetailSkeleton = () => (
     <span className="sr-only" role="status">Loading piece</span>
     <div className="max-w-[1400px] mx-auto md:px-6 pt-[94px] md:pt-[112px] pb-16" aria-hidden="true">
       <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-        <AtelierSkeleton className="w-full" style={{ aspectRatio: "3/4" }} />
+        <AtelierSkeleton className="w-full" style={{ aspectRatio: MOBILE_FRAME }} />
         <div className="mt-6 lg:mt-0 px-4 lg:px-8 xl:px-10">
           <AtelierSkeleton className="h-8 w-4/5" />
           <AtelierSkeleton className="mt-4 h-6 w-1/3" />
@@ -87,6 +87,17 @@ const JewelDetailSkeleton = () => (
     </div>
   </div>
 );
+
+/* Square, not the 3/4 this used to be. Two reasons, both measured.
+
+   15 of the 16 live hero images are exactly 1:1 (1649², 1500², 896²), so the
+   taller frame was cropping a quarter off almost every one of them.
+
+   And it lifts the decision information above the fold: at 3/4 the name and
+   price landed at 1.06 and 1.12 folds on a 390px phone, underneath a buy bar
+   pinned to the bottom of the screen at 0.94 — the shopper was being offered
+   the button before the price. */
+const MOBILE_FRAME = "1/1";
 
 /* Google wants a validity horizon on an Offer. Rolling twelve months keeps the
    markup fresh without anyone having to remember to edit a hardcoded date. */
@@ -128,6 +139,7 @@ const JewelDetail = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
   const [stickyBarVisible, setStickyBarVisible] = useState(false);
+  const stickyBarRef = useRef<HTMLDivElement>(null);
   const [heartPopped, setHeartPopped] = useState(false);
 
   /* Meta Pixel ViewContent — once per piece viewed. */
@@ -145,20 +157,40 @@ const JewelDetail = () => {
   /* The mobile buy bar shows whenever the inline CTA block is off screen —
      below the fold on landing as well as scrolled past above. It used to wait
      for `bottom < 0` only, so the whole stretch from the fold down to the CTA
-     (~750px on a 852px phone) offered no way to buy at all. */
+     (~750px on a 852px phone) offered no way to buy at all.
+
+     It is held back until the price has entered the viewport, though. Pinned
+     to the bottom of the screen it rendered at ~0.94 folds while the name and
+     price sat at 1.06 and 1.12 — so the very first thing a shopper could do
+     was buy something whose price they had not been shown yet. */
   useEffect(() => {
     const check = () => {
       const target = document.getElementById("product-actions");
       if (!target) return;
       const r = target.getBoundingClientRect();
-      setStickyBarVisible(r.bottom < 0 || r.top > window.innerHeight);
+      const offScreen = r.bottom < 0 || r.top > window.innerHeight;
+      /* Never let the bar sit on top of the price. Pinned to the bottom of the
+         screen it covered it outright — the shopper saw the name, two buy
+         buttons, and no price at all. */
+      const price = document.getElementById("product-price");
+      const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
+      const priceClear =
+        !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
+      setStickyBarVisible(offScreen && priceClear);
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
     window.addEventListener("resize", check);
+    /* The first check runs before the gallery images have loaded, when the page
+       is still short and the CTA is wrongly on screen. Nothing re-checked until
+       the shopper scrolled, so the bar stayed hidden on a page they had not
+       touched. Watching the document height catches the reflow instead. */
+    const ro = new ResizeObserver(check);
+    ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", check);
       window.removeEventListener("resize", check);
+      ro.disconnect();
     };
   }, [handle]);
 
@@ -333,7 +365,7 @@ const JewelDetail = () => {
             key={i}
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-            style={{ aspectRatio: "3/4", backgroundColor: "#F4EBE2" }}
+            style={{ aspectRatio: MOBILE_FRAME, backgroundColor: "#F4EBE2" }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
             <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
@@ -472,7 +504,7 @@ const JewelDetail = () => {
             </h1>
 
             {/* Live price from the Shopify listing */}
-            <div className="mt-3 flex flex-wrap items-baseline gap-2">
+            <div id="product-price" className="mt-3 flex flex-wrap items-baseline gap-2">
               <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
                 {piece.priceLabel}
               </span>
@@ -912,6 +944,7 @@ const JewelDetail = () => {
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}
       <div
+        ref={stickyBarRef}
         className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-white/95 backdrop-blur px-3 pt-2 flex items-center gap-2 transition-[transform,visibility] duration-300 ease-out"
         style={{
           borderColor: "hsl(0 0% 90%)",

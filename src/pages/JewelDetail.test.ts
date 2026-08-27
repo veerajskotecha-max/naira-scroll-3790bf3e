@@ -61,3 +61,33 @@ describe("metal normaliser", () => {
     expect(guard).toBeLessThan(firstRewrite);
   });
 });
+
+/*
+  The mobile buy bar is pinned to the bottom of the viewport. With a 3/4 hero
+  the name and price landed at 1.06 and 1.12 folds — below it — so the first
+  thing a shopper could do was buy something whose price they had not been
+  shown. Measured on an iPhone 13: the bar covered the price outright.
+
+  Two things keep that fixed, and both must stay:
+  the square hero, which lifts name and price above the fold (and stops
+  cropping the 15-of-16 hero images that are already square), and the bar's
+  refusal to render while it would sit on top of the price.
+*/
+describe("the buy bar never precedes the price", () => {
+  it("uses a square mobile hero", () => {
+    expect(code).toMatch(/const MOBILE_FRAME = "1\/1"/);
+  });
+
+  it("gates the bar on the price being clear of it", () => {
+    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
+    expect(effect, "expected the bar to measure its own height").toMatch(/stickyBarRef/);
+    expect(effect, "expected a price-clearance check").toMatch(/priceClear/);
+    expect(effect).toMatch(/setStickyBarVisible\(offScreen && priceClear\)/);
+  });
+
+  it("re-checks when the layout reflows, not only on scroll", () => {
+    // The first check runs before images load; without this the bar's state
+    // was frozen until the shopper scrolled.
+    expect(code).toMatch(/new ResizeObserver\(check\)/);
+  });
+});

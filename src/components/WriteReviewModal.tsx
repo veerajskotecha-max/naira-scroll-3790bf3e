@@ -1,8 +1,13 @@
-import { useState } from "react";
-import { Star, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { Star, X, Camera, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+const MAX_PHOTOS = 4;
+const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
 
 interface WriteReviewModalProps {
   open: boolean;
@@ -11,8 +16,10 @@ interface WriteReviewModalProps {
     name: string;
     rating: number;
     text: string;
+    images: string[];
   }) => void;
 }
+
 
 const StarSelector = ({ rating, onChange }: { rating: number; onChange: (r: number) => void }) => {
   const [hovered, setHovered] = useState(0);

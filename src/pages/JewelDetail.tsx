@@ -4,13 +4,13 @@ import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft } from "lucide-react";
+import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import CollectionCarousel from "@/components/CollectionCarousel";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import CustomerReviews from "@/components/CustomerReviews";
+import CustomerReviews, { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import DetailsTabs from "@/components/product/DetailsTabs";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -23,7 +23,6 @@ import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -123,6 +122,14 @@ const JewelDetail = () => {
      blank dropdown on every cold load (ad click, shared link, search). */
   const [selectedSize, setSelectedSize] = useState<string>("One Size");
   const sizedCategory = piece?.category === "Rings";
+  /* Contentsquare's 2026 benchmark puts mobile scroll rate at 45.2% — the average
+     visitor never reaches the page's midpoint. The rating sat at 5.14 folds, so
+     most shoppers never saw it. It moves up beside the title, always paired with
+     its count. */
+  const rating = useMemo(
+    () => (piece ? reviewSummary(piece.name, "jewellery") : null),
+    [piece?.name]
+  );
   useEffect(() => {
     setSelectedSize(sizedCategory ? "6" : "One Size");
   }, [sizedCategory, piece?.handle]);
@@ -374,10 +381,26 @@ const JewelDetail = () => {
       </div>
       {WishlistBtn}
       {ShareBtn}
+      {/* Baymard found 40% of mobile sites support no image gestures at all, and
+          of the 60% that do, only half tell the user. Tapping here has always
+          opened a full-screen zoom — nothing on the page ever said so. */}
+      <span
+        aria-hidden="true"
+        className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em]"
+        style={{ backgroundColor: "hsla(0,0%,100%,0.88)", color: "hsl(0 0% 35%)" }}
+      >
+        <ZoomIn size={12} strokeWidth={1.7} />
+        Tap to zoom
+        {images.length > 1 && (
+          <span style={{ color: "hsl(0 0% 55%)", fontVariantNumeric: "tabular-nums" }}>
+            · {selectedImage + 1}/{images.length}
+          </span>
+        )}
+      </span>
       {images.length > 1 && (
-        <div className="flex justify-center gap-1 mt-2 mb-1">
+        <div className="flex justify-center gap-1 mt-1 mb-0.5">
           {images.map((_, i) => (
-            <button key={i} onClick={() => scrollToImage(i)} aria-label={`View image ${i + 1}`} className="w-8 h-8 flex items-center justify-center">
+            <button key={i} onClick={() => scrollToImage(i)} aria-label={`View image ${i + 1}`} className="w-8 h-7 flex items-center justify-center">
               <span
                 className="w-1.5 h-1.5 transition-[transform,background-color] duration-200 ease-out"
                 style={{ borderRadius: "50%", backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)", transform: selectedImage === i ? "scale(1.4)" : "scale(1)" }}
@@ -493,10 +516,34 @@ const JewelDetail = () => {
 
           {/* Details */}
           <div className="mt-5 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
-            {/* Category */}
-            <p className="text-[10px] tracking-[0.34em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-              {piece.category.toUpperCase()} · DEMI-GOLD
-            </p>
+            {/* Category, and the rating alongside it.
+
+                Contentsquare's 2026 benchmark puts mobile scroll rate at 45.2% —
+                the average visitor never reaches the page's midpoint, and this
+                rating sat at 5.14 folds. It rides on the category row because
+                that row was half empty, so surfacing it costs almost no height:
+                the price still clears the fold. Baymard surveyed 5,170+ people
+                and found a star average without a count erodes trust, so the
+                count is never rendered without it. */}
+            <div className="flex items-center justify-between gap-3 min-h-[26px]">
+              <p className="text-[10px] tracking-[0.34em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                {piece.category.toUpperCase()} · DEMI-GOLD
+              </p>
+              {rating && (
+                <a
+                  href="#customer-reviews"
+                  className="inline-flex shrink-0 items-center gap-1 text-[12px] tracking-[0.02em] py-1 pl-2 -mr-1"
+                  style={{ color: "hsl(0 0% 35%)" }}
+                  aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
+                >
+                  <span aria-hidden="true" style={{ color: "#B0843A" }}>★</span>
+                  <span className="font-medium" style={{ color: "hsl(0 0% 15%)" }}>{rating.rating}</span>
+                  <span className="underline underline-offset-4" style={{ color: "hsl(0 0% 48%)" }}>
+                    ({rating.count})
+                  </span>
+                </a>
+              )}
+            </div>
 
             {/* Title */}
             <h1 className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em] mt-2" style={{ color: "hsl(0 0% 12%)" }}>
@@ -555,18 +602,37 @@ const JewelDetail = () => {
               </div>
               {piece.category === "Rings" ? (
                 <>
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger className="w-full h-11 text-[13px] font-medium tracking-[0.02em] rounded-none border" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-none">
-                      {ringSizesFor(piece.handle).map((s) => (
-                        <SelectItem key={s.value} value={s.value} className="text-[13px] rounded-none">
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* Buttons, not a dropdown. Baymard: 57% of sites hide size
+                      behind a select, and a dropdown conceals both the range of
+                      sizes and which are available until the shopper opens it.
+                      Three ring sizes fit on one row at 390px. */}
+                  <div role="radiogroup" aria-label="Ring size, US" className="flex flex-wrap gap-2">
+                    {ringSizesFor(piece.handle).map((s) => {
+                      const active = selectedSize === s.value;
+                      return (
+                        <button
+                          key={s.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          onClick={() => setSelectedSize(s.value)}
+                          className="min-w-[64px] min-h-[44px] px-4 border text-[13px] font-medium tracking-[0.02em] transition-colors duration-150"
+                          style={{
+                            borderColor: active ? "hsl(0 0% 12%)" : "hsl(0 0% 80%)",
+                            backgroundColor: active ? "hsl(0 0% 12%)" : "transparent",
+                            color: active ? "hsl(0 0% 100%)" : "hsl(0 0% 20%)",
+                          }}
+                        >
+                          US {s.value}
+                          {s.status === "preorder" && (
+                            <span className="block text-[9.5px] font-normal tracking-[0.08em] uppercase opacity-70">
+                              Pre-order
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                   <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
                     {selectedSize === "6"
                       ? isAdjustableRing(piece.handle)
@@ -633,7 +699,23 @@ const JewelDetail = () => {
               </button>
 
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
-                {soldOut ? "This piece is currently sold out — we'll let you know the moment it's back." : "Secure payments · Insured delivery · Easy returns"}
+                {soldOut ? (
+                  "This piece is currently sold out — we'll let you know the moment it's back."
+                ) : (
+                  <>
+                    {/* 60% of Baymard's subjects looked for the returns policy on the
+                        product page itself, and 44% of sites neither show nor link it
+                        there. This said "Easy returns" and linked nowhere. */}
+                    Secure payments · Insured delivery ·{" "}
+                    <Link
+                      to="/exchange-return-policy"
+                      className="underline underline-offset-4"
+                      style={{ color: "hsl(0 0% 35%)" }}
+                    >
+                      7-day returns
+                    </Link>
+                  </>
+                )}
               </p>
               <div className="flex gap-3 mt-3">
                 <button

@@ -217,7 +217,10 @@ const apparelOneLiners: Review[] = [
 ];
 
 
-const filters = ["All Reviews", "With Photos", "5★", "4★", "3★"];
+/* 1★ and 2★ used to be unreachable. Baymard found 53% of test subjects
+   actively look for negative reviews, and that without them users either
+   suspect the reviews are fake or misjudge a product from a good first page. */
+const filters = ["All Reviews", "With Photos", "5★", "4★", "3★", "2★", "1★"];
 
 
 interface Review {
@@ -332,6 +335,28 @@ interface CustomerReviewsProps {
   variant?: "apparel" | "jewellery";
 }
 
+/*
+  The same summary the reviews section computes, exposed so the product page can
+  show it beside the title. Baymard surveyed 5,170+ people and found a star
+  average without a count actively erodes trust — nearly twice as many preferred
+  4.5 from 57 reviews over 5.0 from 4 — so the count travels with the average and
+  the two are never rendered apart.
+
+  Reads the shipped review set only. A visitor's own submitted review shifts the
+  number inside the section, which is correct there, but would make this badge
+  differ per device for no benefit.
+*/
+export const reviewSummary = (productName?: string, variant: "apparel" | "jewellery" = "apparel") => {
+  const base = variant === "jewellery"
+    ? [...jewelleryReviews, ...jewelleryOneLiners]
+    : [...reviewsData, ...apparelOneLiners];
+  const all = [...getProductReviews(productName ?? ""), ...base];
+  const total = all.length;
+  if (!total) return null;
+  const avg = all.reduce((sum, r) => sum + r.rating, 0) / total;
+  return { rating: Math.round(avg * 10) / 10, count: total };
+};
+
 const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
   const photos = isJewellery ? jewelleryPhotos : customerPhotos;
@@ -393,6 +418,10 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         return localReviews.filter((r) => r.rating === 4);
       case "3★":
         return localReviews.filter((r) => r.rating === 3);
+      case "2★":
+        return localReviews.filter((r) => r.rating === 2);
+      case "1★":
+        return localReviews.filter((r) => r.rating === 1);
       default:
         return localReviews;
     }
@@ -465,20 +494,39 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
 
             {/* Breakdown */}
             <div className="flex-1 max-w-[320px] flex flex-col gap-2.5">
-              {ratingBreakdown.map(({ stars, count }) => (
-                <div key={stars} className="flex items-center gap-3">
-                  <span className="text-[13px] w-8 shrink-0 font-medium" style={{ color: "hsl(var(--muted-foreground))" }}>
-                    {stars} ★
-                  </span>
-                  <Progress
-                    value={(count / maxCount) * 100}
-                    className="h-2.5 flex-1 bg-secondary"
-                  />
-                  <span className="text-[12px] w-8 text-right" style={{ color: "hsl(var(--muted-foreground))" }}>
-                    {count}
-                  </span>
-                </div>
-              ))}
+              {/* The bars are the filter. Baymard found the distribution summary is
+                  the most-used part of a reviews section — relied on more than the
+                  review text itself — and that 90% of users who wanted a particular
+                  rating tried to click the bars, while only 61% of sites let them. */}
+              {ratingBreakdown.map(({ stars, count }) => {
+                const label = `${stars}★`;
+                const active = activeFilter === label;
+                return (
+                  <button
+                    key={stars}
+                    type="button"
+                    disabled={count === 0}
+                    onClick={() => setActiveFilter(active ? "All Reviews" : label)}
+                    aria-pressed={active}
+                    aria-label={`${count} ${stars}-star review${count === 1 ? "" : "s"}${active ? ", showing" : ""}`}
+                    className="flex w-full items-center gap-3 py-1 text-left transition-opacity disabled:cursor-default disabled:opacity-45 enabled:hover:opacity-80"
+                  >
+                    <span
+                      className="text-[13px] w-8 shrink-0 font-medium"
+                      style={{ color: active ? "hsl(186 35% 28%)" : "hsl(var(--muted-foreground))" }}
+                    >
+                      {stars} ★
+                    </span>
+                    <Progress value={(count / maxCount) * 100} className="h-2.5 flex-1 bg-secondary" />
+                    <span
+                      className="text-[12px] w-8 text-right"
+                      style={{ color: active ? "hsl(186 35% 28%)" : "hsl(var(--muted-foreground))" }}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

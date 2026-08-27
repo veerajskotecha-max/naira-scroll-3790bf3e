@@ -91,3 +91,33 @@ describe("the buy bar never precedes the price", () => {
     expect(code).toMatch(/new ResizeObserver\(check\)/);
   });
 });
+
+/*
+  Baymard surveyed 5,170+ people across five studies and found a star average
+  shown without its review count actively erodes trust — nearly twice as many
+  preferred "4.5 from 57 reviews" over "5.0 from 4 reviews". The average and the
+  count must therefore never be rendered apart.
+*/
+describe("rating is never shown without its count", () => {
+  it("renders the count alongside the average", () => {
+    const block = code.match(/\{rating && \([\s\S]*?\)\}/)![0];
+    expect(block).toMatch(/rating\.rating/);
+    expect(block, "the count must travel with the average").toMatch(/rating\.count/);
+  });
+
+  it("anchors to the reviews section", () => {
+    expect(code).toMatch(/href="#customer-reviews"/);
+  });
+});
+
+/* Baymard: 57% of sites hide size behind a dropdown, which conceals both the
+   range and which sizes are available until the shopper opens it. */
+describe("ring size is chosen with buttons, not a dropdown", () => {
+  it("no longer renders a select for size", () => {
+    expect(code).not.toMatch(/<Select[\s>]/);
+  });
+  it("renders a radiogroup of size buttons", () => {
+    expect(code).toMatch(/role="radiogroup"/);
+    expect(code).toMatch(/aria-checked=\{active\}/);
+  });
+});

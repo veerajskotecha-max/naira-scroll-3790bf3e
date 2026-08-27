@@ -336,7 +336,7 @@ interface CustomerReviewsProps {
 
 const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsProps = {}) => {
   const isJewellery = variant === "jewellery";
-  const photos = isJewellery ? jewelleryPhotos : customerPhotos;
+  const basePhotos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
   const [visibleCount, setVisibleCount] = useState(8);
   const [lightboxOpen, setLightboxOpen] = useState(false);

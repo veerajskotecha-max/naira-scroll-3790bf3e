@@ -371,7 +371,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
     setLocalReviews(seed);
 
     // Approved shopper-submitted reviews (with their own photos) lead the list.
-    (async () => {
+    const load = async () => {
       let query = supabase
         .from("customer_reviews")
         .select("name, rating, text, images, created_at")
@@ -396,12 +396,35 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         images: r.images ?? [],
       }));
       setLocalReviews([...submitted, ...seed]);
-    })();
+    };
+
+    load();
+
+    // Live updates: realtime pushes when a review is added/approved, plus a
+    // gentle poll and a refresh whenever the tab regains focus.
+    const channel = supabase
+      .channel("customer-reviews-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "customer_reviews" },
+        () => load()
+      )
+      .subscribe();
+
+    const interval = window.setInterval(load, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    document.addEventListener("visibilitychange", onVisible);
 
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+      supabase.removeChannel(channel);
     };
   }, [ownReviews, isJewellery, productName]);
+
 
 
   // Shopper-uploaded photos lead the strip, curated shots fill the rest.

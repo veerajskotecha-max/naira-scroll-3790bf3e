@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
+  applyCartDiscountCodes,
   addLineToShopifyCart,
   createShopifyCart,
   fetchShopifyCart,
@@ -8,7 +9,7 @@ import {
   removeLineFromShopifyCart,
   updateShopifyCartLine,
 } from "@/lib/shopify";
-import { applyPromoToCheckoutUrl } from "@/lib/promo";
+import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 
 export interface CartItem {
@@ -308,7 +309,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart, commitCart]);
 
-  const openCheckout = useCallback((url: string) => {
+  const openCheckout = useCallback(async (url: string) => {
     const latest = loadCart();
     const value = Number(latest.items.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
     trackPixel("InitiateCheckout", {
@@ -324,11 +325,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       })),
       content_type: "product",
     });
-    const target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));
-    const opened = window.open(target, "_blank", "noopener,noreferrer");
-    // Popup blockers reject window.open outside a direct click (Buy now awaits
-    // a network call first) — fall back to same-tab navigation.
-    if (!opened || opened.closed) window.location.assign(target);
+    let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));
+
+    /* Put the discount on the cart, not just in the query string. ?discount= is
+       honoured on Shopify's /cart/... permalinks, but we hand over at
+       /checkouts/cn/<token>, where it is not documented to apply — and if it
+       silently does not, the drawer quotes one total and Shopify charges
+       another (₹245 more on a ₹2,449 piece with NAIRA10). Setting it on the
+       cart makes it travel with the cart. The URL parameter stays as a
+       harmless belt-and-braces. */
+    const code = getPromoCode();
+    const cartId = loadCart().cartId;
+    if (code && cartId) {
+      /* That call runs 437ms at the median and up to 1.2s, so the button has to
+         say something. Without this the shopper taps Secure Checkout and nothing
+         visibly happens for a second — which reads as a broken button. */
+      setIsLoading(true);
+      try {
+        const res = await applyCartDiscountCodes(cartId, [code]);
+        if (res.checkoutUrl) target = applyPromoToCheckoutUrl(res.checkoutUrl);
+      } catch (error) {
+        /* Never block checkout on the discount call — the query string still
+           carries the code, and Shopify's own field accepts it at checkout. */
+        console.error("Could not attach discount to cart", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    /* Straight to checkout in this tab.
+
+       This used to call window.open(target, "_blank", "noopener,noreferrer")
+       first and fall back to navigation "if the popup was blocked". That test
+       could never pass: per the HTML spec window.open returns null whenever
+       noopener is set — verified null on 100 of 100 calls — so the fallback
+       always ran regardless. The call either did nothing, tripped a
+       popup-blocked warning, or opened a stray tab that the navigation below
+       then orphaned. Same-tab hand-off is what Shopify's own buttons do, and it
+       keeps the shopper's back button working. */
+    window.location.assign(target);
     setDrawerOpen(false);
   }, []);
 

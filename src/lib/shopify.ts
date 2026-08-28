@@ -499,6 +499,49 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
   return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id, quantity: line.quantity ?? quantity };
 }
 
+/*
+  Attaches a discount code to the cart itself.
+
+  The app used to rely solely on appending ?discount=CODE to the checkout URL.
+  That parameter is honoured on Shopify's /cart/... permalinks, but this app
+  rewrites the URL to the direct /checkouts/cn/<token> entry point, where it is
+  not documented to apply. If it silently does not, the drawer quotes a
+  discounted total and Shopify charges full price — ₹245 more than shown on a
+  ₹2,449 piece with NAIRA10.
+
+  Setting it on the cart is unambiguous: the code travels with the cart into
+  checkout, and Shopify reports whether it was actually applicable.
+*/
+export async function applyCartDiscountCodes(
+  cartId: string,
+  codes: string[]
+): Promise<{ applied: boolean; checkoutUrl?: string }> {
+  const data = await storefrontApiRequest<{
+    data: {
+      cartDiscountCodesUpdate: {
+        cart: { checkoutUrl: string; discountCodes: Array<{ code: string; applicable: boolean }> } | null;
+        userErrors: Array<{ message: string }>;
+      };
+    };
+  }>(
+    `mutation CartDiscount($cartId: ID!, $codes: [String!]!) {
+      cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $codes) {
+        cart { checkoutUrl discountCodes { code applicable } }
+        userErrors { message }
+      }
+    }`,
+    { cartId, codes }
+  );
+
+  const result = data.data?.cartDiscountCodesUpdate;
+  const cart = result?.cart;
+  if (!cart) return { applied: false };
+  return {
+    applied: cart.discountCodes?.some((d) => d.applicable) ?? false,
+    checkoutUrl: cart.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined,
+  };
+}
+
 export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number, size?: string): Promise<{ success: boolean; lineId?: string; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
   const data = await storefrontApiRequest<{
     data: {

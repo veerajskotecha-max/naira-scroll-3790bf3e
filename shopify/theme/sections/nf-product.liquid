@@ -1,22 +1,47 @@
 {%- comment -%}
-  ═══════════════════════════════════════════════════════════════════
-  Naira Flore — product page
-  Ported from src/pages/JewelDetail.tsx + ProductDetail.tsx.
+  ===================================================================
+  Naira Flore -- product page
+  Ported from src/pages/JewelDetail.tsx (primary target -- this is the
+  jewellery PDP the reference screenshots show) with shared sub-pieces
+  cross-checked against src/components/ProductDetails.tsx and
+  src/components/jewellery/*.
 
-  Add-to-cart posts to routes.cart_add_url (always same-origin) and
-  nf-cart.js upgrades it into an AJAX call that opens the drawer, so
-  nothing ever navigates to a myshopify.com host.
+  Add-to-cart and buy-now both post through the SAME real <form> (id
+  "NfPdpForm", data-nf-add) to routes.cart_add_url; nf-cart.js upgrades
+  the submit into an AJAX call. A "Shop Now" button is a type=submit
+  button carrying `data-nf-buy-now`, associated to the form via the
+  HTML `form=` attribute -- nf-cart.js already reads that attribute
+  (see assets/nf-cart.js) to redirect to /checkout instead of opening
+  the drawer, so this file only needs to emit the right markup, not
+  duplicate that logic.
 
-  Rating reads product.metafields.reviews.rating / rating_count — the
-  convention every Shopify review app writes to. The React site's
-  rating comes from a bundled review dataset that has no Shopify
-  equivalent yet; rather than hardcode those numbers into Liquid, the
-  block simply doesn't render until the metafield exists.
+  Ring size is a LINE ITEM PROPERTY (properties[Size]), never a
+  variant -- every ring in the live catalogue has exactly one Shopify
+  variant, so reading product.variants for size would silently lose
+  the shopper's choice. Non-ring products that DO carry a real
+  multi-value "Size" option (a handful of ready-to-wear pieces) use
+  real Shopify variants instead, mirroring ProductDetails.tsx.
 
-  The arrival date is computed client-side, as it is in React — Liquid
-  has no working-day arithmetic, and a build-time date would be stale
-  the next morning.
-  ═══════════════════════════════════════════════════════════════════
+  Rating reads product.metafields.reviews.rating / rating_count -- the
+  convention review apps write to. React's number comes from a bundled
+  review dataset with no Shopify equivalent, so this block simply does
+  not render until the metafield exists, same idea as the Materials
+  accordion item below (product.metafields.custom.materials).
+
+  The arrival date is computed client-side, same as React, and is
+  skipped for automation (navigator.webdriver) so a prerendered/
+  crawled copy of this page never bakes in a date that goes stale --
+  see the comment by data-nf-arrives below.
+
+  Desktop gallery is a CSS grid, not a horizontal rail: a rail with
+  flex-basis 100% slides overflowed to 2358px at a 1440 viewport, so
+  every photo is shown once in a 1/2/3/4-up grid instead (matching
+  JewelDetail.tsx's own grid-cols logic). This still switches at the
+  same 768px width React's gallery does (its own isMobile breakpoint),
+  which is NOT the same breakpoint the two-column page layout switches
+  at (1024px, React's lg:grid) -- the two are deliberately different
+  media queries below.
+  ===================================================================
 {%- endcomment -%}
 
 <script src="{{ 'nf-cart.js' | asset_url }}" defer="defer"></script>
@@ -27,23 +52,83 @@
     assign v = product.variants.first
   endif
   assign uid = section.id
-  assign sold_out = false
-  unless v.available
-    assign sold_out = true
-  endunless
 
-  assign t = product.type | downcase
-  assign cat = 'Necklaces'
-  if t contains 'earr' or t contains 'stud' or t contains 'hoop' or t contains 'huggie'
+  assign vendor_lc = product.vendor | downcase | strip
+  assign type_lc = product.type | downcase
+  assign is_jewellery = false
+  if vendor_lc == 'naira petite'
+    assign is_jewellery = true
+  elsif type_lc contains 'ring' or type_lc contains 'earring' or type_lc contains 'necklace' or type_lc contains 'bracelet' or type_lc contains 'pendant' or type_lc contains 'anklet' or type_lc contains 'jewel'
+    assign is_jewellery = true
+  endif
+
+  assign cat = ''
+  if type_lc contains 'earr' or type_lc contains 'stud' or type_lc contains 'hoop' or type_lc contains 'huggie'
     assign cat = 'Earrings'
-  elsif t contains 'brac' or t contains 'cuff' or t contains 'ankl'
+  elsif type_lc contains 'brac' or type_lc contains 'cuff' or type_lc contains 'ankl'
     assign cat = 'Bracelets'
-  elsif t contains 'ring' or t contains 'band'
+  elsif type_lc contains 'ring' or type_lc contains 'band'
     assign cat = 'Rings'
+  elsif type_lc contains 'neck' or type_lc contains 'pendant' or type_lc contains 'jewel'
+    assign cat = 'Necklaces'
+  endif
+  if cat == '' and is_jewellery
+    assign cat = 'Necklaces'
+  endif
+  assign is_ring = false
+  if is_jewellery and cat == 'Rings'
+    assign is_ring = true
   endif
 
   assign rating = product.metafields.reviews.rating.value
   assign rating_count = product.metafields.reviews.rating_count.value
+  assign materials_value = product.metafields.custom.materials.value
+
+  assign wa = section.settings.whatsapp_url
+  assign wa_msg = product.title | url_encode
+  assign wa_size_msg = ''
+  if is_ring
+    assign wa_size_msg = wa_msg
+  endif
+
+  assign adj_wrapped = '|' | append: section.settings.adjustable_ring_handles | append: '|'
+  assign adj_wrapped = adj_wrapped | remove: ' '
+  assign this_handle_wrapped = '|' | append: product.handle | append: '|'
+  assign is_adjustable = false
+  if is_ring and adj_wrapped contains this_handle_wrapped
+    assign is_adjustable = true
+  endif
+  assign default_ring_size = '6'
+
+  assign size_option = blank
+  unless is_ring
+    for opt in product.options_with_values
+      assign opt_name_lc = opt.name | downcase
+      if opt_name_lc == 'size'
+        assign size_option = opt
+      endif
+    endfor
+  endunless
+
+  if is_ring == false and size_option != blank
+    assign first_size_value = size_option.values | first
+    assign matched_variant = blank
+    for vv in product.variants
+      if vv.option1 == first_size_value or vv.option2 == first_size_value or vv.option3 == first_size_value
+        if matched_variant == blank
+          assign matched_variant = vv
+        endif
+      endif
+    endfor
+    if matched_variant != blank
+      assign v = matched_variant
+    endif
+  endif
+
+  assign sold_out = false
+  unless v.available
+    assign sold_out = true
+  endunless
 
   assign pct = 0
   if v.compare_at_price > v.price
@@ -51,67 +136,112 @@
     assign pct = diff | divided_by: v.compare_at_price | round
   endif
 
-  assign wa = section.settings.whatsapp_url
-  assign wa_msg = product.title | url_encode
+  assign related_pool = product.collections.first.products
+  if related_pool == blank
+    assign related_pool = collections['all'].products
+  endif
 -%}
 
 <div class="nf nf-pdp" data-nf-pdp>
 
   <nav class="nf-pdp__crumb" aria-label="Breadcrumb">
-    <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
-    <a href="{{ routes.all_products_collection_url }}">Jewellery</a><span aria-hidden="true">/</span>
-    <span aria-current="page">{{ product.title }}</span>
+    <div class="nf-pdp__crumb-trail">
+      <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+      <a href="{{ routes.all_products_collection_url }}">Jewellery</a><span aria-hidden="true">/</span>
+      <span aria-current="page">{{ product.title }}</span>
+    </div>
+    <button type="button" class="nf-pdp__back" data-nf-back aria-label="Go back">
+      <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      Back
+    </button>
   </nav>
 
   <div class="nf-pdp__layout">
 
-    {%- comment -%} ── Gallery ── {%- endcomment -%}
-    <div class="nf-pdp__gallery">
+    {%- comment -%} -- Gallery -- {%- endcomment -%}
+    <div class="nf-pdp__gallery" data-nf-gallery>
+      <button type="button" class="nf-pdp__mback" data-nf-back aria-label="Go back">
+        <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      </button>
+
       {%- if product.media.size > 0 -%}
-        <div class="nf-pdp__rail" data-nf-rail>
-          {%- for media in product.media -%}
+        <div class="nf-pdp__rail nf-pdp__rail--{{ product.media.size }}" data-nf-rail>
+          {%- for media in product.media limit: 4 -%}
             {%- comment -%} Liquid has no ternary; first image must load eagerly (LCP). {%- endcomment -%}
             {%- assign img_loading = 'lazy' -%}
             {%- if forloop.first -%}{%- assign img_loading = 'eager' -%}{%- endif -%}
-            <figure class="nf-pdp__slide">
+            <button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="{{ forloop.index0 }}"
+                    aria-label="Open {{ product.title }} image {{ forloop.index }} full screen">
               {{ media.preview_image | image_url: width: 1400 | image_tag:
                    loading: img_loading,
-                   sizes: '(min-width: 1024px) 50vw, 100vw',
+                   sizes: '(min-width: 768px) 50vw, 100vw',
+                   widths: '400,800,1200,1400',
                    alt: media.alt | default: product.title,
                    class: 'nf-pdp__img' }}
-            </figure>
+            </button>
           {%- endfor -%}
         </div>
+
+        <button type="button" class="nf-pdp__wish" data-nf-wishlist aria-pressed="false" aria-label="Add to wishlist">
+          {%- render 'nf-icon-heart', size: 17 -%}
+        </button>
+        <button type="button" class="nf-pdp__share" data-nf-share aria-label="Share piece">
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span class="nf-pdp__share-copied" data-nf-share-copied aria-hidden="true">Link copied</span>
+        </button>
+
+        {%- comment -%}
+          Baymard: 40% of mobile sites support no image gestures and never say
+          so. The badge is the affordance -- it tells the shopper more photos
+          exist and that the image opens larger, without a swipe needed to
+          discover either. Hidden at the same 768px width the grid gallery
+          takes over, matching JewelDetail.tsx's isMobile-only badge.
+        {%- endcomment -%}
+        <p class="nf-pdp__zoomhint" data-nf-zoomhint>
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          Tap to zoom
+          {%- if product.media.size > 1 -%}
+            <span class="nf-pdp__zoomhint-count">&middot; <span data-nf-idx>1</span>/{{ product.media.size }}</span>
+          {%- endif -%}
+        </p>
         {%- if product.media.size > 1 -%}
-          {%- comment -%}
-            Baymard: 40% of mobile sites support no image gestures and never say
-            so. The counter is the affordance — it tells the shopper more photos
-            exist without needing a swipe to discover it.
-          {%- endcomment -%}
-          <p class="nf-pdp__counter" data-nf-counter aria-live="polite">
-            <span data-nf-idx>1</span> / {{ product.media.size }}
-          </p>
+          <div class="nf-pdp__dots" data-nf-dots role="tablist" aria-label="Choose image">
+            {%- for media in product.media limit: 4 -%}
+              <button type="button" class="nf-pdp__dot{% if forloop.first %} is-active{% endif %}" data-nf-dot data-index="{{ forloop.index0 }}" aria-label="View image {{ forloop.index }}"></button>
+            {%- endfor -%}
+          </div>
         {%- endif -%}
-        <p class="nf-pdp__zoomhint">Tap to zoom</p>
       {%- else -%}
-        <div class="nf-pdp__slide">{{ 'product-1' | placeholder_svg_tag: 'nf-pdp__img' }}</div>
+        <div class="nf-pdp__rail"><div class="nf-pdp__slide">{{ 'product-1' | placeholder_svg_tag: 'nf-pdp__img' }}</div></div>
       {%- endif -%}
     </div>
 
-    {%- comment -%} ── Details ── {%- endcomment -%}
+    {%- comment -%} -- Details -- {%- endcomment -%}
     <div class="nf-pdp__details">
 
-      <div class="nf-pdp__toprow">
-        <p class="nf-pdp__eyebrow">{{ cat | upcase }} · DEMI-GOLD</p>
-        {%- if rating and rating_count -%}
-          <a class="nf-pdp__rating" href="#customer-reviews"
-             aria-label="Rated {{ rating }} out of 5 from {{ rating_count }} reviews. Jump to reviews.">
-            <span aria-hidden="true" class="nf-pdp__star">★</span>
-            <span class="nf-pdp__rating-n">{{ rating }}</span>
-            <span class="nf-pdp__rating-c">({{ rating_count }})</span>
-          </a>
-        {%- endif -%}
-      </div>
+      {%- if is_jewellery -%}
+        <div class="nf-pdp__toprow">
+          <p class="nf-pdp__eyebrow">{{ cat | upcase }} &middot; DEMI-GOLD</p>
+          {%- if rating and rating_count -%}
+            <a class="nf-pdp__rating" href="#customer-reviews"
+               aria-label="Rated {{ rating }} out of 5 from {{ rating_count }} reviews. Jump to reviews.">
+              <span aria-hidden="true" class="nf-pdp__star">&#9733;</span>
+              <span class="nf-pdp__rating-n">{{ rating }}</span>
+              <span class="nf-pdp__rating-c">({{ rating_count }})</span>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        {%- comment -%}
+          ProductDetails.tsx (the non-jewellery path) has no category eyebrow
+          or star rating -- brand-level reviews would read as a fabricated
+          per-product score. It shows a plain jump link instead.
+        {%- endcomment -%}
+        <a class="nf-pdp__reviewlink" href="#customer-reviews">
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+          See customer photos &amp; reviews
+        </a>
+      {%- endif -%}
 
       <h1 class="nf-pdp__title">{{ product.title }}</h1>
 
@@ -123,172 +253,499 @@
         {%- endif -%}
         <span class="nf-pdp__tax">inclusive of all taxes</span>
       </div>
-      <p class="nf-pdp__mrp">MRP inclusive of all taxes · flat ₹150 insured shipping across India</p>
+      <p class="nf-pdp__mrp">MRP inclusive of all taxes &middot; flat &#8377;150 insured shipping across India</p>
 
       <div class="nf-pdp__rule"></div>
 
-      {%- comment -%} ── Size ── {%- endcomment -%}
+      {%- comment -%} -- Size -- {%- endcomment -%}
       <div class="nf-pdp__size">
         <div class="nf-pdp__size-head">
-          <span class="nf-pdp__label">{% if cat == 'Rings' %}Ring Size (US){% else %}Size{% endif %}</span>
-          {%- if wa != blank -%}
-            <a class="nf-pdp__link" href="{{ wa }}" target="_blank" rel="noopener noreferrer">
-              {% if cat == 'Rings' %}Size chart{% else %}Sizing help{% endif %}
-            </a>
+          <span class="nf-pdp__label">{% if is_ring %}Ring Size (US){% else %}Size{% endif %}</span>
+          {%- if is_ring -%}
+            <button type="button" class="nf-pdp__link" data-nf-sizeguide-open>Size chart</button>
+          {%- elsif wa != blank -%}
+            <a class="nf-pdp__link" href="{{ wa }}" target="_blank" rel="noopener noreferrer">Sizing help</a>
           {%- endif -%}
         </div>
 
-        {%- if cat == 'Rings' -%}
+        {%- if is_ring -%}
           {%- comment -%}
             Buttons, not a dropdown. Baymard: 57% of sites hide size behind a
             select, which conceals both the range and what's available until
             it's opened. Three sizes fit one row at 390px.
-          {%- endcomment -%}
-          {%- comment -%}
+
             Ring size is a LINE ITEM PROPERTY, not a variant. No ring in this
-            catalogue has more than one Shopify variant — the React site carries
-            size as a cart line attribute (SIZE_ATTRIBUTE = "Size" in
-            src/lib/shopify.ts), so the order still records which size was
-            chosen. Reading product.variants here would render a single size and
-            silently lose the shopper's choice.
+            catalogue has more than one Shopify variant -- the React site
+            carries size as a cart line attribute, so the order still records
+            which size was chosen. Reading product.variants here would render
+            a single size and silently lose the shopper's choice.
           {%- endcomment -%}
           <div role="radiogroup" aria-label="Ring size, US" class="nf-pdp__sizes">
             {%- assign ring_sizes = section.settings.ring_sizes | split: ',' -%}
-            {%- assign preorder_sizes = section.settings.ring_preorder_sizes | split: ',' -%}
+            {%- assign preorder_wrapped = '|' | append: section.settings.ring_preorder_sizes | append: '|' | remove: ' ' -%}
             {%- for rs in ring_sizes -%}
               {%- assign rs = rs | strip -%}
+              {%- assign rs_wrapped = '|' | append: rs | append: '|' -%}
               {%- assign is_pre = false -%}
-              {%- for ps in preorder_sizes -%}
-                {%- assign ps_trimmed = ps | strip -%}
-                {%- if ps_trimmed == rs -%}{%- assign is_pre = true -%}{%- endif -%}
-              {%- endfor -%}
-              <button type="button" role="radio" class="nf-pdp__size-btn{% if forloop.first %} is-active{% endif %}"
-                      aria-checked="{% if forloop.first %}true{% else %}false{% endif %}"
-                      data-nf-size="US {{ rs }}"{% if is_pre %} data-preorder="true"{% endif %}>
-                US {{ rs }}
+              {%- if preorder_wrapped contains rs_wrapped -%}{%- assign is_pre = true -%}{%- endif -%}
+              {%- assign is_default = false -%}
+              {%- if rs == default_ring_size -%}{%- assign is_default = true -%}{%- endif -%}
+              <button type="button" role="radio" class="nf-pdp__size-btn{% if is_default %} is-active{% endif %}"
+                      aria-checked="{% if is_default %}true{% else %}false{% endif %}"
+                      data-nf-size="US {{ rs }}" data-nf-size-num="{{ rs }}"
+                      {% if is_pre %}data-preorder="true"{% endif %}
+                      {% if is_adjustable and rs == '6' %}data-nf-adjustable="true"{% endif %}>
+                US {{ rs }}{% if is_adjustable and rs == '6' %} &mdash; Adjustable (fits US 6&ndash;8){% endif %}
                 {%- if is_pre -%}<span class="nf-pdp__size-note">Pre-order</span>{%- endif -%}
               </button>
             {%- endfor -%}
           </div>
-          {%- comment -%} Substitute on the server too — JS only fires on click, so
-            the first paint would otherwise show a literal %s. {%- endcomment -%}
-          {%- assign first_label = ring_sizes | first | strip | prepend: 'US ' -%}
-          <p class="nf-pdp__size-help" data-nf-size-help>{{ section.settings.size_in_stock_note | replace: '%s', first_label }}</p>
+          {%- comment -%} Substitute on the server too -- JS only updates after a click, so
+            first paint would otherwise show a literal %s. {%- endcomment -%}
+          {%- assign default_label = 'US ' | append: default_ring_size -%}
+          {%- assign default_help = section.settings.size_in_stock_note | replace: '%s', default_label -%}
+          {%- if is_adjustable -%}{%- assign default_help = default_help | append: ' ' | append: section.settings.adjustable_fit_note -%}{%- endif -%}
+          <p class="nf-pdp__size-help" data-nf-size-help>{{ default_help }}</p>
+
+          {%- comment -%}
+            Ring Size Chart -- native <dialog>, not a hand-rolled overlay: it
+            gets a real modal role, aria-modal, Escape-to-close and a focus
+            trap straight from the browser (see the CSS/JS at the bottom for
+            what still needs wiring: open/close and the highlighted row).
+          {%- endcomment -%}
+          <dialog class="nf-pdp__sizeguide" data-nf-sizeguide aria-labelledby="nf-sizeguide-title-{{ uid }}">
+            <div class="nf-pdp__sizeguide-grabber" aria-hidden="true"></div>
+            <div class="nf-pdp__sizeguide-head">
+              <h2 class="nf-pdp__sizeguide-title" id="nf-sizeguide-title-{{ uid }}">Ring Size Chart</h2>
+              <button type="button" class="nf-pdp__sizeguide-close" data-nf-dialog-close aria-label="Close ring size chart">
+                {%- render 'nf-icon-close', size: 18 -%}
+              </button>
+            </div>
+            <div class="nf-pdp__sizeguide-body">
+              <p>US sizes with the inner diameter and inner circumference of the band, in mm and cm.</p>
+              <div class="nf-pdp__sizeguide-tablewrap">
+                <table class="nf-pdp__sizeguide-table">
+                  <thead>
+                    <tr><th>US Size</th><th>Inner diameter</th><th>Inner circumference</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr data-nf-sizeguide-row data-us="5"><td>US 5</td><td>1.57 cm <span>(15.7 mm)</span></td><td>4.93 cm <span>(49.3 mm)</span></td></tr>
+                    <tr data-nf-sizeguide-row data-us="6"><td>US 6</td><td>1.65 cm <span>(16.5 mm)</span></td><td>5.19 cm <span>(51.9 mm)</span></td></tr>
+                    <tr data-nf-sizeguide-row data-us="7"><td>US 7</td><td>1.73 cm <span>(17.3 mm)</span></td><td>5.44 cm <span>(54.4 mm)</span></td></tr>
+                    <tr data-nf-sizeguide-row data-us="8"><td>US 8</td><td>1.81 cm <span>(18.1 mm)</span></td><td>5.69 cm <span>(56.9 mm)</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>Our most-loved size is <strong>US 6 &mdash; 1.65 cm across, 5.19 cm around</strong>. Adjustable styles are made on a US 6 and open to fit US 6&ndash;8.</p>
+              <p class="nf-pdp__sizeguide-how">How to find your size at home</p>
+              <ol class="nf-pdp__sizeguide-steps">
+                <li><span class="nf-pdp__sizeguide-num">1</span><span><strong>Measure with a strip of paper or thread</strong> Wrap a thin strip of paper (or a piece of thread) snugly around the base of the finger. Mark where it overlaps, lay it flat against a ruler and read the length in cm &mdash; that is your circumference. Match it to the chart: 5.19 cm is a US 6.</span></li>
+                <li><span class="nf-pdp__sizeguide-num">2</span><span><strong>Or measure a ring you already wear</strong> Place a well-fitting ring on a ruler and measure the inside edge-to-edge width in mm &mdash; that is the inner diameter. 16.5 mm (1.65 cm) is a US 6.</span></li>
+                <li><span class="nf-pdp__sizeguide-num">3</span><span><strong>Measure at the right moment</strong> Fingers are smallest in the morning and in cold weather. Measure at the end of the day with warm hands for the truest fit.</span></li>
+                <li><span class="nf-pdp__sizeguide-num">4</span><span><strong>Check it slides over the knuckle</strong> The band should sit snug at the base but pass the knuckle with a gentle twist. If your knuckle is larger, go up one size.</span></li>
+                <li><span class="nf-pdp__sizeguide-num">5</span><span><strong>Between sizes or a wide band?</strong> Always round up. Wider bands sit tighter, so size up if the band is broad.</span></li>
+              </ol>
+              <p>Still unsure? Message us on WhatsApp with your measurement and we will confirm the size for you.</p>
+            </div>
+          </dialog>
+        {%- elsif size_option != blank -%}
+          {%- comment -%}
+            A handful of ready-to-wear pieces (not rings) carry a genuine
+            multi-value Shopify "Size" option -- these use real variants,
+            same as ProductDetails.tsx, instead of the ring's line-item
+            property. Price/compare-at are not swapped per size: nothing in
+            the live catalogue prices sizes differently today, so there is
+            nothing to show; wire a data-nf-variant-price readout here if
+            that ever changes.
+          {%- endcomment -%}
+          <div role="radiogroup" aria-label="Size" class="nf-pdp__sizes">
+            {%- for sv in size_option.values -%}
+              {%- assign is_default = false -%}
+              {%- if forloop.first -%}{%- assign is_default = true -%}{%- endif -%}
+              {%- assign sv_variant = blank -%}
+              {%- for vv in product.variants -%}
+                {%- if vv.option1 == sv or vv.option2 == sv or vv.option3 == sv -%}
+                  {%- if sv_variant == blank -%}{%- assign sv_variant = vv -%}{%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+              <button type="button" role="radio" class="nf-pdp__size-btn{% if is_default %} is-active{% endif %}"
+                      aria-checked="{% if is_default %}true{% else %}false{% endif %}"
+                      data-nf-variant-btn
+                      data-nf-variant-id="{{ sv_variant.id }}"
+                      data-nf-variant-available="{{ sv_variant.available }}">
+                {{ sv }}
+              </button>
+            {%- endfor -%}
+          </div>
         {%- else -%}
-          <div class="nf-pdp__onesize">One Size · adjustable</div>
+          <div class="nf-pdp__onesize">One Size &middot; adjustable</div>
         {%- endif -%}
       </div>
 
-      {%- comment -%} ── Quantity ── {%- endcomment -%}
+      {%- comment -%} -- Quantity -- {%- endcomment -%}
       <div class="nf-pdp__qty-block">
         <span class="nf-pdp__label">Quantity</span>
         <div class="nf-pdp__qty">
-          <button type="button" aria-label="Decrease quantity" data-nf-qty="-1">−</button>
+          <button type="button" aria-label="Decrease quantity" data-nf-qty="-1">&#8722;</button>
           <span data-nf-qty-val aria-live="polite">1</span>
           <button type="button" aria-label="Increase quantity" data-nf-qty="1">+</button>
         </div>
       </div>
 
-      {%- comment -%} ── CTA ── {%- endcomment -%}
+      {%- comment -%} -- CTA --
+        Sold out swaps the whole primary slot for a WhatsApp deep link
+        (a real next step) rather than leaving a disabled button behind;
+        only the secondary ("Shop Now") button stays in place, disabled,
+        reading "Sold Out". Matches JewelDetail.tsx exactly. {%- endcomment -%}
       <div class="nf-pdp__actions" id="product-actions">
-        {%- form 'product', product, id: 'NfPdpForm', class: 'nf-pdp__form', data-nf-add: 'true' -%}
+        {%- form 'product', product, id: 'NfPdpForm', class: 'nf-pdp__form', data-nf-add: 'true', data-nf-add-title: product.title -%}
           <input type="hidden" name="id" value="{{ v.id }}" data-nf-variant-input>
           <input type="hidden" name="quantity" value="1" data-nf-qty-input>
-          {%- if cat == 'Rings' -%}
-            {%- assign first_size = section.settings.ring_sizes | split: ',' | first | strip -%}
-            <input type="hidden" name="properties[Size]" value="US {{ first_size }}" data-nf-size-input>
+          {%- if is_ring -%}
+            <input type="hidden" name="properties[Size]" value="US {{ default_ring_size }}" data-nf-size-input>
           {%- endif -%}
-          <button type="submit" name="add" class="nf-pdp__add" data-nf-add-button {% if sold_out %}disabled{% endif %}>
-            {% if sold_out %}Sold Out{% else %}Add to Cart{% endif %}
-          </button>
+          {%- unless sold_out -%}
+            <button type="submit" name="add" class="nf-pdp__add press-scale" data-nf-add-button>Add to Cart</button>
+          {%- endunless -%}
         {%- endform -%}
 
-        <button type="button" class="nf-pdp__buy" data-nf-buy {% if sold_out %}disabled{% endif %}>
-          {% if sold_out %}Sold Out{% else %}Shop Now{% endif %}
+        {%- if sold_out -%}
+          <a class="nf-pdp__add nf-pdp__add--notify press-scale" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ wa_msg | url_encode }}" target="_blank" rel="noopener noreferrer">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Notify me on WhatsApp
+          </a>
+        {%- endif -%}
+
+        <button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__buy press-scale" {% if sold_out %}disabled{% endif %}>
+          <span data-nf-buy-label>{% if sold_out %}Sold Out{% else %}Shop Now{% endif %}</span>
         </button>
 
         <p class="nf-pdp__trust">
           {%- if sold_out -%}
-            This piece is currently sold out — we'll let you know the moment it's back.
+            This piece is currently sold out &mdash; we'll let you know the moment it's back.
           {%- else -%}
             {%- comment -%}
               60% of Baymard's subjects looked for the returns policy on the
               product page itself; 44% of sites neither show nor link it there.
             {%- endcomment -%}
-            Secure payments · Insured delivery ·
+            Secure payments &middot; Insured delivery &middot;
             <a href="/policies/refund-policy">7-day returns</a>
           {%- endif -%}
         </p>
 
         <div class="nf-pdp__pair">
-          <button type="button" class="nf-pdp__ghost" data-nf-wishlist aria-pressed="false">
-            {%- render 'nf-icon-heart' -%} <span data-nf-wishlist-label>Wishlist</span>
+          <button type="button" class="nf-pdp__ghost press-scale" data-nf-wishlist aria-pressed="false">
+            {%- render 'nf-icon-heart', size: 14 -%} <span data-nf-wishlist-label>Wishlist</span>
           </button>
-          {%- if wa != blank -%}
-            <a class="nf-pdp__ghost" href="{{ wa }}" target="_blank" rel="noopener noreferrer">
-              {%- render 'nf-icon-whatsapp' -%} WhatsApp
-            </a>
-          {%- endif -%}
+          <a class="nf-pdp__ghost" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ wa_msg | url_encode }}" target="_blank" rel="noopener noreferrer">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            WhatsApp
+          </a>
         </div>
       </div>
 
-      {%- comment -%} ── Delivery ── {%- endcomment -%}
+      {%- comment -%} -- Delivery -- {%- endcomment -%}
       <div class="nf-pdp__delivery">
-        <span class="nf-pdp__truck" aria-hidden="true">⛟</span>
+        <svg class="nf-icon nf-pdp__truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
         <p><strong data-nf-arrives>{{ section.settings.preorder_note }}</strong>
            Dispatched insured from our Mumbai atelier, with easy 7-day returns.</p>
       </div>
 
-      {%- comment -%} ── Offers ── {%- endcomment -%}
+      {%- comment -%} -- Offers -- {%- endcomment -%}
       <div class="nf-pdp__offers">
         <p class="nf-pdp__offers-head">AVAILABLE OFFERS</p>
         <ul>
-          <li><span aria-hidden="true" class="nf-pdp__bullet">✦</span><span><strong class="nf-pdp__code">NAIRA10</strong>10% off your first order</span></li>
-          <li><span aria-hidden="true" class="nf-pdp__bullet">✦</span><span>Flat ₹150 insured shipping — anywhere in India, any order size</span></li>
-          <li><span aria-hidden="true" class="nf-pdp__bullet">✦</span><span>2-year plating assurance on all demi-fine pieces</span></li>
+          <li><span aria-hidden="true" class="nf-pdp__bullet">&#10022;</span><span><strong class="nf-pdp__code">NAIRA10</strong>10% off your first order</span></li>
+          <li><span aria-hidden="true" class="nf-pdp__bullet">&#10022;</span><span>Flat &#8377;150 insured shipping &mdash; anywhere in India, any order size</span></li>
+          <li><span aria-hidden="true" class="nf-pdp__bullet">&#10022;</span><span>2-year plating assurance on all demi-fine pieces</span></li>
         </ul>
       </div>
 
-      {%- comment -%} ── Availability ── {%- endcomment -%}
+      {%- if is_jewellery -%}
+        {%- comment -%}
+          Key facts. Finish/Stone are read out of the product's tags (the
+          closest live-Shopify stand-in for JewelDetail.tsx's curated
+          materials string); Fit only applies to rings.
+        {%- endcomment -%}
+        {%- liquid
+          assign tags_lc = product.tags | join: ',' | downcase
+          assign has_gold = false
+          assign has_rhodium = false
+          assign has_pearl = false
+          assign has_zircone = false
+          if tags_lc contains '18k gold' or tags_lc contains 'gold tone'
+            assign has_gold = true
+          endif
+          if tags_lc contains 'rhodium'
+            assign has_rhodium = true
+          endif
+          if tags_lc contains 'pearl'
+            assign has_pearl = true
+          endif
+          if tags_lc contains 'zircon'
+            assign has_zircone = true
+          endif
+          assign finish_value = 'Demi-gold'
+          if has_gold and has_rhodium
+            assign finish_value = '18k gold & rhodium'
+          elsif has_gold
+            assign finish_value = '18k gold'
+          elsif has_rhodium
+            assign finish_value = 'Rhodium'
+          endif
+          assign stone_value = 'Polished metal'
+          if has_pearl and has_zircone
+            assign stone_value = 'Pearl & zircone'
+          elsif has_pearl
+            assign stone_value = 'Freshwater pearl'
+          elsif has_zircone
+            assign stone_value = 'Brilliant-cut zircone'
+          endif
+        -%}
+        <dl class="nf-pdp__facts" aria-label="Key facts">
+          <div class="nf-pdp__fact"><dt>Finish</dt><dd>{{ finish_value }}</dd></div>
+          <div class="nf-pdp__fact"><dt>Stone</dt><dd>{{ stone_value }}</dd></div>
+          {%- if is_ring -%}
+            <div class="nf-pdp__fact"><dt>Fit</dt><dd>{% if is_adjustable %}Adjustable &middot; US 6&ndash;8{% else %}Fixed size{% endif %}</dd></div>
+          {%- else -%}
+            <div class="nf-pdp__fact"><dt>Category</dt><dd>{{ cat }}</dd></div>
+          {%- endif -%}
+        </dl>
+      {%- endif -%}
+
+      {%- comment -%} -- Availability -- {%- endcomment -%}
       <p class="nf-pdp__stock{% if sold_out %} is-out{% endif %}" data-nf-stock>
         {% if sold_out %}{{ section.settings.sold_out_label }}{% else %}{{ section.settings.in_stock_label }}{% endif %}
       </p>
 
-      {%- if section.settings.show_description and product.description != blank -%}
-        <div class="nf-pdp__block">
-          <p class="nf-pdp__block-head">{{ section.settings.details_heading | escape }}</p>
-          <div class="nf-pdp__desc">{{ product.description }}</div>
+      {%- comment -%} -- Trust badges -- {%- endcomment -%}
+      <div class="nf-pdp__trustbadges">
+        {%- if is_jewellery -%}
+          <div class="nf-pdp__trustbadge">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+            <span>Anti-Tarnish Sealed</span>
+          </div>
+          <div class="nf-pdp__trustbadge">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>18k Demi-Gold</span>
+          </div>
+        {%- else -%}
+          <div class="nf-pdp__trustbadge">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+            <span>Handcrafted</span>
+          </div>
+          <div class="nf-pdp__trustbadge">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Quality Assured</span>
+          </div>
+        {%- endif -%}
+        <div class="nf-pdp__trustbadge">
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></svg>
+          <span>Secure Payments</span>
         </div>
-      {%- endif -%}
-      {%- if section.settings.care_text != blank -%}<div class="nf-pdp__note">{{ section.settings.care_text }}</div>{%- endif -%}
-      {%- if section.settings.disclaimer_text != blank -%}
-        <div class="nf-pdp__block">
-          <p class="nf-pdp__block-head">{{ section.settings.disclaimer_heading | escape }}</p>
-          <p class="nf-pdp__disclaimer">{{ section.settings.disclaimer_text }}</p>
+      </div>
+
+      {%- comment -%} -- Pincode / delivery checker --
+        Identical in JewelDetail.tsx and ProductDetails.tsx, so it renders
+        for every product regardless of category. {%- endcomment -%}
+      <div class="nf-pdp__pincode" data-nf-pincode>
+        <div class="nf-pdp__pincode-head">
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="nf-pdp__label">Delivery</span>
         </div>
+        <div class="nf-pdp__pincode-row">
+          <label class="nf-sr-only" for="nf-pincode-{{ uid }}">Pincode</label>
+          <input type="text" inputmode="numeric" maxlength="6" placeholder="Enter pincode" id="nf-pincode-{{ uid }}" class="nf-pdp__pincode-input" data-nf-pincode-input>
+          <button type="button" class="nf-pdp__pincode-btn" data-nf-pincode-check>Check</button>
+        </div>
+        <div class="nf-pdp__pincode-result" data-nf-pincode-result hidden aria-live="polite"></div>
+      </div>
+
+      {%- if is_jewellery -%}
+        {%- comment -%} -- Jewellery assurances (4-chip strip) -- {%- endcomment -%}
+        <ul class="nf-pdp__strip" aria-label="Naira Flore jewellery assurances">
+          <li><svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span>Anti-tarnish coating</span></li>
+          <li><svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg><span>Waterproof sealed</span></li>
+          <li><svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg><span>18k gold / rhodium finish</span></li>
+          <li><svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73Z"/><path d="M12 22V12"/><path d="M3.29 7 12 12l8.71-5"/><path d="m7.5 4.27 9 5.15"/></svg><span>Limited batches only</span></li>
+        </ul>
       {%- endif -%}
+
+      {%- comment -%} -- Policy links -- {%- endcomment -%}
+      <div class="nf-pdp__policylinks">
+        <a href="/policies/refund-policy">Exchange &amp; Return Policy</a>
+        <span aria-hidden="true">|</span>
+        <a href="/pages/faqs">FAQs</a>
+      </div>
+
+      <div class="nf-pdp__rule"></div>
+
+      {%- comment -%} -- Details / Care tabs -- {%- endcomment -%}
+      <div class="nf-pdp__tabs">
+        <div class="nf-pdp__tabbar" role="tablist">
+          <button type="button" class="nf-pdp__tabbtn is-active" role="tab" aria-selected="true" id="nf-tab-details-{{ uid }}" aria-controls="nf-panel-details-{{ uid }}" data-nf-tab="details">Details</button>
+          <button type="button" class="nf-pdp__tabbtn" role="tab" aria-selected="false" id="nf-tab-care-{{ uid }}" aria-controls="nf-panel-care-{{ uid }}" data-nf-tab="care">Care</button>
+        </div>
+        <div class="nf-pdp__tabpanel" id="nf-panel-details-{{ uid }}" role="tabpanel" aria-labelledby="nf-tab-details-{{ uid }}" data-nf-tabpanel="details">
+          {%- if product.description != blank -%}<div class="nf-pdp__desc">{{ product.description }}</div>{%- endif -%}
+        </div>
+        <div class="nf-pdp__tabpanel" id="nf-panel-care-{{ uid }}" role="tabpanel" aria-labelledby="nf-tab-care-{{ uid }}" data-nf-tabpanel="care" hidden>
+          <div class="nf-pdp__desc">{{ section.settings.care_text }}</div>
+        </div>
+      </div>
+
+      <div class="nf-pdp__rule"></div>
+
+      {%- comment -%} -- Accordion: Materials / Delivery Timelines / Disclaimer / Additional Information --
+        Native <details>/<summary> rather than a hand-built ARIA widget: it
+        is keyboard- and screen-reader-accessible for free, and needs no JS
+        to open, close, or animate. {%- endcomment -%}
+      <div class="nf-pdp__accordion">
+        {%- if materials_value != blank -%}
+          <details class="nf-pdp__acc">
+            <summary class="nf-pdp__acc-trigger"><span class="nf-pdp__acc-hairline" aria-hidden="true"></span>Materials<svg class="nf-pdp__acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
+            <div class="nf-pdp__acc-body"><p>{{ materials_value }}</p></div>
+          </details>
+        {%- endif -%}
+        <details class="nf-pdp__acc">
+          <summary class="nf-pdp__acc-trigger"><span class="nf-pdp__acc-hairline" aria-hidden="true"></span>Delivery Timelines<svg class="nf-pdp__acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="nf-pdp__acc-body">{{ section.settings.delivery_timelines_text }}</div>
+        </details>
+        <details class="nf-pdp__acc">
+          <summary class="nf-pdp__acc-trigger"><span class="nf-pdp__acc-hairline" aria-hidden="true"></span>Disclaimer<svg class="nf-pdp__acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="nf-pdp__acc-body">{{ section.settings.disclaimer_text }}</div>
+        </details>
+        <details class="nf-pdp__acc">
+          <summary class="nf-pdp__acc-trigger"><span class="nf-pdp__acc-hairline" aria-hidden="true"></span>Additional Information<svg class="nf-pdp__acc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="nf-pdp__acc-body">{{ section.settings.additional_info_text }}</div>
+        </details>
+      </div>
+
+      <div class="nf-pdp__rule"></div>
+
+      {%- comment -%} -- Need help -- {%- endcomment -%}
+      <div class="nf-pdp__help">
+        <span class="nf-pdp__label">Need Help?</span>
+        <div class="nf-pdp__help-row">
+          <a class="nf-pdp__help-link" href="tel:+{{ section.settings.whatsapp_number }}">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.702 1.6l-.464.354a1 1 0 0 0-.302 1.214 14.1 14.1 0 0 0 6.3 6.3Z"/></svg>
+            Call Us
+          </a>
+          <a class="nf-pdp__help-link" href="mailto:{{ shop.email | default: 'shopatnaira@gmail.com' }}">
+            {%- render 'nf-icon-mail', size: 15 -%}
+            Email Us
+          </a>
+          <a class="nf-pdp__help-link" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ wa_msg | url_encode }}" target="_blank" rel="noopener noreferrer">
+            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>
+            WhatsApp
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
-  {%- comment -%} Mobile sticky buy bar — only once the inline CTA is off screen {%- endcomment -%}
-  <div class="nf-pdp__bar" data-nf-bar hidden>
-    <div class="nf-pdp__bar-price"><span data-nf-bar-price>{{ v.price | money }}</span></div>
-    <button type="button" class="nf-pdp__bar-cta" data-nf-bar-add {% if sold_out %}disabled{% endif %}>
-      {% if sold_out %}Sold Out{% else %}Add to Cart{% endif %}
+  {%- comment -%} -- Mobile sticky bar -- only once the inline CTA is off screen AND the
+    price is fully out of the way, matching JewelDetail.tsx's stickyBarVisible logic
+    (see the script below: this is not a plain IntersectionObserver, on purpose --
+    see the comment by checkStickyBar). {%- endcomment -%}
+  <div class="nf-pdp__bar" data-nf-bar hidden aria-hidden="true">
+    <button type="button" class="nf-pdp__bar-wish" data-nf-wishlist aria-pressed="false" aria-label="Add to wishlist">
+      {%- render 'nf-icon-heart', size: 16 -%}
     </button>
+    {%- if sold_out -%}
+      <span class="nf-pdp__bar-soldout">Sold Out</span>
+      <a class="nf-pdp__bar-notify press-scale" href="https://wa.me/{{ section.settings.whatsapp_number }}?text={{ wa_msg | url_encode }}" target="_blank" rel="noopener noreferrer">Notify me</a>
+    {%- else -%}
+      <button type="submit" form="NfPdpForm" data-nf-add-button class="nf-pdp__bar-add press-scale">Add to Cart</button>
+      <button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__bar-buy press-scale"><span data-nf-buy-label>Shop now</span></button>
+    {%- endif -%}
   </div>
+
+  {%- comment -%} -- Lightbox -- native <dialog> again, for the same free
+    modal/focus-trap/Escape behaviour as the size guide. Deliberately
+    simpler than ImageLightbox.tsx: prev/next and Escape/backdrop-close are
+    ported, the click-to-zoom-2x-at-point interaction is not -- a
+    contain-fit full image already answers "tap to zoom", and reproducing
+    pointer-position zoom is a lot of surface for a secondary interaction
+    the task's checklist does not call out by name. {%- endcomment -%}
+  {%- if product.media.size > 0 -%}
+    <dialog class="nf-pdp__lightbox" data-nf-lightbox aria-label="{{ product.title }}, image viewer">
+      <div class="nf-pdp__lightbox-top">
+        <p class="nf-pdp__lightbox-name">{{ product.title }}</p>
+        <button type="button" class="nf-pdp__lightbox-btn" data-nf-dialog-close aria-label="Close image viewer">
+          {%- render 'nf-icon-close', size: 18 -%}
+        </button>
+      </div>
+      <div class="nf-pdp__lightbox-stage">
+        <img data-nf-lightbox-img src="" alt="">
+      </div>
+      {%- if product.media.size > 1 -%}
+        <p class="nf-pdp__lightbox-count" data-nf-lightbox-count aria-live="polite"></p>
+        <button type="button" class="nf-pdp__lightbox-btn nf-pdp__lightbox-prev" data-nf-lightbox-prev aria-label="Previous image">
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </button>
+        <button type="button" class="nf-pdp__lightbox-btn nf-pdp__lightbox-next" data-nf-lightbox-next aria-label="Next image">
+          <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      {%- endif -%}
+    </dialog>
+  {%- endif -%}
 </div>
+
+{%- comment -%} -- You may also like -- inline in JewelDetail.tsx (not a separate
+  section), so it is ported here. Same-collection pieces lead; "all
+  products" backfills when the product is not in any collection. {%- endcomment -%}
+{%- if related_pool != blank -%}
+  {%- liquid
+    assign related_sub = 'From The Demi-Gold Atelier' | upcase
+    if is_jewellery
+      assign related_sub = 'More ' | append: cat | append: ' From The Atelier' | upcase
+    endif
+  -%}
+  <section class="nf-pdp__related" aria-label="You may also like">
+    <div class="nf-pdp__related-inner">
+      <h2 class="nf-pdp__related-title">You may also like</h2>
+      <p class="nf-pdp__related-sub">{{ related_sub }}</p>
+      <div class="nf-pdp__related-grid">
+        {%- assign related_shown = 0 -%}
+        {%- for rp in related_pool -%}
+          {%- if related_shown >= 4 -%}{%- break -%}{%- endif -%}
+          {%- if rp.handle != product.handle -%}
+            {%- assign related_shown = related_shown | plus: 1 -%}
+            <a href="{{ rp.url }}" class="nf-pdp__related-card">
+              <span class="nf-pdp__related-imgwrap">
+                {{ rp.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300,450,600', alt: rp.title, class: 'nf-pdp__related-img' }}
+              </span>
+              <span class="nf-pdp__related-cat">{{ rp.type | upcase }}</span>
+              <span class="nf-pdp__related-name">{{ rp.title }}</span>
+              <span class="nf-pdp__related-price"><span aria-hidden="true" class="nf-pdp__related-dot"></span>{{ rp.price | money }}</span>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
 
 <script>
 (function () {
   var root = document.querySelector('[data-nf-pdp]');
   if (!root) return;
 
-  /* ---- size selection ---- */
+  /* ---- back button: history if there is somewhere to go back to, else the listing ---- */
+  root.querySelectorAll('[data-nf-back]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (window.history.length > 1) window.history.back();
+      else window.location.href = {{ routes.all_products_collection_url | json }};
+    });
+  });
+
+  /* ---- size selection (rings: line-item property) ---- */
   var sizeInput = root.querySelector('[data-nf-size-input]');
   var helpEl = root.querySelector('[data-nf-size-help]');
   var IN_STOCK = {{ section.settings.size_in_stock_note | json }};
   var PREORDER = {{ section.settings.size_preorder_note | json }};
+  var ADJUSTABLE_NOTE = {{ section.settings.adjustable_fit_note | json }};
   root.querySelectorAll('[data-nf-size]').forEach(function (b) {
     b.addEventListener('click', function () {
       root.querySelectorAll('[data-nf-size]').forEach(function (o) {
@@ -296,9 +753,37 @@
       });
       b.classList.add('is-active'); b.setAttribute('aria-checked', 'true');
       if (sizeInput) sizeInput.value = b.getAttribute('data-nf-size');
-      if (helpEl) helpEl.textContent = b.hasAttribute('data-preorder')
-        ? PREORDER.replace('%s', b.getAttribute('data-nf-size'))
-        : IN_STOCK.replace('%s', b.getAttribute('data-nf-size'));
+      if (helpEl) {
+        var text = b.hasAttribute('data-preorder')
+          ? PREORDER.replace('%s', b.getAttribute('data-nf-size'))
+          : IN_STOCK.replace('%s', b.getAttribute('data-nf-size'));
+        if (b.hasAttribute('data-nf-adjustable')) text += ' ' + ADJUSTABLE_NOTE;
+        helpEl.textContent = text;
+      }
+      updateSizeGuideHighlight();
+    });
+  });
+
+  /* ---- size selection (non-ring products with a real Shopify Size option) ----
+     Price/compare-at are deliberately not swapped -- see the Liquid comment
+     above the markup for why. Availability still gates checkout correctly. */
+  var variantInput = root.querySelector('[data-nf-variant-input]');
+  root.querySelectorAll('[data-nf-variant-btn]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      root.querySelectorAll('[data-nf-variant-btn]').forEach(function (o) {
+        o.classList.remove('is-active'); o.setAttribute('aria-checked', 'false');
+      });
+      b.classList.add('is-active'); b.setAttribute('aria-checked', 'true');
+      var id = b.getAttribute('data-nf-variant-id');
+      var avail = b.getAttribute('data-nf-variant-available') !== 'false';
+      var blocked = !avail || !id;
+      if (variantInput && id) variantInput.value = id;
+      root.querySelectorAll('[data-nf-add-button]').forEach(function (btn) {
+        btn.disabled = blocked;
+        var label = btn.querySelector('[data-nf-buy-label]');
+        if (label) label.textContent = blocked ? 'Sold Out' : (btn.hasAttribute('data-nf-buy-now') ? 'Shop Now' : 'Add to Cart');
+        else if (btn.hasAttribute('data-nf-buy-now') === false) btn.textContent = blocked ? 'Sold Out' : 'Add to Cart';
+      });
     });
   });
 
@@ -312,11 +797,28 @@
     });
   });
 
+  /* ---- buy-now busy label ----
+     nf-cart.js owns the actual submit/redirect (data-nf-buy-now + the form=
+     attribute is its whole contract); this only swaps the label so the
+     button does not sit inert while /checkout is loading. */
+  var form = document.getElementById('NfPdpForm');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      var btn = e.submitter;
+      if (!btn || !btn.hasAttribute('data-nf-buy-now')) return;
+      var label = btn.querySelector('[data-nf-buy-label]');
+      if (label) label.textContent = 'Opening checkout...';
+    });
+  }
+
   /* ---- arrival date ----
      Baymard: 41% of sites quote a shipping speed instead of a date. Computed
-     here rather than in Liquid because a build-time date goes stale overnight. */
+     here, not in Liquid, because a build-time date goes stale overnight --
+     and skipped for automation (navigator.webdriver), same as
+     JewelDetail.tsx: a prerendered or crawled copy of this page must not
+     bake in a date that has already passed by the time someone reads it. */
   var arrives = root.querySelector('[data-nf-arrives]');
-  if (arrives) {
+  if (arrives && !(window.navigator && window.navigator.webdriver)) {
     var d = new Date(), added = 0;
     while (added < {{ section.settings.delivery_working_days }}) {
       d.setDate(d.getDate() + 1);
@@ -327,48 +829,247 @@
       d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }) + '.';
   }
 
-  /* ---- wishlist ---- */
-  var wish = root.querySelector('[data-nf-wishlist]');
-  if (wish) wish.addEventListener('click', function () {
-    var on = wish.getAttribute('aria-pressed') === 'true';
-    wish.setAttribute('aria-pressed', on ? 'false' : 'true');
-    wish.classList.toggle('is-on', !on);
-    var lbl = wish.querySelector('[data-nf-wishlist-label]');
-    if (lbl) lbl.textContent = on ? 'Wishlist' : 'Saved';
-  });
+  /* ---- pincode checker (ported from src/lib/serviceability.ts) ---- */
+  (function () {
+    var box = root.querySelector('[data-nf-pincode]');
+    if (!box) return;
+    var input = box.querySelector('[data-nf-pincode-input]');
+    var btn = box.querySelector('[data-nf-pincode-check]');
+    var out = box.querySelector('[data-nf-pincode-result]');
+    var CHECK_ICON = '<svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>';
+    var ALERT_ICON = '<svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    var INFO_ICON = '<svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+    var BLOCKED_RANGES = [
+      [180, 194], [800, 855], [814, 835], [781, 799], [744, 744], [682, 682], [273, 277], [202, 205], [121, 122]
+    ];
+    var BLOCKED_PINCODES = ['122103', '122107', '121102', '247001', '854105', '845401'];
+    function isMaharashtra(pin) {
+      var two = Number(pin.slice(0, 2)), three = pin.slice(0, 3);
+      if (three === '403') return false;
+      return two >= 40 && two <= 44;
+    }
+    function addWorkingDays(days) {
+      var d = new Date(), added = 0;
+      while (added < days) { d.setDate(d.getDate() + 1); var wd = d.getDay(); if (wd !== 0 && wd !== 6) added++; }
+      return d;
+    }
+    function fmt(d) { return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }); }
+    function run(pin) {
+      if (!/^[1-9]\d{5}$/.test(pin)) {
+        out.hidden = false;
+        out.innerHTML = '<div class="nf-pdp__pincode-error">' + ALERT_ICON + '<span>Enter a valid 6-digit pincode.</span></div>';
+        return;
+      }
+      var mh = isMaharashtra(pin), days = mh ? 3 : 5, three = Number(pin.slice(0, 3));
+      var blocked = BLOCKED_PINCODES.indexOf(pin) !== -1;
+      if (!blocked) {
+        for (var i = 0; i < BLOCKED_RANGES.length; i++) {
+          if (three >= BLOCKED_RANGES[i][0] && three <= BLOCKED_RANGES[i][1]) { blocked = true; break; }
+        }
+      }
+      var eta = fmt(addWorkingDays(days));
+      var html = '<div class="nf-pdp__pincode-ok">' + CHECK_ICON + '<span>Delivery to <strong>' + pin + '</strong> in <strong>' + days + ' working days</strong> &middot; by <strong>' + eta + '</strong></span></div>';
+      html += blocked
+        ? '<div class="nf-pdp__pincode-note">' + INFO_ICON + '<p>Cash on Delivery is unavailable for this pincode. Prepaid only &middot; UPI, cards, wallets and net banking accepted.</p></div>'
+        : '<p class="nf-pdp__pincode-cod">Cash on Delivery available &middot; UPI, cards, wallets and net banking accepted</p>';
+      out.hidden = false;
+      out.innerHTML = html;
+      try { window.localStorage.setItem('naira-pincode', pin); } catch (e) {}
+    }
+    if (input) input.addEventListener('input', function () { input.value = input.value.replace(/\D/g, ''); });
+    if (btn) btn.addEventListener('click', function () { run(input.value); });
+    if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); run(input.value); } });
+    try {
+      var saved = window.localStorage.getItem('naira-pincode');
+      if (saved && /^[1-9]\d{5}$/.test(saved) && input) { input.value = saved; run(saved); }
+    } catch (e) {}
+  })();
 
-  /* ---- Shop Now / sticky bar both submit the same form ---- */
-  var form = root.querySelector('.nf-pdp__form');
-  ['[data-nf-buy]', '[data-nf-bar-add]'].forEach(function (sel) {
-    var el = root.querySelector(sel);
-    if (el && form) el.addEventListener('click', function () { form.requestSubmit(); });
-  });
+  /* ---- wishlist: kept in sync across every instance on the page (gallery
+     overlay, CTA row, sticky bar) ---- */
+  (function () {
+    var wishBtns = root.querySelectorAll('[data-nf-wishlist]');
+    if (!wishBtns.length) return;
+    function setState(on) {
+      wishBtns.forEach(function (w) {
+        w.setAttribute('aria-pressed', on ? 'true' : 'false');
+        w.classList.toggle('is-on', on);
+        var lbl = w.querySelector('[data-nf-wishlist-label]');
+        if (lbl) lbl.textContent = on ? 'Saved' : 'Wishlist';
+        w.setAttribute('aria-label', on ? 'Remove from wishlist' : 'Add to wishlist');
+      });
+    }
+    wishBtns.forEach(function (w) {
+      w.addEventListener('click', function () {
+        var wasOn = w.getAttribute('aria-pressed') === 'true';
+        setState(!wasOn);
+        if (!wasOn) {
+          wishBtns.forEach(function (o) {
+            var icon = o.querySelector('.nf-icon');
+            if (!icon) return;
+            icon.classList.add('heart-pop');
+            icon.addEventListener('animationend', function handler() {
+              icon.classList.remove('heart-pop');
+              icon.removeEventListener('animationend', handler);
+            });
+          });
+        }
+      });
+    });
+  })();
 
-  /* ---- sticky bar: show once the inline CTA block scrolls out of view ---- */
-  var bar = root.querySelector('[data-nf-bar]');
-  var actions = root.querySelector('#product-actions');
-  if (bar && actions && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function (entries) {
-      bar.hidden = entries[0].isIntersecting;
-    }, { rootMargin: '0px 0px -40% 0px' }).observe(actions);
+  /* ---- share: native share sheet, clipboard fallback ---- */
+  var shareBtn = root.querySelector('[data-nf-share]');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function () {
+      var url = window.location.href;
+      var title = {{ product.title | json }};
+      if (navigator.share) {
+        navigator.share({ title: title, text: 'Check out ' + title + ' on Naira Flore', url: url }).catch(function () {});
+        return;
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(function () {
+          shareBtn.classList.add('is-copied');
+          window.setTimeout(function () { shareBtn.classList.remove('is-copied'); }, 1800);
+        }).catch(function () {});
+      }
+    });
   }
 
-  /* ---- gallery counter ---- */
+  /* ---- gallery: dots + counter track the rail on mobile/tablet ---- */
   var rail = root.querySelector('[data-nf-rail]');
   var idx = root.querySelector('[data-nf-idx]');
-  if (rail && idx) rail.addEventListener('scroll', function () {
-    var i = Math.round(rail.scrollLeft / rail.clientWidth) + 1;
-    if (String(i) !== idx.textContent) idx.textContent = i;
-  }, { passive: true });
+  var dots = root.querySelectorAll('[data-nf-dot]');
+  function setActiveSlide(i) {
+    if (idx && String(i + 1) !== idx.textContent) idx.textContent = i + 1;
+    dots.forEach(function (d) { d.classList.toggle('is-active', Number(d.getAttribute('data-index')) === i); });
+  }
+  if (rail) {
+    rail.addEventListener('scroll', function () {
+      var i = Math.round(rail.scrollLeft / (rail.clientWidth || 1));
+      setActiveSlide(i);
+    }, { passive: true });
+  }
+  dots.forEach(function (d) {
+    d.addEventListener('click', function () {
+      var i = Number(d.getAttribute('data-index'));
+      if (rail) rail.scrollTo({ left: i * rail.offsetWidth, behavior: 'smooth' });
+      setActiveSlide(i);
+    });
+  });
+
+  /* ---- details / care tabs ---- */
+  var tabBtns = root.querySelectorAll('[data-nf-tab]');
+  var tabPanels = root.querySelectorAll('[data-nf-tabpanel]');
+  tabBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      tabBtns.forEach(function (o) { o.classList.remove('is-active'); o.setAttribute('aria-selected', 'false'); });
+      tabPanels.forEach(function (p) { p.hidden = true; });
+      b.classList.add('is-active'); b.setAttribute('aria-selected', 'true');
+      var target = root.querySelector('[data-nf-tabpanel="' + b.getAttribute('data-nf-tab') + '"]');
+      if (target) target.hidden = false;
+    });
+  });
+
+  /* ---- ring size guide: native <dialog> gives Escape / focus trap / backdrop
+     click-through for free; only open/close and the highlighted row are wired
+     here. ---- */
+  var sizeGuide = root.querySelector('[data-nf-sizeguide]');
+  var sizeGuideOpenBtn = root.querySelector('[data-nf-sizeguide-open]');
+  function updateSizeGuideHighlight() {
+    if (!sizeGuide) return;
+    var active = root.querySelector('[data-nf-size].is-active');
+    var num = active ? active.getAttribute('data-nf-size-num') : null;
+    sizeGuide.querySelectorAll('[data-nf-sizeguide-row]').forEach(function (row) {
+      row.classList.toggle('is-active', num !== null && row.getAttribute('data-us') === num);
+    });
+  }
+  if (sizeGuide && sizeGuideOpenBtn && sizeGuide.showModal) {
+    sizeGuideOpenBtn.addEventListener('click', function () {
+      updateSizeGuideHighlight();
+      sizeGuide.showModal();
+    });
+    sizeGuide.querySelectorAll('[data-nf-dialog-close]').forEach(function (b) {
+      b.addEventListener('click', function () { sizeGuide.close(); });
+    });
+    sizeGuide.addEventListener('click', function (e) { if (e.target === sizeGuide) sizeGuide.close(); });
+  }
+
+  /* ---- lightbox: same native-<dialog> approach ---- */
+  (function () {
+    var lb = root.querySelector('[data-nf-lightbox]');
+    if (!lb || !lb.showModal) return;
+    var img = lb.querySelector('[data-nf-lightbox-img]');
+    var count = lb.querySelector('[data-nf-lightbox-count]');
+    var slides = Array.prototype.slice.call(root.querySelectorAll('[data-nf-lightbox-open] img'));
+    var current = 0;
+    function show(i) {
+      if (!slides.length) return;
+      current = (i + slides.length) % slides.length;
+      var src = slides[current].currentSrc || slides[current].src;
+      img.src = src;
+      img.alt = slides[current].alt || '';
+      if (count) count.textContent = (current + 1) + ' / ' + slides.length;
+    }
+    root.querySelectorAll('[data-nf-lightbox-open]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        show(Number(b.getAttribute('data-index')) || 0);
+        lb.showModal();
+      });
+    });
+    lb.querySelectorAll('[data-nf-dialog-close]').forEach(function (b) { b.addEventListener('click', function () { lb.close(); }); });
+    lb.addEventListener('click', function (e) { if (e.target === lb) lb.close(); });
+    var prev = lb.querySelector('[data-nf-lightbox-prev]');
+    var next = lb.querySelector('[data-nf-lightbox-next]');
+    if (prev) prev.addEventListener('click', function () { show(current - 1); });
+    if (next) next.addEventListener('click', function () { show(current + 1); });
+    lb.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') show(current + 1);
+      else if (e.key === 'ArrowLeft') show(current - 1);
+    });
+  })();
+
+  /* ---- sticky bar ----
+     Not a plain IntersectionObserver: the bar must stay hidden whenever the
+     price is still on screen (it sits right above the CTA block, so a
+     rootMargin-based observer on #product-actions alone would let the bar
+     cover a price the shopper has not seen yet). This mirrors
+     JewelDetail.tsx's checkStickyBar effect: show once the CTA block is
+     fully off screen (above OR below the viewport) AND the price has
+     scrolled clear of where the bar would sit. */
+  var bar = root.querySelector('[data-nf-bar]');
+  var actions = root.querySelector('#product-actions');
+  var priceEl = root.querySelector('#product-price');
+  if (bar && actions) {
+    var checkStickyBar = function () {
+      var r = actions.getBoundingClientRect();
+      var offScreen = r.bottom < 0 || r.top > window.innerHeight;
+      var barHeight = bar.offsetHeight || 72;
+      var priceClear = !priceEl || priceEl.getBoundingClientRect().bottom < window.innerHeight - barHeight;
+      var visible = offScreen && priceClear;
+      bar.hidden = !visible;
+      bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    };
+    checkStickyBar();
+    window.addEventListener('scroll', checkStickyBar, { passive: true });
+    window.addEventListener('resize', checkStickyBar);
+    if ('ResizeObserver' in window) new ResizeObserver(checkStickyBar).observe(document.body);
+  }
 })();
 </script>
 
 {% stylesheet %}
-.nf-pdp { max-width: 1400px; margin-inline: auto; padding-bottom: 6rem; }
-.nf-pdp__crumb { display: none; align-items: center; gap: .5rem; padding: 1rem 1.5rem .75rem; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-4); color: hsl(0 0% 55%); }
+.nf-pdp { max-width: 1400px; margin-inline: auto; padding-bottom: 6rem; position: relative; }
+.nf-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+.nf-pdp__crumb { display: none; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem .75rem; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-4); color: hsl(0 0% 55%); }
+.nf-pdp__crumb-trail { display: flex; align-items: center; gap: .5rem; }
 .nf-pdp__crumb a { color: inherit; text-decoration: none; }
 .nf-pdp__crumb a:hover { color: var(--nf-ink); }
 .nf-pdp__crumb [aria-current] { color: hsl(0 0% 30%); }
+.nf-pdp__back { display: inline-flex; align-items: center; gap: .375rem; border: 0; background: none; padding: .5rem; margin: -.5rem; font-family: var(--nf-font-label); font-size: 11px; text-transform: uppercase; letter-spacing: var(--nf-track-14); color: hsl(0 0% 45%); cursor: pointer; }
+.nf-pdp__back:hover { color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-pdp__crumb { display: flex; } }
 
 .nf-pdp__layout { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -377,24 +1078,50 @@
 .nf-pdp__gallery { position: relative; }
 .nf-pdp__rail { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .nf-pdp__rail::-webkit-scrollbar { display: none; }
-.nf-pdp__slide { flex: 0 0 100%; scroll-snap-align: center; margin: 0; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--nf-ivory-deep); cursor: zoom-in; }
+.nf-pdp__slide { flex: 0 0 100%; scroll-snap-align: center; margin: 0; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--nf-ivory-deep); cursor: zoom-in; border: 0; padding: 0; display: block; }
+.nf-pdp__slide:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
 
-/* Desktop shows every photo once in a grid, as the React page does. Left as a
-   horizontal rail it overflowed the viewport — 2358px wide at a 1440 viewport,
-   because each slide is flex-basis 100% of the container. */
-@media (min-width: 1024px) {
+/* Desktop/tablet shows every photo once, in a grid -- as JewelDetail.tsx does
+   -- rather than a horizontal rail: a rail overflowed the viewport at 2358px
+   wide at a 1440 viewport, because each slide is flex-basis 100% of the
+   container. This switches at the same 768px width the React gallery's own
+   isMobile check does, which is a different breakpoint than the two-column
+   page layout above (1024px) -- intentionally, matching the source. */
+@media (min-width: 768px) {
   .nf-pdp__rail { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; overflow: visible; scroll-snap-type: none; }
-  .nf-pdp__slide { flex: none; aspect-ratio: 4 / 5; }
+  .nf-pdp__slide { flex: none; aspect-ratio: 4 / 5; cursor: zoom-in; }
   .nf-pdp__slide:first-child:nth-last-child(odd) { grid-column: span 2; }
-  .nf-pdp__counter, .nf-pdp__zoomhint { display: none; }
+  /* Exactly two photos: JewelDetail.tsx stacks them (grid-cols-1 grid-rows-2)
+     instead of sitting them side by side. */
+  .nf-pdp__rail--2 { grid-template-columns: 1fr; }
+  .nf-pdp__counter, .nf-pdp__zoomhint, .nf-pdp__dots { display: none; }
 }
-.nf-pdp__img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.nf-pdp__counter, .nf-pdp__zoomhint { position: absolute; bottom: .75rem; margin: 0; padding: .25rem .6rem; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-8); color: hsl(0 0% 25%); background-color: hsla(0,0%,100%,.86); }
-.nf-pdp__counter { right: .75rem; }
-.nf-pdp__zoomhint { left: .75rem; }
+.nf-pdp__img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1); }
+@media (min-width: 768px) { .nf-pdp__slide:hover .nf-pdp__img { transform: scale(1.03); } }
 
-.nf-pdp__details { display: flex; flex-direction: column; padding: 0 1rem; }
-@media (min-width: 1024px) { .nf-pdp__details { padding: .5rem 2rem; position: sticky; top: 1.5rem; } }
+.nf-pdp__wish, .nf-pdp__share { position: absolute; z-index: 10; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; color: hsl(0 0% 40%); }
+.nf-pdp__wish { top: 1rem; right: 1rem; background-color: hsla(0,0%,100%,.85); }
+.nf-pdp__wish .nf-icon { width: 17px; height: 17px; }
+.nf-pdp__wish.is-on { color: hsl(0 70% 55%); }
+.nf-pdp__wish.is-on .nf-icon { fill: hsl(0 70% 55%); }
+.nf-pdp__share { bottom: 4rem; right: 1rem; border-radius: 50%; background-color: hsla(0,0%,100%,.92); box-shadow: 0 1px 4px hsla(0,0%,0%,.08); color: hsl(0 0% 30%); }
+.nf-pdp__share .nf-icon { width: 15px; height: 15px; }
+.nf-pdp__share-copied { position: absolute; bottom: 120%; right: 0; white-space: nowrap; padding: .3rem .6rem; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-4); color: #fff; background-color: hsl(0 0% 12%); opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
+.nf-pdp__share.is-copied .nf-pdp__share-copied { opacity: 1; }
+.nf-pdp__wish:focus-visible, .nf-pdp__share:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+
+.nf-pdp__zoomhint { position: absolute; left: .75rem; bottom: .75rem; z-index: 10; display: inline-flex; align-items: center; gap: .375rem; margin: 0; padding: .3rem .6rem; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-8); color: hsl(0 0% 35%); background-color: hsla(0,0%,100%,.88); }
+.nf-pdp__zoomhint .nf-icon { width: 12px; height: 12px; }
+.nf-pdp__zoomhint-count { color: hsl(0 0% 55%); font-variant-numeric: tabular-nums; }
+.nf-pdp__dots { position: absolute; left: 0; right: 0; bottom: -1.6rem; z-index: 5; display: flex; justify-content: center; gap: .25rem; }
+.nf-pdp__dot { width: 2rem; height: 1.75rem; border: 0; background: none; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.nf-pdp__dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background-color: hsl(0 0% 75%); transition: transform 200ms ease-out, background-color 200ms ease-out; }
+.nf-pdp__dot.is-active::before { background-color: hsl(0 0% 20%); transform: scale(1.4); }
+.nf-pdp__mback { display: flex; position: absolute; top: 1rem; left: 1rem; z-index: 10; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background-color: hsla(0,0%,100%,.92); box-shadow: 0 2px 6px hsla(0,0%,0%,.12); color: hsl(0 0% 20%); cursor: pointer; }
+@media (min-width: 768px) { .nf-pdp__mback { display: none; } }
+
+.nf-pdp__details { display: flex; flex-direction: column; padding: 1.25rem 1rem 0; }
+@media (min-width: 1024px) { .nf-pdp__details { padding: .5rem 2rem 0; position: sticky; top: 1.5rem; } }
 
 .nf-pdp__toprow { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 26px; }
 .nf-pdp__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-34); color: var(--nf-gold-deep); }
@@ -402,6 +1129,8 @@
 .nf-pdp__star { color: var(--nf-gold-deep); }
 .nf-pdp__rating-n { font-weight: 500; color: hsl(0 0% 15%); }
 .nf-pdp__rating-c { text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 48%); }
+.nf-pdp__reviewlink { display: flex; align-items: center; gap: .5rem; min-height: 44px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); }
+.nf-pdp__reviewlink .nf-icon { width: 13px; height: 13px; }
 
 .nf-pdp__title { margin: .5rem 0 0; font-family: var(--nf-font-display); font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: hsl(0 0% 12%); }
 @media (min-width: 768px) { .nf-pdp__title { font-size: 32px; } }
@@ -418,7 +1147,7 @@
 
 .nf-pdp__label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-16); color: hsl(0 0% 25%); }
 .nf-pdp__size-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .625rem; }
-.nf-pdp__link { font-size: 11px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); min-height: 44px; display: inline-flex; align-items: center; padding-inline: .5rem; }
+.nf-pdp__link { font: inherit; border: 0; background: none; cursor: pointer; font-size: 11px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); min-height: 44px; display: inline-flex; align-items: center; padding-inline: .5rem; }
 .nf-pdp__sizes { display: flex; flex-wrap: wrap; gap: .5rem; }
 .nf-pdp__size-btn { min-width: 64px; min-height: 44px; padding-inline: 1rem; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); font-size: 13px; font-weight: 500; letter-spacing: .02em; cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
 .nf-pdp__size-btn.is-active { border-color: hsl(0 0% 12%); background-color: hsl(0 0% 12%); color: #fff; }
@@ -431,25 +1160,33 @@
 .nf-pdp__qty { display: inline-flex; align-items: center; border: 1px solid hsl(0 0% 80%); }
 .nf-pdp__qty button { width: 44px; height: 44px; border: 0; background: none; cursor: pointer; font-size: 16px; color: hsl(0 0% 30%); }
 .nf-pdp__qty button:hover { background-color: var(--nf-ivory-deep); }
+.nf-pdp__qty button:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
 .nf-pdp__qty span { width: 48px; text-align: center; font-size: 13px; font-weight: 500; color: hsl(0 0% 20%); }
 
 .nf-pdp__actions { margin-top: 1.5rem; }
 .nf-pdp__form { margin: 0; }
-.nf-pdp__add, .nf-pdp__buy { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 0; cursor: pointer; font-size: 12px; font-weight: 500; text-transform: uppercase; transition: opacity .2s; }
+.nf-pdp__add, .nf-pdp__buy { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 0; cursor: pointer; font-size: 12px; font-weight: 500; text-transform: uppercase; transition: opacity .2s; text-decoration: none; }
 .nf-pdp__add { height: 54px; background-color: var(--nf-gold-deep); color: #fff; letter-spacing: var(--nf-track-16); }
+.nf-pdp__add--notify { border: 1px solid hsl(0 0% 24%); background: none; color: hsl(0 0% 15%); }
+.nf-pdp__add--notify:hover { border-color: hsl(0 0% 35%); }
+.nf-pdp__add .nf-icon, .nf-pdp__add--notify .nf-icon { width: 13px; height: 13px; }
 .nf-pdp__buy { height: 50px; margin-top: .75rem; background-color: hsl(0 0% 12%); color: #fff; letter-spacing: var(--nf-track-16); }
 .nf-pdp__add:hover, .nf-pdp__buy:hover { opacity: .9; }
 .nf-pdp__add:disabled, .nf-pdp__buy:disabled { opacity: .6; cursor: not-allowed; }
+.nf-pdp__add:focus-visible, .nf-pdp__buy:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+.nf-pdp__add.is-added { animation: nf-pdp-check-pop 260ms var(--ease-out-strong, ease-out); }
+@keyframes nf-pdp-check-pop { from { opacity: .7; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 .nf-pdp__trust { margin: .5rem 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
 .nf-pdp__trust a { color: hsl(0 0% 35%); text-decoration: underline; text-underline-offset: 4px; }
 .nf-pdp__pair { display: flex; gap: .75rem; margin-top: .75rem; }
 .nf-pdp__ghost { flex: 1; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid hsl(0 0% 74%); background: none; color: hsl(0 0% 30%); cursor: pointer; text-decoration: none; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-10); }
 .nf-pdp__ghost:hover { border-color: hsl(0 0% 45%); }
-.nf-pdp__ghost svg { width: 14px; height: 14px; }
-.nf-pdp__ghost.is-on svg { fill: hsl(0 70% 55%); color: hsl(0 70% 55%); }
+.nf-pdp__ghost:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+.nf-pdp__ghost .nf-icon { width: 14px; height: 14px; }
+.nf-pdp__ghost.is-on .nf-icon { fill: hsl(0 70% 55%); color: hsl(0 70% 55%); }
 
 .nf-pdp__delivery { display: flex; align-items: flex-start; gap: .5rem; margin-top: 1.25rem; padding: .625rem .75rem; border: 1px solid hsl(36 40% 80%); background-color: hsl(36 60% 96%); }
-.nf-pdp__truck { color: var(--nf-gold-shadow); font-size: 14px; line-height: 1.4; }
+.nf-pdp__truck { flex-shrink: 0; margin-top: 2px; width: 13px; height: 13px; color: var(--nf-gold-shadow); }
 .nf-pdp__delivery p { margin: 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 32%); }
 .nf-pdp__delivery strong { font-weight: 500; }
 
@@ -460,22 +1197,174 @@
 .nf-pdp__bullet { color: var(--nf-gold-deep); }
 .nf-pdp__code { margin-right: .375rem; padding: 1px .375rem; border: 1px solid hsl(36 40% 76%); font-size: 10.5px; letter-spacing: var(--nf-track-10); font-weight: 500; color: #8A6A2A; }
 
+.nf-pdp__facts { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 0; }
+.nf-pdp__fact { padding: .375rem .75rem; border: 1px solid hsl(36 30% 84%); background-color: hsl(33 41% 97%); }
+.nf-pdp__fact dt { margin: 0; font-family: var(--nf-font-label); font-size: 8.5px; text-transform: uppercase; letter-spacing: var(--nf-track-18); color: #9A7634; }
+.nf-pdp__fact dd { margin: .125rem 0 0; font-size: 12px; line-height: 1.2; letter-spacing: .01em; color: hsl(0 0% 22%); }
+
 .nf-pdp__stock { display: inline-flex; align-items: center; gap: .375rem; margin: .75rem 0 0; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-10); color: hsl(142 60% 30%); }
 .nf-pdp__stock::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
 .nf-pdp__stock.is-out { color: hsl(0 65% 42%); }
 
-.nf-pdp__block { margin-top: 1.125rem; padding-top: 1.125rem; border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); }
-.nf-pdp__block-head { margin: 0 0 .5rem; font-family: var(--nf-font-label); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: var(--nf-track-10); color: var(--nf-ink); }
-.nf-pdp__desc { font-size: 15px; line-height: 1.7; color: rgb(var(--nf-ink-rgb) / .75); }
-.nf-pdp__note { margin-top: .5rem; font-size: 14px; line-height: 1.6; color: rgb(var(--nf-ink-rgb) / .65); }
-.nf-pdp__disclaimer { margin: 0; font-size: 13px; line-height: 1.6; color: rgb(var(--nf-ink-rgb) / .5); }
+.nf-pdp__trustbadges { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: 1.25rem; padding: .75rem 0; border-top: 1px solid hsl(0 0% 90%); border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-pdp__trustbadge { display: flex; flex-direction: column; align-items: center; gap: .375rem; text-align: center; }
+.nf-pdp__trustbadge .nf-icon { width: 16px; height: 16px; color: hsl(186 35% 28%); }
+.nf-pdp__trustbadge span { font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-10); line-height: 1.2; color: hsl(0 0% 30%); }
 
-/* [hidden] loses to an explicit display:, so the bar opts out of its own. */
+.nf-pdp__pincode { margin-top: 1rem; }
+.nf-pdp__pincode-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .625rem; }
+.nf-pdp__pincode-head .nf-icon { width: 13px; height: 13px; color: hsl(186 35% 28%); }
+.nf-pdp__pincode-row { display: flex; align-items: stretch; }
+.nf-pdp__pincode-input { flex: 1; height: 44px; min-width: 0; padding-inline: .75rem; font-size: 16px; letter-spacing: .02em; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); }
+@media (min-width: 768px) { .nf-pdp__pincode-input { font-size: 13px; } }
+.nf-pdp__pincode-input:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
+.nf-pdp__pincode-btn { flex-shrink: 0; height: 44px; padding-inline: 1.25rem; border: 1px solid hsl(0 0% 20%); border-left: 0; background-color: hsl(0 0% 12%); color: #fff; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-14); cursor: pointer; }
+.nf-pdp__pincode-btn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+.nf-pdp__pincode-result { margin-top: .625rem; display: flex; flex-direction: column; gap: .375rem; }
+.nf-pdp__pincode-ok, .nf-pdp__pincode-error, .nf-pdp__pincode-note { display: flex; align-items: flex-start; gap: .5rem; }
+.nf-pdp__pincode-ok { font-size: 12px; color: hsl(0 0% 25%); }
+.nf-pdp__pincode-ok .nf-icon { width: 13px; height: 13px; margin-top: 2px; flex-shrink: 0; color: hsl(142 50% 38%); }
+.nf-pdp__pincode-error { font-size: 12px; color: hsl(0 65% 45%); }
+.nf-pdp__pincode-error .nf-icon { width: 12px; height: 12px; flex-shrink: 0; }
+.nf-pdp__pincode-note { font-size: 11px; color: hsl(0 0% 40%); }
+.nf-pdp__pincode-note .nf-icon { width: 12px; height: 12px; margin-top: 3px; flex-shrink: 0; color: hsl(28 70% 42%); }
+.nf-pdp__pincode-note p { margin: 0; }
+.nf-pdp__pincode-cod { margin: 0; padding-left: 21px; font-size: 11px; color: hsl(0 0% 50%); }
+
+.nf-pdp__strip { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin: 1rem 0 0; padding: 1px; background-color: rgb(26 22 20 / .1); }
+@media (min-width: 768px) { .nf-pdp__strip { grid-template-columns: repeat(4, 1fr); } }
+.nf-pdp__strip li { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; padding: 1rem .5rem; text-align: center; background-color: #fff; }
+.nf-pdp__strip .nf-icon { width: 16px; height: 16px; color: #B0843A; }
+.nf-pdp__strip span { font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; line-height: 1.5; letter-spacing: var(--nf-track-14); color: rgb(26 22 20 / .7); }
+
+.nf-pdp__policylinks { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: .75rem; }
+.nf-pdp__policylinks a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--nf-font-display); font-size: 12px; letter-spacing: .02em; text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 45%); }
+.nf-pdp__policylinks span { font-size: 10px; color: hsl(0 0% 75%); }
+
+.nf-pdp__tabbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin-bottom: 1rem; border: 1px solid hsl(0 0% 88%); }
+.nf-pdp__tabbtn { padding-block: .75rem; border: 0; background: transparent; color: hsl(0 0% 35%); font-family: var(--nf-font-label); font-size: 11px; text-transform: uppercase; letter-spacing: var(--nf-track-14); font-weight: 500; cursor: pointer; transition: background-color .2s, color .2s; }
+.nf-pdp__tabbtn.is-active { background-color: hsl(0 0% 12%); color: #fff; }
+.nf-pdp__tabbtn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
+.nf-pdp__desc { font-size: 13px; line-height: 1.7; color: hsl(0 0% 40%); }
+.nf-pdp__desc p { margin: 0 0 .75em; }
+.nf-pdp__desc p:last-child { margin-bottom: 0; }
+
+.nf-pdp__accordion { width: 100%; }
+.nf-pdp__acc { border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-pdp__acc-trigger { display: flex; align-items: center; gap: .75rem; padding-block: 1rem; font-family: var(--nf-font-display); font-size: 17px; font-weight: 500; color: #1A1614; cursor: pointer; list-style: none; }
+.nf-pdp__acc-trigger::-webkit-details-marker { display: none; }
+@media (min-width: 768px) { .nf-pdp__acc-trigger { font-size: 18px; } }
+.nf-pdp__acc-trigger:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+.nf-pdp__acc-hairline { flex-shrink: 0; width: 1.5rem; height: 1px; background-color: rgb(201 154 76 / .7); transition: background-color .3s; }
+.nf-pdp__acc-trigger:hover .nf-pdp__acc-hairline { background-color: #C99A4C; }
+.nf-pdp__acc[open] .nf-pdp__acc-hairline { background-color: #9A7634; }
+.nf-pdp__acc-chev { margin-left: auto; width: 16px; height: 16px; color: #9A7634; transition: transform .25s ease; }
+.nf-pdp__acc[open] .nf-pdp__acc-chev { transform: rotate(180deg); }
+.nf-pdp__acc-body { padding-bottom: 1rem; font-size: 13px; line-height: 1.7; color: hsl(0 0% 45%); }
+.nf-pdp__acc-body p { margin: 0 0 .375em; }
+.nf-pdp__acc-body p:last-child { margin-bottom: 0; }
+
+.nf-pdp__help { margin-top: 0; }
+.nf-pdp__help .nf-pdp__label { display: block; margin-bottom: .75rem; }
+.nf-pdp__help-row { display: flex; flex-direction: column; width: 100%; }
+@media (min-width: 768px) { .nf-pdp__help-row { flex-direction: row; } }
+.nf-pdp__help-link { flex: 1; display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding-block: .75rem; font-size: 12px; letter-spacing: .02em; color: hsl(0 0% 35%); text-decoration: none; border-top: 1px solid hsl(0 0% 90%); border-bottom: 1px solid hsl(0 0% 90%); border-right: 1px solid hsl(0 0% 90%); transition: color .2s; }
+.nf-pdp__help-row a:first-child { border-left: 1px solid hsl(0 0% 90%); }
+.nf-pdp__help-link:hover { color: hsl(0 0% 15%); }
+.nf-pdp__help-link .nf-icon { width: 15px; height: 15px; }
+
+/* -- Sticky mobile bar -- */
 .nf-pdp__bar[hidden] { display: none; }
-.nf-pdp__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: .75rem; padding: .625rem .875rem; background-color: #fff; border-top: 1px solid hsl(0 0% 88%); box-shadow: 0 -6px 18px hsla(0,0%,0%,.06); }
-@media (min-width: 1024px) { .nf-pdp__bar { display: none !important; } }
-.nf-pdp__bar-price { font-family: var(--nf-font-display); font-size: 18px; font-weight: 600; color: hsl(0 0% 12%); }
-.nf-pdp__bar-cta { flex: 1; height: 46px; border: 0; background-color: var(--nf-gold-deep); color: #fff; cursor: pointer; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-16); }
+.nf-pdp__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: .5rem; padding: .625rem .75rem calc(.625rem + env(safe-area-inset-bottom, 0px)); background-color: hsla(0,0%,100%,.95); backdrop-filter: blur(6px); border-top: 1px solid hsl(0 0% 90%); box-shadow: 0 -6px 18px hsla(0,0%,0%,.06); transition: transform .3s ease-out; }
+@media (min-width: 768px) { .nf-pdp__bar { display: none !important; } }
+.nf-pdp__bar-wish { flex-shrink: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border: 1px solid hsl(0 0% 74%); background: none; cursor: pointer; color: hsl(0 0% 25%); }
+.nf-pdp__bar-wish .nf-icon { width: 16px; height: 16px; }
+.nf-pdp__bar-wish.is-on { color: hsl(0 70% 55%); }
+.nf-pdp__bar-wish.is-on .nf-icon { fill: hsl(0 70% 55%); }
+.nf-pdp__bar-add, .nf-pdp__bar-buy, .nf-pdp__bar-notify, .nf-pdp__bar-soldout { flex: 1; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-12); text-decoration: none; cursor: pointer; }
+.nf-pdp__bar-add { border: 1px solid hsl(0 0% 24%); background: none; color: hsl(0 0% 15%); }
+.nf-pdp__bar-buy, .nf-pdp__bar-notify { border: 0; background-color: hsl(0 0% 12%); color: #fff; }
+.nf-pdp__bar-soldout { border: 1px solid hsl(0 0% 80%); color: hsl(0 0% 45%); }
+.nf-pdp__bar-add:disabled, .nf-pdp__bar-buy:disabled { opacity: .6; cursor: not-allowed; }
+.nf-pdp__bar-add:focus-visible, .nf-pdp__bar-buy:focus-visible, .nf-pdp__bar-wish:focus-visible, .nf-pdp__bar-notify:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+
+/* -- Ring size guide (native dialog) -- */
+.nf-pdp__sizeguide { border: 0; padding: 0; margin: 0 auto auto; max-width: none; width: 100%; max-height: 88vh; background-color: #FDFAF7; color: hsl(0 0% 20%); position: fixed; inset: auto 0 0 0; overflow-y: auto; }
+.nf-pdp__sizeguide::backdrop { background-color: rgb(0 0 0 / .4); }
+@media (min-width: 768px) { .nf-pdp__sizeguide { inset: 0; top: 50%; left: 50%; right: auto; bottom: auto; transform: translate(-50%, -50%); width: 560px; } }
+.nf-pdp__sizeguide-grabber { display: flex; justify-content: center; padding: .75rem 0 .25rem; }
+.nf-pdp__sizeguide-grabber::before { content: ''; width: 2.5rem; height: 4px; border-radius: 999px; background-color: hsl(0 0% 82%); }
+@media (min-width: 768px) { .nf-pdp__sizeguide-grabber { display: none; } }
+.nf-pdp__sizeguide-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-pdp__sizeguide-title { margin: 0; font-family: var(--nf-font-display); font-size: 21px; font-weight: 600; color: hsl(0 0% 12%); }
+.nf-pdp__sizeguide-close { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 0; background: none; color: hsl(0 0% 45%); cursor: pointer; }
+.nf-pdp__sizeguide-close:hover { background-color: var(--nf-ivory-deep); }
+.nf-pdp__sizeguide-close:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
+.nf-pdp__sizeguide-body { padding: 1rem 1.25rem 1.5rem; font-size: 12px; line-height: 1.7; color: hsl(0 0% 50%); }
+.nf-pdp__sizeguide-body strong { color: hsl(0 0% 25%); font-weight: 500; }
+.nf-pdp__sizeguide-tablewrap { margin-top: .75rem; overflow-x: auto; }
+.nf-pdp__sizeguide-table { width: 100%; min-width: 330px; border-collapse: collapse; text-align: left; }
+.nf-pdp__sizeguide-table th { padding: .625rem 1rem .625rem 0; border-bottom: 1px solid hsl(0 0% 88%); font-family: var(--nf-font-label); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-12); color: hsl(0 0% 35%); }
+.nf-pdp__sizeguide-table td { padding: .625rem 1rem .625rem 0; border-bottom: 1px solid hsl(0 0% 93%); font-size: 13px; color: hsl(0 0% 35%); }
+.nf-pdp__sizeguide-table td:first-child { font-weight: 500; color: hsl(0 0% 18%); }
+.nf-pdp__sizeguide-table td span { color: hsl(0 0% 55%); }
+[data-nf-sizeguide-row].is-active { background-color: rgb(176 132 58 / .1); }
+[data-nf-sizeguide-row].is-active td:first-child { color: #8A6526; }
+.nf-pdp__sizeguide-how { margin: 1.25rem 0 0; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-14); color: hsl(0 0% 25%); }
+.nf-pdp__sizeguide-steps { list-style: none; margin: .75rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .75rem; }
+.nf-pdp__sizeguide-steps li { display: flex; gap: .75rem; }
+.nf-pdp__sizeguide-num { flex-shrink: 0; margin-top: 2px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid rgb(176 132 58 / .5); font-size: 10px; font-weight: 500; color: #8A6526; }
+.nf-pdp__sizeguide-steps strong { display: block; font-size: 12.5px; font-weight: 500; color: hsl(0 0% 20%); }
+.nf-pdp__sizeguide-steps span > span { display: block; margin-top: 2px; font-size: 12px; line-height: 1.7; color: hsl(0 0% 45%); }
+
+/* -- Lightbox (native dialog) -- */
+.nf-pdp__lightbox { border: 0; padding: 0; margin: 0; inset: 0; width: 100%; height: 100%; max-width: 100%; max-height: 100%; background-color: #FBF3EC; display: flex; flex-direction: column; }
+.nf-pdp__lightbox[open] { display: flex; }
+.nf-pdp__lightbox::backdrop { background-color: #FBF3EC; }
+.nf-pdp__lightbox-top { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; padding: 1rem 1rem 0; }
+@media (min-width: 768px) { .nf-pdp__lightbox-top { padding: 1.5rem 2rem 0; } }
+.nf-pdp__lightbox-name { margin: 0; padding-top: .375rem; font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-30); color: #9A7634; }
+.nf-pdp__lightbox-btn { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid rgb(26 22 20 / .15); background-color: rgb(251 243 236 / .9); color: #1A1614; cursor: pointer; transition: background-color .2s, color .2s; }
+.nf-pdp__lightbox-btn:hover { background-color: #1A1614; color: #FBF3EC; }
+.nf-pdp__lightbox-btn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+.nf-pdp__lightbox-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: .75rem 1rem 1.5rem; }
+@media (min-width: 768px) { .nf-pdp__lightbox-stage { padding: .75rem 6rem 2.5rem; } }
+.nf-pdp__lightbox-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.nf-pdp__lightbox-count { position: absolute; left: 1rem; bottom: 1rem; margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-24); color: rgb(26 22 20 / .55); }
+@media (min-width: 768px) { .nf-pdp__lightbox-count { left: 2rem; } }
+.nf-pdp__lightbox-prev, .nf-pdp__lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; }
+.nf-pdp__lightbox-prev { left: .75rem; }
+.nf-pdp__lightbox-next { right: .75rem; }
+@media (min-width: 768px) { .nf-pdp__lightbox-prev { left: 1.5rem; } .nf-pdp__lightbox-next { right: 1.5rem; } }
+
+/* -- You may also like -- */
+.nf-pdp__related { padding-block: 4rem; background-color: #FBF3EC; }
+@media (min-width: 768px) { .nf-pdp__related { padding-block: 5rem; } }
+.nf-pdp__related-inner { max-width: 1400px; margin-inline: auto; padding-inline: 1rem; }
+@media (min-width: 768px) { .nf-pdp__related-inner { padding-inline: 1.5rem; } }
+.nf-pdp__related-title { margin: 0; font-family: var(--nf-font-display); font-size: 26px; text-align: center; color: #1A1614; }
+@media (min-width: 768px) { .nf-pdp__related-title { font-size: 34px; } }
+.nf-pdp__related-sub { margin: .5rem 0 0; text-align: center; font-family: var(--nf-font-label); font-size: 12px; letter-spacing: var(--nf-track-30); color: #B0843A; }
+.nf-pdp__related-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; }
+@media (min-width: 768px) { .nf-pdp__related-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; } }
+.nf-pdp__related-card { display: block; text-decoration: none; }
+.nf-pdp__related-imgwrap { display: block; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--nf-ivory-deep); }
+.nf-pdp__related-img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms ease; }
+.nf-pdp__related-card:hover .nf-pdp__related-img { transform: scale(1.05); }
+.nf-pdp__related-cat { display: block; margin-top: .75rem; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: #B0843A; }
+.nf-pdp__related-name { display: block; margin-top: .25rem; font-family: var(--nf-font-display); font-size: 18px; color: #1A1614; }
+@media (min-width: 768px) { .nf-pdp__related-name { font-size: 20px; } }
+.nf-pdp__related-price { display: inline-flex; align-items: center; gap: .375rem; margin-top: .375rem; font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-18); color: #9A7634; }
+.nf-pdp__related-dot { width: 5px; height: 5px; border-radius: 50%; background-color: #C99A4C; }
+.nf-pdp__related-card:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-pdp__img, .nf-pdp__related-img { transition: none; }
+  .nf-pdp__dot::before { transition: none; }
+  .nf-pdp__bar { transition: none; }
+  .nf-pdp__acc-chev { transition: none; }
+  .nf-pdp__add.is-added { animation: none; }
+}
 {% endstylesheet %}
 
 {% schema %}
@@ -484,18 +1373,20 @@
   "settings": [
     { "type": "text", "id": "in_stock_label", "label": "In stock label", "default": "In Stock" },
     { "type": "text", "id": "sold_out_label", "label": "Sold out label", "default": "Sold Out" },
-    { "type": "text", "id": "whatsapp_url", "label": "WhatsApp link", "default": "https://www.whatsapp.com/catalog/919561557935/?app_absent=0", "info": "Leave blank to hide." },
-    { "type": "text", "id": "preorder_note", "label": "Fallback delivery note", "default": "Delivery in 3–5 working days." },
+    { "type": "text", "id": "whatsapp_url", "label": "Size chart / sizing-help WhatsApp link", "default": "https://www.whatsapp.com/catalog/919561557935/?app_absent=0", "info": "Shown as \"Sizing help\" next to non-ring sizes. Leave blank to hide. Rings always open the in-page size chart instead." },
+    { "type": "text", "id": "whatsapp_number", "label": "WhatsApp number (digits only, with country code)", "default": "919561557935" },
+    { "type": "text", "id": "preorder_note", "label": "Fallback delivery note", "default": "Delivery in 3–5 working days.", "info": "Shown until the client-side delivery date computes, and to crawlers/automation." },
     { "type": "range", "id": "delivery_working_days", "label": "Working days to delivery", "min": 1, "max": 15, "step": 1, "default": 5 },
-    { "type": "text", "id": "ring_sizes", "label": "Ring sizes (US, comma separated)", "default": "6,7" },
-    { "type": "text", "id": "ring_preorder_sizes", "label": "Which ring sizes are pre-order", "default": "7" },
-    { "type": "text", "id": "size_in_stock_note", "label": "In-stock size note", "default": "%s is in stock and ships now." },
-    { "type": "text", "id": "size_preorder_note", "label": "Pre-order size note", "default": "%s is a pre-order — 45 days delivery." },
-    { "type": "checkbox", "id": "show_description", "label": "Show description", "default": true },
-    { "type": "text", "id": "details_heading", "label": "Description heading", "default": "Product Details" },
-    { "type": "richtext", "id": "care_text", "label": "Care note", "default": "<p><strong>Care guide</strong>: wipe with a soft dry cloth. Avoid perfume and water contact.</p>" },
-    { "type": "text", "id": "disclaimer_heading", "label": "Disclaimer heading", "default": "Disclaimer" },
-    { "type": "richtext", "id": "disclaimer_text", "label": "Disclaimer", "default": "<p>Product colour may vary slightly with photographic lighting and your screen settings.</p>" }
+    { "type": "text", "id": "ring_sizes", "label": "Ring sizes (US, comma separated)", "default": "5,6,7" },
+    { "type": "text", "id": "ring_preorder_sizes", "label": "Which ring sizes are pre-order", "default": "5,7" },
+    { "type": "text", "id": "size_in_stock_note", "label": "In-stock size note (%s = size)", "default": "%s is in stock and ships now." },
+    { "type": "text", "id": "size_preorder_note", "label": "Pre-order size note (%s = size)", "default": "%s is a pre-order — 45 days delivery." },
+    { "type": "text", "id": "adjustable_ring_handles", "label": "Adjustable-ring product handles (comma separated)", "default": "rose-verdant-band,granule-dome-ring,verdant-eternity-band,halo-curve-ring,silver-dome-ring,petite-pave-band", "info": "Open-back styles: US 6 is labelled adjustable and fits US 6-8." },
+    { "type": "text", "id": "adjustable_fit_note", "label": "Adjustable-ring fit note", "default": "Open-back design — adjustable to fit US 6 to 8 comfortably." },
+    { "type": "richtext", "id": "care_text", "label": "Care tab content", "default": "<p><strong>Care guide</strong>: store in the pouch provided, away from moisture. Avoid contact with perfume, lotion and chlorinated water. Wipe gently with the polishing cloth; re-plating available.</p>" },
+    { "type": "richtext", "id": "delivery_timelines_text", "label": "\"Delivery Timelines\" accordion content", "default": "<p>• Delivery in 3-5 working days.</p><p>• Flat ₹150 shipping across India, insured in transit.</p><p>• Enter your pincode above for a dated delivery estimate.</p>" },
+    { "type": "richtext", "id": "disclaimer_text", "label": "\"Disclaimer\" accordion content", "default": "<p>• Each piece carries gentle variation, part of its character.</p><p>• Stone tone may vary slightly from screen colours.</p>" },
+    { "type": "richtext", "id": "additional_info_text", "label": "\"Additional Information\" accordion content", "default": "<p>• WhatsApp / WhatsApp Call: <strong>+91 9561557935</strong></p><p>• Manufactured and marketed by Naira Flore</p><p>• Address: Flat 7, Veeraj Blossom, Karanyogi Nagar, Maharashtra – 422002</p>" }
   ],
   "presets": [{ "name": "NF Product" }]
 }

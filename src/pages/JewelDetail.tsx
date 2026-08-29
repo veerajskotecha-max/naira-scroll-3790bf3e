@@ -233,7 +233,11 @@ const JewelDetail = () => {
   const scrollToImage = useCallback((index: number) => {
     if (!scrollRef.current) return;
     isScrolling.current = true;
-    scrollRef.current.scrollTo({ left: index * scrollRef.current.offsetWidth, behavior: "smooth" });
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    scrollRef.current.scrollTo({
+      left: index * scrollRef.current.offsetWidth,
+      behavior: reduced ? "auto" : "smooth",
+    });
     setSelectedImage(index);
     setTimeout(() => { isScrolling.current = false; }, 400);
   }, []);
@@ -241,17 +245,32 @@ const JewelDetail = () => {
   useEffect(() => {
     if (!isMobile || !scrollRef.current) return;
     const el = scrollRef.current;
-    let t: ReturnType<typeof setTimeout>;
+    /* The dots used to update 60ms after the finger stopped, so they lagged a
+       beat behind the photo. Reading the position on an animation frame keeps
+       the active dot moving with the swipe, and coalescing to one frame costs
+       nothing on the scroll thread. */
+    let frame = 0;
     const onScroll = () => {
-      clearTimeout(t);
-      t = setTimeout(() => {
-        if (isScrolling.current) return;
-        setSelectedImage(Math.round(el.scrollLeft / el.offsetWidth));
-      }, 60);
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (isScrolling.current || !el.offsetWidth) return;
+        const next = Math.round(el.scrollLeft / el.offsetWidth);
+        setSelectedImage((cur) => (cur === next ? cur : next));
+      });
     };
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => { el.removeEventListener("scroll", onScroll); clearTimeout(t); };
-  }, [isMobile]);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+    /* images.length matters as much as isMobile here. The gallery only mounts
+       once the live Shopify catalogue resolves, so on first run scrollRef was
+       still null and this bailed out — and with isMobile alone in the deps it
+       never ran again. The listener was never attached on a cold load, which is
+       why swiping the photos left the dots sitting on the first one; only
+       tapping a dot moved them, because that sets the index directly. */
+  }, [isMobile, images.length]);
 
   /* The live Shopify catalogue only lands after first paint, so on a cold load
      (ad click, shared link, search result) a handle that exists solely in
@@ -389,14 +408,35 @@ const JewelDetail = () => {
 
   const Gallery = isMobile ? (
     <div className="relative">
-      <div ref={scrollRef} className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+      {/* The overlays are positioned against this wrapper, which covers only the
+          photo. When they shared a box with the dot strip, a taller strip pushed
+          the "tap to zoom" badge off the image and onto the dots. */}
+      <div className="relative">
+      <div
+        ref={scrollRef}
+        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+        style={{
+          scrollbarWidth: "none",
+          WebkitOverflowScrolling: "touch",
+          /* Keeps a horizontal swipe inside the gallery instead of handing it to
+             the browser's back gesture or bouncing the whole page sideways. */
+          overscrollBehaviorX: "contain",
+        }}
+      >
         {images.map((img, i) => (
           <button
             type="button"
             key={i}
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-            style={{ aspectRatio: MOBILE_FRAME, backgroundColor: "#F4EBE2" }}
+            style={{
+              aspectRatio: MOBILE_FRAME,
+              backgroundColor: "#F4EBE2",
+              /* Belongs on the snap item, not the scroll port. A quick flick used
+                 to fly past three or four photos; stopping at every snap point
+                 makes one swipe move exactly one image. */
+              scrollSnapStop: "always",
+            }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
             <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
@@ -421,16 +461,40 @@ const JewelDetail = () => {
           </span>
         )}
       </span>
+      </div>
       {images.length > 1 && (
-        <div className="flex justify-center gap-1 mt-1 mb-0.5">
-          {images.map((_, i) => (
-            <button key={i} onClick={() => scrollToImage(i)} aria-label={`View image ${i + 1}`} className="w-8 h-7 flex items-center justify-center">
-              <span
-                className="w-1.5 h-1.5 transition-[transform,background-color] duration-200 ease-out"
-                style={{ borderRadius: "50%", backgroundColor: selectedImage === i ? "hsl(0 0% 20%)" : "hsl(0 0% 75%)", transform: selectedImage === i ? "scale(1.4)" : "scale(1)" }}
-              />
-            </button>
-          ))}
+        /* Six-pixel grey circles read as decoration, not as position. The active
+           dot stretches into a bar instead of scaling up: the shape difference
+           survives a squint and a sunlit phone screen, where a 40% size bump on
+           a tiny circle does not. Tap targets stay a full 32px either way. */
+        <div
+          className="flex justify-center items-center gap-0.5 pt-2.5 pb-1"
+          role="group"
+          aria-label={`${piece.name} images`}
+        >
+          {images.map((_, i) => {
+            const active = selectedImage === i;
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => scrollToImage(i)}
+                aria-label={`View image ${i + 1} of ${images.length}`}
+                aria-current={active ? "true" : undefined}
+                data-active={active ? "true" : "false"}
+                className="w-8 h-7 flex items-center justify-center"
+              >
+                <span
+                  className="h-[5px] transition-all duration-300 ease-out"
+                  style={{
+                    width: active ? 18 : 5,
+                    borderRadius: 999,
+                    backgroundColor: active ? "hsl(0 0% 18%)" : "hsl(28 12% 76%)",
+                  }}
+                />
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -538,13 +602,19 @@ const JewelDetail = () => {
         >
           <ArrowLeft size={16} strokeWidth={1.6} style={{ color: "hsl(0 0% 20%)" }} />
         </button>
-        {Gallery}
+        {/* Rendered in exactly one of the two slots. Both used to mount it and
+            hide one with CSS, which put two copies in the DOM sharing a single
+            scrollRef — React handed the ref to whichever mounted last, so on a
+            phone the listener sat on the hidden 0-width copy. Swiping moved
+            photos the code never measured, which is why the dots never followed
+            the finger, and tapping a dot scrolled the invisible gallery. */}
+        {isMobile && Gallery}
       </div>
 
 
       <div className="max-w-[1400px] mx-auto md:px-6 pb-24 md:pb-24">
         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-          <div className="hidden md:block">{Gallery}</div>
+          <div className="hidden md:block">{!isMobile && Gallery}</div>
 
           {/* Details */}
           <div className="mt-5 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">

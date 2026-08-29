@@ -64,17 +64,37 @@
 
 /* layout/theme.liquid forces `h1..h6 { font-family: 'Ophelia' !important }`.
    That is outside this slice's namespace, so the brand serif is re-asserted
-   here — scoped to ported sections only, nothing global is touched. */
+   here -- scoped to ported sections only, nothing global is touched.
+
+   nf-doc (policy/FAQ) and nf-mk (about/contact/made-for-you) headings are
+   font-cormorant in every React source page for this slice -- zero uses of
+   the `editorial` const -- so they default to --nf-font-display, matching
+   font-cormorant's real resolution (Velista). nf-journal headings are
+   `style={velista}` (display) except one `style={jost}` (label) heading,
+   and every journal/article heading already carries its own specific,
+   equally-or-more-specific !important rule further down this file (see
+   "JOURNAL" below) that wins by source order -- so nf-journal is
+   deliberately left out of this blanket rather than given a wrong default
+   that would fight those. */
 .nf-doc :is(h1, h2, h3, h4),
 .nf-mk :is(h1, h2, h3, h4),
 .nf-journal :is(h1, h2, h3, h4) {
-  font-family: var(--nf-font-editorial) !important;
   font-weight: 500;
   margin: 0;
 }
+.nf-doc :is(h1, h2, h3, h4),
+.nf-mk :is(h1, h2, h3, h4) {
+  font-family: var(--nf-font-display) !important;
+}
 
+/* Body-copy fallback for anything with no more specific rule. nf-journal
+   stays editorial on purpose: its paragraphs (intro, excerpt, article
+   body) are genuinely `style={editorial}` in React and have no other
+   font-family rule of their own -- see "JOURNAL" below. */
 .nf-doc,
-.nf-mk,
+.nf-mk {
+  font-family: var(--nf-font-display);
+}
 .nf-journal {
   font-family: var(--nf-font-editorial);
 }
@@ -87,7 +107,14 @@
 
 /* ═══ Shared: eyebrow + sage button ══════════════════════════════ */
 .nf-eyebrow {
-  font-family: var(--nf-font-label);
+  /* Every eyebrow this class ports (AboutHero, AboutEthos, AboutPersonalised,
+     AboutCTA, ContactUs, MadeForYou) renders with no font-cormorant/jost/
+     editorial in React -- plain ui-sans-serif -- confirmed via computed-style
+     diff. Set explicitly, not just omitted: .nf-mk sets --nf-font-display on
+     itself, an ancestor, so simply dropping this declaration would still
+     inherit Velista from there rather than reaching body's plain default. */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
@@ -104,7 +131,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--nf-font-editorial);
+  font-family: var(--nf-font-display);
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
@@ -234,7 +261,7 @@
 .nf-rte li { line-height: 1.7; }
 .nf-rte li + li { margin-top: 6px; }
 .nf-rte h2, .nf-rte h3, .nf-rte h4 {
-  font-family: var(--nf-font-editorial) !important;
+  font-family: var(--nf-font-display) !important;
   color: var(--nf-doc-heading);
   font-weight: 600;
   font-size: clamp(18px, 2vw, 22px);
@@ -421,7 +448,7 @@
 .nf-contact__textarea {
   width: 100%;
   display: block;
-  font-family: var(--nf-font-editorial);
+  font-family: var(--nf-font-display);
   font-size: 15px;
   color: var(--nf-mk-heading);
   background-color: var(--nf-mk-white);
@@ -605,7 +632,11 @@
   .nf-timeline__row--flip .nf-timeline__copy p { margin-left: auto; margin-right: 0; }
 }
 .nf-timeline__label {
-  font-family: var(--nf-font-label);
+  /* AboutTimeline's story.label ("THE BEGINNING", "B2B ROOTS", ...) has no
+     font-cormorant/jost/editorial in React -- plain ui-sans-serif -- same
+     reasoning as .nf-eyebrow above; set explicitly for the same reason. */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
@@ -701,6 +732,15 @@
 @media (min-width: 768px) { .nf-mfy__panel { padding: 48px; } }
 @media (min-width: 1024px) { .nf-mfy__panel { padding: 56px 64px; } }
 .nf-mfy__panel .nf-eyebrow { color: hsl(30 30% 82%); }
+/* .nf-split__copy p is shared with the About "story" blocks, where its
+   text is genuinely font-cormorant (so it correctly inherits display from
+   .nf-mk). MadeForYou reuses the same markup for src/components/
+   ScrollSteps.tsx's step description, which carries no font-cormorant/
+   jost/editorial in React -- plain. Scoped to .nf-mfy so About is untouched. */
+.nf-mfy .nf-split__copy p {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
 .nf-mfy__panel h1 {
   font-size: 30px;
   line-height: 1.15;

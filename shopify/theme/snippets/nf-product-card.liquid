@@ -1,11 +1,11 @@
 {%- comment -%}
-  ═══════════════════════════════════════════════════════════════════
-  Naira Flore — product card
+  =======================================================================
+  Naira Flore -- product card
   Ported from src/components/ProductCard.tsx (Lovable repo).
 
   Every value comes from the Liquid `product` object. Nothing here
   reads src/data/jewellery.ts, and nothing here talks to an
-  off-domain store host — quick add posts to routes.cart_add_url on
+  off-domain store host -- quick add posts to routes.cart_add_url on
   the storefront's own domain.
 
   Accepts:
@@ -13,7 +13,7 @@
     index          {Number}  position in the grid, drives reveal stagger
     uid            {String}  unique-ifies the form id (usually section.id)
     show_quick_add {Boolean} default true
-  ═══════════════════════════════════════════════════════════════════
+  =======================================================================
 {%- endcomment -%}
 
 {{ 'nf-card.css' | asset_url | stylesheet_tag }}
@@ -27,14 +27,12 @@
   endif
   assign card_available = card_variant.available
 
-  assign card_tag = product.tags | first
-  if card_tag == blank
-    assign card_tag = 'New'
-  endif
-
+  # React only ever shows product.category, which itself falls back to
+  # the literal string "Naira Flore" -- never product.vendor. See
+  # productFromShopify() in ProductCard.tsx.
   assign card_category = product.type
   if card_category == blank
-    assign card_category = product.vendor
+    assign card_category = 'Naira Flore'
   endif
 
   assign card_image = product.featured_image
@@ -79,11 +77,15 @@
       {%- endif -%}
     </a>
 
-    <span class="nf-card__tag">{{ card_tag }}</span>
-
-    {%- unless card_available -%}
-      <span class="nf-card__badge">{{ 'Pre-Order' }}</span>
-    {%- endunless -%}
+    {%- comment -%}
+      No tag/"New" badge and no second sold-out badge: React renders
+      neither. Shopify's internal tags (YS, YF...) are merchandising
+      codes, not shopper-facing copy, and the CTA below already reads
+      "Sold Out" -- a second badge saying the same thing was noise, and
+      the orange "Pre-Order" pill it replaced invited shoppers to
+      reserve stock that does not exist. See ProductCard.tsx lines
+      171-178.
+    {%- endcomment -%}
 
     <button
       type="button"
@@ -133,14 +135,13 @@
 
   <a class="nf-card__info" href="{{ product.url }}">
     <h3 class="nf-card__title">{{ product.title }}</h3>
-    {%- if card_category != blank -%}
-      <p class="nf-card__category">{{ card_category }}</p>
-    {%- endif -%}
+    <p class="nf-card__category">{{ card_category }}</p>
+    {%- comment -%}
+      Single price only -- React never shows a compare-at / sale price
+      on this card (no strikethrough, no percent-off badge).
+    {%- endcomment -%}
     <p class="nf-card__price">
       FROM <span class="nf-card__price-value">{{ product.price_min | money }}</span>
-      {%- if product.compare_at_price_max > product.price_min -%}
-        <s class="nf-card__price-was">{{ product.compare_at_price_max | money }}</s>
-      {%- endif -%}
     </p>
   </a>
 

@@ -37,7 +37,9 @@
 }
 .nf-ab:hover .nf-ab__track { animation-play-state: paused; }
 .nf-ab__item {
-  font-family: var(--nf-font-label, 'Jost', 'Inter', sans-serif);
+  /* React's AnnouncementBar uses Tailwind's plain `font-sans` utility here,
+     not the brand label font -- so this deliberately has no font-family
+     override and inherits nf-base.css's body { font-family: ui-sans-serif... }. */
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;

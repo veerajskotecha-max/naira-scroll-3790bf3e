@@ -29,7 +29,7 @@
     {%- for option in product.options_with_values -%}
       <div class="nf-field">
         <div class="nf-field__head">
-          <span class="nf-label">{{ option.name }}</span>
+          <span>{{ option.name }}</span>
           {%- if size_guide_url != blank and option.name == 'Size' -%}
             <a class="nf-field__aside" href="{{ size_guide_url }}">Size Guide</a>
           {%- endif -%}

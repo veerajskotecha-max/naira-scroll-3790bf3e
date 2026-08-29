@@ -142,6 +142,44 @@ body {
   color: var(--nf-text);
 }
 
+/* Neutralise the Sense body typography.
+
+   layout/theme.liquid still loads the pre-port base.css, which sets
+
+       body { line-height: calc(1 + 0.8 / var(--font-body-scale)) }   -> 1.8
+       ... { letter-spacing: calc(var(--font-heading-scale) * .06rem) } -> 0.6px
+
+   and leaves font-family to the Sense theme settings, so unstyled text
+   fell back to the browser serif. None of that exists on the React site,
+   where Tailwind's preflight governs: line-height 1.5, letter-spacing
+   normal, and the default ui-sans-serif stack. A computed-style diff of
+   the two homepages traced 114 line-height, 79 letter-spacing and 20
+   font-family divergences to this one gap.
+
+   nf-base.css loads after base.css and these selectors carry the same
+   specificity, so source order settles it without !important. */
+body {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+
+/* Undo Sense's empty-element reset for ported markup.
+
+   base.css line 468 hides a, ul, dl, div, section, article and h1-h6 when
+   they have no children. Decorative layers are childless by definition --
+   a gradient wash, a scrim, a hairline, a contact shadow -- so every one
+   of them computed to display:none no matter what its own CSS said. The
+   ring atelier backdrop lost its paper wash, its gradient and all three
+   glass orbs to this, and it fails silently: the element is in the DOM
+   with correct styles and simply is not painted. React has no such rule.
+
+   Scoped by the nf- class prefix so Sense's own components keep the
+   behaviour they were written against. [class*="nf-"]:empty is (0,2,0),
+   which outranks div:empty at (0,1,1), so no !important is needed. */
+[class*="nf-"]:empty { display: revert; }
+
 /* src/index.css lines 223-228. `overflow-x: clip` is layered over
    `hidden` on purpose: both suppress horizontal overflow identically,
    but `clip` does not turn the element into a scroll container, so

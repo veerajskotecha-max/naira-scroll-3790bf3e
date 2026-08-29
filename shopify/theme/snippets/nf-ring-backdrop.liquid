@@ -26,17 +26,23 @@
 -%}
 
 <div class="nf-bd nf-bd--{{ bd_variant }}" data-nf-backdrop aria-hidden="true">
-  {%- comment -%} pressed-flower paper wash {%- endcomment -%}
-  <div class="nf-bd__wash" style="background-image: url({{ bd_wash }});"></div>
-  {%- comment -%} warm sun-faded gradient {%- endcomment -%}
-  <div class="nf-bd__sun"></div>
+  {%- comment -%}
+    pressed-flower paper wash and warm sun-faded gradient - these two and
+    the orbs below are `span`, not `div`: the theme's global reset hides
+    every EMPTY div/section/p/heading (nf-base.css, `:empty{display:none}`)
+    so a purely decorative, childless div here would just vanish. `span`
+    is outside that selector list, and `position: absolute` blockifies it
+    identically, so nothing about the layout changes.
+  {%- endcomment -%}
+  <span class="nf-bd__wash" style="background-image: url({{ bd_wash }});"></span>
+  <span class="nf-bd__sun"></span>
 
   {%- comment -%} 3D drifting layer {%- endcomment -%}
   <div class="nf-bd__scene">
     <div class="nf-bd__layer" data-nf-bd-layer>
-      <div class="nf-bd__orb" style="left:16%;top:34%;width:190px;height:190px;--z:-340px;animation:nf-bd-orb 24s ease-in-out 0s infinite;"></div>
-      <div class="nf-bd__orb" style="left:80%;top:72%;width:150px;height:150px;--z:-260px;animation:nf-bd-orb 28s ease-in-out -8s infinite;"></div>
-      <div class="nf-bd__orb" style="left:62%;top:18%;width:110px;height:110px;--z:-400px;animation:nf-bd-orb 32s ease-in-out -4s infinite;"></div>
+      <span class="nf-bd__orb" style="left:16%;top:34%;width:190px;height:190px;--z:-340px;animation:nf-bd-orb 24s ease-in-out 0s infinite;"></span>
+      <span class="nf-bd__orb" style="left:80%;top:72%;width:150px;height:150px;--z:-260px;animation:nf-bd-orb 28s ease-in-out -8s infinite;"></span>
+      <span class="nf-bd__orb" style="left:62%;top:18%;width:110px;height:110px;--z:-400px;animation:nf-bd-orb 32s ease-in-out -4s infinite;"></span>
 
       <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:6%;top:12%;width:130px;height:44.2px;opacity:0.5;--r:-18deg;--dx:10px;--dy:-14px;animation:nf-bd-float 26s ease-in-out 0s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#FFBDA8"/></svg>
       <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:26%;top:68%;width:96px;height:32.64px;opacity:0.45;--r:14deg;--dx:-14px;--dy:-17px;animation:nf-bd-float 31s ease-in-out -6s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#AEBDB6"/></svg>

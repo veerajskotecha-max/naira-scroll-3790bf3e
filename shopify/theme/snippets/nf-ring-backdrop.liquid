@@ -1,5 +1,4 @@
 {% comment %}
-  ─────────────────────────────────────────────────────────────────
   RING ATELIER BACKDROP (snippet)
   Port of src/components/jewellery/RingAtelierBackdrop.tsx.
 
@@ -14,7 +13,6 @@
   Accepts:
     variant - "section" (absolute, default) | "page" (fixed) | "sticky"
     wash    - optional image_url for the pressed-flower paper wash
-  ─────────────────────────────────────────────────────────────────
 {% endcomment %}
 
 {{ 'nf-backdrop.css' | asset_url | stylesheet_tag }}
@@ -49,7 +47,7 @@
   </div>
 
   {%- comment -%}
-    touch blooms — nf-scroll.js grows a different botanical, palette and
+    touch blooms - nf-scroll.js grows a different botanical, palette and
     tilt in here on every tap
   {%- endcomment -%}
   <div class="nf-bd__blooms" data-nf-bd-blooms></div>

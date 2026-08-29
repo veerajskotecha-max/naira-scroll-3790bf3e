@@ -24,11 +24,25 @@ verifies; Sonnet agents do the mechanical work.
 
 1. **Only ever write to theme 150497591458.** It is unpublished.
    `themeFilesUpsert` is rejected on the live/MAIN theme by design.
-2. **Every upload is verified by MD5.** Compute the local MD5, upload, then
-   read `OnlineStoreThemeFile.checksumMd5` back and compare. Sonnet agents
-   have silently mis-transcribed box-drawing runs (`─`, `═`) and `\uXXXX`
-   escapes on five separate uploads — 6 to 18 bytes off each time. A byte
-   count alone is not enough; only the MD5 catches it.
+2. **Upload text files as BASE64, not TEXT, and verify by MD5.**
+   `OnlineStoreThemeFileBodyInput` accepts `BASE64`. Encode the file
+   locally, check the encoding round-trips (`base64 -d | cmp`), and send
+   only that pure-ASCII string. This makes transcription error structurally
+   impossible. Every TEXT-body upload in this port that contained a
+   box-drawing run (`─`, `═`), a literal `\uXXXX` escape, an escaped quote
+   or a stray bullet came back 6 to 18 bytes short; every BASE64 one has
+   matched first time. Either way, read `checksumMd5` back and compare with
+   `md5sum` — a byte count alone does not catch a same-length corruption.
+
+   For **binaries**, do not base64 them into a prompt. Use a staged upload:
+   `stagedUploadsCreate` (resource FILE) -> POST the file to the returned
+   `url` with curl, sending every returned parameter as a form field plus
+   `-F "file=@<path>"` (201 + an ETag means success, and that ETag is the
+   MD5) -> `themeFilesUpsert` with `body: {type: URL, value: <resourceUrl>}`.
+   For a file already on a public URL — a Shopify CDN image, say — skip
+   straight to the URL body. Note the mutation returns an empty
+   `upsertedThemeFiles` array for URL bodies even on success; verify with a
+   separate query.
 3. **Order matters.** A template JSON naming a section file that does not
    exist yet is rejected with *"Section type 'X' does not refer to an
    existing section file"*. Upload sections before the templates that use
@@ -39,6 +53,31 @@ verifies; Sonnet agents do the mechanical work.
    renders empty on the storefront.
 5. Live store data (collections, menus, pages, articles, products) is
    **out of scope without explicit approval**. Theme files only.
+
+## The parity harness
+
+`shopify/PARITY.md` carries the current scoreboard. The method that produces
+it matters more than the numbers:
+
+1. Build the React app (`npx vite build --mode development`) and serve
+   `dist/` with an SPA fallback — `harness/spa.mjs`, port 4325. Without the
+   fallback every route but `/` serves a 404 page and the diff silently
+   compares against nothing.
+2. Render every theme template and serve it — `render.mjs` then
+   `serve.mjs`, port 4310.
+3. `REACT_BASE=http://127.0.0.1:4325 bash harness/difall.sh`
+
+`harness/styledif.mjs` walks both DOMs, keys every text-bearing element by
+its own text, and reports what each side renders that the other does not
+plus the computed properties that diverge. It reads the rendered result, so
+it catches what reading the source cannot: a rule that loses the cascade, an
+element hidden by an inherited reset, a font that silently falls back.
+
+Two things it gets wrong, so check the JSON before acting on a single row:
+it keys by text and keeps the first occurrence per side, so a word that
+appears in both a nav drawer and the page body produces a bogus row; and a
+count rendered from live Shopify data will never match a count hardcoded in
+the React source.
 
 ## Harness
 

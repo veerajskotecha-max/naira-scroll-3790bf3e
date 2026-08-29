@@ -20,9 +20,18 @@
 .nf *,
 .nf *::before,
 .nf *::after { box-sizing: border-box; }
-.nf img { display: block; max-width: 100%; }
-.nf p { margin: 0; }
-.nf h1, .nf h2, .nf h3 { margin: 0; font-weight: 400; }
+/* These are defaults, not decisions, so they must lose to any component
+   that states an opinion. Written as `.nf p` they carry specificity
+   (0,1,1), which beats a single-class rule like `.nf-arr__cta` at (0,1,0)
+   -- so every component rule below was silently losing to them. Three
+   dark-ground CTAs were painting near-black text on teal, brown and sage
+   because `.nf a { color: inherit }` outranked their own `color: #fff`,
+   and every section heading rendered at weight 400 where React asks for
+   500. `:where()` contributes zero specificity, which is exactly what a
+   default should carry. */
+:where(.nf) img { display: block; max-width: 100%; }
+:where(.nf) p { margin: 0; }
+:where(.nf) :is(h1, h2, h3) { margin: 0; font-weight: 400; }
 
 /* layout/theme.liquid forces `h1..h6 { font-family:'Ophelia' !important }`.
    Class selectors below out-specify it so the brand stacks survive.
@@ -32,7 +41,7 @@
 .nf .nf-display   { font-family: var(--nf-font-display) !important; }
 .nf .nf-label     { font-family: var(--nf-font-label) !important; }
 
-.nf a { color: inherit; text-decoration: none; }
+:where(.nf) a { color: inherit; text-decoration: none; }
 .nf .nf-wrap { max-width: 1280px; margin: 0 auto; padding: 0 1.25rem; }
 @media (min-width: 768px) { .nf .nf-wrap { padding: 0 2rem; } }
 @media (min-width: 1024px) { .nf .nf-wrap { padding: 0 2.5rem; } }

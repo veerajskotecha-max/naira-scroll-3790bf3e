@@ -64,7 +64,7 @@
                 <div class="nf-tile__hover" aria-hidden="true"></div>
                 <div class="nf-tile__cap"><p>{{ block.settings.outfit }}</p></div>
                 {%- if block.settings.quote != blank -%}
-                  <span class="nf-tile__quote{% if block.settings.quote_align == 'right' %} nf-tile__quote--right{% endif %}">&ldquo;{{ block.settings.quote }}&rdquo;</span>
+                  <span class="nf-tile__quote{% if block.settings.quote_align == 'right' %} nf-tile__quote--right{% endif %}">"{{ block.settings.quote }}"</span>
                 {%- endif -%}
               </div>
             </div>
@@ -109,7 +109,7 @@
             <div class="nf-tile__hover" aria-hidden="true"></div>
             <div class="nf-tile__cap"><p>{{ block.settings.outfit }}</p></div>
             {%- if block.settings.quote != blank -%}
-              <span class="nf-tile__quote{% if block.settings.quote_align == 'right' %} nf-tile__quote--right{% endif %}">&ldquo;{{ block.settings.quote }}&rdquo;</span>
+              <span class="nf-tile__quote{% if block.settings.quote_align == 'right' %} nf-tile__quote--right{% endif %}">"{{ block.settings.quote }}"</span>
             {%- endif -%}
           </div>
         {%- endif -%}

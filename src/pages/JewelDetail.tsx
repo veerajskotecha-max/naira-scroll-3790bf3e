@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
+import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
 import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
@@ -470,6 +471,10 @@ const JewelDetail = () => {
   );
 
 
+  /* Social crawlers fetch og:image inline and drop oversized files without a
+     word, so the preview must point at a small JPEG, not the 2048px master. */
+  const ogImageUrl = absoluteUrl(shopifyOgImage(piece.image));
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>
       <Helmet>
@@ -480,14 +485,18 @@ const JewelDetail = () => {
         <meta property="og:type" content="product" />
         <meta property="og:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
         <meta property="og:description" content={piece.blurb.slice(0, 150)} />
-        <meta property="og:image" content={absoluteUrl(piece.image)} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:secure_url" content={ogImageUrl} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content={String(OG_IMAGE_SIZE)} />
+        <meta property="og:image:height" content={String(OG_IMAGE_SIZE)} />
         <meta property="og:image:alt" content={piece.name} />
         <meta property="og:url" content={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <meta property="og:site_name" content="Naira Flore" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
         <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
-        <meta name="twitter:image" content={absoluteUrl(piece.image)} />
+        <meta name="twitter:image" content={ogImageUrl} />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
         <script type="application/ld+json">
           {JSON.stringify({

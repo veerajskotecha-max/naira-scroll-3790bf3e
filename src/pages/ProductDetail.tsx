@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
 import { absoluteUrl } from "@/lib/absoluteUrl";
+import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
@@ -151,6 +152,10 @@ const ProductDetail = () => {
   }
 
 
+  /* Social crawlers fetch og:image inline and drop oversized files without a
+     word, so the preview must point at a small JPEG, not the 2048px master. */
+  const ogImageUrl = absoluteUrl(shopifyOgImage(image));
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
       <Helmet>
@@ -163,12 +168,16 @@ const ProductDetail = () => {
         <meta property="og:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
         <meta property="og:url" content={`https://nairaflore.com/product/${id}`} />
         <meta property="og:site_name" content="Naira Flore" />
-        <meta property="og:image" content={absoluteUrl(image)} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:secure_url" content={ogImageUrl} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content={String(OG_IMAGE_SIZE)} />
+        <meta property="og:image:height" content={String(OG_IMAGE_SIZE)} />
         <meta property="og:image:alt" content={title} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${title} | Naira Flore`} />
         <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
-        <meta name="twitter:image" content={absoluteUrl(image)} />
+        <meta name="twitter:image" content={ogImageUrl} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>

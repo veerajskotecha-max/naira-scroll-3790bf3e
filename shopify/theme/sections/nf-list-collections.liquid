@@ -374,19 +374,38 @@
   {%- endif -%}
 
   {%- comment -%}
-    Collapsed internal-linking nav, still in the DOM for crawlers. React
-    links to /jewellery/collections/:slug SEO landing pages that have no
-    theme template; the four real Shopify category collections are the
-    closest working destination, so those are what this links to.
+    Collapsed internal-linking nav, still in the DOM for crawlers -- mirrors
+    allLandings (categoryLandings + extraLandings) in src/data/seoContent.ts
+    and src/data/seoLandings.extra.ts, all 31 entries. A closed <details>
+    LOOKS invisible, but a direct probe of this exact React page confirmed
+    Chromium still lays its content out (computed display stays flex/block,
+    getBoundingClientRect is non-zero) -- so styledif counts every one of
+    these labels, and trimming the list to the 4 real categories left 24+
+    rows genuinely missing. React links to /jewellery/collections/:slug SEO
+    pages that have no theme template; the 4 real Shopify category
+    collections are the closest working destination for those slugs, the
+    rest fall back to the all-products collection rather than 404.
   {%- endcomment -%}
+  {%- liquid
+    assign landing_csv = 'rings|RINGS,earrings|EARRINGS,bracelets|BRACELETS,necklaces|NECKLACES,demi-fine-jewellery|DEMI-FINE,anti-tarnish-jewellery|ANTI-TARNISH,american-diamond-jewellery|AMERICAN DIAMOND,18k-gold-plated-jewellery|18K GOLD PLATED,office-wear-jewellery|OFFICE &amp; EVERYDAY,artificial-jewellery|ARTIFICIAL JEWELLERY,imitation-jewellery|IMITATION JEWELLERY,gold-plated-jewellery|GOLD PLATED,bridal-jewellery|BRIDAL,couple-rings|COUPLE RINGS,adjustable-rings|ADJUSTABLE RINGS,zirconia-earrings|ZIRCONIA EARRINGS,hoop-earrings|HOOP EARRINGS,stud-earrings|STUDS,solitaire-rings|SOLITAIRE,cocktail-rings|COCKTAIL RINGS,layered-necklaces|LAYERED NECKLACES,pendant-sets|PENDANT SETS,chain-for-women|GOLD CHAINS,evil-eye-bracelets|EVIL EYE,charm-bracelets|CHARM BRACELETS,rose-gold-jewellery|ROSE GOLD,minimal-jewellery|MINIMAL,jewellery-for-saree|FOR SAREE,jewellery-for-lehenga|FOR LEHENGA,jewellery-gifts|GIFTING,pearl-jewellery|PEARL'
+    assign landings = landing_csv | split: ','
+    assign core_cats = 'rings,earrings,bracelets,necklaces' | split: ','
+  -%}
   <section class="nf-coll__linkout">
     <details class="nf-coll__details">
       <summary class="nf-coll__summary">SHOP BY COLLECTION</summary>
       <nav class="nf-coll__linknav" aria-label="Jewellery collections">
-        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/rings">RINGS</a>
-        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/earrings">EARRINGS</a>
-        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/bracelets">BRACELETS</a>
-        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/necklaces">NECKLACES</a>
+        {%- for row in landings -%}
+          {%- assign lparts = row | split: '|' -%}
+          {%- assign lslug = lparts[0] -%}
+          {%- assign llabel = lparts[1] -%}
+          {%- assign lis_core = core_cats contains lslug -%}
+          {%- assign lhref = routes.all_products_collection_url -%}
+          {%- if lis_core -%}
+            {%- assign lhref = routes.root_url | append: 'collections/' | append: lslug -%}
+          {%- endif -%}
+          <a class="nf-coll__linkchip" href="{{ lhref }}">{{ llabel }}</a>
+        {%- endfor -%}
       </nav>
     </details>
   </section>

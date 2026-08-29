@@ -89,7 +89,7 @@
           "type": "nav_item",
           "settings": {
             "label": "GIFTING",
-            "url": "/collections/sets",
+            "url": "/pages/gifting",
             "children": "",
             "show_in_desktop_bar": true,
             "desktop_area": "left",

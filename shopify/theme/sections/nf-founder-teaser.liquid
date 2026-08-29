@@ -82,7 +82,12 @@
 .nf-founder__eyebrow { margin-bottom: .75rem !important; }
 @media (min-width: 768px) { .nf-founder__eyebrow { margin-bottom: 1rem !important; } }
 
-.nf-founder__title { line-height: 1.2 !important; margin-bottom: 1rem !important; }
+/* base.css also gives h1-h5 an un-neutralised letter-spacing (~0.72px;
+   see nf-base.css "Neutralise the Sense body typography" -- that pass
+   covers body via inheritance, not the heading-specific rule in
+   base.css). React sets none, so this heading and its <em> need it
+   reset explicitly rather than left to inherit. */
+.nf-founder__title { line-height: 1.2 !important; letter-spacing: normal !important; margin-bottom: 1rem !important; }
 @media (min-width: 768px) { .nf-founder__title { margin-bottom: 1.25rem !important; } }
 
 .nf-founder__para { font-size: 15px !important; line-height: 1.8 !important; }

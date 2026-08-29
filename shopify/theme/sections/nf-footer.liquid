@@ -287,12 +287,18 @@
 /* -- Link columns ----------------------------------------------- */
 /* The layout stamps `font-family: Ophelia !important` on every h1-h6,
    so the override here has to match that weight to keep the brand
-   serif. Specificity, not order, is what wins. */
+   serif. Specificity, not order, is what wins.
+   base.css also gives h1-h5 an un-neutralised line-height (see
+   nf-base.css "Neutralise the Sense body typography": that pass
+   covers body, not the heading-specific rule in base.css), so the
+   line-height below is explicit rather than inherited -- without it
+   this heading renders at ~20px instead of React's 24px (leading-normal). */
 .nf-footer .nf-footer__col-title {
   margin: 0 0 20px;
   font-family: var(--nf-font-display) !important;
   font-size: 16px;
   font-weight: 600;
+  line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: var(--nf-track-10);
   color: var(--nf-footer-text);

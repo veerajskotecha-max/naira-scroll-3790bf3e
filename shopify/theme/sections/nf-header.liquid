@@ -83,6 +83,14 @@
               {%- assign nf_label = block.settings.label | strip -%}
               {%- assign nf_url = block.settings.url | strip -%}
               {%- assign nf_children = block.settings.children | strip -%}
+              {%- comment -%}
+                ponytail: exact-path match only. React marks SHOP active
+                on every /jewellery* and /shop* sub-route (startsWith);
+                this only lights up on /collections/shop-all itself, so
+                a Rings/Earrings/etc. sub-page won't underline SHOP.
+                Upgrade: compare request.path against each child href's
+                prefix too, if that polish is ever asked for.
+              {%- endcomment -%}
               {%- assign nf_is_current = false -%}
               {%- if nf_url != blank and request.path == nf_url -%}
                 {%- assign nf_is_current = true -%}

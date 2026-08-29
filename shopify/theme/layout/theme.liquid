@@ -472,28 +472,3 @@
     </script>
   </body>
   </html>
-
-<style>
-<!-- Floating Custom Icon -->
-<a href="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/Group_1.svg?v=1758795485" class="floating-icon" target="_blank">
-  <img src="{{ 'your-icon.png' | file_url }}" alt="Custom Icon">
-</a>
-
-<style>
-  .floating-icon {
-    position: fixed;
-    bottom: 20px;  /* distance from bottom */
-    right: 20px;   /* distance from right */
-    z-index: 9999; /* keep it on top */
-  }
-  .floating-icon img {
-    width: 60px;   /* adjust size */
-    height: 60px;
-    border-radius: 50%; /* makes it circular if the image isn’t already */
-    box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
-  }
-  .floating-icon img:hover {
-    transform: scale(1.1);
-  }
-</style>

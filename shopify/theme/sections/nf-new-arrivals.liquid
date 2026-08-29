@@ -34,6 +34,20 @@
 <section class="nf nf-arr">
   <div class="nf-arr__tile" aria-hidden="true" style="background-image: url({{ 'nf-background-flora.webp' | asset_url }});"></div>
 
+  {%- comment -%}
+    The watercolour sprig NewArrivals.tsx tucks into the bottom-right corner,
+    rotated 30deg and scaled 1.2 so it bleeds off both edges.
+  {%- endcomment -%}
+  <img
+    class="nf-arr__corner"
+    src="{{ 'nf-floral-corner.webp' | asset_url }}"
+    alt=""
+    aria-hidden="true"
+    loading="lazy"
+    width="380"
+    height="380"
+  >
+
   <div class="nf-arr__logo" aria-hidden="true">
     <div class="nf-arr__logo-box">
       <img
@@ -50,9 +64,9 @@
 
   <div class="nf-arr__inner">
     <div class="nf-arr__head">
-      <h2 class="nf-arr__title">{{ section.settings.heading | default: 'New Arrivals' }}</h2>
+      <h2 class="nf-arr__title nf-display">{{ section.settings.heading | default: 'New Arrivals' }}</h2>
       {%- if section.settings.subheading != blank -%}
-        <p class="nf-arr__subtitle">{{ section.settings.subheading }}</p>
+        <p class="nf-arr__subtitle nf-display">{{ section.settings.subheading }}</p>
       {%- endif -%}
     </div>
 
@@ -192,6 +206,15 @@
   font-weight: 600;
   color: hsl(0 0% 25%);
 }
+
+.nf-arr__corner {
+  position: absolute; bottom: -80px; right: -80px; z-index: 0;
+  width: 180px; height: auto;
+  transform: rotate(30deg) scale(1.2); transform-origin: center center;
+  opacity: .68; pointer-events: none; user-select: none;
+}
+@media (min-width: 768px)  { .nf-arr__corner { width: 280px; } }
+@media (min-width: 1024px) { .nf-arr__corner { width: 380px; } }
 
 .nf-arr__cta-row { display: flex; justify-content: center; margin-top: 40px; }
 @media (min-width: 768px)  { .nf-arr__cta-row { margin-top: 48px; } }

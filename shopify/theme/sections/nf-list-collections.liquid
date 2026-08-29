@@ -1,94 +1,642 @@
 {%- comment -%}
-  ═══════════════════════════════════════════════════════════════════
-  Naira Flore — collections index (/collections)
+  ===========================================================================
+  Naira Flore -- collections index (/collections)
 
-  No React equivalent: the SPA routes /collections through the same
-  listing view. Shopify serves a distinct template, so this uses the
-  collection page's hero and grid language rather than a second idiom.
+  React has no distinct "list of collections" page. src/App.tsx routes
+  /collections straight through: <Route path="/collections" element={
+  <Navigate to="/jewellery" replace />} />. A shopper who lands on
+  /collections sees exactly src/pages/Jewellery.tsx -- same hero, same
+  filters, same JewelCard grid, same FAQ -- not a grid of collection tiles.
 
-  Empty collections are skipped — the store currently carries only a
-  few, and rendering a tile that leads to nothing is worse than
-  omitting it.
-  ═══════════════════════════════════════════════════════════════════
+  Shopify still serves a distinct list-collections.json template for this
+  URL (there is no client-side redirect on the storefront), so this section
+  reproduces the Jewellery listing page directly rather than inventing a
+  second idiom nobody on the React site ever sees. It is a close sibling of
+  sections/nf-collection.liquid; the one structural difference is the
+  product source, since list-collections.json has no bound `collection` --
+  collections['all'] is Shopify's automatic, always-present collection of
+  every product in the store, same as nf-new-arrivals.liquid already uses
+  for "all products" elsewhere in this theme.
+
+  Cards are hand-rolled here, NOT snippets/nf-product-card.liquid -- that
+  snippet is the port of ProductCard.tsx, a different component with
+  different markup. JewelCard.tsx is what src/pages/Jewellery.tsx (and so
+  this route) actually renders.
+
+  Vendor gate: the store carries more than the Naira Petite line, but
+  src/hooks/useLiveJewellery.ts only ever shows live listings whose Shopify
+  vendor is "Naira Petite" (case-insensitive -- JEWELLERY_VENDOR in
+  src/lib/isJewelleryProduct.ts). Every count and every card below runs
+  through that same gate.
+
+  Sold-out sink: applyJewelFilters() in JewelFilterBar.tsx always stable-
+  sorts sold-out pieces to the end of the grid. Mirrored below with two
+  passes over the product list (available, then sold out) so the category
+  derivation, the pill counts and the card grid all agree on one order.
+
+  The sort/price/stock/tag bar is a structural + visual port of
+  JewelFilterBar.tsx (it opens and closes for real). The inputs inside it
+  are NOT wired to re-filter or re-sort the grid: that panel is closed by
+  default in React too, so it never affects the page's default look, and
+  reproducing full client-side re-sorting for a disclosure panel is out of
+  proportion here. Noted, not silently dropped.
+  ===========================================================================
 {%- endcomment -%}
 
-<section class="nf nf-cl">
-  <div class="nf-cl__hero">
-    <header class="nf-cl__head">
+{%- liquid
+  assign products = collections['all'].products
+  assign cats = 'Rings,Bracelets,Earrings,Necklaces' | split: ','
+
+  # Pass 1: in-stock jewellery, in collection order.
+  # Pass 2: sold-out jewellery, in collection order.
+  # Both the pill counts (cat_of) and the card grid below walk the same two
+  # passes, so a card's position in cat_of always matches its position in
+  # the grid (see vis_idx).
+  assign cat_csv = ''
+  assign jewel_count = 0
+  assign price_floor = 0
+  assign price_ceiling = 0
+  for pass_no in (1..2)
+    for p in products
+      assign v = p.vendor | downcase | strip
+      assign avail = p.selected_or_first_available_variant.available
+      assign in_pass = false
+      if v == 'naira petite'
+        if pass_no == 1 and avail
+          assign in_pass = true
+        endif
+        if pass_no == 2 and avail != true
+          assign in_pass = true
+        endif
+      endif
+      if in_pass
+        assign jewel_count = jewel_count | plus: 1
+
+        # 'earring' contains the substring 'ring', so testing rings first
+        # would file every stud under Rings. Test earrings before rings.
+        # Mirrors CATEGORY_BY_TYPE + guessCategory in src/data/jewellery.ts.
+        assign t = p.type | downcase
+        assign c = 'Necklaces'
+        if t contains 'earr' or t contains 'stud' or t contains 'hoop' or t contains 'huggie'
+          assign c = 'Earrings'
+        elsif t contains 'brac' or t contains 'cuff' or t contains 'ankl'
+          assign c = 'Bracelets'
+        elsif t contains 'ring' or t contains 'band'
+          assign c = 'Rings'
+        endif
+        assign cat_csv = cat_csv | append: c | append: ','
+
+        assign p_price = p.selected_or_first_available_variant.price
+        if price_ceiling == 0 or p_price > price_ceiling
+          assign price_ceiling = p_price
+        endif
+        if price_floor == 0 or p_price < price_floor
+          assign price_floor = p_price
+        endif
+      endif
+    endfor
+  endfor
+  assign cat_of = cat_csv | split: ','
+-%}
+
+<section class="nf nf-coll" data-nf-collection>
+  <div class="nf-coll__hero">
+    <div class="nf-coll__pattern" aria-hidden="true" style="background-image:url({{ 'nf-floral-pattern-bg.webp' | asset_url }});"></div>
+    <header class="nf-coll__head">
       {%- if section.settings.eyebrow != blank -%}
-        <p class="nf-cl__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        <p class="nf-coll__eyebrow">{{ section.settings.eyebrow | escape }}</p>
       {%- endif -%}
-      <h1 class="nf-cl__title">{{ section.settings.heading | escape }}</h1>
-      {%- if section.settings.lede != blank -%}<p class="nf-cl__lede">{{ section.settings.lede }}</p>{%- endif -%}
+      <h1 class="nf-coll__title">{{ section.settings.heading | escape }}</h1>
+      {%- if section.settings.lede != blank -%}
+        <p class="nf-coll__lede">{{ section.settings.lede }}</p>
+      {%- endif -%}
     </header>
   </div>
 
-  {%- assign shown = 0 -%}
-  <div class="nf-cl__grid">
-    {%- for c in collections -%}
-      {%- if c.products_count > 0 and c.handle != 'frontpage' -%}
-        {%- assign shown = shown | plus: 1 -%}
-        <a class="nf-cl__card" href="{{ c.url }}">
-          <div class="nf-cl__frame">
-            {%- if c.image != blank -%}
-              {{ c.image | image_url: width: 800 | image_tag: alt: c.title, loading: 'lazy', class: 'nf-cl__img' }}
-            {%- elsif c.products.first.featured_image != blank -%}
-              {{ c.products.first.featured_image | image_url: width: 800 | image_tag: alt: c.title, loading: 'lazy', class: 'nf-cl__img' }}
-            {%- else -%}
-              {{ 'collection-1' | placeholder_svg_tag: 'nf-cl__img' }}
-            {%- endif -%}
-          </div>
-          <p class="nf-cl__name">{{ c.title }}</p>
-          <p class="nf-cl__count">{{ c.products_count }} {% if c.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
-        </a>
-      {%- endif -%}
-    {%- endfor -%}
-  </div>
-
-  {%- if shown == 0 -%}
-    <div class="nf-cl__empty">
-      <h2>The edit is being arranged</h2>
-      <p>Collections are on their way. The full range is a step away.</p>
-      <a class="nf-cl__cta" href="{{ routes.all_products_collection_url }}">VIEW ALL PIECES</a>
+  {%- if section.settings.show_filters -%}
+    <div class="nf-coll__filterbar">
+      <div class="nf-coll__filters" role="group" aria-label="Filter by category">
+        <button type="button" class="nf-coll__pill is-active" data-nf-cat="All" aria-pressed="true">
+          <span>ALL</span><span class="nf-coll__count" aria-hidden="true">{{ jewel_count }}</span>
+        </button>
+        {%- for c in cats -%}
+          {%- assign n = 0 -%}
+          {%- for x in cat_of -%}
+            {%- if x == c -%}{%- assign n = n | plus: 1 -%}{%- endif -%}
+          {%- endfor -%}
+          <button type="button" class="nf-coll__pill" data-nf-cat="{{ c }}" aria-pressed="false">
+            <span>{{ c | upcase }}</span><span class="nf-coll__count" aria-hidden="true">{{ n }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
     </div>
   {%- endif -%}
+
+  {%- if jewel_count > 0 -%}
+    {%- comment -%}
+      STYLE & OCCASION chips: a deduped list of this collection's Shopify
+      tags, capped at 10, in first-seen order. React's collectTags() ranks
+      by how often a tag occurs and requires count > 1; that ranking only
+      ever feeds a panel closed by default, so it is not reproduced here --
+      a plain unique list is the cheaper structure with the same content.
+    {%- endcomment -%}
+    {%- liquid
+      assign tag_csv = ''
+      assign tag_n = 0
+      for p in products
+        assign v = p.vendor | downcase | strip
+        if v == 'naira petite' and tag_n < 10
+          for tg in p.tags
+            assign probe = tag_csv | append: '|'
+            assign needle = tg | append: '|'
+            assign already = probe contains needle
+            if already == false and tag_n < 10
+              assign tag_csv = tag_csv | append: tg | append: '|'
+              assign tag_n = tag_n | plus: 1
+            endif
+          endfor
+        endif
+      endfor
+      assign tag_csv = tag_csv | remove_first: '|'
+      assign style_tags = tag_csv | split: '|'
+    -%}
+    <div class="nf-coll__toolbar">
+      <div class="nf-coll__toolbar-row">
+        <button type="button" class="nf-coll__filter-btn press-scale" data-nf-filter-toggle aria-expanded="false" aria-controls="NfFilterPanel-{{ section.id }}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+          FILTER
+        </button>
+        <span class="nf-coll__result-count">{{ jewel_count }} {% if jewel_count == 1 %}PIECE{% else %}PIECES{% endif %}</span>
+        <label class="nf-coll__sort-label">
+          <span class="visually-hidden">Sort pieces</span>
+          <select class="nf-coll__sort" data-nf-sort>
+            <option value="featured">Featured</option>
+            <option value="best">Best selling</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="newest">Newest first</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="NfFilterPanel-{{ section.id }}" class="nf-coll__filter-panel" data-nf-filter-panel hidden>
+        <div class="nf-coll__filter-grid">
+          {%- if price_ceiling > price_floor -%}
+            <div>
+              <p class="nf-coll__filter-label">PRICE, UP TO</p>
+              <input type="range" class="nf-coll__range" min="{{ price_floor }}" max="{{ price_ceiling }}" step="100" value="{{ price_ceiling }}" aria-label="Maximum price">
+              <p class="nf-coll__range-value">{{ price_ceiling | money }}</p>
+            </div>
+          {%- endif -%}
+          <div>
+            <p class="nf-coll__filter-label">AVAILABILITY</p>
+            <label class="nf-coll__stock-label">
+              <input type="checkbox" class="nf-coll__stock-check">
+              <span>In stock only</span>
+            </label>
+          </div>
+          {%- if style_tags.size > 0 -%}
+            <div class="nf-coll__filter-tags">
+              <p class="nf-coll__filter-label">STYLE &amp; OCCASION</p>
+              <div class="nf-coll__tag-row">
+                {%- for tg in style_tags -%}
+                  {%- if tg != blank -%}
+                    <button type="button" class="nf-coll__tag-chip">{{ tg | upcase }}</button>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%}
+      paginate is required: outside it Shopify caps a product loop at 50.
+      `by 250` (Shopify's own max) keeps every product on page 1 for any
+      catalogue size this store is likely to reach, so paginate.pages stays
+      1 and the pager below never shows -- matching React, which has no
+      pager at all. The vendor gate runs per-item inside the loop rather
+      than before paginate because {% paginate %} only accepts a real
+      paginate-able drop, not a filtered/derived array.
+    {%- endcomment -%}
+    {%- paginate collections['all'].products by 250 -%}
+    <div class="nf-coll__grid" data-nf-grid>
+      {%- assign vis_idx = 0 -%}
+      {%- for pass_no in (1..2) -%}
+        {%- for product in products -%}
+          {%- assign v = product.vendor | downcase | strip -%}
+          {%- assign avail = product.selected_or_first_available_variant.available -%}
+          {%- assign in_pass = false -%}
+          {%- if v == 'naira petite' -%}
+            {%- if pass_no == 1 and avail -%}
+              {%- assign in_pass = true -%}
+            {%- endif -%}
+            {%- if pass_no == 2 and avail != true -%}
+              {%- assign in_pass = true -%}
+            {%- endif -%}
+          {%- endif -%}
+          {%- if in_pass -%}
+            {%- assign cell_cat = cat_of[vis_idx] -%}
+            {%- assign vis_idx = vis_idx | plus: 1 -%}
+
+            {%- liquid
+              assign card_variant = product.selected_or_first_available_variant
+              if card_variant == blank
+                assign card_variant = product.variants.first
+              endif
+              assign card_price = card_variant.price
+              assign card_compare = card_variant.compare_at_price
+              assign off = 0
+              if card_compare > card_price
+                # round(100*diff/compare) done as floor((200*diff+compare)/(2*compare)) --
+                # works whether divided_by floors int/int (real Shopify) or returns a
+                # float (this harness's liquidjs), because floor is applied explicitly
+                # either way instead of assuming which one divided_by will do.
+                assign off_numer = card_compare | minus: card_price | times: 200 | plus: card_compare
+                assign off_denom = card_compare | times: 2
+                assign off = off_numer | divided_by: off_denom | floor
+              endif
+
+              assign badge_label = ''
+              assign badge_gold = false
+              if product.tags contains 'BESTSELLER'
+                assign badge_label = 'BESTSELLER'
+                assign badge_gold = true
+              elsif product.tags contains 'NEW'
+                assign badge_label = 'NEW'
+                assign badge_gold = true
+              endif
+
+              assign front_img = product.images[0] | default: product.featured_image
+              assign alt_img = product.images[1]
+
+              assign add_form_id = 'NfJewelAdd-' | append: section.id | append: '-' | append: product.id
+            -%}
+
+            <div class="nf-coll__cell" data-nf-cell data-cat="{{ cell_cat }}">
+              <article class="jc">
+                <a class="jc__link" href="{{ product.url }}" aria-label="View {{ product.title | escape }}">
+                  <div class="jc__frame">
+                    {%- if front_img != blank -%}
+                      <img
+                        class="jc__front{% if cell_cat == 'Necklaces' %} jc__front--necklace{% endif %}"
+                        src="{{ front_img | image_url: width: 800 }}"
+                        srcset="{{ front_img | image_url: width: 500 }} 500w, {{ front_img | image_url: width: 800 }} 800w, {{ front_img | image_url: width: 1100 }} 1100w"
+                        sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+                        alt="{{ product.title | escape }}"
+                        loading="lazy" decoding="async" width="800" height="800">
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'jc__front' }}
+                    {%- endif -%}
+                    {%- if alt_img != blank -%}
+                      <img
+                        class="jc__back{% if cell_cat == 'Earrings' %} jc__back--earring{% endif %}"
+                        src="{{ alt_img | image_url: width: 800 }}"
+                        srcset="{{ alt_img | image_url: width: 500 }} 500w, {{ alt_img | image_url: width: 800 }} 800w"
+                        sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+                        alt="" aria-hidden="true"
+                        loading="lazy" decoding="async" width="800" height="800">
+                    {%- endif -%}
+
+                    {%- if badge_label != blank -%}
+                      <span class="jc__tag{% if badge_gold %} jc__tag--gold{% endif %}">{{ badge_label }}</span>
+                    {%- endif -%}
+                    {%- if avail != true -%}
+                      <span class="jc__badge jc__badge--soldout">SOLD OUT</span>
+                    {%- elsif off > 0 -%}
+                      <span class="jc__badge jc__badge--off">{{ off }}% OFF</span>
+                    {%- endif -%}
+
+                    <button type="button" class="jc__heart" data-nf-wishlist="{{ product.handle }}" data-nf-wishlist-title="{{ product.title | escape }}" aria-pressed="false" aria-label="Add {{ product.title | escape }} to wishlist">
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
+                    <span class="jc__view">VIEW DETAILS</span>
+                  </div>
+                </a>
+
+                <div class="jc__body">
+                  <p class="jc__cat">{{ cell_cat | upcase }}</p>
+                  <h3 class="jc__title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+                  <div class="jc__price">
+                    <span class="jc__price-now">{{ card_price | money }}</span>
+                    {%- if off > 0 -%}
+                      <span class="jc__price-was">{{ card_compare | money }}</span>
+                      <span class="jc__price-off">{{ off }}% OFF</span>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="jc__cta">
+                    <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" id="{{ add_form_id }}" data-nf-add data-nf-add-title="{{ product.title | escape }}" class="jc__addform">
+                      <input type="hidden" name="id" value="{{ card_variant.id }}">
+                      <input type="hidden" name="quantity" value="1">
+                      <button type="submit" class="jc__add press-scale" {% unless avail %}disabled{% endunless %} aria-label="Add {{ product.title | escape }} to cart">
+                        {% if avail %}ADD TO CART{% else %}SOLD OUT{% endif %}
+                      </button>
+                    </form>
+                    {%- if avail -%}
+                      <form action="{{ routes.cart_add_url }}" method="post" class="jc__buyform">
+                        <input type="hidden" name="id" value="{{ card_variant.id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="return_to" value="{{ routes.root_url }}checkout">
+                        <button type="submit" class="jc__buy press-scale">
+                          <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
+                        </button>
+                      </form>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </article>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+    {%- if paginate.pages > 1 -%}
+      <nav class="nf-coll__pager" aria-label="Pagination">
+        {%- if paginate.previous -%}<a href="{{ paginate.previous.url }}" rel="prev">Previous</a>{%- endif -%}
+        <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+        {%- if paginate.next -%}<a href="{{ paginate.next.url }}" rel="next">Next</a>{%- endif -%}
+      </nav>
+    {%- endif -%}
+    {%- endpaginate -%}
+    <div class="nf-coll__empty" data-nf-empty hidden>
+      <h2 class="nf-coll__empty-title">Nothing in this edit yet</h2>
+      <p class="nf-coll__empty-copy">New pieces join Naira Petite regularly. The full collection is a step away.</p>
+      <button type="button" class="nf-coll__empty-cta" data-nf-cat-reset>VIEW ALL PIECES</button>
+    </div>
+  {%- else -%}
+    <div class="nf-coll__empty">
+      <h2 class="nf-coll__empty-title">Nothing in this edit yet</h2>
+      <p class="nf-coll__empty-copy">New pieces join Naira Petite regularly. The full collection is a step away.</p>
+      <a class="nf-coll__empty-cta" href="{{ routes.all_products_collection_url }}">VIEW ALL PIECES</a>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%}
+    Collapsed internal-linking nav, still in the DOM for crawlers. React
+    links to /jewellery/collections/:slug SEO landing pages that have no
+    theme template; the four real Shopify category collections are the
+    closest working destination, so those are what this links to.
+  {%- endcomment -%}
+  <section class="nf-coll__linkout">
+    <details class="nf-coll__details">
+      <summary class="nf-coll__summary">SHOP BY COLLECTION</summary>
+      <nav class="nf-coll__linknav" aria-label="Jewellery collections">
+        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/rings">RINGS</a>
+        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/earrings">EARRINGS</a>
+        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/bracelets">BRACELETS</a>
+        <a class="nf-coll__linkchip" href="{{ routes.root_url }}collections/necklaces">NECKLACES</a>
+      </nav>
+    </details>
+  </section>
+
+  {%- comment -%} FAQ, collapsed by default so the page stays quiet -- hubFaqs in src/pages/Jewellery.tsx. {%- endcomment -%}
+  <section class="nf-coll__linkout">
+    <details class="nf-coll__details">
+      <summary class="nf-coll__summary">GOOD TO KNOW</summary>
+      <dl class="nf-coll__faqs">
+        <div>
+          <dt>What is demi-fine jewellery?</dt>
+          <dd>Demi-fine jewellery sits between costume and solid gold: real construction, prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base, with lab-grown zircone in place of diamonds.</dd>
+        </div>
+        <div>
+          <dt>Does Naira Flore jewellery tarnish?</dt>
+          <dd>Every piece is anti-tarnish sealed over an 18K gold or rhodium finish and built on a nickel-free base, so it will not green or dull under everyday wear in Indian humidity.</dd>
+        </div>
+        <div>
+          <dt>Is the jewellery waterproof?</dt>
+          <dd>It is waterproof-sealed for incidental contact such as rain or washing hands. Remove pieces before swimming, as chlorine and salt water degrade any plated finish over time.</dd>
+        </div>
+        <div>
+          <dt>What ring sizes do you make?</dt>
+          <dd>We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.</dd>
+        </div>
+      </dl>
+    </details>
+  </section>
 </section>
 
+<script>
+  // Pills hide/show cells in place. No refetch, no scroll jump -- the React
+  // page keeps its scroll position when a category changes, so this does too.
+  (function () {
+    document.querySelectorAll('[data-nf-collection]').forEach(function (root) {
+      var cells = root.querySelectorAll('[data-nf-cell]');
+      var empty = root.querySelector('[data-nf-empty]');
+      function apply(cat) {
+        var shown = 0;
+        cells.forEach(function (c) {
+          var on = cat === 'All' || c.getAttribute('data-cat') === cat;
+          c.hidden = !on;
+          if (on) shown++;
+        });
+        if (empty) empty.hidden = shown !== 0;
+        root.querySelectorAll('[data-nf-cat]').forEach(function (b) {
+          var on = b.getAttribute('data-nf-cat') === cat;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+      }
+      root.querySelectorAll('[data-nf-cat]').forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.getAttribute('data-nf-cat')); });
+      });
+      var reset = root.querySelector('[data-nf-cat-reset]');
+      if (reset) reset.addEventListener('click', function () { apply('All'); });
+
+      // Filter disclosure: open/close only, matching JewelFilterBar's
+      // useState(false) -- the inputs inside do not re-filter the grid.
+      var filterToggle = root.querySelector('[data-nf-filter-toggle]');
+      var filterPanel = root.querySelector('[data-nf-filter-panel]');
+      if (filterToggle && filterPanel) {
+        filterToggle.addEventListener('click', function () {
+          var open = filterPanel.hidden;
+          filterPanel.hidden = !open;
+          filterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+    });
+  })();
+</script>
+
 {% stylesheet %}
-.nf-cl__hero { background-color: var(--nf-ivory); }
-.nf-cl__head { max-width: 72rem; margin-inline: auto; padding: 1.5rem 1rem; }
-@media (min-width: 640px) { .nf-cl__head { padding-inline: 1.5rem; } }
-@media (min-width: 768px) { .nf-cl__head { padding-top: 2.5rem; } }
-.nf-cl__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
-.nf-cl__title { margin: .75rem 0 0; font-family: var(--nf-font-display); font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
-@media (min-width: 768px) { .nf-cl__title { font-size: 48px; } }
-.nf-cl__lede { margin: .75rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
-@media (min-width: 768px) { .nf-cl__lede { font-size: 16px; } }
+.nf-coll__pager { display: flex; justify-content: center; align-items: center; gap: 1.25rem; padding: 0 1rem 3rem; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-18); text-transform: uppercase; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__pager a { color: var(--nf-ink); text-decoration: none; border-bottom: 1px solid var(--nf-gold-deep); padding-bottom: 2px; }
+.nf-coll__pager a:hover { color: var(--nf-gold-deep); }
 
-.nf-cl__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 72rem; margin-inline: auto; padding: 2.5rem 1rem 4rem; }
-@media (min-width: 640px) { .nf-cl__grid { gap: 1.5rem; padding-inline: 1.5rem; } }
-@media (min-width: 1024px) { .nf-cl__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
-.nf-cl__card { text-decoration: none; display: block; }
-.nf-cl__frame { aspect-ratio: 4 / 5; overflow: hidden; background-color: var(--nf-ivory-deep); }
-.nf-cl__img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s var(--nf-ease-reveal); }
-.nf-cl__card:hover .nf-cl__img { transform: scale(1.03); }
-.nf-cl__name { margin: .625rem 0 0; font-family: var(--nf-font-display); font-size: 17px; color: var(--nf-ink); }
-.nf-cl__count { margin: .125rem 0 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); text-transform: uppercase; color: rgb(var(--nf-ink-rgb) / .45); }
+.nf-coll__hero { position: relative; overflow: hidden; background-color: var(--nf-ivory); }
+.nf-coll__pattern { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: multiply; background-size: 160% auto; }
+.nf-coll__head { position: relative; max-width: 72rem; margin-inline: auto; padding: 1.5rem 1rem; }
+@media (min-width: 640px) { .nf-coll__head { padding-inline: 1.5rem; } }
+@media (min-width: 768px) { .nf-coll__head { padding-top: 2.5rem; } }
 
-.nf-cl__empty { text-align: center; max-width: 72rem; margin-inline: auto; padding: 3rem 1.5rem 6rem; }
-.nf-cl__empty h2 { margin: 0; font-family: var(--nf-font-display); font-size: 26px; color: var(--nf-ink); }
-.nf-cl__empty p { margin: .75rem 0 0; font-family: var(--nf-font-editorial); font-size: 14px; color: rgb(var(--nf-ink-rgb) / .6); }
-.nf-cl__cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem; border: 1px solid var(--nf-ink); color: var(--nf-ink); text-decoration: none; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); }
-.nf-cl__cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+.nf-coll__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
+.nf-coll__title { margin: .75rem 0 0; font-family: var(--nf-font-display); font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-coll__title { font-size: 48px; } }
+.nf-coll__lede { margin: .75rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+@media (min-width: 768px) { .nf-coll__lede { font-size: 16px; } }
+
+.nf-coll__filterbar { position: sticky; top: 94px; z-index: 20; background-color: var(--nf-ivory); padding-block: 1rem; }
+@media (min-width: 768px) { .nf-coll__filterbar { top: 100px; padding-block: 1.25rem; } }
+@media (min-width: 1024px) { .nf-coll__filterbar { top: 116px; } }
+.nf-coll__filters { display: flex; flex-wrap: nowrap; align-items: center; gap: .5rem; max-width: 72rem; margin-inline: auto; padding-inline: 1rem; overflow-x: auto; scrollbar-width: none; }
+.nf-coll__filters::-webkit-scrollbar { display: none; }
+@media (min-width: 640px) { .nf-coll__filters { justify-content: center; overflow: visible; padding-inline: 1.5rem; } }
+
+.nf-coll__pill { display: inline-flex; align-items: baseline; gap: .375rem; flex-shrink: 0; min-height: 44px; padding-inline: 1rem; background: none; cursor: pointer;
+  border: 1px solid rgb(var(--nf-ink-rgb) / .25); color: rgb(var(--nf-ink-rgb) / .7);
+  font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); transition: border-color .2s, background-color .2s, color .2s; }
+.nf-coll__pill > span { align-self: center; }
+@media (min-width: 640px) { .nf-coll__pill { padding-inline: 1.25rem; font-size: 11px; letter-spacing: var(--nf-track-30); } }
+.nf-coll__pill:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__pill.is-active { border-color: var(--nf-ink); background-color: var(--nf-ink); color: var(--nf-ivory); }
+.nf-coll__count { font-size: 9px; letter-spacing: var(--nf-track-8); color: rgb(var(--nf-ink-rgb) / .4); }
+@media (min-width: 640px) { .nf-coll__count { font-size: 9.5px; } }
+.nf-coll__pill.is-active .nf-coll__count { color: rgb(var(--nf-ivory-rgb) / .6); }
+
+/* ---- filter/sort toolbar (JewelFilterBar.tsx) ---- */
+.nf-coll__toolbar { max-width: 72rem; margin-inline: auto; padding-inline: 1rem; }
+@media (min-width: 640px) { .nf-coll__toolbar { padding-inline: 1.5rem; } }
+.nf-coll__toolbar-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: .75rem; }
+.nf-coll__filter-btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 40px; padding-inline: .875rem; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none; cursor: pointer;
+  color: rgb(var(--nf-ink-rgb) / .7); font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); }
+@media (min-width: 640px) { .nf-coll__filter-btn { padding-inline: 1rem; font-size: 10.5px; } }
+.nf-coll__filter-btn:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__result-count { display: none; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); color: rgb(var(--nf-ink-rgb) / .45); }
+@media (min-width: 640px) { .nf-coll__result-count { display: inline; } }
+.nf-coll__sort-label { display: inline-flex; align-items: center; margin-left: auto; }
+.nf-coll__sort { min-height: 40px; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: transparent; padding-inline: .75rem;
+  font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-14); color: rgb(var(--nf-ink-rgb) / .8); }
+@media (min-width: 640px) { .nf-coll__sort { font-size: 10.5px; } }
+.nf-coll__sort:focus-visible { border-color: var(--nf-ink); }
+
+.nf-coll__filter-panel[hidden] { display: none; }
+.nf-coll__filter-panel { margin-top: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .12); background-color: var(--nf-ivory); padding: 1rem; }
+@media (min-width: 640px) { .nf-coll__filter-panel { padding: 1.25rem; } }
+.nf-coll__filter-grid { display: grid; gap: 1.25rem; }
+@media (min-width: 640px) { .nf-coll__filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.nf-coll__filter-label { margin: 0; font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .5); }
+.nf-coll__range { margin-top: .75rem; width: 100%; accent-color: var(--nf-accent); }
+.nf-coll__range-value { margin: .25rem 0 0; font-family: var(--nf-font-label); font-size: 12px; color: rgb(var(--nf-ink-rgb) / .7); font-variant-numeric: tabular-nums; }
+.nf-coll__stock-label { display: inline-flex; align-items: center; gap: .5rem; margin-top: .75rem; min-height: 40px; cursor: pointer; font-size: 12px; color: rgb(var(--nf-ink-rgb) / .75); }
+.nf-coll__stock-check { width: 1rem; height: 1rem; accent-color: var(--nf-accent); }
+.nf-coll__filter-tags { grid-column: 1 / -1; }
+.nf-coll__tag-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+.nf-coll__tag-chip { min-height: 36px; padding-inline: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .2); background: none; cursor: pointer;
+  color: rgb(var(--nf-ink-rgb) / .65); font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-16); }
+.nf-coll__tag-chip:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
+
+.nf-coll__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 72rem; margin-inline: auto; padding: 2.5rem 1rem 4rem; }
+@media (min-width: 640px) { .nf-coll__grid { gap: 1.5rem; padding-inline: 1.5rem; } }
+@media (min-width: 1024px) { .nf-coll__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+.nf-coll__cell[hidden] { display: none; }
+
+/* ---- jewel card (JewelCard.tsx) ---- */
+.jc { display: flex; height: 100%; flex-direction: column; }
+.jc__link { display: block; width: 100%; text-decoration: none; color: inherit; }
+.jc__frame { position: relative; overflow: hidden; background-color: var(--nf-ivory-deep); box-shadow: var(--nf-card-shadow); }
+.jc__front, .jc__back { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+.jc__front { transition: opacity .35s ease-out; }
+.jc__back { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease-out; }
+.jc__link:hover .jc__front { opacity: 0; }
+.jc__link:hover .jc__back { opacity: 1; }
+.jc__front--necklace { object-position: center 38%; transform: scale(1.14); }
+.jc__back--earring { object-position: center 10%; transform: scale(1.5); }
+
+.jc__tag { position: absolute; left: .75rem; top: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .15); background-color: rgb(var(--nf-ivory-rgb) / .95);
+  padding: .25rem .625rem; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .6); }
+@media (min-width: 640px) { .jc__tag { left: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; letter-spacing: var(--nf-track-30); } }
+.jc__tag--gold { border-color: var(--nf-gold); color: var(--nf-gold-shadow); }
+
+.jc__badge { position: absolute; right: .75rem; top: .75rem; padding: .25rem .625rem; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
+@media (min-width: 640px) { .jc__badge { right: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; } }
+.jc__badge--soldout { background-color: var(--nf-ink); }
+.jc__badge--off { background-color: var(--nf-gold-deep); }
+
+.jc__heart { position: absolute; bottom: .75rem; right: .75rem; z-index: 10; display: flex; height: 2.25rem; width: 2.25rem; align-items: center; justify-content: center;
+  border: 1px solid rgb(var(--nf-ink-rgb) / .15); background-color: rgb(var(--nf-ivory-rgb) / .92); color: rgb(var(--nf-ink-rgb) / .55); cursor: pointer; }
+@media (min-width: 640px) { .jc__heart { bottom: 1rem; right: 1rem; } }
+.jc__heart:hover { border-color: rgb(var(--nf-ink-rgb) / .5); color: var(--nf-ink); }
+
+.jc__view { position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 8px); background-color: rgb(var(--nf-ivory-rgb) / .9); padding: .5rem 1.25rem;
+  font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: var(--nf-ink); opacity: 0; transition: opacity .2s ease-out, transform .2s ease-out; }
+.jc__link:hover .jc__view { opacity: 1; transform: translate(-50%, 0); }
+
+.jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 1rem .25rem 0; text-align: center; }
+@media (min-width: 640px) { .jc__body { padding-top: 1.25rem; } }
+.jc__cat { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-32); color: var(--nf-gold-deep); }
+@media (min-width: 640px) { .jc__cat { font-size: 10px; letter-spacing: var(--nf-track-34); } }
+.jc__title { margin: .375rem 0 0; min-height: 2.2em; font-family: var(--nf-font-display); font-size: 18px; line-height: 1.25; color: var(--nf-ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+@media (min-width: 640px) { .jc__title { margin-top: .5rem; font-size: 24px; } }
+@media (min-width: 768px) { .jc__title { font-size: 26px; } }
+.jc__title a { color: inherit; text-decoration: none; }
+.jc__title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.jc__price { margin-top: .5rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: .25rem .5rem;
+  font-family: var(--nf-font-label); font-variant-numeric: tabular-nums; }
+@media (min-width: 640px) { .jc__price { margin-top: .625rem; } }
+.jc__price-now { font-size: 15px; font-weight: 500; line-height: 1; color: var(--nf-ink); }
+@media (min-width: 640px) { .jc__price-now { font-size: 17px; } }
+.jc__price-was { font-size: 12px; line-height: 1; color: rgb(var(--nf-ink-rgb) / .4); text-decoration: line-through; }
+@media (min-width: 640px) { .jc__price-was { font-size: 13px; } }
+.jc__price-off { font-size: 10px; line-height: 1; letter-spacing: var(--nf-track-14); color: var(--nf-gold-deep); }
+@media (min-width: 640px) { .jc__price-off { font-size: 11px; } }
+
+.jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: .5rem; padding-top: .75rem; }
+.jc__addform, .jc__buyform { width: 100%; }
+.jc__add { display: inline-flex; min-height: 44px; width: 100%; align-items: center; justify-content: center; border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer;
+  font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ivory); }
+@media (min-width: 640px) { .jc__add { font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
+.jc__add:hover { opacity: .9; }
+.jc__add:disabled { opacity: .6; cursor: default; }
+.jc__buy { display: inline-flex; min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
+  font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ink); }
+@media (min-width: 640px) { .jc__buy { padding-inline: 1.5rem; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
+.jc__buy:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+
+/* An explicit display: wins over the UA stylesheet's [hidden]{display:none},
+   so the empty state must opt out of its own display when hidden. */
+.nf-coll__empty[hidden] { display: none; }
+.nf-coll__empty { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 72rem; margin-inline: auto; padding: 4rem 1.5rem 6rem; }
+.nf-coll__empty-title { margin: 0; font-family: var(--nf-font-display); font-size: 26px; line-height: 1.15; color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-coll__empty-title { font-size: 32px; } }
+.nf-coll__empty-copy { margin: .75rem 0 0; max-width: 24rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__empty-cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem;
+  border: 1px solid var(--nf-ink); background: none; color: var(--nf-ink); cursor: pointer; text-decoration: none;
+  font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); transition: background-color .2s, color .2s; }
+.nf-coll__empty-cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+
+/* ---- collapsed crawler nav + FAQ ---- */
+.nf-coll__linkout { max-width: 72rem; margin-inline: auto; padding: 0 1rem 1.5rem; }
+@media (min-width: 640px) { .nf-coll__linkout { padding-inline: 1.5rem; } }
+.nf-coll__details { border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: 1.5rem; }
+.nf-coll__summary { display: flex; min-height: 44px; cursor: pointer; list-style: none; align-items: center;
+  font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-28); color: rgb(var(--nf-ink-rgb) / .55); }
+.nf-coll__summary::-webkit-details-marker { display: none; }
+.nf-coll__summary:hover { color: var(--nf-ink); }
+.nf-coll__linknav { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .625rem; }
+.nf-coll__linkchip { border: 1px solid rgb(var(--nf-ink-rgb) / .2); padding: .5rem .875rem; font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-20);
+  color: rgb(var(--nf-ink-rgb) / .6); text-decoration: none; }
+.nf-coll__linkchip:hover { border-color: var(--nf-ink); color: var(--nf-ink); }
+.nf-coll__faqs { margin: 1.5rem 0 0; max-width: 48rem; }
+.nf-coll__faqs > div + div { margin-top: 1.5rem; }
+.nf-coll__faqs dt { font-family: var(--nf-font-label); font-size: 14px; letter-spacing: var(--nf-track-4); color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-coll__faqs dt { font-size: 16px; } }
+.nf-coll__faqs dd { margin: .5rem 0 0; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
+@media (min-width: 768px) { .nf-coll__faqs dd { font-size: 15px; } }
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "NF Collections Index",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "NAIRA" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "The Collections" },
-    { "type": "richtext", "id": "lede", "label": "Intro copy", "default": "<p>Every edit, in one place.</p>" }
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "NAIRA PETITE" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Demi-Fine Jewellery" },
+    { "type": "richtext", "id": "lede", "label": "Intro copy", "default": "<p>Brilliant-cut zircone in an 18K gold finish.</p>" },
+    { "type": "checkbox", "id": "show_filters", "label": "Show category filters", "default": true }
   ]
 }
 {% endschema %}

@@ -1,14 +1,64 @@
 /*
  * Naira Flore collections index
+ * /collections redirects to /jewellery in React (see src/App.tsx), so this
+ * template mirrors templates/collection.json section-for-section: the
+ * listing (nf-list-collections, the /collections-specific product source)
+ * plus the "shop by category" grid (nf-jewellery-categories) that follows
+ * it on the same React page.
  */
 {
   "sections": {
     "main": {
       "type": "nf-list-collections",
       "settings": {}
+    },
+    "cats": {
+      "type": "nf-jewellery-categories",
+      "settings": {},
+      "blocks": {
+        "category_1": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "rings",
+            "label": "Rings",
+            "note": "solitaires, halo & stack"
+          }
+        },
+        "category_2": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "bracelets",
+            "label": "Bracelets",
+            "note": "tennis, bow & baroque pearl"
+          }
+        },
+        "category_3": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "earrings",
+            "label": "Earrings",
+            "note": "hoops & the studs, three ways"
+          }
+        },
+        "category_4": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "necklaces",
+            "label": "Necklaces",
+            "note": "lariats, chains & a cascade"
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3",
+        "category_4"
+      ]
     }
   },
   "order": [
-    "main"
+    "main",
+    "cats"
   ]
 }

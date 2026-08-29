@@ -133,6 +133,38 @@
     });
   }
 
+  /* -- 2b. Drawer accordion groups ------------------------------------
+     MobileMenu.tsx: openSection is a single useState<string | null>,
+     so opening one group closes whichever other one was open. Panels
+     are real elements toggled with the `hidden` attribute (matching
+     the .nf-mm drawer itself, which stopped using visibility:hidden --
+     see the stylesheet in sections/nf-header.liquid); aria-expanded
+     drives the chevron rotation in CSS via an attribute selector. */
+  function initAccordion(header) {
+    var menu = header.querySelector('[data-nf-menu]');
+    if (!menu) return;
+    var triggers = menu.querySelectorAll('[data-nf-accordion-trigger]');
+    if (!triggers.length) return;
+
+    Array.prototype.forEach.call(triggers, function (trigger) {
+      trigger.addEventListener('click', function () {
+        var panel = document.getElementById(trigger.getAttribute('aria-controls'));
+        if (!panel) return;
+        var willOpen = trigger.getAttribute('aria-expanded') !== 'true';
+
+        Array.prototype.forEach.call(triggers, function (other) {
+          if (other === trigger) return;
+          other.setAttribute('aria-expanded', 'false');
+          var otherPanel = document.getElementById(other.getAttribute('aria-controls'));
+          if (otherPanel) otherPanel.hidden = true;
+        });
+
+        trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        panel.hidden = !willOpen;
+      });
+    });
+  }
+
   /* -- 3. Wishlist dot ----------------------------------------------
      Liquid has no wishlist object, so the count is read from the same
      localStorage key the Lovable WishlistContext writes. Purely
@@ -222,6 +254,7 @@
     if (!header) return;
     initScrollState(header);
     initMobileMenu(header);
+    initAccordion(header);
     initWishlist(header);
     initCartIcon();
   }

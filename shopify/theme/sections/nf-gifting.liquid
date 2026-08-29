@@ -1,0 +1,379 @@
+{%- comment -%}
+  ===========================================================================
+  Naira Flore -- Gifting hub
+  Ported from src/pages/Gifting.tsx (a merchandised entry point, not a
+  fourth catalogue page). Cards render via snippets/nf-jewel-card.liquid.
+
+  Card snippet provenance: JewelCard.tsx (344 lines) is a different design
+  from ProductCard.tsx -- category above title, compare-at + off% pricing,
+  tag/sold-out/off badges, a stacked Add to Cart + Shop Now pair, a
+  wishlist heart, a hover "view details" reveal and a front/back image
+  crossfade. snippets/nf-product-card.liquid (the ProductCard.tsx port)
+  has none of that, so it was not bent to fit. sections/nf-collection.liquid
+  already contains its own inline JewelCard port (".jc" classes, built
+  for src/pages/Jewellery.tsx) -- that file is out of scope to edit here,
+  so its markup/CSS was extracted into a fresh snippet (".nf-jc" classes)
+  instead of re-deriving an independent copy. Some duplication between the
+  two now exists; a later pass could point nf-collection.liquid at the
+  same snippet.
+
+  Not ported from JewelCard.tsx, on purpose:
+  - The mouse-tracking 3D tilt + glass-sheen overlay and the mobile
+    IntersectionObserver "greet turn" swap: both are JS-driven decoration
+    on top of the same front/back image pair this port already shows via
+    a plain CSS hover crossfade (same technique nf-collection.liquid's
+    inline card uses). Add if a reviewed motion pass asks for it.
+  - The zircone sparkle twinkle overlay: nf-collection.liquid's own
+    JewelCard port skips it too, so parity between the two cards was kept
+    over reintroducing it here alone.
+  - The quick-view modal (JewelQuickView): JewelCard.tsx declares the
+    `open`/`setOpen` state and renders the modal, but nothing in the file
+    ever calls setOpen(true) -- the card's only click target is the
+    product link. The modal is dead code in the source, so it is not
+    ported.
+
+  Product grid: useLiveJewellery() filters the whole Shopify catalogue to
+  vendor "Naira Petite" and Gifting.tsx shows the first 6. Liquid has no
+  cross-collection product query, so `collection` is a section setting
+  (falls back to Shop All) and the vendor gate still runs per item, same
+  as nf-collection.liquid, since a merchant-picked collection can carry
+  non-jewellery lines too. `product_count` reproduces the slice(0, 6).
+
+  Link substitutions (React's /jewellery route and its query strings do
+  not exist as Shopify URLs; see the report for the full list):
+  - /jewellery?under=1000|1500|2500 -> /collections/shop-all
+    ?filter.v.price.lte=1000|1500|2500 -- Shopify's native price filter,
+    already the pattern header-group.json's own "Under Rs 1,500" link uses.
+  - /jewellery?category=Necklaces|Earrings|Bracelets -> /collections/
+    necklaces|earrings|bracelets -- the real per-category collections
+    already used by the header SHOP submenu and the footer.
+
+  Font landmine: Gifting.tsx's `velista` const reads var(--font-cormorant),
+  which is defined nowhere in the React app, so those headings actually
+  inherit the app sans stack there (see docs/design-tokens.md, "The
+  display-font landmine"). Per this port's brief the design intent is
+  Velista, so headings here use --nf-font-display (class nf-display)
+  instead of reproducing that bug.
+
+  Second landmine, not written up in design-tokens.md: Gifting.tsx also
+  uses `tracking-nf-22` twice (the price-edit pills, the "Explore" links).
+  "nf-22" is not a key in tailwind.config.ts's letterSpacing scale (only
+  nf-4 through nf-50 at fixed steps -- no 22), so Tailwind's compiler never
+  generates a rule for that class name and both elements render at normal
+  letter-spacing in the live app. Reproduced as-is: no letter-spacing is
+  applied to the matching elements below.
+  ===========================================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign grid_collection = section.settings.collection
+  if grid_collection == blank
+    assign grid_collection = collections['shop-all']
+  endif
+  assign max_count = section.settings.product_count | default: 6
+
+  assign wa_msg_enc = section.settings.wa_message | url_encode
+  assign wa_href = 'https://wa.me/' | append: section.settings.wa_number | append: '?text=' | append: wa_msg_enc
+-%}
+
+<section class="nf nf-gift">
+  <header class="nf-gift__head">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="nf-gift__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+    <h1 class="nf-gift__title nf-display">{{ section.settings.heading | escape }}</h1>
+    {%- if section.settings.intro != blank -%}
+      <p class="nf-gift__intro">{{ section.settings.intro | escape }}</p>
+    {%- endif -%}
+
+    {%- assign has_price_edit = false -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'price_edit' -%}{%- assign has_price_edit = true -%}{%- break -%}{%- endif -%}
+    {%- endfor -%}
+    {%- if has_price_edit -%}
+      <div class="nf-gift__pricerow">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'price_edit' -%}
+            <a
+              {{ block.shopify_attributes }}
+              href="{{ block.settings.url | escape }}"
+              class="nf-gift__pill press-scale"
+            >{{ block.settings.label | upcase | escape }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </header>
+
+  {%- assign has_whom = false -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'for_whom' -%}{%- assign has_whom = true -%}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+  {%- if has_whom -%}
+    <section class="nf-gift__whom">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'for_whom' -%}
+          <a {{ block.shopify_attributes }} href="{{ block.settings.url | escape }}" class="nf-gift__whomcard">
+            <h2 class="nf-gift__whomtitle nf-display">{{ block.settings.title | escape }}</h2>
+            {%- if block.settings.copy != blank -%}
+              <p class="nf-gift__whomcopy">{{ block.settings.copy | escape }}</p>
+            {%- endif -%}
+            <span class="nf-gift__whomcta">EXPLORE &rarr;</span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </section>
+  {%- endif -%}
+
+  <section class="nf-gift__picks">
+    <h2 class="nf-gift__h2 nf-display">{{ section.settings.picks_heading | escape }}</h2>
+    {%- if grid_collection != blank -%}
+      {%- assign shown = 0 -%}
+      <div class="nf-gift__grid">
+        {%- for product in grid_collection.products -%}
+          {%- assign gift_vendor = product.vendor | downcase | strip -%}
+          {%- if gift_vendor == 'naira petite' -%}
+            {%- render 'nf-jewel-card', product: product, uid: section.id -%}
+            {%- assign shown = shown | plus: 1 -%}
+            {%- if shown >= max_count -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </section>
+
+  <section class="nf-gift__ask">
+    <div class="nf-gift__askbox">
+      <h2 class="nf-gift__h2 nf-display">{{ section.settings.ask_heading | escape }}</h2>
+      {%- if section.settings.ask_copy != blank -%}
+        <p class="nf-gift__askcopy">{{ section.settings.ask_copy | escape }}</p>
+      {%- endif -%}
+      <a
+        href="{{ wa_href }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="nf-gift__ask-cta press-scale"
+      >{{ section.settings.wa_button_label | upcase | escape }}</a>
+    </div>
+  </section>
+</section>
+
+{% stylesheet %}
+.nf-gift { background-color: var(--nf-ivory); color: var(--nf-ink); }
+
+.nf-gift__head { max-width: 72rem; margin-inline: auto; padding: 2.5rem 1rem 2rem; }
+@media (min-width: 640px) { .nf-gift__head { padding-inline: 1.5rem; } }
+@media (min-width: 768px) { .nf-gift__head { padding-top: 3.5rem; } }
+
+.nf-gift__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
+.nf-gift__title { margin: .75rem 0 0; font-size: 32px; line-height: 1.05; letter-spacing: normal; color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-gift__title { font-size: 52px; } }
+.nf-gift__intro { margin: 1rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
+@media (min-width: 768px) { .nf-gift__intro { font-size: 16px; } }
+
+.nf-gift__pricerow { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: .625rem; }
+.nf-gift__pill {
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: 1.25rem;
+  border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none;
+  font-family: var(--nf-font-label); font-size: 10px; color: rgb(var(--nf-ink-rgb) / .75);
+  text-decoration: none; transition: color .2s ease, border-color .2s ease;
+}
+.nf-gift__pill:hover, .nf-gift__pill:focus-visible { border-color: var(--nf-ink); color: var(--nf-ink); }
+
+.nf-gift__whom {
+  max-width: 72rem; margin-inline: auto; display: grid; gap: 1rem; padding: 0 1rem 3rem;
+}
+@media (min-width: 640px) { .nf-gift__whom { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-inline: 1.5rem; } }
+.nf-gift__whomcard {
+  display: block; border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 1.5rem;
+  color: inherit; text-decoration: none; transition: border-color .2s ease;
+}
+.nf-gift__whomcard:hover, .nf-gift__whomcard:focus-visible { border-color: rgb(var(--nf-ink-rgb) / .4); }
+.nf-gift__whomtitle { margin: 0; font-size: 22px; line-height: 1.25; letter-spacing: normal; color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-gift__whomtitle { font-size: 26px; } }
+.nf-gift__whomcopy { margin: .5rem 0 0; font-family: var(--nf-font-editorial); font-size: 13.5px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-gift__whomcta { margin-top: 1rem; display: inline-block; font-family: var(--nf-font-label); font-size: 10px; color: var(--nf-gold-deep); }
+
+.nf-gift__picks { max-width: 72rem; margin-inline: auto; padding: 0 1rem 4rem; }
+@media (min-width: 640px) { .nf-gift__picks { padding-inline: 1.5rem; } }
+.nf-gift__h2 { margin: 0; font-size: 24px; line-height: 1.25; letter-spacing: normal; color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-gift__h2 { font-size: 30px; } }
+
+.nf-gift__grid { margin-top: 1.75rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (min-width: 640px) { .nf-gift__grid { gap: 1.5rem; } }
+@media (min-width: 1024px) { .nf-gift__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+
+.nf-gift__ask { max-width: 72rem; margin-inline: auto; padding: 0 1rem 5rem; }
+@media (min-width: 640px) { .nf-gift__ask { padding-inline: 1.5rem; } }
+.nf-gift__askbox { border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 1.75rem; text-align: center; }
+@media (min-width: 640px) { .nf-gift__askbox { padding: 2.5rem; } }
+.nf-gift__askcopy { margin: .75rem auto 0; max-width: 28rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-gift__ask-cta {
+  margin-top: 1.5rem; display: inline-flex; min-height: 48px; align-items: center;
+  border: 1px solid var(--nf-ink); padding-inline: 1.75rem; background: none;
+  font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); color: var(--nf-ink);
+  text-decoration: none; transition: background-color .2s ease, color .2s ease;
+}
+.nf-gift__ask-cta:hover, .nf-gift__ask-cta:focus-visible { background-color: var(--nf-ink); color: var(--nf-ivory); }
+
+/* ---- nf-jewel-card (rendered by snippets/nf-jewel-card.liquid) ---- */
+.nf-jc { display: flex; height: 100%; flex-direction: column; }
+.nf-jc__link { display: block; width: 100%; text-decoration: none; color: inherit; }
+.nf-jc__frame { position: relative; overflow: hidden; background-color: var(--nf-ivory-deep); box-shadow: var(--nf-card-shadow); }
+.nf-jc__front, .nf-jc__back { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+.nf-jc__front { transition: opacity .35s ease-out; }
+.nf-jc__back { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease-out; }
+.nf-jc__link:hover .nf-jc__front, .nf-jc__link:focus-visible .nf-jc__front { opacity: 0; }
+.nf-jc__link:hover .nf-jc__back, .nf-jc__link:focus-visible .nf-jc__back { opacity: 1; }
+.nf-jc__front--necklace { object-position: center 38%; transform: scale(1.14); }
+.nf-jc__back--earring { object-position: center 10%; transform: scale(1.5); }
+
+.nf-jc__tag {
+  position: absolute; left: .75rem; top: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
+  background-color: rgb(var(--nf-ivory-rgb) / .95); padding: .25rem .625rem;
+  font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .6);
+}
+@media (min-width: 640px) { .nf-jc__tag { left: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; letter-spacing: var(--nf-track-30); } }
+.nf-jc__tag--gold { border-color: var(--nf-gold); color: var(--nf-gold-shadow); }
+
+.nf-jc__badge { position: absolute; right: .75rem; top: .75rem; padding: .25rem .625rem; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
+@media (min-width: 640px) { .nf-jc__badge { right: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; } }
+.nf-jc__badge--soldout { background-color: var(--nf-ink); }
+.nf-jc__badge--off { background-color: var(--nf-gold-deep); }
+
+.nf-jc__heart {
+  position: absolute; bottom: .75rem; right: .75rem; z-index: 10; display: flex; height: 2.25rem; width: 2.25rem;
+  align-items: center; justify-content: center; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
+  background-color: rgb(var(--nf-ivory-rgb) / .92); color: rgb(var(--nf-ink-rgb) / .55); cursor: pointer;
+}
+@media (min-width: 640px) { .nf-jc__heart { bottom: 1rem; right: 1rem; } }
+.nf-jc__heart:hover { border-color: rgb(var(--nf-ink-rgb) / .5); color: var(--nf-ink); }
+
+.nf-jc__view {
+  position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 8px);
+  background-color: rgb(var(--nf-ivory-rgb) / .9); padding: .5rem 1.25rem;
+  font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: var(--nf-ink);
+  opacity: 0; transition: opacity .2s ease-out, transform .2s ease-out; pointer-events: none;
+}
+.nf-jc__link:hover .nf-jc__view, .nf-jc__link:focus-visible .nf-jc__view { opacity: 1; transform: translate(-50%, 0); }
+
+.nf-jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 1rem .25rem 0; text-align: center; }
+@media (min-width: 640px) { .nf-jc__body { padding-top: 1.25rem; } }
+.nf-jc__cat { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-32); color: var(--nf-gold-deep); }
+@media (min-width: 640px) { .nf-jc__cat { font-size: 10px; letter-spacing: var(--nf-track-34); } }
+.nf-jc__title {
+  margin: .375rem 0 0; min-height: 2.2em; font-family: var(--nf-font-display); font-size: 18px; line-height: 1.25; color: var(--nf-ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+@media (min-width: 640px) { .nf-jc__title { margin-top: .5rem; font-size: 24px; } }
+@media (min-width: 768px) { .nf-jc__title { font-size: 26px; } }
+.nf-jc__title a { color: inherit; text-decoration: none; }
+.nf-jc__title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.nf-jc__price { margin-top: .5rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: .25rem .5rem; font-family: var(--nf-font-label); font-variant-numeric: tabular-nums; }
+@media (min-width: 640px) { .nf-jc__price { margin-top: .625rem; } }
+.nf-jc__price-now { font-size: 15px; font-weight: 500; line-height: 1; color: var(--nf-ink); }
+@media (min-width: 640px) { .nf-jc__price-now { font-size: 17px; } }
+.nf-jc__price-was { font-size: 12px; line-height: 1; color: rgb(var(--nf-ink-rgb) / .4); text-decoration: line-through; }
+@media (min-width: 640px) { .nf-jc__price-was { font-size: 13px; } }
+.nf-jc__price-off { font-size: 10px; line-height: 1; letter-spacing: var(--nf-track-14); color: var(--nf-gold-deep); }
+@media (min-width: 640px) { .nf-jc__price-off { font-size: 11px; } }
+
+.nf-jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: .5rem; padding-top: .75rem; }
+.nf-jc__addform, .nf-jc__buyform { width: 100%; margin: 0; }
+.nf-jc__add {
+  display: inline-flex; min-height: 44px; width: 100%; align-items: center; justify-content: center;
+  border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer;
+  font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ivory);
+}
+@media (min-width: 640px) { .nf-jc__add { font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
+.nf-jc__add:hover { opacity: .9; }
+.nf-jc__add:disabled { opacity: .6; cursor: default; }
+.nf-jc__buy {
+  display: inline-flex; min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: .5rem;
+  border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
+  font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ink);
+}
+@media (min-width: 640px) { .nf-jc__buy { padding-inline: 1.5rem; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
+.nf-jc__buy:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-gift__pill, .nf-gift__whomcard, .nf-gift__ask-cta,
+  .nf-jc__front, .nf-jc__back, .nf-jc__view { transition: none; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NF Gifting",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "THE GIFT EDIT" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Gifting" },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro copy",
+      "default": "Every piece arrives boxed and anti-tarnish sealed, ready to hand over. Choose by budget, by occasion, or ask the atelier and we will help you pick."
+    },
+    { "type": "header", "content": "Product grid" },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Falls back to Shop All. Only products whose vendor is Naira Petite are shown, same gate the React catalogue uses."
+    },
+    { "type": "range", "id": "product_count", "min": 3, "max": 12, "step": 3, "label": "Products to show", "default": 6 },
+    { "type": "text", "id": "picks_heading", "label": "Grid heading", "default": "Easy pieces to gift" },
+    { "type": "header", "content": "Ask the atelier" },
+    { "type": "text", "id": "ask_heading", "label": "Heading", "default": "Not sure what to choose?" },
+    {
+      "type": "textarea",
+      "id": "ask_copy",
+      "label": "Copy",
+      "default": "Tell us who it is for and your budget. We will send back three options with photographs."
+    },
+    { "type": "text", "id": "wa_button_label", "label": "Button label", "default": "ASK THE ATELIER" },
+    { "type": "text", "id": "wa_number", "label": "WhatsApp number", "info": "Digits only, country code first.", "default": "919561557935" },
+    {
+      "type": "text",
+      "id": "wa_message",
+      "label": "Prefilled message",
+      "default": "Hi Naira Flore, I'm choosing a gift. Could you help me pick?"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "price_edit",
+      "name": "Price pill",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Under ₹1,000" },
+        { "type": "url", "id": "url", "label": "Link", "default": "/collections/shop-all" }
+      ]
+    },
+    {
+      "type": "for_whom",
+      "name": "For whom card",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Recipient" },
+        { "type": "textarea", "id": "copy", "label": "Copy", "default": "Say who this is for." },
+        { "type": "url", "id": "url", "label": "Link", "default": "/collections/all" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gifting",
+      "blocks": [
+        { "type": "price_edit", "settings": { "label": "Under ₹1,000", "url": "/collections/shop-all?filter.v.price.lte=1000" } },
+        { "type": "price_edit", "settings": { "label": "Under ₹1,500", "url": "/collections/shop-all?filter.v.price.lte=1500" } },
+        { "type": "price_edit", "settings": { "label": "Under ₹2,500", "url": "/collections/shop-all?filter.v.price.lte=2500" } },
+        { "type": "for_whom", "settings": { "title": "For Her", "copy": "Demi-fine everyday pieces she will actually reach for.", "url": "/collections/necklaces" } },
+        { "type": "for_whom", "settings": { "title": "For the Bride", "copy": "Zircone sets that read fine at wedding-light distance.", "url": "/collections/earrings" } },
+        { "type": "for_whom", "settings": { "title": "For a First Gift", "copy": "Quiet rings and bracelets that suit any wrist or finger.", "url": "/collections/bracelets" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

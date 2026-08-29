@@ -1,0 +1,78 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-gifting",
+      "blocks": {
+        "pe0": {
+          "type": "price_edit",
+          "settings": {
+            "label": "Under ₹1,000",
+            "url": "/collections/shop-all?filter.v.price.lte=1000"
+          }
+        },
+        "pe1": {
+          "type": "price_edit",
+          "settings": {
+            "label": "Under ₹1,500",
+            "url": "/collections/shop-all?filter.v.price.lte=1500"
+          }
+        },
+        "pe2": {
+          "type": "price_edit",
+          "settings": {
+            "label": "Under ₹2,500",
+            "url": "/collections/shop-all?filter.v.price.lte=2500"
+          }
+        },
+        "fw0": {
+          "type": "for_whom",
+          "settings": {
+            "title": "For Her",
+            "copy": "Demi-fine everyday pieces she will actually reach for.",
+            "url": "/collections/necklaces"
+          }
+        },
+        "fw1": {
+          "type": "for_whom",
+          "settings": {
+            "title": "For the Bride",
+            "copy": "Zircone sets that read fine at wedding-light distance.",
+            "url": "/collections/earrings"
+          }
+        },
+        "fw2": {
+          "type": "for_whom",
+          "settings": {
+            "title": "For a First Gift",
+            "copy": "Quiet rings and bracelets that suit any wrist or finger.",
+            "url": "/collections/bracelets"
+          }
+        }
+      },
+      "block_order": ["pe0", "pe1", "pe2", "fw0", "fw1", "fw2"],
+      "settings": {
+        "eyebrow": "THE GIFT EDIT",
+        "heading": "Gifting",
+        "intro": "Every piece arrives boxed and anti-tarnish sealed, ready to hand over. Choose by budget, by occasion, or ask the atelier and we will help you pick.",
+        "collection": "shop-all",
+        "product_count": 6,
+        "picks_heading": "Easy pieces to gift",
+        "ask_heading": "Not sure what to choose?",
+        "ask_copy": "Tell us who it is for and your budget. We will send back three options with photographs.",
+        "wa_button_label": "ASK THE ATELIER",
+        "wa_number": "919561557935",
+        "wa_message": "Hi Naira Flore, I'm choosing a gift. Could you help me pick?"
+      }
+    }
+  },
+  "order": ["main"]
+}

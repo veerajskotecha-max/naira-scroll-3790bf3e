@@ -1,0 +1,147 @@
+{%- comment -%}
+  ===========================================================================
+  Naira Flore -- jewel card
+  Port of src/components/jewellery/JewelCard.tsx, extracted from the inline
+  ".jc" card markup/CSS already built in sections/nf-collection.liquid (that
+  file is out of scope to edit for this task, so this snippet is a fresh
+  copy under a ".nf-jc" class namespace, not an edit of that file). Its
+  caller (sections/nf-gifting.liquid) owns the ".nf-jc" stylesheet, since
+  Liquid snippets cannot carry a {% stylesheet %} block of their own.
+
+  Not ported (see sections/nf-gifting.liquid's header comment for why):
+  the mouse-tilt/sheen hover effect, the mobile alt-image auto-swap, the
+  zircone sparkle overlay, and the (dead, unused) quick-view modal.
+
+  Accepts:
+    product  {Product} required
+    uid      {String}  unique-ifies the add-to-cart form id, e.g. section.id
+  ===========================================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign jc_uid = uid | default: 'nf-jc'
+  assign jc_variant = product.selected_or_first_available_variant
+  if jc_variant == blank
+    assign jc_variant = product.variants.first
+  endif
+  assign jc_available = jc_variant.available
+
+  # 'earring' contains the substring 'ring', so testing rings first would
+  # file every stud under Rings. Test earrings before rings. Mirrors
+  # CATEGORY_BY_TYPE + guessCategory in src/hooks/useLiveJewellery.ts.
+  assign jc_type = product.type | downcase
+  assign jc_cat = 'Necklaces'
+  if jc_type contains 'earr' or jc_type contains 'stud' or jc_type contains 'hoop' or jc_type contains 'huggie'
+    assign jc_cat = 'Earrings'
+  elsif jc_type contains 'brac' or jc_type contains 'cuff' or jc_type contains 'ankl'
+    assign jc_cat = 'Bracelets'
+  elsif jc_type contains 'ring' or jc_type contains 'band'
+    assign jc_cat = 'Rings'
+  endif
+
+  assign jc_price = jc_variant.price
+  assign jc_compare = jc_variant.compare_at_price
+  assign jc_off = 0
+  if jc_compare > jc_price
+    # round(100*diff/compare) as floor((200*diff+compare)/(2*compare)) so it
+    # is correct whether divided_by floors int/int or returns a float.
+    assign jc_off_numer = jc_compare | minus: jc_price | times: 200 | plus: jc_compare
+    assign jc_off_denom = jc_compare | times: 2
+    assign jc_off = jc_off_numer | divided_by: jc_off_denom | floor
+  endif
+
+  assign jc_badge_label = ''
+  assign jc_badge_gold = false
+  if product.tags contains 'BESTSELLER'
+    assign jc_badge_label = 'BESTSELLER'
+    assign jc_badge_gold = true
+  elsif product.tags contains 'NEW'
+    assign jc_badge_label = 'NEW'
+    assign jc_badge_gold = true
+  endif
+
+  assign jc_front = product.images[0] | default: product.featured_image
+  assign jc_back = product.images[1]
+
+  assign jc_form_id = 'NfJewelAdd-' | append: jc_uid | append: '-' | append: product.id
+-%}
+
+<article class="nf-jc">
+  <a class="nf-jc__link" href="{{ product.url }}" aria-label="View {{ product.title | escape }}">
+    <div class="nf-jc__frame">
+      {%- if jc_front != blank -%}
+        <img
+          class="nf-jc__front{% if jc_cat == 'Necklaces' %} nf-jc__front--necklace{% endif %}"
+          src="{{ jc_front | image_url: width: 800 }}"
+          srcset="{{ jc_front | image_url: width: 500 }} 500w, {{ jc_front | image_url: width: 800 }} 800w, {{ jc_front | image_url: width: 1100 }} 1100w"
+          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+          alt="{{ product.title | escape }}"
+          loading="lazy" decoding="async" width="800" height="800">
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'nf-jc__front' }}
+      {%- endif -%}
+      {%- if jc_back != blank -%}
+        <img
+          class="nf-jc__back{% if jc_cat == 'Earrings' %} nf-jc__back--earring{% endif %}"
+          src="{{ jc_back | image_url: width: 800 }}"
+          srcset="{{ jc_back | image_url: width: 500 }} 500w, {{ jc_back | image_url: width: 800 }} 800w"
+          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+          alt="" aria-hidden="true"
+          loading="lazy" decoding="async" width="800" height="800">
+      {%- endif -%}
+
+      {%- if jc_badge_label != blank -%}
+        <span class="nf-jc__tag{% if jc_badge_gold %} nf-jc__tag--gold{% endif %}">{{ jc_badge_label }}</span>
+      {%- endif -%}
+      {%- if jc_available != true -%}
+        <span class="nf-jc__badge nf-jc__badge--soldout">SOLD OUT</span>
+      {%- elsif jc_off > 0 -%}
+        <span class="nf-jc__badge nf-jc__badge--off">{{ jc_off }}% OFF</span>
+      {%- endif -%}
+
+      <button
+        type="button"
+        class="nf-jc__heart"
+        data-nf-wishlist="{{ product.handle }}"
+        data-nf-wishlist-title="{{ product.title | escape }}"
+        aria-pressed="false"
+        aria-label="Add {{ product.title | escape }} to wishlist"
+      >
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
+      <span class="nf-jc__view">VIEW DETAILS</span>
+    </div>
+  </a>
+
+  <div class="nf-jc__body">
+    <p class="nf-jc__cat">{{ jc_cat | upcase }}</p>
+    <h3 class="nf-jc__title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+    <div class="nf-jc__price">
+      <span class="nf-jc__price-now">{{ jc_price | money }}</span>
+      {%- if jc_off > 0 -%}
+        <span class="nf-jc__price-was">{{ jc_compare | money }}</span>
+        <span class="nf-jc__price-off">{{ jc_off }}% OFF</span>
+      {%- endif -%}
+    </div>
+
+    <div class="nf-jc__cta">
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" id="{{ jc_form_id }}" data-nf-add data-nf-add-title="{{ product.title | escape }}" class="nf-jc__addform">
+        <input type="hidden" name="id" value="{{ jc_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button type="submit" class="nf-jc__add press-scale" {% unless jc_available %}disabled{% endunless %} aria-label="Add {{ product.title | escape }} to cart">
+          {% if jc_available %}ADD TO CART{% else %}SOLD OUT{% endif %}
+        </button>
+      </form>
+      {%- if jc_available -%}
+        <form action="{{ routes.cart_add_url }}" method="post" class="nf-jc__buyform">
+          <input type="hidden" name="id" value="{{ jc_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="return_to" value="{{ routes.root_url }}checkout">
+          <button type="submit" class="nf-jc__buy press-scale">
+            <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
+          </button>
+        </form>
+      {%- endif -%}
+    </div>
+  </div>
+</article>

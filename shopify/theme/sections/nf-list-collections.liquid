@@ -108,7 +108,7 @@
       {%- endif -%}
       <h1 class="nf-coll__title">{{ section.settings.heading | escape }}</h1>
       {%- if section.settings.lede != blank -%}
-        <p class="nf-coll__lede">{{ section.settings.lede }}</p>
+        <div class="nf-coll__lede">{{ section.settings.lede }}</div>
       {%- endif -%}
     </header>
   </div>
@@ -471,7 +471,16 @@
 @media (min-width: 768px) { .nf-coll__head { padding-top: 2.5rem; } }
 
 .nf-coll__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
-.nf-coll__title { margin: .75rem 0 0; font-family: var(--nf-font-display); font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
+/* React's hero h1 uses a LOCAL style object also literally named "velista"
+   (font-family: var(--font-cormorant), 'Velista', ...) but --font-cormorant
+   is defined nowhere in the app, so the whole declaration is invalid at
+   computed-value time and the heading inherits the body sans -- documented
+   as deliberate in src/pages/Jewellery.tsx ("the display-font landmine").
+   nf-base.css forces every h1-h6 to the real Velista stack with !important;
+   this opts the hero heading back out, same pattern as its own `small`
+   rule (font-family: inherit !important). Loads after nf-base.css, so
+   source order lets this !important win. */
+.nf-coll__title { margin: .75rem 0 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-coll__title { font-size: 48px; } }
 .nf-coll__lede { margin: .75rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
 @media (min-width: 768px) { .nf-coll__lede { font-size: 16px; } }
@@ -483,7 +492,7 @@
 .nf-coll__filters::-webkit-scrollbar { display: none; }
 @media (min-width: 640px) { .nf-coll__filters { justify-content: center; overflow: visible; padding-inline: 1.5rem; } }
 
-.nf-coll__pill { display: inline-flex; align-items: baseline; gap: .375rem; flex-shrink: 0; min-height: 44px; padding-inline: 1rem; background: none; cursor: pointer;
+.nf-coll__pill { display: inline-flex; line-height: 1.5;  align-items: baseline; gap: .375rem; flex-shrink: 0; min-height: 44px; padding-inline: 1rem; background: none; cursor: pointer;
   border: 1px solid rgb(var(--nf-ink-rgb) / .25); color: rgb(var(--nf-ink-rgb) / .7);
   font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); transition: border-color .2s, background-color .2s, color .2s; }
 .nf-coll__pill > span { align-self: center; }
@@ -498,14 +507,14 @@
 .nf-coll__toolbar { max-width: 72rem; margin-inline: auto; padding-inline: 1rem; }
 @media (min-width: 640px) { .nf-coll__toolbar { padding-inline: 1.5rem; } }
 .nf-coll__toolbar-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: .75rem; }
-.nf-coll__filter-btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 40px; padding-inline: .875rem; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none; cursor: pointer;
+.nf-coll__filter-btn { display: inline-flex; line-height: 1.5;  align-items: center; gap: .5rem; min-height: 40px; padding-inline: .875rem; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none; cursor: pointer;
   color: rgb(var(--nf-ink-rgb) / .7); font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); }
 @media (min-width: 640px) { .nf-coll__filter-btn { padding-inline: 1rem; font-size: 10.5px; } }
 .nf-coll__filter-btn:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
 .nf-coll__result-count { display: none; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); color: rgb(var(--nf-ink-rgb) / .45); }
 @media (min-width: 640px) { .nf-coll__result-count { display: inline; } }
 .nf-coll__sort-label { display: inline-flex; align-items: center; margin-left: auto; }
-.nf-coll__sort { min-height: 40px; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: transparent; padding-inline: .75rem;
+.nf-coll__sort { min-height: 40px; line-height: 1.5;  border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: transparent; padding-inline: .75rem;
   font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-14); color: rgb(var(--nf-ink-rgb) / .8); }
 @media (min-width: 640px) { .nf-coll__sort { font-size: 10.5px; } }
 .nf-coll__sort:focus-visible { border-color: var(--nf-ink); }
@@ -522,7 +531,7 @@
 .nf-coll__stock-check { width: 1rem; height: 1rem; accent-color: var(--nf-accent); }
 .nf-coll__filter-tags { grid-column: 1 / -1; }
 .nf-coll__tag-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
-.nf-coll__tag-chip { min-height: 36px; padding-inline: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .2); background: none; cursor: pointer;
+.nf-coll__tag-chip { min-height: 36px; line-height: 1.5;  padding-inline: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .2); background: none; cursor: pointer;
   color: rgb(var(--nf-ink-rgb) / .65); font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-16); }
 .nf-coll__tag-chip:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
 
@@ -558,7 +567,7 @@
 @media (min-width: 640px) { .jc__heart { bottom: 1rem; right: 1rem; } }
 .jc__heart:hover { border-color: rgb(var(--nf-ink-rgb) / .5); color: var(--nf-ink); }
 
-.jc__view { position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 8px); background-color: rgb(var(--nf-ivory-rgb) / .9); padding: .5rem 1.25rem;
+.jc__view { text-align: left; position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 8px); background-color: rgb(var(--nf-ivory-rgb) / .9); padding: .5rem 1.25rem;
   font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: var(--nf-ink); opacity: 0; transition: opacity .2s ease-out, transform .2s ease-out; }
 .jc__link:hover .jc__view { opacity: 1; transform: translate(-50%, 0); }
 
@@ -566,7 +575,10 @@
 @media (min-width: 640px) { .jc__body { padding-top: 1.25rem; } }
 .jc__cat { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-32); color: var(--nf-gold-deep); }
 @media (min-width: 640px) { .jc__cat { font-size: 10px; letter-spacing: var(--nf-track-34); } }
-.jc__title { margin: .375rem 0 0; min-height: 2.2em; font-family: var(--nf-font-display); font-size: 18px; line-height: 1.25; color: var(--nf-ink);
+/* Same landmine as .nf-coll__title, this time from JewelCard.tsx's own
+   local "velista" object -- card titles inherit the body sans in React
+   too, so this opts the h3 back out of nf-base.css's forced Velista. */
+.jc__title { margin: .375rem 0 0; min-height: 2.2em; font-family: inherit !important; letter-spacing: normal !important; font-size: 18px; line-height: 1.25; color: var(--nf-ink);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 @media (min-width: 640px) { .jc__title { margin-top: .5rem; font-size: 24px; } }
 @media (min-width: 768px) { .jc__title { font-size: 26px; } }
@@ -585,12 +597,12 @@
 
 .jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: .5rem; padding-top: .75rem; }
 .jc__addform, .jc__buyform { width: 100%; }
-.jc__add { display: inline-flex; min-height: 44px; width: 100%; align-items: center; justify-content: center; border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer;
+.jc__add { display: inline-flex; line-height: 1.5;  min-height: 44px; width: 100%; align-items: center; justify-content: center; border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer;
   font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ivory); }
 @media (min-width: 640px) { .jc__add { font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
 .jc__add:hover { opacity: .9; }
 .jc__add:disabled { opacity: .6; cursor: default; }
-.jc__buy { display: inline-flex; min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
+.jc__buy { display: inline-flex; line-height: 1.5;  min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
   font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ink); }
 @media (min-width: 640px) { .jc__buy { padding-inline: 1.5rem; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
 .jc__buy:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
@@ -602,7 +614,7 @@
 .nf-coll__empty-title { margin: 0; font-family: var(--nf-font-display); font-size: 26px; line-height: 1.15; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-coll__empty-title { font-size: 32px; } }
 .nf-coll__empty-copy { margin: .75rem 0 0; max-width: 24rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
-.nf-coll__empty-cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem;
+.nf-coll__empty-cta { display: inline-flex; line-height: 1.5;  align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem;
   border: 1px solid var(--nf-ink); background: none; color: var(--nf-ink); cursor: pointer; text-decoration: none;
   font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); transition: background-color .2s, color .2s; }
 .nf-coll__empty-cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }

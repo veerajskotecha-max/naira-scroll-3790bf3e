@@ -97,10 +97,9 @@
             <div class="nf-hero__set"{% if forloop.last %} aria-hidden="true"{% endif %}>
               {%- for block in section.blocks -%}
                 {%- liquid
-                  # Six look assets exist (nf-hero-look-1..6), matching the six
-                  # images in src/assets/lookbook/. Cycling modulo 7 asked for a
-                  # seventh that was never uploaded, so the last tile 404'd.
-                  assign n = forloop.index0 | modulo: 6 | plus: 1
+                  # Seven look assets exist (nf-hero-look-1..7), matching the
+                  # seven images in src/assets/exhibition/.
+                  assign n = forloop.index0 | modulo: 7 | plus: 1
                   assign fallback = 'nf-hero-look-' | append: n | append: '.webp'
                 -%}
                 <figure class="nf-hero__look" {{ block.shopify_attributes }}>

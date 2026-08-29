@@ -1,7 +1,7 @@
 {% comment %}
-  nf-founder-teaser — port of src/components/FounderStoryTeaser.tsx
+  nf-founder-teaser - port of src/components/FounderStoryTeaser.tsx
   Founder portrait (3:4) beside the "Born from a love of craft and colour"
-  story block. Static in the source — no reveal observer.
+  story block. Static in the source - no reveal observer.
 {% endcomment %}
 
 {{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
@@ -10,7 +10,7 @@
 <section class="nf nf-founder" aria-labelledby="NfFounderHeading-{{ section.id }}">
   <div class="nf-wrap">
     <div class="nf-founder__row">
-      <div class="nf-founder__media">
+      <figure class="nf-founder__media">
         <div class="nf-founder__frame">
           {%- if section.settings.image != blank -%}
             {{ section.settings.image | image_url: width: 800 | image_tag:
@@ -21,7 +21,17 @@
           {%- endif -%}
           <div class="nf-founder__scrim" aria-hidden="true"></div>
         </div>
-      </div>
+        {%- if section.settings.founder_name != blank or section.settings.founder_title != blank -%}
+          <figcaption class="nf-founder__caption">
+            {%- if section.settings.founder_name != blank -%}
+              <p class="nf-founder__name">{{ section.settings.founder_name | escape }}</p>
+            {%- endif -%}
+            {%- if section.settings.founder_title != blank -%}
+              <p class="nf-founder__role">{{ section.settings.founder_title | escape }}</p>
+            {%- endif -%}
+          </figcaption>
+        {%- endif -%}
+      </figure>
 
       <div class="nf-founder__text">
         {%- if section.settings.eyebrow != blank -%}
@@ -51,6 +61,60 @@
   </div>
 </section>
 
+{% stylesheet %}
+/* Corrections against src/components/FounderStoryTeaser.tsx.
+   assets/nf-home.css still carries the values this section shipped
+   with at port time, which drifted from the source on background
+   colour, section padding, row gap, and several text metrics.
+   !important wins here regardless of stylesheet load order, same
+   as the h1-h6 override nf-footer.liquid documents. New selectors
+   below (the figcaption) need no !important: nothing else styles
+   them. */
+
+.nf-founder { background-color: hsl(30 25% 96%) !important; padding: 3.5rem 0 !important; }
+@media (min-width: 768px)  { .nf-founder { padding: 5rem 0 !important; } }
+@media (min-width: 1024px) { .nf-founder { padding: 6rem 0 !important; } }
+
+.nf-founder__row { gap: 2rem !important; }
+@media (min-width: 768px)  { .nf-founder__row { gap: 3.5rem !important; } }
+@media (min-width: 1024px) { .nf-founder__row { gap: 5rem !important; } }
+
+.nf-founder__eyebrow { margin-bottom: .75rem !important; }
+@media (min-width: 768px) { .nf-founder__eyebrow { margin-bottom: 1rem !important; } }
+
+.nf-founder__title { line-height: 1.2 !important; margin-bottom: 1rem !important; }
+@media (min-width: 768px) { .nf-founder__title { margin-bottom: 1.25rem !important; } }
+
+.nf-founder__para { font-size: 15px !important; line-height: 1.8 !important; }
+@media (min-width: 768px) { .nf-founder__para { font-size: 16.5px !important; } }
+.nf-founder__para--last { margin-bottom: 1.75rem !important; }
+@media (min-width: 768px) { .nf-founder__para--last { margin-bottom: 2rem !important; } }
+
+.nf-founder__link { font-size: 12px !important; }
+@media (min-width: 768px) { .nf-founder__link { font-size: 13px !important; } }
+
+/* Founder name / title under the portrait -- new, nf-home.css has
+   no rules for these because the markup didn't exist before. */
+.nf-founder__caption { margin-top: 1rem; text-align: center; }
+@media (min-width: 768px) { .nf-founder__caption { text-align: left; } }
+.nf-founder__name {
+  margin: 0;
+  font-family: var(--nf-font-display);
+  font-size: 15px;
+  line-height: 1;
+  color: hsl(0 0% 18%);
+}
+@media (min-width: 768px) { .nf-founder__name { font-size: 16px; } }
+.nf-founder__role {
+  margin: 8px 0 0;
+  font-family: var(--nf-font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: hsl(186 35% 32%);
+}
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "NF Founder story",
@@ -59,12 +123,14 @@
   "settings": [
     { "type": "image_picker", "id": "image", "label": "Founder portrait", "info": "Defaults to the ported nf-founder-portrait.webp theme asset." },
     { "type": "text", "id": "image_alt", "label": "Portrait alt text", "default": "Founder of Naira Flore, crafting Indo-Western fashion in Nashik" },
+    { "type": "text", "id": "founder_name", "label": "Founder name", "default": "Vandana Kotecha" },
+    { "type": "text", "id": "founder_title", "label": "Founder title", "default": "Founder, Nashik" },
     { "type": "header", "content": "Copy" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our Story" },
     { "type": "text", "id": "heading_lead", "label": "Heading, first line", "default": "Born from a love of" },
     { "type": "text", "id": "heading_italic", "label": "Heading, italic line", "default": "craft and colour" },
-    { "type": "textarea", "id": "body_1", "label": "Paragraph 1", "default": "Naira Flore started in a small studio in Nashik, where every stitch was placed by hand and every silhouette was imagined fresh. We believe that truly beautiful clothing shouldn't compromise. It should be both rooted in tradition and alive to the moment." },
-    { "type": "textarea", "id": "body_2", "label": "Paragraph 2", "default": "Today, every piece we create carries that original promise: handmade, personal, and made to be worn for a lifetime." },
+    { "type": "textarea", "id": "body_1", "label": "Paragraph 1", "default": "Naira Flore started in a small studio in Nashik, where every stitch was placed by hand and every silhouette was imagined fresh. Beautiful clothing shouldn't compromise: it can be rooted in tradition and alive to the moment." },
+    { "type": "textarea", "id": "body_2", "label": "Paragraph 2", "default": "Today, every piece carries that original promise: handmade, personal, and made to be worn for a lifetime." },
     { "type": "header", "content": "Link" },
     { "type": "text", "id": "link_label", "label": "Link label", "default": "Read the full story" },
     { "type": "url", "id": "link_url", "label": "Link" }

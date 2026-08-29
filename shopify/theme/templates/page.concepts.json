@@ -12,24 +12,24 @@
     "concept_a": {
       "type": "nf-concepts",
       "settings": {
-        "label": "Concept A",
-        "note": "The Ivory Atelier · Brand-light · Drag to spin",
+        "label": "CONCEPT A",
+        "note": "THE IVORY ATELIER · BRAND-LIGHT · DRAG TO SPIN",
         "placeholder_text": "Add the Concept A jewellery section directly below this divider."
       }
     },
     "concept_b": {
       "type": "nf-concepts",
       "settings": {
-        "label": "Concept B",
-        "note": "The Emerald Jewel Box · Night vitrine · Drag to spin",
+        "label": "CONCEPT B",
+        "note": "THE EMERALD JEWEL BOX · NIGHT VITRINE · DRAG TO SPIN",
         "placeholder_text": "Add the Concept B jewellery section directly below this divider."
       }
     },
     "concept_c": {
       "type": "nf-concepts",
       "settings": {
-        "label": "Concept C",
-        "note": "Golden Hour · Terracotta arches · Drag to spin",
+        "label": "CONCEPT C",
+        "note": "GOLDEN HOUR · TERRACOTTA ARCHES · DRAG TO SPIN",
         "placeholder_text": "Add the Concept C jewellery section directly below this divider."
       }
     }

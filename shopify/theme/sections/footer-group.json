@@ -7,7 +7,31 @@
   "sections": {
     "nf_footer": {
       "type": "nf-footer",
-      "settings": {}
+      "settings": {},
+      "blocks": {
+        "shop": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Shop",
+            "fallback_links": "<ul><li><a href=\"/collections/shop-all\">Dresses</a></li><li><a href=\"/collections/shop-all\">Co-ord Sets</a></li><li><a href=\"/collections/shop-all\">Fusion Sarees</a></li><li><a href=\"/collections/shop-all\">Festive Collection</a></li><li><a href=\"/collections/shop-all\">New Arrivals</a></li><li><a href=\"/collections/rings\">Zircone Rings</a></li><li><a href=\"/collections/earrings\">Earrings</a></li><li><a href=\"/collections/bracelets\">Bracelets</a></li><li><a href=\"/collections/necklaces\">Necklaces</a></li><li><a href=\"/collections/shop-all\">Demi-Fine Jewellery</a></li><li><a href=\"/collections/shop-all\">Anti-Tarnish Jewellery</a></li><li><a href=\"/collections/shop-all\">American Diamond</a></li><li><a href=\"/collections/shop-all\">18K Gold Plated</a></li><li><a href=\"/collections/shop-all\">Office Wear Jewellery</a></li></ul>"
+          }
+        },
+        "customer_care": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Customer Care",
+            "fallback_links": "<ul><li><a href=\"/pages/contact\">Contact Us</a></li><li><a href=\"/blogs/news\">The Journal</a></li><li><a href=\"/blogs/news/ring-size-guide-india\">Ring Size Guide</a></li><li><a href=\"/blogs/news/how-to-care-for-gold-plated-jewellery\">Jewellery Care</a></li><li><a href=\"/blogs/news/anti-tarnish-jewellery-guide\">Anti-Tarnish Explained</a></li><li><a href=\"/blogs/news/american-diamond-vs-cubic-zirconia-vs-moissanite\">American Diamond vs Moissanite</a></li><li><a href=\"/blogs/news/best-demi-fine-jewellery-brands-india\">Choosing a Demi-Fine Brand</a></li><li><a href=\"/policies/refund-policy\">Return &amp; Exchange Policy</a></li><li><a href=\"/pages/faqs\">FAQs</a></li></ul>"
+          }
+        },
+        "policies": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Policies",
+            "fallback_links": "<ul><li><a href=\"/policies/privacy-policy\">Privacy Policy</a></li><li><a href=\"/policies/terms-of-service\">Terms of Service</a></li></ul>"
+          }
+        }
+      },
+      "block_order": ["shop", "customer_care", "policies"]
     },
     "footer": {
       "type": "footer",

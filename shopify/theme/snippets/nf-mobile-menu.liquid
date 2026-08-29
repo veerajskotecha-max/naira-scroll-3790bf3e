@@ -1,50 +1,39 @@
 {%- comment -%}
-  Naira Flore — mobile navigation drawer.
+  Naira Flore -- mobile navigation drawer.
   Ported from src/components/MobileMenu.tsx in the Lovable repo.
   React state (isOpen) becomes an `.is-open` class driven by
   assets/nf-header.js; the transitions, sizes and copy are the
-  source's exact values.
-
-  The source hard-codes its six links. Here the list comes from the
-  Shopify linklist chosen on the header section, with each link's
-  children flattened underneath it, so every href stays a real
-  Shopify route.
+  source's exact values. The single-open accordion
+  (useState<string | null>) is also driven by nf-header.js, toggling
+  `aria-expanded` and `hidden` on server-rendered markup that already
+  starts in the right state (see default_open below), so there's no
+  flash of the wrong panel before JS runs.
 
   Accepts:
-  - menu:          {LinkList} primary menu (required)
-  - menu_right:    {LinkList} optional secondary menu, appended
-  - contact_label: {String} fallback single link when menu_right is unset
-  - contact_url:   {String} href for that fallback link
-  - whatsapp_url:  {String} quick-contact link, hidden when blank
-  - whatsapp_label:{String} its label
-  - show_wishlist: {Boolean}
-  - wishlist_url:  {String} where the wishlist heart points
+  - blocks:          {Array} section.blocks from sections/nf-header.liquid
+                      ("Navigation item" blocks). Only blocks with
+                      show_in_mobile_drawer render here, in block order --
+                      the same ordered list the desktop bar reads, so
+                      the two surfaces can never disagree. A block with
+                      a non-blank children textarea (Label|/url per
+                      line) renders as an expand/collapse accordion
+                      group; otherwise it's a plain link.
+  - default_open:     {String} block label that starts expanded,
+                       matching MobileMenu.tsx's useState("JEWELLERY").
+                       Case-insensitive.
+  - whatsapp_url:      {String} quick-contact link, hidden when blank
+  - whatsapp_label:    {String} its label
+  - show_wishlist:     {Boolean}
+  - wishlist_url:      {String} where the wishlist heart points
 
-  Usage: {% render 'nf-mobile-menu', menu: menu, ... %}
+  Usage: {% render 'nf-mobile-menu', blocks: section.blocks, default_open: '...', ... %}
 {%- endcomment -%}
 
 {%- liquid
-  comment
-    Bug 2 fix, mirrored from sections/nf-header.liquid: don't repeat a
-    CONTACT link the primary menu already has, and never render the
-    fallback link when contact_url is blank (it would otherwise fall
-    back to routes.root_url, i.e. a second link pointing at "/").
-  endcomment
-  assign contact_label_lower = contact_label | strip | downcase
-  assign menu_has_contact_link = false
-  for link in menu.links
-    assign nf_link_title_lower = link.title | strip | downcase
-    if contact_label_lower != blank and nf_link_title_lower == contact_label_lower
-      assign menu_has_contact_link = true
-    endif
-  endfor
-  assign show_contact_fallback = false
-  if menu_right.links == blank and contact_label != blank and contact_url != blank and menu_has_contact_link == false
-    assign show_contact_fallback = true
-  endif
+  assign default_open_lower = default_open | strip | downcase
 -%}
 
-<div class="nf-mm" data-nf-menu aria-hidden="true">
+<div class="nf-mm" data-nf-menu aria-hidden="true" inert>
   <div class="nf-mm__backdrop" data-nf-menu-close aria-hidden="true"></div>
 
   <div
@@ -61,63 +50,83 @@
     </div>
 
     <nav class="nf-mm__nav" aria-label="Main navigation">
-      {%- comment -%}
-        Same source as the desktop bar: when the header supplies a manual nav
-        the drawer uses it too, so the two never disagree.
-      {%- endcomment -%}
-      {%- if use_manual_nav -%}
-        {%- for lbl in nav_labels -%}
-          <a
-            href="{{ nav_urls[forloop.index0] | strip }}"
-            class="nf-mm__link"
-            data-nf-menu-close
-          >
-            {{- lbl | strip | escape -}}
-          </a>
-        {%- endfor -%}
-      {%- else -%}
-      {%- for link in menu.links -%}
-        <a
-          href="{{ link.url }}"
-          class="nf-mm__link{% if link.active %} is-active{% endif %}"
-          data-nf-menu-close
-          {% if link.active %}aria-current="page"{% endif %}
-        >
-          {{- link.title | escape -}}
-        </a>
-        {%- if link.links != blank -%}
-          <div class="nf-mm__sub">
-            {%- for child in link.links -%}
-              <a
-                href="{{ child.url }}"
-                class="nf-mm__link nf-mm__link--sub{% if child.active %} is-active{% endif %}"
-                data-nf-menu-close
-                {% if child.active %}aria-current="page"{% endif %}
+      {%- for block in blocks -%}
+        {%- if block.settings.show_in_mobile_drawer -%}
+          {%- assign nf_label = block.settings.label | strip -%}
+          {%- assign nf_url = block.settings.url | strip -%}
+          {%- assign nf_children = block.settings.children | strip -%}
+          {%- assign nf_is_current = false -%}
+          {%- if nf_url != blank and request.path == nf_url -%}
+            {%- assign nf_is_current = true -%}
+          {%- endif -%}
+
+          {%- if nf_children != blank -%}
+            {%- assign nf_label_lower = nf_label | downcase -%}
+            {%- assign nf_open = false -%}
+            {%- if default_open_lower != blank and nf_label_lower == default_open_lower -%}
+              {%- assign nf_open = true -%}
+            {%- endif -%}
+            <div class="nf-mm__group" {{ block.shopify_attributes }}>
+              <button
+                type="button"
+                class="nf-mm__link nf-mm__toggle"
+                data-nf-accordion-trigger
+                aria-expanded="{{ nf_open }}"
+                aria-controls="nf-mm-panel-{{ block.id }}"
               >
-                {{- child.title | escape -}}
+                <span>{{- nf_label | escape -}}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="nf-mm__chevron"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <ul
+                id="nf-mm-panel-{{ block.id }}"
+                class="nf-mm__sub"
+                data-nf-accordion-panel
+                {% unless nf_open %}hidden{% endunless %}
+              >
+                {%- assign nf_child_lines = nf_children | newline_to_br | split: '<br />' -%}
+                {%- for cline in nf_child_lines -%}
+                  {%- assign nf_cline = cline | strip -%}
+                  {%- if nf_cline == blank -%}
+                    {%- continue -%}
+                  {%- endif -%}
+                  {%- assign nf_cparts = nf_cline | split: '|' -%}
+                  {%- assign nf_clabel = nf_cparts[0] | strip -%}
+                  {%- assign nf_curl = nf_cparts[1] | strip -%}
+                  {%- if nf_clabel == blank or nf_curl == blank -%}
+                    {%- continue -%}
+                  {%- endif -%}
+                  {%- assign nf_child_current = false -%}
+                  {%- if request.path == nf_curl -%}
+                    {%- assign nf_child_current = true -%}
+                  {%- endif -%}
+                  <li>
+                    <a
+                      href="{{ nf_curl | escape }}"
+                      class="nf-mm__link nf-mm__link--sub{% if nf_child_current %} is-active{% endif %}"
+                      data-nf-menu-close
+                      {% if nf_child_current %}aria-current="page"{% endif %}
+                    >
+                      {{- nf_clabel | escape -}}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- else -%}
+            {%- if nf_url != blank -%}
+              <a
+                href="{{ nf_url | escape }}"
+                class="nf-mm__link{% if nf_is_current %} is-active{% endif %}"
+                data-nf-menu-close
+                {% if nf_is_current %}aria-current="page"{% endif %}
+                {{ block.shopify_attributes }}
+              >
+                {{- nf_label | escape -}}
               </a>
-            {%- endfor -%}
-          </div>
+            {%- endif -%}
+          {%- endif -%}
         {%- endif -%}
       {%- endfor -%}
-      {%- endif -%}
-
-      {%- if menu_right.links != blank -%}
-        {%- for link in menu_right.links -%}
-          <a
-            href="{{ link.url }}"
-            class="nf-mm__link{% if link.active %} is-active{% endif %}"
-            data-nf-menu-close
-            {% if link.active %}aria-current="page"{% endif %}
-          >
-            {{- link.title | escape -}}
-          </a>
-        {%- endfor -%}
-      {%- elsif show_contact_fallback -%}
-        <a href="{{ contact_url }}" class="nf-mm__link" data-nf-menu-close>
-          {{- contact_label | escape -}}
-        </a>
-      {%- endif -%}
     </nav>
 
     <div class="nf-mm__foot">
@@ -152,7 +161,7 @@
 
       {%- if whatsapp_url != blank -%}
         <a
-          href="{{ whatsapp_url }}"
+          href="{{ whatsapp_url | escape }}"
           class="nf-mm__whatsapp"
           target="_blank"
           rel="noopener noreferrer"

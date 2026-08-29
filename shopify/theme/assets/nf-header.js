@@ -1,18 +1,19 @@
-/* ═══════════════════════════════════════════════════════════════════
-   NAIRA FLORE — header behaviour
+/* =====================================================================
+   NAIRA FLORE -- header behaviour
    Vanilla port of the React state in the Lovable repo:
      src/components/Header.tsx      -> scrolled flag (window.scrollY > 10)
      src/components/Navbar.tsx      -> mobile menu trigger, badge counts
-     src/components/MobileMenu.tsx  -> drawer open/close + body scroll lock
+     src/components/MobileMenu.tsx  -> drawer open/close + body scroll
+                                        lock + the single-open accordion
    No framework, no build step. Everything is defensive: if a node is
    missing the block is skipped rather than throwing.
-   ═══════════════════════════════════════════════════════════════════ */
+   ===================================================================== */
 (function () {
   'use strict';
 
   var WISHLIST_KEY = 'naira-wishlist'; // matches src/contexts/WishlistContext.tsx
 
-  /* ── 1. Scrolled state ────────────────────────────────────────────
+  /* -- 1. Scrolled state --------------------------------------------
      Header.tsx: setScrolled(window.scrollY > 10) on a passive scroll
      listener. The visual change (translucent + blur + hairline shadow)
      lives in CSS under .nf-header--scrolled. */
@@ -34,7 +35,7 @@
     apply();
   }
 
-  /* ── 2. Mobile menu ───────────────────────────────────────────────
+  /* -- 2. Mobile menu -----------------------------------------------
      MobileMenu.tsx: slide-in panel, backdrop click closes, Escape
      closes, body scroll locked while open, focus moved into the panel
      and returned to the trigger on close. */
@@ -62,6 +63,7 @@
       lastFocused = trigger || document.activeElement;
       menu.classList.add('is-open');
       menu.removeAttribute('aria-hidden');
+      menu.inert = false;
       document.body.style.overflow = 'hidden';
       Array.prototype.forEach.call(openers, function (el) {
         el.setAttribute('aria-expanded', 'true');
@@ -75,6 +77,7 @@
       isOpen = false;
       menu.classList.remove('is-open');
       menu.setAttribute('aria-hidden', 'true');
+      menu.inert = true;
       document.body.style.overflow = '';
       Array.prototype.forEach.call(openers, function (el) {
         el.setAttribute('aria-expanded', 'false');
@@ -130,7 +133,7 @@
     });
   }
 
-  /* ── 3. Wishlist dot ──────────────────────────────────────────────
+  /* -- 3. Wishlist dot ----------------------------------------------
      Liquid has no wishlist object, so the count is read from the same
      localStorage key the Lovable WishlistContext writes. Purely
      decorative: absence of the key just means "no dot". */
@@ -166,7 +169,7 @@
     document.addEventListener('nf:wishlist:change', paint);
   }
 
-  /* ── 4. Keep our cart icon after Dawn re-renders it ───────────────
+  /* -- 4. Keep our cart icon after Dawn re-renders it ---------------
      The cart link carries id="cart-icon-bubble" so Dawn's cart
      notification / cart drawer can find it (real cart state, real
      drawer hook-up). Both replace that element's innerHTML with

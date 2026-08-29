@@ -24,8 +24,8 @@
           "type": "policy_section",
           "settings": {
             "heading": "Standard (Ready-to-Ship) Orders",
-            "nav_label": "Standard Orders",
-            "body": "<p>If you receive a standard product with a manufacturing defect (such as damaged embroidery, incorrect stitching, fabric flaws, or staining), you may request a return <strong>within 48 hours of delivery</strong>.</p><p>To initiate a return, contact us via WhatsApp with:</p><ul><li>Order number</li><li>Photos of the defect</li><li>Brief description of the issue</li></ul><p>After review, we will offer either:</p><ul><li>Repair</li><li>Replacement</li><li>Store credit</li></ul><p>Refunds to the original payment method may be considered on a case-by-case basis.</p>"
+            "nav_label": "Standard",
+            "body": "<p>If you receive a standard product with a manufacturing defect (such as damaged embroidery, incorrect stitching, fabric flaws, or staining), you may request a return <strong>within 7 days of delivery</strong>.</p><p>To initiate a return, contact us via WhatsApp with:</p><ul><li>Order number</li><li>Photos of the defect</li><li>Brief description of the issue</li></ul><p>After review, we will offer either:</p><ul><li>Repair</li><li>Replacement</li><li>Store credit</li></ul><p>Refunds to the original payment method may be considered on a case-by-case basis.</p>"
           }
         },
         "ret_noteligible": {

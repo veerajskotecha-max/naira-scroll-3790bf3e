@@ -1,8 +1,25 @@
 {%- comment -%}
-  Naira Flore — site header.
+  Naira Flore -- site header.
   Ported from src/components/Navbar.tsx (+ the height ladder in
-  src/components/Header.tsx) in the Lovable repo. React Router links
-  become Shopify linklist links; the cart badge reads real cart state.
+  src/components/Header.tsx) and src/components/MobileMenu.tsx in the
+  Lovable repo. React Router links become Shopify routes; the cart
+  badge reads real cart state.
+
+  Navigation is block-driven, not linklist-driven: the live main-menu
+  is a flat 5-item menu and cannot express React's expandable groups
+  (JEWELLERY / THE EDITS / OCCASION / APPAREL each carry children, and
+  the mobile drawer has entries -- TRACK ORDER, the split-out
+  JEWELLERY group -- that desktop's condensed SHOP entry does not).
+  Every top-level nav entry is one "Navigation item" block (see
+  {% schema %} below). One ordered block list drives both surfaces so
+  they can never drift apart:
+    - desktop bar:   blocks with show_in_desktop_bar, split left/right
+                      of the logo by desktop_area
+    - mobile drawer: blocks with show_in_mobile_drawer, in block order
+                      (rendered by snippets/nf-mobile-menu.liquid)
+  A block with a non-blank "Children" textarea (Label|/url per line)
+  becomes a hover dropdown on desktop and an expand/collapse accordion
+  on mobile, matching React's `links` array on a nav Section.
 
   The announcement strip above the bar is a separate section
   (sections/nf-announcement-bar.liquid) so it stays independently
@@ -37,54 +54,7 @@
 {%- endstyle -%}
 
 {%- liquid
-  assign menu = linklists[section.settings.menu]
-  assign menu_right = linklists[section.settings.menu_right]
   assign cart_count = cart.item_count
-
-  comment
-    Bug 2 fix: the live main-menu already carries its own CONTACT
-    item, and menu_right has no default so it's blank on a fresh
-    install. Without this guard the elsif below would ALWAYS also
-    render a second "CONTACT" link, and since contact_url has no
-    default it would point at routes.root_url ("/") — a second, broken
-    link. Suppress the fallback whenever the left menu already has a
-    same-titled item, or whenever contact_url is genuinely empty.
-  endcomment
-  comment
-    main-menu is shared with the published theme, so it cannot be reshaped for
-    this port. The live navbar (src/components/Navbar.tsx) reads
-    HOME / SHOP / GIFTING / ABOUT / CUSTOMISE. These settings reproduce it inside
-    the section; clear nav_labels to fall back to the Shopify linklist.
-  endcomment
-  assign nav_labels = section.settings.nav_labels | split: ','
-  assign nav_urls = section.settings.nav_urls | split: ','
-  assign use_manual_nav = false
-  if nav_labels.size > 0 and nav_labels.size == nav_urls.size
-    assign use_manual_nav = true
-  endif
-
-  assign contact_label_lower = section.settings.contact_label | strip | downcase
-  assign menu_has_contact_link = false
-  for link in menu.links
-    assign nf_link_title_lower = link.title | strip | downcase
-    if contact_label_lower != blank and nf_link_title_lower == contact_label_lower
-      assign menu_has_contact_link = true
-    endif
-  endfor
-  assign show_contact_fallback = false
-  if menu_right.links == blank and section.settings.contact_label != blank and section.settings.contact_url != blank and menu_has_contact_link == false
-    assign show_contact_fallback = true
-  endif
-
-  comment
-    Bug 3 fix: the live main-menu is flat (no child items), so SHOP ALL
-    never gets a hover dropdown even though the Lovable source shows
-    Jewellery / Indo-Western under it. Rather than create a Shopify
-    menu (out of scope — menus are shared with the live theme), a
-    manual dropdown can be configured per top-level title below and is
-    used only when that menu item has no real children of its own.
-  endcomment
-  assign dropdown_parent_lower = section.settings.dropdown_parent | strip | downcase
 -%}
 
 <div
@@ -107,107 +77,68 @@
         </button>
 
         <div class="nf-header__links">
-          {%- if use_manual_nav -%}
-            {%- for lbl in nav_labels -%}
-              {%- assign nav_label = lbl | strip -%}
-              {%- assign nav_url = nav_urls[forloop.index0] | strip -%}
-              {%- assign nav_label_lower = nav_label | downcase -%}
-              {%- if dropdown_parent_lower != blank and nav_label_lower == dropdown_parent_lower -%}
-                <div class="nf-header__item">
-                  <a href="{{ nav_url }}" class="nf-header__link">{{ nav_label | escape }}</a>
+          {%- for block in section.blocks -%}
+            {%- assign nf_area = block.settings.desktop_area | default: 'left' -%}
+            {%- if block.settings.show_in_desktop_bar and nf_area == 'left' -%}
+              {%- assign nf_label = block.settings.label | strip -%}
+              {%- assign nf_url = block.settings.url | strip -%}
+              {%- assign nf_children = block.settings.children | strip -%}
+              {%- assign nf_is_current = false -%}
+              {%- if nf_url != blank and request.path == nf_url -%}
+                {%- assign nf_is_current = true -%}
+              {%- endif -%}
+
+              {%- if nf_children != blank -%}
+                <div class="nf-header__item" {{ block.shopify_attributes }}>
+                  {%- if nf_url != blank -%}
+                    <a
+                      href="{{ nf_url | escape }}"
+                      class="nf-header__link{% if nf_is_current %} is-active{% endif %}"
+                      {% if nf_is_current %}aria-current="page"{% endif %}
+                    >
+                      {{- nf_label | escape -}}
+                    </a>
+                  {%- else -%}
+                    <span class="nf-header__link" tabindex="0">{{- nf_label | escape -}}</span>
+                  {%- endif -%}
                   <div class="nf-header__dropdown">
                     <div class="nf-header__dropdown-inner">
-                      {%- if section.settings.dropdown_link_1_label != blank and section.settings.dropdown_link_1_url != blank -%}<a href="{{ section.settings.dropdown_link_1_url }}" class="nf-header__dropdown-link">{{ section.settings.dropdown_link_1_label | escape }}</a>{%- endif -%}
-                      {%- if section.settings.dropdown_link_2_label != blank and section.settings.dropdown_link_2_url != blank -%}<a href="{{ section.settings.dropdown_link_2_url }}" class="nf-header__dropdown-link">{{ section.settings.dropdown_link_2_label | escape }}</a>{%- endif -%}
-                      {%- if section.settings.dropdown_link_3_label != blank and section.settings.dropdown_link_3_url != blank -%}<a href="{{ section.settings.dropdown_link_3_url }}" class="nf-header__dropdown-link">{{ section.settings.dropdown_link_3_label | escape }}</a>{%- endif -%}
-                      {%- if section.settings.dropdown_link_4_label != blank and section.settings.dropdown_link_4_url != blank -%}<a href="{{ section.settings.dropdown_link_4_url }}" class="nf-header__dropdown-link">{{ section.settings.dropdown_link_4_label | escape }}</a>{%- endif -%}
+                      {%- assign nf_child_lines = nf_children | newline_to_br | split: '<br />' -%}
+                      {%- for cline in nf_child_lines -%}
+                        {%- assign nf_cline = cline | strip -%}
+                        {%- if nf_cline == blank -%}
+                          {%- continue -%}
+                        {%- endif -%}
+                        {%- assign nf_cparts = nf_cline | split: '|' -%}
+                        {%- assign nf_clabel = nf_cparts[0] | strip -%}
+                        {%- assign nf_curl = nf_cparts[1] | strip -%}
+                        {%- if nf_clabel == blank or nf_curl == blank -%}
+                          {%- continue -%}
+                        {%- endif -%}
+                        <a href="{{ nf_curl | escape }}" class="nf-header__dropdown-link">{{- nf_clabel | escape -}}</a>
+                      {%- endfor -%}
                     </div>
                   </div>
                 </div>
               {%- else -%}
-                <a href="{{ nav_url }}" class="nf-header__link">{{ nav_label | escape }}</a>
+                {%- if nf_url != blank -%}
+                  <a
+                    href="{{ nf_url | escape }}"
+                    class="nf-header__link{% if nf_is_current %} is-active{% endif %}"
+                    {% if nf_is_current %}aria-current="page"{% endif %}
+                    {{ block.shopify_attributes }}
+                  >
+                    {{- nf_label | escape -}}
+                  </a>
+                {%- endif -%}
               {%- endif -%}
-            {%- endfor -%}
-          {%- else -%}
-          {%- for link in menu.links -%}
-            {%- assign nf_link_title_lower = link.title | strip | downcase -%}
-            {%- assign nf_use_manual_dropdown = false -%}
-            {%- if link.links == blank and dropdown_parent_lower != blank and nf_link_title_lower == dropdown_parent_lower -%}
-              {%- assign nf_use_manual_dropdown = true -%}
-            {%- endif -%}
-            {%- if link.links != blank -%}
-              <div class="nf-header__item">
-                <a
-                  href="{{ link.url }}"
-                  class="nf-header__link{% if link.active %} is-active{% endif %}"
-                  {% if link.current %}aria-current="page"{% endif %}
-                >
-                  {{- link.title | escape -}}
-                </a>
-                <div class="nf-header__dropdown">
-                  <div class="nf-header__dropdown-inner">
-                    {%- for child in link.links -%}
-                      <a
-                        href="{{ child.url }}"
-                        class="nf-header__dropdown-link"
-                        {% if child.current %}aria-current="page"{% endif %}
-                      >
-                        {{- child.title | escape -}}
-                      </a>
-                    {%- endfor -%}
-                  </div>
-                </div>
-              </div>
-            {%- elsif nf_use_manual_dropdown -%}
-              <div class="nf-header__item">
-                <a
-                  href="{{ link.url }}"
-                  class="nf-header__link{% if link.active %} is-active{% endif %}"
-                  {% if link.current %}aria-current="page"{% endif %}
-                >
-                  {{- link.title | escape -}}
-                </a>
-                <div class="nf-header__dropdown">
-                  <div class="nf-header__dropdown-inner">
-                    {%- if section.settings.dropdown_link_1_label != blank and section.settings.dropdown_link_1_url != blank -%}
-                      <a href="{{ section.settings.dropdown_link_1_url }}" class="nf-header__dropdown-link">
-                        {{- section.settings.dropdown_link_1_label | escape -}}
-                      </a>
-                    {%- endif -%}
-                    {%- if section.settings.dropdown_link_2_label != blank and section.settings.dropdown_link_2_url != blank -%}
-                      <a href="{{ section.settings.dropdown_link_2_url }}" class="nf-header__dropdown-link">
-                        {{- section.settings.dropdown_link_2_label | escape -}}
-                      </a>
-                    {%- endif -%}
-                    {%- if section.settings.dropdown_link_3_label != blank and section.settings.dropdown_link_3_url != blank -%}
-                      <a href="{{ section.settings.dropdown_link_3_url }}" class="nf-header__dropdown-link">
-                        {{- section.settings.dropdown_link_3_label | escape -}}
-                      </a>
-                    {%- endif -%}
-                    {%- if section.settings.dropdown_link_4_label != blank and section.settings.dropdown_link_4_url != blank -%}
-                      <a href="{{ section.settings.dropdown_link_4_url }}" class="nf-header__dropdown-link">
-                        {{- section.settings.dropdown_link_4_label | escape -}}
-                      </a>
-                    {%- endif -%}
-                  </div>
-                </div>
-              </div>
-            {%- else -%}
-              <a
-                href="{{ link.url }}"
-                class="nf-header__link{% if link.active %} is-active{% endif %}"
-                {% if link.current %}aria-current="page"{% endif %}
-              >
-                {{- link.title | escape -}}
-              </a>
             {%- endif -%}
           {%- endfor -%}
-          {%- endif -%}
         </div>
       </div>
 
       {%- comment -%} Centre: NAIRA wordmark, the "I" is a floral glyph {%- endcomment -%}
-      <a href="{{ routes.root_url }}" class="nf-header__logo" aria-label="{{ shop.name | escape }} — home">
+      <a href="{{ routes.root_url }}" class="nf-header__logo" aria-label="{{ shop.name | escape }} -- home">
         {%- if section.settings.logo != blank -%}
           {{
             section.settings.logo
@@ -232,26 +163,29 @@
         {%- endif -%}
       </a>
 
-      {%- comment -%} Right: contact link, then the icon rail {%- endcomment -%}
+      {%- comment -%} Right: nav items pinned right (CONTACT), then the icon rail {%- endcomment -%}
       <div class="nf-header__right">
-        {%- if menu_right.links != blank -%}
-          {%- for link in menu_right.links -%}
-            <a
-              href="{{ link.url }}"
-              class="nf-header__link nf-header__link--right{% if link.active %} is-active{% endif %}"
-              {% if link.current %}aria-current="page"{% endif %}
-            >
-              {{- link.title | escape -}}
-            </a>
-          {%- endfor -%}
-        {%- elsif show_contact_fallback -%}
-          <a
-            href="{{ section.settings.contact_url }}"
-            class="nf-header__link nf-header__link--right"
-          >
-            {{- section.settings.contact_label | escape -}}
-          </a>
-        {%- endif -%}
+        {%- for block in section.blocks -%}
+          {%- assign nf_area = block.settings.desktop_area | default: 'left' -%}
+          {%- if block.settings.show_in_desktop_bar and nf_area == 'right' -%}
+            {%- assign nf_label = block.settings.label | strip -%}
+            {%- assign nf_url = block.settings.url | strip -%}
+            {%- if nf_url != blank -%}
+              {%- assign nf_is_current = false -%}
+              {%- if request.path == nf_url -%}
+                {%- assign nf_is_current = true -%}
+              {%- endif -%}
+              <a
+                href="{{ nf_url | escape }}"
+                class="nf-header__link nf-header__link--right{% if nf_is_current %} is-active{% endif %}"
+                {% if nf_is_current %}aria-current="page"{% endif %}
+                {{ block.shopify_attributes }}
+              >
+                {{- nf_label | escape -}}
+              </a>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
 
         <a href="{{ routes.search_url }}" class="nf-header__icon" aria-label="Search">
           {%- render 'nf-icon-search', size: 20 -%}
@@ -305,13 +239,8 @@
   </nav>
 
   {%- render 'nf-mobile-menu',
-    menu: menu,
-    nav_labels: nav_labels,
-    nav_urls: nav_urls,
-    use_manual_nav: use_manual_nav,
-    menu_right: menu_right,
-    contact_label: section.settings.contact_label,
-    contact_url: section.settings.contact_url,
+    blocks: section.blocks,
+    default_open: section.settings.mobile_default_open,
     whatsapp_url: section.settings.whatsapp_url,
     whatsapp_label: section.settings.whatsapp_label,
     show_wishlist: section.settings.show_wishlist,
@@ -320,7 +249,7 @@
 </div>
 
 {% stylesheet %}
-/* ── Header shell ─────────────────────────────────────────────────
+/* -- Header shell --------------------------------------------------
    Height ladder and colours are the Lovable values verbatim:
    Header.tsx --navbar-h 64 / 72 / 80 at 0 / 768 / 1024,
    Navbar.tsx bg #F4F1ED, scrolled -> rgba(244,241,237,0.85) + blur(8px). */
@@ -367,7 +296,7 @@
   .nf-header__inner { padding-inline: 40px; }
 }
 
-/* ── Left cluster ─────────────────────────────────────────────── */
+/* -- Left cluster ---------------------------------------------------- */
 .nf-header__left { display: flex; align-items: center; }
 .nf-header__burger {
   display: inline-flex;
@@ -392,7 +321,7 @@
   }
 }
 
-/* ── Nav links + the underline sweep (index.css .nav-link) ─────── */
+/* -- Nav links + the underline sweep (index.css .nav-link) ---------- */
 .nf-header__link {
   position: relative;
   font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
@@ -403,6 +332,7 @@
   white-space: nowrap;
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
   transition: opacity 200ms ease;
 }
 @media (min-width: 1024px) {
@@ -424,7 +354,7 @@
 .nf-header__link:hover::after,
 .nf-header__link.is-active::after { transform: scaleX(1); }
 
-/* ── Hover dropdown ───────────────────────────────────────────── */
+/* -- Hover dropdown --------------------------------------------------- */
 .nf-header__item { position: relative; }
 .nf-header__dropdown {
   position: absolute;
@@ -462,7 +392,7 @@
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
 
-/* ── Centre wordmark ──────────────────────────────────────────── */
+/* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
   display: flex;
   align-items: center;
@@ -481,7 +411,7 @@
 @media (min-width: 1024px) { .nf-header__logo-img { width: 130px; } }
 @media (min-width: 1280px) { .nf-header__logo-img { width: 140px; } }
 
-/* ── Right cluster ────────────────────────────────────────────── */
+/* -- Right cluster ----------------------------------------------------- */
 .nf-header__right {
   display: flex;
   align-items: center;
@@ -511,7 +441,7 @@
   .nf-header__icon--account { display: inline-flex; }
 }
 
-/* ── Count badge + wishlist dot ───────────────────────────────── */
+/* -- Count badge + wishlist dot ---------------------------------------- */
 .nf-header__badge {
   position: absolute;
   top: -8px;
@@ -572,14 +502,20 @@
   border: 0;
 }
 
-/* ── Mobile drawer (MobileMenu.tsx) ───────────────────────────── */
+/* -- Mobile drawer (MobileMenu.tsx) ------------------------------------
+   The closed state is transform + opacity only, same as the React
+   source (translate-x-full / opacity-0), never visibility:hidden or
+   display:none on the wrapper: those would also strip every focusable
+   element in the drawer from `inert`-style handling below, and they
+   read as "not present" to any tool that walks computed styles rather
+   than actual visibility. Real hiding comes from `inert` (set in the
+   markup by default, cleared by nf-header.js on open), which drops
+   the whole subtree out of both the tab order and the a11y tree. */
 .nf-mm {
   position: fixed;
   inset: 0;
   z-index: 70;
-  visibility: hidden;
 }
-.nf-mm.is-open { visibility: visible; }
 .nf-mm__backdrop {
   position: absolute;
   inset: 0;
@@ -627,12 +563,21 @@
 .nf-mm__nav {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 4px;
   flex: 1;
-  padding: 8px 32px 0;
+  padding: 8px 32px 24px;
   overflow-y: auto;
 }
+/* One hairline divider per top-level row (flat link or accordion
+   group), last row bare -- React's border-b border-black/5 last:border-0
+   applied per item, but done once here since both markup shapes are
+   direct children of .nf-mm__nav. */
+.nf-mm__nav > * { border-bottom: 1px solid rgb(0 0 0 / 0.05); }
+.nf-mm__nav > *:last-child { border-bottom: 0; }
 .nf-mm__link {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
   font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
   font-size: 20px;
   font-weight: 500;
@@ -645,8 +590,35 @@
 }
 .nf-mm__link:hover,
 .nf-mm__link.is-active { opacity: 1; }
-.nf-mm__sub { display: flex; flex-direction: column; gap: 16px; padding-left: 16px; margin-top: -8px; }
-.nf-mm__link--sub { font-size: 16px; opacity: 0.65; }
+/* Accordion trigger: same look as a link, reset as a button. */
+.nf-mm__toggle {
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.nf-mm__chevron { flex: none; transition: transform 200ms ease; }
+.nf-mm__toggle[aria-expanded="true"] .nf-mm__chevron { transform: rotate(180deg); }
+.nf-mm__sub {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0 0 16px 4px;
+  list-style: none;
+  animation: nf-fade-in 200ms ease;
+}
+.nf-mm__sub[hidden] { display: none; }
+.nf-mm__link--sub { min-height: 42px; padding-block: 8px; font-size: 16px; opacity: 0.65; }
+@keyframes nf-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .nf-mm__foot {
   display: flex;
   align-items: center;
@@ -707,15 +679,48 @@
 }
 .nf-mm__whatsapp:hover { opacity: 1; }
 
+/* Interactive elements already get a visible focus ring from the
+   global :where(a, button, [tabindex]):focus-visible rule in
+   nf-base.css (zero specificity, applies here without repeating it). */
+
 @media (prefers-reduced-motion: reduce) {
   .nf-header,
   .nf-header__link::after,
   .nf-header__icon,
   .nf-mm__panel,
-  .nf-mm__backdrop { transition: none; }
+  .nf-mm__backdrop,
+  .nf-mm__chevron,
+  .nf-mm__sub { transition: none; animation: none; }
   .nf-header__icon:active { transform: none; }
 }
 {% endstylesheet %}
+
+{%- comment -%}
+  Route substitutions used in the default blocks below (no exact
+  Shopify equivalent exists yet on this store):
+    /jewellery, /shop            -> /collections/shop-all
+    /shop/indo-western           -> /collections/all (no Indo-Western
+                                     collection yet; matches the old
+                                     dropdown_link_2_url placeholder)
+    /gifting                     -> /collections/sets (closest existing
+                                     collection; matches the old
+                                     nav_urls placeholder for GIFTING)
+    ?sort=newest / ?sort=best / ?under=1500
+                                  -> /collections/shop-all with
+                                     Shopify's own sort_by / filter.v.price.lte
+                                     query params -- native platform params,
+                                     no theme code needed. The store may
+                                     not have those price bands live yet.
+    ?tag=Everyday / Festive / Wedding
+                                  -> /collections/shop-all?filter.p.tag=...
+                                     (native platform param; those exact
+                                     product tags may not exist yet)
+    /track-order                 -> /account (Shopify has no storefront
+                                     order-tracking route without an app;
+                                     account order history is the closest
+                                     built-in equivalent)
+  Full reasoning: see the port report.
+{%- endcomment -%}
 
 {% schema %}
 {
@@ -728,35 +733,6 @@
     ]
   },
   "settings": [
-    {
-      "type": "header",
-      "content": "Navigation"
-    },
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "Left menu",
-      "default": "main-menu",
-      "info": "Top-level items show in the bar; a nested level shows as a hover dropdown."
-    },
-    {
-      "type": "link_list",
-      "id": "menu_right",
-      "label": "Right menu",
-      "info": "Optional. Leave empty to show the single contact link below instead."
-    },
-    {
-      "type": "text",
-      "id": "contact_label",
-      "label": "Contact link label",
-      "default": "CONTACT"
-    },
-    {
-      "type": "url",
-      "id": "contact_url",
-      "label": "Contact link",
-      "info": "Only shown when Right menu is empty and Left menu has no item with a matching title (avoids a duplicate CONTACT link). Leave empty to hide it entirely."
-    },
     {
       "type": "header",
       "content": "Logo"
@@ -785,85 +761,14 @@
     },
     {
       "type": "header",
-      "content": "Shop dropdown (manual)"
-    },
-    {
-      "type": "paragraph",
-      "content": "The live navigation menu is flat, so top-level items have no real submenu yet. Fill these in to fake a hover dropdown under one top-level item without creating a Shopify menu (menus are shared with the live theme)."
-    },
-    {
-      "type": "header",
-      "content": "Primary navigation"
-    },
-    {
-      "type": "text",
-      "id": "nav_labels",
-      "label": "Nav labels (comma separated)",
-      "default": "HOME,SHOP,GIFTING,ABOUT,CUSTOMISE",
-      "info": "Mirrors the live site's navbar. Clear to use the Shopify menu instead."
-    },
-    {
-      "type": "text",
-      "id": "nav_urls",
-      "label": "Nav links (same order)",
-      "default": "/,/collections/shop-all,/collections/sets,/pages/about-naira,/pages/made-for-you"
-    },
-    {
-      "type": "text",
-      "id": "dropdown_parent",
-      "label": "Top-level item title",
-      "default": "SHOP",
-      "info": "Case-insensitive match against a nav label. The live navbar's SHOP item carries the mega menu."
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_1_label",
-      "label": "Link 1 label",
-      "default": "Jewellery"
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_1_url",
-      "label": "Link 1 URL",
-      "default": "/collections/shop-all",
-      "info": "Defaults to the store's existing \"Shop All\" collection — there is no dedicated Jewellery collection yet. Plain text, not the URL picker: Shopify only allows /collections or /collections/all as a picker default."
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_2_label",
-      "label": "Link 2 label",
-      "default": "Indo-Western"
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_2_url",
-      "label": "Link 2 URL",
-      "default": "/collections/all",
-      "info": "Placeholder — this store has no Indo-Western collection yet. Repoint once one exists."
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_3_label",
-      "label": "Link 3 label"
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_3_url",
-      "label": "Link 3 URL"
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_4_label",
-      "label": "Link 4 label"
-    },
-    {
-      "type": "text",
-      "id": "dropdown_link_4_url",
-      "label": "Link 4 URL"
-    },
-    {
-      "type": "header",
       "content": "Mobile menu"
+    },
+    {
+      "type": "text",
+      "id": "mobile_default_open",
+      "label": "Group open by default",
+      "default": "JEWELLERY",
+      "info": "Case-insensitive match against a Navigation item block's label below. Mirrors MobileMenu.tsx's default open group."
     },
     {
       "type": "text",
@@ -900,9 +805,189 @@
       "default": "#2E5B60"
     }
   ],
+  "blocks": [
+    {
+      "type": "nav_item",
+      "name": "Navigation item",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "One top-level entry. Fill in Children (one Label|/url per line) to turn it into a hover dropdown on desktop and an expand/collapse accordion on mobile."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "text",
+          "id": "url",
+          "label": "Link",
+          "info": "Plain path, e.g. /collections/shop-all. Leave blank for a heading that only expands, with no link of its own (JEWELLERY / THE EDITS / OCCASION / APPAREL do this). Plain text, not the URL picker: Shopify's picker rejects defaults that carry a query string."
+        },
+        {
+          "type": "textarea",
+          "id": "children",
+          "label": "Children",
+          "info": "One per line, as Label|/url. Leave blank for a plain link with no dropdown or accordion."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_in_desktop_bar",
+          "label": "Show in desktop bar",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "desktop_area",
+          "label": "Desktop position",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left, with the main links"
+            },
+            {
+              "value": "right",
+              "label": "Right, by the icons (like CONTACT)"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_in_mobile_drawer",
+          "label": "Show in mobile drawer",
+          "default": true
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "Naira header"
+      "name": "Naira header",
+      "blocks": [
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "HOME",
+            "url": "/",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "SHOP",
+            "url": "/collections/shop-all",
+            "children": "Rings|/collections/rings\nEarrings|/collections/earrings\nNecklaces|/collections/necklaces\nBracelets|/collections/bracelets",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": false
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "JEWELLERY",
+            "url": "",
+            "children": "Shop All|/collections/shop-all\nRings|/collections/rings\nEarrings|/collections/earrings\nNecklaces|/collections/necklaces\nBracelets|/collections/bracelets",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "THE EDITS",
+            "url": "",
+            "children": "New Arrivals|/collections/shop-all?sort_by=created-descending\nBestsellers|/collections/shop-all?sort_by=best-selling\nUnder ₹1,500|/collections/shop-all?filter.v.price.lte=1500\nNaira Petite|/collections/shop-all",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "OCCASION",
+            "url": "",
+            "children": "Everyday|/collections/shop-all?filter.p.tag=Everyday\nFestive|/collections/shop-all?filter.p.tag=Festive\nWedding|/collections/shop-all?filter.p.tag=Wedding\nGifting|/collections/sets",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "APPAREL",
+            "url": "",
+            "children": "Indo-Western|/collections/all\nShop All|/collections/shop-all\nMade to Measure|/pages/made-for-you",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "GIFTING",
+            "url": "/collections/sets",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "ABOUT",
+            "url": "/pages/about-naira",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "CUSTOMISE",
+            "url": "/pages/made-for-you",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "TRACK ORDER",
+            "url": "/account",
+            "children": "",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "CONTACT",
+            "url": "/pages/contact",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "right",
+            "show_in_mobile_drawer": true
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,5 +1,5 @@
 {%- comment -%}
-  Naira Flore — site footer (the sage block).
+  Naira Flore - site footer (the sage block).
   Ported from src/components/Footer.tsx in the Lovable repo.
 
   Colours come from the --nf-footer-* component tokens in
@@ -106,7 +106,7 @@
         </div>
       {%- endfor -%}
 
-      {%- comment -%} Newsletter column — real Shopify customer form {%- endcomment -%}
+      {%- comment -%} Newsletter column - real Shopify customer form {%- endcomment -%}
       <div class="nf-footer__col nf-footer__newsletter">
         {%- if section.settings.newsletter_heading != blank -%}
           <h2 class="nf-footer__col-title">{{ section.settings.newsletter_heading | escape }}</h2>
@@ -157,7 +157,7 @@
       </div>
     </div>
 
-    {%- comment -%} Popular searches — SEO row, points at Shopify search {%- endcomment -%}
+    {%- comment -%} Popular searches - SEO row, points at Shopify search {%- endcomment -%}
     {%- if search_terms != blank -%}
       <div class="nf-footer__searches">
         {%- if section.settings.popular_searches_label != blank -%}
@@ -167,9 +167,24 @@
           {%- for term in search_terms -%}
             {%- assign clean_term = term | strip -%}
             {%- if clean_term == blank -%}{%- continue -%}{%- endif -%}
+            {%- comment -%}
+              Two terms route to the customisation page and one to the
+              jewellery collection, matching src/components/Footer.tsx
+              (customTerms / jewelTerms) instead of falling through to
+              search like every other term.
+            {%- endcomment -%}
+            {%- assign term_url = '' -%}
+            {%- if clean_term == 'Made to Measure' or clean_term == 'Custom Bridalwear' -%}
+              {%- assign term_url = '/pages/made-for-you' -%}
+            {%- elsif clean_term == 'Wedding Sets' -%}
+              {%- assign term_url = '/collections/shop-all' -%}
+            {%- else -%}
+              {%- assign encoded_term = clean_term | url_encode -%}
+              {%- assign term_url = routes.search_url | append: '?q=' | append: encoded_term -%}
+            {%- endif -%}
             <span>
               <a
-                href="{{ routes.search_url }}?q={{ clean_term | url_encode }}"
+                href="{{ term_url }}"
                 class="nf-footer__search-link"
               >
                 {{- clean_term | escape -}}
@@ -188,7 +203,7 @@
 </div>
 
 {% stylesheet %}
-/* ── Sage block ───────────────────────────────────────────────────
+/* -- Sage block ---------------------------------------------------
    Every colour below resolves through the --nf-footer-* component
    tokens in assets/nf-tokens.css. Do not substitute literals. */
 .nf-footer {
@@ -229,7 +244,7 @@
   .nf-footer__brand { grid-column: span 1; }
 }
 
-/* ── Brand column ─────────────────────────────────────────────── */
+/* -- Brand column ----------------------------------------------- */
 .nf-footer__logo { display: inline-block; }
 .nf-footer__logo-img {
   display: block;
@@ -269,7 +284,7 @@
 }
 .nf-footer__chip:hover { background-color: var(--nf-footer-chip-bg-hover); }
 
-/* ── Link columns ─────────────────────────────────────────────── */
+/* -- Link columns ----------------------------------------------- */
 /* The layout stamps `font-family: Ophelia !important` on every h1-h6,
    so the override here has to match that weight to keep the brand
    serif. Specificity, not order, is what wins. */
@@ -299,9 +314,9 @@
 }
 .nf-footer__link:hover { color: var(--nf-footer-text); }
 
-/* ── Link column fallback (no Shopify menu picked yet) ──────────
-   Renders the richtext `fallback_links` block setting — a plain
-   <ul><li><a> list — with the same look as .nf-footer__list/__link
+/* -- Link column fallback (no Shopify menu picked yet) ----------
+   Renders the richtext `fallback_links` block setting -- a plain
+   <ul><li><a> list -- with the same look as .nf-footer__list/__link
    above, since block.settings.menu has no default menu to resolve. */
 .nf-footer__fallback ul {
   list-style: none;
@@ -321,13 +336,13 @@
 }
 .nf-footer__fallback a:hover { color: var(--nf-footer-text); }
 
-/* ── Newsletter ───────────────────────────────────────────────── */
+/* -- Newsletter ------------------------------------------------- */
 .nf-footer__form { display: flex; flex-direction: column; gap: 12px; }
 .nf-footer__input {
   width: 100%;
   padding: 10px 16px;
   border: 1.5px solid var(--nf-footer-text);
-  border-radius: 0;
+  border-radius: 6px;
   background-color: var(--nf-footer-input-bg);
   color: var(--nf-footer-text);
   font-family: var(--nf-font-display);
@@ -341,7 +356,7 @@
   width: 100%;
   padding: 10px 16px;
   border: 0;
-  border-radius: 0;
+  border-radius: 6px;
   background-color: var(--nf-footer-cta);
   color: var(--nf-footer-text);
   font-family: var(--nf-font-display);
@@ -360,7 +375,7 @@
   color: var(--nf-footer-text);
 }
 
-/* ── Popular searches ─────────────────────────────────────────── */
+/* -- Popular searches ------------------------------------------- */
 .nf-footer__searches {
   margin-top: 48px;
   padding-top: 24px;
@@ -387,7 +402,7 @@
 .nf-footer__search-link:hover { color: var(--nf-footer-text); }
 .nf-footer__sep { margin-inline: 8px; opacity: 0.4; }
 
-/* ── Bottom bar ───────────────────────────────────────────────── */
+/* -- Bottom bar ------------------------------------------------- */
 .nf-footer__bottom {
   margin-top: 32px;
   padding-top: 24px;
@@ -443,7 +458,7 @@
       "type": "richtext",
       "id": "brand_text",
       "label": "Brand line",
-      "default": "<p>Where tradition meets the contemporary. Indo-Western fashion, handcrafted for the modern woman who carries her heritage with ease.</p>"
+      "default": "<p>Where tradition meets the contemporary. Handcrafted Indo-Western wear and 18K gold finished demi-fine jewellery, made to order in Nashik for the woman who carries her heritage with ease.</p>"
     },
     {
       "type": "text",

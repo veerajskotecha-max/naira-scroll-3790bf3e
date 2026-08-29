@@ -218,7 +218,7 @@
             "area": "t1",
             "quote_align": "left",
             "outfit": "",
-            "by": "Ananya \u00b7 Mumbai",
+            "by": "Ananya · Mumbai",
             "quote": "Perfect fit."
           }
         },
@@ -228,7 +228,7 @@
             "area": "top",
             "quote_align": "left",
             "outfit": "",
-            "by": "Priya \u00b7 London"
+            "by": "Priya · London"
           }
         },
         "tile_3": {
@@ -237,7 +237,7 @@
             "area": "tr",
             "quote_align": "left",
             "outfit": "Modern Fusion",
-            "by": "Tanvi \u00b7 Bangalore"
+            "by": "Tanvi · Bangalore"
           }
         },
         "tile_4": {
@@ -255,7 +255,7 @@
             "area": "t2",
             "quote_align": "left",
             "outfit": "Festive Edit",
-            "by": "Meera \u00b7 Pune"
+            "by": "Meera · Pune"
           }
         },
         "tile_6": {
@@ -264,7 +264,7 @@
             "area": "mr",
             "quote_align": "right",
             "outfit": "Bridal Couture",
-            "by": "Riya \u00b7 Delhi",
+            "by": "Riya · Delhi",
             "quote": "Exactly how I imagined."
           }
         },
@@ -274,7 +274,7 @@
             "area": "tall",
             "quote_align": "left",
             "outfit": "",
-            "by": "Sarah \u00b7 Dubai"
+            "by": "Sarah · Dubai"
           }
         },
         "tile_8": {
@@ -283,7 +283,7 @@
             "area": "bl",
             "quote_align": "left",
             "outfit": "Soft Pastel Drape",
-            "by": "Naina \u00b7 Jaipur"
+            "by": "Naina · Jaipur"
           }
         },
         "tile_9": {
@@ -292,7 +292,7 @@
             "area": "bot",
             "quote_align": "left",
             "outfit": "Evening Edit",
-            "by": "Aanya \u00b7 Hyderabad",
+            "by": "Aanya · Hyderabad",
             "quote": "Felt like art."
           }
         }

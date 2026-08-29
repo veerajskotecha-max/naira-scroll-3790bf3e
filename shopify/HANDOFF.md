@@ -75,10 +75,39 @@ list-collections, privacy policy, ring atelier backdrop, global chrome
 Link audit: 32 broken → 0. Hover/focus audit: 30 interactive component
 types, all 30 have focus states, reduced-motion handled.
 
-### In flight at pause
-- **`sections/nf-header.liquid`** — a background agent was re-uploading the
-  manual-nav fix after catching a 6-byte transcription drift on two literal
-  `—` sequences in the schema. **Re-verify this file's MD5 first thing.**
+### Sync audit at pause — local vs theme 150497591458
+
+Every file this port owns was checked by MD5 against the deployed theme.
+
+**73 files byte-identical.** That includes `sections/nf-header.liquid`, so
+the manual-nav fix *is* live — the 6-byte drift chased earlier was two
+literal `\u2014` escapes inside schema `"info"` help text, which Shopify
+stores as real em dashes. Same parsed value, different bytes. The local
+copies of `nf-header.liquid`, `nf-hero.liquid` and `templates/index.json`
+have been normalised to the stored form, so the MD5s now agree and this
+class of false alarm is gone for good.
+
+**Two real gaps found and fixed here:** `sections/nf-list-collections.liquid`
+had never been uploaded at all, and `templates/list-collections.json` was
+still the legacy Sense `main-list-collections`. Both are now deployed and
+MD5-verified, so `/collections` renders the ported page. An earlier report
+that this page was done was wrong.
+
+**Two known, accepted differences:**
+
+- The 7 legacy Sense page templates (`page.custom`, `page`, `page.landingpage`,
+  `page.made-for-you`, `page.made-for-you-2`, `page.naira-bridal-edit`,
+  `password`) differ. The deployed versions are the truth; the local copies
+  are stale pulls. Do not push local over them.
+- `assets/nf-wordmark.png` is the same size but different bytes locally and
+  remotely, cause unknown. The deployed one is what the header serves and it
+  renders correctly, so it was left alone. Do not overwrite it without
+  looking at both.
+
+Shopify reports template JSON `size` *excluding* the auto-generated banner
+comment it maintains itself. `templates/product.json` reads as 122 bytes
+against 485 locally for exactly that reason — its body was fetched and
+confirmed to be `nf-product`.
 
 ### Built locally, not yet uploaded
 - **`sections/nf-zircone-turn.liquid`** (new, 16,329 B) — port of

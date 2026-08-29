@@ -1,53 +1,131 @@
 {%- comment -%}
-  ─────────────────────────────────────────────────────────────────
-  Naira Flore — ring atelier backdrop (section)
+  Naira Flore - ring atelier backdrop (band overlay)
 
-  src/pages/Index.tsx renders <RingAtelierBackdrop variant="section" />
-  behind the jewellery band. The snippet was ported and uploaded but no
-  section ever rendered it, so the wash never appeared on the storefront.
+  In src/pages/Index.tsx the backdrop is not a band of its own. It is an
+  absolutely positioned wash sitting BEHIND a run of sections:
 
-  Sits in normal flow with its own height and holds the absolutely
-  positioned backdrop; anything placed after it scrolls over the wash.
-  ─────────────────────────────────────────────────────────────────
+      <div class="relative isolate overflow-hidden bg-[#FBF3EC]
+                  [&_section]:!bg-transparent">
+        <div class="pointer-events-none absolute inset-0 z-0">
+          <RingAtelierBackdrop variant="section" />
+        </div>
+        <div class="relative z-[1]"> ...the sections... </div>
+      </div>
+
+  The homepage uses that wrapper twice: once around ZirconeTurn and
+  JewelleryCategories, once around CustomisationSteps, BrandEthos,
+  Craftsmanship and FounderStoryTeaser.
+
+  A Shopify section cannot wrap other sections, so this one takes no
+  height of itself and instead reaches forward: `span` says how many of
+  the following sections the wash sits behind. A little script measures
+  that run and sizes the wash to it, and marks those sections so their
+  own ivory grounds go transparent - the Liquid equivalent of the
+  `[&_section]:!bg-transparent` above. The wash paints at z-index -1, so
+  in-flow section content stays on top of it without any of them needing
+  to know this section exists.
+
+  An earlier version of this file was a standalone band with its own
+  min-height and a heading, which put a whole extra block on the homepage
+  that the React page does not have.
 {%- endcomment -%}
 
-<section class="nf nf-bdsec" style="min-height: {{ section.settings.height }}px;">
-  {%- render 'nf-ring-backdrop', variant: 'section' -%}
-  {%- if section.settings.heading != blank -%}
-    <div class="nf-bdsec__inner">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="nf-bdsec__eyebrow">{{ section.settings.eyebrow | escape }}</p>
-      {%- endif -%}
-      <h2 class="nf-bdsec__title">{{ section.settings.heading | escape }}</h2>
-      {%- if section.settings.copy != blank -%}<div class="nf-bdsec__copy">{{ section.settings.copy }}</div>{%- endif -%}
-      {%- if section.settings.cta_label != blank -%}
-        <a class="nf-bdsec__cta" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">{{ section.settings.cta_label | escape }}</a>
-      {%- endif -%}
-    </div>
-  {%- endif -%}
-</section>
+<div
+  class="nf-bdband"
+  id="nf-bdband-{{ section.id }}"
+  data-nf-bdband
+  data-nf-bdband-span="{{ section.settings.span }}"
+>
+  <div class="nf-bdband__inner" aria-hidden="true">
+    {%- render 'nf-ring-backdrop', variant: 'section' -%}
+  </div>
+</div>
 
 {% stylesheet %}
-.nf-bdsec { position: relative; display: flex; align-items: center; justify-content: center; background-color: var(--nf-ivory); overflow: hidden; }
-.nf-bdsec__inner { position: relative; z-index: 1; max-width: 40rem; margin-inline: auto; padding: 3rem 1.5rem; text-align: center; }
-.nf-bdsec__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); text-transform: uppercase; color: var(--nf-gold-shadow); }
-.nf-bdsec__title { margin: .75rem 0 0; font-family: var(--nf-font-display); font-size: 30px; line-height: 1.1; color: var(--nf-ink); }
-@media (min-width: 768px) { .nf-bdsec__title { font-size: 42px; } }
-.nf-bdsec__copy { margin-top: .75rem; font-family: var(--nf-font-editorial); font-size: 15px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .65); }
-.nf-bdsec__cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem; border: 1px solid var(--nf-ink); color: var(--nf-ink); text-decoration: none; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); transition: background-color .2s, color .2s; }
-.nf-bdsec__cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+/* Takes no height: the wash hangs out of a zero-height box and is sized
+   to the run of sections below it. */
+.nf-bdband { position: relative; height: 0; }
+.nf-bdband__inner {
+  position: absolute; left: 0; right: 0; top: 0; height: 0;
+  z-index: -1;
+  background-color: var(--nf-ivory);
+  pointer-events: none;
+}
+/* The React wrapper's [&_section]:!bg-transparent. The class lands on the
+   .shopify-section wrapper on the storefront and on the section root in
+   the local render harness, so both shapes are matched. */
+.nf-onwash section,
+section.nf-onwash { background-color: transparent !important; }
 {% endstylesheet %}
+
+<script>
+(function () {
+  /* This script is inline, so it executes while the document is still
+     parsing - at which point the sections it has to measure do not exist
+     yet and nextElementSibling is null. Wait for the parse to finish. */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+
+  function start() {
+  var band = document.getElementById('nf-bdband-{{ section.id }}');
+  if (!band || band.dataset.nfBdbandReady) return;
+  band.dataset.nfBdbandReady = '1';
+
+  var inner = band.querySelector('.nf-bdband__inner');
+  var span = parseInt(band.dataset.nfBdbandSpan, 10) || 1;
+  /* On the storefront each section is wrapped in .shopify-section; the
+     render harness emits the section root directly. Either way the run we
+     want is the following siblings of whichever box this one sits in. */
+  var host = band.closest('.shopify-section') || band;
+  /* Sections are separated by inline <script> and <style> nodes that render
+     nothing; counting those as sections put the wash behind a zero-height
+     script tag and it never appeared. */
+  var SKIP = { SCRIPT: 1, STYLE: 1, TEMPLATE: 1, LINK: 1, NOSCRIPT: 1 };
+  var covered = [];
+  var el = host;
+  while (covered.length < span) {
+    el = el.nextElementSibling;
+    if (!el) break;
+    if (SKIP[el.tagName]) continue;
+    el.classList.add('nf-onwash');
+    covered.push(el);
+  }
+  if (!covered.length) return;
+
+  function size() {
+    var top = band.getBoundingClientRect().top;
+    var bottom = covered[covered.length - 1].getBoundingClientRect().bottom;
+    inner.style.height = Math.max(0, bottom - top) + 'px';
+  }
+
+  size();
+  window.addEventListener('resize', size, { passive: true });
+  window.addEventListener('load', size);
+  if ('ResizeObserver' in window) {
+    var ro = new ResizeObserver(size);
+    covered.forEach(function (c) { ro.observe(c); });
+  }
+  }
+})();
+</script>
 
 {% schema %}
 {
   "name": "NF Ring Backdrop",
   "settings": [
-    { "type": "range", "id": "height", "label": "Section height", "min": 220, "max": 720, "step": 20, "unit": "px", "default": 420 },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "NAIRA PETITE" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Demi-fine, made to be worn" },
-    { "type": "richtext", "id": "copy", "label": "Copy", "default": "<p>Brilliant-cut zircone in an 18K gold finish. Waterproof, anti-tarnish, and built for every day.</p>" },
-    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Shop the collection" },
-    { "type": "url", "id": "cta_link", "label": "Button link" }
+    {
+      "type": "range",
+      "id": "span",
+      "label": "Sections covered",
+      "info": "How many of the sections below this one the wash sits behind. Place this directly above the first section of the run.",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2
+    }
   ],
   "presets": [{ "name": "NF Ring Backdrop" }]
 }

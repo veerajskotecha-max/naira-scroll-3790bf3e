@@ -66,6 +66,83 @@
         "look_6"
       ]
     },
+    "nf_trust_strip": {
+      "type": "nf-trust-strip",
+      "settings": {},
+      "blocks": {
+        "item_1": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "label": "Pan India Shipping"
+          }
+        },
+        "item_2": {
+          "type": "item",
+          "settings": {
+            "icon": "hand",
+            "label": "Authentic Karigar Handwork"
+          }
+        },
+        "item_3": {
+          "type": "item",
+          "settings": {
+            "icon": "message-circle",
+            "label": "Free Design Consultation"
+          }
+        },
+        "item_4": {
+          "type": "item",
+          "settings": {
+            "icon": "sparkles",
+            "label": "Premium Quality Fabrics"
+          }
+        },
+        "item_5": {
+          "type": "item",
+          "settings": {
+            "icon": "shield-check",
+            "label": "Secure Payments"
+          }
+        },
+        "item_6": {
+          "type": "item",
+          "settings": {
+            "icon": "scissors",
+            "label": "2,500+ Custom Pieces Made"
+          }
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4",
+        "item_5",
+        "item_6"
+      ]
+    },
+    "nf_ring_backdrop_a": {
+      "type": "nf-ring-backdrop",
+      "settings": {
+        "span": 2
+      }
+    },
+    "nf_zircone_turn": {
+      "type": "nf-zircone-turn",
+      "settings": {
+        "eyebrow": "THE ZIRCONE EDIT · DEMI-FINE",
+        "callout_left": "18K GOLD FINISHED",
+        "callout_right": "BRILLIANT-CUT ZIRCONE",
+        "spec": "Rhodium finished · brilliant-cut zircone · 4-prong",
+        "cta_label": "ENQUIRE",
+        "show_view_all": true,
+        "view_all_label": "VIEW ALL →",
+        "view_all_link": "/collections/shop-all",
+        "hint": "SCROLL · IT TURNS",
+        "inherit_backdrop": true
+      }
+    },
     "nf_jewellery_categories": {
       "type": "nf-jewellery-categories",
       "settings": {},
@@ -75,7 +152,8 @@
           "settings": {
             "collection_handle": "rings",
             "label": "Rings",
-            "note": "solitaires, halo & stack"
+            "note": "solitaires, halo & stack",
+            "image_asset": "nf-cat-rings.jpg"
           }
         },
         "category_2": {
@@ -83,7 +161,8 @@
           "settings": {
             "collection_handle": "bracelets",
             "label": "Bracelets",
-            "note": "tennis, bow & baroque pearl"
+            "note": "tennis, bow & baroque pearl",
+            "image_asset": "nf-cat-bracelets.jpg"
           }
         },
         "category_3": {
@@ -91,7 +170,8 @@
           "settings": {
             "collection_handle": "earrings",
             "label": "Earrings",
-            "note": "hoops & the studs, three ways"
+            "note": "hoops & the studs, three ways",
+            "image_asset": "nf-cat-earrings.jpg"
           }
         },
         "category_4": {
@@ -99,7 +179,8 @@
           "settings": {
             "collection_handle": "necklaces",
             "label": "Necklaces",
-            "note": "lariats, chains & a cascade"
+            "note": "lariats, chains & a cascade",
+            "image_asset": "nf-cat-necklaces.jpg"
           }
         }
       },
@@ -109,6 +190,18 @@
         "category_3",
         "category_4"
       ]
+    },
+    "nf_new_arrivals": {
+      "type": "nf-new-arrivals",
+      "settings": {
+        "product_count": 4
+      }
+    },
+    "nf_ring_backdrop_b": {
+      "type": "nf-ring-backdrop",
+      "settings": {
+        "span": 4
+      }
     },
     "nf_customisation_steps": {
       "type": "nf-customisation-steps",
@@ -312,16 +405,16 @@
     "nf_campaign_film": {
       "type": "nf-campaign-film",
       "settings": {}
-    },
-    "nf_ring_backdrop": {
-      "type": "nf-ring-backdrop",
-      "settings": {}
     }
   },
   "order": [
     "nf_hero",
-    "nf_ring_backdrop",
+    "nf_trust_strip",
+    "nf_ring_backdrop_a",
+    "nf_zircone_turn",
     "nf_jewellery_categories",
+    "nf_new_arrivals",
+    "nf_ring_backdrop_b",
     "nf_customisation_steps",
     "nf_brand_ethos",
     "nf_craftsmanship",

@@ -1,0 +1,65 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-policy",
+      "blocks": {
+        "ret_custom": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Made-to-Measure Pieces (Made for You)",
+            "nav_label": "Made-to-Measure Pieces",
+            "body": "<ul><li>All custom-designed pieces are made to your unique specifications and are therefore <strong>non-returnable and non-exchangeable</strong>.</li><li>Since each garment is crafted exclusively for you, we cannot accept returns, exchanges, or offer refunds on made-to-measure pieces.</li></ul>"
+          }
+        },
+        "ret_standard": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Standard (Ready-to-Ship) Orders",
+            "nav_label": "Standard Orders",
+            "body": "<p>If you receive a standard product with a manufacturing defect (such as damaged embroidery, incorrect stitching, fabric flaws, or staining), you may request a return <strong>within 48 hours of delivery</strong>.</p><p>To initiate a return, contact us via WhatsApp with:</p><ul><li>Order number</li><li>Photos of the defect</li><li>Brief description of the issue</li></ul><p>After review, we will offer either:</p><ul><li>Repair</li><li>Replacement</li><li>Store credit</li></ul><p>Refunds to the original payment method may be considered on a case-by-case basis.</p>"
+          }
+        },
+        "ret_noteligible": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Not Eligible for Returns",
+            "nav_label": "Not Eligible for Returns",
+            "body": "<p>Items that have been:</p><ul><li>Worn</li><li>Washed</li><li>Altered</li><li>Damaged by the customer</li></ul><p>Products where the issue is:</p><ul><li>Slight colour variations due to screen differences</li><li>Minor irregularities inherent to handcrafted/artisanal work</li></ul>"
+          }
+        }
+      },
+      "block_order": [
+        "ret_custom",
+        "ret_standard",
+        "ret_noteligible"
+      ],
+      "settings": {
+        "source": "blocks",
+        "shopify_policy": "refund_policy",
+        "show_shopify_link": false,
+        "heading": "Exchange & Return Policy",
+        "lede": "Please review our policy carefully before making a purchase.",
+        "hero_background": "#F4F1ED",
+        "show_anchor_nav": true,
+        "show_help": true,
+        "help_heading": "Need Help?",
+        "help_text": "For any queries regarding exchanges or returns, reach out to us directly on WhatsApp.",
+        "help_button_label": "Contact on WhatsApp",
+        "help_button_link": "https://wa.me/919561557935",
+        "help_button_new_tab": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

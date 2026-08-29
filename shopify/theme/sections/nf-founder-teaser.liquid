@@ -1,0 +1,74 @@
+{% comment %}
+  nf-founder-teaser — port of src/components/FounderStoryTeaser.tsx
+  Founder portrait (3:4) beside the "Born from a love of craft and colour"
+  story block. Static in the source — no reveal observer.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+<section class="nf nf-founder" aria-labelledby="NfFounderHeading-{{ section.id }}">
+  <div class="nf-wrap">
+    <div class="nf-founder__row">
+      <div class="nf-founder__media">
+        <div class="nf-founder__frame">
+          {%- if section.settings.image != blank -%}
+            {{ section.settings.image | image_url: width: 800 | image_tag:
+                alt: section.settings.image_alt, loading: 'lazy', widths: '300,400,600,800' }}
+          {%- else -%}
+            <img src="{{ 'nf-founder-portrait.webp' | asset_url }}"
+                 alt="{{ section.settings.image_alt | escape }}" width="400" height="533" loading="lazy">
+          {%- endif -%}
+          <div class="nf-founder__scrim" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="nf-founder__text">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="nf-founder__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+
+        <h2 id="NfFounderHeading-{{ section.id }}" class="nf-founder__title nf-editorial">
+          {{ section.settings.heading_lead }}<br>
+          <em>{{ section.settings.heading_italic }}</em>
+        </h2>
+
+        {%- if section.settings.body_1 != blank -%}
+          <p class="nf-founder__para">{{ section.settings.body_1 }}</p>
+        {%- endif -%}
+        {%- if section.settings.body_2 != blank -%}
+          <p class="nf-founder__para nf-founder__para--last">{{ section.settings.body_2 }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.link_label != blank -%}
+          <a class="nf-founder__link" href="{{ section.settings.link_url | default: '/pages/about-naira' }}">
+            {{ section.settings.link_label }}
+            <span aria-hidden="true">&rsaquo;</span>
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NF Founder story",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Founder portrait", "info": "Defaults to the ported nf-founder-portrait.webp theme asset." },
+    { "type": "text", "id": "image_alt", "label": "Portrait alt text", "default": "Founder of Naira Flore, crafting Indo-Western fashion in Nashik" },
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Our Story" },
+    { "type": "text", "id": "heading_lead", "label": "Heading, first line", "default": "Born from a love of" },
+    { "type": "text", "id": "heading_italic", "label": "Heading, italic line", "default": "craft and colour" },
+    { "type": "textarea", "id": "body_1", "label": "Paragraph 1", "default": "Naira Flore started in a small studio in Nashik, where every stitch was placed by hand and every silhouette was imagined fresh. We believe that truly beautiful clothing shouldn't compromise. It should be both rooted in tradition and alive to the moment." },
+    { "type": "textarea", "id": "body_2", "label": "Paragraph 2", "default": "Today, every piece we create carries that original promise: handmade, personal, and made to be worn for a lifetime." },
+    { "type": "header", "content": "Link" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Read the full story" },
+    { "type": "url", "id": "link_url", "label": "Link" }
+  ],
+  "presets": [{ "name": "NF Founder story" }]
+}
+{% endschema %}

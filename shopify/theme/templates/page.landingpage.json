@@ -1,0 +1,729 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "slideshow_3WQJKG": {
+      "type": "slideshow",
+      "name": "t:sections.slideshow.presets.name",
+      "settings": {
+        "layout": "full_bleed",
+        "slide_height": "medium",
+        "slider_visual": "counter",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "none",
+        "show_text_below": true,
+        "accessibility_info": "Slideshow about our brand"
+      }
+    },
+    "rich_text_iWHetD": {
+      "type": "rich-text",
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "video_DckwNL": {
+      "type": "video",
+      "name": "t:sections.video.presets.name",
+      "settings": {
+        "heading": "Your Dream outfit Tailored by hand, Only for You...",
+        "heading_size": "h2",
+        "enable_video_looping": false,
+        "video": "shopify://files/videos/1.FINAL CONVCEPT 7-1 (1).mov",
+        "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+        "description": "",
+        "full_width": false,
+        "color_scheme": "",
+        "padding_top": 60,
+        "padding_bottom": 16
+      }
+    },
+    "rich_text_Hi4af4": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_DdE88U": {
+          "type": "heading",
+          "settings": {
+            "heading": "Custom Bridal and Wedding Outfits.",
+            "heading_size": "h1"
+          }
+        },
+        "text_tUab9N": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Tailored to your style and body.</p>"
+          }
+        },
+        "text_Qp6n8z": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Share your idea to get expert guidance and receive a handcrafted Naira rarity designed just for you.</p>"
+          }
+        },
+        "text_CDGJp8": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        },
+        "button_kNdBWf": {
+          "type": "button",
+          "settings": {
+            "button_label": "Get Your Free Design Consultation",
+            "button_link": "https://wa.me/message/MZJWKVCKJQ7SO1",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_DdE88U",
+        "text_tUab9N",
+        "text_Qp6n8z",
+        "text_CDGJp8",
+        "button_kNdBWf"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 40,
+        "padding_bottom": 52
+      }
+    },
+    "collapsible_content_L69D4W": {
+      "type": "collapsible-content",
+      "blocks": {
+        "collapsible_row_cMgJEe": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Perfect Fit Guaranteed",
+            "icon": "check_mark",
+            "row_content": "<p>Every outfit is tailored exactly to your measurements. You can send us the required measurements or we can co-ordinate an in home visit in selective cities.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_iWdiyc": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Premium Handwork",
+            "icon": "check_mark",
+            "row_content": "<p>Skillled artisans with 10+ years experience.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_VWxXhM": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Fast Delivery",
+            "icon": "check_mark",
+            "row_content": "<p>Get your unique Naira outfit sketched, hand-made and delivered to your doorstep within 6-8 weeks.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_WVqW7z": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "One-to-one Whatsapp concierge",
+            "icon": "check_mark",
+            "row_content": "<p>Get personalised support on WhatsApp, from design sketches to delivery updates.</p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_ecL6QB": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "Transparent pricing",
+            "icon": "check_mark",
+            "row_content": "<p>Our online model allows us to offer designer outfits at the best prices, without store overheads.<br/><br/>You get transparent pricing with clear variations for handwork, material upgrades, and Swarovski customization; ensuring complete clarity and value with every order.<br/><br/></p>",
+            "page": ""
+          }
+        },
+        "collapsible_row_xA3djh": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "100% Customisable",
+            "icon": "check_mark",
+            "row_content": "<p>Bring any Pinterest, celeb or personal design inspirations.</p>",
+            "page": ""
+          }
+        }
+      },
+      "block_order": [
+        "collapsible_row_cMgJEe",
+        "collapsible_row_iWdiyc",
+        "collapsible_row_VWxXhM",
+        "collapsible_row_WVqW7z",
+        "collapsible_row_ecL6QB",
+        "collapsible_row_xA3djh"
+      ],
+      "name": "t:sections.collapsible_content.presets.name",
+      "settings": {
+        "caption": "",
+        "heading": "Why hundreds of clients chose Naira",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "none",
+        "container_color_scheme": "",
+        "color_scheme": "",
+        "open_first_collapsible_row": false,
+        "image_ratio": "adapt",
+        "desktop_layout": "image_second",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "image_banner_kqPVyB": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_TgDUjq": {
+          "type": "heading",
+          "settings": {
+            "heading": "What our clients have to say?",
+            "heading_size": "h2"
+          }
+        },
+        "text_8icUgm": {
+          "type": "text",
+          "settings": {
+            "text": "",
+            "text_style": "body"
+          }
+        },
+        "buttons_jbyKXH": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "",
+            "button_link_1": "",
+            "button_style_secondary_1": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_TgDUjq",
+        "text_8icUgm",
+        "buttons_jbyKXH"
+      ],
+      "name": "t:sections.image-banner.presets.name",
+      "settings": {
+        "image": "shopify://shop_images/DSC00329.jpg",
+        "image_overlay_opacity": 0,
+        "image_height": "adapt",
+        "image_behavior": "none",
+        "desktop_content_position": "middle-center",
+        "desktop_content_alignment": "center",
+        "show_text_box": true,
+        "color_scheme": "scheme-1",
+        "stack_images_on_mobile": true,
+        "mobile_content_alignment": "center",
+        "show_text_below": true
+      }
+    },
+    "video_AhHFCn": {
+      "type": "video",
+      "name": "t:sections.video.presets.name",
+      "settings": {
+        "heading": "",
+        "heading_size": "h1",
+        "enable_video_looping": false,
+        "video": "shopify://files/videos/NAIRA REEL 27.mov",
+        "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+        "description": "",
+        "full_width": false,
+        "color_scheme": "",
+        "padding_top": 0,
+        "padding_bottom": 36
+      }
+    },
+    "ss_testimonial_20_wUhL9P": {
+      "type": "ss-testimonial-20",
+      "blocks": {
+        "slide_3dMctm": {
+          "type": "slide",
+          "settings": {
+            "author_image": "shopify://shop_images/WhatsApp_Image_2025-11-30_at_02.55.15_67ce24e2.jpg",
+            "author": "Rashmi Rai ( Fitness Infuencer)",
+            "time": "15d ago",
+            "text": "<p>Absolutely obsessed with the quality and drape of Pink Blush of Dawn. It’s elegant without trying too hard. A definite must-have for anyone who loves timeless Indo-Western style.<br/><br/></p>",
+            "image": "shopify://shop_images/WhatsApp_Image_2025-11-30_at_02.46.31_72a97d27.jpg",
+            "count_comments": "3342",
+            "comment": "120 comments",
+            "like_text": "Like",
+            "comment_text": "Comment",
+            "share_text": "Share"
+          }
+        },
+        "slide_zPdf9R": {
+          "type": "slide",
+          "settings": {
+            "author_image": "shopify://shop_images/Screenshot_2025-12-01_023453.png",
+            "author": "Nabby",
+            "time": "30d ago",
+            "text": "<p>Naira’s craftsmanship is intricate yet modern, and the piece fits like it was sketched for my story alone. A brand that truly honours individuality.</p>",
+            "image": "shopify://shop_images/WhatsApp_Image_2025-11-30_at_02.47.05_9b056f7b.jpg",
+            "count_comments": "340",
+            "comment": "22 comments",
+            "like_text": "Like",
+            "comment_text": "Comment",
+            "share_text": "Share"
+          }
+        },
+        "slide_yr43Ti": {
+          "type": "slide",
+          "settings": {
+            "author_image": "shopify://shop_images/Screenshot_2025-11-30_025832.png",
+            "author": "Taneesha Kotecha ( International table tennis player)",
+            "time": "8d ago",
+            "text": "<p>As an athlete, I value precision ; and that’s exactly what I found in Naira. Their team understood my style instantly and crafted a look that was bold, detailed, and incredibly comfortable. Naira brings the same discipline to fashion that champions bring to their game</p>",
+            "image": "shopify://shop_images/WhatsApp_Image_2025-11-30_at_02.45.15_471342ba_d6d048bd-dc57-4221-98d2-e80543a4d587.jpg",
+            "count_comments": "950",
+            "comment": "78 comments",
+            "like_text": "Like",
+            "comment_text": "Comment",
+            "share_text": "Share"
+          }
+        },
+        "slide_4DimGi": {
+          "type": "slide",
+          "settings": {
+            "author_image": "shopify://shop_images/WhatsApp_Image_2025-11-30_at_02.59.24_f584b0a0.jpg",
+            "author": "AIshy ( Influencer)",
+            "time": "18h ago",
+            "text": "<p>Naira has redefined what ‘custom’ means for me. From the first consultation to the final piece in my hands, every step felt curated with care. The finish, the embroidery, the colours :all so thoughtfully done. Wearing Naira genuinely makes you feel celebrated.</p>",
+            "image": "shopify://shop_images/WhatsApp_Image_2025-11-30_at_02.46.34_7f6190b2.jpg",
+            "count_comments": "540",
+            "comment": "23 comments",
+            "like_text": "Like",
+            "comment_text": "Comment",
+            "share_text": "Share"
+          }
+        }
+      },
+      "block_order": [
+        "slide_3dMctm",
+        "slide_zPdf9R",
+        "slide_yr43Ti",
+        "slide_4DimGi"
+      ],
+      "name": "SS - Testimonials #20",
+      "settings": {
+        "heading": "<h2>Testimonials</h2>",
+        "heading_custom": false,
+        "heading_font": "josefin_sans_n4",
+        "heading_size": 32,
+        "heading_size_mobile": 26,
+        "heading_height": 130,
+        "heading_align": "center",
+        "heading_align_mobile": "center",
+        "slider_view": 3,
+        "slider_view_mobile": 1.3,
+        "slider_gap": 32,
+        "slider_gap_mobile": 24,
+        "slider_mt": 10,
+        "slider_mt_mobile": 10,
+        "slide_padding_horizontal": 16,
+        "slide_padding_horizontal_mobile": 16,
+        "slide_padding_vertical": 12,
+        "slide_padding_vertical_mobile": 12,
+        "slide_radius": 12,
+        "slide_border_thickness": 1,
+        "slide_shadow": true,
+        "slide_content_align": "left",
+        "slide_content_align_mobile": "left",
+        "author_wrapper_gap": 10,
+        "author_wrapper_gap_mobile": 10,
+        "author_image_width": 40,
+        "author_image_width_mobile": 40,
+        "author_image_radius": 100,
+        "author_custom": false,
+        "author_font": "josefin_sans_n4",
+        "author_size": 16,
+        "author_size_mobile": 15,
+        "author_height": 130,
+        "author_time_custom": false,
+        "author_time_font": "josefin_sans_n4",
+        "author_time_size": 13,
+        "author_time_size_mobile": 13,
+        "author_time_height": 130,
+        "author_time_mt": 2,
+        "author_time_mt_mobile": 2,
+        "text_custom": false,
+        "text_font": "josefin_sans_n4",
+        "text_size": 16,
+        "text_size_mobile": 15,
+        "text_height": 150,
+        "text_mt": 10,
+        "text_mt_mobile": 10,
+        "image_ratio": "square",
+        "image_ratio_mobile": "square",
+        "image_radius": 0,
+        "image_mt": 10,
+        "image_mt_mobile": 10,
+        "image_full_width": true,
+        "comment_custom": false,
+        "comment_font": "josefin_sans_n4",
+        "comment_size": 14,
+        "comment_size_mobile": 14,
+        "comment_height": 130,
+        "comment_mt": 10,
+        "comment_mt_mobile": 10,
+        "comments_icon_size": 18,
+        "comments_icon_size_mobile": 18,
+        "buttons_border_thickness": 1,
+        "buttons_mt": 10,
+        "buttons_mt_mobile": 10,
+        "button_icon_size": 16,
+        "button_icon_size_mobile": 16,
+        "button_text_custom": false,
+        "button_text_font": "josefin_sans_n4",
+        "button_text_size": 14,
+        "button_text_size_mobile": 14,
+        "button_text_height": 130,
+        "arrow_size": 48,
+        "arrow_size_mobile": 38,
+        "arrow_icon_size": 10,
+        "arrow_icon_size_mobile": 8,
+        "arrow_border_thickness": 0,
+        "arrow_radius": 100,
+        "arrow_hover_effect": "color",
+        "arrow_show_desktop": true,
+        "arrow_show_mobile": false,
+        "dots_size": 6,
+        "dots_size_mobile": 6,
+        "dots_mt": 20,
+        "dots_mt_mobile": 16,
+        "dots_show_desktop": true,
+        "dots_show_mobile": true,
+        "slide_bg_color": "#ffffff",
+        "slide_border_color": "#dfdfdf",
+        "slide_shadow_color": "#000000",
+        "author_color": "#000000",
+        "author_time_color": "#000000",
+        "text_color": "#000000",
+        "comment_color": "#000000",
+        "buttons_border_color": "#a4b0be",
+        "button_icon_color": "#000000",
+        "button_text_color": "#000000",
+        "arrow_color": "#7b7b7b",
+        "arrow_hover_color": "#7b7b7b",
+        "arrow_bg_color": "#ebebeb",
+        "arrow_bg_hover_color": "#f5f5f5",
+        "arrow_border_color": "#c7c7c7",
+        "arrow_border_hover_color": "#c7c7c7",
+        "dots_color": "#000000",
+        "heading_color": "#000000",
+        "background_color": "#ffffff",
+        "background_gradient": "",
+        "border_color": "#000000",
+        "margin_top": 0,
+        "margin_bottom": 0,
+        "margin_horizontal": 0,
+        "margin_horizontal_mobile": 0,
+        "padding_top": 36,
+        "padding_bottom": 36,
+        "padding_horizontal": 3,
+        "padding_horizontal_mobile": 1.5,
+        "full_width": false,
+        "content_width": 1300,
+        "border_thickness": 0,
+        "section_radius": 0,
+        "lazy": true
+      }
+    },
+    "multirow_xzVgPE": {
+      "type": "multirow",
+      "name": "t:sections.multirow.presets.name",
+      "settings": {
+        "image_height": "medium",
+        "desktop_image_width": "medium",
+        "image_layout": "alternate-left",
+        "heading_size": "h1",
+        "text_style": "body",
+        "button_style": "secondary",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "",
+        "row_color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_EkGnqE": {
+      "type": "featured-collection",
+      "name": "t:sections.featured-collection.presets.name",
+      "settings": {
+        "collection": "frontpage",
+        "products_to_show": 6,
+        "title": "Featured collection",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "ss_video_banner_2_pKp9TY": {
+      "type": "ss-video-banner-2",
+      "name": "SS - Video Banner #2",
+      "settings": {
+        "banner_height": "fixed_height",
+        "banner_fixed_height": 600,
+        "banner_fixed_height_mobile": 500,
+        "banner_padding_vertical": 20,
+        "banner_padding_vertical_mobile": 20,
+        "banner_padding_horizontal": 16,
+        "banner_padding_horizontal_mobile": 16,
+        "banner_radius": 8,
+        "banner_border_thickness": 0,
+        "banner_overlay": 0.2,
+        "url": "",
+        "bg_type": "video",
+        "video": "shopify://files/videos/NAIRA REEL 25.mov",
+        "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+        "media_row": false,
+        "media_width": 50,
+        "media_height": 400,
+        "media_mt": 20,
+        "align_content": "end",
+        "align_content_mobile": "end",
+        "title": "",
+        "title_custom": false,
+        "title_font": "josefin_sans_n4",
+        "title_size": 36,
+        "title_size_mobile": 24,
+        "title_height": 130,
+        "title_mt": 4,
+        "text": "",
+        "text_custom": false,
+        "text_font": "josefin_sans_n4",
+        "text_size": 16,
+        "text_size_mobile": 16,
+        "text_height": 130,
+        "arrow_size_mobile": 24,
+        "arrow_size": 18,
+        "action_size_mobile": 38,
+        "action_size": 36,
+        "banner_bg_color": "#121212",
+        "banner_border_color": "#000000",
+        "title_color": "#ffffff",
+        "text_color": "#ffffff",
+        "arrow_color": "#ffffff",
+        "action_bg_color": "#ffffff",
+        "action_arrow_color": "#000000",
+        "background_color": "#ffffff",
+        "background_gradient": "",
+        "border_color": "#000000",
+        "margin_top": 0,
+        "margin_bottom": 0,
+        "padding_top": 36,
+        "padding_bottom": 36,
+        "padding_horizontal": 5,
+        "padding_horizontal_mobile": 1.5,
+        "full_width": true,
+        "content_width": 160,
+        "border_thickness": 0,
+        "lazy": true
+      }
+    },
+    "1764527053f5c8cf44": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "rich_text_NUTMBe": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_UXzi3Q": {
+          "type": "heading",
+          "settings": {
+            "heading": "Frequently asked question:",
+            "heading_size": "h2"
+          }
+        },
+        "text_erAzMC": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "heading_UXzi3Q",
+        "text_erAzMC"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 48,
+        "padding_bottom": 0
+      }
+    },
+    "slideshow_deWme7": {
+      "type": "slideshow",
+      "name": "t:sections.slideshow.presets.name",
+      "settings": {
+        "layout": "full_bleed",
+        "slide_height": "small",
+        "slider_visual": "dots",
+        "auto_rotate": true,
+        "change_slides_speed": 7,
+        "image_behavior": "none",
+        "show_text_below": false,
+        "accessibility_info": "Slideshow about our brand"
+      }
+    },
+    "rich_text_BBfeA7": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_JwLzzh": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h2"
+          }
+        },
+        "text_mBBniM": {
+          "type": "text",
+          "settings": {
+            "text": "<p><strong>Price Range:</strong><br/><br/>Pricing depends on the design and fabric, with outfits starting at ₹15000.</p><p><strong>Delivery Time:</strong><br/><br/>Orders are delivered within <strong>30–60 days</strong>, based on the complexity of the work.</p><p><strong>Customisation:</strong><br/><br/>We offer <strong>full customisation</strong>, including designing your outfit entirely from scratch.</p><p><strong>Shipping:</strong><br/><br/>We ship to <strong>all locations across India</strong>.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading_JwLzzh",
+        "text_mBBniM"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "rich_text_e9XnrN": {
+      "type": "rich-text",
+      "blocks": {
+        "button_xPErUg": {
+          "type": "button",
+          "settings": {
+            "button_label": "Get Your Free Design Consultation",
+            "button_link": "https://wa.me/message/MZJWKVCKJQ7SO1",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        },
+        "heading_BYxdp6": {
+          "type": "heading",
+          "settings": {
+            "heading": "",
+            "heading_size": "h2"
+          }
+        },
+        "text_yEiP7q": {
+          "type": "text",
+          "settings": {
+            "text": ""
+          }
+        },
+        "button_99L8GG": {
+          "type": "button",
+          "settings": {
+            "button_label": "",
+            "button_link": "",
+            "button_style_secondary": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "button_xPErUg",
+        "heading_BYxdp6",
+        "text_yEiP7q",
+        "button_99L8GG"
+      ],
+      "name": "t:sections.rich-text.presets.name",
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 52,
+        "padding_bottom": 52
+      }
+    }
+  },
+  "order": [
+    "main",
+    "slideshow_3WQJKG",
+    "rich_text_iWHetD",
+    "video_DckwNL",
+    "rich_text_Hi4af4",
+    "collapsible_content_L69D4W",
+    "image_banner_kqPVyB",
+    "video_AhHFCn",
+    "ss_testimonial_20_wUhL9P",
+    "multirow_xzVgPE",
+    "featured_collection_EkGnqE",
+    "ss_video_banner_2_pKp9TY",
+    "1764527053f5c8cf44",
+    "rich_text_NUTMBe",
+    "slideshow_deWme7",
+    "rich_text_BBfeA7",
+    "rich_text_e9XnrN"
+  ]
+}

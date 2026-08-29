@@ -1,0 +1,334 @@
+{%- comment -%}
+  Naira Flore — Legal / policy page (ONE section, four pages)
+
+  Ported from the Lovable repo:
+    src/pages/PrivacyPolicy.tsx
+    src/pages/TermsOfService.tsx
+    src/pages/ExchangeReturnPolicy.tsx
+  The three share an identical layout (linen hero -> optional anchor nav ->
+  hairline-separated sections -> optional "Need Help?" foot), so they are a
+  single settings-driven section rather than four near-identical files.
+  Shipping uses the same shell.
+
+  SOURCE OF TRUTH — `source` setting:
+    "shopify" : renders the merchant's own Settings -> Policies text via
+                shop.privacy_policy / refund_policy / terms_of_service /
+                shipping_policy. Preferred: the legal text then lives in
+                exactly one place and Shopify keeps /policies/* in sync.
+    "blocks"  : renders the ported Lovable copy from section blocks.
+                Used where the Shopify policy object is empty.
+
+  If "shopify" is selected but that policy is blank in Settings -> Policies,
+  the section falls back to the blocks so the page is never empty, and shows
+  a notice to staff in the theme editor.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-content.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign policy = null
+  case section.settings.shopify_policy
+    when 'privacy_policy'
+      assign policy = shop.privacy_policy
+    when 'refund_policy'
+      assign policy = shop.refund_policy
+    when 'terms_of_service'
+      assign policy = shop.terms_of_service
+    when 'shipping_policy'
+      assign policy = shop.shipping_policy
+    when 'subscription_policy'
+      assign policy = shop.subscription_policy
+  endcase
+
+  assign use_shopify = false
+  if section.settings.source == 'shopify' and policy != blank and policy.body != blank
+    assign use_shopify = true
+  endif
+-%}
+
+<div
+  class="nf-doc"
+  style="--nf-doc-hero-bg: {{ section.settings.hero_background }};"
+>
+  <header class="nf-doc__hero">
+    <h1>{{ section.settings.heading | escape }}</h1>
+    {%- if section.settings.lede != blank -%}
+      <p class="nf-doc__lede">{{ section.settings.lede | escape }}</p>
+    {%- endif -%}
+  </header>
+
+  {%- if use_shopify -%}
+    <div class="nf-doc__body">
+      <div class="nf-doc__inner">
+        <div class="nf-rte">{{ policy.body }}</div>
+      </div>
+    </div>
+  {%- else -%}
+    {%- if section.settings.source == 'shopify' -%}
+      {%- comment -%} Staff-only warning; never shown to shoppers. {%- endcomment -%}
+      {%- if request.design_mode -%}
+        <div class="nf-doc__body">
+          <div class="nf-doc__inner">
+            <p class="nf-doc__empty">
+              This section is set to use the store’s own
+              <strong>{{ section.settings.shopify_policy | replace: '_', ' ' }}</strong>, but that policy is
+              empty in <strong>Settings → Policies</strong>. The ported copy below is showing instead.
+              Paste the copy into Settings → Policies, or switch “Policy source” to “Section blocks”.
+            </p>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if section.settings.show_anchor_nav and section.blocks.size > 1 -%}
+      <nav class="nf-doc__nav" aria-label="{{ section.settings.heading | escape }} sections">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'policy_section' -%}
+            {%- assign nav_label = block.settings.nav_label | default: block.settings.heading -%}
+            <a href="#nf-policy-{{ block.id }}">{{ nav_label | escape }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
+
+    {%- if section.blocks.size == 0 -%}
+      {%- comment -%}
+        Never leave a legal page blank: a store policy was selected, it is
+        empty, and no copy has been entered here either.
+      {%- endcomment -%}
+      <div class="nf-doc__body">
+        <div class="nf-doc__inner">
+          <p class="nf-rte">
+            {{ section.settings.fallback_text | escape }}
+            {%- if policy != blank %} <a href="{{ policy.url }}">{{ section.settings.shopify_link_label | escape }}</a>.{% endif -%}
+          </p>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="nf-doc__body">
+        <div class="nf-doc__inner">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'policy_section' -%}
+              <section
+                class="nf-doc__section"
+                id="nf-policy-{{ block.id }}"
+                {{ block.shopify_attributes }}
+              >
+                <h2>{{ block.settings.heading | escape }}</h2>
+                <div class="nf-rte">{{ block.settings.body }}</div>
+              </section>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if section.settings.show_help -%}
+    <section class="nf-doc__foot">
+      <div class="nf-doc__foot-inner">
+        <h2>{{ section.settings.help_heading | escape }}</h2>
+        {%- if section.settings.help_text != blank -%}
+          <p>{{ section.settings.help_text | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.help_button_label != blank and section.settings.help_button_link != blank -%}
+          <a
+            class="nf-btn nf-btn--ink"
+            href="{{ section.settings.help_button_link }}"
+            {% if section.settings.help_button_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+          >{{ section.settings.help_button_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if section.settings.show_shopify_link and policy != blank -%}
+    <p class="nf-doc__inner nf-rte" style="padding-bottom: 48px; text-align: center;">
+      <a href="{{ policy.url }}">{{ section.settings.shopify_link_label | escape }}</a>
+    </p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Naira policy page",
+  "tag": "section",
+  "class": "nf-policy-section",
+  "max_blocks": 30,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Source of the legal text"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Policy source",
+      "info": "Prefer the store policy so the legal text lives in one place. Falls back to the blocks if that policy is empty in Settings → Policies.",
+      "options": [
+        {
+          "value": "shopify",
+          "label": "Store policy (Settings → Policies)"
+        },
+        {
+          "value": "blocks",
+          "label": "Section blocks (copy below)"
+        }
+      ],
+      "default": "blocks"
+    },
+    {
+      "type": "select",
+      "id": "shopify_policy",
+      "label": "Which store policy",
+      "options": [
+        {
+          "value": "privacy_policy",
+          "label": "Privacy policy"
+        },
+        {
+          "value": "refund_policy",
+          "label": "Refund / return policy"
+        },
+        {
+          "value": "terms_of_service",
+          "label": "Terms of service"
+        },
+        {
+          "value": "shipping_policy",
+          "label": "Shipping policy"
+        },
+        {
+          "value": "subscription_policy",
+          "label": "Subscription policy"
+        }
+      ],
+      "default": "privacy_policy"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shopify_link",
+      "label": "Show a link to the canonical /policies/… page",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "shopify_link_label",
+      "label": "Canonical link label",
+      "default": "View the official policy page"
+    },
+    {
+      "type": "textarea",
+      "id": "fallback_text",
+      "label": "Text shown if the policy is empty",
+      "info": "Safety net only — a legal page must never render blank.",
+      "default": "This policy is being updated. For the current version, please contact us at shopatnaira@gmail.com or see"
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Privacy Policy"
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Intro line",
+      "default": "At NAIRA, we value your privacy and are committed to transparency in how we collect, use, and protect your personal information."
+    },
+    {
+      "type": "color",
+      "id": "hero_background",
+      "label": "Header background",
+      "default": "#F4F1ED"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_anchor_nav",
+      "label": "Show jump-to navigation",
+      "info": "Matches the anchor nav on the Exchange & Return page in the Lovable build.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Need help footer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_help",
+      "label": "Show the “Need Help?” footer",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "help_heading",
+      "label": "Footer heading",
+      "default": "Need Help?"
+    },
+    {
+      "type": "textarea",
+      "id": "help_text",
+      "label": "Footer text",
+      "default": "For any queries regarding this policy, reach out to us directly on WhatsApp."
+    },
+    {
+      "type": "text",
+      "id": "help_button_label",
+      "label": "Button label",
+      "default": "Contact on WhatsApp"
+    },
+    {
+      "type": "url",
+      "id": "help_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "help_button_new_tab",
+      "label": "Open button in a new tab",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "policy_section",
+      "name": "Policy section",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Introduction"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body",
+          "default": "<p>Describe this part of the policy.</p>"
+        },
+        {
+          "type": "text",
+          "id": "nav_label",
+          "label": "Jump-nav label",
+          "info": "Optional. Defaults to the heading."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira policy page",
+      "blocks": [
+        {
+          "type": "policy_section"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

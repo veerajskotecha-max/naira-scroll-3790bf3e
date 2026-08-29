@@ -1,0 +1,104 @@
+{% comment %}
+  nf-craftsmanship — port of src/components/Craftsmanship.tsx
+  "Statement pieces, made by human hands." Two images (main + overlapping
+  square) beside stacked copy and an outline CTA. The React
+  IntersectionObserver reveal is ported to [data-nf-reveal] + .nf-reveal.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+<section class="nf nf-craft" data-nf-reveal>
+  <div class="nf-wrap">
+    <div class="nf-craft__grid">
+      <div class="nf-craft__media nf-reveal">
+        {%- if section.settings.image_main != blank -%}
+          {{ section.settings.image_main | image_url: width: 1200 | image_tag:
+              class: 'nf-craft__main', alt: section.settings.image_main_alt,
+              loading: 'lazy', widths: '400,600,800,1200' }}
+        {%- else -%}
+          <img class="nf-craft__main" src="{{ 'nf-craftsmanship-main.webp' | asset_url }}"
+               alt="{{ section.settings.image_main_alt | escape }}" loading="lazy">
+        {%- endif -%}
+
+        <div class="nf-craft__overlay nf-reveal">
+          {%- if section.settings.image_overlay != blank -%}
+            {{ section.settings.image_overlay | image_url: width: 600 | image_tag:
+                alt: section.settings.image_overlay_alt, loading: 'lazy', widths: '200,300,400,600' }}
+          {%- else -%}
+            <img src="{{ 'nf-craftsmanship-overlay.webp' | asset_url }}"
+                 alt="{{ section.settings.image_overlay_alt | escape }}" loading="lazy">
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="nf-craft__body">
+        <div class="nf-craft__title-wrap nf-reveal">
+          <h2 class="nf-craft__title nf-editorial">
+            {{ section.settings.heading_lead }}<br>
+            <em>{{ section.settings.heading_italic }}</em>
+          </h2>
+        </div>
+
+        <div class="nf-craft__text nf-reveal">
+          {%- if section.settings.body_1 != blank -%}<p>{{ section.settings.body_1 }}</p>{%- endif -%}
+          {%- if section.settings.body_2 != blank -%}<p>{{ section.settings.body_2 }}</p>{%- endif -%}
+        </div>
+
+        {%- if section.settings.cta_label != blank -%}
+          <div class="nf-craft__cta-wrap nf-reveal">
+            <a class="nf-craft__cta" href="{{ section.settings.cta_link | default: '/pages/about-naira' }}">{{ section.settings.cta_label }}</a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function scan() {
+      var nodes = document.querySelectorAll('[data-nf-reveal]:not(.nf-in)');
+      if (!('IntersectionObserver' in window)) {
+        for (var i = 0; i < nodes.length; i++) nodes[i].classList.add('nf-in');
+        return;
+      }
+      var io = new IntersectionObserver(function (entries, obs) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) { entries[k].target.classList.add('nf-in'); obs.unobserve(entries[k].target); }
+        }
+      }, { threshold: 0.03 });
+      for (var j = 0; j < nodes.length; j++) io.observe(nodes[j]);
+    }
+    if (!window.__nfRevealBound) {
+      window.__nfRevealBound = true;
+      document.addEventListener('shopify:section:load', scan);
+      window.addEventListener('load', scan);
+    }
+    scan();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "NF Craftsmanship",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    { "type": "header", "content": "Images" },
+    { "type": "image_picker", "id": "image_main", "label": "Main image", "info": "Defaults to the ported nf-craftsmanship-main.webp theme asset." },
+    { "type": "text", "id": "image_main_alt", "label": "Main image alt text", "default": "Hand embroidery craftsmanship" },
+    { "type": "image_picker", "id": "image_overlay", "label": "Overlapping image", "info": "Defaults to the ported nf-craftsmanship-overlay.webp theme asset." },
+    { "type": "text", "id": "image_overlay_alt", "label": "Overlapping image alt text", "default": "Uniquely yours customisation" },
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "heading_lead", "label": "Heading, first line", "default": "Statement pieces," },
+    { "type": "text", "id": "heading_italic", "label": "Heading, italic line", "default": "made by human hands." },
+    { "type": "textarea", "id": "body_1", "label": "Paragraph 1", "default": "Heritage is often assumed to be a thing of the past. But Naira brings together traditional techniques with modern design." },
+    { "type": "textarea", "id": "body_2", "label": "Paragraph 2", "default": "Every piece has intricate details, soft and luxurious fabrics, and custom designs that the contemporary woman can move through in, effortlessly." },
+    { "type": "header", "content": "Call to action" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "OUR STORY" },
+    { "type": "url", "id": "cta_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "NF Craftsmanship" }]
+}
+{% endschema %}

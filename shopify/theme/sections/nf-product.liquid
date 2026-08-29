@@ -1,0 +1,502 @@
+{%- comment -%}
+  ═══════════════════════════════════════════════════════════════════
+  Naira Flore — product page
+  Ported from src/pages/JewelDetail.tsx + ProductDetail.tsx.
+
+  Add-to-cart posts to routes.cart_add_url (always same-origin) and
+  nf-cart.js upgrades it into an AJAX call that opens the drawer, so
+  nothing ever navigates to a myshopify.com host.
+
+  Rating reads product.metafields.reviews.rating / rating_count — the
+  convention every Shopify review app writes to. The React site's
+  rating comes from a bundled review dataset that has no Shopify
+  equivalent yet; rather than hardcode those numbers into Liquid, the
+  block simply doesn't render until the metafield exists.
+
+  The arrival date is computed client-side, as it is in React — Liquid
+  has no working-day arithmetic, and a build-time date would be stale
+  the next morning.
+  ═══════════════════════════════════════════════════════════════════
+{%- endcomment -%}
+
+<script src="{{ 'nf-cart.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign v = product.selected_or_first_available_variant
+  if v == blank
+    assign v = product.variants.first
+  endif
+  assign uid = section.id
+  assign sold_out = false
+  unless v.available
+    assign sold_out = true
+  endunless
+
+  assign t = product.type | downcase
+  assign cat = 'Necklaces'
+  if t contains 'earr' or t contains 'stud' or t contains 'hoop' or t contains 'huggie'
+    assign cat = 'Earrings'
+  elsif t contains 'brac' or t contains 'cuff' or t contains 'ankl'
+    assign cat = 'Bracelets'
+  elsif t contains 'ring' or t contains 'band'
+    assign cat = 'Rings'
+  endif
+
+  assign rating = product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value
+
+  assign pct = 0
+  if v.compare_at_price > v.price
+    assign diff = v.compare_at_price | minus: v.price | times: 100.0
+    assign pct = diff | divided_by: v.compare_at_price | round
+  endif
+
+  assign wa = section.settings.whatsapp_url
+  assign wa_msg = product.title | url_encode
+-%}
+
+<div class="nf nf-pdp" data-nf-pdp>
+
+  <nav class="nf-pdp__crumb" aria-label="Breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a><span aria-hidden="true">/</span>
+    <a href="{{ routes.all_products_collection_url }}">Jewellery</a><span aria-hidden="true">/</span>
+    <span aria-current="page">{{ product.title }}</span>
+  </nav>
+
+  <div class="nf-pdp__layout">
+
+    {%- comment -%} ── Gallery ── {%- endcomment -%}
+    <div class="nf-pdp__gallery">
+      {%- if product.media.size > 0 -%}
+        <div class="nf-pdp__rail" data-nf-rail>
+          {%- for media in product.media -%}
+            {%- comment -%} Liquid has no ternary; first image must load eagerly (LCP). {%- endcomment -%}
+            {%- assign img_loading = 'lazy' -%}
+            {%- if forloop.first -%}{%- assign img_loading = 'eager' -%}{%- endif -%}
+            <figure class="nf-pdp__slide">
+              {{ media.preview_image | image_url: width: 1400 | image_tag:
+                   loading: img_loading,
+                   sizes: '(min-width: 1024px) 50vw, 100vw',
+                   alt: media.alt | default: product.title,
+                   class: 'nf-pdp__img' }}
+            </figure>
+          {%- endfor -%}
+        </div>
+        {%- if product.media.size > 1 -%}
+          {%- comment -%}
+            Baymard: 40% of mobile sites support no image gestures and never say
+            so. The counter is the affordance — it tells the shopper more photos
+            exist without needing a swipe to discover it.
+          {%- endcomment -%}
+          <p class="nf-pdp__counter" data-nf-counter aria-live="polite">
+            <span data-nf-idx>1</span> / {{ product.media.size }}
+          </p>
+        {%- endif -%}
+        <p class="nf-pdp__zoomhint">Tap to zoom</p>
+      {%- else -%}
+        <div class="nf-pdp__slide">{{ 'product-1' | placeholder_svg_tag: 'nf-pdp__img' }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Details ── {%- endcomment -%}
+    <div class="nf-pdp__details">
+
+      <div class="nf-pdp__toprow">
+        <p class="nf-pdp__eyebrow">{{ cat | upcase }} · DEMI-GOLD</p>
+        {%- if rating and rating_count -%}
+          <a class="nf-pdp__rating" href="#customer-reviews"
+             aria-label="Rated {{ rating }} out of 5 from {{ rating_count }} reviews. Jump to reviews.">
+            <span aria-hidden="true" class="nf-pdp__star">★</span>
+            <span class="nf-pdp__rating-n">{{ rating }}</span>
+            <span class="nf-pdp__rating-c">({{ rating_count }})</span>
+          </a>
+        {%- endif -%}
+      </div>
+
+      <h1 class="nf-pdp__title">{{ product.title }}</h1>
+
+      <div class="nf-pdp__price-row" id="product-price">
+        <span class="nf-pdp__price" data-nf-price>{{ v.price | money }}</span>
+        {%- if v.compare_at_price > v.price -%}
+          <s class="nf-pdp__was">{{ v.compare_at_price | money }}</s>
+          <span class="nf-pdp__off">{{ pct }}% OFF</span>
+        {%- endif -%}
+        <span class="nf-pdp__tax">inclusive of all taxes</span>
+      </div>
+      <p class="nf-pdp__mrp">MRP inclusive of all taxes · flat ₹150 insured shipping across India</p>
+
+      <div class="nf-pdp__rule"></div>
+
+      {%- comment -%} ── Size ── {%- endcomment -%}
+      <div class="nf-pdp__size">
+        <div class="nf-pdp__size-head">
+          <span class="nf-pdp__label">{% if cat == 'Rings' %}Ring Size (US){% else %}Size{% endif %}</span>
+          {%- if wa != blank -%}
+            <a class="nf-pdp__link" href="{{ wa }}" target="_blank" rel="noopener noreferrer">
+              {% if cat == 'Rings' %}Size chart{% else %}Sizing help{% endif %}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- if cat == 'Rings' -%}
+          {%- comment -%}
+            Buttons, not a dropdown. Baymard: 57% of sites hide size behind a
+            select, which conceals both the range and what's available until
+            it's opened. Three sizes fit one row at 390px.
+          {%- endcomment -%}
+          {%- comment -%}
+            Ring size is a LINE ITEM PROPERTY, not a variant. No ring in this
+            catalogue has more than one Shopify variant — the React site carries
+            size as a cart line attribute (SIZE_ATTRIBUTE = "Size" in
+            src/lib/shopify.ts), so the order still records which size was
+            chosen. Reading product.variants here would render a single size and
+            silently lose the shopper's choice.
+          {%- endcomment -%}
+          <div role="radiogroup" aria-label="Ring size, US" class="nf-pdp__sizes">
+            {%- assign ring_sizes = section.settings.ring_sizes | split: ',' -%}
+            {%- assign preorder_sizes = section.settings.ring_preorder_sizes | split: ',' -%}
+            {%- for rs in ring_sizes -%}
+              {%- assign rs = rs | strip -%}
+              {%- assign is_pre = false -%}
+              {%- for ps in preorder_sizes -%}
+                {%- assign ps_trimmed = ps | strip -%}
+                {%- if ps_trimmed == rs -%}{%- assign is_pre = true -%}{%- endif -%}
+              {%- endfor -%}
+              <button type="button" role="radio" class="nf-pdp__size-btn{% if forloop.first %} is-active{% endif %}"
+                      aria-checked="{% if forloop.first %}true{% else %}false{% endif %}"
+                      data-nf-size="US {{ rs }}"{% if is_pre %} data-preorder="true"{% endif %}>
+                US {{ rs }}
+                {%- if is_pre -%}<span class="nf-pdp__size-note">Pre-order</span>{%- endif -%}
+              </button>
+            {%- endfor -%}
+          </div>
+          {%- comment -%} Substitute on the server too — JS only fires on click, so
+            the first paint would otherwise show a literal %s. {%- endcomment -%}
+          {%- assign first_label = ring_sizes | first | strip | prepend: 'US ' -%}
+          <p class="nf-pdp__size-help" data-nf-size-help>{{ section.settings.size_in_stock_note | replace: '%s', first_label }}</p>
+        {%- else -%}
+          <div class="nf-pdp__onesize">One Size · adjustable</div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ── Quantity ── {%- endcomment -%}
+      <div class="nf-pdp__qty-block">
+        <span class="nf-pdp__label">Quantity</span>
+        <div class="nf-pdp__qty">
+          <button type="button" aria-label="Decrease quantity" data-nf-qty="-1">−</button>
+          <span data-nf-qty-val aria-live="polite">1</span>
+          <button type="button" aria-label="Increase quantity" data-nf-qty="1">+</button>
+        </div>
+      </div>
+
+      {%- comment -%} ── CTA ── {%- endcomment -%}
+      <div class="nf-pdp__actions" id="product-actions">
+        {%- form 'product', product, id: 'NfPdpForm', class: 'nf-pdp__form', data-nf-add: 'true' -%}
+          <input type="hidden" name="id" value="{{ v.id }}" data-nf-variant-input>
+          <input type="hidden" name="quantity" value="1" data-nf-qty-input>
+          {%- if cat == 'Rings' -%}
+            {%- assign first_size = section.settings.ring_sizes | split: ',' | first | strip -%}
+            <input type="hidden" name="properties[Size]" value="US {{ first_size }}" data-nf-size-input>
+          {%- endif -%}
+          <button type="submit" name="add" class="nf-pdp__add" data-nf-add-button {% if sold_out %}disabled{% endif %}>
+            {% if sold_out %}Sold Out{% else %}Add to Cart{% endif %}
+          </button>
+        {%- endform -%}
+
+        <button type="button" class="nf-pdp__buy" data-nf-buy {% if sold_out %}disabled{% endif %}>
+          {% if sold_out %}Sold Out{% else %}Shop Now{% endif %}
+        </button>
+
+        <p class="nf-pdp__trust">
+          {%- if sold_out -%}
+            This piece is currently sold out — we'll let you know the moment it's back.
+          {%- else -%}
+            {%- comment -%}
+              60% of Baymard's subjects looked for the returns policy on the
+              product page itself; 44% of sites neither show nor link it there.
+            {%- endcomment -%}
+            Secure payments · Insured delivery ·
+            <a href="/policies/refund-policy">7-day returns</a>
+          {%- endif -%}
+        </p>
+
+        <div class="nf-pdp__pair">
+          <button type="button" class="nf-pdp__ghost" data-nf-wishlist aria-pressed="false">
+            {%- render 'nf-icon-heart' -%} <span data-nf-wishlist-label>Wishlist</span>
+          </button>
+          {%- if wa != blank -%}
+            <a class="nf-pdp__ghost" href="{{ wa }}" target="_blank" rel="noopener noreferrer">
+              {%- render 'nf-icon-whatsapp' -%} WhatsApp
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- comment -%} ── Delivery ── {%- endcomment -%}
+      <div class="nf-pdp__delivery">
+        <span class="nf-pdp__truck" aria-hidden="true">⛟</span>
+        <p><strong data-nf-arrives>{{ section.settings.preorder_note }}</strong>
+           Dispatched insured from our Mumbai atelier, with easy 7-day returns.</p>
+      </div>
+
+      {%- comment -%} ── Offers ── {%- endcomment -%}
+      <div class="nf-pdp__offers">
+        <p class="nf-pdp__offers-head">AVAILABLE OFFERS</p>
+        <ul>
+          <li><span aria-hidden="true" class="nf-pdp__bullet">✦</span><span><strong class="nf-pdp__code">NAIRA10</strong>10% off your first order</span></li>
+          <li><span aria-hidden="true" class="nf-pdp__bullet">✦</span><span>Flat ₹150 insured shipping — anywhere in India, any order size</span></li>
+          <li><span aria-hidden="true" class="nf-pdp__bullet">✦</span><span>2-year plating assurance on all demi-fine pieces</span></li>
+        </ul>
+      </div>
+
+      {%- comment -%} ── Availability ── {%- endcomment -%}
+      <p class="nf-pdp__stock{% if sold_out %} is-out{% endif %}" data-nf-stock>
+        {% if sold_out %}{{ section.settings.sold_out_label }}{% else %}{{ section.settings.in_stock_label }}{% endif %}
+      </p>
+
+      {%- if section.settings.show_description and product.description != blank -%}
+        <div class="nf-pdp__block">
+          <p class="nf-pdp__block-head">{{ section.settings.details_heading | escape }}</p>
+          <div class="nf-pdp__desc">{{ product.description }}</div>
+        </div>
+      {%- endif -%}
+      {%- if section.settings.care_text != blank -%}<div class="nf-pdp__note">{{ section.settings.care_text }}</div>{%- endif -%}
+      {%- if section.settings.disclaimer_text != blank -%}
+        <div class="nf-pdp__block">
+          <p class="nf-pdp__block-head">{{ section.settings.disclaimer_heading | escape }}</p>
+          <p class="nf-pdp__disclaimer">{{ section.settings.disclaimer_text }}</p>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Mobile sticky buy bar — only once the inline CTA is off screen {%- endcomment -%}
+  <div class="nf-pdp__bar" data-nf-bar hidden>
+    <div class="nf-pdp__bar-price"><span data-nf-bar-price>{{ v.price | money }}</span></div>
+    <button type="button" class="nf-pdp__bar-cta" data-nf-bar-add {% if sold_out %}disabled{% endif %}>
+      {% if sold_out %}Sold Out{% else %}Add to Cart{% endif %}
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-nf-pdp]');
+  if (!root) return;
+
+  /* ---- size selection ---- */
+  var sizeInput = root.querySelector('[data-nf-size-input]');
+  var helpEl = root.querySelector('[data-nf-size-help]');
+  var IN_STOCK = {{ section.settings.size_in_stock_note | json }};
+  var PREORDER = {{ section.settings.size_preorder_note | json }};
+  root.querySelectorAll('[data-nf-size]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      root.querySelectorAll('[data-nf-size]').forEach(function (o) {
+        o.classList.remove('is-active'); o.setAttribute('aria-checked', 'false');
+      });
+      b.classList.add('is-active'); b.setAttribute('aria-checked', 'true');
+      if (sizeInput) sizeInput.value = b.getAttribute('data-nf-size');
+      if (helpEl) helpEl.textContent = b.hasAttribute('data-preorder')
+        ? PREORDER.replace('%s', b.getAttribute('data-nf-size'))
+        : IN_STOCK.replace('%s', b.getAttribute('data-nf-size'));
+    });
+  });
+
+  /* ---- quantity ---- */
+  var qtyVal = root.querySelector('[data-nf-qty-val]');
+  var qtyInput = root.querySelector('[data-nf-qty-input]');
+  root.querySelectorAll('[data-nf-qty]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var n = Math.max(1, parseInt(qtyVal.textContent, 10) + parseInt(b.getAttribute('data-nf-qty'), 10));
+      qtyVal.textContent = n; if (qtyInput) qtyInput.value = n;
+    });
+  });
+
+  /* ---- arrival date ----
+     Baymard: 41% of sites quote a shipping speed instead of a date. Computed
+     here rather than in Liquid because a build-time date goes stale overnight. */
+  var arrives = root.querySelector('[data-nf-arrives]');
+  if (arrives) {
+    var d = new Date(), added = 0;
+    while (added < {{ section.settings.delivery_working_days }}) {
+      d.setDate(d.getDate() + 1);
+      var wd = d.getDay();
+      if (wd !== 0 && wd !== 6) added++;
+    }
+    arrives.textContent = 'Order today, arrives by ' +
+      d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }) + '.';
+  }
+
+  /* ---- wishlist ---- */
+  var wish = root.querySelector('[data-nf-wishlist]');
+  if (wish) wish.addEventListener('click', function () {
+    var on = wish.getAttribute('aria-pressed') === 'true';
+    wish.setAttribute('aria-pressed', on ? 'false' : 'true');
+    wish.classList.toggle('is-on', !on);
+    var lbl = wish.querySelector('[data-nf-wishlist-label]');
+    if (lbl) lbl.textContent = on ? 'Wishlist' : 'Saved';
+  });
+
+  /* ---- Shop Now / sticky bar both submit the same form ---- */
+  var form = root.querySelector('.nf-pdp__form');
+  ['[data-nf-buy]', '[data-nf-bar-add]'].forEach(function (sel) {
+    var el = root.querySelector(sel);
+    if (el && form) el.addEventListener('click', function () { form.requestSubmit(); });
+  });
+
+  /* ---- sticky bar: show once the inline CTA block scrolls out of view ---- */
+  var bar = root.querySelector('[data-nf-bar]');
+  var actions = root.querySelector('#product-actions');
+  if (bar && actions && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      bar.hidden = entries[0].isIntersecting;
+    }, { rootMargin: '0px 0px -40% 0px' }).observe(actions);
+  }
+
+  /* ---- gallery counter ---- */
+  var rail = root.querySelector('[data-nf-rail]');
+  var idx = root.querySelector('[data-nf-idx]');
+  if (rail && idx) rail.addEventListener('scroll', function () {
+    var i = Math.round(rail.scrollLeft / rail.clientWidth) + 1;
+    if (String(i) !== idx.textContent) idx.textContent = i;
+  }, { passive: true });
+})();
+</script>
+
+{% stylesheet %}
+.nf-pdp { max-width: 1400px; margin-inline: auto; padding-bottom: 6rem; }
+.nf-pdp__crumb { display: none; align-items: center; gap: .5rem; padding: 1rem 1.5rem .75rem; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-4); color: hsl(0 0% 55%); }
+.nf-pdp__crumb a { color: inherit; text-decoration: none; }
+.nf-pdp__crumb a:hover { color: var(--nf-ink); }
+.nf-pdp__crumb [aria-current] { color: hsl(0 0% 30%); }
+@media (min-width: 768px) { .nf-pdp__crumb { display: flex; } }
+
+.nf-pdp__layout { display: flex; flex-direction: column; gap: 1.25rem; }
+@media (min-width: 1024px) { .nf-pdp__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; padding-inline: 1.5rem; } }
+
+.nf-pdp__gallery { position: relative; }
+.nf-pdp__rail { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.nf-pdp__rail::-webkit-scrollbar { display: none; }
+.nf-pdp__slide { flex: 0 0 100%; scroll-snap-align: center; margin: 0; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--nf-ivory-deep); cursor: zoom-in; }
+
+/* Desktop shows every photo once in a grid, as the React page does. Left as a
+   horizontal rail it overflowed the viewport — 2358px wide at a 1440 viewport,
+   because each slide is flex-basis 100% of the container. */
+@media (min-width: 1024px) {
+  .nf-pdp__rail { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; overflow: visible; scroll-snap-type: none; }
+  .nf-pdp__slide { flex: none; aspect-ratio: 4 / 5; }
+  .nf-pdp__slide:first-child:nth-last-child(odd) { grid-column: span 2; }
+  .nf-pdp__counter, .nf-pdp__zoomhint { display: none; }
+}
+.nf-pdp__img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.nf-pdp__counter, .nf-pdp__zoomhint { position: absolute; bottom: .75rem; margin: 0; padding: .25rem .6rem; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-8); color: hsl(0 0% 25%); background-color: hsla(0,0%,100%,.86); }
+.nf-pdp__counter { right: .75rem; }
+.nf-pdp__zoomhint { left: .75rem; }
+
+.nf-pdp__details { display: flex; flex-direction: column; padding: 0 1rem; }
+@media (min-width: 1024px) { .nf-pdp__details { padding: .5rem 2rem; position: sticky; top: 1.5rem; } }
+
+.nf-pdp__toprow { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 26px; }
+.nf-pdp__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-34); color: var(--nf-gold-deep); }
+.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: .25rem; padding: .25rem 0 .25rem .5rem; font-size: 12px; color: hsl(0 0% 35%); text-decoration: none; }
+.nf-pdp__star { color: var(--nf-gold-deep); }
+.nf-pdp__rating-n { font-weight: 500; color: hsl(0 0% 15%); }
+.nf-pdp__rating-c { text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 48%); }
+
+.nf-pdp__title { margin: .5rem 0 0; font-family: var(--nf-font-editorial); font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: hsl(0 0% 12%); }
+@media (min-width: 768px) { .nf-pdp__title { font-size: 32px; } }
+@media (min-width: 1024px) { .nf-pdp__title { font-size: 36px; } }
+
+.nf-pdp__price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; margin-top: .75rem; }
+.nf-pdp__price { font-family: var(--nf-font-editorial); font-size: 24px; font-weight: 600; color: hsl(0 0% 12%); }
+@media (min-width: 768px) { .nf-pdp__price { font-size: 28px; } }
+.nf-pdp__was { font-size: 14px; color: hsl(0 0% 55%); }
+.nf-pdp__off { font-size: 11.5px; font-weight: 500; letter-spacing: var(--nf-track-4); color: #8A6A2A; }
+.nf-pdp__tax { font-size: 11px; letter-spacing: .06em; color: hsl(0 0% 48%); }
+.nf-pdp__mrp { margin: .375rem 0 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 48%); }
+.nf-pdp__rule { margin: 1rem 0; border-top: 1px solid hsl(0 0% 88%); }
+
+.nf-pdp__label { font-family: var(--nf-font-label); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-16); color: hsl(0 0% 25%); }
+.nf-pdp__size-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .625rem; }
+.nf-pdp__link { font-size: 11px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); min-height: 44px; display: inline-flex; align-items: center; padding-inline: .5rem; }
+.nf-pdp__sizes { display: flex; flex-wrap: wrap; gap: .5rem; }
+.nf-pdp__size-btn { min-width: 64px; min-height: 44px; padding-inline: 1rem; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); font-size: 13px; font-weight: 500; letter-spacing: .02em; cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
+.nf-pdp__size-btn.is-active { border-color: hsl(0 0% 12%); background-color: hsl(0 0% 12%); color: #fff; }
+.nf-pdp__size-note { display: block; font-size: 9.5px; font-weight: 400; text-transform: uppercase; letter-spacing: var(--nf-track-8); opacity: .7; }
+.nf-pdp__size-help { margin: .5rem 0 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 45%); }
+.nf-pdp__onesize { display: flex; align-items: center; width: 100%; height: 44px; padding-inline: .75rem; border: 1px solid hsl(0 0% 80%); font-size: 13px; color: hsl(0 0% 20%); }
+
+.nf-pdp__qty-block { margin-top: 1rem; }
+.nf-pdp__qty-block .nf-pdp__label { display: block; margin-bottom: .625rem; }
+.nf-pdp__qty { display: inline-flex; align-items: center; border: 1px solid hsl(0 0% 80%); }
+.nf-pdp__qty button { width: 44px; height: 44px; border: 0; background: none; cursor: pointer; font-size: 16px; color: hsl(0 0% 30%); }
+.nf-pdp__qty button:hover { background-color: var(--nf-ivory-deep); }
+.nf-pdp__qty span { width: 48px; text-align: center; font-size: 13px; font-weight: 500; color: hsl(0 0% 20%); }
+
+.nf-pdp__actions { margin-top: 1.5rem; }
+.nf-pdp__form { margin: 0; }
+.nf-pdp__add, .nf-pdp__buy { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 0; cursor: pointer; font-family: var(--nf-font-label); font-size: 12px; font-weight: 500; text-transform: uppercase; transition: opacity .2s; }
+.nf-pdp__add { height: 54px; background-color: var(--nf-gold-deep); color: #fff; letter-spacing: var(--nf-track-16); }
+.nf-pdp__buy { height: 50px; margin-top: .75rem; background-color: hsl(0 0% 12%); color: #fff; letter-spacing: var(--nf-track-16); }
+.nf-pdp__add:hover, .nf-pdp__buy:hover { opacity: .9; }
+.nf-pdp__add:disabled, .nf-pdp__buy:disabled { opacity: .6; cursor: not-allowed; }
+.nf-pdp__trust { margin: .5rem 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
+.nf-pdp__trust a { color: hsl(0 0% 35%); text-decoration: underline; text-underline-offset: 4px; }
+.nf-pdp__pair { display: flex; gap: .75rem; margin-top: .75rem; }
+.nf-pdp__ghost { flex: 1; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid hsl(0 0% 74%); background: none; color: hsl(0 0% 30%); cursor: pointer; text-decoration: none; font-family: var(--nf-font-label); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-10); }
+.nf-pdp__ghost:hover { border-color: hsl(0 0% 45%); }
+.nf-pdp__ghost svg { width: 14px; height: 14px; }
+.nf-pdp__ghost.is-on svg { fill: hsl(0 70% 55%); color: hsl(0 70% 55%); }
+
+.nf-pdp__delivery { display: flex; align-items: flex-start; gap: .5rem; margin-top: 1.25rem; padding: .625rem .75rem; border: 1px solid hsl(36 40% 80%); background-color: hsl(36 60% 96%); }
+.nf-pdp__truck { color: var(--nf-gold-shadow); font-size: 14px; line-height: 1.4; }
+.nf-pdp__delivery p { margin: 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 32%); }
+.nf-pdp__delivery strong { font-weight: 500; }
+
+.nf-pdp__offers { margin-top: .75rem; padding: .75rem; border: 1px solid hsl(0 0% 88%); }
+.nf-pdp__offers-head { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-24); color: hsl(0 0% 45%); }
+.nf-pdp__offers ul { list-style: none; margin: .5rem 0 0; padding: 0; }
+.nf-pdp__offers li { display: flex; align-items: flex-start; gap: .5rem; margin-top: .375rem; font-size: 12px; line-height: 1.6; color: hsl(0 0% 32%); }
+.nf-pdp__bullet { color: var(--nf-gold-deep); }
+.nf-pdp__code { margin-right: .375rem; padding: 1px .375rem; border: 1px solid hsl(36 40% 76%); font-size: 10.5px; letter-spacing: var(--nf-track-10); font-weight: 500; color: #8A6A2A; }
+
+.nf-pdp__stock { display: inline-flex; align-items: center; gap: .375rem; margin: .75rem 0 0; font-family: var(--nf-font-label); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-10); color: hsl(142 60% 30%); }
+.nf-pdp__stock::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
+.nf-pdp__stock.is-out { color: hsl(0 65% 42%); }
+
+.nf-pdp__block { margin-top: 1.125rem; padding-top: 1.125rem; border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); }
+.nf-pdp__block-head { margin: 0 0 .5rem; font-family: var(--nf-font-label); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: var(--nf-track-10); color: var(--nf-ink); }
+.nf-pdp__desc { font-family: var(--nf-font-editorial); font-size: 15px; line-height: 1.7; color: rgb(var(--nf-ink-rgb) / .75); }
+.nf-pdp__note { margin-top: .5rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.6; color: rgb(var(--nf-ink-rgb) / .65); }
+.nf-pdp__disclaimer { margin: 0; font-family: var(--nf-font-editorial); font-size: 13px; line-height: 1.6; color: rgb(var(--nf-ink-rgb) / .5); }
+
+/* [hidden] loses to an explicit display:, so the bar opts out of its own. */
+.nf-pdp__bar[hidden] { display: none; }
+.nf-pdp__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: .75rem; padding: .625rem .875rem; background-color: #fff; border-top: 1px solid hsl(0 0% 88%); box-shadow: 0 -6px 18px hsla(0,0%,0%,.06); }
+@media (min-width: 1024px) { .nf-pdp__bar { display: none !important; } }
+.nf-pdp__bar-price { font-family: var(--nf-font-editorial); font-size: 18px; font-weight: 600; color: hsl(0 0% 12%); }
+.nf-pdp__bar-cta { flex: 1; height: 46px; border: 0; background-color: var(--nf-gold-deep); color: #fff; cursor: pointer; font-family: var(--nf-font-label); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-16); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NF Product",
+  "settings": [
+    { "type": "text", "id": "in_stock_label", "label": "In stock label", "default": "In Stock" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out label", "default": "Sold Out" },
+    { "type": "text", "id": "whatsapp_url", "label": "WhatsApp link", "default": "https://www.whatsapp.com/catalog/919561557935/?app_absent=0", "info": "Leave blank to hide." },
+    { "type": "text", "id": "preorder_note", "label": "Fallback delivery note", "default": "Delivery in 3–5 working days." },
+    { "type": "range", "id": "delivery_working_days", "label": "Working days to delivery", "min": 1, "max": 15, "step": 1, "default": 5 },
+    { "type": "text", "id": "ring_sizes", "label": "Ring sizes (US, comma separated)", "default": "6,7" },
+    { "type": "text", "id": "ring_preorder_sizes", "label": "Which ring sizes are pre-order", "default": "7" },
+    { "type": "text", "id": "size_in_stock_note", "label": "In-stock size note", "default": "%s is in stock and ships now." },
+    { "type": "text", "id": "size_preorder_note", "label": "Pre-order size note", "default": "%s is a pre-order — 45 days delivery." },
+    { "type": "checkbox", "id": "show_description", "label": "Show description", "default": true },
+    { "type": "text", "id": "details_heading", "label": "Description heading", "default": "Product Details" },
+    { "type": "richtext", "id": "care_text", "label": "Care note", "default": "<p><strong>Care guide</strong>: wipe with a soft dry cloth. Avoid perfume and water contact.</p>" },
+    { "type": "text", "id": "disclaimer_heading", "label": "Disclaimer heading", "default": "Disclaimer" },
+    { "type": "richtext", "id": "disclaimer_text", "label": "Disclaimer", "default": "<p>Product colour may vary slightly with photographic lighting and your screen settings.</p>" }
+  ],
+  "presets": [{ "name": "NF Product" }]
+}
+{% endschema %}

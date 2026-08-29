@@ -1,0 +1,78 @@
+/* ─────────────────────────────────────────────────────────────
+   Naira Flore — ring atelier backdrop
+   Styles for snippets/nf-ring-backdrop.liquid, which shipped with the
+   theme but had NO stylesheet: `.nf-bd` matched nothing, so the
+   pressed-flower wash, the drifting orbs and the parallax petals were
+   all invisible. Keyframe values are copied from
+   src/components/jewellery/RingAtelierBackdrop.tsx.
+   ───────────────────────────────────────────────────────────── */
+
+.nf-bd { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.nf-bd--page   { position: fixed; }
+.nf-bd--sticky { position: sticky; top: 0; height: 100vh; }
+
+/* pressed-flower paper wash */
+.nf-bd__wash {
+  position: absolute; inset: 0;
+  background-repeat: repeat; background-size: 420px auto;
+  opacity: .22; mix-blend-mode: multiply;
+}
+
+/* warm sun-faded gradient */
+.nf-bd__sun {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 42%, #FFF6E2 0%, #E5B9A4 58%, transparent 74%);
+  opacity: .3;
+}
+
+/* 3D drifting layer */
+.nf-bd__scene { position: absolute; inset: 0; perspective: 900px; perspective-origin: 50% 45%; }
+.nf-bd__layer { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.22,1,.36,1); }
+
+.nf-bd__orb {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, rgb(255 255 255 / .75), rgb(255 189 168 / .28) 46%, transparent 72%);
+  filter: blur(6px);
+  will-change: transform, opacity;
+}
+@keyframes nf-bd-orb {
+  0%   { transform: translateZ(var(--z, 0px)) translate3d(0, 0, 0) scale(1);       opacity: .35; }
+  50%  { transform: translateZ(var(--z, 0px)) translate3d(-16px, 18px, 0) scale(1.08); opacity: .5; }
+  100% { transform: translateZ(var(--z, 0px)) translate3d(0, 0, 0) scale(1);       opacity: .35; }
+}
+
+.nf-bd__petal { position: absolute; display: block; will-change: transform; }
+@keyframes nf-bd-float {
+  0%   { transform: rotate(var(--r, 0deg)) translate3d(0, 0, 0); }
+  50%  { transform: rotate(var(--r, 0deg)) translate3d(var(--dx, 0px), var(--dy, 0px), 0); }
+  100% { transform: rotate(var(--r, 0deg)) translate3d(0, 0, 0); }
+}
+
+/* touch blooms */
+.nf-bd__blooms { position: absolute; inset: 0; }
+.nf-bd__bloom { position: absolute; transform: translate(-50%, -50%); }
+.nf-bd__bloom span {
+  position: absolute; left: 0; top: 0; display: block;
+  transform-origin: 50% 100%;
+  animation: nf-bd-petal-open 1500ms cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes nf-bd-petal-open {
+  0%   { transform: rotate(var(--a)) translateY(0) scale(.14) rotate(-12deg); opacity: 0; }
+  18%  { opacity: .95; }
+  62%  { transform: rotate(var(--a)) translateY(calc(-0.86 * var(--d))) scale(1.02) rotate(2deg); opacity: .8; }
+  100% { transform: rotate(var(--a)) translateY(calc(-1.06 * var(--d))) scale(.94) rotate(6deg); opacity: 0; }
+}
+.nf-bd__ring { position: absolute; left: 0; top: 0; border-radius: 50%; border: 1px solid rgb(201 154 76 / .5);
+  transform: translate(-50%, -50%); animation: nf-bd-ring 1500ms ease-out forwards; }
+@keyframes nf-bd-ring {
+  0%   { transform: translate(-50%, -50%) scale(.18); opacity: .6; }
+  55%  { opacity: .3; }
+  100% { transform: translate(-50%, -50%) scale(1.75); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Reduced motion: the wash stays, everything that drifts stops. */
+  .nf-bd__orb, .nf-bd__petal { animation: none !important; }
+  .nf-bd__layer { transition: none; }
+  .nf-bd__blooms { display: none; }
+}

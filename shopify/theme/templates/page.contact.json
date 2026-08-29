@@ -1,0 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-contact",
+      "blocks": {
+        "card_visit": {
+          "type": "card",
+          "settings": {
+            "icon": "pin",
+            "title": "Visit Us",
+            "line_1": "Naira Design Studio",
+            "line_2": "Flat 7, Veeraj Blossom, Karanyogi Nagar",
+            "line_3": "Nashik, Maharashtra 422002"
+          }
+        },
+        "card_call": {
+          "type": "card",
+          "settings": {
+            "icon": "phone",
+            "title": "Call or WhatsApp",
+            "line_1": "+91 9561557935",
+            "line_2": "Mon – Sat, 10 AM – 7 PM IST"
+          }
+        },
+        "card_mail": {
+          "type": "card",
+          "settings": {
+            "icon": "mail",
+            "title": "Email Support",
+            "line_1": "shopatnaira@gmail.com",
+            "line_2": "Replies within 24 to 48 hours"
+          }
+        }
+      },
+      "block_order": [
+        "card_visit",
+        "card_call",
+        "card_mail"
+      ],
+      "settings": {
+        "hero_eyebrow": "Get in touch",
+        "hero_heading": "Contact <span class=\"nf-italic\">Us</span>",
+        "hero_text": "We'd love to hear from you. Whether you have questions about our collections, custom designs, or orders, our team is here to help.",
+        "hero_background": "#FBF6F1",
+        "form_eyebrow": "Send a message",
+        "form_heading": "We're Here to <span class=\"nf-italic\">Help</span>",
+        "label_name": "Full Name",
+        "label_email": "Email Address",
+        "label_phone": "Phone Number",
+        "label_subject": "Subject",
+        "label_message": "Your Message",
+        "submit_label": "Submit Message",
+        "success_message": "Thank you. Your message has reached the atelier — we usually reply within 24 to 48 hours.",
+        "response_note": "Our team usually responds within 24–48 hours.",
+        "show_whatsapp": true,
+        "whatsapp_heading": "Need a quick <span class=\"nf-italic\">answer?</span>",
+        "whatsapp_text": "Chat with our team on WhatsApp for faster support.",
+        "whatsapp_button": "Chat on WhatsApp",
+        "whatsapp_link": "https://wa.me/919561557935",
+        "show_faq_shortcut": true,
+        "faq_heading": "Looking for quick <span class=\"nf-italic\">answers?</span>",
+        "faq_text": "Visit our FAQ page to find answers to common questions.",
+        "faq_button": "View FAQs",
+        "faq_link": "/pages/faqs"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

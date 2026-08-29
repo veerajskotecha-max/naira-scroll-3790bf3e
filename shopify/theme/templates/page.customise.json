@@ -1,0 +1,103 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-made-for-you",
+      "blocks": {
+        "mfy_s1": {
+          "type": "step",
+          "settings": {
+            "title": "Send Us Your Dream Outfit",
+            "text": "Share your inspiration with us on WhatsApp: a photo, a sketch, or even just an idea. We'll take it from there and begin bringing your vision to life."
+          }
+        },
+        "mfy_s2": {
+          "type": "step",
+          "settings": {
+            "title": "Explore Design Options",
+            "text": "Our team will send you design suggestions, colour palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin."
+          }
+        },
+        "mfy_s3": {
+          "type": "step",
+          "settings": {
+            "title": "Consultation Call",
+            "text": "We align on measurements, finishing details, and final design choices during a quick consultation to make sure everything is exactly how you want it."
+          }
+        },
+        "mfy_s4": {
+          "type": "step",
+          "settings": {
+            "title": "Delivered To You",
+            "text": "Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep, ready to wear."
+          }
+        },
+        "mfy_r1": {
+          "type": "reel",
+          "settings": {
+            "embed_url": "https://www.instagram.com/p/DVGbqSIjIQ3/embed/",
+            "caption": "Bride receiving her custom lehenga",
+            "link": "https://www.instagram.com/p/DVGbqSIjIQ3/"
+          }
+        },
+        "mfy_r2": {
+          "type": "reel",
+          "settings": {
+            "embed_url": "https://www.instagram.com/reel/DSSQu51EjKS/embed/",
+            "caption": "Hand embroidery in progress",
+            "link": "https://www.instagram.com/reel/DSSQu51EjKS/"
+          }
+        },
+        "mfy_r3": {
+          "type": "reel",
+          "settings": {
+            "embed_url": "https://www.instagram.com/p/DWHDChcDNOK/embed/",
+            "caption": "Final outfit reveal",
+            "link": "https://www.instagram.com/p/DWHDChcDNOK/"
+          }
+        }
+      },
+      "block_order": [
+        "mfy_s1",
+        "mfy_s2",
+        "mfy_s3",
+        "mfy_s4",
+        "mfy_r1",
+        "mfy_r2",
+        "mfy_r3"
+      ],
+      "settings": {
+        "cream": "#F7F3EF",
+        "hero_eyebrow": "Customise",
+        "hero_heading": "Design Your Dream<br>Outfit With <span class=\"nf-italic\">Naira</span>",
+        "hero_text": "Over 2,500 custom pieces handcrafted for brides, celebrations, and once-in-a-lifetime moments.",
+        "hero_button_label": "Begin Your Design",
+        "steps_eyebrow": "The process",
+        "steps_heading": "From idea to <span class=\"nf-italic\">doorstep</span>",
+        "journey_eyebrow": "Get started",
+        "journey_heading": "Start Your Custom <span class=\"nf-italic\">Journey</span>",
+        "journey_text": "Ready to bring your outfit to life? Chat with our design team and we will shape it together.",
+        "journey_button": "Chat on WhatsApp",
+        "journey_link": "https://wa.me/919561557935",
+        "stories_eyebrow": "Customer stories",
+        "stories_heading": "Where ideas become <span class=\"nf-italic\">Outfits</span>",
+        "show_faq_cta": true,
+        "faq_heading": "Have Questions?",
+        "faq_text": "Find answers on customisation, shipping and returns in our FAQ section.",
+        "faq_button": "View FAQs",
+        "faq_link": "/pages/faqs"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,0 +1,60 @@
+{%- comment -%}
+  Naira Flore — Concept review divider
+  Ported from src/pages/Concepts.tsx (Lovable repo).
+
+  Concepts.tsx is an INTERNAL review page: three jewellery-section concepts
+  (ConceptA / ConceptB / ConceptC) stacked with a labelled ink divider above
+  each so the client can compare and approve one. Only the divider belongs to
+  this slice — the concept components themselves live in
+  src/components/jewellery/concepts/ and are ported by the jewellery slice.
+
+  So this section is the divider, added once above each concept section in the
+  page template. The React page also set `noindex`; a section cannot write to
+  <head>, so keep the review page unpublished (or password-protected) rather
+  than relying on a robots tag.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-content.css' | asset_url | stylesheet_tag }}
+
+<div class="nf-doc nf-concepts">
+  <div class="nf-concepts__divider">
+    <span class="nf-concepts__badge">{{ section.settings.label | escape }}</span>
+    <span class="nf-concepts__note">{{ section.settings.note | escape }}</span>
+  </div>
+  {%- if section.settings.placeholder_text != blank -%}
+    <div class="nf-concepts__slot">
+      <p>{{ section.settings.placeholder_text | escape }}</p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Naira concept divider",
+  "tag": "section",
+  "class": "nf-concepts-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Concept label",
+      "default": "Concept A"
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Note",
+      "default": "The Ivory Atelier · Brand-light · Drag to spin"
+    },
+    {
+      "type": "textarea",
+      "id": "placeholder_text",
+      "label": "Placeholder note",
+      "info": "Shown under the divider until the concept section is added below it. Clear this once the real concept section is in place.",
+      "default": "Add the jewellery concept section directly below this divider."
+    }
+  ],
+  "presets": [{ "name": "Naira concept divider" }]
+}
+{% endschema %}

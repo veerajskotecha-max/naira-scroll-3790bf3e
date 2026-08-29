@@ -1,0 +1,19 @@
+{
+  "main-menu": { "title": "Main menu", "handle": "main-menu", "levels": 1, "links": [
+    { "title": "HOME", "url": "/", "type": "frontpage_link", "active": false, "links": [] },
+    { "title": "SHOP ALL", "url": "/collections/all", "type": "catalog_link", "active": false, "links": [] },
+    { "title": "ABOUT NAIRA", "url": "/pages/about-naira", "type": "page_link", "active": false, "links": [] },
+    { "title": "MADE FOR YOU", "url": "/pages/made-for-you", "type": "page_link", "active": false, "links": [] },
+    { "title": "CONTACT", "url": "/pages/contact", "type": "page_link", "active": false, "links": [] }
+  ]},
+  "footer": { "title": "Footer menu", "handle": "footer", "levels": 1, "links": [
+    { "title": "Search", "url": "/search", "type": "search_link", "active": false, "links": [] },
+    { "title": "Shop All", "url": "/collections", "type": "collections_link", "active": false, "links": [] },
+    { "title": "About Naira", "url": "/pages/about-naira", "type": "page_link", "active": false, "links": [] },
+    { "title": "Made for you", "url": "/pages/made-for-you", "type": "page_link", "active": false, "links": [] }
+  ]},
+  "menu": { "title": "MENU", "handle": "menu", "levels": 1, "links": [
+    { "title": "HOME", "url": "/", "type": "frontpage_link", "active": false, "links": [] },
+    { "title": "SHOP ALL", "url": "/collections/all", "type": "catalog_link", "active": false, "links": [] }
+  ]}
+}

@@ -1,0 +1,14 @@
+{%- comment -%}
+  Naira Flore icon: mail.
+  Ported from the inline SVG in src/components/Footer.tsx. Stroke 2 on a 24x24 grid; colour comes
+  from the parent through `currentColor`.
+
+  Accepts:
+  - size: {Number} pixel box, defaults to 16
+
+  Usage: {% render 'nf-icon-mail', size: 16 %}
+{%- endcomment -%}
+{%- liquid
+  assign icon_size = size | default: 16
+-%}
+<svg class="nf-icon" xmlns="http://www.w3.org/2000/svg" width="{{ icon_size }}" height="{{ icon_size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>

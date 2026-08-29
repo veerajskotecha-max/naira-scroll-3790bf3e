@@ -1,0 +1,184 @@
+{%- comment -%}
+  Naira Flore — Journal article
+  Ported from src/pages/JournalArticle.tsx (Lovable repo).
+
+  Renders the Shopify `article` object — not the hardcoded seoContent.ts
+  array. Preserved from the source: the gold reading-progress hairline, the
+  HOME / JOURNAL breadcrumb, the gold drop-cap on the intro, the hairline
+  before each h2, the "GILDED HOUR" aside and the "MORE FROM THE JOURNAL"
+  list. The drop cap applies to the article excerpt; if no excerpt is set the
+  body simply starts straight away.
+
+  Not ported: the per-article FAQ list (article.faqs). In Shopify that would
+  need an `article.metafields` FAQ list or an app — see the port report.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-content.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign words = article.content | strip_html | split: ' ' | size
+  assign minutes = words | divided_by: 200 | at_least: 1
+-%}
+
+{%- if section.settings.show_progress -%}
+  <div class="nf-progress" aria-hidden="true"><span class="nf-progress__bar"></span></div>
+{%- endif -%}
+
+<div class="nf-journal">
+  <article class="nf-article">
+    <nav class="nf-article__crumbs" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">{{ section.settings.crumb_home | escape }}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{{ blog.url }}">{{ blog.title | upcase | escape }}</a>
+    </nav>
+
+    <header class="nf-article__head">
+      <p class="nf-journal__meta">
+        {{ article.published_at | date: '%-d %B %Y' }}
+        <span aria-hidden="true">·</span>
+        {{ minutes }} min read
+      </p>
+      <h1>{{ article.title | escape }}</h1>
+      {%- if article.excerpt != blank -%}
+        <p class="nf-article__excerpt">{{ article.excerpt | strip_html }}</p>
+      {%- endif -%}
+    </header>
+
+    {%- if section.settings.show_featured_image and article.image != blank -%}
+      <img
+        src="{{ article.image | image_url: width: 1600 }}"
+        alt="{{ article.image.alt | escape }}"
+        width="{{ article.image.width }}"
+        height="{{ article.image.height }}"
+        style="display: block; width: 100%; height: auto; margin-top: 32px;"
+        fetchpriority="high"
+      >
+    {%- endif -%}
+
+    <div class="nf-article__body">{{ article.content }}</div>
+
+    {%- if section.settings.show_aside -%}
+      <aside class="nf-article__cta">
+        <p class="nf-kicker">{{ section.settings.aside_kicker | escape }}</p>
+        <p>{{ section.settings.aside_text | escape }}</p>
+        <div class="nf-article__cta-links">
+          {%- if section.settings.aside_link_1_label != blank -%}
+            <a class="nf-link-ghost" href="{{ section.settings.aside_link_1 }}">{{ section.settings.aside_link_1_label | escape }}</a>
+          {%- endif -%}
+          {%- if section.settings.aside_link_2_label != blank -%}
+            <a class="nf-link-ghost nf-link-ghost--quiet" href="{{ section.settings.aside_link_2 }}">{{ section.settings.aside_link_2_label | escape }}</a>
+          {%- endif -%}
+        </div>
+      </aside>
+    {%- endif -%}
+
+    {%- assign more_count = 0 -%}
+    {%- capture more_items -%}
+      {%- for related in blog.articles limit: 8 -%}
+        {%- if related.id != article.id and more_count < 3 -%}
+          {%- assign more_count = more_count | plus: 1 -%}
+          <li><a href="{{ related.url }}">{{ related.title | escape }}</a></li>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- if more_count > 0 -%}
+      <nav class="nf-article__more" aria-label="{{ section.settings.more_heading | escape }}">
+        <h2>{{ section.settings.more_heading | escape }}</h2>
+        <ul>{{ more_items }}</ul>
+      </nav>
+    {%- endif -%}
+
+    <div style="padding-bottom: 80px;"></div>
+  </article>
+</div>
+
+{%- if section.settings.enable_schema_org -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": {{ article.title | strip_html | json }},
+      "description": {{ article.excerpt_or_content | strip_html | truncatewords: 40 | json }},
+      "datePublished": {{ article.published_at | date: '%Y-%m-%d' | json }},
+      "dateModified": {{ article.published_at | date: '%Y-%m-%d' | json }},
+      "mainEntityOfPage": {{ request.origin | append: article.url | json }},
+      {% if article.image != blank %}"image": {{ article.image | image_url: width: 1600 | prepend: 'https:' | json }},{% endif %}
+      "author": { "@type": "Organization", "name": {{ shop.name | json }} },
+      "publisher": {
+        "@type": "Organization",
+        "name": {{ shop.name | json }},
+        "url": {{ request.origin | json }}
+      }
+    }
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+/* Gold reading-progress hairline — the CSS-only equivalent of the
+   requestAnimationFrame scroll listener in JournalArticle.tsx. */
+.nf-progress {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 45;
+  height: 2px;
+  width: 100%;
+  background: transparent;
+  pointer-events: none;
+}
+.nf-progress__bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(to right, var(--nf-gold), var(--nf-gold-shadow));
+  animation: nf-progress-grow linear both;
+  animation-timeline: scroll(root block);
+}
+@keyframes nf-progress-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@supports not (animation-timeline: scroll(root block)) {
+  .nf-progress { display: none; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira journal article",
+  "tag": "section",
+  "class": "nf-journal-article-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_progress", "label": "Show reading-progress hairline", "default": true },
+    { "type": "checkbox", "id": "show_featured_image", "label": "Show featured image", "default": true },
+    { "type": "text", "id": "crumb_home", "label": "Breadcrumb home label", "default": "HOME" },
+    {
+      "type": "checkbox",
+      "id": "enable_schema_org",
+      "label": "Output Article structured data",
+      "default": true
+    },
+
+    { "type": "header", "content": "Shop aside" },
+    { "type": "checkbox", "id": "show_aside", "label": "Show the shop aside", "default": true },
+    { "type": "text", "id": "aside_kicker", "label": "Kicker", "default": "The Gilded Hour" },
+    {
+      "type": "textarea",
+      "id": "aside_text",
+      "label": "Text",
+      "default": "Hand-set zircone in an 18K gold finish, finished at our atelier."
+    },
+    { "type": "text", "id": "aside_link_1_label", "label": "Primary link label", "default": "Shop rings" },
+    { "type": "url", "id": "aside_link_1", "label": "Primary link" },
+    { "type": "text", "id": "aside_link_2_label", "label": "Secondary link label", "default": "All jewellery" },
+    { "type": "url", "id": "aside_link_2", "label": "Secondary link" },
+
+    { "type": "header", "content": "More from the journal" },
+    { "type": "text", "id": "more_heading", "label": "Heading", "default": "More from the journal" }
+  ],
+  "presets": [{ "name": "Naira journal article" }]
+}
+{% endschema %}

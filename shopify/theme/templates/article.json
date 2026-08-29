@@ -1,0 +1,33 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-journal-article",
+      "settings": {
+        "show_progress": true,
+        "show_featured_image": true,
+        "crumb_home": "HOME",
+        "enable_schema_org": true,
+        "show_aside": true,
+        "aside_kicker": "The Gilded Hour",
+        "aside_text": "Hand-set zircone in an 18K gold finish, finished at our atelier.",
+        "aside_link_1_label": "Shop rings",
+        "aside_link_1": "/collections/rings",
+        "aside_link_2_label": "All jewellery",
+        "aside_link_2": "/collections/all",
+        "more_heading": "More from the journal"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

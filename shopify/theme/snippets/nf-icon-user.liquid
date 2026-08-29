@@ -1,0 +1,14 @@
+{%- comment -%}
+  Naira Flore icon: user.
+  Ported from lucide `user`. Stroke 1.5 on a 24x24 grid; colour comes
+  from the parent through `currentColor`.
+
+  Accepts:
+  - size: {Number} pixel box, defaults to 20
+
+  Usage: {% render 'nf-icon-user', size: 20 %}
+{%- endcomment -%}
+{%- liquid
+  assign icon_size = size | default: 20
+-%}
+<svg class="nf-icon" xmlns="http://www.w3.org/2000/svg" width="{{ icon_size }}" height="{{ icon_size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

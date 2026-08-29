@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NAIRA FLORE DESIGN TOKENS
+   Ported verbatim from src/index.css in the Lovable repo. Values are
+   exact and must not be 'normalised'. The *-rgb / *-hsl channel
+   triplets exist so alpha modifiers keep working; keep them in sync
+   with their hex twins.
+   Full documentation: docs/design-tokens.md in the Lovable repo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Layer 1: primitives ─────────────────────────────────────── */
+
+  /* Colour, brand core */
+  --nf-ivory: #FBF3EC;            --nf-ivory-rgb: 251 243 236;   /* page ground */
+  --nf-ivory-deep: #F4EBE2;       --nf-ivory-deep-rgb: 244 235 226; /* pressed-linen surface */
+  --nf-ink: #1A1614;              --nf-ink-rgb: 26 22 20;        /* near-black text */
+  --nf-gold: #C99A4C;             --nf-gold-rgb: 201 154 76;     /* bright gold */
+  --nf-gold-deep: #B0843A;        --nf-gold-deep-rgb: 176 132 58;/* mid gold */
+  --nf-gold-shadow: #9A7634;      --nf-gold-shadow-rgb: 154 118 52; /* umbral gold, text-safe on ivory */
+  --nf-sage: #99B4AF;             --nf-sage-rgb: 153 180 175;    /* brand sage */
+  --nf-blush: #FFBDA8;            --nf-blush-rgb: 255 189 168;   /* pressed-flower blush */
+
+  /* Colour, footer palette (derived from the Naira logo; distinct
+     from --nf-sage on purpose, do not merge them) */
+  --nf-sage-logo-hsl: 162 14% 61%;
+  --nf-sage-logo-deep-hsl: 162 18% 38%;
+  --nf-cream-hsl: 33 33% 95%;
+
+  /* Type stacks. Display = Velista (brand serif), editorial =
+     Cormorant Garamond, labels = Jost. See docs/design-tokens.md,
+     "The display-font landmine", before touching inline font styles. */
+  --nf-font-display: 'Velista', 'Cormorant Garamond', Georgia, serif;
+  --nf-font-editorial: 'Cormorant Garamond', Georgia, serif;
+  --nf-font-label: 'Jost', 'Inter', sans-serif;
+
+  /* Letterform tracking ladder (label typography). Names are
+     hundredths of an em: --nf-track-24 = 0.24em. */
+  --nf-track-4: 0.04em;
+  --nf-track-8: 0.08em;
+  --nf-track-10: 0.1em;
+  --nf-track-16: 0.16em;
+  --nf-track-18: 0.18em;
+  --nf-track-20: 0.2em;
+  --nf-track-24: 0.24em;
+  --nf-track-25: 0.25em;
+  --nf-track-28: 0.28em;
+  --nf-track-30: 0.3em;
+  --nf-track-32: 0.32em;
+  --nf-track-34: 0.34em;
+  --nf-track-40: 0.4em;
+  --nf-track-50: 0.5em;
+
+  /* Motion (complements --ease-out-strong / --ease-drawer above) */
+  --nf-ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
+  --nf-reveal-duration: 0.6s;
+  --nf-reveal-rise: 16px;
+
+  /* ── Layer 2: semantic ───────────────────────────────────────── */
+  --nf-surface: var(--nf-ivory);          /* default page ground */
+  --nf-surface-raised: var(--nf-ivory-deep); /* packshot / skeleton ground */
+  --nf-text: var(--nf-ink);               /* primary copy */
+  --nf-text-inverse: var(--nf-ivory);     /* copy on ink fills */
+  --nf-accent: var(--nf-gold);            /* hairlines, dots, sparkle */
+  --nf-accent-strong: var(--nf-gold-deep);/* category eyebrows, focus */
+  --nf-accent-quiet: var(--nf-gold-shadow); /* small gold text on ivory */
+  --nf-tint-sage: var(--nf-sage);
+  --nf-tint-blush: var(--nf-blush);
+  --nf-focus-ring: var(--nf-gold-deep);   /* keyboard focus outline */
+
+  /* ── Layer 3: component ──────────────────────────────────────── */
+  /* Jewel card */
+  --nf-card-shadow: 0 16px 38px -20px rgb(122 90 40 / 0.5);
+
+  /* Footer (sage block) */
+  --nf-footer-surface: hsl(var(--nf-sage-logo-hsl));
+  --nf-footer-cta: hsl(var(--nf-sage-logo-deep-hsl));
+  --nf-footer-text: hsl(var(--nf-cream-hsl));
+  --nf-footer-text-muted: hsl(var(--nf-cream-hsl) / 0.78);
+  --nf-footer-text-faint: hsl(var(--nf-cream-hsl) / 0.6);
+  --nf-footer-hairline: hsl(var(--nf-cream-hsl) / 0.18);
+  --nf-footer-hairline-strong: hsl(var(--nf-cream-hsl) / 0.22);
+  --nf-footer-chip-bg: hsl(var(--nf-cream-hsl) / 0.12);
+  --nf-footer-chip-bg-hover: hsl(var(--nf-cream-hsl) / 0.25);
+  --nf-footer-input-bg: hsl(0 0% 100% / 0.18);
+  --nf-footer-input-bg-focus: hsl(0 0% 100% / 0.28);
+}

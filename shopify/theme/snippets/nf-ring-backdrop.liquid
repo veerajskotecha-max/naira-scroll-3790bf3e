@@ -1,0 +1,56 @@
+{% comment %}
+  ─────────────────────────────────────────────────────────────────
+  RING ATELIER BACKDROP (snippet)
+  Port of src/components/jewellery/RingAtelierBackdrop.tsx.
+
+  The hero's pressed-flower paper wash carried behind the turning ring,
+  with slow 3D-parallax petals and glass orbs that drift on pointer, plus
+  an elegant flower bloom wherever the client taps. Scoped to whatever
+  positioned box renders it. Reduced motion: static wash.
+
+  Rendered by sections/nf-ring-backdrop.liquid and, when the ring section
+  is not inheriting a page wash, by sections/nf-zircone-turn.liquid.
+
+  Accepts:
+    variant - "section" (absolute, default) | "page" (fixed) | "sticky"
+    wash    - optional image_url for the pressed-flower paper wash
+  ─────────────────────────────────────────────────────────────────
+{% endcomment %}
+
+{{ 'nf-backdrop.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign bd_variant = variant | default: 'section'
+  assign bd_wash = wash
+  if bd_wash == blank
+    assign bd_wash = 'nf-floral-pattern-bg.webp' | asset_url
+  endif
+-%}
+
+<div class="nf-bd nf-bd--{{ bd_variant }}" data-nf-backdrop aria-hidden="true">
+  {%- comment -%} pressed-flower paper wash {%- endcomment -%}
+  <div class="nf-bd__wash" style="background-image: url({{ bd_wash }});"></div>
+  {%- comment -%} warm sun-faded gradient {%- endcomment -%}
+  <div class="nf-bd__sun"></div>
+
+  {%- comment -%} 3D drifting layer {%- endcomment -%}
+  <div class="nf-bd__scene">
+    <div class="nf-bd__layer" data-nf-bd-layer>
+      <div class="nf-bd__orb" style="left:16%;top:34%;width:190px;height:190px;--z:-340px;animation:nf-bd-orb 24s ease-in-out 0s infinite;"></div>
+      <div class="nf-bd__orb" style="left:80%;top:72%;width:150px;height:150px;--z:-260px;animation:nf-bd-orb 28s ease-in-out -8s infinite;"></div>
+      <div class="nf-bd__orb" style="left:62%;top:18%;width:110px;height:110px;--z:-400px;animation:nf-bd-orb 32s ease-in-out -4s infinite;"></div>
+
+      <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:6%;top:12%;width:130px;height:44.2px;opacity:0.5;--r:-18deg;--dx:10px;--dy:-14px;animation:nf-bd-float 26s ease-in-out 0s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#FFBDA8"/></svg>
+      <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:26%;top:68%;width:96px;height:32.64px;opacity:0.45;--r:14deg;--dx:-14px;--dy:-17px;animation:nf-bd-float 31s ease-in-out -6s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#AEBDB6"/></svg>
+      <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:52%;top:8%;width:74px;height:25.16px;opacity:0.4;--r:-34deg;--dx:18px;--dy:-20px;animation:nf-bd-float 35s ease-in-out -12s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#E5B9A4"/></svg>
+      <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:72%;top:58%;width:120px;height:40.8px;opacity:0.42;--r:22deg;--dx:-22px;--dy:-23px;animation:nf-bd-float 29s ease-in-out -3s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#FFBDA8"/></svg>
+      <svg class="nf-bd__petal" viewBox="0 0 100 34" style="left:88%;top:22%;width:86px;height:29.24px;opacity:0.4;--r:-8deg;--dx:26px;--dy:-26px;animation:nf-bd-float 33s ease-in-out -9s infinite;"><path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="#AEBDB6"/></svg>
+    </div>
+  </div>
+
+  {%- comment -%}
+    touch blooms — nf-scroll.js grows a different botanical, palette and
+    tilt in here on every tap
+  {%- endcomment -%}
+  <div class="nf-bd__blooms" data-nf-bd-blooms></div>
+</div>

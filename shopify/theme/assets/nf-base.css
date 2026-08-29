@@ -1,0 +1,514 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NAIRA FLORE — GLOBAL BASE
+   Ported from src/index.css in the Lovable repo (everything except the
+   @tailwind directives and the --nf-* token block, which already ships
+   as assets/nf-tokens.css).
+
+   Loads LAST in <head>, after base.css and after the inline <style>
+   block at the top of layout/theme.liquid. That ordering is load
+   bearing — see "Ophelia neutralisation" below.
+
+   ── Class naming ────────────────────────────────────────────────────
+   Behavioural classes are declared under BOTH their original Lovable
+   name and an `nf-` prefixed alias:
+
+       .press-scale       ≡  .nf-press-scale
+       .check-pop         ≡  .nf-check-pop
+       .heart-pop         ≡  .nf-heart-pop
+       .atelier-shimmer   ≡  .nf-atelier-shimmer
+       .nav-link          ≡  .nf-nav-link
+       .scrollbar-hide    ≡  .nf-scrollbar-hide
+       .tap-target        ≡  .nf-tap-target
+       .section-reveal    ≡  .nf-section-reveal
+       .pause-animation   ≡  .nf-pause-animation
+       .animate-marquee   ≡  .nf-animate-marquee
+       .font-cormorant    ≡  .nf-font-display
+
+   The original names exist so JSX className strings copied straight out
+   of src/components/** keep working untouched; the nf- aliases exist so
+   new Liquid markup stays inside the port's namespace. Use either.
+   Token-derived utilities (text-nf-*, bg-nf-*, border-nf-*,
+   tracking-nf-*, shadow-nf-card) already carry the nf- marker and are
+   declared once, under their Tailwind name.
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══ 1. shadcn / Tailwind design-system tokens ══════════════════════
+   src/index.css lines 18-104. Kept because ported shadcn-derived
+   markup references hsl(var(--border)), hsl(var(--muted-foreground)),
+   var(--radius) and friends. None of these names collide with the
+   theme's own --color-* / --font-* variables. --radius is 0px: the
+   brand uses sharp corners, never round them. */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+
+  --radius: 0px;
+
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+
+/* ═══ 2. Base element styles ═════════════════════════════════════════ */
+
+/* src/index.css line 107: `* { @apply border-border }`. Colour only —
+   Tailwind preflight's `border-width: 0; border-style: solid` is NOT
+   ported, so this cannot draw a border that was not already asked for. */
+*,
+*::before,
+*::after {
+  border-color: hsl(var(--border));
+}
+
+/* src/index.css line 111: `body { @apply bg-background text-foreground }`.
+   DELIBERATE DEVIATION: the source resolves to white/near-black because
+   every Lovable page paints its own `bg-[#FBF3EC]` wrapper on top. A
+   Shopify page also renders theme chrome (header-group, footer-group,
+   main padding) outside any ported section, so white would show through
+   as gaps. The ivory ground is therefore lifted to <body>, which is the
+   colour every Naira page actually presents. */
+body {
+  background-color: var(--nf-surface);
+  color: var(--nf-text);
+}
+
+/* src/index.css lines 223-228. `overflow-x: clip` is layered over
+   `hidden` on purpose: both suppress horizontal overflow identically,
+   but `clip` does not turn the element into a scroll container, so
+   position: sticky headers keep working. Browsers without `clip`
+   support fall back to the `hidden` declaration above it. */
+html,
+body {
+  overflow-x: hidden;
+  overflow-x: clip;
+  /* Smoother font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* src/index.css lines 231-235 */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* src/index.css lines 272-274 */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+
+/* ═══ 3. Ophelia neutralisation ══════════════════════════════════════
+   layout/theme.liquid opens with an inline <style> block, inherited
+   from the pre-port live theme, that forces
+
+       h1, h2, h3, h4, h5, h6, small {
+         font-family: 'Ophelia', sans-serif !important;
+       }
+
+   That block belongs to the shared layout and must not be deleted, so
+   it is overridden here instead. Both declarations are !important and
+   carry identical specificity, which means source order decides — and
+   nf-base.css is loaded after it. Headings therefore resolve to the
+   brand display stack (Velista → Cormorant Garamond → Georgia), and
+   <small> is handed back to normal inheritance.
+
+   Consequence for section authors: the three font utilities below must
+   also be !important, otherwise a non-important class loses to the
+   important element rule when applied to an h1-h6. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--nf-font-display) !important;
+}
+
+small {
+  font-family: inherit !important;
+}
+
+
+/* ═══ 4. Motion system ═══════════════════════════════════════════════
+   src/index.css lines 122-188. Shared micro-interaction primitives.
+   Transform + opacity only, ease-out enters, everything under 300ms,
+   nothing blocks intent.
+
+   --ease-out-strong / --ease-drawer live here rather than in
+   nf-tokens.css because that file ports only the --nf-* namespace. */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Tactile press feedback for buttons, chips and tappable cards.
+   Owns the transition shorthand, so it also carries the standard
+   200ms colour transitions for elements that pair it with hover
+   colour changes. */
+.press-scale,
+.nf-press-scale {
+  transition:
+    color 200ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease,
+    opacity 200ms ease,
+    transform 140ms var(--ease-out-strong);
+}
+.press-scale:active,
+.nf-press-scale:active {
+  transform: scale(0.97);
+}
+
+/* Success pop: swapped-in check/label content (add-to-cart confirm). */
+@keyframes check-pop {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.check-pop,
+.nf-check-pop {
+  animation: check-pop 200ms var(--ease-out-strong);
+}
+
+/* Wishlist heart pop when a piece is saved. */
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+.heart-pop,
+.nf-heart-pop {
+  animation: heart-pop 260ms var(--ease-out-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press-scale,
+  .nf-press-scale { transition: none; }
+  .press-scale:active,
+  .nf-press-scale:active { transform: none; }
+  .check-pop,
+  .nf-check-pop,
+  .heart-pop,
+  .nf-heart-pop { animation: none; }
+}
+
+/* ─── Atelier shimmer skeleton ────────────────────────────────
+   Ivory base (#F4EBE2) with a soft #FBF3EC sheen drifting across.
+   Source component: src/components/ui/atelier-skeleton.tsx. */
+@keyframes atelier-shimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+.atelier-shimmer,
+.nf-atelier-shimmer {
+  background-color: var(--nf-surface-raised);
+  background-image: linear-gradient(100deg, var(--nf-surface-raised) 36%, var(--nf-surface) 50%, var(--nf-surface-raised) 64%);
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  animation: atelier-shimmer 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .atelier-shimmer,
+  .nf-atelier-shimmer { animation: none; }
+}
+
+/* Nav link underline hover effect. src/index.css lines 190-211. */
+.nav-link,
+.nf-nav-link {
+  position: relative;
+}
+
+.nav-link::after,
+.nf-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after,
+.nf-nav-link:hover::after,
+.nf-nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* Marquee. src/index.css lines 116-120 pauses it on hover; the keyframes
+   and the 22s linear loop come from tailwind.config.ts (theme.extend
+   .keyframes.marquee / .animation.marquee), which no longer exists in
+   the theme. Used by src/components/AnnouncementBar.tsx. */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee,
+.nf-animate-marquee {
+  animation: marquee 22s linear infinite;
+}
+.pause-animation:hover .animate-marquee,
+.pause-animation:hover .nf-animate-marquee,
+.nf-pause-animation:hover .animate-marquee,
+.nf-pause-animation:hover .nf-animate-marquee {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .nf-animate-marquee { animation: none; }
+}
+
+/* Section reveal — gentle fade-up. src/index.css lines 276-288.
+   `.is-visible` is toggled by an IntersectionObserver; the port ships a
+   global one at the end of <body> in layout/theme.liquid, so sections
+   only need to add the class. Ported from src/pages/Index.tsx, which
+   uses an observer rather than animation-timeline: view() because the
+   latter clashes with GSAP pin spacers. */
+.section-reveal,
+.nf-section-reveal {
+  opacity: 0;
+  transform: translateY(var(--nf-reveal-rise));
+  transition: opacity var(--nf-reveal-duration) ease,
+              transform var(--nf-reveal-duration) var(--nf-ease-reveal);
+}
+.section-reveal.is-visible,
+.nf-section-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Safety net: with JS off nothing ever adds .is-visible, so reveal
+   content would stay permanently invisible. */
+@media (prefers-reduced-motion: reduce) {
+  .section-reveal,
+  .nf-section-reveal {
+    transition: none;
+  }
+}
+
+
+/* ═══ 5. Mobile optimisation ═════════════════════════════════════════
+   src/index.css lines 237-274. */
+
+/* 1. Remove 300ms tap delay across the entire app */
+* {
+  touch-action: manipulation;
+}
+
+/* 2. Remove the default iOS/Android blue tap highlight flash */
+a, button, [role="button"], input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 2b. Consistent brand focus ring: keyboard focus only, gold on every
+      interactive element. :where() keeps specificity at zero so
+      component level focus styles can still override it. */
+:where(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--nf-focus-ring); /* gold #B0843A via tokens */
+  outline-offset: 2px;
+}
+
+/* 3. Prevent iOS Safari from auto-zooming on input focus
+      (triggered when input font-size < 16px) */
+input, select, textarea {
+  font-size: max(16px, 1em);
+}
+
+/* 4. Minimum 44x44px tap targets for interactive elements.
+      Applied via class to avoid inflating tiny decorative elements like
+      carousel dot indicators. */
+.tap-target,
+.nf-tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Hide scrollbar for horizontal scroll containers.
+   src/index.css lines 213-220. */
+.scrollbar-hide,
+.nf-scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar,
+.nf-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* ═══ 6. Token utilities ═════════════════════════════════════════════
+   Plain-CSS equivalents of the Tailwind utilities that tailwind.config.ts
+   generated from the --nf-* tokens. Only the utilities the Lovable
+   source actually uses are emitted; add more here rather than hardcoding
+   a hex in a section. */
+
+/* ── Type stacks ────────────────────────────────────────────────────
+   !important is required: these must beat the Ophelia override in
+   section 3 when applied to an h1-h6. `font-cormorant` is the Lovable
+   name (254 usages) and resolves to the display stack, not to Cormorant
+   alone — Velista is the brand serif, Cormorant is its fallback. */
+.font-cormorant,
+.nf-font-display {
+  font-family: var(--nf-font-display) !important;
+}
+.font-nf-editorial,
+.nf-font-editorial {
+  font-family: var(--nf-font-editorial) !important;
+}
+.font-nf-label,
+.nf-font-label {
+  font-family: var(--nf-font-label) !important;
+}
+
+/* ── Tracking ladder (names are hundredths of an em) ────────────────── */
+.tracking-nf-4  { letter-spacing: var(--nf-track-4); }
+.tracking-nf-8  { letter-spacing: var(--nf-track-8); }
+.tracking-nf-10 { letter-spacing: var(--nf-track-10); }
+.tracking-nf-16 { letter-spacing: var(--nf-track-16); }
+.tracking-nf-18 { letter-spacing: var(--nf-track-18); }
+.tracking-nf-20 { letter-spacing: var(--nf-track-20); }
+.tracking-nf-24 { letter-spacing: var(--nf-track-24); }
+.tracking-nf-25 { letter-spacing: var(--nf-track-25); }
+.tracking-nf-28 { letter-spacing: var(--nf-track-28); }
+.tracking-nf-30 { letter-spacing: var(--nf-track-30); }
+.tracking-nf-32 { letter-spacing: var(--nf-track-32); }
+.tracking-nf-34 { letter-spacing: var(--nf-track-34); }
+.tracking-nf-40 { letter-spacing: var(--nf-track-40); }
+.tracking-nf-50 { letter-spacing: var(--nf-track-50); }
+
+/* ── Text colour ───────────────────────────────────────────────────── */
+.text-nf-ink            { color: rgb(var(--nf-ink-rgb)); }
+.text-nf-ink\/70        { color: rgb(var(--nf-ink-rgb) / 0.7); }
+.text-nf-ink\/65        { color: rgb(var(--nf-ink-rgb) / 0.65); }
+.text-nf-ink\/60        { color: rgb(var(--nf-ink-rgb) / 0.6); }
+.text-nf-ink\/55        { color: rgb(var(--nf-ink-rgb) / 0.55); }
+.text-nf-ink\/45        { color: rgb(var(--nf-ink-rgb) / 0.45); }
+.text-nf-ink\/40        { color: rgb(var(--nf-ink-rgb) / 0.4); }
+.text-nf-ivory          { color: rgb(var(--nf-ivory-rgb)); }
+.text-nf-ivory\/60      { color: rgb(var(--nf-ivory-rgb) / 0.6); }
+.text-nf-ivory-deep     { color: rgb(var(--nf-ivory-deep-rgb)); }
+.text-nf-gold           { color: rgb(var(--nf-gold-rgb)); }
+.text-nf-gold-deep      { color: rgb(var(--nf-gold-deep-rgb)); }
+.text-nf-gold-deep\/50  { color: rgb(var(--nf-gold-deep-rgb) / 0.5); }
+.text-nf-gold-shadow    { color: rgb(var(--nf-gold-shadow-rgb)); }
+.text-nf-sage           { color: rgb(var(--nf-sage-rgb)); }
+.text-nf-blush          { color: rgb(var(--nf-blush-rgb)); }
+.text-nf-cream          { color: hsl(var(--nf-cream-hsl)); }
+.text-nf-cream\/85      { color: hsl(var(--nf-cream-hsl) / 0.85); }
+
+/* ── Background colour ─────────────────────────────────────────────── */
+.bg-nf-ink          { background-color: rgb(var(--nf-ink-rgb)); }
+.bg-nf-ivory        { background-color: rgb(var(--nf-ivory-rgb)); }
+.bg-nf-ivory\/95    { background-color: rgb(var(--nf-ivory-rgb) / 0.95); }
+.bg-nf-ivory\/90    { background-color: rgb(var(--nf-ivory-rgb) / 0.9); }
+.bg-nf-ivory-deep   { background-color: rgb(var(--nf-ivory-deep-rgb)); }
+.bg-nf-gold         { background-color: rgb(var(--nf-gold-rgb)); }
+.bg-nf-gold-deep    { background-color: rgb(var(--nf-gold-deep-rgb)); }
+.bg-nf-sage         { background-color: rgb(var(--nf-sage-rgb)); }
+.bg-nf-blush        { background-color: rgb(var(--nf-blush-rgb)); }
+.bg-nf-cream        { background-color: hsl(var(--nf-cream-hsl)); }
+
+/* ── Border colour ─────────────────────────────────────────────────── */
+.border-nf-ink        { border-color: rgb(var(--nf-ink-rgb)); }
+.border-nf-ink\/60    { border-color: rgb(var(--nf-ink-rgb) / 0.6); }
+.border-nf-ink\/35    { border-color: rgb(var(--nf-ink-rgb) / 0.35); }
+.border-nf-ink\/25    { border-color: rgb(var(--nf-ink-rgb) / 0.25); }
+.border-nf-ink\/20    { border-color: rgb(var(--nf-ink-rgb) / 0.2); }
+.border-nf-ink\/15    { border-color: rgb(var(--nf-ink-rgb) / 0.15); }
+.border-nf-ink\/10    { border-color: rgb(var(--nf-ink-rgb) / 0.1); }
+.border-nf-gold       { border-color: rgb(var(--nf-gold-rgb)); }
+.border-nf-gold\/60   { border-color: rgb(var(--nf-gold-rgb) / 0.6); }
+.border-nf-gold\/0    { border-color: rgb(var(--nf-gold-rgb) / 0); }
+.border-nf-gold-deep  { border-color: rgb(var(--nf-gold-deep-rgb)); }
+
+/* ── Shadow ────────────────────────────────────────────────────────── */
+.shadow-nf-card {
+  box-shadow: var(--nf-card-shadow);
+}
+
+/* ── Surfaces ──────────────────────────────────────────────────────── */
+.nf-surface        { background-color: var(--nf-surface); }
+.nf-surface-raised { background-color: var(--nf-surface-raised); }
+
+/* Sharp corners. The brand uses radius 0 everywhere; this exists so a
+   ported section can strip a rounded corner inherited from theme CSS
+   without hunting down the rule that added it. */
+.nf-sharp,
+.nf-sharp::before,
+.nf-sharp::after {
+  border-radius: 0;
+}

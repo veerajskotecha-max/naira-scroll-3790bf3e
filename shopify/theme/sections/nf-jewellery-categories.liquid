@@ -1,0 +1,108 @@
+{% comment %}
+  nf-jewellery-categories — port of src/components/jewellery/JewelleryCategories.tsx
+  Four quiet category cards with hover zoom and a gold hairline frame.
+  The React version counted pieces out of src/data/jewellery.ts; here each
+  card is bound to a real Shopify collection and the count comes from
+  collection.all_products_count. Nothing is read from hardcoded data.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+<section class="nf nf-cats">
+  <div class="nf-cats__wrap">
+    <div class="nf-cats__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="nf-cats__eyebrow nf-label">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h3 class="nf-cats__title nf-display">
+        {{ section.settings.heading_lead }} <em class="nf-editorial">{{ section.settings.heading_italic }}</em>
+      </h3>
+    </div>
+
+    <div class="nf-cats__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign col = block.settings.collection
+          if col == blank and block.settings.collection_handle != blank
+            assign col = collections[block.settings.collection_handle]
+          endif
+
+          assign label = block.settings.label
+          if label == blank
+            assign label = col.title
+          endif
+
+          assign card_image = block.settings.image
+          if card_image == blank
+            assign card_image = col.image
+          endif
+          if card_image == blank
+            assign card_image = col.products.first.featured_image
+          endif
+        -%}
+        {%- if col != blank or block.settings.label != blank -%}
+          <a class="nf-cats__card" href="{{ col.url | default: routes.all_products_collection_url }}" {{ block.shopify_attributes }}>
+            {%- if card_image != blank -%}
+              {{ card_image | image_url: width: 900 | image_tag:
+                  alt: label, loading: 'lazy', widths: '300,450,600,900',
+                  sizes: '(min-width: 1024px) 25vw, 50vw' }}
+            {%- else -%}
+              <div class="nf-cats__ph" aria-hidden="true"></div>
+            {%- endif -%}
+            <span class="nf-cats__scrim" aria-hidden="true"></span>
+            <span class="nf-cats__frame" aria-hidden="true"></span>
+            <span class="nf-cats__label">
+              <b class="nf-display">{{ label }}</b>
+              {%- if block.settings.note != blank -%}
+                <i class="nf-editorial">{{ block.settings.note }}</i>
+              {%- endif -%}
+            </span>
+            {%- if col != blank -%}
+              <span class="nf-cats__count nf-label">{{ col.all_products_count }} {{ section.settings.count_word }} &rarr;</span>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NF Jewellery categories",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "SHOP BY CATEGORY" },
+    { "type": "text", "id": "heading_lead", "label": "Heading", "default": "The" },
+    { "type": "text", "id": "heading_italic", "label": "Heading, italic word", "default": "edit." },
+    { "type": "text", "id": "count_word", "label": "Count label", "default": "PIECES" }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "collection_handle", "label": "Fallback collection handle", "info": "Used when no collection is picked above. Lets the section work out of the box." },
+        { "type": "text", "id": "label", "label": "Card label", "info": "Leave empty to use the collection title." },
+        { "type": "text", "id": "note", "label": "Italic note" },
+        { "type": "image_picker", "id": "image", "label": "Card image", "info": "Leave empty to use the collection image, then its first product image." }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "NF Jewellery categories",
+      "blocks": [
+        { "type": "category", "settings": { "collection_handle": "rings", "label": "Rings", "note": "solitaires, halo & stack" } },
+        { "type": "category", "settings": { "collection_handle": "bracelets", "label": "Bracelets", "note": "tennis, bow & baroque pearl" } },
+        { "type": "category", "settings": { "collection_handle": "earrings", "label": "Earrings", "note": "hoops & the studs, three ways" } },
+        { "type": "category", "settings": { "collection_handle": "necklaces", "label": "Necklaces", "note": "lariats, chains & a cascade" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,107 @@
+{%- comment -%}
+  Naira Flore — Announcement bar
+  Ported from src/components/AnnouncementBar.tsx in the Lovable repo.
+  Marquee: translateX(0) -> translateX(-50%), 22s linear infinite,
+  four copies of the text so the -50% loop is seamless. Pauses on hover.
+  Values taken verbatim from the source; do not "tidy" them.
+{%- endcomment -%}
+
+<div class="nf-ab" style="--nf-ab-bg: {{ section.settings.bg_colour }}; --nf-ab-fg: {{ section.settings.text_colour }}; --nf-ab-h: {{ section.settings.height }}px; --nf-ab-speed: {{ section.settings.speed }}s;">
+  <div class="nf-ab__viewport">
+    <div class="nf-ab__track">
+      {%- for i in (1..4) -%}
+        <span class="nf-ab__item">{{ section.settings.text | escape }}</span>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+.nf-ab {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--nf-ab-bg, #AEBDB6);
+  height: var(--nf-ab-h, 36px);
+}
+.nf-ab__viewport {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.nf-ab__track {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  white-space: nowrap;
+  animation: nf-ab-marquee var(--nf-ab-speed, 22s) linear infinite;
+}
+.nf-ab:hover .nf-ab__track { animation-play-state: paused; }
+.nf-ab__item {
+  font-family: var(--nf-font-label, 'Jost', 'Inter', sans-serif);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--nf-track-18, 0.18em);
+  padding-inline: 2rem;
+  color: var(--nf-ab-fg, #FFFFFF);
+}
+@media (min-width: 768px) { .nf-ab__item { font-size: 12px; } }
+@media (min-width: 1024px) { .nf-ab__item { font-size: 13px; } }
+@keyframes nf-ab-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf-ab__track { animation: none; }
+  .nf-ab__viewport { justify-content: center; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "tag": "section",
+  "class": "nf-announcement-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Message",
+      "default": "10% OFF YOUR FIRST ORDER ✦ USE CODE NAIRA10"
+    },
+    {
+      "type": "color",
+      "id": "bg_colour",
+      "label": "Background",
+      "default": "#AEBDB6"
+    },
+    {
+      "type": "color",
+      "id": "text_colour",
+      "label": "Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Bar height",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll duration",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "default": 22
+    }
+  ],
+  "presets": [{ "name": "Naira announcement bar" }]
+}
+{% endschema %}

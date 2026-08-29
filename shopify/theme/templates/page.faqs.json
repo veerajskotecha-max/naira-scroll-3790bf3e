@@ -1,0 +1,182 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-faqs",
+      "blocks": {
+        "faq_g0": {
+          "type": "group",
+          "settings": {
+            "title": "Orders & Customisation"
+          }
+        },
+        "faq_g0q0": {
+          "type": "question",
+          "settings": {
+            "question": "How does the customisation process work?",
+            "answer": "<p>It begins with a consultation on WhatsApp, where you share your vision, reference images, preferred fabrics, colours and embroidery styles. Our design team then creates a sketch and a detailed plan for your approval before we begin handcrafting your piece.</p>"
+          }
+        },
+        "faq_g0q1": {
+          "type": "question",
+          "settings": {
+            "question": "How long do made-to-measure pieces take?",
+            "answer": "<p>Made-to-measure pieces typically take 4–8 weeks depending on the complexity of the design, embroidery work, and fabric sourcing. We'll provide a more specific timeline during your consultation.</p>"
+          }
+        },
+        "faq_g0q2": {
+          "type": "question",
+          "settings": {
+            "question": "Can I modify my order after placing it?",
+            "answer": "<p>Minor modifications can be accommodated within the first 48 hours of placing your order. Once production begins, changes may not be possible as materials are already cut and work has started. Please reach out to us on WhatsApp as soon as possible if you need any changes.</p>"
+          }
+        },
+        "faq_g1": {
+          "type": "group",
+          "settings": {
+            "title": "Shipping & Delivery"
+          }
+        },
+        "faq_g1q0": {
+          "type": "question",
+          "settings": {
+            "question": "What are the delivery timelines?",
+            "answer": "<p>Standard (ready-to-ship) orders are delivered within 3–7 working days. Made-to-measure pieces take 4–8 weeks, depending on the complexity of the piece.</p>"
+          }
+        },
+        "faq_g1q1": {
+          "type": "question",
+          "settings": {
+            "question": "Do you offer express shipping?",
+            "answer": "<p>Currently, we do not offer express shipping for made-to-measure pieces due to the handcrafted nature of our pieces. For standard orders, expedited shipping may be available, please contact us on WhatsApp for options.</p>"
+          }
+        },
+        "faq_g1q2": {
+          "type": "question",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once your order is dispatched, you will receive a tracking link via WhatsApp and email. You can use this link to monitor your shipment in real time.</p>"
+          }
+        },
+        "faq_g2": {
+          "type": "group",
+          "settings": {
+            "title": "Returns & Exchanges"
+          }
+        },
+        "faq_g2q0": {
+          "type": "question",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>Standard orders with manufacturing defects (damaged embroidery, incorrect stitching, fabric flaws, or staining) may be returned within 48 hours of delivery. After review, we offer repair, replacement, or store credit. Refunds to the original payment method are considered case-by-case.</p>"
+          }
+        },
+        "faq_g2q1": {
+          "type": "question",
+          "settings": {
+            "question": "Are made-to-measure pieces returnable?",
+            "answer": "<p>No. All custom-designed pieces are made to your unique specifications and are therefore non-returnable and non-exchangeable. Since each garment is crafted exclusively for you, we cannot accept returns, exchanges, or offer refunds on made-to-measure pieces.</p>"
+          }
+        },
+        "faq_g2q2": {
+          "type": "question",
+          "settings": {
+            "question": "What if I receive a defective product?",
+            "answer": "<p>Contact us via WhatsApp within 48 hours of delivery with your order number, photos of the defect, and a brief description of the issue. Our team will review and resolve the matter promptly.</p>"
+          }
+        },
+        "faq_g3": {
+          "type": "group",
+          "settings": {
+            "title": "Product & Care"
+          }
+        },
+        "faq_g3q0": {
+          "type": "question",
+          "settings": {
+            "question": "How should I care for the product?",
+            "answer": "<p>We recommend dry cleaning only for all Naira garments. Store your pieces in a cool, dry place away from direct sunlight. Use muslin or cotton garment bags to protect the fabric and embroidery.</p>"
+          }
+        },
+        "faq_g3q1": {
+          "type": "question",
+          "settings": {
+            "question": "Will the colour match exactly what I see online?",
+            "answer": "<p>While we strive for accurate colour representation, slight variations may occur due to photographic lighting, screen settings, and display calibration. These are not considered defects.</p>"
+          }
+        },
+        "faq_g3q2": {
+          "type": "question",
+          "settings": {
+            "question": "Are there slight variations in handcrafted pieces?",
+            "answer": "<p>Yes. Each piece is individually handcrafted by skilled artisans, so minor variations in embroidery, texture, or pattern placement are inherent to the artisanal process. These subtle differences make each piece truly one-of-a-kind.</p>"
+          }
+        },
+        "faq_g4": {
+          "type": "group",
+          "settings": {
+            "title": "Contact & Support"
+          }
+        },
+        "faq_g4q0": {
+          "type": "question",
+          "settings": {
+            "question": "How can I contact you?",
+            "answer": "<p>You can reach us via WhatsApp at +91 9561557935, or email us. Our team is available Monday to Saturday, 10 AM – 7 PM IST.</p>"
+          }
+        },
+        "faq_g4q1": {
+          "type": "question",
+          "settings": {
+            "question": "Do you offer styling or customisation assistance?",
+            "answer": "<p>Yes. Our design team holds one-on-one styling consultations to help you choose the right silhouette, fabric and embroidery for your occasion. Write to us on WhatsApp to schedule a session.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_g0",
+        "faq_g0q0",
+        "faq_g0q1",
+        "faq_g0q2",
+        "faq_g1",
+        "faq_g1q0",
+        "faq_g1q1",
+        "faq_g1q2",
+        "faq_g2",
+        "faq_g2q0",
+        "faq_g2q1",
+        "faq_g2q2",
+        "faq_g3",
+        "faq_g3q0",
+        "faq_g3q1",
+        "faq_g3q2",
+        "faq_g4",
+        "faq_g4q0",
+        "faq_g4q1"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions",
+        "lede": "Everything you need to know before placing your order",
+        "hero_background": "#F4F1ED",
+        "show_anchor_nav": true,
+        "enable_schema_org": true,
+        "show_help": true,
+        "help_heading": "Need Help?",
+        "help_text": "Can't find what you're looking for? Write to us on WhatsApp.",
+        "help_button_label": "Contact on WhatsApp",
+        "help_button_link": "https://wa.me/919561557935"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

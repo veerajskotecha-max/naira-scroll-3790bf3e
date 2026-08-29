@@ -1,0 +1,83 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-policy",
+      "blocks": {
+        "ship_timelines": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Delivery Timelines",
+            "nav_label": "Delivery Timelines",
+            "body": "<p>Standard (ready-to-ship) orders are delivered within 3–7 working days. Made-to-measure pieces take 4–8 weeks, depending on the complexity of the piece.</p>"
+          }
+        },
+        "ship_express": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Express Shipping",
+            "nav_label": "Express Shipping",
+            "body": "<p>Currently, we do not offer express shipping for made-to-measure pieces due to the handcrafted nature of our pieces. For standard orders, expedited shipping may be available, please contact us on WhatsApp for options.</p>"
+          }
+        },
+        "ship_tracking": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Order Tracking",
+            "nav_label": "Order Tracking",
+            "body": "<p>Once your order is dispatched, you will receive a tracking link via WhatsApp and email. You can use this link to monitor your shipment in real time.</p>"
+          }
+        },
+        "ship_charges": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Shipping Charges & Destinations",
+            "nav_label": "Charges & Destinations",
+            "body": "<p>Shipping charges, taxes and duties are calculated and shown at checkout before payment. We ship across India; for international destinations, please contact us on WhatsApp before placing your order so we can confirm availability and cost.</p>"
+          }
+        },
+        "ship_contact": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Contact Information",
+            "nav_label": "Contact",
+            "body": "<p>For any questions about a shipment, write to us at <a href=\"mailto:shopatnaira@gmail.com\">shopatnaira@gmail.com</a> or message us on WhatsApp at +91 9561557935. Our team is available Monday to Saturday, 10 AM – 7 PM IST.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "ship_timelines",
+        "ship_express",
+        "ship_tracking",
+        "ship_charges",
+        "ship_contact"
+      ],
+      "settings": {
+        "source": "blocks",
+        "shopify_policy": "shipping_policy",
+        "show_shopify_link": false,
+        "heading": "Shipping Policy",
+        "lede": "How long your order takes to reach you, and how to track it once it leaves the atelier.",
+        "hero_background": "#F4F1ED",
+        "show_anchor_nav": true,
+        "show_help": true,
+        "help_heading": "Need Help?",
+        "help_text": "For any queries about your shipment, reach out to us directly on WhatsApp.",
+        "help_button_label": "Contact on WhatsApp",
+        "help_button_link": "https://wa.me/919561557935",
+        "help_button_new_tab": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

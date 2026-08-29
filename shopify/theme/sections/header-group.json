@@ -1,0 +1,39 @@
+/*
+ * auto-generated
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "nf_announcement": {
+      "type": "nf-announcement-bar",
+      "settings": {
+        "text": "10% OFF YOUR FIRST ORDER \u2726 USE CODE NAIRA10",
+        "bg_colour": "#AEBDB6",
+        "text_colour": "#FFFFFF",
+        "height": 36,
+        "speed": 22
+      }
+    },
+    "nf_header": {
+      "type": "nf-header",
+      "settings": {}
+    },
+    "header": {
+      "type": "header",
+      "disabled": true,
+      "settings": {
+        "logo_position": "top-center",
+        "menu": "main-menu",
+        "menu_type_desktop": "dropdown",
+        "sticky_header_type": "on-scroll-up",
+        "color_scheme": "scheme-1"
+      }
+    }
+  },
+  "order": [
+    "nf_announcement",
+    "nf_header",
+    "header"
+  ]
+}

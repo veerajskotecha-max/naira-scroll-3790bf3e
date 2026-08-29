@@ -1,0 +1,28 @@
+/*
+ * auto-generated
+ */
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "nf_footer": {
+      "type": "nf-footer",
+      "settings": {}
+    },
+    "footer": {
+      "type": "footer",
+      "disabled": true,
+      "settings": {
+        "color_scheme": "scheme-2",
+        "newsletter_enable": false,
+        "show_social": false,
+        "payment_enable": false,
+        "show_policy": false
+      }
+    }
+  },
+  "order": [
+    "nf_footer",
+    "footer"
+  ]
+}

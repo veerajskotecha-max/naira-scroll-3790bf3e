@@ -1,0 +1,127 @@
+{% comment %}
+  nf-campaign-film — port of src/components/CampaignFilm.tsx
+  Instagram reel embed beside "Watch it. Feel it. Own it." and the
+  FEATURED IN THIS CAMPAIGN row. The React version fetched products from
+  the Storefront API; here they come straight off a Liquid collection —
+  nothing is read from src/data/jewellery.ts.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign reel_code = section.settings.reel_url | split: '/reel/' | last | split: '?' | first | split: '/' | first
+  assign embed_src = 'https://www.instagram.com/reel/' | append: reel_code | append: '/embed/'
+
+  assign col = section.settings.collection
+  if col == blank and section.settings.collection_handle != blank
+    assign col = collections[section.settings.collection_handle]
+  endif
+-%}
+
+<section class="nf nf-film" data-nf-reveal>
+  <div class="nf-wrap">
+    <div class="nf-film__grid">
+      <div class="nf-reveal">
+        <div class="nf-film__frame">
+          {%- if reel_code != blank -%}
+            <iframe src="{{ embed_src }}" allowfullscreen title="{{ section.settings.embed_title | escape }}" loading="lazy"></iframe>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="nf-film__body">
+        <div class="nf-film__title-wrap nf-reveal">
+          <h2 class="nf-film__title nf-editorial">
+            {{ section.settings.heading_lead }}<br>
+            <em>{{ section.settings.heading_italic }}</em>
+          </h2>
+        </div>
+
+        {%- if section.settings.body != blank -%}
+          <p class="nf-film__lede nf-reveal">{{ section.settings.body }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.cta_label != blank -%}
+          <div class="nf-film__cta-wrap nf-reveal">
+            <a class="nf-film__cta" href="{{ section.settings.reel_url }}" target="_blank" rel="noopener noreferrer">{{ section.settings.cta_label }}</a>
+          </div>
+        {%- endif -%}
+
+        <div class="nf-film__featured nf-reveal">
+          {%- if section.settings.featured_label != blank -%}
+            <p>{{ section.settings.featured_label }}</p>
+          {%- endif -%}
+          <div class="nf-film__products">
+            {%- if col != blank and col.products.size > 0 -%}
+              {%- for product in col.products limit: section.settings.product_limit -%}
+                <a class="nf-film__card" href="{{ product.url }}">
+                  <div class="nf-film__card-media">
+                    {%- if product.featured_image != blank -%}
+                      {{ product.featured_image | image_url: width: 800 | image_tag:
+                          alt: product.title, loading: 'lazy', decoding: 'async',
+                          widths: '300,500,800', sizes: '(min-width: 1024px) 180px, 30vw' }}
+                    {%- endif -%}
+                  </div>
+                  <p class="nf-film__card-title">{{ product.title }}</p>
+                  <p class="nf-film__card-price">{{ product.price | money }}</p>
+                </a>
+              {%- endfor -%}
+            {%- else -%}
+              <p class="nf-film__empty">{{ section.settings.empty_text }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    function scan() {
+      var nodes = document.querySelectorAll('[data-nf-reveal]:not(.nf-in)');
+      if (!('IntersectionObserver' in window)) {
+        for (var i = 0; i < nodes.length; i++) nodes[i].classList.add('nf-in');
+        return;
+      }
+      var io = new IntersectionObserver(function (entries, obs) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) { entries[k].target.classList.add('nf-in'); obs.unobserve(entries[k].target); }
+        }
+      }, { threshold: 0.03 });
+      for (var j = 0; j < nodes.length; j++) io.observe(nodes[j]);
+    }
+    if (!window.__nfRevealBound) {
+      window.__nfRevealBound = true;
+      document.addEventListener('shopify:section:load', scan);
+      window.addEventListener('load', scan);
+    }
+    scan();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "NF Campaign film",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    { "type": "header", "content": "Reel" },
+    { "type": "text", "id": "reel_url", "label": "Instagram reel URL", "default": "https://www.instagram.com/reel/DWJxV5CsWSt/", "info": "The embed source is derived from this link." },
+    { "type": "text", "id": "embed_title", "label": "Embed title", "default": "NAIRA Campaign Reel" },
+    { "type": "header", "content": "Copy" },
+    { "type": "text", "id": "heading_lead", "label": "Heading, first line", "default": "Watch it. Feel it." },
+    { "type": "text", "id": "heading_italic", "label": "Heading, italic line", "default": "Own it." },
+    { "type": "textarea", "id": "body", "label": "Description", "default": "See the craftsmanship, colours, and quality of Naira's timeless designs." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "WATCH ON INSTAGRAM" },
+    { "type": "header", "content": "Featured products" },
+    { "type": "text", "id": "featured_label", "label": "Row label", "default": "FEATURED IN THIS CAMPAIGN" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "text", "id": "collection_handle", "label": "Fallback collection handle", "default": "frontpage", "info": "Used when no collection is picked above." },
+    { "type": "range", "id": "product_limit", "min": 1, "max": 6, "step": 1, "label": "Products shown", "default": 3 },
+    { "type": "text", "id": "empty_text", "label": "Empty state text", "default": "Products from this campaign are on their way." }
+  ],
+  "presets": [{ "name": "NF Campaign film" }]
+}
+{% endschema %}

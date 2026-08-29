@@ -1,0 +1,118 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-policy",
+      "blocks": {
+        "terms_intro": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Introduction",
+            "body": "<p>By accessing or using the NAIRA website, you agree to comply with and be bound by these Terms &amp; Conditions. These terms apply to all visitors, users, and customers of the website.</p><p>These terms govern:</p><ul><li>Browsing the website</li><li>Creating an account</li><li>Placing orders</li><li>Using any services provided by NAIRA</li></ul><p>Please read these terms carefully before using the website. If you do not agree with any part of these terms, you should discontinue use of the website immediately.</p>"
+          }
+        },
+        "terms_eligibility": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Eligibility",
+            "body": "<p>You must be at least 18 years of age to make purchases on the NAIRA website.</p><p>If you are under 18, a parent or legal guardian must use the service on your behalf and assumes full responsibility for all purchases and account activity.</p><p>NAIRA reserves the right to remove any information if it discovers that personal data has been submitted by a minor without appropriate parental consent.</p>"
+          }
+        },
+        "terms_use": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Use of the Website",
+            "body": "<p>You agree to use the NAIRA website in compliance with all applicable laws and regulations. You must not:</p><ul><li>Misuse the website or its services</li><li>Attempt unauthorised access to any systems or networks</li><li>Distribute malicious software or harmful content</li><li>Interfere with the proper functioning of the website</li></ul><p>NAIRA reserves the right to restrict or terminate access to the website if any misuse is detected.</p>"
+          }
+        },
+        "terms_ip": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Intellectual Property",
+            "body": "<p>All content on the NAIRA website is the intellectual property of NAIRA and is protected under applicable laws. This includes:</p><ul><li>Garment designs and product imagery</li><li>Logos, branding, and trademarks</li><li>Website graphics and visual elements</li><li>Text, copy, and design elements</li></ul><p>You may not reproduce, distribute, copy, or otherwise exploit any materials from this website without prior written permission from NAIRA.</p>"
+          }
+        },
+        "terms_orders": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Orders & Billing",
+            "body": "<p>When placing an order through the NAIRA website:</p><ul><li>You agree to provide accurate and complete billing and shipping information</li><li>All orders are subject to acceptance and product availability</li><li>NAIRA reserves the right to cancel or refuse any order if necessary</li></ul><p>Shipping, returns, and exchanges are governed by the respective policies listed on the website. Please review these policies before placing an order.</p>"
+          }
+        },
+        "terms_payments": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Payments",
+            "body": "<p>All payments must be made through approved payment methods available on the website. NAIRA may use secure third-party payment processors to handle transactions.</p><p>You are responsible for ensuring that all payment information provided is accurate and that you are authorised to use the chosen payment method.</p>"
+          }
+        },
+        "terms_termination": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Termination of Service",
+            "body": "<p>NAIRA may suspend or terminate your access to the website or its services if you:</p><ul><li>Violate any of these Terms &amp; Conditions</li><li>Misuse the platform or its features</li><li>Attempt any fraudulent or deceptive activity</li></ul><p>Termination may occur without prior notice if deemed necessary to protect NAIRA, its customers, or its services.</p>"
+          }
+        },
+        "terms_liability": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Limitation of Liability",
+            "body": "<p>NAIRA shall not be held liable for:</p><ul><li>Temporary website interruptions or downtime</li><li>Technical errors or system failures</li><li>Any damages resulting from misuse of the website</li></ul><p>You acknowledge that you access and use the website at your own discretion and risk.</p>"
+          }
+        },
+        "terms_law": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Governing Law",
+            "body": "<p>These Terms &amp; Conditions are governed by and construed in accordance with the laws of India. Any disputes arising from the use of the NAIRA website shall be subject to the exclusive jurisdiction of the appropriate courts in India.</p>"
+          }
+        },
+        "terms_contact": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Contact Information",
+            "body": "<p>If you have any questions regarding these Terms &amp; Conditions, please contact us at:</p><p><strong>Email:</strong> <a href=\"mailto:shopatnaira@gmail.com\">shopatnaira@gmail.com</a></p>"
+          }
+        }
+      },
+      "block_order": [
+        "terms_intro",
+        "terms_eligibility",
+        "terms_use",
+        "terms_ip",
+        "terms_orders",
+        "terms_payments",
+        "terms_termination",
+        "terms_liability",
+        "terms_law",
+        "terms_contact"
+      ],
+      "settings": {
+        "source": "blocks",
+        "shopify_policy": "terms_of_service",
+        "show_shopify_link": false,
+        "heading": "Terms & Conditions",
+        "lede": "These terms govern the use of the NAIRA website and services, including purchasing products and interacting with our platform.",
+        "hero_background": "#F4F1ED",
+        "show_anchor_nav": false,
+        "show_help": true,
+        "help_heading": "Need Help?",
+        "help_text": "For any questions about these Terms & Conditions, write to us at shopatnaira@gmail.com or reach us on WhatsApp.",
+        "help_button_label": "Contact on WhatsApp",
+        "help_button_link": "https://wa.me/919561557935",
+        "help_button_new_tab": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

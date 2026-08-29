@@ -1,0 +1,423 @@
+{%- comment -%}
+  Naira Flore — Made for You / Customise
+  Ported from src/pages/MadeForYou.tsx, plus the two components it composed:
+    src/components/ScrollSteps.tsx        → "step" blocks
+    src/components/CustomizationStories.tsx → "reel" blocks
+
+  ScrollSteps was a scroll-driven IntersectionObserver stack; here the four
+  steps are plain alternating rows that reveal with CSS only. Copy, order and
+  numbering are unchanged.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-content.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign floral = section.settings.floral_image
+  if floral != blank
+    assign floral_url = floral | image_url: width: 600
+  endif
+-%}
+
+<div class="nf-mk nf-mfy">
+  {%- comment -%} ── SECTION 1 — Hero ── {%- endcomment -%}
+  <section class="nf-mfy__hero">
+    {%- if section.settings.hero_image != blank -%}
+      <div class="nf-mfy__hero-bg" style="background-image: url({{ section.settings.hero_image | image_url: width: 2400 }});"></div>
+    {%- else -%}
+      <div class="nf-mfy__hero-bg" style="background-color: {{ section.settings.cream }};"></div>
+    {%- endif -%}
+    <div class="nf-mfy__scrim" aria-hidden="true"></div>
+    <div class="nf-mfy__panel">
+      <p class="nf-eyebrow">{{ section.settings.hero_eyebrow | escape }}</p>
+      <h1>{{ section.settings.hero_heading }}</h1>
+      <p>{{ section.settings.hero_text | escape }}</p>
+      {%- if section.settings.hero_button_label != blank -%}
+        <a class="nf-btn" href="#nf-custom-journey">{{ section.settings.hero_button_label | escape }}</a>
+      {%- endif -%}
+    </div>
+  </section>
+
+  {%- comment -%} ── SECTION 2 — Steps (was ScrollSteps) ── {%- endcomment -%}
+  {%- assign steps = section.blocks | where: 'type', 'step' -%}
+  {%- if steps.size > 0 -%}
+    <section class="nf-mk__section nf-mk__pad" style="background-color: var(--nf-mk-white);">
+      <div class="nf-mk__wrap">
+        {%- if section.settings.steps_heading != blank -%}
+          <div style="text-align: center; margin-bottom: 48px;">
+            <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">{{ section.settings.steps_eyebrow | escape }}</p>
+            <h2 class="nf-mk__h2" style="margin-bottom: 0;">{{ section.settings.steps_heading }}</h2>
+          </div>
+        {%- endif -%}
+        <div style="display: flex; flex-direction: column; gap: 64px;">
+          {%- for block in steps -%}
+            {%- liquid
+              assign remainder = forloop.index0 | modulo: 2
+              assign flip_class = ''
+              if remainder == 1
+                assign flip_class = ' nf-split--flip'
+              endif
+            -%}
+            <div class="nf-split nf-reveal{{ flip_class }}" {{ block.shopify_attributes }}>
+              <div class="nf-split__copy">
+                <span class="nf-steps__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                <h2 style="font-size: 26px;">{{ block.settings.title | escape }}</h2>
+                <p>{{ block.settings.text | escape }}</p>
+              </div>
+              {%- if block.settings.image != blank -%}
+                <div class="nf-split__media">
+                  <img
+                    src="{{ block.settings.image | image_url: width: 1200 }}"
+                    alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    style="aspect-ratio: 4 / 3;"
+                    loading="lazy"
+                  >
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} ── SECTION 3 — Start your custom journey ── {%- endcomment -%}
+  <section
+    id="nf-custom-journey"
+    class="nf-mk__section"
+    style="background-color: {{ section.settings.cream }}; scroll-margin-top: 110px; padding-block: 32px;"
+  >
+    {%- if floral_url -%}
+      <div class="nf-mk__floral" style="background-image: url({{ floral_url }}); opacity: 0.5;"></div>
+    {%- endif -%}
+    <div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center; padding-block: 28px;">
+      <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">{{ section.settings.journey_eyebrow | escape }}</p>
+      <h2 class="nf-mk__h2" style="margin-bottom: 12px; color: hsl(0 0% 10%);">{{ section.settings.journey_heading }}</h2>
+      <p class="nf-mk__lede" style="color: hsl(0 0% 22%); margin-bottom: 24px;">{{ section.settings.journey_text | escape }}</p>
+      <a class="nf-btn" style="padding: 16px 48px;" href="{{ section.settings.journey_link }}" target="_blank" rel="noopener noreferrer">
+        {{ section.settings.journey_button | escape }}
+      </a>
+    </div>
+  </section>
+
+  {%- comment -%} ── SECTION 4 — Customer stories (was CustomizationStories) ── {%- endcomment -%}
+  {%- assign reels = section.blocks | where: 'type', 'reel' -%}
+  {%- if reels.size > 0 -%}
+    <section class="nf-mk__section" style="background-color: var(--nf-mk-white); padding-block: 30px;">
+      <div class="nf-mk__wrap">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">{{ section.settings.stories_eyebrow | escape }}</p>
+          <h2 class="nf-mk__h2" style="margin-bottom: 12px; color: hsl(0 0% 18%);">{{ section.settings.stories_heading }}</h2>
+        </div>
+        <div class="nf-mfy__reels">
+          {%- for block in reels -%}
+            <figure class="nf-mfy__reel" {{ block.shopify_attributes }}>
+              {%- if block.settings.embed_url != blank -%}
+                <iframe
+                  src="{{ block.settings.embed_url }}"
+                  title="{{ block.settings.caption | escape }}"
+                  loading="lazy"
+                  allowtransparency="true"
+                  allowfullscreen
+                  scrolling="no"
+                  frameborder="0"
+                ></iframe>
+              {%- elsif block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 800 }}"
+                  alt="{{ block.settings.caption | escape }}"
+                  loading="lazy"
+                >
+              {%- endif -%}
+              {%- if block.settings.caption != blank -%}
+                <figcaption>
+                  {%- if block.settings.link != blank -%}
+                    <a href="{{ block.settings.link }}" target="_blank" rel="noopener noreferrer">{{ block.settings.caption | escape }}</a>
+                  {%- else -%}
+                    {{ block.settings.caption | escape }}
+                  {%- endif -%}
+                </figcaption>
+              {%- endif -%}
+            </figure>
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} ── SECTION 5 — FAQ CTA ── {%- endcomment -%}
+  {%- if section.settings.show_faq_cta -%}
+    <section class="nf-mk__section" style="background-color: {{ section.settings.cream }}; padding-block: 64px;">
+      <div style="max-width: 600px; margin: 0 auto; padding-inline: 24px; text-align: center;">
+        <h2 class="nf-mk__h2" style="font-size: 26px; margin-bottom: 16px; color: var(--nf-doc-heading);">{{ section.settings.faq_heading | escape }}</h2>
+        <p class="nf-mk__lede" style="color: var(--nf-doc-muted); margin-bottom: 32px;">{{ section.settings.faq_text | escape }}</p>
+        <a class="nf-btn nf-btn--ink" style="padding: 14px 40px;" href="{{ section.settings.faq_link }}">{{ section.settings.faq_button | escape }}</a>
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+.nf-mfy__reels {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) { .nf-mfy__reels { grid-template-columns: repeat(3, 1fr); } }
+.nf-mfy__reel { margin: 0; }
+.nf-mfy__reel iframe,
+.nf-mfy__reel img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 14;
+  border: 0;
+  object-fit: cover;
+  background-color: var(--nf-surface-raised);
+}
+.nf-mfy__reel figcaption {
+  margin-top: 12px;
+  text-align: center;
+  font-family: var(--nf-font-editorial);
+  font-size: 14px;
+  color: var(--nf-mk-body);
+}
+.nf-mfy__reel figcaption a { color: inherit; text-decoration: none; }
+.nf-mfy__reel figcaption a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .nf-mfy .nf-reveal {
+    animation: nf-mfy-rise 0.7s var(--nf-ease-reveal) both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+@keyframes nf-mfy-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira made for you",
+  "tag": "section",
+  "class": "nf-made-for-you-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "color",
+      "id": "cream",
+      "label": "Cream section background",
+      "default": "#F7F3EF"
+    },
+    {
+      "type": "image_picker",
+      "id": "floral_image",
+      "label": "Floral pattern background"
+    },
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_eyebrow",
+      "label": "Eyebrow",
+      "default": "Customise"
+    },
+    {
+      "type": "html",
+      "id": "hero_heading",
+      "label": "Heading",
+      "default": "Design Your Dream<br>Outfit With <span class=\"nf-italic\">Naira</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_text",
+      "label": "Intro",
+      "default": "Over 2,500 custom pieces handcrafted for brides, celebrations, and once-in-a-lifetime moments."
+    },
+    {
+      "type": "text",
+      "id": "hero_button_label",
+      "label": "Hero button",
+      "default": "Begin Your Design"
+    },
+    {
+      "type": "header",
+      "content": "How it works"
+    },
+    {
+      "type": "text",
+      "id": "steps_eyebrow",
+      "label": "Eyebrow",
+      "default": "The process"
+    },
+    {
+      "type": "html",
+      "id": "steps_heading",
+      "label": "Heading",
+      "default": "From idea to <span class=\"nf-italic\">doorstep</span>"
+    },
+    {
+      "type": "header",
+      "content": "Start your custom journey"
+    },
+    {
+      "type": "text",
+      "id": "journey_eyebrow",
+      "label": "Eyebrow",
+      "default": "Get started"
+    },
+    {
+      "type": "html",
+      "id": "journey_heading",
+      "label": "Heading",
+      "default": "Start Your Custom <span class=\"nf-italic\" style=\"color: hsl(16 45% 58%)\">Journey</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "journey_text",
+      "label": "Text",
+      "default": "Ready to bring your outfit to life? Chat with our design team and we will shape it together."
+    },
+    {
+      "type": "text",
+      "id": "journey_button",
+      "label": "Button label",
+      "default": "Chat on WhatsApp"
+    },
+    {
+      "type": "url",
+      "id": "journey_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Customer stories"
+    },
+    {
+      "type": "text",
+      "id": "stories_eyebrow",
+      "label": "Eyebrow",
+      "default": "Customer stories"
+    },
+    {
+      "type": "html",
+      "id": "stories_heading",
+      "label": "Heading",
+      "default": "Where ideas become <span class=\"nf-italic\">Outfits</span>"
+    },
+    {
+      "type": "header",
+      "content": "FAQ call to action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_faq_cta",
+      "label": "Show FAQ block",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "faq_heading",
+      "label": "Heading",
+      "default": "Have Questions?"
+    },
+    {
+      "type": "textarea",
+      "id": "faq_text",
+      "label": "Text",
+      "default": "Find answers on customisation, shipping and returns in our FAQ section."
+    },
+    {
+      "type": "text",
+      "id": "faq_button",
+      "label": "Button label",
+      "default": "View FAQs"
+    },
+    {
+      "type": "url",
+      "id": "faq_link",
+      "label": "Button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Send Us Your Dream Outfit"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "reel",
+      "name": "Customer story",
+      "settings": [
+        {
+          "type": "text",
+          "id": "embed_url",
+          "label": "Instagram embed URL",
+          "info": "e.g. https://www.instagram.com/reel/XXXX/embed/ — leave blank to use an image instead."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (fallback)"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Caption link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira made for you",
+      "blocks": [
+        {
+          "type": "step"
+        },
+        {
+          "type": "step"
+        },
+        {
+          "type": "step"
+        },
+        {
+          "type": "step"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

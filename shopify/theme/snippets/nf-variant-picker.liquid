@@ -1,0 +1,78 @@
+{%- comment -%}
+  ═══════════════════════════════════════════════════════════════════
+  Naira Flore — variant picker
+  Ported from the Size <Select> in src/components/product/ProductDetails.tsx.
+
+  Reads product.options_with_values / product.variants. The hidden
+  `id` input is the only control named `id`, so the enclosing
+  /cart/add form always posts exactly one variant. The option
+  <select>s deliberately carry no `name` — nf-product.js maps the
+  chosen combination back onto the hidden input.
+
+  Accepts:
+    product        {Product} required
+    size_guide_url {String}  optional, renders the "Size Guide" link
+    uid            {String}  unique-ifies element ids
+  ═══════════════════════════════════════════════════════════════════
+{%- endcomment -%}
+
+{%- liquid
+  assign picker_uid = uid | default: 'nf'
+  assign current_variant = product.selected_or_first_available_variant
+  if current_variant == blank
+    assign current_variant = product.variants.first
+  endif
+-%}
+
+<div class="nf-variants" data-nf-variant-picker data-nf-product-url="{{ product.url }}">
+  {%- unless product.has_only_default_variant -%}
+    {%- for option in product.options_with_values -%}
+      <div class="nf-field">
+        <div class="nf-field__head">
+          <span class="nf-label">{{ option.name }}</span>
+          {%- if size_guide_url != blank and option.name == 'Size' -%}
+            <a class="nf-field__aside" href="{{ size_guide_url }}">Size Guide</a>
+          {%- endif -%}
+        </div>
+        <select
+          class="nf-select"
+          id="NfOption-{{ picker_uid }}-{{ forloop.index }}"
+          data-nf-option-index="{{ forloop.index0 }}"
+          aria-label="{{ option.name | escape }}"
+        >
+          {%- for value in option.values -%}
+            <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+          {%- endfor -%}
+        </select>
+      </div>
+    {%- endfor -%}
+  {%- endunless -%}
+
+  <input
+    type="hidden"
+    name="id"
+    value="{{ current_variant.id }}"
+    data-nf-variant-id
+    {% if current_variant == blank %}disabled{% endif %}
+  >
+
+  <script type="application/json" data-nf-variant-data>
+    [
+      {%- for variant in product.variants -%}
+        {
+          "id": {{ variant.id }},
+          "title": {{ variant.title | json }},
+          "available": {{ variant.available }},
+          "options": {{ variant.options | json }},
+          "price": {{ variant.price }},
+          "price_formatted": {{ variant.price | money | strip_html | json }},
+          "compare_at_price": {{ variant.compare_at_price | default: 0 }},
+          "compare_at_formatted": {{ variant.compare_at_price | money | strip_html | json }},
+          "featured_media_id": {{ variant.featured_media.id | default: 0 }},
+          "sku": {{ variant.sku | json }},
+          "url": {{ variant.url | json }}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+</div>

@@ -1,0 +1,391 @@
+{% comment %}
+  nf-hero — port of src/components/HeroSection.tsx
+  "Softly, slowly, worn." — the Spring Capsule editorial hero.
+  Every string in the source is a section setting with the source text
+  as its default. Model cutouts are blocks; each falls back to the
+  ported nf-hero-look-N.webp theme asset when no image is picked.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign lead_words = section.settings.headline_lead | split: ' '
+  assign tail_delay = lead_words.size | times: 150 | plus: 600
+  assign vocab = section.settings.vocabulary | split: ','
+-%}
+
+<section class="nf nf-hero" id="NfHero-{{ section.id }}">
+  {%- if section.settings.show_pattern -%}
+    {%- if section.settings.pattern_image != blank -%}
+      {%- assign pattern_src = section.settings.pattern_image | image_url: width: 1200 -%}
+    {%- else -%}
+      {%- assign pattern_src = 'nf-floral-pattern-bg.webp' | asset_url -%}
+    {%- endif -%}
+    <div class="nf-hero__pattern" style="background-image:url({{ pattern_src }});" aria-hidden="true"></div>
+  {%- endif -%}
+
+  <div class="nf-hero__wash" aria-hidden="true"></div>
+
+  {%- if section.settings.show_petals -%}
+    <div class="nf-hero__petals" aria-hidden="true">
+      {%- assign petals = '8%|0s|30s|110|.65|-22|blush|a,32%|6s|34s|130|.55|-10|blush|c,56%|3s|32s|90|.5|-30|sage|b,78%|10s|36s|140|.45|-16|blush|a,90%|16s|33s|60|.6|20|sage|b' | split: ',' -%}
+      {%- for p in petals -%}
+        {%- assign f = p | split: '|' -%}
+        {%- assign w = f[3] | times: 1 -%}
+        {%- assign h = w | times: 34 | divided_by: 100 -%}
+        {%- if f[6] == 'sage' -%}{%- assign fill = 'var(--nf-sage)' -%}{%- else -%}{%- assign fill = 'var(--nf-blush)' -%}{%- endif -%}
+        <svg class="nf-petal" viewBox="0 0 100 34"
+          style="left:{{ f[0] }};width:{{ w }}px;height:{{ h }}px;opacity:{{ f[4] }};transform:rotate({{ f[5] }}deg);animation:nf-drift-{{ f[7] }} {{ f[2] }} linear {{ f[1] }} infinite;">
+          <path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill="{{ fill }}"></path>
+        </svg>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  <div class="nf-hero__inner">
+    {%- if section.settings.meta_line_1 != blank or section.settings.meta_line_2 != blank -%}
+      <div class="nf-hero__meta nf-anim">
+        {%- if section.settings.meta_line_1 != blank -%}
+          <span class="nf-label">{{ section.settings.meta_line_1 }}</span>
+        {%- endif -%}
+        {%- if section.settings.meta_line_2 != blank -%}
+          <span class="nf-label">{{ section.settings.meta_line_2 }}</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.numeral != blank -%}
+      <div class="nf-hero__numeral-slot nf-anim">
+        <span class="nf-hero__numeral nf-display" aria-hidden="true">{{ section.settings.numeral }}</span>
+      </div>
+    {%- endif -%}
+
+    <div class="nf-hero__head nf-anim">
+      {%- if section.settings.eyebrow != blank -%}
+        <div>
+          <span class="nf-hero__eyebrow nf-label">{{ section.settings.eyebrow }}</span>
+        </div>
+      {%- endif -%}
+      <h1 class="nf-hero__headline nf-editorial">
+        <span class="nf-hero__lead">
+          {%- for w in lead_words -%}
+            {%- assign d = forloop.index0 | times: 150 | plus: 550 -%}
+            <span class="nf-word" style="animation-delay:{{ d }}ms">{{ w }}</span>{% unless forloop.last %} {% endunless %}
+          {%- endfor -%}
+        </span>
+        {%- if section.settings.headline_tail != blank -%}
+          <span class="nf-hero__tail nf-editorial">
+            <span class="nf-word" style="animation-delay:{{ tail_delay }}ms">{{ section.settings.headline_tail }}</span>
+          </span>
+        {%- endif -%}
+      </h1>
+    </div>
+
+    <div class="nf-hero__models nf-anim">
+      {%- if section.settings.side_label_left != blank -%}
+        <div class="nf-hero__side nf-hero__side--left nf-label">{{ section.settings.side_label_left }}</div>
+      {%- endif -%}
+      {%- if section.settings.side_label_right != blank -%}
+        <div class="nf-hero__side nf-hero__side--right nf-label">{{ section.settings.side_label_right }}</div>
+      {%- endif -%}
+      <div class="nf-hero__rule" aria-hidden="true"></div>
+
+      <div class="nf-hero__viewport" data-nf-hero-viewport>
+        <div class="nf-hero__track" data-nf-hero-track data-speed="{{ section.settings.marquee_speed }}">
+          {%- for dup in (1..2) -%}
+            <div class="nf-hero__set"{% if forloop.last %} aria-hidden="true"{% endif %}>
+              {%- for block in section.blocks -%}
+                {%- liquid
+                  # Six look assets exist (nf-hero-look-1..6), matching the six
+                  # images in src/assets/lookbook/. Cycling modulo 7 asked for a
+                  # seventh that was never uploaded, so the last tile 404'd.
+                  assign n = forloop.index0 | modulo: 6 | plus: 1
+                  assign fallback = 'nf-hero-look-' | append: n | append: '.webp'
+                -%}
+                <figure class="nf-hero__look" {{ block.shopify_attributes }}>
+                  {%- if block.settings.image != blank -%}
+                    {{ block.settings.image | image_url: height: 1200 | image_tag:
+                        alt: block.settings.name,
+                        loading: 'lazy',
+                        decoding: 'async',
+                        widths: '200,300,400,600,800' }}
+                  {%- else -%}
+                    <img src="{{ fallback | asset_url }}" alt="{{ block.settings.name | escape }}" loading="lazy" decoding="async">
+                  {%- endif -%}
+                </figure>
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+    <div class="nf-hero__copy nf-anim">
+      {%- if section.settings.lede != blank -%}
+        <p class="nf-hero__lede nf-editorial">{{ section.settings.lede }}</p>
+      {%- endif -%}
+      {%- if section.settings.cta_label != blank -%}
+        <div class="nf-hero__cta-wrap">
+          <a href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}" class="nf-hero__cta">
+            <span class="nf-hero__cta-face">
+              <span class="nf-hero__cta-fill" aria-hidden="true"></span>
+              <span class="nf-hero__cta-label nf-label">{{ section.settings.cta_label }}</span>
+            </span>
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if vocab.size > 0 -%}
+      <div class="nf-hero__vocab" aria-hidden="true">
+        <div class="nf-hero__vocab-track">
+          {%- for k in (1..2) -%}
+            <div class="nf-hero__vocab-set">
+              {%- for t in vocab -%}
+                <span class="nf-hero__vocab-item">
+                  <i class="nf-editorial">{{ t | strip }}</i>
+                  <s></s>
+                </span>
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function () {
+    function initHero(root) {
+      var track = root.querySelector('[data-nf-hero-track]');
+      if (!track || track.dataset.nfInit === '1') return;
+      track.dataset.nfInit = '1';
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var SPEED = parseFloat(track.dataset.speed || '0.6');
+      var target = 0, current = 0, raf = 0;
+      function onScroll() { target = window.scrollY * SPEED; }
+      function tick() {
+        current += (target - current) * 0.12;
+        var half = track.scrollWidth / 2;
+        if (half > 0) {
+          var wrapped = ((current % half) + half) % half;
+          track.style.transform = 'translate3d(' + -wrapped + 'px,0,0)';
+        }
+        raf = requestAnimationFrame(tick);
+      }
+      onScroll();
+      current = target;
+      window.addEventListener('scroll', onScroll, { passive: true });
+      raf = requestAnimationFrame(tick);
+    }
+    var el = document.getElementById('NfHero-{{ section.id }}');
+    if (el) initHero(el);
+    document.addEventListener('shopify:section:load', function (e) {
+      if (e.target && e.target.querySelector) {
+        var s = e.target.querySelector('.nf-hero');
+        if (s) initHero(s);
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "NF Hero",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Masthead"
+    },
+    {
+      "type": "text",
+      "id": "meta_line_1",
+      "label": "Meta line 1",
+      "default": "Volume One \u00b7 Spring \u00b7 MMXXVI"
+    },
+    {
+      "type": "text",
+      "id": "meta_line_2",
+      "label": "Meta line 2",
+      "default": "\u2116 24"
+    },
+    {
+      "type": "text",
+      "id": "numeral",
+      "label": "Outlined numeral",
+      "default": "06",
+      "info": "Large hairline numeral behind the headline."
+    },
+    {
+      "type": "header",
+      "content": "Headline"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The Spring Capsule"
+    },
+    {
+      "type": "text",
+      "id": "headline_lead",
+      "label": "Headline",
+      "default": "Softly, slowly,",
+      "info": "Each word animates in on its own."
+    },
+    {
+      "type": "text",
+      "id": "headline_tail",
+      "label": "Headline last word (italic)",
+      "default": "worn."
+    },
+    {
+      "type": "header",
+      "content": "Rotated side labels"
+    },
+    {
+      "type": "text",
+      "id": "side_label_left",
+      "label": "Left label",
+      "default": "Hand-finished \u00b7 India"
+    },
+    {
+      "type": "text",
+      "id": "side_label_right",
+      "label": "Right label",
+      "default": "Slow-made to measure"
+    },
+    {
+      "type": "header",
+      "content": "Copy and call to action"
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Description",
+      "default": "Soft tailoring, pressed flowers, and the long quiet of an Indian afternoon."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "Shop the Collection"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Vocabulary marquee"
+    },
+    {
+      "type": "textarea",
+      "id": "vocabulary",
+      "label": "Words (comma separated)",
+      "default": "atelier, edit, capsule, hand-finished, slow-made, pressed, salt-washed, made-to-measure"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pattern",
+      "label": "Show pressed-flower wash",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "pattern_image",
+      "label": "Pressed-flower pattern",
+      "info": "Defaults to the ported nf-floral-pattern-bg.webp theme asset."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_petals",
+      "label": "Show drifting petals",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "x",
+      "label": "Model marquee scroll speed",
+      "default": 0.6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "look",
+      "name": "Model cutout",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Leave empty to use the ported nf-hero-look-N.webp asset for this position."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Look name (alt text)",
+          "default": "Naira Flore look"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 14,
+  "presets": [
+    {
+      "name": "NF Hero",
+      "blocks": [
+        {
+          "type": "look",
+          "settings": {
+            "name": "Lotus drape"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "name": "Indigo zardozi"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "name": "Pressed garden"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "name": "Patchwork story"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "name": "Onyx chiffon"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "name": "Marigold flare"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,132 @@
+/* ─────────────────────────────────────────────────────────────
+   Naira Flore — product card
+   Port of src/components/ProductCard.tsx.
+
+   The card markup shipped in snippets/nf-product-card.liquid but no
+   stylesheet ever did: .nf-card had zero rules anywhere in the theme,
+   so cards rendered as unstyled stacked text, the primary/hover image
+   swap never ran, and the wishlist and add buttons sat at
+   cursor: default with no hover state.
+
+   Snippets cannot carry {% stylesheet %}, so this is a real asset the
+   snippet links with stylesheet_tag.
+   ───────────────────────────────────────────────────────────── */
+
+.nf-card { position: relative; display: flex; flex-direction: column; }
+
+/* ── media ───────────────────────────────────────────────── */
+.nf-card__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #F4EBE2);
+}
+.nf-card__media-link { position: absolute; inset: 0; display: block; }
+.nf-card__img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: opacity .5s ease-out, transform .5s ease-out;
+}
+.nf-card__img--hover { opacity: 0; }
+.nf-card:hover .nf-card__img--primary { opacity: 0; transform: scale(1.02); }
+.nf-card:hover .nf-card__img--hover   { opacity: 1; transform: scale(1.02); }
+/* A card with only one photo must not fade to an empty box on hover. */
+.nf-card__img--primary:only-of-type,
+.nf-card:hover .nf-card__img--primary:only-of-type { opacity: 1; }
+
+/* ── labels ──────────────────────────────────────────────── */
+.nf-card__tag, .nf-card__badge {
+  position: absolute; z-index: 2;
+  padding: 3px 8px;
+  font-family: var(--nf-font-label, sans-serif);
+  font-size: 9.5px; font-weight: 500;
+  letter-spacing: var(--nf-track-18, .18em);
+  text-transform: uppercase;
+}
+.nf-card__tag   { top: .75rem; left: .75rem; background-color: rgb(var(--nf-ivory-rgb, 251 243 236) / .92); color: var(--nf-ink, #1A1614); }
+.nf-card__badge { top: .75rem; left: .75rem; background-color: var(--nf-gold-deep, #B0843A); color: #fff; }
+.nf-card__tag + .nf-card__badge { top: 2.4rem; }
+
+/* ── wishlist ────────────────────────────────────────────── */
+.nf-card__wish {
+  position: absolute; z-index: 3; top: .75rem; right: .75rem;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%;
+  background-color: rgb(var(--nf-ivory-rgb, 251 243 236) / .88);
+  color: var(--nf-ink, #1A1614);
+  cursor: pointer;
+  transition: background-color .2s ease, transform .2s ease;
+}
+.nf-card__wish:hover { background-color: rgb(var(--nf-ivory-rgb, 251 243 236) / 1); transform: scale(1.06); }
+.nf-card__wish svg, .nf-card__heart { width: 16px; height: 16px; pointer-events: none; }
+.nf-card__wish.is-on .nf-card__heart { fill: hsl(0 70% 55%); color: hsl(0 70% 55%); }
+
+/* ── scrim + overlay add ─────────────────────────────────── */
+.nf-card__scrim {
+  position: absolute; inset-inline: 0; bottom: 0; height: 42%;
+  background: linear-gradient(to top, rgb(0 0 0 / .28), transparent);
+  opacity: 0; transition: opacity .3s ease; pointer-events: none; z-index: 1;
+}
+.nf-card:hover .nf-card__scrim { opacity: 1; }
+
+.nf-card__form { margin: 0; }
+.nf-card__add {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  border: 0; cursor: pointer;
+  font-family: var(--nf-font-label, sans-serif);
+  font-size: 13px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .08em;
+  background-color: var(--nf-ink, #1A1614); color: var(--nf-ivory, #FBF3EC);
+  transition: background-color .2s ease, opacity .2s ease, transform .2s ease;
+}
+.nf-card__add:hover { background-color: var(--nf-gold-deep, #B0843A); }
+.nf-card__add:disabled { opacity: .7; cursor: not-allowed; }
+
+/* Desktop: reveal over the image on hover. Mobile has no hover, so the
+   button lives inline under the card instead. */
+.nf-card__add--overlay {
+  position: absolute; z-index: 3;
+  inset-inline: 0; bottom: 0; margin-inline: auto;
+  width: max-content; padding: .625rem 1.5rem; margin-bottom: 1rem;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .2s ease-out, transform .2s ease-out, background-color .2s ease;
+}
+.nf-card:hover .nf-card__add--overlay,
+.nf-card__add--overlay:focus-visible { opacity: 1; transform: translateY(0); }
+@media (max-width: 767px) { .nf-card__add--overlay { display: none; } }
+
+.nf-card__add--mobile { width: 100%; margin-top: .625rem; padding: .75rem 1rem; min-height: 44px; }
+@media (min-width: 768px) { .nf-card__add--mobile { display: none; } }
+
+.nf-card__add-done { display: none; }
+.nf-card__add.is-added .nf-card__add-idle { display: none; }
+.nf-card__add.is-added .nf-card__add-done { display: inline-flex; align-items: center; gap: .5rem; }
+
+/* ── info ────────────────────────────────────────────────── */
+.nf-card__info { display: block; margin-top: .625rem; text-decoration: none; color: inherit; }
+.nf-card__category {
+  margin: 0; font-family: var(--nf-font-label, sans-serif);
+  font-size: 9.5px; letter-spacing: var(--nf-track-18, .18em);
+  text-transform: uppercase; color: var(--nf-gold-shadow, #9A7634);
+}
+.nf-card__title {
+  margin: .25rem 0 0;
+  font-family: var(--nf-font-editorial, Georgia, serif);
+  font-size: 16px; line-height: 1.3; color: var(--nf-ink, #1A1614);
+  transition: color .2s ease;
+}
+.nf-card__info:hover .nf-card__title { color: var(--nf-gold-shadow, #9A7634); }
+.nf-card__price { margin: .25rem 0 0; display: flex; align-items: baseline; gap: .4rem; }
+.nf-card__price-value { font-family: var(--nf-font-editorial, Georgia, serif); font-size: 15px; font-weight: 600; color: var(--nf-ink, #1A1614); }
+.nf-card__price-was { font-size: 12.5px; text-decoration: line-through; color: rgb(var(--nf-ink-rgb, 26 22 20) / .45); }
+
+/* ── press feedback ──────────────────────────────────────── */
+.nf-press { transition: transform .12s ease; }
+.nf-press:active { transform: scale(.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-card__img, .nf-card__scrim, .nf-card__add--overlay, .nf-press { transition: none; }
+  .nf-card__add--overlay { opacity: 1; transform: none; }
+}

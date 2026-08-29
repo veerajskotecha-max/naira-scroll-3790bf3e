@@ -1,0 +1,43 @@
+/* Naira Flore — global chrome (film grain, scroll bloom, feather cursor).
+   Geometry and z-indices copied from the React classes so the layers stack
+   in the same order they do on the live site. */
+
+/* ── film grain ── */
+.nf-grain { position: fixed; inset: 0; z-index: 9000; pointer-events: none; display: none; }
+.nf-grain__noise { position: absolute; inset: 0; opacity: .05; mix-blend-mode: overlay; }
+.nf-grain__vignette { position: absolute; inset: 0;
+  background: radial-gradient(120% 120% at 50% 50%, transparent 62%, rgba(26, 22, 20, .16) 100%); }
+
+/* ── scroll bloom ── */
+.nf-bloom { position: fixed; right: 1.25rem; top: 50%; z-index: 8000;
+  height: 42vh; transform: translateY(-50%); pointer-events: none;
+  display: none; flex-direction: column; align-items: center; }
+.nf-bloom__flower { margin-bottom: .5rem; }
+.nf-bloom__flower g { transform-origin: 20px 20px; transition: transform .25s ease; }
+.nf-bloom__rail { position: relative; width: 1px; flex: 1; background-color: rgb(26 22 20 / .12); }
+.nf-bloom__fill { position: absolute; bottom: 0; left: 0; width: 1px; background-color: #99B4AF; }
+.nf-bloom__dot { position: absolute; left: -3px; width: 6px; height: 6px; border-radius: 50%;
+  background-color: #1A1614; transform: translateY(-50%); }
+.nf-bloom__pct { margin-top: .75rem; font-family: 'Jost', sans-serif; font-size: 9px;
+  letter-spacing: .3em; color: rgb(26 22 20 / .45); font-variant-numeric: tabular-nums; }
+
+/* ── feather cursor ── */
+.nf-cursor { position: fixed; inset: 0; z-index: 9999; pointer-events: none; display: none; }
+.nf-cursor__burst { position: fixed; inset: 0; }
+.nf-cursor__feather { position: fixed; left: 0; top: 0; margin-left: -.5rem; margin-top: -1.25rem;
+  will-change: transform; transform-origin: 13px 35px; transition: filter .3s ease;
+  filter: drop-shadow(0 2px 4px rgba(122, 90, 40, .25)); }
+.nf-cursor__feather.is-lift { filter: drop-shadow(0 0 8px rgba(201, 154, 76, .6)) brightness(1.06); }
+.nf-cursor__feather.is-press svg { transform: scale(.9); transition: transform .12s ease; }
+.nf-cursor__dot { position: fixed; left: 0; top: 0; width: 6px; height: 6px; border-radius: 50%;
+  background-color: #1A1614; will-change: transform; }
+.has-feather-cursor, .has-feather-cursor * { cursor: none !important; }
+
+/* All three are desktop-only, exactly as the React `hidden lg:block` gates. */
+@media (min-width: 1024px) {
+  .nf-grain, .nf-cursor { display: block; }
+  .nf-bloom { display: flex; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf-bloom__flower g { transition: none; }
+}

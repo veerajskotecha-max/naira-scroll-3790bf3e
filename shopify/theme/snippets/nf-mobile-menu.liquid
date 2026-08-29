@@ -1,0 +1,166 @@
+{%- comment -%}
+  Naira Flore — mobile navigation drawer.
+  Ported from src/components/MobileMenu.tsx in the Lovable repo.
+  React state (isOpen) becomes an `.is-open` class driven by
+  assets/nf-header.js; the transitions, sizes and copy are the
+  source's exact values.
+
+  The source hard-codes its six links. Here the list comes from the
+  Shopify linklist chosen on the header section, with each link's
+  children flattened underneath it, so every href stays a real
+  Shopify route.
+
+  Accepts:
+  - menu:          {LinkList} primary menu (required)
+  - menu_right:    {LinkList} optional secondary menu, appended
+  - contact_label: {String} fallback single link when menu_right is unset
+  - contact_url:   {String} href for that fallback link
+  - whatsapp_url:  {String} quick-contact link, hidden when blank
+  - whatsapp_label:{String} its label
+  - show_wishlist: {Boolean}
+  - wishlist_url:  {String} where the wishlist heart points
+
+  Usage: {% render 'nf-mobile-menu', menu: menu, ... %}
+{%- endcomment -%}
+
+{%- liquid
+  comment
+    Bug 2 fix, mirrored from sections/nf-header.liquid: don't repeat a
+    CONTACT link the primary menu already has, and never render the
+    fallback link when contact_url is blank (it would otherwise fall
+    back to routes.root_url, i.e. a second link pointing at "/").
+  endcomment
+  assign contact_label_lower = contact_label | strip | downcase
+  assign menu_has_contact_link = false
+  for link in menu.links
+    assign nf_link_title_lower = link.title | strip | downcase
+    if contact_label_lower != blank and nf_link_title_lower == contact_label_lower
+      assign menu_has_contact_link = true
+    endif
+  endfor
+  assign show_contact_fallback = false
+  if menu_right.links == blank and contact_label != blank and contact_url != blank and menu_has_contact_link == false
+    assign show_contact_fallback = true
+  endif
+-%}
+
+<div class="nf-mm" data-nf-menu aria-hidden="true">
+  <div class="nf-mm__backdrop" data-nf-menu-close aria-hidden="true"></div>
+
+  <div
+    class="nf-mm__panel"
+    data-nf-menu-panel
+    role="dialog"
+    aria-modal="true"
+    aria-label="Navigation menu"
+  >
+    <div class="nf-mm__head">
+      <button type="button" class="nf-mm__close" data-nf-menu-close aria-label="Close menu">
+        {%- render 'nf-icon-close', size: 22 -%}
+      </button>
+    </div>
+
+    <nav class="nf-mm__nav" aria-label="Main navigation">
+      {%- comment -%}
+        Same source as the desktop bar: when the header supplies a manual nav
+        the drawer uses it too, so the two never disagree.
+      {%- endcomment -%}
+      {%- if use_manual_nav -%}
+        {%- for lbl in nav_labels -%}
+          <a
+            href="{{ nav_urls[forloop.index0] | strip }}"
+            class="nf-mm__link"
+            data-nf-menu-close
+          >
+            {{- lbl | strip | escape -}}
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+      {%- for link in menu.links -%}
+        <a
+          href="{{ link.url }}"
+          class="nf-mm__link{% if link.active %} is-active{% endif %}"
+          data-nf-menu-close
+          {% if link.active %}aria-current="page"{% endif %}
+        >
+          {{- link.title | escape -}}
+        </a>
+        {%- if link.links != blank -%}
+          <div class="nf-mm__sub">
+            {%- for child in link.links -%}
+              <a
+                href="{{ child.url }}"
+                class="nf-mm__link nf-mm__link--sub{% if child.active %} is-active{% endif %}"
+                data-nf-menu-close
+                {% if child.active %}aria-current="page"{% endif %}
+              >
+                {{- child.title | escape -}}
+              </a>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- endif -%}
+
+      {%- if menu_right.links != blank -%}
+        {%- for link in menu_right.links -%}
+          <a
+            href="{{ link.url }}"
+            class="nf-mm__link{% if link.active %} is-active{% endif %}"
+            data-nf-menu-close
+            {% if link.active %}aria-current="page"{% endif %}
+          >
+            {{- link.title | escape -}}
+          </a>
+        {%- endfor -%}
+      {%- elsif show_contact_fallback -%}
+        <a href="{{ contact_url }}" class="nf-mm__link" data-nf-menu-close>
+          {{- contact_label | escape -}}
+        </a>
+      {%- endif -%}
+    </nav>
+
+    <div class="nf-mm__foot">
+      {%- if show_wishlist -%}
+        <a
+          href="{{ wishlist_url | default: routes.account_url }}"
+          class="nf-mm__action"
+          data-nf-menu-close
+          aria-label="Wishlist"
+        >
+          {%- render 'nf-icon-heart', size: 22 -%}
+          <span class="nf-mm__dot" data-nf-wishlist-dot hidden></span>
+        </a>
+      {%- endif -%}
+
+      <a
+        href="{{ routes.cart_url }}"
+        class="nf-mm__action"
+        data-nf-menu-close
+        aria-label="Cart, {{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %}"
+      >
+        {%- render 'nf-icon-bag', size: 22 -%}
+        <span
+          class="nf-mm__badge"
+          data-nf-cart-mirror
+          aria-hidden="true"
+          {% if cart.item_count == 0 %}hidden{% endif %}
+        >
+          {%- if cart.item_count > 9 -%}9+{%- else -%}{{ cart.item_count }}{%- endif -%}
+        </span>
+      </a>
+
+      {%- if whatsapp_url != blank -%}
+        <a
+          href="{{ whatsapp_url }}"
+          class="nf-mm__whatsapp"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-nf-menu-close
+        >
+          {{- whatsapp_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

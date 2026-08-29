@@ -1,0 +1,14 @@
+/*
+ * Naira Flore cart page — drawer language from src/components/CartDrawer.tsx
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-cart",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

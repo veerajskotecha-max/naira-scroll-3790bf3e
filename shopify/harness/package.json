@@ -1,0 +1,1 @@
+{ "name": "nf-liquid-harness", "private": true, "type": "module", "dependencies": { "liquidjs": "^10.29.0" } }

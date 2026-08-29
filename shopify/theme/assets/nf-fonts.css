@@ -1,0 +1,46 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NAIRA FLORE — FONT LOADING
+   Ported from the Lovable repo:
+     - src/index.css lines 5-12  (the Velista @font-face)
+     - index.html   lines 12-15  (Cormorant Garamond + Jost)
+
+   Cormorant Garamond and Jost are pulled from Google Fonts by <link>
+   tags in layout/theme.liquid, using the media="print" onload trick so
+   they never block first paint. They are NOT @import-ed here: an
+   @import inside a stylesheet re-introduces the render-blocking
+   waterfall the source deliberately avoids.
+
+   Load order in <head>: google font links → nf-fonts.css →
+   nf-tokens.css → nf-base.css.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Brand serif — self-hosted, non-render-blocking. Replaces Cormorant
+   Garamond as the display face; Cormorant + Georgia remain as fallback
+   in --nf-font-display (see nf-tokens.css).
+
+   The src URL is RELATIVE on purpose. Shopify serves this file from
+   <cdn>/…/assets/nf-fonts.css, so 'Velista.ttf' resolves to
+   <cdn>/…/assets/Velista.ttf — the exact asset uploaded alongside it.
+   A Liquid {{ 'Velista.ttf' | asset_url }} cannot be used here because
+   plain .css theme assets are served verbatim and never rendered
+   through Liquid. layout/theme.liquid preloads the same unversioned
+   URL via `asset_url | split: '?' | first`, so the preload and this
+   @font-face agree and the file is fetched exactly once.
+
+   NO format() HINT, deliberately — this is the one line that differs
+   from src/index.css, which declares format('truetype'). The asset
+   stored in the theme is the original TTF, but Shopify's CDN transcodes
+   it to WOFF2 on delivery (verified: 37060 B TTF stored, 11212 B with a
+   `wOF2` magic number served, regardless of Accept header). A format()
+   hint tells the browser what to expect BEFORE it downloads, so
+   format('truetype') describes bytes that never arrive, and
+   format('woff2') would break if Shopify ever stopped transcoding.
+   Omitting the hint makes the browser download and sniff the real
+   format, which is correct under both behaviours. */
+@font-face {
+  font-family: 'Velista';
+  src: url('Velista.ttf');
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}

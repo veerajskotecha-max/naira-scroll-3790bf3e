@@ -1,0 +1,42 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "concept_a": {
+      "type": "nf-concepts",
+      "settings": {
+        "label": "Concept A",
+        "note": "The Ivory Atelier · Brand-light · Drag to spin",
+        "placeholder_text": "Add the Concept A jewellery section directly below this divider."
+      }
+    },
+    "concept_b": {
+      "type": "nf-concepts",
+      "settings": {
+        "label": "Concept B",
+        "note": "The Emerald Jewel Box · Night vitrine · Drag to spin",
+        "placeholder_text": "Add the Concept B jewellery section directly below this divider."
+      }
+    },
+    "concept_c": {
+      "type": "nf-concepts",
+      "settings": {
+        "label": "Concept C",
+        "note": "Golden Hour · Terracotta arches · Drag to spin",
+        "placeholder_text": "Add the Concept C jewellery section directly below this divider."
+      }
+    }
+  },
+  "order": [
+    "concept_a",
+    "concept_b",
+    "concept_c"
+  ]
+}

@@ -1,0 +1,58 @@
+/*
+ * Naira Flore collection page — ported from src/pages/Jewellery.tsx
+ */{
+  "sections": {
+    "main": {
+      "type": "nf-collection",
+      "settings": {}
+    },
+    "cats": {
+      "type": "nf-jewellery-categories",
+      "settings": {},
+      "blocks": {
+        "category_1": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "rings",
+            "label": "Rings",
+            "note": "solitaires, halo & stack"
+          }
+        },
+        "category_2": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "bracelets",
+            "label": "Bracelets",
+            "note": "tennis, bow & baroque pearl"
+          }
+        },
+        "category_3": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "earrings",
+            "label": "Earrings",
+            "note": "hoops & the studs, three ways"
+          }
+        },
+        "category_4": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "necklaces",
+            "label": "Necklaces",
+            "note": "lariats, chains & a cascade"
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3",
+        "category_4"
+      ]
+    }
+  },
+  "order": [
+    "main",
+    "cats"
+  ]
+}

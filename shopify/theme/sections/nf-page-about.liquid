@@ -1,0 +1,367 @@
+{%- comment -%}
+  Naira Flore — About page
+  Ported from src/pages/AboutUs.tsx and src/components/about/*.tsx:
+    AboutHero · AboutTimeline · AboutEthos · AboutPersonalised ·
+    AboutHandcrafted · AboutFloral · AboutCTA
+
+  The React version staggered every block in with IntersectionObserver.
+  Here that is a CSS-only reveal (no observers, no JS bundle) that is skipped
+  entirely under prefers-reduced-motion. Copy, order and image aspect ratios
+  are unchanged; images become image_picker settings so the merchant owns them.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-content.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign floral = section.settings.floral_image
+  if floral != blank
+    assign floral_url = floral | image_url: width: 600
+  endif
+-%}
+
+<div class="nf-mk nf-about">
+  {%- comment -%} ── AboutHero ── {%- endcomment -%}
+  <section class="nf-about__hero">
+    {%- if section.settings.hero_background_image != blank -%}
+      <div class="nf-about__hero-bg" style="background-image: url({{ section.settings.hero_background_image | image_url: width: 2400 }});"></div>
+    {%- else -%}
+      <div class="nf-about__hero-bg" style="background-color: {{ section.settings.cream }};"></div>
+    {%- endif -%}
+    <div class="nf-mk__wrap nf-about__hero-grid nf-reveal">
+      <div class="nf-about__hero-copy">
+        <p class="nf-eyebrow">{{ section.settings.hero_eyebrow | escape }}</p>
+        <h1>{{ section.settings.hero_heading }}</h1>
+        <p>{{ section.settings.hero_text | escape }}</p>
+        {%- if section.settings.hero_button_label != blank -%}
+          <a class="nf-btn" href="{{ section.settings.hero_button_link | default: routes.all_products_collection_url }}">
+            {{ section.settings.hero_button_label | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.hero_image != blank -%}
+        <div class="nf-about__hero-media">
+          <img
+            src="{{ section.settings.hero_image | image_url: width: 1200 }}"
+            alt="{{ section.settings.hero_image.alt | default: section.settings.hero_image_alt | escape }}"
+            width="{{ section.settings.hero_image.width }}"
+            height="{{ section.settings.hero_image.height }}"
+            fetchpriority="high"
+          >
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+
+  {%- comment -%} ── AboutTimeline ── {%- endcomment -%}
+  {%- assign milestones = section.blocks | where: 'type', 'milestone' -%}
+  {%- if milestones.size > 0 -%}
+    <section class="nf-mk__section nf-mk__pad" style="background-color: var(--nf-mk-white);">
+      <div class="nf-mk__wrap">
+        <div style="text-align: center; margin-bottom: 56px;">
+          <p class="nf-eyebrow" style="margin-bottom: 12px;">{{ section.settings.timeline_eyebrow | escape }}</p>
+          <h2 class="nf-mk__h2" style="margin-bottom: 0; font-size: 28px;">{{ section.settings.timeline_heading }}</h2>
+          <div class="nf-about__rule" aria-hidden="true"><i></i><b></b><i></i></div>
+        </div>
+
+        <div class="nf-timeline">
+          <div class="nf-timeline__line" aria-hidden="true"></div>
+          <div class="nf-timeline__items">
+            {%- for block in milestones -%}
+              {%- liquid
+                assign flip = ''
+                assign remainder = forloop.index0 | modulo: 2
+                if remainder == 1
+                  assign flip = ' nf-timeline__row--flip'
+                endif
+                assign has_media = ' nf-timeline__no-media'
+                if block.settings.image != blank
+                  assign has_media = ' nf-timeline__has-media'
+                endif
+              -%}
+              <div class="nf-timeline__row nf-reveal{{ flip }}{{ has_media }}" {{ block.shopify_attributes }}>
+                {%- if block.settings.image != blank -%}
+                  <div class="nf-timeline__media">
+                    <img
+                      src="{{ block.settings.image | image_url: width: 1200 }}"
+                      alt="{{ block.settings.image.alt | default: block.settings.image_alt | escape }}"
+                      width="{{ block.settings.image.width }}"
+                      height="{{ block.settings.image.height }}"
+                      loading="lazy"
+                    >
+                  </div>
+                {%- endif -%}
+                <div class="nf-timeline__copy">
+                  <p class="nf-timeline__label">{{ block.settings.label | escape }}</p>
+                  <h3>{{ block.settings.title | escape }}</h3>
+                  <p>{{ block.settings.text | escape }}</p>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} ── AboutEthos ── {%- endcomment -%}
+  {%- assign pillars = section.blocks | where: 'type', 'pillar' -%}
+  {%- if pillars.size > 0 -%}
+    <section class="nf-mk__section" style="background-color: {{ section.settings.cream }}; padding-block: 32px;">
+      <div style="max-width: 960px; margin: 0 auto; padding-inline: 24px;">
+        <p class="nf-eyebrow" style="text-align: center; font-size: 10px; margin-bottom: 24px;">
+          {{ section.settings.ethos_eyebrow | escape }}
+        </p>
+        <div class="nf-ethos">
+          {%- for block in pillars -%}
+            <a class="nf-ethos__item" href="#nf-about-{{ block.settings.target | handle }}" {{ block.shopify_attributes }}>
+              <span class="nf-chip" aria-hidden="true">
+                {%- case block.settings.icon -%}
+                  {%- when 'pencil' -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                  {%- when 'scissors' -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.12 15.88"/><path d="M14.47 14.48 20 20"/><path d="M8.12 8.12 12 12"/></svg>
+                  {%- when 'flower' -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M15 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z"/><path d="M3 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z"/></svg>
+                {%- endcase -%}
+              </span>
+              <h3>{{ block.settings.title | escape }}</h3>
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} ── AboutPersonalised / Handcrafted / Floral ── {%- endcomment -%}
+  {%- assign story_index = 0 -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'story' -%}
+      {%- liquid
+        assign story_index = story_index | plus: 1
+        assign remainder = story_index | modulo: 2
+        if remainder == 1
+          assign story_bg = 'var(--nf-mk-white)'
+          assign floral_opacity = '0.04'
+          assign flip_class = ''
+        else
+          assign story_bg = section.settings.cream
+          assign floral_opacity = '0.5'
+          assign flip_class = ' nf-split--flip'
+        endif
+      -%}
+      <section
+        class="nf-mk__section nf-mk__pad"
+        id="nf-about-{{ block.settings.anchor | default: block.settings.eyebrow | handle }}"
+        style="background-color: {{ story_bg }}; scroll-margin-top: 110px;"
+        {{ block.shopify_attributes }}
+      >
+        {%- if floral_url -%}
+          <div class="nf-mk__floral" style="background-image: url({{ floral_url }}); opacity: {{ floral_opacity }};"></div>
+        {%- endif -%}
+        <div class="nf-mk__wrap" style="position: relative; z-index: 1;">
+          <div class="nf-split nf-reveal{{ flip_class }}">
+            <div class="nf-split__copy">
+              <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 12px;">{{ block.settings.eyebrow | escape }}</p>
+              <h2>{{ block.settings.heading }}</h2>
+              <p>{{ block.settings.text | escape }}</p>
+            </div>
+            {%- if block.settings.image != blank -%}
+              <div class="nf-split__media">
+                <img
+                  src="{{ block.settings.image | image_url: width: 1200 }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.image_alt | escape }}"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                  style="aspect-ratio: {{ block.settings.image_ratio }};"
+                  loading="lazy"
+                >
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </section>
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- comment -%} ── AboutCTA ── {%- endcomment -%}
+  {%- if section.settings.show_cta -%}
+    <section class="nf-mk__section nf-mk__pad" style="background-color: {{ section.settings.cream }};">
+      {%- if floral_url -%}
+        <div class="nf-mk__floral" style="background-image: url({{ floral_url }}); opacity: 0.5;"></div>
+      {%- endif -%}
+      <div class="nf-mk__wrap" style="position: relative; text-align: center;">
+        <p class="nf-eyebrow">{{ section.settings.cta_eyebrow | escape }}</p>
+        <h2 class="nf-mk__h2">{{ section.settings.cta_heading }}</h2>
+        <p class="nf-mk__lede" style="margin-bottom: 40px; color: var(--nf-mk-body-soft);">{{ section.settings.cta_text | escape }}</p>
+        {%- if section.settings.cta_button_label != blank -%}
+          <a class="nf-btn" href="{{ section.settings.cta_button_link | default: routes.all_products_collection_url }}">
+            {{ section.settings.cta_button_label | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+    </section>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+/* CSS-only replacement for the IntersectionObserver reveals in
+   src/components/about/*.tsx — same 0.7s rise, no JavaScript. */
+@media (prefers-reduced-motion: no-preference) {
+  .nf-about .nf-reveal {
+    animation: nf-about-rise 0.7s var(--nf-ease-reveal) both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+@keyframes nf-about-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira about page",
+  "tag": "section",
+  "class": "nf-about-section",
+  "max_blocks": 16,
+  "settings": [
+    { "type": "color", "id": "cream", "label": "Cream section background", "default": "#F7F3EF" },
+    { "type": "image_picker", "id": "floral_image", "label": "Floral pattern background" },
+
+    { "type": "header", "content": "Hero" },
+    { "type": "text", "id": "hero_eyebrow", "label": "Eyebrow", "default": "About Naira" },
+    {
+      "type": "html",
+      "id": "hero_heading",
+      "label": "Heading",
+      "info": "Wrap a phrase in <span class=\"nf-italic\">…</span> for the blush italic.",
+      "default": "Where Tradition Meets <span class=\"nf-italic\">Modern Elegance</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_text",
+      "label": "Intro",
+      "default": "Naira is a couture label built on heritage craft and personal stories. Every outfit we create is a conversation between artisan hands and your own story, from bridal dreams to celebration-ready silhouettes."
+    },
+    { "type": "image_picker", "id": "hero_image", "label": "Hero image" },
+    { "type": "text", "id": "hero_image_alt", "label": "Hero image alt text", "default": "Naira atelier, artisan working on embroidered fabric" },
+    { "type": "image_picker", "id": "hero_background_image", "label": "Hero background image" },
+    { "type": "text", "id": "hero_button_label", "label": "Hero button", "default": "Shop the Collection" },
+    { "type": "url", "id": "hero_button_link", "label": "Hero button link" },
+
+    { "type": "header", "content": "Timeline" },
+    { "type": "text", "id": "timeline_eyebrow", "label": "Eyebrow", "default": "Our Journey" },
+    {
+      "type": "html",
+      "id": "timeline_heading",
+      "label": "Heading",
+      "default": "Naira Over <span class=\"nf-italic\">the Years</span>"
+    },
+
+    { "type": "header", "content": "Brand ethos" },
+    { "type": "text", "id": "ethos_eyebrow", "label": "Eyebrow", "default": "Brand Ethos" },
+
+    { "type": "header", "content": "Closing call to action" },
+    { "type": "checkbox", "id": "show_cta", "label": "Show closing block", "default": true },
+    { "type": "text", "id": "cta_eyebrow", "label": "Eyebrow", "default": "Explore Naira" },
+    {
+      "type": "html",
+      "id": "cta_heading",
+      "label": "Heading",
+      "default": "Discover the <span class=\"nf-italic\">Collection</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "cta_text",
+      "label": "Text",
+      "default": "From bridal ensembles to modern fusion wear, each piece is crafted with care, heritage, and your story in mind."
+    },
+    { "type": "text", "id": "cta_button_label", "label": "Button label", "default": "View the Collection" },
+    { "type": "url", "id": "cta_button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Timeline milestone",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "The Beginning" },
+        { "type": "text", "id": "title", "label": "Title", "default": "A Dream Stitched with Passion" },
+        { "type": "textarea", "id": "text", "label": "Text" },
+        { "type": "image_picker", "id": "image", "label": "Image (optional)" },
+        { "type": "text", "id": "image_alt", "label": "Image alt text" }
+      ]
+    },
+    {
+      "type": "pillar",
+      "name": "Ethos pillar",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "pencil", "label": "Pencil" },
+            { "value": "scissors", "label": "Scissors" },
+            { "value": "flower", "label": "Flower" }
+          ],
+          "default": "pencil"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Personalised" },
+        {
+          "type": "text",
+          "id": "target",
+          "label": "Jumps to story band",
+          "info": "Type the same word as the story band's “Anchor” setting, e.g. personalised.",
+          "default": "personalised"
+        }
+      ]
+    },
+    {
+      "type": "story",
+      "name": "Story band",
+      "settings": [
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Personalised" },
+        {
+          "type": "html",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Designed Around <span class=\"nf-italic\">You</span>"
+        },
+        { "type": "textarea", "id": "text", "label": "Text" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "image_alt", "label": "Image alt text" },
+        {
+          "type": "select",
+          "id": "image_ratio",
+          "label": "Image ratio",
+          "options": [
+            { "value": "4 / 5", "label": "Portrait 4:5" },
+            { "value": "1 / 1", "label": "Square" },
+            { "value": "4 / 3", "label": "Landscape 4:3" }
+          ],
+          "default": "4 / 5"
+        },
+        {
+          "type": "text",
+          "id": "anchor",
+          "label": "Anchor",
+          "info": "One word. An ethos pillar with the same “Jumps to story band” value scrolls here.",
+          "default": "personalised"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira about page",
+      "blocks": [
+        { "type": "milestone" },
+        { "type": "pillar" },
+        { "type": "story" }
+      ]
+    }
+  ]
+}
+{% endschema %}

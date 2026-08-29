@@ -1,0 +1,152 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-about",
+      "blocks": {
+        "about_m1": {
+          "type": "milestone",
+          "settings": {
+            "label": "The Beginning",
+            "title": "A Dream Stitched with Passion",
+            "text": "Naira grew from a deep love for Indian textiles and the belief that luxury craftsmanship should feel personal, yet accessible. What started as a small workshop with a handful of artisans has grown into a brand that celebrates the art of handmade fashion.",
+            "image_alt": "Early Naira workshop"
+          }
+        },
+        "about_m2": {
+          "type": "milestone",
+          "settings": {
+            "label": "B2B Roots",
+            "title": "Trusted by Boutiques Across India",
+            "text": "Naira initially built its reputation through partnerships with boutiques and retailers who recognised the quality and artistry of our handcrafted pieces."
+          }
+        },
+        "about_m3": {
+          "type": "milestone",
+          "settings": {
+            "label": "The B2C Journey",
+            "title": "Bringing Couture Directly to You",
+            "text": "The desire to connect personally with every client led Naira to serve individuals directly, with one-on-one design consultations, custom creations, and a curated experience from first message to final delivery."
+          }
+        },
+        "about_m4": {
+          "type": "milestone",
+          "settings": {
+            "label": "Customisation Vision",
+            "title": "Every Piece, Uniquely Yours",
+            "text": "We believe every person deserves an outfit that reflects their personality, their celebration, and their story. Over 2,500 custom pieces later, this belief only grows stronger.",
+            "image_alt": "Custom outfit creation process"
+          }
+        },
+        "about_m5": {
+          "type": "milestone",
+          "settings": {
+            "label": "The Founders",
+            "title": "A Family Legacy",
+            "text": "Naira is the shared vision of a mother's lifelong passion for textiles and her son's ambition to bring that artistry to the world. Together, they blend generational wisdom with contemporary design sensibility.",
+            "image_alt": "Naira founders"
+          }
+        },
+        "about_p1": {
+          "type": "pillar",
+          "settings": {
+            "icon": "pencil",
+            "title": "Personalised",
+            "target": "personalised"
+          }
+        },
+        "about_p2": {
+          "type": "pillar",
+          "settings": {
+            "icon": "scissors",
+            "title": "Handcrafted",
+            "target": "handcrafted"
+          }
+        },
+        "about_p3": {
+          "type": "pillar",
+          "settings": {
+            "icon": "flower",
+            "title": "Floral Inspired",
+            "target": "floral"
+          }
+        },
+        "about_s1": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Personalised",
+            "heading": "Designed Around <span class=\"nf-italic\">You</span>",
+            "text": "Share a sketch, a Pinterest board, or simply describe your vision. Our designers translate your ideas into bespoke garments that are uniquely yours. From fabric selection to final fitting, personalisation is at the heart of everything we do.",
+            "image_alt": "Fashion design sketch of a bridal outfit",
+            "image_ratio": "4 / 5",
+            "anchor": "personalised"
+          }
+        },
+        "about_s2": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Handcrafted",
+            "heading": "Made by <span class=\"nf-italic\">Artisan Hands</span>",
+            "text": "Artisans bring each design to life through techniques refined over generations. Zardosi, threadwork, and fine detailing come together with precision, resulting in pieces that carry depth and character.",
+            "image_alt": "Artisan hand-embroidering fabric",
+            "image_ratio": "4 / 5",
+            "anchor": "handcrafted"
+          }
+        },
+        "about_s3": {
+          "type": "story",
+          "settings": {
+            "eyebrow": "Floral Inspired",
+            "heading": "Echoing <span class=\"nf-italic\">Nature</span>",
+            "text": "Floral elements define the visual language of Naira. Inspired by the gardens and natural landscapes of India, every embroidery pattern draws from the organic beauty of blossoms, leaves, and vines.",
+            "image_alt": "Detailed floral embroidery on fabric",
+            "image_ratio": "1 / 1",
+            "anchor": "floral"
+          }
+        }
+      },
+      "block_order": [
+        "about_m1",
+        "about_m2",
+        "about_m3",
+        "about_m4",
+        "about_m5",
+        "about_p1",
+        "about_p2",
+        "about_p3",
+        "about_s1",
+        "about_s2",
+        "about_s3"
+      ],
+      "settings": {
+        "cream": "#F7F3EF",
+        "hero_eyebrow": "About Naira",
+        "hero_heading": "Where Tradition Meets <span class=\"nf-italic\">Modern Elegance</span>",
+        "hero_text": "Naira is a couture label built on heritage craft and personal stories. Every outfit we create is a conversation between artisan hands and your own story, from bridal dreams to celebration-ready silhouettes.",
+        "hero_image_alt": "Naira atelier, artisan working on embroidered fabric",
+        "hero_button_label": "Shop the Collection",
+        "hero_button_link": "/collections/all",
+        "timeline_eyebrow": "Our Journey",
+        "timeline_heading": "Naira Over <span class=\"nf-italic\">the Years</span>",
+        "ethos_eyebrow": "Brand Ethos",
+        "show_cta": true,
+        "cta_eyebrow": "Explore Naira",
+        "cta_heading": "Discover the <span class=\"nf-italic\">Collection</span>",
+        "cta_text": "From bridal ensembles to modern fusion wear, each piece is crafted with care, heritage, and your story in mind.",
+        "cta_button_label": "View the Collection",
+        "cta_button_link": "/collections/all"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

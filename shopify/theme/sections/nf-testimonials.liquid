@@ -1,0 +1,223 @@
+{% comment %}
+  nf-testimonials — port of src/components/Testimonials.tsx
+  Fixed 6x5 magazine collage on desktop (grid-template-areas), a 2-up grid
+  on tablet and a snapping horizontal strip on mobile. The centre tile
+  carries the "Loved by Women Everywhere" overlay.
+
+  These are curated editorial tiles, not store reviews — the source has no
+  review feed behind them, so every name/quote is a block setting. Real
+  order-verified reviews need the Judge.me app (see JudgeMeReviews.tsx in
+  the Lovable repo); the optional widget below only renders a Judge.me
+  mount point and does nothing until that app is installed.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign areas = 't1,top,tr,t2,mr,tall,bl,bot,ctr' | split: ','
+  assign area_assets = 'nf-testimonial-zardozi.webp,nf-testimonial-anarkali.webp,nf-testimonial-fusion.webp,nf-testimonial-festive.webp,nf-testimonial-bridal.webp,nf-testimonial-pink.webp,nf-testimonial-lehenga.webp,nf-testimonial-evening.webp,nf-testimonial-centre.webp' | split: ','
+-%}
+
+{%- capture hero_copy -%}
+  <i aria-hidden="true"></i>
+  <h2 class="nf-editorial">{{ section.settings.hero_heading }} <em>{{ section.settings.hero_heading_italic }}</em></h2>
+  <p>{{ section.settings.hero_sub }}</p>
+{%- endcapture -%}
+
+<section class="nf nf-testi" data-nf-reveal>
+  <div class="nf-wrap">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="nf-testi__eyebrow nf-reveal">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    {%- comment -%} MOBILE + TABLET {%- endcomment -%}
+    <div class="nf-testi__mobile">
+      <div class="nf-testi__intro nf-reveal">
+        <h2 class="nf-editorial">{{ section.settings.hero_heading }} <em>{{ section.settings.hero_heading_italic }}</em></h2>
+        <p>{{ section.settings.hero_sub }}</p>
+      </div>
+      <div class="nf-testi__strip">
+        {%- assign shown = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.area != 'ctr' and shown < 6 -%}
+            {%- liquid
+              assign shown = shown | plus: 1
+              assign d = shown | minus: 1 | times: 6 | plus: 15
+              assign ai = 8
+              for a in areas
+                if a == block.settings.area
+                  assign ai = forloop.index0
+                  break
+                endif
+              endfor
+              assign fallback = area_assets[ai]
+            -%}
+            <div>
+              <div class="nf-tile nf-reveal" style="transition-delay: 0.{{ d }}s;" {{ block.shopify_attributes }}>
+                {%- if block.settings.image != blank -%}
+                  {{ block.settings.image | image_url: width: 800 | image_tag:
+                      alt: block.settings.outfit, loading: 'lazy', widths: '300,400,600,800' }}
+                {%- else -%}
+                  <img src="{{ fallback | asset_url }}" alt="{{ block.settings.outfit | escape }}" loading="lazy">
+                {%- endif -%}
+                <div class="nf-tile__hover" aria-hidden="true"></div>
+                <div class="nf-tile__cap"><p>{{ block.settings.outfit }}</p></div>
+                {%- if block.settings.quote != blank -%}
+                  <span class="nf-tile__quote{% if block.settings.quote_align == 'right' %} nf-tile__quote--right{% endif %}">&ldquo;{{ block.settings.quote }}&rdquo;</span>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- comment -%} DESKTOP magazine grid {%- endcomment -%}
+    <div class="nf-testi__desktop">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign d = forloop.index0 | times: 6 | plus: 15
+          assign ai = 8
+          for a in areas
+            if a == block.settings.area
+              assign ai = forloop.index0
+              break
+            endif
+          endfor
+          assign fallback = area_assets[ai]
+        -%}
+        {%- if block.settings.area == 'ctr' -%}
+          <div class="nf-testi__hero nf-reveal" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 1200 | image_tag:
+                  alt: section.settings.hero_heading, loading: 'lazy', widths: '400,600,900,1200' }}
+            {%- else -%}
+              <img src="{{ fallback | asset_url }}" alt="{{ section.settings.hero_heading | escape }}" loading="lazy">
+            {%- endif -%}
+            <div class="nf-testi__hero-scrim" aria-hidden="true"></div>
+            <div class="nf-testi__hero-copy">{{ hero_copy }}</div>
+          </div>
+        {%- else -%}
+          <div class="nf-tile nf-reveal" style="grid-area: {{ block.settings.area }}; transition-delay: 0.{{ d }}s;" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 800 | image_tag:
+                  alt: block.settings.outfit, loading: 'lazy', widths: '300,400,600,800' }}
+            {%- else -%}
+              <img src="{{ fallback | asset_url }}" alt="{{ block.settings.outfit | escape }}" loading="lazy">
+            {%- endif -%}
+            <div class="nf-tile__hover" aria-hidden="true"></div>
+            <div class="nf-tile__cap"><p>{{ block.settings.outfit }}</p></div>
+            {%- if block.settings.quote != blank -%}
+              <span class="nf-tile__quote{% if block.settings.quote_align == 'right' %} nf-tile__quote--right{% endif %}">&ldquo;{{ block.settings.quote }}&rdquo;</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_judgeme -%}
+      <div class="nf-testi__reviews">
+        <div class="jdgm-widget jdgm-all-reviews-widget"></div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function () {
+    function scan() {
+      var nodes = document.querySelectorAll('[data-nf-reveal]:not(.nf-in)');
+      if (!('IntersectionObserver' in window)) {
+        for (var i = 0; i < nodes.length; i++) nodes[i].classList.add('nf-in');
+        return;
+      }
+      var io = new IntersectionObserver(function (entries, obs) {
+        for (var k = 0; k < entries.length; k++) {
+          if (entries[k].isIntersecting) { entries[k].target.classList.add('nf-in'); obs.unobserve(entries[k].target); }
+        }
+      }, { threshold: 0.03 });
+      for (var j = 0; j < nodes.length; j++) io.observe(nodes[j]);
+    }
+    if (!window.__nfRevealBound) {
+      window.__nfRevealBound = true;
+      document.addEventListener('shopify:section:load', scan);
+      window.addEventListener('load', scan);
+    }
+    scan();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "NF Testimonials",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Worn by Her · Loved Forever" },
+    { "type": "text", "id": "hero_heading", "label": "Heading", "default": "Loved by Women" },
+    { "type": "text", "id": "hero_heading_italic", "label": "Heading, italic word", "default": "Everywhere" },
+    { "type": "textarea", "id": "hero_sub", "label": "Sub copy", "default": "Real women. Real stories. Each piece worn, lived, cherished." },
+    { "type": "header", "content": "Verified reviews" },
+    { "type": "paragraph", "content": "These tiles are curated editorial, not store reviews. Order-verified reviews require the Judge.me app; enable the mount point below only once it is installed." },
+    { "type": "checkbox", "id": "show_judgeme", "label": "Render Judge.me all-reviews widget", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tile",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image", "info": "Leave empty to use the ported nf-testimonial-*.webp asset for this position." },
+        {
+          "type": "select",
+          "id": "area",
+          "label": "Desktop position",
+          "info": "Grid areas from the source layout. Centre hero carries the heading overlay.",
+          "options": [
+            { "value": "t1", "label": "Top left (wide)" },
+            { "value": "top", "label": "Top centre" },
+            { "value": "tr", "label": "Top right" },
+            { "value": "ctr", "label": "Centre hero" },
+            { "value": "t2", "label": "Left upper" },
+            { "value": "mr", "label": "Right middle" },
+            { "value": "tall", "label": "Far right (tall)" },
+            { "value": "bl", "label": "Left lower" },
+            { "value": "bot", "label": "Bottom (wide)" }
+          ],
+          "default": "t1"
+        },
+        { "type": "text", "id": "outfit", "label": "Outfit name" },
+        { "type": "text", "id": "by", "label": "Worn by" },
+        { "type": "text", "id": "quote", "label": "Short quote" },
+        {
+          "type": "select",
+          "id": "quote_align",
+          "label": "Quote alignment",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 9,
+  "presets": [
+    {
+      "name": "NF Testimonials",
+      "blocks": [
+        { "type": "tile", "settings": { "area": "t1", "outfit": "", "by": "Ananya · Mumbai", "quote": "Perfect fit.", "quote_align": "left" } },
+        { "type": "tile", "settings": { "area": "top", "outfit": "", "by": "Priya · London" } },
+        { "type": "tile", "settings": { "area": "tr", "outfit": "Modern Fusion", "by": "Tanvi · Bangalore" } },
+        { "type": "tile", "settings": { "area": "ctr", "outfit": "Loved by Women", "by": "" } },
+        { "type": "tile", "settings": { "area": "t2", "outfit": "Festive Edit", "by": "Meera · Pune" } },
+        { "type": "tile", "settings": { "area": "mr", "outfit": "Bridal Couture", "by": "Riya · Delhi", "quote": "Exactly how I imagined.", "quote_align": "right" } },
+        { "type": "tile", "settings": { "area": "tall", "outfit": "", "by": "Sarah · Dubai" } },
+        { "type": "tile", "settings": { "area": "bl", "outfit": "Soft Pastel Drape", "by": "Naina · Jaipur" } },
+        { "type": "tile", "settings": { "area": "bot", "outfit": "Evening Edit", "by": "Aanya · Hyderabad", "quote": "Felt like art.", "quote_align": "left" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

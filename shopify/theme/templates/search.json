@@ -1,0 +1,14 @@
+/*
+ * Naira Flore search
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-search",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

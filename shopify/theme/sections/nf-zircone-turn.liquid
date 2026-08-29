@@ -1,0 +1,309 @@
+{%- comment -%}
+  Naira Flore - Zircone Turn (src/components/jewellery/ZirconeTurn.tsx)
+
+  Two ring photographs turning on scroll. The background-removed solitaire
+  turns away to 46 degrees, the photo is swapped for the true 3/4 angle at
+  that extreme, and that face turns back to square-on. The eye reads one
+  ring rotating and revealing its depth.
+
+  Two rules carried over verbatim from the React source, because both were
+  regressions there:
+
+  1. The turn NEVER passes 90 degrees. These are flat photos: at 90 a plane
+     is edge-on and has zero width, so the ring vanishes. 46 is the limit
+     because it is the angle the 3/4 photograph was actually shot at.
+
+  2. The swap never fades both faces at once. The arriving face fades up ON
+     TOP of a fully opaque outgoing face, and only then is the outgoing one
+     hidden. Cross-fading both lets the ground through at the midpoint.
+
+  React drove this with a GSAP ScrollTrigger timeline (scrub 0.5 desktop /
+  0.35 mobile, start "top 78%", end "bottom 22%"). The same normalised beats
+  and easings are reproduced below without GSAP - the theme ships no
+  animation library and one is not worth 40KB for a single section.
+{%- endcomment -%}
+
+{%- assign zt = 'nf-zt-' | append: section.id -%}
+{%- assign enquire_url = routes.all_products_collection_url -%}
+{%- if section.settings.product != blank -%}
+  {%- assign enquire_url = section.settings.product.url -%}
+{%- endif -%}
+
+<section
+  id="{{ zt }}"
+  class="nf nf-zt{% if section.settings.inherit_backdrop %} nf-zt--inherit{% endif %}"
+  data-zt-scrub-desktop="0.5"
+  data-zt-scrub-mobile="0.35"
+>
+  <div class="nf-zt__pin">
+    {%- unless section.settings.inherit_backdrop -%}
+      {%- render 'nf-ring-backdrop', variant: 'section' -%}
+      <div class="nf-zt__wash" aria-hidden="true"></div>
+    {%- endunless -%}
+
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="nf-zt__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+
+    {%- comment -%} wrapper spans full width so the callouts never clip {%- endcomment -%}
+    <div class="nf-zt__stage">
+      <div class="nf-zt__card" data-zt-card>
+        <img
+          class="nf-zt__face"
+          data-zt-face-a
+          src="{{ 'nf-ring-cut-front.webp' | asset_url }}"
+          alt="{{ section.settings.image_alt | default: 'Brilliant-cut zircone solitaire ring' | escape }}"
+          draggable="false"
+          decoding="sync"
+          width="760"
+          height="760"
+        >
+        <img
+          class="nf-zt__face nf-zt__face--b"
+          data-zt-face-b
+          src="{{ 'nf-ring-cut-34.webp' | asset_url }}"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+          decoding="sync"
+          width="760"
+          height="760"
+        >
+        <div class="nf-zt__shadow" data-zt-shadow aria-hidden="true"></div>
+      </div>
+
+      <div class="nf-zt__call nf-zt__call--l" data-zt-call-l>
+        <span class="nf-zt__chip">{{ section.settings.callout_left | escape }}</span>
+        <span class="nf-zt__line nf-zt__line--l" data-zt-line-l aria-hidden="true"></span>
+        <span class="nf-zt__dot" aria-hidden="true"></span>
+      </div>
+
+      <div class="nf-zt__call nf-zt__call--r" data-zt-call-r>
+        <span class="nf-zt__dot" aria-hidden="true"></span>
+        <span class="nf-zt__line nf-zt__line--r" data-zt-line-r aria-hidden="true"></span>
+        <span class="nf-zt__chip">{{ section.settings.callout_right | escape }}</span>
+      </div>
+    </div>
+
+    <div class="nf-zt__finale" data-zt-finale>
+      {%- if section.settings.spec != blank -%}
+        <p class="nf-zt__spec">{{ section.settings.spec | escape }}</p>
+      {%- endif -%}
+      <div class="nf-zt__actions">
+        <a class="nf-zt__btn press-scale" href="{{ enquire_url }}">{{ section.settings.cta_label | escape }}</a>
+        {%- if section.settings.show_view_all -%}
+          <a class="nf-zt__viewall" href="{{ section.settings.view_all_link | default: routes.all_products_collection_url }}">{{ section.settings.view_all_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.settings.hint != blank -%}
+      <span class="nf-zt__hint" data-zt-hint aria-hidden="true">{{ section.settings.hint | escape }}</span>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+.nf-zt { position: relative; color: var(--nf-ink); background-color: var(--nf-ivory); }
+.nf-zt--inherit { background-color: transparent; }
+.nf-zt__pin { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 96px 1rem 1rem; }
+@media (min-width: 768px) {
+  .nf-zt__pin { height: 100svh; min-height: 560px; padding: 120px 1.5rem 2.5rem; }
+}
+.nf-zt__wash { pointer-events: none; position: absolute; inset: 0; background: radial-gradient(62% 46% at 50% 42%, rgba(255, 224, 205, .45) 0%, transparent 66%); }
+
+.nf-zt__eyebrow { position: relative; z-index: 20; margin: 0 0 .75rem; text-align: center; font-family: var(--nf-font-label); font-size: 10px; line-height: 1.625; letter-spacing: var(--nf-track-40); color: var(--nf-gold-deep); }
+@media (min-width: 768px) { .nf-zt__eyebrow { margin-bottom: 1.5rem; font-size: 11px; letter-spacing: var(--nf-track-50); } }
+
+.nf-zt__stage { position: relative; display: flex; width: 100%; max-width: 520px; justify-content: center; perspective: 1200px; }
+@media (min-width: 768px) { .nf-zt__stage { max-width: 900px; } }
+
+/* No `contain: paint` and no `isolation` here: both force a fresh paint
+   context on a 3D-transformed subtree, which re-rasterises the faces
+   mid-turn and flashes. */
+.nf-zt__card { position: relative; aspect-ratio: 1 / 1; width: min(48vw, 200px); transform-style: preserve-3d; will-change: transform; transform: scale(1.08); }
+@media (min-width: 768px) { .nf-zt__card { width: min(34vw, 380px); } }
+
+/* backface-visibility keeps each face on one stable composited layer
+   through the turn, so the browser never re-rasterises it. */
+.nf-zt__face { position: absolute; inset: 0; height: 100%; width: 100%; object-fit: contain; will-change: transform, opacity; transform: translateZ(0); backface-visibility: hidden; }
+.nf-zt__face--b { opacity: 0; }
+
+.nf-zt__shadow { pointer-events: none; position: absolute; bottom: -.75rem; left: 50%; height: .75rem; width: 58%; transform: translateX(-50%); border-radius: 9999px; opacity: .6; background: radial-gradient(ellipse, rgba(122, 90, 40, .38) 0%, transparent 70%); filter: blur(4px); }
+@media (min-width: 768px) { .nf-zt__shadow { bottom: -1.5rem; height: 1rem; } }
+
+.nf-zt__call { position: absolute; z-index: 20; display: flex; align-items: center; transform: translateY(-50%); opacity: 0; }
+.nf-zt__call--l { left: .25rem; right: calc(50% + 27vw); top: 62%; }
+.nf-zt__call--r { left: calc(50% + 26vw); right: .25rem; top: 42%; }
+@media (min-width: 768px) {
+  .nf-zt__call--l { left: 1.5rem; right: calc(50% + 13vw); }
+  .nf-zt__call--r { left: calc(50% + 5vw); right: 1.5rem; top: 46%; }
+}
+@media (min-width: 1024px) {
+  .nf-zt__call--l { left: 2.5rem; }
+  .nf-zt__call--r { right: 2.5rem; }
+}
+.nf-zt__chip { border: 1px solid rgb(var(--nf-gold-rgb) / .6); background-color: rgb(var(--nf-ivory-rgb) / .95); padding: .25rem .5rem; font-family: var(--nf-font-label); font-size: 10px; line-height: 1.35; letter-spacing: .07em; color: #8A6A2F; }
+@media (min-width: 768px) { .nf-zt__chip { white-space: nowrap; padding: .5rem 1rem; font-size: 12px; letter-spacing: var(--nf-track-20); } }
+.nf-zt__line { display: block; height: 1px; flex: 1 1 0%; background-color: var(--nf-gold); transform: scaleX(0); }
+.nf-zt__line--l { transform-origin: 100% 50%; }
+.nf-zt__line--r { transform-origin: 0% 50%; }
+.nf-zt__dot { display: block; height: 4px; width: 4px; flex-shrink: 0; border-radius: 9999px; background-color: var(--nf-gold); }
+@media (min-width: 768px) { .nf-zt__dot { height: 6px; width: 6px; } }
+
+.nf-zt__finale { position: relative; z-index: 20; margin-top: .75rem; text-align: center; opacity: 0; transform: translateY(14px); }
+@media (min-width: 768px) { .nf-zt__finale { margin-top: 2rem; } }
+.nf-zt__finale.is-in { opacity: 1; transform: none; transition: opacity .6s cubic-bezier(.215, .61, .355, 1), transform .6s cubic-bezier(.215, .61, .355, 1); }
+.nf-zt__spec { margin: .25rem 0 0; font-family: var(--nf-font-editorial); font-style: italic; font-size: 13px; color: rgb(var(--nf-ink-rgb) / .55); }
+.nf-zt__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; margin-top: .5rem; }
+@media (min-width: 768px) { .nf-zt__actions { gap: 1rem; margin-top: 1rem; } }
+.nf-zt__btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid var(--nf-ink); padding: .625rem 1.5rem; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: var(--nf-ink); text-decoration: none; transition: background-color .2s, color .2s; }
+@media (min-width: 768px) { .nf-zt__btn { padding-inline: 1.75rem; } }
+.nf-zt__btn:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+.nf-zt__viewall { display: inline-flex; align-items: center; border-bottom: 1px solid var(--nf-gold-deep); padding-bottom: 2px; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-25); color: #8A6A2F; text-decoration: none; }
+.nf-zt__hint { pointer-events: none; position: absolute; bottom: .5rem; left: 50%; transform: translateX(-50%); font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: rgb(var(--nf-ink-rgb) / .35); }
+@media (min-width: 768px) { .nf-zt__hint { bottom: 1.25rem; } }
+
+/* Reduced motion: everything shown, no motion. Mirrors the matchMedia
+   "(prefers-reduced-motion: reduce)" branch in the React component. */
+@media (prefers-reduced-motion: reduce) {
+  .nf-zt__card { transform: none; }
+  .nf-zt__face--b { display: none; }
+  .nf-zt__call, .nf-zt__finale { opacity: 1; }
+  .nf-zt__call { transform: translateY(-50%); }
+  .nf-zt__finale { transform: none; }
+  .nf-zt__line { transform: none; }
+}
+{% endstylesheet %}
+
+<script>
+(function () {
+  var root = document.getElementById('{{ zt }}');
+  if (!root || root.dataset.ztReady) return;
+  root.dataset.ztReady = '1';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var q = function (sel) { return root.querySelector(sel); };
+  var card = q('[data-zt-card]'), faceA = q('[data-zt-face-a]'), faceB = q('[data-zt-face-b]');
+  var callL = q('[data-zt-call-l]'), callR = q('[data-zt-call-r]');
+  var lineL = q('[data-zt-line-l]'), lineR = q('[data-zt-line-r]');
+  var finale = q('[data-zt-finale]'), shadow = q('[data-zt-shadow]'), hint = q('[data-zt-hint]');
+  if (!card || !faceA || !faceB) return;
+
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
+  var seg = function (p, a, b) { var t = (p - a) / (b - a); return t < 0 ? 0 : t > 1 ? 1 : t; };
+  var o1 = function (t) { return 1 - (1 - t) * (1 - t); };            /* power1.out */
+  var o2 = function (t) { return 1 - Math.pow(1 - t, 3); };           /* power2.out */
+  var i1 = function (t) { return t * t; };                            /* power1.in  */
+
+  /* ScrollTrigger start "top 78%" / end "bottom 22%", measured on the card. */
+  function progress() {
+    var r = card.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var span = 0.56 * vh + r.height;
+    if (span <= 0) return 0;
+    var p = (0.78 * vh - r.top) / span;
+    return p < 0 ? 0 : p > 1 ? 1 : p;
+  }
+
+  function apply(p) {
+    /* faceA: turns away 0 -> 46 (linear), hides behind faceB at 0.37,
+       is re-armed at 46 on 0.92 and runs home 46 -> 0. */
+    var aRot = lerp(0, 46, seg(p, 0.02, 0.32));
+    var aOp = (p >= 0.37 && p < 0.92) ? 0 : 1;
+    if (p >= 0.92) aRot = lerp(46, 0, o1(seg(p, 0.94, 1.02)));
+
+    /* faceB: fades up on top of an opaque faceA, turns square-on, then back. */
+    var bOp = p >= 0.92 ? 1 - seg(p, 0.92, 0.98) : seg(p, 0.30, 0.37);
+    var bRot;
+    if (p < 0.37) bRot = 46;
+    else if (p < 0.78) bRot = lerp(46, 0, o1(seg(p, 0.37, 0.60)));
+    else bRot = lerp(0, 46, i1(seg(p, 0.78, 0.92)));
+
+    faceA.style.transform = 'translateZ(0) rotateY(' + aRot.toFixed(2) + 'deg)';
+    faceA.style.opacity = aOp;
+    faceB.style.transform = 'translateZ(0) rotateY(' + bRot.toFixed(2) + 'deg)';
+    faceB.style.opacity = bOp.toFixed(3);
+
+    /* band callout (left) */
+    var lIn = o2(seg(p, 0.18, 0.24)), lOut = 1 - seg(p, 0.34, 0.39);
+    callL.style.opacity = (lIn * lOut).toFixed(3);
+    callL.style.transform = 'translateY(calc(-50% + ' + lerp(10, 0, lIn).toFixed(2) + 'px))';
+    lineL.style.transform = 'scaleX(' + o2(seg(p, 0.20, 0.26)).toFixed(3) + ')';
+    lineL.style.opacity = lOut.toFixed(3);
+
+    /* stone callout (right) */
+    var rIn = o2(seg(p, 0.60, 0.66)), rOut = 1 - seg(p, 0.80, 0.85);
+    callR.style.opacity = (rIn * rOut).toFixed(3);
+    callR.style.transform = 'translateY(calc(-50% + ' + lerp(10, 0, rIn).toFixed(2) + 'px))';
+    lineR.style.transform = 'scaleX(' + o2(seg(p, 0.62, 0.68)).toFixed(3) + ')';
+    lineR.style.opacity = rOut.toFixed(3);
+
+    card.style.transform = 'scale(' + lerp(1.08, 0.98, o1(seg(p, 0.30, 0.90))).toFixed(4) + ')';
+
+    if (shadow) {
+      var s = seg(p, 0.70, 0.90);
+      shadow.style.transform = 'translateX(-50%) scaleX(' + lerp(1, 0.78, s).toFixed(3) + ')';
+      shadow.style.opacity = lerp(0.6, 0.45, s).toFixed(3);
+    }
+    if (hint) hint.style.opacity = (1 - seg(p, 0.22, 0.30)).toFixed(3);
+  }
+
+  /* The finale is deliberately NOT scrubbed - it lands once and stays. */
+  var finaleDone = false;
+  function checkFinale() {
+    if (finaleDone || !finale) return;
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    if (finale.getBoundingClientRect().top <= 0.94 * vh) { finale.classList.add('is-in'); finaleDone = true; }
+  }
+
+  var scrub = window.matchMedia('(min-width: 768px)').matches ? 0.5 : 0.35;
+  var cur = progress(), last = 0, running = false, rafId = 0;
+
+  function frame(now) {
+    var dt = last ? Math.min((now - last) / 1000, 0.1) : 0.016;
+    last = now;
+    var target = progress();
+    cur += (target - cur) * (1 - Math.exp(-dt / scrub));
+    if (Math.abs(target - cur) < 0.0002) cur = target;
+    apply(cur);
+    checkFinale();
+    if (running) rafId = requestAnimationFrame(frame); else rafId = 0;
+  }
+
+  function start() { if (!running) { running = true; last = 0; rafId = requestAnimationFrame(frame); } }
+  function stop() { running = false; if (rafId) cancelAnimationFrame(rafId); rafId = 0; }
+
+  apply(cur);
+  checkFinale();
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries[0].isIntersecting ? start() : stop();
+    }, { rootMargin: '20% 0px' }).observe(root);
+  } else {
+    start();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "NF Zircone Turn",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "THE ZIRCONE EDIT · DEMI-FINE" },
+    { "type": "text", "id": "callout_left", "label": "Left callout (band)", "default": "18K GOLD FINISHED" },
+    { "type": "text", "id": "callout_right", "label": "Right callout (stone)", "default": "BRILLIANT-CUT ZIRCONE" },
+    { "type": "text", "id": "spec", "label": "Spec line", "default": "Rhodium finished · brilliant-cut zircone · 4-prong" },
+    { "type": "text", "id": "image_alt", "label": "Ring image alt text", "default": "Brilliant-cut zircone solitaire ring" },
+    { "type": "product", "id": "product", "label": "Ring product", "info": "The ENQUIRE button links here. Falls back to the all-products collection." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "ENQUIRE" },
+    { "type": "checkbox", "id": "show_view_all", "label": "Show \"view all\" link", "default": true },
+    { "type": "text", "id": "view_all_label", "label": "View all label", "default": "VIEW ALL →" },
+    { "type": "url", "id": "view_all_link", "label": "View all link" },
+    { "type": "text", "id": "hint", "label": "Scroll hint", "default": "SCROLL · IT TURNS" },
+    { "type": "checkbox", "id": "inherit_backdrop", "label": "Inherit the backdrop from the section above", "default": false }
+  ],
+  "presets": [{ "name": "NF Zircone Turn" }]
+}
+{% endschema %}

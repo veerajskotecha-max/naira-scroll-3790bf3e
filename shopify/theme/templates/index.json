@@ -1,0 +1,332 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+/*
+ * ------------------------------------------------------------
+ * Naira Flore homepage.
+ * Section order mirrors src/pages/Index.tsx in the Lovable repo.
+ * Scroll-choreographed sections (scrolly hero, zircone turn,
+ * gilded carousel) are appended by the scroll slice when ready.
+ * ------------------------------------------------------------
+ */{
+  "sections": {
+    "nf_hero": {
+      "type": "nf-hero",
+      "settings": {},
+      "blocks": {
+        "look_1": {
+          "type": "look",
+          "settings": {
+            "name": "Lotus drape"
+          }
+        },
+        "look_2": {
+          "type": "look",
+          "settings": {
+            "name": "Indigo zardozi"
+          }
+        },
+        "look_3": {
+          "type": "look",
+          "settings": {
+            "name": "Pressed garden"
+          }
+        },
+        "look_4": {
+          "type": "look",
+          "settings": {
+            "name": "Patchwork story"
+          }
+        },
+        "look_5": {
+          "type": "look",
+          "settings": {
+            "name": "Onyx chiffon"
+          }
+        },
+        "look_6": {
+          "type": "look",
+          "settings": {
+            "name": "Marigold flare"
+          }
+        }
+      },
+      "block_order": [
+        "look_1",
+        "look_2",
+        "look_3",
+        "look_4",
+        "look_5",
+        "look_6"
+      ]
+    },
+    "nf_jewellery_categories": {
+      "type": "nf-jewellery-categories",
+      "settings": {},
+      "blocks": {
+        "category_1": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "rings",
+            "label": "Rings",
+            "note": "solitaires, halo & stack"
+          }
+        },
+        "category_2": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "bracelets",
+            "label": "Bracelets",
+            "note": "tennis, bow & baroque pearl"
+          }
+        },
+        "category_3": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "earrings",
+            "label": "Earrings",
+            "note": "hoops & the studs, three ways"
+          }
+        },
+        "category_4": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "necklaces",
+            "label": "Necklaces",
+            "note": "lariats, chains & a cascade"
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3",
+        "category_4"
+      ]
+    },
+    "nf_customisation_steps": {
+      "type": "nf-customisation-steps",
+      "settings": {},
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "icon": "message-square",
+            "step": "01",
+            "title": "Share Your Vision",
+            "description": "Share your dream look with us on WhatsApp."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "icon": "palette",
+            "step": "02",
+            "title": "Curated Design Options",
+            "description": "Receive curated design, colour, and fabric options, handpicked for you."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "icon": "sliders-horizontal",
+            "step": "03",
+            "title": "Finalise Your Style",
+            "description": "Choose your fabric and silhouette, then share your measurements."
+          }
+        },
+        "step_4": {
+          "type": "step",
+          "settings": {
+            "icon": "phone",
+            "step": "04",
+            "title": "Personal Consultation",
+            "description": "A personal consultation call to refine every last detail."
+          }
+        },
+        "step_5": {
+          "type": "step",
+          "settings": {
+            "icon": "package",
+            "step": "05",
+            "title": "Delivered to You",
+            "description": "Your customised outfit, delivered to your doorstep."
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3",
+        "step_4",
+        "step_5"
+      ]
+    },
+    "nf_brand_ethos": {
+      "type": "nf-brand-ethos",
+      "settings": {},
+      "blocks": {
+        "pillar_1": {
+          "type": "pillar",
+          "settings": {
+            "icon": "pen-line",
+            "title": "Personalised"
+          }
+        },
+        "pillar_2": {
+          "type": "pillar",
+          "settings": {
+            "icon": "scissors",
+            "title": "Handcrafted"
+          }
+        },
+        "pillar_3": {
+          "type": "pillar",
+          "settings": {
+            "icon": "flower",
+            "title": "Floral-Inspired"
+          }
+        }
+      },
+      "block_order": [
+        "pillar_1",
+        "pillar_2",
+        "pillar_3"
+      ]
+    },
+    "nf_craftsmanship": {
+      "type": "nf-craftsmanship",
+      "settings": {}
+    },
+    "nf_founder_teaser": {
+      "type": "nf-founder-teaser",
+      "settings": {}
+    },
+    "nf_testimonials": {
+      "type": "nf-testimonials",
+      "settings": {},
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "area": "t1",
+            "quote_align": "left",
+            "outfit": "",
+            "by": "Ananya \u00b7 Mumbai",
+            "quote": "Perfect fit."
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "area": "top",
+            "quote_align": "left",
+            "outfit": "",
+            "by": "Priya \u00b7 London"
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "area": "tr",
+            "quote_align": "left",
+            "outfit": "Modern Fusion",
+            "by": "Tanvi \u00b7 Bangalore"
+          }
+        },
+        "tile_4": {
+          "type": "tile",
+          "settings": {
+            "area": "ctr",
+            "quote_align": "left",
+            "outfit": "Loved by Women",
+            "by": ""
+          }
+        },
+        "tile_5": {
+          "type": "tile",
+          "settings": {
+            "area": "t2",
+            "quote_align": "left",
+            "outfit": "Festive Edit",
+            "by": "Meera \u00b7 Pune"
+          }
+        },
+        "tile_6": {
+          "type": "tile",
+          "settings": {
+            "area": "mr",
+            "quote_align": "right",
+            "outfit": "Bridal Couture",
+            "by": "Riya \u00b7 Delhi",
+            "quote": "Exactly how I imagined."
+          }
+        },
+        "tile_7": {
+          "type": "tile",
+          "settings": {
+            "area": "tall",
+            "quote_align": "left",
+            "outfit": "",
+            "by": "Sarah \u00b7 Dubai"
+          }
+        },
+        "tile_8": {
+          "type": "tile",
+          "settings": {
+            "area": "bl",
+            "quote_align": "left",
+            "outfit": "Soft Pastel Drape",
+            "by": "Naina \u00b7 Jaipur"
+          }
+        },
+        "tile_9": {
+          "type": "tile",
+          "settings": {
+            "area": "bot",
+            "quote_align": "left",
+            "outfit": "Evening Edit",
+            "by": "Aanya \u00b7 Hyderabad",
+            "quote": "Felt like art."
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4",
+        "tile_5",
+        "tile_6",
+        "tile_7",
+        "tile_8",
+        "tile_9"
+      ]
+    },
+    "nf_campaign_film": {
+      "type": "nf-campaign-film",
+      "settings": {}
+    },
+    "nf_ring_backdrop": {
+      "type": "nf-ring-backdrop",
+      "settings": {}
+    }
+  },
+  "order": [
+    "nf_hero",
+    "nf_ring_backdrop",
+    "nf_jewellery_categories",
+    "nf_customisation_steps",
+    "nf_brand_ethos",
+    "nf_craftsmanship",
+    "nf_founder_teaser",
+    "nf_testimonials",
+    "nf_campaign_film"
+  ]
+}

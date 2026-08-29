@@ -1,0 +1,153 @@
+{%- comment -%}
+  ═══════════════════════════════════════════════════════════════════
+  Naira Flore — cart page
+
+  The React site has NO cart page; it uses a drawer only (the /cart/c/
+  routes in src/App.tsx are Shopify checkout hand-offs, not a cart UI).
+  Shopify still needs /cart to work, so this reproduces the drawer's
+  visual language from src/components/CartDrawer.tsx rather than
+  inventing a new one.
+
+  Totals follow CartDrawer exactly:
+    orderTotal = subtotal − discount + SHIPPING_CHARGE (₹150)
+  Shipping is a real flat charge, never described as free — correcting
+  that claim was a prior fix and it must not regress here.
+  ═══════════════════════════════════════════════════════════════════
+{%- endcomment -%}
+
+{%- assign ship = section.settings.shipping_charge | times: 100 -%}
+
+<section class="nf nf-cartpg">
+  <header class="nf-cartpg__head">
+    <h1 class="nf-cartpg__title">{{ section.settings.heading | escape }}</h1>
+    {%- if cart.item_count > 0 -%}
+      <p class="nf-cartpg__count">{{ cart.item_count }} {% if cart.item_count == 1 %}piece{% else %}pieces{% endif %}</p>
+    {%- endif -%}
+  </header>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="nf-cartpg__empty">
+      <h2>Your cart is empty</h2>
+      <p>Pieces you add will appear here, held for a little while.</p>
+      <a class="nf-cartpg__cta" href="{{ routes.all_products_collection_url }}">CONTINUE SHOPPING</a>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate class="nf-cartpg__grid">
+      <div class="nf-cartpg__items">
+        {%- for item in cart.items -%}
+          <div class="nf-cartpg__row">
+            <a class="nf-cartpg__thumb" href="{{ item.url }}">
+              {%- if item.image -%}
+                {{ item.image | image_url: width: 300 | image_tag: alt: item.title, loading: 'lazy' }}
+              {%- endif -%}
+            </a>
+            <div class="nf-cartpg__info">
+              <a class="nf-cartpg__name" href="{{ item.url }}">{{ item.product.title }}</a>
+              {%- comment -%} Ring size rides as a line item property, not a variant. {%- endcomment -%}
+              {%- assign opts = '' -%}
+              {%- unless item.variant.title contains 'Default' -%}{%- assign opts = item.variant.title -%}{%- endunless -%}
+              {%- for prop in item.properties -%}
+                {%- unless prop.last == blank or prop.first == '_' -%}
+                  {%- if opts != '' -%}{%- assign opts = opts | append: ' · ' -%}{%- endif -%}
+                  {%- assign opts = opts | append: prop.last -%}
+                {%- endunless -%}
+              {%- endfor -%}
+              {%- if opts != '' -%}<p class="nf-cartpg__opts">{{ opts }}</p>{%- endif -%}
+              <p class="nf-cartpg__price">{{ item.final_line_price | money }}</p>
+
+              <div class="nf-cartpg__controls">
+                <div class="nf-cartpg__qty">
+                  <a href="{{ item.url_to_change }}?quantity={{ item.quantity | minus: 1 }}" aria-label="Decrease quantity">−</a>
+                  <span>{{ item.quantity }}</span>
+                  <a href="{{ item.url_to_change }}?quantity={{ item.quantity | plus: 1 }}" aria-label="Increase quantity">+</a>
+                </div>
+                <a class="nf-cartpg__remove" href="{{ item.url_to_remove }}">Remove</a>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <aside class="nf-cartpg__summary">
+        <div class="nf-cartpg__line">
+          <span>Subtotal</span><span class="nf-cartpg__v">{{ cart.total_price | money }}</span>
+        </div>
+        <div class="nf-cartpg__line">
+          <span>Shipping</span><span class="nf-cartpg__v">{{ ship | money }}</span>
+        </div>
+        {%- for d in cart.cart_level_discount_applications -%}
+          <div class="nf-cartpg__line nf-cartpg__line--save">
+            <span>{{ d.title }}</span><span class="nf-cartpg__v">−{{ d.total_allocated_amount | money }}</span>
+          </div>
+        {%- endfor -%}
+        <div class="nf-cartpg__total">
+          {%- assign grand = cart.total_price | plus: ship -%}
+          <span>Total</span><span>{{ grand | money }}</span>
+        </div>
+        <p class="nf-cartpg__tax">Inclusive of all taxes · flat {{ ship | money }} insured shipping across India</p>
+
+        <button type="submit" name="checkout" class="nf-cartpg__checkout">CHECKOUT</button>
+
+        <p class="nf-cartpg__trust">
+          Secure payments · Insured delivery · <a href="/policies/refund-policy">7-day returns</a>
+        </p>
+      </aside>
+    </form>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+.nf-cartpg { max-width: 1100px; margin-inline: auto; padding: 1.5rem 1rem 5rem; }
+@media (min-width: 768px) { .nf-cartpg { padding: 2.5rem 1.5rem 6rem; } }
+.nf-cartpg__head { display: flex; align-items: baseline; gap: .75rem; margin-bottom: 1.5rem; }
+.nf-cartpg__title { margin: 0; font-family: var(--nf-font-editorial); font-size: 28px; font-weight: 600; color: hsl(0 0% 12%); }
+@media (min-width: 768px) { .nf-cartpg__title { font-size: 34px; } }
+.nf-cartpg__count { margin: 0; font-family: var(--nf-font-label); font-size: 12px; letter-spacing: var(--nf-track-10); color: hsl(0 0% 50%); }
+
+.nf-cartpg__grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+@media (min-width: 900px) { .nf-cartpg__grid { grid-template-columns: 1fr 340px; gap: 3rem; align-items: start; } }
+
+.nf-cartpg__row { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-cartpg__thumb { flex: 0 0 88px; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--nf-ivory-deep); }
+.nf-cartpg__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nf-cartpg__info { flex: 1; min-width: 0; }
+.nf-cartpg__name { font-family: var(--nf-font-editorial); font-size: 16px; color: hsl(0 0% 15%); text-decoration: none; }
+.nf-cartpg__name:hover { text-decoration: underline; text-underline-offset: 3px; }
+.nf-cartpg__opts { margin: .125rem 0 0; font-size: 12px; color: hsl(0 0% 55%); }
+.nf-cartpg__price { margin: .375rem 0 0; font-family: var(--nf-font-editorial); font-size: 15px; font-weight: 600; color: hsl(0 0% 15%); }
+.nf-cartpg__controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .625rem; }
+.nf-cartpg__qty { display: inline-flex; align-items: center; border: 1px solid hsl(0 0% 82%); }
+.nf-cartpg__qty a { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; color: hsl(0 0% 30%); text-decoration: none; font-size: 15px; }
+.nf-cartpg__qty a:hover { background-color: var(--nf-ivory-deep); }
+.nf-cartpg__qty span { min-width: 40px; text-align: center; font-size: 13px; font-weight: 500; color: hsl(0 0% 20%); }
+.nf-cartpg__remove { font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-8); color: hsl(0 0% 45%); text-decoration: underline; text-underline-offset: 3px; }
+
+.nf-cartpg__summary { border: 1px solid hsl(0 0% 88%); padding: 1.25rem; }
+.nf-cartpg__line { display: flex; justify-content: space-between; margin-bottom: .625rem; font-size: 13px; color: hsl(0 0% 40%); }
+.nf-cartpg__v { font-weight: 500; color: hsl(0 0% 25%); }
+.nf-cartpg__line--save, .nf-cartpg__line--save .nf-cartpg__v { color: hsl(142 50% 32%); }
+.nf-cartpg__total { display: flex; justify-content: space-between; padding-top: .75rem; border-top: 1px solid hsl(0 0% 88%); font-family: var(--nf-font-editorial); font-size: 18px; font-weight: 600; color: hsl(0 0% 12%); }
+.nf-cartpg__tax { margin: .5rem 0 0; font-size: 11.5px; line-height: 1.6; color: hsl(0 0% 50%); }
+.nf-cartpg__checkout { width: 100%; height: 52px; margin-top: 1rem; border: 0; background-color: hsl(186 35% 28%); color: #fff; cursor: pointer; font-family: var(--nf-font-label); font-size: 12px; font-weight: 500; letter-spacing: var(--nf-track-16); }
+.nf-cartpg__checkout:hover { background-color: hsl(186 35% 23%); }
+.nf-cartpg__trust { margin: .625rem 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
+.nf-cartpg__trust a { color: hsl(0 0% 35%); text-decoration: underline; text-underline-offset: 4px; }
+
+.nf-cartpg__empty { text-align: center; padding: 4rem 1rem 6rem; }
+.nf-cartpg__empty h2 { margin: 0; font-family: var(--nf-font-editorial); font-size: 24px; font-weight: 600; color: hsl(0 0% 15%); }
+.nf-cartpg__empty p { margin: .625rem 0 0; font-family: var(--nf-font-editorial); font-size: 14px; color: hsl(0 0% 45%); }
+.nf-cartpg__cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem; border: 1px solid var(--nf-ink); color: var(--nf-ink); text-decoration: none; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); }
+.nf-cartpg__cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NF Cart",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your cart" },
+    { "type": "number", "id": "shipping_charge", "label": "Flat shipping charge (₹)", "default": 150,
+      "info": "Matches SHIPPING_CHARGE in src/lib/serviceability.ts. Shipping is never free — do not set to 0 without changing the copy." }
+  ],
+  "presets": [{ "name": "NF Cart" }]
+}
+{% endschema %}

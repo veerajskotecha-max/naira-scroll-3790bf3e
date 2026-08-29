@@ -1,0 +1,94 @@
+{%- comment -%}
+  ═══════════════════════════════════════════════════════════════════
+  Naira Flore — collections index (/collections)
+
+  No React equivalent: the SPA routes /collections through the same
+  listing view. Shopify serves a distinct template, so this uses the
+  collection page's hero and grid language rather than a second idiom.
+
+  Empty collections are skipped — the store currently carries only a
+  few, and rendering a tile that leads to nothing is worse than
+  omitting it.
+  ═══════════════════════════════════════════════════════════════════
+{%- endcomment -%}
+
+<section class="nf nf-cl">
+  <div class="nf-cl__hero">
+    <header class="nf-cl__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="nf-cl__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="nf-cl__title">{{ section.settings.heading | escape }}</h1>
+      {%- if section.settings.lede != blank -%}<p class="nf-cl__lede">{{ section.settings.lede }}</p>{%- endif -%}
+    </header>
+  </div>
+
+  {%- assign shown = 0 -%}
+  <div class="nf-cl__grid">
+    {%- for c in collections -%}
+      {%- if c.products_count > 0 and c.handle != 'frontpage' -%}
+        {%- assign shown = shown | plus: 1 -%}
+        <a class="nf-cl__card" href="{{ c.url }}">
+          <div class="nf-cl__frame">
+            {%- if c.image != blank -%}
+              {{ c.image | image_url: width: 800 | image_tag: alt: c.title, loading: 'lazy', class: 'nf-cl__img' }}
+            {%- elsif c.products.first.featured_image != blank -%}
+              {{ c.products.first.featured_image | image_url: width: 800 | image_tag: alt: c.title, loading: 'lazy', class: 'nf-cl__img' }}
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'nf-cl__img' }}
+            {%- endif -%}
+          </div>
+          <p class="nf-cl__name">{{ c.title }}</p>
+          <p class="nf-cl__count">{{ c.products_count }} {% if c.products_count == 1 %}piece{% else %}pieces{% endif %}</p>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- if shown == 0 -%}
+    <div class="nf-cl__empty">
+      <h2>The edit is being arranged</h2>
+      <p>Collections are on their way. The full range is a step away.</p>
+      <a class="nf-cl__cta" href="{{ routes.all_products_collection_url }}">VIEW ALL PIECES</a>
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+.nf-cl__hero { background-color: var(--nf-ivory); }
+.nf-cl__head { max-width: 72rem; margin-inline: auto; padding: 1.5rem 1rem; }
+@media (min-width: 640px) { .nf-cl__head { padding-inline: 1.5rem; } }
+@media (min-width: 768px) { .nf-cl__head { padding-top: 2.5rem; } }
+.nf-cl__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
+.nf-cl__title { margin: .75rem 0 0; font-family: var(--nf-font-display); font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-cl__title { font-size: 48px; } }
+.nf-cl__lede { margin: .75rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+@media (min-width: 768px) { .nf-cl__lede { font-size: 16px; } }
+
+.nf-cl__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 72rem; margin-inline: auto; padding: 2.5rem 1rem 4rem; }
+@media (min-width: 640px) { .nf-cl__grid { gap: 1.5rem; padding-inline: 1.5rem; } }
+@media (min-width: 1024px) { .nf-cl__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+.nf-cl__card { text-decoration: none; display: block; }
+.nf-cl__frame { aspect-ratio: 4 / 5; overflow: hidden; background-color: var(--nf-ivory-deep); }
+.nf-cl__img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s var(--nf-ease-reveal); }
+.nf-cl__card:hover .nf-cl__img { transform: scale(1.03); }
+.nf-cl__name { margin: .625rem 0 0; font-family: var(--nf-font-editorial); font-size: 17px; color: var(--nf-ink); }
+.nf-cl__count { margin: .125rem 0 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); text-transform: uppercase; color: rgb(var(--nf-ink-rgb) / .45); }
+
+.nf-cl__empty { text-align: center; max-width: 72rem; margin-inline: auto; padding: 3rem 1.5rem 6rem; }
+.nf-cl__empty h2 { margin: 0; font-family: var(--nf-font-display); font-size: 26px; color: var(--nf-ink); }
+.nf-cl__empty p { margin: .75rem 0 0; font-family: var(--nf-font-editorial); font-size: 14px; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-cl__cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem; border: 1px solid var(--nf-ink); color: var(--nf-ink); text-decoration: none; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); }
+.nf-cl__cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NF Collections Index",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "NAIRA" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The Collections" },
+    { "type": "richtext", "id": "lede", "label": "Intro copy", "default": "<p>Every edit, in one place.</p>" }
+  ]
+}
+{% endschema %}

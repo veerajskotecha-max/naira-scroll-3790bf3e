@@ -1,0 +1,79 @@
+{% comment %}
+  nf-brand-ethos — port of src/components/BrandEthos.tsx
+  A slow marquee of brand pillars. The source renders the pillar row
+  three times and animates translateX(-33.333%) -> 0; kept exactly.
+  Lucide icon paths (pen-line / scissors / flower) inlined as SVG.
+{% endcomment %}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'nf-home.css' | asset_url | stylesheet_tag }}
+
+<section class="nf nf-ethos" aria-label="{{ section.settings.aria_label | escape }}">
+  <div class="nf-ethos__track">
+    {%- for pass in (1..3) -%}
+      {%- for block in section.blocks -%}
+        <div class="nf-ethos__item" {{ block.shopify_attributes }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            {%- case block.settings.icon -%}
+              {%- when 'pen-line' -%}
+                <path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+              {%- when 'scissors' -%}
+                <circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>
+              {%- when 'flower' -%}
+                <circle cx="12" cy="12" r="3"/><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5"/><path d="M12 7.5V9"/><path d="M7.5 12H9"/><path d="M16.5 12H15"/><path d="M12 16.5V15"/><path d="m8 8 1.88 1.88"/><path d="M14.12 9.88 16 8"/><path d="m8 16 1.88-1.88"/><path d="M14.12 14.12 16 16"/>
+              {%- when 'package' -%}
+                <path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/>
+              {%- else -%}
+                <circle cx="12" cy="12" r="3"/>
+            {%- endcase -%}
+          </svg>
+          <span class="nf-editorial">{{ block.settings.title }}</span>
+          <span class="nf-ethos__dot" aria-hidden="true">•</span>
+        </div>
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NF Brand ethos",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [
+    { "type": "text", "id": "aria_label", "label": "Accessible label", "default": "Brand pillars" }
+  ],
+  "blocks": [
+    {
+      "type": "pillar",
+      "name": "Pillar",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "pen-line", "label": "Pen" },
+            { "value": "scissors", "label": "Scissors" },
+            { "value": "flower", "label": "Flower" },
+            { "value": "package", "label": "Package" }
+          ],
+          "default": "flower"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Handcrafted" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "NF Brand ethos",
+      "blocks": [
+        { "type": "pillar", "settings": { "icon": "pen-line", "title": "Personalised" } },
+        { "type": "pillar", "settings": { "icon": "scissors", "title": "Handcrafted" } },
+        { "type": "pillar", "settings": { "icon": "flower", "title": "Floral-Inspired" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

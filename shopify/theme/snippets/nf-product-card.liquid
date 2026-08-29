@@ -1,0 +1,165 @@
+{%- comment -%}
+  ═══════════════════════════════════════════════════════════════════
+  Naira Flore — product card
+  Ported from src/components/ProductCard.tsx (Lovable repo).
+
+  Every value comes from the Liquid `product` object. Nothing here
+  reads src/data/jewellery.ts, and nothing here talks to an
+  off-domain store host — quick add posts to routes.cart_add_url on
+  the storefront's own domain.
+
+  Accepts:
+    product        {Product} required
+    index          {Number}  position in the grid, drives reveal stagger
+    uid            {String}  unique-ifies the form id (usually section.id)
+    show_quick_add {Boolean} default true
+  ═══════════════════════════════════════════════════════════════════
+{%- endcomment -%}
+
+{{ 'nf-card.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign card_index = index | default: 0
+  assign card_uid = uid | default: 'nf'
+  assign card_variant = product.selected_or_first_available_variant
+  if card_variant == blank
+    assign card_variant = product.variants.first
+  endif
+  assign card_available = card_variant.available
+
+  assign card_tag = product.tags | first
+  if card_tag == blank
+    assign card_tag = 'New'
+  endif
+
+  assign card_category = product.type
+  if card_category == blank
+    assign card_category = product.vendor
+  endif
+
+  assign card_image = product.featured_image
+  assign card_hover_image = product.images[1] | default: card_image
+
+  assign card_form_id = 'NfAdd-' | append: card_uid | append: '-' | append: product.id
+  assign card_delay = card_index | times: 60 | plus: 100
+  assign quick_add = true
+  if show_quick_add == false
+    assign quick_add = false
+  endif
+-%}
+
+<div class="nf-card" data-nf-reveal style="--nf-card-delay: {{ card_delay }}ms;">
+  <div class="nf-card__media">
+    <a class="nf-card__media-link" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+      {%- if card_image != blank -%}
+        {{
+          card_image
+          | image_url: width: 600
+          | image_tag:
+            loading: 'lazy',
+            decoding: 'async',
+            widths: '200,300,400,600,800',
+            sizes: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
+            class: 'nf-card__img nf-card__img--primary',
+            alt: ''
+        }}
+        {{
+          card_hover_image
+          | image_url: width: 600
+          | image_tag:
+            loading: 'lazy',
+            decoding: 'async',
+            widths: '200,300,400,600,800',
+            sizes: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
+            class: 'nf-card__img nf-card__img--hover',
+            alt: ''
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'nf-card__img nf-card__img--primary nf-card__img--placeholder' }}
+      {%- endif -%}
+    </a>
+
+    <span class="nf-card__tag">{{ card_tag }}</span>
+
+    {%- unless card_available -%}
+      <span class="nf-card__badge">{{ 'Pre-Order' }}</span>
+    {%- endunless -%}
+
+    <button
+      type="button"
+      class="nf-card__wish nf-press"
+      data-nf-wishlist="{{ product.handle }}"
+      data-nf-wishlist-title="{{ product.title | escape }}"
+      aria-pressed="false"
+      aria-label="Add {{ product.title | escape }} to wishlist"
+    >
+      <svg class="nf-card__heart" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+      </svg>
+    </button>
+
+    {%- if quick_add -%}
+      <form
+        id="{{ card_form_id }}"
+        class="nf-card__form"
+        action="{{ routes.cart_add_url }}"
+        method="post"
+        enctype="multipart/form-data"
+        data-nf-add
+        data-nf-add-title="{{ product.title | escape }}"
+      >
+        <input type="hidden" name="id" value="{{ card_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button
+          type="submit"
+          class="nf-card__add nf-card__add--overlay nf-press"
+          {% unless card_available %}disabled{% endunless %}
+          aria-label="Add {{ product.title | escape }} to cart"
+        >
+          <span class="nf-card__add-idle">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            {% if card_available %}Add to Cart{% else %}Sold Out{% endif %}
+          </span>
+          <span class="nf-card__add-done">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+            Added
+          </span>
+        </button>
+      </form>
+    {%- endif -%}
+
+    <div class="nf-card__scrim" aria-hidden="true"></div>
+  </div>
+
+  <a class="nf-card__info" href="{{ product.url }}">
+    <h3 class="nf-card__title">{{ product.title }}</h3>
+    {%- if card_category != blank -%}
+      <p class="nf-card__category">{{ card_category }}</p>
+    {%- endif -%}
+    <p class="nf-card__price">
+      FROM <span class="nf-card__price-value">{{ product.price_min | money }}</span>
+      {%- if product.compare_at_price_max > product.price_min -%}
+        <s class="nf-card__price-was">{{ product.compare_at_price_max | money }}</s>
+      {%- endif -%}
+    </p>
+  </a>
+
+  {%- if quick_add -%}
+    <button
+      type="submit"
+      form="{{ card_form_id }}"
+      class="nf-card__add nf-card__add--mobile nf-press"
+      {% unless card_available %}disabled{% endunless %}
+      aria-label="Add {{ product.title | escape }} to cart"
+    >
+      <span class="nf-card__add-idle">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        {% if card_available %}Add to Cart{% else %}Sold Out{% endif %}
+      </span>
+      <span class="nf-card__add-done">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+        Added
+      </span>
+    </button>
+  {%- endif -%}
+</div>

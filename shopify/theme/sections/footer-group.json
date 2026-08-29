@@ -31,7 +31,15 @@
           }
         }
       },
-      "block_order": ["shop", "customer_care", "policies"]
+      "block_order": [
+        "shop",
+        "customer_care",
+        "policies"
+      ]
+    },
+    "nf_welcome_offer": {
+      "type": "nf-welcome-offer",
+      "settings": {}
     },
     "footer": {
       "type": "footer",
@@ -47,6 +55,7 @@
   },
   "order": [
     "nf_footer",
+    "nf_welcome_offer",
     "footer"
   ]
 }

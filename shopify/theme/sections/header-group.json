@@ -8,7 +8,7 @@
     "nf_announcement": {
       "type": "nf-announcement-bar",
       "settings": {
-        "text": "10% OFF YOUR FIRST ORDER \u2726 USE CODE NAIRA10",
+        "text": "10% OFF YOUR FIRST ORDER ✦ USE CODE NAIRA10",
         "bg_colour": "#AEBDB6",
         "text_colour": "#FFFFFF",
         "height": 36,
@@ -17,7 +17,143 @@
     },
     "nf_header": {
       "type": "nf-header",
-      "settings": {}
+      "settings": {},
+      "blocks": {
+        "home": {
+          "type": "nav_item",
+          "settings": {
+            "label": "HOME",
+            "url": "/",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "shop": {
+          "type": "nav_item",
+          "settings": {
+            "label": "SHOP",
+            "url": "/collections/shop-all",
+            "children": "Rings|/collections/rings\nEarrings|/collections/earrings\nNecklaces|/collections/necklaces\nBracelets|/collections/bracelets",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": false
+          }
+        },
+        "jewellery": {
+          "type": "nav_item",
+          "settings": {
+            "label": "JEWELLERY",
+            "url": "",
+            "children": "Shop All|/collections/shop-all\nRings|/collections/rings\nEarrings|/collections/earrings\nNecklaces|/collections/necklaces\nBracelets|/collections/bracelets",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "the_edits": {
+          "type": "nav_item",
+          "settings": {
+            "label": "THE EDITS",
+            "url": "",
+            "children": "New Arrivals|/collections/shop-all?sort_by=created-descending\nBestsellers|/collections/shop-all?sort_by=best-selling\nUnder ₹1,500|/collections/shop-all?filter.v.price.lte=1500\nNaira Petite|/collections/shop-all",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "occasion": {
+          "type": "nav_item",
+          "settings": {
+            "label": "OCCASION",
+            "url": "",
+            "children": "Everyday|/collections/shop-all?filter.p.tag=Everyday\nFestive|/collections/shop-all?filter.p.tag=Festive\nWedding|/collections/shop-all?filter.p.tag=Wedding\nGifting|/collections/sets",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "apparel": {
+          "type": "nav_item",
+          "settings": {
+            "label": "APPAREL",
+            "url": "",
+            "children": "Indo-Western|/collections/all\nShop All|/collections/shop-all\nMade to Measure|/pages/made-for-you",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "gifting": {
+          "type": "nav_item",
+          "settings": {
+            "label": "GIFTING",
+            "url": "/collections/sets",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "about": {
+          "type": "nav_item",
+          "settings": {
+            "label": "ABOUT",
+            "url": "/pages/about-naira",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "customise": {
+          "type": "nav_item",
+          "settings": {
+            "label": "CUSTOMISE",
+            "url": "/pages/made-for-you",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "track_order": {
+          "type": "nav_item",
+          "settings": {
+            "label": "TRACK ORDER",
+            "url": "/account",
+            "children": "",
+            "show_in_desktop_bar": false,
+            "desktop_area": "left",
+            "show_in_mobile_drawer": true
+          }
+        },
+        "contact": {
+          "type": "nav_item",
+          "settings": {
+            "label": "CONTACT",
+            "url": "/pages/contact",
+            "children": "",
+            "show_in_desktop_bar": true,
+            "desktop_area": "right",
+            "show_in_mobile_drawer": true
+          }
+        }
+      },
+      "block_order": [
+        "home",
+        "shop",
+        "jewellery",
+        "the_edits",
+        "occasion",
+        "apparel",
+        "gifting",
+        "about",
+        "customise",
+        "track_order",
+        "contact"
+      ]
     },
     "header": {
       "type": "header",

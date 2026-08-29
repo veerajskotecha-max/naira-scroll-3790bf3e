@@ -244,9 +244,13 @@
               assign card_compare = card_variant.compare_at_price
               assign off = 0
               if card_compare > card_price
+                # round(100*diff/compare) done as floor((200*diff+compare)/(2*compare)) --
+                # works whether divided_by floors int/int (real Shopify) or returns a
+                # float (this harness's liquidjs), because floor is applied explicitly
+                # either way instead of assuming which one divided_by will do.
                 assign off_numer = card_compare | minus: card_price | times: 200 | plus: card_compare
                 assign off_denom = card_compare | times: 2
-                assign off = off_numer | divided_by: off_denom
+                assign off = off_numer | divided_by: off_denom | floor
               endif
 
               assign badge_label = ''

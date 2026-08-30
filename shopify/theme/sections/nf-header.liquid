@@ -523,7 +523,15 @@
   position: fixed;
   inset: 0;
   z-index: 70;
+  /* The closed drawer is a full-viewport fixed box. `inert` alone is not
+     enough to make it harmless: browsers without inert support (and any
+     context that strips the attribute) leave a transparent 100vw x 100vh
+     layer at z-index 70 swallowing every click on the page -- the header
+     nav, the product grid, the whole site reads as dead. pointer-events
+     costs nothing and fails safe. */
+  pointer-events: none;
 }
+.nf-mm.is-open { pointer-events: auto; }
 .nf-mm__backdrop {
   position: absolute;
   inset: 0;

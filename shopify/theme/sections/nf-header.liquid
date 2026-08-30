@@ -244,12 +244,17 @@
               widths: '160, 260, 320, 440'
           }}
         {%- else -%}
+          {%- comment -%}
+            The same file React's Navbar imports. The nf-wordmark.png this used
+            to point at is a corrupt PNG -- valid header, broken data stream --
+            so the wordmark rendered as an empty gap on every page.
+          {%- endcomment -%}
           <img
-            src="{{ 'nf-wordmark.png' | asset_url }}"
+            src="{{ 'nf-naira-logo.svg' | asset_url }}"
             alt="{{ shop.name | escape }}"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           >
@@ -489,10 +494,16 @@
    Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
    The panel is fixed to the viewport rather than the trigger, so the grid
    stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
 .nf-mega {
-  position: fixed;
+  position: absolute;
   left: 50%;
-  top: calc(var(--nf-announcement-h, 0px) + var(--nf-navbar-h, 72px));
+  top: 100%;
   transform: translateX(-50%);
   padding-top: 12px;
   opacity: 0;

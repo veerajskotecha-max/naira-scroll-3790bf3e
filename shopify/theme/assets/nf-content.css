@@ -82,6 +82,12 @@
   font-weight: 500;
   margin: 0;
 }
+/* base.css line 264 puts letter-spacing: calc(--font-heading-scale * .06rem)
+   -- 0.72px -- on every h1-h4. Tailwind preflight leaves React's marketing
+   headings at `normal`, and none of them carry a tracking-* class. Same fix
+   nf-base.css applies to body, one level down. Rules with their own tracking
+   (.nf-ethos__item h3) are equal specificity and come later, so they win. */
+.nf-mk :is(h1, h2, h3, h4) { letter-spacing: normal; }
 .nf-doc :is(h1, h2, h3, h4),
 .nf-mk :is(h1, h2, h3, h4) {
   font-family: var(--nf-font-display) !important;
@@ -504,10 +510,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 78vh;
-  padding-block: 60px;
+  height: calc(100dvh - 98px);
+  min-height: calc(100dvh - 98px);
 }
-@media (min-width: 1024px) { .nf-about__hero { min-height: 86vh; } }
+@media (min-width: 768px) { .nf-about__hero { height: calc(100dvh - 108px); min-height: calc(100dvh - 108px); } }
+@media (min-width: 1024px) { .nf-about__hero { height: calc(100dvh - 120px); min-height: calc(100dvh - 120px); } }
 .nf-about__hero-bg { position: absolute; inset: 0; pointer-events: none; background-size: cover; background-position: center; }
 .nf-about__hero-grid {
   position: relative;
@@ -530,24 +537,30 @@
 }
 @media (min-width: 768px) { .nf-about__hero-copy h1 { font-size: 40px; } }
 @media (min-width: 1024px) { .nf-about__hero-copy h1 { font-size: 52px; } }
-.nf-about__hero-copy p {
+.nf-about__hero-copy p:not(.nf-eyebrow) {
   font-size: 15px;
   line-height: 1.65;
   color: var(--nf-mk-body);
   max-width: 480px;
   margin: 0 auto 32px;
 }
-@media (min-width: 768px) { .nf-about__hero-copy p { font-size: 16px; line-height: 1.8; } }
-@media (min-width: 1024px) { .nf-about__hero-copy p { margin-inline: 0; font-size: 17px; } }
+@media (min-width: 768px) { .nf-about__hero-copy p:not(.nf-eyebrow) { font-size: 16px; line-height: 1.8; } }
+@media (min-width: 1024px) { .nf-about__hero-copy p:not(.nf-eyebrow) { margin-inline: 0; font-size: 17px; } }
 .nf-about__hero-media { width: 100%; }
 @media (min-width: 1024px) { .nf-about__hero-media { width: 50%; } }
 .nf-about__hero-media img {
   display: block;
   width: 100%;
+  height: auto;
+  max-height: 24dvh;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  /* rounded-2xl on the React wrapper; .nf-mk * zeroes radius, so re-state it */
+  border-radius: 16px;
   box-shadow: 0 8px 40px -8px rgb(0 0 0 / 0.15);
 }
+@media (min-width: 768px) { .nf-about__hero-media img { max-height: 32dvh; } }
+@media (min-width: 1024px) { .nf-about__hero-media img { max-height: 62dvh; } }
 
 .nf-about__rule { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
 .nf-about__rule i { display: block; width: 48px; height: 1px; background-color: var(--nf-mk-dash); }
@@ -598,27 +611,29 @@
 .nf-timeline__media img {
   display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  border-radius: 12px;
   box-shadow: 0 4px 24px -6px rgb(0 0 0 / 0.1);
 }
 .nf-timeline__copy { width: 100%; text-align: center; }
 @media (min-width: 1024px) {
   .nf-timeline__has-media .nf-timeline__media { width: 45%; }
   .nf-timeline__has-media .nf-timeline__copy { width: 45%; text-align: left; }
-  .nf-timeline__row--flip .nf-timeline__copy { text-align: right; }
+  .nf-timeline__has-media.nf-timeline__row--flip .nf-timeline__copy { text-align: right; }
   .nf-timeline__no-media .nf-timeline__copy { width: 70%; margin-inline: auto; }
 }
 .nf-timeline__copy h3 {
   font-size: 22px;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.375;
   color: var(--nf-mk-heading);
   margin-bottom: 16px;
 }
 @media (min-width: 768px) { .nf-timeline__copy h3 { font-size: 26px; } }
 @media (min-width: 1024px) { .nf-timeline__copy h3 { font-size: 30px; } }
-.nf-timeline__copy p {
+.nf-timeline__copy p:not(.nf-timeline__label) {
   font-size: 14px;
   line-height: 1.8;
   color: var(--nf-mk-body-soft);
@@ -626,10 +641,10 @@
   max-width: 560px;
   margin-inline: auto;
 }
-@media (min-width: 768px) { .nf-timeline__copy p { font-size: 15px; } }
+@media (min-width: 768px) { .nf-timeline__copy p:not(.nf-timeline__label) { font-size: 15px; } }
 @media (min-width: 1024px) {
   .nf-timeline__has-media .nf-timeline__copy p { max-width: 440px; margin-inline: 0; }
-  .nf-timeline__row--flip .nf-timeline__copy p { margin-left: auto; margin-right: 0; }
+  .nf-timeline__has-media.nf-timeline__row--flip .nf-timeline__copy p { margin-left: auto; margin-right: 0; }
 }
 .nf-timeline__label {
   /* AboutTimeline's story.label ("THE BEGINNING", "B2B ROOTS", ...) has no
@@ -640,7 +655,7 @@
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: var(--nf-track-16);
+  letter-spacing: 0.15em;
   color: var(--nf-mk-eyebrow);
   margin: 0 0 8px;
 }
@@ -664,6 +679,7 @@
 .nf-ethos__item h3 {
   font-size: 15px;
   font-weight: 500;
+  line-height: 1.5;
   letter-spacing: var(--nf-track-4);
   color: hsl(0 0% 20%);
 }
@@ -681,23 +697,54 @@
 }
 @media (min-width: 768px) { .nf-split__copy h2 { font-size: 36px; } }
 @media (min-width: 1024px) { .nf-split__copy h2 { font-size: 44px; } }
-.nf-split__copy p {
+.nf-split__copy p:not(.nf-eyebrow) {
   font-size: 15px;
   line-height: 1.8;
   color: var(--nf-mk-body-soft);
   max-width: 460px;
   margin: 0 auto;
 }
-@media (min-width: 768px) { .nf-split__copy p { font-size: 16px; } }
-@media (min-width: 1024px) { .nf-split__copy p { margin-inline: 0; } }
+@media (min-width: 768px) { .nf-split__copy p:not(.nf-eyebrow) { font-size: 16px; } }
+@media (min-width: 1024px) { .nf-split__copy p:not(.nf-eyebrow) { margin-inline: 0; } }
 .nf-split__media { width: 100%; }
 @media (min-width: 1024px) { .nf-split__media { width: 50%; } }
 .nf-split__media img {
   display: block;
   width: 100%;
+  height: auto;
   object-fit: cover;
+  border-radius: 12px;
   box-shadow: 0 6px 30px -8px rgb(0 0 0 / 0.12);
 }
+
+/* ── About-only overrides ──────────────────────────────────────────
+   The shared marketing shell is sized for ContactUs (lg:py-[100px],
+   h2 lg:text-[42px] leading-[1.15]). Every About band is lg:py-[120px]
+   and its two .nf-mk__h2 headings are lg:text-[46px] leading-tight. */
+@media (min-width: 1024px) {
+  .nf-about .nf-mk__pad { padding-block: 120px; }
+  .nf-about .nf-mk__h2 { font-size: 46px; }
+}
+/* AboutTimeline / AboutCTA h2: leading-tight + mb-6. base.css's
+   `.nf-mk :is(h1,h2,h3,h4) { margin: 0 }` outranks .nf-mk__h2 (0,1,1 vs
+   0,1,0), which is why the shared 24px never landed. */
+.nf-about .nf-mk__h2 { line-height: 1.25; margin-bottom: 24px; }
+/* base.css gives every p a 1.6rem margin-block-start; Tailwind preflight
+   gives React's none. */
+.nf-about .nf-mk__lede { margin-top: 0; }
+/* React's About buttons are rounded-full; .nf-mk * zeroes radius. */
+.nf-about .nf-btn { border-radius: 999px; }
+/* AboutCTA's button is px-12 py-4, not the hero's px-10 py-3.5. */
+.nf-about__cta-btn { padding: 16px 48px; }
+/* AboutTimeline heading block is mb-14 md:mb-20. */
+.nf-about__timeline-head { text-align: center; margin-bottom: 56px; }
+@media (min-width: 768px) { .nf-about__timeline-head { margin-bottom: 80px; } }
+/* AboutHandcrafted is the one 55/45 split; the rest are 50/50. */
+@media (min-width: 1024px) {
+  .nf-about .nf-split--flip .nf-split__media { width: 55%; }
+  .nf-about .nf-split--flip .nf-split__copy { width: 45%; }
+}
+.nf-about .nf-split--flip .nf-split__copy p:not(.nf-eyebrow) { max-width: 440px; }
 
 /* ═══ Made for you ══════════════════════════════════════════════ */
 .nf-mfy__hero {
@@ -781,6 +828,19 @@
 .nf-journal {
   background-color: var(--nf-journal-ground);
   color: var(--nf-ink);
+
+  /* Journal.tsx styles its masthead h1, its engraved index and its entry
+     titles with the `velista` const, which is
+     `var(--font-cormorant), 'Velista', Georgia, serif` -- and --font-cormorant
+     is defined nowhere in the React build. An unresolved var() with no
+     fallback makes the whole declaration invalid at computed-value time, so
+     every one of those elements silently inherits body's plain sans stack
+     instead. Confirmed by computed-style diff: the React h1 reports
+     ui-sans-serif, not Velista. Reproduced here rather than "corrected",
+     because parity is the contract. Restore --nf-font-display on the three
+     users below if the React side ever defines the variable. */
+  --nf-journal-velista: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+                        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 .nf-journal__wrap { max-width: 56rem; margin: 0 auto; padding-inline: 16px; }
 @media (min-width: 640px) { .nf-journal__wrap { padding-inline: 24px; } }
@@ -811,7 +871,12 @@
 }
 .nf-journal__masthead h1 {
   position: relative;
-  font-family: var(--nf-font-display) !important;
+  /* !important beats layout/theme.liquid's blanket Ophelia override; the
+     weight and tracking beat base.css's h1 rule and the .nf-journal
+     :is(h1..h4) weight above -- React's h1 inherits body's 400/normal. */
+  font-family: var(--nf-journal-velista) !important;
+  font-weight: 400;
+  letter-spacing: normal;
   font-size: 34px;
   line-height: 1.05;
   margin-top: 16px;
@@ -854,7 +919,7 @@
 }
 .nf-journal__index {
   display: none;
-  font-family: var(--nf-font-display);
+  font-family: var(--nf-journal-velista);
   font-size: 26px;
   line-height: 1;
   color: rgb(var(--nf-gold-rgb) / 0.45);
@@ -873,7 +938,7 @@
 .nf-journal__title {
   display: block;
   margin-top: 12px;
-  font-family: var(--nf-font-display);
+  font-family: var(--nf-journal-velista);
   font-size: 24px;
   line-height: 1.2;
   transition: opacity 0.3s ease;

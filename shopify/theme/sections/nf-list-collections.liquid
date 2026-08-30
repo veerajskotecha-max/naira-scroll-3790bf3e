@@ -217,7 +217,7 @@
       catalogue size this store is likely to reach, so paginate.pages stays
       1 and the pager below never shows -- matching React, which has no
       pager at all. The vendor gate runs per-item inside the loop rather
-      than before paginate because {% paginate %} only accepts a real
+      than before paginate because the paginate tag only accepts a real
       paginate-able drop, not a filtered/derived array.
     {%- endcomment -%}
     {%- paginate collections['all'].products by 250 -%}

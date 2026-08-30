@@ -34,6 +34,16 @@ verifies; Sonnet agents do the mechanical work.
    matched first time. Either way, read `checksumMd5` back and compare with
    `md5sum` — a byte count alone does not catch a same-length corruption.
 
+   **Only BASE64 confirms.** `themeFilesUpsert` with a `URL` body returns an
+   empty `upsertedThemeFiles` array whether it worked or not, AND it fails
+   silently at some rate -- three files in one nine-file batch simply did
+   not land, with no `userErrors`, and one of them still would not land on
+   four further attempts with fresh staged URLs and fresh filenames. Hours
+   went into bisecting those files for a Liquid error that did not exist. A
+   BASE64 body returns the real record (filename, size, checksumMd5), so
+   success is confirmed on the spot. Use URL bodies only for binaries, and
+   always verify them with a separate read.
+
    For **binaries**, do not base64 them into a prompt. Use a staged upload:
    `stagedUploadsCreate` (resource FILE) -> POST the file to the returned
    `url` with curl, sending every returned parameter as a form field plus

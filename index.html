@@ -33,18 +33,33 @@
     <meta name="author" content="Naira Flore" />
     <meta name="google-site-verification" content="Zg1NQwy9KQ09S80BpFx2PH2tqonPEhdKhFk2nmSkdCI" />
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code
+         fbevents.js (~108 KB) plus its config payload (~135 KB) were downloading
+         alongside the app bundle and stealing bandwidth/CPU from first paint on
+         mobile. The fbq() stub is installed immediately so every track() call the
+         app makes is queued and replayed; only the network fetch waits for the
+         page to go idle (or the first interaction, whichever comes first). No
+         events are lost, including PageView. -->
     <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
       if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      n.queue=[];f.__fbLoad=function(){if(f.__fbLoaded)return;f.__fbLoaded=1;
+      t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', '1232524215695667');
       fbq('track', 'PageView');
+      (function(){
+        var go = function(){ window.__fbLoad(); };
+        ['pointerdown','keydown','touchstart','scroll'].forEach(function(ev){
+          window.addEventListener(ev, go, { once: true, passive: true });
+        });
+        var idle = function(){ 'requestIdleCallback' in window
+          ? requestIdleCallback(go, { timeout: 3000 }) : setTimeout(go, 2500); };
+        document.readyState === 'complete' ? idle() : window.addEventListener('load', idle);
+      })();
     </script>
     <!-- End Meta Pixel Code -->
 

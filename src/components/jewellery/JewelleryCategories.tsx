@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { jewellery } from "@/data/jewellery";
+import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
    Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
@@ -50,7 +51,18 @@ const JewelleryCategories = () => (
           <Link key={c.label} to={`/jewellery?category=${c.label}`} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
             {/* still-life crop — product centred */}
             <div className="relative overflow-hidden">
-              <img src={c.img} alt={`${c.label}, Naira Flore demi-gold`} loading="lazy" className="aspect-[4/5] w-full object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]" />
+              {/* The Shopify masters are ~2048px / 100-130 KB each and were being
+                  served untouched into a ~180px-wide card. Ask the CDN for the
+                  sizes actually painted instead. */}
+              <img
+                src={shopifyImage(c.img, 500)}
+                srcSet={shopifySrcSet(c.img, [300, 400, 600, 800])}
+                sizes="(max-width: 1024px) 48vw, 280px"
+                alt={`${c.label}, Naira Flore demi-gold`}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[4/5] w-full object-cover object-center transition-transform duration-1200 ease-out group-hover:scale-[1.05]"
+              />
               <span className="pointer-events-none absolute inset-0 border border-[#C99A4C]/0 transition-colors duration-500 group-hover:border-[#C99A4C]/70" />
             </div>
             <span className="block bg-[#FFFBF7] px-3 py-3 md:px-4 md:py-4">

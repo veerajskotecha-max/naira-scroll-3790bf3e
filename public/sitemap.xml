@@ -181,6 +181,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/bold-nocturne-chain</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/serpentine-whisper-chain</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -222,6 +227,11 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/riviere-of-light-bracelet</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/bold-nocturne-bracelet</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -430,6 +440,11 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/pearl-legacy-necklace</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/marquise-layering-set</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -496,6 +511,11 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/triple-dawn-cuff</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/baroque-shell-bracelet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -571,6 +591,21 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/clover-charm-necklace</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/lumiere-oval-necklace</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/lumiere-oval-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/serpentine-whisper-chain-silver</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

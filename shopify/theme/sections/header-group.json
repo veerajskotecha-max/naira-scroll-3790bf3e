@@ -38,7 +38,9 @@
             "children": "Rings|/collections/rings\nEarrings|/collections/earrings\nNecklaces|/collections/necklaces\nBracelets|/collections/bracelets",
             "show_in_desktop_bar": true,
             "desktop_area": "left",
-            "show_in_mobile_drawer": false
+            "show_in_mobile_drawer": false,
+            "mega_role": "panel",
+            "mega_tiles_title": "Shop by category"
           }
         },
         "jewellery": {
@@ -60,7 +62,8 @@
             "children": "New Arrivals|/collections/shop-all?sort_by=created-descending\nBestsellers|/collections/shop-all?sort_by=best-selling\nUnder ₹1,500|/collections/shop-all?filter.v.price.lte=1500\nNaira Petite|/collections/shop-all",
             "show_in_desktop_bar": false,
             "desktop_area": "left",
-            "show_in_mobile_drawer": true
+            "show_in_mobile_drawer": true,
+            "mega_role": "column"
           }
         },
         "occasion": {
@@ -71,7 +74,9 @@
             "children": "Everyday|/collections/shop-all?filter.p.tag=Everyday\nFestive|/collections/shop-all?filter.p.tag=Festive\nWedding|/collections/shop-all?filter.p.tag=Wedding\nGifting|/collections/sets",
             "show_in_desktop_bar": false,
             "desktop_area": "left",
-            "show_in_mobile_drawer": true
+            "show_in_mobile_drawer": true,
+            "mega_role": "column",
+            "mega_title": "By Occasion"
           }
         },
         "apparel": {
@@ -82,7 +87,8 @@
             "children": "Indo-Western|/collections/all\nShop All|/collections/shop-all\nMade to Measure|/pages/made-for-you",
             "show_in_desktop_bar": false,
             "desktop_area": "left",
-            "show_in_mobile_drawer": true
+            "show_in_mobile_drawer": true,
+            "mega_role": "column"
           }
         },
         "gifting": {

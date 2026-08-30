@@ -83,6 +83,12 @@ async function grab(browser, url, label) {
       await r.fulfill({ status: res.status, headers: h, body });
     } catch { await r.abort(); }
   });
+  // Both sides pop the welcome offer 9s after load. Whichever side reaches that
+  // mark first during the scroll walk shows a modal the other does not, and the
+  // whole dialog reads as a diff. Same localStorage key on both, so seed it.
+  await ctx.addInitScript(() => {
+    try { localStorage.setItem('naira-promo-popup-seen', '1'); } catch (e) {}
+  });
   await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
   await page.evaluate(() => { document.querySelectorAll('img[loading="lazy"]').forEach(i => i.loading = 'eager'); });
   // walk the page so scroll-triggered content mounts, then come back

@@ -96,7 +96,92 @@
                 {%- assign nf_is_current = true -%}
               {%- endif -%}
 
-              {%- if nf_children != blank -%}
+              {%- if block.settings.mega_role == 'panel' and nf_children != blank -%}
+                {%- comment -%}
+                  React's SHOP entry opens a four-column panel, not a list:
+                  an image-tile row built from this block's own children plus
+                  one text column per sibling block whose mega_role is column.
+                  Reusing the sibling blocks keeps the drawer and the panel on
+                  one set of links instead of two that drift apart.
+                {%- endcomment -%}
+                <div class="nf-header__item nf-header__item--mega" {{ block.shopify_attributes }}>
+                  {%- if nf_url != blank -%}
+                    <a
+                      href="{{ nf_url | escape }}"
+                      class="nf-header__link{% if nf_is_current %} is-active{% endif %}"
+                      {% if nf_is_current %}aria-current="page"{% endif %}
+                    >
+                      {{- nf_label | escape -}}
+                    </a>
+                  {%- else -%}
+                    <span class="nf-header__link" tabindex="0">{{- nf_label | escape -}}</span>
+                  {%- endif -%}
+                  <div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">{{ block.settings.mega_tiles_title | default: 'Shop by category' | escape }}</p>
+                          <div class="nf-mega__tiles">
+                            {%- assign nf_tile_lines = nf_children | newline_to_br | split: '<br />' -%}
+                            {%- for tline in nf_tile_lines -%}
+                              {%- assign nf_tline = tline | strip -%}
+                              {%- if nf_tline == blank -%}{%- continue -%}{%- endif -%}
+                              {%- assign nf_tparts = nf_tline | split: '|' -%}
+                              {%- assign nf_tlabel = nf_tparts[0] | strip -%}
+                              {%- assign nf_turl = nf_tparts[1] | strip -%}
+                              {%- if nf_tlabel == blank or nf_turl == blank -%}{%- continue -%}{%- endif -%}
+                              {%- comment -%}
+                                React fills each tile with the first live product
+                                in that category. The handle is the last path
+                                segment of the child href, minus any query string.
+                              {%- endcomment -%}
+                              {%- assign nf_thandle = nf_turl | split: '?' | first | split: '/' | last -%}
+                              {%- assign nf_tcoll = collections[nf_thandle] -%}
+                              {%- assign nf_timg = nf_tcoll.products.first.featured_image -%}
+                              <a href="{{ nf_turl | escape }}" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame">
+                                  {%- if nf_timg -%}
+                                    <img
+                                      src="{{ nf_timg | image_url: width: 240 }}"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    >
+                                  {%- endif -%}
+                                </span>
+                                <span class="nf-mega__tile-label">{{- nf_tlabel | escape -}}</span>
+                              </a>
+                            {%- endfor -%}
+                          </div>
+                        </div>
+                        {%- for col in section.blocks -%}
+                          {%- if col.settings.mega_role != 'column' -%}{%- continue -%}{%- endif -%}
+                          {%- assign nf_colkids = col.settings.children | strip -%}
+                          {%- if nf_colkids == blank -%}{%- continue -%}{%- endif -%}
+                          <div class="nf-mega__col">
+                            <p class="nf-mega__label">{{ col.settings.mega_title | default: col.settings.label | escape }}</p>
+                            <ul class="nf-mega__list">
+                              {%- assign nf_col_lines = nf_colkids | newline_to_br | split: '<br />' -%}
+                              {%- for kline in nf_col_lines -%}
+                                {%- assign nf_kline = kline | strip -%}
+                                {%- if nf_kline == blank -%}{%- continue -%}{%- endif -%}
+                                {%- assign nf_kparts = nf_kline | split: '|' -%}
+                                {%- assign nf_klabel = nf_kparts[0] | strip -%}
+                                {%- assign nf_kurl = nf_kparts[1] | strip -%}
+                                {%- if nf_klabel == blank or nf_kurl == blank -%}{%- continue -%}{%- endif -%}
+                                <li><a href="{{ nf_kurl | escape }}" class="nf-mega__link">{{- nf_klabel | escape -}}</a></li>
+                              {%- endfor -%}
+                            </ul>
+                          </div>
+                        {%- endfor -%}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {%- elsif nf_children != blank -%}
                 <div class="nf-header__item" {{ block.shopify_attributes }}>
                   {%- if nf_url != blank -%}
                     <a
@@ -399,6 +484,97 @@
   transition: background-color 150ms ease;
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
+
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+.nf-mega {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--nf-announcement-h, 0px) + var(--nf-navbar-h, 72px));
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
 
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
@@ -852,6 +1028,30 @@
           "id": "show_in_desktop_bar",
           "label": "Show in desktop bar",
           "default": true
+        },
+        {
+          "type": "select",
+          "id": "mega_role",
+          "label": "Role in the SHOP mega panel",
+          "options": [
+            { "value": "none", "label": "Not in the panel" },
+            { "value": "panel", "label": "Opens the panel (its children become the image tiles)" },
+            { "value": "column", "label": "Becomes a text column in the panel" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "text",
+          "id": "mega_tiles_title",
+          "label": "Panel: image-tile column heading",
+          "default": "Shop by category",
+          "info": "Only used when Role is \"Opens the panel\"."
+        },
+        {
+          "type": "text",
+          "id": "mega_title",
+          "label": "Panel: column heading",
+          "info": "Only used when Role is \"Becomes a text column\". Defaults to the item's label."
         },
         {
           "type": "select",

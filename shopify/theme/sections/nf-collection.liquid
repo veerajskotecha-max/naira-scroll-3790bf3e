@@ -144,7 +144,10 @@
           for tg in p.tags
             assign probe = tag_csv | append: '|'
             assign needle = tg | append: '|'
-            assign already = probe contains needle
+            assign already = false
+            if probe contains needle
+              assign already = true
+            endif
             if already == false and tag_n < 10
               assign tag_csv = tag_csv | append: tg | append: '|'
               assign tag_n = tag_n | plus: 1
@@ -394,7 +397,8 @@
           {%- assign lparts = row | split: '|' -%}
           {%- assign lslug = lparts[0] -%}
           {%- assign llabel = lparts[1] -%}
-          {%- assign lis_core = core_cats contains lslug -%}
+          {%- assign lis_core = false -%}
+          {%- if core_cats contains lslug -%}{%- assign lis_core = true -%}{%- endif -%}
           {%- assign lhref = routes.all_products_collection_url -%}
           {%- if lis_core -%}
             {%- assign lhref = routes.root_url | append: 'collections/' | append: lslug -%}

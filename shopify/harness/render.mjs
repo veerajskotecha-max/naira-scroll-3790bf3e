@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { buildEngine, cssBucket } from './shopify.mjs';
-import { loadCatalogue, routes } from './data.mjs';
+import { loadArticles, loadCatalogue, routes } from './data.mjs';
 
 const THEME = process.env.THEME_DIR || path.join(import.meta.dirname, '..', 'theme');
 const OUT   = process.env.OUT_DIR   || path.join(import.meta.dirname, '..', 'rendered');
@@ -54,6 +54,8 @@ function stripJsonComments(s) {
   while (/^\s*\/\*/.test(out)) out = out.replace(/^\s*\/\*[\s\S]*?\*\//, '');
   return out;
 }
+
+const BLOG = loadArticles();
 
 export async function renderTemplate(name, ctxExtra = {}) {
   const cat = await loadCatalogue();
@@ -110,6 +112,11 @@ export async function renderTemplate(name, ctxExtra = {}) {
       return arr;
     })(),
     all_products: Object.fromEntries(cat.products.map(p => [p.handle, p])),
+    // `blogs` takes the same array-plus-handle-keys shape as `collections` so
+    // both `{% for b in blogs %}` and `blogs['news']` resolve. On a blog
+    // template Shopify also exposes the current blog as `blog`.
+    blog: BLOG,
+    blogs: (() => { const arr = [BLOG]; arr[BLOG.handle] = BLOG; return arr; })(),
     ...ctxExtra,
   };
 
@@ -164,7 +171,13 @@ if (process.argv[1] === import.meta.filename) {
   for (const n of list) {
     const extra = {};
     if (n === 'product') extra.product = cat.products.find(p => p.available) || cat.products[0];
-    if (n === 'collection') extra.collection = cat.collections.find(c => c.products_count > 0) || cat.collections.at(-1);
+    // The collection fixture stands in for React's /jewellery, so it must be a
+    // collection that actually holds the Naira Petite line. Picking "the first
+    // non-empty collection" silently became `frontpage` (apparel only) once the
+    // catalogue refresh started bucketing products into real collections, and
+    // the whole listing page rendered as the empty state.
+    if (n === 'collection') extra.collection = cat.collections.find(c => c.products.some(p => (p.vendor || '').toLowerCase() === 'naira petite'))
+      || cat.collections.find(c => c.products_count > 0) || cat.collections.at(-1);
     try {
       const r = await renderTemplate(n, extra);
       console.log(`${r.errors ? 'WARN' : ' ok '} ${n.padEnd(24)} ${String(r.bytes).padStart(7)}b  sections=${r.sections} issues=${r.errors}`);

@@ -1,0 +1,223 @@
+{
+  "_source": "Admin API, 2026-08-30. The Storefront token in data.mjs has no `unauthenticated_read_content` scope, so unlike catalogue.json this cache cannot refresh itself. Re-pull with: query { blog(id: \"gid://shopify/Blog/90750779554\") { articles(first: 50) { nodes { id title handle publishedAt summary tags author { name } image { url altText width height } metafields(first: 20) { nodes { namespace key value } } } } } }",
+  "_notes": [
+    "`content` is not cached: the journal index does not read it, and the 19 bodies are ~60 KB. Add them here if the /blogs/news/:handle route is ported.",
+    "Every article on the live store has ZERO metafields and no image. The `custom.read_time` values below are NOT in Shopify yet -- they are the hand-authored readTime strings from src/data/seoContent.ts + seoJournal.extra.ts, which is the copy the store was seeded from. nf-journal.liquid falls back to a 200 wpm estimate off the body when the metafield is absent, and that estimate does not reproduce these numbers (the source values run 44-73 words/min, they were written, not computed). Seeding these 19 metafields on the store is a content change, which HANDOFF.md puts out of scope without approval."
+  ],
+  "blog": {
+    "id": 90750779554,
+    "handle": "news",
+    "title": "News"
+  },
+  "articles": [
+    {
+      "id": 566363357346,
+      "handle": "ring-size-guide-india",
+      "title": "Ring Size Guide for India: How to Measure at Home",
+      "published_at": "2026-02-10T00:00:00Z",
+      "excerpt": "A paper strip, a ruler and two minutes. Here is how to measure your ring size accurately at home, plus the US-to-centimetre chart we use at the atelier.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363390114,
+      "handle": "how-to-care-for-gold-plated-jewellery",
+      "title": "How to Care for Gold Plated Jewellery So It Lasts",
+      "published_at": "2026-03-04T00:00:00Z",
+      "excerpt": "Plating does not simply wear off, it is stripped, usually by perfume, sweat and the wrong cloth. Here is the routine we give every Naira Petite client.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    },
+    {
+      "id": 566363422882,
+      "handle": "zirconia-vs-diamond",
+      "title": "Zirconia vs Diamond: What You Are Actually Buying",
+      "published_at": "2026-04-18T00:00:00Z",
+      "excerpt": "Zirconia is not a fake diamond, it is a different stone with different optics. Knowing where it wins makes it much easier to buy well.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    },
+    {
+      "id": 566363455650,
+      "handle": "how-to-style-indo-western-outfits",
+      "title": "How to Style Indo-Western Outfits Without Overthinking It",
+      "published_at": "2026-05-22T00:00:00Z",
+      "excerpt": "Indo-Western works when one element is doing the talking. Here is how to decide which one, and what to do with everything else.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363488418,
+      "handle": "demi-fine-jewellery-explained",
+      "title": "Demi-Fine Jewellery Explained: Between Costume and Fine",
+      "published_at": "2026-06-15T00:00:00Z",
+      "excerpt": "Demi-fine is the category most people are actually shopping for without having a word for it. Here is what defines it, and what to check before you buy.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363521186,
+      "handle": "anti-tarnish-jewellery-guide",
+      "title": "Anti-Tarnish Jewellery: What It Actually Means",
+      "published_at": "2026-04-08T00:00:00Z",
+      "excerpt": "Half the jewellery sold as anti-tarnish in India is flash-plated brass with a marketing line. Here is how the seal actually works and how to test a claim before you pay for it.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    },
+    {
+      "id": 566363553954,
+      "handle": "american-diamond-vs-cubic-zirconia-vs-moissanite",
+      "title": "American Diamond vs Cubic Zirconia vs Moissanite",
+      "published_at": "2026-04-22T00:00:00Z",
+      "excerpt": "American diamond and cubic zirconia are the same stone under two names. Moissanite is not. Here is what actually separates them, and which one to buy for what.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 7 } } }
+    },
+    {
+      "id": 566363586722,
+      "handle": "best-demi-fine-jewellery-brands-india",
+      "title": "How to Judge a Demi-Fine Jewellery Brand in India",
+      "published_at": "2026-05-06T00:00:00Z",
+      "excerpt": "Every brand now calls itself demi-fine. Six checks separate the ones building real jewellery from the ones re-labelling costume stock.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    },
+    {
+      "id": 566363619490,
+      "handle": "everyday-dainty-jewellery-styling",
+      "title": "Styling Dainty Jewellery for Everyday and Office Wear",
+      "published_at": "2026-05-20T00:00:00Z",
+      "excerpt": "Three pieces, one focal point, and a rule about chain length. The whole of everyday jewellery styling fits on a postcard.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363652258,
+      "handle": "how-to-clean-artificial-jewellery-at-home",
+      "title": "How to Clean Artificial Jewellery at Home Without Ruining It",
+      "published_at": "2026-04-02T00:00:00Z",
+      "excerpt": "Toothpaste, baking soda and lemon are the three most recommended cleaning methods online, and all three strip plating. Here is what actually works.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    },
+    {
+      "id": 566363685026,
+      "handle": "gold-plated-vs-gold-filled-vs-solid-gold",
+      "title": "Gold Plated vs Gold Filled vs Solid Gold: What You Are Paying For",
+      "published_at": "2026-04-14T00:00:00Z",
+      "excerpt": "Four terms, wildly different products, and almost no labelling discipline in the Indian market. Here is how to tell them apart before you pay.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 7 } } }
+    },
+    {
+      "id": 566363717794,
+      "handle": "how-to-choose-earrings-for-face-shape",
+      "title": "How to Choose Earrings for Your Face Shape",
+      "published_at": "2026-04-22T00:00:00Z",
+      "excerpt": "Face-shape advice is usually stated as law. It is really one principle applied five ways: contrast the shape you already have.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363750562,
+      "handle": "how-to-layer-necklaces",
+      "title": "How to Layer Necklaces So They Do Not Tangle",
+      "published_at": "2026-05-06T00:00:00Z",
+      "excerpt": "Layering is a geometry problem before it is a styling one. Get the spacing right and the look takes care of itself.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363783330,
+      "handle": "bridal-jewellery-checklist-india",
+      "title": "Bridal Jewellery Checklist for an Indian Wedding",
+      "published_at": "2026-05-18T00:00:00Z",
+      "excerpt": "Brides over-buy for the ceremony and under-plan for the four functions around it. Here is the checklist we work from at the atelier.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 8 } } }
+    },
+    {
+      "id": 566363816098,
+      "handle": "how-to-store-jewellery-to-prevent-tarnish",
+      "title": "How to Store Jewellery So It Does Not Tarnish",
+      "published_at": "2026-05-28T00:00:00Z",
+      "excerpt": "Your jewellery spends twenty hours a day in storage. That is where most of the damage happens, and almost nobody optimises for it.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363848866,
+      "handle": "evil-eye-jewellery-meaning",
+      "title": "Evil Eye Jewellery: Meaning, Placement and How to Wear It",
+      "published_at": "2026-06-04T00:00:00Z",
+      "excerpt": "One of the oldest protective symbols in the world, and one of the most misworn. A short, non-mystical guide.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 5 } } }
+    },
+    {
+      "id": 566363881634,
+      "handle": "rose-gold-vs-yellow-gold-vs-white-gold",
+      "title": "Rose Gold vs Yellow Gold vs White Gold: Which Suits You",
+      "published_at": "2026-06-16T00:00:00Z",
+      "excerpt": "The choice is usually made on trend and regretted on tone. A short guide to picking the metal you will still wear in three years.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    },
+    {
+      "id": 566363914402,
+      "handle": "how-to-buy-jewellery-online-in-india",
+      "title": "How to Buy Jewellery Online in India Without Getting Burned",
+      "published_at": "2026-06-26T00:00:00Z",
+      "excerpt": "Product photography has improved far faster than product quality. Here is what to ask before you pay, and what the answers tell you.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 7 } } }
+    },
+    {
+      "id": 566363947170,
+      "handle": "how-to-build-a-jewellery-capsule-wardrobe",
+      "title": "How to Build a Jewellery Capsule You Actually Wear",
+      "published_at": "2026-07-08T00:00:00Z",
+      "excerpt": "Most jewellery boxes are full and still produce the same three pieces every morning. A capsule fixes the ratio.",
+      "author": "Naira Flore",
+      "tags": [],
+      "image": null,
+      "metafields": { "custom": { "read_time": { "value": 6 } } }
+    }
+  ]
+}

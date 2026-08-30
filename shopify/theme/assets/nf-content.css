@@ -143,6 +143,7 @@
   text-transform: uppercase;
   letter-spacing: var(--nf-track-10);
   text-decoration: none;
+  line-height: 1.5;
   padding: 14px 40px;
   border: 0;
   cursor: pointer;
@@ -405,6 +406,31 @@
 @media (min-width: 768px) { .nf-mk__lede { font-size: 16px; } }
 
 /* ═══ Contact ═══════════════════════════════════════════════════ */
+/* ContactUs hero h1 is text-[32px] md:text-[42px] lg:text-[52px]; the two
+   closing bands are text-[26px] md:text-[34px] lg:text-[40px] leading-[1.2].
+   Scoped past `.nf-mk :is(h1,h2,h3,h4) { margin: 0 }`, which is (0,1,1). */
+.nf-mk .nf-contact__h1 {
+  font-size: 32px;
+  line-height: 1.15;
+  color: var(--nf-mk-heading);
+  margin-bottom: 24px;
+}
+@media (min-width: 768px) { .nf-mk .nf-contact__h1 { font-size: 42px; } }
+@media (min-width: 1024px) { .nf-mk .nf-contact__h1 { font-size: 52px; } }
+.nf-mk .nf-contact__band-h2 { font-size: 26px; line-height: 1.2; margin-bottom: 16px; }
+@media (min-width: 768px) { .nf-mk .nf-contact__band-h2 { font-size: 34px; } }
+@media (min-width: 1024px) { .nf-mk .nf-contact__band-h2 { font-size: 40px; } }
+@media (min-width: 1024px) { .nf-contact__hero-lede { font-size: 17px; } }
+/* base.css gives every p a 1.6rem margin-block-start; Tailwind preflight
+   gives React's none. Same gap as .nf-about .nf-mk__lede. */
+.nf-contact .nf-mk__lede { margin: 0 auto; }
+.nf-contact__form-head { text-align: center; margin-bottom: 40px; }
+@media (min-width: 768px) { .nf-contact__form-head { margin-bottom: 56px; } }
+/* The three contact cards use the w-9 icon chip; only the two closing
+   bands use w-10. */
+.nf-contact__card .nf-chip { width: 36px; height: 36px; }
+.nf-contact__card .nf-chip svg { width: 16px; height: 16px; }
+
 .nf-contact__cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -423,6 +449,7 @@
 .nf-contact__card:hover { box-shadow: 0 12px 30px -18px rgb(0 0 0 / 0.4); }
 .nf-contact__card h3 {
   font-size: 20px;
+  line-height: 1.5;
   font-weight: 600;
   color: var(--nf-mk-heading);
   margin-bottom: 12px;
@@ -452,8 +479,8 @@
 
 .nf-contact__input,
 .nf-contact__textarea {
-  width: 100%;
   display: block;
+  width: 100%;
   font-family: var(--nf-font-display);
   font-size: 15px;
   color: var(--nf-mk-heading);
@@ -465,7 +492,7 @@
   appearance: none;
 }
 .nf-contact__input { height: 48px; }
-.nf-contact__textarea { min-height: 140px; resize: vertical; line-height: 1.7; }
+.nf-contact__textarea { min-height: 139px; resize: vertical; line-height: 1.5; display: block; vertical-align: top; }
 .nf-contact__input::placeholder,
 .nf-contact__textarea::placeholder { color: var(--nf-mk-placeholder); }
 .nf-contact__input:focus-visible,
@@ -480,7 +507,7 @@
   text-align: center;
   font-size: 13px;
   color: hsl(0 0% 55%);
-  margin: 16px 0 0;
+  margin: 20px 0 0;  /* form is space-y-5 */
 }
 @media (min-width: 768px) { .nf-contact__note { font-size: 14px; } }
 .nf-contact__success {
@@ -731,7 +758,7 @@
 .nf-about .nf-mk__h2 { line-height: 1.25; margin-bottom: 24px; }
 /* base.css gives every p a 1.6rem margin-block-start; Tailwind preflight
    gives React's none. */
-.nf-about .nf-mk__lede { margin-top: 0; }
+.nf-about .nf-mk__lede { margin: 0 auto; }
 /* React's About buttons are rounded-full; .nf-mk * zeroes radius. */
 .nf-about .nf-btn { border-radius: 999px; }
 /* AboutCTA's button is px-12 py-4, not the hero's px-10 py-3.5. */
@@ -829,20 +856,29 @@
   background-color: var(--nf-journal-ground);
   color: var(--nf-ink);
 
-  /* Journal.tsx styles its masthead h1, its engraved index and its entry
-     titles with the `velista` const, which is
-     `var(--font-cormorant), 'Velista', Georgia, serif` -- and --font-cormorant
-     is defined nowhere in the React build. An unresolved var() with no
-     fallback makes the whole declaration invalid at computed-value time, so
-     every one of those elements silently inherits body's plain sans stack
-     instead. Confirmed by computed-style diff: the React h1 reports
-     ui-sans-serif, not Velista. Reproduced here rather than "corrected",
-     because parity is the contract. Restore --nf-font-display on the three
-     users below if the React side ever defines the variable. */
-  --nf-journal-velista: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-                        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* The plain sans body stack, for the journal elements React does NOT render
+     in a brand face. Two separate reasons land here:
+
+     - masthead h1, engraved index, entry title: Journal.tsx styles all three
+       with the `velista` const, `var(--font-cormorant), 'Velista', Georgia,
+       serif` -- and --font-cormorant is defined nowhere in the React build. An
+       unresolved var() with no fallback makes the whole declaration invalid at
+       computed-value time, so each element silently inherits body's sans stack.
+       Confirmed by computed-style diff: the React h1 reports ui-sans-serif, not
+       Velista. Reproduced rather than "corrected" -- parity is the contract.
+       Put --nf-font-display back on those three if React ever defines the var.
+     - the drifting arrow: carries no font at all in React, so it also lands on
+       body sans. Here it would otherwise inherit editorial from .nf-journal and
+       measure 20px instead of 17px, shifting the title column by 3px. */
+  --nf-journal-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+                     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
-.nf-journal__wrap { max-width: 56rem; margin: 0 auto; padding-inline: 16px; }
+/* px, not rem: layout/theme.liquid sets html{font-size:calc(--font-body-scale*62.5%)}
+   so 1rem is 10px in this theme, and Tailwind's max-w-4xl (56rem off a 16px
+   root) is 896px. As rem this container came out 560px wide and every entry
+   wrapped onto extra lines -- 1345px of surplus page height. Same for the
+   intro's max-w-2xl below (42rem -> 672px). */
+.nf-journal__wrap { max-width: 896px; margin: 0 auto; padding-inline: 16px; }
 @media (min-width: 640px) { .nf-journal__wrap { padding-inline: 24px; } }
 
 .nf-journal__masthead {
@@ -874,7 +910,7 @@
   /* !important beats layout/theme.liquid's blanket Ophelia override; the
      weight and tracking beat base.css's h1 rule and the .nf-journal
      :is(h1..h4) weight above -- React's h1 inherits body's 400/normal. */
-  font-family: var(--nf-journal-velista) !important;
+  font-family: var(--nf-journal-sans) !important;
   font-weight: 400;
   letter-spacing: normal;
   font-size: 34px;
@@ -885,7 +921,7 @@
 .nf-journal__masthead > p.nf-journal__intro {
   position: relative;
   margin-top: 20px;
-  max-width: 42rem;
+  max-width: 672px;
   font-size: 15px;
   line-height: 1.85;
   color: rgb(var(--nf-ink-rgb) / 0.7);
@@ -901,6 +937,14 @@
   background: linear-gradient(to right, var(--nf-gold), rgb(var(--nf-gold-rgb) / 0.4), transparent);
   animation: nf-journal-rule-grow 1.1s var(--nf-ease-reveal) 0.25s both;
 }
+/* The hairline is an empty span, and nf-base.css undoes Sense's
+   `div:empty{display:none}` with `[class*="nf-"]:empty{display:revert}` at
+   (0,2,0) -- which also outranks the `display:block` above at (0,1,0) and
+   reverted it to inline. Vertical margins do not apply to an inline box, so
+   the rule lost both its 1px height and its 32px margin-top and the masthead
+   came out 16px short. (0,3,0) settles it without depending on which of the
+   two files the browser happened to load last. */
+.nf-journal .nf-journal__hairline:empty { display: block; }
 @keyframes nf-journal-rule-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @media (prefers-reduced-motion: reduce) { .nf-journal__hairline { animation: none; } }
 
@@ -919,7 +963,7 @@
 }
 .nf-journal__index {
   display: none;
-  font-family: var(--nf-journal-velista);
+  font-family: var(--nf-journal-sans);
   font-size: 26px;
   line-height: 1;
   color: rgb(var(--nf-gold-rgb) / 0.45);
@@ -938,7 +982,7 @@
 .nf-journal__title {
   display: block;
   margin-top: 12px;
-  font-family: var(--nf-journal-velista);
+  font-family: var(--nf-journal-sans);
   font-size: 24px;
   line-height: 1.2;
   transition: opacity 0.3s ease;
@@ -967,6 +1011,7 @@
 .nf-journal__arrow {
   display: none;
   align-self: center;
+  font-family: var(--nf-journal-sans);
   font-size: 20px;
   color: rgb(var(--nf-gold-rgb) / 0);
   transition: transform 0.5s var(--nf-ease-reveal), color 0.5s ease;

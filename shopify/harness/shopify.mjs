@@ -46,6 +46,32 @@ const attr = (o) => Object.entries(o)
   .filter(([, v]) => v !== undefined && v !== null && v !== '')
   .map(([k, v]) => ` ${k}="${String(v).replace(/"/g, '&quot;')}"`).join('');
 
+// Shopify's `date` filter is Ruby strftime. It was a no-op here, so every
+// `{{ article.published_at | date: '%-d %B %Y' }}` rendered the raw ISO string
+// and the journal meta line could never match React. Only the directives this
+// theme uses are implemented; anything else passes through untouched. UTC
+// throughout -- published_at is stored at UTC midnight, and reading it in a
+// local zone behind UTC would roll the day back one.
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const pad2 = (n) => String(n).padStart(2, '0');
+const strftime = (v, fmt) => {
+  if (v === null || v === undefined || v === '') return '';
+  const d = v instanceof Date ? v : new Date(v === 'now' || v === 'today' ? Date.now() : v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  const map = {
+    '%Y': d.getUTCFullYear(), '%y': pad2(d.getUTCFullYear() % 100),
+    '%m': pad2(d.getUTCMonth() + 1), '%-m': d.getUTCMonth() + 1,
+    '%d': pad2(d.getUTCDate()), '%-d': d.getUTCDate(), '%e': String(d.getUTCDate()).padStart(2, ' '),
+    '%B': MONTHS[d.getUTCMonth()], '%b': MONTHS[d.getUTCMonth()].slice(0, 3),
+    '%A': DAYS[d.getUTCDay()], '%a': DAYS[d.getUTCDay()].slice(0, 3),
+    '%H': pad2(d.getUTCHours()), '%M': pad2(d.getUTCMinutes()), '%S': pad2(d.getUTCSeconds()),
+    '%%': '%',
+  };
+  return String(fmt === undefined || fmt === null ? '%d/%m/%Y' : fmt)
+    .replace(/%-?[A-Za-z%]/g, (t) => (t in map ? String(map[t]) : t));
+};
+
 export function buildEngine(themeRoot) {
   const engine = new Liquid({
     root: [path.join(themeRoot, 'snippets'), path.join(themeRoot, 'sections'), themeRoot, STUB],
@@ -72,7 +98,7 @@ export function buildEngine(themeRoot) {
     t: (s) => String(s ?? '').split('.').pop().replace(/_/g, ' '),
     placeholder_svg_tag: (_, cls) => `<svg class="${cls || ''}" viewBox="0 0 525 525" style="background:#e8e2da"><rect width="525" height="525" fill="#e8e2da"/></svg>`,
     within: (u) => u, link_to: (t, u) => `<a href="${u}">${t}</a>`,
-    weight_with_unit: (w) => `${w} g`, date: (d) => String(d ?? ''),
+    weight_with_unit: (w) => `${w} g`, date: strftime, time_tag: (v, f) => strftime(v, f),
     payment_type_svg_tag: () => '', inline_asset_content: () => '',
     highlight: (s) => s, camelcase: (s) => s, structured_data: () => '',
     metafield_tag: (m) => String(m ?? ''), metafield_text: (m) => String(m ?? ''),

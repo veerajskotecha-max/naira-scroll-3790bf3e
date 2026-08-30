@@ -6,6 +6,7 @@ import path from 'node:path';
 const URL_ = 'https://nc5eti-gp.myshopify.com/api/2025-07/graphql.json';
 const TOKEN = '0f6fd83502924ac437a5d19180bb08c3';
 const CACHE = path.join(import.meta.dirname, 'catalogue.json');
+const ARTICLES = path.join(import.meta.dirname, 'articles.json');
 
 const Q = `{
   products(first: 100) {
@@ -84,6 +85,24 @@ export async function loadCatalogue({ refresh = false } = {}) {
   const out = { products, collections, shop: { name: data.shop.name, description: data.shop.description, url: data.shop.primaryDomain.url, money_format: '₹{{amount}}', email: 'shopatnaira@gmail.com' } };
   fs.writeFileSync(CACHE, JSON.stringify(out));
   return out;
+}
+
+// Blog articles, reshaped into Liquid's `blog` drop. Read-only from a committed
+// cache: the Storefront token above has no `unauthenticated_read_content` scope,
+// so the blog was pulled through the Admin API instead (the query is recorded in
+// articles.json). Without this the blog template had no data at all and the
+// journal index rendered its empty state.
+export function loadArticles() {
+  const raw = JSON.parse(fs.readFileSync(ARTICLES, 'utf8'));
+  const articles = raw.articles.map((a) => ({
+    metafields: {}, tags: [], image: null, content: '', ...a,
+    url: `/blogs/${raw.blog.handle}/${a.handle}`,
+    excerpt_or_content: a.excerpt || a.content || '',
+  }));
+  return {
+    ...raw.blog, articles, articles_count: articles.length,
+    url: `/blogs/${raw.blog.handle}`, all_tags: [], tags: [], comments_enabled: false,
+  };
 }
 
 export const routes = {

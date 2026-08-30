@@ -12,11 +12,10 @@
     "main": {
       "type": "nf-journal",
       "settings": {
-        "kicker": "Naira Flore · The Journal",
+        "kicker": "NAIRA FLORE · THE JOURNAL",
         "heading": "Guides from the atelier",
         "intro": "How to size a ring at home, how to keep a gold finish from failing, what zirconia actually is, and how to put an Indo-Western look together. Written by the people who make the pieces.",
-        "read_label": "Read the guide",
-        "per_page": 12,
+        "read_label": "READ THE GUIDE",
         "empty_text": "The first guides from the atelier are being written. Check back shortly."
       }
     }

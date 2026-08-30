@@ -537,6 +537,103 @@
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
 
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
+.nf-mega {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
+
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
   display: flex;
@@ -1360,12 +1457,71 @@
                     class="nf-header__link"
                     
                     
-                  >HOME</a><div class="nf-header__item" ><a
+                  >HOME</a><div class="nf-header__item nf-header__item--mega" ><a
                       href="/collections/shop-all"
                       class="nf-header__link"
                       
-                    >SHOP</a><div class="nf-header__dropdown">
-                    <div class="nf-header__dropdown-inner"><a href="/collections/rings" class="nf-header__dropdown-link">Rings</a><a href="/collections/earrings" class="nf-header__dropdown-link">Earrings</a><a href="/collections/necklaces" class="nf-header__dropdown-link">Necklaces</a><a href="/collections/bracelets" class="nf-header__dropdown-link">Bracelets</a></div>
+                    >SHOP</a><div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">Shop by category</p>
+                          <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Rings</span>
+                              </a><a href="/collections/earrings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Earrings</span>
+                              </a><a href="/collections/necklaces" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Necklaces</span>
+                              </a><a href="/collections/bracelets" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Bracelets</span>
+                              </a></div>
+                        </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">THE EDITS</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?sort_by=created-descending" class="nf-mega__link">New Arrivals</a></li><li><a href="/collections/shop-all?sort_by=best-selling" class="nf-mega__link">Bestsellers</a></li><li><a href="/collections/shop-all?filter.v.price.lte=1500" class="nf-mega__link">Under ₹1,500</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Naira Petite</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">By Occasion</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">APPAREL</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                          </div></div>
+                    </div>
                   </div>
                 </div><a
                     href="/pages/gifting"
@@ -1384,11 +1540,11 @@
                     
                   >CUSTOMISE</a></div>
       </div><a href="/" class="nf-header__logo" aria-label="Naira -- home"><img
-            src="/assets/nf-wordmark.png"
+            src="/assets/nf-naira-logo.svg"
             alt="Naira"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           ></a><div class="nf-header__right"><a
@@ -1695,15 +1851,203 @@
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       <link rel="stylesheet" href="/assets/nf-tokens.css">
-<link rel="stylesheet" href="/assets/nf-content.css">
-
-<div class="nf-journal">
+<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-journal">
   <div class="nf-journal__wrap">
     <header class="nf-journal__masthead">
       <div class="nf-journal__wash" aria-hidden="true"></div>
-      <p class="nf-kicker">Naira Flore · The Journal</p>
+      <p class="nf-kicker">NAIRA FLORE · THE JOURNAL</p>
       <h1>Guides from the atelier</h1><p class="nf-journal__intro">How to size a ring at home, how to keep a gold finish from failing, what zirconia actually is, and how to put an Indo-Western look together. Written by the people who make the pieces.</p><span class="nf-journal__hairline" aria-hidden="true"></span>
-    </header><p class="nf-journal__empty">The first guides from the atelier are being written. Check back shortly.</p></div>
+    </header><ul class="nf-journal__list"><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/ring-size-guide-india">
+                <span class="nf-journal__index" aria-hidden="true">01</span>
+                <span><span class="nf-journal__meta">10 February 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">Ring Size Guide for India: How to Measure at Home</span><span class="nf-journal__excerpt">A paper strip, a ruler and two minutes. Here is how to measure your ring size accurately at home, plus the US-to-centimetre chart we use at the atelier.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-care-for-gold-plated-jewellery">
+                <span class="nf-journal__index" aria-hidden="true">02</span>
+                <span><span class="nf-journal__meta">4 March 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">How to Care for Gold Plated Jewellery So It Lasts</span><span class="nf-journal__excerpt">Plating does not simply wear off, it is stripped, usually by perfume, sweat and the wrong cloth. Here is the routine we give every Naira Petite client.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/zirconia-vs-diamond">
+                <span class="nf-journal__index" aria-hidden="true">03</span>
+                <span><span class="nf-journal__meta">18 April 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">Zirconia vs Diamond: What You Are Actually Buying</span><span class="nf-journal__excerpt">Zirconia is not a fake diamond, it is a different stone with different optics. Knowing where it wins makes it much easier to buy well.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-style-indo-western-outfits">
+                <span class="nf-journal__index" aria-hidden="true">04</span>
+                <span><span class="nf-journal__meta">22 May 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">How to Style Indo-Western Outfits Without Overthinking It</span><span class="nf-journal__excerpt">Indo-Western works when one element is doing the talking. Here is how to decide which one, and what to do with everything else.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/demi-fine-jewellery-explained">
+                <span class="nf-journal__index" aria-hidden="true">05</span>
+                <span><span class="nf-journal__meta">15 June 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">Demi-Fine Jewellery Explained: Between Costume and Fine</span><span class="nf-journal__excerpt">Demi-fine is the category most people are actually shopping for without having a word for it. Here is what defines it, and what to check before you buy.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/anti-tarnish-jewellery-guide">
+                <span class="nf-journal__index" aria-hidden="true">06</span>
+                <span><span class="nf-journal__meta">8 April 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">Anti-Tarnish Jewellery: What It Actually Means</span><span class="nf-journal__excerpt">Half the jewellery sold as anti-tarnish in India is flash-plated brass with a marketing line. Here is how the seal actually works and how to test a claim before you pay for it.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/american-diamond-vs-cubic-zirconia-vs-moissanite">
+                <span class="nf-journal__index" aria-hidden="true">07</span>
+                <span><span class="nf-journal__meta">22 April 2026<span aria-hidden="true">·</span>7 min read</span>
+                  <span class="nf-journal__title">American Diamond vs Cubic Zirconia vs Moissanite</span><span class="nf-journal__excerpt">American diamond and cubic zirconia are the same stone under two names. Moissanite is not. Here is what actually separates them, and which one to buy for what.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/best-demi-fine-jewellery-brands-india">
+                <span class="nf-journal__index" aria-hidden="true">08</span>
+                <span><span class="nf-journal__meta">6 May 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">How to Judge a Demi-Fine Jewellery Brand in India</span><span class="nf-journal__excerpt">Every brand now calls itself demi-fine. Six checks separate the ones building real jewellery from the ones re-labelling costume stock.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/everyday-dainty-jewellery-styling">
+                <span class="nf-journal__index" aria-hidden="true">09</span>
+                <span><span class="nf-journal__meta">20 May 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">Styling Dainty Jewellery for Everyday and Office Wear</span><span class="nf-journal__excerpt">Three pieces, one focal point, and a rule about chain length. The whole of everyday jewellery styling fits on a postcard.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-clean-artificial-jewellery-at-home">
+                <span class="nf-journal__index" aria-hidden="true">10</span>
+                <span><span class="nf-journal__meta">2 April 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">How to Clean Artificial Jewellery at Home Without Ruining It</span><span class="nf-journal__excerpt">Toothpaste, baking soda and lemon are the three most recommended cleaning methods online, and all three strip plating. Here is what actually works.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/gold-plated-vs-gold-filled-vs-solid-gold">
+                <span class="nf-journal__index" aria-hidden="true">11</span>
+                <span><span class="nf-journal__meta">14 April 2026<span aria-hidden="true">·</span>7 min read</span>
+                  <span class="nf-journal__title">Gold Plated vs Gold Filled vs Solid Gold: What You Are Paying For</span><span class="nf-journal__excerpt">Four terms, wildly different products, and almost no labelling discipline in the Indian market. Here is how to tell them apart before you pay.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-choose-earrings-for-face-shape">
+                <span class="nf-journal__index" aria-hidden="true">12</span>
+                <span><span class="nf-journal__meta">22 April 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">How to Choose Earrings for Your Face Shape</span><span class="nf-journal__excerpt">Face-shape advice is usually stated as law. It is really one principle applied five ways: contrast the shape you already have.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-layer-necklaces">
+                <span class="nf-journal__index" aria-hidden="true">13</span>
+                <span><span class="nf-journal__meta">6 May 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">How to Layer Necklaces So They Do Not Tangle</span><span class="nf-journal__excerpt">Layering is a geometry problem before it is a styling one. Get the spacing right and the look takes care of itself.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/bridal-jewellery-checklist-india">
+                <span class="nf-journal__index" aria-hidden="true">14</span>
+                <span><span class="nf-journal__meta">18 May 2026<span aria-hidden="true">·</span>8 min read</span>
+                  <span class="nf-journal__title">Bridal Jewellery Checklist for an Indian Wedding</span><span class="nf-journal__excerpt">Brides over-buy for the ceremony and under-plan for the four functions around it. Here is the checklist we work from at the atelier.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-store-jewellery-to-prevent-tarnish">
+                <span class="nf-journal__index" aria-hidden="true">15</span>
+                <span><span class="nf-journal__meta">28 May 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">How to Store Jewellery So It Does Not Tarnish</span><span class="nf-journal__excerpt">Your jewellery spends twenty hours a day in storage. That is where most of the damage happens, and almost nobody optimises for it.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/evil-eye-jewellery-meaning">
+                <span class="nf-journal__index" aria-hidden="true">16</span>
+                <span><span class="nf-journal__meta">4 June 2026<span aria-hidden="true">·</span>5 min read</span>
+                  <span class="nf-journal__title">Evil Eye Jewellery: Meaning, Placement and How to Wear It</span><span class="nf-journal__excerpt">One of the oldest protective symbols in the world, and one of the most misworn. A short, non-mystical guide.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/rose-gold-vs-yellow-gold-vs-white-gold">
+                <span class="nf-journal__index" aria-hidden="true">17</span>
+                <span><span class="nf-journal__meta">16 June 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">Rose Gold vs Yellow Gold vs White Gold: Which Suits You</span><span class="nf-journal__excerpt">The choice is usually made on trend and regretted on tone. A short guide to picking the metal you will still wear in three years.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-buy-jewellery-online-in-india">
+                <span class="nf-journal__index" aria-hidden="true">18</span>
+                <span><span class="nf-journal__meta">26 June 2026<span aria-hidden="true">·</span>7 min read</span>
+                  <span class="nf-journal__title">How to Buy Jewellery Online in India Without Getting Burned</span><span class="nf-journal__excerpt">Product photography has improved far faster than product quality. Here is what to ask before you pay, and what the answers tell you.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li><li>
+            <article class="nf-journal__entry">
+              <a href="/blogs/news/how-to-build-a-jewellery-capsule-wardrobe">
+                <span class="nf-journal__index" aria-hidden="true">19</span>
+                <span><span class="nf-journal__meta">8 July 2026<span aria-hidden="true">·</span>6 min read</span>
+                  <span class="nf-journal__title">How to Build a Jewellery Capsule You Actually Wear</span><span class="nf-journal__excerpt">Most jewellery boxes are full and still produce the same three pieces every morning. A capsule fixes the ratio.</span><span class="nf-journal__more">READ THE GUIDE</span>
+                </span>
+                <span class="nf-journal__arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </article>
+          </li></ul></div>
 </div>
 
 

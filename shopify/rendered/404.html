@@ -549,6 +549,103 @@
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
 
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
+.nf-mega {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
+
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
   display: flex;
@@ -1372,12 +1469,71 @@
                     class="nf-header__link"
                     
                     
-                  >HOME</a><div class="nf-header__item" ><a
+                  >HOME</a><div class="nf-header__item nf-header__item--mega" ><a
                       href="/collections/shop-all"
                       class="nf-header__link"
                       
-                    >SHOP</a><div class="nf-header__dropdown">
-                    <div class="nf-header__dropdown-inner"><a href="/collections/rings" class="nf-header__dropdown-link">Rings</a><a href="/collections/earrings" class="nf-header__dropdown-link">Earrings</a><a href="/collections/necklaces" class="nf-header__dropdown-link">Necklaces</a><a href="/collections/bracelets" class="nf-header__dropdown-link">Bracelets</a></div>
+                    >SHOP</a><div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">Shop by category</p>
+                          <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Rings</span>
+                              </a><a href="/collections/earrings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Earrings</span>
+                              </a><a href="/collections/necklaces" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Necklaces</span>
+                              </a><a href="/collections/bracelets" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Bracelets</span>
+                              </a></div>
+                        </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">THE EDITS</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?sort_by=created-descending" class="nf-mega__link">New Arrivals</a></li><li><a href="/collections/shop-all?sort_by=best-selling" class="nf-mega__link">Bestsellers</a></li><li><a href="/collections/shop-all?filter.v.price.lte=1500" class="nf-mega__link">Under ₹1,500</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Naira Petite</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">By Occasion</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">APPAREL</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                          </div></div>
+                    </div>
                   </div>
                 </div><a
                     href="/pages/gifting"
@@ -1396,11 +1552,11 @@
                     
                   >CUSTOMISE</a></div>
       </div><a href="/" class="nf-header__logo" aria-label="Naira -- home"><img
-            src="/assets/nf-wordmark.png"
+            src="/assets/nf-naira-logo.svg"
             alt="Naira"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           ></a><div class="nf-header__right"><a

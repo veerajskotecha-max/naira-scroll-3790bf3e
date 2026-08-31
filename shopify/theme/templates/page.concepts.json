@@ -12,25 +12,64 @@
     "concept_a": {
       "type": "nf-concepts",
       "settings": {
+        "variant": "a",
         "label": "CONCEPT A",
         "note": "THE IVORY ATELIER · BRAND-LIGHT · DRAG TO SPIN",
-        "placeholder_text": "Add the Concept A jewellery section directly below this divider."
+        "model_asset": "nf-model-ivory.webp",
+        "model_alt": "Chandbali Florale worn, Naira Flore demi-gold campaign",
+        "worn_label": "WORN · CHANDBALI FLORALE",
+        "eyebrow": "NAIRA FLORE · DEMI-GOLD",
+        "head1": "Turn it",
+        "head2": "in your hand.",
+        "piece_name": "Rivière Eternal Necklace",
+        "piece_materials": "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+        "piece_price": "₹1,799",
+        "piece_image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749",
+        "thumb_count": 39,
+        "active_index": 0,
+        "view_all_link": "/collections/jewellery"
       }
     },
     "concept_b": {
       "type": "nf-concepts",
       "settings": {
+        "variant": "b",
         "label": "CONCEPT B",
         "note": "THE EMERALD JEWEL BOX · NIGHT VITRINE · DRAG TO SPIN",
-        "placeholder_text": "Add the Concept B jewellery section directly below this divider."
+        "model_asset": "nf-model-emerald.webp",
+        "model_alt": "Pressed Petal Drops worn, Naira Flore demi-gold campaign",
+        "worn_label": "WORN · PRESSED PETAL DROPS",
+        "eyebrow": "THE JEWEL BOX · DEMI-GOLD",
+        "head1": "Spin it toward",
+        "head2": "the light.",
+        "piece_name": "Bold Nocturne Chain",
+        "piece_materials": "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+        "piece_price": "₹2,449",
+        "piece_image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099",
+        "thumb_count": 39,
+        "active_index": 2,
+        "view_all_link": "/collections/jewellery"
       }
     },
     "concept_c": {
       "type": "nf-concepts",
       "settings": {
+        "variant": "c",
         "label": "CONCEPT C",
         "note": "GOLDEN HOUR · TERRACOTTA ARCHES · DRAG TO SPIN",
-        "placeholder_text": "Add the Concept C jewellery section directly below this divider."
+        "model_asset": "nf-model-terracotta.webp",
+        "model_alt": "Marigold Signet Ring worn, Naira Flore demi-gold campaign",
+        "worn_label": "WORN · MARIGOLD SIGNET",
+        "eyebrow": "THE COURTYARD · DEMI-GOLD",
+        "head1": "Gold, turned",
+        "head2": "in the sun.",
+        "piece_name": "Rivière Eternal Necklace",
+        "piece_materials": "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+        "piece_price": "₹1,799",
+        "piece_image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749",
+        "thumb_count": 39,
+        "active_index": 0,
+        "view_all_link": "/collections/jewellery"
       }
     }
   },

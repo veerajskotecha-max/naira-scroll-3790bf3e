@@ -352,43 +352,400 @@
     <script src="/assets/nf-chrome.js" defer="defer"></script>
   <style>
 
-.nf-mfy__reels {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+/* ── scoped preflight: the React page is Tailwind-reset, the theme is not ── */
+/* :where() keeps the reset at (0,1,0) so the component rules below, which
+   are also (0,1,0) but come later, win on source order. :is() would raise it
+   to (0,1,1) and silently beat every font-size/margin set further down. */
+.nf-cu, .nf-cu *, .nf-cu *::before, .nf-cu *::after { box-sizing: border-box; }
+.nf-cu :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote) { margin: 0; }
+.nf-cu :where(h1, h2, h3, h4, h5, h6) { font-size: inherit; font-weight: inherit; letter-spacing: normal; }
+.nf-cu :where(img, svg, iframe) { display: block; vertical-align: middle; }
+.nf-cu :where(img) { max-width: 100%; height: auto; }
+.nf-cu :where(a) { color: inherit; text-decoration: none; }
+.nf-cu .nf-italic { font-style: italic; }
+
+/* eyebrows — plain ui-sans-serif in React, never the display face */
+.nf-cu-eyebrow {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
-@media (min-width: 768px) { .nf-mfy__reels { grid-template-columns: repeat(3, 1fr); } }
-.nf-mfy__reel { margin: 0; }
-.nf-mfy__reel iframe,
-.nf-mfy__reel img {
-  display: block;
+@media (min-width: 768px) { .nf-cu-eyebrow { font-size: 12px; } }
+.nf-cu-eyebrow--sage { color: hsl(160 15% 45%); margin-bottom: 12px; }
+.nf-cu-eyebrow--tight { margin-bottom: 8px; }
+
+/* shared call-to-action button */
+.nf-cu-cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--nf-font-display);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+@media (min-width: 768px) { .nf-cu-cta { font-size: 14px; } }
+.nf-cu-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+.nf-cu-cta--light { padding: 14px 40px; background-color: hsl(0 0% 100%); color: hsl(0 0% 15%); box-shadow: 0 4px 20px -4px hsl(0 0% 0% / 0.25); }
+.nf-cu-cta--sage  { padding: 16px 48px; background-color: hsl(143 14% 63%); color: hsl(0 0% 100%); }
+.nf-cu-cta--ink   { padding: 14px 40px; background-color: hsl(0 0% 12%); color: hsl(0 0% 100%); }
+
+/* ── 1. hero ─────────────────────────────────────────────────── */
+.nf-cu-hero {
+  position: relative;
   width: 100%;
-  aspect-ratio: 9 / 14;
-  border: 0;
-  object-fit: cover;
-  background-color: var(--nf-surface-raised);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100dvh - 98px);
+  min-height: calc(100dvh - 98px);
 }
-.nf-mfy__reel figcaption {
-  margin-top: 12px;
+@media (min-width: 768px)  { .nf-cu-hero { height: calc(100dvh - 108px); min-height: calc(100dvh - 108px); } }
+@media (min-width: 1024px) { .nf-cu-hero { height: calc(100dvh - 120px); min-height: calc(100dvh - 120px); } }
+.nf-cu-hero__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 70%;
+  filter: brightness(0.9) contrast(1.05);
+}
+@media (max-width: 767px) { .nf-cu-hero__bg { background-position: center 60%; } }
+.nf-cu-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, hsl(0 0% 0% / 0.25), hsl(0 0% 0% / 0.3));
+}
+.nf-cu-hero__inner {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 24px;
+}
+@media (min-width: 768px)  { .nf-cu-hero__inner { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-hero__inner { padding-inline: 80px; } }
+.nf-cu-hero__panel {
+  max-width: 680px;
   text-align: center;
+  padding: 32px 24px;
+  background-color: hsl(0 0% 100% / 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid hsl(0 0% 100% / 0.12);
+}
+@media (min-width: 768px)  { .nf-cu-hero__panel { padding: 48px; } }
+@media (min-width: 1024px) { .nf-cu-hero__panel { padding: 56px 64px; } }
+.nf-cu-hero__eyebrow { letter-spacing: 0.2em; margin-bottom: 16px; color: hsl(30 30% 82%); }
+.nf-cu-hero__h1 {
+  font-family: var(--nf-font-display);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: hsl(0 0% 98%);
+}
+@media (min-width: 768px)  { .nf-cu-hero__h1 { font-size: 42px; } }
+@media (min-width: 1024px) { .nf-cu-hero__h1 { font-size: 54px; } }
+.nf-cu-hero__h1 .nf-italic { color: hsl(16 50% 76%); }
+.nf-cu-hero__lede {
   font-family: var(--nf-font-display);
   font-size: 14px;
-  color: var(--nf-mk-body);
+  line-height: 1.625;
+  max-width: 480px;
+  margin: 0 auto 32px;
+  color: hsl(0 0% 82%);
 }
-.nf-mfy__reel figcaption a { color: inherit; text-decoration: none; }
-.nf-mfy__reel figcaption a:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 768px)  { .nf-cu-hero__lede { font-size: 16px; } }
+@media (min-width: 1024px) { .nf-cu-hero__lede { font-size: 17px; } }
+
+/* ── 2. steps ────────────────────────────────────────────────── */
+.nf-cu-steps {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 48px;
+  background-color: hsl(30 20% 96%);
+}
+@media (min-width: 768px)  { .nf-cu-steps { padding-block: 64px; } }
+@media (min-width: 1024px) { .nf-cu-steps { padding-block: 80px; } }
+.nf-cu-steps__wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 768px)  { .nf-cu-steps__wrap { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-steps__wrap { padding-inline: 64px; } }
+.nf-cu-steps__head { text-align: center; margin-bottom: 40px; }
+@media (min-width: 768px) { .nf-cu-steps__head { margin-bottom: 56px; } }
+.nf-cu-steps__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-cu-steps__h2 { font-size: 40px; } }
+@media (min-width: 1024px) { .nf-cu-steps__h2 { font-size: 50px; } }
+.nf-cu-steps__h2 .nf-italic { color: hsl(16 50% 72%); }
+
+.nf-cu-rule { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
+.nf-cu-rule--tight { margin-top: 12px; }
+.nf-cu-rule__line { width: 48px; height: 1px; background-color: hsl(160 12% 72%); }
+@media (min-width: 768px) { .nf-cu-rule__line { width: 64px; } }
+.nf-cu-rule__dot { width: 8px; height: 8px; background-color: hsl(160 15% 55%); }
+.nf-cu-rule__dot--round { border-radius: 9999px; }
+
+.nf-cu-steps__list { display: flex; flex-direction: column; gap: 40px; }
+@media (min-width: 768px)  { .nf-cu-steps__list { gap: 56px; } }
+@media (min-width: 1024px) { .nf-cu-steps__list { gap: 64px; } }
+.nf-cu-step__row { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+@media (min-width: 768px) {
+  .nf-cu-step__row { flex-direction: row; gap: 48px; }
+  .nf-cu-step__row--flip { flex-direction: row-reverse; }
+}
+@media (min-width: 1024px) { .nf-cu-step__row { gap: 80px; } }
+.nf-cu-step__media { width: 100%; }
+@media (min-width: 768px) { .nf-cu-step__media { width: 50%; } }
+.nf-cu-step__frame { overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.nf-cu-step__frame img { width: 100%; height: auto; object-fit: contain; transition: transform 0.7s; }
+.nf-cu-step__frame img:hover { transform: scale(1.05); }
+.nf-cu-step__copy {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 768px) { .nf-cu-step__copy { width: 50%; align-items: flex-start; text-align: left; } }
+.nf-cu-step__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background-color: hsl(160 12% 91%);
+  color: hsl(160 15% 42%);
+}
+.nf-cu-step__n {
+  font-family: var(--nf-font-display);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: hsl(160 15% 45%);
+}
+.nf-cu-step__h3 {
+  font-family: var(--nf-font-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-cu-step__h3 { font-size: 30px; } }
+@media (min-width: 1024px) { .nf-cu-step__h3 { font-size: 34px; } }
+.nf-cu-step__text {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 440px;
+  color: hsl(0 0% 28%);
+}
+@media (min-width: 768px) { .nf-cu-step__text { font-size: 16px; } }
+.nf-cu-step__joint { display: flex; justify-content: center; margin-top: 40px; }
+@media (min-width: 768px) { .nf-cu-step__joint { margin-top: 56px; } }
+.nf-cu-step__stem { width: 1px; height: 32px; background-color: hsl(160 12% 80%); }
+@media (min-width: 768px) { .nf-cu-step__stem { height: 40px; } }
 
 @media (prefers-reduced-motion: no-preference) {
-  .nf-mfy .nf-reveal {
-    animation: nf-mfy-rise 0.7s var(--nf-ease-reveal) both;
+  .nf-cu-reveal {
+    animation: nf-cu-rise 0.7s ease-out both;
     animation-timeline: view();
-    animation-range: entry 0% cover 22%;
+    animation-range: entry 0% cover 12%;
   }
 }
-@keyframes nf-mfy-rise {
-  from { opacity: 0; transform: translateY(24px); }
+@keyframes nf-cu-rise {
+  from { opacity: 0; transform: translateY(30px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* ── 3. custom journey ───────────────────────────────────────── */
+.nf-cu-journey {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 32px;
+  background-color: hsl(30 25% 96%);
+  scroll-margin-top: 110px;
+}
+@media (min-width: 768px)  { .nf-cu-journey { padding-block: 44px; } }
+@media (min-width: 1024px) { .nf-cu-journey { padding-block: 60px; } }
+.nf-cu-journey__floral {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  background-size: 600px;
+  background-position: center;
+  background-repeat: repeat;
+  opacity: 0.5;
+}
+.nf-cu-journey__wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  text-align: center;
+}
+@media (min-width: 768px)  { .nf-cu-journey__wrap { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-journey__wrap { padding-inline: 80px; } }
+.nf-cu-journey__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  color: hsl(0 0% 10%);
+}
+@media (min-width: 768px)  { .nf-cu-journey__h2 { font-size: 36px; } }
+@media (min-width: 1024px) { .nf-cu-journey__h2 { font-size: 46px; } }
+.nf-cu-journey__h2 .nf-italic { color: hsl(16 45% 58%); }
+.nf-cu-journey__text {
+  font-family: var(--nf-font-display);
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto 24px;
+  color: hsl(0 0% 22%);
+}
+@media (min-width: 768px) { .nf-cu-journey__text { font-size: 16px; } }
+
+/* ── 4. customer stories ─────────────────────────────────────── */
+.nf-cu-stories {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 30px;
+  background-color: hsl(0 0% 100%);
+}
+@media (min-width: 768px)  { .nf-cu-stories { padding-block: 40px; } }
+@media (min-width: 1024px) { .nf-cu-stories { padding-block: 56px; } }
+.nf-cu-stories__wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 768px)  { .nf-cu-stories__wrap { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-stories__wrap { padding-inline: 80px; } }
+.nf-cu-stories__head { text-align: center; margin-bottom: 24px; }
+@media (min-width: 768px) { .nf-cu-stories__head { margin-bottom: 32px; } }
+.nf-cu-stories__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  color: hsl(0 0% 18%);
+}
+@media (min-width: 768px)  { .nf-cu-stories__h2 { font-size: 36px; } }
+@media (min-width: 1024px) { .nf-cu-stories__h2 { font-size: 46px; } }
+.nf-cu-stories__h2 .nf-italic { color: hsl(16 50% 72%); }
+.nf-cu-stories__lede {
+  font-family: var(--nf-font-display);
+  font-size: 14px;
+  line-height: 1.625;
+  max-width: 520px;
+  margin-inline: auto;
+  color: hsl(0 0% 48%);
+}
+@media (min-width: 768px) { .nf-cu-stories__lede { font-size: 16px; } }
+
+.nf-cu-reels { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+.nf-cu-reels::-webkit-scrollbar { display: none; }
+.nf-cu-reels > .nf-cu-reel { scroll-snap-align: start; flex: 0 0 80%; }
+@media (min-width: 768px) {
+  .nf-cu-reels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; overflow: visible; padding-bottom: 0; }
+  .nf-cu-reels > .nf-cu-reel { flex: initial; }
+}
+@media (min-width: 1024px) { .nf-cu-reels { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
+.nf-cu-reel {
+  position: relative;
+  border-radius: 12px; /* rounded-xl */
+  overflow: hidden;
+  box-shadow: 0 4px 20px -6px hsl(0 0% 0% / 0.12);
+  aspect-ratio: 9 / 16;
+  background-color: hsl(0 0% 8%);
+}
+.nf-cu-reel iframe, .nf-cu-reel > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: inherit;
+  object-fit: cover;
+}
+.nf-cu-reel__cap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to top, hsl(0 0% 0% / 0.5), transparent);
+}
+.nf-cu-reel__cap p {
+  font-family: var(--nf-font-display);
+  font-size: 13px;
+  line-height: 1.5;
+  color: hsl(0 0% 95%);
+}
+@media (min-width: 768px) { .nf-cu-reel__cap p { font-size: 14px; } }
+
+/* ── 5. FAQ CTA ──────────────────────────────────────────────── */
+.nf-cu-faq { width: 100%; padding-block: 64px; background-color: hsl(30 25% 96%); }
+@media (min-width: 768px)  { .nf-cu-faq { padding-block: 80px; } }
+@media (min-width: 1024px) { .nf-cu-faq { padding-block: 96px; } }
+.nf-cu-faq__wrap { max-width: 600px; margin-inline: auto; padding-inline: 24px; text-align: center; }
+.nf-cu-faq__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-cu-faq__h2 { font-size: 34px; } }
+@media (min-width: 1024px) { .nf-cu-faq__h2 { font-size: 42px; } }
+.nf-cu-faq__text {
+  font-family: var(--nf-font-display);
+  font-size: 14px;
+  line-height: 1.625;
+  margin-bottom: 32px;
+  color: hsl(0 0% 40%);
+}
+@media (min-width: 768px) { .nf-cu-faq__text { font-size: 16px; } }
 
 
 .nf-ab {
@@ -575,6 +932,103 @@
   transition: background-color 150ms ease;
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
+
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
+.nf-mega {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
 
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
@@ -1399,12 +1853,71 @@
                     class="nf-header__link"
                     
                     
-                  >HOME</a><div class="nf-header__item" ><a
+                  >HOME</a><div class="nf-header__item nf-header__item--mega" ><a
                       href="/collections/shop-all"
                       class="nf-header__link"
                       
-                    >SHOP</a><div class="nf-header__dropdown">
-                    <div class="nf-header__dropdown-inner"><a href="/collections/rings" class="nf-header__dropdown-link">Rings</a><a href="/collections/earrings" class="nf-header__dropdown-link">Earrings</a><a href="/collections/necklaces" class="nf-header__dropdown-link">Necklaces</a><a href="/collections/bracelets" class="nf-header__dropdown-link">Bracelets</a></div>
+                    >SHOP</a><div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">Shop by category</p>
+                          <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Rings</span>
+                              </a><a href="/collections/earrings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Earrings</span>
+                              </a><a href="/collections/necklaces" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Necklaces</span>
+                              </a><a href="/collections/bracelets" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Bracelets</span>
+                              </a></div>
+                        </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">THE EDITS</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?sort_by=created-descending" class="nf-mega__link">New Arrivals</a></li><li><a href="/collections/shop-all?sort_by=best-selling" class="nf-mega__link">Bestsellers</a></li><li><a href="/collections/shop-all?filter.v.price.lte=1500" class="nf-mega__link">Under ₹1,500</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Naira Petite</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">By Occasion</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">APPAREL</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                          </div></div>
+                    </div>
                   </div>
                 </div><a
                     href="/pages/gifting"
@@ -1423,11 +1936,11 @@
                     
                   >CUSTOMISE</a></div>
       </div><a href="/" class="nf-header__logo" aria-label="Naira -- home"><img
-            src="/assets/nf-wordmark.png"
+            src="/assets/nf-naira-logo.svg"
             alt="Naira"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           ></a><div class="nf-header__right"><a
@@ -1733,87 +2246,158 @@
 
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
-      <link rel="stylesheet" href="/assets/nf-tokens.css">
-<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-mk nf-mfy"><section class="nf-mfy__hero"><div class="nf-mfy__hero-bg" style="background-color: #F7F3EF;"></div><div class="nf-mfy__scrim" aria-hidden="true"></div>
-    <div class="nf-mfy__panel">
-      <p class="nf-eyebrow">Customise</p>
-      <h1>Design Your Dream<br>Outfit With <span class="nf-italic">Naira</span></h1>
-      <p>Over 2,500 custom pieces handcrafted for brides, celebrations, and once-in-a-lifetime moments.</p><a class="nf-btn" href="#nf-custom-journey">Begin Your Design</a></div>
-  </section><section class="nf-mk__section nf-mk__pad" style="background-color: var(--nf-mk-white);">
-      <div class="nf-mk__wrap"><div style="text-align: center; margin-bottom: 48px;">
-            <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">The process</p>
-            <h2 class="nf-mk__h2" style="margin-bottom: 0;">From idea to <span class="nf-italic">doorstep</span></h2>
-          </div><div style="display: flex; flex-direction: column; gap: 64px;"><div class="nf-split nf-reveal" >
-              <div class="nf-split__copy">
-                <span class="nf-steps__n">01</span>
-                <h2 style="font-size: 26px;">Send Us Your Dream Outfit</h2>
-                <p>Share your inspiration with us on WhatsApp: a photo, a sketch, or even just an idea. We&#39;ll take it from there and begin bringing your vision to life.</p>
-              </div></div><div class="nf-split nf-reveal nf-split--flip" >
-              <div class="nf-split__copy">
-                <span class="nf-steps__n">02</span>
-                <h2 style="font-size: 26px;">Explore Design Options</h2>
-                <p>Our team will send you design suggestions, colour palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin.</p>
-              </div></div><div class="nf-split nf-reveal" >
-              <div class="nf-split__copy">
-                <span class="nf-steps__n">03</span>
-                <h2 style="font-size: 26px;">Consultation Call</h2>
-                <p>We align on measurements, finishing details, and final design choices during a quick consultation to make sure everything is exactly how you want it.</p>
-              </div></div><div class="nf-split nf-reveal nf-split--flip" >
-              <div class="nf-split__copy">
-                <span class="nf-steps__n">04</span>
-                <h2 style="font-size: 26px;">Delivered To You</h2>
-                <p>Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep, ready to wear.</p>
+      <div class="nf-cu"><section class="nf-cu-hero">
+    <div class="nf-cu-hero__bg" style="background-image: url(/assets/nf-customize-hero.webp);"></div>
+    <div class="nf-cu-hero__scrim"></div>
+    <div class="nf-cu-hero__inner">
+      <div class="nf-cu-hero__panel">
+        <p class="nf-cu-eyebrow nf-cu-hero__eyebrow">Customise</p>
+        <h1 class="nf-cu-hero__h1">Design Your Dream<br>Outfit With <span class="nf-italic">Naira</span></h1>
+        <p class="nf-cu-hero__lede">Over 2,500 custom pieces handcrafted for brides, celebrations, and once-in-a-lifetime moments.</p><a class="nf-cu-cta nf-cu-cta--light" href="#custom-journey">Begin Your Design</a></div>
+    </div>
+  </section><section class="nf-cu-steps">
+      <div class="nf-cu-steps__wrap">
+        <div class="nf-cu-steps__head">
+          <p class="nf-cu-eyebrow nf-cu-eyebrow--sage">How it works</p>
+          <h2 class="nf-cu-steps__h2">Your Journey to Custom <span class="nf-italic">Perfection</span></h2>
+          <div class="nf-cu-rule">
+            <div class="nf-cu-rule__line"></div>
+            <div class="nf-cu-rule__dot"></div>
+            <div class="nf-cu-rule__line"></div>
+          </div>
+        </div>
+
+        <div class="nf-cu-steps__list"><div >
+              <div class="nf-cu-step nf-cu-reveal">
+                <div class="nf-cu-step__row">
+                  <div class="nf-cu-step__media">
+                    <div class="nf-cu-step__frame"><img
+                          src="/assets/nf-step-01-dream.jpg"
+                          alt="Send Us Your Dream Outfit"
+                          loading="lazy"
+                          width="640"
+                          height="800"
+                        ></div>
+                  </div>
+                  <div class="nf-cu-step__copy">
+                    <div class="nf-cu-step__icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <span class="nf-cu-step__n">Step 01</span>
+                    <h3 class="nf-cu-step__h3">Send Us Your Dream Outfit</h3>
+                    <p class="nf-cu-step__text">Share your inspiration with us on WhatsApp: a photo, a sketch, or even just an idea. We&#39;ll take it from there and begin bringing your vision to life.</p>
+                  </div>
+                </div>
+              </div><div class="nf-cu-step__joint"><div class="nf-cu-step__stem"></div></div></div><div >
+              <div class="nf-cu-step nf-cu-reveal">
+                <div class="nf-cu-step__row nf-cu-step__row--flip">
+                  <div class="nf-cu-step__media">
+                    <div class="nf-cu-step__frame"><img
+                          src="/assets/nf-step-02-design.jpg"
+                          alt="Explore Design Options"
+                          loading="lazy"
+                          width="640"
+                          height="800"
+                        ></div>
+                  </div>
+                  <div class="nf-cu-step__copy">
+                    <div class="nf-cu-step__icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+                    <span class="nf-cu-step__n">Step 02</span>
+                    <h3 class="nf-cu-step__h3">Explore Design Options</h3>
+                    <p class="nf-cu-step__text">Our team will send you design suggestions, colour palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin.</p>
+                  </div>
+                </div>
+              </div><div class="nf-cu-step__joint"><div class="nf-cu-step__stem"></div></div></div><div >
+              <div class="nf-cu-step nf-cu-reveal">
+                <div class="nf-cu-step__row">
+                  <div class="nf-cu-step__media">
+                    <div class="nf-cu-step__frame"><img
+                          src="/assets/nf-step-03-consultation.jpg"
+                          alt="Consultation Call"
+                          loading="lazy"
+                          width="640"
+                          height="800"
+                        ></div>
+                  </div>
+                  <div class="nf-cu-step__copy">
+                    <div class="nf-cu-step__icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                    <span class="nf-cu-step__n">Step 03</span>
+                    <h3 class="nf-cu-step__h3">Consultation Call</h3>
+                    <p class="nf-cu-step__text">We align on measurements, finishing details, and final design choices during a quick consultation to make sure everything is exactly how you want it.</p>
+                  </div>
+                </div>
+              </div><div class="nf-cu-step__joint"><div class="nf-cu-step__stem"></div></div></div><div >
+              <div class="nf-cu-step nf-cu-reveal">
+                <div class="nf-cu-step__row nf-cu-step__row--flip">
+                  <div class="nf-cu-step__media">
+                    <div class="nf-cu-step__frame"><img
+                          src="/assets/nf-step-04-delivered.webp"
+                          alt="Delivered To You"
+                          loading="lazy"
+                          width="640"
+                          height="800"
+                        ></div>
+                  </div>
+                  <div class="nf-cu-step__copy">
+                    <div class="nf-cu-step__icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></div>
+                    <span class="nf-cu-step__n">Step 04</span>
+                    <h3 class="nf-cu-step__h3">Delivered To You</h3>
+                    <p class="nf-cu-step__text">Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep, ready to wear.</p>
+                  </div>
+                </div>
               </div></div></div>
       </div>
-    </section><section
-    id="nf-custom-journey"
-    class="nf-mk__section"
-    style="background-color: #F7F3EF; scroll-margin-top: 110px; padding-block: 32px;"
-  ><div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center; padding-block: 28px;">
-      <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">Get started</p>
-      <h2 class="nf-mk__h2" style="margin-bottom: 12px; color: hsl(0 0% 10%);">Start Your Custom <span class="nf-italic">Journey</span></h2>
-      <p class="nf-mk__lede" style="color: hsl(0 0% 22%); margin-bottom: 24px;">Ready to bring your outfit to life? Chat with our design team and we will shape it together.</p>
-      <a class="nf-btn" style="padding: 16px 48px;" href="https://wa.me/919561557935" target="_blank" rel="noopener noreferrer">
-        Chat on WhatsApp
-      </a>
+    </section><section id="custom-journey" class="nf-cu-journey"><div class="nf-cu-journey__floral" style="background-image: url(/assets/nf-background-flora.webp);"></div><div class="nf-cu-journey__wrap">
+      <p class="nf-cu-eyebrow nf-cu-eyebrow--sage nf-cu-eyebrow--tight">Get started</p>
+      <h2 class="nf-cu-journey__h2">Start Your Custom <span class="nf-italic">Journey</span></h2>
+      <p class="nf-cu-journey__text">Ready to bring your outfit to life? Chat with our design team and we will shape it together.</p>
+      <a class="nf-cu-cta nf-cu-cta--sage" href="https://wa.me/919561557935" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
     </div>
-  </section><section class="nf-mk__section" style="background-color: var(--nf-mk-white); padding-block: 30px;">
-      <div class="nf-mk__wrap">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">Customer stories</p>
-          <h2 class="nf-mk__h2" style="margin-bottom: 12px; color: hsl(0 0% 18%);">Where ideas become <span class="nf-italic">Outfits</span></h2>
+  </section><section class="nf-cu-stories">
+      <div class="nf-cu-stories__wrap">
+        <div class="nf-cu-stories__head">
+          <p class="nf-cu-eyebrow nf-cu-eyebrow--sage nf-cu-eyebrow--tight">Customer stories</p>
+          <h2 class="nf-cu-stories__h2">Where ideas become <span class="nf-italic">Outfits</span></h2>
+          <p class="nf-cu-stories__lede">See how each design comes to life, guided by our clients and crafted by Naira.</p>
+          <div class="nf-cu-rule nf-cu-rule--tight">
+            <div class="nf-cu-rule__line"></div>
+            <div class="nf-cu-rule__dot nf-cu-rule__dot--round"></div>
+            <div class="nf-cu-rule__line"></div>
+          </div>
         </div>
-        <div class="nf-mfy__reels"><figure class="nf-mfy__reel" ><iframe
+
+        <div class="nf-cu-reels"><div class="nf-cu-reel" ><iframe
                   src="https://www.instagram.com/p/DVGbqSIjIQ3/embed/"
                   title="Bride receiving her custom lehenga"
                   loading="lazy"
-                  allowtransparency="true"
                   allowfullscreen
                   scrolling="no"
                   frameborder="0"
-                ></iframe><figcaption><a href="https://www.instagram.com/p/DVGbqSIjIQ3/" target="_blank" rel="noopener noreferrer">Bride receiving her custom lehenga</a></figcaption></figure><figure class="nf-mfy__reel" ><iframe
+                ></iframe><div class="nf-cu-reel__cap">
+                  <p>Bride receiving her custom lehenga</p>
+                </div></div><div class="nf-cu-reel" ><iframe
                   src="https://www.instagram.com/reel/DSSQu51EjKS/embed/"
                   title="Hand embroidery in progress"
                   loading="lazy"
-                  allowtransparency="true"
                   allowfullscreen
                   scrolling="no"
                   frameborder="0"
-                ></iframe><figcaption><a href="https://www.instagram.com/reel/DSSQu51EjKS/" target="_blank" rel="noopener noreferrer">Hand embroidery in progress</a></figcaption></figure><figure class="nf-mfy__reel" ><iframe
+                ></iframe><div class="nf-cu-reel__cap">
+                  <p>Hand embroidery in progress</p>
+                </div></div><div class="nf-cu-reel" ><iframe
                   src="https://www.instagram.com/p/DWHDChcDNOK/embed/"
                   title="Final outfit reveal"
                   loading="lazy"
-                  allowtransparency="true"
                   allowfullscreen
                   scrolling="no"
                   frameborder="0"
-                ></iframe><figcaption><a href="https://www.instagram.com/p/DWHDChcDNOK/" target="_blank" rel="noopener noreferrer">Final outfit reveal</a></figcaption></figure></div>
+                ></iframe><div class="nf-cu-reel__cap">
+                  <p>Final outfit reveal</p>
+                </div></div></div>
       </div>
-    </section><section class="nf-mk__section" style="background-color: #F7F3EF; padding-block: 64px;">
-      <div style="max-width: 600px; margin: 0 auto; padding-inline: 24px; text-align: center;">
-        <h2 class="nf-mk__h2" style="font-size: 26px; margin-bottom: 16px; color: var(--nf-doc-heading);">Have Questions?</h2>
-        <p class="nf-mk__lede" style="color: var(--nf-doc-muted); margin-bottom: 32px;">Find answers on customisation, shipping and returns in our FAQ section.</p>
-        <a class="nf-btn nf-btn--ink" style="padding: 14px 40px;" href="/pages/faqs">View FAQs</a>
+    </section><section class="nf-cu-faq">
+      <div class="nf-cu-faq__wrap">
+        <h2 class="nf-cu-faq__h2">Have Questions?</h2>
+        <p class="nf-cu-faq__text">Find answers on customisation, shipping and returns in our FAQ section.</p>
+        <a class="nf-cu-cta nf-cu-cta--ink" href="/pages/faqs">View FAQs</a>
       </div>
     </section></div>
 

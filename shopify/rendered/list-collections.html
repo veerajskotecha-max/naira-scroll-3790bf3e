@@ -352,15 +352,15 @@
     <script src="/assets/nf-chrome.js" defer="defer"></script>
   <style>
 
-.nf-coll__pager { display: flex; justify-content: center; align-items: center; gap: 1.25rem; padding: 0 1rem 3rem; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-18); text-transform: uppercase; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__pager { display: flex; justify-content: center; align-items: center; gap: 20px; padding: 0 16px 48px; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-18); text-transform: uppercase; color: rgb(var(--nf-ink-rgb) / .6); }
 .nf-coll__pager a { color: var(--nf-ink); text-decoration: none; border-bottom: 1px solid var(--nf-gold-deep); padding-bottom: 2px; }
 .nf-coll__pager a:hover { color: var(--nf-gold-deep); }
 
 .nf-coll__hero { position: relative; overflow: hidden; background-color: var(--nf-ivory); }
 .nf-coll__pattern { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: multiply; background-size: 160% auto; }
-.nf-coll__head { position: relative; max-width: 72rem; margin-inline: auto; padding: 1.5rem 1rem; }
-@media (min-width: 640px) { .nf-coll__head { padding-inline: 1.5rem; } }
-@media (min-width: 768px) { .nf-coll__head { padding-top: 2.5rem; } }
+.nf-coll__head { position: relative; max-width: 1152px; margin-inline: auto; padding: 24px 16px; }
+@media (min-width: 640px) { .nf-coll__head { padding-inline: 24px; } }
+@media (min-width: 768px) { .nf-coll__head { padding-top: 40px; } }
 
 .nf-coll__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
 /* React's hero h1 uses a LOCAL style object also literally named "velista"
@@ -372,23 +372,23 @@
    this opts the hero heading back out, same pattern as its own `small`
    rule (font-family: inherit !important). Loads after nf-base.css, so
    source order lets this !important win. */
-.nf-coll__title { margin: .75rem 0 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
+.nf-coll__title { margin: 12px 0 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 30px; line-height: 1.05; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-coll__title { font-size: 48px; } }
-.nf-coll__lede { margin: .75rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__lede { margin: 12px 0 0; max-width: 576px; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
 @media (min-width: 768px) { .nf-coll__lede { font-size: 16px; } }
 
-.nf-coll__filterbar { position: sticky; top: 94px; z-index: 20; background-color: var(--nf-ivory); padding-block: 1rem; }
-@media (min-width: 768px) { .nf-coll__filterbar { top: 100px; padding-block: 1.25rem; } }
+.nf-coll__filterbar { position: sticky; top: 94px; z-index: 20; background-color: var(--nf-ivory); padding-block: 16px; }
+@media (min-width: 768px) { .nf-coll__filterbar { top: 100px; padding-block: 20px; } }
 @media (min-width: 1024px) { .nf-coll__filterbar { top: 116px; } }
-.nf-coll__filters { display: flex; flex-wrap: nowrap; align-items: center; gap: .5rem; max-width: 72rem; margin-inline: auto; padding-inline: 1rem; overflow-x: auto; scrollbar-width: none; }
+.nf-coll__filters { display: flex; flex-wrap: nowrap; align-items: center; gap: 8px; max-width: 1152px; margin-inline: auto; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; }
 .nf-coll__filters::-webkit-scrollbar { display: none; }
-@media (min-width: 640px) { .nf-coll__filters { justify-content: center; overflow: visible; padding-inline: 1.5rem; } }
+@media (min-width: 640px) { .nf-coll__filters { justify-content: center; overflow: visible; padding-inline: 24px; } }
 
-.nf-coll__pill { display: inline-flex; line-height: 1.5;  align-items: baseline; gap: .375rem; flex-shrink: 0; min-height: 44px; padding-inline: 1rem; background: none; cursor: pointer;
+.nf-coll__pill { display: inline-flex; line-height: 1.5;  align-items: baseline; gap: 6px; flex-shrink: 0; min-height: 44px; padding-inline: 16px; background: none; cursor: pointer;
   border: 1px solid rgb(var(--nf-ink-rgb) / .25); color: rgb(var(--nf-ink-rgb) / .7);
   font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); transition: border-color .2s, background-color .2s, color .2s; }
 .nf-coll__pill > span { align-self: center; }
-@media (min-width: 640px) { .nf-coll__pill { padding-inline: 1.25rem; font-size: 11px; letter-spacing: var(--nf-track-30); } }
+@media (min-width: 640px) { .nf-coll__pill { padding-inline: 20px; font-size: 11px; letter-spacing: var(--nf-track-30); } }
 .nf-coll__pill:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
 .nf-coll__pill.is-active { border-color: var(--nf-ink); background-color: var(--nf-ink); color: var(--nf-ivory); }
 .nf-coll__count { font-size: 9px; letter-spacing: var(--nf-track-8); color: rgb(var(--nf-ink-rgb) / .4); }
@@ -396,40 +396,40 @@
 .nf-coll__pill.is-active .nf-coll__count { color: rgb(var(--nf-ivory-rgb) / .6); }
 
 /* ---- filter/sort toolbar (JewelFilterBar.tsx) ---- */
-.nf-coll__toolbar { max-width: 72rem; margin-inline: auto; padding-inline: 1rem; }
-@media (min-width: 640px) { .nf-coll__toolbar { padding-inline: 1.5rem; } }
-.nf-coll__toolbar-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: .75rem; }
-.nf-coll__filter-btn { display: inline-flex; line-height: 1.5;  align-items: center; gap: .5rem; min-height: 40px; padding-inline: .875rem; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none; cursor: pointer;
+.nf-coll__toolbar { max-width: 1152px; margin-inline: auto; padding-inline: 16px; }
+@media (min-width: 640px) { .nf-coll__toolbar { padding-inline: 24px; } }
+.nf-coll__toolbar-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: 12px; }
+.nf-coll__filter-btn { display: inline-flex; line-height: 1.5;  align-items: center; gap: 8px; min-height: 40px; padding-inline: 14px; border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none; cursor: pointer;
   color: rgb(var(--nf-ink-rgb) / .7); font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); }
-@media (min-width: 640px) { .nf-coll__filter-btn { padding-inline: 1rem; font-size: 10.5px; } }
+@media (min-width: 640px) { .nf-coll__filter-btn { padding-inline: 16px; font-size: 10.5px; } }
 .nf-coll__filter-btn:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
 .nf-coll__result-count { display: none; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-18); color: rgb(var(--nf-ink-rgb) / .45); }
 @media (min-width: 640px) { .nf-coll__result-count { display: inline; } }
 .nf-coll__sort-label { display: inline-flex; align-items: center; margin-left: auto; }
-.nf-coll__sort { min-height: 40px; line-height: 1.5;  border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: transparent; padding-inline: .75rem;
+.nf-coll__sort { min-height: 40px; line-height: 1.5;  border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: transparent; padding-inline: 12px;
   font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-14); color: rgb(var(--nf-ink-rgb) / .8); }
 @media (min-width: 640px) { .nf-coll__sort { font-size: 10.5px; } }
 .nf-coll__sort:focus-visible { border-color: var(--nf-ink); }
 
 .nf-coll__filter-panel[hidden] { display: none; }
-.nf-coll__filter-panel { margin-top: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .12); background-color: var(--nf-ivory); padding: 1rem; }
-@media (min-width: 640px) { .nf-coll__filter-panel { padding: 1.25rem; } }
-.nf-coll__filter-grid { display: grid; gap: 1.25rem; }
+.nf-coll__filter-panel { margin-top: 12px; border: 1px solid rgb(var(--nf-ink-rgb) / .12); background-color: var(--nf-ivory); padding: 16px; }
+@media (min-width: 640px) { .nf-coll__filter-panel { padding: 20px; } }
+.nf-coll__filter-grid { display: grid; gap: 20px; }
 @media (min-width: 640px) { .nf-coll__filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .nf-coll__filter-label { margin: 0; font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .5); }
-.nf-coll__range { margin-top: .75rem; width: 100%; accent-color: var(--nf-accent); }
-.nf-coll__range-value { margin: .25rem 0 0; font-family: var(--nf-font-label); font-size: 12px; color: rgb(var(--nf-ink-rgb) / .7); font-variant-numeric: tabular-nums; }
-.nf-coll__stock-label { display: inline-flex; align-items: center; gap: .5rem; margin-top: .75rem; min-height: 40px; cursor: pointer; font-size: 12px; color: rgb(var(--nf-ink-rgb) / .75); }
-.nf-coll__stock-check { width: 1rem; height: 1rem; accent-color: var(--nf-accent); }
+.nf-coll__range { margin-top: 12px; width: 100%; accent-color: var(--nf-accent); }
+.nf-coll__range-value { margin: 4px 0 0; font-family: var(--nf-font-label); font-size: 12px; color: rgb(var(--nf-ink-rgb) / .7); font-variant-numeric: tabular-nums; }
+.nf-coll__stock-label { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; min-height: 40px; cursor: pointer; font-size: 12px; color: rgb(var(--nf-ink-rgb) / .75); }
+.nf-coll__stock-check { width: 16px; height: 16px; accent-color: var(--nf-accent); }
 .nf-coll__filter-tags { grid-column: 1 / -1; }
-.nf-coll__tag-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
-.nf-coll__tag-chip { min-height: 36px; line-height: 1.5;  padding-inline: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .2); background: none; cursor: pointer;
+.nf-coll__tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.nf-coll__tag-chip { min-height: 36px; line-height: 1.5;  padding-inline: 12px; border: 1px solid rgb(var(--nf-ink-rgb) / .2); background: none; cursor: pointer;
   color: rgb(var(--nf-ink-rgb) / .65); font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-16); }
 .nf-coll__tag-chip:hover { border-color: rgb(var(--nf-ink-rgb) / .6); }
 
-.nf-coll__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 72rem; margin-inline: auto; padding: 2.5rem 1rem 4rem; }
-@media (min-width: 640px) { .nf-coll__grid { gap: 1.5rem; padding-inline: 1.5rem; } }
-@media (min-width: 1024px) { .nf-coll__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+.nf-coll__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 1152px; margin-inline: auto; padding: 40px 16px 64px; }
+@media (min-width: 640px) { .nf-coll__grid { gap: 24px; padding-inline: 24px; } }
+@media (min-width: 1024px) { .nf-coll__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
 .nf-coll__cell[hidden] { display: none; }
 
 /* ---- jewel card (JewelCard.tsx) ---- */
@@ -444,42 +444,42 @@
 .jc__front--necklace { object-position: center 38%; transform: scale(1.14); }
 .jc__back--earring { object-position: center 10%; transform: scale(1.5); }
 
-.jc__tag { position: absolute; left: .75rem; top: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .15); background-color: rgb(var(--nf-ivory-rgb) / .95);
-  padding: .25rem .625rem; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .6); }
-@media (min-width: 640px) { .jc__tag { left: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; letter-spacing: var(--nf-track-30); } }
+.jc__tag { position: absolute; left: 12px; top: 12px; border: 1px solid rgb(var(--nf-ink-rgb) / .15); background-color: rgb(var(--nf-ivory-rgb) / .95);
+  padding: 4px 10px; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .6); }
+@media (min-width: 640px) { .jc__tag { left: 16px; top: 16px; padding-inline: 12px; font-size: 9px; letter-spacing: var(--nf-track-30); } }
 .jc__tag--gold { border-color: var(--nf-gold); color: var(--nf-gold-shadow); }
 
-.jc__badge { position: absolute; right: .75rem; top: .75rem; padding: .25rem .625rem; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
-@media (min-width: 640px) { .jc__badge { right: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; } }
+.jc__badge { position: absolute; right: 12px; top: 12px; padding: 4px 10px; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
+@media (min-width: 640px) { .jc__badge { right: 16px; top: 16px; padding-inline: 12px; font-size: 9px; } }
 .jc__badge--soldout { background-color: var(--nf-ink); }
 .jc__badge--off { background-color: var(--nf-gold-deep); }
 
-.jc__heart { position: absolute; bottom: .75rem; right: .75rem; z-index: 10; display: flex; height: 2.25rem; width: 2.25rem; align-items: center; justify-content: center;
+.jc__heart { position: absolute; bottom: 12px; right: 12px; z-index: 10; display: flex; height: 36px; width: 36px; align-items: center; justify-content: center;
   border: 1px solid rgb(var(--nf-ink-rgb) / .15); background-color: rgb(var(--nf-ivory-rgb) / .92); color: rgb(var(--nf-ink-rgb) / .55); cursor: pointer; }
-@media (min-width: 640px) { .jc__heart { bottom: 1rem; right: 1rem; } }
+@media (min-width: 640px) { .jc__heart { bottom: 16px; right: 16px; } }
 .jc__heart:hover { border-color: rgb(var(--nf-ink-rgb) / .5); color: var(--nf-ink); }
 
-.jc__view { text-align: left; position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 8px); background-color: rgb(var(--nf-ivory-rgb) / .9); padding: .5rem 1.25rem;
+.jc__view { text-align: left; position: absolute; bottom: 16px; left: 50%; transform: translate(-50%, 8px); background-color: rgb(var(--nf-ivory-rgb) / .9); padding: 8px 20px;
   font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: var(--nf-ink); opacity: 0; transition: opacity .2s ease-out, transform .2s ease-out; }
 .jc__link:hover .jc__view { opacity: 1; transform: translate(-50%, 0); }
 
-.jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 1rem .25rem 0; text-align: center; }
-@media (min-width: 640px) { .jc__body { padding-top: 1.25rem; } }
+.jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 16px 4px 0; text-align: center; }
+@media (min-width: 640px) { .jc__body { padding-top: 20px; } }
 .jc__cat { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-32); color: var(--nf-gold-deep); }
 @media (min-width: 640px) { .jc__cat { font-size: 10px; letter-spacing: var(--nf-track-34); } }
 /* Same landmine as .nf-coll__title, this time from JewelCard.tsx's own
    local "velista" object -- card titles inherit the body sans in React
    too, so this opts the h3 back out of nf-base.css's forced Velista. */
-.jc__title { margin: .375rem 0 0; min-height: 2.2em; font-family: inherit !important; letter-spacing: normal !important; font-size: 18px; line-height: 1.25; color: var(--nf-ink);
+.jc__title { margin: 6px 0 0; min-height: 2.2em; font-family: inherit !important; letter-spacing: normal !important; font-size: 18px; line-height: 1.25; color: var(--nf-ink);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-@media (min-width: 640px) { .jc__title { margin-top: .5rem; font-size: 24px; } }
+@media (min-width: 640px) { .jc__title { margin-top: 8px; font-size: 24px; } }
 @media (min-width: 768px) { .jc__title { font-size: 26px; } }
 .jc__title a { color: inherit; text-decoration: none; }
 .jc__title a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-.jc__price { margin-top: .5rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: .25rem .5rem;
+.jc__price { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 4px 8px;
   font-family: var(--nf-font-label); font-variant-numeric: tabular-nums; }
-@media (min-width: 640px) { .jc__price { margin-top: .625rem; } }
+@media (min-width: 640px) { .jc__price { margin-top: 10px; } }
 .jc__price-now { font-size: 15px; font-weight: 500; line-height: 1; color: var(--nf-ink); }
 @media (min-width: 640px) { .jc__price-now { font-size: 17px; } }
 .jc__price-was { font-size: 12px; line-height: 1; color: rgb(var(--nf-ink-rgb) / .4); text-decoration: line-through; }
@@ -487,50 +487,64 @@
 .jc__price-off { font-size: 10px; line-height: 1; letter-spacing: var(--nf-track-14); color: var(--nf-gold-deep); }
 @media (min-width: 640px) { .jc__price-off { font-size: 11px; } }
 
-.jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: .5rem; padding-top: .75rem; }
+.jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; }
 .jc__addform, .jc__buyform { width: 100%; }
 .jc__add { display: inline-flex; line-height: 1.5;  min-height: 44px; width: 100%; align-items: center; justify-content: center; border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer;
   font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ivory); }
 @media (min-width: 640px) { .jc__add { font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
 .jc__add:hover { opacity: .9; }
 .jc__add:disabled { opacity: .6; cursor: default; }
-.jc__buy { display: inline-flex; line-height: 1.5;  min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
+.jc__buy { display: inline-flex; line-height: 1.5;  min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
   font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ink); }
-@media (min-width: 640px) { .jc__buy { padding-inline: 1.5rem; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
+@media (min-width: 640px) { .jc__buy { padding-inline: 24px; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
 .jc__buy:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
 
 /* An explicit display: wins over the UA stylesheet's [hidden]{display:none},
    so the empty state must opt out of its own display when hidden. */
 .nf-coll__empty[hidden] { display: none; }
-.nf-coll__empty { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 72rem; margin-inline: auto; padding: 4rem 1.5rem 6rem; }
+.nf-coll__empty { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 1152px; margin-inline: auto; padding: 64px 24px 96px; }
 .nf-coll__empty-title { margin: 0; font-family: var(--nf-font-display); font-size: 26px; line-height: 1.15; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-coll__empty-title { font-size: 32px; } }
-.nf-coll__empty-copy { margin: .75rem 0 0; max-width: 24rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
-.nf-coll__empty-cta { display: inline-flex; line-height: 1.5;  align-items: center; justify-content: center; margin-top: 1.75rem; min-height: 48px; padding-inline: 1.75rem;
+.nf-coll__empty-copy { margin: 12px 0 0; max-width: 384px; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-coll__empty-cta { display: inline-flex; line-height: 1.5;  align-items: center; justify-content: center; margin-top: 28px; min-height: 48px; padding-inline: 28px;
   border: 1px solid var(--nf-ink); background: none; color: var(--nf-ink); cursor: pointer; text-decoration: none;
   font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); transition: background-color .2s, color .2s; }
 .nf-coll__empty-cta:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
 
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+
+/* The React source styles both of these with a `velista` font-family whose
+   var(--font-cormorant) is defined nowhere, so the declaration is invalid at
+   computed-value time and the headings fall back to the app sans with normal
+   tracking. `.nf-display` would apply Velista and its own tracking, which is
+   the "display-font landmine" in docs/design-tokens.md -- the same override
+   nf-collection.liquid uses on .nf-coll__title and .jc__title. */
+.nf-cats__title { font-family: inherit !important; letter-spacing: normal !important; line-height: 1.5 !important; }
+.nf-cats__caption b { font-family: inherit; letter-spacing: normal !important; }
+
+
 /* ---- collapsed crawler nav + FAQ ---- */
-.nf-coll__linkout { max-width: 72rem; margin-inline: auto; padding: 0 1rem 1.5rem; }
-@media (min-width: 640px) { .nf-coll__linkout { padding-inline: 1.5rem; } }
-.nf-coll__details { border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: 1.5rem; }
+/* px, not rem: layout/theme.liquid sets html { font-size: 62.5% } (10px root),
+   so a rem here would render at 62.5% of the ported Tailwind figure. */
+.nf-coll__linkout { max-width: 1152px; margin-inline: auto; padding: 0 16px 40px; }
+.nf-coll__linkout--faq { padding-bottom: 64px; }
+@media (min-width: 640px) { .nf-coll__linkout { padding-inline: 24px; } }
+.nf-coll__details { border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: 24px; }
 .nf-coll__summary { display: flex; min-height: 44px; cursor: pointer; list-style: none; align-items: center;
   font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-28); color: rgb(var(--nf-ink-rgb) / .55); }
 .nf-coll__summary::-webkit-details-marker { display: none; }
 .nf-coll__summary:hover { color: var(--nf-ink); }
-.nf-coll__linknav { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .625rem; }
-.nf-coll__linkchip { border: 1px solid rgb(var(--nf-ink-rgb) / .2); padding: .5rem .875rem; font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-20);
+.nf-coll__linknav { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+.nf-coll__linkchip { border: 1px solid rgb(var(--nf-ink-rgb) / .2); padding: 8px 14px; font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-20);
   color: rgb(var(--nf-ink-rgb) / .6); text-decoration: none; }
 .nf-coll__linkchip:hover { border-color: var(--nf-ink); color: var(--nf-ink); }
-.nf-coll__faqs { margin: 1.5rem 0 0; max-width: 48rem; }
-.nf-coll__faqs > div + div { margin-top: 1.5rem; }
+.nf-coll__faqs { margin: 24px 0 0; max-width: 768px; }
+.nf-coll__faqs > div + div { margin-top: 24px; }
 .nf-coll__faqs dt { font-family: var(--nf-font-label); font-size: 14px; letter-spacing: var(--nf-track-4); color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-coll__faqs dt { font-size: 16px; } }
-.nf-coll__faqs dd { margin: .5rem 0 0; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
+.nf-coll__faqs dd { margin: 8px 0 0; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
 @media (min-width: 768px) { .nf-coll__faqs dd { font-size: 15px; } }
-
-.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 
 .nf-ab {
@@ -717,6 +731,103 @@
   transition: background-color 150ms ease;
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
+
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
+.nf-mega {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
 
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
@@ -1541,12 +1652,71 @@
                     class="nf-header__link"
                     
                     
-                  >HOME</a><div class="nf-header__item" ><a
+                  >HOME</a><div class="nf-header__item nf-header__item--mega" ><a
                       href="/collections/shop-all"
                       class="nf-header__link"
                       
-                    >SHOP</a><div class="nf-header__dropdown">
-                    <div class="nf-header__dropdown-inner"><a href="/collections/rings" class="nf-header__dropdown-link">Rings</a><a href="/collections/earrings" class="nf-header__dropdown-link">Earrings</a><a href="/collections/necklaces" class="nf-header__dropdown-link">Necklaces</a><a href="/collections/bracelets" class="nf-header__dropdown-link">Bracelets</a></div>
+                    >SHOP</a><div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">Shop by category</p>
+                          <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Rings</span>
+                              </a><a href="/collections/earrings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Earrings</span>
+                              </a><a href="/collections/necklaces" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Necklaces</span>
+                              </a><a href="/collections/bracelets" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Bracelets</span>
+                              </a></div>
+                        </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">THE EDITS</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?sort_by=created-descending" class="nf-mega__link">New Arrivals</a></li><li><a href="/collections/shop-all?sort_by=best-selling" class="nf-mega__link">Bestsellers</a></li><li><a href="/collections/shop-all?filter.v.price.lte=1500" class="nf-mega__link">Under ₹1,500</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Naira Petite</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">By Occasion</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">APPAREL</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                          </div></div>
+                    </div>
                   </div>
                 </div><a
                     href="/pages/gifting"
@@ -1565,11 +1735,11 @@
                     
                   >CUSTOMISE</a></div>
       </div><a href="/" class="nf-header__logo" aria-label="Naira -- home"><img
-            src="/assets/nf-wordmark.png"
+            src="/assets/nf-naira-logo.svg"
             alt="Naira"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           ></a><div class="nf-header__right"><a
@@ -4032,35 +4202,7 @@
       <h2 class="nf-coll__empty-title">Nothing in this edit yet</h2>
       <p class="nf-coll__empty-copy">New pieces join Naira Petite regularly. The full collection is a step away.</p>
       <button type="button" class="nf-coll__empty-cta" data-nf-cat-reset>VIEW ALL PIECES</button>
-    </div><section class="nf-coll__linkout">
-    <details class="nf-coll__details">
-      <summary class="nf-coll__summary">SHOP BY COLLECTION</summary>
-      <nav class="nf-coll__linknav" aria-label="Jewellery collections"><a class="nf-coll__linkchip" href="/collections/rings">RINGS</a><a class="nf-coll__linkchip" href="/collections/earrings">EARRINGS</a><a class="nf-coll__linkchip" href="/collections/bracelets">BRACELETS</a><a class="nf-coll__linkchip" href="/collections/necklaces">NECKLACES</a><a class="nf-coll__linkchip" href="/collections/all">DEMI-FINE</a><a class="nf-coll__linkchip" href="/collections/all">ANTI-TARNISH</a><a class="nf-coll__linkchip" href="/collections/all">AMERICAN DIAMOND</a><a class="nf-coll__linkchip" href="/collections/all">18K GOLD PLATED</a><a class="nf-coll__linkchip" href="/collections/all">OFFICE &amp; EVERYDAY</a><a class="nf-coll__linkchip" href="/collections/all">ARTIFICIAL JEWELLERY</a><a class="nf-coll__linkchip" href="/collections/all">IMITATION JEWELLERY</a><a class="nf-coll__linkchip" href="/collections/all">GOLD PLATED</a><a class="nf-coll__linkchip" href="/collections/all">BRIDAL</a><a class="nf-coll__linkchip" href="/collections/all">COUPLE RINGS</a><a class="nf-coll__linkchip" href="/collections/all">ADJUSTABLE RINGS</a><a class="nf-coll__linkchip" href="/collections/all">ZIRCONIA EARRINGS</a><a class="nf-coll__linkchip" href="/collections/all">HOOP EARRINGS</a><a class="nf-coll__linkchip" href="/collections/all">STUDS</a><a class="nf-coll__linkchip" href="/collections/all">SOLITAIRE</a><a class="nf-coll__linkchip" href="/collections/all">COCKTAIL RINGS</a><a class="nf-coll__linkchip" href="/collections/all">LAYERED NECKLACES</a><a class="nf-coll__linkchip" href="/collections/all">PENDANT SETS</a><a class="nf-coll__linkchip" href="/collections/all">GOLD CHAINS</a><a class="nf-coll__linkchip" href="/collections/all">EVIL EYE</a><a class="nf-coll__linkchip" href="/collections/all">CHARM BRACELETS</a><a class="nf-coll__linkchip" href="/collections/all">ROSE GOLD</a><a class="nf-coll__linkchip" href="/collections/all">MINIMAL</a><a class="nf-coll__linkchip" href="/collections/all">FOR SAREE</a><a class="nf-coll__linkchip" href="/collections/all">FOR LEHENGA</a><a class="nf-coll__linkchip" href="/collections/all">GIFTING</a><a class="nf-coll__linkchip" href="/collections/all">PEARL</a></nav>
-    </details>
-  </section><section class="nf-coll__linkout">
-    <details class="nf-coll__details">
-      <summary class="nf-coll__summary">GOOD TO KNOW</summary>
-      <dl class="nf-coll__faqs">
-        <div>
-          <dt>What is demi-fine jewellery?</dt>
-          <dd>Demi-fine jewellery sits between costume and solid gold: real construction, prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base, with lab-grown zircone in place of diamonds.</dd>
-        </div>
-        <div>
-          <dt>Does Naira Flore jewellery tarnish?</dt>
-          <dd>Every piece is anti-tarnish sealed over an 18K gold or rhodium finish and built on a nickel-free base, so it will not green or dull under everyday wear in Indian humidity.</dd>
-        </div>
-        <div>
-          <dt>Is the jewellery waterproof?</dt>
-          <dd>It is waterproof-sealed for incidental contact such as rain or washing hands. Remove pieces before swimming, as chlorine and salt water degrade any plated finish over time.</dd>
-        </div>
-        <div>
-          <dt>What ring sizes do you make?</dt>
-          <dd>We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.</dd>
-        </div>
-      </dl>
-    </details>
-  </section>
-</section>
+    </div></section>
 
 <script>
   // Pills hide/show cells in place. No refetch, no scroll jump -- the React
@@ -4114,34 +4256,72 @@
 
 <section class="nf nf-cats">
   <div class="nf-cats__wrap">
-    <div class="nf-cats__head"><p class="nf-cats__eyebrow nf-label">SHOP BY CATEGORY</p><h3 class="nf-cats__title nf-display">
+    <div class="nf-cats__head"><p class="nf-cats__eyebrow nf-label">SHOP BY CATEGORY</p><h3 class="nf-cats__title">
         The <em class="nf-editorial">edit.</em>
       </h3>
     </div>
 
-    <div class="nf-cats__grid"><a class="nf-cats__card" href="/collections/all" >
-            <span class="nf-cats__media"><span class="nf-cats__ph" aria-hidden="true"></span><span class="nf-cats__frame" aria-hidden="true"></span>
+    <div class="nf-cats__grid"><a class="nf-cats__card" href="/collections/rings" >
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
-              <b class="nf-display">Rings</b><i class="nf-editorial">solitaires, halo & stack</i></span>
-          </a><a class="nf-cats__card" href="/collections/all" >
-            <span class="nf-cats__media"><span class="nf-cats__ph" aria-hidden="true"></span><span class="nf-cats__frame" aria-hidden="true"></span>
+              <b>Rings</b><i class="nf-editorial">solitaires, halo & stack</i><span class="nf-cats__count nf-label">13 PIECES &rarr;</span></span>
+          </a><a class="nf-cats__card" href="/collections/bracelets" >
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
-              <b class="nf-display">Bracelets</b><i class="nf-editorial">tennis, bow & baroque pearl</i></span>
-          </a><a class="nf-cats__card" href="/collections/all" >
-            <span class="nf-cats__media"><span class="nf-cats__ph" aria-hidden="true"></span><span class="nf-cats__frame" aria-hidden="true"></span>
+              <b>Bracelets</b><i class="nf-editorial">tennis, bow & baroque pearl</i><span class="nf-cats__count nf-label">9 PIECES &rarr;</span></span>
+          </a><a class="nf-cats__card" href="/collections/earrings" >
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
-              <b class="nf-display">Earrings</b><i class="nf-editorial">hoops & the studs, three ways</i></span>
-          </a><a class="nf-cats__card" href="/collections/all" >
-            <span class="nf-cats__media"><span class="nf-cats__ph" aria-hidden="true"></span><span class="nf-cats__frame" aria-hidden="true"></span>
+              <b>Earrings</b><i class="nf-editorial">hoops & the studs, three ways</i><span class="nf-cats__count nf-label">15 PIECES &rarr;</span></span>
+          </a><a class="nf-cats__card" href="/collections/necklaces" >
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
-              <b class="nf-display">Necklaces</b><i class="nf-editorial">lariats, chains & a cascade</i></span>
+              <b>Necklaces</b><i class="nf-editorial">lariats, chains & a cascade</i><span class="nf-cats__count nf-label">9 PIECES &rarr;</span></span>
           </a></div>
   </div>
 </section>
+
+
+
+<section class="nf nf-coll">
+  <section class="nf-coll__linkout">
+    <details class="nf-coll__details">
+      <summary class="nf-coll__summary">SHOP BY COLLECTION</summary>
+      <nav class="nf-coll__linknav" aria-label="Jewellery collections"><a class="nf-coll__linkchip" href="/collections/rings">RINGS</a><a class="nf-coll__linkchip" href="/collections/earrings">EARRINGS</a><a class="nf-coll__linkchip" href="/collections/bracelets">BRACELETS</a><a class="nf-coll__linkchip" href="/collections/necklaces">NECKLACES</a><a class="nf-coll__linkchip" href="/collections/all">DEMI-FINE</a><a class="nf-coll__linkchip" href="/collections/all">ANTI-TARNISH</a><a class="nf-coll__linkchip" href="/collections/all">AMERICAN DIAMOND</a><a class="nf-coll__linkchip" href="/collections/all">18K GOLD PLATED</a><a class="nf-coll__linkchip" href="/collections/all">OFFICE &amp; EVERYDAY</a><a class="nf-coll__linkchip" href="/collections/all">ARTIFICIAL JEWELLERY</a><a class="nf-coll__linkchip" href="/collections/all">IMITATION JEWELLERY</a><a class="nf-coll__linkchip" href="/collections/all">GOLD PLATED</a><a class="nf-coll__linkchip" href="/collections/all">BRIDAL</a><a class="nf-coll__linkchip" href="/collections/all">COUPLE RINGS</a><a class="nf-coll__linkchip" href="/collections/all">ADJUSTABLE RINGS</a><a class="nf-coll__linkchip" href="/collections/all">ZIRCONIA EARRINGS</a><a class="nf-coll__linkchip" href="/collections/all">HOOP EARRINGS</a><a class="nf-coll__linkchip" href="/collections/all">STUDS</a><a class="nf-coll__linkchip" href="/collections/all">SOLITAIRE</a><a class="nf-coll__linkchip" href="/collections/all">COCKTAIL RINGS</a><a class="nf-coll__linkchip" href="/collections/all">LAYERED NECKLACES</a><a class="nf-coll__linkchip" href="/collections/all">PENDANT SETS</a><a class="nf-coll__linkchip" href="/collections/all">GOLD CHAINS</a><a class="nf-coll__linkchip" href="/collections/all">EVIL EYE</a><a class="nf-coll__linkchip" href="/collections/all">CHARM BRACELETS</a><a class="nf-coll__linkchip" href="/collections/all">ROSE GOLD</a><a class="nf-coll__linkchip" href="/collections/all">MINIMAL</a><a class="nf-coll__linkchip" href="/collections/all">FOR SAREE</a><a class="nf-coll__linkchip" href="/collections/all">FOR LEHENGA</a><a class="nf-coll__linkchip" href="/collections/all">GIFTING</a><a class="nf-coll__linkchip" href="/collections/all">PEARL</a></nav>
+    </details>
+  </section>
+
+  <section class="nf-coll__linkout nf-coll__linkout--faq">
+    <details class="nf-coll__details">
+      <summary class="nf-coll__summary">GOOD TO KNOW</summary>
+      <dl class="nf-coll__faqs">
+        <div>
+          <dt>What is demi-fine jewellery?</dt>
+          <dd>Demi-fine jewellery sits between costume and solid gold: real construction, prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base, with lab-grown zircone in place of diamonds.</dd>
+        </div>
+        <div>
+          <dt>Does Naira Flore jewellery tarnish?</dt>
+          <dd>Every piece is anti-tarnish sealed over an 18K gold or rhodium finish and built on a nickel-free base, so it will not green or dull under everyday wear in Indian humidity.</dd>
+        </div>
+        <div>
+          <dt>Is the jewellery waterproof?</dt>
+          <dd>It is waterproof-sealed for incidental contact such as rain or washing hands. Remove pieces before swimming, as chlorine and salt water degrade any plated finish over time.</dd>
+        </div>
+        <div>
+          <dt>What ring sizes do you make?</dt>
+          <dd>We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.</dd>
+        </div>
+      </dl>
+    </details>
+  </section>
+</section>
+
+
+
 
 
     </main>

@@ -1,0 +1,111 @@
+{%- comment -%}
+  nf-collection-links -- the two collapsed blocks that close src/pages/Jewellery.tsx:
+  the internal-linking nav ("SHOP BY COLLECTION") and the FAQ ("GOOD TO KNOW").
+
+  They live in their own section because React renders JewelleryCategories
+  BETWEEN the product grid and these two blocks. nf-collection.liquid is one
+  section and nf-jewellery-categories.liquid is another, so the only way to
+  get React's order (grid, categories, links, FAQ) is for these two blocks to
+  be a third section the template can place after the categories strip.
+
+  Content is hardcoded, exactly as in React: the chip list mirrors allLandings
+  (categoryLandings + extraLandings) in src/data/seoContent.ts and
+  src/data/seoLandings.extra.ts, all 31 entries, and the four questions are
+  hubFaqs in src/pages/Jewellery.tsx.
+
+  A closed details element LOOKS invisible, but a direct probe of this exact
+  React page confirmed Chromium still lays its content out (computed display
+  stays flex/block, getBoundingClientRect is non-zero), so every one of these
+  labels is measured against React and the list has to be complete.
+
+  React links to /jewellery/collections/:slug SEO pages that have no theme
+  template; the 4 real Shopify category collections are the closest working
+  destination for those slugs, the rest fall back to the all-products
+  collection rather than 404.
+{%- endcomment -%}
+
+{%- liquid
+  assign landing_csv = 'rings|RINGS,earrings|EARRINGS,bracelets|BRACELETS,necklaces|NECKLACES,demi-fine-jewellery|DEMI-FINE,anti-tarnish-jewellery|ANTI-TARNISH,american-diamond-jewellery|AMERICAN DIAMOND,18k-gold-plated-jewellery|18K GOLD PLATED,office-wear-jewellery|OFFICE &amp; EVERYDAY,artificial-jewellery|ARTIFICIAL JEWELLERY,imitation-jewellery|IMITATION JEWELLERY,gold-plated-jewellery|GOLD PLATED,bridal-jewellery|BRIDAL,couple-rings|COUPLE RINGS,adjustable-rings|ADJUSTABLE RINGS,zirconia-earrings|ZIRCONIA EARRINGS,hoop-earrings|HOOP EARRINGS,stud-earrings|STUDS,solitaire-rings|SOLITAIRE,cocktail-rings|COCKTAIL RINGS,layered-necklaces|LAYERED NECKLACES,pendant-sets|PENDANT SETS,chain-for-women|GOLD CHAINS,evil-eye-bracelets|EVIL EYE,charm-bracelets|CHARM BRACELETS,rose-gold-jewellery|ROSE GOLD,minimal-jewellery|MINIMAL,jewellery-for-saree|FOR SAREE,jewellery-for-lehenga|FOR LEHENGA,jewellery-gifts|GIFTING,pearl-jewellery|PEARL'
+  assign landings = landing_csv | split: ','
+  assign core_cats = 'rings,earrings,bracelets,necklaces' | split: ','
+-%}
+
+<section class="nf nf-coll">
+  <section class="nf-coll__linkout">
+    <details class="nf-coll__details">
+      <summary class="nf-coll__summary">SHOP BY COLLECTION</summary>
+      <nav class="nf-coll__linknav" aria-label="Jewellery collections">
+        {%- for row in landings -%}
+          {%- assign lparts = row | split: '|' -%}
+          {%- assign lslug = lparts[0] -%}
+          {%- assign llabel = lparts[1] -%}
+          {%- assign lis_core = false -%}
+          {%- if core_cats contains lslug -%}{%- assign lis_core = true -%}{%- endif -%}
+          {%- assign lhref = routes.all_products_collection_url -%}
+          {%- if lis_core -%}
+            {%- assign lhref = routes.root_url | append: 'collections/' | append: lslug -%}
+          {%- endif -%}
+          <a class="nf-coll__linkchip" href="{{ lhref }}">{{ llabel }}</a>
+        {%- endfor -%}
+      </nav>
+    </details>
+  </section>
+
+  <section class="nf-coll__linkout nf-coll__linkout--faq">
+    <details class="nf-coll__details">
+      <summary class="nf-coll__summary">GOOD TO KNOW</summary>
+      <dl class="nf-coll__faqs">
+        <div>
+          <dt>What is demi-fine jewellery?</dt>
+          <dd>Demi-fine jewellery sits between costume and solid gold: real construction, prong-set stones, soldered joins, a thick 18K gold or rhodium finish over a hypoallergenic base, with lab-grown zircone in place of diamonds.</dd>
+        </div>
+        <div>
+          <dt>Does Naira Flore jewellery tarnish?</dt>
+          <dd>Every piece is anti-tarnish sealed over an 18K gold or rhodium finish and built on a nickel-free base, so it will not green or dull under everyday wear in Indian humidity.</dd>
+        </div>
+        <div>
+          <dt>Is the jewellery waterproof?</dt>
+          <dd>It is waterproof-sealed for incidental contact such as rain or washing hands. Remove pieces before swimming, as chlorine and salt water degrade any plated finish over time.</dd>
+        </div>
+        <div>
+          <dt>What ring sizes do you make?</dt>
+          <dd>We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.</dd>
+        </div>
+      </dl>
+    </details>
+  </section>
+</section>
+
+{% stylesheet %}
+/* ---- collapsed crawler nav + FAQ ---- */
+/* px, not rem: layout/theme.liquid sets html { font-size: 62.5% } (10px root),
+   so a rem here would render at 62.5% of the ported Tailwind figure. */
+.nf-coll__linkout { max-width: 1152px; margin-inline: auto; padding: 0 16px 40px; }
+.nf-coll__linkout--faq { padding-bottom: 64px; }
+@media (min-width: 640px) { .nf-coll__linkout { padding-inline: 24px; } }
+.nf-coll__details { border-top: 1px solid rgb(var(--nf-ink-rgb) / .1); padding-top: 24px; }
+.nf-coll__summary { display: flex; min-height: 44px; cursor: pointer; list-style: none; align-items: center;
+  font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-28); color: rgb(var(--nf-ink-rgb) / .55); }
+.nf-coll__summary::-webkit-details-marker { display: none; }
+.nf-coll__summary:hover { color: var(--nf-ink); }
+.nf-coll__linknav { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+.nf-coll__linkchip { border: 1px solid rgb(var(--nf-ink-rgb) / .2); padding: 8px 14px; font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-20);
+  color: rgb(var(--nf-ink-rgb) / .6); text-decoration: none; }
+.nf-coll__linkchip:hover { border-color: var(--nf-ink); color: var(--nf-ink); }
+.nf-coll__faqs { margin: 24px 0 0; max-width: 768px; }
+.nf-coll__faqs > div + div { margin-top: 24px; }
+.nf-coll__faqs dt { font-family: var(--nf-font-label); font-size: 14px; letter-spacing: var(--nf-track-4); color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-coll__faqs dt { font-size: 16px; } }
+.nf-coll__faqs dd { margin: 8px 0 0; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
+@media (min-width: 768px) { .nf-coll__faqs dd { font-size: 15px; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NF Collection links",
+  "tag": "section",
+  "class": "nf-section",
+  "settings": [],
+  "presets": [{ "name": "NF Collection links" }]
+}
+{% endschema %}

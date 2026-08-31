@@ -582,8 +582,6 @@
   max-height: 24dvh;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  /* rounded-2xl on the React wrapper; .nf-mk * zeroes radius, so re-state it */
-  border-radius: 16px;
   box-shadow: 0 8px 40px -8px rgb(0 0 0 / 0.15);
 }
 @media (min-width: 768px) { .nf-about__hero-media img { max-height: 32dvh; } }
@@ -641,7 +639,6 @@
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: 12px;
   box-shadow: 0 4px 24px -6px rgb(0 0 0 / 0.1);
 }
 .nf-timeline__copy { width: 100%; text-align: center; }
@@ -669,8 +666,11 @@
   margin-inline: auto;
 }
 @media (min-width: 768px) { .nf-timeline__copy p:not(.nf-timeline__label) { font-size: 15px; } }
+/* React caps an image row's paragraph at 440px on every breakpoint, not just
+   from lg -- only the margin flips to flush-left there. */
+.nf-timeline__has-media .nf-timeline__copy p { max-width: 440px; }
 @media (min-width: 1024px) {
-  .nf-timeline__has-media .nf-timeline__copy p { max-width: 440px; margin-inline: 0; }
+  .nf-timeline__has-media .nf-timeline__copy p { margin-inline: 0; }
   .nf-timeline__has-media.nf-timeline__row--flip .nf-timeline__copy p { margin-left: auto; margin-right: 0; }
 }
 .nf-timeline__label {
@@ -740,7 +740,6 @@
   width: 100%;
   height: auto;
   object-fit: cover;
-  border-radius: 12px;
   box-shadow: 0 6px 30px -8px rgb(0 0 0 / 0.12);
 }
 
@@ -759,8 +758,6 @@
 /* base.css gives every p a 1.6rem margin-block-start; Tailwind preflight
    gives React's none. */
 .nf-about .nf-mk__lede { margin: 0 auto; }
-/* React's About buttons are rounded-full; .nf-mk * zeroes radius. */
-.nf-about .nf-btn { border-radius: 999px; }
 /* AboutCTA's button is px-12 py-4, not the hero's px-10 py-3.5. */
 .nf-about__cta-btn { padding: 16px 48px; }
 /* AboutTimeline heading block is mb-14 md:mb-20. */

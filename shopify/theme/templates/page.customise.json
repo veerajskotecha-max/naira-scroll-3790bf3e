@@ -16,52 +16,57 @@
           "type": "step",
           "settings": {
             "title": "Send Us Your Dream Outfit",
-            "text": "Share your inspiration with us on WhatsApp: a photo, a sketch, or even just an idea. We'll take it from there and begin bringing your vision to life."
+            "text": "Share your inspiration with us on WhatsApp: a photo, a sketch, or even just an idea. We'll take it from there and begin bringing your vision to life.",
+            "icon": "message",
+            "image_asset": "nf-step-01-dream.jpg"
           }
         },
         "mfy_s2": {
           "type": "step",
           "settings": {
             "title": "Explore Design Options",
-            "text": "Our team will send you design suggestions, colour palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin."
+            "text": "Our team will send you design suggestions, colour palettes, and fabric options tailored to your idea, so you can see the possibilities before we begin.",
+            "icon": "palette",
+            "image_asset": "nf-step-02-design.jpg"
           }
         },
         "mfy_s3": {
           "type": "step",
           "settings": {
             "title": "Consultation Call",
-            "text": "We align on measurements, finishing details, and final design choices during a quick consultation to make sure everything is exactly how you want it."
+            "text": "We align on measurements, finishing details, and final design choices during a quick consultation to make sure everything is exactly how you want it.",
+            "icon": "phone",
+            "image_asset": "nf-step-03-consultation.jpg"
           }
         },
         "mfy_s4": {
           "type": "step",
           "settings": {
             "title": "Delivered To You",
-            "text": "Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep, ready to wear."
+            "text": "Your dream outfit is handcrafted with care, quality-checked to our standards, and delivered to your doorstep, ready to wear.",
+            "icon": "package",
+            "image_asset": "nf-step-04-delivered.webp"
           }
         },
         "mfy_r1": {
           "type": "reel",
           "settings": {
             "embed_url": "https://www.instagram.com/p/DVGbqSIjIQ3/embed/",
-            "caption": "Bride receiving her custom lehenga",
-            "link": "https://www.instagram.com/p/DVGbqSIjIQ3/"
+            "caption": "Bride receiving her custom lehenga"
           }
         },
         "mfy_r2": {
           "type": "reel",
           "settings": {
             "embed_url": "https://www.instagram.com/reel/DSSQu51EjKS/embed/",
-            "caption": "Hand embroidery in progress",
-            "link": "https://www.instagram.com/reel/DSSQu51EjKS/"
+            "caption": "Hand embroidery in progress"
           }
         },
         "mfy_r3": {
           "type": "reel",
           "settings": {
             "embed_url": "https://www.instagram.com/p/DWHDChcDNOK/embed/",
-            "caption": "Final outfit reveal",
-            "link": "https://www.instagram.com/p/DWHDChcDNOK/"
+            "caption": "Final outfit reveal"
           }
         }
       },
@@ -75,13 +80,14 @@
         "mfy_r3"
       ],
       "settings": {
-        "cream": "#F7F3EF",
+        "hero_image_asset": "nf-customize-hero.webp",
+        "floral_image_asset": "nf-background-flora.webp",
         "hero_eyebrow": "Customise",
         "hero_heading": "Design Your Dream<br>Outfit With <span class=\"nf-italic\">Naira</span>",
         "hero_text": "Over 2,500 custom pieces handcrafted for brides, celebrations, and once-in-a-lifetime moments.",
         "hero_button_label": "Begin Your Design",
-        "steps_eyebrow": "The process",
-        "steps_heading": "From idea to <span class=\"nf-italic\">doorstep</span>",
+        "steps_eyebrow": "How it works",
+        "steps_heading": "Your Journey to Custom <span class=\"nf-italic\">Perfection</span>",
         "journey_eyebrow": "Get started",
         "journey_heading": "Start Your Custom <span class=\"nf-italic\">Journey</span>",
         "journey_text": "Ready to bring your outfit to life? Chat with our design team and we will shape it together.",
@@ -89,6 +95,7 @@
         "journey_link": "https://wa.me/919561557935",
         "stories_eyebrow": "Customer stories",
         "stories_heading": "Where ideas become <span class=\"nf-italic\">Outfits</span>",
+        "stories_text": "See how each design comes to life, guided by our clients and crafted by Naira.",
         "show_faq_cta": true,
         "faq_heading": "Have Questions?",
         "faq_text": "Find answers on customisation, shipping and returns in our FAQ section.",

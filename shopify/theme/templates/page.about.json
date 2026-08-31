@@ -18,7 +18,8 @@
             "label": "The Beginning",
             "title": "A Dream Stitched with Passion",
             "text": "Naira grew from a deep love for Indian textiles and the belief that luxury craftsmanship should feel personal, yet accessible. What started as a small workshop with a handful of artisans has grown into a brand that celebrates the art of handmade fashion.",
-            "image_alt": "Early Naira workshop"
+            "image_alt": "Early Naira workshop",
+            "image_asset": "nf-about-dream-stitched.webp"
           }
         },
         "about_m2": {
@@ -43,7 +44,8 @@
             "label": "Customisation Vision",
             "title": "Every Piece, Uniquely Yours",
             "text": "We believe every person deserves an outfit that reflects their personality, their celebration, and their story. Over 2,500 custom pieces later, this belief only grows stronger.",
-            "image_alt": "Custom outfit creation process"
+            "image_alt": "Custom outfit creation process",
+            "image_asset": "nf-about-uniquely-yours.webp"
           }
         },
         "about_m5": {
@@ -52,7 +54,8 @@
             "label": "The Founders",
             "title": "A Family Legacy",
             "text": "Naira is the shared vision of a mother's lifelong passion for textiles and her son's ambition to bring that artistry to the world. Together, they blend generational wisdom with contemporary design sensibility.",
-            "image_alt": "Naira founders"
+            "image_alt": "Naira founders",
+            "image_asset": "nf-founder-portrait.webp"
           }
         },
         "about_p1": {
@@ -87,7 +90,8 @@
             "text": "Share a sketch, a Pinterest board, or simply describe your vision. Our designers translate your ideas into bespoke garments that are uniquely yours. From fabric selection to final fitting, personalisation is at the heart of everything we do.",
             "image_alt": "Fashion design sketch of a bridal outfit",
             "image_ratio": "4 / 5",
-            "anchor": "personalised"
+            "anchor": "personalised",
+            "image_asset": "nf-about-personalised.jpg"
           }
         },
         "about_s2": {
@@ -98,7 +102,8 @@
             "text": "Artisans bring each design to life through techniques refined over generations. Zardosi, threadwork, and fine detailing come together with precision, resulting in pieces that carry depth and character.",
             "image_alt": "Artisan hand-embroidering fabric",
             "image_ratio": "4 / 5",
-            "anchor": "handcrafted"
+            "anchor": "handcrafted",
+            "image_asset": "nf-craftsmanship-main.webp"
           }
         },
         "about_s3": {
@@ -109,7 +114,8 @@
             "text": "Floral elements define the visual language of Naira. Inspired by the gardens and natural landscapes of India, every embroidery pattern draws from the organic beauty of blossoms, leaves, and vines.",
             "image_alt": "Detailed floral embroidery on fabric",
             "image_ratio": "1 / 1",
-            "anchor": "floral"
+            "anchor": "floral",
+            "image_asset": "nf-about-uniquely-yours.webp"
           }
         }
       },

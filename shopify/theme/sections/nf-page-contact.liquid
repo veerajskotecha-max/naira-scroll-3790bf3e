@@ -12,9 +12,11 @@
 {{ 'nf-content.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  assign floral = section.settings.floral_image
-  if floral != blank
-    assign floral_url = floral | image_url: width: 600
+  # ContactUs tiles src/assets/floral-pattern-bg.webp behind three of its five
+  # bands; the picker is only an override.
+  assign floral_url = 'nf-floral-pattern-bg.webp' | asset_url
+  if section.settings.floral_image != blank
+    assign floral_url = section.settings.floral_image | image_url: width: 600
   endif
 -%}
 
@@ -26,10 +28,8 @@
     {%- endif -%}
     <div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center;">
       <p class="nf-eyebrow">{{ section.settings.hero_eyebrow | escape }}</p>
-      <h1 style="font-size: 32px; line-height: 1.15; color: var(--nf-mk-heading); margin-bottom: 24px;">
-        {{ section.settings.hero_heading }}
-      </h1>
-      <p class="nf-mk__lede" style="max-width: 560px;">{{ section.settings.hero_text | escape }}</p>
+      <h1 class="nf-contact__h1">{{ section.settings.hero_heading }}</h1>
+      <p class="nf-mk__lede nf-contact__hero-lede" style="max-width: 560px;">{{ section.settings.hero_text | escape }}</p>
     </div>
   </section>
 
@@ -74,7 +74,7 @@
       <div class="nf-mk__floral" style="background-image: url({{ floral_url }}); opacity: 0.05;"></div>
     {%- endif -%}
     <div class="nf-mk__wrap" style="position: relative; z-index: 1;">
-      <div style="text-align: center; margin-bottom: 40px;">
+      <div class="nf-contact__form-head">
         <p class="nf-eyebrow">{{ section.settings.form_eyebrow | escape }}</p>
         <h2 class="nf-mk__h2" style="margin-bottom: 0;">{{ section.settings.form_heading }}</h2>
       </div>
@@ -192,7 +192,7 @@
         <span class="nf-chip" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>
         </span>
-        <h2 class="nf-mk__h2" style="font-size: 26px;">{{ section.settings.whatsapp_heading }}</h2>
+        <h2 class="nf-mk__h2 nf-contact__band-h2">{{ section.settings.whatsapp_heading }}</h2>
         <p class="nf-mk__lede" style="max-width: 440px; margin-bottom: 32px;">{{ section.settings.whatsapp_text | escape }}</p>
         <a class="nf-btn" href="{{ section.settings.whatsapp_link }}" target="_blank" rel="noopener noreferrer">
           {{ section.settings.whatsapp_button | escape }}
@@ -211,7 +211,7 @@
         <span class="nf-chip nf-chip--blush" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4"/><path d="M12 17h.01"/></svg>
         </span>
-        <h2 class="nf-mk__h2" style="font-size: 26px;">{{ section.settings.faq_heading }}</h2>
+        <h2 class="nf-mk__h2 nf-contact__band-h2">{{ section.settings.faq_heading }}</h2>
         <p class="nf-mk__lede" style="max-width: 440px; margin-bottom: 32px;">{{ section.settings.faq_text | escape }}</p>
         <a class="nf-btn nf-btn--outline" href="{{ section.settings.faq_link }}">{{ section.settings.faq_button | escape }}</a>
       </div>

@@ -537,6 +537,103 @@
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
 
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
+.nf-mega {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
+
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
   display: flex;
@@ -1360,12 +1457,71 @@
                     class="nf-header__link"
                     
                     
-                  >HOME</a><div class="nf-header__item" ><a
+                  >HOME</a><div class="nf-header__item nf-header__item--mega" ><a
                       href="/collections/shop-all"
                       class="nf-header__link"
                       
-                    >SHOP</a><div class="nf-header__dropdown">
-                    <div class="nf-header__dropdown-inner"><a href="/collections/rings" class="nf-header__dropdown-link">Rings</a><a href="/collections/earrings" class="nf-header__dropdown-link">Earrings</a><a href="/collections/necklaces" class="nf-header__dropdown-link">Necklaces</a><a href="/collections/bracelets" class="nf-header__dropdown-link">Bracelets</a></div>
+                    >SHOP</a><div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">Shop by category</p>
+                          <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Rings</span>
+                              </a><a href="/collections/earrings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Earrings</span>
+                              </a><a href="/collections/necklaces" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Necklaces</span>
+                              </a><a href="/collections/bracelets" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Bracelets</span>
+                              </a></div>
+                        </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">THE EDITS</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?sort_by=created-descending" class="nf-mega__link">New Arrivals</a></li><li><a href="/collections/shop-all?sort_by=best-selling" class="nf-mega__link">Bestsellers</a></li><li><a href="/collections/shop-all?filter.v.price.lte=1500" class="nf-mega__link">Under ₹1,500</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Naira Petite</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">By Occasion</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">APPAREL</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                          </div></div>
+                    </div>
                   </div>
                 </div><a
                     href="/pages/gifting"
@@ -1384,11 +1540,11 @@
                     
                   >CUSTOMISE</a></div>
       </div><a href="/" class="nf-header__logo" aria-label="Naira -- home"><img
-            src="/assets/nf-wordmark.png"
+            src="/assets/nf-naira-logo.svg"
             alt="Naira"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           ></a><div class="nf-header__right"><a
@@ -1695,12 +1851,10 @@
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       <link rel="stylesheet" href="/assets/nf-tokens.css">
-<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-mk nf-contact"><section class="nf-mk__section nf-mk__pad" style="background-color: #FBF6F1;"><div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center;">
+<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-mk nf-contact"><section class="nf-mk__section nf-mk__pad" style="background-color: #FBF6F1;"><div class="nf-mk__floral" style="background-image: url(/assets/nf-floral-pattern-bg.webp); opacity: 0.06;"></div><div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center;">
       <p class="nf-eyebrow">Get in touch</p>
-      <h1 style="font-size: 32px; line-height: 1.15; color: var(--nf-mk-heading); margin-bottom: 24px;">
-        Contact <span class="nf-italic">Us</span>
-      </h1>
-      <p class="nf-mk__lede" style="max-width: 560px;">We&#39;d love to hear from you. Whether you have questions about our collections, custom designs, or orders, our team is here to help.</p>
+      <h1 class="nf-contact__h1">Contact <span class="nf-italic">Us</span></h1>
+      <p class="nf-mk__lede nf-contact__hero-lede" style="max-width: 560px;">We&#39;d love to hear from you. Whether you have questions about our collections, custom designs, or orders, our team is here to help.</p>
     </div>
   </section><section class="nf-mk__section nf-mk__pad" style="background-color: var(--nf-mk-white);">
       <div class="nf-mk__wrap">
@@ -1716,8 +1870,8 @@
     id="nf-contact-form"
     class="nf-mk__section nf-mk__pad"
     style="background-color: #FBF6F1; scroll-margin-top: 110px;"
-  ><div class="nf-mk__wrap" style="position: relative; z-index: 1;">
-      <div style="text-align: center; margin-bottom: 40px;">
+  ><div class="nf-mk__floral" style="background-image: url(/assets/nf-floral-pattern-bg.webp); opacity: 0.05;"></div><div class="nf-mk__wrap" style="position: relative; z-index: 1;">
+      <div class="nf-contact__form-head">
         <p class="nf-eyebrow">Send a message</p>
         <h2 class="nf-mk__h2" style="margin-bottom: 0;">We're Here to <span class="nf-italic">Help</span></h2>
       </div><form method="post" action="/cart/add" class="nf-contact__form" id="NfContactForm"><div class="nf-contact__row nf-contact__row--2">
@@ -1805,17 +1959,17 @@
         <span class="nf-chip" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>
         </span>
-        <h2 class="nf-mk__h2" style="font-size: 26px;">Need a quick <span class="nf-italic">answer?</span></h2>
+        <h2 class="nf-mk__h2 nf-contact__band-h2">Need a quick <span class="nf-italic">answer?</span></h2>
         <p class="nf-mk__lede" style="max-width: 440px; margin-bottom: 32px;">Chat with our team on WhatsApp for faster support.</p>
         <a class="nf-btn" href="https://wa.me/919561557935" target="_blank" rel="noopener noreferrer">
           Chat on WhatsApp
         </a>
       </div>
-    </section><section class="nf-mk__section nf-mk__pad" style="background-color: #FBF6F1;"><div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center;">
+    </section><section class="nf-mk__section nf-mk__pad" style="background-color: #FBF6F1;"><div class="nf-mk__floral" style="background-image: url(/assets/nf-floral-pattern-bg.webp); opacity: 0.05;"></div><div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center;">
         <span class="nf-chip nf-chip--blush" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4"/><path d="M12 17h.01"/></svg>
         </span>
-        <h2 class="nf-mk__h2" style="font-size: 26px;">Looking for quick <span class="nf-italic">answers?</span></h2>
+        <h2 class="nf-mk__h2 nf-contact__band-h2">Looking for quick <span class="nf-italic">answers?</span></h2>
         <p class="nf-mk__lede" style="max-width: 440px; margin-bottom: 32px;">Visit our FAQ page to find answers to common questions.</p>
         <a class="nf-btn nf-btn--outline" href="/pages/faqs">View FAQs</a>
       </div>

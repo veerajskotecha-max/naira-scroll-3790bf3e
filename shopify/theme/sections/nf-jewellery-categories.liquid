@@ -26,7 +26,7 @@
       {%- if section.settings.eyebrow != blank -%}
         <p class="nf-cats__eyebrow nf-label">{{ section.settings.eyebrow }}</p>
       {%- endif -%}
-      <h3 class="nf-cats__title nf-display">
+      <h3 class="nf-cats__title">
         {{ section.settings.heading_lead }} <em class="nf-editorial">{{ section.settings.heading_italic }}</em>
       </h3>
     </div>
@@ -72,12 +72,12 @@
               <span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
-              <b class="nf-display">{{ label }}</b>
+              <b>{{ label }}</b>
               {%- if block.settings.note != blank -%}
                 <i class="nf-editorial">{{ block.settings.note }}</i>
               {%- endif -%}
               {%- if col != blank -%}
-                <span class="nf-cats__count nf-label">{{ col.all_products_count }} {{ section.settings.count_word }} &rarr;</span>
+                <span class="nf-cats__count nf-label">{{ col.all_products_count | default: col.products_count }} {{ section.settings.count_word }} &rarr;</span>
               {%- endif -%}
             </span>
           </a>
@@ -86,6 +86,17 @@
     </div>
   </div>
 </section>
+
+{% stylesheet %}
+/* The React source styles both of these with a `velista` font-family whose
+   var(--font-cormorant) is defined nowhere, so the declaration is invalid at
+   computed-value time and the headings fall back to the app sans with normal
+   tracking. `.nf-display` would apply Velista and its own tracking, which is
+   the "display-font landmine" in docs/design-tokens.md -- the same override
+   nf-collection.liquid uses on .nf-coll__title and .jc__title. */
+.nf-cats__title { font-family: inherit !important; letter-spacing: normal !important; line-height: 1.5 !important; }
+.nf-cats__caption b { font-family: inherit; letter-spacing: normal !important; }
+{% endstylesheet %}
 
 {% schema %}
 {

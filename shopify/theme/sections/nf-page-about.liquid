@@ -14,9 +14,13 @@
 {{ 'nf-content.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  assign floral = section.settings.floral_image
-  if floral != blank
-    assign floral_url = floral | image_url: width: 600
+  # AboutPersonalised / AboutFloral tile floral-pattern-bg.webp at 4% over the
+  # white bands; AboutHandcrafted / AboutCTA tile background_image_flora.webp
+  # at 50% over the cream bands. Two different files, so two urls.
+  assign floral_soft_url = 'nf-floral-pattern-bg.webp' | asset_url
+  assign floral_bold_url = 'nf-background-flora.webp' | asset_url
+  if section.settings.floral_image != blank
+    assign floral_bold_url = section.settings.floral_image | image_url: width: 600
   endif
 -%}
 
@@ -26,7 +30,7 @@
     {%- if section.settings.hero_background_image != blank -%}
       <div class="nf-about__hero-bg" style="background-image: url({{ section.settings.hero_background_image | image_url: width: 2400 }});"></div>
     {%- else -%}
-      <div class="nf-about__hero-bg" style="background-color: {{ section.settings.cream }};"></div>
+      <div class="nf-about__hero-bg" style="background-image: url({{ 'nf-about-hero-bg.webp' | asset_url }}); background-color: {{ section.settings.cream }};"></div>
     {%- endif -%}
     <div class="nf-mk__wrap nf-about__hero-grid nf-reveal">
       <div class="nf-about__hero-copy">
@@ -39,8 +43,8 @@
           </a>
         {%- endif -%}
       </div>
-      {%- if section.settings.hero_image != blank -%}
-        <div class="nf-about__hero-media">
+      <div class="nf-about__hero-media">
+        {%- if section.settings.hero_image != blank -%}
           <img
             src="{{ section.settings.hero_image | image_url: width: 1200 }}"
             alt="{{ section.settings.hero_image.alt | default: section.settings.hero_image_alt | escape }}"
@@ -48,8 +52,16 @@
             height="{{ section.settings.hero_image.height }}"
             fetchpriority="high"
           >
-        </div>
-      {%- endif -%}
+        {%- else -%}
+          <img
+            src="{{ 'nf-craftsmanship-main.webp' | asset_url }}"
+            alt="{{ section.settings.hero_image_alt | escape }}"
+            width="1179"
+            height="1569"
+            fetchpriority="high"
+          >
+        {%- endif -%}
+      </div>
     </div>
   </section>
 
@@ -58,9 +70,9 @@
   {%- if milestones.size > 0 -%}
     <section class="nf-mk__section nf-mk__pad" style="background-color: var(--nf-mk-white);">
       <div class="nf-mk__wrap">
-        <div style="text-align: center; margin-bottom: 56px;">
-          <p class="nf-eyebrow" style="margin-bottom: 12px;">{{ section.settings.timeline_eyebrow | escape }}</p>
-          <h2 class="nf-mk__h2" style="margin-bottom: 0; font-size: 28px;">{{ section.settings.timeline_heading }}</h2>
+        <div class="nf-about__timeline-head">
+          <p class="nf-eyebrow" style="letter-spacing: 0.15em; margin-bottom: 12px;">{{ section.settings.timeline_eyebrow | escape }}</p>
+          <h2 class="nf-mk__h2" style="margin-bottom: 0; color: hsl(0 0% 18%);">{{ section.settings.timeline_heading }}</h2>
           <div class="nf-about__rule" aria-hidden="true"><i></i><b></b><i></i></div>
         </div>
 
@@ -75,7 +87,7 @@
                   assign flip = ' nf-timeline__row--flip'
                 endif
                 assign has_media = ' nf-timeline__no-media'
-                if block.settings.image != blank
+                if block.settings.image != blank or block.settings.image_asset != blank
                   assign has_media = ' nf-timeline__has-media'
                 endif
               -%}
@@ -87,6 +99,16 @@
                       alt="{{ block.settings.image.alt | default: block.settings.image_alt | escape }}"
                       width="{{ block.settings.image.width }}"
                       height="{{ block.settings.image.height }}"
+                      loading="lazy"
+                    >
+                  </div>
+                {%- elsif block.settings.image_asset != blank -%}
+                  <div class="nf-timeline__media">
+                    <img
+                      src="{{ block.settings.image_asset | asset_url }}"
+                      alt="{{ block.settings.image_alt | escape }}"
+                      width="1050"
+                      height="1400"
                       loading="lazy"
                     >
                   </div>
@@ -142,10 +164,12 @@
         assign remainder = story_index | modulo: 2
         if remainder == 1
           assign story_bg = 'var(--nf-mk-white)'
+          assign floral_url = floral_soft_url
           assign floral_opacity = '0.04'
           assign flip_class = ''
         else
           assign story_bg = section.settings.cream
+          assign floral_url = floral_bold_url
           assign floral_opacity = '0.5'
           assign flip_class = ' nf-split--flip'
         endif
@@ -162,7 +186,7 @@
         <div class="nf-mk__wrap" style="position: relative; z-index: 1;">
           <div class="nf-split nf-reveal{{ flip_class }}">
             <div class="nf-split__copy">
-              <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 12px;">{{ block.settings.eyebrow | escape }}</p>
+              <p class="nf-eyebrow" style="letter-spacing: 0.15em; margin-bottom: 12px;">{{ block.settings.eyebrow | escape }}</p>
               <h2>{{ block.settings.heading }}</h2>
               <p>{{ block.settings.text | escape }}</p>
             </div>
@@ -177,6 +201,15 @@
                   loading="lazy"
                 >
               </div>
+            {%- elsif block.settings.image_asset != blank -%}
+              <div class="nf-split__media">
+                <img
+                  src="{{ block.settings.image_asset | asset_url }}"
+                  alt="{{ block.settings.image_alt | escape }}"
+                  style="aspect-ratio: {{ block.settings.image_ratio }};"
+                  loading="lazy"
+                >
+              </div>
             {%- endif -%}
           </div>
         </div>
@@ -187,15 +220,13 @@
   {%- comment -%} ── AboutCTA ── {%- endcomment -%}
   {%- if section.settings.show_cta -%}
     <section class="nf-mk__section nf-mk__pad" style="background-color: {{ section.settings.cream }};">
-      {%- if floral_url -%}
-        <div class="nf-mk__floral" style="background-image: url({{ floral_url }}); opacity: 0.5;"></div>
-      {%- endif -%}
+      <div class="nf-mk__floral" style="background-image: url({{ floral_bold_url }}); opacity: 0.5;"></div>
       <div class="nf-mk__wrap" style="position: relative; text-align: center;">
         <p class="nf-eyebrow">{{ section.settings.cta_eyebrow | escape }}</p>
         <h2 class="nf-mk__h2">{{ section.settings.cta_heading }}</h2>
         <p class="nf-mk__lede" style="margin-bottom: 40px; color: var(--nf-mk-body-soft);">{{ section.settings.cta_text | escape }}</p>
         {%- if section.settings.cta_button_label != blank -%}
-          <a class="nf-btn" href="{{ section.settings.cta_button_link | default: routes.all_products_collection_url }}">
+          <a class="nf-btn nf-about__cta-btn" href="{{ section.settings.cta_button_link | default: routes.all_products_collection_url }}">
             {{ section.settings.cta_button_label | escape }}
           </a>
         {%- endif -%}
@@ -290,6 +321,7 @@
         { "type": "text", "id": "title", "label": "Title", "default": "A Dream Stitched with Passion" },
         { "type": "textarea", "id": "text", "label": "Text" },
         { "type": "image_picker", "id": "image", "label": "Image (optional)" },
+        { "type": "text", "id": "image_asset", "label": "…or theme asset file name", "info": "e.g. nf-about-founder.webp. Used only when no image is picked above." },
         { "type": "text", "id": "image_alt", "label": "Image alt text" }
       ]
     },
@@ -331,6 +363,7 @@
         },
         { "type": "textarea", "id": "text", "label": "Text" },
         { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "image_asset", "label": "…or theme asset file name", "info": "e.g. nf-about-personalised.jpg. Used only when no image is picked above." },
         { "type": "text", "id": "image_alt", "label": "Image alt text" },
         {
           "type": "select",

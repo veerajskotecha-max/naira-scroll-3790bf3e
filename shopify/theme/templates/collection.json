@@ -49,10 +49,15 @@
         "category_3",
         "category_4"
       ]
+    },
+    "links": {
+      "type": "nf-collection-links",
+      "settings": {}
     }
   },
   "order": [
     "main",
-    "cats"
+    "cats",
+    "links"
   ]
 }

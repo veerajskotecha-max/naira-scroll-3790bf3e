@@ -1,79 +1,173 @@
 {%- comment -%}
-  Naira Flore — Made for You / Customise
-  Ported from src/pages/MadeForYou.tsx, plus the two components it composed:
-    src/components/ScrollSteps.tsx        → "step" blocks
-    src/components/CustomizationStories.tsx → "reel" blocks
+  Naira Flore — Made for You / Customise  (route /customize)
+  Ported 1:1 from src/pages/MadeForYou.tsx plus the two components it composes:
+    src/components/ScrollSteps.tsx          → "step" blocks   (section 2)
+    src/components/CustomizationStories.tsx → "reel" blocks   (section 4)
 
-  ScrollSteps was a scroll-driven IntersectionObserver stack; here the four
-  steps are plain alternating rows that reveal with CSS only. Copy, order and
-  numbering are unchanged.
+  Every size, colour, tracking and spacing below is the computed value the
+  React page renders at the same breakpoint — this section owns its whole
+  cascade (scoped preflight + explicit type) rather than borrowing the shared
+  marketing classes, because those resolve to different numbers.
+
+  ScrollSteps' IntersectionObserver reveal is CSS-only here (scroll-driven
+  animation where supported, fully visible otherwise). Copy and order are
+  unchanged.
+
+  CustomizationStories' play-button placeholder is deliberately not ported:
+  React removes it the moment the embed fires onLoad, so it is never what the
+  card actually shows, and reproducing "hide on load" needs JS this section
+  does not ship. The dark card underneath is identical either way.
 {%- endcomment -%}
 
-{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
-{{ 'nf-content.css' | asset_url | stylesheet_tag }}
-
 {%- liquid
-  assign floral = section.settings.floral_image
-  if floral != blank
-    assign floral_url = floral | image_url: width: 600
+  assign hero_src = section.settings.hero_image_asset | asset_url
+  if section.settings.hero_image != blank
+    assign hero_src = section.settings.hero_image | image_url: width: 2400
   endif
+  assign floral_src = section.settings.floral_image_asset | asset_url
+  if section.settings.floral_image != blank
+    assign floral_src = section.settings.floral_image | image_url: width: 600
+  endif
+  assign steps = section.blocks | where: 'type', 'step'
+  assign reels = section.blocks | where: 'type', 'reel'
 -%}
 
-<div class="nf-mk nf-mfy">
-  {%- comment -%} ── SECTION 1 — Hero ── {%- endcomment -%}
-  <section class="nf-mfy__hero">
-    {%- if section.settings.hero_image != blank -%}
-      <div class="nf-mfy__hero-bg" style="background-image: url({{ section.settings.hero_image | image_url: width: 2400 }});"></div>
-    {%- else -%}
-      <div class="nf-mfy__hero-bg" style="background-color: {{ section.settings.cream }};"></div>
-    {%- endif -%}
-    <div class="nf-mfy__scrim" aria-hidden="true"></div>
-    <div class="nf-mfy__panel">
-      <p class="nf-eyebrow">{{ section.settings.hero_eyebrow | escape }}</p>
-      <h1>{{ section.settings.hero_heading }}</h1>
-      <p>{{ section.settings.hero_text | escape }}</p>
-      {%- if section.settings.hero_button_label != blank -%}
-        <a class="nf-btn" href="#nf-custom-journey">{{ section.settings.hero_button_label | escape }}</a>
-      {%- endif -%}
+<div class="nf-cu">
+  {%- comment -%} ── SECTION 1 — Hero banner ── {%- endcomment -%}
+  <section class="nf-cu-hero">
+    <div class="nf-cu-hero__bg" style="background-image: url({{ hero_src }});"></div>
+    <div class="nf-cu-hero__scrim"></div>
+    <div class="nf-cu-hero__inner">
+      <div class="nf-cu-hero__panel">
+        <p class="nf-cu-eyebrow nf-cu-hero__eyebrow">{{ section.settings.hero_eyebrow | escape }}</p>
+        <h1 class="nf-cu-hero__h1">{{ section.settings.hero_heading }}</h1>
+        <p class="nf-cu-hero__lede">{{ section.settings.hero_text | escape }}</p>
+        {%- if section.settings.hero_button_label != blank -%}
+          <a class="nf-cu-cta nf-cu-cta--light" href="#custom-journey">{{ section.settings.hero_button_label | escape }}</a>
+        {%- endif -%}
+      </div>
     </div>
   </section>
 
-  {%- comment -%} ── SECTION 2 — Steps (was ScrollSteps) ── {%- endcomment -%}
-  {%- assign steps = section.blocks | where: 'type', 'step' -%}
+  {%- comment -%} ── SECTION 2 — Scroll-driven steps ── {%- endcomment -%}
   {%- if steps.size > 0 -%}
-    <section class="nf-mk__section nf-mk__pad" style="background-color: var(--nf-mk-white);">
-      <div class="nf-mk__wrap">
-        {%- if section.settings.steps_heading != blank -%}
-          <div style="text-align: center; margin-bottom: 48px;">
-            <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">{{ section.settings.steps_eyebrow | escape }}</p>
-            <h2 class="nf-mk__h2" style="margin-bottom: 0;">{{ section.settings.steps_heading }}</h2>
+    <section class="nf-cu-steps">
+      <div class="nf-cu-steps__wrap">
+        <div class="nf-cu-steps__head">
+          <p class="nf-cu-eyebrow nf-cu-eyebrow--sage">{{ section.settings.steps_eyebrow | escape }}</p>
+          <h2 class="nf-cu-steps__h2">{{ section.settings.steps_heading }}</h2>
+          <div class="nf-cu-rule">
+            <div class="nf-cu-rule__line"></div>
+            <div class="nf-cu-rule__dot"></div>
+            <div class="nf-cu-rule__line"></div>
           </div>
-        {%- endif -%}
-        <div style="display: flex; flex-direction: column; gap: 64px;">
+        </div>
+
+        <div class="nf-cu-steps__list">
           {%- for block in steps -%}
             {%- liquid
-              assign remainder = forloop.index0 | modulo: 2
-              assign flip_class = ''
-              if remainder == 1
-                assign flip_class = ' nf-split--flip'
+              assign n = forloop.index | prepend: '0' | slice: -2, 2
+              assign step_src = block.settings.image_asset | asset_url
+              if block.settings.image != blank
+                assign step_src = block.settings.image | image_url: width: 1280
+              endif
+              assign flip = ''
+              assign rem = forloop.index0 | modulo: 2
+              if rem == 1
+                assign flip = ' nf-cu-step__row--flip'
               endif
             -%}
-            <div class="nf-split nf-reveal{{ flip_class }}" {{ block.shopify_attributes }}>
-              <div class="nf-split__copy">
-                <span class="nf-steps__n">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-                <h2 style="font-size: 26px;">{{ block.settings.title | escape }}</h2>
-                <p>{{ block.settings.text | escape }}</p>
+            <div {{ block.shopify_attributes }}>
+              <div class="nf-cu-step nf-cu-reveal">
+                <div class="nf-cu-step__row{{ flip }}">
+                  <div class="nf-cu-step__media">
+                    <div class="nf-cu-step__frame">
+                      {%- if step_src != blank -%}
+                        <img
+                          src="{{ step_src }}"
+                          alt="{{ block.settings.title | escape }}"
+                          loading="lazy"
+                          width="640"
+                          height="800"
+                        >
+                      {%- endif -%}
+                    </div>
+                  </div>
+                  <div class="nf-cu-step__copy">
+                    <div class="nf-cu-step__icon">
+                      {%- case block.settings.icon -%}
+                        {%- when 'palette' -%}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                        {%- when 'phone' -%}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        {%- when 'package' -%}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg>
+                        {%- else -%}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      {%- endcase -%}
+                    </div>
+                    <span class="nf-cu-step__n">Step {{ n }}</span>
+                    <h3 class="nf-cu-step__h3">{{ block.settings.title | escape }}</h3>
+                    <p class="nf-cu-step__text">{{ block.settings.text | escape }}</p>
+                  </div>
+                </div>
               </div>
-              {%- if block.settings.image != blank -%}
-                <div class="nf-split__media">
-                  <img
-                    src="{{ block.settings.image | image_url: width: 1200 }}"
-                    alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
-                    width="{{ block.settings.image.width }}"
-                    height="{{ block.settings.image.height }}"
-                    style="aspect-ratio: 4 / 3;"
-                    loading="lazy"
-                  >
+              {%- unless forloop.last -%}
+                <div class="nf-cu-step__joint"><div class="nf-cu-step__stem"></div></div>
+              {%- endunless -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- comment -%} ── SECTION 3 — Start your custom journey ── {%- endcomment -%}
+  <section id="custom-journey" class="nf-cu-journey">
+    {%- if floral_src != blank -%}
+      <div class="nf-cu-journey__floral" style="background-image: url({{ floral_src }});"></div>
+    {%- endif -%}
+    <div class="nf-cu-journey__wrap">
+      <p class="nf-cu-eyebrow nf-cu-eyebrow--sage nf-cu-eyebrow--tight">{{ section.settings.journey_eyebrow | escape }}</p>
+      <h2 class="nf-cu-journey__h2">{{ section.settings.journey_heading }}</h2>
+      <p class="nf-cu-journey__text">{{ section.settings.journey_text | escape }}</p>
+      <a class="nf-cu-cta nf-cu-cta--sage" href="{{ section.settings.journey_link }}" target="_blank" rel="noopener noreferrer">{{ section.settings.journey_button | escape }}</a>
+    </div>
+  </section>
+
+  {%- comment -%} ── SECTION 4 — Customer stories ── {%- endcomment -%}
+  {%- if reels.size > 0 -%}
+    <section class="nf-cu-stories">
+      <div class="nf-cu-stories__wrap">
+        <div class="nf-cu-stories__head">
+          <p class="nf-cu-eyebrow nf-cu-eyebrow--sage nf-cu-eyebrow--tight">{{ section.settings.stories_eyebrow | escape }}</p>
+          <h2 class="nf-cu-stories__h2">{{ section.settings.stories_heading }}</h2>
+          <p class="nf-cu-stories__lede">{{ section.settings.stories_text | escape }}</p>
+          <div class="nf-cu-rule nf-cu-rule--tight">
+            <div class="nf-cu-rule__line"></div>
+            <div class="nf-cu-rule__dot nf-cu-rule__dot--round"></div>
+            <div class="nf-cu-rule__line"></div>
+          </div>
+        </div>
+
+        <div class="nf-cu-reels">
+          {%- for block in reels -%}
+            <div class="nf-cu-reel" {{ block.shopify_attributes }}>
+              {%- if block.settings.embed_url != blank -%}
+                <iframe
+                  src="{{ block.settings.embed_url }}"
+                  title="{{ block.settings.caption | escape }}"
+                  loading="lazy"
+                  allowfullscreen
+                  scrolling="no"
+                  frameborder="0"
+                ></iframe>
+              {%- elsif block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.caption | escape }}" loading="lazy">
+              {%- endif -%}
+              {%- if block.settings.caption != blank -%}
+                <div class="nf-cu-reel__cap">
+                  <p>{{ block.settings.caption | escape }}</p>
                 </div>
               {%- endif -%}
             </div>
@@ -83,120 +177,413 @@
     </section>
   {%- endif -%}
 
-  {%- comment -%} ── SECTION 3 — Start your custom journey ── {%- endcomment -%}
-  <section
-    id="nf-custom-journey"
-    class="nf-mk__section"
-    style="background-color: {{ section.settings.cream }}; scroll-margin-top: 110px; padding-block: 32px;"
-  >
-    {%- if floral_url -%}
-      <div class="nf-mk__floral" style="background-image: url({{ floral_url }}); opacity: 0.5;"></div>
-    {%- endif -%}
-    <div class="nf-mk__wrap" style="position: relative; z-index: 1; text-align: center; padding-block: 28px;">
-      <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">{{ section.settings.journey_eyebrow | escape }}</p>
-      <h2 class="nf-mk__h2" style="margin-bottom: 12px; color: hsl(0 0% 10%);">{{ section.settings.journey_heading }}</h2>
-      <p class="nf-mk__lede" style="color: hsl(0 0% 22%); margin-bottom: 24px;">{{ section.settings.journey_text | escape }}</p>
-      <a class="nf-btn" style="padding: 16px 48px;" href="{{ section.settings.journey_link }}" target="_blank" rel="noopener noreferrer">
-        {{ section.settings.journey_button | escape }}
-      </a>
-    </div>
-  </section>
-
-  {%- comment -%} ── SECTION 4 — Customer stories (was CustomizationStories) ── {%- endcomment -%}
-  {%- assign reels = section.blocks | where: 'type', 'reel' -%}
-  {%- if reels.size > 0 -%}
-    <section class="nf-mk__section" style="background-color: var(--nf-mk-white); padding-block: 30px;">
-      <div class="nf-mk__wrap">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <p class="nf-eyebrow" style="letter-spacing: var(--nf-track-16); margin-bottom: 8px;">{{ section.settings.stories_eyebrow | escape }}</p>
-          <h2 class="nf-mk__h2" style="margin-bottom: 12px; color: hsl(0 0% 18%);">{{ section.settings.stories_heading }}</h2>
-        </div>
-        <div class="nf-mfy__reels">
-          {%- for block in reels -%}
-            <figure class="nf-mfy__reel" {{ block.shopify_attributes }}>
-              {%- if block.settings.embed_url != blank -%}
-                <iframe
-                  src="{{ block.settings.embed_url }}"
-                  title="{{ block.settings.caption | escape }}"
-                  loading="lazy"
-                  allowtransparency="true"
-                  allowfullscreen
-                  scrolling="no"
-                  frameborder="0"
-                ></iframe>
-              {%- elsif block.settings.image != blank -%}
-                <img
-                  src="{{ block.settings.image | image_url: width: 800 }}"
-                  alt="{{ block.settings.caption | escape }}"
-                  loading="lazy"
-                >
-              {%- endif -%}
-              {%- if block.settings.caption != blank -%}
-                <figcaption>
-                  {%- if block.settings.link != blank -%}
-                    <a href="{{ block.settings.link }}" target="_blank" rel="noopener noreferrer">{{ block.settings.caption | escape }}</a>
-                  {%- else -%}
-                    {{ block.settings.caption | escape }}
-                  {%- endif -%}
-                </figcaption>
-              {%- endif -%}
-            </figure>
-          {%- endfor -%}
-        </div>
-      </div>
-    </section>
-  {%- endif -%}
-
   {%- comment -%} ── SECTION 5 — FAQ CTA ── {%- endcomment -%}
   {%- if section.settings.show_faq_cta -%}
-    <section class="nf-mk__section" style="background-color: {{ section.settings.cream }}; padding-block: 64px;">
-      <div style="max-width: 600px; margin: 0 auto; padding-inline: 24px; text-align: center;">
-        <h2 class="nf-mk__h2" style="font-size: 26px; margin-bottom: 16px; color: var(--nf-doc-heading);">{{ section.settings.faq_heading | escape }}</h2>
-        <p class="nf-mk__lede" style="color: var(--nf-doc-muted); margin-bottom: 32px;">{{ section.settings.faq_text | escape }}</p>
-        <a class="nf-btn nf-btn--ink" style="padding: 14px 40px;" href="{{ section.settings.faq_link }}">{{ section.settings.faq_button | escape }}</a>
+    <section class="nf-cu-faq">
+      <div class="nf-cu-faq__wrap">
+        <h2 class="nf-cu-faq__h2">{{ section.settings.faq_heading | escape }}</h2>
+        <p class="nf-cu-faq__text">{{ section.settings.faq_text | escape }}</p>
+        <a class="nf-cu-cta nf-cu-cta--ink" href="{{ section.settings.faq_link }}">{{ section.settings.faq_button | escape }}</a>
       </div>
     </section>
   {%- endif -%}
 </div>
 
 {% stylesheet %}
-.nf-mfy__reels {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+/* ── scoped preflight: the React page is Tailwind-reset, the theme is not ── */
+/* :where() keeps the reset at (0,1,0) so the component rules below, which
+   are also (0,1,0) but come later, win on source order. :is() would raise it
+   to (0,1,1) and silently beat every font-size/margin set further down. */
+.nf-cu, .nf-cu *, .nf-cu *::before, .nf-cu *::after { box-sizing: border-box; }
+.nf-cu :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote) { margin: 0; }
+.nf-cu :where(h1, h2, h3, h4, h5, h6) { font-size: inherit; font-weight: inherit; letter-spacing: normal; }
+.nf-cu :where(img, svg, iframe) { display: block; vertical-align: middle; }
+.nf-cu :where(img) { max-width: 100%; height: auto; }
+.nf-cu :where(a) { color: inherit; text-decoration: none; }
+.nf-cu .nf-italic { font-style: italic; }
+
+/* eyebrows — plain ui-sans-serif in React, never the display face */
+.nf-cu-eyebrow {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
-@media (min-width: 768px) { .nf-mfy__reels { grid-template-columns: repeat(3, 1fr); } }
-.nf-mfy__reel { margin: 0; }
-.nf-mfy__reel iframe,
-.nf-mfy__reel img {
-  display: block;
+@media (min-width: 768px) { .nf-cu-eyebrow { font-size: 12px; } }
+.nf-cu-eyebrow--sage { color: hsl(160 15% 45%); margin-bottom: 12px; }
+.nf-cu-eyebrow--tight { margin-bottom: 8px; }
+
+/* shared call-to-action button */
+.nf-cu-cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--nf-font-display);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+@media (min-width: 768px) { .nf-cu-cta { font-size: 14px; } }
+.nf-cu-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+.nf-cu-cta--light { padding: 14px 40px; background-color: hsl(0 0% 100%); color: hsl(0 0% 15%); box-shadow: 0 4px 20px -4px hsl(0 0% 0% / 0.25); }
+.nf-cu-cta--sage  { padding: 16px 48px; background-color: hsl(143 14% 63%); color: hsl(0 0% 100%); }
+.nf-cu-cta--ink   { padding: 14px 40px; background-color: hsl(0 0% 12%); color: hsl(0 0% 100%); }
+
+/* ── 1. hero ─────────────────────────────────────────────────── */
+.nf-cu-hero {
+  position: relative;
   width: 100%;
-  aspect-ratio: 9 / 14;
-  border: 0;
-  object-fit: cover;
-  background-color: var(--nf-surface-raised);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100dvh - 98px);
+  min-height: calc(100dvh - 98px);
 }
-.nf-mfy__reel figcaption {
-  margin-top: 12px;
+@media (min-width: 768px)  { .nf-cu-hero { height: calc(100dvh - 108px); min-height: calc(100dvh - 108px); } }
+@media (min-width: 1024px) { .nf-cu-hero { height: calc(100dvh - 120px); min-height: calc(100dvh - 120px); } }
+.nf-cu-hero__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 70%;
+  filter: brightness(0.9) contrast(1.05);
+}
+@media (max-width: 767px) { .nf-cu-hero__bg { background-position: center 60%; } }
+.nf-cu-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, hsl(0 0% 0% / 0.25), hsl(0 0% 0% / 0.3));
+}
+.nf-cu-hero__inner {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 24px;
+}
+@media (min-width: 768px)  { .nf-cu-hero__inner { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-hero__inner { padding-inline: 80px; } }
+.nf-cu-hero__panel {
+  max-width: 680px;
   text-align: center;
+  padding: 32px 24px;
+  background-color: hsl(0 0% 100% / 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid hsl(0 0% 100% / 0.12);
+}
+@media (min-width: 768px)  { .nf-cu-hero__panel { padding: 48px; } }
+@media (min-width: 1024px) { .nf-cu-hero__panel { padding: 56px 64px; } }
+.nf-cu-hero__eyebrow { letter-spacing: 0.2em; margin-bottom: 16px; color: hsl(30 30% 82%); }
+.nf-cu-hero__h1 {
+  font-family: var(--nf-font-display);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: hsl(0 0% 98%);
+}
+@media (min-width: 768px)  { .nf-cu-hero__h1 { font-size: 42px; } }
+@media (min-width: 1024px) { .nf-cu-hero__h1 { font-size: 54px; } }
+.nf-cu-hero__h1 .nf-italic { color: hsl(16 50% 76%); }
+.nf-cu-hero__lede {
   font-family: var(--nf-font-display);
   font-size: 14px;
-  color: var(--nf-mk-body);
+  line-height: 1.625;
+  max-width: 480px;
+  margin: 0 auto 32px;
+  color: hsl(0 0% 82%);
 }
-.nf-mfy__reel figcaption a { color: inherit; text-decoration: none; }
-.nf-mfy__reel figcaption a:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 768px)  { .nf-cu-hero__lede { font-size: 16px; } }
+@media (min-width: 1024px) { .nf-cu-hero__lede { font-size: 17px; } }
+
+/* ── 2. steps ────────────────────────────────────────────────── */
+.nf-cu-steps {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 48px;
+  background-color: hsl(30 20% 96%);
+}
+@media (min-width: 768px)  { .nf-cu-steps { padding-block: 64px; } }
+@media (min-width: 1024px) { .nf-cu-steps { padding-block: 80px; } }
+.nf-cu-steps__wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 768px)  { .nf-cu-steps__wrap { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-steps__wrap { padding-inline: 64px; } }
+.nf-cu-steps__head { text-align: center; margin-bottom: 40px; }
+@media (min-width: 768px) { .nf-cu-steps__head { margin-bottom: 56px; } }
+.nf-cu-steps__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-cu-steps__h2 { font-size: 40px; } }
+@media (min-width: 1024px) { .nf-cu-steps__h2 { font-size: 50px; } }
+.nf-cu-steps__h2 .nf-italic { color: hsl(16 50% 72%); }
+
+.nf-cu-rule { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
+.nf-cu-rule--tight { margin-top: 12px; }
+.nf-cu-rule__line { width: 48px; height: 1px; background-color: hsl(160 12% 72%); }
+@media (min-width: 768px) { .nf-cu-rule__line { width: 64px; } }
+.nf-cu-rule__dot { width: 8px; height: 8px; background-color: hsl(160 15% 55%); }
+.nf-cu-rule__dot--round { border-radius: 9999px; }
+
+.nf-cu-steps__list { display: flex; flex-direction: column; gap: 40px; }
+@media (min-width: 768px)  { .nf-cu-steps__list { gap: 56px; } }
+@media (min-width: 1024px) { .nf-cu-steps__list { gap: 64px; } }
+.nf-cu-step__row { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+@media (min-width: 768px) {
+  .nf-cu-step__row { flex-direction: row; gap: 48px; }
+  .nf-cu-step__row--flip { flex-direction: row-reverse; }
+}
+@media (min-width: 1024px) { .nf-cu-step__row { gap: 80px; } }
+.nf-cu-step__media { width: 100%; }
+@media (min-width: 768px) { .nf-cu-step__media { width: 50%; } }
+.nf-cu-step__frame { overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.nf-cu-step__frame img { width: 100%; height: auto; object-fit: contain; transition: transform 0.7s; }
+.nf-cu-step__frame img:hover { transform: scale(1.05); }
+.nf-cu-step__copy {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 768px) { .nf-cu-step__copy { width: 50%; align-items: flex-start; text-align: left; } }
+.nf-cu-step__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background-color: hsl(160 12% 91%);
+  color: hsl(160 15% 42%);
+}
+.nf-cu-step__n {
+  font-family: var(--nf-font-display);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: hsl(160 15% 45%);
+}
+.nf-cu-step__h3 {
+  font-family: var(--nf-font-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-cu-step__h3 { font-size: 30px; } }
+@media (min-width: 1024px) { .nf-cu-step__h3 { font-size: 34px; } }
+.nf-cu-step__text {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: 440px;
+  color: hsl(0 0% 28%);
+}
+@media (min-width: 768px) { .nf-cu-step__text { font-size: 16px; } }
+.nf-cu-step__joint { display: flex; justify-content: center; margin-top: 40px; }
+@media (min-width: 768px) { .nf-cu-step__joint { margin-top: 56px; } }
+.nf-cu-step__stem { width: 1px; height: 32px; background-color: hsl(160 12% 80%); }
+@media (min-width: 768px) { .nf-cu-step__stem { height: 40px; } }
 
 @media (prefers-reduced-motion: no-preference) {
-  .nf-mfy .nf-reveal {
-    animation: nf-mfy-rise 0.7s var(--nf-ease-reveal) both;
+  .nf-cu-reveal {
+    animation: nf-cu-rise 0.7s ease-out both;
     animation-timeline: view();
-    animation-range: entry 0% cover 22%;
+    animation-range: entry 0% cover 12%;
   }
 }
-@keyframes nf-mfy-rise {
-  from { opacity: 0; transform: translateY(24px); }
+@keyframes nf-cu-rise {
+  from { opacity: 0; transform: translateY(30px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* ── 3. custom journey ───────────────────────────────────────── */
+.nf-cu-journey {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 32px;
+  background-color: hsl(30 25% 96%);
+  scroll-margin-top: 110px;
+}
+@media (min-width: 768px)  { .nf-cu-journey { padding-block: 44px; } }
+@media (min-width: 1024px) { .nf-cu-journey { padding-block: 60px; } }
+.nf-cu-journey__floral {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  background-size: 600px;
+  background-position: center;
+  background-repeat: repeat;
+  opacity: 0.5;
+}
+.nf-cu-journey__wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  text-align: center;
+}
+@media (min-width: 768px)  { .nf-cu-journey__wrap { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-journey__wrap { padding-inline: 80px; } }
+.nf-cu-journey__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  color: hsl(0 0% 10%);
+}
+@media (min-width: 768px)  { .nf-cu-journey__h2 { font-size: 36px; } }
+@media (min-width: 1024px) { .nf-cu-journey__h2 { font-size: 46px; } }
+.nf-cu-journey__h2 .nf-italic { color: hsl(16 45% 58%); }
+.nf-cu-journey__text {
+  font-family: var(--nf-font-display);
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto 24px;
+  color: hsl(0 0% 22%);
+}
+@media (min-width: 768px) { .nf-cu-journey__text { font-size: 16px; } }
+
+/* ── 4. customer stories ─────────────────────────────────────── */
+.nf-cu-stories {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 30px;
+  background-color: hsl(0 0% 100%);
+}
+@media (min-width: 768px)  { .nf-cu-stories { padding-block: 40px; } }
+@media (min-width: 1024px) { .nf-cu-stories { padding-block: 56px; } }
+.nf-cu-stories__wrap {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+@media (min-width: 768px)  { .nf-cu-stories__wrap { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-cu-stories__wrap { padding-inline: 80px; } }
+.nf-cu-stories__head { text-align: center; margin-bottom: 24px; }
+@media (min-width: 768px) { .nf-cu-stories__head { margin-bottom: 32px; } }
+.nf-cu-stories__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  color: hsl(0 0% 18%);
+}
+@media (min-width: 768px)  { .nf-cu-stories__h2 { font-size: 36px; } }
+@media (min-width: 1024px) { .nf-cu-stories__h2 { font-size: 46px; } }
+.nf-cu-stories__h2 .nf-italic { color: hsl(16 50% 72%); }
+.nf-cu-stories__lede {
+  font-family: var(--nf-font-display);
+  font-size: 14px;
+  line-height: 1.625;
+  max-width: 520px;
+  margin-inline: auto;
+  color: hsl(0 0% 48%);
+}
+@media (min-width: 768px) { .nf-cu-stories__lede { font-size: 16px; } }
+
+.nf-cu-reels { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+.nf-cu-reels::-webkit-scrollbar { display: none; }
+.nf-cu-reels > .nf-cu-reel { scroll-snap-align: start; flex: 0 0 80%; }
+@media (min-width: 768px) {
+  .nf-cu-reels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; overflow: visible; padding-bottom: 0; }
+  .nf-cu-reels > .nf-cu-reel { flex: initial; }
+}
+@media (min-width: 1024px) { .nf-cu-reels { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
+.nf-cu-reel {
+  position: relative;
+  border-radius: 12px; /* rounded-xl */
+  overflow: hidden;
+  box-shadow: 0 4px 20px -6px hsl(0 0% 0% / 0.12);
+  aspect-ratio: 9 / 16;
+  background-color: hsl(0 0% 8%);
+}
+.nf-cu-reel iframe, .nf-cu-reel > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: inherit;
+  object-fit: cover;
+}
+.nf-cu-reel__cap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to top, hsl(0 0% 0% / 0.5), transparent);
+}
+.nf-cu-reel__cap p {
+  font-family: var(--nf-font-display);
+  font-size: 13px;
+  line-height: 1.5;
+  color: hsl(0 0% 95%);
+}
+@media (min-width: 768px) { .nf-cu-reel__cap p { font-size: 14px; } }
+
+/* ── 5. FAQ CTA ──────────────────────────────────────────────── */
+.nf-cu-faq { width: 100%; padding-block: 64px; background-color: hsl(30 25% 96%); }
+@media (min-width: 768px)  { .nf-cu-faq { padding-block: 80px; } }
+@media (min-width: 1024px) { .nf-cu-faq { padding-block: 96px; } }
+.nf-cu-faq__wrap { max-width: 600px; margin-inline: auto; padding-inline: 24px; text-align: center; }
+.nf-cu-faq__h2 {
+  font-family: var(--nf-font-display);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-cu-faq__h2 { font-size: 34px; } }
+@media (min-width: 1024px) { .nf-cu-faq__h2 { font-size: 42px; } }
+.nf-cu-faq__text {
+  font-family: var(--nf-font-display);
+  font-size: 14px;
+  line-height: 1.625;
+  margin-bottom: 32px;
+  color: hsl(0 0% 40%);
+}
+@media (min-width: 768px) { .nf-cu-faq__text { font-size: 16px; } }
 {% endstylesheet %}
 
 {% schema %}
@@ -207,15 +594,15 @@
   "max_blocks": 12,
   "settings": [
     {
-      "type": "color",
-      "id": "cream",
-      "label": "Cream section background",
-      "default": "#F7F3EF"
-    },
-    {
       "type": "image_picker",
       "id": "floral_image",
       "label": "Floral pattern background"
+    },
+    {
+      "type": "text",
+      "id": "floral_image_asset",
+      "label": "Floral pattern theme asset",
+      "default": "nf-background-flora.webp"
     },
     {
       "type": "header",
@@ -225,6 +612,12 @@
       "type": "image_picker",
       "id": "hero_image",
       "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_image_asset",
+      "label": "Hero theme asset",
+      "default": "nf-customize-hero.webp"
     },
     {
       "type": "text",
@@ -258,13 +651,13 @@
       "type": "text",
       "id": "steps_eyebrow",
       "label": "Eyebrow",
-      "default": "The process"
+      "default": "How it works"
     },
     {
       "type": "html",
       "id": "steps_heading",
       "label": "Heading",
-      "default": "From idea to <span class=\"nf-italic\">doorstep</span>"
+      "default": "Your Journey to Custom <span class=\"nf-italic\">Perfection</span>"
     },
     {
       "type": "header",
@@ -280,7 +673,7 @@
       "type": "html",
       "id": "journey_heading",
       "label": "Heading",
-      "default": "Start Your Custom <span class=\"nf-italic\" style=\"color: hsl(16 45% 58%)\">Journey</span>"
+      "default": "Start Your Custom <span class=\"nf-italic\">Journey</span>"
     },
     {
       "type": "textarea",
@@ -314,6 +707,12 @@
       "id": "stories_heading",
       "label": "Heading",
       "default": "Where ideas become <span class=\"nf-italic\">Outfits</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "stories_text",
+      "label": "Text",
+      "default": "See how each design comes to life, guided by our clients and crafted by Naira."
     },
     {
       "type": "header",
@@ -366,9 +765,27 @@
           "label": "Text"
         },
         {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "message", "label": "Message" },
+            { "value": "palette", "label": "Palette" },
+            { "value": "phone", "label": "Phone" },
+            { "value": "package", "label": "Package" }
+          ],
+          "default": "message"
+        },
+        {
           "type": "image_picker",
           "id": "image",
           "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_asset",
+          "label": "Theme asset filename",
+          "info": "Used when no image is picked, e.g. nf-step-01-dream.jpg"
         }
       ]
     },
@@ -391,11 +808,6 @@
           "type": "text",
           "id": "caption",
           "label": "Caption"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Caption link"
         }
       ]
     }
@@ -404,18 +816,13 @@
     {
       "name": "Naira made for you",
       "blocks": [
-        {
-          "type": "step"
-        },
-        {
-          "type": "step"
-        },
-        {
-          "type": "step"
-        },
-        {
-          "type": "step"
-        }
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "step" },
+        { "type": "reel" },
+        { "type": "reel" },
+        { "type": "reel" }
       ]
     }
   ]

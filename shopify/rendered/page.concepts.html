@@ -352,6 +352,864 @@
     <script src="/assets/nf-chrome.js" defer="defer"></script>
   <style>
 
+/* nf-content.css gives .nf-concepts__divider flex-wrap: wrap; React's divider
+   is a plain non-wrapping flex row, so below 1024px the theme grew a third
+   line. Overridden here (0,2,0 beats 0,1,0) rather than editing the shared
+   stylesheet. */
+.nf-cx-divider.nf-concepts__divider { flex-wrap: nowrap; }
+
+/* Scoped preflight. :where() keeps it at (0,1,0) so the component rules that
+   follow — also (0,1,0) — win on source order. */
+.nf-cx, .nf-cx *, .nf-cx *::before, .nf-cx *::after { box-sizing: border-box; }
+.nf-cx :where(h1, h2, h3, h4, h5, h6, p) { margin: 0; font-size: inherit; font-weight: inherit; letter-spacing: normal; }
+.nf-cx :where(img, svg) { display: block; vertical-align: middle; max-width: 100%; height: auto; }
+.nf-cx :where(a) { color: inherit; text-decoration: none; }
+.nf-cx :where(button) { background: transparent; border: 0; padding: 0; margin: 0; font: inherit; color: inherit; cursor: pointer; }
+
+.nf-cx {
+  position: relative;
+  overflow: hidden;
+  padding-block: 80px;
+  display: block;
+}
+@media (min-width: 1024px) { .nf-cx { padding-block: 112px; } }
+
+.nf-cx--a { background-color: #FBF3EC; color: #1A1614; }
+.nf-cx--b { color: #F4E9DD; background: radial-gradient(120% 85% at 50% -10%, #16553F 0%, #0E3B2E 55%, #082820 100%); }
+.nf-cx--c { color: #3A2016; background: linear-gradient(180deg, #C4623C 0%, #B85A38 60%, #A94F30 100%); }
+
+.nf-cx__wash {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 45% at 80% 0%, rgba(255, 189, 168, 0.16) 0%, transparent 60%);
+}
+.nf-cx__hairline {
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, rgba(232, 197, 126, 0.6), transparent);
+}
+.nf-cx__speckle {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+  background-image: radial-gradient(rgba(58, 32, 22, 0.05) 1px, transparent 1px);
+  background-size: 9px 9px;
+}
+
+.nf-cx__grid {
+  position: relative;
+  margin-inline: auto;
+  display: grid;
+  max-width: 1152px; /* 72rem in React; html here is 62.5% so rem must not be used */
+  grid-template-columns: minmax(0, 1fr); /* Tailwind grid-cols-1; the minmax(0,…) is what lets the 39-swatch row shrink */
+  align-items: center;
+  gap: 40px;
+  padding-inline: 24px;
+}
+@media (min-width: 1024px) {
+  .nf-cx__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px; }
+}
+.nf-cx--c .nf-cx__grid { align-items: end; }
+
+/* ── model ─────────────────────────────────────────────────────── */
+.nf-cx__model { position: relative; order: 2; }
+@media (min-width: 1024px) { .nf-cx__model { order: 1; } }
+.nf-cx--b .nf-cx__model { order: 0; }
+@media (min-width: 1024px) { .nf-cx--b .nf-cx__model { order: 2; } }
+.nf-cx__model-img { width: 100%; object-fit: cover; }
+.nf-cx--a .nf-cx__model-img { box-shadow: 0 30px 60px -30px rgba(122, 90, 40, 0.5); }
+.nf-cx--b .nf-cx__model-img {
+  box-shadow: 0 36px 70px -30px rgba(0, 0, 0, 0.8);
+  outline: 1px solid rgba(232, 197, 126, 0.35);
+  outline-offset: 10px;
+}
+.nf-cx__arch-model {
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  box-shadow: 0 30px 60px -28px rgba(58, 32, 22, 0.65), inset 0 0 0 6px #F3E4CE;
+}
+.nf-cx__arch-model img { width: 100%; object-fit: cover; }
+.nf-cx__worn {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  font-family: var(--nf-font-label);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.3em;
+}
+.nf-cx--a .nf-cx__worn { background-color: rgba(251, 243, 236, 0.9); color: #9A7634; }
+.nf-cx--b .nf-cx__worn { background-color: rgba(8, 40, 32, 0.85); color: #E8C57E; }
+.nf-cx--c .nf-cx__worn { left: 50%; transform: translateX(-50%); background-color: rgba(58, 32, 22, 0.85); color: #F3E4CE; }
+
+/* ── console ───────────────────────────────────────────────────── */
+.nf-cx__console {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 1024px) { .nf-cx__console { order: 2; } }
+.nf-cx--b .nf-cx__console { order: 0; }
+@media (min-width: 1024px) { .nf-cx--b .nf-cx__console { order: 1; } }
+.nf-cx--c .nf-cx__console { padding-bottom: 16px; }
+
+.nf-cx__eyebrow {
+  margin-bottom: 16px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.5em;
+}
+.nf-cx--a .nf-cx__eyebrow { color: #B0843A; }
+.nf-cx--b .nf-cx__eyebrow { color: #E8C57E; }
+.nf-cx--c .nf-cx__eyebrow { color: #F3E4CE; }
+
+/* The headline inherits the plain body stack in React — see the note at the
+   top of this file. !important is required to beat nf-base.css's h1-h6 rule. */
+.nf-cx__h2 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-size: clamp(35.2px, 5.5vw, 60.8px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: normal;
+}
+.nf-cx--c .nf-cx__h2 { color: #FBF3EC; }
+.nf-cx__line { display: inline-block; }
+.nf-cx__line--em { font-family: var(--nf-font-editorial); font-style: italic; }
+.nf-cx--a .nf-cx__line--em { color: #B0843A; }
+.nf-cx--b .nf-cx__line--em { color: #E8C57E; }
+.nf-cx--c .nf-cx__line--em { color: #F8D9A8; }
+.nf-cx__l { display: inline-block; white-space: pre; }
+
+.nf-cx__stack { margin-top: 32px; width: 100%; max-width: 380px; }
+.nf-cx--c .nf-cx__stack { max-width: 360px; }
+
+.nf-cx__tray { background-color: #F4EBE2; padding: 12px; box-shadow: 0 24px 50px -30px rgba(122, 90, 40, 0.55); }
+.nf-cx__vitrine {
+  position: relative;
+  padding: 12px;
+  background: linear-gradient(180deg, #0C3325, #0A2A20);
+  box-shadow: inset 0 2px 24px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(232, 197, 126, 0.4);
+}
+.nf-cx__vitrine-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(75% 55% at 50% 0%, rgba(232, 197, 126, 0.3), transparent 70%);
+}
+.nf-cx__vitrine-inner { position: relative; background-color: #F4EBE2; }
+.nf-cx__arch-stage {
+  overflow: hidden;
+  padding: 12px 12px 0;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, #F3E4CE, #EDDABF);
+  box-shadow: inset 0 3px 16px rgba(58, 32, 22, 0.3), 0 24px 46px -22px rgba(58, 32, 22, 0.6);
+}
+.nf-cx__arch-clip { overflow: hidden; border-radius: 999px 999px 0 0; }
+
+.nf-cx__stage {
+  position: relative;
+  user-select: none;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  perspective: 1100px;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.nf-cx--c .nf-cx__stage { aspect-ratio: 4 / 5; }
+.nf-cx__stage > img { width: 100%; height: 100%; object-fit: cover; }
+.nf-cx__hint {
+  pointer-events: none;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  transform: translateX(-50%);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.28em;
+  white-space: nowrap;
+}
+.nf-cx--a .nf-cx__hint { background: rgba(251, 243, 236, 0.9); color: #1A1614; }
+.nf-cx--b .nf-cx__hint { background: rgba(14, 59, 46, 0.85); color: #E8C57E; }
+.nf-cx--c .nf-cx__hint { background: rgba(58, 32, 22, 0.8); color: #F3E4CE; }
+
+.nf-cx__selector { margin-top: 16px; display: flex; justify-content: center; gap: 10px; }
+.nf-cx--b .nf-cx__selector { margin-top: 20px; gap: 12px; }
+.nf-cx__chip { overflow: hidden; transition: all 0.3s; }
+.nf-cx--a .nf-cx__chip { height: 56px; width: 56px; border: 1px solid transparent; opacity: 0.55; }
+.nf-cx--a .nf-cx__chip.is-active { border-color: #B0843A; opacity: 1; }
+.nf-cx--b .nf-cx__chip { height: 48px; width: 48px; border-radius: 9999px; border: 2px solid rgba(232, 197, 126, 0.25); opacity: 0.6; }
+.nf-cx--b .nf-cx__chip.is-active { border-color: #E8C57E; opacity: 1; box-shadow: 0 0 18px rgba(232, 197, 126, 0.5); }
+.nf-cx--c .nf-cx__chip { height: 48px; width: 40px; border: 2px solid rgba(243, 228, 206, 0.3); border-radius: 999px 999px 0 0; opacity: 0.6; }
+.nf-cx--c .nf-cx__chip.is-active { border-color: #F3E4CE; opacity: 1; }
+
+.nf-cx__name {
+  margin-top: 24px;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+.nf-cx--c .nf-cx__name { margin-top: 20px; }
+.nf-cx--b .nf-cx__name { color: #F4E9DD; }
+.nf-cx--c .nf-cx__name { color: #FBF3EC; }
+
+.nf-cx__materials {
+  margin-top: 4px;
+  font-family: var(--nf-font-editorial);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.nf-cx--a .nf-cx__materials { color: rgba(26, 22, 20, 0.55); }
+.nf-cx--b .nf-cx__materials { color: rgba(244, 233, 221, 0.55); }
+.nf-cx--c .nf-cx__materials { color: rgba(251, 243, 236, 0.7); }
+
+.nf-cx__price {
+  margin-top: 8px;
+  font-family: var(--nf-font-label);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+}
+.nf-cx--b .nf-cx__price { color: #E8C57E; }
+.nf-cx--c .nf-cx__price { color: #F8D9A8; }
+
+.nf-cx__actions { margin-top: 24px; display: flex; align-items: center; gap: 16px; }
+.nf-cx__enquire {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  padding: 14px 32px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.3em;
+  transition: color 0.5s;
+}
+.nf-cx--a .nf-cx__enquire { border: 1px solid #1A1614; color: #1A1614; }
+.nf-cx--b .nf-cx__enquire { border: 1px solid rgba(232, 197, 126, 0.7); color: #E8C57E; }
+.nf-cx--c .nf-cx__enquire { border: 1px solid rgba(243, 228, 206, 0.8); color: #F3E4CE; }
+.nf-cx__enquire-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1);
+}
+.nf-cx--a .nf-cx__enquire-fill { background-color: #1A1614; }
+.nf-cx--b .nf-cx__enquire-fill { background-color: #E8C57E; }
+.nf-cx--c .nf-cx__enquire-fill { background-color: #F3E4CE; }
+.nf-cx__enquire:hover .nf-cx__enquire-fill { transform: scaleX(1); }
+.nf-cx--a .nf-cx__enquire:hover { color: #FBF3EC; }
+.nf-cx--b .nf-cx__enquire:hover { color: #0E3B2E; }
+.nf-cx--c .nf-cx__enquire:hover { color: #A94F30; }
+.nf-cx__enquire-label { position: relative; }
+
+.nf-cx__all {
+  padding-bottom: 2px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.25em;
+}
+.nf-cx--a .nf-cx__all { border-bottom: 1px solid #B0843A; color: #9A7634; }
+.nf-cx--b .nf-cx__all { border-bottom: 1px solid rgba(232, 197, 126, 0.7); color: #E8C57E; }
+.nf-cx--c .nf-cx__all { border-bottom: 1px solid #F3E4CE; color: #F3E4CE; }
+
+
+/* nf-content.css gives .nf-concepts__divider flex-wrap: wrap; React's divider
+   is a plain non-wrapping flex row, so below 1024px the theme grew a third
+   line. Overridden here (0,2,0 beats 0,1,0) rather than editing the shared
+   stylesheet. */
+.nf-cx-divider.nf-concepts__divider { flex-wrap: nowrap; }
+
+/* Scoped preflight. :where() keeps it at (0,1,0) so the component rules that
+   follow — also (0,1,0) — win on source order. */
+.nf-cx, .nf-cx *, .nf-cx *::before, .nf-cx *::after { box-sizing: border-box; }
+.nf-cx :where(h1, h2, h3, h4, h5, h6, p) { margin: 0; font-size: inherit; font-weight: inherit; letter-spacing: normal; }
+.nf-cx :where(img, svg) { display: block; vertical-align: middle; max-width: 100%; height: auto; }
+.nf-cx :where(a) { color: inherit; text-decoration: none; }
+.nf-cx :where(button) { background: transparent; border: 0; padding: 0; margin: 0; font: inherit; color: inherit; cursor: pointer; }
+
+.nf-cx {
+  position: relative;
+  overflow: hidden;
+  padding-block: 80px;
+  display: block;
+}
+@media (min-width: 1024px) { .nf-cx { padding-block: 112px; } }
+
+.nf-cx--a { background-color: #FBF3EC; color: #1A1614; }
+.nf-cx--b { color: #F4E9DD; background: radial-gradient(120% 85% at 50% -10%, #16553F 0%, #0E3B2E 55%, #082820 100%); }
+.nf-cx--c { color: #3A2016; background: linear-gradient(180deg, #C4623C 0%, #B85A38 60%, #A94F30 100%); }
+
+.nf-cx__wash {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 45% at 80% 0%, rgba(255, 189, 168, 0.16) 0%, transparent 60%);
+}
+.nf-cx__hairline {
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, rgba(232, 197, 126, 0.6), transparent);
+}
+.nf-cx__speckle {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+  background-image: radial-gradient(rgba(58, 32, 22, 0.05) 1px, transparent 1px);
+  background-size: 9px 9px;
+}
+
+.nf-cx__grid {
+  position: relative;
+  margin-inline: auto;
+  display: grid;
+  max-width: 1152px; /* 72rem in React; html here is 62.5% so rem must not be used */
+  grid-template-columns: minmax(0, 1fr); /* Tailwind grid-cols-1; the minmax(0,…) is what lets the 39-swatch row shrink */
+  align-items: center;
+  gap: 40px;
+  padding-inline: 24px;
+}
+@media (min-width: 1024px) {
+  .nf-cx__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px; }
+}
+.nf-cx--c .nf-cx__grid { align-items: end; }
+
+/* ── model ─────────────────────────────────────────────────────── */
+.nf-cx__model { position: relative; order: 2; }
+@media (min-width: 1024px) { .nf-cx__model { order: 1; } }
+.nf-cx--b .nf-cx__model { order: 0; }
+@media (min-width: 1024px) { .nf-cx--b .nf-cx__model { order: 2; } }
+.nf-cx__model-img { width: 100%; object-fit: cover; }
+.nf-cx--a .nf-cx__model-img { box-shadow: 0 30px 60px -30px rgba(122, 90, 40, 0.5); }
+.nf-cx--b .nf-cx__model-img {
+  box-shadow: 0 36px 70px -30px rgba(0, 0, 0, 0.8);
+  outline: 1px solid rgba(232, 197, 126, 0.35);
+  outline-offset: 10px;
+}
+.nf-cx__arch-model {
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  box-shadow: 0 30px 60px -28px rgba(58, 32, 22, 0.65), inset 0 0 0 6px #F3E4CE;
+}
+.nf-cx__arch-model img { width: 100%; object-fit: cover; }
+.nf-cx__worn {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  font-family: var(--nf-font-label);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.3em;
+}
+.nf-cx--a .nf-cx__worn { background-color: rgba(251, 243, 236, 0.9); color: #9A7634; }
+.nf-cx--b .nf-cx__worn { background-color: rgba(8, 40, 32, 0.85); color: #E8C57E; }
+.nf-cx--c .nf-cx__worn { left: 50%; transform: translateX(-50%); background-color: rgba(58, 32, 22, 0.85); color: #F3E4CE; }
+
+/* ── console ───────────────────────────────────────────────────── */
+.nf-cx__console {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 1024px) { .nf-cx__console { order: 2; } }
+.nf-cx--b .nf-cx__console { order: 0; }
+@media (min-width: 1024px) { .nf-cx--b .nf-cx__console { order: 1; } }
+.nf-cx--c .nf-cx__console { padding-bottom: 16px; }
+
+.nf-cx__eyebrow {
+  margin-bottom: 16px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.5em;
+}
+.nf-cx--a .nf-cx__eyebrow { color: #B0843A; }
+.nf-cx--b .nf-cx__eyebrow { color: #E8C57E; }
+.nf-cx--c .nf-cx__eyebrow { color: #F3E4CE; }
+
+/* The headline inherits the plain body stack in React — see the note at the
+   top of this file. !important is required to beat nf-base.css's h1-h6 rule. */
+.nf-cx__h2 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-size: clamp(35.2px, 5.5vw, 60.8px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: normal;
+}
+.nf-cx--c .nf-cx__h2 { color: #FBF3EC; }
+.nf-cx__line { display: inline-block; }
+.nf-cx__line--em { font-family: var(--nf-font-editorial); font-style: italic; }
+.nf-cx--a .nf-cx__line--em { color: #B0843A; }
+.nf-cx--b .nf-cx__line--em { color: #E8C57E; }
+.nf-cx--c .nf-cx__line--em { color: #F8D9A8; }
+.nf-cx__l { display: inline-block; white-space: pre; }
+
+.nf-cx__stack { margin-top: 32px; width: 100%; max-width: 380px; }
+.nf-cx--c .nf-cx__stack { max-width: 360px; }
+
+.nf-cx__tray { background-color: #F4EBE2; padding: 12px; box-shadow: 0 24px 50px -30px rgba(122, 90, 40, 0.55); }
+.nf-cx__vitrine {
+  position: relative;
+  padding: 12px;
+  background: linear-gradient(180deg, #0C3325, #0A2A20);
+  box-shadow: inset 0 2px 24px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(232, 197, 126, 0.4);
+}
+.nf-cx__vitrine-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(75% 55% at 50% 0%, rgba(232, 197, 126, 0.3), transparent 70%);
+}
+.nf-cx__vitrine-inner { position: relative; background-color: #F4EBE2; }
+.nf-cx__arch-stage {
+  overflow: hidden;
+  padding: 12px 12px 0;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, #F3E4CE, #EDDABF);
+  box-shadow: inset 0 3px 16px rgba(58, 32, 22, 0.3), 0 24px 46px -22px rgba(58, 32, 22, 0.6);
+}
+.nf-cx__arch-clip { overflow: hidden; border-radius: 999px 999px 0 0; }
+
+.nf-cx__stage {
+  position: relative;
+  user-select: none;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  perspective: 1100px;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.nf-cx--c .nf-cx__stage { aspect-ratio: 4 / 5; }
+.nf-cx__stage > img { width: 100%; height: 100%; object-fit: cover; }
+.nf-cx__hint {
+  pointer-events: none;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  transform: translateX(-50%);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.28em;
+  white-space: nowrap;
+}
+.nf-cx--a .nf-cx__hint { background: rgba(251, 243, 236, 0.9); color: #1A1614; }
+.nf-cx--b .nf-cx__hint { background: rgba(14, 59, 46, 0.85); color: #E8C57E; }
+.nf-cx--c .nf-cx__hint { background: rgba(58, 32, 22, 0.8); color: #F3E4CE; }
+
+.nf-cx__selector { margin-top: 16px; display: flex; justify-content: center; gap: 10px; }
+.nf-cx--b .nf-cx__selector { margin-top: 20px; gap: 12px; }
+.nf-cx__chip { overflow: hidden; transition: all 0.3s; }
+.nf-cx--a .nf-cx__chip { height: 56px; width: 56px; border: 1px solid transparent; opacity: 0.55; }
+.nf-cx--a .nf-cx__chip.is-active { border-color: #B0843A; opacity: 1; }
+.nf-cx--b .nf-cx__chip { height: 48px; width: 48px; border-radius: 9999px; border: 2px solid rgba(232, 197, 126, 0.25); opacity: 0.6; }
+.nf-cx--b .nf-cx__chip.is-active { border-color: #E8C57E; opacity: 1; box-shadow: 0 0 18px rgba(232, 197, 126, 0.5); }
+.nf-cx--c .nf-cx__chip { height: 48px; width: 40px; border: 2px solid rgba(243, 228, 206, 0.3); border-radius: 999px 999px 0 0; opacity: 0.6; }
+.nf-cx--c .nf-cx__chip.is-active { border-color: #F3E4CE; opacity: 1; }
+
+.nf-cx__name {
+  margin-top: 24px;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+.nf-cx--c .nf-cx__name { margin-top: 20px; }
+.nf-cx--b .nf-cx__name { color: #F4E9DD; }
+.nf-cx--c .nf-cx__name { color: #FBF3EC; }
+
+.nf-cx__materials {
+  margin-top: 4px;
+  font-family: var(--nf-font-editorial);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.nf-cx--a .nf-cx__materials { color: rgba(26, 22, 20, 0.55); }
+.nf-cx--b .nf-cx__materials { color: rgba(244, 233, 221, 0.55); }
+.nf-cx--c .nf-cx__materials { color: rgba(251, 243, 236, 0.7); }
+
+.nf-cx__price {
+  margin-top: 8px;
+  font-family: var(--nf-font-label);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+}
+.nf-cx--b .nf-cx__price { color: #E8C57E; }
+.nf-cx--c .nf-cx__price { color: #F8D9A8; }
+
+.nf-cx__actions { margin-top: 24px; display: flex; align-items: center; gap: 16px; }
+.nf-cx__enquire {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  padding: 14px 32px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.3em;
+  transition: color 0.5s;
+}
+.nf-cx--a .nf-cx__enquire { border: 1px solid #1A1614; color: #1A1614; }
+.nf-cx--b .nf-cx__enquire { border: 1px solid rgba(232, 197, 126, 0.7); color: #E8C57E; }
+.nf-cx--c .nf-cx__enquire { border: 1px solid rgba(243, 228, 206, 0.8); color: #F3E4CE; }
+.nf-cx__enquire-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1);
+}
+.nf-cx--a .nf-cx__enquire-fill { background-color: #1A1614; }
+.nf-cx--b .nf-cx__enquire-fill { background-color: #E8C57E; }
+.nf-cx--c .nf-cx__enquire-fill { background-color: #F3E4CE; }
+.nf-cx__enquire:hover .nf-cx__enquire-fill { transform: scaleX(1); }
+.nf-cx--a .nf-cx__enquire:hover { color: #FBF3EC; }
+.nf-cx--b .nf-cx__enquire:hover { color: #0E3B2E; }
+.nf-cx--c .nf-cx__enquire:hover { color: #A94F30; }
+.nf-cx__enquire-label { position: relative; }
+
+.nf-cx__all {
+  padding-bottom: 2px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.25em;
+}
+.nf-cx--a .nf-cx__all { border-bottom: 1px solid #B0843A; color: #9A7634; }
+.nf-cx--b .nf-cx__all { border-bottom: 1px solid rgba(232, 197, 126, 0.7); color: #E8C57E; }
+.nf-cx--c .nf-cx__all { border-bottom: 1px solid #F3E4CE; color: #F3E4CE; }
+
+
+/* nf-content.css gives .nf-concepts__divider flex-wrap: wrap; React's divider
+   is a plain non-wrapping flex row, so below 1024px the theme grew a third
+   line. Overridden here (0,2,0 beats 0,1,0) rather than editing the shared
+   stylesheet. */
+.nf-cx-divider.nf-concepts__divider { flex-wrap: nowrap; }
+
+/* Scoped preflight. :where() keeps it at (0,1,0) so the component rules that
+   follow — also (0,1,0) — win on source order. */
+.nf-cx, .nf-cx *, .nf-cx *::before, .nf-cx *::after { box-sizing: border-box; }
+.nf-cx :where(h1, h2, h3, h4, h5, h6, p) { margin: 0; font-size: inherit; font-weight: inherit; letter-spacing: normal; }
+.nf-cx :where(img, svg) { display: block; vertical-align: middle; max-width: 100%; height: auto; }
+.nf-cx :where(a) { color: inherit; text-decoration: none; }
+.nf-cx :where(button) { background: transparent; border: 0; padding: 0; margin: 0; font: inherit; color: inherit; cursor: pointer; }
+
+.nf-cx {
+  position: relative;
+  overflow: hidden;
+  padding-block: 80px;
+  display: block;
+}
+@media (min-width: 1024px) { .nf-cx { padding-block: 112px; } }
+
+.nf-cx--a { background-color: #FBF3EC; color: #1A1614; }
+.nf-cx--b { color: #F4E9DD; background: radial-gradient(120% 85% at 50% -10%, #16553F 0%, #0E3B2E 55%, #082820 100%); }
+.nf-cx--c { color: #3A2016; background: linear-gradient(180deg, #C4623C 0%, #B85A38 60%, #A94F30 100%); }
+
+.nf-cx__wash {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 45% at 80% 0%, rgba(255, 189, 168, 0.16) 0%, transparent 60%);
+}
+.nf-cx__hairline {
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, rgba(232, 197, 126, 0.6), transparent);
+}
+.nf-cx__speckle {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+  background-image: radial-gradient(rgba(58, 32, 22, 0.05) 1px, transparent 1px);
+  background-size: 9px 9px;
+}
+
+.nf-cx__grid {
+  position: relative;
+  margin-inline: auto;
+  display: grid;
+  max-width: 1152px; /* 72rem in React; html here is 62.5% so rem must not be used */
+  grid-template-columns: minmax(0, 1fr); /* Tailwind grid-cols-1; the minmax(0,…) is what lets the 39-swatch row shrink */
+  align-items: center;
+  gap: 40px;
+  padding-inline: 24px;
+}
+@media (min-width: 1024px) {
+  .nf-cx__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px; }
+}
+.nf-cx--c .nf-cx__grid { align-items: end; }
+
+/* ── model ─────────────────────────────────────────────────────── */
+.nf-cx__model { position: relative; order: 2; }
+@media (min-width: 1024px) { .nf-cx__model { order: 1; } }
+.nf-cx--b .nf-cx__model { order: 0; }
+@media (min-width: 1024px) { .nf-cx--b .nf-cx__model { order: 2; } }
+.nf-cx__model-img { width: 100%; object-fit: cover; }
+.nf-cx--a .nf-cx__model-img { box-shadow: 0 30px 60px -30px rgba(122, 90, 40, 0.5); }
+.nf-cx--b .nf-cx__model-img {
+  box-shadow: 0 36px 70px -30px rgba(0, 0, 0, 0.8);
+  outline: 1px solid rgba(232, 197, 126, 0.35);
+  outline-offset: 10px;
+}
+.nf-cx__arch-model {
+  overflow: hidden;
+  border-radius: 999px 999px 0 0;
+  box-shadow: 0 30px 60px -28px rgba(58, 32, 22, 0.65), inset 0 0 0 6px #F3E4CE;
+}
+.nf-cx__arch-model img { width: 100%; object-fit: cover; }
+.nf-cx__worn {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  font-family: var(--nf-font-label);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.3em;
+}
+.nf-cx--a .nf-cx__worn { background-color: rgba(251, 243, 236, 0.9); color: #9A7634; }
+.nf-cx--b .nf-cx__worn { background-color: rgba(8, 40, 32, 0.85); color: #E8C57E; }
+.nf-cx--c .nf-cx__worn { left: 50%; transform: translateX(-50%); background-color: rgba(58, 32, 22, 0.85); color: #F3E4CE; }
+
+/* ── console ───────────────────────────────────────────────────── */
+.nf-cx__console {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 1024px) { .nf-cx__console { order: 2; } }
+.nf-cx--b .nf-cx__console { order: 0; }
+@media (min-width: 1024px) { .nf-cx--b .nf-cx__console { order: 1; } }
+.nf-cx--c .nf-cx__console { padding-bottom: 16px; }
+
+.nf-cx__eyebrow {
+  margin-bottom: 16px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.5em;
+}
+.nf-cx--a .nf-cx__eyebrow { color: #B0843A; }
+.nf-cx--b .nf-cx__eyebrow { color: #E8C57E; }
+.nf-cx--c .nf-cx__eyebrow { color: #F3E4CE; }
+
+/* The headline inherits the plain body stack in React — see the note at the
+   top of this file. !important is required to beat nf-base.css's h1-h6 rule. */
+.nf-cx__h2 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-size: clamp(35.2px, 5.5vw, 60.8px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: normal;
+}
+.nf-cx--c .nf-cx__h2 { color: #FBF3EC; }
+.nf-cx__line { display: inline-block; }
+.nf-cx__line--em { font-family: var(--nf-font-editorial); font-style: italic; }
+.nf-cx--a .nf-cx__line--em { color: #B0843A; }
+.nf-cx--b .nf-cx__line--em { color: #E8C57E; }
+.nf-cx--c .nf-cx__line--em { color: #F8D9A8; }
+.nf-cx__l { display: inline-block; white-space: pre; }
+
+.nf-cx__stack { margin-top: 32px; width: 100%; max-width: 380px; }
+.nf-cx--c .nf-cx__stack { max-width: 360px; }
+
+.nf-cx__tray { background-color: #F4EBE2; padding: 12px; box-shadow: 0 24px 50px -30px rgba(122, 90, 40, 0.55); }
+.nf-cx__vitrine {
+  position: relative;
+  padding: 12px;
+  background: linear-gradient(180deg, #0C3325, #0A2A20);
+  box-shadow: inset 0 2px 24px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(232, 197, 126, 0.4);
+}
+.nf-cx__vitrine-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(75% 55% at 50% 0%, rgba(232, 197, 126, 0.3), transparent 70%);
+}
+.nf-cx__vitrine-inner { position: relative; background-color: #F4EBE2; }
+.nf-cx__arch-stage {
+  overflow: hidden;
+  padding: 12px 12px 0;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(180deg, #F3E4CE, #EDDABF);
+  box-shadow: inset 0 3px 16px rgba(58, 32, 22, 0.3), 0 24px 46px -22px rgba(58, 32, 22, 0.6);
+}
+.nf-cx__arch-clip { overflow: hidden; border-radius: 999px 999px 0 0; }
+
+.nf-cx__stage {
+  position: relative;
+  user-select: none;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  overflow: hidden;
+  perspective: 1100px;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.nf-cx--c .nf-cx__stage { aspect-ratio: 4 / 5; }
+.nf-cx__stage > img { width: 100%; height: 100%; object-fit: cover; }
+.nf-cx__hint {
+  pointer-events: none;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  transform: translateX(-50%);
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.28em;
+  white-space: nowrap;
+}
+.nf-cx--a .nf-cx__hint { background: rgba(251, 243, 236, 0.9); color: #1A1614; }
+.nf-cx--b .nf-cx__hint { background: rgba(14, 59, 46, 0.85); color: #E8C57E; }
+.nf-cx--c .nf-cx__hint { background: rgba(58, 32, 22, 0.8); color: #F3E4CE; }
+
+.nf-cx__selector { margin-top: 16px; display: flex; justify-content: center; gap: 10px; }
+.nf-cx--b .nf-cx__selector { margin-top: 20px; gap: 12px; }
+.nf-cx__chip { overflow: hidden; transition: all 0.3s; }
+.nf-cx--a .nf-cx__chip { height: 56px; width: 56px; border: 1px solid transparent; opacity: 0.55; }
+.nf-cx--a .nf-cx__chip.is-active { border-color: #B0843A; opacity: 1; }
+.nf-cx--b .nf-cx__chip { height: 48px; width: 48px; border-radius: 9999px; border: 2px solid rgba(232, 197, 126, 0.25); opacity: 0.6; }
+.nf-cx--b .nf-cx__chip.is-active { border-color: #E8C57E; opacity: 1; box-shadow: 0 0 18px rgba(232, 197, 126, 0.5); }
+.nf-cx--c .nf-cx__chip { height: 48px; width: 40px; border: 2px solid rgba(243, 228, 206, 0.3); border-radius: 999px 999px 0 0; opacity: 0.6; }
+.nf-cx--c .nf-cx__chip.is-active { border-color: #F3E4CE; opacity: 1; }
+
+.nf-cx__name {
+  margin-top: 24px;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+.nf-cx--c .nf-cx__name { margin-top: 20px; }
+.nf-cx--b .nf-cx__name { color: #F4E9DD; }
+.nf-cx--c .nf-cx__name { color: #FBF3EC; }
+
+.nf-cx__materials {
+  margin-top: 4px;
+  font-family: var(--nf-font-editorial);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+}
+.nf-cx--a .nf-cx__materials { color: rgba(26, 22, 20, 0.55); }
+.nf-cx--b .nf-cx__materials { color: rgba(244, 233, 221, 0.55); }
+.nf-cx--c .nf-cx__materials { color: rgba(251, 243, 236, 0.7); }
+
+.nf-cx__price {
+  margin-top: 8px;
+  font-family: var(--nf-font-label);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+}
+.nf-cx--b .nf-cx__price { color: #E8C57E; }
+.nf-cx--c .nf-cx__price { color: #F8D9A8; }
+
+.nf-cx__actions { margin-top: 24px; display: flex; align-items: center; gap: 16px; }
+.nf-cx__enquire {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  padding: 14px 32px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.3em;
+  transition: color 0.5s;
+}
+.nf-cx--a .nf-cx__enquire { border: 1px solid #1A1614; color: #1A1614; }
+.nf-cx--b .nf-cx__enquire { border: 1px solid rgba(232, 197, 126, 0.7); color: #E8C57E; }
+.nf-cx--c .nf-cx__enquire { border: 1px solid rgba(243, 228, 206, 0.8); color: #F3E4CE; }
+.nf-cx__enquire-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1);
+}
+.nf-cx--a .nf-cx__enquire-fill { background-color: #1A1614; }
+.nf-cx--b .nf-cx__enquire-fill { background-color: #E8C57E; }
+.nf-cx--c .nf-cx__enquire-fill { background-color: #F3E4CE; }
+.nf-cx__enquire:hover .nf-cx__enquire-fill { transform: scaleX(1); }
+.nf-cx--a .nf-cx__enquire:hover { color: #FBF3EC; }
+.nf-cx--b .nf-cx__enquire:hover { color: #0E3B2E; }
+.nf-cx--c .nf-cx__enquire:hover { color: #A94F30; }
+.nf-cx__enquire-label { position: relative; }
+
+.nf-cx__all {
+  padding-bottom: 2px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.25em;
+}
+.nf-cx--a .nf-cx__all { border-bottom: 1px solid #B0843A; color: #9A7634; }
+.nf-cx--b .nf-cx__all { border-bottom: 1px solid rgba(232, 197, 126, 0.7); color: #E8C57E; }
+.nf-cx--c .nf-cx__all { border-bottom: 1px solid #F3E4CE; color: #F3E4CE; }
+
+
 .nf-ab {
   width: 100%;
   overflow: hidden;
@@ -536,6 +1394,103 @@
   transition: background-color 150ms ease;
 }
 .nf-header__dropdown-link:hover { background-color: rgb(0 0 0 / 0.05); }
+
+/* -- SHOP mega panel ---------------------------------------------------
+   Ported from src/components/nav/MegaMenu.tsx + the wrapper in Navbar.tsx.
+   The panel is fixed to the viewport rather than the trigger, so the grid
+   stays centred at every width instead of sliding with the SHOP link. */
+/* The panel hangs off the header shell, not off the SHOP link, so the grid
+   stays centred on the viewport the way React's does. The shell is sticky, so
+   it is already the containing block -- the mega item opts out of position:
+   relative below to let the panel reach it. Anchoring to the shell rather than
+   a hardcoded height means the announcement bar can be any height. */
+.nf-header__item--mega { position: static; }
+.nf-mega {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  padding-top: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+  z-index: 50;
+}
+.nf-header__item--mega:hover .nf-mega,
+.nf-header__item--mega:focus-within .nf-mega { opacity: 1; visibility: visible; }
+.nf-mega__inner {
+  width: min(1100px, 92vw);
+  padding: 32px;
+  background-color: #f4f1ed;
+  border: 1px solid rgb(0 0 0 / 0.08);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 0.10);
+}
+.nf-mega__grid {
+  display: grid;
+  grid-template-columns: 1.35fr repeat(3, 0.65fr);
+  gap: 32px;
+}
+.nf-mega__label {
+  margin: 0;
+  font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: hsl(0 0% 20% / 0.4);
+}
+.nf-mega__tiles {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nf-mega__tile { display: block; text-decoration: none; }
+.nf-mega__tile-frame {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--nf-ivory-deep, #ece7e0);
+}
+.nf-mega__tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-img { transform: scale(1.05); }
+.nf-mega__tile-label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__tile:hover .nf-mega__tile-label { color: hsl(0 0% 20%); }
+.nf-mega__list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nf-mega__link {
+  font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: hsl(0 0% 20% / 0.75);
+  transition: color 150ms ease;
+}
+.nf-mega__link:hover { color: hsl(0 0% 20%); }
+
+/* The panel is desktop-only; the drawer carries the same links on mobile. */
+@media (max-width: 989px) { .nf-mega { display: none; } }
 
 /* -- Centre wordmark --------------------------------------------------- */
 .nf-header__logo {
@@ -1360,12 +2315,71 @@
                     class="nf-header__link"
                     
                     
-                  >HOME</a><div class="nf-header__item" ><a
+                  >HOME</a><div class="nf-header__item nf-header__item--mega" ><a
                       href="/collections/shop-all"
                       class="nf-header__link"
                       
-                    >SHOP</a><div class="nf-header__dropdown">
-                    <div class="nf-header__dropdown-inner"><a href="/collections/rings" class="nf-header__dropdown-link">Rings</a><a href="/collections/earrings" class="nf-header__dropdown-link">Earrings</a><a href="/collections/necklaces" class="nf-header__dropdown-link">Necklaces</a><a href="/collections/bracelets" class="nf-header__dropdown-link">Bracelets</a></div>
+                    >SHOP</a><div class="nf-mega">
+                    <div class="nf-mega__inner">
+                      <div class="nf-mega__grid">
+                        <div class="nf-mega__tiles-col">
+                          <p class="nf-mega__label">Shop by category</p>
+                          <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Rings</span>
+                              </a><a href="/collections/earrings" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Earrings</span>
+                              </a><a href="/collections/necklaces" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Necklaces</span>
+                              </a><a href="/collections/bracelets" class="nf-mega__tile">
+                                <span class="nf-mega__tile-frame"><img
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      alt=""
+                                      loading="lazy"
+                                      decoding="async"
+                                      width="240"
+                                      height="240"
+                                      class="nf-mega__tile-img"
+                                    ></span>
+                                <span class="nf-mega__tile-label">Bracelets</span>
+                              </a></div>
+                        </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">THE EDITS</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?sort_by=created-descending" class="nf-mega__link">New Arrivals</a></li><li><a href="/collections/shop-all?sort_by=best-selling" class="nf-mega__link">Bestsellers</a></li><li><a href="/collections/shop-all?filter.v.price.lte=1500" class="nf-mega__link">Under ₹1,500</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Naira Petite</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">By Occasion</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
+                          </div><div class="nf-mega__col">
+                            <p class="nf-mega__label">APPAREL</p>
+                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                          </div></div>
+                    </div>
                   </div>
                 </div><a
                     href="/pages/gifting"
@@ -1384,11 +2398,11 @@
                     
                   >CUSTOMISE</a></div>
       </div><a href="/" class="nf-header__logo" aria-label="Naira -- home"><img
-            src="/assets/nf-wordmark.png"
+            src="/assets/nf-naira-logo.svg"
             alt="Naira"
             class="nf-header__logo-img"
-            width="440"
-            height="99"
+            width="192"
+            height="44"
             loading="eager"
             fetchpriority="high"
           ></a><div class="nf-header__right"><a
@@ -1695,39 +2709,133 @@
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       <link rel="stylesheet" href="/assets/nf-tokens.css">
-<link rel="stylesheet" href="/assets/nf-content.css">
-
-<div class="nf-doc nf-concepts">
-  <div class="nf-concepts__divider">
+<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-doc nf-concepts">
+  <div class="nf-concepts__divider nf-cx-divider">
     <span class="nf-concepts__badge">CONCEPT A</span>
     <span class="nf-concepts__note">THE IVORY ATELIER · BRAND-LIGHT · DRAG TO SPIN</span>
-  </div><div class="nf-concepts__slot">
-      <p>Add the Concept A jewellery section directly below this divider.</p>
-    </div></div>
+  </div>
+</div>
+
+<section id="jewellery" class="nf-cx nf-cx--a"><div class="nf-cx__wash" aria-hidden="true"></div><div class="nf-cx__grid"><div class="nf-cx__model"><img class="nf-cx__model-img" src="/assets/nf-model-ivory.webp" alt="Chandbali Florale worn, Naira Flore demi-gold campaign"><span class="nf-cx__worn">WORN · CHANDBALI FLORALE</span>
+    </div><div class="nf-cx__console">
+      <p class="nf-cx__eyebrow">NAIRA FLORE · DEMI-GOLD</p>
+
+      <h2 class="nf-cx__h2" aria-label="Turn it in your hand."><span class="nf-cx__line" aria-label="Turn it"><span class="nf-cx__l" aria-hidden="true">T</span><span class="nf-cx__l" aria-hidden="true">u</span><span class="nf-cx__l" aria-hidden="true">r</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">i</span><span class="nf-cx__l" aria-hidden="true">t</span></span><div class="nf-cx__line nf-cx__line--em" aria-label="in your hand."><span class="nf-cx__l" aria-hidden="true">i</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">y</span><span class="nf-cx__l" aria-hidden="true">o</span><span class="nf-cx__l" aria-hidden="true">u</span><span class="nf-cx__l" aria-hidden="true">r</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">h</span><span class="nf-cx__l" aria-hidden="true">a</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true">d</span><span class="nf-cx__l" aria-hidden="true">.</span></div>
+      </h2>
+
+      <div class="nf-cx__stack"><div class="nf-cx__tray">
+            <div class="nf-cx__stage" role="img" aria-label="Rivière Eternal Necklace">
+              <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749" alt="Rivière Eternal Necklace" draggable="false">
+              <span class="nf-cx__hint"><span aria-hidden="true">&#10226;</span> DRAG TO SPIN</span>
+            </div>
+          </div><div class="nf-cx__selector"><button type="button" class="nf-cx__chip is-active" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button></div>
+      </div>
+
+      <h3 class="nf-cx__name">Rivière Eternal Necklace</h3>
+      <p class="nf-cx__materials">18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish</p>
+      <p class="nf-cx__price">₹1,799</p>
+
+      <div class="nf-cx__actions">
+        <button type="button" class="nf-cx__enquire">
+          <span class="nf-cx__enquire-fill" aria-hidden="true"></span>
+          <span class="nf-cx__enquire-label">ENQUIRE TO ORDER</span>
+        </button>
+        <a class="nf-cx__all" href="/collections/jewellery">VIEW ALL &#8594;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
 
 <link rel="stylesheet" href="/assets/nf-tokens.css">
-<link rel="stylesheet" href="/assets/nf-content.css">
-
-<div class="nf-doc nf-concepts">
-  <div class="nf-concepts__divider">
+<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-doc nf-concepts">
+  <div class="nf-concepts__divider nf-cx-divider">
     <span class="nf-concepts__badge">CONCEPT B</span>
     <span class="nf-concepts__note">THE EMERALD JEWEL BOX · NIGHT VITRINE · DRAG TO SPIN</span>
-  </div><div class="nf-concepts__slot">
-      <p>Add the Concept B jewellery section directly below this divider.</p>
-    </div></div>
+  </div>
+</div>
+
+<section id="jewellery" class="nf-cx nf-cx--b"><div class="nf-cx__hairline" aria-hidden="true"></div><div class="nf-cx__grid"><div class="nf-cx__model"><img class="nf-cx__model-img" src="/assets/nf-model-emerald.webp" alt="Pressed Petal Drops worn, Naira Flore demi-gold campaign"><span class="nf-cx__worn">WORN · PRESSED PETAL DROPS</span>
+    </div><div class="nf-cx__console">
+      <p class="nf-cx__eyebrow">THE JEWEL BOX · DEMI-GOLD</p>
+
+      <h2 class="nf-cx__h2" aria-label="Spin it toward the light."><span class="nf-cx__line" aria-label="Spin it toward"><span class="nf-cx__l" aria-hidden="true">S</span><span class="nf-cx__l" aria-hidden="true">p</span><span class="nf-cx__l" aria-hidden="true">i</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">i</span><span class="nf-cx__l" aria-hidden="true">t</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">t</span><span class="nf-cx__l" aria-hidden="true">o</span><span class="nf-cx__l" aria-hidden="true">w</span><span class="nf-cx__l" aria-hidden="true">a</span><span class="nf-cx__l" aria-hidden="true">r</span><span class="nf-cx__l" aria-hidden="true">d</span></span><div class="nf-cx__line nf-cx__line--em" aria-label="the light."><span class="nf-cx__l" aria-hidden="true">t</span><span class="nf-cx__l" aria-hidden="true">h</span><span class="nf-cx__l" aria-hidden="true">e</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">l</span><span class="nf-cx__l" aria-hidden="true">i</span><span class="nf-cx__l" aria-hidden="true">g</span><span class="nf-cx__l" aria-hidden="true">h</span><span class="nf-cx__l" aria-hidden="true">t</span><span class="nf-cx__l" aria-hidden="true">.</span></div>
+      </h2>
+
+      <div class="nf-cx__stack"><div class="nf-cx__vitrine">
+            <span class="nf-cx__vitrine-glow" aria-hidden="true"></span>
+            <div class="nf-cx__vitrine-inner">
+              <div class="nf-cx__stage" role="img" aria-label="Bold Nocturne Chain">
+                <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099" alt="Bold Nocturne Chain" draggable="false">
+                <span class="nf-cx__hint"><span aria-hidden="true">&#10226;</span> DRAG TO SPIN</span>
+              </div>
+            </div>
+          </div><div class="nf-cx__selector"><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip is-active" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button><button type="button" class="nf-cx__chip" aria-label="Bold Nocturne Chain"></button></div>
+      </div>
+
+      <h3 class="nf-cx__name">Bold Nocturne Chain</h3>
+      <p class="nf-cx__materials">18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish</p>
+      <p class="nf-cx__price">₹2,449</p>
+
+      <div class="nf-cx__actions">
+        <button type="button" class="nf-cx__enquire">
+          <span class="nf-cx__enquire-fill" aria-hidden="true"></span>
+          <span class="nf-cx__enquire-label">ENQUIRE TO ORDER</span>
+        </button>
+        <a class="nf-cx__all" href="/collections/jewellery">VIEW ALL &#8594;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
 
 <link rel="stylesheet" href="/assets/nf-tokens.css">
-<link rel="stylesheet" href="/assets/nf-content.css">
-
-<div class="nf-doc nf-concepts">
-  <div class="nf-concepts__divider">
+<link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-doc nf-concepts">
+  <div class="nf-concepts__divider nf-cx-divider">
     <span class="nf-concepts__badge">CONCEPT C</span>
     <span class="nf-concepts__note">GOLDEN HOUR · TERRACOTTA ARCHES · DRAG TO SPIN</span>
-  </div><div class="nf-concepts__slot">
-      <p>Add the Concept C jewellery section directly below this divider.</p>
-    </div></div>
+  </div>
+</div>
+
+<section id="jewellery" class="nf-cx nf-cx--c"><div class="nf-cx__speckle" aria-hidden="true"></div><div class="nf-cx__grid"><div class="nf-cx__model"><div class="nf-cx__arch-model">
+          <img src="/assets/nf-model-terracotta.webp" alt="Marigold Signet Ring worn, Naira Flore demi-gold campaign">
+        </div><span class="nf-cx__worn">WORN · MARIGOLD SIGNET</span>
+    </div><div class="nf-cx__console">
+      <p class="nf-cx__eyebrow">THE COURTYARD · DEMI-GOLD</p>
+
+      <h2 class="nf-cx__h2" aria-label="Gold, turned in the sun."><span class="nf-cx__line" aria-label="Gold, turned"><span class="nf-cx__l" aria-hidden="true">G</span><span class="nf-cx__l" aria-hidden="true">o</span><span class="nf-cx__l" aria-hidden="true">l</span><span class="nf-cx__l" aria-hidden="true">d</span><span class="nf-cx__l" aria-hidden="true">,</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">t</span><span class="nf-cx__l" aria-hidden="true">u</span><span class="nf-cx__l" aria-hidden="true">r</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true">e</span><span class="nf-cx__l" aria-hidden="true">d</span></span><div class="nf-cx__line nf-cx__line--em" aria-label="in the sun."><span class="nf-cx__l" aria-hidden="true">i</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">t</span><span class="nf-cx__l" aria-hidden="true">h</span><span class="nf-cx__l" aria-hidden="true">e</span><span class="nf-cx__l" aria-hidden="true"> </span><span class="nf-cx__l" aria-hidden="true">s</span><span class="nf-cx__l" aria-hidden="true">u</span><span class="nf-cx__l" aria-hidden="true">n</span><span class="nf-cx__l" aria-hidden="true">.</span></div>
+      </h2>
+
+      <div class="nf-cx__stack"><div class="nf-cx__arch-stage">
+            <div class="nf-cx__arch-clip">
+              <div class="nf-cx__stage" role="img" aria-label="Rivière Eternal Necklace">
+                <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749" alt="Rivière Eternal Necklace" draggable="false">
+                <span class="nf-cx__hint"><span aria-hidden="true">&#10226;</span> DRAG TO SPIN</span>
+              </div>
+            </div>
+          </div><div class="nf-cx__selector"><button type="button" class="nf-cx__chip is-active" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button><button type="button" class="nf-cx__chip" aria-label="Rivière Eternal Necklace"></button></div>
+      </div>
+
+      <h3 class="nf-cx__name">Rivière Eternal Necklace</h3>
+      <p class="nf-cx__materials">18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish</p>
+      <p class="nf-cx__price">₹1,799</p>
+
+      <div class="nf-cx__actions">
+        <button type="button" class="nf-cx__enquire">
+          <span class="nf-cx__enquire-fill" aria-hidden="true"></span>
+          <span class="nf-cx__enquire-label">ENQUIRE TO ORDER</span>
+        </button>
+        <a class="nf-cx__all" href="/collections/jewellery">VIEW ALL &#8594;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
 
 

@@ -20,7 +20,7 @@
         "lede": "At NAIRA, we value your privacy and are committed to transparency in how we collect, use, and protect your personal information.",
         "hero_background": "#F4F1ED",
         "show_anchor_nav": false,
-        "show_help": true,
+        "show_help": false,
         "help_heading": "Need Help?",
         "help_text": "For any questions about this Privacy Policy or your personal data, write to us at shopatnaira@gmail.com or reach us on WhatsApp.",
         "help_button_label": "Contact on WhatsApp",

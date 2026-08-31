@@ -103,7 +103,7 @@
         "lede": "These terms govern the use of the NAIRA website and services, including purchasing products and interacting with our platform.",
         "hero_background": "#F4F1ED",
         "show_anchor_nav": false,
-        "show_help": true,
+        "show_help": false,
         "help_heading": "Need Help?",
         "help_text": "For any questions about these Terms & Conditions, write to us at shopatnaira@gmail.com or reach us on WhatsApp.",
         "help_button_label": "Contact on WhatsApp",

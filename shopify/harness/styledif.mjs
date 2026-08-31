@@ -43,6 +43,9 @@ const collect = () => {
     // survives the checks above; catch it by the clip and the 1px box.
     if (cs.clipPath === 'inset(50%)' || /^rect\(0px,? 0px,? 0px,? 0px\)$/.test(cs.clip)) continue;
     if (r.width <= 2 || r.height <= 2) continue;
+    // Content inside a collapsed <details> is not painted, but it still
+    // reports a non-zero box, so every closed FAQ answer counted as an EXTRA.
+    if (el.closest('details:not([open])') && !el.closest('summary')) continue;
     const k = key(own);
     const n = (seen.get(k) || 0) + 1; seen.set(k, n);
     const style = {};

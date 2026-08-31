@@ -244,7 +244,10 @@
 .nf-doc__section + .nf-doc__section { border-top: 1px solid var(--nf-doc-rule); }
 .nf-doc__section { padding-bottom: clamp(32px, 4vw, 48px); margin-bottom: clamp(32px, 4vw, 48px); }
 .nf-doc__section:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: 0; }
-.nf-doc__section + .nf-doc__section { padding-top: clamp(32px, 4vw, 48px); }
+/* No padding-top here. FAQs.tsx, PrivacyPolicy.tsx and TermsOfService.tsx all
+   space their sections with padding-bottom + margin-bottom + a border-bottom on
+   every section but the last, and nothing above. The extra top padding added
+   48px per gap and ran these pages 250-480px taller than React. */
 .nf-doc__section h2 {
   font-size: clamp(20px, 2.2vw, 26px);
   font-weight: 600;

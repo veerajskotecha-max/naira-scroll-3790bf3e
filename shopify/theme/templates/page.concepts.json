@@ -27,7 +27,7 @@
         "piece_image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749",
         "thumb_count": 39,
         "active_index": 0,
-        "view_all_link": "/collections/jewellery"
+        "view_all_link": "/collections/shop-all"
       }
     },
     "concept_b": {
@@ -48,7 +48,7 @@
         "piece_image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_1_main.png?v=1786123099",
         "thumb_count": 39,
         "active_index": 2,
-        "view_all_link": "/collections/jewellery"
+        "view_all_link": "/collections/shop-all"
       }
     },
     "concept_c": {
@@ -69,7 +69,7 @@
         "piece_image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF7085-NEC_1_main.png?v=1786122749",
         "thumb_count": 39,
         "active_index": 0,
-        "view_all_link": "/collections/jewellery"
+        "view_all_link": "/collections/shop-all"
       }
     }
   },

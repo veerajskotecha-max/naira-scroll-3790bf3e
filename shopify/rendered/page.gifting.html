@@ -422,7 +422,16 @@
 .nf-jc { display: flex; height: 100%; flex-direction: column; }
 .nf-jc__link { display: block; width: 100%; text-decoration: none; color: inherit; }
 .nf-jc__frame { position: relative; overflow: hidden; background-color: var(--nf-ivory-deep); box-shadow: var(--nf-card-shadow); }
-.nf-jc__front, .nf-jc__back { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+/* Descendant selector, not `.nf-jc__front, .nf-jc__back`, purely for
+   specificity: nf-base.css carries `[class*="nf-"]:empty { display: revert }`
+   (it un-hides childless decorative divs that Sense's base.css collapses) and
+   an <img> is always :empty, so a single class loses that cascade and the
+   packshot reverts to display:inline -- adding an inline-baseline gap that
+   made every card 7px taller than React's. (0,2,0) ties it, and this
+   stylesheet is inline in the body so source order settles the tie.
+   nf-collection.liquid's own copy of this card dodges it only because its
+   classes are `jc__*`, with no "nf-" substring to match. */
+.nf-jc__frame .nf-jc__front, .nf-jc__frame .nf-jc__back { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
 .nf-jc__front { transition: opacity .35s ease-out; }
 .nf-jc__back { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease-out; }
 .nf-jc__link:hover .nf-jc__front, .nf-jc__link:focus-visible .nf-jc__front { opacity: 0; }

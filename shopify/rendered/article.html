@@ -404,6 +404,15 @@
    Beats the blanket .nf-journal :is(h1..h4) { font-weight: 500 }. */
 .nf-journal .nf-article :is(h1, h2, h3) { font-weight: 400; }
 
+/* Tailwind preflight zeroes p margins; the theme has no equivalent reset in
+   this scope, so every paragraph was carrying the UA `margin-block: 1em` on
+   top of the spacing the rules below set — 1em of a different size each time
+   (10px on the meta line, 18px on the lead, 16px in the body). All vertical
+   rhythm here is set by margin-top, so only the bottom needs clearing; the
+   meta line is the one paragraph with no margin-top of its own. */
+.nf-journal .nf-article p { margin-bottom: 0; }
+.nf-journal .nf-article__head > p:first-child { margin-top: 0; }
+
 /* React: <div class="py-10"> wraps sections + aside + more list, so the 40px
    belongs to that wrapper and not to the body — leaving it on the body added
    it to the aside's own 48px and pushed the whole tail of the page down. */

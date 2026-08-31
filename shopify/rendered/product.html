@@ -560,7 +560,10 @@
 .nf-pdp__tabbtn.is-active { background-color: hsl(0 0% 12%); color: #fff; }
 .nf-pdp__tabbtn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
 .nf-pdp__desc { font-size: 13px; line-height: 1.7; color: hsl(0 0% 40%); }
-.nf-pdp__detailstack > * + * { margin-top: 12px; }
+/* :not(), not `> * + *`: the children below each reset `margin: 0`, which
+   ties on specificity and wins on order, so the stack's 12px (React's
+   space-y-3 on this panel) collapsed to nothing. */
+.nf-pdp__detailstack > :not(:first-child) { margin-top: 12px; }
 .nf-pdp__blurb { margin: 0; font-size: 13px; line-height: 1.7; color: hsl(0 0% 40%); }
 .nf-pdp__specs { margin: 0; }
 .nf-pdp__spec { display: flex; flex-direction: column; gap: 2px; }

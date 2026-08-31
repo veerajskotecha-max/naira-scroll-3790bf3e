@@ -22,7 +22,7 @@ const probe = async (base, path) => {
           Math.round(b.top+scrollY), Math.round(b.height),
           `mt${parseFloat(cs.marginTop)} mb${parseFloat(cs.marginBottom)} pt${parseFloat(cs.paddingTop)} pb${parseFloat(cs.paddingBottom)} lh${cs.lineHeight}`,
           (ch.textContent||'').trim().slice(0,20)]);
-        if (d < 2) walk(ch, d+1);
+        if (d < 3) walk(ch, d+1);
       }
     };
     walk(art, 0);

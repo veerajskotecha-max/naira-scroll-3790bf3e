@@ -98,6 +98,10 @@
 .nf-arr {
   position: relative;
   width: 100%;
+  /* React's section is overflow-hidden. Without it the floral corner, which
+     sits at right:-80px by design, widened the page to 528px at a 390px
+     viewport and the whole site scrolled sideways on a phone. */
+  overflow: hidden;
   background-color: hsl(33 30% 85%);
   padding-block: 40px;
 }

@@ -170,7 +170,17 @@ if (process.argv[1] === import.meta.filename) {
   const list = names.length ? names : fs.readdirSync(path.join(THEME, 'templates')).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, ''));
   for (const n of list) {
     const extra = {};
-    if (n === 'product') extra.product = cat.products.find(p => p.available) || cat.products[0];
+    // PRODUCT_HANDLE pins the PDP fixture so it can be diffed against the same
+    // product on the React side. Default picks a jewellery product, not just the
+    // first available one -- the section branches on vendor, and an apparel
+    // product renders the other layout entirely.
+    if (n === 'product') {
+      const want = process.env.PRODUCT_HANDLE;
+      extra.product = (want && cat.products.find(p => p.handle === want))
+        || cat.products.find(p => (p.vendor || '').toLowerCase() === 'naira petite' && p.available)
+        || cat.products.find(p => p.available) || cat.products[0];
+      if (want && extra.product.handle !== want) console.log(`  note: no product "${want}" in the catalogue, using ${extra.product.handle}`);
+    }
     // The collection fixture stands in for React's /jewellery, so it must be a
     // collection that actually holds the Naira Petite line. Picking "the first
     // non-empty collection" silently became `frontpage` (apparel only) once the

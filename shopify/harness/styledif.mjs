@@ -36,6 +36,13 @@ const collect = () => {
     if (cs.display === 'none' || cs.visibility === 'hidden') continue;
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) continue;
+    // Screen-reader-only text is not a visual difference. The theme carries a
+    // skip link, a cart-count label and a newsletter input label that React has
+    // no equivalent for -- correct a11y markup, but it showed up as an EXTRA on
+    // every single page. sr-only is clipped rather than display:none, so it
+    // survives the checks above; catch it by the clip and the 1px box.
+    if (cs.clipPath === 'inset(50%)' || /^rect\(0px,? 0px,? 0px,? 0px\)$/.test(cs.clip)) continue;
+    if (r.width <= 2 || r.height <= 2) continue;
     const k = key(own);
     const n = (seen.get(k) || 0) + 1; seen.set(k, n);
     const style = {};

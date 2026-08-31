@@ -218,3 +218,59 @@ FAQs page; a `/gifting` page (GIFTING currently points at
   collection or product is missing.
 - `pgrep -f` / `pkill -f` match their own command line and will kill the
   calling shell.
+
+## Traps found the hard way (2026-08-31 pass)
+
+Six of these cost real time. All are now fixed, but they name whole classes of
+bug that a computed-style diff cannot see, so keep them in mind.
+
+**A font that fails to load measures identically to one that loads.**
+`getComputedStyle().fontFamily` returns the *declared* stack, not the face the
+browser used. `sections/nf-header.liquid` declared a second `@font-face` for
+Velista from an undecodable `nf-velista.woff2`; being later in the cascade it
+won the family match and every Velista heading site-wide fell back to Cormorant
+Garamond, while the port measured clean. Check with
+`document.fonts.check('26px Velista')` — `harness/fontcheck.mjs` does this.
+
+**`assign x = blank` is not a usable sentinel.** Liquid's `blank` literal never
+compares equal to itself, so `{% if x != blank %}` always passes. On the PDP
+this nil'd the variant: price zero, empty size picker, permanently sold out, no
+Add to Cart — on the live storefront, not just locally.
+
+**`contains` is not valid inside `assign`.** Parses in liquidjs, rejected by
+Shopify with "Expected end_of_string but found comparison".
+
+**A `url` setting's `default` only accepts `/collections` or `/collections/all`,
+and every schema `label`/`name` has a 50-character cap.** Either one makes
+Shopify reject the whole section file.
+
+**Do not write a Liquid tag inside a `{% comment %}`.** Shopify's parser reads
+it. Cost hours twice.
+
+**`font: inherit` resets every font longhand.** On an element that also carries
+a class setting family/size/weight, the shorthand silently wipes all three.
+This was 85% of the port's remaining style drift.
+
+Also worth knowing: the theme's root font-size is **10px**, not 16px
+(`layout/theme.liquid` sets `62.5%`), so any `rem` lifted from Tailwind lands at
+0.625x. The existing `nf-*` CSS was authored for the 10px root and is correct —
+verified, no systematic 0.625 ratio in the measurements — but new CSS copied
+from React must be converted to px.
+
+## Diff artifacts, so they are not "fixed" again
+
+Four differences were faults in the instrument, all now corrected in
+`harness/styledif.mjs`:
+
+- the welcome popup opens 9s after load on both sides; whichever side reached
+  that mark first during the scroll walk reported the whole dialog as a diff
+- screen-reader-only text (skip link, cart-count label, newsletter label) is
+  correct a11y markup React lacks — it is clipped, not `display:none`, so it
+  survived the visibility checks
+- content inside a collapsed `<details>` is not painted but still reports a box
+- the harness's own `image_tag` discarded every keyword argument, so ten
+  sections rendered classless images locally
+
+`harness/difall.sh <width>` runs the sweep at any viewport and pins the PDP
+fixture; `harness/widthcheck.sh` catches horizontal overflow; `harness/up.sh`
+restarts both servers (they get reaped between tool calls).

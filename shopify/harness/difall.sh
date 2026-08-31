@@ -19,6 +19,11 @@ PAIRS="
 /collections|list-collections
 /jewellery/riviere-eternal-necklace|product
 "
+# The PDP fixture must be the same product both sides show. render.mjs picks a
+# default when PRODUCT_HANDLE is unset, so a concurrent render silently swaps
+# the product mid-sweep and the numbers jump for no reason. Pin it here.
+PRODUCT_HANDLE=riviere-eternal-necklace node render.mjs product > /dev/null 2>&1
+
 echo "=== viewport ${W}px ==="
 printf "%-38s %-22s %7s %7s %7s %11s %13s\n" ROUTE TEMPLATE MISSING EXTRA DRIFT IMG_R/T HEIGHT_R/T
 for p in $PAIRS; do

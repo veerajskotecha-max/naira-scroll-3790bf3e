@@ -43,15 +43,15 @@
   onload="this.media='all'"
 >
 
-{%- style -%}
-  @font-face {
-    font-family: 'Velista';
-    src: url({{ 'nf-velista.woff2' | asset_url }}) format('woff2');
-    font-weight: 400 600;
-    font-style: normal;
-    font-display: swap;
-  }
-{%- endstyle -%}
+{%- comment -%}
+  No @font-face here. This section used to declare a second Velista face from
+  nf-velista.woff2; the browser could not decode that file, and because the
+  header's declaration came later it won the family match, so every Velista
+  heading on every page silently fell back to Cormorant Garamond.
+  document.fonts.check('26px Velista') returned false on the theme and true on
+  React. assets/nf-fonts.css already declares the family once, from the same
+  Velista.ttf React ships, which is the file that works.
+{%- endcomment -%}
 
 {%- liquid
   assign cart_count = cart.item_count

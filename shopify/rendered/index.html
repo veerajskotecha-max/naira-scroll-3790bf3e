@@ -517,6 +517,10 @@ section.nf-onwash { background-color: transparent !important; }
 .nf-arr {
   position: relative;
   width: 100%;
+  /* React's section is overflow-hidden. Without it the floral corner, which
+     sits at right:-80px by design, widened the page to 528px at a 390px
+     viewport and the whole site scrolled sideways on a phone. */
+  overflow: hidden;
   background-color: hsl(33 30% 85%);
   padding-block: 40px;
 }
@@ -793,7 +797,11 @@ section.nf-onwash { background-color: transparent !important; }
   --nf-header-track: 0.12em;
   width: 100%;
   background-color: var(--nf-header-bg, #f4f1ed);
-  color: var(--nf-text, #1a1614);
+  /* React's Navbar and MobileMenu set no colour, so the header inherits the
+     stock shadcn --foreground (222.2 84% 4.9%) rather than the brand ink the
+     rest of the site uses. Matched deliberately -- flip back to var(--nf-text)
+     if the brand ink is preferred here. */
+  color: rgb(2 8 23);
   transition: background-color 300ms ease, box-shadow 300ms ease, backdrop-filter 300ms ease;
 }
 /* Sticky is declared on the section wrapper as well as the inner shell:
@@ -1176,7 +1184,11 @@ section.nf-onwash { background-color: transparent !important; }
   display: flex;
   flex-direction: column;
   background-color: var(--nf-header-bg, #f4f1ed);
-  color: var(--nf-text, #1a1614);
+  /* React's Navbar and MobileMenu set no colour, so the header inherits the
+     stock shadcn --foreground (222.2 84% 4.9%) rather than the brand ink the
+     rest of the site uses. Matched deliberately -- flip back to var(--nf-text)
+     if the brand ink is preferred here. */
+  color: rgb(2 8 23);
   transform: translateX(-100%);
   transition: transform 250ms cubic-bezier(0.4, 0, 1, 1);
 }
@@ -1219,8 +1231,9 @@ section.nf-onwash { background-color: transparent !important; }
   align-items: center;
   min-height: 52px;
   font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 500;
+  line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   text-decoration: none;
@@ -1238,8 +1251,12 @@ section.nf-onwash { background-color: transparent !important; }
   padding: 0;
   border: 0;
   background: none;
-  font: inherit;
-  text-align: left;
+  /* No `font: inherit`, and no font-family either. Both reset the family that
+     .nf-mm__link sets on this same element, and being later in the sheet they
+     won -- every parent label rendered 16px system sans instead of 19px
+     Velista. A button only needs the box and cursor reset here. */
+  color: inherit;
+  text-align: center;
   cursor: pointer;
 }
 .nf-mm__chevron { flex: none; transition: transform 200ms ease; }
@@ -1254,7 +1271,14 @@ section.nf-onwash { background-color: transparent !important; }
   animation: nf-fade-in 200ms ease;
 }
 .nf-mm__sub[hidden] { display: none; }
-.nf-mm__link--sub { min-height: 42px; padding-block: 8px; font-size: 16px; opacity: 0.65; }
+.nf-mm__link--sub {
+  min-height: 42px;
+  padding-block: 8px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+}
 @keyframes nf-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -1500,6 +1524,8 @@ section.nf-onwash { background-color: transparent !important; }
   font-family: var(--nf-font-display);
   font-size: 13px;
   font-weight: 500;
+  /* A button's UA line-height is `normal`; React's inherits 1.5 from the app. */
+  line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: var(--nf-track-8);
   cursor: pointer;
@@ -1820,13 +1846,7 @@ section.nf-onwash { background-color: transparent !important; }
   rel="stylesheet"
   media="print"
   onload="this.media='all'"
-><style>@font-face {
-    font-family: 'Velista';
-    src: url(/assets/nf-velista.woff2) format('woff2');
-    font-weight: 400 600;
-    font-style: normal;
-    font-display: swap;
-  }</style><div
+><div
   class="nf-header nf-header--sticky"
   data-nf-header
   style="--nf-header-bg: #F4F1ED; --nf-header-accent: #2E5B60;"
@@ -1858,7 +1878,7 @@ section.nf-onwash { background-color: transparent !important; }
                           <p class="nf-mega__label">Shop by category</p>
                           <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -1869,7 +1889,7 @@ section.nf-onwash { background-color: transparent !important; }
                                 <span class="nf-mega__tile-label">Rings</span>
                               </a><a href="/collections/earrings" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -1880,7 +1900,7 @@ section.nf-onwash { background-color: transparent !important; }
                                 <span class="nf-mega__tile-label">Earrings</span>
                               </a><a href="/collections/necklaces" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -1891,7 +1911,7 @@ section.nf-onwash { background-color: transparent !important; }
                                 <span class="nf-mega__tile-label">Necklaces</span>
                               </a><a href="/collections/bracelets" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -2766,8 +2786,8 @@ section.nf-onwash { background-color: transparent !important; }
     <div class="nf-arr__head">
       <h2 class="nf-arr__title nf-display">New Arrivals</h2><p class="nf-arr__subtitle nf-display">The latest pieces, straight from our studio.</p></div><div class="nf-arr__grid"><link rel="stylesheet" href="/assets/nf-card.css"><div class="nf-card" data-nf-reveal style="--nf-card-delay: 100ms;">
   <div class="nf-card__media">
-    <a class="nf-card__media-link" href="/products/blush-of-dawn" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn.jpg?v=1787276136&width=1200" loading="lazy">
-        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn-0.jpg?v=1787276136&width=1200" loading="lazy"></a><button
+    <a class="nf-card__media-link" href="/products/blush-of-dawn" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn.jpg?v=1787276136&width=600&width=1200" class="nf-card__img nf-card__img--primary" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw">
+        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn-0.jpg?v=1787276136&width=600&width=1200" class="nf-card__img nf-card__img--hover" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"></a><button
       type="button"
       class="nf-card__wish nf-press"
       data-nf-wishlist="blush-of-dawn"
@@ -2829,8 +2849,8 @@ section.nf-onwash { background-color: transparent !important; }
       </span>
     </button></div><link rel="stylesheet" href="/assets/nf-card.css"><div class="nf-card" data-nf-reveal style="--nf-card-delay: 160ms;">
   <div class="nf-card__media">
-    <a class="nf-card__media-link" href="/products/ethereal-lilac" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac.jpg?v=1787276142&width=1200" loading="lazy">
-        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac-0.jpg?v=1787276142&width=1200" loading="lazy"></a><button
+    <a class="nf-card__media-link" href="/products/ethereal-lilac" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac.jpg?v=1787276142&width=600&width=1200" class="nf-card__img nf-card__img--primary" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw">
+        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac-0.jpg?v=1787276142&width=600&width=1200" class="nf-card__img nf-card__img--hover" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"></a><button
       type="button"
       class="nf-card__wish nf-press"
       data-nf-wishlist="ethereal-lilac"
@@ -2892,8 +2912,8 @@ section.nf-onwash { background-color: transparent !important; }
       </span>
     </button></div><link rel="stylesheet" href="/assets/nf-card.css"><div class="nf-card" data-nf-reveal style="--nf-card-delay: 220ms;">
   <div class="nf-card__media">
-    <a class="nf-card__media-link" href="/products/royal-enigma" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma.jpg?v=1787276148&width=1200" loading="lazy">
-        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma-0.jpg?v=1787276148&width=1200" loading="lazy"></a><button
+    <a class="nf-card__media-link" href="/products/royal-enigma" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma.jpg?v=1787276148&width=600&width=1200" class="nf-card__img nf-card__img--primary" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw">
+        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma-0.jpg?v=1787276148&width=600&width=1200" class="nf-card__img nf-card__img--hover" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"></a><button
       type="button"
       class="nf-card__wish nf-press"
       data-nf-wishlist="royal-enigma"
@@ -2955,8 +2975,8 @@ section.nf-onwash { background-color: transparent !important; }
       </span>
     </button></div><link rel="stylesheet" href="/assets/nf-card.css"><div class="nf-card" data-nf-reveal style="--nf-card-delay: 280ms;">
   <div class="nf-card__media">
-    <a class="nf-card__media-link" href="/products/amber-bloom-set" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set.jpg?v=1787276154&width=1200" loading="lazy">
-        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set-0.jpg?v=1787276154&width=1200" loading="lazy"></a><button
+    <a class="nf-card__media-link" href="/products/amber-bloom-set" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set.jpg?v=1787276154&width=600&width=1200" class="nf-card__img nf-card__img--primary" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw">
+        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set-0.jpg?v=1787276154&width=600&width=1200" class="nf-card__img nf-card__img--hover" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"></a><button
       type="button"
       class="nf-card__wish nf-press"
       data-nf-wishlist="amber-bloom-set"
@@ -3445,15 +3465,15 @@ section.nf-onwash { background-color: transparent !important; }
         </div><p class="nf-film__lede nf-reveal">See the craftsmanship, colours, and quality of Naira's timeless designs.</p><div class="nf-film__cta-wrap nf-reveal">
             <a class="nf-film__cta" href="https://www.instagram.com/reel/DWJxV5CsWSt/" target="_blank" rel="noopener noreferrer">WATCH ON INSTAGRAM</a>
           </div><div class="nf-film__featured nf-reveal"><p>FEATURED IN THIS CAMPAIGN</p><div class="nf-film__products"><a class="nf-film__card" href="/products/amber-bloom-set">
-                  <div class="nf-film__card-media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set.jpg?v=1787276154&width=1200" loading="lazy"></div>
+                  <div class="nf-film__card-media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set.jpg?v=1787276154&width=800&width=1200" alt="Amber Bloom Set" loading="lazy" sizes="(min-width: 1024px) 180px, 30vw"></div>
                   <p class="nf-film__card-title">Amber Bloom Set</p>
                   <p class="nf-film__card-price">₹48,000</p>
                 </a><a class="nf-film__card" href="/products/amber-radiance">
-                  <div class="nf-film__card-media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance.jpg?v=1787276161&width=1200" loading="lazy"></div>
+                  <div class="nf-film__card-media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance.jpg?v=1787276161&width=800&width=1200" alt="Amber Radiance" loading="lazy" sizes="(min-width: 1024px) 180px, 30vw"></div>
                   <p class="nf-film__card-title">Amber Radiance</p>
                   <p class="nf-film__card-price">₹49,000</p>
                 </a><a class="nf-film__card" href="/products/blush-of-dawn">
-                  <div class="nf-film__card-media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn.jpg?v=1787276136&width=1200" loading="lazy"></div>
+                  <div class="nf-film__card-media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn.jpg?v=1787276136&width=800&width=1200" alt="Blush of Dawn" loading="lazy" sizes="(min-width: 1024px) 180px, 30vw"></div>
                   <p class="nf-film__card-title">Blush of Dawn</p>
                   <p class="nf-film__card-price">₹44,000</p>
                 </a></div>

@@ -106,7 +106,7 @@ export function buildEngine(themeRoot) {
     image_tag: (src, ...a) => {
       const o = kwargs(a);
       return `<img src="${imageUrl(src, { width: o.width || 1200 })}"${attr({
-        alt: o.alt, class: o.class, loading: o.loading || 'lazy', sizes: o.sizes, widths: undefined,
+        alt: o.alt, class: o.class, loading: o.loading || 'lazy', sizes: o.sizes, width: o.width, height: o.height,
       })}>`;
     },
   };
@@ -116,7 +116,13 @@ export function buildEngine(themeRoot) {
   function kwargs(args) {
     const o = {};
     for (const a of args) {
-      if (a && typeof a === 'object' && !Array.isArray(a)) Object.assign(o, a);
+      if (!a || typeof a !== 'object') continue;
+      // liquidjs hands named filter arguments over as ['key', value] pairs, and
+      // the Array check below used to skip exactly those -- so image_tag lost
+      // every alt/class/sizes/widths it was given and ten sections rendered
+      // classless images that could not be measured locally.
+      if (Array.isArray(a)) { if (a.length === 2 && typeof a[0] === 'string') o[a[0]] = a[1]; continue; }
+      Object.assign(o, a);
     }
     return o;
   }

@@ -100,28 +100,36 @@
   endif
   assign default_ring_size = '6'
 
-  assign size_option = blank
+  # `assign x = blank` then `x != blank` is NOT a usable sentinel: Liquid's
+  # blank literal never compares equal to itself, so the guard always passed,
+  # `v` was overwritten with nothing, and the page rendered a nil variant
+  # (price 0, no size UI, permanently sold out). Boolean flags instead.
+  assign size_option = nil
+  assign has_size_option = false
   unless is_ring
     for opt in product.options_with_values
       assign opt_name_lc = opt.name | downcase
-      if opt_name_lc == 'size'
+      if opt_name_lc == 'size' and opt.values.size > 1
         assign size_option = opt
+        assign has_size_option = true
       endif
     endfor
   endunless
 
-  if is_ring == false and size_option != blank
+  if is_ring == false and has_size_option
     assign first_size_value = size_option.values | first
-    assign matched_variant = blank
+    assign matched_variant = nil
+    assign has_matched_variant = false
     for vv in product.variants
       # Unconditional re-assign on every match, deliberately no "keep only the
       # first match" guard -- harmless since Shopify never gives two variants
       # the same value for one option.
       if vv.option1 == first_size_value or vv.option2 == first_size_value or vv.option3 == first_size_value
         assign matched_variant = vv
+        assign has_matched_variant = true
       endif
     endfor
-    if matched_variant != blank
+    if has_matched_variant
       assign v = matched_variant
     endif
   endif
@@ -137,10 +145,11 @@
     assign pct = diff | divided_by: v.compare_at_price | round
   endif
 
-  assign related_pool = product.collections.first.products
-  if related_pool == blank
-    assign related_pool = collections['all'].products
-  endif
+  # JewelDetail.tsx leads the recommendations with same-category pieces and
+  # fills the remaining slots from the rest of the atelier -- not with whatever
+  # the first collection happens to hold, which surfaced ready-to-wear on a
+  # necklace page.
+  assign related_pool = collections['all'].products
 -%}
 
 <div class="nf nf-pdp" data-nf-pdp>
@@ -166,19 +175,30 @@
       </button>
 
       {%- if product.media.size > 0 -%}
-        <div class="nf-pdp__rail nf-pdp__rail--{{ product.media.size }}" data-nf-rail>
+        {%- comment -%}
+          Hand-written <img>, not the image_tag filter. Two reasons, both real:
+          the previous call piped `alt: media.alt | default: product.title`
+          INSIDE the argument list, which Liquid parses as
+          (image_tag ...) | default: ... -- so `class` was never passed and the
+          gallery rendered classless, unstyled, full intrinsic width. And the
+          local render harness discards every image_tag keyword argument, so
+          nothing class-driven can be measured through it either.
+        {%- endcomment -%}
+        {%- assign shown = product.media.size -%}
+        {%- if shown > 4 -%}{%- assign shown = 4 -%}{%- endif -%}
+        <div class="nf-pdp__rail nf-pdp__rail--{{ shown }}" data-nf-rail>
           {%- for media in product.media limit: 4 -%}
             {%- comment -%} Liquid has no ternary; first image must load eagerly (LCP). {%- endcomment -%}
             {%- assign img_loading = 'lazy' -%}
             {%- if forloop.first -%}{%- assign img_loading = 'eager' -%}{%- endif -%}
+            {%- assign img_alt = media.alt | default: product.title -%}
             <button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="{{ forloop.index0 }}"
                     aria-label="Open {{ product.title }} image {{ forloop.index }} full screen">
-              {{ media.preview_image | image_url: width: 1400 | image_tag:
-                   loading: img_loading,
-                   sizes: '(min-width: 768px) 50vw, 100vw',
-                   widths: '400,800,1200,1400',
-                   alt: media.alt | default: product.title,
-                   class: 'nf-pdp__img' }}
+              <img class="nf-pdp__img"
+                   src="{{ media.preview_image | image_url: width: 1400 }}"
+                   srcset="{{ media.preview_image | image_url: width: 400 }} 400w, {{ media.preview_image | image_url: width: 800 }} 800w, {{ media.preview_image | image_url: width: 1200 }} 1200w, {{ media.preview_image | image_url: width: 1400 }} 1400w"
+                   sizes="(min-width: 768px) 50vw, 100vw"
+                   alt="{{ img_alt | escape }}" loading="{{ img_loading }}" decoding="async">
             </button>
           {%- endfor -%}
         </div>
@@ -202,7 +222,7 @@
           <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
           Tap to zoom
           {%- if product.media.size > 1 -%}
-            <span class="nf-pdp__zoomhint-count">&middot; <span data-nf-idx>1</span>/{{ product.media.size }}</span>
+            <span class="nf-pdp__zoomhint-count" data-nf-idx data-nf-total="{{ shown }}">&middot; 1/{{ shown }}</span>
           {%- endif -%}
         </p>
         {%- if product.media.size > 1 -%}
@@ -349,7 +369,7 @@
               <p>Still unsure? Message us on WhatsApp with your measurement and we will confirm the size for you.</p>
             </div>
           </dialog>
-        {%- elsif size_option != blank -%}
+        {%- elsif has_size_option -%}
           {%- comment -%}
             A handful of ready-to-wear pieces (not rings) carry a genuine
             multi-value Shopify "Size" option -- these use real variants,
@@ -363,7 +383,7 @@
             {%- for sv in size_option.values -%}
               {%- assign is_default = false -%}
               {%- if forloop.first -%}{%- assign is_default = true -%}{%- endif -%}
-              {%- assign sv_variant = blank -%}
+              {%- assign sv_variant = nil -%}
               {%- for vv in product.variants -%}
                 {%- comment -%} Unconditional re-assign on every match (no "first match only"
                   guard): a self-referential assign inside a nested if-inside-for silently
@@ -591,11 +611,128 @@
           <button type="button" class="nf-pdp__tabbtn is-active" role="tab" aria-selected="true" id="nf-tab-details-{{ uid }}" aria-controls="nf-panel-details-{{ uid }}" data-nf-tab="details">Details</button>
           <button type="button" class="nf-pdp__tabbtn" role="tab" aria-selected="false" id="nf-tab-care-{{ uid }}" aria-controls="nf-panel-care-{{ uid }}" data-nf-tab="care">Care</button>
         </div>
+        {%- comment -%}
+          JewelDetail.tsx does not dump the raw listing copy into the Details
+          tab: it renders a blurb, then a definition list of Length / Stone /
+          Setting / ... specs, then the styling tip, then the materials line,
+          and keeps the care copy for the Care tab. The bundled catalogue holds
+          those as separate fields; the live listing holds the same content as
+          one description, so it is split back apart here. The Shopify copy is
+          written to a fixed shape -- lead paragraph, a "STYLING TIP:"
+          paragraph, a "Details" heading over a spec list, a "Care" heading over
+          its paragraph -- and anything that does not match simply falls through
+          to the raw description, which is what this used to render for
+          everything.
+        {%- endcomment -%}
+        {%- liquid
+          assign desc = product.description
+          assign desc_paras = desc | split: '</p>'
+          assign desc_blurb = ''
+          assign desc_tip = ''
+          assign desc_care = ''
+          assign desc_specs = ''
+          assign has_specs = false
+          assign has_care_head = false
+
+          if desc_paras.size > 0
+            assign desc_blurb = desc_paras[0] | strip_html | strip
+          endif
+
+          for chunk in desc_paras
+            assign is_tip = false
+            if chunk contains 'STYLING TIP'
+              assign is_tip = true
+            endif
+            if is_tip
+              assign desc_tip = chunk | strip_html | remove_first: 'STYLING TIP:' | strip
+            endif
+          endfor
+
+          assign ul_parts = desc | split: '<ul>'
+          if ul_parts.size > 1
+            assign has_specs = true
+            assign desc_specs = ul_parts[1] | split: '</ul>' | first
+          endif
+
+          if desc contains '<strong>Care</strong>'
+            assign has_care_head = true
+          endif
+          if has_care_head
+            assign care_rest = desc | split: '<strong>Care</strong>' | last | split: '</p>'
+            if care_rest.size > 1
+              assign desc_care = care_rest[1] | strip_html | strip
+            endif
+          endif
+        -%}
         <div class="nf-pdp__tabpanel" id="nf-panel-details-{{ uid }}" role="tabpanel" aria-labelledby="nf-tab-details-{{ uid }}" data-nf-tabpanel="details">
-          {%- if product.description != blank -%}<div class="nf-pdp__desc">{{ product.description }}</div>{%- endif -%}
+          {%- if has_specs -%}
+            <div class="nf-pdp__detailstack">
+              {%- if desc_blurb != blank -%}<p class="nf-pdp__blurb">{{ desc_blurb }}</p>{%- endif -%}
+              <dl class="nf-pdp__specs">
+                {%- assign spec_items = desc_specs | split: '<li>' -%}
+                {%- for raw_spec in spec_items -%}
+                  {%- assign spec = raw_spec | split: '</li>' | first | strip_html | strip -%}
+                  {%- if spec != blank -%}
+                    {%- assign spec_head = spec | split: ':' | first -%}
+                    {%- assign has_label = false -%}
+                    {%- if spec_head != spec -%}{%- assign has_label = true -%}{%- endif -%}
+                    {%- if has_label -%}
+                      {%- assign spec_label = spec_head | strip -%}
+                      {%- assign spec_value = spec | remove_first: spec_head | remove_first: ':' | strip -%}
+                      {%- assign spec_label_lc = spec_label | downcase -%}
+                      {%- if spec_label_lc == 'plating' -%}{%- assign plating_value = spec_value -%}{%- endif -%}
+                      {%- if spec_label_lc == 'material' -%}{%- assign material_value = spec_value -%}{%- endif -%}
+                      <div class="nf-pdp__spec"><dt>{{ spec_label }}</dt><dd>{{ spec_value }}</dd></div>
+                    {%- else -%}
+                      <dd class="nf-pdp__spec-loose">{{ spec }}</dd>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </dl>
+              {%- if desc_tip != blank -%}
+                <p class="nf-pdp__tip"><span class="nf-pdp__tip-label">Styling tip</span>{{ desc_tip }}</p>
+              {%- endif -%}
+              {%- liquid
+                # The bundled catalogue carries a curated one-line materials
+                # string; Shopify has no field for it, so it is rebuilt from the
+                # product's own Plating / stone / Material words rather than
+                # invented. A `custom.materials` metafield still wins.
+                if materials_value == blank
+                  assign derived_materials = ''
+                  if plating_value != blank
+                    assign derived_materials = plating_value
+                  endif
+                  if stone_value != blank
+                    assign stone_lc = stone_value | downcase
+                    if derived_materials != blank
+                      assign derived_materials = derived_materials | append: ' · '
+                    endif
+                    assign derived_materials = derived_materials | append: stone_lc
+                  endif
+                  if material_value != blank
+                    assign material_lc = material_value | downcase
+                    if derived_materials != blank
+                      assign derived_materials = derived_materials | append: ' · '
+                    endif
+                    assign derived_materials = derived_materials | append: material_lc
+                  endif
+                  assign materials_value = derived_materials
+                endif
+              -%}
+              {%- if materials_value != blank -%}
+                <p class="nf-pdp__materials">{{ materials_value }}</p>
+              {%- endif -%}
+            </div>
+          {%- elsif product.description != blank -%}
+            <div class="nf-pdp__desc">{{ product.description }}</div>
+          {%- endif -%}
         </div>
         <div class="nf-pdp__tabpanel" id="nf-panel-care-{{ uid }}" role="tabpanel" aria-labelledby="nf-tab-care-{{ uid }}" data-nf-tabpanel="care" hidden>
-          <div class="nf-pdp__desc">{{ section.settings.care_text }}</div>
+          {%- if desc_care != blank -%}
+            <p class="nf-pdp__care">{{ desc_care }}</p>
+          {%- else -%}
+            <div class="nf-pdp__desc">{{ section.settings.care_text }}</div>
+          {%- endif -%}
         </div>
       </div>
 
@@ -653,7 +790,7 @@
     price is fully out of the way, matching JewelDetail.tsx's stickyBarVisible logic
     (see the script below: this is not a plain IntersectionObserver, on purpose --
     see the comment by checkStickyBar). {%- endcomment -%}
-  <div class="nf-pdp__bar" data-nf-bar hidden aria-hidden="true">
+  <div class="nf-pdp__bar" data-nf-bar aria-hidden="true">
     <button type="button" class="nf-pdp__bar-wish" data-nf-wishlist aria-pressed="false" aria-label="Add to wishlist">
       {%- render 'nf-icon-heart', size: 16 -%}
     </button>
@@ -676,16 +813,26 @@
   {%- if product.media.size > 0 -%}
     <dialog class="nf-pdp__lightbox" data-nf-lightbox aria-label="{{ product.title }}, image viewer">
       <div class="nf-pdp__lightbox-top">
-        <p class="nf-pdp__lightbox-name">{{ product.title }}</p>
-        <button type="button" class="nf-pdp__lightbox-btn" data-nf-dialog-close aria-label="Close image viewer">
-          {%- render 'nf-icon-close', size: 18 -%}
-        </button>
+        <div class="nf-pdp__lightbox-id">
+          <p class="nf-pdp__lightbox-name">{{ product.title }}</p>
+          {%- if product.media.size > 1 -%}
+            <p class="nf-pdp__lightbox-count" data-nf-lightbox-count aria-live="polite"></p>
+          {%- endif -%}
+        </div>
+        <div class="nf-pdp__lightbox-tools">
+          <button type="button" class="nf-pdp__lightbox-btn" data-nf-lightbox-zoom aria-pressed="false" aria-label="Zoom in to 2x">
+            <svg class="nf-icon" data-nf-zoom-in viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            <svg class="nf-icon" data-nf-zoom-out viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" hidden><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </button>
+          <button type="button" class="nf-pdp__lightbox-btn" data-nf-dialog-close aria-label="Close image viewer">
+            {%- render 'nf-icon-close', size: 18 -%}
+          </button>
+        </div>
       </div>
-      <div class="nf-pdp__lightbox-stage">
-        <img data-nf-lightbox-img src="" alt="">
+      <div class="nf-pdp__lightbox-stage" data-nf-lightbox-stage>
+        <img data-nf-lightbox-img src="" alt="" draggable="false">
       </div>
       {%- if product.media.size > 1 -%}
-        <p class="nf-pdp__lightbox-count" data-nf-lightbox-count aria-live="polite"></p>
         <button type="button" class="nf-pdp__lightbox-btn nf-pdp__lightbox-prev" data-nf-lightbox-prev aria-label="Previous image">
           <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
         </button>
@@ -696,6 +843,376 @@
     </dialog>
   {%- endif -%}
 </div>
+
+{%- comment -%} -- Customer reviews -- ported from src/components/CustomerReviews.tsx
+  (variant="jewellery"), which JewelDetail.tsx renders between the product grid
+  and "You may also like".
+
+  DATA. React's set is a bundled fixture, not a review app: a 260-entry numbered
+  bank in src/data/productReviews.ts sliced per product, plus nine photo reviews
+  and thirty one-line notes in CustomerReviews.tsx. snippets/nf-review-data.liquid
+  carries the same rows verbatim (regenerate with shopify/harness/reviewfixture.mjs).
+  Shopify's own product-review metafields are deliberately NOT used -- they hold
+  different reviews, so the page would not match.
+
+  The slice is chosen by getProductReviews()'s hash, reimplemented below: it is
+  h = (h * 31 + charCode) >>> 0 over the lowercased product title, so the Liquid
+  side needs character codes. Liquid has no charCodeAt, hence the three lookup
+  tables -- lowercase letters, digits, and a punctuation/accent pair of lists.
+  A character outside all three falls back to "?" (63); no title in the
+  catalogue contains one. The modulo after every step is the >>> 0.
+
+  The nine UGC photos have no bytes in the repo -- src/assets/jewellery/ugc holds
+  only .asset.json pointers to a host that is not reachable here -- so they are
+  referenced as theme assets by name and will 404 until the files are uploaded,
+  exactly as they currently do on the React side.
+{%- endcomment -%}
+{%- comment -%} The punctuation table lives in its own assign rather than inside
+  the liquid tag below: a line there is comment-terminated at a bare #, and the
+  table has to carry one. {%- endcomment -%}
+{%- assign rv_punct = "-.,&/()+:;!?_@#$*='’–—èéàïôüñç" -%}
+{%- assign rv_pcodes = '45,46,44,38,47,40,41,43,58,59,33,63,95,64,35,36,42,61,39,8217,8211,8212,232,233,224,239,244,252,241,231' | split: ',' -%}
+{%- liquid
+  assign rv_key = product.title | downcase | strip
+  assign rv_alpha = 'abcdefghijklmnopqrstuvwxyz'
+  assign rv_digits = '0123456789'
+  assign rv_h = 0
+  assign rv_chars = rv_key | split: ''
+  for rv_c in rv_chars
+    assign rv_code = 63
+    if rv_c == ' '
+      assign rv_code = 32
+    else
+      assign rv_p = rv_alpha | split: rv_c | first | size
+      if rv_p < 26
+        assign rv_code = rv_p | plus: 97
+      else
+        assign rv_p = rv_digits | split: rv_c | first | size
+        if rv_p < 10
+          assign rv_code = rv_p | plus: 48
+        else
+          assign rv_p = rv_punct | split: rv_c | first | size
+          if rv_p < 30
+            assign rv_code = rv_pcodes[rv_p] | plus: 0
+          endif
+        endif
+      endif
+    endif
+    assign rv_h = rv_h | times: 31 | plus: rv_code | modulo: 4294967296
+  endfor
+  assign rv_slot = rv_h | modulo: 52
+  assign rv_start = rv_slot | times: 5
+  assign rv_count = 5
+  assign rv_slot3 = rv_slot | modulo: 3
+  if rv_slot3 == 0
+    assign rv_count = 4
+  endif
+-%}
+{%- capture rv_nl %}
+{% endcapture -%}
+{%- capture rv_bank_raw -%}{%- render 'nf-review-data', part: 'bank' -%}{%- endcapture -%}
+{%- capture rv_seed_raw -%}{%- render 'nf-review-data', part: 'seed' -%}{%- endcapture -%}
+{%- liquid
+  assign rv_bank = rv_bank_raw | strip | split: rv_nl
+  assign rv_seed = rv_seed_raw | strip | split: rv_nl
+  assign rv_own = rv_bank | slice: rv_start, rv_count
+  assign rv_rows = rv_own | concat: rv_seed
+-%}
+{%- if rv_rows.size > 0 -%}
+  {%- liquid
+    assign rv_total = rv_rows.size
+    assign rv_sum = 0
+    assign rv_n5 = 0
+    assign rv_n4 = 0
+    assign rv_n3 = 0
+    assign rv_n2 = 0
+    assign rv_n1 = 0
+    assign rv_photos = ''
+    for rv_row in rv_rows
+      assign rv_f = rv_row | split: '|'
+      assign rv_r = rv_f[4] | plus: 0
+      assign rv_sum = rv_sum | plus: rv_r
+      case rv_r
+        when 5
+          assign rv_n5 = rv_n5 | plus: 1
+        when 4
+          assign rv_n4 = rv_n4 | plus: 1
+        when 3
+          assign rv_n3 = rv_n3 | plus: 1
+        when 2
+          assign rv_n2 = rv_n2 | plus: 1
+        when 1
+          assign rv_n1 = rv_n1 | plus: 1
+      endcase
+      assign rv_ph = rv_f[7]
+      if rv_ph != blank
+        assign rv_dup = false
+        if rv_photos contains rv_ph
+          assign rv_dup = true
+        endif
+        unless rv_dup
+          assign rv_photos = rv_photos | append: rv_ph | append: ','
+        endunless
+      endif
+    endfor
+
+    comment
+      Curated strip shots follow the shopper photos, deduped -- CustomerReviews.tsx
+      jewelleryPhotos, in its order.
+    endcomment
+    assign rv_base = 'the-vine-ugc.jpg,jewel-review-braided-hoop.jpg,jewel-review-pear-pendant.jpg,jewel-review-halo-ring.jpg,jewel-review-pearl-studs.jpg,jewel-review-bracelet.jpg,jewel-review-solitaire.jpg,jewel-review-toietmoi.jpg,jewel-review-bow.jpg' | split: ','
+    for rv_ph in rv_base
+      assign rv_dup = false
+      if rv_photos contains rv_ph
+        assign rv_dup = true
+      endif
+      unless rv_dup
+        assign rv_photos = rv_photos | append: rv_ph | append: ','
+      endunless
+    endfor
+    assign rv_strip = rv_photos | split: ','
+
+    assign rv_max = 1
+    if rv_n5 > rv_max
+      assign rv_max = rv_n5
+    endif
+    if rv_n4 > rv_max
+      assign rv_max = rv_n4
+    endif
+    if rv_n3 > rv_max
+      assign rv_max = rv_n3
+    endif
+    if rv_n2 > rv_max
+      assign rv_max = rv_n2
+    endif
+    if rv_n1 > rv_max
+      assign rv_max = rv_n1
+    endif
+    assign rv_maxf = rv_max | times: 1.0
+    assign rv_totf = rv_total | times: 1.0
+
+    comment
+      Math.round(avg * 10) / 10, printed the way JS prints it: 4.9, but 5 -- not
+      5.0 -- when the average lands on a whole number.
+    endcomment
+    assign rv_r10 = rv_sum | times: 10 | divided_by: rv_totf | round
+    assign rv_whole = rv_r10 | divided_by: 10 | floor
+    assign rv_frac = rv_r10 | modulo: 10
+    capture rv_score
+      echo rv_whole
+      if rv_frac > 0
+        echo '.'
+        echo rv_frac
+      endif
+    endcapture
+
+    assign rv_counts = rv_n5 | append: ',' | append: rv_n4 | append: ',' | append: rv_n3 | append: ',' | append: rv_n2 | append: ',' | append: rv_n1 | split: ','
+    assign rv_stars_desc = '5,4,3,2,1' | split: ','
+  -%}
+
+  <svg class="nf-reviews__sprite" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nf-review-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+
+  <section id="customer-reviews" class="nf-reviews" data-nf-reviews>
+    <h2 class="nf-reviews__title">Customer Reviews</h2>
+
+    <div class="nf-reviews__head">
+      <div class="nf-reviews__summary">
+        <div class="nf-reviews__overall">
+          <div class="nf-reviews__stars nf-reviews__stars--lg" role="img" aria-label="Rated {{ rv_score }} out of 5">
+            {%- for i in (1..5) -%}<svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg>{%- endfor -%}
+          </div>
+          <p class="nf-reviews__score">{{ rv_score }}</p>
+          <p class="nf-reviews__based">Based on {{ rv_total }} reviews</p>
+        </div>
+
+        {%- comment -%} The bars are the filter, as in the source: clicking one
+          narrows the list, clicking the active one clears back to all. {%- endcomment -%}
+        <div class="nf-reviews__bars">
+          {%- for rv_s in rv_stars_desc -%}
+            {%- assign rv_bn = rv_counts[forloop.index0] | plus: 0 -%}
+            {%- assign rv_bw = rv_bn | times: 100 | divided_by: rv_maxf -%}
+            <button type="button" class="nf-reviews__bar" data-nf-review-bar="{{ rv_s }}&#9733;"
+                    {% if rv_bn == 0 %}disabled{% endif %} aria-pressed="false"
+                    aria-label="{{ rv_bn }} {{ rv_s }}-star review{% if rv_bn != 1 %}s{% endif %}">
+              <span class="nf-reviews__bar-label">{{ rv_s }} &#9733;</span>
+              <span class="nf-reviews__bar-track"><span class="nf-reviews__bar-fill" style="width: {{ rv_bw }}%;"></span></span>
+              <span class="nf-reviews__bar-count">{{ rv_bn }}</span>
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="nf-reviews__gallery">
+        <h3 class="nf-reviews__subtitle">
+          <svg class="nf-reviews__camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+          Customer Photos
+        </h3>
+        <div class="nf-reviews__strip">
+          {%- for rv_ph in rv_strip -%}
+            <button type="button" class="nf-reviews__thumb" data-nf-review-photo="{{ rv_ph | prepend: 'nf-' | asset_url }}" aria-label="Open customer photo {{ forloop.index }}">
+              <img class="nf-reviews__thumb-img" src="{{ rv_ph | prepend: 'nf-' | asset_url }}" alt="Customer photo {{ forloop.index }}" loading="lazy" width="90" height="90">
+            </button>
+          {%- endfor -%}
+        </div>
+        <button type="button" class="nf-reviews__write" data-nf-review-write>Write a Review</button>
+      </div>
+    </div>
+
+    <div class="nf-reviews__filters">
+      {%- assign rv_filters = 'All Reviews,With Photos,5&#9733;,4&#9733;,3&#9733;,2&#9733;,1&#9733;' | split: ',' -%}
+      {%- for rv_f in rv_filters -%}
+        <button type="button" class="nf-reviews__chip{% if forloop.first %} is-review-active{% endif %}" data-nf-review-filter="{{ rv_f }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{{ rv_f }}</button>
+      {%- endfor -%}
+    </div>
+
+    <div class="nf-reviews__grid" data-nf-review-grid>
+      {%- for rv_row in rv_rows -%}
+        {%- liquid
+          assign rv_f = rv_row | split: '|'
+          assign rv_no = rv_f[0]
+          assign rv_rating = rv_f[4] | plus: 0
+          assign rv_ph = rv_f[7]
+          assign rv_badge = rv_no
+          if rv_badge == blank
+            assign rv_badge = forloop.index
+          endif
+        -%}
+        <div class="nf-reviews__card{% if forloop.index > 8 %} is-review-hidden{% endif %}" data-nf-review
+             data-no="{{ rv_no }}" data-rating="{{ rv_rating }}" data-photos="{% if rv_ph != blank %}1{% else %}0{% endif %}">
+          <div class="nf-reviews__card-head">
+            <span class="nf-reviews__no" data-nf-review-no>#{{ rv_badge }}</span>
+            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">{{ rv_f[2] }}</span></span>
+            <div class="nf-reviews__who">
+              <p class="nf-reviews__name">{{ rv_f[1] }}</p>
+              {%- if rv_f[3] == '1' -%}<span class="nf-reviews__verified">Verified Buyer</span>{%- endif -%}
+            </div>
+          </div>
+          <div class="nf-reviews__meta">
+            <div class="nf-reviews__stars" role="img" aria-label="Rated {{ rv_rating }} out of 5">
+              {%- for i in (1..5) -%}<svg class="nf-reviews__star{% if i > rv_rating %} nf-reviews__star--off{% endif %}" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg>{%- endfor -%}
+            </div>
+            <span class="nf-reviews__date">{{ rv_f[5] }}</span>
+          </div>
+          <p class="nf-reviews__text">"{{ rv_f[6] }}"</p>
+          {%- if rv_ph != blank -%}
+            <div class="nf-reviews__shots"><img class="nf-reviews__shot" src="{{ rv_ph | prepend: 'nf-' | asset_url }}" alt="Review photo" loading="lazy" width="48" height="48"></div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+      <p class="nf-reviews__none is-review-hidden" data-nf-review-empty>No reviews match this filter.</p>
+    </div>
+
+    <div class="nf-reviews__more{% if rv_total <= 8 %} is-review-hidden{% endif %}" data-nf-review-morewrap>
+      <button type="button" class="nf-reviews__morebtn" data-nf-review-more>Load More Reviews</button>
+    </div>
+
+    <dialog class="nf-reviews__lightbox" data-nf-review-lightbox aria-label="Customer photo">
+      <button type="button" class="nf-reviews__lightbox-close" data-nf-review-lightbox-close aria-label="Close photo">
+        <svg class="nf-reviews__x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <img class="nf-reviews__lightbox-img" data-nf-review-lightbox-img src="" alt="Customer photo">
+    </dialog>
+  </section>
+{%- endif -%}
+
+
+{%- comment -%} -- Customer reviews behaviour -- mirrors the useState logic in
+  CustomerReviews.tsx: the chip row fades the grid for 200ms before swapping the
+  filter and resetting the page size to 8; the histogram bars set the filter
+  straight away and toggle back to "All Reviews" when the active one is clicked
+  again; "Load More" adds 8. Every review is in the DOM and the ones past the
+  page size are display:none, which is what React's slice() amounts to.
+  The #n badge is the review's own number when it has one and otherwise its
+  position in the *filtered* list, so it is recomputed on every render, exactly
+  as `review.no ?? i + 1` does. {%- endcomment -%}
+<script>
+(function () {
+  var root = document.querySelector('[data-nf-reviews]');
+  if (!root) return;
+  var grid  = root.querySelector('[data-nf-review-grid]');
+  var cards = Array.prototype.slice.call(root.querySelectorAll('[data-nf-review]'));
+  var chips = Array.prototype.slice.call(root.querySelectorAll('[data-nf-review-filter]'));
+  var bars  = Array.prototype.slice.call(root.querySelectorAll('[data-nf-review-bar]'));
+  var empty = root.querySelector('[data-nf-review-empty]');
+  var more  = root.querySelector('[data-nf-review-morewrap]');
+  var PAGE = 8;
+  var active = 'All Reviews';
+  var visible = PAGE;
+
+  function matches(card) {
+    if (active === 'All Reviews') return true;
+    if (active === 'With Photos') return card.getAttribute('data-photos') === '1';
+    return card.getAttribute('data-rating') === active.charAt(0);
+  }
+
+  function render() {
+    var matched = 0;
+    cards.forEach(function (card) {
+      if (!matches(card)) { card.classList.add('is-review-hidden'); return; }
+      matched += 1;
+      if (matched > visible) { card.classList.add('is-review-hidden'); return; }
+      card.classList.remove('is-review-hidden');
+      var badge = card.querySelector('[data-nf-review-no]');
+      if (badge) badge.textContent = '#' + (card.getAttribute('data-no') || matched);
+    });
+    chips.forEach(function (c) {
+      var on = c.getAttribute('data-nf-review-filter') === active;
+      c.classList.toggle('is-review-active', on);
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    bars.forEach(function (b) {
+      var on = b.getAttribute('data-nf-review-bar') === active;
+      b.classList.toggle('is-review-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (empty) empty.classList.toggle('is-review-hidden', matched > 0);
+    if (more) more.classList.toggle('is-review-hidden', visible >= matched);
+  }
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      if (grid) grid.classList.add('is-review-fading');
+      setTimeout(function () {
+        active = c.getAttribute('data-nf-review-filter');
+        visible = PAGE;
+        render();
+        if (grid) grid.classList.remove('is-review-fading');
+      }, 200);
+    });
+  });
+
+  bars.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var label = b.getAttribute('data-nf-review-bar');
+      active = active === label ? 'All Reviews' : label;
+      render();
+    });
+  });
+
+  var moreBtn = root.querySelector('[data-nf-review-more]');
+  if (moreBtn) moreBtn.addEventListener('click', function () {
+    visible += PAGE;
+    render();
+  });
+
+  /* Photo strip -> lightbox, the Dialog the source opens on a thumbnail. */
+  var box = root.querySelector('[data-nf-review-lightbox]');
+  var boxImg = root.querySelector('[data-nf-review-lightbox-img]');
+  if (box && boxImg && typeof box.showModal === 'function') {
+    root.querySelectorAll('[data-nf-review-photo]').forEach(function (t) {
+      t.addEventListener('click', function () {
+        boxImg.src = t.getAttribute('data-nf-review-photo');
+        box.showModal();
+      });
+    });
+    box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+    var close = root.querySelector('[data-nf-review-lightbox-close]');
+    if (close) close.addEventListener('click', function () { box.close(); });
+  }
+
+  render();
+}());
+</script>
 
 {%- comment -%} -- You may also like -- inline in JewelDetail.tsx (not a separate
   section), so it is ported here. Same-collection pieces lead; "all
@@ -713,23 +1230,210 @@
       <p class="nf-pdp__related-sub">{{ related_sub }}</p>
       <div class="nf-pdp__related-grid">
         {%- assign related_shown = 0 -%}
+        {%- assign related_seen = '' -%}
+        {%- comment -%} Pass 1: same product type. Pass 2: the rest. {%- endcomment -%}
+        {%- for pass in (1..2) -%}
         {%- for rp in related_pool -%}
           {%- if related_shown >= 4 -%}{%- break -%}{%- endif -%}
+          {%- capture rp_cat -%}{%- render 'nf-jewel-category', p: rp -%}{%- endcapture -%}
+          {%- assign same_type = false -%}
+          {%- if rp_cat == cat -%}{%- assign same_type = true -%}{%- endif -%}
+          {%- assign wanted = false -%}
+          {%- if pass == 1 and same_type -%}{%- assign wanted = true -%}{%- endif -%}
+          {%- if pass == 2 and same_type == false -%}{%- assign wanted = true -%}{%- endif -%}
+          {%- if wanted -%}
           {%- if rp.handle != product.handle -%}
             {%- assign related_shown = related_shown | plus: 1 -%}
             <a href="{{ rp.url }}" class="nf-pdp__related-card">
               <span class="nf-pdp__related-imgwrap">
-                {{ rp.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300,450,600', alt: rp.title, class: 'nf-pdp__related-img' }}
+                <img class="nf-pdp__related-img"
+                     src="{{ rp.featured_image | image_url: width: 600 }}"
+                     srcset="{{ rp.featured_image | image_url: width: 300 }} 300w, {{ rp.featured_image | image_url: width: 450 }} 450w, {{ rp.featured_image | image_url: width: 600 }} 600w"
+                     sizes="(min-width: 768px) 22vw, 45vw"
+                     alt="{{ rp.title | escape }}" loading="lazy" decoding="async">
               </span>
-              <span class="nf-pdp__related-cat">{{ rp.type | upcase }}</span>
+              <span class="nf-pdp__related-cat">{{ rp_cat | default: rp.type | upcase }}</span>
               <span class="nf-pdp__related-name">{{ rp.title }}</span>
               <span class="nf-pdp__related-price"><span aria-hidden="true" class="nf-pdp__related-dot"></span>{{ rp.price | money }}</span>
             </a>
           {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
         {%- endfor -%}
       </div>
     </div>
   </section>
+{%- endif -%}
+
+{%- comment -%} -- From the collection -- ported from src/components/CollectionCarousel.tsx
+  + src/components/ui/circular-gallery.tsx, which JewelDetail.tsx renders under
+  "You may also like".
+
+  A ring of cards in 3D, turned by page scroll with a slow idle drift. React
+  drives it from a requestAnimationFrame loop writing rotateY on the ring and a
+  per-card opacity; the same loop is reproduced below rather than approximated
+  with a CSS animation, because the scroll term has no CSS equivalent. Card
+  size, ring radius, stage height, perspective and tilt are the same formulas
+  React computes from viewport width (the 640px phone break is
+  circular-gallery's own, not the page's).
+
+  React shuffles its ten pieces per render; a Liquid page is cached, so the
+  order here is catalogue order instead -- same cards, stable sequence.
+
+  RecentlyViewed, which follows this in JewelDetail.tsx, renders nothing until
+  a shopper has two pieces in their localStorage history, so there is nothing
+  to port for a first view.
+{%- endcomment -%}
+{%- liquid
+  # Two passes: count the eligible pieces first so the ten shown can be spread
+  # evenly across the catalogue. React shuffles, which lands a mix of rings,
+  # earrings and necklaces on the ring; taking the first ten in catalogue order
+  # would have put ten necklaces on a necklace page.
+  assign ring_pool = collections['all'].products
+  assign ring_total = 0
+  for rc in ring_pool
+    if rc.handle == product.handle
+      continue
+    endif
+    capture rc_cat
+      render 'nf-jewel-category', p: rc
+    endcapture
+    if rc_cat == blank
+      continue
+    endif
+    assign ring_total = ring_total | plus: 1
+  endfor
+  # floor, not bare divided_by: the local engine returns 4.6 where Shopify
+  # returns 4, and a fractional stride never hits modulo 0 again.
+  assign ring_stride = ring_total | divided_by: 10.0 | floor
+  if ring_stride < 1
+    assign ring_stride = 1
+  endif
+  assign ring_count = ring_total
+  if ring_count > 10
+    assign ring_count = 10
+  endif
+-%}
+{%- if ring_count > 2 -%}
+  <section class="nf-ring" aria-label="From the collection" data-nf-ring>
+    <div class="nf-ring__head">
+      <p class="nf-ring__eyebrow">Naira Petite</p>
+      <h2 class="nf-ring__title">From the collection</h2>
+      <p class="nf-ring__sub">Scroll to turn the carousel</p>
+    </div>
+    <div class="nf-ring__viewport">
+      <div class="nf-ring__stage" data-nf-ring-stage>
+        <div class="nf-ring__spin" data-nf-ring-spin>
+          {%- assign ring_i = 0 -%}
+          {%- assign ring_seen = 0 -%}
+          {%- for rc in ring_pool -%}
+            {%- if ring_i >= 10 -%}{%- break -%}{%- endif -%}
+            {%- if rc.handle == product.handle -%}{%- continue -%}{%- endif -%}
+            {%- capture rc_cat -%}{%- render 'nf-jewel-category', p: rc -%}{%- endcapture -%}
+            {%- if rc_cat == blank -%}{%- continue -%}{%- endif -%}
+            {%- assign ring_mod = ring_seen | modulo: ring_stride -%}
+            {%- assign ring_seen = ring_seen | plus: 1 -%}
+            {%- if ring_mod != 0 -%}{%- continue -%}{%- endif -%}
+            <a class="nf-ring__card" href="{{ rc.url }}" data-nf-ring-card data-i="{{ ring_i }}">
+              <span class="nf-ring__frame">
+                <img class="nf-ring__img"
+                     src="{{ rc.featured_image | image_url: width: 440 }}"
+                     srcset="{{ rc.featured_image | image_url: width: 220 }} 220w, {{ rc.featured_image | image_url: width: 440 }} 440w"
+                     sizes="220px"
+                     alt="{{ rc.title | escape }}, {{ rc_cat | downcase }} by Naira Flore" loading="lazy" decoding="async" draggable="false">
+              </span>
+              <span class="nf-ring__text">
+                <span class="nf-ring__name">{{ rc.title }}</span>
+                <span class="nf-ring__cat">{{ rc_cat }}</span>
+              </span>
+            </a>
+            {%- assign ring_i = ring_i | plus: 1 -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  (function () {
+    var root = document.querySelector('[data-nf-ring]');
+    if (!root) return;
+    var stage = root.querySelector('[data-nf-ring-stage]');
+    var spin = root.querySelector('[data-nf-ring-spin]');
+    var cards = Array.prototype.slice.call(root.querySelectorAll('[data-nf-ring-card]'));
+    if (!stage || !spin || !cards.length) return;
+
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var AUTO = 0.03;            /* degrees added per frame while idle */
+    var anglePer = 360 / cards.length;
+    var scrollOffset = 0, drift = 0, scrolling = false, scrollTimer = 0;
+
+    /* circular-gallery.tsx: every dimension is derived from viewport width. */
+    var geo = {};
+    function measure() {
+      var vw = window.innerWidth;
+      var phone = vw < 640;
+      var cardW = Math.round(Math.max(120, Math.min(phone ? vw * 0.34 : vw * 0.16, 220)));
+      var cardH = Math.round(cardW * (4 / 3));
+      var textBlock = phone ? 58 : 64;
+      var autoRadius = Math.round((cards.length * cardW * 1.12) / (2 * Math.PI));
+      geo = {
+        phone: phone, cardW: cardW, cardH: cardH, textBlock: textBlock,
+        radius: Math.max(phone ? 190 : 300, Math.min(autoRadius, 480)),
+        stageH: cardH + textBlock + (phone ? 90 : 140)
+      };
+      stage.style.height = geo.stageH + 'px';
+      stage.style.perspective = (geo.phone ? 900 : 1300) + 'px';
+      cards.forEach(function (c, i) {
+        c.style.width = geo.cardW + 'px';
+        c.style.marginLeft = (-geo.cardW / 2) + 'px';
+        c.style.marginTop = (-(geo.cardH + geo.textBlock) / 2) + 'px';
+        c.style.transform = 'rotateY(' + (i * anglePer) + 'deg) translateZ(' + geo.radius + 'px)';
+        var frame = c.querySelector('.nf-ring__frame');
+        if (frame) { frame.style.height = geo.cardH + 'px'; frame.style.width = geo.cardW + 'px'; }
+        var text = c.querySelector('.nf-ring__text');
+        if (text) text.style.height = geo.textBlock + 'px';
+        var name = c.querySelector('.nf-ring__name');
+        if (name) name.style.fontSize = (geo.phone ? 14 : 17) + 'px';
+        var cat = c.querySelector('.nf-ring__cat');
+        if (cat) cat.style.fontSize = (geo.phone ? 8 : 9) + 'px';
+      });
+    }
+
+    function onScroll() {
+      var rect = root.getBoundingClientRect();
+      var progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+      scrollOffset = Math.max(-0.2, Math.min(1.2, progress)) * 360;
+      scrolling = true;
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(function () { scrolling = false; }, 150);
+    }
+
+    function paint() {
+      var rotation = scrollOffset + drift;
+      spin.style.transform = 'translate(-50%, -50%) rotateX(' + (geo.phone ? -4 : -6) + 'deg) rotateY(' + rotation + 'deg)';
+      var mod = ((rotation % 360) + 360) % 360;
+      cards.forEach(function (c, i) {
+        var rel = (i * anglePer + mod) % 360;
+        var norm = rel > 180 ? 360 - rel : rel;
+        c.style.opacity = String(Math.max(0.18, 1 - norm / 130));
+      });
+    }
+
+    function tick() {
+      if (!reduced && !scrolling) drift += AUTO;
+      paint();
+      window.requestAnimationFrame(tick);
+    }
+
+    measure();
+    onScroll();
+    paint();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function () { measure(); onScroll(); paint(); });
+    window.requestAnimationFrame(tick);
+  })();
+  </script>
 {%- endif -%}
 
 <script>
@@ -947,7 +1651,10 @@
   var idx = root.querySelector('[data-nf-idx]');
   var dots = root.querySelectorAll('[data-nf-dot]');
   function setActiveSlide(i) {
-    if (idx && String(i + 1) !== idx.textContent) idx.textContent = i + 1;
+    if (idx) {
+      var label = '\u00B7 ' + (i + 1) + '/' + (idx.getAttribute('data-nf-total') || 1);
+      if (idx.textContent !== label) idx.textContent = label;
+    }
     dots.forEach(function (d) { d.classList.toggle('is-active', Number(d.getAttribute('data-index')) === i); });
   }
   if (rail) {
@@ -963,6 +1670,41 @@
       setActiveSlide(i);
     });
   });
+
+  /* ---- accordion: Radix animates the panel height (0.34s open, 0.26s closed,
+     cubic-bezier(0.22, 1, 0.36, 1)); a bare <details> snaps. The open attribute
+     is held on until the collapse finishes, and the trigger's open styling runs
+     off a class so the chevron turns back at the start of the collapse, as it
+     does in React. ---- */
+  (function () {
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    root.querySelectorAll('.nf-pdp__acc').forEach(function (d) {
+      var sum = d.querySelector('summary');
+      var body = d.querySelector('.nf-pdp__acc-body');
+      if (!sum || !body) return;
+      var anim = null;
+      if (d.open) d.classList.add('is-open');
+      sum.addEventListener('click', function (e) {
+        if (reduced || typeof body.animate !== 'function') return;
+        e.preventDefault();
+        if (anim) { anim.cancel(); anim = null; }
+        var opening = !d.open;
+        if (opening) d.open = true;
+        d.classList.toggle('is-open', opening);
+        d.classList.toggle('is-closing', !opening);
+        var full = body.scrollHeight;
+        anim = body.animate(
+          [{ height: (opening ? 0 : full) + 'px' }, { height: (opening ? full : 0) + 'px' }],
+          { duration: opening ? 340 : 260, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+        );
+        anim.onfinish = function () {
+          anim = null;
+          d.classList.remove('is-closing');
+          if (!opening) d.open = false;
+        };
+      });
+    });
+  })();
 
   /* ---- details / care tabs ---- */
   var tabBtns = root.querySelectorAll('[data-nf-tab]');
@@ -1006,17 +1748,41 @@
     var lb = root.querySelector('[data-nf-lightbox]');
     if (!lb || !lb.showModal) return;
     var img = lb.querySelector('[data-nf-lightbox-img]');
+    var stage = lb.querySelector('[data-nf-lightbox-stage]');
     var count = lb.querySelector('[data-nf-lightbox-count]');
+    var zoomBtn = lb.querySelector('[data-nf-lightbox-zoom]');
+    var zoomIn = lb.querySelector('[data-nf-zoom-in]');
+    var zoomOut = lb.querySelector('[data-nf-zoom-out]');
     var slides = Array.prototype.slice.call(root.querySelectorAll('[data-nf-lightbox-open] img'));
     var current = 0;
+    function setZoom(on, origin) {
+      if (!stage) return;
+      img.style.transformOrigin = origin || '50% 50%';
+      stage.classList.toggle('is-zoomed', on);
+      if (zoomBtn) {
+        zoomBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        zoomBtn.setAttribute('aria-label', on ? 'Zoom out' : 'Zoom in to 2x');
+      }
+      if (zoomIn) zoomIn.hidden = on;
+      if (zoomOut) zoomOut.hidden = !on;
+    }
+    function zoomed() { return !!stage && stage.classList.contains('is-zoomed'); }
     function show(i) {
       if (!slides.length) return;
       current = (i + slides.length) % slides.length;
       var src = slides[current].currentSrc || slides[current].src;
       img.src = src;
       img.alt = slides[current].alt || '';
+      setZoom(false);
       if (count) count.textContent = (current + 1) + ' / ' + slides.length;
     }
+    if (zoomBtn) zoomBtn.addEventListener('click', function () { setZoom(!zoomed()); });
+    img.addEventListener('click', function (e) {
+      var r = img.getBoundingClientRect();
+      var x = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+      var y = Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100));
+      setZoom(!zoomed(), x.toFixed(1) + '% ' + y.toFixed(1) + '%');
+    });
     root.querySelectorAll('[data-nf-lightbox-open]').forEach(function (b) {
       b.addEventListener('click', function () {
         show(Number(b.getAttribute('data-index')) || 0);
@@ -1053,7 +1819,7 @@
       var barHeight = bar.offsetHeight || 72;
       var priceClear = !priceEl || priceEl.getBoundingClientRect().bottom < window.innerHeight - barHeight;
       var visible = offScreen && priceClear;
-      bar.hidden = !visible;
+      bar.classList.toggle('is-on', visible);
       bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
     };
     checkStickyBar();
@@ -1065,20 +1831,21 @@
 </script>
 
 {% stylesheet %}
-.nf-pdp { max-width: 1400px; margin-inline: auto; padding-bottom: 6rem; position: relative; }
+.nf-pdp { max-width: 1400px; margin-inline: auto; padding-bottom: 96px; position: relative; }
+.nf-pdp button, .nf-pdp input, .nf-pdp select, .nf-pdp textarea { font-family: inherit; line-height: 1.5; }
 .nf-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-.nf-pdp__crumb { display: none; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem .75rem; font-family: var(--nf-font-label); font-size: 11px; letter-spacing: var(--nf-track-4); color: hsl(0 0% 55%); }
-.nf-pdp__crumb-trail { display: flex; align-items: center; gap: .5rem; }
+.nf-pdp__crumb { display: none; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px 12px; font-size: 11px; letter-spacing: var(--nf-track-4); color: hsl(0 0% 55%); }
+.nf-pdp__crumb-trail { display: flex; align-items: center; gap: 8px; }
 .nf-pdp__crumb a { color: inherit; text-decoration: none; }
 .nf-pdp__crumb a:hover { color: var(--nf-ink); }
 .nf-pdp__crumb [aria-current] { color: hsl(0 0% 30%); }
-.nf-pdp__back { display: inline-flex; align-items: center; gap: .375rem; border: 0; background: none; padding: .5rem; margin: -.5rem; font-family: var(--nf-font-label); font-size: 11px; text-transform: uppercase; letter-spacing: var(--nf-track-14); color: hsl(0 0% 45%); cursor: pointer; }
+.nf-pdp__back { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 8px; margin: -8px; font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: hsl(0 0% 45%); cursor: pointer; }
 .nf-pdp__back:hover { color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-pdp__crumb { display: flex; } }
 
-.nf-pdp__layout { display: flex; flex-direction: column; gap: 1.25rem; }
-@media (min-width: 1024px) { .nf-pdp__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; padding-inline: 1.5rem; } }
+.nf-pdp__layout { display: flex; flex-direction: column; gap: 0; }
+@media (min-width: 1024px) { .nf-pdp__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; padding-inline: 24px; } }
 
 .nf-pdp__gallery { position: relative; }
 .nf-pdp__rail { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
@@ -1093,140 +1860,160 @@
    isMobile check does, which is a different breakpoint than the two-column
    page layout above (1024px) -- intentionally, matching the source. */
 @media (min-width: 768px) {
-  .nf-pdp__rail { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; overflow: visible; scroll-snap-type: none; }
-  .nf-pdp__slide { flex: none; aspect-ratio: 4 / 5; cursor: zoom-in; }
+  .nf-pdp__rail { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; overflow: visible; scroll-snap-type: none; }
+  .nf-pdp__slide { flex: none; aspect-ratio: 4 / 5; min-height: 0; cursor: zoom-in; }
   .nf-pdp__slide:first-child:nth-last-child(odd) { grid-column: span 2; }
+  /* One photo: a single full-bleed frame (grid-cols-1 grid-rows-1). */
+  .nf-pdp__rail--1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
   /* Exactly two photos: JewelDetail.tsx stacks them (grid-cols-1 grid-rows-2)
      instead of sitting them side by side. */
   .nf-pdp__rail--2 { grid-template-columns: 1fr; }
   .nf-pdp__counter, .nf-pdp__zoomhint, .nf-pdp__dots { display: none; }
 }
-.nf-pdp__img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* No fixed frame ratio on desktop. JewelDetail.tsx's photo grid is
+   `grid-rows-2 h-full min-h-full` inside an `lg:items-start` cell -- every
+   height in that chain is a percentage of an indefinite height, so it all
+   collapses to auto and the two 1fr rows end up sized by the largest photo's
+   own aspect ratio at the column width, both rows equal. A hard 4/5 frame
+   cropped the hero and halved the second row; stretching the rail to the buy
+   column's height (the other obvious reading) overshot it by ~330px. */
+@media (min-width: 768px) {
+  .nf-pdp__slide { aspect-ratio: auto; }
+}
+/* JewelDetail.tsx: `transition-transform duration-700 ease-out hover:scale-[1.03]`.
+   Tailwind's ease-out is cubic-bezier(0,0,.2,1), not the atelier reveal curve. */
+.nf-pdp__img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms cubic-bezier(0, 0, .2, 1); }
 @media (min-width: 768px) { .nf-pdp__slide:hover .nf-pdp__img { transform: scale(1.03); } }
 
 .nf-pdp__wish, .nf-pdp__share { position: absolute; z-index: 10; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; color: hsl(0 0% 40%); }
-.nf-pdp__wish { top: 1rem; right: 1rem; background-color: hsla(0,0%,100%,.85); }
+.nf-pdp__wish { top: 16px; right: 16px; background-color: hsla(0,0%,100%,.85); }
 .nf-pdp__wish .nf-icon { width: 17px; height: 17px; }
 .nf-pdp__wish.is-on { color: hsl(0 70% 55%); }
 .nf-pdp__wish.is-on .nf-icon { fill: hsl(0 70% 55%); }
-.nf-pdp__share { bottom: 4rem; right: 1rem; border-radius: 50%; background-color: hsla(0,0%,100%,.92); box-shadow: 0 1px 4px hsla(0,0%,0%,.08); color: hsl(0 0% 30%); }
+.nf-pdp__share { bottom: 64px; right: 16px; border-radius: 50%; background-color: hsla(0,0%,100%,.92); box-shadow: 0 1px 4px hsla(0,0%,0%,.08); color: hsl(0 0% 30%); }
 .nf-pdp__share .nf-icon { width: 15px; height: 15px; }
-.nf-pdp__share-copied { position: absolute; bottom: 120%; right: 0; white-space: nowrap; padding: .3rem .6rem; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-4); color: #fff; background-color: hsl(0 0% 12%); opacity: 0; pointer-events: none; transition: opacity 150ms ease; }
-.nf-pdp__share.is-copied .nf-pdp__share-copied { opacity: 1; }
+.nf-pdp__share-copied { position: absolute; bottom: 120%; right: 0; white-space: nowrap; padding: 5px 10px; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-4); color: #fff; background-color: hsl(0 0% 12%); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 150ms ease, visibility 150ms ease; }
+.nf-pdp__share.is-copied .nf-pdp__share-copied { opacity: 1; visibility: visible; }
 .nf-pdp__wish:focus-visible, .nf-pdp__share:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
 
-.nf-pdp__zoomhint { position: absolute; left: .75rem; bottom: .75rem; z-index: 10; display: inline-flex; align-items: center; gap: .375rem; margin: 0; padding: .3rem .6rem; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-8); color: hsl(0 0% 35%); background-color: hsla(0,0%,100%,.88); }
+.nf-pdp__zoomhint { position: absolute; left: 16px; bottom: 12px; z-index: 10; display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 6px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: hsl(0 0% 35%); background-color: hsla(0,0%,100%,.88); }
 .nf-pdp__zoomhint .nf-icon { width: 12px; height: 12px; }
 .nf-pdp__zoomhint-count { color: hsl(0 0% 55%); font-variant-numeric: tabular-nums; }
-.nf-pdp__dots { position: absolute; left: 0; right: 0; bottom: -1.6rem; z-index: 5; display: flex; justify-content: center; gap: .25rem; }
-.nf-pdp__dot { width: 2rem; height: 1.75rem; border: 0; background: none; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.nf-pdp__dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background-color: hsl(0 0% 75%); transition: transform 200ms ease-out, background-color 200ms ease-out; }
+.nf-pdp__dots { display: flex; justify-content: center; gap: 4px; margin: 4px 0 2px; }
+.nf-pdp__dot { width: 32px; height: 28px; border: 0; background: none; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.nf-pdp__dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background-color: hsl(0 0% 75%); transition: transform 200ms cubic-bezier(0, 0, .2, 1), background-color 200ms cubic-bezier(0, 0, .2, 1); }
 .nf-pdp__dot.is-active::before { background-color: hsl(0 0% 20%); transform: scale(1.4); }
-.nf-pdp__mback { display: flex; position: absolute; top: 1rem; left: 1rem; z-index: 10; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background-color: hsla(0,0%,100%,.92); box-shadow: 0 2px 6px hsla(0,0%,0%,.12); color: hsl(0 0% 20%); cursor: pointer; }
+.nf-pdp__mback { display: flex; position: absolute; top: 12px; left: 16px; z-index: 10; width: 44px; height: 44px; align-items: center; justify-content: center; border: 0; border-radius: 50%; background-color: hsla(0,0%,100%,.92); box-shadow: 0 2px 6px hsla(0,0%,0%,.12); color: hsl(0 0% 20%); cursor: pointer; }
 @media (min-width: 768px) { .nf-pdp__mback { display: none; } }
 
-.nf-pdp__details { display: flex; flex-direction: column; padding: 1.25rem 1rem 0; }
-@media (min-width: 1024px) { .nf-pdp__details { padding: .5rem 2rem 0; position: sticky; top: 1.5rem; } }
+.nf-pdp__details { display: flex; flex-direction: column; padding: 20px 16px 0; }
+/* React drops the details column's top margin at md (`mt-5 md:mt-0`). */
+@media (min-width: 768px) { .nf-pdp__details { padding-top: 0; } }
+/* No sticky: JewelDetail.tsx's details column scrolls with the page. */
+@media (min-width: 1024px) { .nf-pdp__details { padding: 8px 32px 0; } }
+@media (min-width: 1280px) { .nf-pdp__details { padding: 8px 40px 0; } }
 
-.nf-pdp__toprow { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 26px; }
+.nf-pdp__toprow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 26px; }
 .nf-pdp__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-34); color: var(--nf-gold-deep); }
-.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: .25rem; padding: .25rem 0 .25rem .5rem; font-size: 12px; color: hsl(0 0% 35%); text-decoration: none; }
+.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; padding: 4px 0 4px 8px; font-size: 12px; color: hsl(0 0% 35%); text-decoration: none; }
 .nf-pdp__star { color: var(--nf-gold-deep); }
 .nf-pdp__rating-n { font-weight: 500; color: hsl(0 0% 15%); }
 .nf-pdp__rating-c { text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 48%); }
-.nf-pdp__reviewlink { display: flex; align-items: center; gap: .5rem; min-height: 44px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); }
+.nf-pdp__reviewlink { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); }
 .nf-pdp__reviewlink .nf-icon { width: 13px; height: 13px; }
 
-.nf-pdp__title { margin: .5rem 0 0; font-family: var(--nf-font-display); font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: hsl(0 0% 12%); }
+.nf-pdp__title { margin: 8px 0 0; font-family: var(--nf-font-display); font-size: 26px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: hsl(0 0% 12%); }
 @media (min-width: 768px) { .nf-pdp__title { font-size: 32px; } }
 @media (min-width: 1024px) { .nf-pdp__title { font-size: 36px; } }
 
-.nf-pdp__price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; margin-top: .75rem; }
+.nf-pdp__price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-top: 12px; }
 .nf-pdp__price { font-family: var(--nf-font-display); font-size: 24px; font-weight: 600; color: hsl(0 0% 12%); }
 @media (min-width: 768px) { .nf-pdp__price { font-size: 28px; } }
 .nf-pdp__was { font-size: 14px; color: hsl(0 0% 55%); }
 .nf-pdp__off { font-size: 11.5px; font-weight: 500; letter-spacing: var(--nf-track-4); color: #8A6A2A; }
 .nf-pdp__tax { font-size: 11px; letter-spacing: .06em; color: hsl(0 0% 48%); }
-.nf-pdp__mrp { margin: .375rem 0 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 48%); }
-.nf-pdp__rule { margin: 1rem 0; border-top: 1px solid hsl(0 0% 88%); }
+.nf-pdp__mrp { margin: 6px 0 0; font-size: 12px; letter-spacing: .02em; line-height: 1.625; color: hsl(0 0% 48%); }
+.nf-pdp__rule { margin: 16px 0; border-top: 1px solid hsl(0 0% 88%); }
 
-.nf-pdp__label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-16); color: hsl(0 0% 25%); }
-.nf-pdp__size-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .625rem; }
-.nf-pdp__link { font: inherit; border: 0; background: none; cursor: pointer; font-size: 11px; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); min-height: 44px; display: inline-flex; align-items: center; padding-inline: .5rem; }
-.nf-pdp__sizes { display: flex; flex-wrap: wrap; gap: .5rem; }
-.nf-pdp__size-btn { min-width: 64px; min-height: 44px; padding-inline: 1rem; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); font-size: 13px; font-weight: 500; letter-spacing: .02em; cursor: pointer; transition: background-color .15s, border-color .15s, color .15s; }
+.nf-pdp__label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .14em; color: hsl(0 0% 25%); }
+.nf-pdp__size-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.nf-pdp__link { font: inherit; border: 0; background: none; cursor: pointer; font-size: 11px; letter-spacing: .02em; text-decoration: underline; text-underline-offset: 4px; color: hsl(186 35% 28%); min-height: 44px; display: inline-flex; align-items: center; padding-inline: 8px; }
+.nf-pdp__sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+.nf-pdp__size-btn { min-width: 64px; min-height: 44px; padding-inline: 16px; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); font-size: 13px; font-weight: 500; letter-spacing: .02em; cursor: pointer; transition: background-color 150ms cubic-bezier(.4, 0, .2, 1), border-color 150ms cubic-bezier(.4, 0, .2, 1), color 150ms cubic-bezier(.4, 0, .2, 1); }
 .nf-pdp__size-btn.is-active { border-color: hsl(0 0% 12%); background-color: hsl(0 0% 12%); color: #fff; }
 .nf-pdp__size-note { display: block; font-size: 9.5px; font-weight: 400; text-transform: uppercase; letter-spacing: var(--nf-track-8); opacity: .7; }
-.nf-pdp__size-help { margin: .5rem 0 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 45%); }
-.nf-pdp__onesize { display: flex; align-items: center; width: 100%; height: 44px; padding-inline: .75rem; border: 1px solid hsl(0 0% 80%); font-size: 13px; color: hsl(0 0% 20%); }
+.nf-pdp__size-help { margin: 8px 0 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 45%); }
+.nf-pdp__onesize { display: flex; align-items: center; width: 100%; height: 44px; padding-inline: 12px; border: 1px solid hsl(0 0% 80%); font-size: 13px; color: hsl(0 0% 20%); }
 
-.nf-pdp__qty-block { margin-top: 1rem; }
-.nf-pdp__qty-block .nf-pdp__label { display: block; margin-bottom: .625rem; }
+.nf-pdp__qty-block { margin-top: 16px; }
+.nf-pdp__qty-block .nf-pdp__label { display: block; margin-bottom: 10px; }
 .nf-pdp__qty { display: inline-flex; align-items: center; border: 1px solid hsl(0 0% 80%); }
 .nf-pdp__qty button { width: 44px; height: 44px; border: 0; background: none; cursor: pointer; font-size: 16px; color: hsl(0 0% 30%); }
 .nf-pdp__qty button:hover { background-color: var(--nf-ivory-deep); }
 .nf-pdp__qty button:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
 .nf-pdp__qty span { width: 48px; text-align: center; font-size: 13px; font-weight: 500; color: hsl(0 0% 20%); }
 
-.nf-pdp__actions { margin-top: 1.5rem; }
+.nf-pdp__actions { margin-top: 24px; }
 .nf-pdp__form { margin: 0; }
-.nf-pdp__add, .nf-pdp__buy { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 0; cursor: pointer; font-size: 12px; font-weight: 500; text-transform: uppercase; transition: opacity .2s; text-decoration: none; }
+.nf-pdp__add, .nf-pdp__buy { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; font-size: 12px; font-weight: 500; text-transform: uppercase; transition: background-color 200ms cubic-bezier(.4, 0, .2, 1), border-color 200ms cubic-bezier(.4, 0, .2, 1), color 200ms cubic-bezier(.4, 0, .2, 1); text-decoration: none; }
 .nf-pdp__add { height: 54px; background-color: var(--nf-gold-deep); color: #fff; letter-spacing: var(--nf-track-16); }
 .nf-pdp__add--notify { border: 1px solid hsl(0 0% 24%); background: none; color: hsl(0 0% 15%); }
 .nf-pdp__add--notify:hover { border-color: hsl(0 0% 35%); }
 .nf-pdp__add .nf-icon, .nf-pdp__add--notify .nf-icon { width: 13px; height: 13px; }
-.nf-pdp__buy { height: 50px; margin-top: .75rem; background-color: hsl(0 0% 12%); color: #fff; letter-spacing: var(--nf-track-16); }
+.nf-pdp__buy { height: 50px; margin-top: 12px; background-color: hsl(0 0% 12%); color: #fff; letter-spacing: var(--nf-track-16); }
 .nf-pdp__add:hover, .nf-pdp__buy:hover { opacity: .9; }
 .nf-pdp__add:disabled, .nf-pdp__buy:disabled { opacity: .6; cursor: not-allowed; }
 .nf-pdp__add:focus-visible, .nf-pdp__buy:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
 .nf-pdp__add.is-added { animation: nf-pdp-check-pop 260ms var(--ease-out-strong, ease-out); }
 @keyframes nf-pdp-check-pop { from { opacity: .7; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-.nf-pdp__trust { margin: .5rem 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
+.nf-pdp__trust { margin: 8px 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
 .nf-pdp__trust a { color: hsl(0 0% 35%); text-decoration: underline; text-underline-offset: 4px; }
-.nf-pdp__pair { display: flex; gap: .75rem; margin-top: .75rem; }
-.nf-pdp__ghost { flex: 1; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid hsl(0 0% 74%); background: none; color: hsl(0 0% 30%); cursor: pointer; text-decoration: none; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-10); }
+.nf-pdp__pair { display: flex; gap: 12px; margin-top: 12px; }
+.nf-pdp__ghost { flex: 1; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid hsl(0 0% 74%); background: none; color: hsl(0 0% 30%); cursor: pointer; text-decoration: none; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; }
+.nf-pdp__ghost { transition: background-color 200ms cubic-bezier(.4, 0, .2, 1), border-color 200ms cubic-bezier(.4, 0, .2, 1), color 200ms cubic-bezier(.4, 0, .2, 1); }
 .nf-pdp__ghost:hover { border-color: hsl(0 0% 45%); }
 .nf-pdp__ghost:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
 .nf-pdp__ghost .nf-icon { width: 14px; height: 14px; }
 .nf-pdp__ghost.is-on .nf-icon { fill: hsl(0 70% 55%); color: hsl(0 70% 55%); }
 
-.nf-pdp__delivery { display: flex; align-items: flex-start; gap: .5rem; margin-top: 1.25rem; padding: .625rem .75rem; border: 1px solid hsl(36 40% 80%); background-color: hsl(36 60% 96%); }
+.nf-pdp__delivery { display: flex; align-items: flex-start; gap: 8px; margin-top: 20px; padding: 10px 12px; border: 1px solid hsl(36 40% 80%); background-color: hsl(36 60% 96%); }
 .nf-pdp__truck { flex-shrink: 0; margin-top: 2px; width: 13px; height: 13px; color: var(--nf-gold-shadow); }
 .nf-pdp__delivery p { margin: 0; font-size: 12px; line-height: 1.6; color: hsl(0 0% 32%); }
 .nf-pdp__delivery strong { font-weight: 500; }
 
-.nf-pdp__offers { margin-top: .75rem; padding: .75rem; border: 1px solid hsl(0 0% 88%); }
+.nf-pdp__offers { margin-top: 12px; padding: 12px; border: 1px solid hsl(0 0% 88%); }
 .nf-pdp__offers-head { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-24); color: hsl(0 0% 45%); }
-.nf-pdp__offers ul { list-style: none; margin: .5rem 0 0; padding: 0; }
-.nf-pdp__offers li { display: flex; align-items: flex-start; gap: .5rem; margin-top: .375rem; font-size: 12px; line-height: 1.6; color: hsl(0 0% 32%); }
+.nf-pdp__offers ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.nf-pdp__offers li { display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; font-size: 12px; line-height: 1.6; color: hsl(0 0% 32%); }
 .nf-pdp__bullet { color: var(--nf-gold-deep); }
-.nf-pdp__code { margin-right: .375rem; padding: 1px .375rem; border: 1px solid hsl(36 40% 76%); font-size: 10.5px; letter-spacing: var(--nf-track-10); font-weight: 500; color: #8A6A2A; }
+.nf-pdp__code { margin-right: 6px; padding: 1px 6px; border: 1px solid hsl(36 40% 76%); font-size: 10.5px; letter-spacing: var(--nf-track-10); font-weight: 500; color: #8A6A2A; }
 
-.nf-pdp__facts { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 0; }
-.nf-pdp__fact { padding: .375rem .75rem; border: 1px solid hsl(36 30% 84%); background-color: hsl(33 41% 97%); }
+.nf-pdp__facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+.nf-pdp__fact { padding: 6px 12px; border: 1px solid hsl(36 30% 84%); background-color: hsl(33 41% 97%); }
 .nf-pdp__fact dt { margin: 0; font-family: var(--nf-font-label); font-size: 8.5px; text-transform: uppercase; letter-spacing: var(--nf-track-18); color: #9A7634; }
-.nf-pdp__fact dd { margin: .125rem 0 0; font-size: 12px; line-height: 1.2; letter-spacing: .01em; color: hsl(0 0% 22%); }
+.nf-pdp__fact dd { margin: 2px 0 0; font-size: 12px; line-height: 1.25; letter-spacing: .01em; color: hsl(0 0% 22%); }
 
-.nf-pdp__stock { display: inline-flex; align-items: center; gap: .375rem; margin: .75rem 0 0; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-10); color: hsl(142 60% 30%); }
+.nf-pdp__stock { display: inline-flex; align-items: center; gap: 6px; margin: 12px 0 0; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; color: hsl(142 50% 30%); }
 .nf-pdp__stock::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
 .nf-pdp__stock.is-out { color: hsl(0 65% 42%); }
 
-.nf-pdp__trustbadges { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: 1.25rem; padding: .75rem 0; border-top: 1px solid hsl(0 0% 90%); border-bottom: 1px solid hsl(0 0% 90%); }
-.nf-pdp__trustbadge { display: flex; flex-direction: column; align-items: center; gap: .375rem; text-align: center; }
+.nf-pdp__trustbadges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; padding: 12px 0; border-top: 1px solid hsl(0 0% 90%); border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-pdp__trustbadge { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
 .nf-pdp__trustbadge .nf-icon { width: 16px; height: 16px; color: hsl(186 35% 28%); }
-.nf-pdp__trustbadge span { font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-10); line-height: 1.2; color: hsl(0 0% 30%); }
+.nf-pdp__trustbadge span { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; line-height: 1.25; color: hsl(0 0% 30%); }
 
-.nf-pdp__pincode { margin-top: 1rem; }
-.nf-pdp__pincode-head { display: flex; align-items: center; gap: .5rem; margin-bottom: .625rem; }
+.nf-pdp__pincode { margin-top: 16px; }
+.nf-pdp__pincode-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .nf-pdp__pincode-head .nf-icon { width: 13px; height: 13px; color: hsl(186 35% 28%); }
 .nf-pdp__pincode-row { display: flex; align-items: stretch; }
-.nf-pdp__pincode-input { flex: 1; height: 44px; min-width: 0; padding-inline: .75rem; font-size: 16px; letter-spacing: .02em; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); }
+.nf-pdp__pincode-input { flex: 1; height: 44px; min-width: 0; padding-inline: 12px; font-size: 16px; letter-spacing: .02em; border: 1px solid hsl(0 0% 80%); background: transparent; color: hsl(0 0% 20%); }
 @media (min-width: 768px) { .nf-pdp__pincode-input { font-size: 13px; } }
 .nf-pdp__pincode-input:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
-.nf-pdp__pincode-btn { flex-shrink: 0; height: 44px; padding-inline: 1.25rem; border: 1px solid hsl(0 0% 20%); border-left: 0; background-color: hsl(0 0% 12%); color: #fff; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-14); cursor: pointer; }
+.nf-pdp__pincode-btn { flex-shrink: 0; height: 44px; padding-inline: 20px; border: 1px solid hsl(0 0% 20%); border-left: 0; background-color: hsl(0 0% 12%); color: #fff; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .14em; cursor: pointer; }
 .nf-pdp__pincode-btn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
-.nf-pdp__pincode-result { margin-top: .625rem; display: flex; flex-direction: column; gap: .375rem; }
-.nf-pdp__pincode-ok, .nf-pdp__pincode-error, .nf-pdp__pincode-note { display: flex; align-items: flex-start; gap: .5rem; }
+.nf-pdp__pincode-result { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.nf-pdp__pincode-ok, .nf-pdp__pincode-error, .nf-pdp__pincode-note { display: flex; align-items: flex-start; gap: 8px; }
 .nf-pdp__pincode-ok { font-size: 12px; color: hsl(0 0% 25%); }
 .nf-pdp__pincode-ok .nf-icon { width: 13px; height: 13px; margin-top: 2px; flex-shrink: 0; color: hsl(142 50% 38%); }
 .nf-pdp__pincode-error { font-size: 12px; color: hsl(0 65% 45%); }
@@ -1236,57 +2023,73 @@
 .nf-pdp__pincode-note p { margin: 0; }
 .nf-pdp__pincode-cod { margin: 0; padding-left: 21px; font-size: 11px; color: hsl(0 0% 50%); }
 
-.nf-pdp__strip { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin: 1rem 0 0; padding: 1px; background-color: rgb(26 22 20 / .1); }
+.nf-pdp__strip { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin: 16px 0 0; padding: 1px; background-color: rgb(26 22 20 / .1); }
 @media (min-width: 768px) { .nf-pdp__strip { grid-template-columns: repeat(4, 1fr); } }
-.nf-pdp__strip li { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; padding: 1rem .5rem; text-align: center; background-color: #fff; }
+.nf-pdp__strip li { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px 8px; text-align: center; background-color: #fff; }
 .nf-pdp__strip .nf-icon { width: 16px; height: 16px; color: #B0843A; }
-.nf-pdp__strip span { font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; line-height: 1.5; letter-spacing: var(--nf-track-14); color: rgb(26 22 20 / .7); }
+.nf-pdp__strip span { font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; line-height: 1.5; letter-spacing: .14em; color: rgb(26 22 20 / .7); }
+@media (min-width: 768px) { .nf-pdp__strip span { font-size: 11px; } }
 
-.nf-pdp__policylinks { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: .75rem; }
+.nf-pdp__policylinks { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 12px; }
 .nf-pdp__policylinks a { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--nf-font-display); font-size: 12px; letter-spacing: .02em; text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 45%); }
 .nf-pdp__policylinks span { font-size: 10px; color: hsl(0 0% 75%); }
 
-.nf-pdp__tabbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin-bottom: 1rem; border: 1px solid hsl(0 0% 88%); }
-.nf-pdp__tabbtn { padding-block: .75rem; border: 0; background: transparent; color: hsl(0 0% 35%); font-family: var(--nf-font-label); font-size: 11px; text-transform: uppercase; letter-spacing: var(--nf-track-14); font-weight: 500; cursor: pointer; transition: background-color .2s, color .2s; }
+.nf-pdp__tabbar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin-bottom: 16px; border: 1px solid hsl(0 0% 88%); }
+.nf-pdp__tabbtn { padding-block: 12px; border: 0; background: transparent; color: hsl(0 0% 35%); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; font-weight: 500; cursor: pointer; transition: background-color 200ms cubic-bezier(.4, 0, .2, 1), color 200ms cubic-bezier(.4, 0, .2, 1); }
 .nf-pdp__tabbtn.is-active { background-color: hsl(0 0% 12%); color: #fff; }
 .nf-pdp__tabbtn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
 .nf-pdp__desc { font-size: 13px; line-height: 1.7; color: hsl(0 0% 40%); }
+.nf-pdp__detailstack > * + * { margin-top: 12px; }
+.nf-pdp__blurb { margin: 0; font-size: 13px; line-height: 1.7; color: hsl(0 0% 40%); }
+.nf-pdp__specs { margin: 0; }
+.nf-pdp__spec { display: flex; flex-direction: column; gap: 2px; }
+.nf-pdp__spec + .nf-pdp__spec { margin-top: 4px; }
+@media (min-width: 640px) { .nf-pdp__spec { flex-direction: row; gap: 12px; } }
+.nf-pdp__spec dt { flex-shrink: 0; margin: 0; padding-top: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: #9A7634; }
+@media (min-width: 640px) { .nf-pdp__spec dt { width: 92px; } }
+.nf-pdp__spec dd, .nf-pdp__spec-loose { margin: 0; font-size: 13px; line-height: 1.7; color: hsl(0 0% 40%); }
+.nf-pdp__tip { margin: 0; font-size: 12.5px; line-height: 1.7; color: hsl(0 0% 40%); }
+.nf-pdp__tip-label { margin-right: 6px; font-size: 10px; text-transform: uppercase; letter-spacing: .14em; color: #9A7634; }
+.nf-pdp__materials { margin: 0; font-family: var(--nf-font-editorial); font-size: 12px; font-style: italic; line-height: 1.7; color: hsl(0 0% 50%); }
+.nf-pdp__care { margin: 0; font-size: 13px; line-height: 1.8; color: hsl(0 0% 40%); }
 .nf-pdp__desc p { margin: 0 0 .75em; }
 .nf-pdp__desc p:last-child { margin-bottom: 0; }
 
 .nf-pdp__accordion { width: 100%; }
 .nf-pdp__acc { border-bottom: 1px solid hsl(0 0% 90%); }
-.nf-pdp__acc-trigger { display: flex; align-items: center; gap: .75rem; padding-block: 1rem; font-family: var(--nf-font-display); font-size: 17px; font-weight: 500; color: #1A1614; cursor: pointer; list-style: none; }
+.nf-pdp__acc-trigger { display: flex; align-items: center; gap: 12px; padding-block: 16px; font-family: var(--nf-font-display); font-size: 17px; font-weight: 500; line-height: 1.375; text-align: left; color: #1A1614; cursor: pointer; list-style: none; }
 .nf-pdp__acc-trigger::-webkit-details-marker { display: none; }
 @media (min-width: 768px) { .nf-pdp__acc-trigger { font-size: 18px; } }
 .nf-pdp__acc-trigger:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
-.nf-pdp__acc-hairline { flex-shrink: 0; width: 1.5rem; height: 1px; background-color: rgb(201 154 76 / .7); transition: background-color .3s; }
+.nf-pdp__acc-hairline { flex-shrink: 0; width: 24px; height: 1px; background-color: rgb(201 154 76 / .7); transition: background-color .3s; }
 .nf-pdp__acc-trigger:hover .nf-pdp__acc-hairline { background-color: #C99A4C; }
-.nf-pdp__acc[open] .nf-pdp__acc-hairline { background-color: #9A7634; }
-.nf-pdp__acc-chev { margin-left: auto; width: 16px; height: 16px; color: #9A7634; transition: transform .25s ease; }
-.nf-pdp__acc[open] .nf-pdp__acc-chev { transform: rotate(180deg); }
-.nf-pdp__acc-body { padding-bottom: 1rem; font-size: 13px; line-height: 1.7; color: hsl(0 0% 45%); }
+.nf-pdp__acc[open] .nf-pdp__acc-hairline, .nf-pdp__acc.is-open .nf-pdp__acc-hairline { background-color: #9A7634; }
+.nf-pdp__acc.is-closing .nf-pdp__acc-hairline { background-color: rgb(201 154 76 / .7); }
+.nf-pdp__acc-chev { margin-left: auto; width: 16px; height: 16px; color: #9A7634; transition: transform 200ms cubic-bezier(.4, 0, .2, 1); }
+.nf-pdp__acc[open] .nf-pdp__acc-chev, .nf-pdp__acc.is-open .nf-pdp__acc-chev { transform: rotate(180deg); }
+.nf-pdp__acc.is-closing .nf-pdp__acc-chev { transform: none; }
+.nf-pdp__acc-body { overflow: hidden; padding-bottom: 16px; font-size: 13px; line-height: 1.7; color: hsl(0 0% 45%); }
 .nf-pdp__acc-body p { margin: 0 0 .375em; }
 .nf-pdp__acc-body p:last-child { margin-bottom: 0; }
 
 .nf-pdp__help { margin-top: 0; }
-.nf-pdp__help .nf-pdp__label { display: block; margin-bottom: .75rem; }
+.nf-pdp__help .nf-pdp__label { display: block; margin-bottom: 12px; color: hsl(0 0% 30%); }
 .nf-pdp__help-row { display: flex; flex-direction: column; width: 100%; }
 @media (min-width: 768px) { .nf-pdp__help-row { flex-direction: row; } }
-.nf-pdp__help-link { flex: 1; display: flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding-block: .75rem; font-size: 12px; letter-spacing: .02em; color: hsl(0 0% 35%); text-decoration: none; border-top: 1px solid hsl(0 0% 90%); border-bottom: 1px solid hsl(0 0% 90%); border-right: 1px solid hsl(0 0% 90%); transition: color .2s; }
+.nf-pdp__help-link { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding-block: 12px; font-size: 12px; line-height: 1.5; letter-spacing: .02em; color: hsl(0 0% 35%); text-decoration: none; border-top: 1px solid hsl(0 0% 90%); border-bottom: 1px solid hsl(0 0% 90%); border-right: 1px solid hsl(0 0% 90%); transition: color 200ms cubic-bezier(.4, 0, .2, 1); }
 .nf-pdp__help-row a:first-child { border-left: 1px solid hsl(0 0% 90%); }
 .nf-pdp__help-link:hover { color: hsl(0 0% 15%); }
 .nf-pdp__help-link .nf-icon { width: 15px; height: 15px; }
 
 /* -- Sticky mobile bar -- */
-.nf-pdp__bar[hidden] { display: none; }
-.nf-pdp__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: .5rem; padding: .625rem .75rem calc(.625rem + env(safe-area-inset-bottom, 0px)); background-color: hsla(0,0%,100%,.95); backdrop-filter: blur(6px); border-top: 1px solid hsl(0 0% 90%); box-shadow: 0 -6px 18px hsla(0,0%,0%,.06); transition: transform .3s ease-out; }
+.nf-pdp__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); background-color: hsla(0,0%,100%,.95); backdrop-filter: blur(6px); border-top: 1px solid hsl(0 0% 90%); box-shadow: 0 -6px 18px hsla(0,0%,0%,.06); transform: translateY(110%); visibility: hidden; pointer-events: none; transition: transform 300ms cubic-bezier(0, 0, .2, 1), visibility 300ms cubic-bezier(0, 0, .2, 1); }
+.nf-pdp__bar.is-on { transform: translateY(0); visibility: visible; pointer-events: auto; }
 @media (min-width: 768px) { .nf-pdp__bar { display: none !important; } }
 .nf-pdp__bar-wish { flex-shrink: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border: 1px solid hsl(0 0% 74%); background: none; cursor: pointer; color: hsl(0 0% 25%); }
 .nf-pdp__bar-wish .nf-icon { width: 16px; height: 16px; }
 .nf-pdp__bar-wish.is-on { color: hsl(0 70% 55%); }
 .nf-pdp__bar-wish.is-on .nf-icon { fill: hsl(0 70% 55%); }
-.nf-pdp__bar-add, .nf-pdp__bar-buy, .nf-pdp__bar-notify, .nf-pdp__bar-soldout { flex: 1; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-12); text-decoration: none; cursor: pointer; }
+.nf-pdp__bar-add, .nf-pdp__bar-buy, .nf-pdp__bar-notify, .nf-pdp__bar-soldout { flex: 1; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; text-decoration: none; cursor: pointer; }
 .nf-pdp__bar-add { border: 1px solid hsl(0 0% 24%); background: none; color: hsl(0 0% 15%); }
 .nf-pdp__bar-buy, .nf-pdp__bar-notify { border: 0; background-color: hsl(0 0% 12%); color: #fff; }
 .nf-pdp__bar-soldout { border: 1px solid hsl(0 0% 80%); color: hsl(0 0% 45%); }
@@ -1297,27 +2100,27 @@
 .nf-pdp__sizeguide { border: 0; padding: 0; margin: 0 auto auto; max-width: none; width: 100%; max-height: 88vh; background-color: #FDFAF7; color: hsl(0 0% 20%); position: fixed; inset: auto 0 0 0; overflow-y: auto; }
 .nf-pdp__sizeguide::backdrop { background-color: rgb(0 0 0 / .4); }
 @media (min-width: 768px) { .nf-pdp__sizeguide { inset: 0; top: 50%; left: 50%; right: auto; bottom: auto; transform: translate(-50%, -50%); width: 560px; } }
-.nf-pdp__sizeguide-grabber { display: flex; justify-content: center; padding: .75rem 0 .25rem; }
-.nf-pdp__sizeguide-grabber::before { content: ''; width: 2.5rem; height: 4px; border-radius: 999px; background-color: hsl(0 0% 82%); }
+.nf-pdp__sizeguide-grabber { display: flex; justify-content: center; padding: 12px 0 4px; }
+.nf-pdp__sizeguide-grabber::before { content: ''; width: 40px; height: 4px; border-radius: 999px; background-color: hsl(0 0% 82%); }
 @media (min-width: 768px) { .nf-pdp__sizeguide-grabber { display: none; } }
-.nf-pdp__sizeguide-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-pdp__sizeguide-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid hsl(0 0% 90%); }
 .nf-pdp__sizeguide-title { margin: 0; font-family: var(--nf-font-display); font-size: 21px; font-weight: 600; color: hsl(0 0% 12%); }
 .nf-pdp__sizeguide-close { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 0; background: none; color: hsl(0 0% 45%); cursor: pointer; }
 .nf-pdp__sizeguide-close:hover { background-color: var(--nf-ivory-deep); }
 .nf-pdp__sizeguide-close:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: -2px; }
-.nf-pdp__sizeguide-body { padding: 1rem 1.25rem 1.5rem; font-size: 12px; line-height: 1.7; color: hsl(0 0% 50%); }
+.nf-pdp__sizeguide-body { padding: 16px 20px 24px; font-size: 12px; line-height: 1.7; color: hsl(0 0% 50%); }
 .nf-pdp__sizeguide-body strong { color: hsl(0 0% 25%); font-weight: 500; }
-.nf-pdp__sizeguide-tablewrap { margin-top: .75rem; overflow-x: auto; }
+.nf-pdp__sizeguide-tablewrap { margin-top: 12px; overflow-x: auto; }
 .nf-pdp__sizeguide-table { width: 100%; min-width: 330px; border-collapse: collapse; text-align: left; }
-.nf-pdp__sizeguide-table th { padding: .625rem 1rem .625rem 0; border-bottom: 1px solid hsl(0 0% 88%); font-family: var(--nf-font-label); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-12); color: hsl(0 0% 35%); }
-.nf-pdp__sizeguide-table td { padding: .625rem 1rem .625rem 0; border-bottom: 1px solid hsl(0 0% 93%); font-size: 13px; color: hsl(0 0% 35%); }
+.nf-pdp__sizeguide-table th { padding: 10px 16px 10px 0; border-bottom: 1px solid hsl(0 0% 88%); font-family: var(--nf-font-label); font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; color: hsl(0 0% 35%); }
+.nf-pdp__sizeguide-table td { padding: 10px 16px 10px 0; border-bottom: 1px solid hsl(0 0% 93%); font-size: 13px; color: hsl(0 0% 35%); }
 .nf-pdp__sizeguide-table td:first-child { font-weight: 500; color: hsl(0 0% 18%); }
 .nf-pdp__sizeguide-table td span { color: hsl(0 0% 55%); }
 [data-nf-sizeguide-row].is-active { background-color: rgb(176 132 58 / .1); }
 [data-nf-sizeguide-row].is-active td:first-child { color: #8A6526; }
-.nf-pdp__sizeguide-how { margin: 1.25rem 0 0; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: var(--nf-track-14); color: hsl(0 0% 25%); }
-.nf-pdp__sizeguide-steps { list-style: none; margin: .75rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .75rem; }
-.nf-pdp__sizeguide-steps li { display: flex; gap: .75rem; }
+.nf-pdp__sizeguide-how { margin: 20px 0 0; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .14em; color: hsl(0 0% 25%); }
+.nf-pdp__sizeguide-steps { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.nf-pdp__sizeguide-steps li { display: flex; gap: 12px; }
 .nf-pdp__sizeguide-num { flex-shrink: 0; margin-top: 2px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid rgb(176 132 58 / .5); font-size: 10px; font-weight: 500; color: #8A6526; }
 .nf-pdp__sizeguide-steps strong { display: block; font-size: 12.5px; font-weight: 500; color: hsl(0 0% 20%); }
 .nf-pdp__sizeguide-steps span > span { display: block; margin-top: 2px; font-size: 12px; line-height: 1.7; color: hsl(0 0% 45%); }
@@ -1326,50 +2129,195 @@
 .nf-pdp__lightbox { border: 0; padding: 0; margin: 0; inset: 0; width: 100%; height: 100%; max-width: 100%; max-height: 100%; background-color: #FBF3EC; }
 .nf-pdp__lightbox[open] { display: flex; flex-direction: column; }
 .nf-pdp__lightbox::backdrop { background-color: #FBF3EC; }
-.nf-pdp__lightbox-top { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; padding: 1rem 1rem 0; }
-@media (min-width: 768px) { .nf-pdp__lightbox-top { padding: 1.5rem 2rem 0; } }
-.nf-pdp__lightbox-name { margin: 0; padding-top: .375rem; font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-30); color: #9A7634; }
+.nf-pdp__lightbox-top { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; padding: 16px 16px 0; }
+@media (min-width: 768px) { .nf-pdp__lightbox-top { padding: 24px 32px 0; } }
+.nf-pdp__lightbox-id { min-width: 0; padding-right: 16px; }
+.nf-pdp__lightbox-tools { flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+.nf-pdp__lightbox-name { margin: 0; padding-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-30); color: #9A7634; }
 .nf-pdp__lightbox-btn { width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid rgb(26 22 20 / .15); background-color: rgb(251 243 236 / .9); color: #1A1614; cursor: pointer; transition: background-color .2s, color .2s; }
 .nf-pdp__lightbox-btn:hover { background-color: #1A1614; color: #FBF3EC; }
 .nf-pdp__lightbox-btn:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
-.nf-pdp__lightbox-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: .75rem 1rem 1.5rem; }
-@media (min-width: 768px) { .nf-pdp__lightbox-stage { padding: .75rem 6rem 2.5rem; } }
-.nf-pdp__lightbox-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.nf-pdp__lightbox-count { position: absolute; left: 1rem; bottom: 1rem; margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-24); color: rgb(26 22 20 / .55); }
-@media (min-width: 768px) { .nf-pdp__lightbox-count { left: 2rem; } }
+.nf-pdp__lightbox-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 12px 16px 24px; }
+@media (min-width: 768px) { .nf-pdp__lightbox-stage { padding: 12px 96px 40px; } }
+/* ImageLightbox: click the photo to toggle a 2x zoom about the clicked point,
+   500ms cubic-bezier(0.22, 1, 0.36, 1). */
+.nf-pdp__lightbox-stage img { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; cursor: zoom-in; transform-origin: 50% 50%; transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1); }
+.nf-pdp__lightbox-stage.is-zoomed img { transform: scale(2); cursor: zoom-out; }
+.nf-pdp__lightbox[open] { animation: nf-pdp-fade-in 200ms cubic-bezier(0, 0, .2, 1); }
+.nf-pdp__lightbox[open]::backdrop { animation: nf-pdp-fade-in 200ms cubic-bezier(0, 0, .2, 1); }
+@keyframes nf-pdp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.nf-pdp__lightbox-count { margin: 6px 0 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-24); color: rgb(26 22 20 / .55); }
 .nf-pdp__lightbox-prev, .nf-pdp__lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; }
-.nf-pdp__lightbox-prev { left: .75rem; }
-.nf-pdp__lightbox-next { right: .75rem; }
-@media (min-width: 768px) { .nf-pdp__lightbox-prev { left: 1.5rem; } .nf-pdp__lightbox-next { right: 1.5rem; } }
+.nf-pdp__lightbox-prev { left: 12px; }
+.nf-pdp__lightbox-next { right: 12px; }
+@media (min-width: 768px) { .nf-pdp__lightbox-prev { left: 24px; } .nf-pdp__lightbox-next { right: 24px; } }
 
 /* -- You may also like -- */
-.nf-pdp__related { padding-block: 4rem; background-color: #FBF3EC; }
-@media (min-width: 768px) { .nf-pdp__related { padding-block: 5rem; } }
-.nf-pdp__related-inner { max-width: 1400px; margin-inline: auto; padding-inline: 1rem; }
-@media (min-width: 768px) { .nf-pdp__related-inner { padding-inline: 1.5rem; } }
-.nf-pdp__related-title { margin: 0; font-family: var(--nf-font-display); font-size: 26px; text-align: center; color: #1A1614; }
+.nf-pdp__related { padding-block: 64px; background-color: #FBF3EC; }
+@media (min-width: 768px) { .nf-pdp__related { padding-block: 80px; } }
+.nf-pdp__related-inner { max-width: 1400px; margin-inline: auto; padding-inline: 16px; }
+@media (min-width: 768px) { .nf-pdp__related-inner { padding-inline: 24px; } }
+.nf-pdp__related-title { margin: 0; font-family: var(--nf-font-display); font-size: 26px; line-height: 1.5; letter-spacing: normal; text-align: center; color: #1A1614; }
 @media (min-width: 768px) { .nf-pdp__related-title { font-size: 34px; } }
-.nf-pdp__related-sub { margin: .5rem 0 0; text-align: center; font-family: var(--nf-font-label); font-size: 12px; letter-spacing: var(--nf-track-30); color: #B0843A; }
-.nf-pdp__related-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; }
-@media (min-width: 768px) { .nf-pdp__related-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; } }
+.nf-pdp__related-sub { margin: 8px 0 0; text-align: center; font-family: var(--nf-font-label); font-size: 12px; letter-spacing: var(--nf-track-30); color: #B0843A; }
+.nf-pdp__related-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+@media (min-width: 768px) { .nf-pdp__related-grid { grid-template-columns: repeat(4, 1fr); gap: 24px; } }
 .nf-pdp__related-card { display: block; text-decoration: none; }
 .nf-pdp__related-imgwrap { display: block; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--nf-ivory-deep); }
-.nf-pdp__related-img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms ease; }
+.nf-pdp__related-img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms cubic-bezier(.4, 0, .2, 1); }
 .nf-pdp__related-card:hover .nf-pdp__related-img { transform: scale(1.05); }
-.nf-pdp__related-cat { display: block; margin-top: .75rem; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: #B0843A; }
-.nf-pdp__related-name { display: block; margin-top: .25rem; font-family: var(--nf-font-display); font-size: 18px; color: #1A1614; }
+.nf-pdp__related-cat { display: block; margin-top: 12px; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: #B0843A; }
+.nf-pdp__related-name { display: block; margin-top: 4px; font-family: var(--nf-font-display); font-size: 18px; color: #1A1614; }
 @media (min-width: 768px) { .nf-pdp__related-name { font-size: 20px; } }
-.nf-pdp__related-price { display: inline-flex; align-items: center; gap: .375rem; margin-top: .375rem; font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-18); color: #9A7634; }
+.nf-pdp__related-price { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-family: var(--nf-font-label); font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-18); color: #9A7634; }
 .nf-pdp__related-dot { width: 5px; height: 5px; border-radius: 50%; background-color: #C99A4C; }
 .nf-pdp__related-card:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
 
+/* -- From the collection: the 3D ring (circular-gallery.tsx). Every measured
+   dimension is set by the script from viewport width, exactly as React does;
+   only the fixed styling lives here. -- */
+.nf-ring { padding-block: 56px; background-color: #FBF7F2; }
+@media (min-width: 768px) { .nf-ring { padding-block: 80px; } }
+.nf-ring__head { text-align: center; padding-inline: 16px; }
+.nf-ring__eyebrow { margin: 0; font-size: 10px; text-transform: uppercase; letter-spacing: var(--nf-track-30); color: #B0843A; }
+.nf-ring__title { margin: 8px 0 0; font-family: var(--nf-font-display); font-size: 26px; font-weight: 400; line-height: 1.5; letter-spacing: normal; color: #1A1614; }
+@media (min-width: 768px) { .nf-ring__title { font-size: 34px; } }
+.nf-ring__sub { margin: 6px 0 0; font-size: 11px; letter-spacing: .14em; color: hsl(0 0% 48%); }
+.nf-ring__viewport { position: relative; width: 100%; overflow: hidden; margin-top: 24px; }
+@media (min-width: 768px) { .nf-ring__viewport { margin-top: 32px; } }
+.nf-ring__stage { position: relative; width: 100%; margin-inline: auto; }
+.nf-ring__spin { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+.nf-ring__card { position: absolute; display: block; text-decoration: none; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: opacity 200ms linear; }
+.nf-ring__frame { display: block; overflow: hidden; background-color: var(--nf-ivory-deep); }
+.nf-ring__img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.nf-ring__text { display: block; overflow: hidden; padding-top: 8px; text-align: center; }
+.nf-ring__name { display: block; font-family: var(--nf-font-display); line-height: 1.25; color: #1A1614; }
+.nf-ring__cat { display: block; margin-top: 4px; text-transform: uppercase; line-height: 1; letter-spacing: .22em; color: #9A7634; }
+
+/* Late, on purpose. The 768px gallery block sits above the base rules for the
+   zoom badge and the dot rail, so its `display: none` lost the cascade to them
+   on equal specificity and both kept showing on desktop, where JewelDetail.tsx
+   renders neither (they belong to its isMobile branch only). */
+@media (min-width: 768px) {
+  .nf-pdp__counter, .nf-pdp__zoomhint, .nf-pdp__dots { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nf-pdp__img, .nf-pdp__related-img { transition: none; }
+  .nf-ring__card { transition: none; }
   .nf-pdp__dot::before { transition: none; }
   .nf-pdp__bar { transition: none; }
   .nf-pdp__acc-chev { transition: none; }
+  .nf-pdp__lightbox-stage img { transition: none; }
+  .nf-pdp__lightbox[open], .nf-pdp__lightbox[open]::backdrop { animation: none; }
   .nf-pdp__add.is-added { animation: none; }
 }
+
+/* == Customer reviews == src/components/CustomerReviews.tsx.
+   Every rule here is scoped to .nf-reviews / nf-reviews__ so it cannot reach
+   the rest of the PDP. Colours are the shadcn tokens the React page resolves
+   to (--foreground 222.2 84% 4.9%, --muted-foreground 215.4 16.3% 46.9%,
+   --border 214.3 31.8% 91.4%, --secondary 210 40% 96.1%, --primary and
+   --secondary-foreground 222.2 47.4% 11.2%), plus the section's own teal
+   186 35% 28% and Tailwind's yellow-500 #eab308 for the stars.
+   The unprefixed text inherits nf-base.css's ui-sans-serif body stack and
+   line-height 1.5, which is exactly what Tailwind's preflight gives React;
+   only the .font-cormorant elements are pulled onto the display face. */
+.nf-reviews {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: 0 16px 80px;
+  scroll-margin-top: 120px;
+}
+/* Star sprite: one <symbol>, 220-odd <use> instances. Kept out of flow rather
+   than display:none so the references resolve in every engine. */
+.nf-reviews__sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* letter-spacing/line-height are restated because base.css gives every heading
+   Sense's tracking and a 1.25 leading; React's h2/h3 inherit Tailwind preflight's
+   normal tracking and 1.5. */
+.nf-reviews__title { font-family: var(--nf-font-display); font-size: 28px; font-weight: 600; line-height: 1.5; letter-spacing: normal; color: hsl(222.2 84% 4.9%); margin: 0; }
+@media (min-width: 768px) { .nf-reviews__title { font-size: 32px; } }
+
+.nf-reviews__stars { display: flex; gap: 2px; }
+.nf-reviews__star { display: block; width: 12px; height: 12px; overflow: hidden; fill: #eab308; stroke: #eab308; }
+.nf-reviews__star--off { fill: none; stroke: hsl(214.3 31.8% 91.4%); }
+.nf-reviews__stars--lg .nf-reviews__star { width: 18px; height: 18px; }
+
+.nf-reviews__head { margin-top: 24px; display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 32px; }
+@media (min-width: 1024px) { .nf-reviews__head { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; } }
+
+.nf-reviews__summary { display: flex; flex-direction: column; gap: 24px; }
+@media (min-width: 640px) { .nf-reviews__summary { flex-direction: row; gap: 40px; } }
+.nf-reviews__overall { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.nf-reviews__score { font-family: var(--nf-font-display); font-size: 36px; font-weight: 700; color: hsl(222.2 84% 4.9%); margin: 0; }
+.nf-reviews__based { font-family: var(--nf-font-display); font-size: 13px; color: hsl(215.4 16.3% 46.9%); margin: 0; }
+
+/* Baymard: the distribution is the most-used part of a reviews block and 90%
+   of shoppers try to click the bars, so each row is the filter for its rating. */
+.nf-reviews__bars { flex: 1 1 0%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.nf-reviews__bar { display: flex; width: 100%; align-items: center; gap: 12px; padding: 4px 0; text-align: left; background: none; border: 0; cursor: pointer; font-family: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; color: inherit; transition: opacity 150ms; }
+.nf-reviews__bar:disabled { cursor: default; opacity: .45; }
+.nf-reviews__bar:not(:disabled):hover { opacity: .8; }
+.nf-reviews__bar-label { font-size: 13px; width: 32px; flex-shrink: 0; font-weight: 500; color: hsl(215.4 16.3% 46.9%); }
+.nf-reviews__bar-track { position: relative; width: 100%; height: 10px; flex: 1 1 0%; overflow: hidden; background-color: hsl(210 40% 96.1%); }
+.nf-reviews__bar-fill { display: block; height: 100%; background-color: hsl(222.2 47.4% 11.2%); transition: width 200ms; }
+.nf-reviews__bar-count { font-size: 12px; width: 32px; text-align: right; color: hsl(215.4 16.3% 46.9%); }
+.nf-reviews__bar.is-review-active .nf-reviews__bar-label,
+.nf-reviews__bar.is-review-active .nf-reviews__bar-count { color: hsl(186 35% 28%); }
+
+.nf-reviews__gallery { display: flex; flex-direction: column; gap: 20px; }
+.nf-reviews__subtitle { display: flex; align-items: center; gap: 8px; font-family: var(--nf-font-display); font-size: 18px; font-weight: 600; line-height: 1.5; letter-spacing: normal; color: hsl(222.2 84% 4.9%); margin: 0; }
+.nf-reviews__camera { width: 16px; height: 16px; flex-shrink: 0; }
+.nf-reviews__strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+.nf-reviews__thumb { flex-shrink: 0; width: 80px; height: 80px; padding: 0; border: 0; background: none; overflow: hidden; cursor: pointer; transition: transform 200ms, box-shadow 200ms; }
+@media (min-width: 768px) { .nf-reviews__thumb { width: 90px; height: 90px; } }
+.nf-reviews__thumb:hover { transform: scale(1.05); box-shadow: 0 4px 6px -1px hsla(0,0%,0%,.1), 0 2px 4px -2px hsla(0,0%,0%,.1); }
+.nf-reviews__thumb-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.nf-reviews__write,
+.nf-reviews__morebtn { padding: 12px 32px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: inherit; text-transform: uppercase; letter-spacing: .1em; color: hsl(222.2 84% 4.9%); background-color: transparent; cursor: pointer; transition: all 250ms ease-in-out; }
+.nf-reviews__write { margin-top: 8px; align-self: flex-start; border: 1px solid hsl(222.2 84% 4.9%); }
+.nf-reviews__morebtn { border: 2px solid hsl(222.2 84% 4.9%); }
+.nf-reviews__write:hover,
+.nf-reviews__morebtn:hover { background-color: hsl(222.2 84% 4.9%); color: hsl(0 0% 100%); box-shadow: 0 4px 6px -1px hsla(0,0%,0%,.1), 0 2px 4px -2px hsla(0,0%,0%,.1); transform: translateY(-1px); }
+
+.nf-reviews__filters { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; }
+.nf-reviews__chip { padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: inherit; color: hsl(215.4 16.3% 46.9%); background-color: transparent; border: 1px solid hsl(214.3 31.8% 91.4%); cursor: pointer; transition: all 200ms; }
+.nf-reviews__chip.is-review-active { color: hsl(0 0% 100%); background-color: hsl(186 35% 28%); border-color: hsl(186 35% 28%); }
+
+.nf-reviews__grid { margin-top: 32px; display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 20px; transition: opacity 200ms; }
+@media (min-width: 640px) { .nf-reviews__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .nf-reviews__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.nf-reviews__grid.is-review-fading { opacity: 0; }
+
+.nf-reviews__card { padding: 20px; background-color: hsl(0 0% 100%); border: 1px solid hsl(214.3 31.8% 91.4%); transition: transform 300ms, box-shadow 300ms; }
+.nf-reviews__card:hover { transform: translateY(-4px); box-shadow: 0 4px 6px -1px hsla(0,0%,0%,.1), 0 2px 4px -2px hsla(0,0%,0%,.1); }
+.nf-reviews__card.is-review-hidden,
+.nf-reviews__none.is-review-hidden,
+.nf-reviews__more.is-review-hidden { display: none; }
+.nf-reviews__card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+/* Source order puts the number first but paints it last, hard right. */
+.nf-reviews__no { order: 9999; margin-left: auto; font-size: 10px; letter-spacing: .08em; color: hsl(215.4 16.3% 46.9%); }
+.nf-reviews__avatar { position: relative; display: flex; flex-shrink: 0; width: 36px; height: 36px; overflow: hidden; }
+.nf-reviews__initials { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; background-color: hsl(210 40% 96.1%); color: hsl(222.2 47.4% 11.2%); }
+.nf-reviews__name { font-family: var(--nf-font-display); font-size: 14px; font-weight: 600; color: hsl(222.2 84% 4.9%); margin: 0; }
+.nf-reviews__verified { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: hsl(186 35% 28%); }
+.nf-reviews__meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.nf-reviews__date { font-size: 11px; color: hsl(215.4 16.3% 46.9%); }
+.nf-reviews__text { font-family: var(--nf-font-display); font-size: 13px; line-height: 1.625; color: hsl(215.4 16.3% 46.9%); margin: 0; }
+.nf-reviews__shots { display: flex; gap: 8px; margin-top: 12px; }
+.nf-reviews__shot { display: block; width: 48px; height: 48px; object-fit: cover; }
+
+.nf-reviews__none { grid-column: 1 / -1; padding: 40px 0; text-align: center; font-family: var(--nf-font-display); font-size: 14px; color: hsl(215.4 16.3% 46.9%); margin: 0; }
+.nf-reviews__more { margin-top: 40px; display: flex; justify-content: center; }
+
+.nf-reviews__lightbox { position: fixed; width: calc(100% - 32px); max-width: 512px; padding: 8px; border: 0; background-color: hsl(0 0% 100%); }
+.nf-reviews__lightbox::backdrop { background-color: hsla(0, 0%, 0%, .8); }
+.nf-reviews__lightbox-img { display: block; width: 100%; height: auto; }
+.nf-reviews__lightbox-close { position: absolute; top: 16px; right: 16px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; background-color: hsla(0, 0%, 100%, .85); color: hsl(0 0% 20%); cursor: pointer; }
+.nf-reviews__x { width: 16px; height: 16px; }
+
 {% endstylesheet %}
 
 {% schema %}

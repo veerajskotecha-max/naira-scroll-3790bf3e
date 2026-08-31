@@ -1,0 +1,318 @@
+{%- comment -%}
+  Review fixture lifted verbatim from the React app so the Liquid PDP renders
+  the identical set: src/data/productReviews.ts (the numbered per-product bank)
+  and the jewellery arrays in src/components/CustomerReviews.tsx. Regenerated
+  by shopify/harness/reviewfixture.mjs -- edit the React source, not this file.
+
+  One row per line, pipe separated:
+    no|name|initials|verified|rating|date|text|photo
+  "no" is set only for bank rows (React shows it as the #nnn badge); "photo" is
+  a theme asset basename for the nine UGC shots.
+
+  part: "bank"  -> all 260 numbered notes, sliced per product by the same hash
+                   getProductReviews() uses
+  part: "seed"  -> the nine photo reviews then the thirty jewellery one-liners,
+                   in React's order
+{%- endcomment -%}
+{%- if part == 'bank' -%}
+1|Aarti A.|AA|1|5|August 28, 2026|Loved it... looks far more expensive than it is|
+2|Aditi J.|AJ|1|5|August 27, 2026|Quality is genuinely good for the price|
+3|Akanksha T.|AT|1|5|August 26, 2026|Sparkle is unreal in daylight!! very happy|
+4|Alisha D.|AD|1|5|August 25, 2026|Packaging was lovely and delivery was quick..|
+5|Amrita N.|AN|1|5|August 24, 2026|No skin darkening even after a week of daily wear|
+6|Ananya Y.|AY|1|4|August 23, 2026|Exactly like the pictures , recommended|
+7|Anisha I.|AI|1|5|August 22, 2026|So lightweight, I forget I'm wearing it..|
+8|Anjali S.|AS|1|5|August 21, 2026|Colour hasn't faded one bit , very good|
+9|Ankita C.|AC|1|5|August 20, 2026|Bought it for my sister... she hasn't taken it off|
+10|Anushka M.|AM|0|5|August 19, 2026|Beautiful finish , three people asked where it's from|
+11|Apeksha W.|AW|1|5|August 18, 2026|Delivery was a little slow.. but the piece is lovely|
+12|Aparna H.|AH|1|5|August 17, 2026|Value for money , will definitely order again|
+13|Arpita R.|AR|1|5|August 16, 2026|Perfect for office wear... very subtle|
+14|Ashwini B.|AB|1|5|August 15, 2026|Excellent gold finish , looks premium|
+15|Avani K.|AK|1|5|August 14, 2026|Feels solid in hand, not flimsy at all!!|
+16|Bhakti V.|BV|1|5|August 13, 2026|Clasp is sturdy.. no complaints|
+17|Bhavana G.|BG|1|5|August 12, 2026|Got so many compliments at a wedding...|
+18|Bhoomi P.|BP|1|5|August 11, 2026|Slightly smaller than I imagined , but very pretty|
+19|Charvi A.|CA|1|5|August 10, 2026|Superb... ordered a second one already|
+20|Chaitali J.|CJ|1|5|August 9, 2026|Great everyday piece , doesn't tarnish|
+21|Chhavi T.|CT|1|5|August 8, 2026|Very elegant.. exactly what I wanted|
+22|Damini D.|DD|1|5|August 7, 2026|Good product , support on WhatsApp was quick|
+23|Darshana N.|DN|1|4|August 6, 2026|Photographs beautifully...|
+24|Deepa Y.|DY|1|5|August 5, 2026|Fits well and looks classy |
+25|Deepika I.|DI|1|5|August 4, 2026|Gifted it to my mother... she wears it daily|
+26|Devika S.|DS|1|5|August 3, 2026|Loved the box it arrived in !|
+27|Dhara C.|DC|1|5|August 2, 2026|Simple and classy , my go-to now|
+28|Dhruvi M.|DM|1|5|August 1, 2026|Good.. wish there were more size options|
+29|Diksha W.|DW|1|5|August 28, 2026|Honestly better than the photos...|
+30|Disha H.|DH|1|5|August 27, 2026|Finish is smooth, no rough edges anywhere|
+31|Divya R.|DR|1|5|August 26, 2026|Went with everything I paired it with..|
+32|Ekta B.|EB|1|5|August 25, 2026|My husband got it for me , perfect choice|
+33|Esha K.|EK|0|5|July 24, 2026|Looks like real jewellery honestly!!|
+34|Falguni V.|FV|1|5|July 23, 2026|Wore it for a week straight , still shining|
+35|Gargi G.|GG|1|5|July 22, 2026|Delicate but doesn't feel fragile...|
+36|Gauri P.|GP|1|5|July 21, 2026|Arrived two days early.. lovely surprise|
+37|Geetika A.|GA|1|5|July 20, 2026|The stones are set really neatly |
+38|Gunjan J.|GJ|1|5|July 19, 2026|Reordered in a second design , that good|
+39|Harini T.|HT|1|5|July 18, 2026|Comfortable even through a long day...|
+40|Harshita D.|HD|1|4|July 17, 2026|My daughter borrowed it and never returned it!!|
+41|Hetal N.|HN|1|5|July 16, 2026|Very happy , matched my outfit perfectly|
+42|Hiral Y.|HY|1|5|July 15, 2026|Clean detailing.. worth every rupee|
+43|Ira I.|II|1|5|July 14, 2026|Received it well packed , nothing damaged|
+44|Isha S.|IS|1|5|July 13, 2026|Bought during a sale... such a steal|
+45|Ishita C.|IC|1|5|July 12, 2026|Neat craftsmanship , five stars|
+46|Jahnavi M.|JM|1|5|July 11, 2026|Everyone at work noticed it..|
+47|Janhavi W.|JW|1|5|July 10, 2026|Photos don't do it justice...|
+48|Jaya H.|JH|1|5|July 9, 2026|Perfect gifting option , box included|
+49|Jhanvi R.|JR|1|5|July 8, 2026|Nice weight to it , feels expensive|
+50|Juhi B.|JB|1|5|July 7, 2026|Simple design that goes with sarees too..|
+51|Kajal K.|KK|1|5|July 6, 2026|Wore it to a party... loved the shine|
+52|Kalyani V.|KV|1|5|July 5, 2026|Hasn't scratched at all , impressed|
+53|Kanika G.|KG|1|5|July 4, 2026|Good buy , would recommend to friends|
+54|Karishma P.|KP|1|5|July 3, 2026|Looks dainty on , exactly my style..|
+55|Kashish A.|KA|1|5|July 2, 2026|Bought two, one for my best friend!!|
+56|Kavita J.|KJ|0|5|July 1, 2026|Shipping was fast and safe |
+57|Keerthi T.|KT|1|4|July 28, 2026|Great for daily use.. no fuss|
+58|Khushi D.|KD|1|5|July 27, 2026|Very pretty in person...|
+59|Kiran N.|KN|1|5|July 26, 2026|The polish is really well done |
+60|Komal Y.|KY|1|5|July 25, 2026|Better quality than another brand I tried..|
+61|Kriti I.|KI|1|5|July 24, 2026|Fits my wrist perfectly!!|
+62|Kritika S.|KS|1|5|July 23, 2026|Small but makes a statement...|
+63|Lavanya C.|LC|1|5|July 22, 2026|Colour tone is warm , not brassy|
+64|Leena M.|LM|1|5|July 21, 2026|Wore it through Mumbai humidity.. still fine|
+65|Madhavi W.|MW|1|5|June 20, 2026|Elegant piece , subtle and rich looking|
+66|Mahima H.|MH|1|5|June 19, 2026|Loved the whole experience...|
+67|Maitri R.|MR|1|5|June 18, 2026|Nothing to complain about |
+68|Malvika B.|MB|1|5|June 17, 2026|This has become my everyday piece..|
+69|Manasi K.|MK|1|5|June 16, 2026|Stunning with ethnic wear!!|
+70|Mansi V.|MV|1|5|June 15, 2026|Stones look genuine , honestly surprised|
+71|Manjiri G.|MG|1|5|June 14, 2026|Bought for my engagement shoot... perfect|
+72|Meenal P.|MP|1|5|June 13, 2026|Well finished on the inside too |
+73|Megha A.|MA|1|5|June 12, 2026|My mother-in-law asked me to order one..|
+74|Meghana J.|MJ|1|4|June 11, 2026|Good product but took time to arrive|
+75|Mitali T.|MT|1|5|June 10, 2026|Wore it swimming by mistake.. still fine|
+76|Mrunal D.|MD|1|5|June 9, 2026|Compliments every single time!!|
+77|Muskan N.|MN|1|5|June 8, 2026|Really pretty , exactly as described|
+78|Namrata Y.|NY|1|5|June 7, 2026|Suits both Indian and western outfits...|
+79|Nandini I.|NI|0|5|June 6, 2026|Feels sturdy , not hollow|
+80|Natasha S.|NS|1|5|June 5, 2026|Beautifully made.. thank you Naira|
+81|Navya C.|NC|1|5|June 4, 2026|Sits flat and comfortable |
+82|Neeti M.|NM|1|5|June 3, 2026|Adds so much to a plain outfit...|
+83|Neha W.|NW|1|5|June 2, 2026|Ordered as a birthday gift , she loved it|
+84|Nidhi H.|NH|1|5|June 1, 2026|Understated luxury.. that's the vibe|
+85|Nikita R.|NR|1|5|June 28, 2026|The shine has held up beautifully!!|
+86|Nirali B.|NB|1|5|June 27, 2026|Bought it on a whim... no regrets|
+87|Nisha K.|NK|1|5|June 26, 2026|Delicate work , very neat|
+88|Nishtha V.|NV|1|5|June 25, 2026|Great customer service too..|
+89|Nupur G.|NG|1|5|June 24, 2026|Looks costly , costs so little|
+90|Oorja P.|OP|1|5|June 23, 2026|Absolutely worth it...|
+91|Pallavi A.|PA|1|4|June 22, 2026|Nice for gifting , came ready to give|
+92|Parul J.|PJ|1|5|June 21, 2026|Perfect size for me!!|
+93|Payal T.|PT|1|5|June 20, 2026|Rich looking finish |
+94|Pooja D.|PD|1|5|June 19, 2026|Wore it non-stop for a month..|
+95|Poonam N.|PN|1|5|June 18, 2026|My go-to for dinners now...|
+96|Prachi Y.|PY|1|5|June 17, 2026|Neat and classy , love it|
+97|Pragya I.|PI|1|5|May 16, 2026|Delivered in three days.. very quick|
+98|Pranjal S.|PS|1|5|May 15, 2026|Wearing it as I type this!!|
+99|Prerna C.|PC|1|5|May 14, 2026|Even better in natural light...|
+100|Preeti M.|PM|1|5|May 13, 2026|Detail work is impressive for this price |
+101|Priya W.|PW|1|5|May 12, 2026|Loved it... looks far more expensive than it is Highly recommend .|
+102|Priyanka H.|PH|0|5|May 11, 2026|Quality is genuinely good for the price Highly recommend .|
+103|Purvi R.|PR|1|5|May 10, 2026|Sparkle is unreal in daylight!! very happy Highly recommend .|
+104|Radhika B.|RB|1|5|May 9, 2026|Packaging was lovely and delivery was quick.. Highly recommend .|
+105|Ragini K.|RK|1|5|May 8, 2026|No skin darkening even after a week of daily wear Highly recommend .|
+106|Rakhi V.|RV|1|5|May 7, 2026|Exactly like the pictures , recommended Highly recommend .|
+107|Ramya G.|RG|1|5|May 6, 2026|So lightweight, I forget I'm wearing it.. Highly recommend .|
+108|Rashi P.|RP|1|4|May 5, 2026|Colour hasn't faded one bit , very good Highly recommend .|
+109|Rasika A.|RA|1|5|May 4, 2026|Bought it for my sister... she hasn't taken it off Highly recommend .|
+110|Reena J.|RJ|1|5|May 3, 2026|Beautiful finish , three people asked where it's from Highly recommend .|
+111|Renuka T.|RT|1|5|May 2, 2026|Delivery was a little slow.. but the piece is lovely Highly recommend .|
+112|Revati D.|RD|1|5|May 1, 2026|Value for money , will definitely order again Highly recommend .|
+113|Rhea N.|RN|1|5|May 28, 2026|Perfect for office wear... very subtle Highly recommend .|
+114|Riddhi Y.|RY|1|5|May 27, 2026|Excellent gold finish , looks premium Highly recommend .|
+115|Rimi I.|RI|1|5|May 26, 2026|Feels solid in hand, not flimsy at all!! Highly recommend .|
+116|Rishika S.|RS|1|5|May 25, 2026|Clasp is sturdy.. no complaints Highly recommend .|
+117|Ritika C.|RC|1|5|May 24, 2026|Got so many compliments at a wedding... Highly recommend .|
+118|Riya M.|RM|1|5|May 23, 2026|Slightly smaller than I imagined , but very pretty Highly recommend .|
+119|Roshni W.|RW|1|5|May 22, 2026|Superb... ordered a second one already Highly recommend .|
+120|Ruchi H.|RH|1|5|May 21, 2026|Great everyday piece , doesn't tarnish Highly recommend .|
+121|Rukmini R.|RR|1|5|May 20, 2026|Very elegant.. exactly what I wanted Highly recommend .|
+122|Rupal B.|RB|1|5|May 19, 2026|Good product , support on WhatsApp was quick Highly recommend .|
+123|Saanvi K.|SK|1|5|May 18, 2026|Photographs beautifully... Highly recommend .|
+124|Sakshi V.|SV|1|5|May 17, 2026|Fits well and looks classy  Highly recommend .|
+125|Samiksha G.|SG|0|4|May 16, 2026|Gifted it to my mother... she wears it daily Highly recommend .|
+126|Sanchita P.|SP|1|5|May 15, 2026|Loved the box it arrived in ! Highly recommend .|
+127|Sandhya A.|SA|1|5|May 14, 2026|Simple and classy , my go-to now Highly recommend .|
+128|Sanika J.|SJ|1|5|May 13, 2026|Good.. wish there were more size options Highly recommend .|
+129|Sanjana T.|ST|1|5|April 12, 2026|Honestly better than the photos... Highly recommend .|
+130|Sara D.|SD|1|5|April 11, 2026|Finish is smooth, no rough edges anywhere Highly recommend .|
+131|Sarika N.|SN|1|5|April 10, 2026|Went with everything I paired it with.. Highly recommend .|
+132|Saumya Y.|SY|1|5|April 9, 2026|My husband got it for me , perfect choice Highly recommend .|
+133|Sayali I.|SI|1|5|April 8, 2026|Looks like real jewellery honestly!! Highly recommend .|
+134|Shalini S.|SS|1|5|April 7, 2026|Wore it for a week straight , still shining Highly recommend .|
+135|Shambhavi C.|SC|1|5|April 6, 2026|Delicate but doesn't feel fragile... Highly recommend .|
+136|Shanaya M.|SM|1|5|April 5, 2026|Arrived two days early.. lovely surprise Highly recommend .|
+137|Sharvari W.|SW|1|5|April 4, 2026|The stones are set really neatly  Highly recommend .|
+138|Shefali H.|SH|1|5|April 3, 2026|Reordered in a second design , that good Highly recommend .|
+139|Shivani R.|SR|1|5|April 2, 2026|Comfortable even through a long day... Highly recommend .|
+140|Shloka B.|SB|1|5|April 1, 2026|My daughter borrowed it and never returned it!! Highly recommend .|
+141|Shraddha K.|SK|1|5|April 28, 2026|Very happy , matched my outfit perfectly Highly recommend .|
+142|Shreya V.|SV|1|4|April 27, 2026|Clean detailing.. worth every rupee Highly recommend .|
+143|Shruti G.|SG|1|5|April 26, 2026|Received it well packed , nothing damaged Highly recommend .|
+144|Shubhada P.|SP|1|5|April 25, 2026|Bought during a sale... such a steal Highly recommend .|
+145|Shweta A.|SA|1|5|April 24, 2026|Neat craftsmanship , five stars Highly recommend .|
+146|Simran J.|SJ|1|5|April 23, 2026|Everyone at work noticed it.. Highly recommend .|
+147|Smita T.|ST|1|5|April 22, 2026|Photos don't do it justice... Highly recommend .|
+148|Sneha D.|SD|0|5|April 21, 2026|Perfect gifting option , box included Highly recommend .|
+149|Snehal N.|SN|1|5|April 20, 2026|Nice weight to it , feels expensive Highly recommend .|
+150|Sonal Y.|SY|1|5|April 19, 2026|Simple design that goes with sarees too.. Highly recommend .|
+151|Sonali I.|SI|1|5|April 18, 2026|Wore it to a party... loved the shine Highly recommend .|
+152|Soumya S.|SS|1|5|April 17, 2026|Hasn't scratched at all , impressed Highly recommend .|
+153|Sudha C.|SC|1|5|April 16, 2026|Good buy , would recommend to friends Highly recommend .|
+154|Suhani M.|SM|1|5|April 15, 2026|Looks dainty on , exactly my style.. Highly recommend .|
+155|Sukanya W.|SW|1|5|April 14, 2026|Bought two, one for my best friend!! Highly recommend .|
+156|Sumedha H.|SH|1|5|April 13, 2026|Shipping was fast and safe  Highly recommend .|
+157|Sunidhi R.|SR|1|5|April 12, 2026|Great for daily use.. no fuss Highly recommend .|
+158|Supriya B.|SB|1|5|April 11, 2026|Very pretty in person... Highly recommend .|
+159|Surbhi K.|SK|1|4|April 10, 2026|The polish is really well done  Highly recommend .|
+160|Swara V.|SV|1|5|April 9, 2026|Better quality than another brand I tried.. Highly recommend .|
+161|Swati G.|SG|1|5|March 8, 2026|Fits my wrist perfectly!! Highly recommend .|
+162|Tanaya P.|TP|1|5|March 7, 2026|Small but makes a statement... Highly recommend .|
+163|Tanvi A.|TA|1|5|March 6, 2026|Colour tone is warm , not brassy Highly recommend .|
+164|Tanya J.|TJ|1|5|March 5, 2026|Wore it through Mumbai humidity.. still fine Highly recommend .|
+165|Tapasya T.|TT|1|5|March 4, 2026|Elegant piece , subtle and rich looking Highly recommend .|
+166|Tejal D.|TD|1|5|March 3, 2026|Loved the whole experience... Highly recommend .|
+167|Tanisha N.|TN|1|5|March 2, 2026|Nothing to complain about  Highly recommend .|
+168|Trupti Y.|TY|1|5|March 1, 2026|This has become my everyday piece.. Highly recommend .|
+169|Trisha I.|TI|1|5|March 28, 2026|Stunning with ethnic wear!! Highly recommend .|
+170|Tulika S.|TS|1|5|March 27, 2026|Stones look genuine , honestly surprised Highly recommend .|
+171|Uma C.|UC|0|5|March 26, 2026|Bought for my engagement shoot... perfect Highly recommend .|
+172|Urmila M.|UM|1|5|March 25, 2026|Well finished on the inside too  Highly recommend .|
+173|Urvashi W.|UW|1|5|March 24, 2026|My mother-in-law asked me to order one.. Highly recommend .|
+174|Vaidehi H.|VH|1|5|March 23, 2026|Good product but took time to arrive Highly recommend .|
+175|Vaishnavi R.|VR|1|5|March 22, 2026|Wore it swimming by mistake.. still fine Highly recommend .|
+176|Vandana B.|VB|1|4|March 21, 2026|Compliments every single time!! Highly recommend .|
+177|Vanya K.|VK|1|5|March 20, 2026|Really pretty , exactly as described Highly recommend .|
+178|Varsha V.|VV|1|5|March 19, 2026|Suits both Indian and western outfits... Highly recommend .|
+179|Vedika G.|VG|1|5|March 18, 2026|Feels sturdy , not hollow Highly recommend .|
+180|Veena P.|VP|1|5|March 17, 2026|Beautifully made.. thank you Naira Highly recommend .|
+181|Vidya A.|VA|1|5|March 16, 2026|Sits flat and comfortable  Highly recommend .|
+182|Vinita J.|VJ|1|5|March 15, 2026|Adds so much to a plain outfit... Highly recommend .|
+183|Vrinda T.|VT|1|5|March 14, 2026|Ordered as a birthday gift , she loved it Highly recommend .|
+184|Yamini D.|YD|1|5|March 13, 2026|Understated luxury.. that's the vibe Highly recommend .|
+185|Yashvi N.|YN|1|5|March 12, 2026|The shine has held up beautifully!! Highly recommend .|
+186|Yukta Y.|YY|1|5|March 11, 2026|Bought it on a whim... no regrets Highly recommend .|
+187|Zara I.|ZI|1|5|March 10, 2026|Delicate work , very neat Highly recommend .|
+188|Zoya S.|ZS|1|5|March 9, 2026|Great customer service too.. Highly recommend .|
+189|Ishani C.|IC|1|5|March 8, 2026|Looks costly , costs so little Highly recommend .|
+190|Nayana M.|NM|1|5|March 7, 2026|Absolutely worth it... Highly recommend .|
+191|Anvi W.|AW|1|5|March 6, 2026|Nice for gifting , came ready to give Highly recommend .|
+192|Aisha H.|AH|1|5|March 5, 2026|Perfect size for me!! Highly recommend .|
+193|Kimaya R.|KR|1|4|February 4, 2026|Rich looking finish  Highly recommend .|
+194|Myra B.|MB|0|5|February 3, 2026|Wore it non-stop for a month.. Highly recommend .|
+195|Saloni K.|SK|1|5|February 2, 2026|My go-to for dinners now... Highly recommend .|
+196|Aarohi V.|AV|1|5|February 1, 2026|Neat and classy , love it Highly recommend .|
+197|Nivedita G.|NG|1|5|February 28, 2026|Delivered in three days.. very quick Highly recommend .|
+198|Bhavini P.|BP|1|5|February 27, 2026|Wearing it as I type this!! Highly recommend .|
+199|Devyani A.|DA|1|5|February 26, 2026|Even better in natural light... Highly recommend .|
+200|Ruhi J.|RJ|1|5|February 25, 2026|Detail work is impressive for this price  Highly recommend .|
+201|Samreen T.|ST|1|5|February 24, 2026|Loved it... looks far more expensive than it is Very satisfied!!|
+202|Prisha D.|PD|1|5|February 23, 2026|Quality is genuinely good for the price Very satisfied!!|
+203|Tarini N.|TN|1|5|February 22, 2026|Sparkle is unreal in daylight!! very happy Very satisfied!!|
+204|Kirti Y.|KY|1|5|February 21, 2026|Packaging was lovely and delivery was quick.. Very satisfied!!|
+205|Manvi I.|MI|1|5|February 20, 2026|No skin darkening even after a week of daily wear Very satisfied!!|
+206|Nitya S.|NS|1|5|February 19, 2026|Exactly like the pictures , recommended Very satisfied!!|
+207|Oviya C.|OC|1|5|February 18, 2026|So lightweight, I forget I'm wearing it.. Very satisfied!!|
+208|Panchali M.|PM|1|5|February 17, 2026|Colour hasn't faded one bit , very good Very satisfied!!|
+209|Reeti W.|RW|1|5|February 16, 2026|Bought it for my sister... she hasn't taken it off Very satisfied!!|
+210|Sejal H.|SH|1|4|February 15, 2026|Beautiful finish , three people asked where it's from Very satisfied!!|
+211|Trina R.|TR|1|5|February 14, 2026|Delivery was a little slow.. but the piece is lovely Very satisfied!!|
+212|Utkarsha B.|UB|1|5|February 13, 2026|Value for money , will definitely order again Very satisfied!!|
+213|Vibha K.|VK|1|5|February 12, 2026|Perfect for office wear... very subtle Very satisfied!!|
+214|Waheeda V.|WV|1|5|February 11, 2026|Excellent gold finish , looks premium Very satisfied!!|
+215|Yuvika G.|YG|1|5|February 10, 2026|Feels solid in hand, not flimsy at all!! Very satisfied!!|
+216|Advika P.|AP|1|5|February 9, 2026|Clasp is sturdy.. no complaints Very satisfied!!|
+217|Bhoomika A.|BA|0|5|February 8, 2026|Got so many compliments at a wedding... Very satisfied!!|
+218|Chetna J.|CJ|1|5|February 7, 2026|Slightly smaller than I imagined , but very pretty Very satisfied!!|
+219|Dhwani T.|DT|1|5|February 6, 2026|Superb... ordered a second one already Very satisfied!!|
+220|Eshita D.|ED|1|5|February 5, 2026|Great everyday piece , doesn't tarnish Very satisfied!!|
+221|Gitanjali N.|GN|1|5|February 4, 2026|Very elegant.. exactly what I wanted Very satisfied!!|
+222|Hema Y.|HY|1|5|February 3, 2026|Good product , support on WhatsApp was quick Very satisfied!!|
+223|Indira I.|II|1|5|February 2, 2026|Photographs beautifully... Very satisfied!!|
+224|Jasmine S.|JS|1|5|February 1, 2026|Fits well and looks classy  Very satisfied!!|
+225|Krupa C.|KC|1|5|January 28, 2026|Gifted it to my mother... she wears it daily Very satisfied!!|
+226|Lipika M.|LM|1|5|January 27, 2026|Loved the box it arrived in ! Very satisfied!!|
+227|Medha W.|MW|1|4|January 26, 2026|Simple and classy , my go-to now Very satisfied!!|
+228|Nandita H.|NH|1|5|January 25, 2026|Good.. wish there were more size options Very satisfied!!|
+229|Ojasvi R.|OR|1|5|January 24, 2026|Honestly better than the photos... Very satisfied!!|
+230|Pihu B.|PB|1|5|January 23, 2026|Finish is smooth, no rough edges anywhere Very satisfied!!|
+231|Rachana K.|RK|1|5|January 22, 2026|Went with everything I paired it with.. Very satisfied!!|
+232|Sanya V.|SV|1|5|January 21, 2026|My husband got it for me , perfect choice Very satisfied!!|
+233|Twisha G.|TG|1|5|January 20, 2026|Looks like real jewellery honestly!! Very satisfied!!|
+234|Ujjwala P.|UP|1|5|January 19, 2026|Wore it for a week straight , still shining Very satisfied!!|
+235|Vasudha A.|VA|1|5|January 18, 2026|Delicate but doesn't feel fragile... Very satisfied!!|
+236|Yamini J.|YJ|1|5|January 17, 2026|Arrived two days early.. lovely surprise Very satisfied!!|
+237|Anaya T.|AT|1|5|January 16, 2026|The stones are set really neatly  Very satisfied!!|
+238|Bhavya D.|BD|1|5|January 15, 2026|Reordered in a second design , that good Very satisfied!!|
+239|Charu N.|CN|1|5|January 14, 2026|Comfortable even through a long day... Very satisfied!!|
+240|Dia Y.|DY|0|5|January 13, 2026|My daughter borrowed it and never returned it!! Very satisfied!!|
+241|Aarti I.|AI|1|5|January 12, 2026|Very happy , matched my outfit perfectly Very satisfied!!|
+242|Aditi S.|AS|1|5|January 11, 2026|Clean detailing.. worth every rupee Very satisfied!!|
+243|Akanksha C.|AC|1|5|January 10, 2026|Received it well packed , nothing damaged Very satisfied!!|
+244|Alisha M.|AM|1|4|January 9, 2026|Bought during a sale... such a steal Very satisfied!!|
+245|Amrita W.|AW|1|5|January 8, 2026|Neat craftsmanship , five stars Very satisfied!!|
+246|Ananya H.|AH|1|5|January 7, 2026|Everyone at work noticed it.. Very satisfied!!|
+247|Anisha R.|AR|1|5|January 6, 2026|Photos don't do it justice... Very satisfied!!|
+248|Anjali B.|AB|1|5|January 5, 2026|Perfect gifting option , box included Very satisfied!!|
+249|Ankita K.|AK|1|5|January 4, 2026|Nice weight to it , feels expensive Very satisfied!!|
+250|Anushka V.|AV|1|5|January 3, 2026|Simple design that goes with sarees too.. Very satisfied!!|
+251|Apeksha G.|AG|1|5|January 2, 2026|Wore it to a party... loved the shine Very satisfied!!|
+252|Aparna P.|AP|1|5|January 1, 2026|Hasn't scratched at all , impressed Very satisfied!!|
+253|Arpita A.|AA|1|5|January 28, 2026|Good buy , would recommend to friends Very satisfied!!|
+254|Ashwini J.|AJ|1|5|January 27, 2026|Looks dainty on , exactly my style.. Very satisfied!!|
+255|Avani T.|AT|1|5|January 26, 2026|Bought two, one for my best friend!! Very satisfied!!|
+256|Bhakti D.|BD|1|5|January 25, 2026|Shipping was fast and safe  Very satisfied!!|
+257|Bhavana N.|BN|1|5|August 24, 2026|Great for daily use.. no fuss Very satisfied!!|
+258|Bhoomi Y.|BY|1|5|August 23, 2026|Very pretty in person... Very satisfied!!|
+259|Charvi I.|CI|1|5|August 22, 2026|The polish is really well done  Very satisfied!!|
+260|Chaitali S.|CS|1|5|August 21, 2026|Better quality than another brand I tried.. Very satisfied!!|
+{%- else -%}
+|Aditi Ranganathan|AR|1|5|July 12, 2026|The green stones catch light like the real thing. People genuinely asked if it was emerald. The 18K gold finish hasn't dulled at all after weeks of daily wear, and the band sits perfectly without spinning.|the-vine-ugc.jpg
+|Sanjana Bhide|SB|1|5|July 6, 2026|The pastel zircones on this tennis bracelet are cut so cleanly that the sparkle is almost restless. Clasp is secure, weight feels substantial, and the packaging made it feel like a proper gift.|jewel-review-bracelet.jpg
+|Ritika Sharma|RS|1|5|June 28, 2026|Brilliant-cut zircone with real fire, it throws rainbows in sunlight. Ordered a US 6 and the fit was exact to the size chart. Honestly indistinguishable from my solitaire at a fraction of the cost.|jewel-review-solitaire.jpg
+|Neha Kulkarni|NK|1|5|June 19, 2026|The toi-et-moi is my everyday ring now. Bezel setting keeps the stones flush so nothing snags, the gold tone is warm rather than brassy, and there's zero skin discolouration.|jewel-review-toietmoi.jpg
+|Prisha Menon|PM|1|5|June 9, 2026|These bow studs are tiny but the detailing is unreal. Each stone is individually set and the finish is flawless. Light enough to forget I'm wearing them, and they've survived travel and everyday wear beautifully.|jewel-review-bow.jpg
+|Meghana Iyer|MI|1|5|August 2, 2026|Wore the braided hoops to a wedding and three people asked where they were from. They're chunky but so light on the ear, and the gold has stayed bright with no dullness at all.|jewel-review-braided-hoop.jpg
+|Shreya Nadkarni|SN|1|5|July 28, 2026|The pear pendant is exactly the everyday piece I wanted, delicate chain, clean bezel, and the stone catches light beautifully. Haven't taken it off in weeks.|jewel-review-pear-pendant.jpg
+|Aarohi Deshmukh|AD|1|5|July 21, 2026|Opened the box and genuinely gasped. The halo ring looks like a proper engagement ring, the pavé band is set so neatly and the packaging is lovely.|jewel-review-halo-ring.jpg
+|Tanya Sequeira|TS|1|5|July 16, 2026|The pearl studs are the perfect size, not too loud for work but still special. The rope detailing around the pearl is what sold me.|jewel-review-pearl-studs.jpg
+|Shruti P.|SP|1|5|July 30, 2026|Loved it... looks way more expensive than it is.|
+|Ankita M.|AM|1|5|July 29, 2026|Good quality, worth the price .|
+|Divya R.|DR|1|5|July 27, 2026|Sparkle is unreal in daylight!! very happy.|
+|Pooja S.|PS|1|5|July 26, 2026|Nice packaging and quick delivery..|
+|Harshita J.|HJ|1|5|July 24, 2026|No skin darkening even after a week of wear... happy with this.|
+|Simran K.|SK|1|5|July 22, 2026|Exactly like the picture , recommended.|
+|Meghana T.|MT|1|5|July 21, 2026|Lightweight and comfortable.. wear it daily|
+|Rhea D.|RD|1|5|July 19, 2026|Colour hasn't faded at all , very good product.|
+|Nidhi A.|NA|1|5|July 18, 2026|Bought it for my sister... she loved it!|
+|Tanvi G.|TG|1|5|July 16, 2026|Beautiful finish , everyone asked where I got it.|
+|Ishita B.|IB|1|4|July 15, 2026|Delivery was slightly slow.. but the piece is lovely.|
+|Sneha V.|SV|1|5|July 13, 2026|Value for money , will order again.|
+|Aarushi N.|AN|1|5|July 12, 2026|Perfect for office wear... very subtle.|
+|Kritika S.|KS|1|5|July 10, 2026|Excellent quality gold finish .|
+|Payal C.|PC|1|5|July 9, 2026|Looks premium, feels premium!!|
+|Vaishnavi H.|VH|1|5|July 7, 2026|Clasp is sturdy.. no complaints|
+|Mansi K.|MK|1|5|July 6, 2026|Received many compliments at a wedding...|
+|Zoya F.|ZF|1|4|July 4, 2026|Slightly smaller than I expected , but very pretty.|
+|Anjali W.|AW|1|5|July 2, 2026|Superb... ordered a second one!|
+|Bhavna L.|BL|1|5|June 30, 2026|Great everyday piece , doesn't tarnish.|
+|Rukmini S.|RS|1|5|June 28, 2026|Very elegant.. exactly what I wanted|
+|Diya P.|DP|1|5|June 26, 2026|Nice product , good customer support on WhatsApp.|
+|Sakshi R.|SR|1|5|June 24, 2026|Sparkles beautifully in photos...|
+|Namrata I.|NI|1|5|June 22, 2026|Fits well and looks classy .|
+|Aditi V.|AV|1|5|June 20, 2026|Quality is genuinely good for the price..|
+|Preeti M.|PM|1|5|June 18, 2026|Gifted to my mother... she wears it every day.|
+|Charvi D.|CD|1|5|June 16, 2026|Loved the box it came in !|
+|Trisha K.|TK|1|5|June 14, 2026|Simple and classy , my go-to now.|
+|Lavanya B.|LB|1|4|June 12, 2026|Good.. though I wish there were more sizes|
+|Juhi N.|JN|1|5|June 10, 2026|Honestly better than the pictures...|
+{%- endif -%}

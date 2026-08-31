@@ -598,7 +598,11 @@
   --nf-header-track: 0.12em;
   width: 100%;
   background-color: var(--nf-header-bg, #f4f1ed);
-  color: var(--nf-text, #1a1614);
+  /* React's Navbar and MobileMenu set no colour, so the header inherits the
+     stock shadcn --foreground (222.2 84% 4.9%) rather than the brand ink the
+     rest of the site uses. Matched deliberately -- flip back to var(--nf-text)
+     if the brand ink is preferred here. */
+  color: rgb(2 8 23);
   transition: background-color 300ms ease, box-shadow 300ms ease, backdrop-filter 300ms ease;
 }
 /* Sticky is declared on the section wrapper as well as the inner shell:
@@ -981,7 +985,11 @@
   display: flex;
   flex-direction: column;
   background-color: var(--nf-header-bg, #f4f1ed);
-  color: var(--nf-text, #1a1614);
+  /* React's Navbar and MobileMenu set no colour, so the header inherits the
+     stock shadcn --foreground (222.2 84% 4.9%) rather than the brand ink the
+     rest of the site uses. Matched deliberately -- flip back to var(--nf-text)
+     if the brand ink is preferred here. */
+  color: rgb(2 8 23);
   transform: translateX(-100%);
   transition: transform 250ms cubic-bezier(0.4, 0, 1, 1);
 }
@@ -1024,8 +1032,9 @@
   align-items: center;
   min-height: 52px;
   font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 500;
+  line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   text-decoration: none;
@@ -1043,8 +1052,12 @@
   padding: 0;
   border: 0;
   background: none;
-  font: inherit;
-  text-align: left;
+  /* No `font: inherit`, and no font-family either. Both reset the family that
+     .nf-mm__link sets on this same element, and being later in the sheet they
+     won -- every parent label rendered 16px system sans instead of 19px
+     Velista. A button only needs the box and cursor reset here. */
+  color: inherit;
+  text-align: center;
   cursor: pointer;
 }
 .nf-mm__chevron { flex: none; transition: transform 200ms ease; }
@@ -1059,7 +1072,14 @@
   animation: nf-fade-in 200ms ease;
 }
 .nf-mm__sub[hidden] { display: none; }
-.nf-mm__link--sub { min-height: 42px; padding-block: 8px; font-size: 16px; opacity: 0.65; }
+.nf-mm__link--sub {
+  min-height: 42px;
+  padding-block: 8px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+}
 @keyframes nf-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -1305,6 +1325,8 @@
   font-family: var(--nf-font-display);
   font-size: 13px;
   font-weight: 500;
+  /* A button's UA line-height is `normal`; React's inherits 1.5 from the app. */
+  line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: var(--nf-track-8);
   cursor: pointer;
@@ -1625,13 +1647,7 @@
   rel="stylesheet"
   media="print"
   onload="this.media='all'"
-><style>@font-face {
-    font-family: 'Velista';
-    src: url(/assets/nf-velista.woff2) format('woff2');
-    font-weight: 400 600;
-    font-style: normal;
-    font-display: swap;
-  }</style><div
+><div
   class="nf-header nf-header--sticky"
   data-nf-header
   style="--nf-header-bg: #F4F1ED; --nf-header-accent: #2E5B60;"
@@ -1663,7 +1679,7 @@
                           <p class="nf-mega__label">Shop by category</p>
                           <div class="nf-mega__tiles"><a href="/collections/rings" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -1674,7 +1690,7 @@
                                 <span class="nf-mega__tile-label">Rings</span>
                               </a><a href="/collections/earrings" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -1685,7 +1701,7 @@
                                 <span class="nf-mega__tile-label">Earrings</span>
                               </a><a href="/collections/necklaces" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -1696,7 +1712,7 @@
                                 <span class="nf-mega__tile-label">Necklaces</span>
                               </a><a href="/collections/bracelets" class="nf-mega__tile">
                                 <span class="nf-mega__tile-frame"><img
-                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
+                                      src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=240"
                                       alt=""
                                       loading="lazy"
                                       decoding="async"
@@ -2102,14 +2118,14 @@
                 <a class="jc__link" href="/products/heartline-paperclip-necklace" aria-label="View Heartline Paperclip Necklace">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Heartline Paperclip Necklace"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="heartline-paperclip-necklace" data-nf-wishlist-title="Heartline Paperclip Necklace" aria-pressed="false" aria-label="Add Heartline Paperclip Necklace to wishlist">
@@ -2148,14 +2164,14 @@
                 <a class="jc__link" href="/products/serpentine-whisper-chain" aria-label="View Serpentine Whisper Chain">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Serpentine Whisper Chain"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="serpentine-whisper-chain" data-nf-wishlist-title="Serpentine Whisper Chain" aria-pressed="false" aria-label="Add Serpentine Whisper Chain to wishlist">
@@ -2194,14 +2210,14 @@
                 <a class="jc__link" href="/products/marquise-layering-set" aria-label="View Marquise Layering Set">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Marquise Layering Set"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="marquise-layering-set" data-nf-wishlist-title="Marquise Layering Set" aria-pressed="false" aria-label="Add Marquise Layering Set to wishlist">
@@ -2240,14 +2256,14 @@
                 <a class="jc__link" href="/products/charm-box-chain" aria-label="View Charm Box Chain">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Charm Box Chain"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="charm-box-chain" data-nf-wishlist-title="Charm Box Chain" aria-pressed="false" aria-label="Add Charm Box Chain to wishlist">
@@ -2286,14 +2302,14 @@
                 <a class="jc__link" href="/products/toggle-link-chain" aria-label="View Toggle Link Chain">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Toggle Link Chain"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="toggle-link-chain" data-nf-wishlist-title="Toggle Link Chain" aria-pressed="false" aria-label="Add Toggle Link Chain to wishlist">
@@ -2332,14 +2348,14 @@
                 <a class="jc__link" href="/products/baroque-pearl-lariat" aria-label="View Baroque Pearl Lariat">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg?v=1787277347&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Baroque Pearl Lariat"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg?v=1787277347"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg?v=1787277347 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg?v=1787277347 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg?v=1787277347&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg?v=1787277347&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg?v=1787277347&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="baroque-pearl-lariat" data-nf-wishlist-title="Baroque Pearl Lariat" aria-pressed="false" aria-label="Add Baroque Pearl Lariat to wishlist">
@@ -2378,14 +2394,14 @@
                 <a class="jc__link" href="/products/molten-bloom-hoops" aria-label="View Molten Bloom Hoops">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Molten Bloom Hoops"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg?v=1787275931"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg?v=1787275931 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg?v=1787275931 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg?v=1787275931&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg?v=1787275931&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg?v=1787275931&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="molten-bloom-hoops" data-nf-wishlist-title="Molten Bloom Hoops" aria-pressed="false" aria-label="Add Molten Bloom Hoops to wishlist">
@@ -2424,14 +2440,14 @@
                 <a class="jc__link" href="/products/clover-trio-edit" aria-label="View Clover Trio Edit">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg?v=1787524090&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Clover Trio Edit"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg?v=1787277433"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg?v=1787277433 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg?v=1787277433 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg?v=1787277433&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg?v=1787277433&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg?v=1787277433&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">30% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="clover-trio-edit" data-nf-wishlist-title="Clover Trio Edit" aria-pressed="false" aria-label="Add Clover Trio Edit to wishlist">
@@ -2470,14 +2486,14 @@
                 <a class="jc__link" href="/products/woven-gold-hoops" aria-label="View Woven Gold Hoops">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Woven Gold Hoops"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg?v=1787277440"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg?v=1787277440 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg?v=1787277440 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg?v=1787277440&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg?v=1787277440&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg?v=1787277440&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="woven-gold-hoops" data-nf-wishlist-title="Woven Gold Hoops" aria-pressed="false" aria-label="Add Woven Gold Hoops to wishlist">
@@ -2516,14 +2532,14 @@
                 <a class="jc__link" href="/products/verdant-drop-earrings" aria-label="View Verdant Drop Earrings">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg?v=1787524534&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Verdant Drop Earrings"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg?v=1787277448"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg?v=1787277448 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg?v=1787277448 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg?v=1787277448&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg?v=1787277448&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg?v=1787277448&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="verdant-drop-earrings" data-nf-wishlist-title="Verdant Drop Earrings" aria-pressed="false" aria-label="Add Verdant Drop Earrings to wishlist">
@@ -2562,14 +2578,14 @@
                 <a class="jc__link" href="/products/ribbon-bow-earrings" aria-label="View Ribbon Bow Earrings">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg?v=1787277455&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Ribbon Bow Earrings"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg?v=1787277455"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg?v=1787277455 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg?v=1787277455 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg?v=1787277455&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg?v=1787277455&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg?v=1787277455&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="ribbon-bow-earrings" data-nf-wishlist-title="Ribbon Bow Earrings" aria-pressed="false" aria-label="Add Ribbon Bow Earrings to wishlist">
@@ -2608,14 +2624,14 @@
                 <a class="jc__link" href="/products/textured-gold-hoops" aria-label="View Textured Gold Hoops">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg?v=1787524334&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Textured Gold Hoops"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg?v=1787277463"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg?v=1787277463 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg?v=1787277463 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg?v=1787277463&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg?v=1787277463&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg?v=1787277463&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="textured-gold-hoops" data-nf-wishlist-title="Textured Gold Hoops" aria-pressed="false" aria-label="Add Textured Gold Hoops to wishlist">
@@ -2654,14 +2670,14 @@
                 <a class="jc__link" href="/products/baguette-arc-hoops" aria-label="View Baguette Arc Hoops">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg?v=1787523958&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Baguette Arc Hoops"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg?v=1787277472&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">25% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="baguette-arc-hoops" data-nf-wishlist-title="Baguette Arc Hoops" aria-pressed="false" aria-label="Add Baguette Arc Hoops to wishlist">
@@ -2700,14 +2716,14 @@
                 <a class="jc__link" href="/products/filigree-bloom-studs" aria-label="View Filigree Bloom Studs">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Filigree Bloom Studs"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg?v=1787277480&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="filigree-bloom-studs" data-nf-wishlist-title="Filigree Bloom Studs" aria-pressed="false" aria-label="Add Filigree Bloom Studs to wishlist">
@@ -2746,14 +2762,14 @@
                 <a class="jc__link" href="/products/solitaire-whisper-studs" aria-label="View Solitaire Whisper Studs">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg?v=1787277489&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Solitaire Whisper Studs"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg?v=1787277489"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg?v=1787277489 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg?v=1787277489 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg?v=1787277489&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg?v=1787277489&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg?v=1787277489&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="solitaire-whisper-studs" data-nf-wishlist-title="Solitaire Whisper Studs" aria-pressed="false" aria-label="Add Solitaire Whisper Studs to wishlist">
@@ -2792,14 +2808,14 @@
                 <a class="jc__link" href="/products/pearl-drop-studs" aria-label="View Pearl Drop Studs">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg?v=1787277493&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Pearl Drop Studs"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg?v=1787277493"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg?v=1787277493 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg?v=1787277493 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg?v=1787277493&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg?v=1787277493&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg?v=1787277493&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="pearl-drop-studs" data-nf-wishlist-title="Pearl Drop Studs" aria-pressed="false" aria-label="Add Pearl Drop Studs to wishlist">
@@ -2838,14 +2854,14 @@
                 <a class="jc__link" href="/products/brushed-gold-huggies" aria-label="View Brushed Gold Huggies">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Brushed Gold Huggies"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg?v=1787277497&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="brushed-gold-huggies" data-nf-wishlist-title="Brushed Gold Huggies" aria-pressed="false" aria-label="Add Brushed Gold Huggies to wishlist">
@@ -2884,14 +2900,14 @@
                 <a class="jc__link" href="/products/silver-drop-earrings" aria-label="View Trio Oval Drop Earrings">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg?v=1787524334&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Trio Oval Drop Earrings"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">25% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="silver-drop-earrings" data-nf-wishlist-title="Trio Oval Drop Earrings" aria-pressed="false" aria-label="Add Trio Oval Drop Earrings to wishlist">
@@ -2930,14 +2946,14 @@
                 <a class="jc__link" href="/products/pearl-blossom-earrings" aria-label="View Pearl Blossom Earrings">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg?v=1787524296&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Pearl Blossom Earrings"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg?v=1787277507&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">30% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="pearl-blossom-earrings" data-nf-wishlist-title="Pearl Blossom Earrings" aria-pressed="false" aria-label="Add Pearl Blossom Earrings to wishlist">
@@ -2976,14 +2992,14 @@
                 <a class="jc__link" href="/products/pearl-point-studs" aria-label="View Pearl Point Studs">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg?v=1787524297&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Pearl Point Studs"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg?v=1787277514"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg?v=1787277514 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg?v=1787277514 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg?v=1787277514&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg?v=1787277514&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg?v=1787277514&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">30% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="pearl-point-studs" data-nf-wishlist-title="Pearl Point Studs" aria-pressed="false" aria-label="Add Pearl Point Studs to wishlist">
@@ -3022,14 +3038,14 @@
                 <a class="jc__link" href="/products/pearl-reverie-bracelet" aria-label="View Pearl Reverie Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg?v=1787277572&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Pearl Reverie Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg?v=1787277572"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg?v=1787277572 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg?v=1787277572 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg?v=1787277572&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg?v=1787277572&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg?v=1787277572&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="pearl-reverie-bracelet" data-nf-wishlist-title="Pearl Reverie Bracelet" aria-pressed="false" aria-label="Add Pearl Reverie Bracelet to wishlist">
@@ -3068,14 +3084,14 @@
                 <a class="jc__link" href="/products/baguette-eclat-bracelet" aria-label="View Baguette Éclat Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg?v=1787524087&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Baguette Éclat Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg?v=1787277590"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg?v=1787277590 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg?v=1787277590 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg?v=1787277590&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg?v=1787277590&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg?v=1787277590&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="baguette-eclat-bracelet" data-nf-wishlist-title="Baguette Éclat Bracelet" aria-pressed="false" aria-label="Add Baguette Éclat Bracelet to wishlist">
@@ -3114,14 +3130,14 @@
                 <a class="jc__link" href="/products/blush-station-bracelet" aria-label="View Blush Station Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg?v=1787524088&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Blush Station Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg?v=1787277594"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg?v=1787277594 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg?v=1787277594 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg?v=1787277594&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg?v=1787277594&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg?v=1787277594&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="blush-station-bracelet" data-nf-wishlist-title="Blush Station Bracelet" aria-pressed="false" aria-label="Add Blush Station Bracelet to wishlist">
@@ -3160,14 +3176,14 @@
                 <a class="jc__link" href="/products/heartbead-bracelet" aria-label="View Heartbead Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Heartbead Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg?v=1787277609"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg?v=1787277609 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg?v=1787277609 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg?v=1787277609&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg?v=1787277609&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg?v=1787277609&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="heartbead-bracelet" data-nf-wishlist-title="Heartbead Bracelet" aria-pressed="false" aria-label="Add Heartbead Bracelet to wishlist">
@@ -3206,14 +3222,14 @@
                 <a class="jc__link" href="/products/ribbon-bead-bracelet" aria-label="View Ribbon Bead Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg?v=1787524333&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Ribbon Bead Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg?v=1787277616"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg?v=1787277616 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg?v=1787277616 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg?v=1787277616&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg?v=1787277616&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg?v=1787277616&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="ribbon-bead-bracelet" data-nf-wishlist-title="Ribbon Bead Bracelet" aria-pressed="false" aria-label="Add Ribbon Bead Bracelet to wishlist">
@@ -3252,14 +3268,14 @@
                 <a class="jc__link" href="/products/cushion-halo-ring" aria-label="View Cushion Halo Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg?v=1787524091&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Cushion Halo Ring"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg?v=1787277624&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="cushion-halo-ring" data-nf-wishlist-title="Cushion Halo Ring" aria-pressed="false" aria-label="Add Cushion Halo Ring to wishlist">
@@ -3298,14 +3314,14 @@
                 <a class="jc__link" href="/products/chevron-whisper-ring" aria-label="View Chevron Whisper Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg?v=1787524090&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Chevron Whisper Ring"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg?v=1787277629"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg?v=1787277629 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg?v=1787277629 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg?v=1787277629&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg?v=1787277629&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg?v=1787277629&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="chevron-whisper-ring" data-nf-wishlist-title="Chevron Whisper Ring" aria-pressed="false" aria-label="Add Chevron Whisper Ring to wishlist">
@@ -3344,14 +3360,14 @@
                 <a class="jc__link" href="/products/pearl-ribbon-ring" aria-label="View Pearl Ribbon Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg?v=1787524297&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Pearl Ribbon Ring"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg?v=1787277635"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg?v=1787277635 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg?v=1787277635 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg?v=1787277635&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg?v=1787277635&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg?v=1787277635&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="pearl-ribbon-ring" data-nf-wishlist-title="Pearl Ribbon Ring" aria-pressed="false" aria-label="Add Pearl Ribbon Ring to wishlist">
@@ -3390,14 +3406,14 @@
                 <a class="jc__link" href="/products/star-point-band" aria-label="View Star Point Band">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg?v=1787277642&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Star Point Band"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg?v=1787277642"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg?v=1787277642 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg?v=1787277642 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg?v=1787277642&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg?v=1787277642&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg?v=1787277642&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="star-point-band" data-nf-wishlist-title="Star Point Band" aria-pressed="false" aria-label="Add Star Point Band to wishlist">
@@ -3436,8 +3452,8 @@
                 <a class="jc__link" href="/products/blush-cluster-ring" aria-label="View Blush Cluster Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg?v=1787524088&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Blush Cluster Ring"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="blush-cluster-ring" data-nf-wishlist-title="Blush Cluster Ring" aria-pressed="false" aria-label="Add Blush Cluster Ring to wishlist">
@@ -3476,14 +3492,14 @@
                 <a class="jc__link" href="/products/rose-verdant-band" aria-label="View Rose Verdant Band">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg?v=1787277717&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Rose Verdant Band"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg?v=1787277717&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="rose-verdant-band" data-nf-wishlist-title="Rose Verdant Band" aria-pressed="false" aria-label="Add Rose Verdant Band to wishlist">
@@ -3522,8 +3538,8 @@
                 <a class="jc__link" href="/products/granule-dome-ring" aria-label="View Granule Dome Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg?v=1787524294&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Granule Dome Ring"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="granule-dome-ring" data-nf-wishlist-title="Granule Dome Ring" aria-pressed="false" aria-label="Add Granule Dome Ring to wishlist">
@@ -3562,14 +3578,14 @@
                 <a class="jc__link" href="/products/verdant-eternity-band" aria-label="View Verdant Eternity Band">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Verdant Eternity Band"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg?v=1787277727"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg?v=1787277727 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg?v=1787277727 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg?v=1787277727&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg?v=1787277727&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg?v=1787277727&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">35% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="verdant-eternity-band" data-nf-wishlist-title="Verdant Eternity Band" aria-pressed="false" aria-label="Add Verdant Eternity Band to wishlist">
@@ -3608,14 +3624,14 @@
                 <a class="jc__link" href="/products/verdant-circlet-studs" aria-label="View Verdant Circlet Studs">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg?v=1787524534&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Verdant Circlet Studs"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back jc__back--earring"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg?v=1787277733"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg?v=1787277733 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg?v=1787277733 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg?v=1787277733&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg?v=1787277733&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg?v=1787277733&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="verdant-circlet-studs" data-nf-wishlist-title="Verdant Circlet Studs" aria-pressed="false" aria-label="Add Verdant Circlet Studs to wishlist">
@@ -3654,14 +3670,14 @@
                 <a class="jc__link" href="/products/halo-curve-ring" aria-label="View Halo Curve Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-0_885ef333-f57b-41bc-a372-fa20f6486a1c.jpg?v=1787524295&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Halo Curve Ring"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-1.jpg?v=1787277737"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-1.jpg?v=1787277737 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-1.jpg?v=1787277737 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-1.jpg?v=1787277737&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-1.jpg?v=1787277737&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/halo-curve-ring-1.jpg?v=1787277737&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">40% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="halo-curve-ring" data-nf-wishlist-title="Halo Curve Ring" aria-pressed="false" aria-label="Add Halo Curve Ring to wishlist">
@@ -3700,14 +3716,14 @@
                 <a class="jc__link" href="/products/vintage-halo-ring" aria-label="View Vintage Halo Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg?v=1787524535&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Vintage Halo Ring"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-2.jpg?v=1787277743"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-2.jpg?v=1787277743 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-2.jpg?v=1787277743 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-2.jpg?v=1787277743&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-2.jpg?v=1787277743&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-2.jpg?v=1787277743&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="vintage-halo-ring" data-nf-wishlist-title="Vintage Halo Ring" aria-pressed="false" aria-label="Add Vintage Halo Ring to wishlist">
@@ -3746,14 +3762,14 @@
                 <a class="jc__link" href="/products/silver-dome-ring" aria-label="View Pavé Dome Ring">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg?v=1787524333&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Pavé Dome Ring"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-1.jpg?v=1787277748"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-1.jpg?v=1787277748 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-1.jpg?v=1787277748 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-1.jpg?v=1787277748&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-1.jpg?v=1787277748&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-1.jpg?v=1787277748&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="silver-dome-ring" data-nf-wishlist-title="Pavé Dome Ring" aria-pressed="false" aria-label="Add Pavé Dome Ring to wishlist">
@@ -3792,14 +3808,14 @@
                 <a class="jc__link" href="/products/whisper-pave-band" aria-label="View Whisper Pavé Band">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg?v=1787524535&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Whisper Pavé Band"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg?v=1787277753"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg?v=1787277753 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg?v=1787277753 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg?v=1787277753&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg?v=1787277753&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg?v=1787277753&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">50% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="whisper-pave-band" data-nf-wishlist-title="Whisper Pavé Band" aria-pressed="false" aria-label="Add Whisper Pavé Band to wishlist">
@@ -3838,14 +3854,14 @@
                 <a class="jc__link" href="/products/petite-pave-band" aria-label="View Petite Pavé Band">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg?v=1787524332&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Petite Pavé Band"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg?v=1787277757"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg?v=1787277757 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg?v=1787277757 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg?v=1787277757&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg?v=1787277757&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg?v=1787277757&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="petite-pave-band" data-nf-wishlist-title="Petite Pavé Band" aria-pressed="false" aria-label="Add Petite Pavé Band to wishlist">
@@ -3884,14 +3900,14 @@
                 <a class="jc__link" href="/products/first-light-set" aria-label="View First Light Set">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg?v=1787524294&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="First Light Set"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg?v=1787277765"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg?v=1787277765 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg?v=1787277765 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg?v=1787277765&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg?v=1787277765&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg?v=1787277765&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--off">45% OFF</span><button type="button" class="jc__heart" data-nf-wishlist="first-light-set" data-nf-wishlist-title="First Light Set" aria-pressed="false" aria-label="Add First Light Set to wishlist">
@@ -3930,14 +3946,14 @@
                 <a class="jc__link" href="/products/riviere-eternal-necklace" aria-label="View Rivière Eternal Necklace">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Rivière Eternal Necklace"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="riviere-eternal-necklace" data-nf-wishlist-title="Rivière Eternal Necklace" aria-pressed="false" aria-label="Add Rivière Eternal Necklace to wishlist">
@@ -3969,14 +3985,14 @@
                 <a class="jc__link" href="/products/petite-pearl-chain" aria-label="View Petite Pearl Chain">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg?v=1787277353&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Petite Pearl Chain"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg?v=1787277353"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg?v=1787277353 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg?v=1787277353 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg?v=1787277353&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg?v=1787277353&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg?v=1787277353&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="petite-pearl-chain" data-nf-wishlist-title="Petite Pearl Chain" aria-pressed="false" aria-label="Add Petite Pearl Chain to wishlist">
@@ -4008,14 +4024,14 @@
                 <a class="jc__link" href="/products/riviere-of-light-bracelet" aria-label="View Rivière of Light Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg?v=1787524333&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Rivière of Light Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg?v=1787277567"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg?v=1787277567 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg?v=1787277567 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg?v=1787277567&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg?v=1787277567&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg?v=1787277567&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="riviere-of-light-bracelet" data-nf-wishlist-title="Rivière of Light Bracelet" aria-pressed="false" aria-label="Add Rivière of Light Bracelet to wishlist">
@@ -4047,14 +4063,14 @@
                 <a class="jc__link" href="/products/triple-dawn-cuff" aria-label="View Triple Dawn Cuff">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg?v=1787277578&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Triple Dawn Cuff"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg?v=1787277578"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg?v=1787277578 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg?v=1787277578 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg?v=1787277578&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg?v=1787277578&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg?v=1787277578&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="triple-dawn-cuff" data-nf-wishlist-title="Triple Dawn Cuff" aria-pressed="false" aria-label="Add Triple Dawn Cuff to wishlist">
@@ -4086,14 +4102,14 @@
                 <a class="jc__link" href="/products/baroque-bloom-cuff" aria-label="View Baroque Bloom Cuff">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg?v=1787524087&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Baroque Bloom Cuff"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg?v=1787277584"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg?v=1787277584 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg?v=1787277584 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg?v=1787277584&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg?v=1787277584&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg?v=1787277584&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="baroque-bloom-cuff" data-nf-wishlist-title="Baroque Bloom Cuff" aria-pressed="false" aria-label="Add Baroque Bloom Cuff to wishlist">
@@ -4125,14 +4141,14 @@
                 <a class="jc__link" href="/products/prism-riviere-bracelet" aria-label="View Prism Rivière Bracelet">
                   <div class="jc__frame"><img
                         class="jc__front"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Prism Rivière Bracelet"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg?v=1787277602"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg?v=1787277602 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg?v=1787277602 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg?v=1787277602&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg?v=1787277602&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg?v=1787277602&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="prism-riviere-bracelet" data-nf-wishlist-title="Prism Rivière Bracelet" aria-pressed="false" aria-label="Add Prism Rivière Bracelet to wishlist">
@@ -4164,14 +4180,14 @@
                 <a class="jc__link" href="/products/clover-charm-necklace" aria-label="View Clover Charm Necklace">
                   <div class="jc__frame"><img
                         class="jc__front jc__front--necklace"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090 1100w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg?v=1787524090&width=1100 1100w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="Clover Charm Necklace"
                         loading="lazy" decoding="async" width="800" height="800"><img
                         class="jc__back"
-                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772"
-                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772 800w"
+                        src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772&width=800"
+                        srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg?v=1787277772&width=800 800w"
                         sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
                         alt="" aria-hidden="true"
                         loading="lazy" decoding="async" width="800" height="800"><span class="jc__badge jc__badge--soldout">SOLD OUT</span><button type="button" class="jc__heart" data-nf-wishlist="clover-charm-necklace" data-nf-wishlist-title="Clover Charm Necklace" aria-pressed="false" aria-label="Add Clover Charm Necklace to wishlist">
@@ -4262,22 +4278,22 @@
     </div>
 
     <div class="nf-cats__grid"><a class="nf-cats__card" href="/collections/rings" >
-            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg?v=1787524535&width=900&width=1200" alt="Rings, Naira Flore demi-gold" loading="lazy" sizes="(min-width: 1024px) 25vw, 50vw"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
               <b>Rings</b><i class="nf-editorial">solitaires, halo & stack</i><span class="nf-cats__count nf-label">13 PIECES &rarr;</span></span>
           </a><a class="nf-cats__card" href="/collections/bracelets" >
-            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg?v=1787524295&width=900&width=1200" alt="Bracelets, Naira Flore demi-gold" loading="lazy" sizes="(min-width: 1024px) 25vw, 50vw"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
               <b>Bracelets</b><i class="nf-editorial">tennis, bow & baroque pearl</i><span class="nf-cats__count nf-label">9 PIECES &rarr;</span></span>
           </a><a class="nf-cats__card" href="/collections/earrings" >
-            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg?v=1787524296&width=900&width=1200" alt="Earrings, Naira Flore demi-gold" loading="lazy" sizes="(min-width: 1024px) 25vw, 50vw"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
               <b>Earrings</b><i class="nf-editorial">hoops & the studs, three ways</i><span class="nf-cats__count nf-label">15 PIECES &rarr;</span></span>
           </a><a class="nf-cats__card" href="/collections/necklaces" >
-            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=1200" loading="lazy"><span class="nf-cats__frame" aria-hidden="true"></span>
+            <span class="nf-cats__media"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=900&width=1200" alt="Necklaces, Naira Flore demi-gold" loading="lazy" sizes="(min-width: 1024px) 25vw, 50vw"><span class="nf-cats__frame" aria-hidden="true"></span>
             </span>
             <span class="nf-cats__caption">
               <b>Necklaces</b><i class="nf-editorial">lariats, chains & a cascade</i><span class="nf-cats__count nf-label">9 PIECES &rarr;</span></span>

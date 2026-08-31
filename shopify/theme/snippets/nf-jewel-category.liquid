@@ -1,0 +1,24 @@
+{%- comment -%}
+  The shopper-facing category for a jewellery piece, matching the `category`
+  field in src/data/jewellery.ts. The live catalogue's product types are
+  singular ("Necklace", "Ring"), so printing product.type raw put "NECKLACE"
+  on cards where React reads "NECKLACES".
+
+  Usage: {% render 'nf-jewel-category', p: some_product %}
+  Prints nothing for a product that is not jewellery, so callers can use the
+  result as an is-jewellery test too.
+{%- endcomment -%}
+{%- liquid
+  assign t = p.type | downcase
+  assign c = ''
+  if t contains 'earr' or t contains 'stud' or t contains 'hoop' or t contains 'huggie'
+    assign c = 'Earrings'
+  elsif t contains 'brac' or t contains 'cuff' or t contains 'ankl'
+    assign c = 'Bracelets'
+  elsif t contains 'ring' or t contains 'band'
+    assign c = 'Rings'
+  elsif t contains 'neck' or t contains 'pendant' or t contains 'chain' or t contains 'jewel' or t contains 'set'
+    assign c = 'Necklaces'
+  endif
+  echo c
+-%}

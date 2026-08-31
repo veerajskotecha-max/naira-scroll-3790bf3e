@@ -356,7 +356,11 @@
   --nf-header-track: 0.12em;
   width: 100%;
   background-color: var(--nf-header-bg, #f4f1ed);
-  color: var(--nf-text, #1a1614);
+  /* React's Navbar and MobileMenu set no colour, so the header inherits the
+     stock shadcn --foreground (222.2 84% 4.9%) rather than the brand ink the
+     rest of the site uses. Matched deliberately -- flip back to var(--nf-text)
+     if the brand ink is preferred here. */
+  color: rgb(2 8 23);
   transition: background-color 300ms ease, box-shadow 300ms ease, backdrop-filter 300ms ease;
 }
 /* Sticky is declared on the section wrapper as well as the inner shell:
@@ -739,7 +743,11 @@
   display: flex;
   flex-direction: column;
   background-color: var(--nf-header-bg, #f4f1ed);
-  color: var(--nf-text, #1a1614);
+  /* React's Navbar and MobileMenu set no colour, so the header inherits the
+     stock shadcn --foreground (222.2 84% 4.9%) rather than the brand ink the
+     rest of the site uses. Matched deliberately -- flip back to var(--nf-text)
+     if the brand ink is preferred here. */
+  color: rgb(2 8 23);
   transform: translateX(-100%);
   transition: transform 250ms cubic-bezier(0.4, 0, 1, 1);
 }
@@ -782,8 +790,9 @@
   align-items: center;
   min-height: 52px;
   font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 500;
+  line-height: 1.5;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   text-decoration: none;
@@ -801,8 +810,12 @@
   padding: 0;
   border: 0;
   background: none;
-  font: inherit;
-  text-align: left;
+  /* No `font: inherit`, and no font-family either. Both reset the family that
+     .nf-mm__link sets on this same element, and being later in the sheet they
+     won -- every parent label rendered 16px system sans instead of 19px
+     Velista. A button only needs the box and cursor reset here. */
+  color: inherit;
+  text-align: center;
   cursor: pointer;
 }
 .nf-mm__chevron { flex: none; transition: transform 200ms ease; }
@@ -817,7 +830,14 @@
   animation: nf-fade-in 200ms ease;
 }
 .nf-mm__sub[hidden] { display: none; }
-.nf-mm__link--sub { min-height: 42px; padding-block: 8px; font-size: 16px; opacity: 0.65; }
+.nf-mm__link--sub {
+  min-height: 42px;
+  padding-block: 8px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+}
 @keyframes nf-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -1046,7 +1066,7 @@
           "label": "Role in the SHOP mega panel",
           "options": [
             { "value": "none", "label": "Not in the panel" },
-            { "value": "panel", "label": "Opens the panel (its children become the image tiles)" },
+            { "value": "panel", "label": "Opens the panel (children are tiles)" },
             { "value": "column", "label": "Becomes a text column in the panel" }
           ],
           "default": "none"

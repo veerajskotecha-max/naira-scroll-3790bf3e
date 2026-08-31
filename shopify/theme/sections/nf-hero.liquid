@@ -57,7 +57,15 @@
 
     {%- if section.settings.numeral != blank -%}
       <div class="nf-hero__numeral-slot nf-anim">
-        <span class="nf-hero__numeral nf-display" aria-hidden="true">{{ section.settings.numeral }}</span>
+        {%- comment -%}
+          Deliberately NOT .nf-display. HeroSection.tsx styles this numeral with
+          `var(--font-cormorant), 'Velista', Georgia, serif`, and --font-cormorant
+          is defined nowhere -- an undefined custom property with no fallback makes
+          the whole font-family declaration invalid at computed-value time, so React
+          renders the watermark in the app sans stack, not Velista. Matched on
+          purpose; add nf-display back to render the author's evident intent.
+        {%- endcomment -%}
+        <span class="nf-hero__numeral" aria-hidden="true">{{ section.settings.numeral }}</span>
       </div>
     {%- endif -%}
 

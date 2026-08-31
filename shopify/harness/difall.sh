@@ -18,7 +18,10 @@ PAIRS="
 /jewellery|collection
 /collections|list-collections
 /jewellery/riviere-eternal-necklace|product
-"
+/gifting|page.gifting
+/journal/ring-size-guide-india|article
+/shop|page.made-for-you
+""
 # The PDP fixture must be the same product both sides show. render.mjs picks a
 # default when PRODUCT_HANDLE is unset, so a concurrent render silently swaps
 # the product mid-sweep and the numbers jump for no reason. Pin it here.

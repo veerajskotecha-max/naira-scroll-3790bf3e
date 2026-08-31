@@ -186,6 +186,16 @@ if (process.argv[1] === import.meta.filename) {
     // non-empty collection" silently became `frontpage` (apparel only) once the
     // catalogue refresh started bucketing products into real collections, and
     // the whole listing page rendered as the empty state.
+    // The article template has no `article` unless one is pinned here, and
+    // without it the whole page renders as an empty shell (no h1, no body).
+    // Same pattern as PRODUCT_HANDLE. Default is the one handle whose `content`
+    // is cached in articles.json -- see the note in that file.
+    if (n === 'article') {
+      const want = process.env.ARTICLE_HANDLE || 'anti-tarnish-jewellery-guide';
+      extra.article = BLOG.articles.find(a => a.handle === want) || BLOG.articles[0];
+      if (extra.article.handle !== want) console.log(`  note: no article "${want}" in the cache, using ${extra.article.handle}`);
+      if (!extra.article.content) console.log(`  note: article "${extra.article.handle}" has no cached body -- the page will render without one`);
+    }
     if (n === 'collection') extra.collection = cat.collections.find(c => c.products.some(p => (p.vendor || '').toLowerCase() === 'naira petite'))
       || cat.collections.find(c => c.products_count > 0) || cat.collections.at(-1);
     try {

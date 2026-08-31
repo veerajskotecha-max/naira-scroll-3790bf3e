@@ -1,7 +1,7 @@
 {
   "_source": "Admin API, 2026-08-30. The Storefront token in data.mjs has no `unauthenticated_read_content` scope, so unlike catalogue.json this cache cannot refresh itself. Re-pull with: query { blog(id: \"gid://shopify/Blog/90750779554\") { articles(first: 50) { nodes { id title handle publishedAt summary tags author { name } image { url altText width height } metafields(first: 20) { nodes { namespace key value } } } } } }",
   "_notes": [
-    "`content` is not cached: the journal index does not read it, and the 19 bodies are ~60 KB. Add them here if the /blogs/news/:handle route is ported.",
+    "`content` is cached for anti-tarnish-jewellery-guide only -- the article-page fixture (ARTICLE_HANDLE in render.mjs). The other 18 bodies are ~57 KB and nothing renders them yet; pull one with Admin API `query { article(id: \"gid://shopify/Article/<id>\") { body } }` and paste it into that article`s `content` when a second fixture is needed.",
     "Every article on the live store has ZERO metafields and no image. The `custom.read_time` values below are NOT in Shopify yet -- they are the hand-authored readTime strings from src/data/seoContent.ts + seoJournal.extra.ts, which is the copy the store was seeded from. nf-journal.liquid falls back to a 200 wpm estimate off the body when the metafield is absent, and that estimate does not reproduce these numbers (the source values run 44-73 words/min, they were written, not computed). Seeding these 19 metafields on the store is a content change, which HANDOFF.md puts out of scope without approval."
   ],
   "blog": {
@@ -19,7 +19,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363390114,
@@ -30,7 +36,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      }
     },
     {
       "id": 566363422882,
@@ -41,7 +53,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      }
     },
     {
       "id": 566363455650,
@@ -52,7 +70,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363488418,
@@ -63,7 +87,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363521186,
@@ -74,7 +104,14 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      },
+      "content": "<p>Tarnish is oxidation. When sweat, humidity or perfume reaches the base metal under a plating, the metal reacts and the piece darkens or turns green. Anti-tarnish jewellery is simply jewellery built so that contact never happens.</p>\n\n<h2>The three layers that decide everything</h2>\n\n<p>A plated piece is three things: a base metal, a precious-metal plating, and, on good pieces, a protective seal above the plating. The base decides whether your skin reacts. The plating thickness decides how long the colour survives friction. The seal decides how long moisture stays out.</p>\n\n<p>Cheap costume jewellery skips the seal entirely and flash-plates a brass base at a fraction of a micron. That is why it looks perfect in the box and grey at the contact points three weeks later.</p>\n\n<h2>Why Indian humidity is the hard test</h2>\n\n<p>Humid air carries more moisture and more airborne sulphur, both of which speed oxidation. A finish that holds fine in a dry climate can fail within one monsoon here.</p>\n\n<p>This is the single best reason to buy demi-fine rather than costume jewellery in India: the thicker plating and seal are built for exactly this environment.</p>\n\n<h2>Four questions to ask before buying</h2>\n\n<p>What is the base metal? You want a nickel-free, hypoallergenic alloy or sterling silver, not unspecified brass.</p>\n\n<p>How thick is the plating? Anything described as flash or micron-plated without a number is usually the thinnest option available.</p>\n\n<p>Is there a protective seal above the plating? If the brand cannot answer this, there almost certainly is not one.</p>\n\n<p>Is the piece waterproof-sealed, and to what degree? Incidental contact and swimming are very different asks.</p>\n\n<h2>Care that actually extends the finish</h2>\n\n<p>Put jewellery on last, after perfume, lotion and hairspray, and take it off first at night. Perfume alcohol is the most common finish-killer we see.</p>\n\n<p>Wipe pieces with a dry, soft cloth after wear, not a silver polishing cloth, which is abrasive and will cut through plating.</p>\n\n<p>Store pieces separately in a dry pouch or box. Loose jewellery in a shared bowl scratches its own finish off.</p>\n\n<h2>Frequently asked</h2>\n\n<dl>\n<dt>Is anti-tarnish jewellery really tarnish-proof?</dt>\n<dd>No finish is permanent. Anti-tarnish means the piece is sealed so that oxidation is delayed for years rather than weeks under normal wear.</dd>\n<dt>Can I shower with anti-tarnish jewellery?</dt>\n<dd>Better not to. Shampoo and soap residue build a film that dulls the surface, and hot water accelerates the breakdown of any seal.</dd>\n<dt>How do I clean anti-tarnish jewellery?</dt>\n<dd>Warm water, a drop of mild soap, a very soft brush, then dry completely with a lint-free cloth. Never use silver dip, toothpaste or baking soda on plated pieces.</dd>\n</dl>"
     },
     {
       "id": 566363553954,
@@ -85,7 +122,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 7 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 7
+          }
+        }
+      }
     },
     {
       "id": 566363586722,
@@ -96,7 +139,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      }
     },
     {
       "id": 566363619490,
@@ -107,7 +156,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363652258,
@@ -118,7 +173,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      }
     },
     {
       "id": 566363685026,
@@ -129,7 +190,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 7 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 7
+          }
+        }
+      }
     },
     {
       "id": 566363717794,
@@ -140,7 +207,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363750562,
@@ -151,7 +224,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363783330,
@@ -162,7 +241,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 8 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 8
+          }
+        }
+      }
     },
     {
       "id": 566363816098,
@@ -173,7 +258,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363848866,
@@ -184,7 +275,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 5 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 5
+          }
+        }
+      }
     },
     {
       "id": 566363881634,
@@ -195,7 +292,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      }
     },
     {
       "id": 566363914402,
@@ -206,7 +309,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 7 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 7
+          }
+        }
+      }
     },
     {
       "id": 566363947170,
@@ -217,7 +326,13 @@
       "author": "Naira Flore",
       "tags": [],
       "image": null,
-      "metafields": { "custom": { "read_time": { "value": 6 } } }
+      "metafields": {
+        "custom": {
+          "read_time": {
+            "value": 6
+          }
+        }
+      }
     }
   ]
 }

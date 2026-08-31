@@ -107,6 +107,9 @@
   pointer-events: none; user-select: none; position: absolute;
   top: -.5rem; left: 50%; transform: translateX(-50%);
   font-size: 224px; line-height: 1; font-weight: 300;
+  /* See the comment in nf-hero.liquid: React's numeral falls back to the app
+     sans because --font-cormorant is undefined. */
+  font-family: ui-sans-serif, system-ui, sans-serif;
   color: transparent; -webkit-text-stroke: 1px rgb(var(--nf-sage-rgb) / .45);
 }
 @media (min-width: 1024px) { .nf-hero__numeral { font-size: 352px; } }
@@ -188,7 +191,7 @@
 .nf-hero__cta:focus-visible .nf-hero__cta-fill { transform: translateY(0); }
 .nf-hero__cta-label {
   position: relative; font-size: 11px; font-weight: 300;
-  letter-spacing: var(--nf-track-32); text-transform: uppercase; color: var(--nf-ivory);
+  letter-spacing: var(--nf-track-32); text-transform: uppercase; color: #fff8f5;
 }
 
 .nf-hero__vocab {
@@ -202,7 +205,7 @@
 .nf-hero__vocab-set { display: flex; align-items: center; flex-shrink: 0; }
 .nf-hero__vocab-item { display: flex; align-items: center; }
 .nf-hero__vocab-item i {
-  padding: 0 24px; font-style: italic; font-size: 18px; color: rgb(var(--nf-ink-rgb) / .8);
+  padding: 0 24px; font-style: italic; font-size: 18px; line-height: 28px; color: rgb(var(--nf-ink-rgb) / .8);
 }
 .nf-hero__vocab-item s {
   width: 4px; height: 4px; border-radius: 50%; background: var(--nf-sage); text-decoration: none;
@@ -420,7 +423,7 @@
 }
 .nf-step__num {
   position: absolute; top: .75rem; right: .75rem; font-family: var(--nf-font-display);
-  font-size: 11px; font-weight: 600; letter-spacing: var(--nf-track-4);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
   color: hsl(0 0% 78%); transition: color .4s ease;
 }
 .nf-step.is-active .nf-step__num { color: hsl(16 40% 55%); }
@@ -508,7 +511,7 @@
   transform: translateY(4px); opacity: 0; transition: all .3s ease;
 }
 .nf-tile:hover .nf-tile__cap { opacity: 1; transform: translateY(0); }
-.nf-tile__cap p { font-family: var(--nf-font-display); font-size: 14px; font-style: italic; line-height: 1.2; color: hsl(0 0% 100%); }
+.nf-tile__cap p { font-family: var(--nf-font-display); font-size: 14px; font-style: italic; line-height: 1.25; color: hsl(0 0% 100%); }
 .nf-tile__quote {
   pointer-events: none; position: absolute; top: .75rem; left: .75rem;
   font-family: var(--nf-font-display); font-style: italic; font-size: 13px;

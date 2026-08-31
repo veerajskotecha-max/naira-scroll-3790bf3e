@@ -1,0 +1,882 @@
+{%- comment -%}
+  ===========================================================================
+  Naira Flore -- apparel shop listing
+  Ported from src/pages/ShopAll.tsx (the /shop route), together with the two
+  components that page renders around its grid:
+    src/components/shop/ShopHero.tsx        -> .nf-shop-hero
+    src/components/product/CustomizationCTA.tsx -> .nf-shop-cta
+  Both are page furniture belonging to ShopAll, not standalone routes, so
+  they live in this one section rather than becoming sections of their own.
+
+  Cards come from snippets/nf-product-card.liquid -- that snippet IS the port
+  of src/components/ProductCard.tsx, which is exactly the card ShopAll.tsx
+  renders (unlike nf-collection.liquid, whose page renders JewelCard.tsx).
+
+  Vendor gate: ShopAll fetches the store's products and shows them all, but
+  this store's catalogue is two lines in one shop. src/lib/isJewelleryProduct.ts
+  buckets a listing as jewellery on the exact vendor string "Naira Petite";
+  everything else is the ready-to-wear line this page is for. The jewellery
+  half already has its own listing (nf-collection.liquid), so the gate here is
+  the inverse of the gate there -- without it /shop and the jewellery page
+  would show the same stock.
+
+  Filters: the sidebar is open by default on the React page and every control
+  in it is live there, so they are live here too -- all client-side over the
+  rendered cells (show/hide + reorder), no reload and no scroll jump, the same
+  way nf-collection.liquid filters its grid. Disclosure uses <details>/<summary>
+  rather than JS state, which is what Radix's Collapsible renders down to.
+
+  Not reproduced, and why:
+    - Loading skeletons and the network-error panel: Liquid renders with the
+      products already in hand, so neither state can occur.
+    - The active-filter chip row: it only exists when a filter is on, never in
+      the default view. A single "Clear all" replaces it.
+  ===========================================================================
+{%- endcomment -%}
+
+{%- liquid
+  assign shop_collection = collections[section.settings.collection]
+  if shop_collection == empty or shop_collection.products.size == 0
+    assign shop_collection = collections.all
+  endif
+
+  assign cat_csv = ''
+  assign shop_count = 0
+  for p in shop_collection.products
+    assign v = p.vendor | downcase | strip
+    unless v == 'naira petite'
+      assign shop_count = shop_count | plus: 1
+      assign c = p.type
+      if c == blank
+        assign c = 'Naira Flore'
+      endif
+      assign probe = cat_csv | append: '|'
+      assign needle = c | append: '|'
+      assign seen = false
+      if probe contains needle
+        assign seen = true
+      endif
+      unless seen
+        assign cat_csv = cat_csv | append: c | append: '|'
+      endunless
+    endunless
+  endfor
+  assign shop_categories = cat_csv | split: '|'
+  assign sizes = 'XS,S,M,L,XL' | split: ','
+-%}
+
+<div class="nf nf-shop">
+  <h1 class="visually-hidden">{{ section.settings.seo_heading }}</h1>
+
+  {%- comment -%} ── Campaign hero — ShopHero.tsx ── {%- endcomment -%}
+  <section class="nf-shop-hero" aria-label="Shop hero">
+    <div class="nf-shop-hero__pattern" aria-hidden="true" style="background-image:url({{ 'nf-floral-pattern-bg.webp' | asset_url }});"></div>
+    <div class="nf-shop-hero__glow nf-shop-hero__glow--warm" aria-hidden="true"></div>
+    <div class="nf-shop-hero__glow nf-shop-hero__glow--sage" aria-hidden="true"></div>
+    <div class="nf-shop-hero__rule nf-shop-hero__rule--top" aria-hidden="true"></div>
+
+    <div class="nf-shop-hero__inner">
+      <div class="nf-shop-hero__eyebrow-row">
+        <span class="nf-shop-hero__dash" aria-hidden="true"></span>
+        <span class="nf-shop-hero__eyebrow">{{ section.settings.hero_eyebrow | escape }}</span>
+        <span class="nf-shop-hero__dash" aria-hidden="true"></span>
+      </div>
+
+      <h2 class="nf-shop-hero__title">
+        {{- section.settings.hero_title | escape -}}
+        {%- if section.settings.hero_title_accent != blank -%}
+          {{ ' ' }}<em class="nf-shop-hero__accent">{{ section.settings.hero_title_accent | escape }}</em>
+        {%- endif -%}
+      </h2>
+
+      {%- if section.settings.hero_copy != blank -%}
+        <p class="nf-shop-hero__copy">{{ section.settings.hero_copy | escape }}</p>
+      {%- endif -%}
+
+      <div class="nf-shop-hero__cta-row">
+        <a class="nf-shop-hero__cta" href="{{ section.settings.hero_cta_url }}">{{ section.settings.hero_cta_label | escape }}</a>
+      </div>
+    </div>
+
+    <div class="nf-shop-hero__rule nf-shop-hero__rule--bottom" aria-hidden="true"></div>
+  </section>
+
+  {%- comment -%} ── Ready-to-wear section header ── {%- endcomment -%}
+  <section id="indo-western" class="nf-shop-head">
+    <div class="nf-shop-head__inner">
+      <span class="nf-shop-head__eyebrow">{{ section.settings.head_eyebrow | escape }}</span>
+      <h2 class="nf-shop-head__title">{{ section.settings.head_title | escape }}</h2>
+      <div class="nf-shop-head__rule" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  {%- comment -%} ── Toolbar ── {%- endcomment -%}
+  <div class="nf-shop-bar" data-nf-shop>
+    <div class="nf-shop-bar__desk">
+      <div class="nf-shop-bar__wrap">
+        <div class="nf-shop-bar__row">
+          <div class="nf-shop-bar__cols">
+            <button type="button" class="nf-shop-bar__col" data-nf-cols="2" title="2 columns" aria-label="2 columns">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg>
+            </button>
+            <button type="button" class="nf-shop-bar__col is-on" data-nf-cols="4" title="4 columns" aria-label="4 columns">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+            </button>
+          </div>
+
+          <p class="nf-shop-bar__count" data-nf-count>{{ shop_count }} Product{% if shop_count != 1 %}s{% endif %}</p>
+
+          <div class="nf-shop-bar__sortwrap">
+            <details class="nf-shop-sort" data-nf-sortmenu>
+              <summary class="nf-shop-sort__trigger">
+                <span data-nf-sortlabel>Newest Arrivals</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="nf-shop-sort__menu">
+                <button type="button" class="nf-shop-sort__opt is-on" data-nf-sort="newest">Newest Arrivals</button>
+                <button type="button" class="nf-shop-sort__opt" data-nf-sort="price-low">Price: Low to High</button>
+                <button type="button" class="nf-shop-sort__opt" data-nf-sort="price-high">Price: High to Low</button>
+                <button type="button" class="nf-shop-sort__opt" data-nf-sort="popular">Most Popular</button>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nf-shop-bar__mob">
+      <button type="button" class="nf-shop-bar__mbtn" data-nf-filters-open>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+        Filters<span data-nf-filtercount></span>
+      </button>
+
+      <details class="nf-shop-sort nf-shop-sort--mob" data-nf-sortmenu>
+        <summary class="nf-shop-bar__mbtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+          Sort
+        </summary>
+        <div class="nf-shop-sort__menu">
+          <button type="button" class="nf-shop-sort__opt is-on" data-nf-sort="newest">Newest Arrivals</button>
+          <button type="button" class="nf-shop-sort__opt" data-nf-sort="price-low">Price: Low to High</button>
+          <button type="button" class="nf-shop-sort__opt" data-nf-sort="price-high">Price: High to Low</button>
+          <button type="button" class="nf-shop-sort__opt" data-nf-sort="popular">Most Popular</button>
+        </div>
+      </details>
+
+      <div class="nf-shop-bar__layout">
+        <button type="button" class="nf-shop-bar__lbtn is-on" data-nf-layout="grid" title="Grid view" aria-label="Grid view">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+        </button>
+        <button type="button" class="nf-shop-bar__lbtn" data-nf-layout="list" title="List view" aria-label="List view">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} ── Two-column shop layout ── {%- endcomment -%}
+  <div class="nf-shop-body">
+    <div class="nf-shop-body__inner">
+      <aside class="nf-shop-side" data-nf-side aria-label="Product filters">
+        <div class="nf-shop-side__sheet">
+          <div class="nf-shop-filters">
+            <div>
+              <p class="nf-shop-filters__legend">Filters</p>
+              <div class="nf-shop-filters__hr nf-shop-filters__hr--top"></div>
+            </div>
+
+            <details class="nf-shop-fs" open>
+              <summary class="nf-shop-fs__trigger">
+                <h3 class="nf-shop-fs__title">Categories</h3>
+                <svg class="nf-shop-fs__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="nf-shop-fs__body">
+                <div class="nf-shop-fs__stack">
+                  {%- for cat in shop_categories -%}
+                    {%- if cat != blank -%}
+                      <label class="nf-shop-check">
+                        <input type="checkbox" class="nf-shop-check__box" data-nf-f="cat" value="{{ cat | escape }}">
+                        <span class="nf-shop-check__label">{{ cat }}</span>
+                      </label>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            </details>
+
+            <div class="nf-shop-filters__hr"></div>
+
+            <details class="nf-shop-fs" open>
+              <summary class="nf-shop-fs__trigger">
+                <h3 class="nf-shop-fs__title">Price Range</h3>
+                <svg class="nf-shop-fs__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="nf-shop-fs__body">
+                <div class="nf-shop-range">
+                  <span class="nf-shop-range__track"><span class="nf-shop-range__fill" data-nf-fill></span></span>
+                  <input type="range" class="nf-shop-range__input" min="0" max="50000" step="1000" value="50000" data-nf-f="price" aria-label="Maximum price">
+                </div>
+                <div class="nf-shop-range__row">
+                  <span class="nf-shop-range__val">&#8377;0</span>
+                  <span class="nf-shop-range__val" data-nf-pricemax>&#8377;50,000</span>
+                </div>
+              </div>
+            </details>
+
+            <div class="nf-shop-filters__hr"></div>
+
+            <details class="nf-shop-fs" open>
+              <summary class="nf-shop-fs__trigger">
+                <h3 class="nf-shop-fs__title">Size</h3>
+                <svg class="nf-shop-fs__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="nf-shop-fs__body">
+                <div class="nf-shop-sizes">
+                  {%- for size in sizes -%}
+                    <button type="button" class="nf-shop-size" data-nf-f="size" data-value="{{ size }}" aria-pressed="false">{{ size }}</button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            </details>
+
+            <div class="nf-shop-filters__hr"></div>
+
+            <details class="nf-shop-fs" open>
+              <summary class="nf-shop-fs__trigger">
+                <h3 class="nf-shop-fs__title">Availability</h3>
+                <svg class="nf-shop-fs__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="nf-shop-fs__body">
+                <div class="nf-shop-fs__stack">
+                  <label class="nf-shop-check">
+                    <input type="checkbox" class="nf-shop-check__box" data-nf-f="avail" value="In Stock">
+                    <span class="nf-shop-check__label">In Stock</span>
+                  </label>
+                  <label class="nf-shop-check">
+                    <input type="checkbox" class="nf-shop-check__box" data-nf-f="avail" value="Sold Out">
+                    <span class="nf-shop-check__label">Sold Out</span>
+                  </label>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="nf-shop-side__actions">
+            <button type="button" class="nf-shop-side__reset" data-nf-reset>Reset</button>
+            <button type="button" class="nf-shop-side__done" data-nf-filters-close>Done</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="nf-shop-grid-col">
+        <div class="nf-shop-grid" data-nf-grid>
+          {%- for product in shop_collection.products -%}
+            {%- assign v = product.vendor | downcase | strip -%}
+            {%- unless v == 'naira petite' -%}
+              {%- liquid
+                assign cell_cat = product.type
+                if cell_cat == blank
+                  assign cell_cat = 'Naira Flore'
+                endif
+                assign cell_sizes = ''
+                for opt in product.options_with_values
+                  assign opt_name = opt.name | downcase
+                  if opt_name == 'size'
+                    assign cell_sizes = opt.values | join: '|'
+                  endif
+                endfor
+                assign cell_avail = 'Sold Out'
+                if product.available
+                  assign cell_avail = 'In Stock'
+                endif
+                assign cell_price = product.price_min | divided_by: 100
+              -%}
+              <div
+                class="nf-shop-cell"
+                data-nf-cell
+                data-cat="{{ cell_cat | escape }}"
+                data-price="{{ cell_price }}"
+                data-avail="{{ cell_avail }}"
+                data-sizes="{{ cell_sizes | escape }}"
+                data-tagged="{% if product.tags.size > 0 %}1{% else %}0{% endif %}"
+                data-idx="{{ forloop.index0 }}"
+              >
+                {%- render 'nf-product-card', product: product, index: forloop.index0, uid: section.id -%}
+              </div>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+
+        <div class="nf-shop-empty" data-nf-empty hidden>
+          <p class="nf-shop-empty__title">No pieces match these filters</p>
+          <p class="nf-shop-empty__copy">Loosen a filter or two and more of the collection will appear.</p>
+          <button type="button" class="nf-shop-empty__cta" data-nf-reset>Reset All Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} ── Customisation CTA — CustomizationCTA.tsx ── {%- endcomment -%}
+  <section class="nf-shop-cta" aria-labelledby="nf-shop-cta-heading">
+    <div class="nf-shop-cta__pattern" aria-hidden="true" style="background-image:url({{ 'nf-background-flora.webp' | asset_url }});"></div>
+    <div class="nf-shop-cta__inner">
+      <p class="nf-shop-cta__eyebrow">{{ section.settings.cta_eyebrow | escape }}</p>
+      <h2 id="nf-shop-cta-heading" class="nf-shop-cta__title">
+        {{- section.settings.cta_title | escape -}}
+        {%- if section.settings.cta_title_accent != blank -%}
+          {{ ' ' }}<span class="nf-shop-cta__accent">{{ section.settings.cta_title_accent | escape }}</span>
+        {%- endif -%}
+      </h2>
+      <p class="nf-shop-cta__copy">{{ section.settings.cta_copy | escape }}</p>
+      <a class="nf-shop-cta__btn" href="{{ section.settings.cta_url }}">{{ section.settings.cta_label | escape }}</a>
+    </div>
+  </section>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-nf-shop]');
+    if (!root) return;
+    var page = root.closest('.nf-shop');
+    var grid = page.querySelector('[data-nf-grid]');
+    var cells = [].slice.call(page.querySelectorAll('[data-nf-cell]'));
+    var empty = page.querySelector('[data-nf-empty]');
+    var countEl = page.querySelector('[data-nf-count]');
+    var badge = page.querySelector('[data-nf-filtercount]');
+    var side = page.querySelector('[data-nf-side]');
+    var sort = 'newest';
+
+    var state = { cat: [], avail: [], size: [], price: 50000 };
+
+    function toggle(list, value) {
+      var i = list.indexOf(value);
+      if (i === -1) list.push(value); else list.splice(i, 1);
+    }
+
+    function matches(cell) {
+      if (state.cat.length && state.cat.indexOf(cell.dataset.cat) === -1) return false;
+      if (state.avail.length && state.avail.indexOf(cell.dataset.avail) === -1) return false;
+      if (Number(cell.dataset.price) > state.price) return false;
+      if (state.size.length) {
+        var have = (cell.dataset.sizes || '').split('|');
+        var hit = state.size.some(function (s) { return have.indexOf(s) !== -1; });
+        if (!hit) return false;
+      }
+      return true;
+    }
+
+    function apply() {
+      var shown = 0;
+      cells.forEach(function (c) {
+        var on = matches(c);
+        c.hidden = !on;
+        if (on) shown++;
+      });
+      // Sorting runs over the whole list so hiding and re-showing a cell never
+      // drops it out of the chosen order.
+      var order = cells.slice();
+      if (sort === 'price-low') order.sort(function (a, b) { return a.dataset.price - b.dataset.price; });
+      else if (sort === 'price-high') order.sort(function (a, b) { return b.dataset.price - a.dataset.price; });
+      else if (sort === 'popular') order.sort(function (a, b) { return b.dataset.tagged - a.dataset.tagged; });
+      else order.sort(function (a, b) { return a.dataset.idx - b.dataset.idx; });
+      order.forEach(function (c) { grid.appendChild(c); });
+
+      if (countEl) countEl.textContent = shown + ' Product' + (shown === 1 ? '' : 's');
+      if (empty) empty.hidden = shown !== 0;
+      var n = state.cat.length + state.avail.length + state.size.length + (state.price === 50000 ? 0 : 1);
+      if (badge) badge.textContent = n ? ' (' + n + ')' : '';
+    }
+
+    page.querySelectorAll('input[data-nf-f="cat"], input[data-nf-f="avail"]').forEach(function (box) {
+      box.addEventListener('change', function () {
+        toggle(state[box.dataset.nfF], box.value);
+        apply();
+      });
+    });
+
+    page.querySelectorAll('[data-nf-f="size"]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        toggle(state.size, btn.dataset.value);
+        var on = state.size.indexOf(btn.dataset.value) !== -1;
+        btn.classList.toggle('is-on', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        apply();
+      });
+    });
+
+    var range = page.querySelector('[data-nf-f="price"]');
+    var priceOut = page.querySelector('[data-nf-pricemax]');
+    var fill = page.querySelector('[data-nf-fill]');
+    if (range) {
+      range.addEventListener('input', function () {
+        state.price = Number(range.value);
+        if (priceOut) priceOut.textContent = '₹' + state.price.toLocaleString('en-IN');
+        if (fill) fill.style.width = (state.price / 50000 * 100) + '%';
+        apply();
+      });
+    }
+
+    page.querySelectorAll('[data-nf-sort]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        sort = btn.dataset.nfSort;
+        page.querySelectorAll('[data-nf-sort]').forEach(function (b) {
+          b.classList.toggle('is-on', b.dataset.nfSort === sort);
+        });
+        page.querySelectorAll('[data-nf-sortlabel]').forEach(function (l) { l.textContent = btn.textContent.trim(); });
+        page.querySelectorAll('[data-nf-sortmenu]').forEach(function (d) { d.open = false; });
+        apply();
+      });
+    });
+
+    page.querySelectorAll('[data-nf-cols]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        grid.setAttribute('data-cols', btn.dataset.nfCols);
+        page.querySelectorAll('[data-nf-cols]').forEach(function (b) {
+          b.classList.toggle('is-on', b === btn);
+        });
+      });
+    });
+
+    page.querySelectorAll('[data-nf-layout]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        grid.setAttribute('data-layout', btn.dataset.nfLayout);
+        page.querySelectorAll('[data-nf-layout]').forEach(function (b) {
+          b.classList.toggle('is-on', b === btn);
+        });
+      });
+    });
+
+    // Phone: the sidebar IS the filter sheet, so there is one set of controls
+    // rather than a second copy inside a drawer.
+    var openBtn = page.querySelector('[data-nf-filters-open]');
+    if (openBtn && side) openBtn.addEventListener('click', function () { side.classList.add('is-open'); });
+    page.querySelectorAll('[data-nf-filters-close]').forEach(function (b) {
+      b.addEventListener('click', function () { side.classList.remove('is-open'); });
+    });
+
+    page.querySelectorAll('[data-nf-reset]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state = { cat: [], avail: [], size: [], price: 50000 };
+        page.querySelectorAll('input[data-nf-f]').forEach(function (b) { b.checked = false; });
+        page.querySelectorAll('[data-nf-f="size"]').forEach(function (b) {
+          b.classList.remove('is-on');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        if (range) range.value = 50000;
+        if (priceOut) priceOut.textContent = '₹50,000';
+        if (fill) fill.style.width = '100%';
+        apply();
+      });
+    });
+  })();
+</script>
+
+{% stylesheet %}
+/* px, not rem: layout/theme.liquid puts the root font-size at 62.5% (10px),
+   so a rem copied off the Tailwind source would land at 0.625x. */
+.nf-shop { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ───────── Campaign hero (ShopHero.tsx) ───────── */
+.nf-shop-hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, hsl(140 14% 84%) 0%, hsl(36 30% 92%) 50%, hsl(20 35% 90%) 100%);
+}
+.nf-shop-hero__pattern {
+  position: absolute; inset: 0; pointer-events: none;
+  background-size: cover; background-position: center;
+  opacity: .07; mix-blend-mode: multiply;
+}
+.nf-shop-hero__glow { position: absolute; pointer-events: none; filter: blur(20px); }
+.nf-shop-hero__glow--warm {
+  top: -10%; right: -5%; width: 640px; height: 640px;
+  background: radial-gradient(circle, hsla(20, 50%, 82%, .55) 0%, hsla(20, 50%, 82%, 0) 70%);
+}
+.nf-shop-hero__glow--sage {
+  bottom: -15%; left: -8%; width: 560px; height: 560px;
+  background: radial-gradient(circle, hsla(140, 18%, 75%, .55) 0%, hsla(140, 18%, 75%, 0) 70%);
+}
+.nf-shop-hero__rule {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  height: 1px; width: 96px; background-color: hsl(186 30% 30% / .25);
+}
+.nf-shop-hero__rule--top { top: 0; }
+.nf-shop-hero__rule--bottom { bottom: 0; }
+@media (min-width: 768px) { .nf-shop-hero__rule { width: 128px; } }
+
+.nf-shop-hero__inner {
+  position: relative; max-width: 860px; margin-inline: auto;
+  padding: 64px 24px; text-align: center;
+}
+@media (min-width: 768px)  { .nf-shop-hero__inner { padding: 96px 40px; } }
+@media (min-width: 1024px) { .nf-shop-hero__inner { padding: 112px 40px; } }
+
+.nf-shop-hero__eyebrow-row { display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 20px; }
+.nf-shop-hero__dash { display: block; width: 32px; height: 1px; background-color: hsl(186 35% 28% / .4); }
+.nf-shop-hero__eyebrow {
+  display: block; font-size: 11px; line-height: 1.5; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .28em; color: hsl(186 35% 28%);
+}
+@media (min-width: 768px) { .nf-shop-hero__eyebrow { font-size: 12px; } }
+
+.nf-shop-hero__title {
+  margin: 0 0 24px;
+  font-family: var(--nf-font-display);
+  font-size: 40px; line-height: 1.05; font-weight: 500; letter-spacing: normal;
+  color: hsl(0 0% 15%);
+}
+@media (min-width: 768px)  { .nf-shop-hero__title { font-size: 60px; margin-bottom: 28px; } }
+@media (min-width: 1024px) { .nf-shop-hero__title { font-size: 76px; } }
+.nf-shop-hero__accent { font-style: italic; font-weight: 400; color: hsl(186 35% 28%); }
+
+.nf-shop-hero__copy {
+  margin: 0 auto 36px;
+  max-width: 560px;
+  font-family: var(--nf-font-display);
+  font-size: 16px; line-height: 1.65; font-weight: 400;
+  color: hsl(0 0% 35%);
+}
+@media (min-width: 768px)  { .nf-shop-hero__copy { font-size: 18px; margin-bottom: 40px; } }
+@media (min-width: 1024px) { .nf-shop-hero__copy { font-size: 19px; } }
+
+.nf-shop-hero__cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: center; }
+@media (min-width: 768px) { .nf-shop-hero__cta-row { gap: 16px; } }
+.nf-shop-hero__cta {
+  display: block;
+  padding: 14px 36px;
+  font-size: 12px; line-height: 1.5; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .18em; text-decoration: none;
+  background-color: hsl(0 0% 12%); color: hsl(0 0% 100%);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+@media (min-width: 768px) { .nf-shop-hero__cta { font-size: 13px; padding: 16px 44px; } }
+.nf-shop-hero__cta:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1); }
+
+/* ───────── Ready-to-wear header ───────── */
+.nf-shop-head { width: 100%; scroll-margin-top: 120px; background-color: hsl(0 0% 98%); }
+.nf-shop-head__inner {
+  max-width: 1400px; margin-inline: auto;
+  padding: 32px 20px 24px; text-align: center;
+}
+@media (min-width: 768px)  { .nf-shop-head__inner { padding: 40px 32px 24px; } }
+@media (min-width: 1024px) { .nf-shop-head__inner { padding: 48px 40px 24px; } }
+.nf-shop-head__eyebrow {
+  font-size: 10px; line-height: 1.5; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .32em; color: hsl(186 35% 28%);
+}
+@media (min-width: 768px) { .nf-shop-head__eyebrow { font-size: 11px; } }
+.nf-shop-head__title {
+  margin: 12px 0 0;
+  font-family: var(--nf-font-display);
+  font-size: 34px; line-height: 1.05; font-weight: 600; letter-spacing: -.01em;
+  color: hsl(0 0% 12%);
+}
+@media (min-width: 768px)  { .nf-shop-head__title { font-size: 46px; } }
+@media (min-width: 1024px) { .nf-shop-head__title { font-size: 56px; } }
+.nf-shop-head__rule { width: 56px; height: 1px; margin: 16px auto 0; background-color: hsl(150 12% 71%); }
+
+/* ───────── Toolbar ───────── */
+.nf-shop-bar { flex-shrink: 0; background-color: hsl(0 0% 98%); border-bottom: 1px solid hsl(0 0% 90%); }
+.nf-shop-bar__desk { display: none; }
+@media (min-width: 768px) { .nf-shop-bar__desk { display: block; } }
+.nf-shop-bar__wrap { max-width: 1400px; margin-inline: auto; padding-inline: 32px; }
+@media (min-width: 1024px) { .nf-shop-bar__wrap { padding-inline: 40px; } }
+.nf-shop-bar__row { position: relative; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+
+.nf-shop-bar__cols { display: none; }
+@media (min-width: 1024px) { .nf-shop-bar__cols { display: flex; align-items: center; gap: 4px; } }
+.nf-shop-bar__col {
+  display: block; padding: 8px; border: 0; background-color: transparent;
+  color: hsl(0 0% 55%); cursor: pointer; transition: background-color .15s, color .15s;
+}
+.nf-shop-bar__col.is-on { background-color: hsl(0 0% 92%); color: hsl(0 0% 15%); }
+.nf-shop-bar__col svg { display: block; }
+
+.nf-shop-bar__count {
+  margin: 0;
+  font-family: var(--nf-font-display);
+  font-size: 14px; line-height: 1.5; font-weight: 400; letter-spacing: .025em;
+  color: hsl(0 0% 45%);
+}
+@media (min-width: 1024px) { .nf-shop-bar__count { position: absolute; left: 50%; transform: translateX(-50%); } }
+
+.nf-shop-bar__sortwrap { margin-left: auto; }
+
+/* Sort menu: <details> stands in for the Radix Select — same closed-by-default
+   look, no popup library. */
+.nf-shop-sort { position: relative; }
+.nf-shop-sort > summary { list-style: none; cursor: pointer; }
+.nf-shop-sort > summary::-webkit-details-marker { display: none; }
+.nf-shop-sort__trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 200px; height: 40px; padding: 8px 12px;
+  border: 1px solid hsl(0 0% 82%); border-radius: 6px; background-color: hsl(0 0% 100%);
+  font-family: var(--nf-font-display); font-size: 14px; line-height: 1.5; text-align: center;
+  color: hsl(0 0% 30%);
+}
+.nf-shop-sort__trigger svg { flex: none; opacity: .5; }
+.nf-shop-sort__menu {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 40;
+  min-width: 200px; padding: 4px;
+  border: 1px solid hsl(0 0% 88%); border-radius: 6px;
+  background-color: hsl(0 0% 100%); box-shadow: 0 10px 25px -8px rgb(0 0 0 / .18);
+}
+.nf-shop-sort__opt {
+  display: flex; width: 100%; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border: 0; background-color: transparent; cursor: pointer;
+  font-family: var(--nf-font-display); font-size: 15px; line-height: 1.5; text-align: left;
+  color: hsl(0 0% 30%);
+}
+.nf-shop-sort__opt.is-on { color: hsl(186 35% 28%); background-color: hsl(186 35% 28% / .06); }
+
+.nf-shop-bar__mob { display: flex; align-items: center; gap: 8px; padding-inline: 20px; height: 52px; }
+@media (min-width: 768px) { .nf-shop-bar__mob { display: none; } }
+.nf-shop-bar__mbtn {
+  flex: 1 1 0%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding-inline: 12px; min-height: 44px;
+  border: 1px solid hsl(0 0% 82%); background-color: hsl(0 0% 100%);
+  font-family: var(--nf-font-display); font-size: 14px; line-height: 1.5; font-weight: 500;
+  color: hsl(0 0% 25%); cursor: pointer; list-style: none; text-align: center;
+}
+.nf-shop-bar__mbtn::-webkit-details-marker { display: none; }
+.nf-shop-sort--mob { flex: 1 1 0%; }
+.nf-shop-sort--mob .nf-shop-sort__menu { left: 0; right: auto; }
+
+.nf-shop-bar__layout {
+  display: flex; align-items: center; overflow: hidden;
+  border: 1px solid hsl(0 0% 82%); background-color: hsl(0 0% 100%);
+}
+.nf-shop-bar__lbtn {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  border: 0; background-color: transparent; color: hsl(0 0% 55%); cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.nf-shop-bar__lbtn.is-on { background-color: hsl(0 0% 92%); color: hsl(0 0% 15%); }
+
+/* ───────── Two-column body ───────── */
+.nf-shop-body { flex: 1 1 0%; display: flex; background-color: hsl(0 0% 98%); }
+.nf-shop-body__inner { display: flex; width: 100%; max-width: 1400px; margin-inline: auto; }
+
+.nf-shop-side { display: none; }
+@media (min-width: 768px) {
+  .nf-shop-side {
+    display: block; width: 240px; flex: none;
+    padding: 32px; border-right: 1px solid hsl(0 0% 92%);
+    position: sticky; top: 152px; align-self: flex-start;
+    max-height: calc(100vh - 168px); overflow-y: auto;
+  }
+}
+@media (min-width: 1024px) { .nf-shop-side { width: 280px; padding-inline: 40px; top: 168px; } }
+
+/* Phone: the same aside doubles as the filter sheet, so there is only ever
+   one set of filter controls in the document. */
+.nf-shop-side.is-open {
+  display: block; position: fixed; inset: auto 0 0 0; z-index: 60;
+  max-height: 85vh; overflow-y: auto;
+  padding: 24px 20px 20px; border-top: 1px solid hsl(0 0% 88%);
+  background-color: hsl(0 0% 100%); box-shadow: 0 -12px 32px -12px rgb(0 0 0 / .25);
+}
+.nf-shop-side__actions { display: none; gap: 12px; margin-top: 32px; }
+.nf-shop-side.is-open .nf-shop-side__actions { display: flex; }
+.nf-shop-side__reset,
+.nf-shop-side__done {
+  flex: 1 1 0%; min-height: 48px; border: 0; cursor: pointer;
+  font-family: var(--nf-font-display); font-size: 14px; font-weight: 500;
+}
+.nf-shop-side__reset { border: 1px solid hsl(0 0% 82%); background-color: transparent; color: hsl(0 0% 40%); }
+.nf-shop-side__done { background-color: hsl(186 35% 28%); color: hsl(0 0% 100%); }
+
+.nf-shop-filters > * + * { margin-top: 8px; }
+.nf-shop-filters__legend {
+  margin: 0;
+  font-family: var(--nf-font-display);
+  font-size: 13px; line-height: 1.5; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .15em; color: hsl(0 0% 48%);
+}
+.nf-shop-filters__hr { height: 1px; width: 100%; flex: none; background-color: hsl(0 0% 90%); }
+.nf-shop-filters__hr--top { margin-top: 12px; background-color: hsl(0 0% 85%); }
+
+.nf-shop-fs > summary { list-style: none; cursor: pointer; display: flex; width: 100%; align-items: center; justify-content: space-between; padding-block: 4px; text-align: center; }
+.nf-shop-fs > summary::-webkit-details-marker { display: none; }
+.nf-shop-fs__title {
+  margin: 0;
+  font-family: var(--nf-font-display);
+  font-size: 17px; line-height: 1.5; font-weight: 600; letter-spacing: normal;
+  color: hsl(0 0% 18%);
+}
+.nf-shop-fs__chev { flex: none; color: hsl(0 0% 50%); transition: transform .2s; }
+.nf-shop-fs[open] > summary .nf-shop-fs__chev { transform: rotate(180deg); }
+.nf-shop-fs__body { padding-top: 16px; padding-bottom: 8px; }
+.nf-shop-fs__stack > * + * { margin-top: 12px; }
+
+.nf-shop-check { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.nf-shop-check__box {
+  appearance: none; -webkit-appearance: none;
+  width: 16px; height: 16px; flex: none; margin: 0;
+  border: 1px solid hsl(0 0% 70%); border-radius: 2px; background-color: transparent;
+  cursor: pointer;
+}
+.nf-shop-check__box:checked {
+  border-color: hsl(186 35% 28%); background-color: hsl(186 35% 28%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  background-size: 12px 12px; background-position: center; background-repeat: no-repeat;
+}
+.nf-shop-check__label {
+  display: block;
+  font-family: var(--nf-font-display);
+  font-size: 15px; line-height: 1.5; font-weight: 400;
+  color: hsl(0 0% 35%); transition: color .2s;
+}
+.nf-shop-check:hover .nf-shop-check__label { color: hsl(186 35% 28%); }
+
+.nf-shop-range { position: relative; display: flex; align-items: center; width: 100%; height: 8px; margin-bottom: 12px; }
+.nf-shop-range__track { position: absolute; inset: 0; overflow: hidden; border-radius: 9999px; background-color: hsl(210 40% 96.1%); }
+.nf-shop-range__fill { position: absolute; inset: 0 auto 0 0; width: 100%; background-color: hsl(186 35% 28%); }
+.nf-shop-range__input {
+  position: relative; width: 100%; margin: 0; height: 20px;
+  appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer;
+}
+.nf-shop-range__input::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 9999px;
+  border: 2px solid hsl(186 35% 28%); background-color: hsl(0 0% 100%);
+}
+.nf-shop-range__input::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 9999px;
+  border: 2px solid hsl(186 35% 28%); background-color: hsl(0 0% 100%);
+}
+.nf-shop-range__row { display: flex; justify-content: space-between; }
+.nf-shop-range__val {
+  display: block;
+  font-family: var(--nf-font-display);
+  font-size: 14px; line-height: 1.5; font-weight: 400; color: hsl(0 0% 45%);
+}
+
+.nf-shop-sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+.nf-shop-size {
+  min-width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid hsl(0 0% 82%); background-color: transparent;
+  font-family: var(--nf-font-display); font-size: 14px; line-height: 1.5; font-weight: 500;
+  color: hsl(0 0% 35%); cursor: pointer; transition: border-color .2s, background-color .2s, color .2s;
+}
+.nf-shop-size:hover { border-color: hsl(186 35% 28%); color: hsl(186 35% 28%); }
+.nf-shop-size.is-on { border-color: hsl(186 35% 28%); background-color: hsl(186 35% 28%); color: hsl(0 0% 100%); }
+
+/* ───────── Product grid ───────── */
+.nf-shop-grid-col { flex: 1 1 0%; min-width: 0; padding: 32px 20px; }
+@media (min-width: 768px)  { .nf-shop-grid-col { padding-inline: 32px; } }
+@media (min-width: 1024px) { .nf-shop-grid-col { padding-inline: 40px; } }
+
+.nf-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 20px; row-gap: 40px;
+}
+.nf-shop-grid[data-layout="list"] { grid-template-columns: minmax(0, 1fr); row-gap: 32px; }
+@media (min-width: 768px) {
+  .nf-shop-grid,
+  .nf-shop-grid[data-layout="list"] { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; }
+}
+@media (min-width: 1024px) {
+  .nf-shop-grid,
+  .nf-shop-grid[data-layout="list"] { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 24px; row-gap: 56px; }
+  .nf-shop-grid[data-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; row-gap: 64px; }
+}
+
+.nf-shop-empty[hidden] { display: none; }
+.nf-shop-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; text-align: center; }
+.nf-shop-empty__title {
+  margin: 0 0 8px;
+  font-family: var(--nf-font-display);
+  font-size: 24px; line-height: 1.5; font-weight: 600; color: hsl(0 0% 18%);
+}
+.nf-shop-empty__copy {
+  margin: 0 0 28px; max-width: 300px;
+  font-family: var(--nf-font-display);
+  font-size: 15px; line-height: 1.7; color: hsl(0 0% 45%);
+}
+.nf-shop-empty__cta {
+  padding-inline: 32px; min-height: 48px; border: 0; cursor: pointer;
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .16em;
+  background-color: hsl(186 35% 28%); color: hsl(0 0% 100%);
+}
+
+/* ───────── Customisation CTA (CustomizationCTA.tsx) ───────── */
+.nf-shop-cta { position: relative; width: 100%; overflow: hidden; padding-block: 60px; background-color: hsl(30 25% 96%); }
+@media (min-width: 768px)  { .nf-shop-cta { padding-block: 80px; } }
+@media (min-width: 1024px) { .nf-shop-cta { padding-block: 110px; } }
+.nf-shop-cta__pattern {
+  position: absolute; inset: 0; pointer-events: none; user-select: none;
+  background-size: 600px; background-position: center; background-repeat: repeat; opacity: .5;
+}
+.nf-shop-cta__inner { position: relative; max-width: 1200px; margin-inline: auto; padding-inline: 24px; text-align: center; }
+@media (min-width: 768px)  { .nf-shop-cta__inner { padding-inline: 40px; } }
+@media (min-width: 1024px) { .nf-shop-cta__inner { padding-inline: 80px; } }
+.nf-shop-cta__eyebrow {
+  margin: 0 0 16px;
+  font-size: 11px; line-height: 1.5; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .2em; color: hsl(160 15% 45%);
+}
+@media (min-width: 768px) { .nf-shop-cta__eyebrow { font-size: 12px; } }
+.nf-shop-cta__title {
+  margin: 0 0 24px;
+  font-family: var(--nf-font-display);
+  font-size: 28px; line-height: 1.25; font-weight: 500; letter-spacing: normal;
+  color: hsl(0 0% 15%);
+}
+@media (min-width: 768px)  { .nf-shop-cta__title { font-size: 36px; } }
+@media (min-width: 1024px) { .nf-shop-cta__title { font-size: 46px; } }
+.nf-shop-cta__accent { font-style: italic; color: hsl(16 50% 72%); }
+.nf-shop-cta__copy {
+  margin: 0 auto 40px; max-width: 520px;
+  font-family: var(--nf-font-display);
+  font-size: 15px; line-height: 1.8; font-weight: 400; color: hsl(0 0% 48%);
+}
+@media (min-width: 768px) { .nf-shop-cta__copy { font-size: 16px; } }
+.nf-shop-cta__btn {
+  display: inline-flex; align-items: center;
+  padding: 16px 48px; border-radius: 9999px; text-decoration: none;
+  font-family: var(--nf-font-display);
+  font-size: 13px; line-height: 1.5; font-weight: 500;
+  text-transform: uppercase; letter-spacing: .1em;
+  background-color: hsl(143 14% 63%); color: hsl(0 0% 100%);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+@media (min-width: 768px) { .nf-shop-cta__btn { font-size: 14px; } }
+.nf-shop-cta__btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-shop-hero__cta, .nf-shop-cta__btn, .nf-shop-fs__chev { transition: none; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "NF Shop All",
+  "settings": [
+    { "type": "text", "id": "collection", "label": "Collection handle", "info": "Handle of the collection to list. Jewellery (vendor Naira Petite) is filtered out. Leave blank for all products.", "default": "frontpage" },
+    { "type": "text", "id": "seo_heading", "label": "Screen-reader heading", "default": "Shop all Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore" },
+    { "type": "header", "content": "Campaign hero" },
+    { "type": "text", "id": "hero_eyebrow", "label": "Hero eyebrow", "default": "New Arrivals" },
+    { "type": "text", "id": "hero_title", "label": "Hero title", "default": "The Festive" },
+    { "type": "text", "id": "hero_title_accent", "label": "Hero title, italic word", "default": "Edit" },
+    { "type": "textarea", "id": "hero_copy", "label": "Hero copy", "default": "Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape." },
+    { "type": "text", "id": "hero_cta_label", "label": "Hero button label", "default": "Shop the Festive Edit" },
+    { "type": "url", "id": "hero_cta_url", "label": "Hero button link", "default": "/collections/all" },
+    { "type": "header", "content": "Listing header" },
+    { "type": "text", "id": "head_eyebrow", "label": "Listing eyebrow", "default": "Ready to Wear" },
+    { "type": "text", "id": "head_title", "label": "Listing heading", "default": "Indo-Western Outfits" },
+    { "type": "header", "content": "Customisation CTA" },
+    { "type": "text", "id": "cta_eyebrow", "label": "CTA eyebrow", "default": "MADE TO ORDER" },
+    { "type": "text", "id": "cta_title", "label": "CTA heading", "default": "Want Something" },
+    { "type": "text", "id": "cta_title_accent", "label": "CTA heading, italic part", "default": "Made Just for You?" },
+    { "type": "textarea", "id": "cta_copy", "label": "CTA copy", "default": "From bespoke silhouettes to handpicked fabrics and personalised embroidery, our atelier will craft a piece that's entirely yours." },
+    { "type": "text", "id": "cta_label", "label": "CTA button label", "default": "Start Customisation" },
+    { "type": "url", "id": "cta_url", "label": "CTA button link", "default": "/collections/all" }
+  ],
+  "presets": [{ "name": "NF Shop All" }]
+}
+{% endschema %}

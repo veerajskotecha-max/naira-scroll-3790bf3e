@@ -352,159 +352,186 @@
     <script src="/assets/nf-chrome.js" defer="defer"></script>
   <style>
 
-/* px, not rem: layout/theme.liquid sets html { font-size: 62.5% } (10px root)
-   like the base Dawn theme, while every value below is copied from Tailwind
-   utilities that assume a 16px root. rem here renders at 0.625x. */
-.nf-gift { background-color: var(--nf-ivory); color: var(--nf-ink); }
-
-.nf-gift__head { max-width: 1152px; margin-inline: auto; padding: 40px 16px 32px; }
-@media (min-width: 640px) { .nf-gift__head { padding-inline: 24px; } }
-@media (min-width: 768px) { .nf-gift__head { padding-top: 56px; } }
-
-.nf-gift__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
-/* Font landmine: Gifting.tsx's `velista` const reads var(--font-cormorant),
-   which is defined nowhere in the app, so the whole declaration is invalid at
-   computed-value time and every heading below inherits the body sans stack --
-   documented as the approved pixel output in docs/design-tokens.md, "The
-   display-font landmine". nf-base.css forces h1-h6 to Velista with !important
-   (to beat theme.liquid's inline Ophelia rule); these opt back out, same
-   pattern as .nf-coll__title / .jc__title in sections/nf-collection.liquid.
-   This stylesheet loads after nf-base.css, so source order lets it win. */
-.nf-gift__title { margin: 12px 0 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 32px; line-height: 1.05; color: var(--nf-ink); }
-@media (min-width: 768px) { .nf-gift__title { font-size: 52px; } }
-.nf-gift__intro { margin: 16px 0 0; max-width: 576px; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
-@media (min-width: 768px) { .nf-gift__intro { font-size: 16px; } }
-
-.nf-gift__pricerow { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
-.nf-gift__pill {
-  display: inline-flex; align-items: center; min-height: 44px; padding-inline: 20px;
-  border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none;
-  font-family: var(--nf-font-label); font-size: 10px; line-height: 1.5; color: rgb(var(--nf-ink-rgb) / .75);
-  text-decoration: none; transition: color .2s ease, border-color .2s ease;
+/* ═══════════════════════════════════════════════════════════════════
+   TRACK ORDER — src/pages/TrackOrder.tsx
+   React's own header is position:fixed, so the page carries
+   pt-[94px]/[100px]/[116px] to clear it. This theme's header is
+   position:sticky and already occupies 100/108/116px of flow, so the
+   clearance is subtracted here instead of repeated: it nets to zero at
+   1024px+ and to a small negative at the two narrower steps, where the
+   theme's announcement bar is a couple of pixels taller than React's.
+   ═══════════════════════════════════════════════════════════════════ */
+.nf-track {
+  background-color: var(--nf-ivory);
+  color: var(--nf-ink);
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* React's body stays 16px at every width; this theme steps it down to
+     15px under 768px. Nothing here draws its size from the cascade except
+     the line-box strut inside each field label, which is exactly where a
+     1.5px-per-label drift showed up at 390px. */
+  font-size: 16px;
+  line-height: 1.5;
+  margin-top: -6px;
 }
-.nf-gift__pill:hover, .nf-gift__pill:focus-visible { border-color: var(--nf-ink); color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-track { margin-top: -8px; } }
+@media (min-width: 1024px) { .nf-track { margin-top: 0; } }
 
-.nf-gift__whom { max-width: 1152px; margin-inline: auto; display: grid; gap: 16px; padding: 0 16px 48px; }
-@media (min-width: 640px) { .nf-gift__whom { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-inline: 24px; } }
-.nf-gift__whomcard {
-  display: block; border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 24px;
-  color: inherit; text-decoration: none; transition: border-color .2s ease;
+.nf-track * { border-radius: 0; }
+
+.nf-track__wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
 }
-.nf-gift__whomcard:hover, .nf-gift__whomcard:focus-visible { border-color: rgb(var(--nf-ink-rgb) / .4); }
-.nf-gift__whomtitle { margin: 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 22px; line-height: 1.25; color: var(--nf-ink); }
-@media (min-width: 768px) { .nf-gift__whomtitle { font-size: 26px; } }
-.nf-gift__whomcopy { margin: 8px 0 0; font-family: var(--nf-font-editorial); font-size: 13.5px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
-.nf-gift__whomcta { margin-top: 16px; display: inline-block; font-family: var(--nf-font-label); font-size: 10px; color: var(--nf-gold-deep); }
+@media (min-width: 640px) { .nf-track__wrap { padding-left: 24px; padding-right: 24px; } }
+@media (min-width: 768px) { .nf-track__wrap { padding-top: 56px; } }
 
-.nf-gift__picks { max-width: 1152px; margin-inline: auto; padding: 0 16px 64px; }
-@media (min-width: 640px) { .nf-gift__picks { padding-inline: 24px; } }
-.nf-gift__h2 { margin: 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 24px; line-height: 1.25; color: var(--nf-ink); }
-@media (min-width: 768px) { .nf-gift__h2 { font-size: 30px; } }
-
-.nf-gift__grid { margin-top: 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-@media (min-width: 640px) { .nf-gift__grid { gap: 24px; } }
-@media (min-width: 1024px) { .nf-gift__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
-
-.nf-gift__ask { max-width: 1152px; margin-inline: auto; padding: 0 16px 80px; }
-@media (min-width: 640px) { .nf-gift__ask { padding-inline: 24px; } }
-.nf-gift__askbox { border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 28px; text-align: center; }
-@media (min-width: 640px) { .nf-gift__askbox { padding: 40px; } }
-.nf-gift__askcopy { margin: 12px auto 0; max-width: 448px; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .6); }
-.nf-gift__ask-cta {
-  margin-top: 24px; display: inline-flex; min-height: 48px; align-items: center;
-  border: 1px solid var(--nf-ink); padding-inline: 28px; background: none;
-  font-family: var(--nf-font-label); font-size: 10.5px; line-height: 1.5; letter-spacing: var(--nf-track-28); color: var(--nf-ink);
-  text-decoration: none; transition: background-color .2s ease, color .2s ease;
+.nf-track__eyebrow {
+  margin: 0;
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: var(--nf-track-40);
+  color: var(--nf-gold-shadow);
 }
-.nf-gift__ask-cta:hover, .nf-gift__ask-cta:focus-visible { background-color: var(--nf-ink); color: var(--nf-ivory); }
 
-/* ---- nf-jewel-card (rendered by snippets/nf-jewel-card.liquid) ---- */
-.nf-jc { display: flex; height: 100%; flex-direction: column; }
-.nf-jc__link { display: block; width: 100%; text-decoration: none; color: inherit; }
-.nf-jc__frame { position: relative; overflow: hidden; background-color: var(--nf-ivory-deep); box-shadow: var(--nf-card-shadow); }
-.nf-jc__front, .nf-jc__back { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
-.nf-jc__front { transition: opacity .35s ease-out; }
-.nf-jc__back { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease-out; }
-.nf-jc__link:hover .nf-jc__front, .nf-jc__link:focus-visible .nf-jc__front { opacity: 0; }
-.nf-jc__link:hover .nf-jc__back, .nf-jc__link:focus-visible .nf-jc__back { opacity: 1; }
-.nf-jc__front--necklace { object-position: center 38%; transform: scale(1.14); }
-.nf-jc__back--earring { object-position: center 10%; transform: scale(1.5); }
-
-.nf-jc__tag {
-  position: absolute; left: 12px; top: 12px; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
-  background-color: rgb(var(--nf-ivory-rgb) / .95); padding: 4px 10px;
-  font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .6);
+/* layout/theme.liquid forces h1-h6 to 'Ophelia' !important and
+   nf-base.css re-forces them to the display serif, also !important.
+   React renders both of this page's headings in Tailwind's plain sans
+   -- style={velista} reads var(--font-cormorant), which is defined
+   nowhere in the Lovable repo, so the whole declaration is invalid at
+   computed-value time and the heading simply inherits body. Matching
+   that needs !important to clear the two element-level rules. */
+.nf-track__h1,
+.nf-track__h2 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-weight: 400;
+  letter-spacing: normal;
 }
-@media (min-width: 640px) { .nf-jc__tag { left: 16px; top: 16px; padding-inline: 12px; font-size: 9px; letter-spacing: var(--nf-track-30); } }
-.nf-jc__tag--gold { border-color: var(--nf-gold); color: var(--nf-gold-shadow); }
-
-.nf-jc__badge { position: absolute; right: 12px; top: 12px; padding: 4px 10px; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
-@media (min-width: 640px) { .nf-jc__badge { right: 16px; top: 16px; padding-inline: 12px; font-size: 9px; } }
-.nf-jc__badge--soldout { background-color: var(--nf-ink); }
-.nf-jc__badge--off { background-color: var(--nf-gold-deep); }
-
-.nf-jc__heart {
-  position: absolute; bottom: 12px; right: 12px; z-index: 10; display: flex; height: 36px; width: 36px;
-  align-items: center; justify-content: center; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
-  background-color: rgb(var(--nf-ivory-rgb) / .92); color: rgb(var(--nf-ink-rgb) / .55); cursor: pointer;
+.nf-track__h1 {
+  margin: 12px 0 0;
+  font-size: 32px;
+  line-height: 1.05;
 }
-@media (min-width: 640px) { .nf-jc__heart { bottom: 16px; right: 16px; } }
-.nf-jc__heart:hover { border-color: rgb(var(--nf-ink-rgb) / .5); color: var(--nf-ink); }
+@media (min-width: 768px) { .nf-track__h1 { font-size: 46px; } }
 
-.nf-jc__view {
-  position: absolute; bottom: 16px; left: 50%; transform: translate(-50%, 8px); text-align: left;
-  background-color: rgb(var(--nf-ivory-rgb) / .9); padding: 8px 20px;
-  font-family: var(--nf-font-label); font-size: 10px; line-height: 1.5; letter-spacing: var(--nf-track-30); color: var(--nf-ink);
-  opacity: 0; transition: opacity .2s ease-out, transform .2s ease-out; pointer-events: none;
+.nf-track__lede {
+  margin: 16px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 14px;
+  line-height: 1.85;
+  color: rgb(var(--nf-ink-rgb) / 0.65);
 }
-.nf-jc__link:hover .nf-jc__view, .nf-jc__link:focus-visible .nf-jc__view { opacity: 1; transform: translate(-50%, 0); }
+@media (min-width: 768px) { .nf-track__lede { font-size: 15.5px; } }
 
-.nf-jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 16px 4px 0; text-align: center; }
-@media (min-width: 640px) { .nf-jc__body { padding-top: 20px; } }
-.nf-jc__cat { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-32); color: var(--nf-gold-deep); }
-@media (min-width: 640px) { .nf-jc__cat { font-size: 10px; letter-spacing: var(--nf-track-34); } }
-/* Same landmine as .nf-gift__title, this time from JewelCard.tsx's own local
-   "velista" object -- card titles inherit the body sans in React too. */
-.nf-jc__title {
-  margin: 6px 0 0; min-height: 2.2em; font-family: inherit !important; letter-spacing: normal !important;
-  font-size: 18px; line-height: 1.25; color: var(--nf-ink);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+/* `border border-nf-ink/12` never generated a colour utility -- 12 is not
+   on Tailwind's opacity scale -- so both panels fall back to Tailwind's
+   default border colour, slate-200. Ported as measured, not as intended. */
+.nf-track__form,
+.nf-track__aside {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid rgb(226 232 240);
 }
-@media (min-width: 640px) { .nf-jc__title { margin-top: 8px; font-size: 24px; } }
-@media (min-width: 768px) { .nf-jc__title { font-size: 26px; } }
-.nf-jc__title a { color: inherit; text-decoration: none; }
-.nf-jc__title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.nf-track__form > * + * { margin-top: 16px; }
 
-.nf-jc__price { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 4px 8px; font-family: var(--nf-font-label); font-variant-numeric: tabular-nums; }
-@media (min-width: 640px) { .nf-jc__price { margin-top: 10px; } }
-.nf-jc__price-now { font-size: 15px; font-weight: 500; line-height: 1; color: var(--nf-ink); }
-@media (min-width: 640px) { .nf-jc__price-now { font-size: 17px; } }
-.nf-jc__price-was { font-size: 12px; line-height: 1; color: rgb(var(--nf-ink-rgb) / .4); text-decoration: line-through; }
-@media (min-width: 640px) { .nf-jc__price-was { font-size: 13px; } }
-.nf-jc__price-off { font-size: 10px; line-height: 1; letter-spacing: var(--nf-track-14); color: var(--nf-gold-deep); }
-@media (min-width: 640px) { .nf-jc__price-off { font-size: 11px; } }
-
-.nf-jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; }
-.nf-jc__addform, .nf-jc__buyform { width: 100%; margin: 0; }
-.nf-jc__add {
-  display: inline-flex; min-height: 44px; width: 100%; align-items: center; justify-content: center;
-  border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer; padding-inline: 20px;
-  font-family: var(--nf-font-label); font-size: 9.5px; line-height: 1.5; letter-spacing: var(--nf-track-25); color: var(--nf-ivory);
+.nf-track__label { display: block; }
+.nf-track__label-text {
+  font-family: var(--nf-font-label);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: var(--nf-track-24);
+  color: rgb(var(--nf-ink-rgb) / 0.5);
 }
-@media (min-width: 640px) { .nf-jc__add { font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
-.nf-jc__add:hover { opacity: .9; }
-.nf-jc__add:disabled { opacity: .6; cursor: default; }
-.nf-jc__buy {
-  display: inline-flex; min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: 8px;
-  border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer; padding-inline: 20px;
-  font-family: var(--nf-font-label); font-size: 9.5px; line-height: 1.5; letter-spacing: var(--nf-track-25); color: var(--nf-ink);
-}
-@media (min-width: 640px) { .nf-jc__buy { padding-inline: 24px; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
-.nf-jc__buy:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
 
-@media (prefers-reduced-motion: reduce) {
-  .nf-gift__pill, .nf-gift__whomcard, .nf-gift__ask-cta,
-  .nf-jc__front, .nf-jc__back, .nf-jc__view { transition: none; }
+/* nf-base.css sets `input, select, textarea { font-size: max(16px, 1em) }`
+   as an iOS zoom guard; a class beats that element rule without
+   !important, which is why every field below states its own size. */
+.nf-track__input {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 8px;
+  padding: 0 12px;
+  border: 1px solid rgb(var(--nf-ink-rgb) / 0.2);
+  background-color: transparent;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--nf-ink);
+}
+.nf-track__input:focus {
+  border-color: var(--nf-ink);
+  outline: none;
+}
+
+.nf-track__submit {
+  display: inline-block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid var(--nf-ink);
+  background-color: var(--nf-ink);
+  color: var(--nf-ivory);
+  font-family: var(--nf-font-label);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: var(--nf-track-28);
+  text-align: center;
+  text-transform: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.nf-track__submit:hover { opacity: 0.9; }
+
+.nf-track__note {
+  /* stated, not inherited from `> * + *`: that rule and this one tie at
+     (0,1,0) and this one is later, so it would zero the gap out. */
+  margin: 16px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 12px;
+  line-height: 1.7;
+  color: rgb(var(--nf-ink-rgb) / 0.5);
+}
+
+.nf-track__h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+}
+@media (min-width: 768px) { .nf-track__h2 { font-size: 24px; } }
+
+.nf-track__aside-text {
+  margin: 8px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgb(var(--nf-ink-rgb) / 0.6);
+}
+
+.nf-track__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  margin-top: 20px;
+  padding: 0 24px;
+  border: 1px solid var(--nf-ink);
+  font-family: var(--nf-font-label);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--nf-ink);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.nf-track__cta:hover {
+  background-color: var(--nf-ink);
+  color: var(--nf-ivory);
 }
 
 
@@ -2022,344 +2049,56 @@
 
 
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
-      <section class="nf nf-gift">
-  <header class="nf-gift__head"><p class="nf-gift__eyebrow">THE GIFT EDIT</p><h1 class="nf-gift__title">Gifting</h1><p class="nf-gift__intro">Every piece arrives boxed and anti-tarnish sealed, ready to hand over. Choose by budget, by occasion, or ask the atelier and we will help you pick.</p><div class="nf-gift__pricerow"><a
-              
-              href="/collections/shop-all?filter.v.price.lte=1000"
-              class="nf-gift__pill press-scale"
-            >UNDER ₹1,000</a><a
-              
-              href="/collections/shop-all?filter.v.price.lte=1500"
-              class="nf-gift__pill press-scale"
-            >UNDER ₹1,500</a><a
-              
-              href="/collections/shop-all?filter.v.price.lte=2500"
-              class="nf-gift__pill press-scale"
-            >UNDER ₹2,500</a></div></header><section class="nf-gift__whom"><a  href="/collections/necklaces" class="nf-gift__whomcard">
-            <h2 class="nf-gift__whomtitle">For Her</h2><p class="nf-gift__whomcopy">Demi-fine everyday pieces she will actually reach for.</p><span class="nf-gift__whomcta">EXPLORE &rarr;</span>
-          </a><a  href="/collections/earrings" class="nf-gift__whomcard">
-            <h2 class="nf-gift__whomtitle">For the Bride</h2><p class="nf-gift__whomcopy">Zircone sets that read fine at wedding-light distance.</p><span class="nf-gift__whomcta">EXPLORE &rarr;</span>
-          </a><a  href="/collections/bracelets" class="nf-gift__whomcard">
-            <h2 class="nf-gift__whomtitle">For a First Gift</h2><p class="nf-gift__whomcopy">Quiet rings and bracelets that suit any wrist or finger.</p><span class="nf-gift__whomcta">EXPLORE &rarr;</span>
-          </a></section><section class="nf-gift__picks">
-    <h2 class="nf-gift__h2">Easy pieces to gift</h2><div class="nf-gift__grid"><article class="nf-jc">
-  <a class="nf-jc__link" href="/products/riviere-eternal-necklace" aria-label="View Rivière Eternal Necklace">
-    <div class="nf-jc__frame"><img
-          class="nf-jc__front nf-jc__front--necklace"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=1100 1100w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="Rivière Eternal Necklace"
-          loading="lazy" decoding="async" width="800" height="800"><img
-          class="nf-jc__back"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=800 800w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="" aria-hidden="true"
-          loading="lazy" decoding="async" width="800" height="800"><span class="nf-jc__badge nf-jc__badge--soldout">SOLD OUT</span><button
-        type="button"
-        class="nf-jc__heart"
-        data-nf-wishlist="riviere-eternal-necklace"
-        data-nf-wishlist-title="Rivière Eternal Necklace"
-        aria-pressed="false"
-        aria-label="Add Rivière Eternal Necklace to wishlist"
-      >
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      </button>
-      <span class="nf-jc__view">VIEW DETAILS</span>
-    </div>
-  </a>
+      <link rel="stylesheet" href="/assets/nf-tokens.css">
 
-  <div class="nf-jc__body">
-    <p class="nf-jc__cat">NECKLACES</p>
-    <h3 class="nf-jc__title"><a href="/products/riviere-eternal-necklace">Rivière Eternal Necklace</a></h3>
-    <div class="nf-jc__price">
-      <span class="nf-jc__price-now">₹1,799</span><span class="nf-jc__price-was">₹3,269</span>
-        <span class="nf-jc__price-off">45% OFF</span></div>
+<div class="nf-track">
+  <div class="nf-track__wrap">
+    <p class="nf-track__eyebrow">ORDER SUPPORT</p>
+    <h1 class="nf-track__h1">Track your order</h1>
+    <p class="nf-track__lede">Every dispatch confirmation carries a tracking link. Enter your order number below to open your order status, or message us and we will check it for you.</p>
 
-    <div class="nf-jc__cta">
-      <form action="" method="post" enctype="multipart/form-data" id="NfJewelAdd-main-gid://shopify/Product/9294915305634" data-nf-add data-nf-add-title="Rivière Eternal Necklace" class="nf-jc__addform">
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786480802">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="nf-jc__add press-scale" disabled aria-label="Add Rivière Eternal Necklace to cart">
-          SOLD OUT
-        </button>
-      </form></div>
+    <form
+      class="nf-track__form"
+      action="/account/login"
+      method="get"
+      target="_blank"
+      rel="noopener"
+    >
+      <label class="nf-track__label">
+        <span class="nf-track__label-text">ORDER NUMBER</span>
+        <input
+          class="nf-track__input"
+          type="text"
+          placeholder="#1024"
+          autocomplete="off"
+        >
+      </label>
+      <label class="nf-track__label">
+        <span class="nf-track__label-text">EMAIL USED AT CHECKOUT</span>
+        <input
+          class="nf-track__input"
+          type="email"
+          placeholder="you@email.com"
+          autocomplete="email"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+      </label>
+      <button class="nf-track__submit" type="submit">OPEN ORDER STATUS</button>
+      <p class="nf-track__note">Order status is served securely by our checkout provider, so this opens in a new tab.</p>
+    </form>
+
+    <div class="nf-track__aside">
+      <h2 class="nf-track__h2">Prefer to ask us?</h2>
+      <p class="nf-track__aside-text">Send your order number on WhatsApp and we will reply with the current status.</p><a
+          class="nf-track__cta"
+          href="https://wa.me/919561557935?text=Hi%20Naira%20Flore%2C%20could%20you%20share%20the%20status%20of%20my%20order%3F"
+          target="_blank"
+          rel="noopener noreferrer"
+        >MESSAGE THE ATELIER</a></div>
   </div>
-</article>
-<article class="nf-jc">
-  <a class="nf-jc__link" href="/products/heartline-paperclip-necklace" aria-label="View Heartline Paperclip Necklace">
-    <div class="nf-jc__frame"><img
-          class="nf-jc__front nf-jc__front--necklace"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=1100 1100w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="Heartline Paperclip Necklace"
-          loading="lazy" decoding="async" width="800" height="800"><img
-          class="nf-jc__back"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=800 800w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="" aria-hidden="true"
-          loading="lazy" decoding="async" width="800" height="800"><span class="nf-jc__badge nf-jc__badge--off">35% OFF</span><button
-        type="button"
-        class="nf-jc__heart"
-        data-nf-wishlist="heartline-paperclip-necklace"
-        data-nf-wishlist-title="Heartline Paperclip Necklace"
-        aria-pressed="false"
-        aria-label="Add Heartline Paperclip Necklace to wishlist"
-      >
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      </button>
-      <span class="nf-jc__view">VIEW DETAILS</span>
-    </div>
-  </a>
-
-  <div class="nf-jc__body">
-    <p class="nf-jc__cat">NECKLACES</p>
-    <h3 class="nf-jc__title"><a href="/products/heartline-paperclip-necklace">Heartline Paperclip Necklace</a></h3>
-    <div class="nf-jc__price">
-      <span class="nf-jc__price-now">₹2,449</span><span class="nf-jc__price-was">₹3,769</span>
-        <span class="nf-jc__price-off">35% OFF</span></div>
-
-    <div class="nf-jc__cta">
-      <form action="" method="post" enctype="multipart/form-data" id="NfJewelAdd-main-gid://shopify/Product/9294915338402" data-nf-add data-nf-add-title="Heartline Paperclip Necklace" class="nf-jc__addform">
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786513570">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="nf-jc__add press-scale"  aria-label="Add Heartline Paperclip Necklace to cart">
-          ADD TO CART
-        </button>
-      </form><form action="" method="post" class="nf-jc__buyform">
-          <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786513570">
-          <input type="hidden" name="quantity" value="1">
-          <input type="hidden" name="return_to" value="checkout">
-          <button type="submit" class="nf-jc__buy press-scale">
-            <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
-          </button>
-        </form></div>
-  </div>
-</article>
-<article class="nf-jc">
-  <a class="nf-jc__link" href="/products/serpentine-whisper-chain" aria-label="View Serpentine Whisper Chain">
-    <div class="nf-jc__frame"><img
-          class="nf-jc__front nf-jc__front--necklace"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3061.png?v=1787573978&width=1100 1100w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="Serpentine Whisper Chain"
-          loading="lazy" decoding="async" width="800" height="800"><img
-          class="nf-jc__back"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender.jpg?v=1787558972&width=800 800w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="" aria-hidden="true"
-          loading="lazy" decoding="async" width="800" height="800"><span class="nf-jc__badge nf-jc__badge--off">45% OFF</span><button
-        type="button"
-        class="nf-jc__heart"
-        data-nf-wishlist="serpentine-whisper-chain"
-        data-nf-wishlist-title="Serpentine Whisper Chain"
-        aria-pressed="false"
-        aria-label="Add Serpentine Whisper Chain to wishlist"
-      >
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      </button>
-      <span class="nf-jc__view">VIEW DETAILS</span>
-    </div>
-  </a>
-
-  <div class="nf-jc__body">
-    <p class="nf-jc__cat">NECKLACES</p>
-    <h3 class="nf-jc__title"><a href="/products/serpentine-whisper-chain">Serpentine Whisper Chain</a></h3>
-    <div class="nf-jc__price">
-      <span class="nf-jc__price-now">₹1,849</span><span class="nf-jc__price-was">₹3,359</span>
-        <span class="nf-jc__price-off">45% OFF</span></div>
-
-    <div class="nf-jc__cta">
-      <form action="" method="post" enctype="multipart/form-data" id="NfJewelAdd-main-gid://shopify/Product/9294915436706" data-nf-add data-nf-add-title="Serpentine Whisper Chain" class="nf-jc__addform">
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786611874">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="nf-jc__add press-scale"  aria-label="Add Serpentine Whisper Chain to cart">
-          ADD TO CART
-        </button>
-      </form><form action="" method="post" class="nf-jc__buyform">
-          <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786611874">
-          <input type="hidden" name="quantity" value="1">
-          <input type="hidden" name="return_to" value="checkout">
-          <button type="submit" class="nf-jc__buy press-scale">
-            <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
-          </button>
-        </form></div>
-  </div>
-</article>
-<article class="nf-jc">
-  <a class="nf-jc__link" href="/products/marquise-layering-set" aria-label="View Marquise Layering Set">
-    <div class="nf-jc__frame"><img
-          class="nf-jc__front nf-jc__front--necklace"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg?v=1787277329&width=1100 1100w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="Marquise Layering Set"
-          loading="lazy" decoding="async" width="800" height="800"><img
-          class="nf-jc__back"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg?v=1787277329&width=800 800w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="" aria-hidden="true"
-          loading="lazy" decoding="async" width="800" height="800"><span class="nf-jc__badge nf-jc__badge--off">40% OFF</span><button
-        type="button"
-        class="nf-jc__heart"
-        data-nf-wishlist="marquise-layering-set"
-        data-nf-wishlist-title="Marquise Layering Set"
-        aria-pressed="false"
-        aria-label="Add Marquise Layering Set to wishlist"
-      >
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      </button>
-      <span class="nf-jc__view">VIEW DETAILS</span>
-    </div>
-  </a>
-
-  <div class="nf-jc__body">
-    <p class="nf-jc__cat">NECKLACES</p>
-    <h3 class="nf-jc__title"><a href="/products/marquise-layering-set">Marquise Layering Set</a></h3>
-    <div class="nf-jc__price">
-      <span class="nf-jc__price-now">₹1,799</span><span class="nf-jc__price-was">₹2,999</span>
-        <span class="nf-jc__price-off">40% OFF</span></div>
-
-    <div class="nf-jc__cta">
-      <form action="" method="post" enctype="multipart/form-data" id="NfJewelAdd-main-gid://shopify/Product/9294915469474" data-nf-add data-nf-add-title="Marquise Layering Set" class="nf-jc__addform">
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786644642">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="nf-jc__add press-scale"  aria-label="Add Marquise Layering Set to cart">
-          ADD TO CART
-        </button>
-      </form><form action="" method="post" class="nf-jc__buyform">
-          <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786644642">
-          <input type="hidden" name="quantity" value="1">
-          <input type="hidden" name="return_to" value="checkout">
-          <button type="submit" class="nf-jc__buy press-scale">
-            <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
-          </button>
-        </form></div>
-  </div>
-</article>
-<article class="nf-jc">
-  <a class="nf-jc__link" href="/products/charm-box-chain" aria-label="View Charm Box Chain">
-    <div class="nf-jc__frame"><img
-          class="nf-jc__front nf-jc__front--necklace"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089&width=1100 1100w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="Charm Box Chain"
-          loading="lazy" decoding="async" width="800" height="800"><img
-          class="nf-jc__back"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg?v=1787277336&width=800 800w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="" aria-hidden="true"
-          loading="lazy" decoding="async" width="800" height="800"><span class="nf-jc__badge nf-jc__badge--off">35% OFF</span><button
-        type="button"
-        class="nf-jc__heart"
-        data-nf-wishlist="charm-box-chain"
-        data-nf-wishlist-title="Charm Box Chain"
-        aria-pressed="false"
-        aria-label="Add Charm Box Chain to wishlist"
-      >
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      </button>
-      <span class="nf-jc__view">VIEW DETAILS</span>
-    </div>
-  </a>
-
-  <div class="nf-jc__body">
-    <p class="nf-jc__cat">NECKLACES</p>
-    <h3 class="nf-jc__title"><a href="/products/charm-box-chain">Charm Box Chain</a></h3>
-    <div class="nf-jc__price">
-      <span class="nf-jc__price-now">₹2,149</span><span class="nf-jc__price-was">₹3,309</span>
-        <span class="nf-jc__price-off">35% OFF</span></div>
-
-    <div class="nf-jc__cta">
-      <form action="" method="post" enctype="multipart/form-data" id="NfJewelAdd-main-gid://shopify/Product/9294915535010" data-nf-add data-nf-add-title="Charm Box Chain" class="nf-jc__addform">
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786710178">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="nf-jc__add press-scale"  aria-label="Add Charm Box Chain to cart">
-          ADD TO CART
-        </button>
-      </form><form action="" method="post" class="nf-jc__buyform">
-          <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786710178">
-          <input type="hidden" name="quantity" value="1">
-          <input type="hidden" name="return_to" value="checkout">
-          <button type="submit" class="nf-jc__buy press-scale">
-            <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
-          </button>
-        </form></div>
-  </div>
-</article>
-<article class="nf-jc">
-  <a class="nf-jc__link" href="/products/toggle-link-chain" aria-label="View Toggle Link Chain">
-    <div class="nf-jc__frame"><img
-          class="nf-jc__front nf-jc__front--necklace"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg?v=1787524533&width=1100 1100w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="Toggle Link Chain"
-          loading="lazy" decoding="async" width="800" height="800"><img
-          class="nf-jc__back"
-          src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342&width=800"
-          srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342&width=500 500w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342&width=800 800w"
-          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-          alt="" aria-hidden="true"
-          loading="lazy" decoding="async" width="800" height="800"><span class="nf-jc__badge nf-jc__badge--off">45% OFF</span><button
-        type="button"
-        class="nf-jc__heart"
-        data-nf-wishlist="toggle-link-chain"
-        data-nf-wishlist-title="Toggle Link Chain"
-        aria-pressed="false"
-        aria-label="Add Toggle Link Chain to wishlist"
-      >
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-      </button>
-      <span class="nf-jc__view">VIEW DETAILS</span>
-    </div>
-  </a>
-
-  <div class="nf-jc__body">
-    <p class="nf-jc__cat">NECKLACES</p>
-    <h3 class="nf-jc__title"><a href="/products/toggle-link-chain">Toggle Link Chain</a></h3>
-    <div class="nf-jc__price">
-      <span class="nf-jc__price-now">₹1,999</span><span class="nf-jc__price-was">₹3,629</span>
-        <span class="nf-jc__price-off">45% OFF</span></div>
-
-    <div class="nf-jc__cta">
-      <form action="" method="post" enctype="multipart/form-data" id="NfJewelAdd-main-gid://shopify/Product/9294915567778" data-nf-add data-nf-add-title="Toggle Link Chain" class="nf-jc__addform">
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786742946">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="nf-jc__add press-scale"  aria-label="Add Toggle Link Chain to cart">
-          ADD TO CART
-        </button>
-      </form><form action="" method="post" class="nf-jc__buyform">
-          <input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786742946">
-          <input type="hidden" name="quantity" value="1">
-          <input type="hidden" name="return_to" value="checkout">
-          <button type="submit" class="nf-jc__buy press-scale">
-            <span>SHOP NOW</span><span aria-hidden="true">&rarr;</span>
-          </button>
-        </form></div>
-  </div>
-</article>
-</div></section>
-
-  <section class="nf-gift__ask">
-    <div class="nf-gift__askbox">
-      <h2 class="nf-gift__h2">Not sure what to choose?</h2><p class="nf-gift__askcopy">Tell us who it is for and your budget. We will send back three options with photographs.</p><a
-        href="https://wa.me/919561557935?text=Hi+Naira+Flore%2C+I'm+choosing+a+gift.+Could+you+help+me+pick%3F"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="nf-gift__ask-cta press-scale"
-      >ASK THE ATELIER</a>
-    </div>
-  </section>
-</section>
+</div>
 
 
 

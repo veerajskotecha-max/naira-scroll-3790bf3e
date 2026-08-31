@@ -22,11 +22,13 @@
   multi-value "Size" option (a handful of ready-to-wear pieces) use
   real Shopify variants instead, mirroring ProductDetails.tsx.
 
-  Rating reads product.metafields.reviews.rating / rating_count -- the
-  convention review apps write to. React's number comes from a bundled
-  review dataset with no Shopify equivalent, so this block simply does
-  not render until the metafield exists, same idea as the Materials
-  accordion item below (product.metafields.custom.materials).
+  Rating is NOT read from product.metafields.reviews.* (the convention
+  review apps write to): React computes it from the same bundled review
+  fixture the Customer Reviews section below renders, so a metafield
+  average would print a different number beside the title than the one
+  under it. The fixture load and getProductReviews()'s hash therefore sit
+  above this markup -- see the rv_* block after the liquid tag below --
+  and the badge is fed from rv_score / rv_total.
 
   The arrival date is computed client-side, same as React, and is
   skipped for automation (navigator.webdriver) so a prerendered/
@@ -80,8 +82,6 @@
     assign is_ring = true
   endif
 
-  assign rating = product.metafields.reviews.rating.value
-  assign rating_count = product.metafields.reviews.rating_count.value
   assign materials_value = product.metafields.custom.materials.value
 
   assign wa = section.settings.whatsapp_url
@@ -151,6 +151,150 @@
   # necklace page.
   assign related_pool = collections['all'].products
 -%}
+
+{%- comment -%} The punctuation table lives in its own assign rather than inside
+  the liquid tag below: a line there is comment-terminated at a bare #, and the
+  table has to carry one. {%- endcomment -%}
+{%- assign rv_punct = "-.,&/()+:;!?_@#$*='’–—èéàïôüñç" -%}
+{%- assign rv_pcodes = '45,46,44,38,47,40,41,43,58,59,33,63,95,64,35,36,42,61,39,8217,8211,8212,232,233,224,239,244,252,241,231' | split: ',' -%}
+{%- liquid
+  assign rv_key = product.title | downcase | strip
+  assign rv_alpha = 'abcdefghijklmnopqrstuvwxyz'
+  assign rv_digits = '0123456789'
+  assign rv_h = 0
+  assign rv_chars = rv_key | split: ''
+  for rv_c in rv_chars
+    assign rv_code = 63
+    if rv_c == ' '
+      assign rv_code = 32
+    else
+      assign rv_p = rv_alpha | split: rv_c | first | size
+      if rv_p < 26
+        assign rv_code = rv_p | plus: 97
+      else
+        assign rv_p = rv_digits | split: rv_c | first | size
+        if rv_p < 10
+          assign rv_code = rv_p | plus: 48
+        else
+          assign rv_p = rv_punct | split: rv_c | first | size
+          if rv_p < 30
+            assign rv_code = rv_pcodes[rv_p] | plus: 0
+          endif
+        endif
+      endif
+    endif
+    assign rv_h = rv_h | times: 31 | plus: rv_code | modulo: 4294967296
+  endfor
+  assign rv_slot = rv_h | modulo: 52
+  assign rv_start = rv_slot | times: 5
+  assign rv_count = 5
+  assign rv_slot3 = rv_slot | modulo: 3
+  if rv_slot3 == 0
+    assign rv_count = 4
+  endif
+-%}
+{%- capture rv_nl %}
+{% endcapture -%}
+{%- capture rv_bank_raw -%}{%- render 'nf-review-data', part: 'bank' -%}{%- endcapture -%}
+{%- capture rv_seed_raw -%}{%- render 'nf-review-data', part: 'seed' -%}{%- endcapture -%}
+{%- liquid
+  assign rv_bank = rv_bank_raw | strip | split: rv_nl
+  assign rv_seed = rv_seed_raw | strip | split: rv_nl
+  assign rv_own = rv_bank | slice: rv_start, rv_count
+  assign rv_rows = rv_own | concat: rv_seed
+-%}
+{%- if rv_rows.size > 0 -%}
+  {%- liquid
+    assign rv_total = rv_rows.size
+    assign rv_sum = 0
+    assign rv_n5 = 0
+    assign rv_n4 = 0
+    assign rv_n3 = 0
+    assign rv_n2 = 0
+    assign rv_n1 = 0
+    assign rv_photos = ''
+    for rv_row in rv_rows
+      assign rv_f = rv_row | split: '|'
+      assign rv_r = rv_f[4] | plus: 0
+      assign rv_sum = rv_sum | plus: rv_r
+      case rv_r
+        when 5
+          assign rv_n5 = rv_n5 | plus: 1
+        when 4
+          assign rv_n4 = rv_n4 | plus: 1
+        when 3
+          assign rv_n3 = rv_n3 | plus: 1
+        when 2
+          assign rv_n2 = rv_n2 | plus: 1
+        when 1
+          assign rv_n1 = rv_n1 | plus: 1
+      endcase
+      assign rv_ph = rv_f[7]
+      if rv_ph != blank
+        assign rv_dup = false
+        if rv_photos contains rv_ph
+          assign rv_dup = true
+        endif
+        unless rv_dup
+          assign rv_photos = rv_photos | append: rv_ph | append: ','
+        endunless
+      endif
+    endfor
+
+    comment
+      Curated strip shots follow the shopper photos, deduped -- CustomerReviews.tsx
+      jewelleryPhotos, in its order.
+    endcomment
+    assign rv_base = 'the-vine-ugc.jpg,jewel-review-braided-hoop.jpg,jewel-review-pear-pendant.jpg,jewel-review-halo-ring.jpg,jewel-review-pearl-studs.jpg,jewel-review-bracelet.jpg,jewel-review-solitaire.jpg,jewel-review-toietmoi.jpg,jewel-review-bow.jpg' | split: ','
+    for rv_ph in rv_base
+      assign rv_dup = false
+      if rv_photos contains rv_ph
+        assign rv_dup = true
+      endif
+      unless rv_dup
+        assign rv_photos = rv_photos | append: rv_ph | append: ','
+      endunless
+    endfor
+    assign rv_strip = rv_photos | split: ','
+
+    assign rv_max = 1
+    if rv_n5 > rv_max
+      assign rv_max = rv_n5
+    endif
+    if rv_n4 > rv_max
+      assign rv_max = rv_n4
+    endif
+    if rv_n3 > rv_max
+      assign rv_max = rv_n3
+    endif
+    if rv_n2 > rv_max
+      assign rv_max = rv_n2
+    endif
+    if rv_n1 > rv_max
+      assign rv_max = rv_n1
+    endif
+    assign rv_maxf = rv_max | times: 1.0
+    assign rv_totf = rv_total | times: 1.0
+
+    comment
+      Math.round(avg * 10) / 10, printed the way JS prints it: 4.9, but 5 -- not
+      5.0 -- when the average lands on a whole number.
+    endcomment
+    assign rv_r10 = rv_sum | times: 10 | divided_by: rv_totf | round
+    assign rv_whole = rv_r10 | divided_by: 10 | floor
+    assign rv_frac = rv_r10 | modulo: 10
+    capture rv_score
+      echo rv_whole
+      if rv_frac > 0
+        echo '.'
+        echo rv_frac
+      endif
+    endcapture
+
+    assign rv_counts = rv_n5 | append: ',' | append: rv_n4 | append: ',' | append: rv_n3 | append: ',' | append: rv_n2 | append: ',' | append: rv_n1 | split: ','
+    assign rv_stars_desc = '5,4,3,2,1' | split: ','
+  -%}
+{%- endif -%}
 
 <div class="nf nf-pdp" data-nf-pdp>
 
@@ -243,12 +387,12 @@
       {%- if is_jewellery -%}
         <div class="nf-pdp__toprow">
           <p class="nf-pdp__eyebrow">{{ cat | upcase }} &middot; DEMI-GOLD</p>
-          {%- if rating and rating_count -%}
+          {%- if rv_total > 0 -%}
             <a class="nf-pdp__rating" href="#customer-reviews"
-               aria-label="Rated {{ rating }} out of 5 from {{ rating_count }} reviews. Jump to reviews.">
+               aria-label="Rated {{ rv_score }} out of 5 from {{ rv_total }} reviews. Jump to reviews.">
               <span aria-hidden="true" class="nf-pdp__star">&#9733;</span>
-              <span class="nf-pdp__rating-n">{{ rating }}</span>
-              <span class="nf-pdp__rating-c">({{ rating_count }})</span>
+              <span class="nf-pdp__rating-n">{{ rv_score }}</span>
+              <span class="nf-pdp__rating-c">({{ rv_total }})</span>
             </a>
           {%- endif -%}
         </div>
@@ -441,9 +585,7 @@
           </a>
         {%- endif -%}
 
-        <button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__buy press-scale" {% if sold_out %}disabled{% endif %}>
-          <span data-nf-buy-label>{% if sold_out %}Sold Out{% else %}Shop Now{% endif %}</span>
-        </button>
+        <button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__buy press-scale" {% if sold_out %}disabled{% endif %}>{% if sold_out %}Sold Out{% else %}Shop Now{% endif %}</button>
 
         <p class="nf-pdp__trust">
           {%- if sold_out -%}
@@ -855,7 +997,8 @@
   Shopify's own product-review metafields are deliberately NOT used -- they hold
   different reviews, so the page would not match.
 
-  The slice is chosen by getProductReviews()'s hash, reimplemented below: it is
+  The slice is chosen by getProductReviews()'s hash, reimplemented above the
+  buy box (the rv_* block, hoisted there so the title badge can use it): it is
   h = (h * 31 + charCode) >>> 0 over the lowercased product title, so the Liquid
   side needs character codes. Liquid has no charCodeAt, hence the three lookup
   tables -- lowercase letters, digits, and a punctuation/accent pair of lists.
@@ -867,148 +1010,7 @@
   referenced as theme assets by name and will 404 until the files are uploaded,
   exactly as they currently do on the React side.
 {%- endcomment -%}
-{%- comment -%} The punctuation table lives in its own assign rather than inside
-  the liquid tag below: a line there is comment-terminated at a bare #, and the
-  table has to carry one. {%- endcomment -%}
-{%- assign rv_punct = "-.,&/()+:;!?_@#$*='’–—èéàïôüñç" -%}
-{%- assign rv_pcodes = '45,46,44,38,47,40,41,43,58,59,33,63,95,64,35,36,42,61,39,8217,8211,8212,232,233,224,239,244,252,241,231' | split: ',' -%}
-{%- liquid
-  assign rv_key = product.title | downcase | strip
-  assign rv_alpha = 'abcdefghijklmnopqrstuvwxyz'
-  assign rv_digits = '0123456789'
-  assign rv_h = 0
-  assign rv_chars = rv_key | split: ''
-  for rv_c in rv_chars
-    assign rv_code = 63
-    if rv_c == ' '
-      assign rv_code = 32
-    else
-      assign rv_p = rv_alpha | split: rv_c | first | size
-      if rv_p < 26
-        assign rv_code = rv_p | plus: 97
-      else
-        assign rv_p = rv_digits | split: rv_c | first | size
-        if rv_p < 10
-          assign rv_code = rv_p | plus: 48
-        else
-          assign rv_p = rv_punct | split: rv_c | first | size
-          if rv_p < 30
-            assign rv_code = rv_pcodes[rv_p] | plus: 0
-          endif
-        endif
-      endif
-    endif
-    assign rv_h = rv_h | times: 31 | plus: rv_code | modulo: 4294967296
-  endfor
-  assign rv_slot = rv_h | modulo: 52
-  assign rv_start = rv_slot | times: 5
-  assign rv_count = 5
-  assign rv_slot3 = rv_slot | modulo: 3
-  if rv_slot3 == 0
-    assign rv_count = 4
-  endif
--%}
-{%- capture rv_nl %}
-{% endcapture -%}
-{%- capture rv_bank_raw -%}{%- render 'nf-review-data', part: 'bank' -%}{%- endcapture -%}
-{%- capture rv_seed_raw -%}{%- render 'nf-review-data', part: 'seed' -%}{%- endcapture -%}
-{%- liquid
-  assign rv_bank = rv_bank_raw | strip | split: rv_nl
-  assign rv_seed = rv_seed_raw | strip | split: rv_nl
-  assign rv_own = rv_bank | slice: rv_start, rv_count
-  assign rv_rows = rv_own | concat: rv_seed
--%}
 {%- if rv_rows.size > 0 -%}
-  {%- liquid
-    assign rv_total = rv_rows.size
-    assign rv_sum = 0
-    assign rv_n5 = 0
-    assign rv_n4 = 0
-    assign rv_n3 = 0
-    assign rv_n2 = 0
-    assign rv_n1 = 0
-    assign rv_photos = ''
-    for rv_row in rv_rows
-      assign rv_f = rv_row | split: '|'
-      assign rv_r = rv_f[4] | plus: 0
-      assign rv_sum = rv_sum | plus: rv_r
-      case rv_r
-        when 5
-          assign rv_n5 = rv_n5 | plus: 1
-        when 4
-          assign rv_n4 = rv_n4 | plus: 1
-        when 3
-          assign rv_n3 = rv_n3 | plus: 1
-        when 2
-          assign rv_n2 = rv_n2 | plus: 1
-        when 1
-          assign rv_n1 = rv_n1 | plus: 1
-      endcase
-      assign rv_ph = rv_f[7]
-      if rv_ph != blank
-        assign rv_dup = false
-        if rv_photos contains rv_ph
-          assign rv_dup = true
-        endif
-        unless rv_dup
-          assign rv_photos = rv_photos | append: rv_ph | append: ','
-        endunless
-      endif
-    endfor
-
-    comment
-      Curated strip shots follow the shopper photos, deduped -- CustomerReviews.tsx
-      jewelleryPhotos, in its order.
-    endcomment
-    assign rv_base = 'the-vine-ugc.jpg,jewel-review-braided-hoop.jpg,jewel-review-pear-pendant.jpg,jewel-review-halo-ring.jpg,jewel-review-pearl-studs.jpg,jewel-review-bracelet.jpg,jewel-review-solitaire.jpg,jewel-review-toietmoi.jpg,jewel-review-bow.jpg' | split: ','
-    for rv_ph in rv_base
-      assign rv_dup = false
-      if rv_photos contains rv_ph
-        assign rv_dup = true
-      endif
-      unless rv_dup
-        assign rv_photos = rv_photos | append: rv_ph | append: ','
-      endunless
-    endfor
-    assign rv_strip = rv_photos | split: ','
-
-    assign rv_max = 1
-    if rv_n5 > rv_max
-      assign rv_max = rv_n5
-    endif
-    if rv_n4 > rv_max
-      assign rv_max = rv_n4
-    endif
-    if rv_n3 > rv_max
-      assign rv_max = rv_n3
-    endif
-    if rv_n2 > rv_max
-      assign rv_max = rv_n2
-    endif
-    if rv_n1 > rv_max
-      assign rv_max = rv_n1
-    endif
-    assign rv_maxf = rv_max | times: 1.0
-    assign rv_totf = rv_total | times: 1.0
-
-    comment
-      Math.round(avg * 10) / 10, printed the way JS prints it: 4.9, but 5 -- not
-      5.0 -- when the average lands on a whole number.
-    endcomment
-    assign rv_r10 = rv_sum | times: 10 | divided_by: rv_totf | round
-    assign rv_whole = rv_r10 | divided_by: 10 | floor
-    assign rv_frac = rv_r10 | modulo: 10
-    capture rv_score
-      echo rv_whole
-      if rv_frac > 0
-        echo '.'
-        echo rv_frac
-      endif
-    endcapture
-
-    assign rv_counts = rv_n5 | append: ',' | append: rv_n4 | append: ',' | append: rv_n3 | append: ',' | append: rv_n2 | append: ',' | append: rv_n1 | split: ','
-    assign rv_stars_desc = '5,4,3,2,1' | split: ','
-  -%}
 
   <svg class="nf-reviews__sprite" aria-hidden="true" focusable="false" width="0" height="0"><symbol id="nf-review-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
 
@@ -1489,9 +1491,12 @@
       if (variantInput && id) variantInput.value = id;
       root.querySelectorAll('[data-nf-add-button]').forEach(function (btn) {
         btn.disabled = blocked;
-        var label = btn.querySelector('[data-nf-buy-label]');
-        if (label) label.textContent = blocked ? 'Sold Out' : (btn.hasAttribute('data-nf-buy-now') ? 'Shop Now' : 'Add to Cart');
-        else if (btn.hasAttribute('data-nf-buy-now') === false) btn.textContent = blocked ? 'Sold Out' : 'Add to Cart';
+        /* The inline CTAs carry their label as the button's own text (React
+           does, and a wrapper span makes the text node's background
+           transparent where React's is the button fill); the sticky bar
+           still wraps it, so write to the span when there is one. */
+        var label = btn.querySelector('[data-nf-buy-label]') || btn;
+        label.textContent = blocked ? 'Sold Out' : (btn.hasAttribute('data-nf-buy-now') ? 'Shop Now' : 'Add to Cart');
       });
     });
   });
@@ -1515,8 +1520,8 @@
     form.addEventListener('submit', function (e) {
       var btn = e.submitter;
       if (!btn || !btn.hasAttribute('data-nf-buy-now')) return;
-      var label = btn.querySelector('[data-nf-buy-label]');
-      if (label) label.textContent = 'Opening checkout...';
+      var label = btn.querySelector('[data-nf-buy-label]') || btn;
+      label.textContent = 'Opening checkout...';
     });
   }
 
@@ -1916,7 +1921,7 @@
 
 .nf-pdp__toprow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 26px; }
 .nf-pdp__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-34); color: var(--nf-gold-deep); }
-.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; padding: 4px 0 4px 8px; font-size: 12px; color: hsl(0 0% 35%); text-decoration: none; }
+.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; margin-right: -4px; padding: 4px 0 4px 8px; font-size: 12px; letter-spacing: .02em; color: hsl(0 0% 35%); text-decoration: none; }
 .nf-pdp__star { color: var(--nf-gold-deep); }
 .nf-pdp__rating-n { font-weight: 500; color: hsl(0 0% 15%); }
 .nf-pdp__rating-c { text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 48%); }
@@ -1967,7 +1972,7 @@
 .nf-pdp__add:focus-visible, .nf-pdp__buy:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
 .nf-pdp__add.is-added { animation: nf-pdp-check-pop 260ms var(--ease-out-strong, ease-out); }
 @keyframes nf-pdp-check-pop { from { opacity: .7; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-.nf-pdp__trust { margin: 8px 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
+.nf-pdp__trust { margin: 8px 0 0; text-align: center; font-size: 11px; letter-spacing: .02em; color: hsl(0 0% 50%); }
 .nf-pdp__trust a { color: hsl(0 0% 35%); text-decoration: underline; text-underline-offset: 4px; }
 .nf-pdp__pair { display: flex; gap: 12px; margin-top: 12px; }
 .nf-pdp__ghost { flex: 1; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid hsl(0 0% 74%); background: none; color: hsl(0 0% 30%); cursor: pointer; text-decoration: none; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; }

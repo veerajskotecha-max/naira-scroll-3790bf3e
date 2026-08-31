@@ -1,0 +1,357 @@
+{%- comment -%}
+  Naira Flore — Track your order
+  Ported from src/pages/TrackOrder.tsx (Lovable repo).
+
+  The React page never tracked anything itself: its submit handler opened
+  the Shopify-hosted account login in a new tab, because the hosted order
+  status page is the only authoritative source. This port keeps that
+  behaviour but reaches it without JavaScript — the form is a plain GET
+  form whose action is routes.account_login_url. The two fields carry no
+  name attribute on purpose, so nothing is appended to the URL and nothing
+  is posted anywhere; they are the visual copy of the React inputs, and the
+  button lands the shopper on Shopify's own login / order-status flow.
+
+  This page does not use the nf-doc / nf-mk page shell: TrackOrder.tsx is
+  from the members/account lineage, with its own 760px measure, its own
+  type ramp and Tailwind's plain sans for the headings. Every shared class
+  would have to be overridden, so the (small) layer below is section-local.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+
+<div class="nf-track">
+  <div class="nf-track__wrap">
+    <p class="nf-track__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    <h1 class="nf-track__h1">{{ section.settings.heading | escape }}</h1>
+    <p class="nf-track__lede">{{ section.settings.lede | escape }}</p>
+
+    <form
+      class="nf-track__form"
+      action="{{ routes.account_login_url }}"
+      method="get"
+      target="_blank"
+      rel="noopener"
+    >
+      <label class="nf-track__label">
+        <span class="nf-track__label-text">{{ section.settings.label_order | escape }}</span>
+        <input
+          class="nf-track__input"
+          type="text"
+          placeholder="{{ section.settings.placeholder_order | escape }}"
+          autocomplete="off"
+        >
+      </label>
+      <label class="nf-track__label">
+        <span class="nf-track__label-text">{{ section.settings.label_email | escape }}</span>
+        <input
+          class="nf-track__input"
+          type="email"
+          placeholder="{{ section.settings.placeholder_email | escape }}"
+          autocomplete="email"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+      </label>
+      <button class="nf-track__submit" type="submit">{{ section.settings.submit_label | escape }}</button>
+      <p class="nf-track__note">{{ section.settings.note | escape }}</p>
+    </form>
+
+    <div class="nf-track__aside">
+      <h2 class="nf-track__h2">{{ section.settings.aside_heading | escape }}</h2>
+      <p class="nf-track__aside-text">{{ section.settings.aside_text | escape }}</p>
+      {%- if section.settings.whatsapp_link != blank -%}
+        <a
+          class="nf-track__cta"
+          href="{{ section.settings.whatsapp_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >{{ section.settings.aside_button | escape }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+/* ═══════════════════════════════════════════════════════════════════
+   TRACK ORDER — src/pages/TrackOrder.tsx
+   React's own header is position:fixed, so the page carries
+   pt-[94px]/[100px]/[116px] to clear it. This theme's header is
+   position:sticky and already occupies 100/108/116px of flow, so the
+   clearance is subtracted here instead of repeated: it nets to zero at
+   1024px+ and to a small negative at the two narrower steps, where the
+   theme's announcement bar is a couple of pixels taller than React's.
+   ═══════════════════════════════════════════════════════════════════ */
+.nf-track {
+  background-color: var(--nf-ivory);
+  color: var(--nf-ink);
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* React's body stays 16px at every width; this theme steps it down to
+     15px under 768px. Nothing here draws its size from the cascade except
+     the line-box strut inside each field label, which is exactly where a
+     1.5px-per-label drift showed up at 390px. */
+  font-size: 16px;
+  line-height: 1.5;
+  margin-top: -6px;
+}
+@media (min-width: 768px) { .nf-track { margin-top: -8px; } }
+@media (min-width: 1024px) { .nf-track { margin-top: 0; } }
+
+.nf-track * { border-radius: 0; }
+
+.nf-track__wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+@media (min-width: 640px) { .nf-track__wrap { padding-left: 24px; padding-right: 24px; } }
+@media (min-width: 768px) { .nf-track__wrap { padding-top: 56px; } }
+
+.nf-track__eyebrow {
+  margin: 0;
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: var(--nf-track-40);
+  color: var(--nf-gold-shadow);
+}
+
+/* layout/theme.liquid forces h1-h6 to 'Ophelia' !important and
+   nf-base.css re-forces them to the display serif, also !important.
+   React renders both of this page's headings in Tailwind's plain sans
+   -- style={velista} reads var(--font-cormorant), which is defined
+   nowhere in the Lovable repo, so the whole declaration is invalid at
+   computed-value time and the heading simply inherits body. Matching
+   that needs !important to clear the two element-level rules. */
+.nf-track__h1,
+.nf-track__h2 {
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+.nf-track__h1 {
+  margin: 12px 0 0;
+  font-size: 32px;
+  line-height: 1.05;
+}
+@media (min-width: 768px) { .nf-track__h1 { font-size: 46px; } }
+
+.nf-track__lede {
+  margin: 16px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 14px;
+  line-height: 1.85;
+  color: rgb(var(--nf-ink-rgb) / 0.65);
+}
+@media (min-width: 768px) { .nf-track__lede { font-size: 15.5px; } }
+
+/* `border border-nf-ink/12` never generated a colour utility -- 12 is not
+   on Tailwind's opacity scale -- so both panels fall back to Tailwind's
+   default border colour, slate-200. Ported as measured, not as intended. */
+.nf-track__form,
+.nf-track__aside {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid rgb(226 232 240);
+}
+.nf-track__form > * + * { margin-top: 16px; }
+
+.nf-track__label { display: block; }
+.nf-track__label-text {
+  font-family: var(--nf-font-label);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: var(--nf-track-24);
+  color: rgb(var(--nf-ink-rgb) / 0.5);
+}
+
+/* nf-base.css sets `input, select, textarea { font-size: max(16px, 1em) }`
+   as an iOS zoom guard; a class beats that element rule without
+   !important, which is why every field below states its own size. */
+.nf-track__input {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 8px;
+  padding: 0 12px;
+  border: 1px solid rgb(var(--nf-ink-rgb) / 0.2);
+  background-color: transparent;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--nf-ink);
+}
+.nf-track__input:focus {
+  border-color: var(--nf-ink);
+  outline: none;
+}
+
+.nf-track__submit {
+  display: inline-block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid var(--nf-ink);
+  background-color: var(--nf-ink);
+  color: var(--nf-ivory);
+  font-family: var(--nf-font-label);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: var(--nf-track-28);
+  text-align: center;
+  text-transform: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.nf-track__submit:hover { opacity: 0.9; }
+
+.nf-track__note {
+  /* stated, not inherited from `> * + *`: that rule and this one tie at
+     (0,1,0) and this one is later, so it would zero the gap out. */
+  margin: 16px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 12px;
+  line-height: 1.7;
+  color: rgb(var(--nf-ink-rgb) / 0.5);
+}
+
+.nf-track__h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+}
+@media (min-width: 768px) { .nf-track__h2 { font-size: 24px; } }
+
+.nf-track__aside-text {
+  margin: 8px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgb(var(--nf-ink-rgb) / 0.6);
+}
+
+.nf-track__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  margin-top: 20px;
+  padding: 0 24px;
+  border: 1px solid var(--nf-ink);
+  font-family: var(--nf-font-label);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: var(--nf-ink);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.nf-track__cta:hover {
+  background-color: var(--nf-ink);
+  color: var(--nf-ivory);
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira track order",
+  "tag": "section",
+  "class": "nf-track-order-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "ORDER SUPPORT"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Track your order"
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Intro",
+      "default": "Every dispatch confirmation carries a tracking link. Enter your order number below to open your order status, or message us and we will check it for you."
+    },
+    {
+      "type": "header",
+      "content": "Order lookup"
+    },
+    {
+      "type": "text",
+      "id": "label_order",
+      "label": "Order number label",
+      "default": "ORDER NUMBER"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_order",
+      "label": "Order number placeholder",
+      "default": "#1024"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Email label",
+      "default": "EMAIL USED AT CHECKOUT"
+    },
+    {
+      "type": "text",
+      "id": "placeholder_email",
+      "label": "Email placeholder",
+      "default": "you@email.com"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit button",
+      "default": "OPEN ORDER STATUS"
+    },
+    {
+      "type": "textarea",
+      "id": "note",
+      "label": "Note under the form",
+      "default": "Order status is served securely by our checkout provider, so this opens in a new tab."
+    },
+    {
+      "type": "header",
+      "content": "WhatsApp panel"
+    },
+    {
+      "type": "text",
+      "id": "aside_heading",
+      "label": "Heading",
+      "default": "Prefer to ask us?"
+    },
+    {
+      "type": "textarea",
+      "id": "aside_text",
+      "label": "Text",
+      "default": "Send your order number on WhatsApp and we will reply with the current status."
+    },
+    {
+      "type": "text",
+      "id": "aside_button",
+      "label": "Button label",
+      "default": "MESSAGE THE ATELIER"
+    },
+    {
+      "type": "url",
+      "id": "whatsapp_link",
+      "label": "WhatsApp link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira track order"
+    }
+  ]
+}
+{% endschema %}

@@ -32,12 +32,18 @@
     product link. The modal is dead code in the source, so it is not
     ported.
 
-  Product grid: useLiveJewellery() filters the whole Shopify catalogue to
-  vendor "Naira Petite" and Gifting.tsx shows the first 6. Liquid has no
-  cross-collection product query, so `collection` is a section setting
-  (falls back to Shop All) and the vendor gate still runs per item, same
-  as nf-collection.liquid, since a merchant-picked collection can carry
-  non-jewellery lines too. `product_count` reproduces the slice(0, 6).
+  Product grid: useLiveJewellery() fetches the whole Shopify catalogue and
+  filters it to vendor "Naira Petite"; Gifting.tsx shows the first 6. The
+  faithful Liquid equivalent is collections.all (Shopify's automatic
+  all-products collection, always present) with the same vendor gate run
+  per item -- the same fallback nf-new-arrivals.liquid uses. `collection`
+  stays a section setting so a merchant can narrow it; the vendor gate
+  still runs either way. `product_count` reproduces the slice(0, 6).
+
+  Order caveat: React's list is ordered by the bundled src/data/jewellery.ts
+  and includes handles that no longer exist in Shopify (bold-nocturne-chain,
+  dewdrop-bezel-necklace), so the two sides cannot pick an identical six.
+  Liquid has no access to that bundled ordering.
 
   Link substitutions (React's /jewellery route and its query strings do
   not exist as Shopify URLs; see the report for the full list):
@@ -50,10 +56,11 @@
 
   Font landmine: Gifting.tsx's `velista` const reads var(--font-cormorant),
   which is defined nowhere in the React app, so those headings actually
-  inherit the app sans stack there (see docs/design-tokens.md, "The
-  display-font landmine"). Per this port's brief the design intent is
-  Velista, so headings here use --nf-font-display (class nf-display)
-  instead of reproducing that bug.
+  inherit the app sans stack there. docs/design-tokens.md ("The
+  display-font landmine") records that inherited look as the approved
+  pixel output, so the headings here reproduce it: font-family: inherit
+  !important, opting back out of nf-base.css's forced Velista, exactly as
+  .nf-coll__title and .jc__title already do in nf-collection.liquid.
 
   Second landmine, not written up in design-tokens.md: Gifting.tsx also
   uses `tracking-nf-22` twice (the price-edit pills, the "Explore" links).
@@ -68,7 +75,7 @@
 {%- liquid
   assign grid_collection = section.settings.collection
   if grid_collection == blank
-    assign grid_collection = collections['shop-all']
+    assign grid_collection = collections.all
   endif
   assign max_count = section.settings.product_count | default: 6
 
@@ -81,7 +88,7 @@
     {%- if section.settings.eyebrow != blank -%}
       <p class="nf-gift__eyebrow">{{ section.settings.eyebrow | escape }}</p>
     {%- endif -%}
-    <h1 class="nf-gift__title nf-display">{{ section.settings.heading | escape }}</h1>
+    <h1 class="nf-gift__title">{{ section.settings.heading | escape }}</h1>
     {%- if section.settings.intro != blank -%}
       <p class="nf-gift__intro">{{ section.settings.intro | escape }}</p>
     {%- endif -%}
@@ -114,7 +121,7 @@
       {%- for block in section.blocks -%}
         {%- if block.type == 'for_whom' -%}
           <a {{ block.shopify_attributes }} href="{{ block.settings.url | escape }}" class="nf-gift__whomcard">
-            <h2 class="nf-gift__whomtitle nf-display">{{ block.settings.title | escape }}</h2>
+            <h2 class="nf-gift__whomtitle">{{ block.settings.title | escape }}</h2>
             {%- if block.settings.copy != blank -%}
               <p class="nf-gift__whomcopy">{{ block.settings.copy | escape }}</p>
             {%- endif -%}
@@ -126,7 +133,7 @@
   {%- endif -%}
 
   <section class="nf-gift__picks">
-    <h2 class="nf-gift__h2 nf-display">{{ section.settings.picks_heading | escape }}</h2>
+    <h2 class="nf-gift__h2">{{ section.settings.picks_heading | escape }}</h2>
     {%- if grid_collection != blank -%}
       {%- assign shown = 0 -%}
       <div class="nf-gift__grid">
@@ -146,7 +153,7 @@
 
   <section class="nf-gift__ask">
     <div class="nf-gift__askbox">
-      <h2 class="nf-gift__h2 nf-display">{{ section.settings.ask_heading | escape }}</h2>
+      <h2 class="nf-gift__h2">{{ section.settings.ask_heading | escape }}</h2>
       {%- if section.settings.ask_copy != blank -%}
         <p class="nf-gift__askcopy">{{ section.settings.ask_copy | escape }}</p>
       {%- endif -%}
@@ -161,59 +168,68 @@
 </section>
 
 {% stylesheet %}
+/* px, not rem: layout/theme.liquid sets html { font-size: 62.5% } (10px root)
+   like the base Dawn theme, while every value below is copied from Tailwind
+   utilities that assume a 16px root. rem here renders at 0.625x. */
 .nf-gift { background-color: var(--nf-ivory); color: var(--nf-ink); }
 
-.nf-gift__head { max-width: 72rem; margin-inline: auto; padding: 2.5rem 1rem 2rem; }
-@media (min-width: 640px) { .nf-gift__head { padding-inline: 1.5rem; } }
-@media (min-width: 768px) { .nf-gift__head { padding-top: 3.5rem; } }
+.nf-gift__head { max-width: 1152px; margin-inline: auto; padding: 40px 16px 32px; }
+@media (min-width: 640px) { .nf-gift__head { padding-inline: 24px; } }
+@media (min-width: 768px) { .nf-gift__head { padding-top: 56px; } }
 
 .nf-gift__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-40); color: var(--nf-gold-shadow); }
-.nf-gift__title { margin: .75rem 0 0; font-size: 32px; line-height: 1.05; letter-spacing: normal; color: var(--nf-ink); }
+/* Font landmine: Gifting.tsx's `velista` const reads var(--font-cormorant),
+   which is defined nowhere in the app, so the whole declaration is invalid at
+   computed-value time and every heading below inherits the body sans stack --
+   documented as the approved pixel output in docs/design-tokens.md, "The
+   display-font landmine". nf-base.css forces h1-h6 to Velista with !important
+   (to beat theme.liquid's inline Ophelia rule); these opt back out, same
+   pattern as .nf-coll__title / .jc__title in sections/nf-collection.liquid.
+   This stylesheet loads after nf-base.css, so source order lets it win. */
+.nf-gift__title { margin: 12px 0 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 32px; line-height: 1.05; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-gift__title { font-size: 52px; } }
-.nf-gift__intro { margin: 1rem 0 0; max-width: 36rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
+.nf-gift__intro { margin: 16px 0 0; max-width: 576px; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .65); }
 @media (min-width: 768px) { .nf-gift__intro { font-size: 16px; } }
 
-.nf-gift__pricerow { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: .625rem; }
+.nf-gift__pricerow { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
 .nf-gift__pill {
-  display: inline-flex; align-items: center; min-height: 44px; padding-inline: 1.25rem;
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: 20px;
   border: 1px solid rgb(var(--nf-ink-rgb) / .25); background: none;
-  font-family: var(--nf-font-label); font-size: 10px; color: rgb(var(--nf-ink-rgb) / .75);
+  font-family: var(--nf-font-label); font-size: 10px; line-height: 1.5; color: rgb(var(--nf-ink-rgb) / .75);
   text-decoration: none; transition: color .2s ease, border-color .2s ease;
 }
 .nf-gift__pill:hover, .nf-gift__pill:focus-visible { border-color: var(--nf-ink); color: var(--nf-ink); }
 
-.nf-gift__whom {
-  max-width: 72rem; margin-inline: auto; display: grid; gap: 1rem; padding: 0 1rem 3rem;
-}
-@media (min-width: 640px) { .nf-gift__whom { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-inline: 1.5rem; } }
+.nf-gift__whom { max-width: 1152px; margin-inline: auto; display: grid; gap: 16px; padding: 0 16px 48px; }
+@media (min-width: 640px) { .nf-gift__whom { grid-template-columns: repeat(3, minmax(0, 1fr)); padding-inline: 24px; } }
 .nf-gift__whomcard {
-  display: block; border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 1.5rem;
+  display: block; border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 24px;
   color: inherit; text-decoration: none; transition: border-color .2s ease;
 }
 .nf-gift__whomcard:hover, .nf-gift__whomcard:focus-visible { border-color: rgb(var(--nf-ink-rgb) / .4); }
-.nf-gift__whomtitle { margin: 0; font-size: 22px; line-height: 1.25; letter-spacing: normal; color: var(--nf-ink); }
+.nf-gift__whomtitle { margin: 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 22px; line-height: 1.25; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-gift__whomtitle { font-size: 26px; } }
-.nf-gift__whomcopy { margin: .5rem 0 0; font-family: var(--nf-font-editorial); font-size: 13.5px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
-.nf-gift__whomcta { margin-top: 1rem; display: inline-block; font-family: var(--nf-font-label); font-size: 10px; color: var(--nf-gold-deep); }
+.nf-gift__whomcopy { margin: 8px 0 0; font-family: var(--nf-font-editorial); font-size: 13.5px; line-height: 1.8; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-gift__whomcta { margin-top: 16px; display: inline-block; font-family: var(--nf-font-label); font-size: 10px; color: var(--nf-gold-deep); }
 
-.nf-gift__picks { max-width: 72rem; margin-inline: auto; padding: 0 1rem 4rem; }
-@media (min-width: 640px) { .nf-gift__picks { padding-inline: 1.5rem; } }
-.nf-gift__h2 { margin: 0; font-size: 24px; line-height: 1.25; letter-spacing: normal; color: var(--nf-ink); }
+.nf-gift__picks { max-width: 1152px; margin-inline: auto; padding: 0 16px 64px; }
+@media (min-width: 640px) { .nf-gift__picks { padding-inline: 24px; } }
+.nf-gift__h2 { margin: 0; font-family: inherit !important; letter-spacing: normal !important; font-size: 24px; line-height: 1.25; color: var(--nf-ink); }
 @media (min-width: 768px) { .nf-gift__h2 { font-size: 30px; } }
 
-.nf-gift__grid { margin-top: 1.75rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
-@media (min-width: 640px) { .nf-gift__grid { gap: 1.5rem; } }
-@media (min-width: 1024px) { .nf-gift__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+.nf-gift__grid { margin-top: 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (min-width: 640px) { .nf-gift__grid { gap: 24px; } }
+@media (min-width: 1024px) { .nf-gift__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
 
-.nf-gift__ask { max-width: 72rem; margin-inline: auto; padding: 0 1rem 5rem; }
-@media (min-width: 640px) { .nf-gift__ask { padding-inline: 1.5rem; } }
-.nf-gift__askbox { border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 1.75rem; text-align: center; }
-@media (min-width: 640px) { .nf-gift__askbox { padding: 2.5rem; } }
-.nf-gift__askcopy { margin: .75rem auto 0; max-width: 28rem; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .6); }
+.nf-gift__ask { max-width: 1152px; margin-inline: auto; padding: 0 16px 80px; }
+@media (min-width: 640px) { .nf-gift__ask { padding-inline: 24px; } }
+.nf-gift__askbox { border: 1px solid rgb(var(--nf-ink-rgb) / .12); padding: 28px; text-align: center; }
+@media (min-width: 640px) { .nf-gift__askbox { padding: 40px; } }
+.nf-gift__askcopy { margin: 12px auto 0; max-width: 448px; font-family: var(--nf-font-editorial); font-size: 14px; line-height: 1.85; color: rgb(var(--nf-ink-rgb) / .6); }
 .nf-gift__ask-cta {
-  margin-top: 1.5rem; display: inline-flex; min-height: 48px; align-items: center;
-  border: 1px solid var(--nf-ink); padding-inline: 1.75rem; background: none;
-  font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-28); color: var(--nf-ink);
+  margin-top: 24px; display: inline-flex; min-height: 48px; align-items: center;
+  border: 1px solid var(--nf-ink); padding-inline: 28px; background: none;
+  font-family: var(--nf-font-label); font-size: 10.5px; line-height: 1.5; letter-spacing: var(--nf-track-28); color: var(--nf-ink);
   text-decoration: none; transition: background-color .2s ease, color .2s ease;
 }
 .nf-gift__ask-cta:hover, .nf-gift__ask-cta:focus-visible { background-color: var(--nf-ink); color: var(--nf-ivory); }
@@ -231,49 +247,52 @@
 .nf-jc__back--earring { object-position: center 10%; transform: scale(1.5); }
 
 .nf-jc__tag {
-  position: absolute; left: .75rem; top: .75rem; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
-  background-color: rgb(var(--nf-ivory-rgb) / .95); padding: .25rem .625rem;
+  position: absolute; left: 12px; top: 12px; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
+  background-color: rgb(var(--nf-ivory-rgb) / .95); padding: 4px 10px;
   font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-24); color: rgb(var(--nf-ink-rgb) / .6);
 }
-@media (min-width: 640px) { .nf-jc__tag { left: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; letter-spacing: var(--nf-track-30); } }
+@media (min-width: 640px) { .nf-jc__tag { left: 16px; top: 16px; padding-inline: 12px; font-size: 9px; letter-spacing: var(--nf-track-30); } }
 .nf-jc__tag--gold { border-color: var(--nf-gold); color: var(--nf-gold-shadow); }
 
-.nf-jc__badge { position: absolute; right: .75rem; top: .75rem; padding: .25rem .625rem; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
-@media (min-width: 640px) { .nf-jc__badge { right: 1rem; top: 1rem; padding-inline: .75rem; font-size: 9px; } }
+.nf-jc__badge { position: absolute; right: 12px; top: 12px; padding: 4px 10px; font-family: var(--nf-font-label); font-size: 8.5px; letter-spacing: var(--nf-track-20); color: var(--nf-ivory); }
+@media (min-width: 640px) { .nf-jc__badge { right: 16px; top: 16px; padding-inline: 12px; font-size: 9px; } }
 .nf-jc__badge--soldout { background-color: var(--nf-ink); }
 .nf-jc__badge--off { background-color: var(--nf-gold-deep); }
 
 .nf-jc__heart {
-  position: absolute; bottom: .75rem; right: .75rem; z-index: 10; display: flex; height: 2.25rem; width: 2.25rem;
+  position: absolute; bottom: 12px; right: 12px; z-index: 10; display: flex; height: 36px; width: 36px;
   align-items: center; justify-content: center; border: 1px solid rgb(var(--nf-ink-rgb) / .15);
   background-color: rgb(var(--nf-ivory-rgb) / .92); color: rgb(var(--nf-ink-rgb) / .55); cursor: pointer;
 }
-@media (min-width: 640px) { .nf-jc__heart { bottom: 1rem; right: 1rem; } }
+@media (min-width: 640px) { .nf-jc__heart { bottom: 16px; right: 16px; } }
 .nf-jc__heart:hover { border-color: rgb(var(--nf-ink-rgb) / .5); color: var(--nf-ink); }
 
 .nf-jc__view {
-  position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 8px);
-  background-color: rgb(var(--nf-ivory-rgb) / .9); padding: .5rem 1.25rem;
-  font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-30); color: var(--nf-ink);
+  position: absolute; bottom: 16px; left: 50%; transform: translate(-50%, 8px); text-align: left;
+  background-color: rgb(var(--nf-ivory-rgb) / .9); padding: 8px 20px;
+  font-family: var(--nf-font-label); font-size: 10px; line-height: 1.5; letter-spacing: var(--nf-track-30); color: var(--nf-ink);
   opacity: 0; transition: opacity .2s ease-out, transform .2s ease-out; pointer-events: none;
 }
 .nf-jc__link:hover .nf-jc__view, .nf-jc__link:focus-visible .nf-jc__view { opacity: 1; transform: translate(-50%, 0); }
 
-.nf-jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 1rem .25rem 0; text-align: center; }
-@media (min-width: 640px) { .nf-jc__body { padding-top: 1.25rem; } }
+.nf-jc__body { display: flex; flex: 1; flex-direction: column; align-items: center; padding: 16px 4px 0; text-align: center; }
+@media (min-width: 640px) { .nf-jc__body { padding-top: 20px; } }
 .nf-jc__cat { margin: 0; font-family: var(--nf-font-label); font-size: 9px; letter-spacing: var(--nf-track-32); color: var(--nf-gold-deep); }
 @media (min-width: 640px) { .nf-jc__cat { font-size: 10px; letter-spacing: var(--nf-track-34); } }
+/* Same landmine as .nf-gift__title, this time from JewelCard.tsx's own local
+   "velista" object -- card titles inherit the body sans in React too. */
 .nf-jc__title {
-  margin: .375rem 0 0; min-height: 2.2em; font-family: var(--nf-font-display); font-size: 18px; line-height: 1.25; color: var(--nf-ink);
+  margin: 6px 0 0; min-height: 2.2em; font-family: inherit !important; letter-spacing: normal !important;
+  font-size: 18px; line-height: 1.25; color: var(--nf-ink);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-@media (min-width: 640px) { .nf-jc__title { margin-top: .5rem; font-size: 24px; } }
+@media (min-width: 640px) { .nf-jc__title { margin-top: 8px; font-size: 24px; } }
 @media (min-width: 768px) { .nf-jc__title { font-size: 26px; } }
 .nf-jc__title a { color: inherit; text-decoration: none; }
 .nf-jc__title a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-.nf-jc__price { margin-top: .5rem; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: .25rem .5rem; font-family: var(--nf-font-label); font-variant-numeric: tabular-nums; }
-@media (min-width: 640px) { .nf-jc__price { margin-top: .625rem; } }
+.nf-jc__price { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 4px 8px; font-family: var(--nf-font-label); font-variant-numeric: tabular-nums; }
+@media (min-width: 640px) { .nf-jc__price { margin-top: 10px; } }
 .nf-jc__price-now { font-size: 15px; font-weight: 500; line-height: 1; color: var(--nf-ink); }
 @media (min-width: 640px) { .nf-jc__price-now { font-size: 17px; } }
 .nf-jc__price-was { font-size: 12px; line-height: 1; color: rgb(var(--nf-ink-rgb) / .4); text-decoration: line-through; }
@@ -281,22 +300,22 @@
 .nf-jc__price-off { font-size: 10px; line-height: 1; letter-spacing: var(--nf-track-14); color: var(--nf-gold-deep); }
 @media (min-width: 640px) { .nf-jc__price-off { font-size: 11px; } }
 
-.nf-jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: .5rem; padding-top: .75rem; }
+.nf-jc__cta { margin-top: auto; display: flex; width: 100%; flex-direction: column; align-items: center; gap: 8px; padding-top: 12px; }
 .nf-jc__addform, .nf-jc__buyform { width: 100%; margin: 0; }
 .nf-jc__add {
   display: inline-flex; min-height: 44px; width: 100%; align-items: center; justify-content: center;
-  border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer;
-  font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ivory);
+  border: 1px solid var(--nf-ink); background-color: var(--nf-ink); cursor: pointer; padding-inline: 20px;
+  font-family: var(--nf-font-label); font-size: 9.5px; line-height: 1.5; letter-spacing: var(--nf-track-25); color: var(--nf-ivory);
 }
 @media (min-width: 640px) { .nf-jc__add { font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
 .nf-jc__add:hover { opacity: .9; }
 .nf-jc__add:disabled { opacity: .6; cursor: default; }
 .nf-jc__buy {
-  display: inline-flex; min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: .5rem;
-  border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer;
-  font-family: var(--nf-font-label); font-size: 9.5px; letter-spacing: var(--nf-track-25); color: var(--nf-ink);
+  display: inline-flex; min-height: 40px; width: 100%; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid rgb(var(--nf-ink-rgb) / .35); background: none; cursor: pointer; padding-inline: 20px;
+  font-family: var(--nf-font-label); font-size: 9.5px; line-height: 1.5; letter-spacing: var(--nf-track-25); color: var(--nf-ink);
 }
-@media (min-width: 640px) { .nf-jc__buy { padding-inline: 1.5rem; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
+@media (min-width: 640px) { .nf-jc__buy { padding-inline: 24px; font-size: 10.5px; letter-spacing: var(--nf-track-30); } }
 .nf-jc__buy:hover { background-color: var(--nf-ink); color: var(--nf-ivory); }
 
 @media (prefers-reduced-motion: reduce) {

@@ -382,6 +382,108 @@
   .nf-progress { display: none; }
 }
 
+/* Everything below is a delta on the .nf-article block in nf-content.css,
+   which is shared and off-limits to this section. Each selector is prefixed
+   with .nf-journal so it outranks the base rule whatever order the two
+   stylesheets land in. */
+
+/* React's `velista` const resolves to the plain body sans, not to Velista:
+   --font-cormorant is defined nowhere in the React build, so the whole
+   font-family declaration is invalid at computed-value time and the element
+   inherits body. Same finding as the --nf-journal-sans note in nf-content.css,
+   which is where that stack is defined. Confirmed by computed-style diff:
+   React reports ui-sans-serif/400 for the h1, every section h2 and the
+   more-list links. Put --nf-font-display back here if React ever defines the
+   var. */
+.nf-journal .nf-article__head h1,
+.nf-journal .nf-article__body :is(h2, h3),
+.nf-journal .nf-article__more a {
+  font-family: var(--nf-journal-sans) !important;
+}
+/* Tailwind preflight leaves headings at font-weight: inherit, i.e. body's 400.
+   Beats the blanket .nf-journal :is(h1..h4) { font-weight: 500 }. */
+.nf-journal .nf-article :is(h1, h2, h3) { font-weight: 400; }
+
+/* React: <div class="py-10"> wraps sections + aside + more list, so the 40px
+   belongs to that wrapper and not to the body — leaving it on the body added
+   it to the aside's own 48px and pushed the whole tail of the page down. */
+.nf-journal .nf-article__main { padding-block: 40px; }
+.nf-journal .nf-article__body { padding-block: 0; }
+.nf-journal .nf-article__body > :first-child { margin-top: 0; }
+
+/* React's h2 is `flex items-baseline gap-3` with the gold rule as its first
+   child, so a heading that wraps indents its continuation lines past the rule.
+   As an inline-block ::before it did not, and every h2 wrapped differently at
+   390px. */
+.nf-journal .nf-article__body :is(h2, h3) {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.nf-journal .nf-article__body :is(h2, h3)::before {
+  margin-right: 0;
+  flex: none;
+  align-self: center;
+}
+
+/* ── FAQ ──────────────────────────────────────────────────────────
+   article.content carries the FAQs as <h2>Frequently asked</h2><dl>.
+   React renders that as <section class="border-t pt-10"> + a plain heading +
+   one bordered <div> per pair. Targeting the heading by the <dl> that follows
+   it reproduces the section rule without splitting the body string, and the
+   border is carried by the dt and dd together (padding, not margin, between
+   them) so the gold rule runs unbroken down the pair the way the wrapper
+   div's does. */
+.nf-journal .nf-article__body h2:has(+ dl) {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--nf-journal-rule);
+  line-height: 1.5;
+}
+.nf-journal .nf-article__body h2:has(+ dl)::before { content: none; }
+.nf-journal .nf-article__body dl { margin: 24px 0 0; }
+.nf-journal .nf-article__body dt,
+.nf-journal .nf-article__body dd {
+  border-left: 1px solid rgb(var(--nf-gold-rgb) / 0.3);
+  padding-left: 16px;
+  transition: border-color 0.3s ease;
+}
+.nf-journal .nf-article__body dt {
+  margin: 0;
+  font-family: var(--nf-font-label);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--nf-ink);
+}
+.nf-journal .nf-article__body dt + dt,
+.nf-journal .nf-article__body dd + dt { margin-top: 24px; }
+.nf-journal .nf-article__body dd {
+  margin: 0;
+  padding-top: 8px;
+  font-size: 14px;
+  line-height: 1.85;
+  color: rgb(var(--nf-ink-rgb) / 0.65);
+}
+.nf-journal .nf-article__body dt:hover,
+.nf-journal .nf-article__body dt:has(+ dd:hover),
+.nf-journal .nf-article__body dt:hover + dd,
+.nf-journal .nf-article__body dd:hover { border-color: var(--nf-gold); }
+@media (min-width: 768px) {
+  .nf-journal .nf-article__body dt { font-size: 16px; }
+  .nf-journal .nf-article__body dd { font-size: 15px; }
+}
+
+/* The more-list arrow is transparent until hover in React, but it still takes
+   up its 8px gap and its own width, which decides where a long title wraps. */
+.nf-journal .nf-article__more a { display: inline-flex; align-items: baseline; gap: 8px; }
+.nf-journal .nf-article__more a span {
+  font-family: var(--nf-journal-sans);
+  font-size: 14px;
+  color: rgb(var(--nf-gold-rgb) / 0);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.nf-journal .nf-article__more a:hover span { color: var(--nf-gold); transform: translateX(2px); }
+
 
 .nf-ab {
   width: 100%;
@@ -1899,37 +2001,70 @@
     <main id="MainContent" class="content-for-layout focus-none" role="main" tabindex="-1">
       <link rel="stylesheet" href="/assets/nf-tokens.css">
 <link rel="stylesheet" href="/assets/nf-content.css"><div class="nf-progress" aria-hidden="true"><span class="nf-progress__bar"></span></div><div class="nf-journal">
-  <article class="nf-article">
-    <nav class="nf-article__crumbs" aria-label="Breadcrumb">
-      <a href="/">HOME</a>
-      <span aria-hidden="true">/</span>
-      <a href="/blogs/news">NEWS</a>
-    </nav>
+  <article class="nf-article"><nav class="nf-article__crumbs" aria-label="Breadcrumb"><a href="/">HOME</a><span aria-hidden="true">/</span><a href="/blogs/news">JOURNAL</a></nav>
 
     <header class="nf-article__head">
-      <p class="nf-journal__meta">
-        
-        <span aria-hidden="true">·</span>
-        1 min read
-      </p>
-      <h1></h1></header><div class="nf-article__body"></div><aside class="nf-article__cta">
-        <p class="nf-kicker">The Gilded Hour</p>
-        <p>Hand-set zircone in an 18K gold finish, finished at our atelier.</p>
-        <div class="nf-article__cta-links"><a class="nf-link-ghost" href="/collections/rings">Shop rings</a><a class="nf-link-ghost nf-link-ghost--quiet" href="/collections/all">All jewellery</a></div>
-      </aside><nav class="nf-article__more" aria-label="More from the journal">
-        <h2>More from the journal</h2>
-        <ul><li><a href="/blogs/news/ring-size-guide-india">Ring Size Guide for India: How to Measure at Home</a></li><li><a href="/blogs/news/how-to-care-for-gold-plated-jewellery">How to Care for Gold Plated Jewellery So It Lasts</a></li><li><a href="/blogs/news/zirconia-vs-diamond">Zirconia vs Diamond: What You Are Actually Buying</a></li></ul>
-      </nav><div style="padding-bottom: 80px;"></div>
+      <p class="nf-journal__meta">8 April 2026<span aria-hidden="true">·</span>6 min read</p>
+      <h1>Anti-Tarnish Jewellery: What It Actually Means</h1><p class="nf-article__excerpt">Tarnish is oxidation. When sweat, humidity or perfume reaches the base metal under a plating, the metal reacts and the piece darkens or turns green. Anti-tarnish jewellery is simply jewellery built so that contact never happens.</p></header><div class="nf-article__main">
+      <div class="nf-article__body">
+
+<h2>The three layers that decide everything</h2>
+
+<p>A plated piece is three things: a base metal, a precious-metal plating, and, on good pieces, a protective seal above the plating. The base decides whether your skin reacts. The plating thickness decides how long the colour survives friction. The seal decides how long moisture stays out.</p>
+
+<p>Cheap costume jewellery skips the seal entirely and flash-plates a brass base at a fraction of a micron. That is why it looks perfect in the box and grey at the contact points three weeks later.</p>
+
+<h2>Why Indian humidity is the hard test</h2>
+
+<p>Humid air carries more moisture and more airborne sulphur, both of which speed oxidation. A finish that holds fine in a dry climate can fail within one monsoon here.</p>
+
+<p>This is the single best reason to buy demi-fine rather than costume jewellery in India: the thicker plating and seal are built for exactly this environment.</p>
+
+<h2>Four questions to ask before buying</h2>
+
+<p>What is the base metal? You want a nickel-free, hypoallergenic alloy or sterling silver, not unspecified brass.</p>
+
+<p>How thick is the plating? Anything described as flash or micron-plated without a number is usually the thinnest option available.</p>
+
+<p>Is there a protective seal above the plating? If the brand cannot answer this, there almost certainly is not one.</p>
+
+<p>Is the piece waterproof-sealed, and to what degree? Incidental contact and swimming are very different asks.</p>
+
+<h2>Care that actually extends the finish</h2>
+
+<p>Put jewellery on last, after perfume, lotion and hairspray, and take it off first at night. Perfume alcohol is the most common finish-killer we see.</p>
+
+<p>Wipe pieces with a dry, soft cloth after wear, not a silver polishing cloth, which is abrasive and will cut through plating.</p>
+
+<p>Store pieces separately in a dry pouch or box. Loose jewellery in a shared bowl scratches its own finish off.</p>
+
+<h2>Frequently asked</h2>
+
+<dl>
+<dt>Is anti-tarnish jewellery really tarnish-proof?</dt>
+<dd>No finish is permanent. Anti-tarnish means the piece is sealed so that oxidation is delayed for years rather than weeks under normal wear.</dd>
+<dt>Can I shower with anti-tarnish jewellery?</dt>
+<dd>Better not to. Shampoo and soap residue build a film that dulls the surface, and hot water accelerates the breakdown of any seal.</dd>
+<dt>How do I clean anti-tarnish jewellery?</dt>
+<dd>Warm water, a drop of mild soap, a very soft brush, then dry completely with a lint-free cloth. Never use silver dip, toothpaste or baking soda on plated pieces.</dd>
+</dl></div><aside class="nf-article__cta">
+          <p class="nf-kicker">NAIRA PETITE</p>
+          <p>Hand-set zircone in an 18K gold finish, finished at our atelier.</p>
+          <div class="nf-article__cta-links"><a class="nf-link-ghost" href="/collections/rings">SHOP RINGS</a><a class="nf-link-ghost nf-link-ghost--quiet" href="/collections/all">ALL JEWELLERY</a></div>
+        </aside><nav class="nf-article__more" aria-label="MORE FROM THE JOURNAL">
+          <h2>MORE FROM THE JOURNAL</h2>
+          <ul><li><a href="/blogs/news/ring-size-guide-india">Ring Size Guide for India: How to Measure at Home<span aria-hidden="true">&rarr;</span></a></li><li><a href="/blogs/news/how-to-care-for-gold-plated-jewellery">How to Care for Gold Plated Jewellery So It Lasts<span aria-hidden="true">&rarr;</span></a></li><li><a href="/blogs/news/zirconia-vs-diamond">Zirconia vs Diamond: What You Are Actually Buying<span aria-hidden="true">&rarr;</span></a></li></ul>
+        </nav></div>
   </article>
 </div><script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "",
-      "description": "",
-      "datePublished": "",
-      "dateModified": "",
-      "mainEntityOfPage": "",
+      "headline": "Anti-Tarnish Jewellery: What It Actually Means",
+      "description": "Half the jewellery sold as anti-tarnish in India is flash-plated brass with a marketing line. Here is how the seal actually works and how to test a claim before you pay for it.",
+      "datePublished": "2026-04-08",
+      "dateModified": "2026-04-08",
+      "mainEntityOfPage": "/blogs/news/anti-tarnish-jewellery-guide",
       
       "author": { "@type": "Organization", "name": "Naira" },
       "publisher": {

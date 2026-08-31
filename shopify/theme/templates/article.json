@@ -17,13 +17,14 @@
         "crumb_home": "HOME",
         "enable_schema_org": true,
         "show_aside": true,
-        "aside_kicker": "The Gilded Hour",
+        "aside_kicker": "NAIRA PETITE",
         "aside_text": "Hand-set zircone in an 18K gold finish, finished at our atelier.",
-        "aside_link_1_label": "Shop rings",
+        "aside_link_1_label": "SHOP RINGS",
         "aside_link_1": "/collections/rings",
-        "aside_link_2_label": "All jewellery",
+        "aside_link_2_label": "ALL JEWELLERY",
         "aside_link_2": "/collections/all",
-        "more_heading": "More from the journal"
+        "more_heading": "MORE FROM THE JOURNAL",
+        "crumb_blog": "JOURNAL"
       }
     }
   },

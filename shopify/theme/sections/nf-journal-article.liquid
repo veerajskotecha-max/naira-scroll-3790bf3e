@@ -4,21 +4,62 @@
 
   Renders the Shopify `article` object — not the hardcoded seoContent.ts
   array. Preserved from the source: the gold reading-progress hairline, the
-  HOME / JOURNAL breadcrumb, the gold drop-cap on the intro, the hairline
-  before each h2, the "GILDED HOUR" aside and the "MORE FROM THE JOURNAL"
-  list. The drop cap applies to the article excerpt; if no excerpt is set the
-  body simply starts straight away.
+  HOME / JOURNAL breadcrumb, the gold drop-cap on the lead paragraph, the
+  hairline before each h2, the "NAIRA PETITE" aside and the "MORE FROM THE
+  JOURNAL" list.
 
-  Not ported: the per-article FAQ list (article.faqs). In Shopify that would
-  need an `article.metafields` FAQ list or an app — see the port report.
+  Four things worth knowing before editing:
+
+  1. The lead paragraph is NOT article.excerpt. React renders `article.intro`,
+     a separate field, above the header's bottom rule, and the excerpt only
+     ever appears on the journal index. Every article on this store was seeded
+     from the same copy, so `intro` is the FIRST PARAGRAPH of article.content.
+     It is split back out below and the remainder becomes the body — rendering
+     the excerpt here instead put the wrong sentence on the page and left the
+     intro un-dropcapped inside the body.
+
+  2. The FAQ block is not separate markup either. React renders
+     `article.faqs` as its own <section> with a top rule, a hairline-free
+     heading and a gold rule down the left of each pair; in Shopify it arrives
+     as `<h2>Frequently asked</h2><dl>` inside article.content. The stylesheet
+     below reproduces the section by targeting the heading that precedes a
+     <dl>, so no string surgery is needed and an article without FAQs is
+     simply unaffected.
+
+  3. Read time. Same story as nf-journal.liquid: the Lovable `readTime` is
+     hand-written per article, Shopify has no equivalent, so it is read from an
+     OPTIONAL `custom.read_time` integer metafield with a 200 wpm fallback.
+     The live store has no such metafields yet, so both this page and the index
+     currently show the estimate rather than the authored number.
+
+  4. No hero image and no byline — deliberately. JournalArticle.tsx renders
+     neither: `coverImage` and `author` exist on the React type but are only
+     ever fed to JSON-LD, and no article sets them. The live Shopify articles
+     have no image either, so `show_featured_image` is a merchant escape hatch
+     that is dark today. Turning it on would put a photograph on the page that
+     React does not have.
 {%- endcomment -%}
 
 {{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
 {{ 'nf-content.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
-  assign words = article.content | strip_html | split: ' ' | size
-  assign minutes = words | divided_by: 200 | at_least: 1
+  assign minutes = article.metafields.custom.read_time.value
+  if minutes == blank
+    assign words = article.content | strip_html | split: ' ' | size
+    assign minutes = words | divided_by: 200 | at_least: 1
+  endif
+
+  assign lead = ''
+  assign body = article.content
+  assign opener = article.content | strip | slice: 0, 3
+  if opener == '<p>'
+    assign chunks = article.content | split: '</p>'
+    assign lead = chunks[0] | strip_html | strip
+    assign body = article.content | remove_first: chunks[0] | remove_first: '</p>'
+  endif
+
+  assign more_posts = blog.articles | sort: 'id'
 -%}
 
 {%- if section.settings.show_progress -%}
@@ -27,21 +68,18 @@
 
 <div class="nf-journal">
   <article class="nf-article">
-    <nav class="nf-article__crumbs" aria-label="Breadcrumb">
-      <a href="{{ routes.root_url }}">{{ section.settings.crumb_home | escape }}</a>
-      <span aria-hidden="true">/</span>
-      <a href="{{ blog.url }}">{{ blog.title | upcase | escape }}</a>
-    </nav>
+    {%- comment -%}
+      React renders the two crumbs and the padded slash as three adjacent
+      children with no whitespace between them, so the nav's own text is
+      "HOME/JOURNAL". Keep this on one line — a newline becomes a space.
+    {%- endcomment -%}
+    <nav class="nf-article__crumbs" aria-label="Breadcrumb"><a href="{{ routes.root_url }}">{{ section.settings.crumb_home | escape }}</a><span aria-hidden="true">/</span><a href="{{ blog.url }}">{{ section.settings.crumb_blog | escape }}</a></nav>
 
     <header class="nf-article__head">
-      <p class="nf-journal__meta">
-        {{ article.published_at | date: '%-d %B %Y' }}
-        <span aria-hidden="true">·</span>
-        {{ minutes }} min read
-      </p>
+      <p class="nf-journal__meta">{{ article.published_at | date: '%-d %B %Y' }}<span aria-hidden="true">·</span>{{ minutes }} min read</p>
       <h1>{{ article.title | escape }}</h1>
-      {%- if article.excerpt != blank -%}
-        <p class="nf-article__excerpt">{{ article.excerpt | strip_html }}</p>
+      {%- if lead != '' -%}
+        <p class="nf-article__excerpt">{{ lead }}</p>
       {%- endif -%}
     </header>
 
@@ -56,40 +94,45 @@
       >
     {%- endif -%}
 
-    <div class="nf-article__body">{{ article.content }}</div>
+    {%- comment -%}
+      One wrapper for body + aside + more list: React's <div class="py-10">
+      owns the 40px above the first heading and below the last link, and the
+      aside/more margins measure from inside it.
+    {%- endcomment -%}
+    <div class="nf-article__main">
+      <div class="nf-article__body">{{ body }}</div>
 
-    {%- if section.settings.show_aside -%}
-      <aside class="nf-article__cta">
-        <p class="nf-kicker">{{ section.settings.aside_kicker | escape }}</p>
-        <p>{{ section.settings.aside_text | escape }}</p>
-        <div class="nf-article__cta-links">
-          {%- if section.settings.aside_link_1_label != blank -%}
-            <a class="nf-link-ghost" href="{{ section.settings.aside_link_1 }}">{{ section.settings.aside_link_1_label | escape }}</a>
+      {%- if section.settings.show_aside -%}
+        <aside class="nf-article__cta">
+          <p class="nf-kicker">{{ section.settings.aside_kicker | escape }}</p>
+          <p>{{ section.settings.aside_text | escape }}</p>
+          <div class="nf-article__cta-links">
+            {%- if section.settings.aside_link_1_label != blank -%}
+              <a class="nf-link-ghost" href="{{ section.settings.aside_link_1 }}">{{ section.settings.aside_link_1_label | escape }}</a>
+            {%- endif -%}
+            {%- if section.settings.aside_link_2_label != blank -%}
+              <a class="nf-link-ghost nf-link-ghost--quiet" href="{{ section.settings.aside_link_2 }}">{{ section.settings.aside_link_2_label | escape }}</a>
+            {%- endif -%}
+          </div>
+        </aside>
+      {%- endif -%}
+
+      {%- assign more_count = 0 -%}
+      {%- capture more_items -%}
+        {%- for related in more_posts limit: 8 -%}
+          {%- if related.id != article.id and more_count < 3 -%}
+            {%- assign more_count = more_count | plus: 1 -%}
+            <li><a href="{{ related.url }}">{{ related.title | escape }}<span aria-hidden="true">&rarr;</span></a></li>
           {%- endif -%}
-          {%- if section.settings.aside_link_2_label != blank -%}
-            <a class="nf-link-ghost nf-link-ghost--quiet" href="{{ section.settings.aside_link_2 }}">{{ section.settings.aside_link_2_label | escape }}</a>
-          {%- endif -%}
-        </div>
-      </aside>
-    {%- endif -%}
-
-    {%- assign more_count = 0 -%}
-    {%- capture more_items -%}
-      {%- for related in blog.articles limit: 8 -%}
-        {%- if related.id != article.id and more_count < 3 -%}
-          {%- assign more_count = more_count | plus: 1 -%}
-          <li><a href="{{ related.url }}">{{ related.title | escape }}</a></li>
-        {%- endif -%}
-      {%- endfor -%}
-    {%- endcapture -%}
-    {%- if more_count > 0 -%}
-      <nav class="nf-article__more" aria-label="{{ section.settings.more_heading | escape }}">
-        <h2>{{ section.settings.more_heading | escape }}</h2>
-        <ul>{{ more_items }}</ul>
-      </nav>
-    {%- endif -%}
-
-    <div style="padding-bottom: 80px;"></div>
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- if more_count > 0 -%}
+        <nav class="nf-article__more" aria-label="{{ section.settings.more_heading | escape }}">
+          <h2>{{ section.settings.more_heading | escape }}</h2>
+          <ul>{{ more_items }}</ul>
+        </nav>
+      {%- endif -%}
+    </div>
   </article>
 </div>
 
@@ -144,6 +187,108 @@
 @supports not (animation-timeline: scroll(root block)) {
   .nf-progress { display: none; }
 }
+
+/* Everything below is a delta on the .nf-article block in nf-content.css,
+   which is shared and off-limits to this section. Each selector is prefixed
+   with .nf-journal so it outranks the base rule whatever order the two
+   stylesheets land in. */
+
+/* React's `velista` const resolves to the plain body sans, not to Velista:
+   --font-cormorant is defined nowhere in the React build, so the whole
+   font-family declaration is invalid at computed-value time and the element
+   inherits body. Same finding as the --nf-journal-sans note in nf-content.css,
+   which is where that stack is defined. Confirmed by computed-style diff:
+   React reports ui-sans-serif/400 for the h1, every section h2 and the
+   more-list links. Put --nf-font-display back here if React ever defines the
+   var. */
+.nf-journal .nf-article__head h1,
+.nf-journal .nf-article__body :is(h2, h3),
+.nf-journal .nf-article__more a {
+  font-family: var(--nf-journal-sans) !important;
+}
+/* Tailwind preflight leaves headings at font-weight: inherit, i.e. body's 400.
+   Beats the blanket .nf-journal :is(h1..h4) { font-weight: 500 }. */
+.nf-journal .nf-article :is(h1, h2, h3) { font-weight: 400; }
+
+/* React: <div class="py-10"> wraps sections + aside + more list, so the 40px
+   belongs to that wrapper and not to the body — leaving it on the body added
+   it to the aside's own 48px and pushed the whole tail of the page down. */
+.nf-journal .nf-article__main { padding-block: 40px; }
+.nf-journal .nf-article__body { padding-block: 0; }
+.nf-journal .nf-article__body > :first-child { margin-top: 0; }
+
+/* React's h2 is `flex items-baseline gap-3` with the gold rule as its first
+   child, so a heading that wraps indents its continuation lines past the rule.
+   As an inline-block ::before it did not, and every h2 wrapped differently at
+   390px. */
+.nf-journal .nf-article__body :is(h2, h3) {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.nf-journal .nf-article__body :is(h2, h3)::before {
+  margin-right: 0;
+  flex: none;
+  align-self: center;
+}
+
+/* ── FAQ ──────────────────────────────────────────────────────────
+   article.content carries the FAQs as <h2>Frequently asked</h2><dl>.
+   React renders that as <section class="border-t pt-10"> + a plain heading +
+   one bordered <div> per pair. Targeting the heading by the <dl> that follows
+   it reproduces the section rule without splitting the body string, and the
+   border is carried by the dt and dd together (padding, not margin, between
+   them) so the gold rule runs unbroken down the pair the way the wrapper
+   div's does. */
+.nf-journal .nf-article__body h2:has(+ dl) {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--nf-journal-rule);
+  line-height: 1.5;
+}
+.nf-journal .nf-article__body h2:has(+ dl)::before { content: none; }
+.nf-journal .nf-article__body dl { margin: 24px 0 0; }
+.nf-journal .nf-article__body dt,
+.nf-journal .nf-article__body dd {
+  border-left: 1px solid rgb(var(--nf-gold-rgb) / 0.3);
+  padding-left: 16px;
+  transition: border-color 0.3s ease;
+}
+.nf-journal .nf-article__body dt {
+  margin: 0;
+  font-family: var(--nf-font-label);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--nf-ink);
+}
+.nf-journal .nf-article__body dt + dt,
+.nf-journal .nf-article__body dd + dt { margin-top: 24px; }
+.nf-journal .nf-article__body dd {
+  margin: 0;
+  padding-top: 8px;
+  font-size: 14px;
+  line-height: 1.85;
+  color: rgb(var(--nf-ink-rgb) / 0.65);
+}
+.nf-journal .nf-article__body dt:hover,
+.nf-journal .nf-article__body dt:has(+ dd:hover),
+.nf-journal .nf-article__body dt:hover + dd,
+.nf-journal .nf-article__body dd:hover { border-color: var(--nf-gold); }
+@media (min-width: 768px) {
+  .nf-journal .nf-article__body dt { font-size: 16px; }
+  .nf-journal .nf-article__body dd { font-size: 15px; }
+}
+
+/* The more-list arrow is transparent until hover in React, but it still takes
+   up its 8px gap and its own width, which decides where a long title wraps. */
+.nf-journal .nf-article__more a { display: inline-flex; align-items: baseline; gap: 8px; }
+.nf-journal .nf-article__more a span {
+  font-family: var(--nf-journal-sans);
+  font-size: 14px;
+  color: rgb(var(--nf-gold-rgb) / 0);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.nf-journal .nf-article__more a:hover span { color: var(--nf-gold); transform: translateX(2px); }
 {% endstylesheet %}
 
 {% schema %}
@@ -155,6 +300,7 @@
     { "type": "checkbox", "id": "show_progress", "label": "Show reading-progress hairline", "default": true },
     { "type": "checkbox", "id": "show_featured_image", "label": "Show featured image", "default": true },
     { "type": "text", "id": "crumb_home", "label": "Breadcrumb home label", "default": "HOME" },
+    { "type": "text", "id": "crumb_blog", "label": "Breadcrumb blog label", "default": "JOURNAL" },
     {
       "type": "checkbox",
       "id": "enable_schema_org",
@@ -164,20 +310,20 @@
 
     { "type": "header", "content": "Shop aside" },
     { "type": "checkbox", "id": "show_aside", "label": "Show the shop aside", "default": true },
-    { "type": "text", "id": "aside_kicker", "label": "Kicker", "default": "The Gilded Hour" },
+    { "type": "text", "id": "aside_kicker", "label": "Kicker", "default": "NAIRA PETITE" },
     {
       "type": "textarea",
       "id": "aside_text",
       "label": "Text",
       "default": "Hand-set zircone in an 18K gold finish, finished at our atelier."
     },
-    { "type": "text", "id": "aside_link_1_label", "label": "Primary link label", "default": "Shop rings" },
+    { "type": "text", "id": "aside_link_1_label", "label": "Primary link label", "default": "SHOP RINGS" },
     { "type": "url", "id": "aside_link_1", "label": "Primary link" },
-    { "type": "text", "id": "aside_link_2_label", "label": "Secondary link label", "default": "All jewellery" },
+    { "type": "text", "id": "aside_link_2_label", "label": "Secondary link label", "default": "ALL JEWELLERY" },
     { "type": "url", "id": "aside_link_2", "label": "Secondary link" },
 
     { "type": "header", "content": "More from the journal" },
-    { "type": "text", "id": "more_heading", "label": "Heading", "default": "More from the journal" }
+    { "type": "text", "id": "more_heading", "label": "Heading", "default": "MORE FROM THE JOURNAL" }
   ],
   "presets": [{ "name": "Naira journal article" }]
 }

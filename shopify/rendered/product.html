@@ -437,7 +437,7 @@
 
 .nf-pdp__toprow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 26px; }
 .nf-pdp__eyebrow { margin: 0; font-family: var(--nf-font-label); font-size: 10px; letter-spacing: var(--nf-track-34); color: var(--nf-gold-deep); }
-.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; padding: 4px 0 4px 8px; font-size: 12px; color: hsl(0 0% 35%); text-decoration: none; }
+.nf-pdp__rating { display: inline-flex; flex-shrink: 0; align-items: center; gap: 4px; margin-right: -4px; padding: 4px 0 4px 8px; font-size: 12px; letter-spacing: .02em; color: hsl(0 0% 35%); text-decoration: none; }
 .nf-pdp__star { color: var(--nf-gold-deep); }
 .nf-pdp__rating-n { font-weight: 500; color: hsl(0 0% 15%); }
 .nf-pdp__rating-c { text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 48%); }
@@ -488,7 +488,7 @@
 .nf-pdp__add:focus-visible, .nf-pdp__buy:focus-visible { outline: 2px solid var(--nf-gold-deep); outline-offset: 2px; }
 .nf-pdp__add.is-added { animation: nf-pdp-check-pop 260ms var(--ease-out-strong, ease-out); }
 @keyframes nf-pdp-check-pop { from { opacity: .7; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-.nf-pdp__trust { margin: 8px 0 0; text-align: center; font-size: 11px; color: hsl(0 0% 50%); }
+.nf-pdp__trust { margin: 8px 0 0; text-align: center; font-size: 11px; letter-spacing: .02em; color: hsl(0 0% 50%); }
 .nf-pdp__trust a { color: hsl(0 0% 35%); text-decoration: underline; text-underline-offset: 4px; }
 .nf-pdp__pair { display: flex; gap: 12px; margin-top: 12px; }
 .nf-pdp__ghost { flex: 1; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid hsl(0 0% 74%); background: none; color: hsl(0 0% 30%); cursor: pointer; text-decoration: none; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .12em; }
@@ -2361,7 +2361,7 @@
     <div class="nf-pdp__crumb-trail">
       <a href="/">Home</a><span aria-hidden="true">/</span>
       <a href="/collections/all">Jewellery</a><span aria-hidden="true">/</span>
-      <span aria-current="page">Rivière Eternal Necklace</span>
+      <span aria-current="page">Heartline Paperclip Necklace</span>
     </div>
     <button type="button" class="nf-pdp__back" data-nf-back aria-label="Go back">
       <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -2372,27 +2372,34 @@
   <div class="nf-pdp__layout"><div class="nf-pdp__gallery" data-nf-gallery>
       <button type="button" class="nf-pdp__mback" data-nf-back aria-label="Go back">
         <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-      </button><div class="nf-pdp__rail nf-pdp__rail--3" data-nf-rail><button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="0"
-                    aria-label="Open Rivière Eternal Necklace image 1 full screen">
+      </button><div class="nf-pdp__rail nf-pdp__rail--4" data-nf-rail><button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="0"
+                    aria-label="Open Heartline Paperclip Necklace image 1 full screen">
               <img class="nf-pdp__img"
-                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=1400"
-                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=1400 1400w"
+                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=1400"
+                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=1400 1400w"
                    sizes="(min-width: 768px) 50vw, 100vw"
-                   alt="Riviere Eternal Necklace" loading="eager" decoding="async">
+                   alt="Heartline Paperclip Necklace" loading="eager" decoding="async">
             </button><button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="1"
-                    aria-label="Open Rivière Eternal Necklace image 2 full screen">
+                    aria-label="Open Heartline Paperclip Necklace image 2 full screen">
               <img class="nf-pdp__img"
-                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=1400"
-                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg?v=1787277307&width=1400 1400w"
+                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=1400"
+                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg?v=1787277315&width=1400 1400w"
                    sizes="(min-width: 768px) 50vw, 100vw"
-                   alt="Rivière Eternal Necklace" loading="lazy" decoding="async">
+                   alt="Heartline Paperclip Necklace" loading="lazy" decoding="async">
             </button><button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="2"
-                    aria-label="Open Rivière Eternal Necklace image 3 full screen">
+                    aria-label="Open Heartline Paperclip Necklace image 3 full screen">
               <img class="nf-pdp__img"
-                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-2.jpg?v=1787277307&width=1400"
-                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-2.jpg?v=1787277307&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-2.jpg?v=1787277307&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-2.jpg?v=1787277307&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-2.jpg?v=1787277307&width=1400 1400w"
+                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-2.jpg?v=1787277315&width=1400"
+                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-2.jpg?v=1787277315&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-2.jpg?v=1787277315&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-2.jpg?v=1787277315&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-2.jpg?v=1787277315&width=1400 1400w"
                    sizes="(min-width: 768px) 50vw, 100vw"
-                   alt="Rivière Eternal Necklace" loading="lazy" decoding="async">
+                   alt="Heartline Paperclip Necklace" loading="lazy" decoding="async">
+            </button><button type="button" class="nf-pdp__slide" data-nf-lightbox-open data-index="3"
+                    aria-label="Open Heartline Paperclip Necklace image 4 full screen">
+              <img class="nf-pdp__img"
+                   src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-3.jpg?v=1787277315&width=1400"
+                   srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-3.jpg?v=1787277315&width=400 400w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-3.jpg?v=1787277315&width=800 800w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-3.jpg?v=1787277315&width=1200 1200w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-3.jpg?v=1787277315&width=1400 1400w"
+                   sizes="(min-width: 768px) 50vw, 100vw"
+                   alt="Heartline Paperclip Necklace" loading="lazy" decoding="async">
             </button></div>
 
         <button type="button" class="nf-pdp__wish" data-nf-wishlist aria-pressed="false" aria-label="Add to wishlist"><svg class="nf-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
@@ -2402,12 +2409,17 @@
           <span class="nf-pdp__share-copied" data-nf-share-copied aria-hidden="true">Link copied</span>
         </button><p class="nf-pdp__zoomhint" data-nf-zoomhint>
           <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-          Tap to zoom<span class="nf-pdp__zoomhint-count" data-nf-idx data-nf-total="3">&middot; 1/3</span></p><div class="nf-pdp__dots" data-nf-dots role="tablist" aria-label="Choose image"><button type="button" class="nf-pdp__dot is-active" data-nf-dot data-index="0" aria-label="View image 1"></button><button type="button" class="nf-pdp__dot" data-nf-dot data-index="1" aria-label="View image 2"></button><button type="button" class="nf-pdp__dot" data-nf-dot data-index="2" aria-label="View image 3"></button></div></div><div class="nf-pdp__details"><div class="nf-pdp__toprow">
-          <p class="nf-pdp__eyebrow">NECKLACES &middot; DEMI-GOLD</p></div><h1 class="nf-pdp__title">Rivière Eternal Necklace</h1>
+          Tap to zoom<span class="nf-pdp__zoomhint-count" data-nf-idx data-nf-total="4">&middot; 1/4</span></p><div class="nf-pdp__dots" data-nf-dots role="tablist" aria-label="Choose image"><button type="button" class="nf-pdp__dot is-active" data-nf-dot data-index="0" aria-label="View image 1"></button><button type="button" class="nf-pdp__dot" data-nf-dot data-index="1" aria-label="View image 2"></button><button type="button" class="nf-pdp__dot" data-nf-dot data-index="2" aria-label="View image 3"></button><button type="button" class="nf-pdp__dot" data-nf-dot data-index="3" aria-label="View image 4"></button></div></div><div class="nf-pdp__details"><div class="nf-pdp__toprow">
+          <p class="nf-pdp__eyebrow">NECKLACES &middot; DEMI-GOLD</p><a class="nf-pdp__rating" href="#customer-reviews"
+               aria-label="Rated 4.9 out of 5 from 43 reviews. Jump to reviews.">
+              <span aria-hidden="true" class="nf-pdp__star">&#9733;</span>
+              <span class="nf-pdp__rating-n">4.9</span>
+              <span class="nf-pdp__rating-c">(43)</span>
+            </a></div><h1 class="nf-pdp__title">Heartline Paperclip Necklace</h1>
 
       <div class="nf-pdp__price-row" id="product-price">
-        <span class="nf-pdp__price" data-nf-price>₹1,799</span><s class="nf-pdp__was">₹3,269</s>
-          <span class="nf-pdp__off">45% OFF</span><span class="nf-pdp__tax">inclusive of all taxes</span>
+        <span class="nf-pdp__price" data-nf-price>₹2,449</span><s class="nf-pdp__was">₹3,769</s>
+          <span class="nf-pdp__off">35% OFF</span><span class="nf-pdp__tax">inclusive of all taxes</span>
       </div>
       <p class="nf-pdp__mrp">MRP inclusive of all taxes &middot; flat &#8377;150 insured shipping across India</p>
 
@@ -2420,21 +2432,17 @@
           <span data-nf-qty-val aria-live="polite">1</span>
           <button type="button" aria-label="Increase quantity" data-nf-qty="1">+</button>
         </div>
-      </div><div class="nf-pdp__actions" id="product-actions"><form method="post" action="/cart/add" class="nf-pdp__form" id="NfPdpForm"><input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786480802" data-nf-variant-input>
-          <input type="hidden" name="quantity" value="1" data-nf-qty-input></form><a class="nf-pdp__add nf-pdp__add--notify press-scale" href="https://wa.me/919561557935?text=Rivi%25C3%25A8re%2BEternal%2BNecklace" target="_blank" rel="noopener noreferrer">
-            <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Notify me on WhatsApp
-          </a><button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__buy press-scale" disabled>
-          <span data-nf-buy-label>Sold Out</span>
-        </button>
+      </div><div class="nf-pdp__actions" id="product-actions"><form method="post" action="/cart/add" class="nf-pdp__form" id="NfPdpForm"><input type="hidden" name="id" value="gid://shopify/ProductVariant/47501786513570" data-nf-variant-input>
+          <input type="hidden" name="quantity" value="1" data-nf-qty-input><button type="submit" name="add" class="nf-pdp__add press-scale" data-nf-add-button>Add to Cart</button></form><button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__buy press-scale" >Shop Now</button>
 
-        <p class="nf-pdp__trust">This piece is currently sold out &mdash; we'll let you know the moment it's back.</p>
+        <p class="nf-pdp__trust">Secure payments &middot; Insured delivery &middot;
+            <a href="/policies/refund-policy">7-day returns</a></p>
 
         <div class="nf-pdp__pair">
           <button type="button" class="nf-pdp__ghost press-scale" data-nf-wishlist aria-pressed="false"><svg class="nf-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
 <span data-nf-wishlist-label>Wishlist</span>
           </button>
-          <a class="nf-pdp__ghost" href="https://wa.me/919561557935?text=Rivi%25C3%25A8re%2BEternal%2BNecklace" target="_blank" rel="noopener noreferrer">
+          <a class="nf-pdp__ghost" href="https://wa.me/919561557935?text=Heartline%2BPaperclip%2BNecklace" target="_blank" rel="noopener noreferrer">
             <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             WhatsApp
           </a>
@@ -2452,8 +2460,8 @@
         </ul>
       </div><dl class="nf-pdp__facts" aria-label="Key facts">
           <div class="nf-pdp__fact"><dt>Finish</dt><dd>18k gold</dd></div>
-          <div class="nf-pdp__fact"><dt>Stone</dt><dd>Brilliant-cut zircone</dd></div><div class="nf-pdp__fact"><dt>Category</dt><dd>Necklaces</dd></div></dl><p class="nf-pdp__stock is-out" data-nf-stock>
-        Sold Out
+          <div class="nf-pdp__fact"><dt>Stone</dt><dd>Brilliant-cut zircone</dd></div><div class="nf-pdp__fact"><dt>Category</dt><dd>Necklaces</dd></div></dl><p class="nf-pdp__stock" data-nf-stock>
+        In Stock
       </p><div class="nf-pdp__trustbadges"><div class="nf-pdp__trustbadge">
             <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
             <span>Anti-Tarnish Sealed</span>
@@ -2491,7 +2499,7 @@
         <div class="nf-pdp__tabbar" role="tablist">
           <button type="button" class="nf-pdp__tabbtn is-active" role="tab" aria-selected="true" id="nf-tab-details-main" aria-controls="nf-panel-details-main" data-nf-tab="details">Details</button>
           <button type="button" class="nf-pdp__tabbtn" role="tab" aria-selected="false" id="nf-tab-care-main" aria-controls="nf-panel-care-main" data-nf-tab="care">Care</button>
-        </div><div class="nf-pdp__tabpanel" id="nf-panel-details-main" role="tabpanel" aria-labelledby="nf-tab-details-main" data-nf-tabpanel="details"><div class="nf-pdp__detailstack"><p class="nf-pdp__blurb">Light, laid in a single row. This 40cm necklace is set with round brilliant cut clear cubic zirconia of about 3mm, each stone in its own four claw gold setting linked directly to the next so the line never breaks. A flat polished buckle station of about 12mm sits at the front. Wear it high on the neck with an open collar, or under a saree blouse for a wedding evening.</p><dl class="nf-pdp__specs"><div class="nf-pdp__spec"><dt>Length</dt><dd>Approximately 40cm</dd></div><div class="nf-pdp__spec"><dt>Stone</dt><dd>Round brilliant cut clear cubic zirconia, each in its own four claw setting</dd></div><div class="nf-pdp__spec"><dt>Setting</dt><dd>Individual four claw settings linked directly to one another</dd></div><div class="nf-pdp__spec"><dt>Feature</dt><dd>Flat rectangular buckle station, approximately 12mm, at the front</dd></div><div class="nf-pdp__spec"><dt>Plating</dt><dd>18k gold tone plated</dd></div><div class="nf-pdp__spec"><dt>Material</dt><dd>Surgical stainless steel</dd></div></dl><p class="nf-pdp__tip"><span class="nf-pdp__tip-label">Styling tip</span>Pair it with an open collar shirt and small studs so the line stays uninterrupted.</p><p class="nf-pdp__materials">18k gold tone plated · brilliant-cut zircone · surgical stainless steel</p></div></div>
+        </div><div class="nf-pdp__tabpanel" id="nf-panel-details-main" role="tabpanel" aria-labelledby="nf-tab-details-main" data-nf-tabpanel="details"><div class="nf-pdp__detailstack"><p class="nf-pdp__blurb">Small hearts, gathered where they show. This necklace is built from fine gold paperclip links, with the row of small heart shaped clear cubic zirconia stations grouped through the front centre section and plain chain running along both sides. The plating is finished in 18k gold tone over surgical stainless steel, so it holds up to daily wear. Wear it on its own, or layer it under a longer chain.</p><dl class="nf-pdp__specs"><div class="nf-pdp__spec"><dt>Chain</dt><dd>Fine gold paperclip links</dd></div><div class="nf-pdp__spec"><dt>Stone</dt><dd>Small heart shaped clear cubic zirconia stations</dd></div><div class="nf-pdp__spec"><dt>Placement</dt><dd>Stations grouped through the front centre section, with plain paperclip chain along both sides</dd></div><div class="nf-pdp__spec"><dt>Finish</dt><dd>Tarnish resistant gold plating</dd></div><div class="nf-pdp__spec"><dt>Plating</dt><dd>18k gold tone plated</dd></div><div class="nf-pdp__spec"><dt>Material</dt><dd>Surgical stainless steel</dd></div></dl><p class="nf-pdp__tip"><span class="nf-pdp__tip-label">Styling tip</span>Layer it with a longer pendant chain so the heart stations stay visible above it.</p><p class="nf-pdp__materials">18k gold tone plated · brilliant-cut zircone · surgical stainless steel</p></div></div>
         <div class="nf-pdp__tabpanel" id="nf-panel-care-main" role="tabpanel" aria-labelledby="nf-tab-care-main" data-nf-tabpanel="care" hidden><p class="nf-pdp__care">Waterproof and tarnish free, so daily wear and water are fine. Keep it away from perfume and harsh chemicals, wipe with a soft dry cloth and store it flat in its pouch.</p></div>
       </div>
 
@@ -2522,7 +2530,7 @@
           <a class="nf-pdp__help-link" href="mailto:shopatnaira@gmail.com"><svg class="nf-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
 Email Us
           </a>
-          <a class="nf-pdp__help-link" href="https://wa.me/919561557935?text=Rivi%25C3%25A8re%2BEternal%2BNecklace" target="_blank" rel="noopener noreferrer">
+          <a class="nf-pdp__help-link" href="https://wa.me/919561557935?text=Heartline%2BPaperclip%2BNecklace" target="_blank" rel="noopener noreferrer">
             <svg class="nf-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>
             WhatsApp
           </a>
@@ -2531,11 +2539,11 @@ Email Us
     </div>
   </div><div class="nf-pdp__bar" data-nf-bar aria-hidden="true">
     <button type="button" class="nf-pdp__bar-wish" data-nf-wishlist aria-pressed="false" aria-label="Add to wishlist"><svg class="nf-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-</button><span class="nf-pdp__bar-soldout">Sold Out</span>
-      <a class="nf-pdp__bar-notify press-scale" href="https://wa.me/919561557935?text=Rivi%25C3%25A8re%2BEternal%2BNecklace" target="_blank" rel="noopener noreferrer">Notify me</a></div><dialog class="nf-pdp__lightbox" data-nf-lightbox aria-label="Rivière Eternal Necklace, image viewer">
+</button><button type="submit" form="NfPdpForm" data-nf-add-button class="nf-pdp__bar-add press-scale">Add to Cart</button>
+      <button type="submit" form="NfPdpForm" data-nf-buy-now data-nf-add-button class="nf-pdp__bar-buy press-scale"><span data-nf-buy-label>Shop now</span></button></div><dialog class="nf-pdp__lightbox" data-nf-lightbox aria-label="Heartline Paperclip Necklace, image viewer">
       <div class="nf-pdp__lightbox-top">
         <div class="nf-pdp__lightbox-id">
-          <p class="nf-pdp__lightbox-name">Rivière Eternal Necklace</p><p class="nf-pdp__lightbox-count" data-nf-lightbox-count aria-live="polite"></p></div>
+          <p class="nf-pdp__lightbox-name">Heartline Paperclip Necklace</p><p class="nf-pdp__lightbox-count" data-nf-lightbox-count aria-live="polite"></p></div>
         <div class="nf-pdp__lightbox-tools">
           <button type="button" class="nf-pdp__lightbox-btn" data-nf-lightbox-zoom aria-pressed="false" aria-label="Zoom in to 2x">
             <svg class="nf-icon" data-nf-zoom-in viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
@@ -2627,54 +2635,54 @@ Email Us
     <div class="nf-reviews__filters"><button type="button" class="nf-reviews__chip is-review-active" data-nf-review-filter="All Reviews" aria-pressed="true">All Reviews</button><button type="button" class="nf-reviews__chip" data-nf-review-filter="With Photos" aria-pressed="false">With Photos</button><button type="button" class="nf-reviews__chip" data-nf-review-filter="5&#9733;" aria-pressed="false">5&#9733;</button><button type="button" class="nf-reviews__chip" data-nf-review-filter="4&#9733;" aria-pressed="false">4&#9733;</button><button type="button" class="nf-reviews__chip" data-nf-review-filter="3&#9733;" aria-pressed="false">3&#9733;</button><button type="button" class="nf-reviews__chip" data-nf-review-filter="2&#9733;" aria-pressed="false">2&#9733;</button><button type="button" class="nf-reviews__chip" data-nf-review-filter="1&#9733;" aria-pressed="false">1&#9733;</button></div>
 
     <div class="nf-reviews__grid" data-nf-review-grid><div class="nf-reviews__card" data-nf-review
-             data-no="181" data-rating="5" data-photos="0">
+             data-no="1" data-rating="5" data-photos="0">
           <div class="nf-reviews__card-head">
-            <span class="nf-reviews__no" data-nf-review-no>#181</span>
-            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">VA</span></span>
+            <span class="nf-reviews__no" data-nf-review-no>#1</span>
+            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">AA</span></span>
             <div class="nf-reviews__who">
-              <p class="nf-reviews__name">Vidya A.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
+              <p class="nf-reviews__name">Aarti A.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
           </div>
           <div class="nf-reviews__meta">
             <div class="nf-reviews__stars" role="img" aria-label="Rated 5 out of 5"><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg></div>
-            <span class="nf-reviews__date">March 16, 2026</span>
+            <span class="nf-reviews__date">August 28, 2026</span>
           </div>
-          <p class="nf-reviews__text">"Sits flat and comfortable  Highly recommend ."</p></div><div class="nf-reviews__card" data-nf-review
-             data-no="182" data-rating="5" data-photos="0">
+          <p class="nf-reviews__text">"Loved it... looks far more expensive than it is"</p></div><div class="nf-reviews__card" data-nf-review
+             data-no="2" data-rating="5" data-photos="0">
           <div class="nf-reviews__card-head">
-            <span class="nf-reviews__no" data-nf-review-no>#182</span>
-            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">VJ</span></span>
+            <span class="nf-reviews__no" data-nf-review-no>#2</span>
+            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">AJ</span></span>
             <div class="nf-reviews__who">
-              <p class="nf-reviews__name">Vinita J.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
+              <p class="nf-reviews__name">Aditi J.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
           </div>
           <div class="nf-reviews__meta">
             <div class="nf-reviews__stars" role="img" aria-label="Rated 5 out of 5"><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg></div>
-            <span class="nf-reviews__date">March 15, 2026</span>
+            <span class="nf-reviews__date">August 27, 2026</span>
           </div>
-          <p class="nf-reviews__text">"Adds so much to a plain outfit... Highly recommend ."</p></div><div class="nf-reviews__card" data-nf-review
-             data-no="183" data-rating="5" data-photos="0">
+          <p class="nf-reviews__text">"Quality is genuinely good for the price"</p></div><div class="nf-reviews__card" data-nf-review
+             data-no="3" data-rating="5" data-photos="0">
           <div class="nf-reviews__card-head">
-            <span class="nf-reviews__no" data-nf-review-no>#183</span>
-            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">VT</span></span>
+            <span class="nf-reviews__no" data-nf-review-no>#3</span>
+            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">AT</span></span>
             <div class="nf-reviews__who">
-              <p class="nf-reviews__name">Vrinda T.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
+              <p class="nf-reviews__name">Akanksha T.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
           </div>
           <div class="nf-reviews__meta">
             <div class="nf-reviews__stars" role="img" aria-label="Rated 5 out of 5"><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg></div>
-            <span class="nf-reviews__date">March 14, 2026</span>
+            <span class="nf-reviews__date">August 26, 2026</span>
           </div>
-          <p class="nf-reviews__text">"Ordered as a birthday gift , she loved it Highly recommend ."</p></div><div class="nf-reviews__card" data-nf-review
-             data-no="184" data-rating="5" data-photos="0">
+          <p class="nf-reviews__text">"Sparkle is unreal in daylight!! very happy"</p></div><div class="nf-reviews__card" data-nf-review
+             data-no="4" data-rating="5" data-photos="0">
           <div class="nf-reviews__card-head">
-            <span class="nf-reviews__no" data-nf-review-no>#184</span>
-            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">YD</span></span>
+            <span class="nf-reviews__no" data-nf-review-no>#4</span>
+            <span class="nf-reviews__avatar"><span class="nf-reviews__initials">AD</span></span>
             <div class="nf-reviews__who">
-              <p class="nf-reviews__name">Yamini D.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
+              <p class="nf-reviews__name">Alisha D.</p><span class="nf-reviews__verified">Verified Buyer</span></div>
           </div>
           <div class="nf-reviews__meta">
             <div class="nf-reviews__stars" role="img" aria-label="Rated 5 out of 5"><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg><svg class="nf-reviews__star" aria-hidden="true" focusable="false"><use href="#nf-review-star"/></svg></div>
-            <span class="nf-reviews__date">March 13, 2026</span>
+            <span class="nf-reviews__date">August 25, 2026</span>
           </div>
-          <p class="nf-reviews__text">"Understated luxury.. that's the vibe Highly recommend ."</p></div><div class="nf-reviews__card" data-nf-review
+          <p class="nf-reviews__text">"Packaging was lovely and delivery was quick.."</p></div><div class="nf-reviews__card" data-nf-review
              data-no="" data-rating="5" data-photos="1">
           <div class="nf-reviews__card-head">
             <span class="nf-reviews__no" data-nf-review-no>#5</span>
@@ -3246,17 +3254,17 @@ Email Us
     <div class="nf-pdp__related-inner">
       <h2 class="nf-pdp__related-title">You may also like</h2>
       <p class="nf-pdp__related-sub">MORE NECKLACES FROM THE ATELIER</p>
-      <div class="nf-pdp__related-grid"><a href="/products/heartline-paperclip-necklace" class="nf-pdp__related-card">
+      <div class="nf-pdp__related-grid"><a href="/products/riviere-eternal-necklace" class="nf-pdp__related-card">
               <span class="nf-pdp__related-imgwrap">
                 <img class="nf-pdp__related-img"
-                     src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=600"
-                     srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=300 300w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=450 450w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=600 600w"
+                     src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=600"
+                     srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=300 300w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=450 450w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=600 600w"
                      sizes="(min-width: 768px) 22vw, 45vw"
-                     alt="Heartline Paperclip Necklace" loading="lazy" decoding="async">
+                     alt="Rivière Eternal Necklace" loading="lazy" decoding="async">
               </span>
               <span class="nf-pdp__related-cat">NECKLACES</span>
-              <span class="nf-pdp__related-name">Heartline Paperclip Necklace</span>
-              <span class="nf-pdp__related-price"><span aria-hidden="true" class="nf-pdp__related-dot"></span>₹2,449</span>
+              <span class="nf-pdp__related-name">Rivière Eternal Necklace</span>
+              <span class="nf-pdp__related-price"><span aria-hidden="true" class="nf-pdp__related-dot"></span>₹1,799</span>
             </a><a href="/products/serpentine-whisper-chain" class="nf-pdp__related-card">
               <span class="nf-pdp__related-imgwrap">
                 <img class="nf-pdp__related-img"
@@ -3300,16 +3308,16 @@ Email Us
     </div>
     <div class="nf-ring__viewport">
       <div class="nf-ring__stage" data-nf-ring-stage>
-        <div class="nf-ring__spin" data-nf-ring-spin><a class="nf-ring__card" href="/products/heartline-paperclip-necklace" data-nf-ring-card data-i="0">
+        <div class="nf-ring__spin" data-nf-ring-spin><a class="nf-ring__card" href="/products/riviere-eternal-necklace" data-nf-ring-card data-i="0">
               <span class="nf-ring__frame">
                 <img class="nf-ring__img"
-                     src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=440"
-                     srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=220 220w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg?v=1787524296&width=440 440w"
+                     src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=440"
+                     srcset="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=220 220w, https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg?v=1787524333&width=440 440w"
                      sizes="220px"
-                     alt="Heartline Paperclip Necklace, necklaces by Naira Flore" loading="lazy" decoding="async" draggable="false">
+                     alt="Rivière Eternal Necklace, necklaces by Naira Flore" loading="lazy" decoding="async" draggable="false">
               </span>
               <span class="nf-ring__text">
-                <span class="nf-ring__name">Heartline Paperclip Necklace</span>
+                <span class="nf-ring__name">Rivière Eternal Necklace</span>
                 <span class="nf-ring__cat">Necklaces</span>
               </span>
             </a><a class="nf-ring__card" href="/products/toggle-link-chain" data-nf-ring-card data-i="1">
@@ -3557,9 +3565,12 @@ Email Us
       if (variantInput && id) variantInput.value = id;
       root.querySelectorAll('[data-nf-add-button]').forEach(function (btn) {
         btn.disabled = blocked;
-        var label = btn.querySelector('[data-nf-buy-label]');
-        if (label) label.textContent = blocked ? 'Sold Out' : (btn.hasAttribute('data-nf-buy-now') ? 'Shop Now' : 'Add to Cart');
-        else if (btn.hasAttribute('data-nf-buy-now') === false) btn.textContent = blocked ? 'Sold Out' : 'Add to Cart';
+        /* The inline CTAs carry their label as the button's own text (React
+           does, and a wrapper span makes the text node's background
+           transparent where React's is the button fill); the sticky bar
+           still wraps it, so write to the span when there is one. */
+        var label = btn.querySelector('[data-nf-buy-label]') || btn;
+        label.textContent = blocked ? 'Sold Out' : (btn.hasAttribute('data-nf-buy-now') ? 'Shop Now' : 'Add to Cart');
       });
     });
   });
@@ -3583,8 +3594,8 @@ Email Us
     form.addEventListener('submit', function (e) {
       var btn = e.submitter;
       if (!btn || !btn.hasAttribute('data-nf-buy-now')) return;
-      var label = btn.querySelector('[data-nf-buy-label]');
-      if (label) label.textContent = 'Opening checkout...';
+      var label = btn.querySelector('[data-nf-buy-label]') || btn;
+      label.textContent = 'Opening checkout...';
     });
   }
 
@@ -3700,7 +3711,7 @@ Email Us
   if (shareBtn) {
     shareBtn.addEventListener('click', function () {
       var url = window.location.href;
-      var title = "Rivière Eternal Necklace";
+      var title = "Heartline Paperclip Necklace";
       if (navigator.share) {
         navigator.share({ title: title, text: 'Check out ' + title + ' on Naira Flore', url: url }).catch(function () {});
         return;

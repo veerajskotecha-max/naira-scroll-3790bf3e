@@ -1,0 +1,15 @@
+/*
+ * Naira Flore apparel shop listing — ported from src/pages/ShopAll.tsx (/shop).
+ */{
+  "sections": {
+    "main": {
+      "type": "nf-shop-all",
+      "settings": {
+        "collection": "frontpage",
+        "hero_cta_url": "/pages/shop",
+        "cta_url": "/pages/made-for-you"
+      }
+    }
+  },
+  "order": ["main"]
+}

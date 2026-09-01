@@ -22,8 +22,20 @@ verifies; Sonnet agents do the mechanical work.
 
 ## Deploy protocol — do not skip
 
-1. **Only ever write to theme 150497591458.** It is unpublished.
-   `themeFilesUpsert` is rejected on the live/MAIN theme by design.
+1. **Write to theme 151002841250, "Naira Port -- working draft".**
+
+   The deploy target changed on 1 Sep. Theme 150497591458, the original
+   port target, was published: it is now MAIN, and `themeFilesUpsert` is
+   refused on a live theme by design, so it can no longer be written to.
+   151002841250 is a duplicate of it taken at that moment, unpublished
+   and writable. Everything since goes there, and a merchant publishes it
+   when the port is ready.
+
+   Note what publishing did and did not do. `nc5eti-gp.myshopify.com` does
+   render the port -- Shopify serves it, headers confirm -- but that host
+   301s to `www.nairaflore.com`, which Cloudflare serves with no Shopify
+   headers at all. The apex domain still points at the React app, so no
+   shopper has seen the ported theme.
 2. **Upload text files as BASE64, not TEXT, and verify by MD5.**
    `OnlineStoreThemeFileBodyInput` accepts `BASE64`. Encode the file
    locally, check the encoding round-trips (`base64 -d | cmp`), and send

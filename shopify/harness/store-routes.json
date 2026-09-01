@@ -1,15 +1,16 @@
 {
  "pages": [
-  "contact",
   "about-naira",
-  "made-for-you",
-  "custom",
-  "privacy-policy",
-  "terms",
-  "faqs",
-  "exchange-return-policy",
   "concepts",
-  "gifting"
+  "contact",
+  "custom",
+  "exchange-return-policy",
+  "faqs",
+  "gifting",
+  "made-for-you",
+  "privacy-policy",
+  "shop",
+  "terms"
  ],
  "collections": [
   "frontpage",

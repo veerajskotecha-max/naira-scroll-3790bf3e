@@ -575,6 +575,12 @@
   font-size: 13px; line-height: 1.5; font-weight: 500;
   text-transform: uppercase; letter-spacing: .15em; color: hsl(0 0% 48%);
 }
+.nf-shop-filters__clear {
+  padding-inline: 12px; min-height: 44px; border: 0; background-color: transparent; cursor: pointer;
+  font-family: var(--nf-font-display); font-size: 13px; font-weight: 500;
+  text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 45%);
+}
+.nf-shop-filters__clear[hidden] { display: none; }
 .nf-shop-filters__hr { height: 1px; width: 100%; flex: none; background-color: hsl(0 0% 90%); }
 .nf-shop-filters__hr--top { margin-top: 12px; background-color: hsl(0 0% 85%); }
 
@@ -1916,7 +1922,7 @@
                             <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
                           </div><div class="nf-mega__col">
                             <p class="nf-mega__label">APPAREL</p>
-                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                            <ul class="nf-mega__list"><li><a href="/pages/shop?category=Indo-Western" class="nf-mega__link">Indo-Western</a></li><li><a href="/pages/shop" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
                           </div></div>
                     </div>
                   </div>
@@ -2161,14 +2167,14 @@
                 hidden
               ><li>
                     <a
-                      href="/collections/all"
+                      href="/pages/shop?category=Indo-Western"
                       class="nf-mm__link nf-mm__link--sub"
                       data-nf-menu-close
                       
                     >Indo-Western</a>
                   </li><li>
                     <a
-                      href="/collections/shop-all"
+                      href="/pages/shop"
                       class="nf-mm__link nf-mm__link--sub"
                       data-nf-menu-close
                       
@@ -2262,7 +2268,7 @@
       </div>
 
       <h2 class="nf-shop-hero__title">The Festive <em class="nf-shop-hero__accent">Edit</em></h2><p class="nf-shop-hero__copy">Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape.</p><div class="nf-shop-hero__cta-row">
-        <a class="nf-shop-hero__cta" href="/pages/shop">Shop the Festive Edit</a>
+        <a class="nf-shop-hero__cta" href="/pages/shop#indo-western">Shop the Festive Edit</a>
       </div>
     </div>
 
@@ -2286,7 +2292,7 @@
             </button>
           </div>
 
-          <p class="nf-shop-bar__count" data-nf-count>18 Products</p>
+          <p class="nf-shop-bar__count" data-nf-count>17 Products</p>
 
           <div class="nf-shop-bar__sortwrap">
             <details class="nf-shop-sort" data-nf-sortmenu>
@@ -2408,6 +2414,7 @@
                 </div>
               </div>
             </details>
+            <button type="button" class="nf-shop-filters__clear" data-nf-reset data-nf-clear hidden>Clear All</button>
           </div>
 
           <div class="nf-shop-side__actions">
@@ -3358,78 +3365,6 @@
                 class="nf-shop-cell"
                 data-nf-cell
                 data-cat="Naira Flore"
-                data-price="55000"
-                data-avail="In Stock"
-                data-sizes=""
-                data-tagged="0"
-                data-idx="13"
-              ><link rel="stylesheet" href="/assets/nf-card.css"><div class="nf-card" data-nf-reveal style="--nf-card-delay: 880ms;">
-  <div class="nf-card__media">
-    <a class="nf-card__media-link" href="/products/nocturne-veil" tabindex="-1" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil.jpg?v=1787277298&width=600&width=1200" class="nf-card__img nf-card__img--primary" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw">
-        <img src="https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil-0.jpg?v=1787277298&width=600&width=1200" class="nf-card__img nf-card__img--hover" loading="lazy" sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"></a><button
-      type="button"
-      class="nf-card__wish nf-press"
-      data-nf-wishlist="nocturne-veil"
-      data-nf-wishlist-title="Nocturne Veil"
-      aria-pressed="false"
-      aria-label="Add Nocturne Veil to wishlist"
-    >
-      <svg class="nf-card__heart" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-      </svg>
-    </button><form
-        id="NfAdd-main-gid://shopify/Product/8788699938978"
-        class="nf-card__form"
-        action=""
-        method="post"
-        enctype="multipart/form-data"
-        data-nf-add
-        data-nf-add-title="Nocturne Veil"
-      >
-        <input type="hidden" name="id" value="gid://shopify/ProductVariant/45878099181730">
-        <input type="hidden" name="quantity" value="1">
-        <button
-          type="submit"
-          class="nf-card__add nf-card__add--overlay nf-press"
-          
-          aria-label="Add Nocturne Veil to cart"
-        >
-          <span class="nf-card__add-idle">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            Add to Cart
-          </span>
-          <span class="nf-card__add-done">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
-            Added
-          </span>
-        </button>
-      </form><div class="nf-card__scrim" aria-hidden="true"></div>
-  </div>
-
-  <a class="nf-card__info" href="/products/nocturne-veil">
-    <h3 class="nf-card__title">Nocturne Veil</h3>
-    <p class="nf-card__category">Naira Flore</p><p class="nf-card__price">
-      FROM <span class="nf-card__price-value">₹55,000</span>
-    </p>
-  </a><button
-      type="submit"
-      form="NfAdd-main-gid://shopify/Product/8788699938978"
-      class="nf-card__add nf-card__add--mobile nf-press"
-      
-      aria-label="Add Nocturne Veil to cart"
-    >
-      <span class="nf-card__add-idle">
-        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        Add to Cart
-      </span>
-      <span class="nf-card__add-done">
-        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
-        Added
-      </span>
-    </button></div></div><div
-                class="nf-shop-cell"
-                data-nf-cell
-                data-cat="Naira Flore"
                 data-price="9500"
                 data-avail="In Stock"
                 data-sizes=""
@@ -3786,6 +3721,7 @@
       if (empty) empty.hidden = shown !== 0;
       var n = state.cat.length + state.avail.length + state.size.length + (state.price === 50000 ? 0 : 1);
       if (badge) badge.textContent = n ? ' (' + n + ')' : '';
+      page.querySelectorAll('[data-nf-clear]').forEach(function (b) { b.hidden = n === 0; });
     }
 
     page.querySelectorAll('input[data-nf-f="cat"], input[data-nf-f="avail"]').forEach(function (box) {

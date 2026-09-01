@@ -35,16 +35,28 @@
 {%- endcomment -%}
 
 {%- liquid
-  assign shop_collection = collections[section.settings.collection]
-  if shop_collection == empty or shop_collection.products.size == 0
-    assign shop_collection = collections.all
-  endif
+  # nil-safe fallback: `collections['bad-handle']` is nil, and nil.products.size
+  # is nil too, so test the size with `> 0` rather than comparing against empty
+  # -- neither nil nor EmptyDrop compares equal to a sentinel reliably.
+  assign shop_products = collections[section.settings.collection].products
+  unless shop_products.size > 0
+    assign shop_products = collections.all.products
+  endunless
+
+  # ShopAll.tsx opens with priceRange = [0, 50000] and filters on it from the
+  # first render, so anything dearer never appears on /shop -- the slider only
+  # travels down from that ceiling. Applied here as well, or the server-rendered
+  # grid would show pieces the client-side filter removes on the first click.
+  # ponytail: 50000 is React's constant, repeated in the slider max, the "₹50,000"
+  # label and the JS default below. Raise all four together if the catalogue does.
+  assign price_cap = 50000
 
   assign cat_csv = ''
   assign shop_count = 0
-  for p in shop_collection.products
+  for p in shop_products
     assign v = p.vendor | downcase | strip
-    unless v == 'naira petite'
+    assign p_rupees = p.price_min | divided_by: 100
+    if v != 'naira petite' and p_rupees <= price_cap
       assign shop_count = shop_count | plus: 1
       assign c = p.type
       if c == blank
@@ -59,7 +71,7 @@
       unless seen
         assign cat_csv = cat_csv | append: c | append: '|'
       endunless
-    endunless
+    endif
   endfor
   assign shop_categories = cat_csv | split: '|'
   assign sizes = 'XS,S,M,L,XL' | split: ','
@@ -259,6 +271,7 @@
                 </div>
               </div>
             </details>
+            <button type="button" class="nf-shop-filters__clear" data-nf-reset data-nf-clear hidden>Clear All</button>
           </div>
 
           <div class="nf-shop-side__actions">
@@ -270,9 +283,10 @@
 
       <div class="nf-shop-grid-col">
         <div class="nf-shop-grid" data-nf-grid>
-          {%- for product in shop_collection.products -%}
+          {%- for product in shop_products -%}
             {%- assign v = product.vendor | downcase | strip -%}
-            {%- unless v == 'naira petite' -%}
+            {%- assign cell_price = product.price_min | divided_by: 100 -%}
+            {%- if v != 'naira petite' and cell_price <= price_cap -%}
               {%- liquid
                 assign cell_cat = product.type
                 if cell_cat == blank
@@ -289,7 +303,6 @@
                 if product.available
                   assign cell_avail = 'In Stock'
                 endif
-                assign cell_price = product.price_min | divided_by: 100
               -%}
               <div
                 class="nf-shop-cell"
@@ -303,7 +316,7 @@
               >
                 {%- render 'nf-product-card', product: product, index: forloop.index0, uid: section.id -%}
               </div>
-            {%- endunless -%}
+            {%- endif -%}
           {%- endfor -%}
         </div>
 
@@ -385,6 +398,7 @@
       if (empty) empty.hidden = shown !== 0;
       var n = state.cat.length + state.avail.length + state.size.length + (state.price === 50000 ? 0 : 1);
       if (badge) badge.textContent = n ? ' (' + n + ')' : '';
+      page.querySelectorAll('[data-nf-clear]').forEach(function (b) { b.hidden = n === 0; });
     }
 
     page.querySelectorAll('input[data-nf-f="cat"], input[data-nf-f="avail"]').forEach(function (box) {
@@ -695,6 +709,12 @@
   font-size: 13px; line-height: 1.5; font-weight: 500;
   text-transform: uppercase; letter-spacing: .15em; color: hsl(0 0% 48%);
 }
+.nf-shop-filters__clear {
+  padding-inline: 12px; min-height: 44px; border: 0; background-color: transparent; cursor: pointer;
+  font-family: var(--nf-font-display); font-size: 13px; font-weight: 500;
+  text-decoration: underline; text-underline-offset: 4px; color: hsl(0 0% 45%);
+}
+.nf-shop-filters__clear[hidden] { display: none; }
 .nf-shop-filters__hr { height: 1px; width: 100%; flex: none; background-color: hsl(0 0% 90%); }
 .nf-shop-filters__hr--top { margin-top: 12px; background-color: hsl(0 0% 85%); }
 

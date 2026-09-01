@@ -163,7 +163,12 @@
 .nf-btn--ink {
   background-color: var(--nf-doc-cta-bg);
   color: var(--nf-doc-cta-fg);
-  letter-spacing: var(--nf-track-10);
+  /* The "Contact on WhatsApp" link is text-[13px] tracking-[0.12em] at every
+     width in FAQs.tsx and ExchangeReturnPolicy.tsx -- no md: step. Restated
+     here (equal specificity, later source) so the @media .nf-btn 14px/0.1em
+     bump above does not reach it. */
+  font-size: 13px;
+  letter-spacing: 0.12em;
   padding: 12px 32px;
   transition: background-color 0.2s ease;
 }
@@ -232,12 +237,24 @@
 }
 .nf-doc__nav a:hover { color: var(--nf-doc-heading); }
 @media (min-width: 768px) { .nf-doc__nav a { font-size: 14px; } }
+/* ExchangeReturnPolicy.tsx's anchor nav is FAQs.tsx's minus flex-wrap and the
+   16px side padding, with wider gaps: `flex justify-center gap-6 md:gap-10
+   py-5`. Without wrapping, its three labels stay on one row and break
+   internally instead -- 79.5px tall at 390 where the wrapping version is 96. */
+.nf-doc__nav--tight { flex-wrap: nowrap; gap: 24px; padding-inline: 0; }
+@media (min-width: 768px) { .nf-doc__nav--tight { gap: 40px; } }
 
 .nf-doc__body {
   width: 100%;
   padding-top: clamp(48px, 6vw, 80px);
   padding-bottom: clamp(40px, 5vw, 60px);
 }
+/* PrivacyPolicy.tsx and TermsOfService.tsx close the page on the body and
+   give it clamp(60px, 8vw, 120px). FAQs.tsx and ExchangeReturnPolicy.tsx
+   hand the page's bottom breathing room to the "Need Help?" foot that
+   follows and keep the body at clamp(40px, 5vw, 60px) -- so "is anything
+   after me" is exactly the condition, not a proxy for one. */
+.nf-doc__body:last-child { padding-bottom: clamp(60px, 8vw, 120px); }
 .nf-doc__inner { max-width: 760px; margin: 0 auto; padding-inline: 24px; }
 
 .nf-doc__section { scroll-margin-top: 96px; }
@@ -251,7 +268,10 @@
 .nf-doc__section h2 {
   font-size: clamp(20px, 2.2vw, 26px);
   font-weight: 600;
-  letter-spacing: var(--nf-track-4);
+  /* tracking-[0.02em] in all four sources -- half the hero's 0.04em.
+     No --nf-track-2 token exists and nf-tokens.css is not this slice's
+     to extend, so the literal stands. */
+  letter-spacing: 0.02em;
   color: var(--nf-doc-heading);
   margin-bottom: 16px;
 }
@@ -263,9 +283,17 @@
   line-height: 1.8;
   color: var(--nf-doc-body);
 }
-.nf-rte > * + * { margin-top: 16px; }
 .nf-rte p { margin: 0; }
 .nf-rte ul, .nf-rte ol { margin: 0; padding-left: 24px; }
+/* space-y-4. In React the margin reset is Tailwind preflight -- bare type
+   selectors, (0,0,1) -- so the space-y rule outranks it. Scoped under
+   .nf-rte both sides gain a class, and `.nf-rte p` (0,1,1) beat
+   `.nf-rte > * + *` (0,1,0): every sibling gap collapsed to zero, running
+   privacy 300px and terms 268px short. The doubled class restores the
+   original order of precedence without touching the resets. */
+.nf-rte.nf-rte > * + * { margin-top: 16px; }
+/* ...which would otherwise also flatten the rich-text heading gap below. */
+.nf-rte.nf-rte > * + :is(h2, h3, h4) { margin-top: 28px; }
 .nf-rte ul { list-style: disc; }
 .nf-rte ol { list-style: decimal; }
 .nf-rte li { line-height: 1.7; }
@@ -284,7 +312,10 @@
   transition: opacity 0.2s ease;
 }
 .nf-rte a:hover { opacity: 0.7; }
-.nf-rte strong { font-weight: 600; color: var(--nf-doc-heading); }
+/* No source page styles <strong>: it lands on the UA default `bolder`
+   (700 against the 400 body) and inherits the body grey. The 600 + ink
+   colour here were an invention. */
+.nf-rte strong { font-weight: 700; color: inherit; }
 
 /* Editor-only warning when a Shopify policy object is empty */
 .nf-doc__empty {
@@ -315,7 +346,7 @@
 .nf-doc__foot h2 {
   font-size: clamp(20px, 2.2vw, 26px);
   font-weight: 600;
-  letter-spacing: var(--nf-track-4);
+  letter-spacing: 0.02em;
   color: var(--nf-doc-heading);
   margin-bottom: 12px;
 }
@@ -332,7 +363,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 6px;
   padding: 16px 0;
   cursor: pointer;
   list-style: none;
@@ -340,6 +371,7 @@
   font-weight: 500;
   letter-spacing: 0.01em;
   line-height: 1.5;
+  text-align: left;
   color: var(--nf-doc-question);
 }
 @media (min-width: 768px) { .nf-faq__item > summary { font-size: 15px; } }

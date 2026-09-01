@@ -84,7 +84,7 @@
           "settings": {
             "label": "APPAREL",
             "url": "",
-            "children": "Indo-Western|/collections/all\nShop All|/collections/shop-all\nMade to Measure|/pages/made-for-you",
+            "children": "Indo-Western|/pages/shop?category=Indo-Western\nShop All|/pages/shop\nMade to Measure|/pages/made-for-you",
             "show_in_desktop_bar": false,
             "desktop_area": "left",
             "show_in_mobile_drawer": true,

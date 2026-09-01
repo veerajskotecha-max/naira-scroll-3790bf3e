@@ -6,7 +6,7 @@
       "type": "nf-shop-all",
       "settings": {
         "collection": "frontpage",
-        "hero_cta_url": "/pages/shop",
+        "hero_cta_url": "/pages/shop#indo-western",
         "cta_url": "/pages/made-for-you"
       }
     }

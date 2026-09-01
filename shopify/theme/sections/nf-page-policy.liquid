@@ -82,7 +82,7 @@
     {%- endif -%}
 
     {%- if section.settings.show_anchor_nav and section.blocks.size > 1 -%}
-      <nav class="nf-doc__nav" aria-label="{{ section.settings.heading | escape }} sections">
+      <nav class="nf-doc__nav nf-doc__nav--tight" aria-label="{{ section.settings.heading | escape }} sections">
         {%- for block in section.blocks -%}
           {%- if block.type == 'policy_section' -%}
             {%- assign nav_label = block.settings.nav_label | default: block.settings.heading -%}

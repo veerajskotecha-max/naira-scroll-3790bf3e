@@ -1,0 +1,33 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "nf-page-inner-circle",
+      "settings": {
+        "eyebrow": "BY INVITATION",
+        "heading": "The Inner <span class=\"nf-inner__h1-em\">Circle.</span>",
+        "lede": "A small room for the people who wear us first — private previews, early access to every new piece, and prices kept for members alone.",
+        "status_label": "OPENING SOON",
+        "name_placeholder": "Your name",
+        "email_placeholder": "Email address",
+        "cta": "Join the Inner Circle",
+        "customer_tag": "inner-circle",
+        "success_message": "You're in. Watch your inbox.",
+        "account_link_label": "REGISTER NOW / SIGN IN →",
+        "whatsapp_label": "OR REQUEST AN INVITATION ON WHATSAPP",
+        "whatsapp_link": "https://wa.me/919561557935?text=Hi%20Naira%20Flore%20%E2%80%94%20I'd%20like%20to%20join%20the%20Inner%20Circle."
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

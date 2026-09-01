@@ -355,7 +355,13 @@
 /* px, not rem: layout/theme.liquid sets html { font-size: 62.5% } (10px root)
    like the base Dawn theme, while every value below is copied from Tailwind
    utilities that assume a 16px root. rem here renders at 0.625x. */
-.nf-gift { background-color: var(--nf-ivory); color: var(--nf-ink); }
+/* font-size, explicitly: layout/theme.liquid's inline <style> sets
+   body { font-size: 1.5rem } with a 1.6rem bump only above 750px, so below
+   that every inherited size (and the 1.5 line-height computed from it) is
+   15px against React's 16px -- 358px-wide "for whom" cards came out 1px
+   short at 390. Global fix belongs in nf-base.css's body override, which is
+   another agent's file; this scopes the React value to the gifting page. */
+.nf-gift { background-color: var(--nf-ivory); color: var(--nf-ink); font-size: 16px; }
 
 .nf-gift__head { max-width: 1152px; margin-inline: auto; padding: 40px 16px 32px; }
 @media (min-width: 640px) { .nf-gift__head { padding-inline: 24px; } }
@@ -1700,7 +1706,7 @@
                             <ul class="nf-mega__list"><li><a href="/collections/shop-all?filter.p.tag=Everyday" class="nf-mega__link">Everyday</a></li><li><a href="/collections/shop-all?filter.p.tag=Festive" class="nf-mega__link">Festive</a></li><li><a href="/collections/shop-all?filter.p.tag=Wedding" class="nf-mega__link">Wedding</a></li><li><a href="/collections/sets" class="nf-mega__link">Gifting</a></li></ul>
                           </div><div class="nf-mega__col">
                             <p class="nf-mega__label">APPAREL</p>
-                            <ul class="nf-mega__list"><li><a href="/collections/all" class="nf-mega__link">Indo-Western</a></li><li><a href="/collections/shop-all" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
+                            <ul class="nf-mega__list"><li><a href="/pages/shop?category=Indo-Western" class="nf-mega__link">Indo-Western</a></li><li><a href="/pages/shop" class="nf-mega__link">Shop All</a></li><li><a href="/pages/made-for-you" class="nf-mega__link">Made to Measure</a></li></ul>
                           </div></div>
                     </div>
                   </div>
@@ -1945,14 +1951,14 @@
                 hidden
               ><li>
                     <a
-                      href="/collections/all"
+                      href="/pages/shop?category=Indo-Western"
                       class="nf-mm__link nf-mm__link--sub"
                       data-nf-menu-close
                       
                     >Indo-Western</a>
                   </li><li>
                     <a
-                      href="/collections/shop-all"
+                      href="/pages/shop"
                       class="nf-mm__link nf-mm__link--sub"
                       data-nf-menu-close
                       

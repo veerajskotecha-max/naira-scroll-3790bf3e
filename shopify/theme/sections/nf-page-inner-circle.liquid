@@ -1,0 +1,412 @@
+{%- comment -%}
+  Naira Flore — The Inner Circle
+  Ported from src/pages/InnerCircle.tsx + src/components/members/
+  JoinInnerCircleForm.tsx (Lovable repo).
+
+  React posted the sign-up to Supabase. Shopify has no Supabase, and the
+  native equivalent of "a members list you email later" is the customer
+  list itself, so the form below is a real Shopify customer form carrying
+  a contact[tags] value — the same mechanism the footer newsletter already
+  uses. Sign-ups therefore land in Customers, tagged, ready for a segment.
+  The React success state (the form replaced by one italic line) is kept
+  as the form.posted_successfully? branch.
+
+  Like nf-page-track-order, this page is not on the nf-doc / nf-mk shell:
+  it is a centred 672px column with its own type ramp, Tailwind's plain
+  sans for the h1 and no shared component in it. The styles below are
+  section-local for that reason.
+{%- endcomment -%}
+
+{{ 'nf-tokens.css' | asset_url | stylesheet_tag }}
+
+<div class="nf-inner">
+  <section class="nf-inner__wrap">
+    <p class="nf-inner__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+
+    <h1 class="nf-inner__h1">{{ section.settings.heading }}</h1>
+
+    <span class="nf-inner__rule" aria-hidden="true"></span>
+
+    <p class="nf-inner__lede">{{ section.settings.lede | escape }}</p>
+
+    <p class="nf-inner__soon">{{ section.settings.status_label | escape }}</p>
+
+    <div class="nf-inner__stack">
+      {%- form 'customer', id: 'NfInnerCircle', class: 'nf-inner__form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="nf-inner__done" role="status" tabindex="-1">{{ section.settings.success_message | escape }}</p>
+        {%- else -%}
+          <input type="hidden" name="contact[tags]" value="{{ section.settings.customer_tag | escape }}">
+          <label class="nf-inner__sr" for="NfInnerCircleName">{{ section.settings.name_placeholder | escape }}</label>
+          <input
+            class="nf-inner__input"
+            id="NfInnerCircleName"
+            type="text"
+            name="contact[first_name]"
+            maxlength="80"
+            autocomplete="given-name"
+            placeholder="{{ section.settings.name_placeholder | escape }}"
+          >
+          <label class="nf-inner__sr" for="NfInnerCircleEmail">{{ section.settings.email_placeholder | escape }}</label>
+          <input
+            class="nf-inner__input"
+            id="NfInnerCircleEmail"
+            type="email"
+            name="contact[email]"
+            maxlength="255"
+            required
+            autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            placeholder="{{ section.settings.email_placeholder | escape }}"
+          >
+          {%- if form.errors -%}
+            <p class="nf-inner__error" role="alert">
+              {{- form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email -}}
+            </p>
+          {%- endif -%}
+          <button class="nf-inner__submit" type="submit">
+            <span class="nf-inner__sweep" aria-hidden="true"></span>
+            <span class="nf-inner__submit-label">{{ section.settings.cta | escape }}</span>
+          </button>
+        {%- endif -%}
+      {%- endform -%}
+
+      <a class="nf-inner__account" href="{{ routes.account_login_url }}">{{ section.settings.account_link_label | escape }}</a>
+
+      {%- if section.settings.whatsapp_link != blank -%}
+        <a
+          class="nf-inner__whatsapp"
+          href="{{ section.settings.whatsapp_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >{{ section.settings.whatsapp_label | escape }}</a>
+      {%- endif -%}
+    </div>
+  </section>
+</div>
+
+{% stylesheet %}
+/* ═══════════════════════════════════════════════════════════════════
+   THE INNER CIRCLE — src/pages/InnerCircle.tsx
+   React's header is position:fixed, so <main> carries pt-[110px] /
+   md:pt-[130px] to clear it. This theme's header is position:sticky and
+   already takes 100 / 108 / 116px of flow, so only the remainder is
+   padded here.
+
+   min-h-[100svh] from the React <main> is deliberately not ported: the
+   React footer sits INSIDE that main and already takes it past a
+   viewport on its own, so the rule never has an effect. Here the footer
+   is a separate section group, and copying the rule would stretch this
+   section to a full viewport and add height React does not have.
+   ═══════════════════════════════════════════════════════════════════ */
+.nf-inner {
+  background-color: var(--nf-ivory);
+  color: var(--nf-ink);
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* React's body stays 16px at every width; this theme steps it down to
+     15px under 768px. The submit button's line box is sized from it. */
+  font-size: 16px;
+  line-height: 1.5;
+  padding-top: 10px;
+}
+@media (min-width: 768px) { .nf-inner { padding-top: 22px; } }
+@media (min-width: 1024px) { .nf-inner { padding-top: 14px; } }
+
+.nf-inner * { border-radius: 0; }
+
+.nf-inner__wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 672px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  text-align: center;
+}
+@media (min-width: 768px) { .nf-inner__wrap { padding-block: 96px; } }
+
+.nf-inner__eyebrow {
+  margin: 0;
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.45em;
+  color: var(--nf-gold-deep);
+}
+
+/* layout/theme.liquid forces h1-h6 to 'Ophelia' !important and
+   nf-base.css re-forces them to the display serif, also !important.
+   React renders this h1 in Tailwind's plain sans: style={velista} reads
+   var(--font-cormorant), which the Lovable repo never defines, so the
+   declaration is invalid at computed-value time and the heading falls
+   back to inheriting body. Matching it needs !important here. */
+.nf-inner__h1 {
+  margin: 20px 0 0;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  /* text-[clamp(2.4rem,9vw,4.4rem)] at React's 16px root */
+  font-size: clamp(38.4px, 9vw, 70.4px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: normal;
+}
+.nf-inner__h1-em {
+  font-family: var(--nf-font-editorial);
+  font-style: italic;
+  color: var(--nf-gold-deep);
+}
+
+/* nf-base.css line 265 gives every empty nf- element `display: revert`
+   so Sense's empty-element reset cannot blank out decorative layers.
+   That selector is (0,2,0) and these two rules would only tie it, with
+   source order between two stylesheets deciding — hence !important. */
+.nf-inner__rule {
+  display: block !important;
+  width: 64px;
+  height: 1px;
+  margin-top: 32px;
+  background-color: rgb(var(--nf-gold-rgb) / 0.6);
+}
+
+.nf-inner__lede {
+  max-width: 448px;
+  margin: 32px 0 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 16.8px;
+  font-style: italic;
+  line-height: 1.6;
+  color: rgb(var(--nf-ink-rgb) / 0.7);
+}
+
+.nf-inner__soon {
+  margin: 40px 0 0;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  color: rgb(var(--nf-ink-rgb) / 0.45);
+}
+
+.nf-inner__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 40px;
+}
+
+.nf-inner__form {
+  width: 100%;
+  max-width: 360px;
+}
+
+.nf-inner__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* nf-base.css sets `input, select, textarea { font-size: max(16px, 1em) }`
+   as an iOS zoom guard; a class beats that element rule without
+   !important. Spacing is stated per element rather than with a
+   `> * + *` rule because the Shopify form tag injects its own hidden
+   inputs at the top of the form, which would shift the first field. */
+.nf-inner__input {
+  display: block;
+  width: 100%;
+  padding: 12px 4px;
+  border: 0;
+  border-bottom: 1px solid rgb(var(--nf-ink-rgb) / 0.15);
+  background-color: transparent;
+  font-family: var(--nf-font-label);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--nf-ink);
+  outline: none;
+}
+.nf-inner__input::placeholder { color: rgb(var(--nf-ink-rgb) / 0.4); }
+.nf-inner__input + .nf-inner__sr + .nf-inner__input { margin-top: 12px; }
+
+.nf-inner__error {
+  margin: 12px 0 0;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  color: var(--nf-gold-deep);
+}
+
+.nf-inner__submit {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 12px;
+  padding: 16px 24px;
+  border: 0;
+  background-color: var(--nf-ink);
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: center;
+  cursor: pointer;
+}
+.nf-inner__sweep {
+  display: block !important;
+  position: absolute;
+  inset: 0;
+  background-color: var(--nf-sage);
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0, 0, 0.2, 1);
+}
+.nf-inner__submit:hover .nf-inner__sweep { transform: translateY(0); }
+.nf-inner__submit-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--nf-font-label);
+  font-size: 11px;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: var(--nf-track-32);
+  text-transform: uppercase;
+  /* #FFF8F5 is the Lovable literal on this button and has no token: it is
+     a shade lighter than --nf-ivory, which is the page ground. */
+  color: #FFF8F5;
+}
+
+.nf-inner__done {
+  margin: 0;
+  font-family: var(--nf-font-editorial);
+  font-size: 16.8px;
+  font-style: italic;
+  line-height: 1.5;
+  color: rgb(var(--nf-ink-rgb) / 0.7);
+}
+
+.nf-inner__account,
+.nf-inner__whatsapp {
+  font-family: var(--nf-font-label);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: var(--nf-track-30);
+  text-decoration: none;
+}
+.nf-inner__account {
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--nf-gold-deep);
+  /* #8A6A2F: the Lovable literal, one step below --nf-gold-shadow */
+  color: #8A6A2F;
+}
+.nf-inner__whatsapp { color: rgb(var(--nf-ink-rgb) / 0.45); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira inner circle",
+  "tag": "section",
+  "class": "nf-inner-circle-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "BY INVITATION"
+    },
+    {
+      "type": "html",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Wrap a word in <span class=\"nf-inner__h1-em\">…</span> for the gold italic.",
+      "default": "The Inner <span class=\"nf-inner__h1-em\">Circle.</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "lede",
+      "label": "Intro",
+      "default": "A small room for the people who wear us first — private previews, early access to every new piece, and prices kept for members alone."
+    },
+    {
+      "type": "text",
+      "id": "status_label",
+      "label": "Status line",
+      "default": "OPENING SOON"
+    },
+    {
+      "type": "header",
+      "content": "Sign-up form"
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "label": "Name placeholder",
+      "default": "Your name"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Email address"
+    },
+    {
+      "type": "text",
+      "id": "cta",
+      "label": "Button label",
+      "default": "Join the Inner Circle"
+    },
+    {
+      "type": "text",
+      "id": "customer_tag",
+      "label": "Customer tag applied on sign-up",
+      "default": "inner-circle"
+    },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "You're in. Watch your inbox."
+    },
+    {
+      "type": "header",
+      "content": "Secondary links"
+    },
+    {
+      "type": "text",
+      "id": "account_link_label",
+      "label": "Account link label",
+      "default": "REGISTER NOW / SIGN IN →"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_label",
+      "label": "WhatsApp link label",
+      "default": "OR REQUEST AN INVITATION ON WHATSAPP"
+    },
+    {
+      "type": "url",
+      "id": "whatsapp_link",
+      "label": "WhatsApp link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira inner circle"
+    }
+  ]
+}
+{% endschema %}

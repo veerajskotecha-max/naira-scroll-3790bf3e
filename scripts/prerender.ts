@@ -20,7 +20,8 @@ import { spawn } from "child_process";
 import { mkdirSync, writeFileSync, existsSync, readdirSync } from "fs";
 import { resolve, join } from "path";
 import { chromium, type Browser } from "playwright";
-import { resolveSiteRoutes, type SiteRoute } from "./routes";
+import { resolveSiteRoutes, BASE_URL, type SiteRoute } from "./routes";
+import { writeProductAliases, redirectsBody } from "./product-aliases";
 
 const PORT = Number(process.env.PRERENDER_PORT ?? 4180);
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -226,6 +227,21 @@ async function main() {
     await browser.close();
 
     console.log(`prerendered ${written}/${routes.length} routes`);
+
+    /* Shopify publishes /products/<handle>; this site serves /jewellery/<handle>
+       and /product/<handle>. Nothing answered the plural form, so a product link
+       from a feed, an ad or the Shopify admin fell through to the SPA shell and
+       rendered the homepage. Emit a redirect stub per handle, plus _redirects
+       for hosts that can turn them into real 301s.
+
+       Only for routes that actually rendered: an alias pointing at a page that
+       failed to prerender would send the shopper to another SPA shell, which
+       is the bug this fixes, one hop further along. */
+    const failedPaths = new Set(failures.map((f) => f.path));
+    const rendered = routes.filter((r) => !failedPaths.has(r.path));
+    const aliases = writeProductAliases(rendered, BASE_URL);
+    writeFileSync(join(DIST, "_redirects"), redirectsBody(rendered), "utf8");
+    console.log(`product aliases: ${aliases} /products/<handle> redirect(s)`);
     if (failures.length) {
       console.error(`\n${failures.length} route(s) failed:`);
       for (const f of failures) console.error(`  ${f.path} — ${f.reason}`);

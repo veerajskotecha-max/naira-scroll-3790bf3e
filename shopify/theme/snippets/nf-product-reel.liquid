@@ -1,0 +1,190 @@
+{%- comment -%}
+  The product reel: sits below Buy Now and above the product details.
+
+  Autoplays, loops, and carries no play/pause chrome at all. Tapping it opens
+  the reel full screen with sound.
+
+  Two things worth knowing, because they are browser rules rather than choices:
+
+  1. Autoplay only works when the video is muted. Every current browser blocks
+     an unmuted autoplay, so the inline reel is muted and the tap-to-open view
+     is where sound lives. That is why the "tap to open" affordance exists.
+  2. An Instagram embed cannot do this. It is a cross-origin iframe running
+     Instagram's own player, so the page cannot start it, cannot mute it and
+     cannot hide its controls. A reel has to be a real video file here.
+
+  Source, in order: the product's own Shopify video media, then an
+  external_video, then a reel_url metafield holding a direct file URL.
+  Renders nothing at all when the product has no video, so it is safe to leave
+  in place for every product.
+{%- endcomment -%}
+
+{%- liquid
+  assign reel = null
+  assign poster = null
+  for media in product.media
+    if media.media_type == 'video' and reel == null
+      assign reel = media
+    endif
+  endfor
+  assign reel_url = product.metafields.custom.reel_url.value | default: ''
+  if reel != blank
+    assign poster = reel.preview_image
+  else
+    assign poster = product.featured_image
+  endif
+-%}
+
+{%- if reel != blank or reel_url != '' -%}
+  <section class="nf-reel" data-nf-reel aria-labelledby="NfReelTitle-{{ product.id }}">
+    <h2 class="nf-reel__title" id="NfReelTitle-{{ product.id }}">{{ block.settings.reel_title | default: 'See it move' }}</h2>
+
+    <div class="nf-reel__frame">
+      {%- comment -%}
+        No `controls`: the inline reel is decoration that happens to move, and a
+        control bar over a 9:16 crop is noise. muted + playsinline are what make
+        autoplay legal; loop keeps it going.
+      {%- endcomment -%}
+      <video
+        class="nf-reel__video"
+        data-nf-reel-video
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        {% if poster %}poster="{{ poster | image_url: width: 720 }}"{% endif %}
+        aria-label="{{ product.title | escape }} in motion"
+      >
+        {%- if reel != blank -%}
+          {%- for source in reel.sources -%}
+            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {%- endfor -%}
+        {%- else -%}
+          <source src="{{ reel_url }}" type="video/mp4">
+        {%- endif -%}
+      </video>
+
+      <button type="button" class="nf-reel__open" data-nf-reel-open>
+        <span class="nf-reel__open-dot" aria-hidden="true"></span>
+        <span class="nf-reel__open-label">{{ block.settings.reel_cta | default: 'Tap to open with sound' }}</span>
+      </button>
+    </div>
+  </section>
+
+  {%- comment -%} Full screen, with sound. Closed by default, so it costs nothing until asked for. {%- endcomment -%}
+  <dialog class="nf-reel__full" data-nf-reel-dialog aria-label="{{ product.title | escape }} reel">
+    <video class="nf-reel__full-video" data-nf-reel-full loop playsinline preload="none"
+      {% if poster %}poster="{{ poster | image_url: width: 1080 }}"{% endif %}>
+      {%- if reel != blank -%}
+        {%- for source in reel.sources -%}
+          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+        {%- endfor -%}
+      {%- else -%}
+        <source src="{{ reel_url }}" type="video/mp4">
+      {%- endif -%}
+    </video>
+    <button type="button" class="nf-reel__close" data-nf-reel-close aria-label="Close">&times;</button>
+  </dialog>
+{%- endif -%}
+
+{%- if reel != blank or reel_url != '' -%}
+<style>
+  .nf-reel { margin: 24px 0 32px; }
+  .nf-reel__title {
+    margin: 0 0 12px;
+    font-family: var(--nf-font-display, 'Velista', 'Cormorant Garamond', Georgia, serif);
+    font-size: 15px; font-weight: 500; line-height: 1.5;
+    letter-spacing: 0.1em; text-transform: uppercase; color: hsl(0 0% 20% / 0.75);
+  }
+  .nf-reel__frame {
+    position: relative; overflow: hidden;
+    aspect-ratio: 9 / 16; max-height: 62vh; margin-inline: auto;
+    background: var(--nf-ivory-deep, #ece7e0);
+  }
+  @media (min-width: 768px) { .nf-reel__frame { max-width: 340px; margin-inline: 0; } }
+  .nf-reel__video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* The whole frame is the affordance; the label just names it. */
+  .nf-reel__open {
+    position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center;
+    gap: 8px; padding: 0 0 18px; border: 0; background: linear-gradient(to top, rgb(0 0 0 / 0.45), transparent 38%);
+    color: #fff; cursor: pointer; font: inherit;
+  }
+  .nf-reel__open-label {
+    font-family: var(--nf-font-label, 'Jost', ui-sans-serif, system-ui, sans-serif);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .nf-reel__open-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: #fff;
+    animation: nf-reel-pulse 2s ease-in-out infinite;
+  }
+  @keyframes nf-reel-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .nf-reel__open:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+
+  .nf-reel__full { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh;
+    padding: 0; border: 0; background: #000; }
+  .nf-reel__full::backdrop { background: rgb(0 0 0 / 0.92); }
+  .nf-reel__full-video { width: 100%; height: 100%; object-fit: contain; }
+  .nf-reel__close {
+    position: absolute; top: 14px; right: 16px; width: 44px; height: 44px;
+    border: 0; border-radius: 50%; background: rgb(0 0 0 / 0.5); color: #fff;
+    font-size: 26px; line-height: 1; cursor: pointer;
+  }
+  .nf-reel__close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-reel__open-dot { animation: none; }
+  }
+</style>
+
+<script>
+(function () {
+  /* Guard: a snippet can be rendered more than once on a page. */
+  if (window.__nfReelBound) return;
+  window.__nfReelBound = true;
+
+  function bind(root) {
+    var inline = root.querySelector('[data-nf-reel-video]');
+    var open = root.querySelector('[data-nf-reel-open]');
+    if (!inline) return;
+
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      /* Someone who asked for less motion gets the poster, not a looping video. */
+      inline.removeAttribute('autoplay');
+      inline.pause();
+    } else if ('IntersectionObserver' in window) {
+      /* Play only while on screen. Autoplay already started it; this stops it
+         burning battery once it has scrolled away, and resumes on return. */
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { var p = inline.play(); if (p && p.catch) p.catch(function () {}); }
+          else inline.pause();
+        });
+      }, { threshold: 0.25 }).observe(inline);
+    }
+
+    var dialog = document.querySelector('[data-nf-reel-dialog]');
+    var full = document.querySelector('[data-nf-reel-full]');
+    var close = document.querySelector('[data-nf-reel-close]');
+    if (!dialog || !full || !open || typeof dialog.showModal !== 'function') return;
+
+    open.addEventListener('click', function () {
+      full.currentTime = 0;
+      full.muted = false;          /* sound is the point of opening it */
+      dialog.showModal();
+      var p = full.play(); if (p && p.catch) p.catch(function () { full.muted = true; full.play(); });
+    });
+    function shut() { full.pause(); if (dialog.open) dialog.close(); }
+    close.addEventListener('click', shut);
+    dialog.addEventListener('close', function () { full.pause(); });
+    dialog.addEventListener('click', function (e) { if (e.target === dialog) shut(); });
+  }
+
+  function start() { document.querySelectorAll('[data-nf-reel]').forEach(bind); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+}());
+</script>
+{%- endif -%}

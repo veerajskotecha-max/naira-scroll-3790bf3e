@@ -19,6 +19,7 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import ComingSoon from "./ComingSoon";
+import ReelPeek from "@/components/reels/ReelPeek";
 
 const ProductDetail = () => {
   const [selection, setSelection] = useState<ProductSelection | null>(null);
@@ -252,6 +253,7 @@ const ProductDetail = () => {
       <YouMayAlsoLike currentHandle={product.handle} />
       <CollectionCarousel />
       
+      <ReelPeek />
       <Footer />
       <StickyAddToCart
         image={image}

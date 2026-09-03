@@ -117,6 +117,16 @@ const ReelSlide = ({
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  // Live stock: a piece that has sold out in Shopify becomes a pre-order.
+  const { jewellery } = useLiveJewellery();
+  const soldOutHandles = useMemo(
+    () => new Set(jewellery.filter((p) => p.availableForSale === false).map((p) => p.handle)),
+    [jewellery],
+  );
+
+
 
 
   // Only the active slide holds a loaded video — neighbours are released.

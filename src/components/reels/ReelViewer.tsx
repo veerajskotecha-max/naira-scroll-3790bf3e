@@ -143,7 +143,9 @@ const ReelSlide = ({
       v.pause();
       v.currentTime = 0;
       setRevealed(false);
+      setExpanded(false);
     }
+
   }, [active, muted]);
 
 

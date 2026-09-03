@@ -176,16 +176,46 @@ const ReelSlide = ({
           {muted ? <VolumeX size={16} color="#fff" /> : <Volume2 size={16} color="#fff" />}
         </button>
 
-        <div className="absolute inset-x-0 bottom-0 space-y-2 p-3">
+        {/* Soft scrim so the shoppable cards stay legible over the footage */}
+        {reel.products.length > 0 && (
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-40 transition-opacity duration-700"
+            style={{
+              opacity: revealed ? 1 : 0,
+              background: "linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0))",
+            }}
+          />
+        )}
+
+        <div className="absolute inset-x-0 bottom-0 space-y-1.5 p-3 pb-4">
           {reel.caption && (
-            <p className="font-cormorant text-[15px]" style={{ color: "#fff", textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
+            <p
+              className="font-cormorant text-[15px] transition-opacity duration-500"
+              style={{
+                color: "#fff",
+                textShadow: "0 1px 6px rgba(0,0,0,0.6)",
+                opacity: revealed ? 0 : 1,
+              }}
+            >
               {reel.caption}
             </p>
           )}
-          {reel.products.map((p) => (
-            <ProductTag key={p.id} product={p} />
+          {reel.products.map((p, i) => (
+            <div
+              key={p.id}
+              className="transition-all duration-500 ease-out"
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? "translateY(0)" : "translateY(14px)",
+                transitionDelay: `${revealed ? i * 140 : 0}ms`,
+                pointerEvents: revealed ? "auto" : "none",
+              }}
+            >
+              <ProductTag product={p} />
+            </div>
           ))}
         </div>
+
       </div>
     </div>
   );

@@ -6,8 +6,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 // Code-split: none of the viewer JS ships with the product page bundle.
 const ReelViewer = lazy(() => import("./ReelViewer"));
 
-const DISMISS_KEY = "naira-reel-peek-dismissed";
-
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -21,21 +19,17 @@ const ReelPeek = () => {
   const isMobile = useIsMobile();
   const [armed, setArmed] = useState(false);
   const [shown, setShown] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
   const [minimised, setMinimised] = useState(false);
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { data: reels } = useReels(armed && !dismissed);
+  const { data: reels } = useReels(armed);
   const reel = reels?.[0];
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (sessionStorage.getItem(DISMISS_KEY) === "1" || saveData()) {
-      setDismissed(true);
-      return;
-    }
+    if (saveData()) return;
     const onScroll = () => {
       if (window.scrollY > window.innerHeight * 0.4) {
         setArmed(true);
@@ -71,15 +65,14 @@ const ReelPeek = () => {
     }
   }, []);
 
-  const dismiss = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setDismissed(true);
-    sessionStorage.setItem(DISMISS_KEY, "1");
-  };
-
   const minimise = (e: React.MouseEvent) => {
     e.stopPropagation();
     setMinimised(true);
+  };
+
+  const showReels = () => {
+    setArmed(true);
+    setMinimised(false);
   };
 
   const toggleMute = (e: React.MouseEvent) => {
@@ -91,25 +84,23 @@ const ReelPeek = () => {
     if (!v.muted) void v.play().catch(() => undefined);
   };
 
-  if (dismissed || !reel) return null;
-
   return (
     <>
-      {!open && minimised && (
+      {!open && (minimised || (isMobile && !reel)) && (
         <button
           type="button"
-          onClick={() => setMinimised(false)}
+          onClick={showReels}
           aria-label="Show shoppable reels"
-          className="fixed z-[70] flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-[10px] uppercase tracking-[0.14em] shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
-          style={{ right: isMobile ? 12 : 24, bottom: isMobile ? 92 : 28, color: "hsl(0 0% 20%)" }}
+          className="fixed z-[110] flex min-h-10 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.5)]"
+          style={{ right: isMobile ? 12 : 24, bottom: isMobile ? 96 : 28, color: "hsl(0 0% 20%)" }}
         >
           <Play size={12} /> Reels
         </button>
       )}
 
-      {!open && !minimised && (
+      {!open && !minimised && reel && (
         <div
-          className="fixed z-[70] transition-all duration-500 ease-out"
+          className="fixed z-[110] transition-all duration-500 ease-out"
           style={{
             width: isMobile ? 108 : 150,
             right: isMobile ? 12 : 24,
@@ -147,8 +138,8 @@ const ReelPeek = () => {
 
           <button
             type="button"
-            onClick={dismiss}
-            aria-label="Close reel"
+            onClick={minimise}
+            aria-label="Minimise reel"
             className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"
           >
             <X size={13} style={{ color: "hsl(0 0% 20%)" }} />

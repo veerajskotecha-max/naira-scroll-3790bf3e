@@ -28,36 +28,30 @@ const ReelPeek = () => {
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
 
-  // Reveal only after the shopper is ~32% down the page, and slide it away again
-  // the moment they scroll back up. Keeps the gallery + details area clear.
+  // Anchor the reel to the product material details section: it slides in when
+  // that section reaches the viewport and stays for the rest of the page, and
+  // vanishes the moment the shopper scrolls back up above it (over the gallery).
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (saveData()) return;
 
-    let lastY = window.scrollY;
     let raf = 0;
-
     const evaluate = () => {
       raf = 0;
-      const y = window.scrollY;
-      const max = Math.max(
-        1,
-        document.documentElement.scrollHeight - window.innerHeight,
-      );
-      const progress = y / max;
-      const goingUp = y < lastY - 4;
-      lastY = y;
-
-      if (progress >= 0.32) {
-        setArmed(true);
-        setPastThreshold(true);
-        if (!goingUp) setMinimised(false);
+      const anchor = document.getElementById("product-material-details");
+      let active: boolean;
+      if (anchor) {
+        // Active once the section's top has entered the lower viewport.
+        active = anchor.getBoundingClientRect().top <= window.innerHeight * 0.85;
       } else {
-        setPastThreshold(false);
+        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        active = window.scrollY / max >= 0.32;
       }
-
-      // Scrolling up always tucks it away so it never sits over the imagery.
-      if (goingUp) setMinimised(true);
+      setPastThreshold(active);
+      if (active) {
+        setArmed(true);
+        setMinimised(false);
+      }
     };
 
     const onScroll = () => {
@@ -66,9 +60,13 @@ const ReelPeek = () => {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
     evaluate();
+    const t = window.setTimeout(evaluate, 600);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.clearTimeout(t);
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);

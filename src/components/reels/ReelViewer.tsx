@@ -114,14 +114,17 @@ const ReelSlide = ({
   }, [active, muted]);
 
   return (
-    <div className="relative h-full w-full snap-start" style={{ scrollSnapAlign: "start" }}>
-      <div className="relative mx-auto h-full w-full max-w-[430px]">
+    <div className="relative flex h-full w-full items-center justify-center snap-start" style={{ scrollSnapAlign: "start" }}>
+      <div
+        className="relative"
+        style={{ width: "min(100%, calc(100dvh * 9 / 16))", aspectRatio: "9/16", maxHeight: "100%" }}
+      >
         {active || reel.posterUrl ? (
           <video
             ref={ref}
             src={active ? reel.videoUrl : undefined}
             poster={reel.posterUrl ?? undefined}
-            className="h-full w-full object-contain"
+            className="h-full w-full object-cover"
             playsInline
             loop
             preload={active ? "auto" : "none"}
@@ -207,7 +210,7 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
   }, []);
 
   return createPortal(
-    <div className="fixed inset-0 z-[100]" style={{ backgroundColor: "hsl(0 0% 4%)" }}>
+    <div className="fixed inset-0 z-[130]" style={{ backgroundColor: "hsl(0 0% 4%)" }}>
       <button
         type="button"
         onClick={onClose}

@@ -138,6 +138,15 @@ const ReelPeek = () => {
 
           <button
             type="button"
+            onClick={dismiss}
+            aria-label="Minimise reel"
+            className="absolute -bottom-2 right-1/2 flex h-5 w-8 translate-x-1/2 items-center justify-center rounded-full bg-white shadow"
+          >
+            <ChevronDown size={12} style={{ color: "hsl(0 0% 20%)" }} />
+          </button>
+
+          <button
+            type="button"
             onClick={toggleMute}
             aria-label={muted ? "Unmute reel" : "Mute reel"}
             className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"

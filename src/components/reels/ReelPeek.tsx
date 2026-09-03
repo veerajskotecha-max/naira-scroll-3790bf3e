@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { X, Volume2, VolumeX } from "lucide-react";
+import { X, ChevronDown, Volume2, VolumeX } from "lucide-react";
 import { useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -134,6 +134,15 @@ const ReelPeek = () => {
             className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"
           >
             <X size={13} style={{ color: "hsl(0 0% 20%)" }} />
+          </button>
+
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label="Minimise reel"
+            className="absolute -bottom-2 right-1/2 flex h-5 w-8 translate-x-1/2 items-center justify-center rounded-full bg-white shadow"
+          >
+            <ChevronDown size={12} style={{ color: "hsl(0 0% 20%)" }} />
           </button>
 
           <button

@@ -405,6 +405,8 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
               active={i === index}
               muted={muted}
               onToggleMute={() => setMuted((m) => !m)}
+              onClose={onClose}
+
             />
           </div>
         ))}

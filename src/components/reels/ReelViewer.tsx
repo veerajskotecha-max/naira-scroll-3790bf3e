@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { X, Volume2, VolumeX, Play } from "lucide-react";
+import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
 import { useCart } from "@/contexts/CartContext";

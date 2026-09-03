@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
 import { useCart } from "@/contexts/CartContext";
-import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { useLiveJewellery, useLiveJewel } from "@/hooks/useLiveJewellery";
 
 interface Props {
   reels: Reel[];
@@ -18,26 +18,46 @@ const parsePrice = (label?: string | null) =>
 
 const PREORDER_WHATSAPP = "919561557935";
 
-const ProductTag = ({ product, soldOut }: { product: ReelProduct; soldOut: boolean }) => {
+const ProductTag = ({
+  product,
+  soldOut,
+  onClose,
+}: {
+  product: ReelProduct;
+  soldOut: boolean;
+  onClose: () => void;
+}) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
+  const live = useLiveJewel(product.handle);
+  const navigate = useNavigate();
   const [adding, setAdding] = useState(false);
+  const productPath = `/jewellery/${product.handle}`;
+
+  // Always leave the reel behind when we send the shopper to the product page.
+  const goToProduct = () => {
+    onClose();
+    navigate(productPath);
+  };
 
 
   const add = async () => {
-    if (!product.variant_id) {
-      toast("Opening product", { description: "Pick your options on the product page." });
+    // Prefer the live Shopify variant so the add always lands on a real SKU.
+    const variantId = live?.variantId || product.variant_id;
+    if (!variantId) {
+      toast("Choose your options", { description: "Opening the product page." });
+      goToProduct();
       return;
     }
     setAdding(true);
     try {
       await addItem({
         id: product.handle,
-        variantId: product.variant_id,
-        name: product.title,
-        price: parsePrice(product.price_label),
-        priceLabel: product.price_label ?? "",
+        variantId,
+        name: live?.name ?? product.title,
+        price: live?.price ?? parsePrice(product.price_label),
+        priceLabel: live?.priceLabel ?? product.price_label ?? "",
         currencyCode: "INR",
-        image: product.image_url ?? "",
+        image: live?.image ?? product.image_url ?? "",
       });
       setDrawerOpen(true);
     } finally {
@@ -60,18 +80,21 @@ const ProductTag = ({ product, soldOut }: { product: ReelProduct; soldOut: boole
         boxShadow: "0 6px 24px rgba(0,0,0,0.28)",
       }}
     >
-      {product.image_url && (
-        <img
-          src={product.image_url}
-          alt={product.title}
-          className="h-11 w-11 shrink-0 object-cover"
-          loading="lazy"
-          decoding="async"
-        />
+      {(live?.image || product.image_url) && (
+        <button type="button" onClick={goToProduct} aria-label={`View ${product.title}`} className="shrink-0">
+          <img
+            src={live?.image ?? product.image_url ?? ""}
+            alt={product.title}
+            className="h-11 w-11 object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
       )}
       <div className="min-w-0 flex-1">
         <Link
-          to={`/jewellery/${product.handle}`}
+          to={productPath}
+          onClick={onClose}
           className="block truncate font-cormorant text-[14px] leading-tight"
           style={{ color: "hsl(0 0% 12%)" }}
         >
@@ -107,11 +130,13 @@ const ReelSlide = ({
   active,
   muted,
   onToggleMute,
+  onClose,
 }: {
   reel: Reel;
   active: boolean;
   muted: boolean;
   onToggleMute: () => void;
+  onClose: () => void;
 }) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
@@ -263,7 +288,7 @@ const ReelSlide = ({
                       transitionDelay: `${expanded ? i * 90 : 0}ms`,
                     }}
                   >
-                    <ProductTag product={p} soldOut={soldOutHandles.has(p.handle)} />
+                    <ProductTag product={p} soldOut={soldOutHandles.has(p.handle)} onClose={onClose} />
                   </div>
                 ))}
               </div>
@@ -380,6 +405,8 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
               active={i === index}
               muted={muted}
               onToggleMute={() => setMuted((m) => !m)}
+              onClose={onClose}
+
             />
           </div>
         ))}

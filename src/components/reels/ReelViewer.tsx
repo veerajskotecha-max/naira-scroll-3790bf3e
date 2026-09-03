@@ -130,11 +130,13 @@ const ReelSlide = ({
   active,
   muted,
   onToggleMute,
+  onClose,
 }: {
   reel: Reel;
   active: boolean;
   muted: boolean;
   onToggleMute: () => void;
+  onClose: () => void;
 }) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);

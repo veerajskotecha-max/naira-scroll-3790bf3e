@@ -96,6 +96,8 @@ const ReelSlide = ({
   const ref = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+
 
   // Only the active slide holds a loaded video — neighbours are released.
   useEffect(() => {

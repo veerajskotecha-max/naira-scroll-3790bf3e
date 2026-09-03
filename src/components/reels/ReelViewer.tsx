@@ -211,13 +211,15 @@ const ReelSlide = ({
         {/* Soft scrim so the shoppable cards stay legible over the footage */}
         {reel.products.length > 0 && (
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-40 transition-opacity duration-700"
+            className="pointer-events-none absolute inset-x-0 bottom-0 transition-all duration-500"
             style={{
+              height: expanded ? "62%" : "24%",
               opacity: revealed ? 1 : 0,
-              background: "linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0))",
+              background: "linear-gradient(to top, rgba(0,0,0,0.66), rgba(0,0,0,0))",
             }}
           />
         )}
+
 
         <div className="absolute inset-x-0 bottom-0 p-3 pb-4">
           {reel.caption && (

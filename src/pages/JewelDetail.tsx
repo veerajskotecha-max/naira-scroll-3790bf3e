@@ -950,6 +950,8 @@ const JewelDetail = () => {
             <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
             {/* Details tabs */}
+            <div id="product-material-details" />
+
             <DetailsTabs
               tabs={[
                 {

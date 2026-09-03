@@ -146,7 +146,12 @@ const ReelSlide = ({
             onTimeUpdate={(e) => {
               const v = e.currentTarget;
               if (v.duration) setProgress((v.currentTime / v.duration) * 100);
+              // Shoppable cards surface near the end of the story — 20s in,
+              // or a touch earlier on shorter cuts so they never miss the loop.
+              const cue = Math.min(20, Math.max(4, (v.duration || 24) - 6));
+              if (v.currentTime >= cue) setRevealed(true);
             }}
+
           />
         ) : null}
 

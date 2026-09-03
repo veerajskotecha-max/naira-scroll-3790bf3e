@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown } from "lucide-react";
+import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
 import { useCart } from "@/contexts/CartContext";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 
 interface Props {
   reels: Reel[];
@@ -15,9 +16,12 @@ interface Props {
 const parsePrice = (label?: string | null) =>
   label ? Number(label.replace(/[^\d.]/g, "")) || 0 : 0;
 
-const ProductTag = ({ product }: { product: ReelProduct }) => {
+const PREORDER_WHATSAPP = "919561557935";
+
+const ProductTag = ({ product, soldOut }: { product: ReelProduct; soldOut: boolean }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
+
 
   const add = async () => {
     if (!product.variant_id) {
@@ -39,6 +43,13 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
     } finally {
       setAdding(false);
     }
+  };
+
+  const preorder = () => {
+    const message = encodeURIComponent(
+      `Hello Naira — I'd like to pre-order the ${product.title}. Please reserve one for me.`,
+    );
+    window.open(`https://wa.me/${PREORDER_WHATSAPP}?text=${message}`, "_blank", "noopener");
   };
 
   return (
@@ -66,24 +77,29 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
         >
           {product.title}
         </Link>
-        {product.price_label && (
-          <span className="text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 42%)" }}>
-            {product.price_label}
-          </span>
-        )}
+        <span className="block truncate text-[10.5px] tracking-[0.04em]" style={{ color: "hsl(0 0% 42%)" }}>
+          {soldOut
+            ? `${product.price_label ?? ""}${product.price_label ? " · " : ""}Reserve today · 2 weeks delivery`
+            : product.price_label}
+        </span>
       </div>
       <button
         type="button"
-        onClick={add}
-        disabled={adding || isLoading}
+        onClick={soldOut ? preorder : add}
+        disabled={!soldOut && (adding || isLoading)}
         className="press-scale h-8 shrink-0 px-3 text-[9.5px] font-medium uppercase tracking-[0.14em] disabled:opacity-60"
-        style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
+        style={
+          soldOut
+            ? { backgroundColor: "transparent", color: "hsl(0 0% 12%)", border: "1px solid hsl(0 0% 12%)" }
+            : { backgroundColor: "hsl(0 0% 12%)", color: "#fff" }
+        }
       >
-        {adding ? "Adding…" : "Add"}
+        {soldOut ? "Pre-order" : adding ? "Adding…" : "Add"}
       </button>
     </div>
   );
 };
+
 
 
 const ReelSlide = ({
@@ -101,6 +117,16 @@ const ReelSlide = ({
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  // Live stock: a piece that has sold out in Shopify becomes a pre-order.
+  const { jewellery } = useLiveJewellery();
+  const soldOutHandles = useMemo(
+    () => new Set(jewellery.filter((p) => p.availableForSale === false).map((p) => p.handle)),
+    [jewellery],
+  );
+
+
 
 
   // Only the active slide holds a loaded video — neighbours are released.
@@ -117,7 +143,9 @@ const ReelSlide = ({
       v.pause();
       v.currentTime = 0;
       setRevealed(false);
+      setExpanded(false);
     }
+
   }, [active, muted]);
 
 
@@ -183,18 +211,20 @@ const ReelSlide = ({
         {/* Soft scrim so the shoppable cards stay legible over the footage */}
         {reel.products.length > 0 && (
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-40 transition-opacity duration-700"
+            className="pointer-events-none absolute inset-x-0 bottom-0 transition-all duration-500"
             style={{
+              height: expanded ? "62%" : "24%",
               opacity: revealed ? 1 : 0,
-              background: "linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0))",
+              background: "linear-gradient(to top, rgba(0,0,0,0.66), rgba(0,0,0,0))",
             }}
           />
         )}
 
-        <div className="absolute inset-x-0 bottom-0 space-y-1.5 p-3 pb-4">
+
+        <div className="absolute inset-x-0 bottom-0 p-3 pb-4">
           {reel.caption && (
             <p
-              className="font-cormorant text-[15px] transition-opacity duration-500"
+              className="mb-2 font-cormorant text-[15px] transition-opacity duration-500"
               style={{
                 color: "#fff",
                 textShadow: "0 1px 6px rgba(0,0,0,0.6)",
@@ -204,21 +234,65 @@ const ReelSlide = ({
               {reel.caption}
             </p>
           )}
-          {reel.products.map((p, i) => (
+
+          {reel.products.length > 0 && (
             <div
-              key={p.id}
               className="transition-all duration-500 ease-out"
               style={{
                 opacity: revealed ? 1 : 0,
                 transform: revealed ? "translateY(0)" : "translateY(14px)",
-                transitionDelay: `${revealed ? i * 140 : 0}ms`,
                 pointerEvents: revealed ? "auto" : "none",
               }}
             >
-              <ProductTag product={p} />
+              {/* Expanded stack — stays out of the way until tapped */}
+              <div
+                className="space-y-1.5 overflow-hidden transition-all duration-500 ease-out"
+                style={{
+                  maxHeight: expanded ? `${reel.products.length * 68 + 12}px` : "0px",
+                  opacity: expanded ? 1 : 0,
+                  marginBottom: expanded ? "8px" : "0px",
+                }}
+              >
+                {reel.products.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="transition-all duration-500 ease-out"
+                    style={{
+                      opacity: expanded ? 1 : 0,
+                      transform: expanded ? "translateY(0)" : "translateY(10px)",
+                      transitionDelay: `${expanded ? i * 90 : 0}ms`,
+                    }}
+                  >
+                    <ProductTag product={p} soldOut={soldOutHandles.has(p.handle)} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Single elegant trigger — one line, never blocks the reel */}
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+                className="press-scale flex w-full items-center justify-center gap-2 px-4 py-2.5 backdrop-blur-md"
+                style={{
+                  backgroundColor: expanded ? "rgba(255,255,255,0.96)" : "rgba(20,20,20,0.72)",
+                  color: expanded ? "hsl(0 0% 12%)" : "#fff",
+                  boxShadow: "0 6px 24px rgba(0,0,0,0.28)",
+                }}
+              >
+                {expanded ? (
+                  <ChevronDown size={14} />
+                ) : (
+                  <ShoppingBag size={13} strokeWidth={1.6} />
+                )}
+                <span className="text-[10px] font-medium uppercase tracking-[0.22em]">
+                  {expanded ? "Hide" : `Shop this reel · ${reel.products.length}`}
+                </span>
+              </button>
             </div>
-          ))}
+          )}
         </div>
+
 
       </div>
     </div>

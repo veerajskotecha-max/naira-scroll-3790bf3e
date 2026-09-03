@@ -170,7 +170,7 @@ const OrderCard = ({ order }: { order: OrderRow }) => {
           href={order.checkout_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-block border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.28em] text-[#8A6A2F]"
+          className="mt-3 inline-flex min-h-11 items-end border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.28em] text-[#8A6A2F]"
           style={jost}
         >
           FINISH THIS CHECKOUT →

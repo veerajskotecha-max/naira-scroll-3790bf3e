@@ -289,10 +289,7 @@ const ConservatoryGate = ({
       <div className="pointer-events-none absolute inset-x-2 inset-y-0 -z-10 rounded-t-[999px] border border-[#B0843A]/20" />
 
       <div key={mode} className="gate-card">
-        <p className="text-[10px] tracking-[0.45em] text-[#B0843A]" style={jost}>
-          THE INNER CIRCLE
-        </p>
-        <h2 className="mt-4 text-[clamp(1.9rem,6vw,2.8rem)] leading-[1.05] text-[#1A1614]" style={velista}>
+        <h2 className="text-[clamp(1.9rem,6vw,2.8rem)] leading-[1.05] text-[#1A1614]" style={velista}>
           Step{" "}
           <span className="italic text-[#B0843A]" style={editorial}>
             inside.
@@ -307,14 +304,14 @@ const ConservatoryGate = ({
         </p>
 
         {mode !== "setpass" && (
-          <div className="mt-8 flex items-center justify-center gap-1" role="group" aria-label="How would you like to enter?">
+          <div className="mt-8 flex items-end justify-center gap-1" role="group" aria-label="How would you like to enter?">
             {TABS.map((t) => (
               <button
                 key={t.id}
                 type="button"
                 onClick={() => turn(t.id)}
                 aria-pressed={mode === t.id}
-                className={`border-b px-3 pb-2 text-[10px] tracking-[0.24em] transition-colors ${focusRing} ${
+                className={`flex min-h-11 items-end border-b px-3 pb-2 text-[10px] tracking-[0.24em] transition-colors ${focusRing} ${
                   mode === t.id
                     ? "border-[#B0843A] text-[#8A6A2F]"
                     : "border-transparent text-[#1A1614]/45 hover:text-[#1A1614]/75"
@@ -419,7 +416,7 @@ const ConservatoryGate = ({
             type="button"
             onClick={sendReset}
             disabled={busy || left > 0}
-            className={`mt-6 border-b border-[#B0843A]/50 pb-1 text-[10px] tracking-[0.28em] text-[#8A6A2F] disabled:opacity-50 ${focusRing}`}
+            className={`mt-6 inline-flex min-h-11 items-end border-b border-[#B0843A]/50 pb-1 text-[10px] tracking-[0.28em] text-[#8A6A2F] disabled:opacity-50 ${focusRing}`}
             style={jost}
           >
             {left > 0 ? `AGAIN IN ${left}S` : "FORGOTTEN YOUR PASSWORD?"}
@@ -430,7 +427,7 @@ const ConservatoryGate = ({
           <button
             type="button"
             onClick={() => void finish(true)}
-            className={`mt-6 border-b border-[#B0843A]/50 pb-1 text-[10px] tracking-[0.28em] text-[#8A6A2F] ${focusRing}`}
+            className={`mt-6 inline-flex min-h-11 items-end border-b border-[#B0843A]/50 pb-1 text-[10px] tracking-[0.28em] text-[#8A6A2F] ${focusRing}`}
             style={jost}
           >
             SKIP FOR NOW

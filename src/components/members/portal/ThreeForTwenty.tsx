@@ -167,6 +167,10 @@ const ThreeForTwenty = ({ code }: { code?: string }) => {
         <>
           <div
             className="mt-5 grid max-h-[62svh] grid-cols-2 gap-2.5 overflow-y-auto overscroll-contain pr-0.5 sm:grid-cols-3"
+            style={{
+              maskImage: "linear-gradient(to bottom, #000 calc(100% - 28px), transparent)",
+              WebkitMaskImage: "linear-gradient(to bottom, #000 calc(100% - 28px), transparent)",
+            }}
             role="group"
             aria-label="Choose your pieces"
           >

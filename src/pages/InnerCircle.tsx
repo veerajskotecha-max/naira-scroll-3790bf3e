@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import PageSEO from "@/components/PageSEO";
 import Footer from "@/components/Footer";
-import JoinInnerCircleForm from "@/components/members/JoinInnerCircleForm";
 import PortalShell, { LazyPanel } from "@/components/members/portal/PortalShell";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -61,26 +60,20 @@ const Invitation = () => (
       />
     </div>
 
-    <span className="mt-12 block h-px w-16 bg-[#C99A4C]/60" aria-hidden />
-
-    <p className="mt-10 text-[10px] tracking-[0.4em] text-[#B0843A]" style={jost}>
-      NOT ON THE LIST YET
+    <p className="mt-10 text-[1.02rem] italic leading-[1.6] text-[#1A1614]/60" style={editorial}>
+      Not on the list yet? Choose <span className="not-italic tracking-[0.16em] text-[#8A6A2F]">Join</span> above,
+      and we will send you the key.
     </p>
 
-    <div className="mt-6 flex w-full max-w-[360px] flex-col items-center gap-4">
-      <JoinInnerCircleForm source="inner-circle" cta="Join the Inner Circle" />
-      {/* No second sign-in link here: the gate above is the door, and its
-          fallback carries the link whenever the gate itself is missing. */}
-      <a
-        href={WHATSAPP}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[10px] tracking-[0.3em] text-[#1A1614]/45"
-        style={jost}
-      >
-        OR REQUEST AN INVITATION ON WHATSAPP
-      </a>
-    </div>
+    <a
+      href={WHATSAPP}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-6 inline-flex min-h-11 items-center text-[10px] tracking-[0.3em] text-[#1A1614]/45"
+      style={jost}
+    >
+      OR REQUEST AN INVITATION ON WHATSAPP
+    </a>
   </section>
 );
 

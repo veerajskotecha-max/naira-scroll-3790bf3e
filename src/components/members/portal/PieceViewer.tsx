@@ -276,7 +276,7 @@ const PieceViewer = ({
             <TabsTrigger
               key={m}
               value={m}
-              className="group relative flex-1 rounded-none bg-transparent px-2 py-3 text-[10px] tracking-[0.3em] text-[#1A1614]/45 transition-[color,opacity] duration-200 data-[state=active]:bg-transparent data-[state=active]:text-[#1A1614] data-[state=active]:shadow-none focus-visible:ring-1 focus-visible:ring-[#B0843A] focus-visible:ring-offset-0"
+              className="group relative min-h-11 flex-1 rounded-none bg-transparent px-2 py-3 text-[10px] tracking-[0.3em] text-[#1A1614]/45 transition-[color,opacity] duration-200 data-[state=active]:bg-transparent data-[state=active]:text-[#1A1614] data-[state=active]:shadow-none focus-visible:ring-1 focus-visible:ring-[#B0843A] focus-visible:ring-offset-0"
               style={jost}
             >
               {tabLabel[m].toUpperCase()}
@@ -324,7 +324,7 @@ const PieceViewer = ({
                     loading={i === 0 ? "eager" : "lazy"}
                     decoding="async"
                     draggable={false}
-                    className="aspect-[4/5] w-full select-none object-cover"
+                    className="aspect-[4/5] max-h-[62svh] w-full select-none object-cover md:max-h-[58svh]"
                   />
                 </button>
               ))}
@@ -340,7 +340,7 @@ const PieceViewer = ({
                   onClick={() => scrollToSlide(i)}
                   aria-label={`Show ${frameAlt(piece, src, i, count)}`}
                   aria-current={i === slide}
-                  className="flex h-6 w-6 items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B0843A]"
+                  className="flex h-11 w-11 items-center justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#B0843A]"
                 >
                   <span
                     aria-hidden

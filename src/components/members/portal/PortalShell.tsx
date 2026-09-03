@@ -253,7 +253,7 @@ const PortalShell = () => {
       <div className="mt-12 flex flex-col items-center gap-4">
         <Link
           to="/account"
-          className="border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
+          className="inline-flex min-h-11 items-end border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
           style={jost}
         >
           YOUR ACCOUNT →
@@ -261,7 +261,7 @@ const PortalShell = () => {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="text-[10px] tracking-[0.3em] text-[#1A1614]/40"
+          className="inline-flex min-h-11 items-center text-[10px] tracking-[0.3em] text-[#1A1614]/40"
           style={jost}
         >
           SIGN OUT

@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { X, Volume2, VolumeX } from "lucide-react";
+import { X, ChevronDown, Volume2, VolumeX } from "lucide-react";
 import { useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 

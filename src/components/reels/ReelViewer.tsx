@@ -112,8 +112,10 @@ const ReelSlide = ({
     } else {
       v.pause();
       v.currentTime = 0;
+      setRevealed(false);
     }
   }, [active, muted]);
+
 
   return (
     <div className="relative flex h-full w-full items-center justify-center snap-start" style={{ scrollSnapAlign: "start" }}>

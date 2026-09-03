@@ -18,31 +18,36 @@ const controlClasses =
 
 /**
  * Full-screen product image viewer for the atelier.
- * Ivory backdrop, ink controls, 2x zoom toggle, arrow-key navigation.
+ * Ivory backdrop, ink controls, arrow-key navigation, tap or click to zoom 2x,
+ * and pinch to zoom up to 4x with one-finger panning on touch.
  * Focus trap, Escape and backdrop close are handled by Radix Dialog.
  */
 const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpenChange }: ImageLightboxProps) => {
   const count = images.length;
   const [index, setIndex] = React.useState(initialIndex);
-  const [zoomed, setZoomed] = React.useState(false);
-  const [origin, setOrigin] = React.useState("50% 50%");
+  /* One object so a pinch produces one render per frame, not four. */
+  const [zoom, setZoom] = React.useState({ scale: 1, x: 0, y: 0, origin: "50% 50%", live: false });
+  const gesture = React.useRef<{ dist: number; scale: number; mx: number; my: number } | null>(null);
+  const zoomed = zoom.scale > 1;
+  const resetZoom = React.useCallback(
+    () => setZoom({ scale: 1, x: 0, y: 0, origin: "50% 50%", live: false }),
+    [],
+  );
 
   React.useEffect(() => {
     if (open) {
       setIndex(Math.min(Math.max(initialIndex, 0), Math.max(count - 1, 0)));
-      setZoomed(false);
-      setOrigin("50% 50%");
+      resetZoom();
     }
-  }, [open, initialIndex, count]);
+  }, [open, initialIndex, count, resetZoom]);
 
   const step = React.useCallback(
     (delta: number) => {
       if (count < 2) return;
-      setZoomed(false);
-      setOrigin("50% 50%");
+      resetZoom();
       setIndex((prev) => (prev + delta + count) % count);
     },
-    [count]
+    [count, resetZoom]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -56,16 +61,71 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
   };
 
   const toggleZoomAtPoint = (e: React.MouseEvent<HTMLImageElement>) => {
+    if (zoomed) return resetZoom();
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
     const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
-    setOrigin(`${x.toFixed(1)}% ${y.toFixed(1)}%`);
-    setZoomed((z) => !z);
+    setZoom({ scale: 2, x: 0, y: 0, origin: `${x.toFixed(1)}% ${y.toFixed(1)}%`, live: false });
   };
 
   const toggleZoomButton = () => {
-    setOrigin("50% 50%");
-    setZoomed((z) => !z);
+    if (zoomed) return resetZoom();
+    setZoom({ scale: 2, x: 0, y: 0, origin: "50% 50%", live: false });
+  };
+
+  /* Pinch to zoom, and one finger to pan once zoomed.
+     `touch-action: none` on the image hands us the gesture, so nothing here
+     has to call preventDefault and every listener stays passive. */
+  const MAX_SCALE = 4;
+  const midpoint = (t: React.TouchList) => ({
+    x: (t[0].clientX + (t[1]?.clientX ?? t[0].clientX)) / 2,
+    y: (t[0].clientY + (t[1]?.clientY ?? t[0].clientY)) / 2,
+  });
+  const spread = (t: React.TouchList) =>
+    t.length < 2 ? 0 : Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+
+  const onTouchStart = (e: React.TouchEvent<HTMLImageElement>) => {
+    const t = e.touches;
+    const p = midpoint(t);
+    gesture.current = { dist: spread(t), scale: zoom.scale, mx: p.x, my: p.y };
+    if (t.length === 2 && !zoomed) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = Math.min(100, Math.max(0, ((p.x - rect.left) / rect.width) * 100));
+      const y = Math.min(100, Math.max(0, ((p.y - rect.top) / rect.height) * 100));
+      setZoom((z) => ({ ...z, origin: `${x.toFixed(1)}% ${y.toFixed(1)}%`, live: true }));
+    }
+  };
+
+  const onTouchMove = (e: React.TouchEvent<HTMLImageElement>) => {
+    const g = gesture.current;
+    if (!g) return;
+    const t = e.touches;
+    const pinching = t.length === 2 && g.dist > 0;
+    if (!pinching && !(t.length === 1 && zoomed)) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const p = midpoint(t);
+    setZoom((z) => {
+      const scale = pinching
+        ? Math.min(MAX_SCALE, Math.max(1, g.scale * (spread(t) / g.dist)))
+        : z.scale;
+      // Keep the image within its own overflow, whatever the fingers do.
+      const limitX = (rect.width * (scale - 1)) / 2;
+      const limitY = (rect.height * (scale - 1)) / 2;
+      return {
+        ...z,
+        scale,
+        x: Math.min(limitX, Math.max(-limitX, z.x + (p.x - g.mx))),
+        y: Math.min(limitY, Math.max(-limitY, z.y + (p.y - g.my))),
+        live: true,
+      };
+    });
+    g.mx = p.x;
+    g.my = p.y;
+  };
+
+  const onTouchEnd = () => {
+    gesture.current = null;
+    setZoom((z) => (z.scale <= 1.05 ? { scale: 1, x: 0, y: 0, origin: "50% 50%", live: false } : { ...z, live: false }));
   };
 
   if (count === 0) return null;
@@ -124,12 +184,18 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
               alt={`${name}, view ${index + 1} of ${count}`}
               draggable={false}
               onClick={toggleZoomAtPoint}
-              className={`max-h-full max-w-full select-none object-contain transition-transform duration-500 ${
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+              onTouchCancel={onTouchEnd}
+              className={`max-h-full max-w-full select-none object-contain transition-transform ${
                 zoomed ? "cursor-zoom-out" : "cursor-zoom-in"
               }`}
               style={{
-                transform: zoomed ? "scale(2)" : "scale(1)",
-                transformOrigin: origin,
+                transform: `translate3d(${zoom.x}px, ${zoom.y}px, 0) scale(${zoom.scale})`,
+                transformOrigin: zoom.origin,
+                touchAction: "none",
+                transitionDuration: zoom.live ? "0ms" : "260ms",
                 transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             />

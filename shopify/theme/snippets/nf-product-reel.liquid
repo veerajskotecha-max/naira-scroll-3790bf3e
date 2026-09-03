@@ -13,29 +13,36 @@
      Instagram's own player, so the page cannot start it, cannot mute it and
      cannot hide its controls. A reel has to be a real video file here.
 
-  Source, in order: the product's own Shopify video media, then an
-  external_video, then a reel_url metafield holding a direct file URL.
+  Source, in order: the product's own Shopify video media, then a
+  reel_url metafield holding a direct file URL.
   Renders nothing at all when the product has no video, so it is safe to leave
   in place for every product.
 {%- endcomment -%}
 
 {%- liquid
-  assign reel = null
-  assign poster = null
+  comment
+    has_video is a real boolean on purpose. The obvious guard, reel != blank
+    over an unset variable, is TRUE in Shopify Liquid -- nil is not comparable
+    to the blank sentinel the way it reads -- so it drew an empty black frame
+    on every product in the catalogue. Booleans compare reliably; keep them.
+  endcomment
+  assign has_video = false
+  assign poster = product.featured_image
   for media in product.media
-    if media.media_type == 'video' and reel == null
+    if media.media_type == 'video' and has_video == false
       assign reel = media
+      assign has_video = true
+      assign poster = media.preview_image
     endif
   endfor
   assign reel_url = product.metafields.custom.reel_url.value | default: ''
-  if reel != blank
-    assign poster = reel.preview_image
-  else
-    assign poster = product.featured_image
+  assign has_reel = has_video
+  if reel_url != ''
+    assign has_reel = true
   endif
 -%}
 
-{%- if reel != blank or reel_url != '' -%}
+{%- if has_reel -%}
   <section class="nf-reel" data-nf-reel aria-labelledby="NfReelTitle-{{ product.id }}">
     <h2 class="nf-reel__title" id="NfReelTitle-{{ product.id }}">{{ block.settings.reel_title | default: 'See it move' }}</h2>
 
@@ -56,7 +63,7 @@
         {% if poster %}poster="{{ poster | image_url: width: 720 }}"{% endif %}
         aria-label="{{ product.title | escape }} in motion"
       >
-        {%- if reel != blank -%}
+        {%- if has_video -%}
           {%- for source in reel.sources -%}
             <source src="{{ source.url }}" type="{{ source.mime_type }}">
           {%- endfor -%}
@@ -76,7 +83,7 @@
   <dialog class="nf-reel__full" data-nf-reel-dialog aria-label="{{ product.title | escape }} reel">
     <video class="nf-reel__full-video" data-nf-reel-full loop playsinline preload="none"
       {% if poster %}poster="{{ poster | image_url: width: 1080 }}"{% endif %}>
-      {%- if reel != blank -%}
+      {%- if has_video -%}
         {%- for source in reel.sources -%}
           <source src="{{ source.url }}" type="{{ source.mime_type }}">
         {%- endfor -%}
@@ -88,7 +95,7 @@
   </dialog>
 {%- endif -%}
 
-{%- if reel != blank or reel_url != '' -%}
+{%- if has_reel -%}
 <style>
   .nf-reel { margin: 24px 0 32px; }
   .nf-reel__title {

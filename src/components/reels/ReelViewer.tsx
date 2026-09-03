@@ -43,14 +43,17 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
 
   return (
     <div
-      className="flex items-center gap-3 p-2 backdrop-blur-sm"
-      style={{ backgroundColor: "rgba(255,255,255,0.94)" }}
+      className="flex items-center gap-2.5 p-1.5 pr-2 backdrop-blur-md"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.96)",
+        boxShadow: "0 6px 24px rgba(0,0,0,0.28)",
+      }}
     >
       {product.image_url && (
         <img
           src={product.image_url}
           alt={product.title}
-          className="h-12 w-12 shrink-0 object-cover"
+          className="h-11 w-11 shrink-0 object-cover"
           loading="lazy"
           decoding="async"
         />
@@ -64,7 +67,7 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
           {product.title}
         </Link>
         {product.price_label && (
-          <span className="text-[11px]" style={{ color: "hsl(0 0% 40%)" }}>
+          <span className="text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 42%)" }}>
             {product.price_label}
           </span>
         )}
@@ -73,7 +76,7 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
         type="button"
         onClick={add}
         disabled={adding || isLoading}
-        className="press-scale h-9 shrink-0 px-3 text-[10px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
+        className="press-scale h-8 shrink-0 px-3 text-[9.5px] font-medium uppercase tracking-[0.14em] disabled:opacity-60"
         style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
       >
         {adding ? "Adding…" : "Add"}
@@ -81,6 +84,7 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
     </div>
   );
 };
+
 
 const ReelSlide = ({
   reel,

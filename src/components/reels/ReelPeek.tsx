@@ -20,6 +20,7 @@ const ReelPeek = () => {
   const [armed, setArmed] = useState(false);
   const [shown, setShown] = useState(false);
   const [minimised, setMinimised] = useState(false);
+  const [pastThreshold, setPastThreshold] = useState(false);
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -27,24 +28,55 @@ const ReelPeek = () => {
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
 
+  // Reveal only after the shopper is ~32% down the page, and slide it away again
+  // the moment they scroll back up. Keeps the gallery + details area clear.
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (saveData()) return;
-    const onScroll = () => {
-      if (window.scrollY > window.innerHeight * 0.4) {
+
+    let lastY = window.scrollY;
+    let raf = 0;
+
+    const evaluate = () => {
+      raf = 0;
+      const y = window.scrollY;
+      const max = Math.max(
+        1,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      const progress = y / max;
+      const goingUp = y < lastY - 4;
+      lastY = y;
+
+      if (progress >= 0.32) {
         setArmed(true);
-        window.removeEventListener("scroll", onScroll);
+        setPastThreshold(true);
+        if (!goingUp) setMinimised(false);
+      } else {
+        setPastThreshold(false);
       }
+
+      // Scrolling up always tucks it away so it never sits over the imagery.
+      if (goingUp) setMinimised(true);
     };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(evaluate);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    evaluate();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   // Reveal only once the media is actually available.
   useEffect(() => {
-    if (reel?.videoUrl) setShown(true);
-  }, [reel?.videoUrl]);
+    setShown(Boolean(reel?.videoUrl) && pastThreshold && !minimised);
+  }, [reel?.videoUrl, pastThreshold, minimised]);
 
   // Try sound first, fall back to muted when the browser blocks it.
   const startPlayback = useCallback(async () => {
@@ -64,6 +96,13 @@ const ReelPeek = () => {
       }
     }
   }, []);
+
+  // Never keep audio/video running while tucked away.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (minimised || !pastThreshold) v.pause();
+  }, [minimised, pastThreshold]);
 
   const minimise = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -86,7 +125,7 @@ const ReelPeek = () => {
 
   return (
     <>
-      {!open && (minimised || (isMobile && !reel)) && (
+      {!open && pastThreshold && (minimised || !reel) && (
         <button
           type="button"
           onClick={showReels}
@@ -98,7 +137,7 @@ const ReelPeek = () => {
         </button>
       )}
 
-      {!open && !minimised && reel && (
+      {!open && !minimised && pastThreshold && reel && (
         <div
           className="fixed z-[110] transition-all duration-500 ease-out"
           style={{

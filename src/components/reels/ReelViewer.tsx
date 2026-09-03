@@ -43,14 +43,17 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
 
   return (
     <div
-      className="flex items-center gap-3 p-2 backdrop-blur-sm"
-      style={{ backgroundColor: "rgba(255,255,255,0.94)" }}
+      className="flex items-center gap-2.5 p-1.5 pr-2 backdrop-blur-md"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.96)",
+        boxShadow: "0 6px 24px rgba(0,0,0,0.28)",
+      }}
     >
       {product.image_url && (
         <img
           src={product.image_url}
           alt={product.title}
-          className="h-12 w-12 shrink-0 object-cover"
+          className="h-11 w-11 shrink-0 object-cover"
           loading="lazy"
           decoding="async"
         />
@@ -64,7 +67,7 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
           {product.title}
         </Link>
         {product.price_label && (
-          <span className="text-[11px]" style={{ color: "hsl(0 0% 40%)" }}>
+          <span className="text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 42%)" }}>
             {product.price_label}
           </span>
         )}
@@ -73,7 +76,7 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
         type="button"
         onClick={add}
         disabled={adding || isLoading}
-        className="press-scale h-9 shrink-0 px-3 text-[10px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
+        className="press-scale h-8 shrink-0 px-3 text-[9.5px] font-medium uppercase tracking-[0.14em] disabled:opacity-60"
         style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
       >
         {adding ? "Adding…" : "Add"}
@@ -81,6 +84,7 @@ const ProductTag = ({ product }: { product: ReelProduct }) => {
     </div>
   );
 };
+
 
 const ReelSlide = ({
   reel,
@@ -96,6 +100,8 @@ const ReelSlide = ({
   const ref = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+
 
   // Only the active slide holds a loaded video — neighbours are released.
   useEffect(() => {
@@ -110,8 +116,10 @@ const ReelSlide = ({
     } else {
       v.pause();
       v.currentTime = 0;
+      setRevealed(false);
     }
   }, [active, muted]);
+
 
   return (
     <div className="relative flex h-full w-full items-center justify-center snap-start" style={{ scrollSnapAlign: "start" }}>
@@ -142,7 +150,12 @@ const ReelSlide = ({
             onTimeUpdate={(e) => {
               const v = e.currentTarget;
               if (v.duration) setProgress((v.currentTime / v.duration) * 100);
+              // Shoppable cards surface near the end of the story — 20s in,
+              // or a touch earlier on shorter cuts so they never miss the loop.
+              const cue = Math.min(20, Math.max(4, (v.duration || 24) - 6));
+              if (v.currentTime >= cue) setRevealed(true);
             }}
+
           />
         ) : null}
 
@@ -167,16 +180,46 @@ const ReelSlide = ({
           {muted ? <VolumeX size={16} color="#fff" /> : <Volume2 size={16} color="#fff" />}
         </button>
 
-        <div className="absolute inset-x-0 bottom-0 space-y-2 p-3">
+        {/* Soft scrim so the shoppable cards stay legible over the footage */}
+        {reel.products.length > 0 && (
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-40 transition-opacity duration-700"
+            style={{
+              opacity: revealed ? 1 : 0,
+              background: "linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0))",
+            }}
+          />
+        )}
+
+        <div className="absolute inset-x-0 bottom-0 space-y-1.5 p-3 pb-4">
           {reel.caption && (
-            <p className="font-cormorant text-[15px]" style={{ color: "#fff", textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>
+            <p
+              className="font-cormorant text-[15px] transition-opacity duration-500"
+              style={{
+                color: "#fff",
+                textShadow: "0 1px 6px rgba(0,0,0,0.6)",
+                opacity: revealed ? 0 : 1,
+              }}
+            >
               {reel.caption}
             </p>
           )}
-          {reel.products.map((p) => (
-            <ProductTag key={p.id} product={p} />
+          {reel.products.map((p, i) => (
+            <div
+              key={p.id}
+              className="transition-all duration-500 ease-out"
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? "translateY(0)" : "translateY(14px)",
+                transitionDelay: `${revealed ? i * 140 : 0}ms`,
+                pointerEvents: revealed ? "auto" : "none",
+              }}
+            >
+              <ProductTag product={p} />
+            </div>
           ))}
         </div>
+
       </div>
     </div>
   );

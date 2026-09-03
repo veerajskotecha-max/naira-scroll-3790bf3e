@@ -217,10 +217,10 @@ const ReelSlide = ({
           />
         )}
 
-        <div className="absolute inset-x-0 bottom-0 space-y-1.5 p-3 pb-4">
+        <div className="absolute inset-x-0 bottom-0 p-3 pb-4">
           {reel.caption && (
             <p
-              className="font-cormorant text-[15px] transition-opacity duration-500"
+              className="mb-2 font-cormorant text-[15px] transition-opacity duration-500"
               style={{
                 color: "#fff",
                 textShadow: "0 1px 6px rgba(0,0,0,0.6)",
@@ -230,21 +230,65 @@ const ReelSlide = ({
               {reel.caption}
             </p>
           )}
-          {reel.products.map((p, i) => (
+
+          {reel.products.length > 0 && (
             <div
-              key={p.id}
               className="transition-all duration-500 ease-out"
               style={{
                 opacity: revealed ? 1 : 0,
                 transform: revealed ? "translateY(0)" : "translateY(14px)",
-                transitionDelay: `${revealed ? i * 140 : 0}ms`,
                 pointerEvents: revealed ? "auto" : "none",
               }}
             >
-              <ProductTag product={p} />
+              {/* Expanded stack — stays out of the way until tapped */}
+              <div
+                className="space-y-1.5 overflow-hidden transition-all duration-500 ease-out"
+                style={{
+                  maxHeight: expanded ? `${reel.products.length * 68 + 12}px` : "0px",
+                  opacity: expanded ? 1 : 0,
+                  marginBottom: expanded ? "8px" : "0px",
+                }}
+              >
+                {reel.products.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="transition-all duration-500 ease-out"
+                    style={{
+                      opacity: expanded ? 1 : 0,
+                      transform: expanded ? "translateY(0)" : "translateY(10px)",
+                      transitionDelay: `${expanded ? i * 90 : 0}ms`,
+                    }}
+                  >
+                    <ProductTag product={p} soldOut={soldOutHandles.has(p.handle)} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Single elegant trigger — one line, never blocks the reel */}
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+                className="press-scale flex w-full items-center justify-center gap-2 px-4 py-2.5 backdrop-blur-md"
+                style={{
+                  backgroundColor: expanded ? "rgba(255,255,255,0.96)" : "rgba(20,20,20,0.72)",
+                  color: expanded ? "hsl(0 0% 12%)" : "#fff",
+                  boxShadow: "0 6px 24px rgba(0,0,0,0.28)",
+                }}
+              >
+                {expanded ? (
+                  <ChevronDown size={14} />
+                ) : (
+                  <ShoppingBag size={13} strokeWidth={1.6} />
+                )}
+                <span className="text-[10px] font-medium uppercase tracking-[0.22em]">
+                  {expanded ? "Hide" : `Shop this reel · ${reel.products.length}`}
+                </span>
+              </button>
             </div>
-          ))}
+          )}
         </div>
+
 
       </div>
     </div>

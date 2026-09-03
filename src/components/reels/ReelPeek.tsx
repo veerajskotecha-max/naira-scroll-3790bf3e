@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { X, ChevronDown, Volume2, VolumeX } from "lucide-react";
+import { X, ChevronDown, Play, Volume2, VolumeX } from "lucide-react";
 import { useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -22,6 +22,7 @@ const ReelPeek = () => {
   const [armed, setArmed] = useState(false);
   const [shown, setShown] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [minimised, setMinimised] = useState(false);
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,7 +37,7 @@ const ReelPeek = () => {
       return;
     }
     const onScroll = () => {
-      if (window.scrollY > window.innerHeight * 1.2) {
+      if (window.scrollY > window.innerHeight * 0.4) {
         setArmed(true);
         window.removeEventListener("scroll", onScroll);
       }
@@ -76,6 +77,11 @@ const ReelPeek = () => {
     sessionStorage.setItem(DISMISS_KEY, "1");
   };
 
+  const minimise = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMinimised(true);
+  };
+
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     const v = videoRef.current;
@@ -89,13 +95,25 @@ const ReelPeek = () => {
 
   return (
     <>
-      {!open && (
+      {!open && minimised && (
+        <button
+          type="button"
+          onClick={() => setMinimised(false)}
+          aria-label="Show shoppable reels"
+          className="fixed z-[70] flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-[10px] uppercase tracking-[0.14em] shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
+          style={{ right: isMobile ? 12 : 24, bottom: isMobile ? 92 : 28, color: "hsl(0 0% 20%)" }}
+        >
+          <Play size={12} /> Reels
+        </button>
+      )}
+
+      {!open && !minimised && (
         <div
-          className="fixed z-[60] transition-all duration-500 ease-out"
+          className="fixed z-[70] transition-all duration-500 ease-out"
           style={{
             width: isMobile ? 108 : 150,
             right: isMobile ? 12 : 24,
-            bottom: isMobile ? 88 : 28,
+            bottom: isMobile ? 92 : 28,
             opacity: shown ? 1 : 0,
             transform: shown ? "translateY(0)" : "translateY(24px)",
             pointerEvents: shown ? "auto" : "none",
@@ -138,7 +156,7 @@ const ReelPeek = () => {
 
           <button
             type="button"
-            onClick={dismiss}
+            onClick={minimise}
             aria-label="Minimise reel"
             className="absolute -bottom-2 right-1/2 flex h-5 w-8 translate-x-1/2 items-center justify-center rounded-full bg-white shadow"
           >

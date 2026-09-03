@@ -118,7 +118,10 @@ const StageLabels = ({ stage }: { stage: StageIndex }) => (
       <li
         key={s.key}
         className="px-0.5 text-[9px] leading-[1.3] tracking-[0.06em]"
-        style={{ ...jost, color: i === stage ? GOLD : i < stage ? `${INK}66` : `${INK}40` }}
+        /* The four stage names say where a piece is, so all four have to be
+               readable. 40 measured 1.7:1 -- "Yours" was a ghost. Raised to
+               99/73, which keeps done > still-to-come > current-in-gold. */
+        style={{ ...jost, color: i === stage ? GOLD : i < stage ? `${INK}99` : `${INK}73` }}
         aria-current={i === stage ? "step" : undefined}
       >
         {s.label}

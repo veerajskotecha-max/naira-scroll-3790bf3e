@@ -345,7 +345,9 @@ const PieceViewer = ({
                   <span
                     aria-hidden
                     className="h-px w-4 transition-transform duration-200"
-                    style={{ background: i === slide ? GOLD : `${INK}33`, transform: i === slide ? "scaleY(2)" : "scaleY(1)" }}
+                    /* 33 was 1.5:1 against the ground -- a 1px hairline nobody could see,
+                         so a five-photograph piece looked like it had one. 80 is 3.4:1. */
+                    style={{ background: i === slide ? GOLD : `${INK}80`, transform: i === slide ? "scaleY(2)" : "scaleY(1)" }}
                   />
                 </button>
               ))}

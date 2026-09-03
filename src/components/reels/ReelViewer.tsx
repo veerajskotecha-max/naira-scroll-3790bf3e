@@ -187,16 +187,43 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
   const [index, setIndex] = useState(startIndex);
   const [muted, setMuted] = useState(false);
 
+  const goTo = useCallback(
+    (i: number) => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const next = Math.min(Math.max(i, 0), reels.length - 1);
+      el.scrollTo({ top: next * el.clientHeight, behavior: "smooth" });
+      setIndex(next);
+    },
+    [reels.length],
+  );
+
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowDown" || e.key === "PageDown") {
+        e.preventDefault();
+        setIndex((i) => {
+          goTo(i + 1);
+          return i;
+        });
+      }
+      if (e.key === "ArrowUp" || e.key === "PageUp") {
+        e.preventDefault();
+        setIndex((i) => {
+          goTo(i - 1);
+          return i;
+        });
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", onKey);
     };
-  }, [onClose]);
+  }, [onClose, goTo]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -208,6 +235,8 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
     if (!el) return;
     setIndex(Math.round(el.scrollTop / el.clientHeight));
   }, []);
+
+  const multi = reels.length > 1;
 
   return createPortal(
     <div className="fixed inset-0 z-[130]" style={{ backgroundColor: "hsl(0 0% 4%)" }}>
@@ -225,7 +254,7 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
         ref={scrollRef}
         onScroll={onScroll}
         className="h-full w-full snap-y snap-mandatory overflow-y-auto scrollbar-hide"
-        style={{ scrollbarWidth: "none" }}
+        style={{ scrollbarWidth: "none", overscrollBehavior: "contain" }}
       >
         {reels.map((reel, i) => (
           <div key={reel.id} className="h-full w-full">
@@ -238,6 +267,57 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
           </div>
         ))}
       </div>
+
+      {multi && (
+        <>
+          {/* Shift controls */}
+          <div className="pointer-events-none absolute right-3 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => goTo(index - 1)}
+              disabled={index === 0}
+              aria-label="Previous reel"
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-30"
+              style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+            >
+              <ChevronUp size={18} color="#fff" />
+            </button>
+            <button
+              type="button"
+              onClick={() => goTo(index + 1)}
+              disabled={index === reels.length - 1}
+              aria-label="Next reel"
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full disabled:opacity-30"
+              style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
+            >
+              <ChevronDown size={18} color="#fff" />
+            </button>
+          </div>
+
+          {/* Position dots */}
+          <div className="absolute left-3 top-1/2 z-10 flex -translate-y-1/2 flex-col gap-1.5">
+            {reels.map((r, i) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`Go to reel ${i + 1}`}
+                className="h-6 w-[3px]"
+                style={{ backgroundColor: i === index ? "#fff" : "rgba(255,255,255,0.3)" }}
+              />
+            ))}
+          </div>
+
+          {index === 0 && (
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-2 z-10 text-center text-[10px] uppercase tracking-[0.18em]"
+              style={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              Swipe up for more
+            </div>
+          )}
+        </>
+      )}
     </div>,
     document.body,
   );

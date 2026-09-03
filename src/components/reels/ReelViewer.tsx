@@ -45,6 +45,13 @@ const ProductTag = ({ product, soldOut }: { product: ReelProduct; soldOut: boole
     }
   };
 
+  const preorder = () => {
+    const message = encodeURIComponent(
+      `Hello Naira — I'd like to pre-order the ${product.title}. Please reserve one for me.`,
+    );
+    window.open(`https://wa.me/${PREORDER_WHATSAPP}?text=${message}`, "_blank", "noopener");
+  };
+
   return (
     <div
       className="flex items-center gap-2.5 p-1.5 pr-2 backdrop-blur-md"
@@ -70,24 +77,29 @@ const ProductTag = ({ product, soldOut }: { product: ReelProduct; soldOut: boole
         >
           {product.title}
         </Link>
-        {product.price_label && (
-          <span className="text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 42%)" }}>
-            {product.price_label}
-          </span>
-        )}
+        <span className="block truncate text-[10.5px] tracking-[0.04em]" style={{ color: "hsl(0 0% 42%)" }}>
+          {soldOut
+            ? `${product.price_label ?? ""}${product.price_label ? " · " : ""}Reserve today · 2 weeks delivery`
+            : product.price_label}
+        </span>
       </div>
       <button
         type="button"
-        onClick={add}
-        disabled={adding || isLoading}
+        onClick={soldOut ? preorder : add}
+        disabled={!soldOut && (adding || isLoading)}
         className="press-scale h-8 shrink-0 px-3 text-[9.5px] font-medium uppercase tracking-[0.14em] disabled:opacity-60"
-        style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
+        style={
+          soldOut
+            ? { backgroundColor: "transparent", color: "hsl(0 0% 12%)", border: "1px solid hsl(0 0% 12%)" }
+            : { backgroundColor: "hsl(0 0% 12%)", color: "#fff" }
+        }
       >
-        {adding ? "Adding…" : "Add"}
+        {soldOut ? "Pre-order" : adding ? "Adding…" : "Add"}
       </button>
     </div>
   );
 };
+
 
 
 const ReelSlide = ({

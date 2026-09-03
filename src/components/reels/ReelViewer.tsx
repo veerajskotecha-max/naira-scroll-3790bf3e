@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown } from "lucide-react";
+import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
 import { useCart } from "@/contexts/CartContext";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 
 interface Props {
   reels: Reel[];
@@ -15,9 +16,12 @@ interface Props {
 const parsePrice = (label?: string | null) =>
   label ? Number(label.replace(/[^\d.]/g, "")) || 0 : 0;
 
-const ProductTag = ({ product }: { product: ReelProduct }) => {
+const PREORDER_WHATSAPP = "919561557935";
+
+const ProductTag = ({ product, soldOut }: { product: ReelProduct; soldOut: boolean }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
+
 
   const add = async () => {
     if (!product.variant_id) {

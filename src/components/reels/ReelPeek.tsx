@@ -28,9 +28,9 @@ const ReelPeek = () => {
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
 
-  // Anchor the reel to the product material details section: it slides in when
-  // that section reaches the viewport and stays for the rest of the page, and
-  // vanishes the moment the shopper scrolls back up above it (over the gallery).
+  // Anchor the reel to the Buy Now / Add to Cart block: it slides in once those
+  // buttons have been passed and stays for the rest of the page, vanishing the
+  // moment the shopper scrolls back up above them (over the gallery).
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (saveData()) return;
@@ -38,15 +38,18 @@ const ReelPeek = () => {
     let raf = 0;
     const evaluate = () => {
       raf = 0;
-      const anchor = document.getElementById("product-material-details");
+      const anchor =
+        document.getElementById("product-actions") ||
+        document.getElementById("product-material-details");
       let active: boolean;
       if (anchor) {
-        // Active once the section's top has entered the lower viewport.
-        active = anchor.getBoundingClientRect().top <= window.innerHeight * 0.85;
+        // Active once the buttons block has been scrolled past (bottom above 85% of viewport).
+        active = anchor.getBoundingClientRect().bottom <= window.innerHeight * 0.85;
       } else {
         const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
         active = window.scrollY / max >= 0.32;
       }
+
       setPastThreshold(active);
       if (active) {
         setArmed(true);
@@ -76,24 +79,24 @@ const ReelPeek = () => {
     setShown(Boolean(reel?.videoUrl) && pastThreshold && !minimised);
   }, [reel?.videoUrl, pastThreshold, minimised]);
 
-  // Try sound first, fall back to muted when the browser blocks it.
+  // Always autoplay silently — audio stays opt-in via the mute toggle.
   const startPlayback = useCallback(async () => {
     const v = videoRef.current;
     if (!v || prefersReducedMotion()) return;
-    v.muted = false;
+    v.muted = true;
+    setMuted(true);
     try {
       await v.play();
-      setMuted(false);
     } catch {
-      v.muted = true;
-      setMuted(true);
-      try {
-        await v.play();
-      } catch {
-        /* autoplay fully blocked — poster stays */
-      }
+      /* autoplay blocked — poster stays */
     }
   }, []);
+
+  // Kick playback whenever the widget becomes visible.
+  useEffect(() => {
+    if (shown) void startPlayback();
+  }, [shown, startPlayback]);
+
 
   // Never keep audio/video running while tucked away.
   useEffect(() => {
@@ -161,9 +164,13 @@ const ReelPeek = () => {
               className="absolute inset-0 h-full w-full object-cover"
               playsInline
               loop
-              preload="none"
+              muted
+              autoPlay
+              preload="metadata"
+              onLoadedMetadata={() => void startPlayback()}
               onLoadedData={() => void startPlayback()}
               onCanPlay={() => void startPlayback()}
+
             />
             <span
               className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-left text-[9px] uppercase tracking-[0.14em] text-white"

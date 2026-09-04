@@ -193,7 +193,7 @@ const ReelPeek = () => {
               loop
               muted
               autoPlay
-              preload="metadata"
+              preload="auto"
               onLoadedMetadata={() => void startPlayback()}
               onLoadedData={() => void startPlayback()}
               onCanPlay={() => void startPlayback()}

@@ -128,12 +128,15 @@ const ProductTag = ({
 const ReelSlide = ({
   reel,
   active,
+  neighbour,
   muted,
   onToggleMute,
   onClose,
 }: {
   reel: Reel;
   active: boolean;
+  /** The slide one swipe away — buffered so the next reel starts instantly. */
+  neighbour: boolean;
   muted: boolean;
   onToggleMute: () => void;
   onClose: () => void;
@@ -180,15 +183,15 @@ const ReelSlide = ({
         className="relative"
         style={{ width: "min(100%, calc(100dvh * 9 / 16))", aspectRatio: "9/16", maxHeight: "100%" }}
       >
-        {active || reel.posterUrl ? (
+        {active || neighbour || reel.posterUrl ? (
           <video
             ref={ref}
-            src={active ? reel.videoUrl : undefined}
+            src={active || neighbour ? reel.videoUrl : undefined}
             poster={reel.posterUrl ?? undefined}
             className="h-full w-full object-cover"
             playsInline
             loop
-            preload={active ? "auto" : "none"}
+            preload={active ? "auto" : neighbour ? "metadata" : "none"}
             onClick={() => {
               const v = ref.current;
               if (!v) return;
@@ -403,6 +406,7 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
             <ReelSlide
               reel={reel}
               active={i === index}
+              neighbour={Math.abs(i - index) === 1}
               muted={muted}
               onToggleMute={() => setMuted((m) => !m)}
               onClose={onClose}

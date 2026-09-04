@@ -28,6 +28,33 @@ const ReelPeek = () => {
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
 
+  // Warm-up during browser idle time: fetch the (tiny) reel metadata, pull the
+  // viewer chunk into cache and decode the poster. No video bytes are touched,
+  // so the PDP stays light while the reel opens instantly when it appears.
+  useEffect(() => {
+    if (typeof window === "undefined" || saveData()) return;
+    const idle =
+      (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number })
+        .requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
+    const id = idle(() => {
+      setArmed(true);
+      void import("./ReelViewer");
+    }, { timeout: 4000 });
+    return () => {
+      const cancel = (window as Window & { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
+      if (cancel) cancel(id as number);
+      else window.clearTimeout(id as number);
+    };
+  }, []);
+
+  // Poster first: the still is a few KB and removes the black flash on reveal.
+  useEffect(() => {
+    if (!reel?.posterUrl) return;
+    const img = new Image();
+    img.src = reel.posterUrl;
+  }, [reel?.posterUrl]);
+
+
   // Anchor the reel to the Buy Now / Add to Cart block: it slides in once those
   // buttons have been passed and stays for the rest of the page, vanishing the
   // moment the shopper scrolls back up above them (over the gallery).
@@ -166,7 +193,7 @@ const ReelPeek = () => {
               loop
               muted
               autoPlay
-              preload="metadata"
+              preload="auto"
               onLoadedMetadata={() => void startPlayback()}
               onLoadedData={() => void startPlayback()}
               onCanPlay={() => void startPlayback()}

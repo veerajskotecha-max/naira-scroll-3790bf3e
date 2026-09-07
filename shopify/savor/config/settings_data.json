@@ -9,8 +9,8 @@
  */
 {
   "current": {
-    "logo_height": 36,
-    "logo_height_mobile": 28,
+    "logo_height": 34,
+    "logo_height_mobile": 26,
     "page_background_color": "{{ settings.color_palette.background }}",
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "jost_n3",
@@ -71,7 +71,8 @@
       "color1": "#1A1614",
       "color2": "#B0843A",
       "color3": "#E8DCD3"
-    }
+    },
+    "logo": "shopify://shop_images/nf-wordmark-ink.png"
   },
   "presets": {
     "Savor": {

@@ -1,0 +1,116 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NAIRA — brand layer over Savor
+   Loaded from snippets/stylesheets.liquid, after base.css, so it wins
+   on source order without needing a single !important.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Velista, the brand display face.
+
+   The src URL is RELATIVE on purpose. Shopify serves this file from
+   <cdn>/…/assets/nf-brand.css, so 'Velista.ttf' resolves to
+   <cdn>/…/assets/Velista.ttf. A Liquid {{ 'Velista.ttf' | asset_url }}
+   cannot be used: plain .css theme assets are served verbatim and never
+   rendered through Liquid.
+
+   NO format() hint, deliberately. The stored asset is a 37KB TTF, but
+   Shopify's CDN transcodes it to WOFF2 on delivery — so format('truetype')
+   would describe bytes that never arrive, and format('woff2') would break
+   if Shopify ever stopped transcoding. Omitting it makes the browser sniff
+   the real format, which is correct under both behaviours. */
+@font-face {
+  font-family: 'Velista';
+  src: url('Velista.ttf');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Savor builds every heading off this token, so redefining it once moves
+   the whole theme onto Velista. Cormorant stays as the fallback: it is
+   what Shopify's font picker is set to, so a failed Velista fetch lands
+   on the closest available serif rather than on Times. */
+:root {
+  --font-heading--family: 'Velista', 'Cormorant', 'Cormorant Garamond', Georgia, serif;
+  --nf-gold: #B0843A;
+  --nf-ink: #1A1614;
+}
+
+/* Velista sits large on the page and its natural leading is loose.
+   Headings set in it want tighter line-height than a text serif does. */
+h1, h2, .h1, .h2 { line-height: 1.06; letter-spacing: -0.005em; }
+
+/* ── The floral backdrop ──────────────────────────────────────────
+   Ported from the live site. It is a *backdrop*, so it sits behind
+   content at low opacity and never competes with a photograph of a
+   piece of jewellery. Opt in per section by adding the class in the
+   theme editor's custom CSS box, or by wrapping a section. */
+.nf-floral {
+  position: relative;
+  isolation: isolate;
+}
+.nf-floral::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url('nf-floral-pattern-bg.webp');
+  background-size: 600px auto;
+  background-repeat: repeat;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.nf-floral--corner::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(38vw, 320px);
+  aspect-ratio: 1;
+  z-index: -1;
+  background: url('nf-floral-corner.webp') right bottom / contain no-repeat;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Applied for real, not left as a class nobody adds.
+
+   Shopify wraps every section in #shopify-section-<id>, and the ids in
+   templates/index.json are ours -- `reasons` is the three-claim band under
+   the product grid. Targeting it directly means the backdrop ships without
+   anyone having to paste a class into the theme editor.
+
+   It goes behind the quietest band on the page on purpose: a floral wash
+   under a photograph of a necklace fights the necklace. */
+#shopify-section-reasons {
+  position: relative;
+  isolation: isolate;
+}
+#shopify-section-reasons::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url('nf-floral-pattern-bg.webp');
+  background-size: 600px auto;
+  background-repeat: repeat;
+  opacity: 0.07;
+  pointer-events: none;
+}
+#shopify-section-reasons::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(34vw, 260px);
+  aspect-ratio: 1;
+  z-index: -1;
+  background: url('nf-floral-corner.webp') right bottom / contain no-repeat;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+/* A page that asks not to move gets a still one. */
+@media (prefers-reduced-motion: reduce) {
+  .nf-floral::before,
+  .nf-floral--corner::after { animation: none; }
+}

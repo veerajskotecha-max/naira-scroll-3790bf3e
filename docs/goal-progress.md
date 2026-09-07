@@ -94,11 +94,54 @@ One side effect worth knowing: menus are store-wide, so the currently
 published theme sees this too. Since no shopper reaches a Shopify-rendered
 page today, that changes nothing in practice.
 
+### Pass 5 — the brand layer (logo, Velista, floral)
+Savor was still wearing its own clothes: no logo, Shopify's Cormorant
+standing in for the real display face, and none of the site's floral art.
+All three came out of the ported theme in this repo rather than being
+recreated.
+
+**The logo.** Savor renders `{% render 'jumbo-text', text: shop.name %}` when
+`settings.logo` is empty — the shop name as plain text, which is what was
+showing. `settings.logo` is an `image_picker` against Shopify **Files**, not
+theme assets, so the wordmark had to be uploaded there.
+
+Getting a usable file took three tries, and the first two are worth writing
+down. `nf-naira-logo.webp` turned out to be 1920×1080 — a padded canvas, not
+a wordmark. `nf-naira-logo.svg` is really a 105×24 raster wrapped in an SVG
+pattern fill, so it is both too small and unusable as an `image_picker`
+value. `nf-wordmark-cream.png` is the right artwork at 520×116, but cream on
+transparent — invisible on a warm-white header. It is a palette PNG, so
+rewriting its 32-entry PLTE chunk to ink (and recomputing the CRC) produced
+`nf-wordmark-ink.png`: the real NAIRA wordmark, floral "I" and all, at full
+resolution in brand ink. Uploaded, set, and the 1920×1080 file deleted.
+
+**Velista.** The actual brand display face, uploaded as a theme asset and
+wired through `assets/nf-brand.css`, which redefines `--font-heading--family`
+— the one token Savor builds every heading from. Two things the port had
+already solved and this reuses: the `src` URL is relative because plain .css
+assets are served verbatim and never run through Liquid, and there is no
+`format()` hint because Shopify's CDN transcodes the stored TTF to WOFF2 on
+delivery. Cormorant stays as the fallback.
+
+**Floral.** `nf-floral-pattern-bg.webp` and `nf-floral-corner.webp` ported
+across and applied to `#shopify-section-reasons` — the quiet three-claim band
+— at 7% and 42% opacity. Behind the calmest part of the page on purpose: a
+floral wash under a photograph of a necklace fights the necklace.
+
+**And a bug of my own from pass 1.** Savor draws a *transparent* header over
+the hero and paints its text in `background`. Once the ground became warm
+white that was warm-white-on-warm-white — an invisible header on the home,
+product and collection pages. Transparency off, solid ground, ink text.
+Also off: the country and language pickers, two controls nobody in a
+single-market Indian store touches. Sticky header on.
+
+Every binary verified by MD5 against the local file after upload, since the
+staged-upload path returns no record of its own.
+
 ## Not done yet
 
 - **`templates/collection.json`** — still Savor's demo. Next pass.
 - **`list-collections.json`**, `page.json`, `cart.json`, `search.json`.
-- **Logo.** Savor is showing its own wordmark.
 
 ## Two things that constrain every pass
 

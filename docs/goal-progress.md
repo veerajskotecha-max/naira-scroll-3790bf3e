@@ -77,13 +77,27 @@ days · 7-day returns*.
 
 5,644 bytes against Savor's 21,707.
 
+### Pass 4 — navigation (live store data, approved)
+Both menus pointed at apparel. Rewritten as Shopify menu resources, so the
+links resolve by collection/page id rather than a hardcoded path:
+
+| | Was | Now |
+|---|---|---|
+| `main-menu` | HOME · SHOP ALL · ABOUT NAIRA · MADE FOR YOU · CONTACT | NECKLACES · EARRINGS · BRACELETS · RINGS |
+| `footer` | Search · Shop All · About Naira · Made for you | Shop all · Contact · FAQs · Exchange & returns |
+
+Every header link now lands on product rather than on a page. Nothing was
+deleted — About Naira, Made for You, Concepts, Gifting and the Wedding Edit
+all still exist in Shopify, they are just no longer linked.
+
+One side effect worth knowing: menus are store-wide, so the currently
+published theme sees this too. Since no shopper reaches a Shopify-rendered
+page today, that changes nothing in practice.
+
 ## Not done yet
 
 - **`templates/collection.json`** — still Savor's demo. Next pass.
 - **`list-collections.json`**, `page.json`, `cart.json`, `search.json`.
-- **Navigation.** `main-menu` still reads HOME / SHOP ALL / ABOUT NAIRA /
-  MADE FOR YOU / CONTACT. The last three are apparel pages. Menus are live
-  store data — needs the owner's go-ahead.
 - **Logo.** Savor is showing its own wordmark.
 
 ## Two things that constrain every pass

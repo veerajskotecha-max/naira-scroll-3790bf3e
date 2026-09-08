@@ -24,6 +24,13 @@ const ReelPeek = () => {
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Position handed to the fullscreen viewer so it resumes on the same frame.
+  const handoffTime = useRef(0);
+
+  const openViewer = () => {
+    handoffTime.current = videoRef.current?.currentTime ?? 0;
+    setOpen(true);
+  };
 
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];

@@ -453,9 +453,11 @@ const ReelViewer = ({ reels, startIndex = 0, startTime, onClose }: Props) => {
               active={i === index}
               neighbour={Math.abs(i - index) === 1}
               muted={muted}
+              startTime={i === startIndex ? startTime : undefined}
+              soldOutHandles={soldOutHandles}
+              liveByHandle={liveByHandle}
               onToggleMute={() => setMuted((m) => !m)}
               onClose={onClose}
-
             />
           </div>
         ))}

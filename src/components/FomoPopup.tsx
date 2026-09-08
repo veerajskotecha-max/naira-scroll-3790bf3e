@@ -172,7 +172,10 @@ const FomoPopup = () => {
         </div>
         <button
           type="button"
-          onClick={() => setDismissed(true)}
+          onClick={() => {
+            setVisible(false);
+            snoozeUntil.current = Date.now() + SNOOZE;
+          }}
           aria-label="Dismiss notification"
           className="absolute right-1.5 top-1.5 p-1"
           style={{ color: "hsl(0 0% 55%)" }}

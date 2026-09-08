@@ -99,7 +99,7 @@ const FomoPopup = () => {
       aria-live="polite"
     >
       <div
-        className="flex max-w-[300px] items-center gap-3 bg-white/95 p-2 pr-8 backdrop-blur"
+        className="relative flex max-w-[300px] items-center gap-3 bg-white/95 p-2 pr-8 backdrop-blur"
         style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.14)", border: "1px solid hsl(0 0% 92%)" }}
       >
         <Link to={item.to} className="shrink-0">

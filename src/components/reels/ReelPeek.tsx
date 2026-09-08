@@ -242,7 +242,12 @@ const ReelPeek = () => {
 
       {open && (
         <Suspense fallback={null}>
-          <ReelViewer reels={reels ?? []} startIndex={0} onClose={() => setOpen(false)} />
+          <ReelViewer
+            reels={reels ?? []}
+            startIndex={0}
+            startTime={handoffTime.current}
+            onClose={() => setOpen(false)}
+          />
         </Suspense>
       )}
     </>

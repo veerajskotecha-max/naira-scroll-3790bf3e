@@ -5,7 +5,8 @@ import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown, ShoppingBag } from "
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
 import { useCart } from "@/contexts/CartContext";
-import { useLiveJewellery, useLiveJewel } from "@/hooks/useLiveJewellery";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import type { JewelPiece } from "@/data/jewellery";
 
 interface Props {
   reels: Reel[];

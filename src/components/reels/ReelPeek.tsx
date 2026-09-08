@@ -24,6 +24,13 @@ const ReelPeek = () => {
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Position handed to the fullscreen viewer so it resumes on the same frame.
+  const handoffTime = useRef(0);
+
+  const openViewer = () => {
+    handoffTime.current = videoRef.current?.currentTime ?? 0;
+    setOpen(true);
+  };
 
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
@@ -179,7 +186,7 @@ const ReelPeek = () => {
         >
           <button
             type="button"
-            onClick={() => setOpen(true)}
+            onClick={openViewer}
             className="relative block w-full overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
             style={{ aspectRatio: "9/16", backgroundColor: "hsl(0 0% 8%)" }}
             aria-label="Open shoppable reels"
@@ -242,7 +249,12 @@ const ReelPeek = () => {
 
       {open && (
         <Suspense fallback={null}>
-          <ReelViewer reels={reels ?? []} startIndex={0} onClose={() => setOpen(false)} />
+          <ReelViewer
+            reels={reels ?? []}
+            startIndex={0}
+            startTime={handoffTime.current}
+            onClose={() => setOpen(false)}
+          />
         </Suspense>
       )}
     </>

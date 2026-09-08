@@ -5,11 +5,14 @@ import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown, ShoppingBag } from "
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
 import { useCart } from "@/contexts/CartContext";
-import { useLiveJewellery, useLiveJewel } from "@/hooks/useLiveJewellery";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import type { JewelPiece } from "@/data/jewellery";
 
 interface Props {
   reels: Reel[];
   startIndex?: number;
+  /** Playback position handed over from the floating peek, so the reel continues seamlessly. */
+  startTime?: number;
   onClose: () => void;
 }
 
@@ -21,14 +24,15 @@ const PREORDER_WHATSAPP = "919561557935";
 const ProductTag = ({
   product,
   soldOut,
+  live,
   onClose,
 }: {
   product: ReelProduct;
   soldOut: boolean;
+  live?: JewelPiece;
   onClose: () => void;
 }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
-  const live = useLiveJewel(product.handle);
   const navigate = useNavigate();
   const [adding, setAdding] = useState(false);
   const productPath = `/jewellery/${product.handle}`;
@@ -130,6 +134,9 @@ const ReelSlide = ({
   active,
   neighbour,
   muted,
+  startTime,
+  soldOutHandles,
+  liveByHandle,
   onToggleMute,
   onClose,
 }: {
@@ -138,6 +145,9 @@ const ReelSlide = ({
   /** The slide one swipe away — buffered so the next reel starts instantly. */
   neighbour: boolean;
   muted: boolean;
+  startTime?: number;
+  soldOutHandles: Set<string>;
+  liveByHandle: Map<string, JewelPiece>;
   onToggleMute: () => void;
   onClose: () => void;
 }) => {
@@ -146,22 +156,23 @@ const ReelSlide = ({
   const [progress, setProgress] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
-  // Live stock: a piece that has sold out in Shopify becomes a pre-order.
-  const { jewellery } = useLiveJewellery();
-  const soldOutHandles = useMemo(
-    () => new Set(jewellery.filter((p) => p.availableForSale === false).map((p) => p.handle)),
-    [jewellery],
-  );
-
-
-
+  const seeded = useRef(false);
 
   // Only the active slide holds a loaded video — neighbours are released.
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
     if (active) {
+      // Hand over the position already playing in the floating peek so the
+      // fullscreen view continues from the same frame instead of restarting.
+      if (!seeded.current && startTime && startTime > 0.2) {
+        seeded.current = true;
+        try {
+          v.currentTime = startTime;
+        } catch {
+          /* not seekable yet — harmless */
+        }
+      }
       v.muted = muted;
       void v.play().catch(() => {
         v.muted = true;
@@ -174,14 +185,22 @@ const ReelSlide = ({
       setExpanded(false);
     }
 
-  }, [active, muted]);
+  }, [active, muted, startTime]);
 
 
   return (
     <div className="relative flex h-full w-full items-center justify-center snap-start" style={{ scrollSnapAlign: "start" }}>
       <div
         className="relative"
-        style={{ width: "min(100%, calc(100dvh * 9 / 16))", aspectRatio: "9/16", maxHeight: "100%" }}
+        style={{
+          width: "min(100%, calc(100dvh * 9 / 16))",
+          aspectRatio: "9/16",
+          maxHeight: "100%",
+          // Poster as backdrop: the frame is on screen instantly, no black flash.
+          backgroundImage: reel.posterUrl ? `url(${reel.posterUrl})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         {active || neighbour || reel.posterUrl ? (
           <video
@@ -191,7 +210,13 @@ const ReelSlide = ({
             className="h-full w-full object-cover"
             playsInline
             loop
+            autoPlay={active}
             preload={active ? "auto" : neighbour ? "metadata" : "none"}
+            onLoadedMetadata={() => {
+              if (!active) return;
+              const v = ref.current;
+              if (v) void v.play().catch(() => undefined);
+            }}
             onClick={() => {
               const v = ref.current;
               if (!v) return;
@@ -291,7 +316,12 @@ const ReelSlide = ({
                       transitionDelay: `${expanded ? i * 90 : 0}ms`,
                     }}
                   >
-                    <ProductTag product={p} soldOut={soldOutHandles.has(p.handle)} onClose={onClose} />
+                    <ProductTag
+                      product={p}
+                      soldOut={soldOutHandles.has(p.handle)}
+                      live={liveByHandle.get(p.handle)}
+                      onClose={onClose}
+                    />
                   </div>
                 ))}
               </div>
@@ -327,10 +357,25 @@ const ReelSlide = ({
   );
 };
 
-const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
+const ReelViewer = ({ reels, startIndex = 0, startTime, onClose }: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(startIndex);
-  const [muted, setMuted] = useState(false);
+  // Start silent: muted playback is always allowed, so the first frame moves
+  // immediately instead of waiting on a rejected autoplay attempt.
+  const [muted, setMuted] = useState(true);
+
+  // Live stock/pricing resolved once for the whole viewer (was recomputed per
+  // slide and per product card, which stalled the open on a 250-product list).
+  const { jewellery } = useLiveJewellery();
+  const { soldOutHandles, liveByHandle } = useMemo(() => {
+    const soldOut = new Set<string>();
+    const map = new Map<string, JewelPiece>();
+    for (const p of jewellery) {
+      map.set(p.handle, p);
+      if (p.availableForSale === false) soldOut.add(p.handle);
+    }
+    return { soldOutHandles: soldOut, liveByHandle: map };
+  }, [jewellery]);
 
   const goTo = useCallback(
     (i: number) => {
@@ -408,9 +453,11 @@ const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
               active={i === index}
               neighbour={Math.abs(i - index) === 1}
               muted={muted}
+              startTime={i === startIndex ? startTime : undefined}
+              soldOutHandles={soldOutHandles}
+              liveByHandle={liveByHandle}
               onToggleMute={() => setMuted((m) => !m)}
               onClose={onClose}
-
             />
           </div>
         ))}

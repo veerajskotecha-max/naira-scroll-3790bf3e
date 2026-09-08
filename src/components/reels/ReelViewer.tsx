@@ -134,6 +134,9 @@ const ReelSlide = ({
   active,
   neighbour,
   muted,
+  startTime,
+  soldOutHandles,
+  liveByHandle,
   onToggleMute,
   onClose,
 }: {
@@ -142,6 +145,9 @@ const ReelSlide = ({
   /** The slide one swipe away — buffered so the next reel starts instantly. */
   neighbour: boolean;
   muted: boolean;
+  startTime?: number;
+  soldOutHandles: Set<string>;
+  liveByHandle: Map<string, JewelPiece>;
   onToggleMute: () => void;
   onClose: () => void;
 }) => {
@@ -150,22 +156,23 @@ const ReelSlide = ({
   const [progress, setProgress] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
-  // Live stock: a piece that has sold out in Shopify becomes a pre-order.
-  const { jewellery } = useLiveJewellery();
-  const soldOutHandles = useMemo(
-    () => new Set(jewellery.filter((p) => p.availableForSale === false).map((p) => p.handle)),
-    [jewellery],
-  );
-
-
-
+  const seeded = useRef(false);
 
   // Only the active slide holds a loaded video — neighbours are released.
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
     if (active) {
+      // Hand over the position already playing in the floating peek so the
+      // fullscreen view continues from the same frame instead of restarting.
+      if (!seeded.current && startTime && startTime > 0.2) {
+        seeded.current = true;
+        try {
+          v.currentTime = startTime;
+        } catch {
+          /* not seekable yet — harmless */
+        }
+      }
       v.muted = muted;
       void v.play().catch(() => {
         v.muted = true;
@@ -178,14 +185,22 @@ const ReelSlide = ({
       setExpanded(false);
     }
 
-  }, [active, muted]);
+  }, [active, muted, startTime]);
 
 
   return (
     <div className="relative flex h-full w-full items-center justify-center snap-start" style={{ scrollSnapAlign: "start" }}>
       <div
         className="relative"
-        style={{ width: "min(100%, calc(100dvh * 9 / 16))", aspectRatio: "9/16", maxHeight: "100%" }}
+        style={{
+          width: "min(100%, calc(100dvh * 9 / 16))",
+          aspectRatio: "9/16",
+          maxHeight: "100%",
+          // Poster as backdrop: the frame is on screen instantly, no black flash.
+          backgroundImage: reel.posterUrl ? `url(${reel.posterUrl})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         {active || neighbour || reel.posterUrl ? (
           <video
@@ -195,7 +210,13 @@ const ReelSlide = ({
             className="h-full w-full object-cover"
             playsInline
             loop
+            autoPlay={active}
             preload={active ? "auto" : neighbour ? "metadata" : "none"}
+            onLoadedMetadata={() => {
+              if (!active) return;
+              const v = ref.current;
+              if (v) void v.play().catch(() => undefined);
+            }}
             onClick={() => {
               const v = ref.current;
               if (!v) return;

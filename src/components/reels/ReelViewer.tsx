@@ -357,10 +357,25 @@ const ReelSlide = ({
   );
 };
 
-const ReelViewer = ({ reels, startIndex = 0, onClose }: Props) => {
+const ReelViewer = ({ reels, startIndex = 0, startTime, onClose }: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(startIndex);
-  const [muted, setMuted] = useState(false);
+  // Start silent: muted playback is always allowed, so the first frame moves
+  // immediately instead of waiting on a rejected autoplay attempt.
+  const [muted, setMuted] = useState(true);
+
+  // Live stock/pricing resolved once for the whole viewer (was recomputed per
+  // slide and per product card, which stalled the open on a 250-product list).
+  const { jewellery } = useLiveJewellery();
+  const { soldOutHandles, liveByHandle } = useMemo(() => {
+    const soldOut = new Set<string>();
+    const map = new Map<string, JewelPiece>();
+    for (const p of jewellery) {
+      map.set(p.handle, p);
+      if (p.availableForSale === false) soldOut.add(p.handle);
+    }
+    return { soldOutHandles: soldOut, liveByHandle: map };
+  }, [jewellery]);
 
   const goTo = useCallback(
     (i: number) => {

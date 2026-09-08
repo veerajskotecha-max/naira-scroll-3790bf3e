@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -6,8 +6,8 @@ import { reviewerNames } from "@/data/productReviews";
 
 /**
  * Social-proof ("someone just bought this") notifications on product pages.
- * First appears 15s after landing, then alternates 30s / 45s gaps, each time
- * with a different buyer, piece and elapsed time.
+ * One notification at a time: it fades in, stays visible, fades out, then a
+ * quiet gap passes before the next one appears with a fresh buyer + product.
  */
 
 const CITIES = [
@@ -37,8 +37,6 @@ const CITIES = [
   "Dehradun",
 ];
 
-/* First and last names combine into several hundred plausible buyers, so the
-   same name rarely repeats within a visit. */
 const FIRST_NAMES = [
   "Aanya", "Aditi", "Ahana", "Aishwarya", "Ananya", "Anjali", "Avni", "Bhavya",
   "Charvi", "Dhwani", "Diya", "Esha", "Gauri", "Hiral", "Ira", "Ishita",
@@ -55,10 +53,9 @@ const LAST_NAMES = [
 ];
 
 const FIRST_DELAY = 5000;
-/* Quiet 60s pause after each popup fades before the next one appears, so
-   only one notification is ever on screen and they never feel like flashing. */
 const GAP = 60000;
 const VISIBLE_FOR = 7000;
+const SNOOZE = 60000;
 
 interface Shown {
   name: string;
@@ -71,51 +68,62 @@ interface Shown {
 
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
-const SNOOZE = 60000;
-
 const FomoPopup = () => {
   const { jewellery } = useLiveJewellery();
   const [item, setItem] = useState<Shown | null>(null);
   const [visible, setVisible] = useState(false);
+
+  const poolRef = useRef<typeof jewellery>([]);
+  const namesRef = useRef<string[]>([]);
+  const indexRef = useRef(0);
   const snoozeUntil = useRef<number | null>(null);
   const timers = useRef<number[]>([]);
+  const started = useRef(false);
 
-  /* Keep a small rotating set (10-20 pieces) so the same shopper sees a
-     believable handful of bestsellers rather than the whole catalogue. */
-  const pool = useMemo(() => {
+  // Build the product pool and name list exactly once, even if jewellery
+  // re-renders frequently while data is loading.
+  if (poolRef.current.length === 0 && jewellery.length > 0) {
     const available = jewellery.filter((p) => p.image && p.handle);
     const shuffled = [...available].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(available.length, 10 + Math.floor(Math.random() * 11)));
-  }, [jewellery]);
+    poolRef.current = shuffled.slice(0, Math.min(available.length, 10 + Math.floor(Math.random() * 11)));
+  }
 
-  const names = useMemo(() => {
+  if (namesRef.current.length === 0) {
     const generated: string[] = [];
     for (const first of FIRST_NAMES) {
       for (let i = 0; i < 7; i += 1) {
         generated.push(`${first} ${LAST_NAMES[(FIRST_NAMES.indexOf(first) + i * 3) % LAST_NAMES.length]}`);
       }
     }
-    return Array.from(new Set([...reviewerNames, ...generated]));
-  }, []);
-
+    namesRef.current = Array.from(new Set([...reviewerNames, ...generated]));
+  }
 
   useEffect(() => {
-    if (pool.length === 0) return;
+    if (started.current) return;
+    if (poolRef.current.length === 0) return;
+    started.current = true;
 
     const clearAll = () => {
       timers.current.forEach((t) => window.clearTimeout(t));
       timers.current = [];
     };
 
-    const show = () => {
+    const schedule = (delay: number, fn: () => void) => {
+      timers.current.push(window.setTimeout(fn, delay));
+    };
+
+    const showNext = () => {
       const now = Date.now();
       if (snoozeUntil.current && now < snoozeUntil.current) {
-        timers.current.push(window.setTimeout(show, snoozeUntil.current - now + 100));
+        schedule(snoozeUntil.current - now + 100, showNext);
         return;
       }
-      const piece = pick(pool);
+
+      const piece = poolRef.current[indexRef.current % poolRef.current.length];
+      indexRef.current += 1;
+
       setItem({
-        name: pick(names),
+        name: pick(namesRef.current),
         city: pick(CITIES),
         minutes: 1 + Math.floor(Math.random() * 24),
         title: piece.name,
@@ -123,13 +131,17 @@ const FomoPopup = () => {
         to: `/jewellery/${piece.handle}`,
       });
       setVisible(true);
-      timers.current.push(window.setTimeout(() => setVisible(false), VISIBLE_FOR));
-      timers.current.push(window.setTimeout(show, VISIBLE_FOR + GAP));
+
+      schedule(VISIBLE_FOR, () => {
+        setVisible(false);
+        schedule(GAP, showNext);
+      });
     };
 
-    timers.current.push(window.setTimeout(show, FIRST_DELAY));
+    schedule(FIRST_DELAY, showNext);
+
     return clearAll;
-  }, [pool, names]);
+  }, []);
 
   if (!item || !visible) return null;
 

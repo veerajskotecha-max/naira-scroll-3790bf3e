@@ -10,6 +10,8 @@ import { useLiveJewellery, useLiveJewel } from "@/hooks/useLiveJewellery";
 interface Props {
   reels: Reel[];
   startIndex?: number;
+  /** Playback position handed over from the floating peek, so the reel continues seamlessly. */
+  startTime?: number;
   onClose: () => void;
 }
 

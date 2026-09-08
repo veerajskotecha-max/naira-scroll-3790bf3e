@@ -316,7 +316,12 @@ const ReelSlide = ({
                       transitionDelay: `${expanded ? i * 90 : 0}ms`,
                     }}
                   >
-                    <ProductTag product={p} soldOut={soldOutHandles.has(p.handle)} onClose={onClose} />
+                    <ProductTag
+                      product={p}
+                      soldOut={soldOutHandles.has(p.handle)}
+                      live={liveByHandle.get(p.handle)}
+                      onClose={onClose}
+                    />
                   </div>
                 ))}
               </div>

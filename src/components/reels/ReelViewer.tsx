@@ -23,14 +23,15 @@ const PREORDER_WHATSAPP = "919561557935";
 const ProductTag = ({
   product,
   soldOut,
+  live,
   onClose,
 }: {
   product: ReelProduct;
   soldOut: boolean;
+  live?: JewelPiece;
   onClose: () => void;
 }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
-  const live = useLiveJewel(product.handle);
   const navigate = useNavigate();
   const [adding, setAdding] = useState(false);
   const productPath = `/jewellery/${product.handle}`;

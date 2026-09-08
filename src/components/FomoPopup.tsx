@@ -23,11 +23,40 @@ const CITIES = [
   "Chennai",
   "Indore",
   "Surat",
+  "Lucknow",
+  "Chandigarh",
+  "Gurugram",
+  "Noida",
+  "Kochi",
+  "Coimbatore",
+  "Bhopal",
+  "Nagpur",
+  "Vadodara",
+  "Thane",
+  "Goa",
+  "Dehradun",
 ];
 
-const FIRST_DELAY = 15000;
+/* First and last names combine into several hundred plausible buyers, so the
+   same name rarely repeats within a visit. */
+const FIRST_NAMES = [
+  "Aanya", "Aditi", "Ahana", "Aishwarya", "Ananya", "Anjali", "Avni", "Bhavya",
+  "Charvi", "Dhwani", "Diya", "Esha", "Gauri", "Hiral", "Ira", "Ishita",
+  "Jhanvi", "Kavya", "Khushi", "Lavanya", "Mahika", "Manasi", "Meera", "Mitali",
+  "Naina", "Namrata", "Neha", "Nidhi", "Pooja", "Prisha", "Radhika", "Riya",
+  "Rutuja", "Saanvi", "Sakshi", "Sanya", "Shreya", "Simran", "Sneha", "Tanvi",
+  "Tara", "Trisha", "Vaishnavi", "Vanya", "Yashvi", "Zoya",
+];
+
+const LAST_NAMES = [
+  "Agarwal", "Bhatia", "Chawla", "Desai", "Gandhi", "Iyer", "Jain", "Joshi",
+  "Kapoor", "Kotecha", "Malhotra", "Mehta", "Nair", "Patel", "Rao", "Reddy",
+  "Sharma", "Shah", "Singh", "Verma",
+];
+
+const FIRST_DELAY = 10000;
 const GAPS = [30000, 45000];
-const VISIBLE_FOR = 6500;
+const VISIBLE_FOR = 6000;
 
 interface Shown {
   name: string;
@@ -47,10 +76,24 @@ const FomoPopup = () => {
   const [dismissed, setDismissed] = useState(false);
   const timers = useRef<number[]>([]);
 
-  const pool = useMemo(
-    () => jewellery.filter((p) => p.image && p.handle).slice(0, 60),
-    [jewellery],
-  );
+  /* Keep a small rotating set (10-20 pieces) so the same shopper sees a
+     believable handful of bestsellers rather than the whole catalogue. */
+  const pool = useMemo(() => {
+    const available = jewellery.filter((p) => p.image && p.handle);
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(available.length, 10 + Math.floor(Math.random() * 11)));
+  }, [jewellery]);
+
+  const names = useMemo(() => {
+    const generated: string[] = [];
+    for (const first of FIRST_NAMES) {
+      for (let i = 0; i < 7; i += 1) {
+        generated.push(`${first} ${LAST_NAMES[(FIRST_NAMES.indexOf(first) + i * 3) % LAST_NAMES.length]}`);
+      }
+    }
+    return Array.from(new Set([...reviewerNames, ...generated]));
+  }, []);
+
 
   useEffect(() => {
     if (dismissed || pool.length === 0) return;

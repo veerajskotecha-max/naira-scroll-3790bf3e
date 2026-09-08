@@ -54,9 +54,9 @@ const LAST_NAMES = [
   "Sharma", "Shah", "Singh", "Verma",
 ];
 
-const FIRST_DELAY = 10000;
-const GAPS = [30000, 45000];
-const VISIBLE_FOR = 6000;
+const FIRST_DELAY = 5000;
+const GAP = 20000;
+const VISIBLE_FOR = 7000;
 
 interface Shown {
   name: string;

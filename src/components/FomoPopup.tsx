@@ -55,7 +55,9 @@ const LAST_NAMES = [
 ];
 
 const FIRST_DELAY = 5000;
-const GAP = 20000;
+/* Quiet 60s pause after each popup fades before the next one appears, so
+   only one notification is ever on screen and they never feel like flashing. */
+const GAP = 60000;
 const VISIBLE_FOR = 7000;
 
 interface Shown {

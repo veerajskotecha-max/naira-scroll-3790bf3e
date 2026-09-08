@@ -98,7 +98,6 @@ const FomoPopup = () => {
   useEffect(() => {
     if (dismissed || pool.length === 0) return;
 
-    let round = 0;
     const clearAll = () => {
       timers.current.forEach((t) => window.clearTimeout(t));
       timers.current = [];
@@ -116,12 +115,7 @@ const FomoPopup = () => {
       });
       setVisible(true);
       timers.current.push(window.setTimeout(() => setVisible(false), VISIBLE_FOR));
-      timers.current.push(
-        window.setTimeout(() => {
-          round += 1;
-          show();
-        }, VISIBLE_FOR + GAPS[round % GAPS.length]),
-      );
+      timers.current.push(window.setTimeout(show, VISIBLE_FOR + GAP));
     };
 
     timers.current.push(window.setTimeout(show, FIRST_DELAY));

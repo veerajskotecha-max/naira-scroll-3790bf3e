@@ -31,7 +31,11 @@
    on the closest available serif rather than on Times. */
 :root {
   --font-heading--family: 'Velista', 'Cormorant', 'Cormorant Garamond', Georgia, serif;
-  --nf-gold: #B0843A;
+  /* Straight from the brand book. Gold is deliberately absent: it is
+     nowhere in the book, and the site had been using it by habit. */
+  --nf-sage: #99B4AF;
+  --nf-peach: #FFBDA8;
+  --nf-cream: #FFF8F5;
   --nf-ink: #1A1614;
 }
 

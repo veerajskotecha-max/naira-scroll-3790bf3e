@@ -138,6 +138,45 @@ single-market Indian store touches. Sticky header on.
 Every binary verified by MD5 against the local file after upload, since the
 staged-upload path returns no record of its own.
 
+### Pass 6 — the brand book (`naira.pdf`)
+The owner sent the brand book. It settles two things I had been guessing at
+and overturns one.
+
+**The palette is not what the site has been using.** The book names three
+colours and gold is not among them:
+
+| | Hex | Where it goes |
+|---|---|---|
+| Cream | `FFF8F5` | the ground — already set, and the book confirms it exactly |
+| Sage | `99B4AF` | the brand's own colour; the wordmark is set in it |
+| Peach | `FFBDA8` | the iris in the logo, and now the sale badge |
+
+`#B0843A` gold, which the React site uses in 46 places, appears nowhere in
+the book. It was being used out of habit. `color2` is sage now and the sale
+badge is peach with ink on it at 11.2:1.
+
+The book specifies no text or button colour, as brand books usually do not,
+so both stay ink. That is a deliberate reading rather than an omission: sage
+body text on cream measures **2.1:1** and a sage button would be unreadable,
+while the book's own logo application is 2.1:1 *on purpose* — a mark is
+exempt from contrast minimums, a paragraph is not.
+
+**The logo is vector, and now it is the real one.** Only two rasters exist in
+26 pages, so the wordmark is drawn. Page 3 carries the definitive
+application — sage wordmark, peach iris, on cream — and that region was
+rendered at 300dpi and cropped to 2073×560. It replaces the ink wordmark
+hand-recoloured in pass 5, which is deleted; that was a reconstruction, this
+is the artwork.
+
+Page 2's lockup also gives the reversed pair (black on white, white on
+black) if a dark surface ever needs one.
+
+Getting here needed poppler, which was not installed and whose first
+`apt-get` failed on a stale index; `apt-get update` fixed it. Pillow was
+also tried and abandoned — the apt build targets Python 3.12 and this
+container runs 3.11 — so the crop was done with `pdftoppm -x -y -W -H`
+instead, which needed no new dependency at all.
+
 ## Not done yet
 
 - **`templates/collection.json`** — still Savor's demo. Next pass.

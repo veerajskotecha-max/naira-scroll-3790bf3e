@@ -9,8 +9,8 @@
  */
 {
   "current": {
-    "logo_height": 34,
-    "logo_height_mobile": 26,
+    "logo_height": 30,
+    "logo_height_mobile": 24,
     "page_background_color": "{{ settings.color_palette.background }}",
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "jost_n3",
@@ -28,7 +28,7 @@
     "type_size_h2": "48",
     "type_line_height_h2": "display-tight",
     "card_hover_effect": "none",
-    "badge_sale_background_color": "{{ settings.color_palette.color2 }}",
+    "badge_sale_background_color": "#FFBDA8",
     "badge_sale_text_color": "{{ settings.color_palette.foreground }}",
     "badge_sold_out_background_color": "{{ settings.color_palette.color3 }}",
     "badge_sold_out_text_color": "{{ settings.color_palette.foreground }}",
@@ -69,10 +69,10 @@
       "background": "#FFF8F5",
       "foreground": "#1A1614",
       "color1": "#1A1614",
-      "color2": "#B0843A",
-      "color3": "#E8DCD3"
+      "color2": "#99B4AF",
+      "color3": "#E4DAD4"
     },
-    "logo": "shopify://shop_images/nf-wordmark-ink.png"
+    "logo": "shopify://shop_images/nf-logo-brand.png"
   },
   "presets": {
     "Savor": {

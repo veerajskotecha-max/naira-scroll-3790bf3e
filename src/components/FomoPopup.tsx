@@ -107,7 +107,7 @@ const FomoPopup = () => {
     const show = () => {
       const piece = pick(pool);
       setItem({
-        name: pick(reviewerNames),
+        name: pick(names),
         city: pick(CITIES),
         minutes: 1 + Math.floor(Math.random() * 24),
         title: piece.name,
@@ -126,23 +126,23 @@ const FomoPopup = () => {
 
     timers.current.push(window.setTimeout(show, FIRST_DELAY));
     return clearAll;
-  }, [pool, dismissed]);
+  }, [pool, dismissed, names]);
 
   if (!item || dismissed) return null;
 
   return (
     <div
-      className="fixed bottom-[86px] left-3 z-[90] md:bottom-6 md:left-6"
+      className="fixed left-3 right-3 top-[96px] z-[90] md:bottom-6 md:left-6 md:right-auto md:top-auto"
       style={{
         pointerEvents: visible ? "auto" : "none",
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(12px)",
+        transform: visible ? "translateY(0)" : "translateY(-12px)",
         transition: "opacity 420ms ease, transform 420ms ease",
       }}
       aria-live="polite"
     >
       <div
-        className="relative flex max-w-[300px] items-center gap-3 bg-white/95 p-2 pr-8 backdrop-blur"
+        className="relative flex w-full max-w-full items-center gap-3 bg-white/95 p-2 pr-8 backdrop-blur md:max-w-[300px]"
         style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.14)", border: "1px solid hsl(0 0% 92%)" }}
       >
         <Link to={item.to} className="shrink-0">

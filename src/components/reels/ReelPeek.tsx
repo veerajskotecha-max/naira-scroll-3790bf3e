@@ -186,7 +186,7 @@ const ReelPeek = () => {
         >
           <button
             type="button"
-            onClick={() => setOpen(true)}
+            onClick={openViewer}
             className="relative block w-full overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
             style={{ aspectRatio: "9/16", backgroundColor: "hsl(0 0% 8%)" }}
             aria-label="Open shoppable reels"

@@ -277,6 +277,9 @@ const bank: ProductReview[] = [
 
 export const totalProductReviews = bank.length;
 
+/* Buyer names reused by the live purchase notifications on product pages. */
+export const reviewerNames: string[] = Array.from(new Set(bank.map((r) => r.name)));
+
 /* Stable hash so each product key maps to its own slice of the bank. */
 const hash = (key: string) => {
   let h = 0;

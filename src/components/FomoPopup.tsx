@@ -69,11 +69,13 @@ interface Shown {
 
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
+const SNOOZE = 60000;
+
 const FomoPopup = () => {
   const { jewellery } = useLiveJewellery();
   const [item, setItem] = useState<Shown | null>(null);
   const [visible, setVisible] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const snoozeUntil = useRef<number | null>(null);
   const timers = useRef<number[]>([]);
 
   /* Keep a small rotating set (10-20 pieces) so the same shopper sees a
@@ -96,7 +98,7 @@ const FomoPopup = () => {
 
 
   useEffect(() => {
-    if (dismissed || pool.length === 0) return;
+    if (pool.length === 0) return;
 
     const clearAll = () => {
       timers.current.forEach((t) => window.clearTimeout(t));
@@ -104,6 +106,11 @@ const FomoPopup = () => {
     };
 
     const show = () => {
+      const now = Date.now();
+      if (snoozeUntil.current && now < snoozeUntil.current) {
+        timers.current.push(window.setTimeout(show, snoozeUntil.current - now + 100));
+        return;
+      }
       const piece = pick(pool);
       setItem({
         name: pick(names),
@@ -120,9 +127,9 @@ const FomoPopup = () => {
 
     timers.current.push(window.setTimeout(show, FIRST_DELAY));
     return clearAll;
-  }, [pool, dismissed, names]);
+  }, [pool, names]);
 
-  if (!item || dismissed) return null;
+  if (!item || !visible) return null;
 
   return (
     <div

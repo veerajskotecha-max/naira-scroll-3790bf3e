@@ -85,10 +85,10 @@ const ReelPeek = () => {
       }
 
       setPastThreshold(active);
-      if (active) {
-        setArmed(true);
-        setMinimised(false);
-      }
+      // Never auto-restore: once the shopper closes the reel it stays closed
+      // until they tap the Reels bubble again.
+      if (active) setArmed(true);
+
     };
 
     const onScroll = () => {

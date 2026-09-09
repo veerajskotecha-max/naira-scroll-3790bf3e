@@ -115,10 +115,10 @@ const realReviews: Review[] = [
     verified: true,
     rating: 5,
     date: "September 7, 2026",
-    text: "The cushion halo ring looks like a proper diamond ring in person. The setting is neat from every angle, the gold finish is warm and rich, and the fit was exactly as the size chart promised.",
+    text: "The blush cluster ring is such a pretty everyday statement. The pink centre stone glows in natural light, the surrounding setting is delicate, and the slim band makes it comfortable to wear all day.",
     hasPhotos: true,
     images: [realHaloRing.url],
-    match: ["halo", "ring", "cushion", "solitaire"],
+    match: ["blush", "cluster", "ring", "pink", "flower"],
   },
 ];
 

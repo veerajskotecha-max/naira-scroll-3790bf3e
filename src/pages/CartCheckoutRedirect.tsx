@@ -1,30 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { CHECKOUT_DOMAIN } from "@/lib/shopify";
-
-const BRAND = ["#E5B9A4", "#AEBDB6", "#F0D9CF", "#2F5D63", "#E9C8B4"];
-
-/** Organic rose-petal / leaf silhouette used for the falling overlays. */
-const Petal = ({ color, variant }: { color: string; variant: number }) => {
-  const paths = [
-    "M50 2 C78 14 92 46 84 78 C76 108 24 108 16 78 C8 46 22 14 50 2 Z",
-    "M50 0 C84 10 96 52 70 90 C52 112 30 98 26 66 C22 32 28 8 50 0 Z",
-    "M50 4 C70 0 94 22 90 54 C86 88 60 104 38 92 C14 78 12 44 30 22 C38 12 44 7 50 4 Z",
-    "M50 2 C62 18 66 44 58 74 C52 96 40 100 30 84 C16 62 22 24 50 2 Z",
-  ];
-  return (
-    <svg viewBox="0 0 100 110" className="w-full h-full">
-      <path d={paths[variant % paths.length]} fill={color} />
-      <path
-        d="M50 8 C50 34 50 60 48 92"
-        stroke="rgba(255,255,255,0.45)"
-        strokeWidth="1.4"
-        fill="none"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-};
+import HeroPetals from "@/components/HeroPetals";
 
 /**
  * Safety net for Shopify checkout links that land on our own domain.
@@ -35,6 +12,8 @@ const Petal = ({ color, variant }: { color: string; variant: number }) => {
 const CartCheckoutRedirect = () => {
   const { token } = useParams<{ token: string }>();
   const { search, pathname } = useLocation();
+  const progressRef = useRef(0);
+  const vh = useMemo(() => window.innerHeight, []);
 
   useEffect(() => {
     const fallbackToken = pathname.split("/").filter(Boolean).pop();
@@ -50,21 +29,19 @@ const CartCheckoutRedirect = () => {
     return () => window.clearTimeout(t);
   }, [token, search, pathname]);
 
-  const petals = useMemo(
-    () =>
-      Array.from({ length: 26 }, (_, i) => ({
-        left: (i * 37.7 + 8) % 100,
-        size: 14 + ((i * 29) % 26),
-        duration: 4.2 + ((i * 13) % 40) / 10,
-        delay: ((i * 17) % 30) / 10,
-        drift: -30 + ((i * 23) % 60),
-        spin: (i % 2 === 0 ? 1 : -1) * (140 + ((i * 31) % 200)),
-        color: BRAND[i % BRAND.length],
-        variant: i % 4,
-        opacity: 0.55 + ((i * 7) % 40) / 100,
-      })),
-    []
-  );
+  // Drive the homepage petal layer with a simulated scroll progress so the
+  // petals fall continuously while the redirect overlay is visible.
+  useEffect(() => {
+    let raf = 0;
+    let start = performance.now();
+    const duration = 6000; // one full fall cycle
+    const tick = (now: number) => {
+      progressRef.current = Math.min(1, (now - start) / duration);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   return (
     <div

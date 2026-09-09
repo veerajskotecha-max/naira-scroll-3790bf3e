@@ -346,14 +346,6 @@ const JewelDetail = () => {
     if (!wishlisted) setHeartPopped(true);
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
   };
-  const handleShare = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
-    try {
-      if (navigator.share) await navigator.share({ title: piece.name, text: `Check out ${piece.name} on Naira Flore`, url });
-      else if (navigator.clipboard) { await navigator.clipboard.writeText(url); toast("Link copied"); }
-    } catch { /* silent */ }
-  };
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -397,17 +389,6 @@ const JewelDetail = () => {
       />
     </button>
   );
-  const ShareBtn = (
-    <button
-      className="press-scale absolute bottom-16 right-4 z-10 w-11 h-11 flex items-center justify-center shadow-sm"
-      style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
-      onClick={handleShare}
-      aria-label="Share piece"
-    >
-      <Share2 size={15} strokeWidth={1.6} style={{ color: "hsl(0 0% 30%)" }} />
-    </button>
-  );
-
   const Gallery = isMobile ? (
     <div className="relative">
       {/* The overlays are positioned against this wrapper, which covers only the

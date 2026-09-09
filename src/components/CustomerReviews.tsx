@@ -52,6 +52,7 @@ const realReviews: Review[] = [
     text: "The pastel zircone bracelet is even prettier in person. Every stone is set cleanly and the colours look soft and expensive, not loud. It came in the sweetest pink Naira box and I've worn it stacked with my everyday chain since the day it arrived.",
     hasPhotos: true,
     images: [realPastelBox.url, realPastelWorn.url, realBraceletPackaging.url],
+    match: ["bracelet", "pastel", "zircone", "candy", "rainbow"],
   },
   {
     name: "Tanvi Shah",
@@ -62,6 +63,7 @@ const realReviews: Review[] = [
     text: "Ordered the baguette bracelet with two pairs of hoops and the whole set arrived beautifully packed. The gold tone is warm and rich, the braided hoops are far lighter than they look, and nothing has dulled after weeks of wear.",
     hasPhotos: true,
     images: [realGoldSet.url],
+    match: ["hoop", "huggie", "bracelet", "baguette", "gold"],
   },
   {
     name: "Aishwarya Nair",
@@ -72,6 +74,7 @@ const realReviews: Review[] = [
     text: "Wearing the solitaire pendant with the matching studs almost daily now. The chain is fine and delicate, the stone catches light in every photo, and there's been no skin darkening at all.",
     hasPhotos: true,
     images: [realSolitaireSet.url],
+    match: ["pendant", "solitaire", "necklace", "stud", "chain"],
   },
   {
     name: "Nabby Dsouza",
@@ -82,6 +85,7 @@ const realReviews: Review[] = [
     text: "The beaded bracelet with the gold heart charm is my favourite pickup this year. The beads have a lovely weight, the toggle clasp is easy to fasten one-handed, and the heart sits perfectly on the wrist.",
     hasPhotos: true,
     images: [realHeartbead.url],
+    match: ["heartbead", "heart", "bead", "bracelet", "charm"],
   },
   {
     name: "Sneha Kulkarni",
@@ -92,10 +96,42 @@ const realReviews: Review[] = [
     text: "Bought the halo ring for a family function and it did not leave my finger. It looks like a proper diamond ring, the setting is neat from every angle, and the fit was exactly as the size chart promised.",
     hasPhotos: true,
     images: [realHaloRing.url],
+    match: ["halo", "ring", "cushion"],
+  },
+  {
+    name: "Ishita Mehta",
+    initials: "IM",
+    verified: true,
+    rating: 5,
+    date: "September 5, 2026",
+    text: "The pearl drop stud with the little pendant chain has become my everyday pair. It is light enough to forget I am wearing it, the pearl has a soft natural sheen, and the chain sits at exactly the right length with a shirt.",
+    hasPhotos: true,
+    images: [realPearlPendant.url],
+    match: ["pearl", "stud", "earring", "pendant", "necklace", "chain"],
+  },
+  {
+    name: "Prachi Deshmukh",
+    initials: "PD",
+    verified: true,
+    rating: 5,
+    date: "September 7, 2026",
+    text: "The pink stone halo ring is so pretty in warm light. The gold band is slim and comfortable, the pave around the centre stone is even all the way round, and it has not turned my finger at all.",
+    hasPhotos: true,
+    images: [realPinkHaloRing.url],
+    match: ["ring", "halo", "pink", "rose", "cushion", "solitaire"],
   },
 ];
 
 const realPhotos = realReviews.flatMap((r) => r.images);
+
+/* Show the real review whose piece matches the product being viewed first, so
+   the photo wall on each page feels specific to that piece. */
+const orderedRealReviews = (productName?: string) => {
+  const n = (productName ?? "").toLowerCase();
+  if (!n) return realReviews;
+  const score = (r: Review) => (r.match ?? []).filter((k) => n.includes(k)).length;
+  return [...realReviews].sort((a, b) => score(b) - score(a));
+};
 
 const jewelleryPhotos = [
   ...realPhotos,
@@ -296,6 +332,8 @@ const filters = ["All Reviews", "With Photos", "5★", "4★", "3★", "2★", "
 
 interface Review {
   no?: number;
+  /** Keywords used to surface the most relevant real review first on a PDP. */
+  match?: string[];
   name: string;
   initials: string;
   verified: boolean;
@@ -421,7 +459,7 @@ export const reviewSummary = (productName?: string, variant: "apparel" | "jewell
   const base = variant === "jewellery"
     ? [...jewelleryReviews, ...jewelleryOneLiners]
     : [...reviewsData, ...apparelOneLiners];
-  const all = [...realReviews, ...getProductReviews(productName ?? ""), ...base];
+  const all = [...orderedRealReviews(productName), ...getProductReviews(productName ?? ""), ...base];
   const total = all.length;
   if (!total) return null;
   const avg = all.reduce((sum, r) => sum + r.rating, 0) / total;
@@ -458,7 +496,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
     let cancelled = false;
     const seed = [
       // Real photographed customer reviews always lead.
-      ...realReviews,
+      ...orderedRealReviews(productName),
       ...ownReviews,
       ...(isJewellery
         ? [...jewelleryReviews, ...jewelleryOneLiners]

@@ -425,10 +425,9 @@ const JewelDetail = () => {
             <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
           </button>
         ))}
-      </div>
-      {WishlistBtn}
-      {ShareBtn}
-      {/* Baymard found 40% of mobile sites support no image gestures at all, and
+          </div>
+          {WishlistBtn}
+          {/* Baymard found 40% of mobile sites support no image gestures at all, and
           of the 60% that do, only half tell the user. Tapping here has always
           opened a full-screen zoom — nothing on the page ever said so. */}
       <span
@@ -506,14 +505,13 @@ const JewelDetail = () => {
                 style={{ backgroundColor: "#F4EBE2", height: "100%" }}
                 aria-label={`Open ${piece.name} image ${i + 1} full screen`}
               >
-                <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
-              </button>
-            ))}
-          </div>
-          {WishlistBtn}
-          {ShareBtn}
-        </div>
-      );
+            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
+          </button>
+        ))}
+      </div>
+      {WishlistBtn}
+    </div>
+  );
     })()
   );
 

@@ -93,10 +93,10 @@ const realReviews: Review[] = [
     verified: true,
     rating: 5,
     date: "August 6, 2026",
-    text: "Bought the halo ring for a family function and it did not leave my finger. It looks like a proper diamond ring, the setting is neat from every angle, and the fit was exactly as the size chart promised.",
+    text: "Bought the blush cluster ring for a family lunch and it has not left my finger since. The pink centre stone catches light beautifully, the tiny stones around it are set evenly, and the slim band makes it comfortable enough for all-day wear.",
     hasPhotos: true,
-    images: [realHaloRing.url],
-    match: ["halo", "ring", "cushion"],
+    images: [realPinkHaloRing.url],
+    match: ["blush", "cluster", "ring", "pink", "flower"],
   },
   {
     name: "Ishita Mehta",
@@ -115,10 +115,10 @@ const realReviews: Review[] = [
     verified: true,
     rating: 5,
     date: "September 7, 2026",
-    text: "The pink stone halo ring is so pretty in warm light. The gold band is slim and comfortable, the pave around the centre stone is even all the way round, and it has not turned my finger at all.",
+    text: "The cushion halo ring looks like a proper diamond ring in person. The setting is neat from every angle, the gold finish is warm and rich, and the fit was exactly as the size chart promised.",
     hasPhotos: true,
-    images: [realPinkHaloRing.url],
-    match: ["ring", "halo", "pink", "rose", "cushion", "solitaire"],
+    images: [realHaloRing.url],
+    match: ["halo", "ring", "cushion", "solitaire"],
   },
 ];
 

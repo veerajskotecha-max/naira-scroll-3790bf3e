@@ -116,8 +116,8 @@ const realReviews: Review[] = [
     rating: 5,
     date: "September 7, 2026",
     text: "The blush cluster ring is such a pretty everyday statement. The pink centre stone glows in natural light, the surrounding setting is delicate, and the slim band makes it comfortable to wear all day.",
-    hasPhotos: true,
-    images: [realHaloRing.url],
+    hasPhotos: false,
+    images: [],
     match: ["blush", "cluster", "ring", "pink", "flower"],
   },
 ];

@@ -412,8 +412,13 @@ export function formatShopifyPrice(money: ShopifyMoney): string {
  * The main site domains (nairaflore.com / www) stay on Lovable, which is why
  * checkout cannot use them: Shopify /cart/c/... paths 404 there.
  */
+/* payments.nairaflore.com stopped serving checkout: every /checkouts/cn/... and
+   /cart/c/... request on it now 302s to www.nairaflore.com (our own site), so
+   shoppers were dumped on the homepage instead of paying. The store's permanent
+   domain serves checkout correctly, so it is the default again until the
+   branded subdomain is reconnected as Shopify's primary domain. */
 export const CHECKOUT_DOMAIN =
-  (import.meta.env.VITE_CHECKOUT_DOMAIN ?? "").toString().trim() || "payments.nairaflore.com";
+  (import.meta.env.VITE_CHECKOUT_DOMAIN ?? "").toString().trim() || SHOPIFY_STORE_PERMANENT_DOMAIN;
 
 export function formatCheckoutUrl(checkoutUrl: string): string {
   try {

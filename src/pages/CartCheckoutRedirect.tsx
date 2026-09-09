@@ -1,10 +1,11 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { CHECKOUT_DOMAIN } from "@/lib/shopify";
+import HeroPetals from "@/components/HeroPetals";
 
 const BRAND = ["#E5B9A4", "#AEBDB6", "#F0D9CF", "#2F5D63", "#E9C8B4"];
 
-/** Organic rose-petal / leaf silhouette used for the falling overlays. */
+/** Simple petal silhouette used only for the centre bloom ring. */
 const Petal = ({ color, variant }: { color: string; variant: number }) => {
   const paths = [
     "M50 2 C78 14 92 46 84 78 C76 108 24 108 16 78 C8 46 22 14 50 2 Z",
@@ -35,6 +36,8 @@ const Petal = ({ color, variant }: { color: string; variant: number }) => {
 const CartCheckoutRedirect = () => {
   const { token } = useParams<{ token: string }>();
   const { search, pathname } = useLocation();
+  const progressRef = useRef(0);
+  const vh = useMemo(() => window.innerHeight, []);
 
   useEffect(() => {
     const fallbackToken = pathname.split("/").filter(Boolean).pop();
@@ -50,21 +53,19 @@ const CartCheckoutRedirect = () => {
     return () => window.clearTimeout(t);
   }, [token, search, pathname]);
 
-  const petals = useMemo(
-    () =>
-      Array.from({ length: 26 }, (_, i) => ({
-        left: (i * 37.7 + 8) % 100,
-        size: 14 + ((i * 29) % 26),
-        duration: 4.2 + ((i * 13) % 40) / 10,
-        delay: ((i * 17) % 30) / 10,
-        drift: -30 + ((i * 23) % 60),
-        spin: (i % 2 === 0 ? 1 : -1) * (140 + ((i * 31) % 200)),
-        color: BRAND[i % BRAND.length],
-        variant: i % 4,
-        opacity: 0.55 + ((i * 7) % 40) / 100,
-      })),
-    []
-  );
+  // Drive the homepage petal layer with a simulated scroll progress so the
+  // petals fall continuously while the redirect overlay is visible.
+  useEffect(() => {
+    let raf = 0;
+    let start = performance.now();
+    const duration = 6000; // one full fall cycle
+    const tick = (now: number) => {
+      progressRef.current = Math.min(1, (now - start) / duration);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   return (
     <div
@@ -72,10 +73,6 @@ const CartCheckoutRedirect = () => {
       style={{ backgroundColor: "#F4F1ED" }}
     >
       <style>{`
-        @keyframes naira-petal-fall {
-          0%   { transform: translate3d(0, -12vh, 0) rotate(0deg); }
-          100% { transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)); }
-        }
         @keyframes naira-bloom {
           0% { transform: scale(0.4) rotate(-8deg); opacity: 0; }
           60% { transform: scale(1.06) rotate(2deg); opacity: 1; }
@@ -94,25 +91,8 @@ const CartCheckoutRedirect = () => {
         }
       `}</style>
 
-      {/* Falling petals */}
-      {petals.map((p, i) => (
-        <div
-          key={i}
-          className="absolute top-0 pointer-events-none"
-          style={{
-            left: `${p.left}%`,
-            width: p.size,
-            height: p.size * 1.1,
-            opacity: p.opacity,
-            animation: `naira-petal-fall ${p.duration}s linear ${p.delay}s infinite`,
-            // @ts-expect-error custom props
-            "--drift": `${p.drift}px`,
-            "--spin": `${p.spin}deg`,
-          }}
-        >
-          <Petal color={p.color} variant={p.variant} />
-        </div>
-      ))}
+      {/* Primary homepage hero floral overlay — falls as the shopper scrolls on the home page */}
+      <HeroPetals progressRef={progressRef} vh={vh} />
 
       {/* Center bloom */}
       <div className="relative z-10 flex flex-col items-center px-6 text-center">

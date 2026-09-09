@@ -1,0 +1,125 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Savor motion stage</title>
+<!--
+  The Savor theme cannot be loaded in a browser: the store 301s every URL, theme
+  previews included, to a Cloudflare-served domain. So the motion layer is
+  verified here instead - real nf-brand.css, against a mock of the markup
+  Horizon emits, in a real browser.
+
+  This is a test fixture, not a page that ships. It only has to be faithful in
+  the ways the CSS cares about: section ids, card structure, heading levels.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500&family=Jost:wght@300;400;500&display=swap">
+<style>
+  /* Stands in for the parts of Savor's base.css the motion layer sits on top of.
+     Deliberately thin: if a rule here is doing the work, the real theme would
+     not reproduce it. */
+  :root{--font-body--family:'Jost',sans-serif;--font-heading--family:'Cormorant',Georgia,serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:#FFF8F5;color:#1A1614;font:300 15px/1.6 var(--font-body--family)}
+  h1,h2,h3{font-family:var(--font-heading--family);font-weight:400;margin:0}
+  .page-width{max-width:1200px;margin:0 auto;padding:0 24px}
+  .header{display:flex;align-items:center;gap:32px;padding:18px 24px;border-bottom:1px solid #E4DAD4;
+    position:sticky;top:0;background:#FFF8F5;z-index:50}
+  .header nav{display:none;gap:26px;font-size:.8125rem;letter-spacing:.18em;text-transform:uppercase}
+  @media(min-width:750px){.header nav{display:flex}}
+  .header img{height:30px}
+  .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 8px}
+  @media(min-width:750px){.product-grid{grid-template-columns:repeat(4,1fr)}}
+  .product-card{background:#FFF8F5}
+  /* <a> is inline; aspect-ratio does nothing on it, so the box collapsed and
+     the sale badge landed on the product name. */
+  .card-gallery{display:block;position:relative;aspect-ratio:1;overflow:hidden;background:#EFE6E0}
+  /* Both frames occupy the same box - a hover swap crossfades between them,
+     it does not stack them. The fixture had them in flow, doubling card height. */
+  .card-gallery img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .card-gallery__secondary{opacity:0}
+  .card-meta{padding-top:10px;font-size:.8125rem}
+  .card-meta .title{letter-spacing:.06em}
+  .reasons{display:flex;flex-direction:column;gap:28px;padding:24px 0 72px;text-align:center}
+  @media(min-width:750px){.reasons{flex-direction:row;gap:40px}}
+  .reasons > div{flex:1}
+  .eyebrow{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:#B0843A}
+  .badge{position:absolute;top:10px;left:10px;background:#FFBDA8;color:#1A1614;
+    font-size:.625rem;letter-spacing:.16em;text-transform:uppercase;padding:4px 8px}
+  .btn{display:inline-block;background:#1A1614;color:#FFF8F5;border:0;padding:14px 28px;
+    font:400 .75rem/1 var(--font-body--family);letter-spacing:.2em;text-transform:uppercase;cursor:pointer}
+  .pdp{display:grid;gap:8px}
+  @media(min-width:750px){.pdp{grid-template-columns:1fr 1fr}}
+  .pdp-media{aspect-ratio:1;background:#EFE6E0;overflow:hidden}
+  .pdp-media img{width:100%;height:100%;object-fit:cover;display:block}
+  .pdp-details{padding:20px 16px 40px}
+</style>
+<!-- nf-brand.css loads AFTER the base tokens, exactly as it does in the
+     real theme (theme-styles-variables -> base.css -> nf-brand.css). Loading it
+     first let the fixture override --font-heading--family and silently defeat
+     the font under test. -->
+<link rel="stylesheet" href="../../savor/assets/nf-brand.css">
+</head><body>
+
+<header class="header">
+  <img src="../../savor/assets/nf-logo-brand.png" alt="Naira">
+  <nav><a href="#">Necklaces</a><a href="#">Earrings</a><a href="#">Bracelets</a><a href="#">Rings</a></nav>
+</header>
+
+<main>
+  <section id="shopify-section-hero">
+    <div class="page-width" style="padding:48px 24px;text-align:center">
+      <h1 style="font-size:clamp(2.2rem,7vw,3.4rem)">Fine jewellery, made to be worn every day.</h1>
+      <p style="max-width:34ch;margin:20px auto">Gold tone plated, anti-tarnish, and delivered in 3&ndash;5 working days.</p>
+      <button class="btn">Shop all jewellery</button>
+    </div>
+  </section>
+
+  <section id="shopify-section-grid">
+    <div class="page-width" style="padding:56px 24px">
+      <h2 style="font-size:2rem;margin-bottom:24px">New in</h2>
+      <div class="product-grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="shopify-section-reasons">
+    <div class="page-width">
+      <div class="reasons">
+        <div><p class="eyebrow">Gold tone plated</p><p>18k gold tone plated over brass, finished to resist tarnish.</p></div>
+        <div><p class="eyebrow">Delivered in 3&ndash;5 days</p><p>Dispatched insured from our Mumbai atelier.</p></div>
+        <div><p class="eyebrow">7-day returns</p><p>Not right? Send it back within seven days.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="shopify-section-main">
+    <div class="page-width" style="padding:40px 24px">
+      <div class="pdp">
+        <div class="pdp-media"><img alt="" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23C9A227'/%3E%3C/svg%3E"></div>
+        <div class="pdp-details">
+          <h1 style="font-size:1.9rem">Molten Bloom Hoops</h1>
+          <p style="font-size:1.125rem;margin:8px 0 20px">&#8377;2,949</p>
+          <button class="btn" style="width:100%">Add to bag</button>
+          <p style="font-size:.8125rem;margin-top:16px">18k gold tone plated over brass &middot; Delivered in 3&ndash;5 working days &middot; 7-day returns</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  /* Twelve cards, deterministic - no Math.random, so two runs are diffable. */
+  const NAMES = ['Riviere Eternal Necklace','Heartline Paperclip','Bold Nocturne Chain','Serpentine Whisper',
+    'Dewdrop Bezel','Charm Box Chain','Toggle Link Chain','Molten Bloom Hoops','Clover Trio Edit',
+    'Woven Gold Hoops','Ribbon Bow Earrings','Textured Gold Hoops'];
+  const PRICES = [1799,2449,2449,1849,1299,2149,1999,2949,2749,2349,2299,2849];
+  const sw = (h) => "data:image/svg+xml;utf8," + encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='hsl(${h} 32% 62%)'/></svg>`);
+  document.getElementById('grid').innerHTML = NAMES.map((n,i) => `
+    <div class="product-card">
+      <a class="card-gallery" href="#">
+        ${i % 4 === 0 ? '<span class="badge">20% off</span>' : ''}
+        <img class="card-gallery__primary" alt="${n}" src="${sw(38 + i*11)}">
+        <img class="card-gallery__secondary" alt="" src="${sw(150 + i*11)}">
+      </a>
+      <div class="card-meta"><div class="title">${n}</div><div class="price">&#8377;${PRICES[i].toLocaleString('en-IN')}</div></div>
+    </div>`).join('');
+</script>
+</body></html>

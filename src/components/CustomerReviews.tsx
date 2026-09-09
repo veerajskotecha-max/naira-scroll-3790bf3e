@@ -419,7 +419,7 @@ export const reviewSummary = (productName?: string, variant: "apparel" | "jewell
   const base = variant === "jewellery"
     ? [...jewelleryReviews, ...jewelleryOneLiners]
     : [...reviewsData, ...apparelOneLiners];
-  const all = [...getProductReviews(productName ?? ""), ...base];
+  const all = [...realReviews, ...getProductReviews(productName ?? ""), ...base];
   const total = all.length;
   if (!total) return null;
   const avg = all.reduce((sum, r) => sum + r.rating, 0) / total;

@@ -112,6 +112,13 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
+  if (!(await verifyShopifyHmac(req))) {
+    return new Response(JSON.stringify({ error: "Invalid signature" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const order = (await req.json()) as Record<string, unknown>;
     const checkoutToken = extractTokenFromCheckoutUrl(order.checkout_url as string | null | undefined);

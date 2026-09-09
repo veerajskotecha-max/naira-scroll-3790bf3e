@@ -27,6 +27,7 @@
   .page-width{max-width:1200px;margin:0 auto;padding:0 24px}
   .header{display:flex;align-items:center;gap:32px;padding:18px 24px;border-bottom:1px solid #E4DAD4;
     position:sticky;top:0;background:#FFF8F5;z-index:50}
+  .header nav a{color:#1A1614;text-decoration:none}
   .header nav{display:none;gap:26px;font-size:.8125rem;letter-spacing:.18em;text-transform:uppercase}
   @media(min-width:750px){.header nav{display:flex}}
   .header img{height:30px}
@@ -47,7 +48,8 @@
   .card-gallery img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   .card-gallery__secondary{opacity:0}
   .card-meta{padding-top:10px;font-size:.8125rem}
-  .card-meta .title{letter-spacing:.06em}
+  .card-meta .title{letter-spacing:.06em;margin:0}
+  .card-gallery{text-decoration:none}
   .reasons{display:flex;flex-direction:column;gap:28px;padding:24px 0 72px;text-align:center}
   @media(min-width:750px){.reasons{flex-direction:row;gap:40px}}
   .reasons > div{flex:1}
@@ -66,16 +68,21 @@
      real theme (theme-styles-variables -> base.css -> nf-brand.css). Loading it
      first let the fixture override --font-heading--family and silently defeat
      the font under test. -->
+<style>
+  /* Same rules as nf-brand.css, re-pathed for the fixture's directory. */
+  #shopify-section-hero{background-image:url('nf-hero-mobile.jpg')}
+  @media(min-width:750px){#shopify-section-hero{background-image:url('nf-hero.jpg')}}
+</style>
 </head><body>
 
 <header class="header">
-  <img src="../../savor/assets/nf-logo-brand.png" alt="Naira">
+  <img src="nf-logo-ink.png" alt="Naira">
   <nav><a href="#">Necklaces</a><a href="#">Earrings</a><a href="#">Bracelets</a><a href="#">Rings</a></nav>
 </header>
 
 <main>
   <section id="shopify-section-hero">
-    <div class="page-width" style="padding:48px 24px;text-align:center">
+    <div class="group-block page-width" style="padding:48px 24px;text-align:center">
       <h1 style="font-size:clamp(2.2rem,7vw,3.4rem)">Fine jewellery, made to be worn every day.</h1>
       <p style="max-width:34ch;margin:20px auto">Gold tone plated, anti-tarnish, and delivered in 3&ndash;5 working days.</p>
       <button class="btn">Shop all jewellery</button>
@@ -116,24 +123,35 @@
 
 <script>
   /* Twelve cards, deterministic - no Math.random, so two runs are diffable. */
-  const NAMES = ['Riviere Eternal Necklace','Heartline Paperclip','Bold Nocturne Chain','Serpentine Whisper',
-    'Dewdrop Bezel','Charm Box Chain','Toggle Link Chain','Molten Bloom Hoops','Clover Trio Edit',
-    'Woven Gold Hoops','Ribbon Bow Earrings','Textured Gold Hoops'];
-  const PRICES = [1799,2449,2449,1849,1299,2149,1999,2949,2749,2349,2299,2849];
-  const sw = (h) => "data:image/svg+xml;utf8," + encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='hsl(${h} 32% 62%)'/></svg>`);
-  document.getElementById('grid').innerHTML = NAMES.map((n,i) => `
+  /* Real packshots, pulled from the store. Judging a jewellery grid on
+     colour swatches tells you nothing about whether it looks expensive. */
+  const P = [
+    ['Rivière Eternal Necklace', 1799, '01a.jpg', '01b.jpg'],
+    ['Heartline Paperclip Necklace', 2449, '02a.jpg', '02b.jpg'],
+    ['Bold Nocturne Chain', 2449, '03a.png', null],
+    ['Pearl Legacy Necklace', 2400, '04a.png', null],
+    ['Serpentine Whisper Chain', 1849, '05a.png', null],
+    ['Marquise Layering Set', 1799, '06a.jpg', null],
+    ['Charm Box Chain', 2149, '07a.jpg', null],
+    ['Toggle Link Chain', 1999, '08a.jpg', null],
+    ['Baroque Pearl Lariat', 2299, '09a.jpg', null],
+    ['Petite Pearl Chain', 1299, '10a.jpg', null],
+    ['Molten Bloom Hoops', 1300, '11a.jpg', '11b.jpg'],
+    ['Clover Trio Edit', 2749, '12a.jpg', null],
+  ];
+  document.getElementById('grid').innerHTML = P.map(([n, price, a, b], i) => `
     <li class="resource-list__item">
       <div class="product-card">
         <a class="card-gallery" href="#">
-          ${i % 4 === 0 ? '<span class="product-badges__badge">20% off</span>' : ''}
-          <img class="card-gallery__primary" alt="${n}" src="${sw(38 + i*11)}">
-          <img class="card-gallery__secondary" alt="" src="${sw(150 + i*11)}">
+          ${i % 5 === 0 ? '<span class="product-badges__badge">20% off</span>' : ''}
+          <img class="card-gallery__primary" alt="${n}" src="shots/${a}">
+          ${b ? `<img class="card-gallery__secondary" alt="" src="shots/${b}">` : ''}
           <button class="quick-add__button" type="button"><span class="add-to-cart-icon">+</span>Add to bag</button>
         </a>
-        <div class="card-meta"><h3 class="title">${n}</h3><product-price class="price">&#8377;${PRICES[i].toLocaleString('en-IN')}</product-price></div>
+        <div class="card-meta"><h3 class="title">${n}</h3><product-price class="price">&#8377;${price.toLocaleString('en-IN')}</product-price></div>
       </div>
     </li>`).join('');
+  document.querySelector('.pdp-media img').src = 'shots/11a.jpg';
 </script>
 <script src="../../savor/assets/nf-motion.js"></script>
 </body></html>

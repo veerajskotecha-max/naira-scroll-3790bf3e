@@ -143,8 +143,8 @@ product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabula
   pointer-events: none;
   background-image: var(--nf-flora-tile);
   background-repeat: repeat;
-  background-size: 320px auto;
-  opacity: .05;
+  background-size: 190px auto;
+  opacity: .045;
   mix-blend-mode: multiply;
 }
 
@@ -174,6 +174,46 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
 .sticky-add-to-cart__button { border-radius: 0; text-transform: uppercase; letter-spacing: var(--nf-track-btn); }
 
 /* ── The hero ──────────────────────────────────────────────────────────── */
+
+/* A split hero, built from the section's own background rather than a media
+   block, so it needs no Horizon schema key I would have to guess at.
+
+   Desktop: the photograph holds the left half, type sits in the right half.
+   That is the composition the image was shot for -- subject left, negative
+   space right -- so nothing important is ever cropped away.
+   Mobile: the photograph becomes a band above the type. Laying type over a
+   pale still life on a 390px screen would be unreadable, and a scrim dark
+   enough to fix that would bury the photograph. */
+#shopify-section-hero {
+  background-image: url('nf-hero-mobile.jpg');
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100% auto;
+  /* Reserve the band up front. Padding, not margin, so the section's own
+     background paints behind it and nothing reflows when the image lands. */
+  padding-block-start: calc(100vw * 1.049) !important;
+}
+
+@media (min-width: 750px) {
+  #shopify-section-hero {
+    background-image: url('nf-hero.jpg');
+    background-position: left center;
+    background-size: 46% auto;
+    padding-block-start: 0 !important;
+    min-height: 42rem;
+    display: flex;
+    align-items: center;
+  }
+  /* Push the whole content group into the right half, hard against the
+     photograph's negative space. */
+  #shopify-section-hero .group-block,
+  #shopify-section-hero > * {
+    margin-inline-start: auto;
+    margin-inline-end: 6%;
+    max-width: 42%;
+    text-align: left;
+  }
+}
 
 /* No entrance animation here, deliberately. The hero is text-only, so the h1
    is almost certainly the LCP element, and starting it at opacity 0 delays

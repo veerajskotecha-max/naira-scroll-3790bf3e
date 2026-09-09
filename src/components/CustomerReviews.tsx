@@ -34,9 +34,7 @@ import realBraceletPackaging from "@/assets/jewellery/real/real-bracelet-packagi
 import realGoldSet from "@/assets/jewellery/real/real-gold-set.jpg.asset.json";
 import realSolitaireSet from "@/assets/jewellery/real/real-solitaire-set.jpg.asset.json";
 import realHeartbead from "@/assets/jewellery/real/real-heartbead-bracelet.jpg.asset.json";
-import realHaloRing from "@/assets/jewellery/real/real-halo-ring.jpg.asset.json";
 import realPearlPendant from "@/assets/jewellery/real/real-pearl-pendant.jpg.asset.json";
-import realPinkHaloRing from "@/assets/jewellery/real/real-pink-halo-ring.jpg.asset.json";
 
 const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
 
@@ -94,8 +92,8 @@ const realReviews: Review[] = [
     rating: 5,
     date: "August 6, 2026",
     text: "Bought the blush cluster ring for a family lunch and it has not left my finger since. The pink centre stone catches light beautifully, the tiny stones around it are set evenly, and the slim band makes it comfortable enough for all-day wear.",
-    hasPhotos: true,
-    images: [realPinkHaloRing.url],
+    hasPhotos: false,
+    images: [],
     match: ["blush", "cluster", "ring", "pink", "flower"],
   },
   {
@@ -116,8 +114,8 @@ const realReviews: Review[] = [
     rating: 5,
     date: "September 7, 2026",
     text: "The blush cluster ring is such a pretty everyday statement. The pink centre stone glows in natural light, the surrounding setting is delicate, and the slim band makes it comfortable to wear all day.",
-    hasPhotos: true,
-    images: [realHaloRing.url],
+    hasPhotos: false,
+    images: [],
     match: ["blush", "cluster", "ring", "pink", "flower"],
   },
 ];

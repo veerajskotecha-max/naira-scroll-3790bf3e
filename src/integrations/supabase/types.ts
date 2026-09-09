@@ -14,81 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      abandoned_cart_sessions: {
-        Row: {
-          cart_id: string | null
-          checkout_token: string | null
-          checkout_url: string | null
-          completed_at: string | null
-          created_at: string
-          currency: string
-          email: string | null
-          full_name: string | null
-          id: string
-          item_count: number
-          items: Json
-          opted_out_at: string | null
-          phone: string | null
-          recovered_at: string | null
-          recovery_sent_at: string | null
-          session_fingerprint: string | null
-          source: string
-          status: string
-          total: number
-          updated_at: string
-          user_id: string | null
-          utm_params: Json
-        }
-        Insert: {
-          cart_id?: string | null
-          checkout_token?: string | null
-          checkout_url?: string | null
-          completed_at?: string | null
-          created_at?: string
-          currency?: string
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          item_count?: number
-          items?: Json
-          opted_out_at?: string | null
-          phone?: string | null
-          recovered_at?: string | null
-          recovery_sent_at?: string | null
-          session_fingerprint?: string | null
-          source?: string
-          status?: string
-          total?: number
-          updated_at?: string
-          user_id?: string | null
-          utm_params?: Json
-        }
-        Update: {
-          cart_id?: string | null
-          checkout_token?: string | null
-          checkout_url?: string | null
-          completed_at?: string | null
-          created_at?: string
-          currency?: string
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          item_count?: number
-          items?: Json
-          opted_out_at?: string | null
-          phone?: string | null
-          recovered_at?: string | null
-          recovery_sent_at?: string | null
-          session_fingerprint?: string | null
-          source?: string
-          status?: string
-          total?: number
-          updated_at?: string
-          user_id?: string | null
-          utm_params?: Json
-        }
-        Relationships: []
-      }
       customer_reviews: {
         Row: {
           approved: boolean
@@ -157,67 +82,40 @@ export type Database = {
       }
       member_orders: {
         Row: {
-          cart_id: string | null
-          checkout_token: string | null
           checkout_url: string | null
-          completed_at: string | null
           created_at: string
           currency: string
           email: string | null
           id: string
           item_count: number
           items: Json
-          opted_out_at: string | null
-          recovered_at: string | null
-          recovery_sent_at: string | null
-          session_fingerprint: string | null
-          source: string | null
           status: string
           total: number
           user_id: string
-          utm_params: Json | null
         }
         Insert: {
-          cart_id?: string | null
-          checkout_token?: string | null
           checkout_url?: string | null
-          completed_at?: string | null
           created_at?: string
           currency?: string
           email?: string | null
           id?: string
           item_count?: number
           items?: Json
-          opted_out_at?: string | null
-          recovered_at?: string | null
-          recovery_sent_at?: string | null
-          session_fingerprint?: string | null
-          source?: string | null
           status?: string
           total?: number
           user_id: string
-          utm_params?: Json | null
         }
         Update: {
-          cart_id?: string | null
-          checkout_token?: string | null
           checkout_url?: string | null
-          completed_at?: string | null
           created_at?: string
           currency?: string
           email?: string | null
           id?: string
           item_count?: number
           items?: Json
-          opted_out_at?: string | null
-          recovered_at?: string | null
-          recovery_sent_at?: string | null
-          session_fingerprint?: string | null
-          source?: string | null
           status?: string
           total?: number
           user_id?: string
-          utm_params?: Json | null
         }
         Relationships: []
       }

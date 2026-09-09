@@ -11,8 +11,6 @@ import {
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
-import { captureCheckoutStart } from "@/lib/abandonedCart";
-import { useAuth } from "@/contexts/AuthContext";
 
 export interface CartItem {
   id: string;
@@ -75,7 +73,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  const { user, profile } = useAuth();
 
   const { items, cartId, checkoutUrl } = storedCart;
 
@@ -366,22 +363,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
        popup-blocked warning, or opened a stray tab that the navigation below
        then orphaned. Same-tab hand-off is what Shopify's own buttons do, and it
        keeps the shopper's back button working. */
-
-    // Record the checkout-start event for abandoned-cart tracking. Fire-and-
-    // forget: checkout must never be blocked by a tracking write failure.
-    void captureCheckoutStart({
-      cartId,
-      checkoutUrl: target,
-      items: latest.items,
-      userId: user?.id,
-      email: user?.email,
-      phone: profile?.phone,
-      fullName: profile?.full_name,
-    });
-
     window.location.assign(target);
     setDrawerOpen(false);
-  }, [user, profile]);
+  }, []);
 
   const checkout = useCallback(() => {
     const latestUrl = loadCart().checkoutUrl ?? checkoutUrl;

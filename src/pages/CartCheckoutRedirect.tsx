@@ -24,7 +24,7 @@ const CartCheckoutRedirect = () => {
     }
     const params = new URLSearchParams(search);
     params.set("channel", "online_store");
-    const target = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/checkouts/cn/${checkoutToken}?${params.toString()}`;
+    const target = `https://${CHECKOUT_DOMAIN}/checkouts/cn/${checkoutToken}?${params.toString()}`;
     window.location.replace(target);
   }, [token, search, pathname]);
 

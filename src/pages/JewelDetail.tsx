@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
+import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";

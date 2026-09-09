@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { useWishlist } from "@/contexts/WishlistContext";

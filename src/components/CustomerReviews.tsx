@@ -94,8 +94,8 @@ const realReviews: Review[] = [
     rating: 5,
     date: "August 6, 2026",
     text: "Bought the blush cluster ring for a family lunch and it has not left my finger since. The pink centre stone catches light beautifully, the tiny stones around it are set evenly, and the slim band makes it comfortable enough for all-day wear.",
-    hasPhotos: true,
-    images: [realPinkHaloRing.url],
+    hasPhotos: false,
+    images: [],
     match: ["blush", "cluster", "ring", "pink", "flower"],
   },
   {

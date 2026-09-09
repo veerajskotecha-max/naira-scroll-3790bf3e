@@ -8,6 +8,7 @@ import {
   LogOut,
   Package,
   Ruler,
+  ShoppingCart,
   Sparkles,
   Truck,
 } from "lucide-react";
@@ -17,6 +18,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import JoinInnerCircleForm from "@/components/members/JoinInnerCircleForm";
+
+type AbandonedCart = {
+  id: string;
+  created_at: string;
+  status: string;
+  email: string | null;
+  phone: string | null;
+  full_name: string | null;
+  item_count: number;
+  total: number;
+  currency: string;
+  recovery_sent_at: string | null;
+  completed_at: string | null;
+  items: { name?: string; quantity?: number }[] | null;
+};
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
@@ -104,6 +120,10 @@ const Account = () => {
   const [saving, setSaving] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [form, setForm] = useState({ full_name: "", phone: "", birthday: "", city: "" });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [abandonedCarts, setAbandonedCarts] = useState<AbandonedCart[] | null>(null);
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoveryNote, setRecoveryNote] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -126,6 +146,48 @@ const Account = () => {
       .order("created_at", { ascending: false })
       .then(({ data }) => setOrders((data as MemberOrder[]) ?? []));
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .rpc("has_role", { _user_id: user.id, _role: "admin" })
+      .then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    loadAbandonedCarts();
+  }, [isAdmin]);
+
+  const loadAbandonedCarts = () => {
+    supabase
+      .from("abandoned_cart_sessions")
+      .select("id, created_at, status, email, phone, full_name, item_count, total, currency, recovery_sent_at, completed_at, items")
+      .order("created_at", { ascending: false })
+      .limit(50)
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        setAbandonedCarts((data as AbandonedCart[]) ?? []);
+      });
+  };
+
+  const runRecovery = async () => {
+    setRecoveryLoading(true);
+    setRecoveryNote(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("abandoned-cart-recovery", {
+        body: {},
+      });
+      if (error) throw error;
+      setRecoveryNote(`Processed ${(data as { processed?: number })?.processed ?? 0} abandoned carts.`);
+      loadAbandonedCarts();
+    } catch (err) {
+      setRecoveryNote("Could not run recovery job.");
+      console.error(err);
+    } finally {
+      setRecoveryLoading(false);
+    }
+  };
 
   const firstName = useMemo(() => {
     const source = profile?.full_name || user?.user_metadata?.full_name || user?.email || "";
@@ -386,6 +448,92 @@ const Account = () => {
             </p>
           </Panel>
         </div>
+
+        {isAdmin && (
+          <div className="mx-auto max-w-5xl px-4 pb-14 md:px-6 md:pb-20">
+            <Panel title="Abandoned checkouts" eyebrow="ADMIN" icon={<ShoppingCart size={18} strokeWidth={1.4} />}>
+              <div className="mb-4 flex items-center gap-4">
+                <button
+                  onClick={runRecovery}
+                  disabled={recoveryLoading}
+                  className="inline-flex items-center gap-2 bg-[#1A1614] px-4 py-2.5 text-[10px] uppercase tracking-[0.3em] text-[#FFF8F5] disabled:opacity-70"
+                  style={jost}
+                >
+                  {recoveryLoading && <Loader2 size={12} className="animate-spin" />}
+                  Run recovery job
+                </button>
+                {recoveryNote && (
+                  <span className="text-[11px] text-[#8A6A2F]" style={jost}>
+                    {recoveryNote}
+                  </span>
+                )}
+              </div>
+
+              {abandonedCarts === null ? (
+                <Loader2 className="animate-spin text-[#B0843A]" size={16} />
+              ) : abandonedCarts.length === 0 ? (
+                <p className="text-[0.98rem] italic text-[#1A1614]/60" style={editorial}>
+                  No abandoned checkouts captured yet.
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-[12px]" style={jost}>
+                    <thead>
+                      <tr className="border-b border-[#1A1614]/10 text-[#1A1614]/55">
+                        <th className="py-2 pr-4 font-normal">Started</th>
+                        <th className="py-2 pr-4 font-normal">Contact</th>
+                        <th className="py-2 pr-4 font-normal">Items</th>
+                        <th className="py-2 pr-4 font-normal">Total</th>
+                        <th className="py-2 pr-4 font-normal">Status</th>
+                        <th className="py-2 font-normal">Recovery</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {abandonedCarts.map((cart) => (
+                        <tr key={cart.id} className="border-b border-[#1A1614]/5">
+                          <td className="py-3 pr-4">
+                            {new Date(cart.created_at).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {cart.full_name || cart.email || cart.phone || "Guest"}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {cart.item_count} ·{" "}
+                            {(cart.items ?? [])
+                              .map((i) => i?.name)
+                              .filter(Boolean)
+                              .slice(0, 2)
+                              .join(", ") || "—"}
+                          </td>
+                          <td className="py-3 pr-4">
+                            {cart.currency} {Number(cart.total).toLocaleString("en-IN")}
+                          </td>
+                          <td className="py-3 pr-4 capitalize">{cart.status}</td>
+                          <td className="py-3">
+                            {cart.recovery_sent_at
+                              ? new Date(cart.recovery_sent_at).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                })
+                              : cart.completed_at
+                                ? "Completed"
+                                : "Pending"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Panel>
+          </div>
+        )}
+
         <Footer />
       </main>
     </>

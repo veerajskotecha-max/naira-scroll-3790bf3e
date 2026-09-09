@@ -11,12 +11,12 @@ import floralPatternBg from "@/assets/floral-pattern-bg.webp";
 const contactCards = [
   {
     icon: MapPin,
-    title: "Visit Us",
-    lines: ["Naira Design Studio", "Flat 7, Veeraj Blossom, Karanyogi Nagar", "Nashik, Maharashtra 422002"],
+    title: "Business Address",
+    lines: ["Naira (Managed by Vandana Sanjay Kotecha)", "C-5, Nayantara Estate, Sambhaji Chowk", "Nashik, Maharashtra 422002"],
   },
   {
     icon: Phone,
-    title: "Call or WhatsApp",
+    title: "WhatsApp / Call",
     lines: ["+91 9561557935", "Mon – Sat, 10 AM – 7 PM IST"],
   },
   {
@@ -32,13 +32,14 @@ const contactLocalBusinessLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   name: "Naira Flore",
+  legalName: "Naira managed by Vandana Sanjay Kotecha",
   url: "https://nairaflore.com/contact",
   image: "https://nairaflore.com/logo.png",
   telephone: "+91-9561557935",
   email: "shopatnaira@gmail.com",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Flat 7, Veeraj Blossom, Karanyogi Nagar",
+    streetAddress: "C-5, Nayantara Estate, Sambhaji Chowk",
     addressLocality: "Nashik",
     addressRegion: "Maharashtra",
     postalCode: "422002",

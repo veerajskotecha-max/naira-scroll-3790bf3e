@@ -413,7 +413,7 @@ const JewelDetail = () => {
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
             style={{
-              aspectRatio: MOBILE_FRAME,
+              aspectRatio: "3/4",
               backgroundColor: "#F4EBE2",
               /* Belongs on the snap item, not the scroll port. A quick flick used
                  to fly past three or four photos; stopping at every snap point
@@ -422,7 +422,7 @@ const JewelDetail = () => {
             }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
+            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain" />
           </button>
         ))}
           </div>

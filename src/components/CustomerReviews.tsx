@@ -35,6 +35,8 @@ import realGoldSet from "@/assets/jewellery/real/real-gold-set.jpg.asset.json";
 import realSolitaireSet from "@/assets/jewellery/real/real-solitaire-set.jpg.asset.json";
 import realHeartbead from "@/assets/jewellery/real/real-heartbead-bracelet.jpg.asset.json";
 import realHaloRing from "@/assets/jewellery/real/real-halo-ring.jpg.asset.json";
+import realPearlPendant from "@/assets/jewellery/real/real-pearl-pendant.jpg.asset.json";
+import realPinkHaloRing from "@/assets/jewellery/real/real-pink-halo-ring.jpg.asset.json";
 
 const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
 

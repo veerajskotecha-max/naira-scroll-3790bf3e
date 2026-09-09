@@ -73,10 +73,6 @@ const CartCheckoutRedirect = () => {
       style={{ backgroundColor: "#F4F1ED" }}
     >
       <style>{`
-        @keyframes naira-petal-fall {
-          0%   { transform: translate3d(0, -12vh, 0) rotate(0deg); }
-          100% { transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)); }
-        }
         @keyframes naira-bloom {
           0% { transform: scale(0.4) rotate(-8deg); opacity: 0; }
           60% { transform: scale(1.06) rotate(2deg); opacity: 1; }

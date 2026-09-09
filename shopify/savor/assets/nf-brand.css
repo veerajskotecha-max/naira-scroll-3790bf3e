@@ -1,22 +1,21 @@
-/* ═══════════════════════════════════════════════════════════════════
-   NAIRA — brand layer over Savor
-   Loaded from snippets/stylesheets.liquid, after base.css, so it wins
-   on source order without needing a single !important.
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAIRA — brand and motion layer over Savor (Shopify Horizon 4.1.5)
 
-/* Velista, the brand display face.
+   Loaded from snippets/stylesheets.liquid. NOTE the cascade: layout/theme.liquid
+   renders `stylesheets` (this file) at line 20 and `theme-styles-variables` at
+   line 24, and that snippet emits an inline {% style %} block. So Savor's tokens
+   land AFTER this file at equal specificity and win any :root tie.
 
-   The src URL is RELATIVE on purpose. Shopify serves this file from
-   <cdn>/…/assets/nf-brand.css, so 'Velista.ttf' resolves to
-   <cdn>/…/assets/Velista.ttf. A Liquid {{ 'Velista.ttf' | asset_url }}
-   cannot be used: plain .css theme assets are served verbatim and never
-   rendered through Liquid.
+   Hence :root:root (0-2-0) wherever a Savor token is redefined. Own --nf-*
+   names need only a single :root. The same principle applies to Horizon's
+   {% stylesheet %} bundles, whose aggregation order cannot be relied on:
+   out-specify, never out-order.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-   NO format() hint, deliberately. The stored asset is a 37KB TTF, but
-   Shopify's CDN transcodes it to WOFF2 on delivery — so format('truetype')
-   would describe bytes that never arrive, and format('woff2') would break
-   if Shopify ever stopped transcoding. Omitting it makes the browser sniff
-   the real format, which is correct under both behaviours. */
+/* Velista, the brand display face. Relative src because plain .css assets are
+   served verbatim and never run through Liquid. No format() hint: the stored
+   asset is a TTF but Shopify's CDN transcodes to WOFF2 on delivery, so any
+   hint would describe bytes that never arrive. */
 @font-face {
   font-family: 'Velista';
   src: url('Velista.ttf');
@@ -25,96 +24,206 @@
   font-display: swap;
 }
 
-/* Savor builds every heading off this token, so redefining it once moves
-   the whole theme onto Velista. Cormorant stays as the fallback: it is
-   what Shopify's font picker is set to, so a failed Velista fetch lands
-   on the closest available serif rather than on Times. */
-:root {
+:root:root {
+  /* Velista draws a-z as capital forms, so it is a display face for short
+     matter -- product names, section titles. Cormorant carries anything that
+     runs to a sentence. */
   --font-heading--family: 'Velista', 'Cormorant', 'Cormorant Garamond', Georgia, serif;
-  /* Straight from the brand book. Gold is deliberately absent: it is
-     nowhere in the book, and the site had been using it by habit. */
+
+  /* The brand book's three, and nothing else. */
   --nf-sage: #99B4AF;
   --nf-peach: #FFBDA8;
   --nf-cream: #FFF8F5;
   --nf-ink: #1A1614;
+  --nf-ivory-deep: #F4EBE2;
+
+  --nf-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --nf-ease-soft: cubic-bezier(0, 0, .2, 1);
+  --nf-track-btn: .16em;
+
+  /* A tiled iris, drawn rather than fetched: it cannot 404 and costs no
+     request. The corner motif is deliberately gone -- a second decorative
+     image on a three-claim band is one decoration too many. */
+  --nf-flora-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%231A1614' stroke-width='1.1'%3E%3Cg transform='translate(40 40)'%3E%3Cellipse cy='-14' rx='6.5' ry='14'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(72)'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(144)'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(216)'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(288)'/%3E%3Ccircle r='3'/%3E%3C/g%3E%3Cg transform='translate(120 118) rotate(24)'%3E%3Cellipse cy='-12' rx='5.5' ry='12'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(72)'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(144)'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(216)'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(288)'/%3E%3Ccircle r='2.6'/%3E%3C/g%3E%3Cpath d='M40 58 C48 82 62 98 82 106'/%3E%3Cpath d='M120 100 C112 82 100 70 80 62'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Velista sits large on the page and its natural leading is loose.
-   Headings set in it want tighter line-height than a text serif does. */
-h1, h2, .h1, .h2 { line-height: 1.06; letter-spacing: -0.005em; }
+/* ── Type ──────────────────────────────────────────────────────────────── */
 
-/* ── The floral backdrop ──────────────────────────────────────────
-   Ported from the live site. It is a *backdrop*, so it sits behind
-   content at low opacity and never competes with a photograph of a
-   piece of jewellery. Opt in per section by adding the class in the
-   theme editor's custom CSS box, or by wrapping a section. */
-.nf-floral {
-  position: relative;
-  isolation: isolate;
+h1, h2, .h1, .h2 { line-height: 1.06; letter-spacing: -.005em; text-wrap: balance; }
+h3, .h3 { line-height: 1.12; text-wrap: balance; }
+rte-formatter p, .text-block.paragraph { text-wrap: pretty; max-width: 64ch; }
+
+/* Digits that line up down a column instead of shimmering as they change. */
+product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+
+/* Two lines for every card title, so every price in a row sits on one
+   baseline. Horizon clamps to three, and only on mobile. */
+.product-card :is(h3, h4, .h3, .h4) {
+  font-family: var(--font-heading--family);
+  line-height: 1.15;
+  min-height: 2.3em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
-.nf-floral::before {
+
+.button-primary {
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: var(--nf-track-btn);
+  font-size: 12px;
+  padding-block: 1rem;
+  padding-inline: 2.25rem;
+}
+
+/* ── The card ──────────────────────────────────────────────────────────── */
+
+/* A warm well behind every packshot, and while the image is still decoding. */
+.card-gallery { background-color: var(--nf-ivory-deep); }
+
+/* A sage hairline that draws itself on hover, inside the tile rather than
+   around it, so nothing in the grid shifts. */
+.card-gallery::before {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background-image: url('nf-floral-pattern-bg.webp');
-  background-size: 600px auto;
-  background-repeat: repeat;
-  opacity: 0.06;
+  z-index: 2;
   pointer-events: none;
+  border: 1px solid rgb(153 180 175 / 0);
+  transition: border-color 450ms var(--nf-ease-soft);
 }
-.nf-floral--corner::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: min(38vw, 320px);
-  aspect-ratio: 1;
-  z-index: -1;
-  background: url('nf-floral-corner.webp') right bottom / contain no-repeat;
-  opacity: 0.5;
-  pointer-events: none;
+.product-card:is(:hover, :focus-within) .card-gallery::before { border-color: rgb(153 180 175 / .55); }
+
+.product-badges__badge {
+  border-radius: 0;
+  padding: .35rem .75rem;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: .2em;
+  text-transform: uppercase;
 }
 
-/* Applied for real, not left as a class nobody adds.
+/* Horizon's quick-add pill, reskinned as a flat ink bar rising into the
+   bottom edge. Horizon already reveals it on hover and already transitions
+   `translate`; this changes only the skin. */
+.card-gallery .quick-add__button {
+  --quick-add-collapsed-width: auto;
+  --quick-add-expanded-width: auto;
+  width: auto;
+  max-inline-size: none;
+  justify-content: center;
+  gap: 0;
+  border: 1px solid var(--nf-ink);
+  border-radius: 0;
+  background: var(--nf-ink);
+  color: var(--nf-cream);
+  backdrop-filter: none;
+  font-size: 10px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  translate: 0 8px;
+  transition-duration: 200ms;
+  transition-timing-function: var(--nf-ease-soft);
+}
+.product-card:is(:hover, :focus-within) .card-gallery .quick-add__button { translate: 0 0; }
+.card-gallery .quick-add__button > .add-to-cart-icon { display: none; }
 
-   Shopify wraps every section in #shopify-section-<id>, and the ids in
-   templates/index.json are ours -- `reasons` is the three-claim band under
-   the product grid. Targeting it directly means the backdrop ships without
-   anyone having to paste a class into the theme editor.
+/* ── The floral band ───────────────────────────────────────────────────── */
 
-   It goes behind the quietest band on the page on purpose: a floral wash
+/* Behind the quietest section on the page, and only that one: a floral wash
    under a photograph of a necklace fights the necklace. */
-#shopify-section-reasons {
-  position: relative;
-  isolation: isolate;
-}
+#shopify-section-reasons { position: relative; isolation: isolate; }
 #shopify-section-reasons::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: url('nf-floral-pattern-bg.webp');
-  background-size: 600px auto;
+  pointer-events: none;
+  background-image: var(--nf-flora-tile);
   background-repeat: repeat;
-  opacity: 0.07;
-  pointer-events: none;
-}
-#shopify-section-reasons::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: min(34vw, 260px);
-  aspect-ratio: 1;
-  z-index: -1;
-  background: url('nf-floral-corner.webp') right bottom / contain no-repeat;
-  opacity: 0.42;
-  pointer-events: none;
+  background-size: 320px auto;
+  opacity: .05;
+  mix-blend-mode: multiply;
 }
 
-/* A page that asks not to move gets a still one. */
+/* ── PDP: the lightbox and the sticky bar, both Horizon's, painted ─────── */
+
+/* The dialog's white ground is set in a {% stylesheet %} block, so the class
+   is repeated here to out-specify rather than out-order it. */
+zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); color: var(--nf-ink); }
+.dialog-zoomed-gallery__close-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 0;
+  border: 1px solid color-mix(in srgb, var(--nf-ink) 15%, transparent);
+  background: color-mix(in srgb, var(--nf-cream) 90%, transparent);
+  color: var(--nf-ink);
+  transition: background-color 200ms ease, color 200ms ease;
+}
+.dialog-zoomed-gallery__close-button:hover { background: var(--nf-ink); color: var(--nf-cream); }
+.dialog-thumbnails-list__thumbnail { border-radius: 0; }
+
+.sticky-add-to-cart__bar {
+  border-top: 1px solid color-mix(in srgb, var(--nf-ink) 10%, transparent);
+  border-radius: 0;
+  box-shadow: 0 -4px 20px rgb(0 0 0 / .06);
+}
+.sticky-add-to-cart__title { font-family: var(--font-heading--family); }
+.sticky-add-to-cart__button { border-radius: 0; text-transform: uppercase; letter-spacing: var(--nf-track-btn); }
+
+/* ── The hero ──────────────────────────────────────────────────────────── */
+
+/* No entrance animation here, deliberately. The hero is text-only, so the h1
+   is almost certainly the LCP element, and starting it at opacity 0 delays
+   the paint LCP measures by the whole delay plus duration. */
+#shopify-section-hero .text-block.h1 { font-size: clamp(2.6rem, 6vw, 5rem); }
+#shopify-section-hero .button-primary {
+  transition: color 200ms ease, background-color 200ms ease, transform 140ms cubic-bezier(.23, 1, .32, 1);
+}
+#shopify-section-hero .button-primary:active { transform: scale(.97); }
+
+/* ── Motion: one system, below the fold only ───────────────────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes nf-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes nf-rise-soft {
+    from { opacity: 0; transform: translateY(14px); filter: blur(5px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
+  }
+
+  /* Gated behind a class the script adds. If nf-motion.js is blocked or fails,
+     nothing is ever hidden and the store renders exactly as it does today. */
+  html.nf-motion .nf-r { opacity: 0; }
+  html.nf-motion .nf-r.nf-in {
+    animation: nf-rise .7s var(--nf-ease-out) both;
+    animation-delay: calc(min(var(--nf-i, 0), 5) * .07s);
+    will-change: transform, opacity;
+  }
+  /* Blur is for section headings. Never for a grid of photographs. */
+  html.nf-motion #shopify-section-grid .text-block.nf-r.nf-in { animation-name: nf-rise-soft; }
+
+  /* A settled filter -- even blur(0) -- is still a containing block, which
+     would silently break any sticky descendant. Clearing it is not optional. */
+  html.nf-motion .nf-r.nf-done {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+    will-change: auto;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 750px) {
+    .media-gallery--grid .media-gallery__grid .product-media-container img {
+      transition: transform 700ms var(--nf-ease-soft);
+    }
+    .media-gallery--grid .media-gallery__grid .product-media-container:hover img { transform: scale(1.03); }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .nf-floral::before,
-  .nf-floral--corner::after { animation: none; }
+  html.nf-motion .nf-r,
+  html.nf-motion .nf-r.nf-in { opacity: 1; animation: none; transform: none; filter: none; }
+  #shopify-section-reasons::before { animation: none; }
 }

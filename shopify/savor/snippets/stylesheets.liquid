@@ -1,3 +1,4 @@
 {{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
 {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
 {{ 'nf-brand.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'nf-motion.js' | asset_url }}" defer></script>

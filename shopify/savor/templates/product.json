@@ -15,11 +15,11 @@
           "type": "_product-media-gallery",
           "static": true,
           "settings": {
-            "media_presentation": "slideshow",
+            "media_presentation": "grid",
             "slideshow_controls_style": "counter",
             "slideshow_mobile_controls_style": "dots",
             "media_columns": "two",
-            "image_gap": 1,
+            "image_gap": 4,
             "large_first_image": true,
             "thumbnail_position": "bottom",
             "thumbnail_width": 44,

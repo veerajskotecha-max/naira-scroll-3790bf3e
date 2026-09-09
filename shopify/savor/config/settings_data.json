@@ -27,7 +27,7 @@
     "type_case_h6": "uppercase",
     "type_size_h2": "48",
     "type_line_height_h2": "display-tight",
-    "card_hover_effect": "none",
+    "card_hover_effect": "subtle-zoom",
     "badge_sale_background_color": "#FFBDA8",
     "badge_sale_text_color": "{{ settings.color_palette.foreground }}",
     "badge_sold_out_background_color": "{{ settings.color_palette.color3 }}",

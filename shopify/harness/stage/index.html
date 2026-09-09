@@ -11,11 +11,16 @@
   the ways the CSS cares about: section ids, card structure, heading levels.
 -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500&family=Jost:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="../../savor/assets/nf-brand.css">
+<style>
+  /* Emitted by theme-styles-variables.liquid AFTER our stylesheet -- this is
+     the ordering that decides the font, so the fixture must reproduce it. */
+  :root{--font-heading--family:Cormorant,serif;--font-body--family:Jost,sans-serif}
+</style>
 <style>
   /* Stands in for the parts of Savor's base.css the motion layer sits on top of.
      Deliberately thin: if a rule here is doing the work, the real theme would
      not reproduce it. */
-  :root{--font-body--family:'Jost',sans-serif;--font-heading--family:'Cormorant',Georgia,serif}
   *{box-sizing:border-box}
   body{margin:0;background:#FFF8F5;color:#1A1614;font:300 15px/1.6 var(--font-body--family)}
   h1,h2,h3{font-family:var(--font-heading--family);font-weight:400;margin:0}
@@ -27,7 +32,13 @@
   .header img{height:30px}
   .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 8px}
   @media(min-width:750px){.product-grid{grid-template-columns:repeat(4,1fr)}}
+  .resource-list{list-style:none;margin:0;padding:0}
+  .resource-list__item{height:100%}
   .product-card{background:#FFF8F5}
+  .quick-add__button{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;opacity:0;
+    transition:opacity 200ms,translate 200ms}
+  .product-card:is(:hover,:focus-within) .quick-add__button{opacity:1}
+  product-price{display:block}
   /* <a> is inline; aspect-ratio does nothing on it, so the box collapsed and
      the sale badge landed on the product name. */
   .card-gallery{display:block;position:relative;aspect-ratio:1;overflow:hidden;background:#EFE6E0}
@@ -55,7 +66,6 @@
      real theme (theme-styles-variables -> base.css -> nf-brand.css). Loading it
      first let the fixture override --font-heading--family and silently defeat
      the font under test. -->
-<link rel="stylesheet" href="../../savor/assets/nf-brand.css">
 </head><body>
 
 <header class="header">
@@ -74,17 +84,17 @@
 
   <section id="shopify-section-grid">
     <div class="page-width" style="padding:56px 24px">
-      <h2 style="font-size:2rem;margin-bottom:24px">New in</h2>
-      <div class="product-grid" id="grid"></div>
+      <div class="text-block"><h2 style="font-size:2rem;margin-bottom:24px">New in</h2></div>
+      <ul class="product-grid resource-list" id="grid"></ul>
     </div>
   </section>
 
   <section id="shopify-section-reasons">
     <div class="page-width">
       <div class="reasons">
-        <div><p class="eyebrow">Gold tone plated</p><p>18k gold tone plated over brass, finished to resist tarnish.</p></div>
-        <div><p class="eyebrow">Delivered in 3&ndash;5 days</p><p>Dispatched insured from our Mumbai atelier.</p></div>
-        <div><p class="eyebrow">7-day returns</p><p>Not right? Send it back within seven days.</p></div>
+        <div class="group-block"><p class="eyebrow">Gold tone plated</p><p>18k gold tone plated over brass, finished to resist tarnish.</p></div>
+        <div class="group-block"><p class="eyebrow">Delivered in 3&ndash;5 days</p><p>Dispatched insured from our Mumbai atelier.</p></div>
+        <div class="group-block"><p class="eyebrow">7-day returns</p><p>Not right? Send it back within seven days.</p></div>
       </div>
     </div>
   </section>
@@ -113,13 +123,17 @@
   const sw = (h) => "data:image/svg+xml;utf8," + encodeURIComponent(
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='hsl(${h} 32% 62%)'/></svg>`);
   document.getElementById('grid').innerHTML = NAMES.map((n,i) => `
-    <div class="product-card">
-      <a class="card-gallery" href="#">
-        ${i % 4 === 0 ? '<span class="badge">20% off</span>' : ''}
-        <img class="card-gallery__primary" alt="${n}" src="${sw(38 + i*11)}">
-        <img class="card-gallery__secondary" alt="" src="${sw(150 + i*11)}">
-      </a>
-      <div class="card-meta"><div class="title">${n}</div><div class="price">&#8377;${PRICES[i].toLocaleString('en-IN')}</div></div>
-    </div>`).join('');
+    <li class="resource-list__item">
+      <div class="product-card">
+        <a class="card-gallery" href="#">
+          ${i % 4 === 0 ? '<span class="product-badges__badge">20% off</span>' : ''}
+          <img class="card-gallery__primary" alt="${n}" src="${sw(38 + i*11)}">
+          <img class="card-gallery__secondary" alt="" src="${sw(150 + i*11)}">
+          <button class="quick-add__button" type="button"><span class="add-to-cart-icon">+</span>Add to bag</button>
+        </a>
+        <div class="card-meta"><h3 class="title">${n}</h3><product-price class="price">&#8377;${PRICES[i].toLocaleString('en-IN')}</product-price></div>
+      </div>
+    </li>`).join('');
 </script>
+<script src="../../savor/assets/nf-motion.js"></script>
 </body></html>

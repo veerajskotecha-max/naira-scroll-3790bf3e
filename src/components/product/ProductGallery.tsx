@@ -100,28 +100,28 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
           style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
           {images.map((img, i) => (
-            <button
-              type="button"
-              key={i}
-              onClick={() => openLightbox(i)}
-              className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-              style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 96%)" }}
-              aria-label={`Open ${productName} image ${i + 1} full screen`}
-            >
-              <img
-                src={shopifyImage(img, 800)}
-                srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
-                sizes="100vw"
-                alt={`${productName} - View ${i + 1}`}
-                className="w-full h-full object-cover"
-                // First slide is the mobile LCP element — it must not be lazy.
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : undefined}
-                decoding="async"
-                width={800}
-                height={1067}
-              />
-            </button>
+          <button
+            type="button"
+            key={i}
+            onClick={() => openLightbox(i)}
+            className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
+            style={{ aspectRatio: "3/4", backgroundColor: "#F4EBE2" }}
+            aria-label={`Open ${productName} image ${i + 1} full screen`}
+          >
+            <img
+              src={shopifyImage(img, 800)}
+              srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
+              sizes="100vw"
+              alt={`${productName} - View ${i + 1}`}
+              className="w-full h-full object-contain"
+              // First slide is the mobile LCP element — it must not be lazy.
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : undefined}
+              decoding="async"
+              width={800}
+              height={1067}
+            />
+          </button>
           ))}
         </div>
         {WishlistBtn}

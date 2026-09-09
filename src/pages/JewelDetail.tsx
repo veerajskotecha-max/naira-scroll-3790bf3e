@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Share2, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
+import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -346,14 +346,6 @@ const JewelDetail = () => {
     if (!wishlisted) setHeartPopped(true);
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
   };
-  const handleShare = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
-    try {
-      if (navigator.share) await navigator.share({ title: piece.name, text: `Check out ${piece.name} on Naira Flore`, url });
-      else if (navigator.clipboard) { await navigator.clipboard.writeText(url); toast("Link copied"); }
-    } catch { /* silent */ }
-  };
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -397,17 +389,6 @@ const JewelDetail = () => {
       />
     </button>
   );
-  const ShareBtn = (
-    <button
-      className="press-scale absolute bottom-16 right-4 z-10 w-11 h-11 flex items-center justify-center shadow-sm"
-      style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
-      onClick={handleShare}
-      aria-label="Share piece"
-    >
-      <Share2 size={15} strokeWidth={1.6} style={{ color: "hsl(0 0% 30%)" }} />
-    </button>
-  );
-
   const Gallery = isMobile ? (
     <div className="relative">
       {/* The overlays are positioned against this wrapper, which covers only the
@@ -432,7 +413,7 @@ const JewelDetail = () => {
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
             style={{
-              aspectRatio: MOBILE_FRAME,
+              aspectRatio: "3/4",
               backgroundColor: "#F4EBE2",
               /* Belongs on the snap item, not the scroll port. A quick flick used
                  to fly past three or four photos; stopping at every snap point
@@ -441,13 +422,12 @@ const JewelDetail = () => {
             }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover" />
+            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain" />
           </button>
         ))}
-      </div>
-      {WishlistBtn}
-      {ShareBtn}
-      {/* Baymard found 40% of mobile sites support no image gestures at all, and
+          </div>
+          {WishlistBtn}
+          {/* Baymard found 40% of mobile sites support no image gestures at all, and
           of the 60% that do, only half tell the user. Tapping here has always
           opened a full-screen zoom — nothing on the page ever said so. */}
       <span
@@ -525,14 +505,13 @@ const JewelDetail = () => {
                 style={{ backgroundColor: "#F4EBE2", height: "100%" }}
                 aria-label={`Open ${piece.name} image ${i + 1} full screen`}
               >
-                <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
-              </button>
-            ))}
-          </div>
-          {WishlistBtn}
-          {ShareBtn}
-        </div>
-      );
+            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
+          </button>
+        ))}
+      </div>
+      {WishlistBtn}
+    </div>
+  );
     })()
   );
 

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -58,22 +58,6 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
     toggleItem({ id: productId, name: productName, price: "", image: firstImage });
   };
 
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const url = typeof window !== "undefined" ? window.location.href : "";
-    const shareData = { title: productName, text: `Check out ${productName} on Naira Flore`, url };
-    try {
-      if (typeof navigator !== "undefined" && (navigator as Navigator & { share?: (d: ShareData) => Promise<void> }).share) {
-        await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share(shareData);
-      } else if (navigator?.clipboard) {
-        await navigator.clipboard.writeText(url);
-        toast("Link copied", { description: "Product link copied to clipboard." });
-      }
-    } catch {
-      /* user cancelled or share unsupported — silent */
-    }
-  };
-
   const WishlistBtn = (
     <button
       className="press-scale absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center"
@@ -89,17 +73,6 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
           fill: wishlisted ? "hsl(0 70% 55%)" : "none",
         }}
       />
-    </button>
-  );
-
-  const ShareBtn = (
-    <button
-      className="press-scale absolute bottom-16 right-4 z-10 w-10 h-10 flex items-center justify-center shadow-sm"
-      style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
-      onClick={handleShare}
-      aria-label="Share product"
-    >
-      <Share2 size={15} strokeWidth={1.6} style={{ color: "hsl(0 0% 30%)" }} />
     </button>
   );
 
@@ -127,32 +100,31 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
           style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
         >
           {images.map((img, i) => (
-            <button
-              type="button"
-              key={i}
-              onClick={() => openLightbox(i)}
-              className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
-              style={{ aspectRatio: "3/4", backgroundColor: "hsl(0 0% 96%)" }}
-              aria-label={`Open ${productName} image ${i + 1} full screen`}
-            >
-              <img
-                src={shopifyImage(img, 800)}
-                srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
-                sizes="100vw"
-                alt={`${productName} - View ${i + 1}`}
-                className="w-full h-full object-cover"
-                // First slide is the mobile LCP element — it must not be lazy.
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : undefined}
-                decoding="async"
-                width={800}
-                height={1067}
-              />
-            </button>
+          <button
+            type="button"
+            key={i}
+            onClick={() => openLightbox(i)}
+            className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
+            style={{ aspectRatio: "3/4", backgroundColor: "#F4EBE2" }}
+            aria-label={`Open ${productName} image ${i + 1} full screen`}
+          >
+            <img
+              src={shopifyImage(img, 800)}
+              srcSet={shopifySrcSet(img, [400, 600, 800, 1200])}
+              sizes="100vw"
+              alt={`${productName} - View ${i + 1}`}
+              className="w-full h-full object-contain"
+              // First slide is the mobile LCP element — it must not be lazy.
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : undefined}
+              decoding="async"
+              width={800}
+              height={1067}
+            />
+          </button>
           ))}
         </div>
         {WishlistBtn}
-        {ShareBtn}
         <div className="flex justify-center gap-2 mt-3 mb-1">
           {images.map((_, i) => (
             <button
@@ -210,7 +182,6 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
         ))}
       </div>
       {WishlistBtn}
-      {ShareBtn}
       {Lightbox}
     </div>
   );

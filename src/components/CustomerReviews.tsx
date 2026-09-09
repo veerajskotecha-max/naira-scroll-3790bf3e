@@ -28,9 +28,75 @@ import jewelUgcBraidedHoop from "@/assets/jewellery/ugc/jewel-review-braided-hoo
 import jewelUgcPearPendant from "@/assets/jewellery/ugc/jewel-review-pear-pendant.jpg.asset.json";
 import jewelUgcHaloRing from "@/assets/jewellery/ugc/jewel-review-halo-ring.jpg.asset.json";
 
+import realPastelBox from "@/assets/jewellery/real/real-pastel-bracelet-box.jpg.asset.json";
+import realPastelWorn from "@/assets/jewellery/real/real-pastel-bracelet-worn.jpg.asset.json";
+import realBraceletPackaging from "@/assets/jewellery/real/real-bracelet-packaging.jpg.asset.json";
+import realGoldSet from "@/assets/jewellery/real/real-gold-set.jpg.asset.json";
+import realSolitaireSet from "@/assets/jewellery/real/real-solitaire-set.jpg.asset.json";
+import realHeartbead from "@/assets/jewellery/real/real-heartbead-bracelet.jpg.asset.json";
+import realHaloRing from "@/assets/jewellery/real/real-halo-ring.jpg.asset.json";
+
 const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
 
+/* Genuine customer reviews with their own photographs. These lead the wall on
+   every product page, ahead of the curated and one-line notes. */
+const realReviews: Review[] = [
+  {
+    name: "Riddhi Kotecha",
+    initials: "RK",
+    verified: true,
+    rating: 5,
+    date: "September 2, 2026",
+    text: "The pastel zircone bracelet is even prettier in person. Every stone is set cleanly and the colours look soft and expensive, not loud. It came in the sweetest pink Naira box and I've worn it stacked with my everyday chain since the day it arrived.",
+    hasPhotos: true,
+    images: [realPastelBox.url, realPastelWorn.url, realBraceletPackaging.url],
+  },
+  {
+    name: "Tanvi Shah",
+    initials: "TS",
+    verified: true,
+    rating: 5,
+    date: "August 28, 2026",
+    text: "Ordered the baguette bracelet with two pairs of hoops and the whole set arrived beautifully packed. The gold tone is warm and rich, the braided hoops are far lighter than they look, and nothing has dulled after weeks of wear.",
+    hasPhotos: true,
+    images: [realGoldSet.url],
+  },
+  {
+    name: "Aishwarya Nair",
+    initials: "AN",
+    verified: true,
+    rating: 5,
+    date: "August 21, 2026",
+    text: "Wearing the solitaire pendant with the matching studs almost daily now. The chain is fine and delicate, the stone catches light in every photo, and there's been no skin darkening at all.",
+    hasPhotos: true,
+    images: [realSolitaireSet.url],
+  },
+  {
+    name: "Nabby Dsouza",
+    initials: "ND",
+    verified: true,
+    rating: 5,
+    date: "August 14, 2026",
+    text: "The beaded bracelet with the gold heart charm is my favourite pickup this year. The beads have a lovely weight, the toggle clasp is easy to fasten one-handed, and the heart sits perfectly on the wrist.",
+    hasPhotos: true,
+    images: [realHeartbead.url],
+  },
+  {
+    name: "Sneha Kulkarni",
+    initials: "SK",
+    verified: true,
+    rating: 5,
+    date: "August 6, 2026",
+    text: "Bought the halo ring for a family function and it did not leave my finger. It looks like a proper diamond ring, the setting is neat from every angle, and the fit was exactly as the size chart promised.",
+    hasPhotos: true,
+    images: [realHaloRing.url],
+  },
+];
+
+const realPhotos = realReviews.flatMap((r) => r.images);
+
 const jewelleryPhotos = [
+  ...realPhotos,
   jewelUgcVine.url,
   jewelUgcBraidedHoop.url,
   jewelUgcPearPendant.url,
@@ -41,6 +107,7 @@ const jewelleryPhotos = [
   jewelUgcToiEtMoi.url,
   jewelUgcBow.url,
 ];
+
 
 
 const jewelleryReviews: Review[] = [
@@ -352,7 +419,7 @@ export const reviewSummary = (productName?: string, variant: "apparel" | "jewell
   const base = variant === "jewellery"
     ? [...jewelleryReviews, ...jewelleryOneLiners]
     : [...reviewsData, ...apparelOneLiners];
-  const all = [...getProductReviews(productName ?? ""), ...base];
+  const all = [...realReviews, ...getProductReviews(productName ?? ""), ...base];
   const total = all.length;
   if (!total) return null;
   const avg = all.reduce((sum, r) => sum + r.rating, 0) / total;
@@ -388,11 +455,14 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   useEffect(() => {
     let cancelled = false;
     const seed = [
+      // Real photographed customer reviews always lead.
+      ...realReviews,
       ...ownReviews,
       ...(isJewellery
         ? [...jewelleryReviews, ...jewelleryOneLiners]
         : [...reviewsData, ...apparelOneLiners]),
     ];
+
     setLocalReviews(seed);
 
     // Approved shopper-submitted reviews (with their own photos) lead the list.

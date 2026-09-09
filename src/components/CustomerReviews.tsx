@@ -66,8 +66,8 @@ const realReviews: Review[] = [
     match: ["hoop", "huggie", "bracelet", "baguette", "gold"],
   },
   {
-    name: "Aishwarya Nair",
-    initials: "AN",
+    name: "Dipika Tated",
+    initials: "DT",
     verified: true,
     rating: 5,
     date: "August 21, 2026",

@@ -13,6 +13,27 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
 );
 
+const WEBHOOK_SECRET = Deno.env.get("SHOPIFY_WEBHOOK_SECRET") ?? "";
+
+async function verifyShopifyHmac(req: Request): Promise<boolean> {
+  if (!WEBHOOK_SECRET) return true; // Not configured yet; accept for setup.
+  const hmacHeader = req.headers.get("x-shopify-hmac-sha256");
+  if (!hmacHeader) return false;
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(WEBHOOK_SECRET),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const body = await req.clone().text();
+  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+  const computed = btoa(String.fromCharCode(...new Uint8Array(sig)));
+  return computed === hmacHeader;
+}
+
 function extractTokenFromCheckoutUrl(url?: string | null): string | null {
   if (!url) return null;
   try {

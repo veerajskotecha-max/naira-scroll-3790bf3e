@@ -95,25 +95,8 @@ const CartCheckoutRedirect = () => {
         }
       `}</style>
 
-      {/* Falling petals */}
-      {petals.map((p, i) => (
-        <div
-          key={i}
-          className="absolute top-0 pointer-events-none"
-          style={{
-            left: `${p.left}%`,
-            width: p.size,
-            height: p.size * 1.1,
-            opacity: p.opacity,
-            animation: `naira-petal-fall ${p.duration}s linear ${p.delay}s infinite`,
-            // @ts-expect-error custom props
-            "--drift": `${p.drift}px`,
-            "--spin": `${p.spin}deg`,
-          }}
-        >
-          <Petal color={p.color} variant={p.variant} />
-        </div>
-      ))}
+      {/* Primary homepage hero floral overlay — falls as the shopper scrolls on the home page */}
+      <HeroPetals progressRef={progressRef} vh={vh} />
 
       {/* Center bloom */}
       <div className="relative z-10 flex flex-col items-center px-6 text-center">

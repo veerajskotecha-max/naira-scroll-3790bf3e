@@ -3,6 +3,30 @@ import { useParams, useLocation } from "react-router-dom";
 import { CHECKOUT_DOMAIN } from "@/lib/shopify";
 import HeroPetals from "@/components/HeroPetals";
 
+const BRAND = ["#E5B9A4", "#AEBDB6", "#F0D9CF", "#2F5D63", "#E9C8B4"];
+
+/** Simple petal silhouette used only for the centre bloom ring. */
+const Petal = ({ color, variant }: { color: string; variant: number }) => {
+  const paths = [
+    "M50 2 C78 14 92 46 84 78 C76 108 24 108 16 78 C8 46 22 14 50 2 Z",
+    "M50 0 C84 10 96 52 70 90 C52 112 30 98 26 66 C22 32 28 8 50 0 Z",
+    "M50 4 C70 0 94 22 90 54 C86 88 60 104 38 92 C14 78 12 44 30 22 C38 12 44 7 50 4 Z",
+    "M50 2 C62 18 66 44 58 74 C52 96 40 100 30 84 C16 62 22 24 50 2 Z",
+  ];
+  return (
+    <svg viewBox="0 0 100 110" className="w-full h-full">
+      <path d={paths[variant % paths.length]} fill={color} />
+      <path
+        d="M50 8 C50 34 50 60 48 92"
+        stroke="rgba(255,255,255,0.45)"
+        strokeWidth="1.4"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
 /**
  * Safety net for Shopify checkout links that land on our own domain.
  * Catches /cart/c/<token> and /checkouts/cn/<token> and forwards the shopper

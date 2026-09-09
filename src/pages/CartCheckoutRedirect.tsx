@@ -163,13 +163,6 @@ const CartCheckoutRedirect = () => {
           className="mt-2 text-[13px] tracking-[0.22em] uppercase"
           style={{
             animation: "naira-word 0.6s ease 0.45s both",
-            background: "linear-gradient(90deg,#2F5D63 20%,#C58F73 50%,#2F5D63 80%)",
-            backgroundSize: "200% auto",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            ...( {} as React.CSSProperties),
-            // shimmer applied via keyframes below
           }}
         >
           <span

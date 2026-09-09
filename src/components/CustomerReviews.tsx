@@ -44,8 +44,8 @@ const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
    every product page, ahead of the curated and one-line notes. */
 const realReviews: Review[] = [
   {
-    name: "Riddhi Kotecha",
-    initials: "RK",
+    name: "Arya",
+    initials: "A",
     verified: true,
     rating: 5,
     date: "September 2, 2026",
@@ -55,8 +55,8 @@ const realReviews: Review[] = [
     match: ["bracelet", "pastel", "zircone", "candy", "rainbow"],
   },
   {
-    name: "Tanvi Shah",
-    initials: "TS",
+    name: "Tanvi Joshi",
+    initials: "TJ",
     verified: true,
     rating: 5,
     date: "August 28, 2026",

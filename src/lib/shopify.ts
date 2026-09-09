@@ -413,7 +413,7 @@ export function formatShopifyPrice(money: ShopifyMoney): string {
  * checkout cannot use them: Shopify /cart/c/... paths 404 there.
  */
 export const CHECKOUT_DOMAIN =
-  (import.meta.env.VITE_CHECKOUT_DOMAIN ?? "").toString().trim() || SHOPIFY_STORE_PERMANENT_DOMAIN;
+  (import.meta.env.VITE_CHECKOUT_DOMAIN ?? "").toString().trim() || "payments.nairaflore.com";
 
 export function formatCheckoutUrl(checkoutUrl: string): string {
   try {

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { SHOPIFY_STORE_PERMANENT_DOMAIN } from "@/lib/shopify";
+import { CHECKOUT_DOMAIN } from "@/lib/shopify";
 
 /**
  * Safety net for Shopify checkout links that land on our own domain.
@@ -8,7 +8,7 @@ import { SHOPIFY_STORE_PERMANENT_DOMAIN } from "@/lib/shopify";
  * Shopify's primary domain is nairaflore.com, which is served by this app — so
  * Shopify sometimes bounces a checkout (/cart/c/<token> or /checkouts/cn/<token>)
  * to nairaflore.com, where it would hit our 404. We catch those paths and send
- * the shopper back to the real checkout on the Shopify domain, keeping every
+ * the shopper back to the branded checkout domain, keeping every
  * query param (key, discount, channel) intact.
  */
 const CartCheckoutRedirect = () => {
@@ -24,7 +24,7 @@ const CartCheckoutRedirect = () => {
     }
     const params = new URLSearchParams(search);
     params.set("channel", "online_store");
-    const target = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/checkouts/cn/${checkoutToken}?${params.toString()}`;
+    const target = `https://${CHECKOUT_DOMAIN}/checkouts/cn/${checkoutToken}?${params.toString()}`;
     window.location.replace(target);
   }, [token, search, pathname]);
 

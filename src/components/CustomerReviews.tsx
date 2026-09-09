@@ -455,11 +455,14 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   useEffect(() => {
     let cancelled = false;
     const seed = [
+      // Real photographed customer reviews always lead.
+      ...realReviews,
       ...ownReviews,
       ...(isJewellery
         ? [...jewelleryReviews, ...jewelleryOneLiners]
         : [...reviewsData, ...apparelOneLiners]),
     ];
+
     setLocalReviews(seed);
 
     // Approved shopper-submitted reviews (with their own photos) lead the list.

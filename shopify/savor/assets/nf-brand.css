@@ -266,4 +266,108 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
   html.nf-motion .nf-r,
   html.nf-motion .nf-r.nf-in { opacity: 1; animation: none; transform: none; filter: none; }
   #shopify-section-reasons::before { animation: none; }
+  .product-card .card-gallery,
+  #shopify-section-categories :is(.button, a) { transition: none; }
+  .product-card:active .card-gallery,
+  #shopify-section-categories :is(.button, a):active { transform: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PHONE
+   Everything below 750px. This is where the store is actually used, so it
+   gets its own rules rather than inheriting whatever desktop leaves behind.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 749px) {
+
+  /* Velista draws lowercase as capital forms. At 13px on a phone that strips
+     the word-shape cues people scan by, and twelve product names become
+     twelve blocks of identical-height letters. The display face is right for
+     a heading and wrong for a list, so the card title drops to the body face
+     here and keeps Velista from 750px up. */
+  .product-card :is(h3, h4, .h3, .h4) {
+    font-family: var(--font-body--family);
+    font-size: .875rem;
+    letter-spacing: .01em;
+    line-height: 1.3;
+    min-height: 2.6em;
+  }
+  .product-card product-price, .product-card .price { font-size: .875rem; }
+
+  /* The category rail: a row that scrolls sideways rather than wrapping to
+     two ragged lines. Snap points so it never rests mid-chip, and the
+     scrollbar hidden because a four-item rail does not need chrome. */
+  /* The rail bleeds to both screen edges, so the SECTION has to contain it
+     or the negative margin pushes the whole page 20px wide. Scoped to this
+     one id, and safe because nothing inside it is sticky -- a clipping
+     ancestor is exactly what breaks sticky elsewhere on this theme. */
+  #shopify-section-categories { overflow-x: clip; }
+  #shopify-section-categories .section-content-wrapper,
+  #shopify-section-categories > * {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    /* Bleed the rail to both page edges so the first and last chip can sit
+       flush, then restore the gutter as scroll padding. */
+    margin-inline: calc(var(--padding-inline, 1.25rem) * -1);
+    padding-inline: var(--padding-inline, 1.25rem);
+    scroll-padding-inline: var(--padding-inline, 1.25rem);
+  }
+  #shopify-section-categories ::-webkit-scrollbar { display: none; }
+  #shopify-section-categories .button,
+  #shopify-section-categories a {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--nf-ink) 18%, transparent);
+    padding: .68rem 1.15rem;
+    font-size: .75rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    /* 44px minimum, and the rail is thumb-height rather than a line of text. */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Three claims stacked is 300px of scroll between the grid and the footer.
+     Tighter, and the eyebrow sits right on top of its line rather than
+     floating. */
+  #shopify-section-reasons { padding-block: 8px 40px !important; }
+  #shopify-section-reasons .group-block { gap: 2px !important; }
+  #shopify-section-reasons p { max-width: 30ch; margin-inline: auto; }
+
+  /* The floral tile scaled against a 390px screen was still reading as
+     three separate flowers. Half the size makes it a texture again. */
+  #shopify-section-reasons::before { background-size: 118px auto; opacity: .05; }
+
+  /* A phone has no hover, so a tap is the only feedback channel there is.
+     A brief press-in on the things you tap is the difference between a page
+     that feels responsive and one that feels like a screenshot. Transform
+     only -- it composites, so it cannot cost a repaint mid-scroll. */
+  .product-card .card-gallery,
+  #shopify-section-categories .button,
+  #shopify-section-categories a {
+    transition: transform 120ms var(--nf-ease-soft);
+  }
+  .product-card:active .card-gallery { transform: scale(.985); }
+  #shopify-section-categories :is(.button, a):active { transform: scale(.96); }
+
+  /* Horizon hides quick-add on phones by default and that is right -- a
+     hover affordance has no meaning here, and the tile should go to the
+     product. Make sure it cannot half-appear. */
+  .card-gallery .quick-add__button { display: none; }
+
+}
+
+/* A phone held in the hand is a different reading distance from a laptop.
+   The hero sub-line was set for the desktop column. */
+@media (max-width: 749px) {
+  #shopify-section-hero .text-block.paragraph { font-size: .95rem; max-width: 30ch; margin-inline: auto; }
+  #shopify-section-hero .button-primary { width: 100%; justify-content: center; }
 }

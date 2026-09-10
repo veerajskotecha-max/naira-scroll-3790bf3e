@@ -402,10 +402,78 @@
         "padding-block-end": 72,
         "vertical_on_mobile": true
       }
+    },
+    "categories": {
+      "type": "section",
+      "name": "t:names.section",
+      "blocks": {
+        "c_neck": {
+          "type": "button",
+          "settings": {
+            "label": "Necklaces",
+            "link": "shopify://collections/necklaces",
+            "style_class": "button-secondary",
+            "width": "fit-content",
+            "width_mobile": "fit-content"
+          },
+          "blocks": {}
+        },
+        "c_ear": {
+          "type": "button",
+          "settings": {
+            "label": "Earrings",
+            "link": "shopify://collections/earrings",
+            "style_class": "button-secondary",
+            "width": "fit-content",
+            "width_mobile": "fit-content"
+          },
+          "blocks": {}
+        },
+        "c_brac": {
+          "type": "button",
+          "settings": {
+            "label": "Bracelets",
+            "link": "shopify://collections/bracelets",
+            "style_class": "button-secondary",
+            "width": "fit-content",
+            "width_mobile": "fit-content"
+          },
+          "blocks": {}
+        },
+        "c_ring": {
+          "type": "button",
+          "settings": {
+            "label": "Rings",
+            "link": "shopify://collections/rings",
+            "style_class": "button-secondary",
+            "width": "fit-content",
+            "width_mobile": "fit-content"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "c_neck",
+        "c_ear",
+        "c_brac",
+        "c_ring"
+      ],
+      "settings": {
+        "content_direction": "row",
+        "vertical_on_mobile": false,
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "gap": 10,
+        "section_width": "page-width",
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 4,
+        "padding-block-end": 8
+      }
     }
   },
   "order": [
     "hero",
+    "categories",
     "grid",
     "reasons"
   ]

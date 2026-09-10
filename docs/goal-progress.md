@@ -162,7 +162,7 @@ while the book's own logo application is 2.1:1 *on purpose* — a mark is
 exempt from contrast minimums, a paragraph is not.
 
 **The logo is vector, and now it is the real one.** Only two rasters exist in
-26 pages, so the wordmark is drawn. Page 3 carries the definitive
+the book, so the wordmark is drawn. Page 3 carries the definitive
 application — sage wordmark, peach iris, on cream — and that region was
 rendered at 300dpi and cropped to 2073×560. It replaces the ink wordmark
 hand-recoloured in pass 5, which is deleted; that was a reconstruction, this
@@ -176,6 +176,77 @@ Getting here needed poppler, which was not installed and whose first
 also tried and abandoned — the apt build targets Python 3.12 and this
 container runs 3.11 — so the crop was done with `pdftoppm -x -y -W -H`
 instead, which needed no new dependency at all.
+
+### Pass 7 — the rest of the brand book, and the artwork in it
+
+Pass 6 read the first three pages and stopped. The book is **12 pages**, not
+26 — that figure in pass 6 was wrong and is corrected above. All twelve are
+now read, and the back nine change what the site should look like.
+
+**Every named colour is confirmed at the pixel.** Page 3's swatch bar was
+rendered at 150dpi and histogrammed rather than eyeballed:
+
+| | Hex | Share of page 3 |
+|---|---|---|
+| Cream | `#FFF8F5` | 24.8% |
+| Sage | `#99B4AF` | 24.8% |
+| Peach | `#FFBDA8` | 2.8% |
+
+Exact matches for the three tokens already in `settings_data.json`. Nothing
+to change; the guess from pass 6 was right.
+
+**Page 4, BRAND LOOK, is the page that matters, and I had never seen it.**
+The brand's visual signature is a *watercolour* composition — two blush
+tulips, a bud, and a fan of sage eucalyptus leaves on dashed stems — with
+the wordmark sitting over it. It is given in two official colourways: on
+cream, and on sage.
+
+This overturns the floral in `nf-brand.css`. `--nf-flora-tile` is a
+hand-drawn SVG line iris at full opacity; the brand's florals are washes.
+Histogramming the artwork gives the real range:
+
+| | Lightest wash | Deepest wash |
+|---|---|---|
+| Petals | `#FCEEEA` | `#FBD4CD` |
+| Leaves | `#EBEDEA` | `#D2DBD6` |
+
+So sage and peach are the **accent** colours — logo, badge, rule — and the
+ambient floral lives at roughly 10–25% tints of them, nearly dissolved into
+the cream. A line drawing at full strength is the wrong instrument.
+
+**The artwork is now extracted rather than reconstructed.** Both colourways
+were cropped free of the wordmark (the blooms sit above it, the leaves
+below) and encoded to WebP through a Chromium canvas, since there is still
+no Pillow in this container:
+
+| File | Size |
+|---|---|
+| `shopify/brand/nf-flora-blooms.webp` | 12.0 kB |
+| `shopify/brand/nf-flora-leaves.webp` | 6.1 kB |
+| `shopify/brand/nf-flora-blooms-sage.webp` | 13.4 kB |
+| `shopify/brand/nf-brand-look-cream.webp` | 26.2 kB |
+| `shopify/brand/nf-brand-look-sage.webp` | 26.4 kB |
+
+1400px wide for 12 kB — watercolour washes compress about as well as
+anything does. They keep their native grounds rather than being keyed to
+transparency: the cream ground *is* `#FFF8F5`, the same token the site
+already uses, so a crop drops onto a cream section seamlessly and no alpha
+estimation can introduce fringing.
+
+**The live React site's floral is off-brand.** `src/assets/background_image_flora.webp`
+is a tan engraved damask on ivory — stock, and in the same `#B0843A` gold
+family the book excludes. The instruction was that florals could be lifted
+from the live site if needed; they should not be. The book's own art is both
+on-brand and a twentieth the weight.
+
+**Packaging (pages 5–6) fixes the physical vocabulary**: sage bag and box
+with the wordmark reversed out in white, peach tulip tissue inside, and a
+circular peach seal. The seal is a usable secondary mark wherever a round
+one is wanted.
+
+**Pages 7–12 are the logo colourway sheet**: black on white, white on
+black, a blush tint, and sage-with-peach-iris on white. Page 11 is the same
+application as page 3 at 5334×3000 if a larger master is ever needed.
 
 ## Not done yet
 

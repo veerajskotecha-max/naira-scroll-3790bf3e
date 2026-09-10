@@ -248,6 +248,73 @@ one is wanted.
 black, a blush tint, and sage-with-peach-iris on white. Page 11 is the same
 application as page 3 at 5334×3000 if a larger master is ever needed.
 
+### Pass 8 — the live checkout, and why the theme cannot touch it
+
+The owner pointed at the checkout on `payments.nairaflore.com` and asked for
+branding changes "on the current Shopify theme". Checkout is not part of any
+theme — `checkout.liquid` is retired and the page is rendered from a checkout
+profile, so no theme file reaches it. Worth stating plainly before anyone
+spends a pass in the wrong place.
+
+**What the live checkout actually is.** A real cart was created through the
+Storefront API and its checkout followed with a cookie jar. The page renders
+`<title>Checkout - Naira</title>` and carries four colours: `#FFFFFF`,
+`#F5F5F5`, `#000000` and `#005BD1` — Shopify's default blue, which is what
+"Order summary" and "Sign in" are painted in. No logo file is requested at
+all; the header is the shop name as text.
+
+A first pass with curl showed a redirect loop ending at the React homepage
+and looked like a broken checkout. That was a curl artifact — no cookie jar,
+so Shopify could not establish the session and kept reissuing the token.
+With `-c/-b` it resolves in one hop to a working checkout. Not a bug.
+
+**The domain is already branded.** `payments.nairaflore.com` answers with
+`powered-by: Shopify`. The concern that checkout was stranded on the
+myshopify host was wrong.
+
+Note the URL Shopify itself issues is still dead: `cartCreate` returns
+`www.nairaflore.com/cart/c/<token>`, which redirects to the apex, which
+Cloudflare serves as the React SPA. `formatCheckoutUrl` rewriting the host is
+therefore load-bearing, not a nicety.
+
+**The branding API is closed on this plan.** The shop is Basic
+(`plan.shopifyPlus: false`, `partnerDevelopment: false`). The app does hold
+`write_checkout_branding_settings`, so the full mutation was built,
+validated and run against the published profile. Shopify answered:
+
+> Access denied for `checkoutBrandingUpsert` field. Required access: access
+> to checkout branding settings and the shop must be on a Plus plan or a
+> Development store plan.
+
+`checkoutBrandingUpsert` is also deprecated in favour of
+`checkoutAndAccountsConfigurationUpdate`, which needs
+`read_checkout_and_accounts_configurations` — a scope this app does not
+have, and whose root query is not exposed here either. Both doors shut.
+The remaining route is the checkout editor in admin.
+
+**The palette, corrected by the owner.** A first proposal led with ink. The
+owner asked for the brand's own green and pink instead, and to check what
+the live site uses. Histogramming the live pages settles it: `#8EA9A1` is
+19.5% of the PDP, `#4F7268` is the site's deep green, and `#AEBDB6` carries
+the home page. `#4F7268` measures **5.07:1 on cream**, so the green can
+carry links and icons, not only decoration — which is what made a
+green-led scheme workable without putting sage text on cream at 2.1:1.
+
+| Role | Value | |
+|---|---|---|
+| Logo | `nf-logo-brand.png` | sage wordmark, peach iris |
+| Ground | `#FFF8F5` | book |
+| Order summary | `#E8EEEC` | pale sage |
+| Primary button | `#99B4AF` on `#1A1614` text | 8.1:1 |
+| Links, icons | `#4F7268` | 5.07:1 on cream |
+| Borders | `#C7D3CF` | sage-tinted |
+| Decorative | `#FFBDA8` | peach, as a hairline |
+
+`shopify/harness/ckstage/ck.mjs` renders the page at 390px in both states so
+the choice can be looked at before anyone opens admin. Fonts are asserted
+loaded before the shot; a silent fallback would have made the comparison
+worthless.
+
 ## Not done yet
 
 - **`templates/collection.json`** — still Savor's demo. Next pass.

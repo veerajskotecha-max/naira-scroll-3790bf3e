@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync } from 'node:fs';
 const logo = 'data:image/png;base64,' + readFileSync(new URL('./logo.txt', import.meta.url), 'utf8').trim();
+const logoBrand = 'data:image/png;base64,' + readFileSync(new URL('./logo-brand.txt', import.meta.url), 'utf8').trim();
 
 // Shopify's stock checkout, as it renders today
 const NOW = {
@@ -11,23 +12,25 @@ const NOW = {
 };
 // The same page with Naira's brand book applied
 const AFTER = {
-  ground:'#FFF8F5', summary:'#F4EBE2', text:'#1A1614', muted:'#6E645E',
-  link:'#1A1614', border:'#D8CCC4', field:'#FFFFFF', radius:'0px',
+  ground:'#FFF8F5', summary:'#E8EEEC', text:'#1A1614', muted:'#6E645E',
+  link:'#4F7268', border:'#C7D3CF', field:'#FFFFFF', radius:'0px',
   head:"'Cormorant', Georgia, serif", body:"'Jost', -apple-system, sans-serif",
-  headWeight:400, brandMark:'logo', btn:'#1A1614', btnText:'#FFF8F5', caseT:'uppercase', track:'.1em',
+  headWeight:400, brandMark:'logoBrand', btn:'#99B4AF', btnText:'#1A1614',
+  caseT:'uppercase', track:'.1em', mark:'#FFBDA8',
 };
 
 const panel = (t, label) => `
 <section class="phone">
   <div class="tag">${label}</div>
   <div class="screen" style="background:${t.ground};color:${t.text};font-family:${t.body}">
-    <header class="hd">${t.brandMark === 'logo'
-      ? `<img class="logo" src="${logo}" alt="Naira">`
-      : `<span style="font:700 26px ${t.head}">Naira</span>`}</header>
+    <header class="hd">${t.brandMark === 'text'
+      ? `<span style="font:700 26px ${t.head}">Naira</span>`
+      : `<img class="logo" src="${t.brandMark === 'logoBrand' ? logoBrand : logo}" alt="Naira">`}</header>
     <div class="sum" style="background:${t.summary};border-color:${t.border}">
       <span style="color:${t.link};${t.link==='#1A1614'?'text-decoration:underline;text-underline-offset:3px;':''}">Order summary <b>&#9662;</b></span>
       <strong style="font-family:${t.body}">&#8377;1,999.00</strong>
     </div>
+    ${t.mark ? `<div style="height:2px;background:${t.mark}"></div>` : ''}
     <div class="body">
       <div class="rowhead">
         <h2 style="font:${t.headWeight} 25px ${t.head}">Contact</h2>
@@ -73,7 +76,7 @@ const html = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?fam
  .cb{display:flex;gap:11px;align-items:center;font-size:15px;margin:14px 0 0}
  .cb i{width:19px;height:19px;border:1px solid;display:block;flex:none}
  .pay{width:100%;border:0;padding:17px;margin-top:24px;font-size:14px;font-weight:500;cursor:pointer}
-</style>` + panel(NOW, 'now — Shopify stock') + panel(AFTER, 'with the brand book applied');
+</style>` + panel(NOW, 'now — Shopify stock') + panel(AFTER, 'sage + peach — the brand colours');
 
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const page = await b.newPage({ viewport: { width: 880, height: 1000 }, deviceScaleFactor: 2 });

@@ -315,6 +315,49 @@ the choice can be looked at before anyone opens admin. Fonts are asserted
 loaded before the shot; a silent fallback would have made the comparison
 worthless.
 
+### Pass 9 — notification email, and the DNS that has to come first
+
+Shopify's customer notifications currently send with
+`shopatnaira@gmail.com` as the sender. Gmail's own DMARC forbids anyone
+else sending as a gmail.com address, so Shopify does not: it sends from its
+own domain and puts the Gmail address in reply-to. Customers see a
+shopifyemail.com sender on every order confirmation.
+
+The domain's mail DNS, read live:
+
+| Record | Value | |
+|---|---|---|
+| NS | `ns21/ns22.domaincontrol.com` | **DNS is at GoDaddy**, not Cloudflare |
+| MX | `smtp.secureserver.net` | mail is GoDaddy-hosted |
+| SPF | `v=spf1 include:secureserver.net -all` | `-all` — hard fail, Shopify not included |
+| DMARC | `v=DMARC1; p=quarantine; adkim=r; aspf=r` | unauthenticated mail is quarantined |
+| DKIM | none of `shopifydkim`, `shopifyemail`, `s1`, `s2` `._domainkey` | not set |
+
+Cloudflare appears in every HTTP response for the site but is not
+authoritative for DNS — it fronts the app host. Records go in GoDaddy.
+
+Two things follow. The relaxed alignment (`adkim=r`) is good news: a DKIM
+signature on a subdomain of nairaflore.com will align, which is exactly the
+shape of Shopify's CNAME method. And `-all` plus `p=quarantine` means there
+is no partial credit — either the records verify or Shopify keeps falling
+back to its own domain.
+
+So the failure mode of setting the sender without the DNS is not "mail goes
+to spam", it is "nothing visibly changes". Shopify's fallback protects the
+store; it also hides that the step did not work.
+
+Order of operations: enter the address in Settings > Notifications first,
+because Shopify generates the DKIM CNAME tokens per domain and only shows
+them on that screen — they cannot be written ahead of time. Then add them at
+GoDaddy, extend the one existing SPF record to
+`v=spf1 include:secureserver.net include:shops.shopify.com -all` (never a
+second TXT record — two SPF records is a permerror), and wait for the
+status to flip.
+
+This is admin plus DNS. There is no Admin API mutation for the notification
+sender, and the DKIM tokens have to be read off that admin screen anyway,
+so nothing here can be pushed from code.
+
 ## Not done yet
 
 - **`templates/collection.json`** — still Savor's demo. Next pass.

@@ -26,6 +26,9 @@ export interface CategoryLanding {
   kicker: string;
   metaTitle: string;
   metaDescription: string;
+  /** One-line promise shown under the H1 on the landing page. Ad traffic
+      reads this and nothing else before the grid; keep it under ~18 words. */
+  lead?: string;
   intro: string[];
   bullets: { title: string; body: string }[];
   faqs: FaqItem[];

@@ -14,16 +14,16 @@ export type EditEntry = {
 };
 
 export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
-  { handle: "ivory-clasp-chain" },        // Toggle Link Chain
-  { handle: "woven-gold-hoops" },
+  { handle: "ivory-clasp-chain", match: ["toggle link"] },
+  { handle: "woven-gold-hoops", match: ["woven gold hoop"] },
   { match: ["prism riv", "prism"], fallbackHandle: "riviere-of-light-bracelet" },
-  { handle: "molten-bloom-hoops" },
+  { handle: "molten-bloom-hoops", match: ["molten"] },
   { match: ["heartbead", "heart bead"], fallbackHandle: "cuban-pearl-bracelet" },
-  { handle: "charm-box-chain" },
-  { handle: "cushion-halo-ring" },
-  { handle: "brushed-gold-huggies", match: ["brushed gold huggies"], fallbackHandle: "golden-nugget-studs" },
-  { handle: "blush-halo-ring" },
-  { handle: "heart-whisper-studs" },      // Pearl Drop Studs
+  { handle: "charm-box-chain", match: ["charm box"] },
+  { handle: "cushion-halo-ring", match: ["cushion halo"] },
+  { handle: "brushed-gold-huggies", match: ["brushed gold huggies", "huggie"] },
+  { handle: "blush-halo-ring", match: ["blush cluster", "blush"] },
+  { handle: "heart-whisper-studs", match: ["pearl drop"] },
 ];
 
 /** Resolve the edit against the live catalogue, keeping the curated order. */

@@ -94,7 +94,15 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
 
+  /* A single slow Shopify response is enough to leave one route short of its
+     <h1> at capture time, which failed the whole build for a page that renders
+     perfectly on a second look. Give each route up to three attempts, with a
+     longer settle each time, before calling it a real defect. */
+  const ATTEMPTS = 3;
+
   for (const route of routes) {
+   let lastError: unknown;
+   for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
     try {
       /*
         Deliberately not "networkidle". Product imagery comes from Shopify's
@@ -115,7 +123,14 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
       // outermost node has no box of its own, so waiting for visibility times
       // out on every route while the DOM underneath is perfectly complete.
       await page.waitForSelector("#root > *", { state: "attached", timeout: 15_000 });
-      await page.waitForTimeout(900);
+      await page.waitForTimeout(900 * attempt);
+      // The <h1> is the marker asserted below; wait for it rather than racing
+      // a fixed delay against a slow catalogue response.
+      await page
+        .waitForSelector("h1", { state: "attached", timeout: 10_000 * attempt })
+        .catch(() => {
+          /* the assertion below reports it properly */
+        });
 
       // A route that fell through to the catch-all redirect is not a real page.
       // Advertising it in the sitemap while it bounces is the exact defect this
@@ -163,9 +178,18 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
       mkdirSync(resolve(file, ".."), { recursive: true });
       writeFileSync(file, html, "utf8");
       written += 1;
+      lastError = undefined;
+      break;
     } catch (err) {
-      failures.push({ path: route.path, reason: err instanceof Error ? err.message : String(err) });
+      lastError = err;
     }
+   }
+   if (lastError) {
+     failures.push({
+       path: route.path,
+       reason: lastError instanceof Error ? lastError.message : String(lastError),
+     });
+   }
   }
 
   await page.close();

@@ -75,7 +75,8 @@ working in:
 |---|---|---|
 | **Colourful** — after *NOT A PHASE* | Saturated colour blocks, one impossible idea per frame, copy space built in | 9.15 |
 | **Red** — after *THE RED ROOM* | Oxblood lacquer, water beads, red glass bangles, burgundy silk. Festive through material, never iconography | 8.90 |
-| **Lilac and bone** | Pale lilac and bone-white, the quiet end of the house palette | — |
+| **Lilac and bone** | Pale lilac and bone-white, the quiet end of the house palette | 8.92 |
+| **Soft physics** — *SOFT PHYSICS* | The pale palette carrying one broken law of physics per frame. Calm and strange at once | 9.17 |
 
 *AFTER DARK* (black ground) is deliberately not on this list.
 
@@ -94,6 +95,15 @@ works is an exhaustive absence list plus a positive statement of what the object
 doing instead: *no plinth, no pedestal, no cube, no ledge, no table, no floor, no
 wall, no horizon, no gradient, no cast shadow because there is no surface for a
 shadow to fall on — the necklace is hanging in the air, not lying down.*
+
+### The third failure mode — trusting a thumbnail over a macro
+
+At contact-sheet size the Heartline Paperclip Necklace looked like plain oval
+links and round bezels, so I briefed against its own name — and was wrong twice
+before zooming in. The live macro shows the name is literal: paperclip links and
+heart-cut stones in pavé halos. **Zoom to full resolution before contradicting a
+listing, not after.** The rule that listing copy loses to the photographs still
+holds; it just has to lose to the photograph actually examined.
 
 ### The second failure mode — macro reference bleed
 

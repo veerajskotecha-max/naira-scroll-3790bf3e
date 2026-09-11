@@ -94,7 +94,15 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
 
+  /* A single slow Shopify response is enough to leave one route short of its
+     <h1> at capture time, which failed the whole build for a page that renders
+     perfectly on a second look. Give each route up to three attempts, with a
+     longer settle each time, before calling it a real defect. */
+  const ATTEMPTS = 3;
+
   for (const route of routes) {
+   let lastError: unknown;
+   for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
     try {
       /*
         Deliberately not "networkidle". Product imagery comes from Shopify's

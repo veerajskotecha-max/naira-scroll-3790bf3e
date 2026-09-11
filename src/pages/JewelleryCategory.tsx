@@ -6,7 +6,7 @@ import JewelCard from "@/components/jewellery/JewelCard";
 import Reveal from "@/components/wow/Reveal";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { categoryBySlug, allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
+import { categoryBySlug, allLandings, categoryLandings as coreCategories, SITE_URL } from "@/data/seoContent";
 import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
@@ -140,11 +140,48 @@ const JewelleryCategory = () => {
           </div>
         </div>
 
+        {/* category bar — swipeable on mobile, lets ad traffic hop collections */}
+        <nav
+          aria-label="Shop jewellery by category"
+          className="sticky top-[92px] z-20 border-y border-[#1A1614]/10 bg-[#FBF3EC]/95 backdrop-blur-sm md:top-[98px] lg:top-[114px]"
+        >
+          <div className="mx-auto flex max-w-6xl items-stretch gap-2 overflow-x-auto px-4 py-3 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-6 sm:py-3.5 [&::-webkit-scrollbar]:hidden">
+            {[
+              { label: "SHOP ALL", to: "/jewellery", active: false },
+              ...coreCategories.map((c) => ({
+                label: (c.crumb ?? c.category ?? c.h1).toUpperCase(),
+                to: `/jewellery/collections/${c.slug}`,
+                active: c.slug === landing.slug,
+              })),
+            ].map((c) =>
+              c.active ? (
+                <span
+                  key={c.label}
+                  aria-current="page"
+                  className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#1A1614] bg-[#1A1614] px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#FBF3EC]"
+                  style={jost}
+                >
+                  {c.label}
+                </span>
+              ) : (
+                <Link
+                  key={c.label}
+                  to={c.to}
+                  className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+                  style={jost}
+                >
+                  {c.label}
+                </Link>
+              )
+            )}
+          </div>
+        </nav>
+
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           {/* grid — hero pieces first, sold out last */}
           <section
             aria-label={`${label} collection`}
-            className="grid grid-cols-2 gap-4 pt-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
+            className="grid grid-cols-2 gap-4 pt-6 sm:gap-6 sm:pt-8 lg:grid-cols-3 lg:gap-8"
           >
             {pieces.map((piece, i) => (
               <Reveal key={piece.handle} delay={Math.min(i, 5) * 60}>
@@ -210,7 +247,7 @@ const JewelleryCategory = () => {
 
           {/* sibling links, internal linking for crawl depth */}
           <nav aria-label="Other jewellery collections" className="flex flex-wrap gap-3 border-t border-[#1A1614]/10 py-10">
-            {categoryLandings
+            {allLandings
               .filter((c) => c.slug !== landing.slug)
               .map((c) => (
                 <Link

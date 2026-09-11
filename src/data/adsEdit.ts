@@ -22,7 +22,7 @@ export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
   { handle: "charm-box-chain", match: ["charm box"] },
   { handle: "cushion-halo-ring", match: ["cushion halo"] },
   { handle: "brushed-gold-huggies", match: ["brushed gold huggies", "huggie"] },
-  { handle: "blush-halo-ring", match: ["blush cluster", "blush"] },
+  { handle: "blush-halo-ring", match: ["blush cluster"], fallbackHandle: "chevron-whisper-ring" },
   { handle: "heart-whisper-studs", match: ["pearl drop"] },
 ];
 

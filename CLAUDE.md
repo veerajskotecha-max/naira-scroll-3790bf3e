@@ -67,9 +67,10 @@ For every campaign frame:
 
 ### Campaigns the brand likes — the house directions
 
-Four reference-led campaigns were shot in August 2026 and scored (see
-`scripts/higgsfield/campaign-softly-slowly-worn.md`). The three directions to keep
-working in:
+Five campaigns have been shot and scored (see
+`scripts/higgsfield/campaign-softly-slowly-worn.md` for the August reference set
+and `scripts/higgsfield/campaign-five-2026-09.md` for the September thirty). The
+directions to keep working in:
 
 | Direction | What it is | Score |
 |---|---|---|
@@ -77,6 +78,7 @@ working in:
 | **Red** — after *THE RED ROOM* | Oxblood lacquer, water beads, red glass bangles, burgundy silk. Festive through material, never iconography | 8.90 |
 | **Lilac and bone** | Pale lilac and bone-white, the quiet end of the house palette | 8.92 |
 | **Soft physics** — *SOFT PHYSICS* | The pale palette carrying one broken law of physics per frame. Calm and strange at once | 9.17 |
+| **How it's worn** — *HOW IT'S WORN* | Worn frames whose only idea is scale, each one built to pass a measurement anyone can check by looking | 9.17 |
 
 *AFTER DARK* (black ground) is deliberately not on this list.
 
@@ -126,9 +128,37 @@ State the result as a ratio the model can test: *the heart is as wide as two bea
 side by side; the toggle ring is as wide as two beads side by side; the bar is as
 long as four beads in a row.*
 
+### The fourth failure mode — overcorrecting a re-shoot
+
+Every correction has overshot at least once. The Heartbead heart went 1.57 beads
+→ 3.04 → 2. The Rose Verdant Band went 0.80 of a finger → 0.44 → 0.57. Telling the
+model "smaller" or "bigger" moves it past the target. **State the target as a ratio
+with a number**, and re-measure after every pass.
+
+### The fifth failure mode — a reference that is not what its slot says
+
+Two second-pass frames drifted because the slot meant for the SKU's own *worn*
+photograph held something else: a second packshot in one case, a macro on green
+velvet in the other. Neither frame had a body reference at all, so the scale had
+nothing to lock to. **Open every reference before uploading it**, and name the
+files by what they show.
+
+Related, and cheap to check: a `generate_image_batch` request with no `medias`
+array still submits, still charges, and comes back as generic stock. Confirm the
+array is present in every request before sending.
+
 ### Where the pipeline lives
 
 `scripts/higgsfield/` holds the shot pipeline: `prompt.ts` (the fidelity lock and
 per-category staging), `plates.json` (the five staging plates, reused as IMAGE 2 so
 the whole catalogue reads as one shoot), and `sizing.md` (the published size standard
 every worn frame is measured against).
+
+### The skill that runs all of this
+
+`/imagegenerationnaira` (`.claude/skills/imagegenerationnaira/`) is the working
+procedure for both modes — CAMPAIGN (plan, cast, brief, generate, verify,
+re-shoot, book, proof sheet) and PRODUCTION (one-off frames, gap-filling,
+re-shoots). It carries the reference chain, the prompt anatomy, the scale-test
+rules, the verification method, the failure modes above, and the exact Higgsfield
+call shapes. Invoke it before starting any Naira imagery work.

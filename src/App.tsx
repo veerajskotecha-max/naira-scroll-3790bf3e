@@ -45,6 +45,7 @@ const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
 const Journal = lazy(() => import("./pages/Journal.tsx"));
 const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
 const Gifting = lazy(() => import("./pages/Gifting.tsx"));
+const GoldenHourEdit = lazy(() => import("./pages/GoldenHourEdit.tsx"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
 const InnerCircle = lazy(() => import("./pages/InnerCircle.tsx"));
 const Auth = lazy(() => import("./pages/Auth.tsx"));
@@ -89,6 +90,8 @@ const AppShell = () => {
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
           <Route path="/gifting" element={<Gifting />} />
+          {/* Private, ads-only edit: unlinked in navigation and noindex. */}
+          <Route path="/the-golden-hour" element={<GoldenHourEdit />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/innercircle" element={<InnerCircle />} />
           <Route path="/inner-circle" element={<InnerCircle />} />

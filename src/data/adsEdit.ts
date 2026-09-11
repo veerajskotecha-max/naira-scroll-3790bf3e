@@ -19,9 +19,9 @@ export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
   { match: ["prism riv", "prism"], fallbackHandle: "riviere-of-light-bracelet" },
   { handle: "molten-bloom-hoops", match: ["molten"] },
   { match: ["heartbead", "heart bead"], fallbackHandle: "cuban-pearl-bracelet" },
+  { handle: "brushed-gold-huggies", match: ["brushed gold huggies", "huggie"] },
   { handle: "charm-box-chain", match: ["charm box"] },
   { handle: "cushion-halo-ring", match: ["cushion halo"] },
-  { handle: "brushed-gold-huggies", match: ["brushed gold huggies", "huggie"] },
   { handle: "blush-halo-ring", match: ["blush cluster"], fallbackHandle: "chevron-whisper-ring" },
   { handle: "heart-whisper-studs", match: ["pearl drop"] },
 ];

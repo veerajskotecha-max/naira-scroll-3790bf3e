@@ -60,7 +60,7 @@ export const categoryLandings: CategoryLanding[] = [
       },
       {
         title: "Hand-set at our atelier",
-        body: "We make to order rather than to inventory, which keeps the setting work slow and the finish consistent.",
+        body: "We work in small batches rather than to inventory, which keeps the setting work slow and the finish consistent.",
       },
     ],
     faqs: [

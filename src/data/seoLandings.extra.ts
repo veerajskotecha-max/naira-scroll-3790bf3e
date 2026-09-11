@@ -579,7 +579,7 @@ export const extraLandings: CategoryLanding[] = [
     intro: [
       "A pendant set is the most useful thing in an Indian jewellery box, it dresses a kurta up and a saree down, and it is the safest gift you can buy for someone whose taste you only half know.",
       "Ours pair a pendant with earrings cut from the same stone batch, so the sparkle matches across the two pieces. The chain is soldered and the pendant bail is closed, not glued.",
-      "Message the atelier if you want a set built across pieces that are not already paired, we make to order, so it is straightforward.",
+      "Message the atelier if you want a set built across pieces that are not already paired, and we will put it together for you.",
     ],
     bullets: [
       {

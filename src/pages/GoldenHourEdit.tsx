@@ -54,7 +54,17 @@ const GoldenHourEdit = () => {
   };
 
   const { jewellery } = useLiveJewellery();
-  const edit = useMemo(() => resolveEdit(jewellery), [jewellery]);
+  const curated = useMemo(() => resolveEdit(jewellery), [jewellery]);
+
+  // Private toggle, only on this page: the curated edit, or the whole catalogue.
+  const showAll = searchParams.get("view") === "all";
+  const edit = showAll ? jewellery : curated;
+
+  const setView = (next: "edit" | "all") => {
+    const params = new URLSearchParams(searchParams);
+    next === "all" ? params.set("view", "all") : params.delete("view");
+    setSearchParams(params, { replace: true });
+  };
 
   const activeFilters: JewelFilters = useMemo(() => {
     const sortParam = searchParams.get("sort");
@@ -116,6 +126,34 @@ const GoldenHourEdit = () => {
               Ten pieces we keep aside for the last warm light of the day.
             </p>
           </header>
+        </div>
+
+        {/* private edit / full catalogue switch */}
+        <div className="mx-auto mt-6 flex max-w-6xl justify-center px-4 sm:px-6">
+          <div className="inline-flex border border-nf-ink/25">
+            {([
+              { key: "edit", label: "THE GOLDEN HOUR", n: curated.length },
+              { key: "all", label: "ALL PIECES", n: jewellery.length },
+            ] as const).map((o) => (
+              <button
+                key={o.key}
+                type="button"
+                onClick={() => setView(o.key)}
+                aria-pressed={showAll ? o.key === "all" : o.key === "edit"}
+                className={`press-scale inline-flex min-h-[42px] items-baseline gap-1.5 px-4 text-[10px] tracking-nf-18 transition-colors sm:px-6 sm:text-[10.5px] ${
+                  (showAll ? o.key === "all" : o.key === "edit")
+                    ? "bg-nf-ink text-nf-ivory"
+                    : "text-nf-ink/60 hover:text-nf-ink"
+                }`}
+                style={jost}
+              >
+                <span className="self-center">{o.label}</span>
+                <span aria-hidden className="self-center text-[9px] opacity-60">
+                  {o.n}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* filter */}

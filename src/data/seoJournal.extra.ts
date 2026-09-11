@@ -310,7 +310,7 @@ export const extraJournal: JournalArticle[] = [
       },
       {
         q: "When should I order wedding jewellery?",
-        a: "Two to three weeks ahead for individual made-to-order pieces, four weeks for a matched multi-piece set.",
+        a: "Two to three weeks ahead for individual pieces, four weeks for a matched multi-piece set.",
       },
     ],
   },
@@ -529,7 +529,7 @@ export const extraJournal: JournalArticle[] = [
       {
         h: "Read the returns policy before the reviews",
         p: [
-          "Custom and made-to-order pieces are usually non-returnable, which is reasonable. What is not reasonable is a blanket no-returns policy on stock items.",
+          "Bespoke and personalised pieces are usually non-returnable, which is reasonable. What is not reasonable is a blanket no-returns policy on stock items.",
           "Look for a clear window and a stated process. Vagueness here is the most reliable warning sign in the category.",
         ],
       },
@@ -537,7 +537,7 @@ export const extraJournal: JournalArticle[] = [
         h: "Message the seller before ordering",
         p: [
           "Ask one specific question about the piece. The speed and specificity of the reply tells you what a post-purchase problem will feel like.",
-          "Brands that make to order, as we do, will usually walk you through sizing before anything is produced. That conversation is free and prevents most exchanges.",
+          "Good brands, as we do, will walk you through sizing before you buy. That conversation is free and prevents most exchanges.",
         ],
       },
     ],
@@ -551,8 +551,8 @@ export const extraJournal: JournalArticle[] = [
         a: "Ask whether the base is nickel-free and whether the finish is sealed. Both answers together predict it better than price does.",
       },
       {
-        q: "Should I buy made-to-order jewellery online?",
-        a: "It usually means better construction and a sizing conversation before production, at the cost of a two to three week wait.",
+        q: "Should I buy demi-fine jewellery online?",
+        a: "Yes, if the seller states base metal, finish and sizing in real units and will answer questions before you buy.",
       },
     ],
   },

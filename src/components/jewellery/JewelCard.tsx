@@ -30,7 +30,7 @@ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif"
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 /* A demi-gold jewellery product card: photoreal packshot with a 3D
-   cursor-tilt + glass sheen, a tag, price, a made-to-order WhatsApp
+   cursor-tilt + glass sheen, a tag, price, a WhatsApp
    enquiry, and a click-to-open quick-view (PDP-lite) modal. */
 const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) => {
   const tiltRef = useRef<HTMLDivElement>(null);

@@ -76,8 +76,8 @@ export const extraLandings: CategoryLanding[] = [
         body: "18K gold or rhodium over a hypoallergenic base, sealed. Flash plating measures in fractions of a micron; ours is built to survive contact.",
       },
       {
-        title: "Made to order",
-        body: "We make to order rather than to warehouse.",
+        title: "Hand-set, small batch",
+        body: "Every piece is hand-set and checked before it is packed."
       },
     ],
     faqs: [

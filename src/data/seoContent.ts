@@ -43,7 +43,7 @@ export const categoryLandings: CategoryLanding[] = [
     metaTitle: "Zircone Rings for Women, 18K Gold Finished | Naira Flore",
     metaDescription:
       "Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–8. Anti-tarnish, waterproof-sealed.",
-    lead: "Hand-set brilliant-cut zircone in a sealed 18K gold finish. US 5 to 8, made to order.",
+    lead: "Hand-set brilliant-cut zircone in a sealed 18K gold finish. US 5 to 8, hand-set at our atelier.",
     intro: [
       "A ring is the piece people see first. Ours are cut and set the way fine jewellery is, a brilliant-cut zircone held in real prongs, a band filed thin enough to sit flush against the finger, and an 18K gold or rhodium finish sealed against water and daily wear.",
       "Naira Petite rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set at our atelier and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
@@ -89,7 +89,7 @@ export const categoryLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · EARRINGS",
     metaTitle: "Zircone Earrings & Gold Studs for Women | Naira Flore",
     metaDescription:
-      "Bow studs, braided hoops and pavé drops in 18K gold finish with hand-set zircone. Lightweight, anti-tarnish and made to order by the Naira Flore atelier.",
+      "Bow studs, braided hoops and pavé drops in 18K gold finish with hand-set zircone. Lightweight, anti-tarnish and hand-finished by the Naira Flore atelier.",
     lead: "Featherlight studs, hoops and drops in a sealed 18K gold finish. Kind to sensitive ears.",
     intro: [
       "Earrings get worn more than anything else in a jewellery box, so weight matters as much as sparkle. Naira Petite studs and hoops are built light, hollow-formed where we can, with posts and backs sized for all-day wear rather than for the photograph.",
@@ -131,7 +131,7 @@ export const categoryLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · BRACELETS",
     metaTitle: "Zircone Tennis Bracelets & Gold Cuffs for Women | Naira Flore",
     metaDescription:
-      "Hand-set tennis bracelets, chevron stacks and gold-finished cuffs with brilliant-cut zircone. Adjustable, anti-tarnish, made to order in India by Naira Flore.",
+      "Hand-set tennis bracelets, chevron stacks and gold-finished cuffs with brilliant-cut zircone. Adjustable, anti-tarnish, hand-set in India by Naira Flore.",
     lead: "Zircone tennis lines, pearl links and gold cuffs, articulated to follow the wrist. Anti-tarnish sealed.",
     intro: [
       "A tennis bracelet lives on the wrist bone, which means the clasp and the articulation matter more than the stone count. Ours are linked so the line follows the wrist instead of standing away from it, with a secure box clasp and a safety catch.",
@@ -158,7 +158,7 @@ export const categoryLandings: CategoryLanding[] = [
       },
       {
         q: "Can the bracelet be resized?",
-        a: "Yes, because the pieces are made to order, we set the link count to your measurement rather than shipping a fixed length.",
+        a: "Yes, share your wrist measurement and we will set the link count to fit you rather than shipping a fixed length.",
       },
       {
         q: "How should I store a tennis bracelet?",
@@ -173,7 +173,7 @@ export const categoryLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · NECKLACES",
     metaTitle: "Gold Finished Necklaces & Zircone Pendants | Naira Flore",
     metaDescription:
-      "Lariats, rondelle chains and zircone pendants in an 18K gold finish. Layerable lengths, anti-tarnish sealing, made to order by the Naira Flore atelier.",
+      "Lariats, rondelle chains and zircone pendants in an 18K gold finish. Layerable lengths, anti-tarnish sealing, hand-finished by the Naira Flore atelier.",
     lead: "Layerable chains and hand-set zircone pendants in a sealed 18K gold finish.",
     intro: [
       "Necklaces are the hardest demi-fine piece to get right, because the chain is where cheap jewellery gives itself away. We use a soldered, weight-matched chain on every style so the pendant sits centred and the links do not splay after a month.",
@@ -894,7 +894,7 @@ export const journal: JournalArticle[] = [
       {
         h: "5. The returns policy is specific",
         p: [
-          "Look for a stated window, and honest language about made-to-order pieces. Custom and made-to-measure work is genuinely non-returnable almost everywhere, a brand that pretends otherwise is not reading its own operations.",
+          "Look for a stated window and honest language about custom work. Bespoke and made-to-measure pieces are genuinely non-returnable almost everywhere, a brand that pretends otherwise is not reading its own operations.",
         ],
       },
       {

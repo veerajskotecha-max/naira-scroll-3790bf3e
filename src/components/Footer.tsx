@@ -122,7 +122,7 @@ const Footer = () => {
               style={{ color: CREAM_MUTED }}
             >
               Where tradition meets the contemporary. Handcrafted Indo-Western
-              wear and 18K gold finished demi-fine jewellery, made to order in
+              wear and 18K gold finished demi-fine jewellery, crafted in
               Nashik for the woman who carries her heritage with ease.
             </p>
             <div className="flex gap-3">

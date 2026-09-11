@@ -1,22 +1,94 @@
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
-import Reveal from "@/components/wow/Reveal";
+import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
+import JewelFilterBar, {
+  applyJewelFilters,
+  SORT_OPTIONS,
+  type JewelFilters,
+} from "@/components/jewellery/JewelFilterBar";
+import type { JewelCategory } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { resolveEdit } from "@/data/adsEdit";
 import { SITE_URL } from "@/data/seoContent";
+import { useSearchParams } from "react-router-dom";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
-const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
-const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
+const editorial = { fontFamily: "var(--nf-font-editorial)" } as const;
+const jost = { fontFamily: "var(--nf-font-label)" } as const;
+
+const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
 /* The Golden Hour — a private edit used only in paid campaigns.
-   Deliberately absent from the menus, the footer and the sitemap, and
-   marked noindex: the only way in is the ad link. */
+   Laid out exactly like the main jewellery shop-all page (hero, sticky
+   category pills, sort/filter bar, product grid) but scoped to the
+   curated ten pieces. Deliberately absent from menus, footer and
+   sitemap, and marked noindex: the only way in is the ad link. */
 const GoldenHourEdit = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const paramCategory = searchParams.get("category");
+  const initialCategory = (filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase()) ?? "All") as
+    | "All"
+    | JewelCategory;
+  const [active, setActive] = useState<"All" | JewelCategory>(initialCategory);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const didScrollToGrid = useRef(false);
+
+  useEffect(() => {
+    const match = filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase());
+    if (match && match !== active) setActive(match);
+    if (match && match !== "All" && !didScrollToGrid.current) {
+      didScrollToGrid.current = true;
+      window.setTimeout(() => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 260);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramCategory]);
+
+  const selectCategory = (next: "All" | JewelCategory) => {
+    setActive(next);
+    const params = new URLSearchParams(searchParams);
+    if (next === "All") params.delete("category");
+    else params.set("category", next);
+    setSearchParams(params, { replace: true });
+  };
+
   const { jewellery } = useLiveJewellery();
-  const pieces = resolveEdit(jewellery);
+  const edit = useMemo(() => resolveEdit(jewellery), [jewellery]);
+
+  const activeFilters: JewelFilters = useMemo(() => {
+    const sortParam = searchParams.get("sort");
+    const max = searchParams.get("under");
+    return {
+      sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
+      maxPrice: max ? Number(max) : null,
+      inStockOnly: searchParams.get("stock") === "in",
+      tag: searchParams.get("tag"),
+    };
+  }, [searchParams]);
+
+  const setFilters = (next: JewelFilters) => {
+    const params = new URLSearchParams(searchParams);
+    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
+    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
+    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
+    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    setSearchParams(params, { replace: true });
+  };
+
+  const filterCounts = useMemo(
+    () =>
+      filters.reduce((acc, f) => {
+        acc[f] = f === "All" ? edit.length : edit.filter((p) => p.category === f).length;
+        return acc;
+      }, {} as Record<"All" | JewelCategory, number>),
+    [edit]
+  );
+  const inCategory = useMemo(
+    () => (active === "All" ? edit : edit.filter((p) => p.category === active)),
+    [active, edit]
+  );
+  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters), [inCategory, activeFilters]);
   const url = `${SITE_URL}/the-golden-hour`;
 
   return (
@@ -28,57 +100,88 @@ const GoldenHourEdit = () => {
         image={pieces[0]?.image}
         noindex
       />
+      <div className="relative bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+        {/* hero block — pressed-flower wash, matching the jewellery shop-all */}
+        <div className="relative overflow-hidden bg-[#FBF3EC]">
+          <div className="pointer-events-none absolute inset-0 z-0">
+            <RingAtelierBackdrop variant="section" />
+          </div>
 
-      <div className="bg-[#FBF3EC] pt-[94px] text-[#1A1614] md:pt-[100px] lg:pt-[116px]">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <Reveal as="header" className="relative border-b border-[#1A1614]/10 pb-10 pt-12 text-center">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-8 left-1/2 h-[260px] w-[120%] -translate-x-1/2 [background:radial-gradient(50%_60%_at_50%_30%,rgba(255,224,205,0.5)_0%,transparent_70%)]"
-            />
-            <p className="relative text-[10px] tracking-[0.4em] text-[#9A7634]" style={jost}>
-              A PRIVATE EDIT
-            </p>
-            <h1 className="relative mt-4 text-[36px] leading-[1.05] md:text-[58px]" style={velista}>
+          <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
+            <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>A PRIVATE EDIT</p>
+            <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
               The Golden Hour
             </h1>
-            <p
-              className="relative mx-auto mt-6 max-w-2xl text-[15px] leading-[1.85] text-[#1A1614]/70 md:text-[17px]"
-              style={editorial}
-            >
-              Ten pieces we keep aside for the last warm light of the day — hoops, chains and
-              stone-set rings in 18K gold tone. Waterproof, anti-tarnish, and carried with a
-              two-year plating assurance.
+            <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
+              Ten pieces we keep aside for the last warm light of the day.
             </p>
-            <p className="relative mt-5 text-[10px] tracking-[0.3em] text-[#1A1614]/45" style={jost}>
-              INSURED DELIVERY IN 3–5 WORKING DAYS · 7-DAY RETURNS
-            </p>
-          </Reveal>
+          </header>
+        </div>
 
-          <section aria-label="The Golden Hour edit" className="grid grid-cols-2 gap-4 pt-10 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-            {pieces.map((piece, i) => (
-              <Reveal key={piece.handle} delay={(i % 3) * 70}>
-                <JewelCard piece={piece} index={i} />
-              </Reveal>
+        {/* filter */}
+        <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
+          <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
+            {filters.map((f) => (
+              <button
+                key={f}
+                onClick={() => selectCategory(f)}
+                aria-pressed={active === f}
+                aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
+                className={`press-scale shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
+                  active === f ? "border-nf-ink bg-nf-ink text-nf-ivory" : "border-nf-ink/25 text-nf-ink/70 hover:border-nf-ink/60"
+                }`}
+                style={jost}
+              >
+                <span className="self-center">{f.toUpperCase()}</span>
+                <span
+                  aria-hidden
+                  className={`self-center text-[9px] tracking-nf-8 sm:text-[9.5px] ${active === f ? "text-nf-ivory/60" : "text-nf-ink/40"}`}
+                >
+                  {filterCounts[f]}
+                </span>
+              </button>
             ))}
-          </section>
-
-          <div className="border-t border-[#1A1614]/10 py-14 text-center md:py-20">
-            <p className="text-[15px] leading-[1.85] text-[#1A1614]/65 md:text-[17px]" style={editorial}>
-              Looking for something else from the atelier?
-            </p>
-            <Link
-              to="/jewellery"
-              className="mt-6 inline-block border border-[#1A1614]/25 px-8 py-3 text-[10px] tracking-[0.3em] transition-colors hover:bg-[#1A1614] hover:text-[#FBF3EC]"
-              style={jost}
-            >
-              VIEW ALL JEWELLERY
-            </Link>
           </div>
         </div>
-      </div>
 
-      <Footer />
+        {/* sort + filters */}
+        <JewelFilterBar
+          pieces={inCategory}
+          value={activeFilters}
+          onChange={setFilters}
+          resultCount={pieces.length}
+        />
+
+        {/* grid */}
+        {pieces.length === 0 ? (
+          <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pb-24 pt-16 text-center">
+            <h2 className="text-[26px] leading-[1.15] md:text-[32px]" style={velista}>
+              Nothing in this edit yet
+            </h2>
+            <p className="mt-3 max-w-sm text-[14px] leading-[1.8] text-nf-ink/60" style={editorial}>
+              New pieces join the edit regularly. The full collection is a step away.
+            </p>
+            <button
+              onClick={() => {
+                setActive("All");
+                setSearchParams(new URLSearchParams(), { replace: true });
+              }}
+              className="press-scale mt-7 border border-nf-ink px-7 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
+              style={jost}
+            >
+              VIEW ALL PIECES
+            </button>
+          </div>
+        ) : (
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-16 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
+            {pieces.map((piece, i) => (
+              <JewelCard key={piece.handle} piece={piece} index={i} />
+            ))}
+          </div>
+        )}
+
+        <Footer />
+      </div>
     </>
   );
 };

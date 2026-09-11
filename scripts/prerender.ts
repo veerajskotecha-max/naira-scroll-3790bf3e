@@ -123,7 +123,14 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
       // outermost node has no box of its own, so waiting for visibility times
       // out on every route while the DOM underneath is perfectly complete.
       await page.waitForSelector("#root > *", { state: "attached", timeout: 15_000 });
-      await page.waitForTimeout(900);
+      await page.waitForTimeout(900 * attempt);
+      // The <h1> is the marker asserted below; wait for it rather than racing
+      // a fixed delay against a slow catalogue response.
+      await page
+        .waitForSelector("h1", { state: "attached", timeout: 10_000 * attempt })
+        .catch(() => {
+          /* the assertion below reports it properly */
+        });
 
       // A route that fell through to the catch-all redirect is not a real page.
       // Advertising it in the sitemap while it bounces is the exact defect this

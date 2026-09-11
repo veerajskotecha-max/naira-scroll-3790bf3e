@@ -1,43 +1,45 @@
-# Razorpay Magic Checkout — what's needed and what changes here
+# The Golden Hour — a private edit for ads
 
-## Answer to the question first
+A hidden, ad-only collection page with 10 hand-picked pieces. It looks and shops exactly like a Shop All page, but it is not linked anywhere in the menus, footer, or search on the site — only people who click your ad reach it.
 
-The text you pasted is only Razorpay's documentation index. It contains **no keys, no account ID, no credentials** — so nothing can be connected from it. Nothing in the project's stored keys today is Razorpay-related either (only Shopify ones).
+## The link
 
-The good news: because your checkout runs on Shopify, Magic Checkout is installed **on Shopify**, not coded into this website. That means very little work here, and no Razorpay API keys need to be stored in this project at all.
+`https://nairaflore.com/the-golden-hour`
 
-## How it will work
+Alternatives if you prefer a different name (say the word and I'll use it instead):
+- `/the-gilded-edit`
+- `/maison-edit`
+- `/private-atelier`
 
-Today: cart on nairaflore.com → hand-off to the Shopify checkout on payments.nairaflore.com.
+## The 10 pieces
 
-After: exactly the same hand-off, except Shopify shows Razorpay Magic Checkout (phone number, saved addresses, one-tap COD/UPI) instead of the standard form.
+Confirmed in the catalogue:
+1. Toggle Link Chain
+2. Woven Gold Hoops
+3. Molten Bloom Hoops
+4. Charm Box Chain
+5. Cushion Halo Ring
+6. Brushed Gold Huggies
+7. Blush Cluster Ring
+8. Pearl Drop Studs
 
-## Steps
+Named by you but listed under slightly different titles in the store — I'll match them to the live Shopify products at build time:
+9. Prism Rivière Bracelet
+10. Heartbead Bracelet
 
-### 1. Setup you do in Razorpay + Shopify (no code)
-- In the Razorpay dashboard, confirm Magic Checkout is enabled for the account and that the account is live (not test).
-- Install the "Razorpay Magic Checkout" app from the Shopify App Store onto the Naira store and connect it to the Razorpay account.
-- In the app settings, turn Magic Checkout on for the storefront, and set COD rules if you want cash on delivery.
-- In Shopify Settings → Payments, make Razorpay the active provider so card/UPI/netbanking route through it.
+If either of those two isn't found live, I'll substitute Rivière of Light Bracelet and Pearl Link Bracelet and tell you.
 
-### 2. Settings that must match what the site already promises
-- **Shipping ₹150** — the cart currently shows a flat ₹150 shipping line. This must be set as a Shopify shipping rate so the amount charged matches what the cart shows. If it is not set in Shopify today, the customer is charged less than shown.
-- **Discount codes** (NAIRA10, FRIENDSANDFAMILY) — Magic Checkout has its own coupon panel. Needs a test that a code applied in our cart drawer still carries through.
-- **Serviceability** — the site's pin-code checker and the "3–5 working days" promise should line up with the delivery rules configured in the Razorpay app.
+## What the page has
 
-### 3. Small checks in this website's code
-- The checkout hand-off already sends shoppers to `payments.nairaflore.com`; confirm that stays the domain the Razorpay app serves checkout on. If Razorpay serves it elsewhere, one line changes.
-- The branded "secure checkout" loading screen stays as is — it just lands on the Razorpay-powered page instead.
-- No Razorpay keys, no new backend function, no webhook needed for this route: Shopify remains the system of record for orders.
+- Editorial hero: "The Golden Hour — a private edit", short line of copy, no navigation clutter.
+- Grid of the 10 pieces using the same product cards as Shop All (live price, sold-out state, add to cart, links into each product page).
+- Same header/footer as the rest of the site so it feels native and shoppers can still browse.
+- Kept out of the sitemap and set to no-index, so it stays out of Google and off the menus while remaining fully shareable in ads.
+- Meta Pixel page-view and add-to-cart tracking works there like everywhere else.
 
-### 4. Verification before going live
-- One real low-value order end to end: cart → checkout → UPI payment → order appears in Shopify admin.
-- One COD order if COD is switched on.
-- Confirm shipping ₹150 and a discount code both appear correctly on the Razorpay checkout total.
-- Confirm the purchase still fires the Meta Pixel purchase event.
+## Technical notes
 
-## What I need from you to proceed
-Nothing secret. Once the Razorpay app is installed on Shopify and switched on, tell me and I'll verify the hand-off, the ₹150 shipping match and the discount pass-through, and fix anything that breaks.
-
-## If you ever want the other route
-Building Razorpay Magic Checkout directly into this site (bypassing Shopify checkout) would need a Razorpay key ID + key secret stored securely, a backend order-creation and signature-verification function, webhooks, and our own handling of stock, refunds and order records. Much larger build, and orders would no longer flow into Shopify automatically. Not recommended while Shopify runs the store.
+- New route `/the-golden-hour` in `src/App.tsx` rendering a new `src/pages/GoldenHourEdit.tsx`.
+- Curated handle list in the page (or `src/data/adsEdit.ts`), resolved against `useLiveJewellery()` and ordered as listed, so pricing and stock stay live.
+- `PageSEO` with `noindex, nofollow`, canonical to itself; excluded from `public/sitemap.xml`.
+- Reuses `JewelCard` and the existing grid layout; no changes to menus, `Jewellery.tsx`, or `ShopAll.tsx`.

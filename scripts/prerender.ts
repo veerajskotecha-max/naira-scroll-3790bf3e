@@ -178,9 +178,18 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
       mkdirSync(resolve(file, ".."), { recursive: true });
       writeFileSync(file, html, "utf8");
       written += 1;
+      lastError = undefined;
+      break;
     } catch (err) {
-      failures.push({ path: route.path, reason: err instanceof Error ? err.message : String(err) });
+      lastError = err;
     }
+   }
+   if (lastError) {
+     failures.push({
+       path: route.path,
+       reason: lastError instanceof Error ? lastError.message : String(lastError),
+     });
+   }
   }
 
   await page.close();

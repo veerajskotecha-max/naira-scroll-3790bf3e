@@ -6,7 +6,7 @@ import JewelCard from "@/components/jewellery/JewelCard";
 import Reveal from "@/components/wow/Reveal";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { categoryBySlug, allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
+import { categoryBySlug, allLandings, categoryLandings as coreCategories, SITE_URL } from "@/data/seoContent";
 import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
@@ -148,7 +148,7 @@ const JewelleryCategory = () => {
           <div className="mx-auto flex max-w-6xl items-stretch gap-2 overflow-x-auto px-4 py-3 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-6 sm:py-3.5 [&::-webkit-scrollbar]:hidden">
             {[
               { label: "SHOP ALL", to: "/jewellery", active: false },
-              ...categoryLandings.map((c) => ({
+              ...coreCategories.map((c) => ({
                 label: (c.crumb ?? c.category ?? c.h1).toUpperCase(),
                 to: `/jewellery/collections/${c.slug}`,
                 active: c.slug === landing.slug,
@@ -181,7 +181,7 @@ const JewelleryCategory = () => {
           {/* grid — hero pieces first, sold out last */}
           <section
             aria-label={`${label} collection`}
-            className="grid grid-cols-2 gap-4 pt-2 sm:gap-6 lg:grid-cols-3 lg:gap-8"
+            className="grid grid-cols-2 gap-4 pt-6 sm:gap-6 sm:pt-8 lg:grid-cols-3 lg:gap-8"
           >
             {pieces.map((piece, i) => (
               <Reveal key={piece.handle} delay={Math.min(i, 5) * 60}>
@@ -247,7 +247,7 @@ const JewelleryCategory = () => {
 
           {/* sibling links, internal linking for crawl depth */}
           <nav aria-label="Other jewellery collections" className="flex flex-wrap gap-3 border-t border-[#1A1614]/10 py-10">
-            {categoryLandings
+            {allLandings
               .filter((c) => c.slug !== landing.slug)
               .map((c) => (
                 <Link

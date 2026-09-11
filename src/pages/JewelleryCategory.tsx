@@ -140,6 +140,43 @@ const JewelleryCategory = () => {
           </div>
         </div>
 
+        {/* category bar — swipeable on mobile, lets ad traffic hop collections */}
+        <nav
+          aria-label="Shop jewellery by category"
+          className="sticky top-[92px] z-20 border-y border-[#1A1614]/10 bg-[#FBF3EC]/95 backdrop-blur-sm md:top-[98px] lg:top-[114px]"
+        >
+          <div className="mx-auto flex max-w-6xl items-stretch gap-2 overflow-x-auto px-4 py-3 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-6 sm:py-3.5 [&::-webkit-scrollbar]:hidden">
+            {[
+              { label: "SHOP ALL", to: "/jewellery", active: false },
+              ...categoryLandings.map((c) => ({
+                label: (c.crumb ?? c.category ?? c.h1).toUpperCase(),
+                to: `/jewellery/collections/${c.slug}`,
+                active: c.slug === landing.slug,
+              })),
+            ].map((c) =>
+              c.active ? (
+                <span
+                  key={c.label}
+                  aria-current="page"
+                  className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#1A1614] bg-[#1A1614] px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#FBF3EC]"
+                  style={jost}
+                >
+                  {c.label}
+                </span>
+              ) : (
+                <Link
+                  key={c.label}
+                  to={c.to}
+                  className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+                  style={jost}
+                >
+                  {c.label}
+                </Link>
+              )
+            )}
+          </div>
+        </nav>
+
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           {/* grid — hero pieces first, sold out last */}
           <section

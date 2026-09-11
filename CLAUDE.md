@@ -42,6 +42,80 @@ copy.
   a theme or theme file.
 - Do not commit campaign assets (images, video, generated frames) to this repo.
 
+### It governs Higgsfield campaign work too
+
+**Any Higgsfield work for Naira products starts from this document.** Campaigns,
+ad creative, social frames, product imagery — all of it. Open the proof sheet
+first, take the product references from it, and update it when the work is done.
+It is the single source of truth for what each piece actually looks like.
+
+For every campaign frame:
+
+- **Reference the verified live product images** from the sheet — that SKU's own
+  delivered e-com still is a cleaner reference than a supplier packshot, because
+  the product is already isolated there. Use three to four references per frame:
+  the live page images first, the supplier photograph second.
+- **Check every frame against the published sizing** in `scripts/higgsfield/sizing.md`.
+  If scale or placement is off, re-shoot the frame — do not ship it. State the
+  measurement as a *geometric test the model can check against the body*, not an
+  adjective: "the two loops reach the edges of the finger and stop there", never
+  "petite".
+- **Model is Nano Banana Pro** (`nano_banana_pro`, which reports as
+  `nano_banana_2`), 4:5, 2K, one product per frame.
+- These frames go on Instagram as the brand and get used as paid ads, so leave
+  deliberate copy space in every composition for type and layers to be added later.
+
+### Campaigns the brand likes — the house directions
+
+Four reference-led campaigns were shot in August 2026 and scored (see
+`scripts/higgsfield/campaign-softly-slowly-worn.md`). The three directions to keep
+working in:
+
+| Direction | What it is | Score |
+|---|---|---|
+| **Colourful** — after *NOT A PHASE* | Saturated colour blocks, one impossible idea per frame, copy space built in | 9.15 |
+| **Red** — after *THE RED ROOM* | Oxblood lacquer, water beads, red glass bangles, burgundy silk. Festive through material, never iconography | 8.90 |
+| **Lilac and bone** | Pale lilac and bone-white, the quiet end of the house palette | — |
+
+*AFTER DARK* (black ground) is deliberately not on this list.
+
+### The two rules that carry the frames
+
+1. **A fidelity clause naming what will morph.** "The braided rope must stay a
+   visible braid of separate twisted strands, never a smooth plain tube."
+2. **A scale test with a checkable edge.** "The bow is 16mm and a finger is 16mm
+   across, so the two loops reach the edges of the finger and stop there."
+
+### The failure mode that repeats — plinth bleed
+
+Every frame briefed as a flat colour field fights the plaster block living in the
+e-com still used as its reference. "Flat colour, no surface" is not enough. What
+works is an exhaustive absence list plus a positive statement of what the object is
+doing instead: *no plinth, no pedestal, no cube, no ledge, no table, no floor, no
+wall, no horizon, no gradient, no cast shadow because there is no surface for a
+shadow to fall on — the necklace is hanging in the air, not lying down.*
+
+### The second failure mode — macro reference bleed
+
+A macro close-up of a piece exaggerates the parts nearest the lens. Feed one in as
+the lead reference and the model learns those wrong internal proportions: on the
+Heartbead Bracelet it copied the macro's fat foreground beads, and the 15mm heart
+charm came back reading smaller than two beads across when the flat packshot shows
+it is exactly two beads wide.
+
+Two habits fix it:
+
+1. **Lead with the flattest view.** Put the straight-on packshot in as IMAGE 1 and
+   the macro second, never the other way round.
+2. **Check the ratio, don't eyeball it.** Scale the frame and the live photo so one
+   shared feature (a bead, a link, a stone) is the same number of pixels in both,
+   then put them side by side. A miss that is invisible at montage size is obvious
+   once the ruler matches.
+
+State the result as a ratio the model can test: *the heart is as wide as two beads
+side by side; the toggle ring is as wide as two beads side by side; the bar is as
+long as four beads in a row.*
+
 ### Where the pipeline lives
 
 `scripts/higgsfield/` holds the shot pipeline: `prompt.ts` (the fidelity lock and

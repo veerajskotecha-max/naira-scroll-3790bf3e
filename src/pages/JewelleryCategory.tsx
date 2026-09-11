@@ -194,7 +194,7 @@ const JewelleryCategory = () => {
           <Reveal as="section" className="mt-12 border border-[#C99A4C]/30 bg-white/50 px-6 py-8 text-center md:mt-16">
             <h2 className="text-[22px] md:text-[28px]" style={velista}>Not sure of your size?</h2>
             <p className="mx-auto mt-2 max-w-md text-[14px] leading-[1.8] text-[#1A1614]/65 md:text-[15px]" style={editorial}>
-              Every piece is made to order, so tell us your measurement and we will set the fit before we make it.
+              Tell us your measurement on WhatsApp and we will help you get the fit right.
             </p>
             <a
               href={waHref}

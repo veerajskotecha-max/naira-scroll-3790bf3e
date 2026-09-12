@@ -14,8 +14,10 @@ Read it first (`action: "read"`) and build the update on what comes back.
 
 ### What it must always contain
 
-- **All jewellery SKUs on Shopify.** As of 9 Sep 2026 that is **71** (90 products
-  total, minus 19 with an empty `productType`, which are clothing). Jewellery is
+- **All jewellery SKUs on Shopify.** As of 12 Sep 2026 that is **71** (90 products
+  total, minus 19 with an empty `productType`, which are clothing) — of which **55
+  are ACTIVE and 16 are DRAFT**. Every one of the 55 ACTIVE SKUs now has a
+  campaign frame in the sheet. Jewellery is
   identified by a non-empty `productType`: Ring, Necklace, Bracelet, Earrings,
   Jewellery Set. Re-derive this count each time; do not assume 71 still holds.
 - **Every live product image** for each SKU, in its real Shopify media order,
@@ -67,9 +69,9 @@ For every campaign frame:
 
 ### Campaigns the brand likes — the house directions
 
-Five campaigns have been shot and scored (see
+Eight campaigns have been shot and scored (see
 `scripts/higgsfield/campaign-softly-slowly-worn.md` for the August reference set
-and `scripts/higgsfield/campaign-five-2026-09.md` for the September thirty). The
+and `scripts/higgsfield/campaign-eight-2026-09.md` for the September fifty-eight). The
 directions to keep working in:
 
 | Direction | What it is | Score |
@@ -79,6 +81,9 @@ directions to keep working in:
 | **Lilac and bone** | Pale lilac and bone-white, the quiet end of the house palette | 8.92 |
 | **Soft physics** — *SOFT PHYSICS* | The pale palette carrying one broken law of physics per frame. Calm and strange at once | 9.17 |
 | **How it's worn** — *HOW IT'S WORN* | Worn frames whose only idea is scale, each one built to pass a measurement anyone can check by looking | 9.17 |
+| **Soft matter** — *SOFT MATTER* | Bone, chalk, blush. The piece is the only hard thing in frame and it is changing the soft thing — printing, tearing, cutting, dyeing, crushing | 9.45 |
+| **Clear** — *CLEAR* | Oyster and water-white. The piece seen *through* something transparent and coming back wrong: rippled water, fluted glass, ice, a waterline, one droplet | 9.42 |
+| **Lilac hour** — *LILAC HOUR* | Pale lilac and bone, and exactly one thing about the light is impossible — shadows that disagree, climb, multiply, or swap shape | 9.48 |
 
 *AFTER DARK* (black ground) is deliberately not on this list.
 
@@ -146,6 +151,28 @@ files by what they show.
 Related, and cheap to check: a `generate_image_batch` request with no `medias`
 array still submits, still charges, and comes back as generic stock. Confirm the
 array is present in every request before sending.
+
+### The sixth failure mode — the model inverts relief
+
+Asked twice for a groove cut *into* wax, it returned a raised welt carrying the
+same impression. Asked instead to put the chain *inside the trench* — a statement
+about where things are, not about what happened — it complied at once. When a
+physical effect fails twice, restate it as geometry: what is above what, what
+steps down, what the eye passes as it crosses the frame.
+
+### The seventh failure mode — an unrenderable conceit, retried
+
+Two passes at a bracelet half-sunk in opaque cream produced no cream at all. The
+same idea in chalk powder — a medium the model already handles well — worked
+first time. **Swap the medium, don't buy a third pass.** Powder, paper, wax,
+cloth, water and glass all render reliably; opaque liquids and refraction offsets
+do not.
+
+### Name the absence, not the intent
+
+"The shadows go up" produced downward shadows. "No shadow below or beside either
+earring, none pooling at the base" produced upward ones. The negative list does
+more work than the positive sentence.
 
 ### Where the pipeline lives
 

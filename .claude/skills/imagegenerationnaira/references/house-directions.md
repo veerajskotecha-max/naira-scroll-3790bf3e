@@ -10,6 +10,10 @@ here before inventing one. The full record of each shoot lives in `scripts/higgs
 | **Colourful** — after *NOT A PHASE* | Saturated colour blocks, one impossible idea per frame, copy space built in | 9.15 |
 | **Soft physics** — *SOFT PHYSICS* | The pale palette carrying one broken law of physics per frame. Calm and strange at once | 9.17 |
 | **Lilac and bone** | Pale lilac and bone-white, the quiet end of the house palette | 8.92 |
+| **Soft matter** — *SOFT MATTER* | Bone, chalk, blush. The piece is the only hard thing in frame and it is changing the soft thing around it | 9.45 |
+| **Clear** — *CLEAR* | Oyster and water-white. The piece seen through something transparent and coming back wrong | 9.42 |
+| **Lilac hour** — *LILAC HOUR* | Pale lilac and bone, and exactly one thing about the light is impossible | 9.48 |
+| **How it's worn** — *HOW IT'S WORN* | Worn frames whose only idea is scale, proved against the body | 9.17 |
 | **Red** — after *THE RED ROOM* | Oxblood lacquer, water beads, red glass bangles, burgundy silk. Festive through material, never iconography | 8.90 |
 
 *AFTER DARK* (black ground) is deliberately **not** on this list. The brand bible names black in the
@@ -41,7 +45,12 @@ prompt.
 
 ## Casting a campaign
 
-Six SKUs. Spread the categories — six frames should not be four rings. Prefer `ACTIVE` over `DRAFT`
+Six SKUs for a standard campaign; **nine to twelve when the brief is to cover the
+catalogue** — that is the size at which a direction stays coherent and still
+earns its own palette and divider page. Change direction every nine to twelve
+frames, not every six.
+
+Six to twelve SKUs. Spread the categories — six frames should not be four rings. Prefer `ACTIVE` over `DRAFT`
 and SKUs with four or more live images. Exclude anything already used in a previous campaign unless
 you are deliberately re-shooting it. Choose on looks, from a visual pick sheet of the unused SKUs,
 never from the names.

@@ -1,6 +1,6 @@
 ---
 name: imagegenerationnaira
-description: Make Naira Petite jewellery imagery on Higgsfield — full advertising campaigns (plan, cast, brief, generate, verify against live product pages and the published size guide, re-shoot, assemble a book and update the standing proof sheet) and one-off production work (PDP frames, re-shoots, background swaps, ad creative, batches). Use whenever the user asks for a Naira campaign, shoot, lookbook, ad creative, PDP ladder, hero frames, worn/model shots, a re-shoot, or mentions Higgsfield, Nano Banana, Naira Petite or nairaflore alongside images. Covers the reference chain, the fidelity and scale locks, the verification method, the four repeating failure modes, and the Higgsfield call mechanics.
+description: Make Naira Petite jewellery imagery on Higgsfield — full advertising campaigns (plan, cast, brief, generate, verify against live product pages and the published size guide, re-shoot, assemble a book and update the standing proof sheet) and one-off production work (PDP frames, re-shoots, background swaps, ad creative, batches). Use whenever the user asks for a Naira campaign, shoot, lookbook, ad creative, PDP ladder, hero frames, worn/model shots, a re-shoot, or mentions Higgsfield, Nano Banana, Naira Petite or nairaflore alongside images. Covers the reference chain, the fidelity and scale locks, the verification method, the repeating failure modes (including packaging and brand-mark lettering), and the Higgsfield call mechanics.
 ---
 
 # Naira image generation
@@ -104,7 +104,7 @@ Every one of these has cost a wasted batch.
 
 ---
 
-## The four repeating failure modes
+## The repeating failure modes
 
 **1 · Plinth bleed.** Any frame briefed as a flat colour field fights the plaster block living in the e-com still used as its reference. "Flat colour, no surface" is not enough. What works is an exhaustive absence list *plus* a positive statement of what the object is doing instead:
 
@@ -116,7 +116,15 @@ Every one of these has cost a wasted batch.
 
 **4 · A word in the brief overriding the reference.** The Star Point Band carries a four-lobed clover. Two passes drew a five-pointed star because the brief said "star" — the word beat the photograph sitting right next to it. Name shapes geometrically: quatrefoil, four-lobed clover, elongated oval with rounded ends.
 
-A fifth, related: **a pale or coloured set bleeds into the product.** Gold desaturates to silver on bone plaster; a clear stone goes amethyst on lilac paper. Fix by stating the product's own colour as a positive fact *and* explicitly denying the set's: *"the lilac belongs to the paper and the flowers alone; not one bit of it enters the stone."*
+**5 · Naming a glyph teaches the model to spell it.** The Naira box carries four letters — N, A, R, A — with a drawn rose standing in the gap where the I would be. Briefing the characters as *"N, A, a ROSE, R, A"* made the model typeset the word: two frames came back `NA(rose)RA` and `NA[ROSE]RA`. The fix, first time and every time: **stop calling the picture a character.**
+
+> FOUR LETTERS ONLY — N, A, R, A. Between the second letter A and the third letter R is a gap one letter wide, and standing in that gap is a SMALL DRAWN FLOWER — a picture, not a letter and not a word. No brackets, no parentheses, no dividers around it. The English word 'rose' does not appear on the box in any form.
+
+The same frame later drew the right idea as the wrong flower — an open bloom. Name the silhouette as geometry: closed, tight, unopened, one smooth compact teardrop pointed at the top, taller than it is wide, on one unbroken stem to the baseline, two narrow leaves low down. Then the absence list: no daisy, no spread petals, no round flat head, no flower wider than it is tall.
+
+**Any frame carrying a mark, monogram or packaging lettering: crop the mark out at full resolution on every frame and read it character by character before shipping.** At contact-sheet size a garbled mark is invisible.
+
+A sixth, related: **a pale or coloured set bleeds into the product.** Gold desaturates to silver on bone plaster; a clear stone goes amethyst on lilac paper. Fix by stating the product's own colour as a positive fact *and* explicitly denying the set's: *"the lilac belongs to the paper and the flowers alone; not one bit of it enters the stone."*
 
 ---
 

@@ -168,6 +168,28 @@ first time. **Swap the medium, don't buy a third pass.** Powder, paper, wax,
 cloth, water and glass all render reliably; opaque liquids and refraction offsets
 do not.
 
+### The eighth failure mode — naming a glyph teaches the model to spell it
+
+The Naira box carries four letters — N, A, R, A — with a drawn rose standing in the gap
+where the I would be. Briefing the characters as *"N, A, a ROSE, R, A"* made the model
+typeset the word: two frames came back reading `NA(rose)RA` and `NA[ROSE]RA`.
+
+The fix worked first time, twice: **stop calling the picture a character.** Say there are
+FOUR LETTERS ONLY, that between the second A and the R there is a gap one letter wide,
+that a small drawn flower stands in that gap — *a picture, not a letter and not a word* —
+that there are no brackets or parentheses around it, and that **the English word does not
+appear on the box in any form**.
+
+The same frame later drew the right idea as the wrong flower, an open bloom with splayed
+petals. Naming the silhouette as geometry fixed that too: closed, tight, unopened, one
+smooth compact teardrop pointed at the top, taller than it is wide — the height of a
+capital, the width of a third of one — on one unbroken stem to the baseline, two narrow
+leaves low down. Then the absence list: no daisy, no spread petals, no round flat head,
+no flower wider than it is tall.
+
+Whenever a mark, a monogram or a piece of packaging carries lettering, crop the mark out
+at full resolution on **every** frame and read it character by character before shipping.
+
 ### Name the absence, not the intent
 
 "The shadows go up" produced downward shadows. "No shadow below or beside either
@@ -175,6 +197,11 @@ earring, none pooling at the base" produced upward ones. The negative list does
 more work than the positive sentence.
 
 ### Where the pipeline lives
+
+`scripts/higgsfield/packaging-2026-09.md` is the packaging record — the box's real
+construction (a 70mm square slide-drawer sleeve, a 62mm black velvet bed, the
+four-letters-and-a-drawn-rose mark), the thirty-five frames, and every re-shoot.
+Start any further packaging work from it.
 
 `scripts/higgsfield/` holds the shot pipeline: `prompt.ts` (the fidelity lock and
 per-category staging), `plates.json` (the five staging plates, reused as IMAGE 2 so

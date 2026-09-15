@@ -729,8 +729,9 @@ const JewelDetail = () => {
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
 
 
-            {/* Quantity */}
-            <div className="mt-4">
+            {/* Quantity — desktop only; on a phone it pushes the CTA below the
+                fold and can be changed in the cart. */}
+            <div className="mt-4 hidden md:block">
               <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-2.5" style={{ color: "hsl(0 0% 25%)" }}>Quantity</span>
               <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 80%)" }}>
                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="w-11 h-11 flex items-center justify-center hover:bg-muted">
@@ -818,7 +819,7 @@ const JewelDetail = () => {
 
             {/* Delivery + shipping reassurance */}
             <div
-              className="mt-5 flex items-start gap-2 border px-3 py-2.5"
+              className="mt-5 hidden md:flex items-start gap-2 border px-3 py-2.5"
               style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
             >
               <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />

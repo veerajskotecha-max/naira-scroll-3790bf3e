@@ -351,12 +351,9 @@ const JewelDetail = () => {
   /* Sold-out pieces take pre-orders: try the cart first, and if Shopify
      refuses the variant, fall back to a WhatsApp reservation. */
   const handlePreOrder = async () => {
-    try {
-      await addToCart();
-      setDrawerOpen(true);
-    } catch {
-      window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
-    }
+    const added = await addToCart().catch(() => false);
+    if (added) setDrawerOpen(true);
+    else window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
   };
 
   const handleWishlist = () => {

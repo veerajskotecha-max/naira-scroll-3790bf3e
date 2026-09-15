@@ -4,3 +4,4 @@
 - [x] Keep the reel feature light on PDP (lazy-loaded viewer, no fetch/video until scrolled, compressed media) and smooth on desktop
 - [x] Remove product counts from jewellery scrolling tabs
 - [x] Shorten jewellery PDP by consolidating repeated product, trust, delivery, and recommendation sections
+- [x] Pin Prism Reverie bracelet, Molten Bloom and Woven Gold Hoops at the top of /jewellery

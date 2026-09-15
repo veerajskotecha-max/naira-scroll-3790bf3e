@@ -223,6 +223,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ad_matching_consent: boolean
+          ad_matching_consent_at: string | null
           birthday: string | null
           city: string | null
           created_at: string
@@ -232,6 +234,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ad_matching_consent?: boolean
+          ad_matching_consent_at?: string | null
           birthday?: string | null
           city?: string | null
           created_at?: string
@@ -241,6 +245,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ad_matching_consent?: boolean
+          ad_matching_consent_at?: string | null
           birthday?: string | null
           city?: string | null
           created_at?: string

@@ -45,6 +45,11 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
+/* Merchandised leads: the Prism Rivière bracelet, Molten Bloom and Woven Gold
+   Hoops open the grid on the default Featured sort. An explicit sort chosen by
+   the shopper always wins over the pinning. */
+const FEATURED_LEADS = ["riviere-of-light-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
+
 const Jewellery = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigationType = useNavigationType();
@@ -105,7 +110,14 @@ const Jewellery = () => {
     () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
-  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters), [inCategory, activeFilters]);
+  const pieces = useMemo(() => {
+    const filtered = applyJewelFilters(inCategory, activeFilters);
+    if (activeFilters.sort !== "featured") return filtered;
+    const leads = FEATURED_LEADS
+      .map((handle) => filtered.find((p) => p.handle === handle))
+      .filter((p): p is (typeof filtered)[number] => Boolean(p));
+    return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
+  }, [inCategory, activeFilters]);
 
   return (
     <>

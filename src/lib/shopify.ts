@@ -453,6 +453,23 @@ export const SIZE_ATTRIBUTE = "Size";
 export const sizeAttributes = (size?: string) =>
   size && size.trim() ? [{ key: SIZE_ATTRIBUTE, value: size.trim() }] : [];
 
+/**
+ * Cart-level attributes that travel with the order into Shopify, so the
+ * server-side Purchase event can be joined to the same anonymous browsing
+ * session the browser pixel reported (`external_id`) and to the ad click
+ * (`_fbc`). Opaque values only — no personal data.
+ */
+export const trackingCartAttributes = (): Array<{ key: string; value: string }> => {
+  const attrs: Array<{ key: string; value: string }> = [];
+  const vid = getVisitorId();
+  if (vid) attrs.push({ key: "naira_visitor_id", value: vid });
+  const fbc = getFbClickId();
+  if (fbc) attrs.push({ key: "fbc", value: fbc });
+  const fbp = getFbBrowserId();
+  if (fbp) attrs.push({ key: "fbp", value: fbp });
+  return attrs;
+};
+
 type CartLineNode = {
   id: string;
   quantity?: number;
@@ -486,7 +503,10 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
       };
     };
   }>(CART_CREATE_MUTATION, {
-    input: { lines: [{ quantity, merchandiseId: variantId, attributes: sizeAttributes(size) }] },
+    input: {
+      lines: [{ quantity, merchandiseId: variantId, attributes: sizeAttributes(size) }],
+      attributes: trackingCartAttributes(),
+    },
   });
 
   const userErrors = data.data.cartCreate.userErrors;

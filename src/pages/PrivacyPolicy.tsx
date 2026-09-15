@@ -62,7 +62,15 @@ const sections = [
           <li>Remembering login sessions</li>
           <li>Improving page performance</li>
           <li>Personalising your browsing experience</li>
+          <li>Measuring and optimising our advertising</li>
         </ul>
+        <p>
+          For advertising measurement we place a random, anonymous visitor identifier on your device, and we store the
+          click identifier that accompanies a visit from one of our advertisements. These values contain no personal
+          details. They are shared with Meta Platforms (Facebook and Instagram) and travel with your order to Shopify so
+          that a purchase can be linked to the advertisement it came from, and they are used to measure and optimise our
+          advertising, including showing you relevant advertisements.
+        </p>
         <p>You may disable cookies through your browser settings at any time. Please note that doing so may affect certain features and functionality of the website.</p>
       </>
     ),

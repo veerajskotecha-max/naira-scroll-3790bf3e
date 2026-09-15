@@ -28,6 +28,11 @@ const categorySlugMap: Record<string, string> = {
 };
 const availabilityOptions = ["In Stock", "Sold Out"];
 
+/* Merchandised lead: the Prism Rivière bracelet opens the default Shop All
+   grid, mirroring /jewellery. An explicit sort or category filter chosen by
+   the shopper always wins over the pinning. */
+const PRISM_RIVIERE_HANDLE = "riviere-of-light-bracelet";
+
 /* ───── Collapsible Filter Section ───── */
 const FilterSection = ({
   title,
@@ -314,6 +319,15 @@ const ShopAll = () => {
       case "newest":
       default:
         break; // original order
+    }
+
+    // Merchandised lead on the default view: Prism Rivière first, unless the
+    // shopper picked a sort or a category of their own.
+    if (sortValue === "newest" && selectedCategories.length === 0) {
+      const lead = result.filter((p) => p.handle === PRISM_RIVIERE_HANDLE);
+      if (lead.length > 0) {
+        result = [...lead, ...result.filter((p) => p.handle !== PRISM_RIVIERE_HANDLE)];
+      }
     }
 
     return result;

@@ -58,7 +58,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
   const zircone = piece.handle.startsWith("zircone");
   /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they
-     never read as sold out; other sold-out pieces take pre-orders instead. */
+     never read as sold out. Collection cards show a calm, final SOLD OUT state;
+     any pre-order option belongs on the product page only. */
   const adjustable = isAdjustableRing(piece.handle);
   const soldOut = piece.availableForSale === false && !adjustable;
 
@@ -89,7 +90,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     }
   };
 
-  /* Shopify-backed pre-order add: real variant, real cart. */
+  /* Shopify-backed cart add: real variant, real cart. */
   const handleAdd = async () => {
     setAdding(true);
     try {
@@ -168,14 +169,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
           {zircone && (
             <span aria-hidden className="pointer-events-none absolute inset-0">
-              <svg className="jc-tw absolute left-[20%] top-[22%]" width="15" height="15" viewBox="0 0 20 20"><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
-              <svg className="jc-tw absolute right-[24%] top-[40%]" width="10" height="10" viewBox="0 0 20 20" style={{ animationDelay: "1.2s" }}><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
-              <svg className="jc-tw absolute bottom-[26%] left-[34%]" width="12" height="12" viewBox="0 0 20 20" style={{ animationDelay: "2s" }}><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
-              <style>{`
-                @keyframes jc-twinkle { 0%,100% { opacity:.12; transform:scale(.5) rotate(0deg);} 50% { opacity:.95; transform:scale(1) rotate(28deg);} }
-                .jc-tw { animation: jc-twinkle 2.9s ease-in-out infinite; }
-                @media (prefers-reduced-motion: reduce) { .jc-tw { animation: none; opacity:.4; } }
-              `}</style>
+              <svg className="absolute left-[20%] top-[22%] opacity-40" width="15" height="15" viewBox="0 0 20 20"><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
+              <svg className="absolute right-[24%] top-[40%] opacity-30" width="10" height="10" viewBox="0 0 20 20"><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
+              <svg className="absolute bottom-[26%] left-[34%] opacity-35" width="12" height="12" viewBox="0 0 20 20"><path d="M10 0 Q11 8.5 20 10 Q11 11.5 10 20 Q9 11.5 0 10 Q9 8.5 10 0 Z" fill="var(--nf-accent)" /></svg>
             </span>
           )}
           <div ref={sheenRef} aria-hidden className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-300" />
@@ -196,7 +192,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               className="absolute right-3 top-3 bg-nf-ink px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
               style={jost}
             >
-              PRE-ORDER
+              SOLD OUT
             </span>
           )}
           {off > 0 && !soldOut && (
@@ -252,11 +248,11 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
           <button
             onClick={handleAdd}
-            disabled={adding || cartLoading}
+            disabled={soldOut || adding || cartLoading}
             className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 disabled:opacity-60 sm:text-[10.5px] sm:tracking-nf-30"
             style={jost}
           >
-            {soldOut ? "PRE-ORDER" : adding ? "ADDING…" : "ADD TO CART"}
+            {soldOut ? "SOLD OUT" : adding ? "ADDING…" : "ADD TO CART"}
           </button>
           {!soldOut && (
             <button

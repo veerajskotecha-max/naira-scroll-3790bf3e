@@ -71,6 +71,18 @@ const sections = [
           that a purchase can be linked to the advertisement it came from, and they are used to measure and optimise our
           advertising, including showing you relevant advertisements.
         </p>
+        <p>
+          These same events — pages viewed, pieces added to the bag, checkouts started — are also sent to Meta from our
+          own servers, together with your device details, network address and country, so that measurement remains
+          accurate when a browser blocks the tracking script.
+        </p>
+        <p>
+          If you hold a Naira Flore member account and have accepted it, we additionally share a scrambled (SHA-256
+          hashed) version of your email address with Meta so your activity can be matched to your account. Your email
+          address itself is never shared, we do not store the scrambled value, and nothing is shared unless you have
+          accepted. You may withdraw this at any time from the details section of your account, and the change applies
+          immediately.
+        </p>
         <p>You may disable cookies through your browser settings at any time. Please note that doing so may affect certain features and functionality of the website.</p>
       </>
     ),

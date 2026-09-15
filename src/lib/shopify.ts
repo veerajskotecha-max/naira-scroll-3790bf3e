@@ -534,6 +534,25 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
   Setting it on the cart is unambiguous: the code travels with the cart into
   checkout, and Shopify reports whether it was actually applicable.
 */
+/**
+ * Refreshes the tracking attributes on an existing cart just before checkout.
+ * Carts created before this shipped — or before the shopper clicked the ad —
+ * would otherwise reach Shopify without the visitor id or the click id.
+ */
+export async function updateCartTrackingAttributes(cartId: string): Promise<void> {
+  const attributes = trackingCartAttributes();
+  if (!attributes.length) return;
+  await storefrontApiRequest(
+    `mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
+      cartAttributesUpdate(cartId: $cartId, attributes: $attributes) {
+        cart { id }
+        userErrors { message }
+      }
+    }`,
+    { cartId, attributes }
+  );
+}
+
 export async function applyCartDiscountCodes(
   cartId: string,
   codes: string[]

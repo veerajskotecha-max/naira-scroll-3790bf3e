@@ -1050,12 +1050,14 @@ const JewelDetail = () => {
         </button>
         {soldOut ? (
           <>
-            <span
-              className="flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border"
-              style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 45%)" }}
+            <button
+              onClick={handlePreOrder}
+              disabled={buying || cartLoading}
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
+              style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
             >
-              Sold Out
-            </span>
+              Pre-order
+            </button>
             <a
               href={sizedEnquiryHref}
               target="_blank"
@@ -1063,7 +1065,7 @@ const JewelDetail = () => {
               className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em]"
               style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
             >
-              Notify me
+              Reserve
             </a>
           </>
         ) : (

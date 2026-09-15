@@ -28,6 +28,11 @@ const categorySlugMap: Record<string, string> = {
 };
 const availabilityOptions = ["In Stock", "Sold Out"];
 
+/* Merchandised lead: the Prism Rivière bracelet opens the default Shop All
+   grid, mirroring /jewellery. An explicit sort or category filter chosen by
+   the shopper always wins over the pinning. */
+const PRISM_RIVIERE_HANDLE = "riviere-of-light-bracelet";
+
 /* ───── Collapsible Filter Section ───── */
 const FilterSection = ({
   title,

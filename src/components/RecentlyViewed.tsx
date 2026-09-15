@@ -28,7 +28,7 @@ const RecentlyViewed = ({ current }: { current?: ViewedItem }) => {
                   alt={i.name}
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+                  className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-[1.03]"
                 />
               )}
             </div>

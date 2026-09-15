@@ -6,6 +6,19 @@ Three, from `supplier-tracker.json`: **YISS FERA** (19 SKUs, `YF*` codes),
 **YIWU JD** (16, `JD*`), **KAVNAR** (27, letter-prefixed). Their photo sets
 live in Google Drive, shared with `shopatnaira@gmail.com`.
 
+## The supplier, named
+
+`YF5144-1.html` also carries the seller's identity:
+
+| | |
+|---|---|
+| Company | **Foshan Yiss Fera Import & Export Co., Ltd.** |
+| Storefront | `yissfera.en.alibaba.com` |
+| Company id | `265132781` |
+
+Five of the seven missing SKUs are theirs (`YF3952`, `YF3925`, `YF3925-NEC`,
+`YF8457`, `YF5215`), so this is the right door to knock on.
+
 ## Alibaba is reachable and refuses us
 
 A saved listing page in the YISS FERA folder, `YF5144-1.html`, identifies the
@@ -15,12 +28,25 @@ platform and the URL shape:
 https://www.alibaba.com/product-detail/YF5144-Fashion-Designer-Jewelry-18K-Gold-1601458695821.html
 ```
 
-Fetching that URL and an Alibaba SKU search both return **HTTP 200 with a
-CAPTCHA body** — "Access Denied", "Captcha", "Verify". The request reaches
-Alibaba; Alibaba declines to serve it. Headless Chromium fails earlier still,
-on the proxy CA. So the live listings cannot be read from here, and this is
-their anti-bot rather than our network — checked both ways rather than
-assumed.
+Every available route was tried:
+
+| Route | Result |
+|---|---|
+| `curl` the listing URL | HTTP 200, CAPTCHA body |
+| `curl` Alibaba SKU search | HTTP 200, CAPTCHA body |
+| Headless Chromium, real fingerprint | fails earlier, on the proxy CA |
+| WebFetch `www.alibaba.com` listing | blank — the captcha page has no text |
+| WebFetch `yissfera.en.alibaba.com/productlist.html` | blank |
+| WebFetch `yissfera.m.en.alibaba.com` (mobile) | blank |
+| WebFetch `indonesian.alibaba.com` (the canonical locale) | blank |
+| Web search, each SKU quoted | not indexed |
+| Web search, title-case (`Yf3952`) as Alibaba renders it | not indexed |
+| Web search, restricted to `alibaba.com` | not indexed |
+| Web search with the supplier name | finds the storefront, not the SKUs |
+| Gmail, for supplier correspondence | **token expired — needs re-authorisation** |
+
+The request reaches Alibaba and Alibaba declines it. This is their anti-bot,
+not our network.
 
 ## What the saved page did give
 
@@ -45,6 +71,12 @@ with no printed dimensions anywhere. The twelve SKUs that *do* have printed
 dimensions were already transcribed into
 `supplier-tracker.json → sizing_from_supplier_spec_sheets`, and none of the
 seven is among them.
+
+The two photos that had not been opened yet were opened: `YF8457-1.jpg` is a
+clean packshot of the lariat and `YF5215-1.jpg` is an on-model wrist shot.
+Neither carries a printed figure. That fits the pattern — the twelve SKUs
+whose photos *were* spec sheets already had their dimensions transcribed,
+and what remains are packshots and model shots.
 
 So these need either a message to the supplier or a tape measure:
 

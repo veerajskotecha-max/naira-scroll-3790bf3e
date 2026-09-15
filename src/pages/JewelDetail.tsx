@@ -831,16 +831,19 @@ const JewelDetail = () => {
               </p>
             </div>
 
-            {/* One useful offer; delivery and assurance are shown once below. */}
-            <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
-              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>NAIRA10</strong>
-                10% off your first order
-              </p>
-            </div>
+            {/* One useful offer; on a phone it is a single line, not a box. */}
+            <p className="mt-3 text-[12px] leading-[1.6] md:border md:px-3 md:py-3" style={{ color: "hsl(0 0% 32%)" }}>
+              <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>NAIRA10</strong>
+              10% off your first order
+            </p>
+
+            {/* Mobile: one compact delivery line instead of the boxes below. */}
+            <p className="mt-3 md:hidden text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 40%)" }}>
+              {arrivesBy ? `Arrives by ${arrivesBy}` : PREORDER_NOTE} · ₹150 insured shipping · 7-day returns
+            </p>
 
             {/* Key facts, at a glance */}
-            <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
+            <dl className="mt-4 hidden md:flex flex-wrap gap-2" aria-label="Key facts">
               {keyFacts.map((fact) => (
                 <div key={fact.label} className="border px-3 py-1.5" style={{ borderColor: "hsl(36 30% 84%)", backgroundColor: "hsl(33 41% 97%)" }}>
                   <dt className="text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>

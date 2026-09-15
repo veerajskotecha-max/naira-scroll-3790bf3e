@@ -965,7 +965,7 @@ const JewelDetail = () => {
 
 
       <ReelPeek />
-      <FomoPopup />
+      
       <Footer />
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}

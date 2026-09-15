@@ -211,7 +211,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; 
   // file was generated) is built straight from the API so nothing is missing.
   const known = new Set(merged.map((piece) => piece.handle));
   const extras = data
-    .filter((node) => node.vendor?.trim().toLowerCase() === JEWELLERY_VENDOR && !known.has(node.handle))
+    .filter((node) => isJewelleryProduct(node) && !known.has(node.handle))
     .map((node, i) => fromShopify(node, merged.length + i));
 
   const all = [...merged, ...extras];

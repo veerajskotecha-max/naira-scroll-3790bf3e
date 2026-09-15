@@ -103,7 +103,7 @@ const Account = () => {
   const [orders, setOrders] = useState<MemberOrder[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
-  const [form, setForm] = useState({ full_name: "", phone: "", birthday: "", city: "" });
+  const [form, setForm] = useState({ full_name: "", phone: "", birthday: "", city: "", ads: false });
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -115,6 +115,7 @@ const Account = () => {
       phone: profile?.phone ?? "",
       birthday: profile?.birthday ?? "",
       city: profile?.city ?? "",
+      ads: Boolean(profile?.ad_matching_consent),
     });
   }, [profile]);
 
@@ -148,7 +149,9 @@ const Account = () => {
       phone: form.phone.trim().slice(0, 20) || null,
       birthday: form.birthday || null,
       city: form.city.trim().slice(0, 60) || null,
-    });
+      ad_matching_consent: form.ads,
+      ad_matching_consent_at: form.ads ? new Date().toISOString() : null,
+    } as never);
     setSaving(false);
     setSavedNote(error ? "Could not save, please try again." : "Saved.");
     if (!error) await refreshProfile();
@@ -349,6 +352,18 @@ const Account = () => {
                 className={field}
                 style={jost}
               />
+              <label className="flex cursor-pointer items-start gap-3 pt-2" style={jost}>
+                <input
+                  type="checkbox"
+                  checked={form.ads}
+                  onChange={(e) => setForm({ ...form, ads: e.target.checked })}
+                  className="mt-[3px] h-[14px] w-[14px] accent-[#B0843A]"
+                />
+                <span className="text-[11px] leading-[1.6] text-[#1A1614]/60">
+                  Show me Naira Flore pieces on social media. Your email is scrambled before it leaves
+                  this site and shared with Meta only to match you.
+                </span>
+              </label>
               <div className="flex items-center gap-4 pt-1">
                 <button
                   type="submit"

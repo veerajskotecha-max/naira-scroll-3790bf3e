@@ -32,6 +32,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [adConsent, setAdConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -71,8 +72,13 @@ const Auth = () => {
         source: "member-signup",
         userId: data.user?.id ?? null,
       });
-      if (data.user && parsed.data.name) {
-        await supabase.from("profiles").upsert({ id: data.user.id, full_name: parsed.data.name });
+      if (data.user && (parsed.data.name || adConsent)) {
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          ...(parsed.data.name ? { full_name: parsed.data.name } : {}),
+          ad_matching_consent: adConsent,
+          ad_matching_consent_at: adConsent ? new Date().toISOString() : null,
+        } as never);
       }
       setBusy(false);
       if (!data.session) {
@@ -167,6 +173,21 @@ const Auth = () => {
               className={field}
               style={jost}
             />
+            {mode === "signup" && (
+              <label className="flex cursor-pointer items-start gap-3 pt-1 text-left" style={jost}>
+                <input
+                  type="checkbox"
+                  checked={adConsent}
+                  onChange={(e) => setAdConsent(e.target.checked)}
+                  className="mt-[3px] h-[14px] w-[14px] accent-[#B0843A]"
+                />
+                <span className="text-[11px] leading-[1.6] text-[#1A1614]/60">
+                  Show me Naira Flore pieces on social media. Your email is scrambled before it leaves
+                  this site and shared with Meta only to match you. You can turn this off any time in
+                  your account.
+                </span>
+              </label>
+            )}
             {error && (
               <p className="text-[11px] text-[#A44A34]" style={jost}>
                 {error}

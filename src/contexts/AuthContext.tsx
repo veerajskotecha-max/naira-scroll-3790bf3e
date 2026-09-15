@@ -16,6 +16,8 @@ export type MemberProfile = {
   phone: string | null;
   birthday: string | null;
   city: string | null;
+  /** Member accepted having their email used (scrambled) for ad matching. */
+  ad_matching_consent?: boolean | null;
 };
 
 type AuthValue = {
@@ -54,12 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setProfile(null);
       return;
     }
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, full_name, phone, birthday, city")
-      .eq("id", userId)
-      .maybeSingle();
-    setProfile((data as MemberProfile) ?? null);
+    const { data } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+    setProfile((data as unknown as MemberProfile) ?? null);
   }, [userId]);
 
   useEffect(() => {

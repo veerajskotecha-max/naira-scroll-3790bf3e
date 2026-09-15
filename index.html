@@ -41,6 +41,27 @@
          page to go idle (or the first interaction, whichever comes first). No
          events are lost, including PageView. -->
     <script>
+      /* Anonymous first-party visitor id, written before fbq init so advanced
+         matching (external_id) is attached to every event including the first
+         PageView. Random opaque value only — never personal data. Mirrored in
+         src/lib/visitorId.ts, which reads the same cookie. */
+      (function(){
+        try {
+          var m = document.cookie.match(/(?:^|; )naira_vid=([^;]*)/);
+          var id = m ? decodeURIComponent(m[1]) : '';
+          if (!id) {
+            id = (window.crypto && crypto.randomUUID)
+              ? crypto.randomUUID()
+              : 'v-' + Date.now().toString(16) + '-' + Math.random().toString(16).slice(2);
+            document.cookie = 'naira_vid=' + encodeURIComponent(id) +
+              '; path=/; max-age=63072000; SameSite=Lax' +
+              (location.protocol === 'https:' ? '; Secure' : '');
+          }
+          window.__nairaVid = id;
+        } catch (e) { /* cookies blocked — events simply carry no external_id */ }
+      })();
+    </script>
+    <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};

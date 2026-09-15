@@ -966,6 +966,7 @@ const JewelDetail = () => {
 
 
       <ReelPeek />
+      <FomoPopup />
       
       <Footer />
 

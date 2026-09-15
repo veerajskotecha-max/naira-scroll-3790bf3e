@@ -937,7 +937,7 @@ const JewelDetail = () => {
             {related.map((r) => (
               <Link key={r.handle} to={`/jewellery/${r.handle}`} className="group">
                 <div className="aspect-square overflow-hidden" style={{ backgroundColor: "#F4EBE2" }}>
-                  <img src={r.image} alt={r.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img src={r.image} alt={r.name} loading="lazy" className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
                 </div>
                 <p className="mt-3 text-[10px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>{r.category.toUpperCase()}</p>
                 <h3 className="mt-1 font-cormorant text-[18px] md:text-[20px]" style={{ color: "#1A1614" }}>{r.name}</h3>

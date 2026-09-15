@@ -70,7 +70,8 @@
       t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1232524215695667');
+      fbq('init', '1232524215695667',
+        window.__nairaVid ? { external_id: window.__nairaVid } : undefined);
       fbq('track', 'PageView');
       (function(){
         var go = function(){ window.__fbLoad(); };

@@ -43,25 +43,19 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const { toggleItem, isWishlisted } = useWishlist();
   const saved = isWishlisted(piece.handle);
   const off = discountPercent(piece);
-  /* Earrings: frame one must be the product packshot (the earrings alone) and
-     frame two the on-model shot, zoomed to the ear. Everything else keeps the
-     plain gallery order. */
+  /* One settled frame per piece — no hover swap, no timed flip. A grid of
+     still, consistently framed studio packshots reads calmer and more
+     luxurious than tiles that flicker between angles. Worn shots are kept
+     only when a piece has no clean packshot (necklaces/bracelets shot on
+     model), so scale is still communicated. */
   const gallery = piece.gallery ?? [];
-  /* Galleries arrive worn-shot-first (see `wornFirst` in lib/shopify), so when
-     the studio filename convention isn't present the first frame is the model. */
   const named = (g: string) => /worn|model|onmodel|_2_/i.test(g);
   const anyNamed = gallery.some(named) || named(piece.image);
   const isWorn = (g: string) => (anyNamed ? named(g) : g === gallery[0]);
-  const wornImg = gallery.find(isWorn) ?? null;
-  const isEarrings = piece.category === "Earrings";
   const packshot = gallery.find((g) => !isWorn(g)) ?? null;
 
-  const frontImg =
-    isEarrings && isWorn(piece.image) && packshot ? packshot : piece.image;
-  const altImg =
-    (isEarrings ? (wornImg && wornImg !== frontImg ? wornImg : null) : null) ??
-    gallery.filter((g) => g !== frontImg)[0] ??
-    null;
+  const frontImg = (isWorn(piece.image) && packshot ? packshot : piece.image) ?? piece.image;
+
   const zircone = piece.handle.startsWith("zircone");
   /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they
      never read as sold out; other sold-out pieces take pre-orders instead. */

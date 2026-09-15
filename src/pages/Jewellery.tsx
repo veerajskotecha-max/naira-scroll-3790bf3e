@@ -101,14 +101,6 @@ const Jewellery = () => {
     setSearchParams(params, { replace: true });
   };
 
-  const filterCounts = useMemo(
-    () =>
-      filters.reduce((acc, f) => {
-        acc[f] = f === "All" ? jewellery.length : jewellery.filter((p) => p.category === f).length;
-        return acc;
-      }, {} as Record<"All" | JewelCategory, number>),
-    [jewellery]
-  );
   const inCategory = useMemo(
     () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
@@ -176,19 +168,12 @@ const Jewellery = () => {
                 key={f}
                 onClick={() => selectCategory(f)}
                 aria-pressed={active === f}
-                aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
-                className={`press-scale shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
+                className={`press-scale shrink-0 inline-flex items-center border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
                   active === f ? "border-nf-ink bg-nf-ink text-nf-ivory" : "border-nf-ink/25 text-nf-ink/70 hover:border-nf-ink/60"
                 }`}
                 style={jost}
               >
-                <span className="self-center">{f.toUpperCase()}</span>
-                <span
-                  aria-hidden
-                  className={`self-center text-[9px] tracking-nf-8 sm:text-[9.5px] ${active === f ? "text-nf-ivory/60" : "text-nf-ink/40"}`}
-                >
-                  {filterCounts[f]}
-                </span>
+                {f.toUpperCase()}
               </button>
             ))}
           </div>

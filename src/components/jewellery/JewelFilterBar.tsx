@@ -75,12 +75,11 @@ const JewelFilterBar = ({
   pieces,
   value,
   onChange,
-  resultCount,
 }: {
   pieces: JewelPiece[];
   value: JewelFilters;
   onChange: (next: JewelFilters) => void;
-  resultCount: number;
+  resultCount?: number;
 }) => {
   const [open, setOpen] = useState(false);
   const tags = useMemo(() => collectTags(pieces), [pieces]);
@@ -107,10 +106,6 @@ const JewelFilterBar = ({
           <SlidersHorizontal size={13} strokeWidth={1.6} />
           FILTER{activeCount ? ` (${activeCount})` : ""}
         </button>
-
-        <span className="hidden text-[10px] tracking-nf-18 text-nf-ink/45 sm:inline" style={jost}>
-          {resultCount} {resultCount === 1 ? "PIECE" : "PIECES"}
-        </span>
 
         <label className="inline-flex items-center gap-2">
           <span className="sr-only">Sort pieces</span>

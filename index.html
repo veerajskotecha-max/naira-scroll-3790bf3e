@@ -58,6 +58,18 @@
               (location.protocol === 'https:' ? '; Secure' : '');
           }
           window.__nairaVid = id;
+
+          /* Ad click id. fbevents.js normally writes _fbc from ?fbclid=, but it
+             is deferred here until idle/first interaction — a shopper who
+             bounces before that leaves no click id at all. Writing the standard
+             fb.1.<ts>.<fbclid> value ourselves makes capture immediate; the
+             pixel reuses an existing cookie rather than overwriting it. */
+          var fbclid = new URLSearchParams(location.search).get('fbclid');
+          if (fbclid && !/(?:^|; )_fbc=/.test(document.cookie)) {
+            document.cookie = '_fbc=fb.1.' + Date.now() + '.' + fbclid +
+              '; path=/; max-age=7776000; SameSite=Lax' +
+              (location.protocol === 'https:' ? '; Secure' : '');
+          }
         } catch (e) { /* cookies blocked — events simply carry no external_id */ }
       })();
     </script>

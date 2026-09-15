@@ -21,7 +21,7 @@ const RecentlyViewed = ({ current }: { current?: ViewedItem }) => {
       <div className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.slice(0, 8).map((i) => (
           <Link key={i.handle} to={i.to} className="w-[140px] shrink-0 snap-start sm:w-[170px]">
-            <div className="aspect-[4/5] overflow-hidden bg-nf-ivory-deep">
+            <div className="aspect-square overflow-hidden bg-nf-ivory-deep">
               {i.image && (
                 <img
                   src={shopifyImage(i.image, 340)}

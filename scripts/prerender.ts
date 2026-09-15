@@ -84,13 +84,30 @@ const clean = (html: string) =>
     // React re-renders into #root on load, so any scroll position or transient
     // UI state captured here is replaced anyway; strip the attribute rather
     // than serve a stale value.
-    .replace(/\sdata-prerender-transient="[^"]*"/g, "");
+    .replace(/\sdata-prerender-transient="[^"]*"/g, "")
+    /*
+      The pixel runs inside the capture browser, which lives on 127.0.0.1, and
+      fbevents.js injects its own <script src=".../signals/config/<id>?...
+      &domain=127.0.0.1&hme=..."> into the head. Captured verbatim, every
+      visitor then downloaded a signals config bound to localhost with a stale
+      integrity hash — the served HTML claimed the wrong domain for the pixel.
+      The static bootstrap in index.html re-fetches the correct config at
+      runtime, so these injected tags must never reach disk.
+    */
+    .replace(/<script[^>]+src="[^"]*(?:facebook\.net|facebook\.com|fbcdn\.net)[^"]*"[^>]*><\/script>/gi, "")
+    .replace(/<link[^>]+href="[^"]*(?:facebook\.net|facebook\.com|fbcdn\.net)[^"]*"[^>]*\/?>/gi, "")
+    .replace(/<img[^>]+src="[^"]*facebook\.com\/tr[^"]*"[^>]*\/?>/gi, "");
 
 const routeToFile = (routePath: string) =>
   routePath === "/" ? join(DIST, "index.html") : join(DIST, routePath, "index.html");
 
 async function renderAll(browser: Browser, routes: SiteRoute[]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+
+  /* Never let the capture browser talk to Meta: its events would be attributed
+     to 127.0.0.1 and its injected config tags would be captured into the HTML.
+     Belt and braces with the strip in clean(). */
+  await page.route(/(facebook\.net|facebook\.com|fbcdn\.net)/i, (r) => r.abort());
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
 

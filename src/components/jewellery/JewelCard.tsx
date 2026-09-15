@@ -292,7 +292,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         </h3>
         {/* Price: the single most-scanned element on a grid card, so it reads
             at title weight in ink, with the MRP struck through beside it. */}
-        <div className="mt-2 sm:mt-2.5">
+        {/* Fixed-height price row: with or without a struck-through MRP every
+            tile keeps the same height, so rows never stagger while scrolling. */}
+        <div className="mt-2 flex min-h-[30px] w-full items-center justify-center sm:mt-2.5 sm:min-h-[34px]">
           <JewelPriceTag piece={piece} />
         </div>
         {/* Pre-order / delivery wording lives on the product page only. */}

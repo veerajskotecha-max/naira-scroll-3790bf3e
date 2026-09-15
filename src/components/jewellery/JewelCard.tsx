@@ -133,45 +133,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     return () => { el.removeEventListener("mousemove", onMove); el.removeEventListener("mouseleave", reset); };
   }, []);
 
-  // Mobile "greet turn": no hover on touch — the piece flashes its 3/4 angle
-  // once as the card scrolls into view, so the second angle is never hidden.
-  // Timing follows the pattern used by Mejuri/Zara-style grids: a short settle
-  // after the card lands, a hold long enough to actually read the second
-  // angle, then a return. The alt frame is decoded first so the swap never
-  // flashes an empty tile.
-  useEffect(() => {
-    if (!altImg) return;
-    if (window.matchMedia("(hover: hover)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const root = tiltRef.current;
-    const back = root?.querySelector<HTMLElement>(".jc-back");
-    const front = root?.querySelector<HTMLElement>(".jc-front");
-    if (!root || !back || !front) return;
-    const timers: number[] = [];
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      const pre = new Image();
-      pre.src = cdn(altImg, 800);
-      const run = () => {
-        timers.push(
-          window.setTimeout(() => {
-            back.style.opacity = "1";
-            front.style.opacity = "0";
-            timers.push(
-              window.setTimeout(() => {
-                back.style.opacity = "0";
-                front.style.opacity = "1";
-              }, 1600)
-            );
-          }, 650)
-        );
-      };
-      pre.decode?.().then(run).catch(run) ?? run();
-    }, { threshold: 0.6 });
-    io.observe(root);
-    return () => { io.disconnect(); timers.forEach(clearTimeout); };
-  }, [altImg]);
+  /* The timed "greet turn" and the hover image swap were removed: a still
+     grid reads as considered, a flickering one as unstable. */
+
 
 
   return (

@@ -57,10 +57,15 @@ const ringSizes: { value: string; label: string; status: "available" | "preorder
   { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
-/** Size list for a specific ring: open-back styles flag US 6 as adjustable. */
+/** Size list for a specific ring: open-back styles adjust to fit, so every
+    size button reads as available — never pre-order, never out of stock. */
 const ringSizesFor = (handle?: string) =>
   isAdjustableRing(handle)
-    ? ringSizes.map((s) => (s.value === "6" ? { ...s, label: "US 6 — Adjustable (fits US 6–8)" } : s))
+    ? ringSizes.map((s) => ({
+        ...s,
+        status: "available" as const,
+        label: s.value === "6" ? "US 6 — Adjustable (fits US 6–8)" : `US ${s.value} — Adjustable fit`,
+      }))
     : ringSizes;
 
 
@@ -284,7 +289,10 @@ const JewelDetail = () => {
 
   const wishlisted = isWishlisted(piece.handle);
   /* Live Shopify stock state, refreshed by useLiveJewel. */
-  const soldOut = piece.availableForSale === false;
+  /* Adjustable open-back rings flex to fit, so they never read as sold out —
+     a low Shopify count just means the next piece is finished to order. */
+  const adjustable = isAdjustableRing(piece.handle);
+  const soldOut = piece.availableForSale === false && !adjustable;
   const keyFacts = deriveKeyFacts(piece);
   /* Same-category pieces lead the recommendations; the atelier's other
      work fills any remaining slots. */
@@ -338,6 +346,14 @@ const JewelDetail = () => {
     } finally {
       setBuying(false);
     }
+  };
+
+  /* Sold-out pieces take pre-orders: try the cart first, and if Shopify
+     refuses the variant, fall back to a WhatsApp reservation. */
+  const handlePreOrder = async () => {
+    const added = await addToCart().catch(() => false);
+    if (added) setDrawerOpen(true);
+    else window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
   };
 
   const handleWishlist = () => {
@@ -712,11 +728,11 @@ const JewelDetail = () => {
                     })}
                   </div>
                   <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
-                    {selectedSize === "6"
-                      ? isAdjustableRing(piece.handle)
-                        ? `US 6 is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
-                        : "US 6 is in stock and ships now."
-                      : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                    {adjustable
+                      ? `US ${selectedSize} is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
+                      : selectedSize === "6"
+                        ? "US 6 is in stock and ships now."
+                        : `US ${selectedSize} is a pre-order — 45 days delivery.`}
                   </p>
 
                 </>
@@ -749,15 +765,14 @@ const JewelDetail = () => {
                 converts better than an outline ghost button. */}
             <div id="product-actions" className="mt-6">
               {soldOut ? (
-                <a
-                  href={sizedEnquiryHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
-                  style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+                <button
+                  onClick={handlePreOrder}
+                  disabled={buying || cartLoading}
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
                 >
-                  <MessageSquare size={13} /> Notify me on WhatsApp
-                </a>
+                  Pre-order Now
+                </button>
               ) : (
                 <button
                   onClick={handleAddToCart}
@@ -768,18 +783,30 @@ const JewelDetail = () => {
                   Add to Cart
                 </button>
               )}
-              <button
-                onClick={handleBuyNow}
-                disabled={soldOut || buying || cartLoading}
-                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
-              >
-                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
-              </button>
+              {soldOut ? (
+                <a
+                  href={sizedEnquiryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
+                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                >
+                  <MessageSquare size={13} /> Reserve on WhatsApp
+                </a>
+              ) : (
+                <button
+                  onClick={handleBuyNow}
+                  disabled={buying || cartLoading}
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                >
+                  {buying ? "Opening checkout…" : "Shop Now"}
+                </button>
+              )}
 
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
                 {soldOut ? (
-                  "This piece is currently sold out — we'll let you know the moment it's back."
+                  "Reserve today — your piece is hand-finished and ships within 2 weeks."
                 ) : (
                   <>
                     {/* 60% of Baymard's subjects looked for the returns policy on the
@@ -1020,12 +1047,14 @@ const JewelDetail = () => {
         </button>
         {soldOut ? (
           <>
-            <span
-              className="flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border"
-              style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 45%)" }}
+            <button
+              onClick={handlePreOrder}
+              disabled={buying || cartLoading}
+              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
+              style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
             >
-              Sold Out
-            </span>
+              Pre-order
+            </button>
             <a
               href={sizedEnquiryHref}
               target="_blank"
@@ -1033,7 +1062,7 @@ const JewelDetail = () => {
               className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em]"
               style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
             >
-              Notify me
+              Reserve
             </a>
           </>
         ) : (

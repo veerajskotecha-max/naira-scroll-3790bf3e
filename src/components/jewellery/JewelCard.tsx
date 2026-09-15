@@ -16,6 +16,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Heart } from "lucide-react";
 import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
+import { isAdjustableRing } from "@/data/ringFit";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
@@ -62,8 +63,10 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     gallery.filter((g) => g !== frontImg)[0] ??
     null;
   const zircone = piece.handle.startsWith("zircone");
-  /* Live Shopify stock state — sold-out pieces stay visible but can't be bought. */
-  const soldOut = piece.availableForSale === false;
+  /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they
+     never read as sold out; other sold-out pieces take pre-orders instead. */
+  const adjustable = isAdjustableRing(piece.handle);
+  const soldOut = piece.availableForSale === false && !adjustable;
 
 
   const toggleWishlist = (e: React.MouseEvent) => {
@@ -247,7 +250,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               className="absolute right-3 top-3 bg-nf-ink px-2.5 py-1 text-[8.5px] tracking-nf-20 text-nf-ivory sm:right-4 sm:top-4 sm:px-3 sm:text-[9px]"
               style={jost}
             >
-              SOLD OUT
+              PRE-ORDER
             </span>
           )}
           {off > 0 && !soldOut && (
@@ -303,11 +306,11 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
           <button
             onClick={handleAdd}
-            disabled={soldOut || adding || cartLoading}
+            disabled={adding || cartLoading}
             className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 disabled:opacity-60 sm:text-[10.5px] sm:tracking-nf-30"
             style={jost}
           >
-            {soldOut ? "SOLD OUT" : adding ? "ADDING…" : "ADD TO CART"}
+            {soldOut ? "PRE-ORDER" : adding ? "ADDING…" : "ADD TO CART"}
           </button>
           {!soldOut && (
             <button

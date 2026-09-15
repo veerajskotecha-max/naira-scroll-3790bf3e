@@ -212,14 +212,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
-              /* Earrings: push into the head/ear area so the worn piece reads. */
-              style={
-                piece.category === "Earrings"
-                  ? { objectPosition: "center 10%", transform: "scale(1.5)" }
-                  : undefined
-              }
-
-              className="jc-back absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+              className="jc-back absolute inset-0 h-full w-full object-cover object-center opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}
 

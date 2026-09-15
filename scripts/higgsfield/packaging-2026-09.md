@@ -156,3 +156,80 @@ Five of the twenty SKUs from the shoot were left out — Blush Cluster Ring, Pea
 Earrings, Blush Station Bracelet, Clover Charm Necklace and Lumière Oval Necklace — because
 there are fifteen box frames and no frame was to repeat. Their natural cover is the
 twenty product-in-box frames, which are SKU-specific and still unplaced.
+
+## Full catalogue coverage — 15 September 2026
+
+Extended from the first fifteen to **every ACTIVE jewellery SKU**: all 55 now carry one
+packaging frame, added alongside the existing images rather than replacing any.
+
+The store holds 90 products. 19 have an empty `productType` and are clothing — untouched.
+16 are DRAFT — untouched. That leaves the 55 ACTIVE jewellery SKUs, and each has exactly
+one packaging image and no more.
+
+Frames were drawn at random from the fifteen, shuffled so no frame repeats back to back
+and each gets used three to five times across the catalogue. Slot is the third or fourth
+image: 27 sit third, 26 sit fourth, and two — Granule Dome Ring and Pavé Dome Ring — sit
+second because those pages only had a single image to begin with.
+
+The second wave reused the fifteen files already on the Shopify CDN rather than
+re-uploading, so there are still only fifteen source images behind all 55 placements.
+
+| Product | Frame | Slot |
+|---|---|---|
+| baguette-arc-hoops | B6 | 3 |
+| baguette-eclat-bracelet | B15 | 4 |
+| baroque-bloom-cuff | B9 | 3 |
+| baroque-pearl-lariat | B10 | 3 |
+| baroque-shell-bracelet | B8 | 4 |
+| blush-cluster-ring | B9 | 4 |
+| blush-station-bracelet | B5 | 3 |
+| bold-nocturne-bracelet | B14 | 4 |
+| bold-nocturne-chain | B8 | 4 |
+| brushed-gold-huggies | B3 | 3 |
+| charm-box-chain | B15 | 3 |
+| chevron-whisper-ring | B7 | 4 |
+| clover-charm-necklace | B1 | 3 |
+| clover-trio-edit | B6 | 3 |
+| cushion-halo-ring | B1 | 3 |
+| filigree-bloom-studs | B4 | 4 |
+| first-light-set | B13 | 3 |
+| granule-dome-ring | B4 | 2 |
+| halo-curve-ring | B2 | 4 |
+| heartbead-bracelet | B2 | 3 |
+| heartline-paperclip-necklace | B12 | 4 |
+| lumiere-oval-bracelet | B10 | 4 |
+| lumiere-oval-necklace | B11 | 4 |
+| marquise-layering-set | B8 | 4 |
+| molten-bloom-hoops | B11 | 4 |
+| pearl-blossom-earrings | B11 | 3 |
+| pearl-drop-studs | B9 | 3 |
+| pearl-legacy-necklace | B10 | 4 |
+| pearl-point-studs | B15 | 3 |
+| pearl-reverie-bracelet | B6 | 4 |
+| pearl-ribbon-ring | B5 | 4 |
+| petal-pearl-drop-studs | B4 | 4 |
+| petite-pave-band | B14 | 3 |
+| petite-pearl-chain | B2 | 3 |
+| prism-riviere-bracelet | B13 | 4 |
+| ribbon-bead-bracelet | B13 | 4 |
+| ribbon-bow-earrings | B1 | 3 |
+| riviere-eternal-necklace | B3 | 4 |
+| riviere-of-light-bracelet | B12 | 3 |
+| rose-verdant-band | B11 | 3 |
+| serpentine-whisper-chain | B15 | 3 |
+| serpentine-whisper-chain-silver | B13 | 4 |
+| silver-dome-ring | B7 | 2 |
+| silver-drop-earrings | B14 | 3 |
+| solitaire-whisper-studs | B10 | 3 |
+| star-point-band | B7 | 4 |
+| textured-gold-hoops | B1 | 3 |
+| toggle-link-chain | B3 | 4 |
+| triple-dawn-cuff | B9 | 3 |
+| verdant-circlet-studs | B12 | 4 |
+| verdant-drop-earrings | B14 | 3 |
+| verdant-eternity-band | B5 | 3 |
+| vintage-halo-ring | B3 | 4 |
+| whisper-pave-band | B9 | 4 |
+| woven-gold-hoops | B12 | 3 |
+
+Every placement was re-queried after the writes and confirmed READY in its intended slot.

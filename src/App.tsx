@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -55,6 +55,16 @@ const AdminReels = lazy(() => import("./pages/admin/Reels.tsx"));
 
 
 const queryClient = new QueryClient();
+
+/**
+ * Redirect that keeps the query string. Ad clicks land on legacy Shopify-shaped
+ * URLs carrying ?fbclid= and utm_*; a plain <Navigate to="/path"> drops them,
+ * so the pixel never sees the click id on the page that reports the visit.
+ */
+const KeepQuery = ({ to }: { to: string }) => {
+  const { search } = useLocation();
+  return <Navigate to={{ pathname: to, search }} replace />;
+};
 
 const AppShell = () => {
   useCartSync();
@@ -116,20 +126,20 @@ const AppShell = () => {
           <Route path="/checkouts/cn/:token/*" element={<CartCheckoutRedirect />} />
           {/* Legacy / Shopify-shaped URLs (ads, old links, storefront exports)
               map onto the real pages instead of dead-ending. */}
-          <Route path="/collections" element={<Navigate to="/jewellery" replace />} />
-          <Route path="/collections/all" element={<Navigate to="/shop" replace />} />
+          <Route path="/collections" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/collections/all" element={<KeepQuery to="/shop" />} />
           <Route path="/collections/:slug" element={<JewelleryCategory />} />
-          <Route path="/blogs" element={<Navigate to="/journal" replace />} />
-          <Route path="/blogs/:blog" element={<Navigate to="/journal" replace />} />
+          <Route path="/blogs" element={<KeepQuery to="/journal" />} />
+          <Route path="/blogs/:blog" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
-          <Route path="/jewelry" element={<Navigate to="/jewellery" replace />} />
+          <Route path="/jewelry" element={<KeepQuery to="/jewellery" />} />
           <Route path="/jewelry/:handle" element={<JewelDetail />} />
-          <Route path="/pages/about" element={<Navigate to="/about" replace />} />
-          <Route path="/pages/contact" element={<Navigate to="/contact" replace />} />
-          <Route path="/pages/faqs" element={<Navigate to="/faqs" replace />} />
-          <Route path="/policies/privacy-policy" element={<Navigate to="/privacy" replace />} />
-          <Route path="/policies/terms-of-service" element={<Navigate to="/terms" replace />} />
-          <Route path="/policies/refund-policy" element={<Navigate to="/exchange-return-policy" replace />} />
+          <Route path="/pages/about" element={<KeepQuery to="/about" />} />
+          <Route path="/pages/contact" element={<KeepQuery to="/contact" />} />
+          <Route path="/pages/faqs" element={<KeepQuery to="/faqs" />} />
+          <Route path="/policies/privacy-policy" element={<KeepQuery to="/privacy" />} />
+          <Route path="/policies/terms-of-service" element={<KeepQuery to="/terms" />} />
+          <Route path="/policies/refund-policy" element={<KeepQuery to="/exchange-return-policy" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<ComingSoon />} />
         </Routes>

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { trackPageView, trackPixel } from "@/lib/pixel";
+import { setAdMatchEmail, trackPageView, trackPixel } from "@/lib/pixel";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Global Meta Pixel wiring:
@@ -11,6 +12,13 @@ import { trackPageView, trackPixel } from "@/lib/pixel";
  */
 const PixelEvents = () => {
   const { pathname, search } = useLocation();
+  const { user, profile } = useAuth();
+
+  /* Advanced matching: only for a signed-in member who accepted it, and the
+     address is hashed in the browser before it goes anywhere. */
+  useEffect(() => {
+    void setAdMatchEmail(profile?.ad_matching_consent ? user?.email : null);
+  }, [user?.email, profile?.ad_matching_consent]);
 
   // The very first PageView is fired by the inline snippet in index.html.
   const firstRender = useRef(true);

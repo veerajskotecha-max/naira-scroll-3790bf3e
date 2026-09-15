@@ -348,6 +348,17 @@ const JewelDetail = () => {
     }
   };
 
+  /* Sold-out pieces take pre-orders: try the cart first, and if Shopify
+     refuses the variant, fall back to a WhatsApp reservation. */
+  const handlePreOrder = async () => {
+    try {
+      await addToCart();
+      setDrawerOpen(true);
+    } catch {
+      window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
+    }
+  };
+
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
@@ -720,11 +731,11 @@ const JewelDetail = () => {
                     })}
                   </div>
                   <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
-                    {selectedSize === "6"
-                      ? isAdjustableRing(piece.handle)
-                        ? `US 6 is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
-                        : "US 6 is in stock and ships now."
-                      : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                    {adjustable
+                      ? `US ${selectedSize} is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
+                      : selectedSize === "6"
+                        ? "US 6 is in stock and ships now."
+                        : `US ${selectedSize} is a pre-order — 45 days delivery.`}
                   </p>
 
                 </>

@@ -321,6 +321,15 @@ const ShopAll = () => {
         break; // original order
     }
 
+    // Merchandised lead on the default view: Prism Rivière first, unless the
+    // shopper picked a sort or a category of their own.
+    if (sortValue === "newest" && selectedCategories.length === 0) {
+      const lead = result.filter((p) => p.handle === PRISM_RIVIERE_HANDLE);
+      if (lead.length > 0) {
+        result = [...lead, ...result.filter((p) => p.handle !== PRISM_RIVIERE_HANDLE)];
+      }
+    }
+
     return result;
   }, [allProducts, selectedCategories, priceRange, selectedSizes, selectedAvailability, sortValue]);
 

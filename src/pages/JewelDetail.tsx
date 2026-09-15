@@ -856,7 +856,7 @@ const JewelDetail = () => {
               ))}
             </dl>
 
-            <div className="mt-4">
+            <div className="mt-4 hidden md:block">
               <PincodeChecker />
             </div>
 

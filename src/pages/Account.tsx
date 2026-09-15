@@ -103,7 +103,7 @@ const Account = () => {
   const [orders, setOrders] = useState<MemberOrder[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
-  const [form, setForm] = useState({ full_name: "", phone: "", birthday: "", city: "" });
+  const [form, setForm] = useState({ full_name: "", phone: "", birthday: "", city: "", ads: false });
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth", { replace: true });
@@ -115,6 +115,7 @@ const Account = () => {
       phone: profile?.phone ?? "",
       birthday: profile?.birthday ?? "",
       city: profile?.city ?? "",
+      ads: Boolean(profile?.ad_matching_consent),
     });
   }, [profile]);
 
@@ -148,7 +149,9 @@ const Account = () => {
       phone: form.phone.trim().slice(0, 20) || null,
       birthday: form.birthday || null,
       city: form.city.trim().slice(0, 60) || null,
-    });
+      ad_matching_consent: form.ads,
+      ad_matching_consent_at: form.ads ? new Date().toISOString() : null,
+    } as never);
     setSaving(false);
     setSavedNote(error ? "Could not save, please try again." : "Saved.");
     if (!error) await refreshProfile();

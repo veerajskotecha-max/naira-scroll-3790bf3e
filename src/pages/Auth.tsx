@@ -173,6 +173,21 @@ const Auth = () => {
               className={field}
               style={jost}
             />
+            {mode === "signup" && (
+              <label className="flex cursor-pointer items-start gap-3 pt-1 text-left" style={jost}>
+                <input
+                  type="checkbox"
+                  checked={adConsent}
+                  onChange={(e) => setAdConsent(e.target.checked)}
+                  className="mt-[3px] h-[14px] w-[14px] accent-[#B0843A]"
+                />
+                <span className="text-[11px] leading-[1.6] text-[#1A1614]/60">
+                  Show me Naira Flore pieces on social media. Your email is scrambled before it leaves
+                  this site and shared with Meta only to match you. You can turn this off any time in
+                  your account.
+                </span>
+              </label>
+            )}
             {error && (
               <p className="text-[11px] text-[#A44A34]" style={jost}>
                 {error}

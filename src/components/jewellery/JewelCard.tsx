@@ -285,7 +285,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         {/* Two-line clamp keeps every card in a row the same height, so the
             price and CTAs line up across the grid instead of staggering. */}
         <h3
-          className="mt-1.5 line-clamp-2 min-h-[2.2em] text-[18px] leading-tight text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]"
+          className="mt-1.5 line-clamp-2 h-[2.4em] overflow-hidden text-[18px] leading-[1.2] text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]"
           style={velista}
         >
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>

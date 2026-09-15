@@ -169,7 +169,6 @@ const GoldenHourEdit = () => {
           pieces={inCategory}
           value={activeFilters}
           onChange={setFilters}
-          resultCount={pieces.length}
         />
 
         {/* grid */}

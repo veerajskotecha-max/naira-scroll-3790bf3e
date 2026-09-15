@@ -184,7 +184,6 @@ const Jewellery = () => {
           pieces={inCategory}
           value={activeFilters}
           onChange={setFilters}
-          resultCount={pieces.length}
         />
 
 

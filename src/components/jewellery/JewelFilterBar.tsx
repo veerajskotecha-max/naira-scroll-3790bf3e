@@ -79,7 +79,6 @@ const JewelFilterBar = ({
   pieces: JewelPiece[];
   value: JewelFilters;
   onChange: (next: JewelFilters) => void;
-  resultCount?: number;
 }) => {
   const [open, setOpen] = useState(false);
   const tags = useMemo(() => collectTags(pieces), [pieces]);

@@ -42,7 +42,7 @@ const customerPhotos = [reviewAshley, reviewTaneesha, reviewNabby];
    every product page, ahead of the curated and one-line notes. */
 const realReviews: Review[] = [
   {
-    name: "Arya",
+    name: "Khushi",
     initials: "A",
     verified: true,
     rating: 5,

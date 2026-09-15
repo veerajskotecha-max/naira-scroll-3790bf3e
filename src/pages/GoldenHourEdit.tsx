@@ -86,14 +86,6 @@ const GoldenHourEdit = () => {
     setSearchParams(params, { replace: true });
   };
 
-  const filterCounts = useMemo(
-    () =>
-      filters.reduce((acc, f) => {
-        acc[f] = f === "All" ? edit.length : edit.filter((p) => p.category === f).length;
-        return acc;
-      }, {} as Record<"All" | JewelCategory, number>),
-    [edit]
-  );
   const inCategory = useMemo(
     () => (active === "All" ? edit : edit.filter((p) => p.category === active)),
     [active, edit]
@@ -132,25 +124,22 @@ const GoldenHourEdit = () => {
         <div className="mx-auto mt-6 flex max-w-6xl justify-center px-4 sm:px-6">
           <div className="inline-flex border border-nf-ink/25">
             {([
-              { key: "edit", label: "THE GOLDEN HOUR", n: curated.length },
-              { key: "all", label: "ALL PIECES", n: jewellery.length },
+              { key: "edit", label: "THE GOLDEN HOUR" },
+              { key: "all", label: "ALL PIECES" },
             ] as const).map((o) => (
               <button
                 key={o.key}
                 type="button"
                 onClick={() => setView(o.key)}
                 aria-pressed={showAll ? o.key === "all" : o.key === "edit"}
-                className={`press-scale inline-flex min-h-[42px] items-baseline gap-1.5 px-4 text-[10px] tracking-nf-18 transition-colors sm:px-6 sm:text-[10.5px] ${
+                className={`press-scale inline-flex min-h-[42px] items-center px-4 text-[10px] tracking-nf-18 transition-colors sm:px-6 sm:text-[10.5px] ${
                   (showAll ? o.key === "all" : o.key === "edit")
                     ? "bg-nf-ink text-nf-ivory"
                     : "text-nf-ink/60 hover:text-nf-ink"
                 }`}
                 style={jost}
               >
-                <span className="self-center">{o.label}</span>
-                <span aria-hidden className="self-center text-[9px] opacity-60">
-                  {o.n}
-                </span>
+                {o.label}
               </button>
             ))}
           </div>
@@ -164,19 +153,12 @@ const GoldenHourEdit = () => {
                 key={f}
                 onClick={() => selectCategory(f)}
                 aria-pressed={active === f}
-                aria-label={`${f}, ${filterCounts[f]} ${filterCounts[f] === 1 ? "piece" : "pieces"}`}
-                className={`press-scale shrink-0 inline-flex items-baseline gap-1.5 border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
+                className={`press-scale shrink-0 inline-flex items-center border px-4 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 sm:px-5 sm:text-[11px] sm:tracking-nf-30 ${
                   active === f ? "border-nf-ink bg-nf-ink text-nf-ivory" : "border-nf-ink/25 text-nf-ink/70 hover:border-nf-ink/60"
                 }`}
                 style={jost}
               >
-                <span className="self-center">{f.toUpperCase()}</span>
-                <span
-                  aria-hidden
-                  className={`self-center text-[9px] tracking-nf-8 sm:text-[9.5px] ${active === f ? "text-nf-ivory/60" : "text-nf-ink/40"}`}
-                >
-                  {filterCounts[f]}
-                </span>
+                {f.toUpperCase()}
               </button>
             ))}
           </div>
@@ -187,7 +169,6 @@ const GoldenHourEdit = () => {
           pieces={inCategory}
           value={activeFilters}
           onChange={setFilters}
-          resultCount={pieces.length}
         />
 
         {/* grid */}

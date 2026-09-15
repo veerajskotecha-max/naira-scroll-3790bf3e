@@ -5,20 +5,17 @@ import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, Sparkles, ShieldCheck, ReceiptText, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
+import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
-import CollectionCarousel from "@/components/CollectionCarousel";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import CustomerReviews, { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
-import DetailsTabs from "@/components/product/DetailsTabs";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
-import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
@@ -648,12 +645,9 @@ const JewelDetail = () => {
                   </span>
                 </>
               )}
-              <span className="text-[11px] tracking-[0.06em]" style={{ color: "hsl(0 0% 48%)" }}>
-                inclusive of all taxes
-              </span>
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              MRP inclusive of all taxes · flat ₹150 insured shipping across India
+              Inclusive of taxes · ₹150 insured shipping across India
             </p>
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}
@@ -835,33 +829,12 @@ const JewelDetail = () => {
               </p>
             </div>
 
-            {/* Offers — the coupon hub shoppers expect before they commit */}
+            {/* One useful offer; delivery and assurance are shown once below. */}
             <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
-              <p className="text-[9px] tracking-[0.24em]" style={{ color: "hsl(0 0% 45%)", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-                AVAILABLE OFFERS
+              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
+                <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>NAIRA10</strong>
+                10% off your first order
               </p>
-              <ul className="mt-2 space-y-1.5">
-                {[
-                  { code: "NAIRA10", text: "10% off your first order" },
-                  { code: null, text: "Flat ₹150 insured shipping — anywhere in India, any order size" },
-                  { code: null, text: "2-year plating assurance on all demi-fine pieces" },
-                ].map((o) => (
-                  <li key={o.text} className="flex items-start gap-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                    <span aria-hidden="true" style={{ color: "#B0843A" }}>✦</span>
-                    <span>
-                      {o.code && (
-                        <strong
-                          className="mr-1.5 border px-1.5 py-[1px] text-[10.5px] tracking-[0.1em] font-medium"
-                          style={{ borderColor: "hsl(36 40% 76%)", color: "#8A6A2A" }}
-                        >
-                          {o.code}
-                        </strong>
-                      )}
-                      {o.text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
             </div>
 
             {/* Key facts, at a glance */}
@@ -878,156 +851,40 @@ const JewelDetail = () => {
               ))}
             </dl>
 
-            {/* Availability / delivery badge — live from Shopify */}
-            <div className="flex items-center gap-2 mt-3">
-              {soldOut ? (
-                <>
-                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(0 65% 50%)" }} />
-                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(0 65% 42%)" }}>
-                    Sold Out
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="inline-block w-[7px] h-[7px] rounded-full" style={{ backgroundColor: "hsl(142 50% 40%)" }} />
-                  <span className="text-[12px] uppercase tracking-[0.12em] font-medium" style={{ color: "hsl(142 50% 30%)" }}>
-                    In Stock
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-2 mt-5 py-3 border-y" style={{ borderColor: "hsl(0 0% 90%)" }}>
-              {[
-                { icon: Sparkles, label: "Anti-Tarnish Sealed" },
-                { icon: ShieldCheck, label: "18k Demi-Gold" },
-                { icon: ReceiptText, label: "Secure Payments" },
-              ].map(({ icon: Icon, label }) => (
-                <div key={label} className="flex flex-col items-center gap-1.5 text-center">
-                  <Icon size={16} strokeWidth={1.4} style={{ color: "hsl(186 35% 28%)" }} />
-                  <span className="text-[10px] uppercase tracking-[0.1em] leading-tight" style={{ color: "hsl(0 0% 30%)" }}>{label}</span>
-                </div>
-              ))}
-            </div>
-
             <div className="mt-4">
               <PincodeChecker />
             </div>
 
-
-
-            {/* Jewellery assurances */}
-            <JewelTrustStrip />
-
-            {/* Policy links */}
-            <div className="flex items-center justify-center gap-4 mt-3">
-              <Link to="/exchange-return-policy" className="inline-flex items-center min-h-[44px] font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>Exchange &amp; Return Policy</Link>
-              <span className="text-[10px]" style={{ color: "hsl(0 0% 75%)" }}>|</span>
-              <Link to="/faqs" className="inline-flex items-center min-h-[44px] font-cormorant text-[12px] tracking-[0.02em] underline underline-offset-4" style={{ color: "hsl(0 0% 45%)" }}>FAQs</Link>
-            </div>
-
             <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
-            {/* Details tabs */}
+            {/* Compact product information: one source for each buying fact. */}
             <div id="product-material-details" />
-
-            <DetailsTabs
-              tabs={[
-                {
-                  id: "details",
-                  label: "Details",
-                  content: (
-                    <div className="space-y-3">
-                      <p className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{piece.blurb}</p>
-                      {piece.details?.length ? (
-                        <dl className="space-y-1">
-                          {piece.details.map((spec) => {
-                            const at = spec.indexOf(":");
-                            // A spec that lost its label still gets shown, just unlabelled.
-                            if (at < 0) return (
-                              <dd key={spec} className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>{spec}</dd>
-                            );
-                            return (
-                              <div key={spec} className="flex flex-col gap-0.5 sm:flex-row sm:gap-3">
-                                <dt
-                                  className="shrink-0 pt-[3px] text-[10px] uppercase tracking-[0.14em] sm:w-[92px]"
-                                  style={{ color: "#9A7634" }}
-                                >
-                                  {spec.slice(0, at)}
-                                </dt>
-                                <dd className="text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
-                                  {spec.slice(at + 1).trim()}
-                                </dd>
-                              </div>
-                            );
-                          })}
-                        </dl>
-                      ) : null}
-                      {piece.stylingTip && (
-                        <p className="text-[12.5px] leading-[1.7]" style={{ color: "hsl(0 0% 40%)" }}>
-                          <span className="uppercase tracking-[0.14em] text-[10px] mr-1.5" style={{ color: "#9A7634" }}>Styling tip</span>
-                          {piece.stylingTip}
-                        </p>
-                      )}
-                      <p className="text-[12px] italic leading-[1.7]" style={{ color: "hsl(0 0% 50%)", fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-                        {piece.materials}
-                      </p>
-                    </div>
-                  ),
-                },
-                {
-                  id: "care",
-                  label: "Care",
-                  content: piece.care ? (
-                    <p className="text-[13px] leading-[1.8]" style={{ color: "hsl(0 0% 40%)" }}>{piece.care}</p>
-                  ) : (
-                    <ul className="text-[13px] leading-[1.8] list-disc pl-4" style={{ color: "hsl(0 0% 40%)" }}>
-                      <li>Store in the pouch provided, away from moisture.</li>
-                      <li>Avoid contact with perfume, lotion, and chlorinated water.</li>
-                      <li>Wipe gently with the polishing cloth; re-plating available.</li>
-                    </ul>
-                  ),
-                },
-
-              ]}
-            />
-
-            <div className="my-5" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
-
-            {/* Accordions */}
             <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="info" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AtelierAccordionTrigger>Materials</AtelierAccordionTrigger>
-                <AccordionContent><p className="text-[13px] leading-[1.7] pb-2" style={{ color: "hsl(0 0% 45%)" }}>{piece.materials}</p></AccordionContent>
+              <AccordionItem value="details" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Product Details</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 pb-2 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <p>{piece.blurb}</p>
+                    {piece.details?.map((spec) => <p key={spec}>• {spec}</p>)}
+                    <p>{piece.materials}</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="care" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Care &amp; Plating Assurance</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-1.5 pb-2 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <p>{piece.care ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
+                    <p>Covered by our 2-year plating assurance.</p>
+                  </div>
+                </AccordionContent>
               </AccordionItem>
               <AccordionItem value="delivery" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AtelierAccordionTrigger>Delivery Timelines</AtelierAccordionTrigger>
+                <AtelierAccordionTrigger>Delivery &amp; Returns</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• {PREORDER_NOTE}</p>
-                    <p>• Flat ₹150 shipping across India, insured in transit.</p>
-                    <p>• Enter your pincode above for a dated delivery estimate.</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="disclaimer" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AtelierAccordionTrigger>Disclaimer</AtelierAccordionTrigger>
-                <AccordionContent>
-                  <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• Each piece carries gentle variation, part of its character.</p>
-                    <p>• Stone tone may vary slightly from screen colours.</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="additional" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <AtelierAccordionTrigger>Additional Information</AtelierAccordionTrigger>
-                <AccordionContent>
-                  <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>• WhatsApp / WhatsApp Call: <span className="font-semibold" style={{ color: "hsl(0 0% 20%)" }}>+91 9561557935</span></p>
-                    <p>• Manufactured and marketed by Naira Flore</p>
-                    <p>• Address: Flat 7, Veeraj Blossom, Karanyogi Nagar, Maharashtra – 422002</p>
+                    <p>{PREORDER_NOTE} Flat ₹150 insured shipping across India.</p>
+                    <p>7-day returns apply. <Link to="/exchange-return-policy" className="underline underline-offset-4">Read policy</Link></p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -1093,8 +950,6 @@ const JewelDetail = () => {
           </div>
         </div>
       </section>
-
-      <CollectionCarousel excludeHandle={piece?.handle} />
 
       <RecentlyViewed
         current={

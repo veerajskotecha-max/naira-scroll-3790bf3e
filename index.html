@@ -41,6 +41,39 @@
          page to go idle (or the first interaction, whichever comes first). No
          events are lost, including PageView. -->
     <script>
+      /* Anonymous first-party visitor id, written before fbq init so advanced
+         matching (external_id) is attached to every event including the first
+         PageView. Random opaque value only — never personal data. Mirrored in
+         src/lib/visitorId.ts, which reads the same cookie. */
+      (function(){
+        try {
+          var m = document.cookie.match(/(?:^|; )naira_vid=([^;]*)/);
+          var id = m ? decodeURIComponent(m[1]) : '';
+          if (!id) {
+            id = (window.crypto && crypto.randomUUID)
+              ? crypto.randomUUID()
+              : 'v-' + Date.now().toString(16) + '-' + Math.random().toString(16).slice(2);
+            document.cookie = 'naira_vid=' + encodeURIComponent(id) +
+              '; path=/; max-age=63072000; SameSite=Lax' +
+              (location.protocol === 'https:' ? '; Secure' : '');
+          }
+          window.__nairaVid = id;
+
+          /* Ad click id. fbevents.js normally writes _fbc from ?fbclid=, but it
+             is deferred here until idle/first interaction — a shopper who
+             bounces before that leaves no click id at all. Writing the standard
+             fb.1.<ts>.<fbclid> value ourselves makes capture immediate; the
+             pixel reuses an existing cookie rather than overwriting it. */
+          var fbclid = new URLSearchParams(location.search).get('fbclid');
+          if (fbclid && !/(?:^|; )_fbc=/.test(document.cookie)) {
+            document.cookie = '_fbc=fb.1.' + Date.now() + '.' + fbclid +
+              '; path=/; max-age=7776000; SameSite=Lax' +
+              (location.protocol === 'https:' ? '; Secure' : '');
+          }
+        } catch (e) { /* cookies blocked — events simply carry no external_id */ }
+      })();
+    </script>
+    <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -49,7 +82,8 @@
       t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1232524215695667');
+      fbq('init', '1232524215695667',
+        window.__nairaVid ? { external_id: window.__nairaVid } : undefined);
       fbq('track', 'PageView');
       (function(){
         var go = function(){ window.__fbLoad(); };

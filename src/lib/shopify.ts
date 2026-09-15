@@ -1,3 +1,5 @@
+import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
+
 export const SHOPIFY_API_VERSION = "2025-07";
 export const SHOPIFY_STORE_PERMANENT_DOMAIN = "nc5eti-gp.myshopify.com";
 export const SHOPIFY_STOREFRONT_URL = `https://${SHOPIFY_STORE_PERMANENT_DOMAIN}/api/${SHOPIFY_API_VERSION}/graphql.json`;
@@ -453,6 +455,23 @@ export const SIZE_ATTRIBUTE = "Size";
 export const sizeAttributes = (size?: string) =>
   size && size.trim() ? [{ key: SIZE_ATTRIBUTE, value: size.trim() }] : [];
 
+/**
+ * Cart-level attributes that travel with the order into Shopify, so the
+ * server-side Purchase event can be joined to the same anonymous browsing
+ * session the browser pixel reported (`external_id`) and to the ad click
+ * (`_fbc`). Opaque values only — no personal data.
+ */
+export const trackingCartAttributes = (): Array<{ key: string; value: string }> => {
+  const attrs: Array<{ key: string; value: string }> = [];
+  const vid = getVisitorId();
+  if (vid) attrs.push({ key: "naira_visitor_id", value: vid });
+  const fbc = getFbClickId();
+  if (fbc) attrs.push({ key: "fbc", value: fbc });
+  const fbp = getFbBrowserId();
+  if (fbp) attrs.push({ key: "fbp", value: fbp });
+  return attrs;
+};
+
 type CartLineNode = {
   id: string;
   quantity?: number;
@@ -486,7 +505,10 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
       };
     };
   }>(CART_CREATE_MUTATION, {
-    input: { lines: [{ quantity, merchandiseId: variantId, attributes: sizeAttributes(size) }] },
+    input: {
+      lines: [{ quantity, merchandiseId: variantId, attributes: sizeAttributes(size) }],
+      attributes: trackingCartAttributes(),
+    },
   });
 
   const userErrors = data.data.cartCreate.userErrors;
@@ -512,6 +534,25 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
   Setting it on the cart is unambiguous: the code travels with the cart into
   checkout, and Shopify reports whether it was actually applicable.
 */
+/**
+ * Refreshes the tracking attributes on an existing cart just before checkout.
+ * Carts created before this shipped — or before the shopper clicked the ad —
+ * would otherwise reach Shopify without the visitor id or the click id.
+ */
+export async function updateCartTrackingAttributes(cartId: string): Promise<void> {
+  const attributes = trackingCartAttributes();
+  if (!attributes.length) return;
+  await storefrontApiRequest(
+    `mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!) {
+      cartAttributesUpdate(cartId: $cartId, attributes: $attributes) {
+        cart { id }
+        userErrors { message }
+      }
+    }`,
+    { cartId, attributes }
+  );
+}
+
 export async function applyCartDiscountCodes(
   cartId: string,
   codes: string[]

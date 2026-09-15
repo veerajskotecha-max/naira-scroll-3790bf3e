@@ -8,6 +8,7 @@ import {
   formatCheckoutUrl,
   removeLineFromShopifyCart,
   updateShopifyCartLine,
+  updateCartTrackingAttributes,
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
@@ -325,6 +326,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       })),
       content_type: "product",
     });
+    /* Carry the anonymous visitor id and click id onto the cart so Shopify's
+       server-side Purchase event can be matched back to this session. Never
+       block checkout on it. */
+    if (latest.cartId) {
+      try {
+        await updateCartTrackingAttributes(latest.cartId);
+      } catch (error) {
+        console.error("Could not attach tracking attributes to cart", error);
+      }
+    }
+
     let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));
 
     /* Put the discount on the cart, not just in the query string. ?discount= is

@@ -103,6 +103,11 @@ const routeToFile = (routePath: string) =>
 
 async function renderAll(browser: Browser, routes: SiteRoute[]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+
+  /* Never let the capture browser talk to Meta: its events would be attributed
+     to 127.0.0.1 and its injected config tags would be captured into the HTML.
+     Belt and braces with the strip in clean(). */
+  await page.route(/(facebook\.net|facebook\.com|fbcdn\.net)/i, (r) => r.abort());
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
 

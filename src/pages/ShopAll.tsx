@@ -325,8 +325,15 @@ const ShopAll = () => {
     // shopper picked a sort or a category of their own.
     if (sortValue === "newest" && selectedCategories.length === 0) {
       const lead = result.filter((p) => p.handle === PRISM_RIVIERE_HANDLE);
+      let rest = result.filter((p) => p.handle !== PRISM_RIVIERE_HANDLE);
+      // Products with more photos sell better — richest galleries next.
+      rest = [...rest].sort(
+        (a, b) =>
+          (b.shopifyProduct?.images.edges.length ?? 0) -
+          (a.shopifyProduct?.images.edges.length ?? 0),
+      );
       if (lead.length > 0) {
-        result = [...lead, ...result.filter((p) => p.handle !== PRISM_RIVIERE_HANDLE)];
+        result = [...lead, ...rest];
       }
     }
 

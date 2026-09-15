@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
-import { JEWELLERY_VENDOR } from "@/lib/isJewelleryProduct";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
 /**
  * Overlays LIVE Shopify data (images, price, variant id, availability) on top of
@@ -211,7 +211,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; 
   // file was generated) is built straight from the API so nothing is missing.
   const known = new Set(merged.map((piece) => piece.handle));
   const extras = data
-    .filter((node) => node.vendor?.trim().toLowerCase() === JEWELLERY_VENDOR && !known.has(node.handle))
+    .filter((node) => isJewelleryProduct(node) && !known.has(node.handle))
     .map((node, i) => fromShopify(node, merged.length + i));
 
   const all = [...merged, ...extras];

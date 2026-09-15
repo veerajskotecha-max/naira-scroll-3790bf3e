@@ -57,10 +57,15 @@ const ringSizes: { value: string; label: string; status: "available" | "preorder
   { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
-/** Size list for a specific ring: open-back styles flag US 6 as adjustable. */
+/** Size list for a specific ring: open-back styles adjust to fit, so every
+    size button reads as available — never pre-order, never out of stock. */
 const ringSizesFor = (handle?: string) =>
   isAdjustableRing(handle)
-    ? ringSizes.map((s) => (s.value === "6" ? { ...s, label: "US 6 — Adjustable (fits US 6–8)" } : s))
+    ? ringSizes.map((s) => ({
+        ...s,
+        status: "available" as const,
+        label: s.value === "6" ? "US 6 — Adjustable (fits US 6–8)" : `US ${s.value} — Adjustable fit`,
+      }))
     : ringSizes;
 
 
@@ -284,7 +289,10 @@ const JewelDetail = () => {
 
   const wishlisted = isWishlisted(piece.handle);
   /* Live Shopify stock state, refreshed by useLiveJewel. */
-  const soldOut = piece.availableForSale === false;
+  /* Adjustable open-back rings flex to fit, so they never read as sold out —
+     a low Shopify count just means the next piece is finished to order. */
+  const adjustable = isAdjustableRing(piece.handle);
+  const soldOut = piece.availableForSale === false && !adjustable;
   const keyFacts = deriveKeyFacts(piece);
   /* Same-category pieces lead the recommendations; the atelier's other
      work fills any remaining slots. */

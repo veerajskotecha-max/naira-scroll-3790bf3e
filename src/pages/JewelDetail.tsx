@@ -729,8 +729,9 @@ const JewelDetail = () => {
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
 
 
-            {/* Quantity */}
-            <div className="mt-4">
+            {/* Quantity — desktop only; on a phone it pushes the CTA below the
+                fold and can be changed in the cart. */}
+            <div className="mt-4 hidden md:block">
               <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-2.5" style={{ color: "hsl(0 0% 25%)" }}>Quantity</span>
               <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 80%)" }}>
                 <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="w-11 h-11 flex items-center justify-center hover:bg-muted">
@@ -818,7 +819,7 @@ const JewelDetail = () => {
 
             {/* Delivery + shipping reassurance */}
             <div
-              className="mt-5 flex items-start gap-2 border px-3 py-2.5"
+              className="mt-5 hidden md:flex items-start gap-2 border px-3 py-2.5"
               style={{ borderColor: "hsl(36 40% 80%)", backgroundColor: "hsl(36 60% 96%)" }}
             >
               <Truck size={13} strokeWidth={1.6} className="mt-[2px] shrink-0" style={{ color: "#9A7634" }} />
@@ -830,16 +831,19 @@ const JewelDetail = () => {
               </p>
             </div>
 
-            {/* One useful offer; delivery and assurance are shown once below. */}
-            <div className="mt-3 border px-3 py-3" style={{ borderColor: "hsl(0 0% 88%)" }}>
-              <p className="text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 32%)" }}>
-                <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>NAIRA10</strong>
-                10% off your first order
-              </p>
-            </div>
+            {/* One useful offer; on a phone it is a single line, not a box. */}
+            <p className="mt-3 text-[12px] leading-[1.6] md:border md:px-3 md:py-3" style={{ color: "hsl(0 0% 32%)" }}>
+              <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>NAIRA10</strong>
+              10% off your first order
+            </p>
+
+            {/* Mobile: one compact delivery line instead of the boxes below. */}
+            <p className="mt-3 md:hidden text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 40%)" }}>
+              {arrivesBy ? `Arrives by ${arrivesBy}` : PREORDER_NOTE} · ₹150 insured shipping · 7-day returns
+            </p>
 
             {/* Key facts, at a glance */}
-            <dl className="mt-4 flex flex-wrap gap-2" aria-label="Key facts">
+            <dl className="mt-4 hidden md:flex flex-wrap gap-2" aria-label="Key facts">
               {keyFacts.map((fact) => (
                 <div key={fact.label} className="border px-3 py-1.5" style={{ borderColor: "hsl(36 30% 84%)", backgroundColor: "hsl(33 41% 97%)" }}>
                   <dt className="text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
@@ -852,7 +856,7 @@ const JewelDetail = () => {
               ))}
             </dl>
 
-            <div className="mt-4">
+            <div className="mt-4 hidden md:block">
               <PincodeChecker />
             </div>
 
@@ -889,12 +893,35 @@ const JewelDetail = () => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+              {/* Phone only: pincode check and key facts live inside dropdowns
+                  so the page stays short. */}
+              <AccordionItem value="pincode" className="border-b md:hidden" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Check Delivery Date</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="pb-2">
+                    <PincodeChecker />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="facts" className="border-b md:hidden" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Highlights</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <dl className="pb-2 space-y-1.5 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {keyFacts.map((fact) => (
+                      <div key={fact.label} className="flex gap-2">
+                        <dt style={{ color: "hsl(0 0% 30%)" }}>{fact.label}:</dt>
+                        <dd>{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
 
-            <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+            <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
-            {/* Help */}
-            <div className="w-full">
+            {/* Help — the phone already has WhatsApp in the buttons above. */}
+            <div className="w-full hidden md:block">
               <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-3" style={{ color: "hsl(0 0% 30%)" }}>Need Help?</span>
               <div className="flex flex-col md:flex-row w-full">
                 {[

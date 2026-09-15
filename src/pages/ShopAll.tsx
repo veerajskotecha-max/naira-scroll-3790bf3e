@@ -16,6 +16,7 @@ import Footer from "@/components/Footer";
 import ShopHero from "@/components/shop/ShopHero";
 import CustomizationCTA from "@/components/product/CustomizationCTA";
 import { fetchShopifyProducts } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
 const sizes = ["XS", "S", "M", "L", "XL"];
 
@@ -220,7 +221,11 @@ const ShopAll = () => {
     queryFn: () => fetchShopifyProducts(50),
     staleTime: 1000 * 60 * 5,
   });
-  const allProducts = useMemo(() => shopifyProducts.map(productFromShopify), [shopifyProducts]);
+  // Jewellery-only catalogue — clothing no longer appears in Shop All.
+  const allProducts = useMemo(
+    () => shopifyProducts.filter(isJewelleryProduct).map(productFromShopify),
+    [shopifyProducts],
+  );
   const categories = useMemo(
     () => Array.from(new Set(allProducts.map((product) => product.category).filter(Boolean))),
     [allProducts]

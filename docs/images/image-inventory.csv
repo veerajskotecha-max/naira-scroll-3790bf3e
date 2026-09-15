@@ -1,0 +1,331 @@
+product,handle,jewellery,position,width,height,ratio,is_hero,under_800px,url
+Blush of Dawn,blush-of-dawn,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn.jpg
+Blush of Dawn,blush-of-dawn,False,2,1537,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-of-dawn-0.jpg
+Ethereal Lilac,ethereal-lilac,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac.jpg
+Ethereal Lilac,ethereal-lilac,False,2,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac-0.jpg
+Ethereal Lilac,ethereal-lilac,False,3,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac-1.jpg
+Ethereal Lilac,ethereal-lilac,False,4,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ethereal-lilac-2.jpg
+Royal Enigma,royal-enigma,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma.jpg
+Royal Enigma,royal-enigma,False,2,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma-0.jpg
+Royal Enigma,royal-enigma,False,3,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma-1.jpg
+Royal Enigma,royal-enigma,False,4,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/royal-enigma-2.jpg
+Amber Bloom Set,amber-bloom-set,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set.jpg
+Amber Bloom Set,amber-bloom-set,False,2,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set-0.jpg
+Amber Bloom Set,amber-bloom-set,False,3,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set-1.jpg
+Amber Bloom Set,amber-bloom-set,False,4,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-bloom-set-2.jpg
+Amber Radiance,amber-radiance,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance.jpg
+Amber Radiance,amber-radiance,False,2,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance-0.jpg
+Amber Radiance,amber-radiance,False,3,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance-1.jpg
+Amber Radiance,amber-radiance,False,4,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance-2.jpg
+Amber Radiance,amber-radiance,False,5,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/amber-radiance-3.jpg
+Golden Blossom,golden-blossom,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/golden-blossom.jpg
+Golden Blossom,golden-blossom,False,2,1537,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/golden-blossom-0.jpg
+Golden Blossom,golden-blossom,False,3,1537,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/golden-blossom-1.jpg
+Golden Blossom,golden-blossom,False,4,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/golden-blossom-2.jpg
+Golden Blossom,golden-blossom,False,5,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/golden-blossom-3.jpg
+Midnight Bloom,midnight-bloom,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-bloom.jpg
+Midnight Bloom,midnight-bloom,False,2,1537,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-bloom-0.jpg
+Midnight Bloom,midnight-bloom,False,3,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-bloom-1.jpg
+Midnight Bloom,midnight-bloom,False,4,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-bloom-2.jpg
+Midnight Bloom,midnight-bloom,False,5,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-bloom-3.jpg
+Ivory Whisper Co-ord Set,ivory-whisper-co-ord-set,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ivory-whisper-co-ord-set.jpg
+Ivory Whisper Co-ord Set,ivory-whisper-co-ord-set,False,2,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ivory-whisper-co-ord-set-0.jpg
+Ivory Whisper Co-ord Set,ivory-whisper-co-ord-set,False,3,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ivory-whisper-co-ord-set-1.jpg
+Ivory Whisper Co-ord Set,ivory-whisper-co-ord-set,False,4,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ivory-whisper-co-ord-set-2.jpg
+Ivory Whisper Co-ord Set,ivory-whisper-co-ord-set,False,5,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ivory-whisper-co-ord-set-3.jpg
+Sunset Reverie,sunset-reverie,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sunset-reverie.jpg
+Sunset Reverie,sunset-reverie,False,2,1537,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sunset-reverie-0.jpg
+Sunset Reverie,sunset-reverie,False,3,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sunset-reverie-1.jpg
+Sunset Reverie,sunset-reverie,False,4,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sunset-reverie-2.jpg
+Sunset Reverie,sunset-reverie,False,5,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sunset-reverie-3.jpg
+Lilac Whisper,lilac-whisper,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/lilac-whisper.jpg
+Lilac Whisper,lilac-whisper,False,2,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/lilac-whisper-0.jpg
+Lilac Whisper,lilac-whisper,False,3,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/lilac-whisper-1.jpg
+Lilac Whisper,lilac-whisper,False,4,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/lilac-whisper-2.jpg
+Lilac Whisper,lilac-whisper,False,5,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/lilac-whisper-3.jpg
+Crimson Legacy Set,crimson-legacy-set,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/crimson-legacy-set.jpg
+Crimson Legacy Set,crimson-legacy-set,False,2,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/crimson-legacy-set-0.jpg
+Crimson Legacy Set,crimson-legacy-set,False,3,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/crimson-legacy-set-1.jpg
+Crimson Legacy Set,crimson-legacy-set,False,4,1365,2048,0.67,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/crimson-legacy-set-2.jpg
+Heritage Mosaic,heritage-mosaic,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heritage-mosaic.jpg
+Heritage Mosaic,heritage-mosaic,False,2,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heritage-mosaic-0.jpg
+Heritage Mosaic,heritage-mosaic,False,3,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heritage-mosaic-1.jpg
+Heritage Mosaic,heritage-mosaic,False,4,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heritage-mosaic-2.jpg
+Heritage Mosaic,heritage-mosaic,False,5,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heritage-mosaic-3.jpg
+Heritage Mosaic,heritage-mosaic,False,6,1537,2047,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heritage-mosaic-4.jpg
+Noir Mela,noir-mela,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/noir-mela.jpg
+Noir Mela,noir-mela,False,2,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/noir-mela-0.jpg
+Noir Mela,noir-mela,False,3,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/noir-mela-1.jpg
+Noir Mela,noir-mela,False,4,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/noir-mela-2.jpg
+Tangerine Bloom,tangerine-bloom,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tangerine-bloom.jpg
+Tangerine Bloom,tangerine-bloom,False,2,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tangerine-bloom-0.jpg
+Tangerine Bloom,tangerine-bloom,False,3,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tangerine-bloom-1.jpg
+Tangerine Bloom,tangerine-bloom,False,4,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/tangerine-bloom-2.jpg
+Gulaal Mirage,gulaal-mirage,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/gulaal-mirage.jpg
+Gulaal Mirage,gulaal-mirage,False,2,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/gulaal-mirage-0.jpg
+Gulaal Mirage,gulaal-mirage,False,3,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/gulaal-mirage-1.jpg
+Gulaal Mirage,gulaal-mirage,False,4,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/gulaal-mirage-2.jpg
+Gulaal Mirage,gulaal-mirage,False,5,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/gulaal-mirage-3.jpg
+Midnight Éclat,midnight-eclat,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat.jpg
+Midnight Éclat,midnight-eclat,False,2,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat-0.jpg
+Midnight Éclat,midnight-eclat,False,3,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat-1.jpg
+Midnight Éclat,midnight-eclat,False,4,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat-2.jpg
+Midnight Éclat,midnight-eclat,False,5,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat-3.jpg
+Midnight Éclat,midnight-eclat,False,6,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat-4.jpg
+Midnight Éclat,midnight-eclat,False,7,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/midnight-eclat-5.jpg
+Nocturne Veil,nocturne-veil,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil.jpg
+Nocturne Veil,nocturne-veil,False,2,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil-0.jpg
+Nocturne Veil,nocturne-veil,False,3,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil-1.jpg
+Nocturne Veil,nocturne-veil,False,4,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil-2.jpg
+Nocturne Veil,nocturne-veil,False,5,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/nocturne-veil-3.jpg
+Celeste Bloom,celeste-bloom,False,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/celeste-bloom.jpg
+Celeste Bloom,celeste-bloom,False,2,1536,2048,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/celeste-bloom-0.jpg
+Rivière Eternal Necklace,riviere-eternal-necklace,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg
+Rivière Eternal Necklace,riviere-eternal-necklace,True,2,1280,1714,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-1.jpg
+Rivière Eternal Necklace,riviere-eternal-necklace,True,3,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-eternal-necklace-2.jpg
+Rivière Eternal Necklace,riviere-eternal-necklace,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b3_a6492ca4-26e4-4a64-8b57-72506134c6f5.jpg
+Heartline Paperclip Necklace,heartline-paperclip-necklace,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-0_660f5314-75b0-4ab9-8d78-cfb1bb519987.jpg
+Heartline Paperclip Necklace,heartline-paperclip-necklace,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-1.jpg
+Heartline Paperclip Necklace,heartline-paperclip-necklace,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-2.jpg
+Heartline Paperclip Necklace,heartline-paperclip-necklace,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartline-paperclip-necklace-3.jpg
+Heartline Paperclip Necklace,heartline-paperclip-necklace,True,5,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b13_a87c1294-2b6b-4edf-9165-1050d133780c.jpg
+Bold Nocturne Chain,bold-nocturne-chain,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_202820_ced0ce1b-4902-4f44-96ba-51ad4982a154.png
+Bold Nocturne Chain,bold-nocturne-chain,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_202820_d8c5c163-56ee-43d5-9271-645333345fb2.png
+Bold Nocturne Chain,bold-nocturne-chain,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_2_worn.png
+Bold Nocturne Chain,bold-nocturne-chain,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b8.jpg
+Bold Nocturne Chain,bold-nocturne-chain,True,5,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_3_alt.png
+Pearl Legacy Necklace,pearl-legacy-necklace,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_aec8f93f-574c-4925-8d00-b81adc2858f6.png
+Pearl Legacy Necklace,pearl-legacy-necklace,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_71319de7-6034-4185-9032-43c8e3d44629.png
+Pearl Legacy Necklace,pearl-legacy-necklace,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b4_057a7816-4622-48df-8066-3a93f309a599.jpg
+Serpentine Whisper Chain,serpentine-whisper-chain,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/serpentine-whisper-chain-0_51e2b606-e02d-4389-a9ab-79e1a02faccd.jpg
+Serpentine Whisper Chain,serpentine-whisper-chain,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/serpentine-whisper-chain-3.jpg
+Serpentine Whisper Chain,serpentine-whisper-chain,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b15_65fadc0d-065e-4cfe-9430-79a2df35e005.jpg
+Serpentine Whisper Chain,serpentine-whisper-chain,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3060.png
+Serpentine Whisper Chain,serpentine-whisper-chain,True,5,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/IMG-3059.png
+Marquise Layering Set,marquise-layering-set,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set.jpg
+Marquise Layering Set,marquise-layering-set,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-1.jpg
+Marquise Layering Set,marquise-layering-set,True,3,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-2.jpg
+Marquise Layering Set,marquise-layering-set,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b8_9f3eba87-3d71-45eb-9239-ee310e8dd73e.jpg
+Charm Box Chain,charm-box-chain,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg
+Charm Box Chain,charm-box-chain,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-1.jpg
+Charm Box Chain,charm-box-chain,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b15_e796aad4-30f4-4e68-850d-0147e53faa30.jpg
+Charm Box Chain,charm-box-chain,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-2.jpg
+Charm Box Chain,charm-box-chain,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-4.jpg
+Toggle Link Chain,toggle-link-chain,True,1,896,896,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg
+Toggle Link Chain,toggle-link-chain,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg
+Toggle Link Chain,toggle-link-chain,True,3,640,857,3:4,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-2.jpg
+Toggle Link Chain,toggle-link-chain,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b3_6254fb2d-0604-41e9-8300-e144ba6e2461.jpg
+Baroque Pearl Lariat,baroque-pearl-lariat,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat.jpg
+Baroque Pearl Lariat,baroque-pearl-lariat,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-1.jpg
+Baroque Pearl Lariat,baroque-pearl-lariat,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b10.jpg
+Baroque Pearl Lariat,baroque-pearl-lariat,True,4,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-pearl-lariat-2.jpg
+Baroque Pearl Lariat,baroque-pearl-lariat,True,5,1179,1391,0.85,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2483C5F2-0731-47C6-8A45-369076AFD93A.jpg
+Baroque Pearl Lariat,baroque-pearl-lariat,True,6,1161,1388,0.84,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/1DAA5604-FA4D-4B9E-A3D8-4E16DA8C9A78.jpg
+Petite Pearl Chain,petite-pearl-chain,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain.jpg
+Petite Pearl Chain,petite-pearl-chain,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-0.jpg
+Petite Pearl Chain,petite-pearl-chain,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b2_8432f2b1-bd17-40a1-a3aa-c1227cbc09ae.jpg
+Petite Pearl Chain,petite-pearl-chain,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-1.jpg
+Petite Pearl Chain,petite-pearl-chain,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-2.jpg
+Petite Pearl Chain,petite-pearl-chain,True,6,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pearl-chain-3.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-1.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,3,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-2.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b11.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,5,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-3.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,6,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-4.jpg
+Molten Bloom Hoops,molten-bloom-hoops,True,7,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-bloom-hoops-5.jpg
+Clover Trio Edit,clover-trio-edit,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-0_ed1fda50-33d5-436b-a5c6-3c9133b4bf74.jpg
+Clover Trio Edit,clover-trio-edit,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-1.jpg
+Clover Trio Edit,clover-trio-edit,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b6_4e5bb319-5269-4517-8d42-88721aac06af.jpg
+Clover Trio Edit,clover-trio-edit,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-2.jpg
+Clover Trio Edit,clover-trio-edit,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-3.jpg
+Clover Trio Edit,clover-trio-edit,True,6,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-trio-edit-5.jpg
+Woven Gold Hoops,woven-gold-hoops,True,1,896,896,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg
+Woven Gold Hoops,woven-gold-hoops,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-1.jpg
+Woven Gold Hoops,woven-gold-hoops,True,3,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-2.jpg
+Woven Gold Hoops,woven-gold-hoops,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-3.jpg
+Woven Gold Hoops,woven-gold-hoops,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-4.jpg
+Woven Gold Hoops,woven-gold-hoops,True,6,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b7_4901d496-c260-4092-a6be-a3ae76a35343.jpg
+Verdant Drop Earrings,verdant-drop-earrings,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg
+Verdant Drop Earrings,verdant-drop-earrings,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-1.jpg
+Verdant Drop Earrings,verdant-drop-earrings,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b14.jpg
+Verdant Drop Earrings,verdant-drop-earrings,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-2.jpg
+Verdant Drop Earrings,verdant-drop-earrings,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-3.jpg
+Verdant Drop Earrings,verdant-drop-earrings,True,6,1280,1714,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-drop-earrings-4.jpg
+Ribbon Bow Earrings,ribbon-bow-earrings,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings.jpg
+Ribbon Bow Earrings,ribbon-bow-earrings,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-0.jpg
+Ribbon Bow Earrings,ribbon-bow-earrings,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b1_2af9b1d3-6cff-4b51-ab53-dc5cd136d54b.jpg
+Ribbon Bow Earrings,ribbon-bow-earrings,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-2.jpg
+Ribbon Bow Earrings,ribbon-bow-earrings,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-3.jpg
+Ribbon Bow Earrings,ribbon-bow-earrings,True,6,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bow-earrings-4.jpg
+Textured Gold Hoops,textured-gold-hoops,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg
+Textured Gold Hoops,textured-gold-hoops,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-2.jpg
+Textured Gold Hoops,textured-gold-hoops,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b1_264a714c-92f0-4cd8-9ffe-aa1b6bde8579.jpg
+Textured Gold Hoops,textured-gold-hoops,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-1.jpg
+Textured Gold Hoops,textured-gold-hoops,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-3.jpg
+Textured Gold Hoops,textured-gold-hoops,True,6,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/textured-gold-hoops-4.jpg
+Baguette Arc Hoops,baguette-arc-hoops,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-0_36619557-b91b-4449-99db-9ba31c4eb7e2.jpg
+Baguette Arc Hoops,baguette-arc-hoops,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-2.jpg
+Baguette Arc Hoops,baguette-arc-hoops,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b6.jpg
+Baguette Arc Hoops,baguette-arc-hoops,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-3.jpg
+Baguette Arc Hoops,baguette-arc-hoops,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-4.jpg
+Baguette Arc Hoops,baguette-arc-hoops,True,6,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-arc-hoops-5.jpg
+Filigree Bloom Studs,filigree-bloom-studs,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg
+Filigree Bloom Studs,filigree-bloom-studs,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-2.jpg
+Filigree Bloom Studs,filigree-bloom-studs,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-3.jpg
+Filigree Bloom Studs,filigree-bloom-studs,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b4.jpg
+Filigree Bloom Studs,filigree-bloom-studs,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-4.jpg
+Solitaire Whisper Studs,solitaire-whisper-studs,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs.jpg
+Solitaire Whisper Studs,solitaire-whisper-studs,True,2,1280,1714,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-1.jpg
+Solitaire Whisper Studs,solitaire-whisper-studs,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-2.jpg
+Solitaire Whisper Studs,solitaire-whisper-studs,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-3.jpg
+Solitaire Whisper Studs,solitaire-whisper-studs,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/solitaire-whisper-studs-4.jpg
+Solitaire Whisper Studs,solitaire-whisper-studs,True,6,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b1_264a714c-92f0-4cd8-9ffe-aa1b6bde8579.jpg
+Pearl Drop Studs,pearl-drop-studs,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs.jpg
+Pearl Drop Studs,pearl-drop-studs,True,2,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-1.jpg
+Pearl Drop Studs,pearl-drop-studs,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b9_4b553bfa-6b78-4edd-899c-90bed80a20ee.jpg
+Brushed Gold Huggies,brushed-gold-huggies,True,1,896,896,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg
+Brushed Gold Huggies,brushed-gold-huggies,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-1.jpg
+Brushed Gold Huggies,brushed-gold-huggies,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b3_8c8c1d6c-16fd-4947-840b-4cc7b47a435d.jpg
+Trio Oval Drop Earrings,silver-drop-earrings,True,1,1600,1600,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-0_d7ff0f06-0d36-40d2-b49f-1468ad0edadf.jpg
+Trio Oval Drop Earrings,silver-drop-earrings,True,2,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg
+Trio Oval Drop Earrings,silver-drop-earrings,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b14_cd6a0b93-eae2-4e02-93c3-4d1dcc9fbd74.jpg
+Trio Oval Drop Earrings,silver-drop-earrings,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-2.jpg
+Trio Oval Drop Earrings,silver-drop-earrings,True,5,1280,1714,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-3.jpg
+Pearl Blossom Earrings,pearl-blossom-earrings,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-0_8b601091-c9d3-48bf-baa8-c3bfebb4950c.jpg
+Pearl Blossom Earrings,pearl-blossom-earrings,True,2,1280,1714,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-blossom-earrings-1.jpg
+Pearl Blossom Earrings,pearl-blossom-earrings,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b11_307d6130-39cc-4c70-a261-0aa933fb98db.jpg
+Pearl Point Studs,pearl-point-studs,True,1,640,640,1:1,True,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-3_fd1b8184-0f8a-402e-81ed-0f0f82c0c98c.jpg
+Pearl Point Studs,pearl-point-studs,True,2,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-0.jpg
+Pearl Point Studs,pearl-point-studs,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b15_edfdfe00-1876-4077-ac69-cb84fd35b2be.jpg
+Pearl Point Studs,pearl-point-studs,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-1.jpg
+Pearl Point Studs,pearl-point-studs,True,5,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-2.jpg
+Pearl Point Studs,pearl-point-studs,True,6,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-point-studs-4.jpg
+Rivière of Light Bracelet,riviere-of-light-bracelet,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg
+Rivière of Light Bracelet,riviere-of-light-bracelet,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/riviere-of-light-bracelet-1.jpg
+Rivière of Light Bracelet,riviere-of-light-bracelet,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b12_4327afb0-fa89-46b6-8658-d1bc45945ede.jpg
+Pearl Reverie Bracelet,pearl-reverie-bracelet,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet.jpg
+Pearl Reverie Bracelet,pearl-reverie-bracelet,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-1.jpg
+Pearl Reverie Bracelet,pearl-reverie-bracelet,True,3,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-reverie-bracelet-2.jpg
+Pearl Reverie Bracelet,pearl-reverie-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b6_e118bb77-c292-4510-945c-adba7890cf47.jpg
+Triple Dawn Cuff,triple-dawn-cuff,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff.jpg
+Triple Dawn Cuff,triple-dawn-cuff,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-1.jpg
+Triple Dawn Cuff,triple-dawn-cuff,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b9.jpg
+Triple Dawn Cuff,triple-dawn-cuff,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/triple-dawn-cuff-2.jpg
+Bold Nocturne Bracelet,bold-nocturne-bracelet,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_202820_4655468e-3f43-44d3-a072-b82f1349fc13.png
+Bold Nocturne Bracelet,bold-nocturne-bracelet,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_202820_8f628d11-a37b-4470-9d19-13712dda1c07.png
+Bold Nocturne Bracelet,bold-nocturne-bracelet,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144-BRA_2_worn.png
+Bold Nocturne Bracelet,bold-nocturne-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b14_3d3f7e3b-368b-42e7-929c-1ff5f8fe99b3.jpg
+Baroque Bloom Cuff,baroque-bloom-cuff,True,1,640,640,1:1,True,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-0_80bb0244-7923-4303-a825-653061497716.jpg
+Baroque Bloom Cuff,baroque-bloom-cuff,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-2.jpg
+Baroque Bloom Cuff,baroque-bloom-cuff,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b9_6c176b11-456e-4144-ac53-fb0d9442c93c.jpg
+Baroque Bloom Cuff,baroque-bloom-cuff,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-1.jpg
+Baroque Bloom Cuff,baroque-bloom-cuff,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baroque-bloom-cuff-3.jpg
+Baroque Shell Bracelet,baroque-shell-bracelet,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_c89ac146-44c5-415f-9cbd-fd6af6093299.png
+Baroque Shell Bracelet,baroque-shell-bracelet,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_40637e96-f7ab-4f9d-9813-10d9f4f218b3.png
+Baroque Shell Bracelet,baroque-shell-bracelet,True,3,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_210929_affda4fc-e3c5-448e-b373-6149b12da6ee.png
+Baroque Shell Bracelet,baroque-shell-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b8_0a2363d8-5108-494f-9f71-9c303d0baf62.jpg
+Baroque Shell Bracelet,baroque-shell-bracelet,True,5,640,640,1:1,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/CCDB2655-DB5A-44C7-AF4D-E1191E5652B6.webp
+Baroque Shell Bracelet,baroque-shell-bracelet,True,6,913,902,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender_1eda0489-b5c8-4768-aff8-17701f48560e.jpg
+Baguette Éclat Bracelet,baguette-eclat-bracelet,True,1,640,640,1:1,True,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-0_b190417a-894e-41d0-ba3d-7525aa6d73b5.jpg
+Baguette Éclat Bracelet,baguette-eclat-bracelet,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-1.jpg
+Baguette Éclat Bracelet,baguette-eclat-bracelet,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-2.jpg
+Baguette Éclat Bracelet,baguette-eclat-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b15.jpg
+Baguette Éclat Bracelet,baguette-eclat-bracelet,True,5,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eclat-bracelet-3.jpg
+Blush Station Bracelet,blush-station-bracelet,True,1,640,640,1:1,True,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg
+Blush Station Bracelet,blush-station-bracelet,True,2,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-station-bracelet-1.jpg
+Blush Station Bracelet,blush-station-bracelet,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b5_a82d6651-c6ec-4896-abcd-ab8155641630.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,2,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-2.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-1.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b13.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-3.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,6,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-4.jpg
+Prism Rivière Bracelet,prism-riviere-bracelet,True,7,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-5.jpg
+Heartbead Bracelet,heartbead-bracelet,True,1,640,640,1:1,True,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-0_0b5bf644-b12f-4dac-b3c4-86b40c5b1718.jpg
+Heartbead Bracelet,heartbead-bracelet,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-3.jpg
+Heartbead Bracelet,heartbead-bracelet,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b2.jpg
+Heartbead Bracelet,heartbead-bracelet,True,4,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-1.jpg
+Heartbead Bracelet,heartbead-bracelet,True,5,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-2.jpg
+Heartbead Bracelet,heartbead-bracelet,True,6,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-4.jpg
+Ribbon Bead Bracelet,ribbon-bead-bracelet,True,1,1600,1600,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg
+Ribbon Bead Bracelet,ribbon-bead-bracelet,True,2,640,857,3:4,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-2.jpg
+Ribbon Bead Bracelet,ribbon-bead-bracelet,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-1.jpg
+Ribbon Bead Bracelet,ribbon-bead-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b13_d0feab2f-55ae-4ecf-b48c-ec67b10c1f6e.jpg
+Ribbon Bead Bracelet,ribbon-bead-bracelet,True,5,640,640,1:1,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/ribbon-bead-bracelet-3.jpg
+Cushion Halo Ring,cushion-halo-ring,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-0_5d46c0f5-1847-4550-8d3c-77d72f06b67f.jpg
+Cushion Halo Ring,cushion-halo-ring,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-1.jpg
+Cushion Halo Ring,cushion-halo-ring,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b1.jpg
+Cushion Halo Ring,cushion-halo-ring,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-3.jpg
+Cushion Halo Ring,cushion-halo-ring,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-4.jpg
+Chevron Whisper Ring,chevron-whisper-ring,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-0_c55321a4-4269-49f6-afa0-8025e597ceae.jpg
+Chevron Whisper Ring,chevron-whisper-ring,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-1.jpg
+Chevron Whisper Ring,chevron-whisper-ring,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/chevron-whisper-ring-2.jpg
+Chevron Whisper Ring,chevron-whisper-ring,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b7_ee49a81f-0521-4705-a231-7bfda91ea31f.jpg
+Pearl Ribbon Ring,pearl-ribbon-ring,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-0_cffc36a6-2a0b-4078-bf3d-74090b0bde22.jpg
+Pearl Ribbon Ring,pearl-ribbon-ring,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-1.jpg
+Pearl Ribbon Ring,pearl-ribbon-ring,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-ribbon-ring-2.jpg
+Pearl Ribbon Ring,pearl-ribbon-ring,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b5_69318d2f-ebf3-4456-88c7-9dcca979b938.jpg
+Star Point Band,star-point-band,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band.jpg
+Star Point Band,star-point-band,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-1.jpg
+Star Point Band,star-point-band,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-2.jpg
+Star Point Band,star-point-band,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b7.jpg
+Star Point Band,star-point-band,True,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-3.jpg
+Star Point Band,star-point-band,True,6,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-4.jpg
+Blush Cluster Ring,blush-cluster-ring,True,1,1280,1280,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/blush-cluster-ring-0_07d6fd3b-8ed3-49f6-88ab-cb674a409fcb.jpg
+Blush Cluster Ring,blush-cluster-ring,True,2,1179,1443,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender_e93ba70d-63e0-417c-8979-673905c75fbb.jpg
+Blush Cluster Ring,blush-cluster-ring,True,3,992,1110,0.89,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/FullSizeRender_c57a3223-5863-4b8c-aaea-2bc3752af01f.jpg
+Blush Cluster Ring,blush-cluster-ring,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b9_e2d4ba15-a050-43f8-8a20-a2bb57083da0.jpg
+Rose Verdant Band,rose-verdant-band,True,1,1500,1500,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band.jpg
+Rose Verdant Band,rose-verdant-band,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-2.jpg
+Rose Verdant Band,rose-verdant-band,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b11_7b176220-1a54-4fc3-8325-09a17d314704.jpg
+Rose Verdant Band,rose-verdant-band,True,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-3.jpg
+Rose Verdant Band,rose-verdant-band,True,5,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/rose-verdant-band-4.jpg
+Granule Dome Ring,granule-dome-ring,True,1,1280,1280,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/granule-dome-ring-0_b16739f1-1513-46e1-9a4c-bae0d6a9c53e.jpg
+Granule Dome Ring,granule-dome-ring,True,2,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b4_13fa15c3-8945-4f2b-9e65-bbdc0f0b8160.jpg
+Verdant Eternity Band,verdant-eternity-band,True,1,896,896,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-0_5b5a3c58-f0cf-4657-a580-9cff7067e54a.jpg
+Verdant Eternity Band,verdant-eternity-band,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-1.jpg
+Verdant Eternity Band,verdant-eternity-band,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b5.jpg
+Verdant Eternity Band,verdant-eternity-band,True,4,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-eternity-band-2.jpg
+Verdant Circlet Studs,verdant-circlet-studs,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg
+Verdant Circlet Studs,verdant-circlet-studs,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-3.jpg
+Verdant Circlet Studs,verdant-circlet-studs,True,3,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/verdant-circlet-studs-1.jpg
+Verdant Circlet Studs,verdant-circlet-studs,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b1_2af9b1d3-6cff-4b51-ab53-dc5cd136d54b.jpg
+Halo Curve Ring,halo-curve-ring,True,1,934,944,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/B0DA22CE-47D0-4BA3-9CEF-52C34966BE0C.jpg
+Halo Curve Ring,halo-curve-ring,True,2,1150,1348,0.85,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/4532987C-A2DA-4C8E-A706-E1140E5FF8BD.jpg
+Halo Curve Ring,halo-curve-ring,True,3,743,918,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/CD6A27C9-F249-49BD-8212-54A7EEB03DFF.jpg
+Halo Curve Ring,halo-curve-ring,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b2_a377ca87-4b5d-4c3d-8454-5449fd59524b.jpg
+Vintage Halo Ring,vintage-halo-ring,True,1,1600,1600,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg
+Vintage Halo Ring,vintage-halo-ring,True,2,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-1.jpg
+Vintage Halo Ring,vintage-halo-ring,True,3,640,794,4:5,False,True,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/vintage-halo-ring-3.jpg
+Vintage Halo Ring,vintage-halo-ring,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b3.jpg
+Pavé Dome Ring,silver-dome-ring,True,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg
+Pavé Dome Ring,silver-dome-ring,True,2,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b7_4901d496-c260-4092-a6be-a3ae76a35343.jpg
+Whisper Pavé Band,whisper-pave-band,True,1,1600,1600,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-0_348a2c03-1364-4de3-a95e-fb64c6d8663d.jpg
+Whisper Pavé Band,whisper-pave-band,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-1.jpg
+Whisper Pavé Band,whisper-pave-band,True,3,1600,1986,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/whisper-pave-band-2.jpg
+Whisper Pavé Band,whisper-pave-band,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b9_07608534-6711-4dfb-8c99-8aa240a1b084.jpg
+Petite Pavé Band,petite-pave-band,True,1,1600,1600,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg
+Petite Pavé Band,petite-pave-band,True,2,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/petite-pave-band-1.jpg
+Petite Pavé Band,petite-pave-band,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b14_4f4203e9-c909-4f02-943d-26a63d84874d.jpg
+First Light Set,first-light-set,False,1,1649,1649,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-0_2ac00b30-2c62-45f5-a55b-000ea726002b.jpg
+First Light Set,first-light-set,False,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-1.jpg
+First Light Set,first-light-set,False,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b13_a87c1294-2b6b-4edf-9165-1050d133780c.jpg
+First Light Set,first-light-set,False,4,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-2.jpg
+First Light Set,first-light-set,False,5,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-3.jpg
+First Light Set,first-light-set,False,6,1649,2048,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/first-light-set-4.jpg
+Clover Charm Necklace,clover-charm-necklace,True,1,896,896,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-0_60fd02ce-f2ff-44ce-a275-f30faaf8b350.jpg
+Clover Charm Necklace,clover-charm-necklace,True,2,896,1200,3:4,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/clover-charm-necklace-1.jpg
+Clover Charm Necklace,clover-charm-necklace,True,3,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b1_2bb060d9-6ebe-466b-aabe-e515cf05bba3.jpg
+Lumière Oval Necklace,lumiere-oval-necklace,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211043_3c63d783-9dc6-47e2-be96-6eec3f506709.png
+Lumière Oval Necklace,lumiere-oval-necklace,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211042_f044fba5-4068-477d-bc22-1a24b3d4aa1e.png
+Lumière Oval Necklace,lumiere-oval-necklace,True,3,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211042_8828b64e-a588-46c4-96c3-5cdd2eeff282.png
+Lumière Oval Necklace,lumiere-oval-necklace,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b11_7d9e02fe-e23a-4b44-9137-7d6c15a1fd1f.jpg
+Lumière Oval Bracelet,lumiere-oval-bracelet,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211041_19e84071-ec11-4410-a655-b97d8ba0d656.png
+Lumière Oval Bracelet,lumiere-oval-bracelet,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211041_fc236d1a-b3b6-4bc4-8d96-2c8db3903cdc.png
+Lumière Oval Bracelet,lumiere-oval-bracelet,True,3,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211042_d151cc52-1489-468e-92a7-9a650e29e6b3.png
+Lumière Oval Bracelet,lumiere-oval-bracelet,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b2_8432f2b1-bd17-40a1-a3aa-c1227cbc09ae.jpg
+Serpentine Whisper Chain — Silver,serpentine-whisper-chain-silver,True,1,2048,2048,1:1,True,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211552_60eab886-839f-4492-95a3-042c70cd96b7.png
+Serpentine Whisper Chain — Silver,serpentine-whisper-chain-silver,True,2,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211552_3848381a-9e8a-4a96-acae-c7051d07f8eb.png
+Serpentine Whisper Chain — Silver,serpentine-whisper-chain-silver,True,3,2048,2048,1:1,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_211553_72295b21-0b99-4747-a2b4-e38a92d330a1.png
+Serpentine Whisper Chain — Silver,serpentine-whisper-chain-silver,True,4,1856,2304,4:5,False,False,https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-packaging-b13_844d96c7-320f-45b7-b85c-bbd0c8fe34f1.jpg

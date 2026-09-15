@@ -218,7 +218,9 @@ const ShopAll = () => {
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
   const { data: shopifyProducts = [], isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["shopify-products", "shop-all"],
-    queryFn: () => fetchShopifyProducts(50),
+    // Full catalogue — fetching fewer than the total let clothing crowd out
+    // jewellery pieces before the jewellery-only filter ran.
+    queryFn: () => fetchShopifyProducts(250),
     staleTime: 1000 * 60 * 5,
   });
   // Jewellery-only catalogue — clothing no longer appears in Shop All.

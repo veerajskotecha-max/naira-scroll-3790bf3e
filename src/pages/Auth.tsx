@@ -32,6 +32,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [adConsent, setAdConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -71,8 +72,13 @@ const Auth = () => {
         source: "member-signup",
         userId: data.user?.id ?? null,
       });
-      if (data.user && parsed.data.name) {
-        await supabase.from("profiles").upsert({ id: data.user.id, full_name: parsed.data.name });
+      if (data.user && (parsed.data.name || adConsent)) {
+        await supabase.from("profiles").upsert({
+          id: data.user.id,
+          ...(parsed.data.name ? { full_name: parsed.data.name } : {}),
+          ad_matching_consent: adConsent,
+          ad_matching_consent_at: adConsent ? new Date().toISOString() : null,
+        } as never);
       }
       setBusy(false);
       if (!data.session) {

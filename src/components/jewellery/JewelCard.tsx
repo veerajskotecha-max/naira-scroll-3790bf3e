@@ -198,14 +198,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             decoding="async"
             width={800}
             height={800}
-            /* Only the on-model (person) shots get zoomed so the piece reads
-               big on the body. Earring packshots stay at their natural crop. */
-            style={
-              piece.category === "Necklaces"
-                ? { objectPosition: "center 38%", transform: "scale(1.14)" }
-                : undefined
-            }
-            className="jc-front absolute inset-0 h-full w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
+            /* Every tile uses the exact same square frame and centre crop so a
+               scrolling grid never staggers or shows differently sized pieces. */
+            className="jc-front absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
 
           />
           {altImg && (
@@ -217,14 +212,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
               aria-hidden
               loading="lazy"
               decoding="async"
-              /* Earrings: push into the head/ear area so the worn piece reads. */
-              style={
-                piece.category === "Earrings"
-                  ? { objectPosition: "center 10%", transform: "scale(1.5)" }
-                  : undefined
-              }
-
-              className="jc-back absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+              className="jc-back absolute inset-0 h-full w-full object-cover object-center opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}
 
@@ -297,14 +285,16 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
         {/* Two-line clamp keeps every card in a row the same height, so the
             price and CTAs line up across the grid instead of staggering. */}
         <h3
-          className="mt-1.5 line-clamp-2 min-h-[2.2em] text-[18px] leading-tight text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]"
+          className="mt-1.5 line-clamp-2 h-[2.4em] overflow-hidden text-[18px] leading-[1.2] text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]"
           style={velista}
         >
           <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
         {/* Price: the single most-scanned element on a grid card, so it reads
             at title weight in ink, with the MRP struck through beside it. */}
-        <div className="mt-2 sm:mt-2.5">
+        {/* Fixed-height price row: with or without a struck-through MRP every
+            tile keeps the same height, so rows never stagger while scrolling. */}
+        <div className="mt-2 flex min-h-[30px] w-full items-center justify-center sm:mt-2.5 sm:min-h-[34px]">
           <JewelPriceTag piece={piece} />
         </div>
         {/* Pre-order / delivery wording lives on the product page only. */}

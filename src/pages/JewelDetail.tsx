@@ -20,6 +20,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import ReelPeek from "@/components/reels/ReelPeek";
+import FomoPopup from "@/components/FomoPopup";
 
 
 

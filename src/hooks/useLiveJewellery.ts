@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
-import { JEWELLERY_VENDOR } from "@/lib/isJewelleryProduct";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
 /**
  * Overlays LIVE Shopify data (images, price, variant id, availability) on top of

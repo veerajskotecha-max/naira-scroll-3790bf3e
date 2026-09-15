@@ -161,21 +161,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             height={800}
             /* Every tile uses the exact same square frame and centre crop so a
                scrolling grid never staggers or shows differently sized pieces. */
-            className="jc-front absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
-
+            className="jc-front absolute inset-0 h-full w-full object-cover object-center transition-transform duration-[600ms] ease-out group-hover:scale-[1.04]"
           />
-          {altImg && (
-            <img
-              src={cdn(altImg, 800)}
-              srcSet={`${cdn(altImg, 500)} 500w, ${cdn(altImg, 800)} 800w`}
-              sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
-              alt=""
-              aria-hidden
-              loading="lazy"
-              decoding="async"
-              className="jc-back absolute inset-0 h-full w-full object-cover object-center opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
-            />
-          )}
+
 
 
           {zircone && (

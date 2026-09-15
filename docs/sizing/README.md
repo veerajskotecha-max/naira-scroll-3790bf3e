@@ -23,29 +23,49 @@ The owner's figure of 54 is exactly the live jewellery count.
 
 | | |
 |---|---|
-| Correct as written | 35 |
-| Genuinely wrong | 15 |
+| Correct as written | 38 |
+| Genuinely wrong | 12 |
 | Unclear or trivially fixable | 4 |
 
-The expensive one: **four rings are made in a single fixed US 7 and sold as
-one variant with no size selector** — Cushion Halo, Chevron Whisper, Pearl
-Ribbon, Blush Cluster. Nobody who is not a size 7 can buy them. The supplier
-lists two of these styles in four sizes (`YF5214` in US 6/7/8/9; the `-7` in
-`JDR0303312-7` *is* the size), so the choice exists upstream and is not
-being offered downstream.
+The expensive one is a contradiction, not a gap. Four rings — Cushion Halo,
+Chevron Whisper, Pearl Ribbon, Blush Cluster — state in their Shopify
+listing that they are made in a single fixed US 7 and are *not* adjustable.
+The live PDP (`src/pages/JewelDetail.tsx`) ignores that and renders the same
+ring picker on every ring: **US 6 pre-selected and in stock, US 5 and US 7
+marked 45-day pre-orders.** A shopper who reads the description and takes
+the default buys a size the description says the ring is not made in.
+
+Sizing never becomes a Shopify variant. `JewelDetail` passes the choice as a
+cart **line attribute** (`SIZE_ATTRIBUTE = "Size"` in `src/lib/shopify.ts`),
+so stock is not tracked per size and fulfilment reads it off the line item.
+That is why no jewellery product carries a Size option in Shopify — and why
+auditing Shopify alone gives the wrong answer.
+
+`src/data/ringFit.ts` hard-codes six handles as adjustable and says the set
+was "verified against the live Shopify photography and listing copy for
+every ring". Four check out. **Halo Curve Ring** and **Rose Verdant Band**
+do not — their listings say nothing about size at all, so there was no copy
+to verify against, yet the page tells shoppers they adjust to US 6–8.
 
 Seven SKUs state no length in the Details block or the body copy, and have
 no supplier sheet. Those numbers cannot be recovered from anything available
 here — they need measuring or a note to the manufacturer. No value has been
 guessed for them.
 
-## A correction to the first pass
+## Two corrections to earlier passes
 
 The first run flagged seven rings as contradicting themselves by saying both
 "US 7" and "adjustable". They do not. The actual phrases are "US 7, fixed
 size, not adjustable" and "adjustable around US 7" — a pattern match had
 caught the word inside its own negation. Those seven are counted correct.
-The lesson is the usual one: read the sentence before reporting the match.
+
+The second is larger. The first version of this audit said four rings could
+not be bought by anyone who was not a size 7. That was read from Shopify
+alone, where no jewellery product carries a Size option. But the storefront
+is a React app and it has its own ring picker, so shoppers can and do choose
+a size. Auditing the commerce backend without reading the front end that
+sits in front of it produced a confident, wrong headline. The real defect is
+the opposite one, above.
 
 ## Two corrections that are ready
 

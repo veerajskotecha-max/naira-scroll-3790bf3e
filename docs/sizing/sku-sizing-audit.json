@@ -674,10 +674,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "fixed-no-choice",
+  "status": "copy-vs-picker",
   "sev": "high",
-  "note": "Made only in US 7 and sold as a single variant — no other finger size can buy it.",
-  "fix": null
+  "note": "The listing says this is made only in US 7 and is not adjustable — but the page renders the standard picker, which pre-selects US 6 as in stock and marks US 7 a 45-day pre-order. A shopper who takes the default buys a size the copy says the ring is not made in.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Chevron Whisper Ring",
@@ -692,10 +694,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "fixed-no-choice",
+  "status": "copy-vs-picker",
   "sev": "high",
-  "note": "Made only in US 7 and sold as a single variant — no other finger size can buy it.",
-  "fix": null
+  "note": "The listing says this is made only in US 7 and is not adjustable — but the page renders the standard picker, which pre-selects US 6 as in stock and marks US 7 a 45-day pre-order. A shopper who takes the default buys a size the copy says the ring is not made in.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Cushion Halo Ring",
@@ -710,10 +714,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "fixed-no-choice",
+  "status": "copy-vs-picker",
   "sev": "high",
-  "note": "Made only in US 7 and sold as a single variant — no other finger size can buy it.",
-  "fix": null
+  "note": "The listing says this is made only in US 7 and is not adjustable — but the page renders the standard picker, which pre-selects US 6 as in stock and marks US 7 a 45-day pre-order. A shopper who takes the default buys a size the copy says the ring is not made in.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Granule Dome Ring",
@@ -730,8 +736,10 @@
   "supplier": "",
   "status": "ok",
   "sev": "",
-  "note": "Adjustable — a range covers most buyers.",
-  "fix": null
+  "note": "Listing and page agree: open back, US 6–8.",
+  "fix": null,
+  "pdp_fit": "Adjustable · US 6–8",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Halo Curve Ring",
@@ -744,10 +752,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "no-size",
-  "sev": "high",
-  "note": "No ring size stated anywhere on the page.",
-  "fix": null
+  "status": "unbacked-claim",
+  "sev": "med",
+  "note": "The page states Fit: Adjustable · US 6–8, but this listing says nothing about size at all. ringFit.ts claims the set was verified against listing copy; for this handle there is no copy to verify against.",
+  "fix": null,
+  "pdp_fit": "Adjustable · US 6–8",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Pavé Dome Ring",
@@ -764,8 +774,10 @@
   "supplier": "",
   "status": "ok",
   "sev": "",
-  "note": "Adjustable — a range covers most buyers.",
-  "fix": null
+  "note": "Listing and page agree: open back, US 6–8.",
+  "fix": null,
+  "pdp_fit": "Adjustable · US 6–8",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Pearl Ribbon Ring",
@@ -780,10 +792,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "fixed-no-choice",
+  "status": "copy-vs-picker",
   "sev": "high",
-  "note": "Made only in US 7 and sold as a single variant — no other finger size can buy it.",
-  "fix": null
+  "note": "The listing says this is made only in US 7 and is not adjustable — but the page renders the standard picker, which pre-selects US 6 as in stock and marks US 7 a 45-day pre-order. A shopper who takes the default buys a size the copy says the ring is not made in.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Petite Pavé Band",
@@ -800,8 +814,10 @@
   "supplier": "",
   "status": "ok",
   "sev": "",
-  "note": "Adjustable — a range covers most buyers.",
-  "fix": null
+  "note": "Listing and page agree: open back, US 6–8.",
+  "fix": null,
+  "pdp_fit": "Adjustable · US 6–8",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Rose Verdant Band",
@@ -814,10 +830,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "no-size",
-  "sev": "high",
-  "note": "No ring size stated anywhere on the page.",
-  "fix": null
+  "status": "unbacked-claim",
+  "sev": "med",
+  "note": "The page states Fit: Adjustable · US 6–8, but this listing says nothing about size at all. ringFit.ts claims the set was verified against listing copy; for this handle there is no copy to verify against.",
+  "fix": null,
+  "pdp_fit": "Adjustable · US 6–8",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Star Point Band",
@@ -830,10 +848,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "star-motif band ring, band ~6mm, US 6/7/8/9, gold and steel colourways",
-  "status": "no-size",
-  "sev": "high",
-  "note": "No ring size stated anywhere on the page.",
-  "fix": null
+  "status": "ok",
+  "sev": "",
+  "note": "Page shows Fit: Fixed size; the listing is silent on size but the supplier offers several.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Verdant Eternity Band",
@@ -850,8 +870,10 @@
   "supplier": "",
   "status": "ok",
   "sev": "",
-  "note": "Adjustable — a range covers most buyers.",
-  "fix": null
+  "note": "Listing and page agree: open back, US 6–8.",
+  "fix": null,
+  "pdp_fit": "Adjustable · US 6–8",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Vintage Halo Ring",
@@ -866,10 +888,12 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "ambiguous",
-  "sev": "med",
-  "note": "Says US 7 but never says whether it is fixed or adjustable.",
-  "fix": null
+  "status": "ok",
+  "sev": "",
+  "note": "Listing says US 7 without stating fit; the page shows Fit: Fixed size. Consistent, though the copy could say so outright.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  },
  {
   "title": "Whisper Pavé Band",
@@ -884,9 +908,11 @@
   "adjustable": false,
   "size_option": false,
   "supplier": "",
-  "status": "ambiguous",
-  "sev": "med",
-  "note": "Says US 7 but never says whether it is fixed or adjustable.",
-  "fix": null
+  "status": "ok",
+  "sev": "",
+  "note": "Listing says US 7 without stating fit; the page shows Fit: Fixed size. Consistent, though the copy could say so outright.",
+  "fix": null,
+  "pdp_fit": "Fixed size",
+  "picker": "US 5 (pre-order 45d) · US 6 (in stock, default) · US 7 (pre-order 45d)"
  }
 ]

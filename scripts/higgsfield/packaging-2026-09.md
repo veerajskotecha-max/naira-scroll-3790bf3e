@@ -118,3 +118,41 @@ Re-shot, and why:
 - `naira-packaging-box-contact.jpg`, `naira-packaging-products-contact.jpg`
 
 Assets live in the session scratchpad and are deliberately not committed.
+
+## Placed on Shopify — 15 September 2026
+
+One packaging frame on each of fifteen ACTIVE jewellery product pages, a different
+frame every time, inserted as the third or fourth image so it sits after the hero and
+the first detail shot but before the tail of the gallery.
+
+Uploaded through `stagedUploadsCreate` so the files carry real names
+(`naira-packaging-b1.jpg` and so on) in the Files library rather than generator hashes.
+Every frame went up at its full 1856 × 2304, which is the same 4:5 the catalogue's own
+e-com stills already use, so nothing crops oddly in the gallery. Each carries written
+alt text naming the box and the SKU it ships with.
+
+| Frame | Product | Slot | Media |
+|---|---|---|---|
+| B1 · The stack | Cushion Halo Ring | 3rd of 5 | 37245458940066 |
+| B3 · Silk | Vintage Halo Ring | 4th of 4 | 37245459366050 |
+| B5 · The slat | Verdant Eternity Band | 3rd of 6 | 37245459923106 |
+| B7 · Petals | Star Point Band | 4th of 6 | 37245460185250 |
+| B12 · The mark | Woven Gold Hoops | 3rd of 6 | 37245460545698 |
+| B11 · Travertine | Molten Bloom Hoops | 4th of 7 | 37245465395362 |
+| B14 · Under the veil | Verdant Drop Earrings | 3rd of 6 | 37245465493666 |
+| B4 · Ribbon | Filigree Bloom Studs | 4th of 5 | 37245465723042 |
+| B6 · The water film | Baguette Arc Hoops | 3rd of 6 | 37245466149026 |
+| B13 · In the air | Prism Rivière Bracelet | 4th of 7 | 37245466345634 |
+| B2 · The drawer | Heartbead Bracelet | 3rd of 6 | 37245503144098 |
+| B15 · On its edge | Baguette Éclat Bracelet | 4th of 5 | 37245513990306 |
+| B9 · Tissue | Triple Dawn Cuff | 3rd of 4 | 37245581918370 |
+| B8 · Opening it | Bold Nocturne Chain | 4th of 5 | 37245582147746 |
+| B10 · Closed and open | Baroque Pearl Lariat | 3rd of 6 | 37245582934178 |
+
+All fifteen re-queried after the move and confirmed READY and in the intended slot.
+No product carries more than one packaging image.
+
+Five of the twenty SKUs from the shoot were left out — Blush Cluster Ring, Pearl Blossom
+Earrings, Blush Station Bracelet, Clover Charm Necklace and Lumière Oval Necklace — because
+there are fifteen box frames and no frame was to repeat. Their natural cover is the
+twenty product-in-box frames, which are SKU-specific and still unplaced.

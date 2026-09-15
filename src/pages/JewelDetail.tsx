@@ -893,12 +893,35 @@ const JewelDetail = () => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+              {/* Phone only: pincode check and key facts live inside dropdowns
+                  so the page stays short. */}
+              <AccordionItem value="pincode" className="border-b md:hidden" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Check Delivery Date</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="pb-2">
+                    <PincodeChecker />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="facts" className="border-b md:hidden" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Highlights</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <dl className="pb-2 space-y-1.5 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {keyFacts.map((fact) => (
+                      <div key={fact.label} className="flex gap-2">
+                        <dt style={{ color: "hsl(0 0% 30%)" }}>{fact.label}:</dt>
+                        <dd>{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
 
-            <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+            <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
 
-            {/* Help */}
-            <div className="w-full">
+            {/* Help — the phone already has WhatsApp in the buttons above. */}
+            <div className="w-full hidden md:block">
               <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-3" style={{ color: "hsl(0 0% 30%)" }}>Need Help?</span>
               <div className="flex flex-col md:flex-row w-full">
                 {[

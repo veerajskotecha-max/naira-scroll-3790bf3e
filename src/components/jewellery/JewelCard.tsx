@@ -16,6 +16,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Heart } from "lucide-react";
 import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
+import { isAdjustableRing } from "@/data/ringFit";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
@@ -62,8 +63,10 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     gallery.filter((g) => g !== frontImg)[0] ??
     null;
   const zircone = piece.handle.startsWith("zircone");
-  /* Live Shopify stock state — sold-out pieces stay visible but can't be bought. */
-  const soldOut = piece.availableForSale === false;
+  /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they
+     never read as sold out; other sold-out pieces take pre-orders instead. */
+  const adjustable = isAdjustableRing(piece.handle);
+  const soldOut = piece.availableForSale === false && !adjustable;
 
 
   const toggleWishlist = (e: React.MouseEvent) => {

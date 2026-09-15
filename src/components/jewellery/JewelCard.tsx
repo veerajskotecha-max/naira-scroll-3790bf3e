@@ -186,7 +186,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
       >
         <div
           ref={tiltRef}
-          className="relative overflow-hidden bg-nf-ivory-deep shadow-nf-card transition-transform duration-500 ease-out will-change-transform"
+          className="relative aspect-square w-full overflow-hidden bg-nf-ivory-deep shadow-nf-card transition-transform duration-500 ease-out will-change-transform"
           style={{ transform: "perspective(900px)" }}
         >
           <img
@@ -205,7 +205,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
                 ? { objectPosition: "center 38%", transform: "scale(1.14)" }
                 : undefined
             }
-            className="jc-front aspect-square w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
+            className="jc-front absolute inset-0 h-full w-full object-cover transition-opacity duration-[350ms] ease-out group-hover:opacity-0"
 
           />
           {altImg && (
@@ -224,7 +224,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
                   : undefined
               }
 
-              className="jc-back absolute inset-0 aspect-square w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
+              className="jc-back absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[350ms] ease-out group-hover:opacity-100"
             />
           )}
 

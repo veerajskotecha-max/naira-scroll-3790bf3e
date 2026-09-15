@@ -768,15 +768,14 @@ const JewelDetail = () => {
                 converts better than an outline ghost button. */}
             <div id="product-actions" className="mt-6">
               {soldOut ? (
-                <a
-                  href={sizedEnquiryHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] border transition-colors duration-200 hover:border-[hsl(0_0%_35%)]"
-                  style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
+                <button
+                  onClick={handlePreOrder}
+                  disabled={buying || cartLoading}
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
                 >
-                  <MessageSquare size={13} /> Notify me on WhatsApp
-                </a>
+                  Pre-order Now
+                </button>
               ) : (
                 <button
                   onClick={handleAddToCart}
@@ -787,18 +786,30 @@ const JewelDetail = () => {
                   Add to Cart
                 </button>
               )}
-              <button
-                onClick={handleBuyNow}
-                disabled={soldOut || buying || cartLoading}
-                className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
-              >
-                {soldOut ? "Sold Out" : buying ? "Opening checkout…" : "Shop Now"}
-              </button>
+              {soldOut ? (
+                <a
+                  href={sizedEnquiryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
+                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                >
+                  <MessageSquare size={13} /> Reserve on WhatsApp
+                </a>
+              ) : (
+                <button
+                  onClick={handleBuyNow}
+                  disabled={buying || cartLoading}
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                >
+                  {buying ? "Opening checkout…" : "Shop Now"}
+                </button>
+              )}
 
               <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
                 {soldOut ? (
-                  "This piece is currently sold out — we'll let you know the moment it's back."
+                  "Reserve today — your piece is hand-finished and ships within 2 weeks."
                 ) : (
                   <>
                     {/* 60% of Baymard's subjects looked for the returns policy on the

@@ -193,6 +193,11 @@ const CartDrawer = () => {
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
+              {/* One reassurance line under the button: the last doubt before
+                  the shopper leaves for the payment page. */}
+              <p className="text-center text-[11px] leading-relaxed" style={{ color: "hsl(0 0% 45%)" }}>
+                Delivery in 3–5 working days · ₹150 insured shipping · 7-day returns
+              </p>
               {/* Trust row */}
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 {["UPI", "COD", "VISA", "MC", "RAZORPAY"].map((b) => (

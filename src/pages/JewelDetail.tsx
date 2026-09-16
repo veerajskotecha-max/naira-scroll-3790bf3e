@@ -664,6 +664,11 @@ const JewelDetail = () => {
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
               Inclusive of taxes · ₹150 insured shipping across India
             </p>
+            {/* The delivery + returns promise sits at the buy moment, not only
+                in the footer: it is the last question before Add to Cart. */}
+            <p className="mt-1 text-[12px] font-medium tracking-[0.02em] leading-relaxed" style={{ color: "hsl(186 35% 28%)" }}>
+              Delivery in 3–5 working days · 7-day returns · 2-year plating assurance
+            </p>
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}
 

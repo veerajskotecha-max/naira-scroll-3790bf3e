@@ -16,8 +16,7 @@ import Index from "./pages/Index.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import PixelEvents from "./components/PixelEvents";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
-// a flash on first paint (cursor, film grain, page curtain, scroll bloom).
-import FeatherCursor from "./components/wow/FeatherCursor";
+// a flash on first paint (film grain, page curtain, scroll bloom).
 import FilmGrain from "./components/wow/FilmGrain";
 import ScrollBloom from "./components/wow/ScrollBloom";
 import PageCurtain from "./components/wow/PageCurtain";

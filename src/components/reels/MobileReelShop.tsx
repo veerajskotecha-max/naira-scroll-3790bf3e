@@ -106,6 +106,14 @@ const ReelFrame = ({
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
+  /* A missing/blocked video must never collapse or blank the card: we fall back
+     to the still thumbnail and hide the playback chrome instead. */
+  const [failed, setFailed] = useState(false);
+  const [slow, setSlow] = useState(false);
+
+  /* Poster, else the first tagged product photo — the frame always has an image. */
+  const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? null;
+  const playable = Boolean(reel.videoUrl) && !failed;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -117,6 +125,14 @@ const ReelFrame = ({
     video.muted = muted;
     void video.play().then(() => setPaused(false)).catch(() => undefined);
   }, [active, canLoad, muted]);
+
+  /* Stop spinning forever on a stalled network: after 6s we simply show the
+     still image while the video keeps loading quietly in the background. */
+  useEffect(() => {
+    if (!canLoad || !playable || ready) return;
+    const timer = window.setTimeout(() => setSlow(true), 6000);
+    return () => window.clearTimeout(timer);
+  }, [canLoad, playable, ready]);
 
   const togglePlayback = () => {
     const video = videoRef.current;
@@ -132,21 +148,26 @@ const ReelFrame = ({
     <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
       {/* Poster stays painted underneath, so the frame is never blank while the
           video streams in — and it doubles as the placeholder for inactive reels. */}
-      {reel.posterUrl && (
+      {stillUrl ? (
         <img
-          src={reel.posterUrl}
-          alt=""
-          aria-hidden="true"
+          src={stillUrl}
+          alt={reel.title ?? "Naira Flore reel"}
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
           decoding="async"
         />
+      ) : (
+        <div className="absolute inset-0 bg-muted" aria-hidden="true" />
       )}
-      {canLoad && (
+      {canLoad && playable && (
         <video
           ref={videoRef}
           src={reel.videoUrl}
-          poster={reel.posterUrl ?? undefined}
+          poster={stillUrl ?? undefined}
+          onError={() => {
+            setFailed(true);
+            setReady(false);
+          }}
           className={`relative h-full w-full object-cover transition-opacity duration-500 ${
             ready ? "opacity-100" : "opacity-0"
           }`}
@@ -165,32 +186,37 @@ const ReelFrame = ({
           }}
         />
       )}
-      {/* Soft shimmer + spinner over the poster until the first frame can play. */}
-      {canLoad && !ready && (
+      {/* Soft shimmer + spinner over the still until the first frame can play —
+          it gives up after a few seconds so the thumbnail stays clean. */}
+      {canLoad && playable && !ready && !slow && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25 backdrop-blur-[1px]">
           <span className="absolute inset-0 animate-pulse bg-gradient-to-br from-background/10 via-transparent to-background/10" />
           <span className="h-6 w-6 animate-spin rounded-full border-2 border-background/40 border-t-background" />
         </div>
       )}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
-        <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
-      </div>
-      <button
-        type="button"
-        onClick={togglePlayback}
-        aria-label={paused ? "Play reel" : "Pause reel"}
-        className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
-      >
-        {paused ? <Play size={12} /> : <Pause size={12} />}
-      </button>
-      <button
-        type="button"
-        onClick={() => setMuted((value) => !value)}
-        aria-label={muted ? "Unmute reel" : "Mute reel"}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
-      >
-        {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-      </button>
+      {playable && (
+        <>
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
+            <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
+          </div>
+          <button
+            type="button"
+            onClick={togglePlayback}
+            aria-label={paused ? "Play reel" : "Pause reel"}
+            className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
+          >
+            {paused ? <Play size={12} /> : <Pause size={12} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMuted((value) => !value)}
+            aria-label={muted ? "Unmute reel" : "Mute reel"}
+            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
+          >
+            {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+          </button>
+        </>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
         <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
         {reel.title && <p className="mt-0.5 line-clamp-1 font-cormorant text-[15px] leading-tight">{reel.title}</p>}

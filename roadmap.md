@@ -12,3 +12,4 @@
 - [x] Prevent packaging or gift-box photos from becoming product covers when a listing has only two images
 - [x] Add a continuous press wordmark line below PDP reviews for Times of India, Maharashtra Times, Lokmat, Times Now, and Fashionista
 - [x] Redesign PDP recommendations as a five-piece editorial showcase with one featured piece and four supporting picks
+- [x] Replace mobile PDP recommendations and floating reel with an embedded swipeable Shop the Reel section and three products per reel

@@ -329,11 +329,25 @@ const Jewellery = () => {
             </button>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-16 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
-            {pieces.map((piece, i) => (
-              <JewelCard key={piece.handle} piece={piece} index={i} />
-            ))}
-          </div>
+          <>
+            <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
+              {visiblePieces.map((piece, i) => (
+                <JewelCard key={piece.handle} piece={piece} index={i} />
+              ))}
+            </div>
+            {visibleCount < pieces.length && (
+              <div className="mx-auto flex max-w-6xl justify-center px-4 pt-8 sm:px-6">
+                <button
+                  onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                  className="press-scale border border-nf-ink px-8 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
+                  style={jost}
+                >
+                  SHOW MORE ({pieces.length - visibleCount})
+                </button>
+              </div>
+            )}
+            <div className="pb-16" />
+          </>
         )}
 
         {/* shop by category, after the full grid */}

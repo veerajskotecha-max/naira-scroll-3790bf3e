@@ -147,6 +147,24 @@ const Jewellery = () => {
     return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
   }, [inCategory, activeFilters]);
 
+  /* Paged grid: one tap loads the next twelve. */
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [active, activeFilters]);
+  const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
+
+  /* Six in-stock leads, shown above the filters so the very first screen has a
+     piece, a price and a way to buy. */
+  const bestSellers = useMemo(() => {
+    const inStock = jewellery.filter((p) => p.availableForSale !== false);
+    const leads = FEATURED_LEADS
+      .map((handle) => inStock.find((p) => p.handle === handle))
+      .filter((p): p is (typeof inStock)[number] => Boolean(p));
+    const rest = inStock.filter(
+      (p) => !FEATURED_LEADS.includes(p.handle) && (p.tag === "BESTSELLER" || p.tag === "NEW"),
+    );
+    return [...leads, ...rest].slice(0, 6);
+  }, [jewellery]);
+
   return (
     <>
       <PageSEO

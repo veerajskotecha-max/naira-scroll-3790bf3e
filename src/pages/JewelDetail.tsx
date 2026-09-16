@@ -18,6 +18,7 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+import PressMarquee from "@/components/jewellery/PressMarquee";
 import ReelPeek from "@/components/reels/ReelPeek";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
@@ -961,6 +962,8 @@ const JewelDetail = () => {
       <Suspense fallback={<div className="min-h-[240px] bg-white" aria-hidden="true" />}>
         <CustomerReviews productName={piece.name} variant="jewellery" />
       </Suspense>
+
+      <PressMarquee />
 
       {/* Related jewellery */}
       <section className="py-10 md:py-14" style={{ backgroundColor: "#FBF3EC" }}>

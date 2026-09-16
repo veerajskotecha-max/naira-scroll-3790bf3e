@@ -60,7 +60,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     variantId: variant?.id ?? piece.variantId,
     availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
     image: images[0] ?? piece.image,
-    gallery: images.length ? images : piece.gallery,
+    gallery: coverFirst(piece.handle, images.length ? images : piece.gallery),
     description: normalizeMetalCopy(node.description) || piece.description,
     tags: node.tags?.length ? node.tags : piece.tags,
   };

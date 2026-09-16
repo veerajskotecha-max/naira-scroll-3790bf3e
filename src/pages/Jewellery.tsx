@@ -170,10 +170,10 @@ const Jewellery = () => {
     const leads = FEATURED_LEADS
       .map((handle) => inStock.find((p) => p.handle === handle))
       .filter((p): p is (typeof inStock)[number] => Boolean(p));
-    const rest = inStock.filter(
-      (p) => !FEATURED_LEADS.includes(p.handle) && (p.tag === "BESTSELLER" || p.tag === "NEW"),
-    );
-    return [...leads, ...rest].slice(0, 6);
+    const rest = inStock.filter((p) => !FEATURED_LEADS.includes(p.handle));
+    const tagged = rest.filter((p) => p.tag === "BESTSELLER" || p.tag === "NEW");
+    const others = rest.filter((p) => p.tag !== "BESTSELLER" && p.tag !== "NEW");
+    return [...leads, ...tagged, ...others].slice(0, 6);
   }, [jewellery]);
 
   return (

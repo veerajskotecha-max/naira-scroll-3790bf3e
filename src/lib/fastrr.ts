@@ -114,11 +114,10 @@ export const toFastrrItems = (items: CartItem[]): FastrrItem[] =>
       const variantId = shopifyNumericId(item.variantId) ?? item.variantId;
       if (!variantId) return null;
       return {
-        productId: shopifyNumericId(item.id) ?? variantId,
-        variantId,
+        id: shopifyNumericId(item.id) ?? variantId,
+        variant_id: variantId,
         quantity: item.quantity,
-        title: item.name,
-        variantTitle: item.variantTitle ?? item.size ?? "",
+        title: item.variantTitle || item.size ? `${item.name} — ${item.variantTitle ?? item.size}` : item.name,
         price: Math.round(item.price * FASTRR_PRICE_MULTIPLIER),
         image: item.image,
       } satisfies FastrrItem;

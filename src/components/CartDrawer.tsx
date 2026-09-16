@@ -147,13 +147,15 @@ const CartDrawer = () => {
               className="shrink-0 border-t px-5 pt-3 space-y-2.5 pb-[max(12px,env(safe-area-inset-bottom))]"
               style={{ borderColor: "hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 100%)" }}
             >
-              {/* Delivery */}
+              {/* Delivery — a named date, not a speed. Shoppers buying a gift
+                  stall at checkout to work the days out themselves. */}
               <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
-                  Insured delivery in <strong className="font-semibold">3–5 working days</strong>
+                  Order today, arrives by <strong className="font-semibold">{arrivesBy}</strong>
                 </p>
               </div>
+
               {/* Promo code */}
               <CartPromoField />
 

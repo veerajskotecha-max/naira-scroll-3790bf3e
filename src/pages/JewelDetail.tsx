@@ -620,7 +620,7 @@ const JewelDetail = () => {
                 the price still clears the fold. Baymard surveyed 5,170+ people
                 and found a star average without a count erodes trust, so the
                 count is never rendered without it. */}
-            <div className="hidden md:flex items-center justify-between gap-3 min-h-[26px]">
+            <div className="flex items-center justify-between gap-3 min-h-[26px]">
               <p className="text-[10px] tracking-[0.34em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
                 {piece.category.toUpperCase()} · DEMI-GOLD
               </p>
@@ -667,8 +667,9 @@ const JewelDetail = () => {
             {/* The delivery + returns promise sits at the buy moment, not only
                 in the footer: it is the last question before Add to Cart. */}
             <p className="mt-1 text-[12px] font-medium tracking-[0.02em] leading-relaxed" style={{ color: "hsl(186 35% 28%)" }}>
-              Delivery in 3–5 working days · 7-day returns · 2-year plating assurance
+              {arrivesBy ? `Order today, arrives by ${arrivesBy}` : PREORDER_NOTE} · 7-day returns · 2-year plating assurance
             </p>
+
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}
 
@@ -886,10 +887,12 @@ const JewelDetail = () => {
               10% off your first order
             </p>
 
-            {/* Mobile: one compact delivery line instead of the boxes below. */}
+            {/* Mobile: the arrival date already sits under the price, so this
+                line only repeats the shipping and returns terms. */}
             <p className="mt-3 md:hidden text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 40%)" }}>
-              {arrivesBy ? `Arrives by ${arrivesBy}` : PREORDER_NOTE} · ₹150 insured shipping · 7-day returns
+              ₹150 insured shipping · 7-day returns
             </p>
+
 
             {/* Key facts, at a glance */}
             <dl className="mt-4 hidden md:flex flex-wrap gap-2" aria-label="Key facts">

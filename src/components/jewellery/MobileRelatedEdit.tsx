@@ -77,13 +77,75 @@ const MobileRelatedEdit = ({ current, jewellery }: MobileRelatedEditProps) => {
     return [...sameCategory, ...otherCategories].slice(0, 5);
   }, [current.category, current.handle, jewellery]);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  useScrollDrift(sectionRef);
+
   if (recommendations.length < 5) return null;
 
   const [anchor, high, overlap, wide, tucked] = recommendations;
 
   return (
-    <section className="overflow-hidden border-b border-border bg-background px-4 py-12 md:hidden" aria-labelledby="mobile-related-title">
-      <header className="mb-8 flex flex-col items-center text-center">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden border-b border-border bg-background px-4 py-12 md:hidden"
+      aria-labelledby="mobile-related-title"
+      style={{ ["--nf-drift" as string]: 0 }}
+    >
+      <style>{`
+        @keyframes nf-petal-sway {
+          0%, 100% { transform: translate3d(0,0,0) rotate(var(--nf-rot)); }
+          50% { transform: translate3d(var(--nf-sway), -6px, 0) rotate(calc(var(--nf-rot) + 6deg)); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .nf-related-petal, .nf-related-wash { animation: none !important; }
+        }
+      `}</style>
+
+      {/* hero floral wash, drifting gently with scroll */}
+      <div
+        className="nf-related-wash pointer-events-none absolute inset-0 opacity-[0.10] mix-blend-multiply"
+        aria-hidden
+        style={{
+          backgroundImage: `url(${floralBg})`,
+          backgroundSize: "150% auto",
+          transform: "translate3d(0, calc(var(--nf-drift) * -26px), 0)",
+          willChange: "transform",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 [background:radial-gradient(90%_55%_at_50%_0%,#FFF1E6_0%,transparent_60%),radial-gradient(70%_50%_at_100%_100%,#E5B9A4_0%,transparent_55%)] opacity-60" />
+
+      {/* side petals — float on scroll */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        {sidePetals.map((p, i) => (
+          <div
+            key={i}
+            className="absolute"
+            style={{
+              top: p.top,
+              [p.side]: "-18px",
+              transform: `translate3d(0, calc(var(--nf-drift) * ${p.depth}px), 0)`,
+              willChange: "transform",
+            }}
+          >
+            <svg
+              className="nf-related-petal block"
+              viewBox="0 0 100 34"
+              width={p.w}
+              height={p.w * 0.34}
+              style={{
+                opacity: p.op,
+                ["--nf-rot" as string]: `${p.rot}deg`,
+                ["--nf-sway" as string]: `${p.sway}px`,
+                animation: `nf-petal-sway ${p.dur} ease-in-out ${i * 0.7}s infinite`,
+              }}
+            >
+              <path d="M2,17 C18,2 70,2 98,17 C70,32 18,32 2,17 Z" fill={p.color} />
+            </svg>
+          </div>
+        ))}
+      </div>
+
+      <header className="relative mb-8 flex flex-col items-center text-center">
         <p className="font-sans text-[9px] font-medium uppercase tracking-nf-15 text-primary">Curated for you</p>
         <h2 id="mobile-related-title" className="mt-2 font-cormorant text-[32px] italic leading-none text-foreground">
           You May Also Like

@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { getProductReviews } from "@/data/productReviews";
-import { Star, Camera, X } from "lucide-react";
+import { Star, Camera, ChevronDown, PenLine } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import WriteReviewModal from "@/components/WriteReviewModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -468,7 +467,9 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   const isJewellery = variant === "jewellery";
   const basePhotos = isJewellery ? jewelleryPhotos : customerPhotos;
   const [activeFilter, setActiveFilter] = useState("All Reviews");
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [reviewsExpanded, setReviewsExpanded] = useState(false);
+  const [featuredExpanded, setFeaturedExpanded] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -570,19 +571,10 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   );
 
   // Aggregate is computed from the reviews actually shown, never invented.
-  const { overallRating, totalReviews, ratingBreakdown, maxCount } = useMemo(() => {
+  const overallRating = useMemo(() => {
     const total = localReviews.length;
     const avg = total ? localReviews.reduce((s, r) => s + r.rating, 0) / total : 0;
-    const breakdown = [5, 4, 3, 2, 1].map((stars) => ({
-      stars,
-      count: localReviews.filter((r) => r.rating === stars).length,
-    }));
-    return {
-      overallRating: Math.round(avg * 10) / 10,
-      totalReviews: total,
-      ratingBreakdown: breakdown,
-      maxCount: Math.max(1, ...breakdown.map((b) => b.count)),
-    };
+    return Math.round(avg * 10) / 10;
   }, [localReviews]);
 
   const filteredReviews = useMemo(() => {
@@ -640,101 +632,66 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
     setAnimating(true);
     setTimeout(() => {
       setActiveFilter(filter);
-      setVisibleCount(8);
+      setVisibleCount(4);
       setAnimating(false);
     }, 200);
   };
 
+  const featuredReview = filteredReviews[0] ?? localReviews[0];
+
   return (
-    <section id="customer-reviews" className="max-w-[1200px] mx-auto px-4 pb-20" style={{ scrollMarginTop: "120px" }}>
-      <h2
-        className="font-cormorant text-[28px] md:text-[32px] font-semibold"
-        style={{ color: "hsl(var(--foreground))" }}
-      >
-        Customer Reviews
-      </h2>
-
-      {/* Two-Column Header */}
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        {/* Left Column: Rating Summary + Breakdown */}
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-10">
-            {/* Overall */}
-            <div className="flex flex-col items-start gap-2">
-              <Stars count={5} size={18} />
-              <p className="font-cormorant text-[36px] font-bold" style={{ color: "hsl(var(--foreground))" }}>
-                {overallRating}
-              </p>
-              <p className="text-[13px] font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
-                Based on {totalReviews} reviews
-              </p>
-            </div>
-
-            {/* Breakdown */}
-            <div className="flex-1 max-w-[320px] flex flex-col gap-2.5">
-              {/* The bars are the filter. Baymard found the distribution summary is
-                  the most-used part of a reviews section — relied on more than the
-                  review text itself — and that 90% of users who wanted a particular
-                  rating tried to click the bars, while only 61% of sites let them. */}
-              {ratingBreakdown.map(({ stars, count }) => {
-                const label = `${stars}★`;
-                const active = activeFilter === label;
-                return (
-                  <button
-                    key={stars}
-                    type="button"
-                    disabled={count === 0}
-                    onClick={() => setActiveFilter(active ? "All Reviews" : label)}
-                    aria-pressed={active}
-                    aria-label={`${count} ${stars}-star review${count === 1 ? "" : "s"}${active ? ", showing" : ""}`}
-                    className="flex w-full items-center gap-3 py-1 text-left transition-opacity disabled:cursor-default disabled:opacity-45 enabled:hover:opacity-80"
-                  >
-                    <span
-                      className="text-[13px] w-8 shrink-0 font-medium"
-                      style={{ color: active ? "hsl(186 35% 28%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {stars} ★
-                    </span>
-                    <Progress value={(count / maxCount) * 100} className="h-2.5 flex-1 bg-secondary" />
-                    <span
-                      className="text-[12px] w-8 text-right"
-                      style={{ color: active ? "hsl(186 35% 28%)" : "hsl(var(--muted-foreground))" }}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+    <section id="customer-reviews" className="mx-auto max-w-[1200px] px-4 pb-14 md:pb-20" style={{ scrollMarginTop: "120px" }}>
+      <div className="border-y border-border py-6 md:py-8">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Kind words</p>
+            <h2 className="mt-1 font-cormorant text-[27px] font-semibold text-foreground md:text-[32px]">Customer Reviews</h2>
+          </div>
+          <div className="mb-1 flex items-center gap-2" aria-label={`${overallRating} out of 5 stars`}>
+            <span className="font-cormorant text-[18px] font-semibold text-foreground">{overallRating}</span>
+            <Stars count={5} size={13} />
           </div>
         </div>
 
-        {/* Right Column: Customer Photos + Write Review */}
-        <div className="flex flex-col gap-5">
-          <h3
-            className="font-cormorant text-[18px] font-semibold flex items-center gap-2"
-            style={{ color: "hsl(var(--foreground))" }}
-          >
-            <Camera size={16} /> Customer Photos
-          </h3>
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {photos.map((photo, i) => (
-              <button
-                key={i}
-                onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                className="shrink-0 w-[80px] h-[80px] md:w-[90px] md:h-[90px] overflow-hidden hover:shadow-md transition-all duration-200 hover:scale-105"
-              >
-                <img src={photo} alt={`Customer photo ${i + 1}`} className="w-full h-full object-cover" />
+        {featuredReview && (
+          <article className="mt-6 max-w-2xl">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-secondary text-[10px] font-medium text-secondary-foreground">{featuredReview.initials}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-[12px] font-medium text-foreground">{featuredReview.name}</p>
+                <p className="text-[9px] uppercase tracking-[0.12em] text-primary">{featuredReview.verified ? "Verified Buyer" : "Customer Review"}</p>
+              </div>
+            </div>
+            <p className={`mt-3 font-cormorant text-[15px] italic leading-6 text-muted-foreground ${featuredExpanded ? "" : "line-clamp-3 md:line-clamp-2"}`}>
+              “{featuredReview.text}”
+            </p>
+            {featuredReview.text.length > 150 && (
+              <button type="button" onClick={() => setFeaturedExpanded((value) => !value)} className="mt-2 min-h-11 text-[11px] font-medium underline underline-offset-4 text-foreground">
+                {featuredExpanded ? "Show less" : "Read full review"}
+              </button>
+            )}
+          </article>
+        )}
+
+        <div className="mt-5 flex items-center justify-between gap-4 border-t border-border pt-4">
+          <div className="flex -space-x-2" aria-label="Customer photos">
+            {photos.slice(0, 4).map((photo, i) => (
+              <button key={photo} type="button" onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }} className="h-9 w-9 overflow-hidden rounded-full border-2 border-background" aria-label={`Open customer photo ${i + 1}`}>
+                <img src={photo} alt="" loading="lazy" className="h-full w-full object-cover" />
               </button>
             ))}
           </div>
-          <button
-            onClick={() => setReviewModalOpen(true)}
-            className="mt-2 self-start px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] border border-foreground text-foreground transition-all duration-250 ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
-          >
-            Write a Review
+          <button type="button" onClick={() => setReviewsExpanded((value) => !value)} className="flex min-h-11 items-center gap-2 text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground transition-colors hover:text-foreground" aria-expanded={reviewsExpanded}>
+            {reviewsExpanded ? "Show less" : "View more reviews"}
+            <ChevronDown size={14} className={`transition-transform duration-300 ${reviewsExpanded ? "rotate-180" : ""}`} />
           </button>
         </div>
+
+        <button type="button" onClick={() => setReviewModalOpen(true)} className="mt-4 flex h-11 w-full items-center justify-center gap-2 border border-foreground text-[11px] font-medium uppercase tracking-[0.12em] text-foreground transition-colors hover:bg-foreground hover:text-background md:w-auto md:px-8">
+          <PenLine size={14} /> Write a Review
+        </button>
       </div>
 
       <WriteReviewModal
@@ -754,18 +711,16 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         </DialogContent>
       </Dialog>
 
+      <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${reviewsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!reviewsExpanded}>
+        <div className="overflow-hidden">
       {/* Filters */}
-      <div className="mt-8 flex flex-wrap gap-2.5">
+      <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
         {filters.map((f) => (
           <button
             key={f}
             onClick={() => handleFilterChange(f)}
-            className="px-4 py-2 text-[13px] font-medium border transition-all duration-200"
-            style={{
-              backgroundColor: activeFilter === f ? "hsl(186 35% 28%)" : "transparent",
-              color: activeFilter === f ? "hsl(0 0% 100%)" : "hsl(var(--muted-foreground))",
-              borderColor: activeFilter === f ? "hsl(186 35% 28%)" : "hsl(var(--border))",
-            }}
+            tabIndex={reviewsExpanded ? 0 : -1}
+            className={`shrink-0 border px-3 py-2 text-[11px] font-medium transition-colors ${activeFilter === f ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
           >
             {f}
           </button>
@@ -774,7 +729,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
 
       {/* Review Cards */}
       <div
-        className={`mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 transition-opacity duration-200 ${animating ? "opacity-0" : "opacity-100"}`}
+        className={`mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 transition-opacity duration-200 ${animating ? "opacity-0" : "opacity-100"}`}
       >
         {filteredReviews.length === 0 ? (
           <p className="col-span-full text-center text-[14px] font-cormorant py-10" style={{ color: "hsl(var(--muted-foreground))" }}>
@@ -784,24 +739,20 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
           filteredReviews.slice(0, visibleCount).map((review, i) => (
             <div
               key={`${activeFilter}-${i}`}
-              className="p-5 hover:shadow-md transition-all duration-300 hover:-translate-y-1 animate-fade-in"
-              style={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+              className="border border-border bg-card p-4 animate-fade-in md:p-5"
             >
               <div className="flex items-center gap-3 mb-3">
-                <span className="ml-auto order-last text-[10px] tracking-[0.08em]" style={{ color: "hsl(var(--muted-foreground))" }}>
-                  #{review.no ?? i + 1}
-                </span>
                 <Avatar className="h-9 w-9">
                   <AvatarFallback className="text-[12px] font-medium bg-secondary text-secondary-foreground">
                     {review.initials}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-[14px] font-semibold font-cormorant" style={{ color: "hsl(var(--foreground))" }}>
+                  <p className="text-[14px] font-semibold font-cormorant text-foreground">
                     {review.name}
                   </p>
                   {review.verified && (
-                    <span className="text-[10px] uppercase tracking-[0.08em] font-medium" style={{ color: "hsl(186 35% 28%)" }}>
+                    <span className="text-[10px] uppercase tracking-[0.08em] font-medium text-primary">
                       Verified Buyer
                     </span>
                   )}
@@ -809,9 +760,9 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
               </div>
               <div className="flex items-center justify-between mb-3">
                 <Stars count={review.rating} />
-                <span className="text-[11px]" style={{ color: "hsl(var(--muted-foreground))" }}>{review.date}</span>
+                <span className="text-[11px] text-muted-foreground">{review.date}</span>
               </div>
-              <p className="text-[13px] leading-relaxed font-cormorant" style={{ color: "hsl(var(--muted-foreground))" }}>
+              <p className="line-clamp-4 text-[13px] leading-relaxed font-cormorant text-muted-foreground">
                 "{review.text}"
               </p>
               {review.hasPhotos && review.images.length > 0 && (
@@ -828,15 +779,17 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
 
       {/* Load More */}
       {visibleCount < filteredReviews.length && (
-        <div className="mt-10 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <button
-            onClick={() => setVisibleCount((v) => Math.min(v + 8, filteredReviews.length))}
-            className="px-8 py-3 text-[13px] font-medium uppercase tracking-[0.1em] border-2 border-foreground text-foreground transition-all duration-250 ease-in-out hover:bg-foreground hover:text-background hover:shadow-md hover:-translate-y-[1px]"
+            onClick={() => setVisibleCount((v) => Math.min(v + 4, filteredReviews.length))}
+            className="min-h-11 border border-foreground px-8 text-[11px] font-medium uppercase tracking-[0.1em] text-foreground transition-colors hover:bg-foreground hover:text-background"
           >
-            Load More Reviews
+            View more
           </button>
         </div>
       )}
+        </div>
+      </div>
     </section>
   );
 };

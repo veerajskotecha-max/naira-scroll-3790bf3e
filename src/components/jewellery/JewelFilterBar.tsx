@@ -17,11 +17,13 @@ export const SORT_OPTIONS: Array<{ key: SortKey; label: string }> = [
 export interface JewelFilters {
   sort: SortKey;
   maxPrice: number | null;
+  /** Lower bound, set by the one-tap price bands on the shop page. */
+  minPrice?: number | null;
   inStockOnly: boolean;
   tag: string | null;
 }
 
-export const emptyFilters: JewelFilters = { sort: "featured", maxPrice: null, inStockOnly: false, tag: null };
+export const emptyFilters: JewelFilters = { sort: "featured", maxPrice: null, minPrice: null, inStockOnly: false, tag: null };
 
 /** Style/occasion chips built from whatever Shopify tags the catalogue carries. */
 export const collectTags = (pieces: JewelPiece[]) => {
@@ -44,6 +46,7 @@ export const applyJewelFilters = (pieces: JewelPiece[], f: JewelFilters) => {
   let out = pieces.slice();
   if (f.inStockOnly) out = out.filter((p) => p.availableForSale);
   if (f.maxPrice != null) out = out.filter((p) => p.price <= f.maxPrice!);
+  if (f.minPrice != null) out = out.filter((p) => p.price >= f.minPrice!);
   if (f.tag) out = out.filter((p) => (p.tags ?? []).includes(f.tag!));
 
   switch (f.sort) {

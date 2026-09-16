@@ -664,6 +664,11 @@ const JewelDetail = () => {
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
               Inclusive of taxes · ₹150 insured shipping across India
             </p>
+            {/* The delivery + returns promise sits at the buy moment, not only
+                in the footer: it is the last question before Add to Cart. */}
+            <p className="mt-1 text-[12px] font-medium tracking-[0.02em] leading-relaxed" style={{ color: "hsl(186 35% 28%)" }}>
+              Delivery in 3–5 working days · 7-day returns · 2-year plating assurance
+            </p>
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}
 
@@ -731,7 +736,17 @@ const JewelDetail = () => {
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                    {" "}
+                    <button
+                      type="button"
+                      onClick={() => setSizeGuideOpen(true)}
+                      className="underline underline-offset-4"
+                      style={{ color: "hsl(186 35% 28%)" }}
+                    >
+                      Not sure of your size?
+                    </button>
                   </p>
+
 
                 </>
               ) : (

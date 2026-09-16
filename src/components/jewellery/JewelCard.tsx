@@ -152,11 +152,16 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           style={{ transform: "perspective(900px)" }}
         >
           <img
-            src={cdn(frontImg, 800)}
-            srcSet={`${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 800)} 800w, ${cdn(frontImg, 1100)} 1100w`}
-            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+            src={cdn(frontImg, 500)}
+            /* A tile is ~190 CSS px on a phone. Offering 300/400/500 as well as
+               the retina sizes keeps the grid from pulling 800–1100px renders
+               for a thumbnail — the single biggest weight saving on mobile. */
+            srcSet={`${cdn(frontImg, 300)} 300w, ${cdn(frontImg, 400)} 400w, ${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 700)} 700w, ${cdn(frontImg, 900)} 900w`}
+            sizes="(max-width: 640px) 46vw, (max-width: 1024px) 32vw, 300px"
             alt={piece.name}
-            loading="lazy"
+            /* Only the first screen of tiles loads eagerly. */
+            loading={index < 4 ? "eager" : "lazy"}
+            fetchPriority={index < 2 ? "high" : "auto"}
             decoding="async"
             width={800}
             height={800}

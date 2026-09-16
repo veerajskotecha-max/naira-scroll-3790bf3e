@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { CHECKOUT_DOMAIN } from "@/lib/shopify";
 import floralPattern from "@/assets/floral-pattern-bg.webp";
@@ -27,19 +27,25 @@ const petals = [
 const CartCheckoutRedirect = () => {
   const { token } = useParams<{ token: string }>();
   const { search, pathname } = useLocation();
-
-  useEffect(() => {
+  const [showFallback, setShowFallback] = useState(false);
+  const checkoutTarget = useMemo(() => {
     const fallbackToken = pathname.split("/").filter(Boolean).pop();
     const checkoutToken = token || fallbackToken;
-    if (!checkoutToken) {
+    if (!checkoutToken) return null;
+    const params = new URLSearchParams(search);
+    params.set("channel", "online_store");
+    return `https://${CHECKOUT_DOMAIN}/checkouts/cn/${checkoutToken}?${params.toString()}`;
+  }, [pathname, search, token]);
+
+  useEffect(() => {
+    if (!checkoutTarget) {
       window.location.replace("/");
       return;
     }
-    const params = new URLSearchParams(search);
-    params.set("channel", "online_store");
-    const target = `https://${CHECKOUT_DOMAIN}/checkouts/cn/${checkoutToken}?${params.toString()}`;
-    window.location.replace(target);
-  }, [token, search, pathname]);
+    const fallbackTimer = window.setTimeout(() => setShowFallback(true), 3000);
+    window.location.replace(checkoutTarget);
+    return () => window.clearTimeout(fallbackTimer);
+  }, [checkoutTarget]);
 
   return (
     <main className="relative min-h-[100dvh] overflow-hidden bg-[var(--nf-surface)] text-[var(--nf-text)]">
@@ -121,6 +127,19 @@ const CartCheckoutRedirect = () => {
         <div className="mt-8 h-px w-24 overflow-hidden bg-[color:rgb(var(--nf-ink-rgb)/0.12)]">
           <span className="checkout-progress block h-full w-full origin-center bg-[var(--nf-accent-strong)] [animation:checkout-breathe_1.4s_ease-in-out_infinite]" />
         </div>
+        {showFallback && checkoutTarget && (
+          <div className="mt-8">
+            <a
+              href={checkoutTarget}
+              className="inline-flex min-h-[48px] items-center justify-center border border-[var(--nf-text)] px-7 font-sans text-[11px] uppercase tracking-[0.16em]"
+            >
+              Continue to secure checkout
+            </a>
+            <a href="/jewellery" className="mt-3 flex min-h-[44px] items-center justify-center font-sans text-[11px] underline underline-offset-4">
+              Return to jewellery
+            </a>
+          </div>
+        )}
       </div>
     </main>
   );

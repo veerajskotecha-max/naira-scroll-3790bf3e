@@ -202,7 +202,11 @@ const FilterSidebar = ({
   </div>
 );
 
+/* One screen-and-a-bit of pieces, then "Show more". */
+const SHOP_PAGE_SIZE = 12;
+
 /* ───── Main Page ───── */
+
 const ShopAll = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -216,6 +220,8 @@ const ShopAll = () => {
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
+  const [visibleCount, setVisibleCount] = useState(SHOP_PAGE_SIZE);
+
   const { data: shopifyProducts = [], isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["shopify-products", "shop-all"],
     // Full catalogue — fetching fewer than the total let clothing crowd out

@@ -21,6 +21,7 @@ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import ReelPeek from "@/components/reels/ReelPeek";
 import MobileReelShop from "@/components/reels/MobileReelShop";
+import MobileRelatedEdit from "@/components/jewellery/MobileRelatedEdit";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 
@@ -962,6 +963,8 @@ const JewelDetail = () => {
       <PressMarquee />
 
       <MobileReelShop />
+
+      <MobileRelatedEdit current={piece} jewellery={jewellery} />
 
       {!isMobile && <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />}
       

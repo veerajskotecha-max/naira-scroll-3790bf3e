@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { setAdMatchIdentity, trackPageView, trackPixel } from "@/lib/pixel";
+import { tagClaritySession } from "@/lib/clarity";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
@@ -23,6 +24,13 @@ const PixelEvents = () => {
       consented ? { email: user?.email, phone: profile?.phone } : null
     );
   }, [consented, user?.email, profile?.phone]);
+
+  /* Clarity session tags. Clarity and Meta never exchange data; these stamp the
+     recording with the same ids the Meta events carry, so a session can be
+     found from a campaign or click id. Inert until the Clarity snippet loads. */
+  useEffect(() => {
+    tagClaritySession({ signedIn: Boolean(user) });
+  }, [user]);
 
   // The very first PageView is fired by the inline snippet in index.html.
   const firstRender = useRef(true);

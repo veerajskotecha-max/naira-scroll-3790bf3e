@@ -12,6 +12,7 @@ import {
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
+import { setClarityTag } from "@/lib/clarity";
 
 export interface CartItem {
   id: string;
@@ -326,6 +327,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       })),
       content_type: "product",
     });
+    /* Clarity stops at our domain — Shopify's checkout is another origin we
+       cannot instrument on this plan. Tagging the handoff is what makes the
+       two halves separable: sessions that reached payment vs sessions that
+       never did. */
+    setClarityTag("reached_checkout", "yes");
+    setClarityTag("checkout_value", String(Math.round(value)));
     /* Carry the anonymous visitor id and click id onto the cart so Shopify's
        server-side Purchase event can be matched back to this session. Never
        block checkout on it. */

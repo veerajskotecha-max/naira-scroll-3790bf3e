@@ -215,47 +215,62 @@ const MobileReelShop = () => {
   if (enabled && !isLoading && reels.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-12 md:hidden" aria-labelledby="shop-reels-title">
-      <header className="px-4 text-center">
-        <div className="mx-auto mb-3 flex w-max items-center gap-2 text-primary">
-          <ShoppingBag size={13} strokeWidth={1.5} />
-          <p className="font-sans text-[9px] font-medium uppercase tracking-nf-15">Seen on Naira</p>
+    <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">
+      <header className="flex items-end justify-between gap-3 px-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 text-primary">
+            <ShoppingBag size={11} strokeWidth={1.5} />
+            <p className="font-sans text-[8px] font-medium uppercase tracking-nf-15">Seen on Naira</p>
+          </div>
+          <h2 id="shop-reels-title" className="mt-1 font-cormorant text-[24px] italic leading-none text-foreground">
+            Shop the Reel
+          </h2>
         </div>
-        <h2 id="shop-reels-title" className="font-cormorant text-[32px] italic leading-none text-foreground">Shop the Reel</h2>
-        <p className="mt-3 font-sans text-[10px] uppercase tracking-nf-10 text-muted-foreground">Swipe through {Math.max(reels.length, 2)} shoppable reels</p>
+        {reels.length > 1 && (
+          <p className="shrink-0 font-sans text-[9px] font-medium tabular-nums tracking-nf-10 text-muted-foreground">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(reels.length).padStart(2, "0")}
+          </p>
+        )}
       </header>
 
       {!enabled || isLoading ? (
-        <div className="mx-4 mt-7 aspect-[4/5] animate-pulse bg-muted" aria-hidden="true" />
+        <div className="mx-4 mt-5 aspect-[4/5] max-w-[236px] animate-pulse bg-muted" aria-hidden="true" />
       ) : (
         <>
           <div
             ref={railRef}
             onScroll={onScroll}
-            className="scrollbar-hide mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pr-[15%]"
+            className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 pr-[28%]"
             style={{ overscrollBehaviorX: "contain" }}
           >
-            {reels.map((reel, index) => (
-              <article key={reel.id} data-reel-slide className="w-[86vw] max-w-[338px] shrink-0 snap-start">
-                <ReelFrame reel={reel} active={index === activeIndex} />
-                <div className={`grid border-x border-b border-border bg-background ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
-                  {reel.products.slice(0, 3).map((product) => (
-                    <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />
-                  ))}
-                </div>
-              </article>
-            ))}
+            {reels.map((reel, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <article
+                  key={reel.id}
+                  data-reel-slide
+                  onClick={() => !isActive && goToReel(index)}
+                  className={`w-[60vw] max-w-[236px] shrink-0 snap-start border border-border bg-background transition-all duration-300 ${
+                    isActive ? "opacity-100 shadow-sm" : "opacity-60"
+                  }`}
+                >
+                  <ReelFrame reel={reel} active={isActive} />
+                  <div className={`grid ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+                    {reel.products.slice(0, 3).map((product) => (
+                      <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />
+                    ))}
+                  </div>
+                </article>
+              );
+            })}
           </div>
           {reels.length > 1 && (
-            <nav className="mx-4 mt-5 flex items-center gap-3" aria-label="Choose reel">
-              <p className="w-11 shrink-0 font-sans text-[10px] font-medium tabular-nums text-foreground">
-                {String(activeIndex + 1).padStart(2, "0")} / {String(reels.length).padStart(2, "0")}
-              </p>
-              <div className="flex h-7 flex-1 items-center gap-1" aria-hidden="true">
+            <nav className="mx-4 mt-4 flex items-center gap-3" aria-label="Choose reel">
+              <div className="flex h-5 flex-1 items-center gap-1" aria-hidden="true">
                 {reels.map((reel, index) => (
                   <span
                     key={reel.id}
-                    className={`h-1 flex-1 transition-colors duration-300 ${index <= activeIndex ? "bg-primary" : "bg-border"}`}
+                    className={`h-[2px] flex-1 transition-colors duration-300 ${index <= activeIndex ? "bg-primary" : "bg-border"}`}
                   />
                 ))}
               </div>
@@ -263,9 +278,9 @@ const MobileReelShop = () => {
                 type="button"
                 variant="ghost"
                 onClick={() => goToReel((activeIndex + 1) % reels.length)}
-                className="h-8 shrink-0 px-2 font-sans text-[9px] uppercase tracking-nf-10"
+                className="h-7 shrink-0 gap-1 px-2 font-sans text-[8px] uppercase tracking-nf-10"
               >
-                Next reel
+                Next reel <ChevronRight size={11} />
               </Button>
             </nav>
           )}

@@ -300,7 +300,7 @@ const JewelDetail = () => {
      work fills any remaining slots. */
   const sameCategory = jewellery.filter((j) => j.handle !== piece.handle && j.category === piece.category);
   const otherPieces = jewellery.filter((j) => j.handle !== piece.handle && j.category !== piece.category);
-  const related = [...sameCategory, ...otherPieces].slice(0, 2);
+  const related = [...sameCategory, ...otherPieces].slice(0, 5);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
@@ -965,38 +965,67 @@ const JewelDetail = () => {
 
       <PressMarquee />
 
-      {/* Related jewellery */}
-      <section className="py-10 md:py-14" style={{ backgroundColor: "#FBF3EC" }}>
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6">
-          <h2 className="font-cormorant text-[26px] md:text-[34px] text-center" style={{ color: "#1A1614" }}>You may also like</h2>
-          <p className="text-center mt-2 text-[12px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-            {sameCategory.length >= 2 ? `MORE ${piece.category.toUpperCase()} FROM THE ATELIER` : "FROM THE DEMI-GOLD ATELIER"}
-          </p>
-          <div className="grid grid-cols-2 gap-4 md:gap-6 mt-6 max-w-[680px] mx-auto">
-            {related.map((r) => (
-              <Link key={r.handle} to={`/jewellery/${r.handle}`} className="group">
-                <div className="aspect-square overflow-hidden" style={{ backgroundColor: "#F4EBE2" }}>
-                  <img
-                    src={shopifyImage(r.image, 600)}
-                    srcSet={shopifySrcSet(r.image, [320, 480, 600]) || undefined}
-                    sizes="(max-width: 768px) 48vw, 25vw"
-                    alt={r.name}
-                    loading="lazy"
-                    decoding="async"
-                    width={600}
-                    height={600}
-                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <p className="mt-3 text-[10px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>{r.category.toUpperCase()}</p>
-                <h3 className="mt-1 font-cormorant text-[18px] md:text-[20px]" style={{ color: "#1A1614" }}>{r.name}</h3>
-                <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-                  <span aria-hidden className="h-[5px] w-[5px]" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
-                  {r.priceLabel}
-                </p>
-              </Link>
-            ))}
+      {/* Related jewellery — an editorial lead piece with four supporting picks. */}
+      <section className="bg-secondary/45 py-12 md:py-20">
+        <div className="mx-auto max-w-[1200px] px-4 md:px-8">
+          <header className="mb-8 flex items-end justify-between border-b border-border pb-5 md:mb-10 md:pb-6">
+            <div>
+              <p className="mb-2 font-sans text-[10px] font-medium uppercase tracking-nf-15 text-primary">
+                Curated for you
+              </p>
+              <h2 className="font-cormorant text-[30px] italic leading-none text-foreground md:text-[42px]">You may also like</h2>
+            </div>
+            <Link to={`/jewellery/collections/${piece.category.toLowerCase()}`} className="story-link hidden pb-1 font-sans text-[10px] font-medium uppercase tracking-nf-10 text-muted-foreground md:inline-block">
+              Discover the collection
+            </Link>
+          </header>
+
+          <div className="grid grid-cols-2 gap-x-3 gap-y-7 md:grid-cols-12 md:gap-x-8 md:gap-y-10">
+            {related.map((r, index) => {
+              const featured = index === 0;
+              const recommendationSoldOut = r.availableForSale === false && !isAdjustableRing(r.handle);
+              return (
+                <Link
+                  key={r.handle}
+                  to={`/jewellery/${r.handle}`}
+                  className={`group min-w-0 ${featured ? "col-span-2 md:col-span-5 md:row-span-2" : "md:col-span-3"}`}
+                >
+                  <div className={`relative aspect-square overflow-hidden bg-muted ${featured ? "md:aspect-[4/5]" : ""}`}>
+                    <img
+                      src={shopifyImage(r.image, featured ? 900 : 600)}
+                      srcSet={shopifySrcSet(r.image, featured ? [480, 700, 900] : [320, 480, 600]) || undefined}
+                      sizes={featured ? "(max-width: 768px) 100vw, 42vw" : "(max-width: 768px) 48vw, 24vw"}
+                      alt={r.name}
+                      loading="lazy"
+                      decoding="async"
+                      width={featured ? 900 : 600}
+                      height={featured ? 900 : 600}
+                      className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                    />
+                    {featured && (
+                      <span className="absolute left-3 top-3 border border-border bg-background/90 px-3 py-1.5 font-sans text-[9px] font-medium uppercase tracking-nf-10 text-foreground backdrop-blur-sm md:left-5 md:top-5">
+                        Editor's pick
+                      </span>
+                    )}
+                    {recommendationSoldOut && (
+                      <span className="absolute bottom-0 left-0 bg-foreground px-3 py-1.5 font-sans text-[9px] font-medium uppercase tracking-nf-10 text-background">
+                        Pre-order
+                      </span>
+                    )}
+                  </div>
+                  <div className={featured ? "pt-4 md:px-1 md:pt-5" : "pt-3"}>
+                    <p className="font-sans text-[9px] font-medium uppercase tracking-nf-10 text-primary">{r.category}</p>
+                    <h3 className={`mt-1 font-cormorant leading-tight text-foreground ${featured ? "text-[23px] md:text-[28px]" : "text-[17px] md:text-[20px]"}`}>{r.name}</h3>
+                    <p className="mt-1 font-sans text-[11px] text-muted-foreground">{recommendationSoldOut ? `Pre-order · ${r.priceLabel}` : r.priceLabel}</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
+
+          <Link to={`/jewellery/collections/${piece.category.toLowerCase()}`} className="story-link mx-auto mt-9 block w-max pb-1 font-sans text-[10px] font-medium uppercase tracking-nf-10 text-muted-foreground md:hidden">
+            Discover the collection
+          </Link>
         </div>
       </section>
 

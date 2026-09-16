@@ -180,7 +180,7 @@ const JewelFilterBar = ({
                       type="button"
                       onClick={() => set({ tag: value.tag === t ? null : t })}
                       aria-pressed={value.tag === t}
-                      className={`min-h-[36px] border px-3 text-[9.5px] tracking-nf-16 transition-colors ${
+                      className={`min-h-[44px] border px-3.5 text-[9.5px] tracking-nf-16 transition-colors ${
                         value.tag === t
                           ? "border-nf-ink bg-nf-ink text-nf-ivory"
                           : "border-nf-ink/20 text-nf-ink/65 hover:border-nf-ink/60"
@@ -199,7 +199,7 @@ const JewelFilterBar = ({
             <button
               type="button"
               onClick={() => onChange({ ...emptyFilters, sort: value.sort })}
-              className="mt-5 inline-flex min-h-[36px] items-center gap-1.5 text-[10px] tracking-nf-18 text-nf-ink/55 underline underline-offset-4 hover:text-nf-ink"
+              className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-[10px] tracking-nf-18 text-nf-ink/55 underline underline-offset-4 hover:text-nf-ink"
               style={jost}
             >
               <X size={12} strokeWidth={1.6} /> CLEAR FILTERS

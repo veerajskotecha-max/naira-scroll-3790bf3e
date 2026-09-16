@@ -37,22 +37,28 @@ export const FASTRR_DOMAIN =
 */
 export const FASTRR_PRICE_MULTIPLIER = Number(import.meta.env.VITE_FASTRR_PRICE_MULTIPLIER ?? 100) || 100;
 
+/* Key names are dictated by Fastrr's script: it reads item.id -> productId and
+   item.variant_id -> variantId. Camel-cased keys are silently dropped. */
 export interface FastrrItem {
-  productId: string;
-  variantId: string;
+  id: string;
+  variant_id: string;
   quantity: number;
   title: string;
-  variantTitle: string;
   price: number;
   image: string;
 }
 
 type FastrrPayload = {
   items: FastrrItem[];
+  /* Shopify permanent domain -> sellerDomain */
   domain: string;
+  /* Storefront origin -> domain */
+  webUrl?: string;
   couponCode?: string;
-  utmParams?: string;
   cartAttributes?: Record<string, string>;
+  /* Base64-encodes cartAttributes; without it the object stringifies to
+     "[object Object]" in the URL. */
+  encodingRequired?: boolean;
 };
 
 declare global {

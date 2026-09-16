@@ -17,6 +17,24 @@ const productImagesFirst = (node: ShopifyProductNode): string[] =>
     .sort((a, b) => Number(a.packaging) - Number(b.packaging) || a.index - b.index)
     .map(({ url }) => url);
 
+/** Per-piece cover picks. Some listings read better with a specific photo
+ * leading the card and the gallery — the shot that sells the piece goes first. */
+const COVER_PICKS: Record<string, RegExp> = {
+  // Bold Nocturne Chain — the on-model shot shows the chain's true weight.
+  "bold-nocturne-chain": /YF5144_2_worn/i,
+  // Solitaire Whisper Studs — the zoomed stud close-up reads far clearer
+  // than the on-model crop the listing currently opens with.
+  "solitaire-whisper-studs": /solitaire-whisper-studs-2\./i,
+};
+
+const coverFirst = (handle: string, urls: string[]): string[] => {
+  const pick = COVER_PICKS[handle];
+  if (!pick) return urls;
+  const i = urls.findIndex((url) => pick.test(url));
+  if (i <= 0) return urls;
+  return [urls[i], ...urls.slice(0, i), ...urls.slice(i + 1)];
+};
+
 /**
  * Overlays LIVE Shopify data (images, price, variant id, availability) on top of
  * the bundled catalogue. The static file is only a first-paint fallback — once

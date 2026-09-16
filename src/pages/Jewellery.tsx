@@ -14,6 +14,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import { Link, useNavigationType, useSearchParams } from "react-router-dom";
+import { shopifyImage } from "@/lib/shopifyImage";
 
 const hubFaqs = [
   {
@@ -146,6 +147,16 @@ const Jewellery = () => {
       .filter((p): p is (typeof filtered)[number] => Boolean(p));
     return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
   }, [inCategory, activeFilters]);
+
+  /* Decorative backdrop on larger screens only. */
+  const [showBackdrop, setShowBackdrop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const apply = () => setShowBackdrop(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
 
   /* Paged grid: one tap loads the next twelve. */
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);

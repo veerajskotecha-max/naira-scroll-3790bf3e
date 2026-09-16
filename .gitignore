@@ -37,3 +37,6 @@ naira-sku-corrections.xlsx
 
 # Higgsfield image-generation tooling — campaign work, not website code.
 scripts/higgsfield/
+
+# Clarity export pulls — data, not website code.
+clarity-reports/

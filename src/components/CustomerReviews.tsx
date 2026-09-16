@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { getProductReviews } from "@/data/productReviews";
-import { Star, Camera, ChevronDown, PenLine } from "lucide-react";
+import { Star, ChevronDown, PenLine } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import WriteReviewModal from "@/components/WriteReviewModal";

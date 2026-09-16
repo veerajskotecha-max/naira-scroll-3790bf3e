@@ -38,8 +38,8 @@ export const FASTRR_DOMAIN =
 export const FASTRR_PRICE_MULTIPLIER = Number(import.meta.env.VITE_FASTRR_PRICE_MULTIPLIER ?? 100) || 100;
 
 export interface FastrrItem {
-  productId: string | number;
-  variantId: string | number;
+  productId: string;
+  variantId: string;
   quantity: number;
   title: string;
   variantTitle: string;

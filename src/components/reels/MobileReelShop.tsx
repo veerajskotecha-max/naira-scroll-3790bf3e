@@ -153,7 +153,7 @@ const ReelFrame = ({
           playsInline
           loop
           muted={muted}
-          preload={active ? "auto" : "metadata"}
+          preload="auto"
           onClick={togglePlayback}
           onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}
@@ -310,7 +310,7 @@ const MobileReelShop = () => {
                   <ReelFrame
                     reel={reel}
                     active={isActive}
-                    canLoad={inView && Math.abs(index - activeIndex) <= 1}
+                    canLoad={inView && isActive}
                   />
                   <div className={`grid ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                     {reel.products.slice(0, 3).map((product) => (

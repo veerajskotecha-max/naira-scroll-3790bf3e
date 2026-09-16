@@ -416,7 +416,9 @@ const ShopAll = () => {
         </section>
       )}
 
-      {showIndoWestern && (
+      {/* The toolbar + grid render on every shop view. /shop/jewellery used to
+          fall through here and show nothing below the header — an empty page. */}
+      {true && (
         <>
 
 

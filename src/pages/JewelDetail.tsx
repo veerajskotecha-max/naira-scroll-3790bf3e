@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
+import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -429,7 +429,7 @@ const JewelDetail = () => {
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
             style={{
-              aspectRatio: "3/4",
+              aspectRatio: MOBILE_FRAME,
               backgroundColor: "#F4EBE2",
               /* Belongs on the snap item, not the scroll port. A quick flick used
                  to fly past three or four photos; stopping at every snap point
@@ -443,7 +443,7 @@ const JewelDetail = () => {
               srcSet={shopifySrcSet(img, [480, 720, 900, 1200]) || undefined}
               sizes="100vw"
               alt={`${piece.name} view ${i + 1}`}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
               width={900}
               height={1200}
               loading={i === 0 ? "eager" : "lazy"}
@@ -454,30 +454,19 @@ const JewelDetail = () => {
         ))}
           </div>
           {WishlistBtn}
-          {/* Baymard found 40% of mobile sites support no image gestures at all, and
-          of the 60% that do, only half tell the user. Tapping here has always
-          opened a full-screen zoom — nothing on the page ever said so. */}
-      <span
-        aria-hidden="true"
-        className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em]"
-        style={{ backgroundColor: "hsla(0,0%,100%,0.88)", color: "hsl(0 0% 35%)" }}
-      >
-        <ZoomIn size={12} strokeWidth={1.7} />
-        Tap to zoom
-        {images.length > 1 && (
-          <span style={{ color: "hsl(0 0% 55%)", fontVariantNumeric: "tabular-nums" }}>
-            · {selectedImage + 1}/{images.length}
+          <span
+            aria-hidden="true"
+            className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-1.5 bg-background/90 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+          >
+            <ZoomIn size={12} strokeWidth={1.7} /> Tap to zoom
           </span>
-        )}
-      </span>
-      </div>
-      {images.length > 1 && (
-        <div
-          className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-4 pt-2.5 pb-1"
-          role="group"
-          aria-label={`${piece.name} images`}
-        >
-          {images.map((thumb, i) => {
+          {images.length > 1 && (
+            <div
+              className="absolute inset-x-0 bottom-4 z-10 flex items-center justify-center gap-2"
+              role="group"
+              aria-label={`${piece.name} images`}
+            >
+              {images.map((_, i) => {
             const active = selectedImage === i;
             return (
               <button
@@ -487,23 +476,13 @@ const JewelDetail = () => {
                 aria-label={`View image ${i + 1} of ${images.length}`}
                 aria-current={active ? "true" : undefined}
                 data-active={active ? "true" : "false"}
-                className="h-14 w-14 shrink-0 overflow-hidden border-2 transition-colors"
-                style={{ borderColor: active ? "hsl(0 0% 18%)" : "transparent" }}
-              >
-                <img
-                  src={shopifyImage(thumb, 120)}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  width={56}
-                  height={56}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </button>
+                className={`h-3 w-3 rounded-full border border-foreground/35 transition-colors ${active ? "bg-foreground" : "bg-background/60"}`}
+              />
             );
-          })}
-        </div>
-      )}
+              })}
+            </div>
+          )}
+      </div>
     </div>
   ) : (
     (() => {
@@ -644,7 +623,7 @@ const JewelDetail = () => {
                 the price still clears the fold. Baymard surveyed 5,170+ people
                 and found a star average without a count erodes trust, so the
                 count is never rendered without it. */}
-            <div className="flex items-center justify-between gap-3 min-h-[26px]">
+            <div className="hidden md:flex items-center justify-between gap-3 min-h-[26px]">
               <p className="text-[10px] tracking-[0.34em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
                 {piece.category.toUpperCase()} · DEMI-GOLD
               </p>
@@ -692,10 +671,10 @@ const JewelDetail = () => {
             {/* Size / Quantity / CTA moved directly under the price for conversion */}
 
 
-            <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
+            <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
             {/* Size / One-size */}
-            <div>
+            <div className={piece.category === "Rings" ? "mt-4 md:mt-0" : "hidden md:block"}>
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
                   {piece.category === "Rings" ? "Ring Size (US)" : "Size"}
@@ -785,7 +764,7 @@ const JewelDetail = () => {
             {/* CTA block: live Shopify cart + checkout, WhatsApp supports.
                 Add to Cart leads in brand gold — a warm, high-contrast primary
                 converts better than an outline ghost button. */}
-            <div id="product-actions" className="mt-6">
+            <div id="product-actions" className="mt-4 md:mt-6">
               {soldOut ? (
                 <button
                   onClick={handlePreOrder}
@@ -796,14 +775,24 @@ const JewelDetail = () => {
                   Pre-order Now
                 </button>
               ) : (
-                <button
-                  onClick={handleAddToCart}
-                  disabled={buying || cartLoading}
-                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
-                >
-                  Add to Cart
-                </button>
+                <div className="flex gap-2 md:block">
+                  <div className="flex h-[54px] w-[38%] shrink-0 items-center justify-between border border-border md:hidden">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="press-scale flex h-full min-w-11 items-center justify-center text-foreground">
+                      <Minus size={15} />
+                    </button>
+                    <span className="text-[15px] font-medium text-foreground" aria-live="polite">{quantity}</span>
+                    <button onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity" className="press-scale flex h-full min-w-11 items-center justify-center text-foreground">
+                      <Plus size={15} />
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={buying || cartLoading}
+                    className="press-scale inline-flex h-[54px] flex-1 items-center justify-center gap-2 bg-foreground text-[12px] font-medium uppercase tracking-[0.12em] text-background transition-colors duration-200 hover:opacity-90 disabled:opacity-60 md:w-full"
+                  >
+                    <ShoppingBag size={16} strokeWidth={1.6} /> Add to Cart
+                  </button>
+                </div>
               )}
               {soldOut ? (
                 <a
@@ -819,8 +808,7 @@ const JewelDetail = () => {
                 <button
                   onClick={handleBuyNow}
                   disabled={buying || cartLoading}
-                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                  className="press-scale mt-2 inline-flex h-[50px] w-full items-center justify-center gap-2.5 bg-foreground text-[12px] font-medium uppercase tracking-[0.12em] text-background transition-colors duration-200 hover:opacity-90 disabled:opacity-60 md:mt-3"
                 >
                   {buying ? "Opening checkout…" : "Shop Now"}
                 </button>

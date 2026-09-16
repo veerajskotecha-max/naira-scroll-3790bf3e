@@ -232,7 +232,11 @@ const MobileReelShop = () => {
   const [enabled, setEnabled] = useState(false);
   const [inView, setInView] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data: reels = [], isLoading } = useReels(enabled);
+  const { data, isLoading, isError, isSuccess } = useReels(enabled);
+  /* If the refresh fails we keep the last reels we saw rather than letting the
+     whole section disappear mid-page. */
+  const fallback = useMemo(() => (isError ? readStaleReelCache() ?? [] : []), [isError]);
+  const reels = data?.length ? data : fallback;
   const { jewellery } = useLiveJewellery();
   const liveByHandle = useMemo(
     () => new Map(jewellery.map((product) => [product.handle, product])),
@@ -289,7 +293,9 @@ const MobileReelShop = () => {
     rail.scrollTo({ left: slide.offsetLeft - 16, behavior: "smooth" });
   };
 
-  if (enabled && !isLoading && reels.length === 0) return null;
+  /* Only hide when we know for certain there is nothing to show. A loading or
+     failed fetch keeps the section (and its placeholder) in place. */
+  if (isSuccess && reels.length === 0) return null;
 
   return (
     <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">

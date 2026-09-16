@@ -103,9 +103,12 @@ export const useReels = (enabled: boolean) =>
     queryKey: ["reels"],
     queryFn: fetchReels,
     enabled,
-    initialData: readCache,
+    initialData: () => readCache(),
     staleTime: 30 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
     refetchOnWindowFocus: false,
+    // A flaky signed-URL round trip used to empty the section entirely.
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 8000),
   });
 

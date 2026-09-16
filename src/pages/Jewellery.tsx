@@ -15,6 +15,8 @@ import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import { Link, useNavigationType, useSearchParams } from "react-router-dom";
 import { shopifyImage } from "@/lib/shopifyImage";
+import { cardCover } from "@/lib/cardCover";
+
 
 const hubFaqs = [
   {
@@ -237,7 +239,9 @@ const Jewellery = () => {
           <section aria-label="Most loved pieces" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
             <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
             <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
-              {bestSellers.map((p, i) => (
+              {bestSellers.map((p, i) => {
+                const cover = cardCover(p);
+                return (
                 <Link
                   key={p.handle}
                   to={`/jewellery/${p.handle}`}
@@ -245,8 +249,8 @@ const Jewellery = () => {
                 >
                   <div className="aspect-square w-full overflow-hidden bg-nf-ivory-deep">
                     <img
-                      src={shopifyImage(p.image, 240)}
-                      srcSet={`${shopifyImage(p.image, 160)} 160w, ${shopifyImage(p.image, 240)} 240w, ${shopifyImage(p.image, 320)} 320w`}
+                      src={shopifyImage(cover, 240)}
+                      srcSet={`${shopifyImage(cover, 160)} 160w, ${shopifyImage(cover, 240)} 240w, ${shopifyImage(cover, 320)} 320w`}
                       sizes="132px"
                       alt={p.name}
                       width={240}
@@ -256,10 +260,14 @@ const Jewellery = () => {
                       className="h-full w-full object-cover object-center"
                     />
                   </div>
-                  <p className="mt-2 line-clamp-1 text-[13px] leading-tight text-nf-ink" style={velista}>{p.name}</p>
+                  {/* Two lines, never cut mid-word: a shopper can't choose a
+                      piece whose name they can't read. */}
+                  <p className="mt-2 line-clamp-2 min-h-[2.4em] text-[13px] leading-[1.2] text-nf-ink" style={velista}>{p.name}</p>
                   <p className="mt-0.5 text-[10px] tracking-nf-18 text-nf-ink/65" style={jost}>{p.priceLabel}</p>
                 </Link>
-              ))}
+                );
+              })}
+
             </div>
           </section>
         )}
@@ -292,7 +300,7 @@ const Jewellery = () => {
                   key={b.key}
                   onClick={() => selectBand(b)}
                   aria-pressed={on}
-                  className={`press-scale shrink-0 inline-flex items-center border px-3.5 min-h-[36px] text-[10px] tracking-nf-18 transition-colors duration-200 ${
+                  className={`press-scale shrink-0 inline-flex items-center border px-3.5 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 ${
                     on ? "border-nf-gold bg-nf-gold/15 text-nf-gold-shadow" : "border-nf-ink/20 text-nf-ink/65 hover:border-nf-ink/50"
                   }`}
                   style={jost}

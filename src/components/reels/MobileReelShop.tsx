@@ -106,6 +106,14 @@ const ReelFrame = ({
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
+  /* A missing/blocked video must never collapse or blank the card: we fall back
+     to the still thumbnail and hide the playback chrome instead. */
+  const [failed, setFailed] = useState(false);
+  const [slow, setSlow] = useState(false);
+
+  /* Poster, else the first tagged product photo — the frame always has an image. */
+  const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? null;
+  const playable = Boolean(reel.videoUrl) && !failed;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -117,6 +125,14 @@ const ReelFrame = ({
     video.muted = muted;
     void video.play().then(() => setPaused(false)).catch(() => undefined);
   }, [active, canLoad, muted]);
+
+  /* Stop spinning forever on a stalled network: after 6s we simply show the
+     still image while the video keeps loading quietly in the background. */
+  useEffect(() => {
+    if (!canLoad || !playable || ready) return;
+    const timer = window.setTimeout(() => setSlow(true), 6000);
+    return () => window.clearTimeout(timer);
+  }, [canLoad, playable, ready]);
 
   const togglePlayback = () => {
     const video = videoRef.current;

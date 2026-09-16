@@ -189,7 +189,7 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
   const price = variant ? Math.round(Number(variant.price.amount)) : Math.round(Number(node.priceRange.minVariantPrice.amount));
   const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
   const compareAtPrice = compareRaw > price ? compareRaw : undefined;
-  const images = productImagesFirst(node);
+  const images = coverFirst(node.handle, productImagesFirst(node));
   const description = normalizeMetalCopy(node.description);
   const parsed = parseDescription(description);
 

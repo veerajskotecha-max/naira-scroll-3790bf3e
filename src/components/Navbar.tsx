@@ -113,14 +113,14 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             >
               CONTACT
             </Link>
-            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="flex items-center">
+            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="-m-3 p-3 flex items-center">
               <Search
                 size={20}
                 strokeWidth={1.5}
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
             </button>
-            <button onClick={handleAccount} aria-label={user ? "My account" : "Sign in"} className="flex items-center">
+            <button onClick={handleAccount} aria-label={user ? "My account" : "Sign in"} className="-m-3 p-3 flex items-center">
               <User
                 size={20}
                 strokeWidth={1.5}
@@ -128,7 +128,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
             </button>
             {/* Wishlist icon with dot indicator */}
-            <button className="press-scale relative" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
+            <button className="press-scale relative -m-3 p-3" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
               <Heart
                 size={20}
                 strokeWidth={1.5}
@@ -141,7 +141,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
                 />
               )}
             </button>
-            <button className="press-scale relative" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
+            <button className="press-scale relative -m-3 p-3" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
               <ShoppingBag
                 size={20}
                 strokeWidth={1.5}

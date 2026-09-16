@@ -54,7 +54,7 @@ const LAST_NAMES = [
 
 const FIRST_DELAY = 5000;
 const GAP = 60000;
-const VISIBLE_FOR = 7000;
+const VISIBLE_FOR = 3500;
 const SNOOZE = 60000;
 
 interface Shown {

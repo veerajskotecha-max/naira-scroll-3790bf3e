@@ -1,9 +1,48 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { JewelPiece } from "@/data/jewellery";
 import { shopifyImage } from "@/lib/shopifyImage";
+import floralBg from "@/assets/floral-pattern-bg.webp";
+
+/** Gentle scroll-linked drift for the floral overlays (writes a CSS var, no re-renders). */
+const useScrollDrift = (ref: React.RefObject<HTMLElement>) => {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // -1 (section below viewport) → 1 (section above viewport)
+      const progress = Math.max(-1, Math.min(1, (vh / 2 - (rect.top + rect.height / 2)) / vh));
+      el.style.setProperty("--nf-drift", progress.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [ref]);
+};
+
+const sidePetals = [
+  { side: "left", top: "6%", w: 96, op: 0.3, rot: -24, color: "#E5B9A4", depth: 34, sway: 10, dur: "13s" },
+  { side: "left", top: "48%", w: 70, op: 0.24, rot: 14, color: "#AEBDB6", depth: -26, sway: -8, dur: "17s" },
+  { side: "right", top: "18%", w: 84, op: 0.28, rot: 22, color: "#AEBDB6", depth: -30, sway: 9, dur: "15s" },
+  { side: "right", top: "66%", w: 110, op: 0.26, rot: -12, color: "#E5B9A4", depth: 40, sway: -11, dur: "19s" },
+] as const;
 
 type MobileRelatedEditProps = {
   current: JewelPiece;

@@ -44,7 +44,7 @@
             "hero_sub": {
               "type": "text",
               "settings": {
-                "text": "<p>Gold tone plated, anti-tarnish, and delivered in 3\u20135 working days.</p>",
+                "text": "<p>Gold tone plated, anti-tarnish, and delivered in 3–5 working days.</p>",
                 "width": "100%",
                 "alignment": "left",
                 "type_preset": "paragraph",
@@ -297,7 +297,7 @@
             "r1_h": {
               "type": "text",
               "settings": {
-                "text": "<p>Delivered in 3\u20135 days</p>",
+                "text": "<p>Delivered in 3–5 days</p>",
                 "width": "100%",
                 "alignment": "center",
                 "type_preset": "h6",
@@ -407,67 +407,271 @@
       "type": "section",
       "name": "t:names.section",
       "blocks": {
-        "c_neck": {
-          "type": "button",
+        "cc_neck": {
+          "type": "collection-card",
+          "name": "t:names.collection_card",
           "settings": {
-            "label": "Necklaces",
-            "link": "shopify://collections/necklaces",
-            "style_class": "button-secondary",
-            "width": "fit-content",
-            "width_mobile": "fit-content"
+            "collection": "necklaces",
+            "placement": "below_image",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "collection_card_gap": 12,
+            "background_color": "rgba(0,0,0,0)",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0
           },
-          "blocks": {}
+          "blocks": {
+            "collection-card-image": {
+              "type": "_collection-card-image",
+              "name": "t:names.collection_card_image",
+              "static": true,
+              "settings": {
+                "image_ratio": "portrait",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0
+              },
+              "blocks": {}
+            },
+            "title": {
+              "type": "collection-title",
+              "name": "t:names.collection_title",
+              "settings": {
+                "width": "fill",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "font_size": "0.75rem",
+                "line_height": "normal",
+                "letter_spacing": "0.18em",
+                "case": "uppercase",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title"
+          ]
         },
-        "c_ear": {
-          "type": "button",
+        "cc_ear": {
+          "type": "collection-card",
+          "name": "t:names.collection_card",
           "settings": {
-            "label": "Earrings",
-            "link": "shopify://collections/earrings",
-            "style_class": "button-secondary",
-            "width": "fit-content",
-            "width_mobile": "fit-content"
+            "collection": "earrings",
+            "placement": "below_image",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "collection_card_gap": 12,
+            "background_color": "rgba(0,0,0,0)",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0
           },
-          "blocks": {}
+          "blocks": {
+            "collection-card-image": {
+              "type": "_collection-card-image",
+              "name": "t:names.collection_card_image",
+              "static": true,
+              "settings": {
+                "image_ratio": "portrait",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0
+              },
+              "blocks": {}
+            },
+            "title": {
+              "type": "collection-title",
+              "name": "t:names.collection_title",
+              "settings": {
+                "width": "fill",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "font_size": "0.75rem",
+                "line_height": "normal",
+                "letter_spacing": "0.18em",
+                "case": "uppercase",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title"
+          ]
         },
-        "c_brac": {
-          "type": "button",
+        "cc_brac": {
+          "type": "collection-card",
+          "name": "t:names.collection_card",
           "settings": {
-            "label": "Bracelets",
-            "link": "shopify://collections/bracelets",
-            "style_class": "button-secondary",
-            "width": "fit-content",
-            "width_mobile": "fit-content"
+            "collection": "bracelets",
+            "placement": "below_image",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "collection_card_gap": 12,
+            "background_color": "rgba(0,0,0,0)",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0
           },
-          "blocks": {}
+          "blocks": {
+            "collection-card-image": {
+              "type": "_collection-card-image",
+              "name": "t:names.collection_card_image",
+              "static": true,
+              "settings": {
+                "image_ratio": "portrait",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0
+              },
+              "blocks": {}
+            },
+            "title": {
+              "type": "collection-title",
+              "name": "t:names.collection_title",
+              "settings": {
+                "width": "fill",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "font_size": "0.75rem",
+                "line_height": "normal",
+                "letter_spacing": "0.18em",
+                "case": "uppercase",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title"
+          ]
         },
-        "c_ring": {
-          "type": "button",
+        "cc_ring": {
+          "type": "collection-card",
+          "name": "t:names.collection_card",
           "settings": {
-            "label": "Rings",
-            "link": "shopify://collections/rings",
-            "style_class": "button-secondary",
-            "width": "fit-content",
-            "width_mobile": "fit-content"
+            "collection": "rings",
+            "placement": "below_image",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "collection_card_gap": 12,
+            "background_color": "rgba(0,0,0,0)",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0
           },
-          "blocks": {}
+          "blocks": {
+            "collection-card-image": {
+              "type": "_collection-card-image",
+              "name": "t:names.collection_card_image",
+              "static": true,
+              "settings": {
+                "image_ratio": "portrait",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0
+              },
+              "blocks": {}
+            },
+            "title": {
+              "type": "collection-title",
+              "name": "t:names.collection_title",
+              "settings": {
+                "width": "fill",
+                "max_width": "normal",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "font_size": "0.75rem",
+                "line_height": "normal",
+                "letter_spacing": "0.18em",
+                "case": "uppercase",
+                "wrap": "pretty",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "title"
+          ]
         }
       },
       "block_order": [
-        "c_neck",
-        "c_ear",
-        "c_brac",
-        "c_ring"
+        "cc_neck",
+        "cc_ear",
+        "cc_brac",
+        "cc_ring"
       ],
       "settings": {
         "content_direction": "row",
         "vertical_on_mobile": false,
         "horizontal_alignment": "center",
-        "vertical_alignment": "center",
-        "gap": 10,
+        "vertical_alignment": "flex-start",
+        "gap": 12,
         "section_width": "page-width",
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 4,
-        "padding-block-end": 8
+        "padding-block-start": 8,
+        "padding-block-end": 48
       }
     }
   },

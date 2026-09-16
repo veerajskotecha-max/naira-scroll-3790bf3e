@@ -286,3 +286,26 @@ Four differences were faults in the instrument, all now corrected in
 `harness/difall.sh <width>` runs the sweep at any viewport and pins the PDP
 fixture; `harness/widthcheck.sh` catches horizontal overflow; `harness/up.sh`
 restarts both servers (they get reaped between tool calls).
+
+## Byte-comparing a template against the local file does not work
+
+`config/settings_data.json` and `templates/*.json` are **re-serialised by
+Shopify on write**. It strips the settings a block's schema does not define
+and re-indents the rest, so the stored file is almost never byte-identical to
+the local one even when every setting landed.
+
+On 16 Sep this produced a false alarm. `product.json` (local 10,531 bytes)
+and `settings_data.json` (local 7,109) kept reading back as 5,639 and 5,816
+with unchanged checksums, through a URL body, a retry with fresh staging, and
+finally a BASE64 body — which returns a real record and still reported the
+old checksum. That looked exactly like the documented silent-failure bug.
+
+It was not. Reading both bodies back showed the stored content already
+matched the local file setting for setting — `media_presentation: grid`,
+`large_first_image`, `enable_sticky_add_to_cart`, the whole block order, the
+brand palette, `jost_n3`/`cormorant_n4`. Only the whitespace differed.
+
+**So: for JSON templates and config, compare content, not checksums.** The
+checksum test is still right for assets — `.css`, `.js`, images — which are
+stored verbatim. Those did behave: `nf-brand.css` and the two floral WebPs
+came back with checksums matching `md5sum` exactly.

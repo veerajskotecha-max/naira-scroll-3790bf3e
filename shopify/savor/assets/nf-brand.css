@@ -33,6 +33,13 @@
   /* The brand book's three, and nothing else. */
   --nf-sage: #99B4AF;
   --nf-peach: #FFBDA8;
+  /* The book names three colours and none of them can carry a link: sage on
+     cream is 2.1:1. These two are the live site's own greens, measured off
+     its pages -- #8EA9A1 covers 19.5% of the PDP and #4F7268 is its deepest.
+     #4F7268 on cream is 5.07:1, so the brand's green can carry text after
+     all, which is what makes a green-led scheme possible at all. */
+  --nf-green: #4F7268;
+  --nf-sage-deep: #8EA9A1;
   --nf-cream: #FFF8F5;
   --nf-ink: #1A1614;
   --nf-ivory-deep: #F4EBE2;
@@ -41,10 +48,12 @@
   --nf-ease-soft: cubic-bezier(0, 0, .2, 1);
   --nf-track-btn: .16em;
 
-  /* A tiled iris, drawn rather than fetched: it cannot 404 and costs no
-     request. The corner motif is deliberately gone -- a second decorative
-     image on a three-claim band is one decoration too many. */
-  --nf-flora-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%231A1614' stroke-width='1.1'%3E%3Cg transform='translate(40 40)'%3E%3Cellipse cy='-14' rx='6.5' ry='14'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(72)'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(144)'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(216)'/%3E%3Cellipse cy='-14' rx='6.5' ry='14' transform='rotate(288)'/%3E%3Ccircle r='3'/%3E%3C/g%3E%3Cg transform='translate(120 118) rotate(24)'%3E%3Cellipse cy='-12' rx='5.5' ry='12'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(72)'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(144)'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(216)'/%3E%3Cellipse cy='-12' rx='5.5' ry='12' transform='rotate(288)'/%3E%3Ccircle r='2.6'/%3E%3C/g%3E%3Cpath d='M40 58 C48 82 62 98 82 106'/%3E%3Cpath d='M120 100 C112 82 100 70 80 62'/%3E%3C/g%3E%3C/svg%3E");
+  /* The book's own watercolour, not a reconstruction. Page 4 draws the
+     florals as washes -- petals #FCEEEA to #FBD4CD, leaves #EBEDEA to
+     #D2DBD6 -- so the line-drawn iris that used to sit here was the wrong
+     instrument at the wrong strength. Blooms and leaves are separate crops
+     because the book composes them around the wordmark, and 12kB and 6kB
+     respectively is cheaper than the data URI it replaces. */
 }
 
 /* ── Type ──────────────────────────────────────────────────────────────── */
@@ -130,6 +139,26 @@ product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabula
 .product-card:is(:hover, :focus-within) .card-gallery .quick-add__button { translate: 0 0; }
 .card-gallery .quick-add__button > .add-to-cart-icon { display: none; }
 
+/* ── Category tiles ────────────────────────────────────────────────────── */
+
+/* The collection card ships with no hover of its own. A slow, small zoom
+   inside a clipped frame is the same gesture the product cards use, so the
+   two grids feel like one page rather than two components. */
+#shopify-section-categories .collection-card__image,
+#shopify-section-categories .collection-card figure { overflow: hidden; }
+#shopify-section-categories .collection-card img {
+  transition: transform 700ms var(--nf-ease-out);
+}
+@media (hover: hover) {
+  #shopify-section-categories .collection-card:hover img { transform: scale(1.04); }
+}
+/* The label is a way-finder, not a headline: small, wide-tracked, ink. */
+#shopify-section-categories .collection-card a,
+#shopify-section-categories .collection-title {
+  color: var(--nf-ink);
+  text-decoration: none;
+}
+
 /* ── The floral band ───────────────────────────────────────────────────── */
 
 /* Behind the quietest section on the page, and only that one: a floral wash
@@ -141,11 +170,19 @@ product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabula
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: var(--nf-flora-tile);
-  background-repeat: repeat;
-  background-size: 190px auto;
-  opacity: .045;
-  mix-blend-mode: multiply;
+  /* Placed, not tiled. The book sets the blooms above the wordmark and the
+     leaves below it, so they read as one plant rather than a repeat. */
+  background-image: url('nf-flora-blooms.webp'), url('nf-flora-leaves.webp');
+  background-repeat: no-repeat, no-repeat;
+  background-position: right -60px top -40px, left -70px bottom -30px;
+  background-size: 320px auto, 300px auto;
+  /* The crops carry the book's cream ground, and that ground has to vanish.
+     Multiply will not do it: #FFF8F5 multiplied by itself is #FFF1EB, darker
+     than either, so each crop showed as a faint rectangle. Darken takes the
+     per-channel minimum, so ground over identical ground is exactly identity
+     and only the washes -- which are darker -- come through. */
+  opacity: .8;
+  mix-blend-mode: darken;
 }
 
 /* ── PDP: the lightbox and the sticky bar, both Horizon's, painted ─────── */
@@ -267,9 +304,9 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
   html.nf-motion .nf-r.nf-in { opacity: 1; animation: none; transform: none; filter: none; }
   #shopify-section-reasons::before { animation: none; }
   .product-card .card-gallery,
-  #shopify-section-categories :is(.button, a) { transition: none; }
+  #shopify-section-categories .collection-card img { transition: none; }
   .product-card:active .card-gallery,
-  #shopify-section-categories :is(.button, a):active { transform: none; }
+  #shopify-section-categories .collection-card:active img { transform: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -301,39 +338,21 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
      or the negative margin pushes the whole page 20px wide. Scoped to this
      one id, and safe because nothing inside it is sticky -- a clipping
      ancestor is exactly what breaks sticky elsewhere on this theme. */
-  #shopify-section-categories { overflow-x: clip; }
+  /* Four category tiles, two up. A row of four on a 390px screen gives each
+     tile about 90px, which is smaller than the product cards below it and
+     reads as a toolbar rather than a way in. Wrapping to 2x2 is what the
+     live site does, and it makes each tile the same width as a product card
+     so the two grids line up as you scroll from one into the other. */
   #shopify-section-categories .section-content-wrapper,
   #shopify-section-categories > * {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
-    /* Bleed the rail to both page edges so the first and last chip can sit
-       flush, then restore the gutter as scroll padding. */
-    margin-inline: calc(var(--padding-inline, 1.25rem) * -1);
-    padding-inline: var(--padding-inline, 1.25rem);
-    scroll-padding-inline: var(--padding-inline, 1.25rem);
+    flex-wrap: wrap !important;
+    justify-content: center !important;
   }
-  #shopify-section-categories ::-webkit-scrollbar { display: none; }
-  #shopify-section-categories .button,
-  #shopify-section-categories a {
-    scroll-snap-align: start;
-    flex: 0 0 auto;
-    white-space: nowrap;
-    border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--nf-ink) 18%, transparent);
-    padding: .68rem 1.15rem;
-    font-size: .75rem;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    /* 44px minimum, and the rail is thumb-height rather than a line of text. */
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
+  #shopify-section-categories .collection-card {
+    flex: 0 0 calc(50% - 6px);
+    max-width: calc(50% - 6px);
   }
+
 
   /* Three claims stacked is 300px of scroll between the grid and the footer.
      Tighter, and the eyebrow sits right on top of its line rather than
@@ -342,21 +361,24 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
   #shopify-section-reasons .group-block { gap: 2px !important; }
   #shopify-section-reasons p { max-width: 30ch; margin-inline: auto; }
 
-  /* The floral tile scaled against a 390px screen was still reading as
-     three separate flowers. Half the size makes it a texture again. */
-  #shopify-section-reasons::before { background-size: 118px auto; opacity: .05; }
+  /* On a 390px screen two 320px sprays crowd the copy. Smaller, pushed
+     further into the corners, and lighter. */
+  #shopify-section-reasons::before {
+    background-position: right -46px top -26px, left -52px bottom -20px;
+    background-size: 190px auto, 176px auto;
+    opacity: .6;
+  }
 
   /* A phone has no hover, so a tap is the only feedback channel there is.
      A brief press-in on the things you tap is the difference between a page
      that feels responsive and one that feels like a screenshot. Transform
      only -- it composites, so it cannot cost a repaint mid-scroll. */
   .product-card .card-gallery,
-  #shopify-section-categories .button,
-  #shopify-section-categories a {
+  #shopify-section-categories .collection-card img {
     transition: transform 120ms var(--nf-ease-soft);
   }
   .product-card:active .card-gallery { transform: scale(.985); }
-  #shopify-section-categories :is(.button, a):active { transform: scale(.96); }
+  #shopify-section-categories .collection-card:active img { transform: scale(.985); }
 
   /* Horizon hides quick-add on phones by default and that is right -- a
      hover affordance has no meaning here, and the tile should go to the

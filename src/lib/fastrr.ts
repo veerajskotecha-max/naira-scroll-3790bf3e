@@ -17,10 +17,10 @@ import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
 const SCRIPT_SRC = "https://fastrr-boost-ui.pickrr.com/assets/js/channels/mobileApp.js";
 const SCRIPT_TIMEOUT_MS = 6000;
 
-export const CHECKOUT_PROVIDER = ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string)
-  .toString()
-  .trim()
-  .toLowerCase();
+/* Fastrr is the live checkout. Set VITE_CHECKOUT_PROVIDER=shopify to roll back
+   to Shopify's own checkout page without a code change. */
+export const CHECKOUT_PROVIDER =
+  ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "fastrr";
 
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";
 
@@ -37,22 +37,28 @@ export const FASTRR_DOMAIN =
 */
 export const FASTRR_PRICE_MULTIPLIER = Number(import.meta.env.VITE_FASTRR_PRICE_MULTIPLIER ?? 100) || 100;
 
+/* Key names are dictated by Fastrr's script: it reads item.id -> productId and
+   item.variant_id -> variantId. Camel-cased keys are silently dropped. */
 export interface FastrrItem {
-  productId: string;
-  variantId: string;
+  id: string;
+  variant_id: string;
   quantity: number;
   title: string;
-  variantTitle: string;
   price: number;
   image: string;
 }
 
 type FastrrPayload = {
   items: FastrrItem[];
+  /* Shopify permanent domain -> sellerDomain */
   domain: string;
+  /* Storefront origin -> domain */
+  webUrl?: string;
   couponCode?: string;
-  utmParams?: string;
   cartAttributes?: Record<string, string>;
+  /* Base64-encodes cartAttributes; without it the object stringifies to
+     "[object Object]" in the URL. */
+  encodingRequired?: boolean;
 };
 
 declare global {
@@ -108,11 +114,10 @@ export const toFastrrItems = (items: CartItem[]): FastrrItem[] =>
       const variantId = shopifyNumericId(item.variantId) ?? item.variantId;
       if (!variantId) return null;
       return {
-        productId: shopifyNumericId(item.id) ?? variantId,
-        variantId,
+        id: shopifyNumericId(item.id) ?? variantId,
+        variant_id: variantId,
         quantity: item.quantity,
-        title: item.name,
-        variantTitle: item.variantTitle ?? item.size ?? "",
+        title: item.variantTitle || item.size ? `${item.name} — ${item.variantTitle ?? item.size}` : item.name,
         price: Math.round(item.price * FASTRR_PRICE_MULTIPLIER),
         image: item.image,
       } satisfies FastrrItem;
@@ -161,13 +166,19 @@ export const getFastrrCheckoutUrl = async (
     const ready = await loadFastrrScript();
     if (!ready || typeof window.getOneClickCheckoutUrl !== "function") return null;
 
+    /* Their script ignores a utmParams field, so campaign values ride along
+       inside cartAttributes, which lands on the Shopify order. */
     const utmParams = currentUtmParams();
+    const cartAttributes = fastrrCartAttributes();
+    if (utmParams) cartAttributes.utm_params = utmParams;
+
     const payload: FastrrPayload = {
       items: lines,
       domain: FASTRR_DOMAIN,
-      cartAttributes: fastrrCartAttributes(),
+      webUrl: typeof window === "undefined" ? undefined : window.location.origin,
+      cartAttributes,
+      encodingRequired: true,
       ...(options.couponCode ? { couponCode: options.couponCode } : {}),
-      ...(utmParams ? { utmParams } : {}),
     };
 
     const url = window.getOneClickCheckoutUrl(payload);

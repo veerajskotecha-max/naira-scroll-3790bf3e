@@ -66,15 +66,15 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
           />
         )}
       </Link>
-      <div className="flex min-h-[132px] flex-1 flex-col px-2 pb-2 pt-2.5">
+      <div className="flex min-h-[92px] flex-1 flex-col px-1.5 pb-1.5 pt-2">
         <Link
           to={`/jewellery/${product.handle}`}
-          className="line-clamp-2 min-h-9 font-cormorant text-[15px] leading-[1.15] text-foreground"
+          className="line-clamp-2 min-h-[26px] font-cormorant text-[12px] leading-[1.12] text-foreground"
         >
           {product.title}
         </Link>
-        <p className="mt-1 truncate font-sans text-[10px] text-muted-foreground">
-          {soldOut ? "Pre-order · 2 weeks" : price}
+        <p className="mt-0.5 truncate font-sans text-[8px] tracking-nf-10 text-muted-foreground">
+          {soldOut ? "Pre-order" : price}
         </p>
         <Button
           type="button"
@@ -82,7 +82,7 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
           size="sm"
           onClick={soldOut ? preorder : add}
           disabled={!soldOut && (adding || isLoading)}
-          className="mt-auto h-8 w-full px-1 font-sans text-[8px] uppercase tracking-nf-10"
+          className="mt-auto h-7 w-full px-1 font-sans text-[7px] uppercase tracking-nf-10"
         >
           {soldOut ? "Reserve" : adding ? "Adding…" : "Add"}
         </Button>

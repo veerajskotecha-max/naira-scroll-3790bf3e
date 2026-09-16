@@ -31,18 +31,22 @@ const CACHE_KEY = "naira:reels:v3";
 const CACHE_MS = 1000 * 60 * 60 * 2; // re-sign well before the URLs expire
 
 /** Session cache so a second product page opens the reels instantly, with no round-trip. */
-const readCache = (): Reel[] | undefined => {
+const readCache = (maxAge = CACHE_MS): Reel[] | undefined => {
   if (typeof sessionStorage === "undefined") return undefined;
   try {
     const raw = sessionStorage.getItem(CACHE_KEY);
     if (!raw) return undefined;
     const parsed = JSON.parse(raw) as { at: number; reels: Reel[] };
-    if (Date.now() - parsed.at > CACHE_MS) return undefined;
+    if (Date.now() - parsed.at > maxAge) return undefined;
     return parsed.reels;
   } catch {
     return undefined;
   }
 };
+
+/** Last known reels regardless of age — used so a failed refresh never
+    collapses the Shop the Reel section on a product page. */
+export const readStaleReelCache = (): Reel[] | undefined => readCache(Number.POSITIVE_INFINITY);
 
 const writeCache = (reels: Reel[]) => {
   if (typeof sessionStorage === "undefined") return;

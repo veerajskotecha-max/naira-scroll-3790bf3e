@@ -152,7 +152,7 @@ const MobileRelatedEdit = ({ current, jewellery }: MobileRelatedEditProps) => {
         </h2>
       </header>
 
-      <div className="mx-auto grid max-w-[390px] grid-cols-12 gap-3">
+      <div className="relative mx-auto grid max-w-[390px] grid-cols-12 gap-3">
         <Link to={`/jewellery/${anchor.handle}`} className="group relative col-span-8 row-span-2 block pb-5">
           <div className="aspect-square overflow-hidden bg-muted">
             <ProductImage piece={anchor} sizes="67vw" />
@@ -198,7 +198,7 @@ const MobileRelatedEdit = ({ current, jewellery }: MobileRelatedEditProps) => {
         </Link>
       </div>
 
-      <div className="mt-10 flex justify-center">
+      <div className="relative mt-10 flex justify-center">
         <Button asChild variant="outline" className="h-11 border-foreground px-8 font-sans text-[9px] uppercase tracking-nf-15">
           <Link to="/jewellery">
             Explore all <ArrowUpRight size={13} />

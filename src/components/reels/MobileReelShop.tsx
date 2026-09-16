@@ -204,6 +204,7 @@ const MobileReelShop = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
+  const [inView, setInView] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const { data: reels = [], isLoading } = useReels(enabled);
   const { jewellery } = useLiveJewellery();
@@ -215,18 +216,30 @@ const MobileReelShop = () => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    const observer = new IntersectionObserver(
+    /* Two stages so the reel starts instantly without costing the product page
+       anything up front: the tiny metadata/signed-URL fetch runs well ahead of
+       the section, the multi-megabyte video only once it is actually on screen. */
+    const dataObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setEnabled(true);
-          observer.disconnect();
+          dataObserver.disconnect();
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "1400px 0px" },
     );
-    observer.observe(section);
-    return () => observer.disconnect();
+    const videoObserver = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "150px 0px", threshold: 0.01 },
+    );
+    dataObserver.observe(section);
+    videoObserver.observe(section);
+    return () => {
+      dataObserver.disconnect();
+      videoObserver.disconnect();
+    };
   }, []);
+
 
   const onScroll = useCallback(() => {
     const rail = railRef.current;

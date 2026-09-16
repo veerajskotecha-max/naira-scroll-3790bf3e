@@ -984,7 +984,10 @@ const JewelDetail = () => {
       <MobileReelShop />
 
       {!isMobile && <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />}
-      <FomoPopup suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />
+      <FomoPopup
+        suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
+        mobileStickyVisible={stickyBarVisible}
+      />
       
       <Footer compact />
 

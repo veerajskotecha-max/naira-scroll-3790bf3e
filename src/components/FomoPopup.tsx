@@ -70,9 +70,10 @@ const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
 interface FomoPopupProps {
   suppressed?: boolean;
+  mobileStickyVisible?: boolean;
 }
 
-const FomoPopup = ({ suppressed = false }: FomoPopupProps) => {
+const FomoPopup = ({ suppressed = false, mobileStickyVisible = false }: FomoPopupProps) => {
   const { jewellery } = useLiveJewellery();
   const [item, setItem] = useState<Shown | null>(null);
   const [visible, setVisible] = useState(false);
@@ -157,7 +158,11 @@ const FomoPopup = ({ suppressed = false }: FomoPopupProps) => {
 
   return (
     <div
-      className="fixed bottom-[calc(var(--pdp-sticky-bar-h)+env(safe-area-inset-bottom,0px)+88px)] left-3 z-[39] w-[min(292px,calc(100vw-24px))] md:bottom-6 md:left-6 md:z-[90]"
+      className={`fixed left-3 z-[39] w-[min(280px,calc(100vw-24px))] md:bottom-6 md:left-6 md:top-auto md:z-[90] ${
+        mobileStickyVisible
+          ? "bottom-[calc(var(--pdp-sticky-bar-h)+env(safe-area-inset-bottom,0px)+12px)]"
+          : "top-[166px]"
+      }`}
       style={{
         pointerEvents: "auto",
       }}

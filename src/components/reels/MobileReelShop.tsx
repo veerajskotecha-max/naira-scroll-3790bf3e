@@ -58,7 +58,7 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
       <Link to={`/jewellery/${product.handle}`} className="block aspect-square overflow-hidden bg-muted">
         {image && (
           <img
-            src={shopifyImage(image, 320)}
+            src={shopifyImage(image, 240)}
             alt={product.title}
             className="h-full w-full object-cover"
             loading="lazy"

@@ -119,7 +119,7 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
   };
 
   return (
-    <div className="relative aspect-[9/16] overflow-hidden bg-foreground">
+    <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
       <video
         ref={videoRef}
         src={active ? reel.videoUrl : undefined}
@@ -196,9 +196,25 @@ const MobileReelShop = () => {
 
   const onScroll = useCallback(() => {
     const rail = railRef.current;
-    if (!rail?.clientWidth) return;
-    setActiveIndex(Math.round(rail.scrollLeft / rail.clientWidth));
+    if (!rail) return;
+    const slides = Array.from(rail.querySelectorAll<HTMLElement>("[data-reel-slide]"));
+    if (!slides.length) return;
+    const railCenter = rail.scrollLeft + rail.clientWidth / 2;
+    const closestIndex = slides.reduce((closest, slide, index) => {
+      const center = slide.offsetLeft + slide.offsetWidth / 2;
+      const closestSlide = slides[closest];
+      const closestCenter = closestSlide.offsetLeft + closestSlide.offsetWidth / 2;
+      return Math.abs(center - railCenter) < Math.abs(closestCenter - railCenter) ? index : closest;
+    }, 0);
+    setActiveIndex(closestIndex);
   }, []);
+
+  const goToReel = (index: number) => {
+    const rail = railRef.current;
+    const slide = rail?.querySelectorAll<HTMLElement>("[data-reel-slide]")[index];
+    if (!rail || !slide) return;
+    rail.scrollTo({ left: slide.offsetLeft - 16, behavior: "smooth" });
+  };
 
   if (enabled && !isLoading && reels.length === 0) return null;
 
@@ -210,21 +226,21 @@ const MobileReelShop = () => {
           <p className="font-sans text-[9px] font-medium uppercase tracking-nf-15">Seen on Naira</p>
         </div>
         <h2 id="shop-reels-title" className="font-cormorant text-[32px] italic leading-none text-foreground">Shop the Reel</h2>
-        <p className="mt-3 font-sans text-[10px] uppercase tracking-nf-10 text-muted-foreground">Swipe to discover the next edit</p>
+        <p className="mt-3 font-sans text-[10px] uppercase tracking-nf-10 text-muted-foreground">Swipe through {Math.max(reels.length, 2)} shoppable reels</p>
       </header>
 
       {!enabled || isLoading ? (
-        <div className="mx-4 mt-7 aspect-[9/16] animate-pulse bg-muted" aria-hidden="true" />
+        <div className="mx-4 mt-7 aspect-[4/5] animate-pulse bg-muted" aria-hidden="true" />
       ) : (
         <>
           <div
             ref={railRef}
             onScroll={onScroll}
-            className="scrollbar-hide mt-7 flex snap-x snap-mandatory overflow-x-auto"
+            className="scrollbar-hide mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pr-[15%]"
             style={{ overscrollBehaviorX: "contain" }}
           >
             {reels.map((reel, index) => (
-              <article key={reel.id} className="w-full shrink-0 snap-center px-4">
+              <article key={reel.id} data-reel-slide className="w-[86vw] max-w-[338px] shrink-0 snap-start">
                 <ReelFrame reel={reel} active={index === activeIndex} />
                 <div className={`grid border-x border-b border-border bg-background ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                   {reel.products.slice(0, 3).map((product) => (
@@ -235,21 +251,26 @@ const MobileReelShop = () => {
             ))}
           </div>
           {reels.length > 1 && (
-            <nav className="mt-5 flex items-center justify-center gap-2" aria-label="Choose reel">
-              {reels.map((reel, index) => (
-                <Button
-                  key={reel.id}
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={`View reel ${index + 1}`}
-                  aria-current={index === activeIndex ? "true" : undefined}
-                  onClick={() => railRef.current?.scrollTo({ left: index * (railRef.current?.clientWidth ?? 0), behavior: "smooth" })}
-                  className="h-7 w-7"
-                >
-                  <span className={`block h-1 transition-all duration-300 ${index === activeIndex ? "w-6 bg-primary" : "w-2 bg-muted-foreground/45"}`} />
-                </Button>
-              ))}
+            <nav className="mx-4 mt-5 flex items-center gap-3" aria-label="Choose reel">
+              <p className="w-11 shrink-0 font-sans text-[10px] font-medium tabular-nums text-foreground">
+                {String(activeIndex + 1).padStart(2, "0")} / {String(reels.length).padStart(2, "0")}
+              </p>
+              <div className="flex h-7 flex-1 items-center gap-1" aria-hidden="true">
+                {reels.map((reel, index) => (
+                  <span
+                    key={reel.id}
+                    className={`h-1 flex-1 transition-colors duration-300 ${index <= activeIndex ? "bg-primary" : "bg-border"}`}
+                  />
+                ))}
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => goToReel((activeIndex + 1) % reels.length)}
+                className="h-8 shrink-0 px-2 font-sans text-[9px] uppercase tracking-nf-10"
+              >
+                Next reel
+              </Button>
             </nav>
           )}
         </>

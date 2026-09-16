@@ -736,7 +736,17 @@ const JewelDetail = () => {
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                    {" "}
+                    <button
+                      type="button"
+                      onClick={() => setSizeGuideOpen(true)}
+                      className="underline underline-offset-4"
+                      style={{ color: "hsl(186 35% 28%)" }}
+                    >
+                      Not sure of your size?
+                    </button>
                   </p>
+
 
                 </>
               ) : (

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
@@ -10,7 +10,7 @@ import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, MessageSquare, A
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import RecentlyViewed from "@/components/RecentlyViewed";
-import CustomerReviews, { reviewSummary } from "@/components/CustomerReviews";
+import { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
@@ -20,7 +20,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import ReelPeek from "@/components/reels/ReelPeek";
-import FomoPopup from "@/components/FomoPopup";
+import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 
 
@@ -29,6 +29,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+
+const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 
 
 /* Key facts distilled from the approved data model: finish and stone are
@@ -436,7 +438,18 @@ const JewelDetail = () => {
             }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain" />
+            <img
+              src={shopifyImage(img, 900)}
+              srcSet={shopifySrcSet(img, [480, 720, 900, 1200]) || undefined}
+              sizes="100vw"
+              alt={`${piece.name} view ${i + 1}`}
+              className="w-full h-full object-contain"
+              width={900}
+              height={1200}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+              decoding={i === 0 ? "sync" : "async"}
+            />
           </button>
         ))}
           </div>
@@ -459,16 +472,12 @@ const JewelDetail = () => {
       </span>
       </div>
       {images.length > 1 && (
-        /* Six-pixel grey circles read as decoration, not as position. The active
-           dot stretches into a bar instead of scaling up: the shape difference
-           survives a squint and a sunlit phone screen, where a 40% size bump on
-           a tiny circle does not. Tap targets stay a full 32px either way. */
         <div
-          className="flex justify-center items-center gap-0.5 pt-2.5 pb-1"
+          className="flex items-center gap-2 overflow-x-auto scrollbar-hide px-4 pt-2.5 pb-1"
           role="group"
           aria-label={`${piece.name} images`}
         >
-          {images.map((_, i) => {
+          {images.map((thumb, i) => {
             const active = selectedImage === i;
             return (
               <button
@@ -478,15 +487,17 @@ const JewelDetail = () => {
                 aria-label={`View image ${i + 1} of ${images.length}`}
                 aria-current={active ? "true" : undefined}
                 data-active={active ? "true" : "false"}
-                className="w-8 h-7 flex items-center justify-center"
+                className="h-14 w-14 shrink-0 overflow-hidden border-2 transition-colors"
+                style={{ borderColor: active ? "hsl(0 0% 18%)" : "transparent" }}
               >
-                <span
-                  className="h-[5px] transition-all duration-300 ease-out"
-                  style={{
-                    width: active ? 18 : 5,
-                    borderRadius: 999,
-                    backgroundColor: active ? "hsl(0 0% 18%)" : "hsl(28 12% 76%)",
-                  }}
+                <img
+                  src={shopifyImage(thumb, 120)}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  width={56}
+                  height={56}
+                  loading="lazy"
+                  decoding="async"
                 />
               </button>
             );
@@ -519,7 +530,18 @@ const JewelDetail = () => {
                 style={{ backgroundColor: "#F4EBE2", height: "100%" }}
                 aria-label={`Open ${piece.name} image ${i + 1} full screen`}
               >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
+            <img
+              src={shopifyImage(img, 1000)}
+              srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || undefined}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              alt={`${piece.name} view ${i + 1}`}
+              className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+              width={1000}
+              height={1000}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+              decoding={i === 0 ? "sync" : "async"}
+            />
           </button>
         ))}
       </div>
@@ -979,7 +1001,9 @@ const JewelDetail = () => {
         </div>
       </div>
 
-      <CustomerReviews productName={piece.name} variant="jewellery" />
+      <Suspense fallback={<div className="min-h-[240px] bg-white" aria-hidden="true" />}>
+        <CustomerReviews productName={piece.name} variant="jewellery" />
+      </Suspense>
 
       {/* Related jewellery */}
       <section className="py-16 md:py-20" style={{ backgroundColor: "#FBF3EC" }}>
@@ -992,7 +1016,17 @@ const JewelDetail = () => {
             {related.map((r) => (
               <Link key={r.handle} to={`/jewellery/${r.handle}`} className="group">
                 <div className="aspect-square overflow-hidden" style={{ backgroundColor: "#F4EBE2" }}>
-                  <img src={r.image} alt={r.name} loading="lazy" className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
+                  <img
+                    src={shopifyImage(r.image, 600)}
+                    srcSet={shopifySrcSet(r.image, [320, 480, 600]) || undefined}
+                    sizes="(max-width: 768px) 48vw, 25vw"
+                    alt={r.name}
+                    loading="lazy"
+                    decoding="async"
+                    width={600}
+                    height={600}
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  />
                 </div>
                 <p className="mt-3 text-[10px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>{r.category.toUpperCase()}</p>
                 <h3 className="mt-1 font-cormorant text-[18px] md:text-[20px]" style={{ color: "#1A1614" }}>{r.name}</h3>
@@ -1019,8 +1053,7 @@ const JewelDetail = () => {
       />
 
 
-      <ReelPeek />
-      <FomoPopup />
+      <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />
       
       <Footer />
 

@@ -5,3 +5,4 @@
 - [x] Remove product counts from jewellery scrolling tabs
 - [x] Shorten jewellery PDP by consolidating repeated product, trust, delivery, and recommendation sections
 - [x] Pin Prism Reverie bracelet, Molten Bloom and Woven Gold Hoops at the top of /jewellery
+- [x] Mobile CRO first release: responsive PDP gallery, calm overlays, simplified cart, recoverable checkout handoff

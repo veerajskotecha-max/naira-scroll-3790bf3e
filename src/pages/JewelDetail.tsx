@@ -118,7 +118,7 @@ const JewelDetail = () => {
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
   const [buying, setBuying] = useState(false);
 
   const goBack = () => {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Pause, Play, ShoppingBag, Volume2, VolumeX } from "lucide-react";
+import { ChevronRight, Pause, Play, ShoppingBag, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";

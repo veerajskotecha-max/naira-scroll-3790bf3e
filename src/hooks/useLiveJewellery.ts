@@ -17,6 +17,24 @@ const productImagesFirst = (node: ShopifyProductNode): string[] =>
     .sort((a, b) => Number(a.packaging) - Number(b.packaging) || a.index - b.index)
     .map(({ url }) => url);
 
+/** Per-piece cover picks. Some listings read better with a specific photo
+ * leading the card and the gallery — the shot that sells the piece goes first. */
+const COVER_PICKS: Record<string, RegExp> = {
+  // Bold Nocturne Chain — the on-model shot shows the chain's true weight.
+  "bold-nocturne-chain": /YF5144_2_worn/i,
+  // Solitaire Whisper Studs — the zoomed stud close-up reads far clearer
+  // than the on-model crop the listing currently opens with.
+  "solitaire-whisper-studs": /solitaire-whisper-studs-2\./i,
+};
+
+const coverFirst = (handle: string, urls: string[]): string[] => {
+  const pick = COVER_PICKS[handle];
+  if (!pick) return urls;
+  const i = urls.findIndex((url) => pick.test(url));
+  if (i <= 0) return urls;
+  return [urls[i], ...urls.slice(0, i), ...urls.slice(i + 1)];
+};
+
 /**
  * Overlays LIVE Shopify data (images, price, variant id, availability) on top of
  * the bundled catalogue. The static file is only a first-paint fallback — once
@@ -26,6 +44,7 @@ const productImagesFirst = (node: ShopifyProductNode): string[] =>
 const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => {
   if (!node) return piece;
   const images = productImagesFirst(node);
+  const gallery = coverFirst(piece.handle, images.length ? images : piece.gallery);
   const variant = node.variants.edges[0]?.node;
   const price = variant ? Math.round(Number(variant.price.amount)) : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
@@ -41,8 +60,8 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
     variantId: variant?.id ?? piece.variantId,
     availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
-    image: images[0] ?? piece.image,
-    gallery: images.length ? images : piece.gallery,
+    image: gallery[0] ?? piece.image,
+    gallery,
     description: normalizeMetalCopy(node.description) || piece.description,
     tags: node.tags?.length ? node.tags : piece.tags,
   };
@@ -170,7 +189,7 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
   const price = variant ? Math.round(Number(variant.price.amount)) : Math.round(Number(node.priceRange.minVariantPrice.amount));
   const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
   const compareAtPrice = compareRaw > price ? compareRaw : undefined;
-  const images = productImagesFirst(node);
+  const images = coverFirst(node.handle, productImagesFirst(node));
   const description = normalizeMetalCopy(node.description);
   const parsed = parseDescription(description);
 
@@ -201,6 +220,10 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
 };
 
 
+
+/** Handles whose card cover was deliberately chosen (see COVER_PICKS). The
+ * grid card's packshot-swap must not second-guess them. */
+export const EXPLICIT_COVERS = new Set(Object.keys(COVER_PICKS));
 
 export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
   const { data, isLoading } = useQuery({

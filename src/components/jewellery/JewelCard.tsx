@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
+import { EXPLICIT_COVERS } from "@/hooks/useLiveJewellery";
 
 /* Shopify CDN images ship at their upload size; asking the CDN for a
    grid-sized render keeps packshots crisp on retina without the weight. */
@@ -54,7 +55,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const isWorn = (g: string) => (anyNamed ? named(g) : g === gallery[0]);
   const packshot = gallery.find((g) => !isWorn(g)) ?? null;
 
-  const frontImg = (isWorn(piece.image) && packshot ? packshot : piece.image) ?? piece.image;
+  const frontImg = (EXPLICIT_COVERS.has(piece.handle)
+    ? piece.image
+    : (isWorn(piece.image) && packshot ? packshot : piece.image)) ?? piece.image;
 
   const zircone = piece.handle.startsWith("zircone");
   /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they

@@ -54,7 +54,7 @@ const LAST_NAMES = [
 
 const FIRST_DELAY = 5000;
 const GAP = 60000;
-const VISIBLE_FOR = 3500;
+const VISIBLE_FOR = 2300;
 const SNOOZE = 60000;
 
 interface Shown {
@@ -68,7 +68,11 @@ interface Shown {
 
 const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 
-const FomoPopup = () => {
+interface FomoPopupProps {
+  suppressed?: boolean;
+}
+
+const FomoPopup = ({ suppressed = false }: FomoPopupProps) => {
   const { jewellery } = useLiveJewellery();
   const [item, setItem] = useState<Shown | null>(null);
   const [visible, setVisible] = useState(false);
@@ -141,46 +145,47 @@ const FomoPopup = () => {
     schedule(FIRST_DELAY, showNext);
 
     return clearAll;
-  }, []);
+  }, [jewellery.length]);
 
-  if (!item || !visible) return null;
+  /* Product dialogs and the cart are higher-intent moments. Never compete
+     with them; if one opens while the notice is showing, remove it at once. */
+  useEffect(() => {
+    if (suppressed) setVisible(false);
+  }, [suppressed]);
+
+  if (!item || !visible || suppressed) return null;
 
   return (
     <div
-      className="fixed left-3 right-3 top-[96px] z-[90] md:bottom-6 md:left-6 md:right-auto md:top-auto"
+      className="fixed bottom-[calc(var(--pdp-sticky-bar-h)+env(safe-area-inset-bottom,0px)+88px)] left-3 z-[39] w-[min(292px,calc(100vw-24px))] md:bottom-6 md:left-6 md:z-[90]"
       style={{
-        pointerEvents: visible ? "auto" : "none",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(-12px)",
-        transition: "opacity 420ms ease, transform 420ms ease",
+        pointerEvents: "auto",
       }}
       aria-live="polite"
     >
       <div
-        className="relative flex w-full max-w-full items-center gap-3 bg-white/95 p-2 pr-8 backdrop-blur md:max-w-[300px]"
-        style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.14)", border: "1px solid hsl(0 0% 92%)" }}
+        className="relative flex w-full items-center gap-2.5 border border-border bg-background/95 p-1.5 pr-8 shadow-md backdrop-blur-md"
       >
         <Link to={item.to} className="shrink-0">
           <img
             src={item.image}
             alt={item.title}
-            className="h-12 w-12 object-cover"
+            className="h-11 w-11 object-cover"
             loading="lazy"
             decoding="async"
           />
         </Link>
         <div className="min-w-0">
-          <p className="truncate text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 38%)" }}>
+          <p className="truncate text-[10px] text-muted-foreground">
             {item.name} from {item.city}
           </p>
           <Link
             to={item.to}
-            className="block truncate font-cormorant text-[15px] leading-snug"
-            style={{ color: "hsl(0 0% 12%)" }}
+            className="block truncate font-cormorant text-[14px] leading-snug text-foreground"
           >
             just bought the {item.title}
           </Link>
-          <p className="text-[10px] uppercase tracking-[0.16em]" style={{ color: "hsl(0 0% 55%)" }}>
+          <p className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
             {item.minutes === 1 ? "1 min ago" : `${item.minutes} mins ago`}
           </p>
         </div>
@@ -191,8 +196,7 @@ const FomoPopup = () => {
             snoozeUntil.current = Date.now() + SNOOZE;
           }}
           aria-label="Dismiss notification"
-          className="absolute right-1.5 top-1.5 p-1"
-          style={{ color: "hsl(0 0% 55%)" }}
+          className="absolute right-0 top-0 flex h-9 w-9 items-center justify-center text-muted-foreground"
         >
           <X size={13} />
         </button>

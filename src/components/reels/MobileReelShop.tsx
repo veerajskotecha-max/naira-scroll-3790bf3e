@@ -305,7 +305,13 @@ const MobileReelShop = () => {
                     isActive ? "opacity-100 shadow-sm" : "opacity-60"
                   }`}
                 >
-                  <ReelFrame reel={reel} active={isActive} />
+                  {/* Active reel plus its immediate neighbour load, so a swipe
+                      is instant while nothing else downloads. */}
+                  <ReelFrame
+                    reel={reel}
+                    active={isActive}
+                    canLoad={inView && Math.abs(index - activeIndex) <= 1}
+                  />
                   <div className={`grid ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                     {reel.products.slice(0, 3).map((product) => (
                       <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />

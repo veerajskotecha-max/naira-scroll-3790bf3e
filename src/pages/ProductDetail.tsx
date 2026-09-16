@@ -18,6 +18,7 @@ import ProductDetails, { type ProductSelection } from "@/components/product/Prod
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { jewellery as staticJewellery } from "@/data/jewellery";
 import ComingSoon from "./ComingSoon";
 import ReelPeek from "@/components/reels/ReelPeek";
 

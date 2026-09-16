@@ -47,13 +47,17 @@ const Navbar = ({ scrolled }: NavbarProps) => {
         <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-10">
           {/* Left: hamburger (mobile) / nav links (desktop) */}
           <div className="flex items-center">
+            {/* Icon buttons carry a 44px hit area through padding and pull it
+                back with a negative margin, so the thumb target grows without
+                moving anything on screen. */}
             <button
-              className="lg:hidden opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="lg:hidden -m-3 p-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
+
             <div className="hidden lg:flex items-center gap-[30px] lg:gap-[34px]">
               {leftLinks.map((link) =>
                 link.mega ? (

@@ -29,10 +29,10 @@ const categorySlugMap: Record<string, string> = {
 };
 const availabilityOptions = ["In Stock", "Sold Out"];
 
-/* Merchandised lead: the Prism Rivière bracelet opens the default Shop All
-   grid, mirroring /jewellery. An explicit sort or category filter chosen by
-   the shopper always wins over the pinning. */
-const PRISM_RIVIERE_HANDLE = "riviere-of-light-bracelet";
+/* Merchandised lead: the multi-colour Prism Rivière bracelet opens the
+   default Shop All grid, mirroring /jewellery. An explicit sort or category
+   filter chosen by the shopper always wins over the pinning. */
+const PRISM_RIVIERE_HANDLE = "prism-riviere-bracelet";
 
 /* ───── Collapsible Filter Section ───── */
 const FilterSection = ({
@@ -416,8 +416,9 @@ const ShopAll = () => {
         </section>
       )}
 
-      {showIndoWestern && (
-        <>
+      {/* The toolbar + grid render on every shop view. /shop/jewellery used to
+          fall through here and show nothing below the header — an empty page. */}
+      <>
 
 
       {/* ── Fixed Shop Toolbar ── */}
@@ -774,8 +775,7 @@ const ShopAll = () => {
           </div>
         </div>
       </div>
-        </>
-      )}
+      </>
 
       {/* Customisation CTA – nudge users who didn't find a fit */}
       <CustomizationCTA />

@@ -46,10 +46,10 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
-/* Merchandised leads: the Prism Rivière bracelet, Molten Bloom and Woven Gold
-   Hoops open the grid on the default Featured sort. An explicit sort chosen by
-   the shopper always wins over the pinning. */
-const FEATURED_LEADS = ["riviere-of-light-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
+/* Merchandised leads: the multi-colour Prism Rivière bracelet, Molten Bloom
+   and Woven Gold Hoops open the grid on the default Featured sort. An explicit
+   sort chosen by the shopper always wins over the pinning. */
+const FEATURED_LEADS = ["prism-riviere-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
 
 /* One-tap budget chips beside the category tabs. */
 type PriceBand = { key: string; label: string; min: number | null; max: number | null };

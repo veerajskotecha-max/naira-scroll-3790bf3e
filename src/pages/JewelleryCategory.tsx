@@ -17,7 +17,7 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
    first thing on the page. Matched on the live Shopify title, with the bundled
    handle as a fallback if the title is ever renamed. */
 const PINNED: { match: string[]; handle: string }[] = [
-  { match: ["prism riv", "prism"], handle: "riviere-of-light-bracelet" },
+  { match: ["prism riv", "prism"], handle: "prism-riviere-bracelet" },
   { match: ["heartbead", "heart bead"], handle: "cuban-pearl-bracelet" },
 ];
 

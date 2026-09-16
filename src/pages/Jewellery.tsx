@@ -50,6 +50,20 @@ const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Ear
    the shopper always wins over the pinning. */
 const FEATURED_LEADS = ["riviere-of-light-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
 
+/* One-tap budget chips beside the category tabs. */
+type PriceBand = { key: string; label: string; min: number | null; max: number | null };
+const PRICE_BANDS: PriceBand[] = [
+  { key: "under-999", label: "UNDER ₹999", min: null, max: 999 },
+  { key: "999-1499", label: "₹999–1,499", min: 999, max: 1499 },
+  { key: "1500-plus", label: "₹1,500+", min: 1500, max: null },
+];
+const bandKey = (f: JewelFilters) =>
+  PRICE_BANDS.find((b) => (b.min ?? null) === (f.minPrice ?? null) && (b.max ?? null) === (f.maxPrice ?? null))?.key ?? null;
+
+/* The grid opens with one screen-and-a-bit of pieces; the rest load on tap.
+   Rendering all 57 tiles up front pulled megabytes of images nobody scrolled to. */
+const PAGE_SIZE = 12;
+
 const Jewellery = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigationType = useNavigationType();

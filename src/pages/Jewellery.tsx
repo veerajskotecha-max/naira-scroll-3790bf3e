@@ -89,9 +89,11 @@ const Jewellery = () => {
   const activeFilters: JewelFilters = useMemo(() => {
     const sortParam = searchParams.get("sort");
     const max = searchParams.get("under");
+    const min = searchParams.get("over");
     return {
       sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
       maxPrice: max ? Number(max) : null,
+      minPrice: min ? Number(min) : null,
       inStockOnly: searchParams.get("stock") === "in",
       tag: searchParams.get("tag"),
     };
@@ -101,9 +103,21 @@ const Jewellery = () => {
     const params = new URLSearchParams(searchParams);
     next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
     next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
+    next.minPrice == null ? params.delete("over") : params.set("over", String(next.minPrice));
     next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
     next.tag ? params.set("tag", next.tag) : params.delete("tag");
     setSearchParams(params, { replace: true });
+  };
+
+  /* One-tap price bands. A shopper arriving from an ad knows their budget
+     long before they know a category. */
+  const selectBand = (band: PriceBand) => {
+    const current = bandKey(activeFilters);
+    setFilters({
+      ...activeFilters,
+      minPrice: current === band.key ? null : band.min,
+      maxPrice: current === band.key ? null : band.max,
+    });
   };
 
   const inCategory = useMemo(

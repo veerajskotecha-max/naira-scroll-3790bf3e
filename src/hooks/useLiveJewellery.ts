@@ -3,6 +3,20 @@ import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
+/** Shopify occasionally places the Naira gift-box photo before the product
+ * photo. Packaging is useful in the gallery, but must never become the cover. */
+const productImagesFirst = (node: ShopifyProductNode): string[] =>
+  node.images.edges
+    .map((edge, index) => ({
+      url: edge.node.url,
+      index,
+      packaging: /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton)/i.test(
+        `${edge.node.url} ${edge.node.altText ?? ""}`
+      ),
+    }))
+    .sort((a, b) => Number(a.packaging) - Number(b.packaging) || a.index - b.index)
+    .map(({ url }) => url);
+
 /**
  * Overlays LIVE Shopify data (images, price, variant id, availability) on top of
  * the bundled catalogue. The static file is only a first-paint fallback — once
@@ -11,7 +25,7 @@ import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
  */
 const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => {
   if (!node) return piece;
-  const images = node.images.edges.map((e) => e.node.url);
+  const images = productImagesFirst(node);
   const variant = node.variants.edges[0]?.node;
   const price = variant ? Math.round(Number(variant.price.amount)) : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
@@ -156,7 +170,7 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
   const price = variant ? Math.round(Number(variant.price.amount)) : Math.round(Number(node.priceRange.minVariantPrice.amount));
   const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
   const compareAtPrice = compareRaw > price ? compareRaw : undefined;
-  const images = node.images.edges.map((e) => e.node.url);
+  const images = productImagesFirst(node);
   const description = normalizeMetalCopy(node.description);
   const parsed = parseDescription(description);
 

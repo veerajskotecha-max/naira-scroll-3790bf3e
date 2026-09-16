@@ -145,7 +145,7 @@ const FomoPopup = ({ suppressed = false }: FomoPopupProps) => {
     schedule(FIRST_DELAY, showNext);
 
     return clearAll;
-  }, []);
+  }, [jewellery.length]);
 
   /* Product dialogs and the cart are higher-intent moments. Never compete
      with them; if one opens while the notice is showing, remove it at once. */

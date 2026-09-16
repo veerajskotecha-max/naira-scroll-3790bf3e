@@ -166,13 +166,19 @@ export const getFastrrCheckoutUrl = async (
     const ready = await loadFastrrScript();
     if (!ready || typeof window.getOneClickCheckoutUrl !== "function") return null;
 
+    /* Their script ignores a utmParams field, so campaign values ride along
+       inside cartAttributes, which lands on the Shopify order. */
     const utmParams = currentUtmParams();
+    const cartAttributes = fastrrCartAttributes();
+    if (utmParams) cartAttributes.utm_params = utmParams;
+
     const payload: FastrrPayload = {
       items: lines,
       domain: FASTRR_DOMAIN,
-      cartAttributes: fastrrCartAttributes(),
+      webUrl: typeof window === "undefined" ? undefined : window.location.origin,
+      cartAttributes,
+      encodingRequired: true,
       ...(options.couponCode ? { couponCode: options.couponCode } : {}),
-      ...(utmParams ? { utmParams } : {}),
     };
 
     const url = window.getOneClickCheckoutUrl(payload);

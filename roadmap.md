@@ -9,3 +9,4 @@
 - [x] Match the compact Shopify-style mobile PDP: square image slides, overlay dots, quantity beside Add to Cart, full-width Shop Now
 - [x] Shorten the review section with a featured review, rating stars, expandable review wall, photo submission, and live updates
 - [x] Simplify jewellery PDP footer and page length: compact Naira/contact/policies footer, one recommendation row, no duplicate help or recently viewed section
+- [x] Prevent packaging or gift-box photos from becoming product covers when a listing has only two images

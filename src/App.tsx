@@ -76,7 +76,7 @@ const AppShell = () => {
       <PageCurtain />
       <FilmGrain />
       <ScrollBloom />
-      <FeatherCursor />
+      
       <Header />
       <CartDrawer />
       <WishlistDrawer />

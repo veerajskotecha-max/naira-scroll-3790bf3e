@@ -21,6 +21,11 @@ import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import ComingSoon from "./ComingSoon";
 import ReelPeek from "@/components/reels/ReelPeek";
 
+/* Ad clicks land on /products/<handle>. For a handle we already know is
+   jewellery we hop to the real page on the first render, before the Shopify
+   lookup resolves — waiting for the fetch showed paid traffic a blank beat. */
+const knownJewelleryHandles = new Set(staticJewellery.map((p) => p.handle));
+
 const ProductDetail = () => {
   const [selection, setSelection] = useState<ProductSelection | null>(null);
   const { id } = useParams();
@@ -30,10 +35,12 @@ const ProductDetail = () => {
     else navigate("/shop");
   };
 
+  const earlyJewellery = Boolean(id && knownJewelleryHandles.has(id));
+
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ["shopify-product", id],
     queryFn: () => fetchShopifyProductByHandle(id ?? ""),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && !earlyJewellery,
     staleTime: 1000 * 60 * 5,
     retry: 1,
   });

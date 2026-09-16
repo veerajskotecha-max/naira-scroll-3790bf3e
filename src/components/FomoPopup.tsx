@@ -157,7 +157,7 @@ const FomoPopup = ({ suppressed = false }: FomoPopupProps) => {
 
   return (
     <div
-      className="fixed bottom-[calc(var(--pdp-sticky-bar-h)+env(safe-area-inset-bottom,0px)+10px)] left-3 z-[39] w-[min(292px,calc(100vw-24px))] md:bottom-6 md:left-6 md:z-[90]"
+      className="fixed bottom-[calc(var(--pdp-sticky-bar-h)+env(safe-area-inset-bottom,0px)+88px)] left-3 z-[39] w-[min(292px,calc(100vw-24px))] md:bottom-6 md:left-6 md:z-[90]"
       style={{
         pointerEvents: "auto",
       }}

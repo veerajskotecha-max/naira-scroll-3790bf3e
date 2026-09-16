@@ -221,6 +221,10 @@ const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
 
 
 
+/** Handles whose card cover was deliberately chosen (see COVER_PICKS). The
+ * grid card's packshot-swap must not second-guess them. */
+export const EXPLICIT_COVERS = new Set(Object.keys(COVER_PICKS));
+
 export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],

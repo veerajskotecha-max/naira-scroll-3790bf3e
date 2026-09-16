@@ -91,11 +91,21 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
   );
 };
 
-const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
+const ReelFrame = ({
+  reel,
+  active,
+  canLoad,
+}: {
+  reel: Reel;
+  active: boolean;
+  /** Only the reel actually on screen downloads video — everything else stays a poster. */
+  canLoad: boolean;
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -106,7 +116,7 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
     }
     video.muted = muted;
     void video.play().then(() => setPaused(false)).catch(() => undefined);
-  }, [active, muted]);
+  }, [active, canLoad, muted]);
 
   const togglePlayback = () => {
     const video = videoRef.current;
@@ -120,23 +130,50 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
 
   return (
     <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
-      <video
-        ref={videoRef}
-        src={active ? reel.videoUrl : undefined}
-        poster={reel.posterUrl ?? undefined}
-        className="h-full w-full object-cover"
-        playsInline
-        loop
-        muted={muted}
-        preload={active ? "metadata" : "none"}
-        onClick={togglePlayback}
-        onTimeUpdate={(event) => {
-          const video = event.currentTarget;
-          if (video.duration) setProgress((video.currentTime / video.duration) * 100);
-        }}
-      />
+      {/* Poster stays painted underneath, so the frame is never blank while the
+          video streams in — and it doubles as the placeholder for inactive reels. */}
+      {reel.posterUrl && (
+        <img
+          src={reel.posterUrl}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      {canLoad && (
+        <video
+          ref={videoRef}
+          src={reel.videoUrl}
+          poster={reel.posterUrl ?? undefined}
+          className={`relative h-full w-full object-cover transition-opacity duration-500 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
+          playsInline
+          loop
+          muted={muted}
+          preload="auto"
+          onClick={togglePlayback}
+          onLoadedData={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
+          onWaiting={() => setReady(false)}
+          onPlaying={() => setReady(true)}
+          onTimeUpdate={(event) => {
+            const video = event.currentTarget;
+            if (video.duration) setProgress((video.currentTime / video.duration) * 100);
+          }}
+        />
+      )}
+      {/* Soft shimmer + spinner over the poster until the first frame can play. */}
+      {canLoad && !ready && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25 backdrop-blur-[1px]">
+          <span className="absolute inset-0 animate-pulse bg-gradient-to-br from-background/10 via-transparent to-background/10" />
+          <span className="h-6 w-6 animate-spin rounded-full border-2 border-background/40 border-t-background" />
+        </div>
+      )}
       <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
-        <div className="h-full bg-background" style={{ width: `${progress}%` }} />
+        <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
       </div>
       <button
         type="button"
@@ -162,10 +199,12 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
   );
 };
 
+
 const MobileReelShop = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
+  const [inView, setInView] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const { data: reels = [], isLoading } = useReels(enabled);
   const { jewellery } = useLiveJewellery();
@@ -177,18 +216,30 @@ const MobileReelShop = () => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    const observer = new IntersectionObserver(
+    /* Two stages so the reel starts instantly without costing the product page
+       anything up front: the tiny metadata/signed-URL fetch runs well ahead of
+       the section, the multi-megabyte video only once it is actually on screen. */
+    const dataObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setEnabled(true);
-          observer.disconnect();
+          dataObserver.disconnect();
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "1400px 0px" },
     );
-    observer.observe(section);
-    return () => observer.disconnect();
+    const videoObserver = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "150px 0px", threshold: 0.01 },
+    );
+    dataObserver.observe(section);
+    videoObserver.observe(section);
+    return () => {
+      dataObserver.disconnect();
+      videoObserver.disconnect();
+    };
   }, []);
+
 
   const onScroll = useCallback(() => {
     const rail = railRef.current;
@@ -254,7 +305,13 @@ const MobileReelShop = () => {
                     isActive ? "opacity-100 shadow-sm" : "opacity-60"
                   }`}
                 >
-                  <ReelFrame reel={reel} active={isActive} />
+                  {/* Only the reel on screen streams; the rest stay posters, so a
+                      swipe reveals a poster first, then plays. */}
+                  <ReelFrame
+                    reel={reel}
+                    active={isActive}
+                    canLoad={inView && isActive}
+                  />
                   <div className={`grid ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                     {reel.products.slice(0, 3).map((product) => (
                       <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />

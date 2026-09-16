@@ -136,7 +136,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
               {wishlistCount > 0 && (
                 <span
-                  className="absolute -top-0.5 -right-0.5 w-[7px] h-[7px] rounded-full animate-scale-in"
+                  className="absolute top-[10px] right-[10px] w-[7px] h-[7px] rounded-full animate-scale-in"
                   style={{ backgroundColor: "hsl(186 35% 28%)" }}
                 />
               )}

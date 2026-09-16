@@ -119,7 +119,7 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
   };
 
   return (
-    <div className="relative aspect-[9/16] overflow-hidden bg-foreground">
+    <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
       <video
         ref={videoRef}
         src={active ? reel.videoUrl : undefined}
@@ -230,7 +230,7 @@ const MobileReelShop = () => {
       </header>
 
       {!enabled || isLoading ? (
-        <div className="mx-4 mt-7 aspect-[9/16] animate-pulse bg-muted" aria-hidden="true" />
+        <div className="mx-4 mt-7 aspect-[4/5] animate-pulse bg-muted" aria-hidden="true" />
       ) : (
         <>
           <div

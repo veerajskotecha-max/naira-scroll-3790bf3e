@@ -95,43 +95,28 @@ const CartDrawer = () => {
           </div>
         ) : (
           <>
-            {/* Flat shipping notice */}
-            <div className="shrink-0 px-5 py-2.5" style={{ backgroundColor: "hsl(33 30% 97%)" }}>
-              <p className="text-[12px] flex items-center gap-1.5" style={{ color: "hsl(0 0% 38%)" }}>
-                <Truck size={13} strokeWidth={1.5} />
-                Flat shipping of{" "}
-                <strong className="font-semibold" style={{ color: "hsl(186 35% 28%)" }}>
-                  {formatPrice(SHIPPING_CHARGE)}
-                </strong>{" "}
-                applies to every order
-              </p>
-            </div>
-
-
-            <Separator className="shrink-0" />
-
             {/* Scroll region: cart items only — footer CTA always stays visible */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
 
               {/* Lines sit against the summary rather than floating at the top
                   of an empty panel, so a single-item cart reads as one block. */}
-              <div className="flex min-h-full flex-col justify-end px-5 py-4 space-y-4">
+              <div className="flex flex-col px-5 py-4 space-y-4">
 
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.size}`} className="flex gap-3">
+                  <div key={`${item.id}-${item.size}`} className="flex gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-[72px] h-[90px] object-cover shrink-0"
+                      className="h-[76px] w-[76px] shrink-0 object-cover"
                       width={72}
                       height={90}
                       loading="lazy"
                     />
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div>
-                        <p className="font-cormorant text-[15px] font-semibold truncate" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
+                        <p className="line-clamp-2 font-cormorant text-[15px] font-semibold leading-tight" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
                         {lineOptions(item) ? <p className="text-[12px] mt-0.5 truncate" style={{ color: "hsl(0 0% 55%)" }}>{lineOptions(item)}</p> : null}
-                        <p className="font-cormorant text-[15px] font-bold mt-1" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
+                        <p className="mt-1 font-cormorant text-[15px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
@@ -139,7 +124,7 @@ const CartDrawer = () => {
                           <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
                           <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Increase quantity"><Plus size={12} /></button>
                         </div>
-                        <button onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="p-2 transition-colors hover:bg-muted min-h-[40px] min-w-[40px] flex items-center justify-center disabled:opacity-50" aria-label={`Remove ${item.name}`}>
+                        <button onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50" aria-label={`Remove ${item.name}`}>
                           <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
                         </button>
                       </div>
@@ -152,12 +137,12 @@ const CartDrawer = () => {
 
             {/* Footer — always visible above the fold */}
             <div
-              className="shrink-0 border-t px-5 pt-3 space-y-2.5 pb-[max(12px,env(safe-area-inset-bottom))]"
+              className="shrink-0 space-y-2 border-t px-5 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]"
               style={{ borderColor: "hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 100%)" }}
             >
               {/* Delivery — a named date, not a speed. Shoppers buying a gift
                   stall at checkout to work the days out themselves. */}
-              <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
+              <div className="flex items-center gap-2 border border-border bg-muted/40 px-3 py-2">
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
                   Order today, arrives by <strong className="font-semibold">{arrivesBy}</strong>
@@ -167,24 +152,22 @@ const CartDrawer = () => {
               {/* Promo code */}
               <CartPromoField />
 
-              {/* Subtotal */}
-              <div className="flex items-center justify-between">
-                <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Subtotal</span>
-                <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(subtotal)}</span>
-              </div>
-              {/* Shipping */}
-              <div className="flex items-center justify-between">
-                <span className="text-[13px]" style={{ color: "hsl(0 0% 40%)" }}>Shipping</span>
-                <span className="text-[13px] font-medium" style={{ color: "hsl(0 0% 25%)" }}>{formatPrice(SHIPPING_CHARGE)}</span>
-              </div>
-              {discountAmount > 0 && (
+              <div className="space-y-1 text-[12px] text-muted-foreground">
                 <div className="flex items-center justify-between">
-                  <span className="text-[13px]" style={{ color: "hsl(142 50% 32%)" }}>
-                    {promoCode} ({Math.round(discountRate * 100)}% off)
-                  </span>
-                  <span className="text-[13px] font-medium" style={{ color: "hsl(142 50% 32%)" }}>−{formatPrice(discountAmount)}</span>
+                  <span>Subtotal</span>
+                  <span className="text-foreground">{formatPrice(subtotal)}</span>
                 </div>
-              )}
+                <div className="flex items-center justify-between">
+                  <span>Insured shipping</span>
+                  <span className="text-foreground">{formatPrice(SHIPPING_CHARGE)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex items-center justify-between text-primary">
+                    <span>{promoCode} ({Math.round(discountRate * 100)}% off)</span>
+                    <span>−{formatPrice(discountAmount)}</span>
+                  </div>
+                )}
+              </div>
               {/* Total */}
               <div className="flex items-center justify-between pt-1.5 border-t" style={{ borderColor: "hsl(0 0% 90%)" }}>
                 <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Total</span>
@@ -203,19 +186,9 @@ const CartDrawer = () => {
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
-              {/* One reassurance line under the button: the last doubt before
-                  the shopper leaves for the payment page. */}
-              <p className="text-center text-[11px] leading-relaxed" style={{ color: "hsl(0 0% 45%)" }}>
-                Delivery in 3–5 working days · ₹150 insured shipping · 7-day returns
-              </p>
-              {/* Trust row */}
-              <div className="flex items-center justify-center gap-2 flex-wrap">
-                {["UPI", "COD", "VISA", "MC", "RAZORPAY"].map((b) => (
-                  <span key={b} className="px-1.5 py-0.5 text-[9px] font-bold border rounded tracking-wide" style={{ borderColor: "hsl(0 0% 82%)", color: "hsl(0 0% 45%)" }}>{b}</span>
-                ))}
-                <span className="flex items-center gap-1 text-[10px]" style={{ color: "hsl(0 0% 55%)" }}>
-                  <Shield size={10} strokeWidth={1.5} /> Secure checkout
-                </span>
+              <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
+                <Shield size={11} strokeWidth={1.5} />
+                <span>Secure payments · UPI · Cards · COD</span>
               </div>
               <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[36px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>
                 Continue Shopping

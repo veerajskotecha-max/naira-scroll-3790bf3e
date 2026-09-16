@@ -7,3 +7,4 @@
 - [x] Pin Prism Reverie bracelet, Molten Bloom and Woven Gold Hoops at the top of /jewellery
 - [x] Mobile CRO first release: responsive PDP gallery, calm overlays, simplified cart, recoverable checkout handoff
 - [x] Match the compact Shopify-style mobile PDP: square image slides, overlay dots, quantity beside Add to Cart, full-width Shop Now
+- [x] Shorten the review section with a featured review, rating stars, expandable review wall, photo submission, and live updates

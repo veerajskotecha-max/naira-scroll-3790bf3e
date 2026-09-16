@@ -153,7 +153,7 @@ const ReelFrame = ({
           playsInline
           loop
           muted={muted}
-          preload={active ? "auto" : "none"}
+          preload={active ? "auto" : "metadata"}
           onClick={togglePlayback}
           onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}

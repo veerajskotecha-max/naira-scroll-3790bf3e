@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing } from "@/data/ringFit";
 import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
+import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
 
 const PREORDER_WHATSAPP = "919561557935";
@@ -232,7 +232,11 @@ const MobileReelShop = () => {
   const [enabled, setEnabled] = useState(false);
   const [inView, setInView] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data: reels = [], isLoading } = useReels(enabled);
+  const { data, isLoading, isError, isSuccess } = useReels(enabled);
+  /* If the refresh fails we keep the last reels we saw rather than letting the
+     whole section disappear mid-page. */
+  const fallback = useMemo(() => (isError ? readStaleReelCache() ?? [] : []), [isError]);
+  const reels = data?.length ? data : fallback;
   const { jewellery } = useLiveJewellery();
   const liveByHandle = useMemo(
     () => new Map(jewellery.map((product) => [product.handle, product])),
@@ -289,7 +293,9 @@ const MobileReelShop = () => {
     rail.scrollTo({ left: slide.offsetLeft - 16, behavior: "smooth" });
   };
 
-  if (enabled && !isLoading && reels.length === 0) return null;
+  /* Only hide when we know for certain there is nothing to show. A loading or
+     failed fetch keeps the section (and its placeholder) in place. */
+  if (isSuccess && reels.length === 0) return null;
 
   return (
     <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">
@@ -310,7 +316,7 @@ const MobileReelShop = () => {
         )}
       </header>
 
-      {!enabled || isLoading ? (
+      {!enabled || isLoading || reels.length === 0 ? (
         <div className="mx-4 mt-5 aspect-[4/5] max-w-[236px] animate-pulse bg-muted" aria-hidden="true" />
       ) : (
         <>

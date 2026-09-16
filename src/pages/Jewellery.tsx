@@ -163,13 +163,15 @@ const Jewellery = () => {
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [active, activeFilters]);
   const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
 
-  /* Six in-stock leads, shown above the filters so the very first screen has a
-     piece, a price and a way to buy. */
+  /* Six leads, shown above the filters so the very first screen has a
+     piece, a price and a way to buy. Pinned leads (Prism Rivière, Molten
+     Bloom, Woven Gold) always show — even sold out, where the card carries
+     its pre-order treatment — so the row never loses its hero pieces. */
   const bestSellers = useMemo(() => {
-    const inStock = jewellery.filter((p) => p.availableForSale !== false);
     const leads = FEATURED_LEADS
-      .map((handle) => inStock.find((p) => p.handle === handle))
-      .filter((p): p is (typeof inStock)[number] => Boolean(p));
+      .map((handle) => jewellery.find((p) => p.handle === handle))
+      .filter((p): p is (typeof jewellery)[number] => Boolean(p));
+    const inStock = jewellery.filter((p) => p.availableForSale !== false);
     const rest = inStock.filter((p) => !FEATURED_LEADS.includes(p.handle));
     const tagged = rest.filter((p) => p.tag === "BESTSELLER" || p.tag === "NEW");
     const others = rest.filter((p) => p.tag !== "BESTSELLER" && p.tag !== "NEW");

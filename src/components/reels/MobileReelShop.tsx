@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing } from "@/data/ringFit";
 import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
+import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
 
 const PREORDER_WHATSAPP = "919561557935";

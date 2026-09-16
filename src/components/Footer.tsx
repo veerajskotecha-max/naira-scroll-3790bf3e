@@ -71,7 +71,13 @@ const SocialIcon = ({
   </a>
 );
 
-const Footer = () => {
+const compactPolicyLinks = [
+  { label: "Returns", to: "/exchange-return-policy" },
+  { label: "Privacy", to: "/privacy" },
+  { label: "Terms", to: "/terms" },
+];
+
+const Footer = ({ compact = false }: { compact?: boolean }) => {
   const [email, setEmail] = useState("");
 
   const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
@@ -99,6 +105,39 @@ const Footer = () => {
       </ul>
     </div>
   );
+
+  if (compact) {
+    return (
+      <footer className="w-full py-8 md:py-10" style={{ backgroundColor: SAGE }}>
+        <div className="max-w-[1200px] mx-auto px-5 md:px-10">
+          <div className="flex flex-col items-center gap-5 text-center md:flex-row md:justify-between md:text-left">
+            <Link to="/" aria-label="Naira home">
+              <img
+                src={nairaLogo}
+                alt="NAIRA"
+                loading="lazy"
+                decoding="async"
+                className="w-[88px] h-auto brightness-0 invert"
+              />
+            </Link>
+            <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+              <Link to="/contact" className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
+                Contact Us
+              </Link>
+              {compactPolicyLinks.map((link) => (
+                <Link key={link.label} to={link.to} className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <p className="mt-6 text-center font-cormorant text-[12px]" style={{ color: CREAM_FAINT }}>
+            © 2026 NAIRA. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer

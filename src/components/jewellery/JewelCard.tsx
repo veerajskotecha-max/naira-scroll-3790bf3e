@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
+import { EXPLICIT_COVERS } from "@/hooks/useLiveJewellery";
 
 /* Shopify CDN images ship at their upload size; asking the CDN for a
    grid-sized render keeps packshots crisp on retina without the weight. */

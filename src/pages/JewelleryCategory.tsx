@@ -17,7 +17,7 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
    first thing on the page. Matched on the live Shopify title, with the bundled
    handle as a fallback if the title is ever renamed. */
 const PINNED: { match: string[]; handle: string }[] = [
-  { match: ["prism riv", "prism"], handle: "riviere-of-light-bracelet" },
+  { match: ["prism riv", "prism"], handle: "prism-riviere-bracelet" },
   { match: ["heartbead", "heart bead"], handle: "cuban-pearl-bracelet" },
 ];
 
@@ -114,7 +114,10 @@ const JewelleryCategory = () => {
             <header className="pb-7 pt-6 md:pb-9 md:pt-8">
               <p className="text-[10px] tracking-[0.4em] text-[#9A7634]" style={jost}>{landing.kicker}</p>
               <h1 className="mt-3 text-[32px] leading-[1.04] md:text-[54px]" style={velista}>{landing.h1}</h1>
-              <p className="mt-4 max-w-xl text-[15px] leading-[1.7] text-[#1A1614]/70 md:text-[18px]" style={editorial}>
+              {/* On a phone the opening copy and the proof chips pushed the
+                  first product a full screen down; both stay for wider
+                  screens and for crawlers, hidden only on mobile. */}
+              <p className="mt-4 hidden max-w-xl text-[15px] leading-[1.7] text-[#1A1614]/70 sm:block md:text-[18px]" style={editorial}>
                 {landing.lead ?? landing.intro[0]}
               </p>
 
@@ -125,7 +128,7 @@ const JewelleryCategory = () => {
                 </p>
               )}
 
-              <ul className="mt-5 flex flex-wrap gap-2">
+              <ul className="mt-5 hidden flex-wrap gap-2 sm:flex">
                 {PROOF.map((p) => (
                   <li
                     key={p}
@@ -136,8 +139,12 @@ const JewelleryCategory = () => {
                   </li>
                 ))}
               </ul>
+              <p className="mt-3 text-[10px] tracking-[0.18em] text-[#1A1614]/55 sm:hidden" style={jost}>
+                ANTI-TARNISH 18K · 7-DAY RETURNS · INSURED DELIVERY
+              </p>
             </header>
           </div>
+
         </div>
 
         {/* category bar — swipeable on mobile, lets ad traffic hop collections */}

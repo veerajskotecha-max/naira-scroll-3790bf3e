@@ -8,6 +8,13 @@
       "when": 1789507618338,
       "tag": "0000_add_ad_matching_consent_to_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789519292294,
+      "tag": "0001_allow_text_only_customer_reviews",
+      "breakpoints": true
     }
   ]
 }

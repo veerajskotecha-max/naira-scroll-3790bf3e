@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { X, ChevronDown, Play, Volume2, VolumeX } from "lucide-react";
+import { X, Play, Volume2, VolumeX } from "lucide-react";
 import { useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -15,7 +15,7 @@ const saveData = () =>
   (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
 /** Floating shoppable reel that appears once the shopper scrolls past the fold. */
-const ReelPeek = () => {
+const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   const isMobile = useIsMobile();
   const [armed, setArmed] = useState(false);
   const [shown, setShown] = useState(false);
@@ -110,8 +110,8 @@ const ReelPeek = () => {
 
   // Reveal only once the media is actually available.
   useEffect(() => {
-    setShown(Boolean(reel?.videoUrl) && pastThreshold && !minimised);
-  }, [reel?.videoUrl, pastThreshold, minimised]);
+    setShown(Boolean(reel?.videoUrl) && pastThreshold && !minimised && !suppressed);
+  }, [reel?.videoUrl, pastThreshold, minimised, suppressed]);
 
   // Always autoplay silently — audio stays opt-in via the mute toggle.
   const startPlayback = useCallback(async () => {
@@ -136,8 +136,8 @@ const ReelPeek = () => {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    if (minimised || !pastThreshold) v.pause();
-  }, [minimised, pastThreshold]);
+    if (minimised || !pastThreshold || suppressed) v.pause();
+  }, [minimised, pastThreshold, suppressed]);
 
   const minimise = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -160,25 +160,25 @@ const ReelPeek = () => {
 
   return (
     <>
-      {!open && pastThreshold && (minimised || !reel) && (
+      {!suppressed && !open && pastThreshold && (minimised || !reel) && (
         <button
           type="button"
           onClick={showReels}
           aria-label="Show shoppable reels"
-          className="fixed z-[110] flex min-h-10 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.5)]"
-          style={{ right: isMobile ? 12 : 24, bottom: isMobile ? 96 : 28, color: "hsl(0 0% 20%)" }}
+          className="fixed z-[35] flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.5)]"
+          style={{ right: isMobile ? 12 : 24, bottom: isMobile ? "calc(var(--pdp-sticky-bar-h, 72px) + 16px)" : 28, color: "hsl(0 0% 20%)" }}
         >
           <Play size={12} /> Reels
         </button>
       )}
 
-      {!open && !minimised && pastThreshold && reel && (
+      {!suppressed && !open && !minimised && pastThreshold && reel && (
         <div
-          className="fixed z-[110] transition-all duration-500 ease-out"
+          className="fixed z-[35] transition-all duration-500 ease-out"
           style={{
             width: isMobile ? 108 : 150,
             right: isMobile ? 12 : 24,
-            bottom: isMobile ? 92 : 28,
+            bottom: isMobile ? "calc(var(--pdp-sticky-bar-h, 72px) + 16px)" : 28,
             opacity: shown ? 1 : 0,
             transform: shown ? "translateY(0)" : "translateY(24px)",
             pointerEvents: shown ? "auto" : "none",
@@ -200,7 +200,7 @@ const ReelPeek = () => {
               loop
               muted
               autoPlay
-              preload="auto"
+              preload="metadata"
               onLoadedMetadata={() => void startPlayback()}
               onLoadedData={() => void startPlayback()}
               onCanPlay={() => void startPlayback()}
@@ -218,25 +218,16 @@ const ReelPeek = () => {
             type="button"
             onClick={minimise}
             aria-label="Minimise reel"
-            className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"
+             className="absolute -top-3 -left-3 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow"
           >
             <X size={13} style={{ color: "hsl(0 0% 20%)" }} />
           </button>
 
           <button
             type="button"
-            onClick={minimise}
-            aria-label="Minimise reel"
-            className="absolute -bottom-2 right-1/2 flex h-5 w-8 translate-x-1/2 items-center justify-center rounded-full bg-white shadow"
-          >
-            <ChevronDown size={12} style={{ color: "hsl(0 0% 20%)" }} />
-          </button>
-
-          <button
-            type="button"
             onClick={toggleMute}
             aria-label={muted ? "Unmute reel" : "Mute reel"}
-            className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow"
+            className="absolute -top-3 -right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow"
           >
             {muted ? (
               <VolumeX size={12} style={{ color: "hsl(0 0% 20%)" }} />

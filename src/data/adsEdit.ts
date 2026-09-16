@@ -16,7 +16,7 @@ export type EditEntry = {
 export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
   { handle: "ivory-clasp-chain", match: ["toggle link"] },
   { handle: "woven-gold-hoops", match: ["woven gold hoop"] },
-  { match: ["prism riv", "prism"], fallbackHandle: "riviere-of-light-bracelet" },
+  { handle: "prism-riviere-bracelet", match: ["prism riv", "prism"] },
   { handle: "molten-bloom-hoops", match: ["molten"] },
   { match: ["heartbead", "heart bead"], fallbackHandle: "cuban-pearl-bracelet" },
   { handle: "brushed-gold-huggies", match: ["brushed gold huggies", "huggie"] },

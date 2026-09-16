@@ -17,11 +17,13 @@ export const SORT_OPTIONS: Array<{ key: SortKey; label: string }> = [
 export interface JewelFilters {
   sort: SortKey;
   maxPrice: number | null;
+  /** Lower bound, set by the one-tap price bands on the shop page. */
+  minPrice?: number | null;
   inStockOnly: boolean;
   tag: string | null;
 }
 
-export const emptyFilters: JewelFilters = { sort: "featured", maxPrice: null, inStockOnly: false, tag: null };
+export const emptyFilters: JewelFilters = { sort: "featured", maxPrice: null, minPrice: null, inStockOnly: false, tag: null };
 
 /** Style/occasion chips built from whatever Shopify tags the catalogue carries. */
 export const collectTags = (pieces: JewelPiece[]) => {
@@ -44,6 +46,7 @@ export const applyJewelFilters = (pieces: JewelPiece[], f: JewelFilters) => {
   let out = pieces.slice();
   if (f.inStockOnly) out = out.filter((p) => p.availableForSale);
   if (f.maxPrice != null) out = out.filter((p) => p.price <= f.maxPrice!);
+  if (f.minPrice != null) out = out.filter((p) => p.price >= f.minPrice!);
   if (f.tag) out = out.filter((p) => (p.tags ?? []).includes(f.tag!));
 
   switch (f.sort) {
@@ -177,7 +180,7 @@ const JewelFilterBar = ({
                       type="button"
                       onClick={() => set({ tag: value.tag === t ? null : t })}
                       aria-pressed={value.tag === t}
-                      className={`min-h-[36px] border px-3 text-[9.5px] tracking-nf-16 transition-colors ${
+                      className={`min-h-[44px] border px-3.5 text-[9.5px] tracking-nf-16 transition-colors ${
                         value.tag === t
                           ? "border-nf-ink bg-nf-ink text-nf-ivory"
                           : "border-nf-ink/20 text-nf-ink/65 hover:border-nf-ink/60"
@@ -196,7 +199,7 @@ const JewelFilterBar = ({
             <button
               type="button"
               onClick={() => onChange({ ...emptyFilters, sort: value.sort })}
-              className="mt-5 inline-flex min-h-[36px] items-center gap-1.5 text-[10px] tracking-nf-18 text-nf-ink/55 underline underline-offset-4 hover:text-nf-ink"
+              className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-[10px] tracking-nf-18 text-nf-ink/55 underline underline-offset-4 hover:text-nf-ink"
               style={jost}
             >
               <X size={12} strokeWidth={1.6} /> CLEAR FILTERS

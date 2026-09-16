@@ -14,6 +14,9 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import { Link, useNavigationType, useSearchParams } from "react-router-dom";
+import { shopifyImage } from "@/lib/shopifyImage";
+import { cardCover } from "@/lib/cardCover";
+
 
 const hubFaqs = [
   {
@@ -45,10 +48,24 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
-/* Merchandised leads: the Prism Rivière bracelet, Molten Bloom and Woven Gold
-   Hoops open the grid on the default Featured sort. An explicit sort chosen by
-   the shopper always wins over the pinning. */
-const FEATURED_LEADS = ["riviere-of-light-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
+/* Merchandised leads: the multi-colour Prism Rivière bracelet, Molten Bloom
+   and Woven Gold Hoops open the grid on the default Featured sort. An explicit
+   sort chosen by the shopper always wins over the pinning. */
+const FEATURED_LEADS = ["prism-riviere-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
+
+/* One-tap budget chips beside the category tabs. */
+type PriceBand = { key: string; label: string; min: number | null; max: number | null };
+const PRICE_BANDS: PriceBand[] = [
+  { key: "under-999", label: "UNDER ₹999", min: null, max: 999 },
+  { key: "999-1499", label: "₹999–1,499", min: 999, max: 1499 },
+  { key: "1500-plus", label: "₹1,500+", min: 1500, max: null },
+];
+const bandKey = (f: JewelFilters) =>
+  PRICE_BANDS.find((b) => (b.min ?? null) === (f.minPrice ?? null) && (b.max ?? null) === (f.maxPrice ?? null))?.key ?? null;
+
+/* The grid opens with one screen-and-a-bit of pieces; the rest load on tap.
+   Rendering all 57 tiles up front pulled megabytes of images nobody scrolled to. */
+const PAGE_SIZE = 12;
 
 const Jewellery = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -89,9 +106,11 @@ const Jewellery = () => {
   const activeFilters: JewelFilters = useMemo(() => {
     const sortParam = searchParams.get("sort");
     const max = searchParams.get("under");
+    const min = searchParams.get("over");
     return {
       sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
       maxPrice: max ? Number(max) : null,
+      minPrice: min ? Number(min) : null,
       inStockOnly: searchParams.get("stock") === "in",
       tag: searchParams.get("tag"),
     };
@@ -101,9 +120,21 @@ const Jewellery = () => {
     const params = new URLSearchParams(searchParams);
     next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
     next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
+    next.minPrice == null ? params.delete("over") : params.set("over", String(next.minPrice));
     next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
     next.tag ? params.set("tag", next.tag) : params.delete("tag");
     setSearchParams(params, { replace: true });
+  };
+
+  /* One-tap price bands. A shopper arriving from an ad knows their budget
+     long before they know a category. */
+  const selectBand = (band: PriceBand) => {
+    const current = bandKey(activeFilters);
+    setFilters({
+      ...activeFilters,
+      minPrice: current === band.key ? null : band.min,
+      maxPrice: current === band.key ? null : band.max,
+    });
   };
 
   const inCategory = useMemo(
@@ -118,6 +149,36 @@ const Jewellery = () => {
       .filter((p): p is (typeof filtered)[number] => Boolean(p));
     return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
   }, [inCategory, activeFilters]);
+
+  /* Decorative backdrop on larger screens only. */
+  const [showBackdrop, setShowBackdrop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const apply = () => setShowBackdrop(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  /* Paged grid: one tap loads the next twelve. */
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [active, activeFilters]);
+  const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
+
+  /* Six leads, shown above the filters so the very first screen has a
+     piece, a price and a way to buy. Pinned leads (Prism Rivière, Molten
+     Bloom, Woven Gold) always show — even sold out, where the card carries
+     its pre-order treatment — so the row never loses its hero pieces. */
+  const bestSellers = useMemo(() => {
+    const leads = FEATURED_LEADS
+      .map((handle) => jewellery.find((p) => p.handle === handle))
+      .filter((p): p is (typeof jewellery)[number] => Boolean(p));
+    const inStock = jewellery.filter((p) => p.availableForSale !== false);
+    const rest = inStock.filter((p) => !FEATURED_LEADS.includes(p.handle));
+    const tagged = rest.filter((p) => p.tag === "BESTSELLER" || p.tag === "NEW");
+    const others = rest.filter((p) => p.tag !== "BESTSELLER" && p.tag !== "NEW");
+    return [...leads, ...tagged, ...others].slice(0, 6);
+  }, [jewellery]);
 
   return (
     <>
@@ -153,11 +214,13 @@ const Jewellery = () => {
       <div className="relative bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
         {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
         <div className="relative overflow-hidden bg-[#FBF3EC]">
-          <div className="pointer-events-none absolute inset-0 z-0">
-            <RingAtelierBackdrop variant="section" />
-          </div>
-
-
+          {/* The drifting atelier backdrop is decorative; a phone spends its
+              budget on packshots instead, so it mounts on larger screens only. */}
+          {showBackdrop && (
+            <div className="pointer-events-none absolute inset-0 z-0">
+              <RingAtelierBackdrop variant="section" />
+            </div>
+          )}
 
           {/* indexable header */}
           <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
@@ -170,6 +233,44 @@ const Jewellery = () => {
             </p>
           </header>
         </div>
+
+        {/* most-loved row: a piece, a price and a way in, on the first screen */}
+        {bestSellers.length > 0 && (
+          <section aria-label="Most loved pieces" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
+            <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
+            <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
+              {bestSellers.map((p, i) => {
+                const cover = cardCover(p);
+                return (
+                <Link
+                  key={p.handle}
+                  to={`/jewellery/${p.handle}`}
+                  className="w-[112px] shrink-0 snap-start sm:w-[132px]"
+                >
+                  <div className="aspect-square w-full overflow-hidden bg-nf-ivory-deep">
+                    <img
+                      src={shopifyImage(cover, 240)}
+                      srcSet={`${shopifyImage(cover, 160)} 160w, ${shopifyImage(cover, 240)} 240w, ${shopifyImage(cover, 320)} 320w`}
+                      sizes="132px"
+                      alt={p.name}
+                      width={240}
+                      height={240}
+                      loading={i < 3 ? "eager" : "lazy"}
+                      decoding="async"
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
+                  {/* Two lines, never cut mid-word: a shopper can't choose a
+                      piece whose name they can't read. */}
+                  <p className="mt-2 line-clamp-2 min-h-[2.4em] text-[13px] leading-[1.2] text-nf-ink" style={velista}>{p.name}</p>
+                  <p className="mt-0.5 text-[10px] tracking-nf-18 text-nf-ink/65" style={jost}>{p.priceLabel}</p>
+                </Link>
+                );
+              })}
+
+            </div>
+          </section>
+        )}
 
         {/* filter */}
         <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
@@ -189,6 +290,30 @@ const Jewellery = () => {
               </button>
             ))}
           </div>
+
+          {/* budget chips */}
+          <div className="mx-auto mt-2 flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
+            {PRICE_BANDS.map((b) => {
+              const on = bandKey(activeFilters) === b.key;
+              return (
+                <button
+                  key={b.key}
+                  onClick={() => selectBand(b)}
+                  aria-pressed={on}
+                  className={`press-scale shrink-0 inline-flex items-center border px-3.5 min-h-[44px] text-[10px] tracking-nf-18 transition-colors duration-200 ${
+                    on ? "border-nf-gold bg-nf-gold/15 text-nf-gold-shadow" : "border-nf-ink/20 text-nf-ink/65 hover:border-nf-ink/50"
+                  }`}
+                  style={jost}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="mx-auto mt-2 max-w-6xl px-4 text-center text-[10.5px] tracking-nf-18 text-nf-ink/55 sm:px-6" style={jost}>
+            DELIVERY IN 3–5 WORKING DAYS · ₹150 INSURED · 7-DAY RETURNS
+          </p>
         </div>
 
         {/* sort + filters */}
@@ -225,11 +350,25 @@ const Jewellery = () => {
             </button>
           </div>
         ) : (
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pb-16 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
-            {pieces.map((piece, i) => (
-              <JewelCard key={piece.handle} piece={piece} index={i} />
-            ))}
-          </div>
+          <>
+            <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
+              {visiblePieces.map((piece, i) => (
+                <JewelCard key={piece.handle} piece={piece} index={i} />
+              ))}
+            </div>
+            {visibleCount < pieces.length && (
+              <div className="mx-auto flex max-w-6xl justify-center px-4 pt-8 sm:px-6">
+                <button
+                  onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+                  className="press-scale border border-nf-ink px-8 min-h-[48px] text-[10.5px] tracking-nf-28 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
+                  style={jost}
+                >
+                  SHOW MORE ({pieces.length - visibleCount})
+                </button>
+              </div>
+            )}
+            <div className="pb-16" />
+          </>
         )}
 
         {/* shop by category, after the full grid */}

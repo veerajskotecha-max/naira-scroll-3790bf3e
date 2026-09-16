@@ -1,17 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2, Sparkles } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
-import { joinInnerCircle } from "@/lib/innerCircle";
-import { trackPixel } from "@/lib/pixel";
-import { supabase } from "@/integrations/supabase/client";
 import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
-import { SHIPPING_CHARGE } from "@/lib/serviceability";
+import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
    — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
@@ -26,20 +22,11 @@ const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: stri
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
-  const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
   useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
 
-  // Inner Circle opt-in shown at checkout. Starts unticked: pre-ticked marketing
-  // consent is a named dark pattern under the CCPA Dark Patterns Guidelines 2023
-  // and isn't valid consent anywhere.
-  const [optIn, setOptIn] = useState(false);
-  const [optEmail, setOptEmail] = useState("");
   const [promoCode, setActivePromoCode] = useState<string | null>(() => getPromoCode());
-  useEffect(() => {
-    if (user?.email) setOptEmail(user.email);
-  }, [user]);
   useEffect(() => {
     const syncPromo = () => setActivePromoCode(getPromoCode());
     window.addEventListener(PROMO_EVENT, syncPromo);
@@ -54,43 +41,16 @@ const CartDrawer = () => {
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
+  /* A dated arrival promise, computed the way a courier counts: working days
+     only. Quoting "3–5 working days" makes the shopper do this arithmetic. */
+  const arrivesBy = formatDeliveryDate(addWorkingDays(new Date(), 5));
+
   const discountRate = getPromoDiscountRate(promoCode);
   const discountAmount = Math.round(subtotal * discountRate);
   const orderTotal = subtotal - discountAmount + SHIPPING_CHARGE;
 
-  /* Capture the opt-in email and log the order against the member account,
-     then hand over to the Shopify checkout as before. */
-  const handleCheckout = async () => {
-    /* The shopper is handing over to Shopify's payment step. */
-    trackPixel("AddPaymentInfo", { currency: "INR", value: orderTotal, num_items: totalItems });
-    try {
-      if (optIn && optEmail.trim()) {
-        await joinInnerCircle({
-          email: optEmail,
-          source: "checkout",
-          userId: user?.id ?? null,
-        });
-      }
-      if (user) {
-        await supabase.from("member_orders").insert({
-          user_id: user.id,
-          email: user.email ?? optEmail.trim() ?? null,
-          items: items.map((i) => ({
-            name: i.name,
-            quantity: i.quantity,
-            size: i.size ?? null,
-            image: i.image,
-            price: i.priceLabel,
-          })),
-          item_count: totalItems,
-          total: orderTotal,
-        });
-      }
-    } catch {
-      /* never block the checkout on the members-list write */
-    }
-    checkout();
-  };
+
+  const handleCheckout = () => checkout();
 
 
   return (
@@ -153,7 +113,10 @@ const CartDrawer = () => {
             {/* Scroll region: cart items only — footer CTA always stays visible */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
 
-              <div className="px-5 py-4 space-y-4">
+              {/* Lines sit against the summary rather than floating at the top
+                  of an empty panel, so a single-item cart reads as one block. */}
+              <div className="flex min-h-full flex-col justify-end px-5 py-4 space-y-4">
+
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} className="flex gap-3">
                     <img
@@ -192,13 +155,15 @@ const CartDrawer = () => {
               className="shrink-0 border-t px-5 pt-3 space-y-2.5 pb-[max(12px,env(safe-area-inset-bottom))]"
               style={{ borderColor: "hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 100%)" }}
             >
-              {/* Delivery */}
+              {/* Delivery — a named date, not a speed. Shoppers buying a gift
+                  stall at checkout to work the days out themselves. */}
               <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
-                  Insured delivery in <strong className="font-semibold">3–5 working days</strong>
+                  Order today, arrives by <strong className="font-semibold">{arrivesBy}</strong>
                 </p>
               </div>
+
               {/* Promo code */}
               <CartPromoField />
 
@@ -226,43 +191,6 @@ const CartDrawer = () => {
                 <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(orderTotal)}</span>
               </div>
 
-              {/* Inner Circle opt-in */}
-              <div className="border px-3 py-2.5" style={{ borderColor: "hsl(36 47% 46% / 0.3)", backgroundColor: "hsl(33 41% 96%)" }}>
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={optIn}
-                    onChange={(e) => setOptIn(e.target.checked)}
-                    className="mt-0.5 h-3.5 w-3.5 accent-[hsl(186_35%_28%)]"
-                  />
-                  <span className="text-[12px] leading-[1.5]" style={{ color: "hsl(0 0% 35%)" }}>
-                    <Sparkles size={11} className="inline mb-0.5 mr-1" style={{ color: "hsl(36 47% 46%)" }} />
-                    Add me to the <strong className="font-semibold">Inner Circle</strong> — first access to new drops and members-only pricing.
-                  </span>
-                </label>
-                {optIn && (
-                  <input
-                    type="email"
-                    value={optEmail}
-                    onChange={(e) => setOptEmail(e.target.value)}
-                    placeholder="Email address"
-                    maxLength={255}
-                    className="mt-2 w-full border-b bg-transparent px-1 py-2 text-[12px] outline-none"
-                    style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 25%)" }}
-                  />
-                )}
-                {!user && (
-                  <Link
-                    to="/auth"
-                    onClick={() => setDrawerOpen(false)}
-                    className="mt-1.5 inline-block text-[11px] underline underline-offset-2"
-                    style={{ color: "hsl(36 47% 38%)" }}
-                  >
-                    Create an account to track your orders
-                  </Link>
-                )}
-              </div>
-
               {/* CTA */}
               <button
                 onClick={handleCheckout}
@@ -275,6 +203,11 @@ const CartDrawer = () => {
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
+              {/* One reassurance line under the button: the last doubt before
+                  the shopper leaves for the payment page. */}
+              <p className="text-center text-[11px] leading-relaxed" style={{ color: "hsl(0 0% 45%)" }}>
+                Delivery in 3–5 working days · ₹150 insured shipping · 7-day returns
+              </p>
               {/* Trust row */}
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 {["UPI", "COD", "VISA", "MC", "RAZORPAY"].map((b) => (

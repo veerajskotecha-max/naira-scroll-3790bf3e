@@ -1,16 +1,15 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, MessageSquare, ArrowLeft, ZoomIn } from "lucide-react";
+import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
-import RecentlyViewed from "@/components/RecentlyViewed";
-import CustomerReviews, { reviewSummary } from "@/components/CustomerReviews";
+import { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
@@ -19,8 +18,11 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+import PressMarquee from "@/components/jewellery/PressMarquee";
 import ReelPeek from "@/components/reels/ReelPeek";
-import FomoPopup from "@/components/FomoPopup";
+import MobileReelShop from "@/components/reels/MobileReelShop";
+
+import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 
 
@@ -29,6 +31,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+
+const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 
 
 /* Key facts distilled from the approved data model: finish and stone are
@@ -116,7 +120,7 @@ const JewelDetail = () => {
   const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
   const [buying, setBuying] = useState(false);
 
   const goBack = () => {
@@ -294,11 +298,6 @@ const JewelDetail = () => {
   const adjustable = isAdjustableRing(piece.handle);
   const soldOut = piece.availableForSale === false && !adjustable;
   const keyFacts = deriveKeyFacts(piece);
-  /* Same-category pieces lead the recommendations; the atelier's other
-     work fills any remaining slots. */
-  const sameCategory = jewellery.filter((j) => j.handle !== piece.handle && j.category === piece.category);
-  const otherPieces = jewellery.filter((j) => j.handle !== piece.handle && j.category !== piece.category);
-  const related = [...sameCategory, ...otherPieces].slice(0, 4);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
@@ -427,7 +426,7 @@ const JewelDetail = () => {
             onClick={() => openLightbox(i)}
             className="w-full shrink-0 snap-center block p-0 cursor-zoom-in"
             style={{
-              aspectRatio: "3/4",
+              aspectRatio: MOBILE_FRAME,
               backgroundColor: "#F4EBE2",
               /* Belongs on the snap item, not the scroll port. A quick flick used
                  to fly past three or four photos; stopping at every snap point
@@ -436,39 +435,35 @@ const JewelDetail = () => {
             }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-contain" />
+            <img
+              src={shopifyImage(img, 900)}
+              srcSet={shopifySrcSet(img, [480, 720, 900, 1200]) || undefined}
+              sizes="100vw"
+              alt={`${piece.name} view ${i + 1}`}
+              className="w-full h-full object-cover"
+              width={900}
+              height={1200}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+              decoding={i === 0 ? "sync" : "async"}
+            />
           </button>
         ))}
           </div>
           {WishlistBtn}
-          {/* Baymard found 40% of mobile sites support no image gestures at all, and
-          of the 60% that do, only half tell the user. Tapping here has always
-          opened a full-screen zoom — nothing on the page ever said so. */}
-      <span
-        aria-hidden="true"
-        className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em]"
-        style={{ backgroundColor: "hsla(0,0%,100%,0.88)", color: "hsl(0 0% 35%)" }}
-      >
-        <ZoomIn size={12} strokeWidth={1.7} />
-        Tap to zoom
-        {images.length > 1 && (
-          <span style={{ color: "hsl(0 0% 55%)", fontVariantNumeric: "tabular-nums" }}>
-            · {selectedImage + 1}/{images.length}
+          <span
+            aria-hidden="true"
+            className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-1.5 bg-background/90 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+          >
+            <ZoomIn size={12} strokeWidth={1.7} /> Tap to zoom
           </span>
-        )}
-      </span>
-      </div>
-      {images.length > 1 && (
-        /* Six-pixel grey circles read as decoration, not as position. The active
-           dot stretches into a bar instead of scaling up: the shape difference
-           survives a squint and a sunlit phone screen, where a 40% size bump on
-           a tiny circle does not. Tap targets stay a full 32px either way. */
-        <div
-          className="flex justify-center items-center gap-0.5 pt-2.5 pb-1"
-          role="group"
-          aria-label={`${piece.name} images`}
-        >
-          {images.map((_, i) => {
+          {images.length > 1 && (
+            <div
+              className="absolute inset-x-0 bottom-4 z-10 flex items-center justify-center gap-2"
+              role="group"
+              aria-label={`${piece.name} images`}
+            >
+              {images.map((_, i) => {
             const active = selectedImage === i;
             return (
               <button
@@ -478,21 +473,13 @@ const JewelDetail = () => {
                 aria-label={`View image ${i + 1} of ${images.length}`}
                 aria-current={active ? "true" : undefined}
                 data-active={active ? "true" : "false"}
-                className="w-8 h-7 flex items-center justify-center"
-              >
-                <span
-                  className="h-[5px] transition-all duration-300 ease-out"
-                  style={{
-                    width: active ? 18 : 5,
-                    borderRadius: 999,
-                    backgroundColor: active ? "hsl(0 0% 18%)" : "hsl(28 12% 76%)",
-                  }}
-                />
-              </button>
+                className={`h-3 w-3 rounded-full border border-foreground/35 transition-colors ${active ? "bg-foreground" : "bg-background/60"}`}
+              />
             );
-          })}
-        </div>
-      )}
+              })}
+            </div>
+          )}
+      </div>
     </div>
   ) : (
     (() => {
@@ -519,7 +506,18 @@ const JewelDetail = () => {
                 style={{ backgroundColor: "#F4EBE2", height: "100%" }}
                 aria-label={`Open ${piece.name} image ${i + 1} full screen`}
               >
-            <img src={img} alt={`${piece.name} view ${i + 1}`} className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]" />
+            <img
+              src={shopifyImage(img, 1000)}
+              srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || undefined}
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              alt={`${piece.name} view ${i + 1}`}
+              className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+              width={1000}
+              height={1000}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+              decoding={i === 0 ? "sync" : "async"}
+            />
           </button>
         ))}
       </div>
@@ -666,14 +664,20 @@ const JewelDetail = () => {
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
               Inclusive of taxes · ₹150 insured shipping across India
             </p>
+            {/* The delivery + returns promise sits at the buy moment, not only
+                in the footer: it is the last question before Add to Cart. */}
+            <p className="mt-1 text-[12px] font-medium tracking-[0.02em] leading-relaxed" style={{ color: "hsl(186 35% 28%)" }}>
+              {arrivesBy ? `Order today, arrives by ${arrivesBy}` : PREORDER_NOTE} · 7-day returns · 2-year plating assurance
+            </p>
+
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}
 
 
-            <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
+            <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
             {/* Size / One-size */}
-            <div>
+            <div className={piece.category === "Rings" ? "mt-4 md:mt-0" : "hidden md:block"}>
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
                   {piece.category === "Rings" ? "Ring Size (US)" : "Size"}
@@ -733,7 +737,17 @@ const JewelDetail = () => {
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                    {" "}
+                    <button
+                      type="button"
+                      onClick={() => setSizeGuideOpen(true)}
+                      className="underline underline-offset-4"
+                      style={{ color: "hsl(186 35% 28%)" }}
+                    >
+                      Not sure of your size?
+                    </button>
                   </p>
+
 
                 </>
               ) : (
@@ -763,7 +777,7 @@ const JewelDetail = () => {
             {/* CTA block: live Shopify cart + checkout, WhatsApp supports.
                 Add to Cart leads in brand gold — a warm, high-contrast primary
                 converts better than an outline ghost button. */}
-            <div id="product-actions" className="mt-6">
+            <div id="product-actions" className="mt-4 md:mt-6">
               {soldOut ? (
                 <button
                   onClick={handlePreOrder}
@@ -774,14 +788,24 @@ const JewelDetail = () => {
                   Pre-order Now
                 </button>
               ) : (
-                <button
-                  onClick={handleAddToCart}
-                  disabled={buying || cartLoading}
-                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
-                >
-                  Add to Cart
-                </button>
+                <div className="flex gap-2 md:block">
+                  <div className="flex h-[54px] w-[38%] shrink-0 items-center justify-between border border-border md:hidden">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="press-scale flex h-full min-w-11 items-center justify-center text-foreground">
+                      <Minus size={15} />
+                    </button>
+                    <span className="text-[15px] font-medium text-foreground" aria-live="polite">{quantity}</span>
+                    <button onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity" className="press-scale flex h-full min-w-11 items-center justify-center text-foreground">
+                      <Plus size={15} />
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={buying || cartLoading}
+                    className="press-scale inline-flex h-[54px] flex-1 items-center justify-center gap-2 bg-foreground text-[12px] font-medium uppercase tracking-[0.12em] text-background transition-colors duration-200 hover:opacity-90 disabled:opacity-60 md:w-full"
+                  >
+                    <ShoppingBag size={16} strokeWidth={1.6} /> Add to Cart
+                  </button>
+                </div>
               )}
               {soldOut ? (
                 <a
@@ -797,8 +821,7 @@ const JewelDetail = () => {
                 <button
                   onClick={handleBuyNow}
                   disabled={buying || cartLoading}
-                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
-                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                  className="press-scale mt-2 inline-flex h-[50px] w-full items-center justify-center gap-2.5 bg-foreground text-[12px] font-medium uppercase tracking-[0.12em] text-background transition-colors duration-200 hover:opacity-90 disabled:opacity-60 md:mt-3"
                 >
                   {buying ? "Opening checkout…" : "Shop Now"}
                 </button>
@@ -864,10 +887,12 @@ const JewelDetail = () => {
               10% off your first order
             </p>
 
-            {/* Mobile: one compact delivery line instead of the boxes below. */}
+            {/* Mobile: the arrival date already sits under the price, so this
+                line only repeats the shipping and returns terms. */}
             <p className="mt-3 md:hidden text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 40%)" }}>
-              {arrivesBy ? `Arrives by ${arrivesBy}` : PREORDER_NOTE} · ₹150 insured shipping · 7-day returns
+              ₹150 insured shipping · 7-day returns
             </p>
+
 
             {/* Key facts, at a glance */}
             <dl className="mt-4 hidden md:flex flex-wrap gap-2" aria-label="Key facts">
@@ -945,84 +970,21 @@ const JewelDetail = () => {
               </AccordionItem>
             </Accordion>
 
-            <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
-
-            {/* Help — the phone already has WhatsApp in the buttons above. */}
-            <div className="w-full hidden md:block">
-              <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-3" style={{ color: "hsl(0 0% 30%)" }}>Need Help?</span>
-              <div className="flex flex-col md:flex-row w-full">
-                {[
-                  { icon: Phone, label: "Call Us", href: `tel:+${WHATSAPP_NUMBER}` },
-                  { icon: Mail, label: "Email Us", href: "mailto:shopatnaira@gmail.com" },
-                  { icon: MessageCircle, label: "WhatsApp", href: enquiryHref },
-                ].map(({ icon: Icon, label, href }, idx) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target={label === "WhatsApp" ? "_blank" : undefined}
-                    rel={label === "WhatsApp" ? "noopener noreferrer" : undefined}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] text-[12px] tracking-[0.02em] transition-colors duration-200 hover:text-foreground"
-                    style={{
-                      color: "hsl(0 0% 35%)",
-                      borderTop: "1px solid hsl(0 0% 90%)",
-                      borderBottom: "1px solid hsl(0 0% 90%)",
-                      borderLeft: idx === 0 ? "1px solid hsl(0 0% 90%)" : "none",
-                      borderRight: "1px solid hsl(0 0% 90%)",
-                    }}
-                  >
-                    <Icon size={15} strokeWidth={1.5} />{label}
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      <CustomerReviews productName={piece.name} variant="jewellery" />
+      <Suspense fallback={<div className="min-h-[240px] bg-white" aria-hidden="true" />}>
+        <CustomerReviews productName={piece.name} variant="jewellery" />
+      </Suspense>
 
-      {/* Related jewellery */}
-      <section className="py-16 md:py-20" style={{ backgroundColor: "#FBF3EC" }}>
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6">
-          <h2 className="font-cormorant text-[26px] md:text-[34px] text-center" style={{ color: "#1A1614" }}>You may also like</h2>
-          <p className="text-center mt-2 text-[12px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-            {sameCategory.length >= 2 ? `MORE ${piece.category.toUpperCase()} FROM THE ATELIER` : "FROM THE DEMI-GOLD ATELIER"}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-8">
-            {related.map((r) => (
-              <Link key={r.handle} to={`/jewellery/${r.handle}`} className="group">
-                <div className="aspect-square overflow-hidden" style={{ backgroundColor: "#F4EBE2" }}>
-                  <img src={r.image} alt={r.name} loading="lazy" className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
-                </div>
-                <p className="mt-3 text-[10px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>{r.category.toUpperCase()}</p>
-                <h3 className="mt-1 font-cormorant text-[18px] md:text-[20px]" style={{ color: "#1A1614" }}>{r.name}</h3>
-                <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
-                  <span aria-hidden className="h-[5px] w-[5px]" style={{ borderRadius: "50%", backgroundColor: "#C99A4C" }} />
-                  {r.priceLabel}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PressMarquee />
 
-      <RecentlyViewed
-        current={
-          piece && {
-            handle: piece.handle,
-            name: piece.name,
-            price: piece.priceLabel,
-            image: piece.image,
-            to: `/jewellery/${piece.handle}`,
-          }
-        }
-      />
+      <MobileReelShop />
 
-
-      <ReelPeek />
-      <FomoPopup />
+      {!isMobile && <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />}
       
-      <Footer />
+      <Footer compact />
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}
       <div

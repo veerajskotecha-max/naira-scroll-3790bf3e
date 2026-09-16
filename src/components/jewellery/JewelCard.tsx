@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { JewelPiece } from "@/data/jewellery";
+import { cardCover } from "@/lib/cardCover";
 
 /* Shopify CDN images ship at their upload size; asking the CDN for a
    grid-sized render keeps packshots crisp on retina without the weight. */
@@ -48,13 +49,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
      luxurious than tiles that flicker between angles. Worn shots are kept
      only when a piece has no clean packshot (necklaces/bracelets shot on
      model), so scale is still communicated. */
-  const gallery = piece.gallery ?? [];
-  const named = (g: string) => /worn|model|onmodel|_2_/i.test(g);
-  const anyNamed = gallery.some(named) || named(piece.image);
-  const isWorn = (g: string) => (anyNamed ? named(g) : g === gallery[0]);
-  const packshot = gallery.find((g) => !isWorn(g)) ?? null;
+  const frontImg = cardCover(piece);
 
-  const frontImg = (isWorn(piece.image) && packshot ? packshot : piece.image) ?? piece.image;
 
   const zircone = piece.handle.startsWith("zircone");
   /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they
@@ -152,11 +148,16 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           style={{ transform: "perspective(900px)" }}
         >
           <img
-            src={cdn(frontImg, 800)}
-            srcSet={`${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 800)} 800w, ${cdn(frontImg, 1100)} 1100w`}
-            sizes="(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 300px"
+            src={cdn(frontImg, 500)}
+            /* A tile is ~190 CSS px on a phone. Offering 300/400/500 as well as
+               the retina sizes keeps the grid from pulling 800–1100px renders
+               for a thumbnail — the single biggest weight saving on mobile. */
+            srcSet={`${cdn(frontImg, 300)} 300w, ${cdn(frontImg, 400)} 400w, ${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 700)} 700w, ${cdn(frontImg, 900)} 900w`}
+            sizes="(max-width: 640px) 46vw, (max-width: 1024px) 32vw, 300px"
             alt={piece.name}
-            loading="lazy"
+            /* Only the first screen of tiles loads eagerly. */
+            loading={index < 4 ? "eager" : "lazy"}
+            fetchPriority={index < 2 ? "high" : "auto"}
             decoding="async"
             width={800}
             height={800}
@@ -210,7 +211,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             onClick={toggleWishlist}
             aria-label={saved ? `Remove ${piece.name} from wishlist` : `Add ${piece.name} to wishlist`}
             aria-pressed={saved}
-            className={`press-scale absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center border bg-nf-ivory/92 transition-colors duration-200 sm:bottom-4 sm:right-4 ${
+            className={`press-scale absolute bottom-3 right-3 z-10 flex h-11 w-11 items-center justify-center border bg-nf-ivory/92 transition-colors duration-200 sm:bottom-4 sm:right-4 ${
               saved ? "border-nf-gold text-nf-gold-deep" : "border-nf-ink/15 text-nf-ink/55 hover:border-nf-ink/50 hover:text-nf-ink"
             }`}
           >
@@ -258,7 +259,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             <button
               onClick={handleBuyNow}
               disabled={buying || adding || cartLoading}
-              className="press-scale group/btn relative inline-flex min-h-[40px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory disabled:opacity-60 sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
+              className="press-scale group/btn relative inline-flex min-h-[44px] w-full items-center justify-center gap-2 overflow-hidden border border-nf-ink/35 px-5 text-[9.5px] tracking-nf-25 text-nf-ink hover:text-nf-ivory disabled:opacity-60 sm:px-6 sm:text-[10.5px] sm:tracking-nf-30"
               style={jost}
             >
               <span className="absolute inset-0 origin-left scale-x-0 bg-nf-ink transition-transform duration-300 ease-out group-hover/btn:scale-x-100" />

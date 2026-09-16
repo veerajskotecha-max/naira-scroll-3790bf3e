@@ -29,10 +29,10 @@ const categorySlugMap: Record<string, string> = {
 };
 const availabilityOptions = ["In Stock", "Sold Out"];
 
-/* Merchandised lead: the Prism Rivière bracelet opens the default Shop All
-   grid, mirroring /jewellery. An explicit sort or category filter chosen by
-   the shopper always wins over the pinning. */
-const PRISM_RIVIERE_HANDLE = "riviere-of-light-bracelet";
+/* Merchandised lead: the multi-colour Prism Rivière bracelet opens the
+   default Shop All grid, mirroring /jewellery. An explicit sort or category
+   filter chosen by the shopper always wins over the pinning. */
+const PRISM_RIVIERE_HANDLE = "prism-riviere-bracelet";
 
 /* ───── Collapsible Filter Section ───── */
 const FilterSection = ({
@@ -202,7 +202,11 @@ const FilterSidebar = ({
   </div>
 );
 
+/* One screen-and-a-bit of pieces, then "Show more". */
+const SHOP_PAGE_SIZE = 12;
+
 /* ───── Main Page ───── */
+
 const ShopAll = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -216,6 +220,8 @@ const ShopAll = () => {
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
   const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [mobileLayout, setMobileLayout] = useState<"grid" | "list">("grid");
+  const [visibleCount, setVisibleCount] = useState(SHOP_PAGE_SIZE);
+
   const { data: shopifyProducts = [], isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["shopify-products", "shop-all"],
     // Full catalogue — fetching fewer than the total let clothing crowd out
@@ -416,8 +422,9 @@ const ShopAll = () => {
         </section>
       )}
 
-      {showIndoWestern && (
-        <>
+      {/* The toolbar + grid render on every shop view. /shop/jewellery used to
+          fall through here and show nothing below the header — an empty page. */}
+      <>
 
 
       {/* ── Fixed Shop Toolbar ── */}
@@ -756,6 +763,7 @@ const ShopAll = () => {
                 </button>
               </div>
             ) : (
+              <>
               <div
                 className={`grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-6 md:gap-y-12 transition-opacity duration-300 ${
                   mobileLayout === "list" ? "grid-cols-1 gap-y-8" : "grid-cols-2 gap-y-10"
@@ -765,17 +773,31 @@ const ShopAll = () => {
                     : "lg:grid-cols-2 lg:gap-x-10 lg:gap-y-16"
                 }`}
               >
-                {filteredProducts.map((product, i) => (
+                {filteredProducts.slice(0, visibleCount).map((product, i) => (
                   <ProductCard key={product.handle ?? product.name} product={product} index={i} visible />
                 ))}
               </div>
+              {/* The whole catalogue in one scroll ran past 14,000px on a phone.
+                  Twelve at a time gives the shopper an end to reach. */}
+              {visibleCount < filteredProducts.length && (
+                <div className="flex justify-center pt-10">
+                  <button
+                    onClick={() => setVisibleCount((n) => n + SHOP_PAGE_SIZE)}
+                    className="press-scale border px-8 min-h-[48px] text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-200"
+                    style={{ borderColor: "hsl(0 0% 20%)", color: "hsl(0 0% 15%)" }}
+                  >
+                    Show more ({filteredProducts.length - visibleCount})
+                  </button>
+                </div>
+              )}
+              </>
             )}
+
 
           </div>
         </div>
       </div>
-        </>
-      )}
+      </>
 
       {/* Customisation CTA – nudge users who didn't find a fit */}
       <CustomizationCTA />

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { BadgeCheck, LockKeyhole, RotateCcw, Truck } from "lucide-react";
 import nairaLogo from "@/assets/naira-logo-footer.svg";
 
 const shopLinks = [
@@ -71,7 +72,43 @@ const SocialIcon = ({
   </a>
 );
 
-const Footer = () => {
+const compactPolicyLinks = [
+  { label: "Returns", to: "/exchange-return-policy" },
+  { label: "Privacy", to: "/privacy" },
+  { label: "Terms", to: "/terms" },
+];
+
+const compactTrustItems = [
+  { icon: LockKeyhole, title: "Secure checkout", detail: "Encrypted payments" },
+  { icon: Truck, title: "Insured delivery", detail: "3–5 working days" },
+  { icon: RotateCcw, title: "7-day returns", detail: "On eligible pieces" },
+  { icon: BadgeCheck, title: "2-year assurance", detail: "Plating protection" },
+];
+
+const CompactPaymentMarks = () => (
+  <div className="flex flex-wrap items-center justify-center gap-2.5" aria-label="Accepted payment methods">
+    <span className="inline-flex h-7 min-w-[48px] items-center justify-center border border-current px-2 font-sans text-[10px] font-semibold tracking-nf-5" aria-label="Visa">
+      VISA
+    </span>
+    <span className="inline-flex h-7 min-w-[48px] items-center justify-center border border-current px-2" aria-label="Mastercard">
+      <svg viewBox="0 0 38 22" className="h-[18px] w-[31px]" role="img" aria-hidden="true">
+        <circle cx="14" cy="11" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="24" cy="11" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    </span>
+    <span className="inline-flex h-7 min-w-[48px] items-center justify-center border border-current px-2 font-sans text-[10px] font-semibold tracking-nf-5" aria-label="UPI">
+      UPI
+    </span>
+    <span className="inline-flex h-7 min-w-[48px] items-center justify-center border border-current px-2 font-sans text-[9px] font-semibold tracking-nf-5" aria-label="RuPay">
+      RuPay
+    </span>
+    <span className="inline-flex h-7 min-w-[48px] items-center justify-center border border-current px-2 font-sans text-[9px] font-medium tracking-nf-5" aria-label="Net banking">
+      NETBANK
+    </span>
+  </div>
+);
+
+const Footer = ({ compact = false }: { compact?: boolean }) => {
   const [email, setEmail] = useState("");
 
   const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
@@ -99,6 +136,66 @@ const Footer = () => {
       </ul>
     </div>
   );
+
+  if (compact) {
+    return (
+      <footer className="w-full border-t border-border" style={{ backgroundColor: SAGE }}>
+        <section className="bg-background px-5 py-10 md:px-10 md:py-12" aria-label="Naira purchase assurances">
+          <div className="mx-auto max-w-[880px]">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
+              {compactTrustItems.map(({ icon: Icon, title, detail }) => (
+                <div key={title} className="flex flex-col items-center text-center">
+                  <Icon className="mb-3 h-6 w-6 text-foreground/70" strokeWidth={1.25} aria-hidden="true" />
+                  <p className="font-sans text-[10px] font-medium uppercase tracking-nf-10 text-foreground">{title}</p>
+                  <p className="mt-1 font-sans text-[10px] text-muted-foreground">{detail}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-10 border-t border-border pt-7 text-center">
+              <div className="mb-4 flex items-center justify-center gap-2 font-sans text-[10px] font-medium uppercase tracking-nf-10 text-muted-foreground">
+                <LockKeyhole className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
+                Secure payments
+              </div>
+              <div className="text-muted-foreground">
+                <CompactPaymentMarks />
+              </div>
+              <p className="mt-4 font-sans text-[10px] text-muted-foreground">UPI, major cards, net banking and Cash on Delivery on serviceable pincodes</p>
+            </div>
+          </div>
+        </section>
+
+        <div className="max-w-[1200px] mx-auto px-5 py-8 md:px-10 md:py-10">
+          <div className="flex flex-col items-center gap-5 text-center md:flex-row md:justify-between md:text-left">
+            <Link to="/" aria-label="Naira home">
+              <img
+                src={nairaLogo}
+                alt="NAIRA"
+                loading="lazy"
+                decoding="async"
+                className="w-[88px] h-auto brightness-0 invert"
+              />
+            </Link>
+            <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+              <Link to="/contact" className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
+                Contact Us
+              </Link>
+              {compactPolicyLinks.map((link) => (
+                <Link key={link.label} to={link.to} className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <p className="mx-auto mt-6 max-w-[420px] text-center font-cormorant text-[14px] italic" style={{ color: CREAM_MUTED }}>
+            Crafted for the moments you keep.
+          </p>
+          <p className="mt-6 text-center font-cormorant text-[12px]" style={{ color: CREAM_FAINT }}>
+            © 2026 NAIRA. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer

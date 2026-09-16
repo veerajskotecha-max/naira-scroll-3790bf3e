@@ -148,21 +148,26 @@ const ReelFrame = ({
     <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
       {/* Poster stays painted underneath, so the frame is never blank while the
           video streams in — and it doubles as the placeholder for inactive reels. */}
-      {reel.posterUrl && (
+      {stillUrl ? (
         <img
-          src={reel.posterUrl}
-          alt=""
-          aria-hidden="true"
+          src={stillUrl}
+          alt={reel.title ?? "Naira Flore reel"}
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
           decoding="async"
         />
+      ) : (
+        <div className="absolute inset-0 bg-muted" aria-hidden="true" />
       )}
-      {canLoad && (
+      {canLoad && playable && (
         <video
           ref={videoRef}
           src={reel.videoUrl}
-          poster={reel.posterUrl ?? undefined}
+          poster={stillUrl ?? undefined}
+          onError={() => {
+            setFailed(true);
+            setReady(false);
+          }}
           className={`relative h-full w-full object-cover transition-opacity duration-500 ${
             ready ? "opacity-100" : "opacity-0"
           }`}

@@ -199,11 +199,13 @@ const Jewellery = () => {
       <div className="relative bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
         {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
         <div className="relative overflow-hidden bg-[#FBF3EC]">
-          <div className="pointer-events-none absolute inset-0 z-0">
-            <RingAtelierBackdrop variant="section" />
-          </div>
-
-
+          {/* The drifting atelier backdrop is decorative; a phone spends its
+              budget on packshots instead, so it mounts on larger screens only. */}
+          {showBackdrop && (
+            <div className="pointer-events-none absolute inset-0 z-0">
+              <RingAtelierBackdrop variant="section" />
+            </div>
+          )}
 
           {/* indexable header */}
           <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
@@ -216,6 +218,38 @@ const Jewellery = () => {
             </p>
           </header>
         </div>
+
+        {/* most-loved row: a piece, a price and a way in, on the first screen */}
+        {bestSellers.length > 0 && (
+          <section aria-label="Most loved pieces" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
+            <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
+            <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
+              {bestSellers.map((p, i) => (
+                <Link
+                  key={p.handle}
+                  to={`/jewellery/${p.handle}`}
+                  className="w-[112px] shrink-0 snap-start sm:w-[132px]"
+                >
+                  <div className="aspect-square w-full overflow-hidden bg-nf-ivory-deep">
+                    <img
+                      src={shopifyImage(p.image, 240)}
+                      srcSet={`${shopifyImage(p.image, 160)} 160w, ${shopifyImage(p.image, 240)} 240w, ${shopifyImage(p.image, 320)} 320w`}
+                      sizes="132px"
+                      alt={p.name}
+                      width={240}
+                      height={240}
+                      loading={i < 3 ? "eager" : "lazy"}
+                      decoding="async"
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
+                  <p className="mt-2 line-clamp-1 text-[13px] leading-tight text-nf-ink" style={velista}>{p.name}</p>
+                  <p className="mt-0.5 text-[10px] tracking-nf-18 text-nf-ink/65" style={jost}>{p.priceLabel}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* filter */}
         <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
@@ -235,6 +269,30 @@ const Jewellery = () => {
               </button>
             ))}
           </div>
+
+          {/* budget chips */}
+          <div className="mx-auto mt-2 flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
+            {PRICE_BANDS.map((b) => {
+              const on = bandKey(activeFilters) === b.key;
+              return (
+                <button
+                  key={b.key}
+                  onClick={() => selectBand(b)}
+                  aria-pressed={on}
+                  className={`press-scale shrink-0 inline-flex items-center border px-3.5 min-h-[36px] text-[10px] tracking-nf-18 transition-colors duration-200 ${
+                    on ? "border-nf-gold bg-nf-gold/15 text-nf-gold-shadow" : "border-nf-ink/20 text-nf-ink/65 hover:border-nf-ink/50"
+                  }`}
+                  style={jost}
+                >
+                  {b.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="mx-auto mt-2 max-w-6xl px-4 text-center text-[10.5px] tracking-nf-18 text-nf-ink/55 sm:px-6" style={jost}>
+            DELIVERY IN 3–5 WORKING DAYS · ₹150 INSURED · 7-DAY RETURNS
+          </p>
         </div>
 
         {/* sort + filters */}

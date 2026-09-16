@@ -186,32 +186,37 @@ const ReelFrame = ({
           }}
         />
       )}
-      {/* Soft shimmer + spinner over the poster until the first frame can play. */}
-      {canLoad && !ready && (
+      {/* Soft shimmer + spinner over the still until the first frame can play —
+          it gives up after a few seconds so the thumbnail stays clean. */}
+      {canLoad && playable && !ready && !slow && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25 backdrop-blur-[1px]">
           <span className="absolute inset-0 animate-pulse bg-gradient-to-br from-background/10 via-transparent to-background/10" />
           <span className="h-6 w-6 animate-spin rounded-full border-2 border-background/40 border-t-background" />
         </div>
       )}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
-        <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
-      </div>
-      <button
-        type="button"
-        onClick={togglePlayback}
-        aria-label={paused ? "Play reel" : "Pause reel"}
-        className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
-      >
-        {paused ? <Play size={12} /> : <Pause size={12} />}
-      </button>
-      <button
-        type="button"
-        onClick={() => setMuted((value) => !value)}
-        aria-label={muted ? "Unmute reel" : "Mute reel"}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
-      >
-        {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-      </button>
+      {playable && (
+        <>
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
+            <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
+          </div>
+          <button
+            type="button"
+            onClick={togglePlayback}
+            aria-label={paused ? "Play reel" : "Pause reel"}
+            className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
+          >
+            {paused ? <Play size={12} /> : <Pause size={12} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMuted((value) => !value)}
+            aria-label={muted ? "Unmute reel" : "Mute reel"}
+            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
+          >
+            {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+          </button>
+        </>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
         <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
         {reel.title && <p className="mt-0.5 line-clamp-1 font-cormorant text-[15px] leading-tight">{reel.title}</p>}

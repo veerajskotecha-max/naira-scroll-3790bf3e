@@ -83,6 +83,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCart));
   }, [storedCart]);
 
+  /* Fetch the Fastrr script only once a shopper actually opens the bag, so the
+     third-party file never lands on first paint of a browsing session. */
+  useEffect(() => {
+    if (isDrawerOpen) primeFastrr();
+  }, [isDrawerOpen]);
+
   /* Persist synchronously AND update React state. The synchronous write matters:
      "Buy now" reads the cart back from storage right after adding, before React
      has flushed the state update + effect. Without it checkout saw a stale cart

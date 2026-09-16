@@ -17,10 +17,10 @@ import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
 const SCRIPT_SRC = "https://fastrr-boost-ui.pickrr.com/assets/js/channels/mobileApp.js";
 const SCRIPT_TIMEOUT_MS = 6000;
 
-export const CHECKOUT_PROVIDER = ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string)
-  .toString()
-  .trim()
-  .toLowerCase();
+/* Fastrr is the live checkout. Set VITE_CHECKOUT_PROVIDER=shopify to roll back
+   to Shopify's own checkout page without a code change. */
+export const CHECKOUT_PROVIDER =
+  ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "fastrr";
 
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";
 

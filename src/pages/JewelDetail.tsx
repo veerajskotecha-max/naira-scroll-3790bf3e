@@ -5,11 +5,10 @@ import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { Helmet } from "react-helmet-async";
-import { Heart, Minus, Plus, Phone, Mail, MessageCircle, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag } from "lucide-react";
+import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
-import RecentlyViewed from "@/components/RecentlyViewed";
 import { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -300,7 +299,7 @@ const JewelDetail = () => {
      work fills any remaining slots. */
   const sameCategory = jewellery.filter((j) => j.handle !== piece.handle && j.category === piece.category);
   const otherPieces = jewellery.filter((j) => j.handle !== piece.handle && j.category !== piece.category);
-  const related = [...sameCategory, ...otherPieces].slice(0, 4);
+  const related = [...sameCategory, ...otherPieces].slice(0, 2);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
@@ -955,36 +954,6 @@ const JewelDetail = () => {
               </AccordionItem>
             </Accordion>
 
-            <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
-
-            {/* Help — the phone already has WhatsApp in the buttons above. */}
-            <div className="w-full hidden md:block">
-              <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-3" style={{ color: "hsl(0 0% 30%)" }}>Need Help?</span>
-              <div className="flex flex-col md:flex-row w-full">
-                {[
-                  { icon: Phone, label: "Call Us", href: `tel:+${WHATSAPP_NUMBER}` },
-                  { icon: Mail, label: "Email Us", href: "mailto:shopatnaira@gmail.com" },
-                  { icon: MessageCircle, label: "WhatsApp", href: enquiryHref },
-                ].map(({ icon: Icon, label, href }, idx) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target={label === "WhatsApp" ? "_blank" : undefined}
-                    rel={label === "WhatsApp" ? "noopener noreferrer" : undefined}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 min-h-[44px] text-[12px] tracking-[0.02em] transition-colors duration-200 hover:text-foreground"
-                    style={{
-                      color: "hsl(0 0% 35%)",
-                      borderTop: "1px solid hsl(0 0% 90%)",
-                      borderBottom: "1px solid hsl(0 0% 90%)",
-                      borderLeft: idx === 0 ? "1px solid hsl(0 0% 90%)" : "none",
-                      borderRight: "1px solid hsl(0 0% 90%)",
-                    }}
-                  >
-                    <Icon size={15} strokeWidth={1.5} />{label}
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -994,13 +963,13 @@ const JewelDetail = () => {
       </Suspense>
 
       {/* Related jewellery */}
-      <section className="py-16 md:py-20" style={{ backgroundColor: "#FBF3EC" }}>
+      <section className="py-10 md:py-14" style={{ backgroundColor: "#FBF3EC" }}>
         <div className="max-w-[1400px] mx-auto px-4 md:px-6">
           <h2 className="font-cormorant text-[26px] md:text-[34px] text-center" style={{ color: "#1A1614" }}>You may also like</h2>
           <p className="text-center mt-2 text-[12px] tracking-[0.3em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
             {sameCategory.length >= 2 ? `MORE ${piece.category.toUpperCase()} FROM THE ATELIER` : "FROM THE DEMI-GOLD ATELIER"}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-8">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 mt-6 max-w-[680px] mx-auto">
             {related.map((r) => (
               <Link key={r.handle} to={`/jewellery/${r.handle}`} className="group">
                 <div className="aspect-square overflow-hidden" style={{ backgroundColor: "#F4EBE2" }}>
@@ -1028,22 +997,9 @@ const JewelDetail = () => {
         </div>
       </section>
 
-      <RecentlyViewed
-        current={
-          piece && {
-            handle: piece.handle,
-            name: piece.name,
-            price: piece.priceLabel,
-            image: piece.image,
-            to: `/jewellery/${piece.handle}`,
-          }
-        }
-      />
-
-
       <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />
       
-      <Footer />
+      <Footer compact />
 
       {/* Sticky mobile enquire bar, revealed after the CTA scrolls past */}
       <div

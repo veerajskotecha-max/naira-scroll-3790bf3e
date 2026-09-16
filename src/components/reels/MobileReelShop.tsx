@@ -91,11 +91,21 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
   );
 };
 
-const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
+const ReelFrame = ({
+  reel,
+  active,
+  canLoad,
+}: {
+  reel: Reel;
+  active: boolean;
+  /** Only the reel actually on screen downloads video — everything else stays a poster. */
+  canLoad: boolean;
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -106,7 +116,7 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
     }
     video.muted = muted;
     void video.play().then(() => setPaused(false)).catch(() => undefined);
-  }, [active, muted]);
+  }, [active, canLoad, muted]);
 
   const togglePlayback = () => {
     const video = videoRef.current;
@@ -120,23 +130,50 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
 
   return (
     <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
-      <video
-        ref={videoRef}
-        src={active ? reel.videoUrl : undefined}
-        poster={reel.posterUrl ?? undefined}
-        className="h-full w-full object-cover"
-        playsInline
-        loop
-        muted={muted}
-        preload={active ? "metadata" : "none"}
-        onClick={togglePlayback}
-        onTimeUpdate={(event) => {
-          const video = event.currentTarget;
-          if (video.duration) setProgress((video.currentTime / video.duration) * 100);
-        }}
-      />
+      {/* Poster stays painted underneath, so the frame is never blank while the
+          video streams in — and it doubles as the placeholder for inactive reels. */}
+      {reel.posterUrl && (
+        <img
+          src={reel.posterUrl}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      {canLoad && (
+        <video
+          ref={videoRef}
+          src={reel.videoUrl}
+          poster={reel.posterUrl ?? undefined}
+          className={`relative h-full w-full object-cover transition-opacity duration-500 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
+          playsInline
+          loop
+          muted={muted}
+          preload={active ? "auto" : "none"}
+          onClick={togglePlayback}
+          onLoadedData={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
+          onWaiting={() => setReady(false)}
+          onPlaying={() => setReady(true)}
+          onTimeUpdate={(event) => {
+            const video = event.currentTarget;
+            if (video.duration) setProgress((video.currentTime / video.duration) * 100);
+          }}
+        />
+      )}
+      {/* Soft shimmer + spinner over the poster until the first frame can play. */}
+      {!ready && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25 backdrop-blur-[1px]">
+          <span className="absolute inset-0 animate-pulse bg-gradient-to-br from-background/10 via-transparent to-background/10" />
+          <span className="h-6 w-6 animate-spin rounded-full border-2 border-background/40 border-t-background" />
+        </div>
+      )}
       <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
-        <div className="h-full bg-background" style={{ width: `${progress}%` }} />
+        <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
       </div>
       <button
         type="button"
@@ -161,6 +198,7 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
     </div>
   );
 };
+
 
 const MobileReelShop = () => {
   const sectionRef = useRef<HTMLElement>(null);

@@ -44,6 +44,7 @@ const coverFirst = (handle: string, urls: string[]): string[] => {
 const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => {
   if (!node) return piece;
   const images = productImagesFirst(node);
+  const gallery = coverFirst(piece.handle, images.length ? images : piece.gallery);
   const variant = node.variants.edges[0]?.node;
   const price = variant ? Math.round(Number(variant.price.amount)) : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
@@ -59,8 +60,8 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
     variantId: variant?.id ?? piece.variantId,
     availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
-    image: images[0] ?? piece.image,
-    gallery: coverFirst(piece.handle, images.length ? images : piece.gallery),
+    image: gallery[0] ?? piece.image,
+    gallery,
     description: normalizeMetalCopy(node.description) || piece.description,
     tags: node.tags?.length ? node.tags : piece.tags,
   };

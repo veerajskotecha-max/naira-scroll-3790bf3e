@@ -316,7 +316,7 @@ const MobileReelShop = () => {
         )}
       </header>
 
-      {!enabled || isLoading ? (
+      {!enabled || isLoading || reels.length === 0 ? (
         <div className="mx-4 mt-5 aspect-[4/5] max-w-[236px] animate-pulse bg-muted" aria-hidden="true" />
       ) : (
         <>

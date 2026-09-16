@@ -25,7 +25,7 @@ export interface Reel {
 }
 
 const SIGN_TTL = 60 * 60 * 6; // 6h — long enough for a browsing session
-const CACHE_KEY = "naira:reels:v1";
+const CACHE_KEY = "naira:reels:v2";
 const CACHE_MS = 1000 * 60 * 60 * 2; // re-sign well before the URLs expire
 
 /** Session cache so a second product page opens the reels instantly, with no round-trip. */

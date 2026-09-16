@@ -305,8 +305,8 @@ const MobileReelShop = () => {
                     isActive ? "opacity-100 shadow-sm" : "opacity-60"
                   }`}
                 >
-                  {/* Active reel plus its immediate neighbour load, so a swipe
-                      is instant while nothing else downloads. */}
+                  {/* Only the reel on screen streams; the rest stay posters, so a
+                      swipe reveals a poster first, then plays. */}
                   <ReelFrame
                     reel={reel}
                     active={isActive}

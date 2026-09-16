@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Pause, Play, ShoppingBag, Volume2, VolumeX } from "lucide-react";
+import { ChevronRight, Pause, Play, ShoppingBag, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
@@ -58,7 +58,7 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
       <Link to={`/jewellery/${product.handle}`} className="block aspect-square overflow-hidden bg-muted">
         {image && (
           <img
-            src={shopifyImage(image, 320)}
+            src={shopifyImage(image, 240)}
             alt={product.title}
             className="h-full w-full object-cover"
             loading="lazy"
@@ -66,15 +66,15 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
           />
         )}
       </Link>
-      <div className="flex min-h-[132px] flex-1 flex-col px-2 pb-2 pt-2.5">
+      <div className="flex min-h-[92px] flex-1 flex-col px-1.5 pb-1.5 pt-2">
         <Link
           to={`/jewellery/${product.handle}`}
-          className="line-clamp-2 min-h-9 font-cormorant text-[15px] leading-[1.15] text-foreground"
+          className="line-clamp-2 min-h-[26px] font-cormorant text-[12px] leading-[1.12] text-foreground"
         >
           {product.title}
         </Link>
-        <p className="mt-1 truncate font-sans text-[10px] text-muted-foreground">
-          {soldOut ? "Pre-order · 2 weeks" : price}
+        <p className="mt-0.5 truncate font-sans text-[8px] tracking-nf-10 text-muted-foreground">
+          {soldOut ? "Pre-order" : price}
         </p>
         <Button
           type="button"
@@ -82,7 +82,7 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
           size="sm"
           onClick={soldOut ? preorder : add}
           disabled={!soldOut && (adding || isLoading)}
-          className="mt-auto h-8 w-full px-1 font-sans text-[8px] uppercase tracking-nf-10"
+          className="mt-auto h-7 w-full px-1 font-sans text-[7px] uppercase tracking-nf-10"
         >
           {soldOut ? "Reserve" : adding ? "Adding…" : "Add"}
         </Button>
@@ -138,29 +138,25 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
       <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
         <div className="h-full bg-background" style={{ width: `${progress}%` }} />
       </div>
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
         onClick={togglePlayback}
         aria-label={paused ? "Play reel" : "Pause reel"}
-        className="absolute left-3 top-3 bg-foreground/45 text-background hover:bg-foreground/65 hover:text-background"
+        className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
       >
-        {paused ? <Play /> : <Pause />}
-      </Button>
-      <Button
+        {paused ? <Play size={12} /> : <Pause size={12} />}
+      </button>
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
         onClick={() => setMuted((value) => !value)}
         aria-label={muted ? "Unmute reel" : "Mute reel"}
-        className="absolute right-3 top-3 bg-foreground/45 text-background hover:bg-foreground/65 hover:text-background"
+        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
       >
-        {muted ? <VolumeX /> : <Volume2 />}
-      </Button>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent px-4 pb-4 pt-16 text-background">
-        <p className="font-sans text-[9px] font-medium uppercase tracking-nf-15">Shop the reel</p>
-        {reel.title && <p className="mt-1 font-cormorant text-[21px] leading-tight">{reel.title}</p>}
+        {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+      </button>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
+        <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
+        {reel.title && <p className="mt-0.5 line-clamp-1 font-cormorant text-[15px] leading-tight">{reel.title}</p>}
       </div>
     </div>
   );
@@ -219,47 +215,62 @@ const MobileReelShop = () => {
   if (enabled && !isLoading && reels.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-12 md:hidden" aria-labelledby="shop-reels-title">
-      <header className="px-4 text-center">
-        <div className="mx-auto mb-3 flex w-max items-center gap-2 text-primary">
-          <ShoppingBag size={13} strokeWidth={1.5} />
-          <p className="font-sans text-[9px] font-medium uppercase tracking-nf-15">Seen on Naira</p>
+    <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">
+      <header className="flex items-end justify-between gap-3 px-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 text-primary">
+            <ShoppingBag size={11} strokeWidth={1.5} />
+            <p className="font-sans text-[8px] font-medium uppercase tracking-nf-15">Seen on Naira</p>
+          </div>
+          <h2 id="shop-reels-title" className="mt-1 font-cormorant text-[24px] italic leading-none text-foreground">
+            Shop the Reel
+          </h2>
         </div>
-        <h2 id="shop-reels-title" className="font-cormorant text-[32px] italic leading-none text-foreground">Shop the Reel</h2>
-        <p className="mt-3 font-sans text-[10px] uppercase tracking-nf-10 text-muted-foreground">Swipe through {Math.max(reels.length, 2)} shoppable reels</p>
+        {reels.length > 1 && (
+          <p className="shrink-0 font-sans text-[9px] font-medium tabular-nums tracking-nf-10 text-muted-foreground">
+            {String(activeIndex + 1).padStart(2, "0")} / {String(reels.length).padStart(2, "0")}
+          </p>
+        )}
       </header>
 
       {!enabled || isLoading ? (
-        <div className="mx-4 mt-7 aspect-[4/5] animate-pulse bg-muted" aria-hidden="true" />
+        <div className="mx-4 mt-5 aspect-[4/5] max-w-[236px] animate-pulse bg-muted" aria-hidden="true" />
       ) : (
         <>
           <div
             ref={railRef}
             onScroll={onScroll}
-            className="scrollbar-hide mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pr-[15%]"
+            className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 pr-[28%]"
             style={{ overscrollBehaviorX: "contain" }}
           >
-            {reels.map((reel, index) => (
-              <article key={reel.id} data-reel-slide className="w-[86vw] max-w-[338px] shrink-0 snap-start">
-                <ReelFrame reel={reel} active={index === activeIndex} />
-                <div className={`grid border-x border-b border-border bg-background ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
-                  {reel.products.slice(0, 3).map((product) => (
-                    <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />
-                  ))}
-                </div>
-              </article>
-            ))}
+            {reels.map((reel, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <article
+                  key={reel.id}
+                  data-reel-slide
+                  onClick={() => !isActive && goToReel(index)}
+                  className={`w-[60vw] max-w-[236px] shrink-0 snap-start border border-border bg-background transition-all duration-300 ${
+                    isActive ? "opacity-100 shadow-sm" : "opacity-60"
+                  }`}
+                >
+                  <ReelFrame reel={reel} active={isActive} />
+                  <div className={`grid ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+                    {reel.products.slice(0, 3).map((product) => (
+                      <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />
+                    ))}
+                  </div>
+                </article>
+              );
+            })}
           </div>
           {reels.length > 1 && (
-            <nav className="mx-4 mt-5 flex items-center gap-3" aria-label="Choose reel">
-              <p className="w-11 shrink-0 font-sans text-[10px] font-medium tabular-nums text-foreground">
-                {String(activeIndex + 1).padStart(2, "0")} / {String(reels.length).padStart(2, "0")}
-              </p>
-              <div className="flex h-7 flex-1 items-center gap-1" aria-hidden="true">
+            <nav className="mx-4 mt-4 flex items-center gap-3" aria-label="Choose reel">
+              <div className="flex h-5 flex-1 items-center gap-1" aria-hidden="true">
                 {reels.map((reel, index) => (
                   <span
                     key={reel.id}
-                    className={`h-1 flex-1 transition-colors duration-300 ${index <= activeIndex ? "bg-primary" : "bg-border"}`}
+                    className={`h-[2px] flex-1 transition-colors duration-300 ${index <= activeIndex ? "bg-primary" : "bg-border"}`}
                   />
                 ))}
               </div>
@@ -267,9 +278,9 @@ const MobileReelShop = () => {
                 type="button"
                 variant="ghost"
                 onClick={() => goToReel((activeIndex + 1) % reels.length)}
-                className="h-8 shrink-0 px-2 font-sans text-[9px] uppercase tracking-nf-10"
+                className="h-7 shrink-0 gap-1 px-2 font-sans text-[8px] uppercase tracking-nf-10"
               >
-                Next reel
+                Next reel <ChevronRight size={11} />
               </Button>
             </nav>
           )}

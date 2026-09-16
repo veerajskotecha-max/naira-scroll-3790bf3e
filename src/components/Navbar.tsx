@@ -47,13 +47,17 @@ const Navbar = ({ scrolled }: NavbarProps) => {
         <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-10">
           {/* Left: hamburger (mobile) / nav links (desktop) */}
           <div className="flex items-center">
+            {/* Icon buttons carry a 44px hit area through padding and pull it
+                back with a negative margin, so the thumb target grows without
+                moving anything on screen. */}
             <button
-              className="lg:hidden opacity-70 hover:opacity-100 transition-opacity duration-200"
+              className="lg:hidden -m-3 p-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
+
             <div className="hidden lg:flex items-center gap-[30px] lg:gap-[34px]">
               {leftLinks.map((link) =>
                 link.mega ? (
@@ -109,14 +113,14 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             >
               CONTACT
             </Link>
-            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="flex items-center">
+            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="-m-3 p-3 flex items-center">
               <Search
                 size={20}
                 strokeWidth={1.5}
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
             </button>
-            <button onClick={handleAccount} aria-label={user ? "My account" : "Sign in"} className="flex items-center">
+            <button onClick={handleAccount} aria-label={user ? "My account" : "Sign in"} className="-m-3 p-3 flex items-center">
               <User
                 size={20}
                 strokeWidth={1.5}
@@ -124,7 +128,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
             </button>
             {/* Wishlist icon with dot indicator */}
-            <button className="press-scale relative" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
+            <button className="press-scale relative -m-3 p-3" onClick={() => setWishlistOpen(true)} aria-label="Open wishlist">
               <Heart
                 size={20}
                 strokeWidth={1.5}
@@ -132,12 +136,12 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
               {wishlistCount > 0 && (
                 <span
-                  className="absolute -top-0.5 -right-0.5 w-[7px] h-[7px] rounded-full animate-scale-in"
+                  className="absolute top-[10px] right-[10px] w-[7px] h-[7px] rounded-full animate-scale-in"
                   style={{ backgroundColor: "hsl(186 35% 28%)" }}
                 />
               )}
             </button>
-            <button className="press-scale relative" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
+            <button className="press-scale relative -m-3 p-3" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
               <ShoppingBag
                 size={20}
                 strokeWidth={1.5}
@@ -145,7 +149,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
               {totalItems > 0 && (
                 <span
-                  className="absolute -top-2 -right-2 w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold leading-none"
+                  className="absolute top-[4px] right-[4px] w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold leading-none"
                   style={{ borderRadius: '50%', backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
                 >
                   {totalItems > 9 ? "9+" : totalItems}

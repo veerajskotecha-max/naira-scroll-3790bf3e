@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
-import { SHIPPING_CHARGE } from "@/lib/serviceability";
+import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
    — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
@@ -41,9 +41,14 @@ const CartDrawer = () => {
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
+  /* A dated arrival promise, computed the way a courier counts: working days
+     only. Quoting "3–5 working days" makes the shopper do this arithmetic. */
+  const arrivesBy = formatDeliveryDate(addWorkingDays(new Date(), 5));
+
   const discountRate = getPromoDiscountRate(promoCode);
   const discountAmount = Math.round(subtotal * discountRate);
   const orderTotal = subtotal - discountAmount + SHIPPING_CHARGE;
+
 
   const handleCheckout = () => checkout();
 
@@ -108,7 +113,10 @@ const CartDrawer = () => {
             {/* Scroll region: cart items only — footer CTA always stays visible */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
 
-              <div className="px-5 py-4 space-y-4">
+              {/* Lines sit against the summary rather than floating at the top
+                  of an empty panel, so a single-item cart reads as one block. */}
+              <div className="flex min-h-full flex-col justify-end px-5 py-4 space-y-4">
+
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} className="flex gap-3">
                     <img
@@ -147,13 +155,15 @@ const CartDrawer = () => {
               className="shrink-0 border-t px-5 pt-3 space-y-2.5 pb-[max(12px,env(safe-area-inset-bottom))]"
               style={{ borderColor: "hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 100%)" }}
             >
-              {/* Delivery */}
+              {/* Delivery — a named date, not a speed. Shoppers buying a gift
+                  stall at checkout to work the days out themselves. */}
               <div className="flex items-center gap-2 py-1.5 px-3 rounded-sm" style={{ backgroundColor: "hsl(142 30% 96%)" }}>
                 <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
                 <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
-                  Insured delivery in <strong className="font-semibold">3–5 working days</strong>
+                  Order today, arrives by <strong className="font-semibold">{arrivesBy}</strong>
                 </p>
               </div>
+
               {/* Promo code */}
               <CartPromoField />
 

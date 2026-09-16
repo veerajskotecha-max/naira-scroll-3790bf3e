@@ -17,10 +17,13 @@ import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
 const SCRIPT_SRC = "https://fastrr-boost-ui.pickrr.com/assets/js/channels/mobileApp.js";
 const SCRIPT_TIMEOUT_MS = 6000;
 
-/* Fastrr is the live checkout. Set VITE_CHECKOUT_PROVIDER=shopify to roll back
-   to Shopify's own checkout page without a code change. */
+/* Shopify's own checkout is live (Razorpay runs inside it as the payment
+   provider, configured in Shopify admin — no keys or scripts belong here).
+   Set VITE_CHECKOUT_PROVIDER=fastrr to switch back to Shiprocket Fastrr; the
+   hand-off below stays in place, dormant, so the flip is one line. */
 export const CHECKOUT_PROVIDER =
-  ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "fastrr";
+  ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "shopify";
+
 
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";
 

@@ -55,7 +55,7 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent ref={contentRef} className="w-full sm:max-w-[420px] h-full max-h-[100dvh] flex flex-col p-0 gap-0">
+      <SheetContent ref={contentRef} className="bottom-0 top-auto flex h-auto max-h-[92dvh] w-full flex-col gap-0 p-0 sm:inset-y-0 sm:h-full sm:max-h-[100dvh] sm:max-w-[420px]">
         {/* Header */}
         <SheetHeader className="shrink-0 px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">
@@ -96,7 +96,7 @@ const CartDrawer = () => {
         ) : (
           <>
             {/* Scroll region: cart items only — footer CTA always stays visible */}
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+            <div className="max-h-[34dvh] min-h-0 overflow-y-auto overscroll-contain sm:flex-1 sm:max-h-none">
 
               {/* Lines sit against the summary rather than floating at the top
                   of an empty panel, so a single-item cart reads as one block. */}

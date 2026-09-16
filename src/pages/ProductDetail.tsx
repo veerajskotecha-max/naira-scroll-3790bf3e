@@ -83,6 +83,10 @@ const ProductDetail = () => {
     },
   };
 
+  if (earlyJewellery && id) {
+    return <Navigate to={{ pathname: `/jewellery/${id}`, search: window.location.search }} replace />;
+  }
+
   if (product && isJewellery) {
     /* Keep the query string across the hop. Ad clicks arrive with ?fbclid= and
        utm_*; dropping them here meant the Meta pixel never saw the click id on

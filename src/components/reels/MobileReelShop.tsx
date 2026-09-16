@@ -226,7 +226,7 @@ const MobileReelShop = () => {
             {reels.map((reel, index) => (
               <article key={reel.id} className="w-full shrink-0 snap-center px-4">
                 <ReelFrame reel={reel} active={index === activeIndex} />
-                <div className="grid grid-cols-3 border-x border-b border-border bg-background">
+                <div className={`grid border-x border-b border-border bg-background ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                   {reel.products.slice(0, 3).map((product) => (
                     <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />
                   ))}

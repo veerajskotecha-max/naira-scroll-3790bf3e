@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { setAdMatchEmail, trackPageView, trackPixel } from "@/lib/pixel";
+import { setAdMatchIdentity, trackPageView, trackPixel } from "@/lib/pixel";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
@@ -14,11 +14,15 @@ const PixelEvents = () => {
   const { pathname, search } = useLocation();
   const { user, profile } = useAuth();
 
-  /* Advanced matching: only for a signed-in member who accepted it, and the
-     address is hashed in the browser before it goes anywhere. */
+  /* Advanced matching: only for a signed-in member who accepted it. Email and
+     phone are hashed in the browser before either goes anywhere, and dropping
+     the consent (or signing out) re-initialises the pixel without them. */
+  const consented = Boolean(profile?.ad_matching_consent);
   useEffect(() => {
-    void setAdMatchEmail(profile?.ad_matching_consent ? user?.email : null);
-  }, [user?.email, profile?.ad_matching_consent]);
+    void setAdMatchIdentity(
+      consented ? { email: user?.email, phone: profile?.phone } : null
+    );
+  }, [consented, user?.email, profile?.phone]);
 
   // The very first PageView is fired by the inline snippet in index.html.
   const firstRender = useRef(true);

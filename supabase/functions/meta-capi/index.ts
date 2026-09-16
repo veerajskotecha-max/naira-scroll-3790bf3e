@@ -7,7 +7,8 @@
  * cannot: the shopper's network address, device string, country and the page
  * they were on. Both copies share `event_id`, so Meta counts them once.
  *
- * It never receives a raw email: the browser hashes it before sending.
+ * It never receives a raw email or phone number: the browser hashes both
+ * before sending, and the schema rejects anything that is not a SHA-256 hex.
  */
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3";
@@ -36,6 +37,7 @@ const BodySchema = z.object({
       fbc: z.string().max(400).optional(),
       fbp: z.string().max(400).optional(),
       em: hex64.optional(),
+      ph: hex64.optional(),
     })
     .optional(),
   test_event_code: z.string().max(60).optional(),
@@ -75,6 +77,7 @@ Deno.serve(async (req) => {
     fbc: body.user_data?.fbc,
     fbp: body.user_data?.fbp,
     em: body.user_data?.em ? [body.user_data.em] : undefined,
+    ph: body.user_data?.ph ? [body.user_data.ph] : undefined,
     country: country && country !== "xx" ? [await sha256Hex(country)] : undefined,
   };
   for (const key of Object.keys(user_data)) if (user_data[key] === undefined) delete user_data[key];

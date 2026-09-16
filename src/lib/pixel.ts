@@ -59,14 +59,17 @@ const SERVER_EVENTS = new Set<PixelEvent>([
 ]);
 
 /**
- * SHA-256 hash of the signed-in shopper's email, set only when that shopper
- * has accepted advertising matching. Never the raw address, never persisted.
+ * The shopper's hashed Meta match keys, set only when a signed-in member has
+ * accepted advertising matching. Raw values never leave this module: they are
+ * SHA-256'd here in the browser, so neither Meta nor our own server ever
+ * receives the address or the number.
  */
-let hashedEmail: string | undefined;
+type MatchKeys = { em?: string; ph?: string };
+let matchKeys: MatchKeys = {};
 
 const sha256Hex = async (value: string): Promise<string | undefined> => {
   try {
-    const bytes = new TextEncoder().encode(value.trim().toLowerCase());
+    const bytes = new TextEncoder().encode(value);
     const digest = await crypto.subtle.digest("SHA-256", bytes);
     return Array.from(new Uint8Array(digest))
       .map((b) => b.toString(16).padStart(2, "0"))
@@ -76,22 +79,66 @@ const sha256Hex = async (value: string): Promise<string | undefined> => {
   }
 };
 
+/** Meta's normalisation for `em`: trimmed and lowercased before hashing. */
+export const normalizeEmail = (email?: string | null): string | undefined => {
+  const clean = email?.trim().toLowerCase();
+  // Cheapest possible sanity check — a hash of "not an email" matches nothing
+  // and only pollutes the match pool.
+  return clean && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean) ? clean : undefined;
+};
+
 /**
- * Attaches (or clears) the signed-in shopper's email as a Meta match key.
- * Email is the single highest-value parameter Meta uses; it is hashed here in
- * the browser, so neither Meta nor our own server ever receives the address.
+ * Meta's normalisation for `ph`: digits only, country code included, no
+ * leading zeros and no punctuation.
+ *
+ * Members enter their number every which way — "+91 98765 43210",
+ * "098765-43210", "9876543210". The store sells only into India (INR, IST,
+ * India), so a bare ten-digit number is an Indian one and takes the 91 prefix;
+ * anything already carrying a country code is left alone. A number that cannot
+ * be read as a real subscriber number returns undefined rather than a hash of
+ * junk.
  */
-export const setAdMatchEmail = async (email?: string | null) => {
-  if (!email) {
-    hashedEmail = undefined;
-    return;
-  }
-  const next = await sha256Hex(email);
-  if (!next || next === hashedEmail) return;
-  hashedEmail = next;
+export const normalizePhone = (phone?: string | null): string | undefined => {
+  if (!phone) return undefined;
+  let digits = phone.replace(/\D/g, "");
+  if (!digits) return undefined;
+  digits = digits.replace(/^00+/, ""); // international access prefix
+  digits = digits.replace(/^0+/, ""); // domestic trunk prefix
+  // Bare Indian subscriber number (mobile numbers start 6-9).
+  if (/^[6-9]\d{9}$/.test(digits)) digits = `91${digits}`;
+  // Shortest plausible E.164 is 8 digits, longest is 15.
+  return digits.length >= 8 && digits.length <= 15 ? digits : undefined;
+};
+
+/**
+ * Attaches (or clears) the shopper's Meta match keys.
+ *
+ * Email and phone are the two highest-value parameters Meta matches on, and
+ * `external_id` rides along on the same init so it survives every re-init.
+ * Passing nothing clears the keys — which MUST still re-initialise the pixel.
+ * Clearing only the module variable used to leave fbevents.js holding the
+ * previous member's `em`, so every event fired after a sign-out still carried
+ * the signed-out member's address.
+ */
+export const setAdMatchIdentity = async (identity?: { email?: string | null; phone?: string | null } | null) => {
+  const email = normalizeEmail(identity?.email);
+  const phone = normalizePhone(identity?.phone);
+
+  const next: MatchKeys = {};
+  if (email) next.em = await sha256Hex(email);
+  if (phone) next.ph = await sha256Hex(phone);
+
+  if (next.em === matchKeys.em && next.ph === matchKeys.ph) return;
+  matchKeys = next;
+
   try {
-    // Re-init with advanced matching so every later event carries the key.
-    window.fbq?.("init", PIXEL_ID, { external_id: getVisitorId(), em: hashedEmail });
+    /* Re-init with advanced matching so every later event carries the keys.
+       fbevents.js accepts an already-hashed 64-char hex value as-is. */
+    window.fbq?.("init", PIXEL_ID, {
+      external_id: getVisitorId(),
+      ...(matchKeys.em ? { em: matchKeys.em } : {}),
+      ...(matchKeys.ph ? { ph: matchKeys.ph } : {}),
+    });
   } catch {
     /* pixel blocked */
   }
@@ -126,7 +173,7 @@ const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<str
           external_id: getVisitorId(),
           fbc: getFbClickId(),
           fbp: getFbBrowserId(),
-          em: hashedEmail,
+          ...matchKeys,
         },
       }),
     }).catch(() => {

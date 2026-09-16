@@ -63,12 +63,23 @@
              is deferred here until idle/first interaction — a shopper who
              bounces before that leaves no click id at all. Writing the standard
              fb.1.<ts>.<fbclid> value ourselves makes capture immediate; the
-             pixel reuses an existing cookie rather than overwriting it. */
+             pixel reuses an existing cookie rather than overwriting it.
+
+             The cookie lasts 90 days, so it is only kept when it belongs to
+             THIS click. Keeping any existing _fbc meant a shopper who clicked a
+             second ad weeks later stayed attributed to the first one — the new
+             campaign got no credit. A fresh fbclid always wins, which is what
+             fbevents.js itself does. */
           var fbclid = new URLSearchParams(location.search).get('fbclid');
-          if (fbclid && !/(?:^|; )_fbc=/.test(document.cookie)) {
-            document.cookie = '_fbc=fb.1.' + Date.now() + '.' + fbclid +
-              '; path=/; max-age=7776000; SameSite=Lax' +
-              (location.protocol === 'https:' ? '; Secure' : '');
+          if (fbclid) {
+            var prior = document.cookie.match(/(?:^|; )_fbc=([^;]*)/);
+            // Stored form is fb.<subdomainIndex>.<creationTime>.<fbclid>.
+            var priorClick = prior ? decodeURIComponent(prior[1]).split('.').slice(3).join('.') : '';
+            if (priorClick !== fbclid) {
+              document.cookie = '_fbc=fb.1.' + Date.now() + '.' + fbclid +
+                '; path=/; max-age=7776000; SameSite=Lax' +
+                (location.protocol === 'https:' ? '; Secure' : '');
+            }
           }
         } catch (e) { /* cookies blocked — events simply carry no external_id */ }
       })();

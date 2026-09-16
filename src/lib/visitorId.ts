@@ -8,11 +8,21 @@
  *
  * The cookie is written by the inline snippet in index.html before
  * `fbq('init', ...)` runs, so advanced matching has it on the very first
- * PageView. This module reads the same cookie and is the single accessor the
- * app uses (cart attributes handed to Shopify, per-event user data).
+ * PageView. That snippet also parks the value on `window.__nairaVid`, which is
+ * the authoritative source here: it is the exact value the browser pixel was
+ * initialised with, and it survives the case where the cookie write itself
+ * fails. This module is the single accessor the app uses (cart attributes
+ * handed to Shopify, per-event user data).
  */
 
 export const VISITOR_COOKIE = "naira_vid";
+
+declare global {
+  interface Window {
+    /** Visitor id chosen by the inline snippet in index.html, pre-`fbq('init')`. */
+    __nairaVid?: string;
+  }
+}
 
 const readCookie = (name: string): string | undefined => {
   if (typeof document === "undefined") return undefined;
@@ -35,19 +45,39 @@ const writeCookie = (value: string) => {
   document.cookie = `${VISITOR_COOKIE}=${encodeURIComponent(value)}; path=/; max-age=63072000; SameSite=Lax${secure}`;
 };
 
+/*
+  Remembered for the life of the page.
+
+  Without this, a browser that refuses cookies re-entered the mint-a-new-id
+  branch on every single call: the cookie write silently failed, the next read
+  found nothing, and each event went out under a *different* external_id. That
+  is worse than sending none — it inflates Meta's unique-user count and, because
+  the browser pixel was initialised once from window.__nairaVid, the server copy
+  of an event no longer shared an external_id with its own browser twin.
+*/
+let cachedId: string | undefined;
+
 /** Returns the visitor id, creating and persisting one on first call. */
 export const getVisitorId = (): string | undefined => {
   if (typeof document === "undefined") return undefined;
-  const existing = readCookie(VISITOR_COOKIE);
-  if (existing) return existing;
-  const next = randomId();
-  writeCookie(next);
-  return next;
+  if (cachedId) return cachedId;
+  // The id the pixel was actually initialised with wins, then the cookie.
+  cachedId = (typeof window !== "undefined" ? window.__nairaVid : undefined) || readCookie(VISITOR_COOKIE);
+  if (cachedId) return cachedId;
+  cachedId = randomId();
+  writeCookie(cachedId);
+  return cachedId;
+};
+
+/** Test seam: drops the in-memory id so the next read re-resolves it. */
+export const resetVisitorIdCache = () => {
+  cachedId = undefined;
 };
 
 /**
- * Meta's click id cookie, written by the pixel from `?fbclid=`. Passed to
- * Shopify so the server-side Purchase event can be joined to the same click.
+ * Meta's click id cookie, written from `?fbclid=` by the inline snippet in
+ * index.html (and later by fbevents.js). Passed to Shopify so the server-side
+ * Purchase event can be joined to the same click.
  */
 export const getFbClickId = (): string | undefined => readCookie("_fbc");
 

@@ -138,29 +138,25 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
       <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
         <div className="h-full bg-background" style={{ width: `${progress}%` }} />
       </div>
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
         onClick={togglePlayback}
         aria-label={paused ? "Play reel" : "Pause reel"}
-        className="absolute left-3 top-3 bg-foreground/45 text-background hover:bg-foreground/65 hover:text-background"
+        className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
       >
-        {paused ? <Play /> : <Pause />}
-      </Button>
-      <Button
+        {paused ? <Play size={12} /> : <Pause size={12} />}
+      </button>
+      <button
         type="button"
-        variant="ghost"
-        size="icon"
         onClick={() => setMuted((value) => !value)}
         aria-label={muted ? "Unmute reel" : "Mute reel"}
-        className="absolute right-3 top-3 bg-foreground/45 text-background hover:bg-foreground/65 hover:text-background"
+        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
       >
-        {muted ? <VolumeX /> : <Volume2 />}
-      </Button>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent px-4 pb-4 pt-16 text-background">
-        <p className="font-sans text-[9px] font-medium uppercase tracking-nf-15">Shop the reel</p>
-        {reel.title && <p className="mt-1 font-cormorant text-[21px] leading-tight">{reel.title}</p>}
+        {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+      </button>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
+        <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
+        {reel.title && <p className="mt-0.5 line-clamp-1 font-cormorant text-[15px] leading-tight">{reel.title}</p>}
       </div>
     </div>
   );

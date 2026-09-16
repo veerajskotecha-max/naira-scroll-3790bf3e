@@ -75,7 +75,7 @@ const MobileRelatedEdit = ({ current, jewellery }: MobileRelatedEditProps) => {
           <ProductCopy piece={overlap} align="right" />
         </Link>
 
-        <Link to={`/jewellery/${wide.handle}`} className="group relative col-span-7 mt-1 block">
+        <Link to={`/jewellery/${wide.handle}`} className="group relative z-10 col-span-7 mt-1 block">
           <div className="aspect-square overflow-hidden bg-muted">
             <ProductImage piece={wide} sizes="58vw" />
           </div>
@@ -84,10 +84,12 @@ const MobileRelatedEdit = ({ current, jewellery }: MobileRelatedEditProps) => {
               Pre-order
             </span>
           )}
-          <ProductCopy piece={wide} />
+          <div className="relative bg-background pr-2">
+            <ProductCopy piece={wide} />
+          </div>
         </Link>
 
-        <Link to={`/jewellery/${tucked.handle}`} className="group relative col-start-7 col-span-6 -mt-10 block">
+        <Link to={`/jewellery/${tucked.handle}`} className="group relative col-start-7 col-span-6 -mt-3 block">
           <div className="aspect-square overflow-hidden border-4 border-background bg-muted shadow-md">
             <ProductImage piece={tucked} sizes="50vw" />
           </div>

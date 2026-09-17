@@ -1,81 +1,99 @@
 /*
-  Shiprocket Fastrr one-click checkout (headless hand-off).
+  Shiprocket Fastrr one-click checkout — "Custom frontend + Shopify backend"
+  integration, exactly as documented by Shiprocket:
 
-  Fastrr replaces the page the shopper pays on: instead of sending the bag to
-  Shopify's own checkout, we hand the same lines to Fastrr, which pre-fills the
-  address, offers COD/UPI, and writes the finished order back into Shopify.
-  Shopify still owns products, stock and orders.
+    <input type="hidden" value="<seller-domain>" id="sellerDomain"/>
+    <script src=".../channels/shopify.js" defer></script>
+    <link rel="stylesheet" href=".../styles/shopify.css">
 
-  Everything here is best-effort. If the script is blocked, slow, or returns
-  nothing usable, the caller keeps the existing Shopify checkout URL — a
-  checkout button must never be able to dead-end on a third-party script.
+    shiprocketCheckoutEvents.buyDirect({ type, products, couponCode,
+                                         utmParams, cartAttributes })
+
+  Note what this flow does NOT send: prices. Fastrr resolves the line items from
+  Shopify by variant id, so Shopify remains the single source of truth for
+  price, stock and discounts (the earlier mobile-app script needed a price and
+  carried a 100x unit risk — that is gone).
+
+  Everything here is best-effort. If the script is blocked, slow, or the
+  checkout is reported down, the caller keeps the existing Shopify checkout URL
+  — a checkout button must never dead-end on a third-party script.
 */
 import type { CartItem } from "@/contexts/CartContext";
 import { shopifyNumericId, CURRENCY } from "@/lib/pixel";
 import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
 
-const SCRIPT_SRC = "https://fastrr-boost-ui.pickrr.com/assets/js/channels/mobileApp.js";
+const SCRIPT_SRC = "https://fastrr-boost-ui.pickrr.com/assets/js/channels/shopify.js";
+const STYLE_HREF = "https://fastrr-boost-ui.pickrr.com/assets/styles/shopify.css";
 const SCRIPT_TIMEOUT_MS = 6000;
 
-/* Shopify's own checkout is live (Razorpay runs inside it as the payment
-   provider, configured in Shopify admin — no keys or scripts belong here).
-   Set VITE_CHECKOUT_PROVIDER=fastrr to switch back to Shiprocket Fastrr; the
-   hand-off below stays in place, dormant, so the flip is one line. */
+/* Set VITE_CHECKOUT_PROVIDER=shopify to fall back to Shopify's own checkout. */
 export const CHECKOUT_PROVIDER =
   ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "fastrr";
 
-
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";
 
-/* The Shopify permanent domain Fastrr is registered against — not the customer
-   facing domain. */
+/* The domain Fastrr has our configuration saved against. */
 export const FASTRR_DOMAIN =
   ((import.meta.env.VITE_FASTRR_DOMAIN ?? "") as string).toString().trim() || "nc5eti-gp.myshopify.com";
 
-/*
-  Fastrr's documented example sends `price: 50000` for a ₹500 item, i.e. the
-  smallest currency unit. We store rupees. Getting this wrong is a 100x error on
-  every order, so the multiplier is a single named constant that can be flipped
-  to 1 the moment Shiprocket confirms the unit in writing.
-*/
-export const FASTRR_PRICE_MULTIPLIER = Number(import.meta.env.VITE_FASTRR_PRICE_MULTIPLIER ?? 100) || 100;
-
-/* Key names are dictated by Fastrr's script: it reads item.id -> productId and
-   item.variant_id -> variantId. Camel-cased keys are silently dropped. */
-export interface FastrrItem {
-  id: string;
-  variant_id: string;
+export interface FastrrProduct {
+  variantId: string;
   quantity: number;
-  title: string;
-  price: number;
-  image: string;
 }
 
-type FastrrPayload = {
-  items: FastrrItem[];
-  /* Shopify permanent domain -> sellerDomain */
-  domain: string;
-  /* Storefront origin -> domain */
-  webUrl?: string;
+type BuyDirectPayload = {
+  type: "cart" | "product";
+  products: FastrrProduct[];
   couponCode?: string;
+  utmParams?: string;
   cartAttributes?: Record<string, string>;
-  /* Base64-encodes cartAttributes; without it the object stringifies to
-     "[object Object]" in the URL. */
-  encodingRequired?: boolean;
+  /* Undocumented but read by their script: where to send the shopper if
+     initiation fails. We pass Shopify's checkout URL. */
+  fallbackUrl?: string;
 };
 
 declare global {
   interface Window {
-    getOneClickCheckoutUrl?: (payload: FastrrPayload) => string | undefined;
+    shiprocketCheckoutEvents?: {
+      buyDirect?: (payload: BuyDirectPayload) => void;
+    };
   }
 }
 
 let scriptPromise: Promise<boolean> | null = null;
 
+/* The script reads the seller domain from a hidden input in the document, so it
+   must exist before the script runs. */
+const ensureSellerDomainInput = () => {
+  if (typeof document === "undefined") return;
+  let input = document.getElementById("sellerDomain") as HTMLInputElement | null;
+  if (!input) {
+    input = document.createElement("input");
+    input.type = "hidden";
+    input.id = "sellerDomain";
+    document.body.appendChild(input);
+  }
+  input.value = FASTRR_DOMAIN;
+};
+
+const ensureStylesheet = () => {
+  if (typeof document === "undefined") return;
+  if (document.querySelector(`link[href="${STYLE_HREF}"]`)) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = STYLE_HREF;
+  document.head.appendChild(link);
+};
+
+const isReady = () => typeof window !== "undefined" && typeof window.shiprocketCheckoutEvents?.buyDirect === "function";
+
 const loadFastrrScript = (): Promise<boolean> => {
   if (typeof window === "undefined" || typeof document === "undefined") return Promise.resolve(false);
-  if (typeof window.getOneClickCheckoutUrl === "function") return Promise.resolve(true);
+  if (isReady()) return Promise.resolve(true);
   if (scriptPromise) return scriptPromise;
+
+  ensureSellerDomainInput();
+  ensureStylesheet();
 
   scriptPromise = new Promise<boolean>((resolve) => {
     let settled = false;
@@ -89,17 +107,17 @@ const loadFastrrScript = (): Promise<boolean> => {
 
     const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`);
     const script = existing ?? document.createElement("script");
-    script.addEventListener("load", () => finish(typeof window.getOneClickCheckoutUrl === "function"));
+    script.addEventListener("load", () => finish(isReady()));
     script.addEventListener("error", () => finish(false));
 
     if (!existing) {
       script.src = SCRIPT_SRC;
-      script.async = true;
+      script.defer = true;
       document.head.appendChild(script);
     }
 
     /* Never hold the shopper behind a stalled third-party script. */
-    window.setTimeout(() => finish(typeof window.getOneClickCheckoutUrl === "function"), SCRIPT_TIMEOUT_MS);
+    window.setTimeout(() => finish(isReady()), SCRIPT_TIMEOUT_MS);
   });
 
   return scriptPromise;
@@ -111,21 +129,14 @@ export const primeFastrr = () => {
   void loadFastrrScript();
 };
 
-export const toFastrrItems = (items: CartItem[]): FastrrItem[] =>
+export const toFastrrProducts = (items: CartItem[]): FastrrProduct[] =>
   items
     .map((item) => {
       const variantId = shopifyNumericId(item.variantId) ?? item.variantId;
       if (!variantId) return null;
-      return {
-        id: shopifyNumericId(item.id) ?? variantId,
-        variant_id: variantId,
-        quantity: item.quantity,
-        title: item.variantTitle || item.size ? `${item.name} — ${item.variantTitle ?? item.size}` : item.name,
-        price: Math.round(item.price * FASTRR_PRICE_MULTIPLIER),
-        image: item.image,
-      } satisfies FastrrItem;
+      return { variantId: String(variantId), quantity: item.quantity } satisfies FastrrProduct;
     })
-    .filter((item): item is FastrrItem => item !== null);
+    .filter((product): product is FastrrProduct => product !== null);
 
 /* UTM values from the current URL, forwarded verbatim so Shopify's order sees
    the same campaign our own analytics recorded. */
@@ -154,40 +165,37 @@ export const fastrrCartAttributes = (): Record<string, string> => {
 };
 
 /**
- * Builds the Fastrr checkout URL for the given bag.
- * Returns null on any failure so the caller can fall back to Shopify checkout.
+ * Opens Fastrr's checkout for the given bag.
+ * Returns false on any failure so the caller can fall back to Shopify checkout.
  */
-export const getFastrrCheckoutUrl = async (
+export const startFastrrCheckout = async (
   items: CartItem[],
-  options: { couponCode?: string | null } = {}
-): Promise<string | null> => {
-  if (!isFastrrEnabled()) return null;
-  const lines = toFastrrItems(items);
-  if (!lines.length) return null;
+  options: { couponCode?: string | null; fallbackUrl?: string } = {}
+): Promise<boolean> => {
+  if (!isFastrrEnabled()) return false;
+  const products = toFastrrProducts(items);
+  if (!products.length) return false;
 
   try {
     const ready = await loadFastrrScript();
-    if (!ready || typeof window.getOneClickCheckoutUrl !== "function") return null;
+    if (!ready || typeof window.shiprocketCheckoutEvents?.buyDirect !== "function") return false;
 
-    /* Their script ignores a utmParams field, so campaign values ride along
-       inside cartAttributes, which lands on the Shopify order. */
+    ensureSellerDomainInput();
+
     const utmParams = currentUtmParams();
-    const cartAttributes = fastrrCartAttributes();
-    if (utmParams) cartAttributes.utm_params = utmParams;
-
-    const payload: FastrrPayload = {
-      items: lines,
-      domain: FASTRR_DOMAIN,
-      webUrl: typeof window === "undefined" ? undefined : window.location.origin,
-      cartAttributes,
-      encodingRequired: true,
+    const payload: BuyDirectPayload = {
+      type: "cart",
+      products,
+      cartAttributes: fastrrCartAttributes(),
+      ...(utmParams ? { utmParams } : {}),
       ...(options.couponCode ? { couponCode: options.couponCode } : {}),
+      ...(options.fallbackUrl ? { fallbackUrl: options.fallbackUrl } : {}),
     };
 
-    const url = window.getOneClickCheckoutUrl(payload);
-    return typeof url === "string" && url.startsWith("http") ? url : null;
+    window.shiprocketCheckoutEvents.buyDirect(payload);
+    return true;
   } catch (error) {
-    console.error("Fastrr checkout URL could not be built", error);
-    return null;
+    console.error("Fastrr checkout could not be started", error);
+    return false;
   }
 };

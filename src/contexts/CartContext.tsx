@@ -11,7 +11,7 @@ import {
   updateCartTrackingAttributes,
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
-import { getFastrrCheckoutUrl, isFastrrEnabled, primeFastrr } from "@/lib/fastrr";
+import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { setClarityTag } from "@/lib/clarity";
 

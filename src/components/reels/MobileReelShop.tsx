@@ -9,6 +9,7 @@ import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
+import localReelPoster from "@/assets/reel-poster-2.jpg";
 
 const PREORDER_WHATSAPP = "919561557935";
 
@@ -111,8 +112,9 @@ const ReelFrame = ({
   const [failed, setFailed] = useState(false);
   const [slow, setSlow] = useState(false);
 
-  /* Poster, else the first tagged product photo — the frame always has an image. */
-  const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? null;
+  /* The bundled poster is the final fallback. Signed poster links can expire or
+     be unavailable on a weak connection, but the frame must never go blank. */
+  const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
   const playable = Boolean(reel.videoUrl) && !failed;
 
   useEffect(() => {
@@ -148,17 +150,16 @@ const ReelFrame = ({
     <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
       {/* Poster stays painted underneath, so the frame is never blank while the
           video streams in — and it doubles as the placeholder for inactive reels. */}
-      {stillUrl ? (
-        <img
-          src={stillUrl}
-          alt={reel.title ?? "Naira Flore reel"}
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-muted" aria-hidden="true" />
-      )}
+      <img
+        src={stillUrl}
+        alt={reel.title ?? "Naira Flore reel"}
+        className="absolute inset-0 h-full w-full object-cover"
+        loading={active ? "eager" : "lazy"}
+        decoding="async"
+        onError={(event) => {
+          if (event.currentTarget.src !== localReelPoster) event.currentTarget.src = localReelPoster;
+        }}
+      />
       {canLoad && playable && (
         <video
           ref={videoRef}
@@ -225,6 +226,33 @@ const ReelFrame = ({
   );
 };
 
+const InstantReelFallback = () => (
+  <article className="relative mt-5 ml-4 w-[60vw] max-w-[236px] border border-border bg-background">
+    <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+      <img
+        src={localReelPoster}
+        alt="Naira Flore jewellery reel preview"
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-foreground/10" aria-hidden="true" />
+      <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center bg-foreground/55 text-background">
+        <Play size={13} fill="currentColor" />
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
+        <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
+        <p className="mt-0.5 font-cormorant text-[15px] leading-tight">Tap when the video is ready</p>
+      </div>
+    </div>
+    <div className="grid h-[92px] grid-cols-3 divide-x divide-border" aria-hidden="true">
+      <span className="bg-muted/60" />
+      <span className="bg-muted/45" />
+      <span className="bg-muted/30" />
+    </div>
+  </article>
+);
+
 
 const MobileReelShop = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -246,6 +274,10 @@ const MobileReelShop = () => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
+    /* Start the tiny metadata request shortly after the PDP settles. This does
+       not download a video; it makes ad landings resilient when the shopper
+       reaches this section before IntersectionObserver has fired. */
+    const warmup = window.setTimeout(() => setEnabled(true), 600);
     /* Two stages so the reel starts instantly without costing the product page
        anything up front: the tiny metadata/signed-URL fetch runs well ahead of
        the section, the multi-megabyte video only once it is actually on screen. */
@@ -265,6 +297,7 @@ const MobileReelShop = () => {
     dataObserver.observe(section);
     videoObserver.observe(section);
     return () => {
+      window.clearTimeout(warmup);
       dataObserver.disconnect();
       videoObserver.disconnect();
     };
@@ -317,7 +350,7 @@ const MobileReelShop = () => {
       </header>
 
       {!enabled || isLoading || reels.length === 0 ? (
-        <div className="mx-4 mt-5 aspect-[4/5] max-w-[236px] animate-pulse bg-muted" aria-hidden="true" />
+        <InstantReelFallback />
       ) : (
         <>
           <div

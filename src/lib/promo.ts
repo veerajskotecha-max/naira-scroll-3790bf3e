@@ -6,10 +6,20 @@
    the bag resolves exactly one code and never quotes a stacked total it cannot
    deliver. */
 
+/* NAIRA10 is back and live in Shopify: 10%, ALL customers, no minimum, no
+   usage limit — its old title said "first order" but it was never actually
+   restricted, so the bag can offer it to anyone without quoting a discount the
+   checkout would reject.
+
+   It is the floor of the ladder, not a rung of it. The quantity offers are
+   earned by the bag; NAIRA10 is typed. A single-piece order is two thirds of
+   what this store sells and the ladder gives it nothing, so without this code
+   the most common order carries no discount at all. */
 export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
   BUY2: 0.2,
   BUY3: 0.3,
+  NAIRA10: 0.1,
 } as const;
 
 export type PromoCode = keyof typeof PROMO_DISCOUNTS;

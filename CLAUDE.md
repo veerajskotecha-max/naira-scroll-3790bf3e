@@ -83,8 +83,23 @@ Shopify quotes a total the shopper is never charged.
 
 Live codes: `BUY2` (20%, min qty 2) and `BUY3` (30%, min qty 3), both PRODUCT
 class scoped to the hidden auto-updating collection `discount-scope-all` — do
-not delete it or both stop working. `NAIRA10` was retired and is EXPIRED in
-Shopify; the app no longer accepts it.
+not delete it or both stop working.
+
+`NAIRA10` (10%) is LIVE again. It was retired, then brought back because two
+thirds of orders are a single piece, which the ladder gives nothing — before it
+came back, the most common order carried no discount at all. Despite its old
+title it was never restricted to first orders: verified live, `allCustomers:
+true`, `appliesOncePerCustomer: false`, no usage limit, no minimum, so the bag
+can offer it to anyone without quoting a discount the checkout would reject.
+
+NAIRA10 is the FLOOR, not a rung. It is typed; the rungs are earned. The
+resolver returns the richer of the two, so a two-piece bag correctly shows BUY2
+at 20% and ignores a stored NAIRA10 — verified in the browser: 1 piece +
+NAIRA10 = -₹250 on ₹2,499; adding a second piece switches to BUY2, -₹860 on
+₹4,298. It is NOT auto-applied: a shopper has to type it, which is why the
+announcement strip carries it (`AnnouncementBar.tsx` alternates scarcity with
+the code). Deciding to auto-apply it is a margin call for the owner, not a
+code change to make unprompted.
 
 `FRIENDSANDFAMILY` (20%) still exists and is now WORTH LESS than the top rung.
 The resolver hands back the richer of earned and typed, so a three-piece bag
@@ -102,7 +117,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 154 tests
+npx vitest run                          # currently 158 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

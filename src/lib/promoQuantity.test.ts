@@ -93,17 +93,26 @@ describe("resolveCartDiscount", () => {
     expect(resolveCartDiscount({ totalItems: 0 }).rate).toBe(0);
   });
 
-  /* NAIRA10 was retired and deactivated in Shopify. A shopper with it still in
-     localStorage must get the bag's own offer, not a dead code the checkout
-     would reject. */
-  it("ignores the retired welcome code", () => {
-    expect(ACCEPTED_PROMO_CODES).not.toContain("NAIRA10");
+  /* NAIRA10 is live again (10%, all customers, no minimum). It must be
+     ACCEPTED on a single-piece bag — that is two thirds of orders and the
+     ladder gives them nothing — but it must never beat a rung it is worth less
+     than, or the bag would quote 10% while the checkout applied 20%. */
+  it("accepts the welcome code on a bag the ladder does not reach", () => {
+    expect(ACCEPTED_PROMO_CODES).toContain("NAIRA10");
     expect(resolveCartDiscount({ totalItems: 1, promoCode: "NAIRA10" })).toEqual({
-      code: null,
-      rate: 0,
+      code: "NAIRA10",
+      rate: 0.1,
       automatic: false,
     });
-    expect(resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" }).code).toBe("BUY2");
+  });
+
+  it("still prefers the earned rung once the bag out-earns the welcome code", () => {
+    expect(resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" })).toEqual({
+      code: "BUY2",
+      rate: 0.2,
+      automatic: true,
+    });
+    expect(resolveCartDiscount({ totalItems: 3, promoCode: "NAIRA10" }).code).toBe("BUY3");
   });
 });
 

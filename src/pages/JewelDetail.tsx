@@ -22,6 +22,7 @@ import PressMarquee from "@/components/jewellery/PressMarquee";
 import ReelPeek from "@/components/reels/ReelPeek";
 import MobileReelShop from "@/components/reels/MobileReelShop";
 import FomoPopup from "@/components/FomoPopup";
+import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
@@ -828,7 +829,8 @@ const JewelDetail = () => {
                 </button>
               )}
 
-              <p className="mt-2 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
+              {!soldOut && <CheckoutBenefit className="mt-2 flex" />}
+              <p className="mt-1.5 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
                 {soldOut ? (
                   "Reserve today — your piece is hand-finished and ships within 2 weeks."
                 ) : (
@@ -836,7 +838,7 @@ const JewelDetail = () => {
                     {/* 60% of Baymard's subjects looked for the returns policy on the
                         product page itself, and 44% of sites neither show nor link it
                         there. This said "Easy returns" and linked nowhere. */}
-                    Secure payments · Insured delivery ·{" "}
+                    Insured delivery ·{" "}
                     <Link
                       to="/exchange-return-policy"
                       className="underline underline-offset-4"
@@ -1045,10 +1047,11 @@ const JewelDetail = () => {
             <button
               onClick={handleBuyNow}
               disabled={buying || cartLoading}
-              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
+              className="press-scale flex-1 h-[48px] inline-flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
               style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
             >
-              {buying ? "Opening…" : "Shop now"}
+              <span>{buying ? "Opening…" : "Shop now"}</span>
+              {!buying && <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fast checkout</span>}
             </button>
           </>
         )}

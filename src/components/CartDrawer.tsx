@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Shield, Loader2 } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Lock, Loader2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
@@ -8,6 +8,7 @@ import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
+import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
    — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
@@ -186,10 +187,7 @@ const CartDrawer = () => {
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
-              <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
-                <Shield size={11} strokeWidth={1.5} />
-                <span>Secure payments · UPI · Cards · COD</span>
-              </div>
+              <CheckoutBenefit className="flex w-full" />
               <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[36px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>
                 Continue Shopping
               </Link>

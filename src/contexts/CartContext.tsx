@@ -11,6 +11,7 @@ import {
   updateCartTrackingAttributes,
 } from "@/lib/shopify";
 import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
+import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { setClarityTag } from "@/lib/clarity";
 
@@ -81,6 +82,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCart));
   }, [storedCart]);
+
+  /* Fetch the Fastrr script only once a shopper actually opens the bag, so the
+     third-party file never lands on first paint of a browsing session. */
+  useEffect(() => {
+    if (isDrawerOpen) primeFastrr();
+  }, [isDrawerOpen]);
 
   /* Persist synchronously AND update React state. The synchronous write matters:
      "Buy now" reads the cart back from storage right after adding, before React
@@ -382,6 +389,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
        popup-blocked warning, or opened a stray tab that the navigation below
        then orphaned. Same-tab hand-off is what Shopify's own buttons do, and it
        keeps the shopper's back button working. */
+    /* Shiprocket Fastrr, when switched on, replaces only the page the shopper
+       pays on — the bag was still built in Shopify above, and the finished
+       order comes back to Shopify. Anything less than a usable URL (script
+       blocked, slow, empty response) falls through to Shopify's own checkout
+       rather than leaving the button dead. */
+    if (isFastrrEnabled()) {
+      setIsLoading(true);
+      try {
+        const started = await startFastrrCheckout(loadCart().items, { couponCode: code, fallbackUrl: target });
+        if (started) {
+          /* Fastrr takes over the screen itself — no navigation from us. */
+          setDrawerOpen(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Falling back to Shopify checkout", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
     window.location.assign(target);
     setDrawerOpen(false);
   }, []);

@@ -7,10 +7,14 @@ import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing } from "@/data/ringFit";
 import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
+import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
+import localReelPoster from "@/assets/reel-fallback.webp";
 
 const PREORDER_WHATSAPP = "919561557935";
+
+const isInstagramBrowser = () =>
+  typeof navigator !== "undefined" && /Instagram|FBAN|FBAV/i.test(navigator.userAgent);
 
 const parsePrice = (label?: string | null) =>
   label ? Number(label.replace(/[^\d.]/g, "")) || 0 : 0;
@@ -91,11 +95,33 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
   );
 };
 
-const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
+const ReelFrame = ({
+  reel,
+  active,
+  canLoad,
+}: {
+  reel: Reel;
+  active: boolean;
+  /** Only the reel actually on screen downloads video — everything else stays a poster. */
+  canLoad: boolean;
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const instagramBrowser = useMemo(isInstagramBrowser, []);
+  const [userStarted, setUserStarted] = useState(false);
   const [muted, setMuted] = useState(true);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(instagramBrowser);
   const [progress, setProgress] = useState(0);
+  const [ready, setReady] = useState(false);
+  /* A missing/blocked video must never collapse or blank the card: we fall back
+     to the still thumbnail and hide the playback chrome instead. */
+  const [failed, setFailed] = useState(false);
+  const [slow, setSlow] = useState(false);
+
+  /* The bundled poster is the final fallback. Signed poster links can expire or
+     be unavailable on a weak connection, but the frame must never go blank. */
+  const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
+  const playable = Boolean(reel.videoUrl);
+  const shouldMountVideo = canLoad && playable && !failed;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -104,13 +130,36 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
       video.pause();
       return;
     }
+    if (instagramBrowser && !userStarted) return;
     video.muted = muted;
     void video.play().then(() => setPaused(false)).catch(() => undefined);
-  }, [active, muted]);
+  }, [active, canLoad, instagramBrowser, muted, userStarted]);
+
+  /* Stop spinning forever on a stalled network: after 6s we simply show the
+     still image while the video keeps loading quietly in the background. */
+  useEffect(() => {
+    if (!shouldMountVideo || ready) return;
+    const timer = window.setTimeout(() => setSlow(true), 6000);
+    return () => window.clearTimeout(timer);
+  }, [ready, shouldMountVideo]);
 
   const togglePlayback = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      return;
+    }
+    /* Instagram's webview must receive load() and play() inside the physical
+       tap handler; starting them from an effect after rendering is often
+       classified as autoplay and the range request is aborted. */
+    if (instagramBrowser && (!userStarted || failed)) {
+      setFailed(false);
+      setUserStarted(true);
+      setSlow(false);
+      video.src = reel.videoUrl;
+      video.load();
+      void video.play().then(() => setPaused(false)).catch(() => setPaused(true));
+      return;
+    }
     if (video.paused) void video.play().then(() => setPaused(false));
     else {
       video.pause();
@@ -120,40 +169,89 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
 
   return (
     <div className="relative aspect-[4/5] overflow-hidden bg-foreground">
-      <video
-        ref={videoRef}
-        src={active ? reel.videoUrl : undefined}
-        poster={reel.posterUrl ?? undefined}
-        className="h-full w-full object-cover"
-        playsInline
-        loop
-        muted={muted}
-        preload={active ? "metadata" : "none"}
-        onClick={togglePlayback}
-        onTimeUpdate={(event) => {
-          const video = event.currentTarget;
-          if (video.duration) setProgress((video.currentTime / video.duration) * 100);
+      {/* Poster stays painted underneath, so the frame is never blank while the
+          video streams in — and it doubles as the placeholder for inactive reels. */}
+      <img
+        src={stillUrl}
+        alt={reel.title ?? "Naira Flore reel"}
+        className="absolute inset-0 h-full w-full object-cover"
+        loading={active ? "eager" : "lazy"}
+        decoding="async"
+        onError={(event) => {
+          event.currentTarget.onerror = null;
+          event.currentTarget.src = localReelPoster;
         }}
       />
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
-        <div className="h-full bg-background" style={{ width: `${progress}%` }} />
-      </div>
-      <button
-        type="button"
-        onClick={togglePlayback}
-        aria-label={paused ? "Play reel" : "Pause reel"}
-        className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
-      >
-        {paused ? <Play size={12} /> : <Pause size={12} />}
-      </button>
-      <button
-        type="button"
-        onClick={() => setMuted((value) => !value)}
-        aria-label={muted ? "Unmute reel" : "Mute reel"}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
-      >
-        {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
-      </button>
+      {shouldMountVideo && (
+        <video
+          ref={videoRef}
+          src={instagramBrowser && !userStarted ? undefined : reel.videoUrl}
+          poster={stillUrl ?? undefined}
+          onError={() => {
+            setFailed(true);
+            setReady(false);
+          }}
+          className={`relative h-full w-full object-cover transition-opacity duration-500 ${
+            ready ? "opacity-100" : "opacity-0"
+          }`}
+          playsInline
+          loop
+          muted={muted}
+          preload={instagramBrowser && !userStarted ? "none" : "auto"}
+          onClick={togglePlayback}
+          onLoadedData={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
+          onWaiting={() => setReady(false)}
+          onPlaying={() => setReady(true)}
+          onTimeUpdate={(event) => {
+            const video = event.currentTarget;
+            if (video.duration) setProgress((video.currentTime / video.duration) * 100);
+          }}
+        />
+      )}
+      {/* Soft shimmer + spinner over the still until the first frame can play —
+          it gives up after a few seconds so the thumbnail stays clean. */}
+      {shouldMountVideo && !ready && !slow && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25 backdrop-blur-[1px]">
+          <span className="absolute inset-0 animate-pulse bg-gradient-to-br from-background/10 via-transparent to-background/10" />
+          <span className="h-6 w-6 animate-spin rounded-full border-2 border-background/40 border-t-background" />
+        </div>
+      )}
+      {playable && (
+        <>
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-background/30">
+            <div className="h-full bg-background transition-[width] duration-150" style={{ width: `${progress}%` }} />
+          </div>
+          <button
+            type="button"
+            onClick={togglePlayback}
+            aria-label={paused ? "Play reel" : "Pause reel"}
+            className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
+          >
+            {paused || !ready ? <Play size={12} /> : <Pause size={12} />}
+          </button>
+          {instagramBrowser && (!userStarted || failed) && (
+            <button
+              type="button"
+              onClick={togglePlayback}
+              className="absolute inset-0 flex items-center justify-center text-background"
+              aria-label="Tap to play reel"
+            >
+              <span className="flex items-center gap-1.5 bg-foreground/60 px-3 py-2 font-sans text-[9px] uppercase tracking-nf-10 backdrop-blur-sm">
+                <Play size={12} fill="currentColor" /> Tap to play
+              </span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setMuted((value) => !value)}
+            aria-label={muted ? "Unmute reel" : "Mute reel"}
+            className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
+          >
+            {muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
+          </button>
+        </>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
         <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
         {reel.title && <p className="mt-0.5 line-clamp-1 font-cormorant text-[15px] leading-tight">{reel.title}</p>}
@@ -162,12 +260,45 @@ const ReelFrame = ({ reel, active }: { reel: Reel; active: boolean }) => {
   );
 };
 
+const InstantReelFallback = () => (
+  <article className="relative mt-5 ml-4 w-[60vw] max-w-[236px] border border-border bg-background">
+    <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+      <img
+        src={localReelPoster}
+        alt="Naira Flore jewellery reel preview"
+        className="absolute inset-0 h-full w-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-foreground/10" aria-hidden="true" />
+      <div className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center bg-foreground/55 text-background">
+        <Play size={13} fill="currentColor" />
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
+        <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
+        <p className="mt-0.5 font-cormorant text-[15px] leading-tight">Tap to play</p>
+      </div>
+    </div>
+    <div className="grid h-[92px] grid-cols-3 divide-x divide-border" aria-hidden="true">
+      <span className="bg-muted/60" />
+      <span className="bg-muted/45" />
+      <span className="bg-muted/30" />
+    </div>
+  </article>
+);
+
+
 const MobileReelShop = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
+  const [inView, setInView] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data: reels = [], isLoading } = useReels(enabled);
+  const { data, isLoading, isError, isSuccess } = useReels(enabled);
+  /* If the refresh fails we keep the last reels we saw rather than letting the
+     whole section disappear mid-page. */
+  const fallback = useMemo(() => (isError ? readStaleReelCache() ?? [] : []), [isError]);
+  const reels = data?.length ? data : fallback;
   const { jewellery } = useLiveJewellery();
   const liveByHandle = useMemo(
     () => new Map(jewellery.map((product) => [product.handle, product])),
@@ -177,18 +308,35 @@ const MobileReelShop = () => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-    const observer = new IntersectionObserver(
+    /* Start the tiny metadata request shortly after the PDP settles. This does
+       not download a video; it makes ad landings resilient when the shopper
+       reaches this section before IntersectionObserver has fired. */
+    const warmup = window.setTimeout(() => setEnabled(true), 600);
+    /* Two stages so the reel starts instantly without costing the product page
+       anything up front: the tiny metadata/signed-URL fetch runs well ahead of
+       the section, the multi-megabyte video only once it is actually on screen. */
+    const dataObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setEnabled(true);
-          observer.disconnect();
+          dataObserver.disconnect();
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "1400px 0px" },
     );
-    observer.observe(section);
-    return () => observer.disconnect();
+    const videoObserver = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "150px 0px", threshold: 0.01 },
+    );
+    dataObserver.observe(section);
+    videoObserver.observe(section);
+    return () => {
+      window.clearTimeout(warmup);
+      dataObserver.disconnect();
+      videoObserver.disconnect();
+    };
   }, []);
+
 
   const onScroll = useCallback(() => {
     const rail = railRef.current;
@@ -212,8 +360,6 @@ const MobileReelShop = () => {
     rail.scrollTo({ left: slide.offsetLeft - 16, behavior: "smooth" });
   };
 
-  if (enabled && !isLoading && reels.length === 0) return null;
-
   return (
     <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">
       <header className="flex items-end justify-between gap-3 px-4">
@@ -233,8 +379,8 @@ const MobileReelShop = () => {
         )}
       </header>
 
-      {!enabled || isLoading ? (
-        <div className="mx-4 mt-5 aspect-[4/5] max-w-[236px] animate-pulse bg-muted" aria-hidden="true" />
+      {!enabled || isLoading || reels.length === 0 ? (
+        <InstantReelFallback />
       ) : (
         <>
           <div
@@ -254,7 +400,13 @@ const MobileReelShop = () => {
                     isActive ? "opacity-100 shadow-sm" : "opacity-60"
                   }`}
                 >
-                  <ReelFrame reel={reel} active={isActive} />
+                  {/* Only the reel on screen streams; the rest stay posters, so a
+                      swipe reveals a poster first, then plays. */}
+                  <ReelFrame
+                    reel={reel}
+                    active={isActive}
+                    canLoad={inView && isActive}
+                  />
                   <div className={`grid ${reel.products.length >= 3 ? "grid-cols-3" : "grid-cols-2"}`}>
                     {reel.products.slice(0, 3).map((product) => (
                       <MobileProductCard key={product.id} product={product} live={liveByHandle.get(product.handle)} />

@@ -1,12 +1,4 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */{
+{
   "sections": {
     "hero": {
       "type": "hero",
@@ -15,16 +7,32 @@
           "type": "group",
           "settings": {
             "content_direction": "column",
-            "horizontal_alignment": "center",
+            "horizontal_alignment": "flex-start",
             "vertical_alignment": "center",
-            "horizontal_alignment_flex_direction_column": "center",
+            "horizontal_alignment_flex_direction_column": "flex-start",
             "vertical_alignment_flex_direction_column": "center",
-            "gap": 20,
+            "gap": 18,
             "width": "custom",
-            "custom_width": 60,
+            "custom_width": 100,
             "width_mobile": "fill"
           },
           "blocks": {
+            "hero_eyebrow": {
+              "type": "text",
+              "settings": {
+                "text": "<p>The zircone edit · Demi-fine</p>",
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "0.32em",
+                "case": "uppercase",
+                "text_color": "{{ settings.color_palette.foreground }}",
+                "font_size": "0.625rem"
+              },
+              "blocks": {}
+            },
             "hero_line": {
               "type": "text",
               "settings": {
@@ -36,7 +44,6 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
-                "background_color": "#00000026",
                 "text_color": "{{ settings.color_palette.foreground }}"
               },
               "blocks": {}
@@ -44,7 +51,7 @@
             "hero_sub": {
               "type": "text",
               "settings": {
-                "text": "<p>Gold tone plated, anti-tarnish, and delivered in 3–5 working days.</p>",
+                "text": "<p>Gold tone plated over brass, anti-tarnish, and dispatched insured from our Mumbai atelier in 3–5 working days.</p>",
                 "width": "100%",
                 "alignment": "left",
                 "type_preset": "paragraph",
@@ -52,7 +59,6 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
-                "background_color": "#00000026",
                 "text_color": "{{ settings.color_palette.foreground }}"
               },
               "blocks": {}
@@ -70,6 +76,7 @@
             }
           },
           "block_order": [
+            "hero_eyebrow",
             "hero_line",
             "hero_sub",
             "hero_btn"
@@ -83,14 +90,22 @@
         "content_direction": "column",
         "horizontal_alignment": "center",
         "vertical_alignment": "center",
-        "horizontal_alignment_flex_direction_column": "center",
+        "horizontal_alignment_flex_direction_column": "flex-start",
         "vertical_alignment_flex_direction_column": "center",
         "gap": 16,
         "section_width": "page-width",
-        "section_height": "medium",
+        "section_height": "large",
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "padding-block-start": 40,
+        "padding-block-end": 40,
+        "media_type_1": "image",
+        "image_1": "shopify://shop_images/nf-hero.jpg",
+        "custom_mobile_media": true,
+        "media_type_1_mobile": "image",
+        "image_1_mobile": "shopify://shop_images/nf-hero-mobile.jpg",
+        "stack_media_on_mobile": false,
+        "blurred_reflection": false,
+        "toggle_overlay": false
       }
     },
     "grid": {
@@ -111,27 +126,8 @@
             "width_mobile": "fill",
             "padding-block-end": 24
           },
-          "blocks": {
-            "grid_heading": {
-              "type": "text",
-              "settings": {
-                "text": "<h2>New in</h2>",
-                "width": "100%",
-                "alignment": "left",
-                "type_preset": "h3",
-                "font": "var(--font-heading--family)",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "background_color": "#00000026",
-                "text_color": "{{ settings.color_palette.foreground }}"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "grid_heading"
-          ]
+          "blocks": {},
+          "block_order": []
         },
         "static-product-card": {
           "type": "_product-card",
@@ -222,7 +218,7 @@
         "horizontal_alignment": "flex-start",
         "gap": 0,
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 56,
+        "padding-block-start": 8,
         "padding-block-end": 56
       }
     },
@@ -670,14 +666,156 @@
         "gap": 12,
         "section_width": "page-width",
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 8,
+        "padding-block-start": 0,
         "padding-block-end": 48
+      }
+    },
+    "catintro": {
+      "type": "section",
+      "blocks": {
+        "cat_grp": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 10,
+            "width": "fill",
+            "width_mobile": "fill"
+          },
+          "blocks": {
+            "cat_eyebrow": {
+              "type": "text",
+              "settings": {
+                "text": "<p>Shop by category</p>",
+                "width": "100%",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "0.32em",
+                "case": "uppercase",
+                "text_color": "{{ settings.color_palette.color2 }}",
+                "font_size": "0.625rem"
+              },
+              "blocks": {}
+            },
+            "cat_head": {
+              "type": "text",
+              "settings": {
+                "text": "<h2>The edit.</h2>",
+                "width": "100%",
+                "alignment": "center",
+                "type_preset": "h2",
+                "font": "var(--font-heading--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "{{ settings.color_palette.foreground }}"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "cat_eyebrow",
+            "cat_head"
+          ]
+        }
+      },
+      "block_order": [
+        "cat_grp"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 0,
+        "section_width": "page-width",
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 64,
+        "padding-block-end": 24
+      }
+    },
+    "gridintro": {
+      "type": "section",
+      "blocks": {
+        "newin_grp": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 10,
+            "width": "fill",
+            "width_mobile": "fill"
+          },
+          "blocks": {
+            "newin_eyebrow": {
+              "type": "text",
+              "settings": {
+                "text": "<p>Straight from the atelier</p>",
+                "width": "100%",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "0.32em",
+                "case": "uppercase",
+                "text_color": "{{ settings.color_palette.color2 }}",
+                "font_size": "0.625rem"
+              },
+              "blocks": {}
+            },
+            "newin_head": {
+              "type": "text",
+              "settings": {
+                "text": "<h2>New in.</h2>",
+                "width": "100%",
+                "alignment": "center",
+                "type_preset": "h2",
+                "font": "var(--font-heading--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "{{ settings.color_palette.foreground }}"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "newin_eyebrow",
+            "newin_head"
+          ]
+        }
+      },
+      "block_order": [
+        "newin_grp"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 0,
+        "section_width": "page-width",
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 64,
+        "padding-block-end": 24
       }
     }
   },
   "order": [
     "hero",
+    "catintro",
     "categories",
+    "gridintro",
     "grid",
     "reasons"
   ]

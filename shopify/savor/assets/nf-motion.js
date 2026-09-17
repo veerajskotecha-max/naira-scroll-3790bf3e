@@ -11,15 +11,15 @@
 (function () {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  /* Below the fold only. Nothing here may touch #shopify-section-main,
+  /* Below the fold only. Nothing here may touch [id^="shopify-section-"][id$="__main"],
      .product-information*, .product-details, media-gallery or .header-section:
      those have sticky descendants, and a transformed ancestor becomes the
      containing block and kills sticky silently. */
   var SEL = [
-    '#shopify-section-grid .resource-list__item',
-    '#shopify-section-grid .text-block',
-    '#shopify-section-reasons .group-block',
-    '#shopify-section-recommendations .resource-list__item'
+    '[id^="shopify-section-"][id$="__grid"] .resource-list__item',
+    '[id^="shopify-section-"][id$="__grid"] .text-block',
+    '[id^="shopify-section-"][id$="__reasons"] .group-block',
+    '[id^="shopify-section-"][id$="__recommendations"] .resource-list__item'
   ].join(',');
 
   document.documentElement.classList.add('nf-motion');

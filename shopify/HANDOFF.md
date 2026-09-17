@@ -309,3 +309,39 @@ brand palette, `jost_n3`/`cormorant_n4`. Only the whitespace differed.
 checksum test is still right for assets — `.css`, `.js`, images — which are
 stored verbatim. Those did behave: `nf-brand.css` and the two floral WebPs
 came back with checksums matching `md5sum` exactly.
+
+## Screenshots of this theme were lying about everything below the fold
+
+Two separate traps, both found only by cropping a capture and looking at it:
+
+1. **Above 990px Horizon scrolls `.page-wrapper`, not the window.** `html` and
+   `body` are `overflow: hidden` at a fixed viewport height, so Playwright's
+   `fullPage: true` capture stops at the viewport and every desktop screenshot
+   came back exactly 1000 CSS px tall. Unlock `overflow` and `height` on
+   `html, body, .page-wrapper` before the shot.
+2. **Horizon sets `content-visibility: auto` on section subtrees.** Chromium
+   does not paint those when they are off-screen, and a fullPage capture does
+   not force them on. The footer screenshotted as an empty beige band for
+   three consecutive runs while the live page rendered it correctly. Add
+   `* { content-visibility: visible !important; contain-intrinsic-size: auto !important; }`
+   to the same injected stylesheet.
+
+Do not conclude a section is broken from a capture until both of these are in
+place. `shopify/harness/shotall.mjs` does both.
+
+## Uploading theme files without spending model context
+
+`themeFilesUpsert` with `body: {type: BASE64}` has to carry the whole file
+through the conversation — 28 kB of base64 for a 20 kB stylesheet. The staged
+route costs nothing:
+
+1. `stagedUploadsCreate` with `resource: FILE` (works for `text/css` and
+   `application/json`, not just images) — save the response to a file.
+2. `node shopify/harness/stage-push.mjs targets.json local/path=theme/path ...`
+   curls each file up and prints the `themeFilesUpsert` variables.
+3. Send that as `body: {type: URL}`.
+
+The URL form returns an **empty** `upsertedThemeFiles` array whether or not it
+worked, so always read back `checksumMd5` from `theme.files`. Assets and
+stylesheets match their local md5 exactly; `templates/*.json` may be
+re-serialised by Shopify, so compare content, not bytes.

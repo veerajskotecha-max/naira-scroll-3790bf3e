@@ -65,9 +65,20 @@ rte-formatter p, .text-block.paragraph { text-wrap: pretty; max-width: 64ch; }
 /* Digits that line up down a column instead of shimmering as they change. */
 product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
 
+/* Horizon renders the product name TWICE inside a card: once in the title
+   block we place, and once in an <h3 class="product-grid-view-zoom-out--details">
+   that belongs to the pinch-to-zoom grid view. No stylesheet in this theme
+   styles or hides that h3, so it fell through to the plain h3 rules and
+   printed every product name a second time at Velista 32px. The link text
+   already carries the name for assistive tech, so the duplicate goes. */
+.product-card .product-grid-view-zoom-out--details { display: none; }
+
 /* Two lines for every card title, so every price in a row sits on one
-   baseline. Horizon clamps to three, and only on mobile. */
-.product-card :is(h3, h4, .h3, .h4) {
+   baseline. Horizon clamps to three, and only on mobile. The title is a <p>
+   inside a text-block, not a heading -- targeting h3 here is what hit the
+   zoom-out element above. */
+.product-card [class*="__card_title"] :is(p, a),
+.product-card [class*="__card_title"] {
   font-family: var(--font-heading--family);
   line-height: 1.15;
   min-height: 2.3em;
@@ -78,16 +89,76 @@ product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabula
   overflow: hidden;
 }
 
-.button-primary {
+/* Horizon's `.button-primary` resolves its fill from a colour-scheme token
+   this theme never sets, so the hero CTA rendered as bare text with 36px of
+   padding round it -- a button that did not look like a button. The fill,
+   the label colour and the hover are all set here.
+
+   The hover is the live site's: a sage panel rises from the bottom edge and
+   takes the button over, rather than a colour cross-fade. Transform only, so
+   it composites and cannot repaint mid-scroll. */
+.button-primary,
+a.button-primary,
+button.button-primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--nf-ink);
   border-radius: 0;
+  background: var(--nf-ink);
+  color: var(--nf-cream);
   text-transform: uppercase;
   letter-spacing: var(--nf-track-btn);
-  font-size: 12px;
-  padding-block: 1rem;
+  font-size: 11px;
+  line-height: 1;
+  padding-block: 1.05rem;
   padding-inline: 2.25rem;
+  text-decoration: none;
+}
+.button-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--nf-sage);
+  transform: translateY(100%);
+  transition: transform 500ms var(--nf-ease-out);
+}
+.button-primary:is(:hover, :focus-visible)::before { transform: translateY(0); }
+/* Ink on sage is 7.1:1; cream on sage is 1.9:1 and would vanish. */
+.button-primary:is(:hover, :focus-visible) { color: var(--nf-ink); }
+
+/* The quieter twin: a hairline box that fills with ink on hover. */
+.button-secondary,
+a.button-secondary {
+  border: 1px solid color-mix(in srgb, var(--nf-ink) 45%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--nf-ink);
+  text-transform: uppercase;
+  letter-spacing: var(--nf-track-btn);
+  font-size: 11px;
+  padding-block: 1.05rem;
+  padding-inline: 2rem;
+  transition: background-color 260ms var(--nf-ease-soft), color 260ms var(--nf-ease-soft), border-color 260ms var(--nf-ease-soft);
+}
+.button-secondary:is(:hover, :focus-visible) {
+  background: var(--nf-ink);
+  border-color: var(--nf-ink);
+  color: var(--nf-cream);
 }
 
 /* ── The card ──────────────────────────────────────────────────────────── */
+
+/* Ten pixels between a photograph and the name under it reads as a caption
+   that fell off the image. Sixteen, and a hairline of space under the price,
+   makes each card a unit with its own margin. */
+.product-card .group-block-content { padding-block-start: 6px; }
+.product-card [class*="__card_title"] { margin-block-start: 4px; }
+.product-card product-price { margin-block-start: 2px; opacity: .88; }
 
 /* A warm well behind every packshot, and while the image is still decoding. */
 .card-gallery { background-color: var(--nf-ivory-deep); }
@@ -139,32 +210,124 @@ product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabula
 .product-card:is(:hover, :focus-within) .card-gallery .quick-add__button { translate: 0 0; }
 .card-gallery .quick-add__button > .add-to-cart-icon { display: none; }
 
+/* ── Section intros ────────────────────────────────────────────────────── */
+
+/* Every band on the live site opens the same way: a letterspaced label in
+   green, then a display line in Velista, both centred. That repeated shape
+   is what makes a page of unrelated grids read as one magazine. The eyebrow
+   is green (#4F7268, 5.07:1 on cream) and never sage, which at 2.1:1 cannot
+   carry text at any size. */
+[class*="__cat_eyebrow"], [class*="__cat_eyebrow"] p,
+[class*="__newin_eyebrow"], [class*="__newin_eyebrow"] p { color: var(--nf-green); margin-block: 0; }
+
+[class*="__cat_head"] :is(h2, p),
+[class*="__newin_head"] :is(h2, p) {
+  font-family: var(--font-heading--family);
+  font-size: clamp(2rem, 3.4vw, 3.1rem);
+  line-height: 1;
+  letter-spacing: -.01em;
+  margin-block: 0;
+}
+
+/* A sage hairline under each intro, the width of the word above it, drawn
+   rather than declared -- the same rule the live site runs under its section
+   titles. */
+[class*="__cat_head"]::after,
+[class*="__newin_head"]::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 1px;
+  margin: 18px auto 0;
+  background: var(--nf-sage);
+}
+
 /* ── Category tiles ────────────────────────────────────────────────────── */
 
 /* The collection card ships with no hover of its own. A slow, small zoom
    inside a clipped frame is the same gesture the product cards use, so the
    two grids feel like one page rather than two components. */
-#shopify-section-categories .collection-card__image,
-#shopify-section-categories .collection-card figure { overflow: hidden; }
-#shopify-section-categories .collection-card img {
+[id^="shopify-section-"][id$="__categories"] .collection-card__image,
+[id^="shopify-section-"][id$="__categories"] .collection-card figure { overflow: hidden; }
+[id^="shopify-section-"][id$="__categories"] .collection-card img {
   transition: transform 700ms var(--nf-ease-out);
 }
 @media (hover: hover) {
-  #shopify-section-categories .collection-card:hover img { transform: scale(1.04); }
+  [id^="shopify-section-"][id$="__categories"] .collection-card:hover img { transform: scale(1.04); }
 }
 /* The label is a way-finder, not a headline: small, wide-tracked, ink. */
-#shopify-section-categories .collection-card a,
-#shopify-section-categories .collection-title {
+[id^="shopify-section-"][id$="__categories"] .collection-card a,
+[id^="shopify-section-"][id$="__categories"] .collection-title {
   color: var(--nf-ink);
   text-decoration: none;
+}
+
+/* The label earns a sage rule that draws itself on hover -- the tile's only
+   hover state besides the slow zoom, and the one that says "this is a link". */
+[id^="shopify-section-"][id$="__categories"] .collection-title :is(p, span, a) {
+  position: relative;
+  display: inline-block;
+  padding-block-end: 6px;
+}
+[id^="shopify-section-"][id$="__categories"] .collection-title :is(p, span, a)::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--nf-green);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 460ms var(--nf-ease-out);
+}
+@media (hover: hover) {
+  [id^="shopify-section-"][id$="__categories"] .collection-card:is(:hover, :focus-within) .collection-title :is(p, span, a)::after {
+    transform: scaleX(1);
+  }
+}
+
+/* ── The paper ─────────────────────────────────────────────────────────── */
+
+/* The live site prints every section on the same pressed-flower paper: the
+   pattern under a multiply blend at a few per cent, so the red flowers and
+   the dark leaves settle into the cream as a beige line-drawing rather than
+   reading as colour. It is the strongest brand cue the site has, and Savor
+   had none of it.
+
+   `background-attachment: fixed` is load-bearing, not decoration. The tile is
+   seamless, but a per-section background restarts its phase at every section
+   boundary, so the sheet showed a visible seam between every band. Anchored
+   to the viewport, all sections share one coordinate system and the page is
+   printed on a single piece of paper.
+
+   z-index -1 under `isolation: isolate` puts the wash in paint step 3: above
+   the section's own background, below everything in flow. A positive z-index
+   would have painted it over the type. Header and footer are excluded -- both
+   are their own colour blocks and the texture would only muddy them. */
+[id^="shopify-section-"]:not([id*="header"]):not([id*="footer"]):not([id*="announcement"]) {
+  position: relative;
+  isolation: isolate;
+}
+[id^="shopify-section-"]:not([id*="header"]):not([id*="footer"]):not([id*="announcement"])::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url('nf-paper.webp');
+  background-size: 520px auto;
+  background-attachment: fixed;
+  background-position: center top;
+  opacity: .045;
+  mix-blend-mode: multiply;
 }
 
 /* ── The floral band ───────────────────────────────────────────────────── */
 
 /* Behind the quietest section on the page, and only that one: a floral wash
    under a photograph of a necklace fights the necklace. */
-#shopify-section-reasons { position: relative; isolation: isolate; }
-#shopify-section-reasons::before {
+[id^="shopify-section-"][id$="__reasons"]::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -183,6 +346,104 @@ product-price, .price, .sticky-add-to-cart__price { font-variant-numeric: tabula
      and only the washes -- which are darker -- come through. */
   opacity: .8;
   mix-blend-mode: darken;
+}
+/* ── The collection page ───────────────────────────────────────────────── */
+
+/* Savor's demo collection banner asks for a background image, and when none
+   is set Horizon fills it with `placeholder_svg_tag` -- on /collections/necklaces
+   that is a cartoon denim jacket, on an ink ground under a 38% black scrim,
+   with the collection name reversed out in cream over it.
+
+   `:has()` is what makes this safe: the rules fire only while that placeholder
+   svg is in the tree. Set a real image on the collection and the <svg> becomes
+   an <img>, every selector below stops matching, and the banner returns to the
+   photograph it was designed for -- no rule to remember to remove. */
+/* Written flat rather than nested: CSS nesting without a leading `&` is
+   recent enough that an older Safari would drop the whole block, and this is
+   the only thing standing between a customer and a cartoon denim jacket. */
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .background-image-container > svg { display: none; }
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .section-background { background: var(--nf-cream) !important; }
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .overlay { display: none; }
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .custom-section-content { min-height: 0; }
+/* The title block carries its own `alignment: left` from the template, and a
+   centred rule under a left-set title just floats. Left is the more editorial
+   set anyway, so the rule follows the title rather than the other way round. */
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .section-content-wrapper {
+  padding-inline: clamp(16px, 4vw, 56px);
+  align-items: flex-end;
+}
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) :is(h1, h2, h3, .text-block, .text-block *) { color: var(--nf-ink) !important; }
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) h1 {
+  font-family: var(--font-heading--family);
+  font-size: clamp(2.1rem, 3.6vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -.01em;
+}
+/* The same sage rule that sits under every section title on the homepage, so
+   the collection header is recognisably the same page furniture. */
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) h1::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 1px;
+  margin: 16px 0 0;
+  background: var(--nf-sage);
+}
+/* 280px of empty paper above a collection title is a banner waiting for a
+   photograph that is not coming. Half that, and the grid starts sooner. */
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .custom-section-content,
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .section {
+  min-height: 0 !important;
+  height: auto !important;
+}
+[id^="shopify-section-"]:has(.custom-section-background .background-image-container > svg) .section-content-wrapper {
+  padding-block: 56px 20px;
+}
+
+/* The filter bar shipped as a full-bleed ink band -- 60px of near-black
+   directly under a cream header and directly above a grid of pale packshots.
+   It reads as a toolbar from another site. Cream, with hairlines to separate
+   it, and the controls carried by type rather than by a colour block. */
+.facets-block-wrapper--horizontal {
+  background: transparent !important;
+  color: var(--nf-ink) !important;
+  border-block: 1px solid color-mix(in srgb, var(--nf-ink) 12%, transparent);
+}
+.facets-block-wrapper--horizontal :is(button, summary, a, span, .facets__label) {
+  color: var(--nf-ink);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.facets-block-wrapper--horizontal svg { color: var(--nf-ink); }
+
+/* The grid ran edge to edge: the first card started at x=0 and the last ended
+   at the viewport edge, so names and prices sat hard against the glass. Give
+   the page the same gutter the rest of the store uses, and give the cards a
+   gap wide enough to read as separate objects. */
+.product-grid-container {
+  padding-inline: clamp(16px, 4vw, 56px) !important;
+  padding-block-end: 64px;
+}
+.product-grid-container .product-grid,
+.product-grid-container .resource-list--grid { column-gap: clamp(10px, 1.4vw, 20px); row-gap: 40px; }
+
+/* On the collection grid Horizon sets the name and the price on ONE row, name
+   left and price right. Every two-line name then leaves its price stranded
+   against the right edge on a different baseline from its neighbours. Stacked,
+   the way the homepage grid already reads. */
+.product-grid-container .product-card .group-block-content {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px;
+}
+.product-grid-container .product-card product-price { text-align: left; }
+
+/* The PDP gallery had a right margin and no left one, so the whole page sat
+   off-centre. */
+[id^="shopify-section-"][id$="__main"] .product-information,
+[id^="shopify-section-"][id$="__main"] > .section {
+  padding-inline: clamp(16px, 4vw, 56px);
 }
 
 /* ── PDP: the lightbox and the sticky bar, both Horizon's, painted ─────── */
@@ -212,54 +473,94 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
 
 /* ── The hero ──────────────────────────────────────────────────────────── */
 
-/* A split hero, built from the section's own background rather than a media
-   block, so it needs no Horizon schema key I would have to guess at.
+/* Horizon draws hero media itself, from `image_1`/`image_1_mobile`, into an
+   absolutely-positioned `.hero__media-grid` that fills the section. Painting
+   the photograph as a CSS background -- which is what used to happen here --
+   put it BEHIND that grid, and with no media set Horizon filled the grid with
+   its `hero-apparel-1` placeholder: a cartoon canoe and mountains, directly
+   over the headline. The media now comes from the section settings, so the
+   placeholder can never render, the image gets Horizon's srcset and its
+   <picture> art-direction, and this file only has to say WHERE the grid sits.
 
-   Desktop: the photograph holds the left half, type sits in the right half.
-   That is the composition the image was shot for -- subject left, negative
-   space right -- so nothing important is ever cropped away.
-   Mobile: the photograph becomes a band above the type. Laying type over a
-   pale still life on a 390px screen would be unreadable, and a scrim dark
-   enough to fix that would bury the photograph. */
-#shopify-section-hero {
-  background-image: url('nf-hero-mobile.jpg');
-  background-repeat: no-repeat;
-  background-position: top center;
-  background-size: 100% auto;
-  /* Reserve the band up front. Padding, not margin, so the section's own
-     background paints behind it and nothing reflows when the image lands. */
-  padding-block-start: calc(100vw * 1.049) !important;
+   Desktop: the photograph takes the right column, type holds the left.
+   Subject-left framing means the crop loses nothing on the right edge.
+   Mobile: the photograph becomes a band above the type. Type over a pale
+   still life at 390px is unreadable, and a scrim dark enough to fix that
+   would bury the photograph. */
+[id^="shopify-section-"][id$="__hero"] { position: relative; isolation: isolate; }
+
+/* The hero takes the shared paper wash from the rule above; ::after adds the
+   two warm glows the live site fades in behind its own hero. */
+[id^="shopify-section-"][id$="__hero"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 60% at 50% 0%, #FFF1E6 0%, transparent 60%),
+    radial-gradient(80% 60% at 0% 100%, rgb(255 189 168 / .55) 0%, transparent 55%);
+}
+
+/* MOBILE: media band on top, type below it. */
+[id^="shopify-section-"][id$="__hero"] .hero__media-grid {
+  inset: 0 0 auto 0;
+  height: 60vh;
+  max-height: 460px;
+  z-index: 1;
+}
+[id^="shopify-section-"][id$="__hero"] .hero__content-wrapper {
+  z-index: 2;
+  padding-block-start: calc(60vh + 28px);
 }
 
 @media (min-width: 750px) {
-  #shopify-section-hero {
-    background-image: url('nf-hero.jpg');
-    background-position: left center;
-    background-size: 46% auto;
-    padding-block-start: 0 !important;
-    min-height: 42rem;
-    display: flex;
-    align-items: center;
+  /* DESKTOP: photograph right, type left. */
+  [id^="shopify-section-"][id$="__hero"] .hero__media-grid {
+    inset: 0 0 0 auto;
+    width: 46%;
+    height: auto;
+    max-height: none;
   }
-  /* Push the whole content group into the right half, hard against the
-     photograph's negative space. */
-  #shopify-section-hero .group-block,
-  #shopify-section-hero > * {
-    margin-inline-start: auto;
-    margin-inline-end: 6%;
-    max-width: 42%;
-    text-align: left;
+  [id^="shopify-section-"][id$="__hero"] .hero__content-wrapper {
+    padding-block-start: 0;
+    max-width: 50%;
+    margin-inline-end: auto;
+    margin-inline-start: 0;
   }
+  [id^="shopify-section-"][id$="__hero"] .hero__container { min-height: 40rem; }
 }
 
-/* No entrance animation here, deliberately. The hero is text-only, so the h1
-   is almost certainly the LCP element, and starting it at opacity 0 delays
-   the paint LCP measures by the whole delay plus duration. */
-#shopify-section-hero .text-block.h1 { font-size: clamp(2.6rem, 6vw, 5rem); }
-#shopify-section-hero .button-primary {
+/* The headline used to break mid-word -- "FINE JEWEL / LERY," -- because the
+   column was 42% of the page and the type was set in vw. Velista has no
+   hyphenation dictionary and the browser was breaking on overflow alone.
+   A measure in ch and a size that answers to the COLUMN rather than the
+   viewport keeps every break on a word boundary. */
+[id^="shopify-section-"][id$="__hero"] .text-block.h1 {
+  font-size: clamp(2.4rem, 4.4vw, 4.2rem);
+  line-height: .98;
+  max-width: 13ch;
+  letter-spacing: -.01em;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+/* The eyebrow: the label that tells you which chapter you are in. Green,
+   not sage -- sage on cream is 2.1:1 and cannot legally carry text.
+   `__hero_eyebrow` is the block id from index.json, which Horizon stamps into
+   the text-block class, so this reaches exactly one block. */
+[class*="__hero_eyebrow"],
+[class*="__hero_eyebrow"] p {
+  color: var(--nf-green);
+  margin-block: 0;
+}
+
+[id^="shopify-section-"][id$="__hero"] .button-primary {
   transition: color 200ms ease, background-color 200ms ease, transform 140ms cubic-bezier(.23, 1, .32, 1);
 }
-#shopify-section-hero .button-primary:active { transform: scale(.97); }
+[id^="shopify-section-"][id$="__hero"] .button-primary:active { transform: scale(.97); }
 
 /* ── Motion: one system, below the fold only ───────────────────────────── */
 
@@ -279,7 +580,7 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
     will-change: transform, opacity;
   }
   /* Blur is for section headings. Never for a grid of photographs. */
-  html.nf-motion #shopify-section-grid .text-block.nf-r.nf-in { animation-name: nf-rise-soft; }
+  html.nf-motion [id^="shopify-section-"][id$="__grid"] .text-block.nf-r.nf-in { animation-name: nf-rise-soft; }
 
   /* A settled filter -- even blur(0) -- is still a containing block, which
      would silently break any sticky descendant. Clearing it is not optional. */
@@ -302,11 +603,11 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
 @media (prefers-reduced-motion: reduce) {
   html.nf-motion .nf-r,
   html.nf-motion .nf-r.nf-in { opacity: 1; animation: none; transform: none; filter: none; }
-  #shopify-section-reasons::before { animation: none; }
+  [id^="shopify-section-"][id$="__reasons"]::after { animation: none; }
   .product-card .card-gallery,
-  #shopify-section-categories .collection-card img { transition: none; }
+  [id^="shopify-section-"][id$="__categories"] .collection-card img { transition: none; }
   .product-card:active .card-gallery,
-  #shopify-section-categories .collection-card:active img { transform: none; }
+  [id^="shopify-section-"][id$="__categories"] .collection-card:active img { transform: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -322,7 +623,8 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
      twelve blocks of identical-height letters. The display face is right for
      a heading and wrong for a list, so the card title drops to the body face
      here and keeps Velista from 750px up. */
-  .product-card :is(h3, h4, .h3, .h4) {
+  .product-card [class*="__card_title"] :is(p, a),
+  .product-card [class*="__card_title"] {
     font-family: var(--font-body--family);
     font-size: .875rem;
     letter-spacing: .01em;
@@ -343,12 +645,12 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
      reads as a toolbar rather than a way in. Wrapping to 2x2 is what the
      live site does, and it makes each tile the same width as a product card
      so the two grids line up as you scroll from one into the other. */
-  #shopify-section-categories .section-content-wrapper,
-  #shopify-section-categories > * {
+  [id^="shopify-section-"][id$="__categories"] .section-content-wrapper,
+  [id^="shopify-section-"][id$="__categories"] > * {
     flex-wrap: wrap !important;
     justify-content: center !important;
   }
-  #shopify-section-categories .collection-card {
+  [id^="shopify-section-"][id$="__categories"] .collection-card {
     flex: 0 0 calc(50% - 6px);
     max-width: calc(50% - 6px);
   }
@@ -357,13 +659,13 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
   /* Three claims stacked is 300px of scroll between the grid and the footer.
      Tighter, and the eyebrow sits right on top of its line rather than
      floating. */
-  #shopify-section-reasons { padding-block: 8px 40px !important; }
-  #shopify-section-reasons .group-block { gap: 2px !important; }
-  #shopify-section-reasons p { max-width: 30ch; margin-inline: auto; }
+  [id^="shopify-section-"][id$="__reasons"] { padding-block: 8px 40px !important; }
+  [id^="shopify-section-"][id$="__reasons"] .group-block { gap: 2px !important; }
+  [id^="shopify-section-"][id$="__reasons"] p { max-width: 30ch; margin-inline: auto; }
 
   /* On a 390px screen two 320px sprays crowd the copy. Smaller, pushed
      further into the corners, and lighter. */
-  #shopify-section-reasons::before {
+  [id^="shopify-section-"][id$="__reasons"]::after {
     background-position: right -46px top -26px, left -52px bottom -20px;
     background-size: 190px auto, 176px auto;
     opacity: .6;
@@ -374,11 +676,11 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
      that feels responsive and one that feels like a screenshot. Transform
      only -- it composites, so it cannot cost a repaint mid-scroll. */
   .product-card .card-gallery,
-  #shopify-section-categories .collection-card img {
+  [id^="shopify-section-"][id$="__categories"] .collection-card img {
     transition: transform 120ms var(--nf-ease-soft);
   }
   .product-card:active .card-gallery { transform: scale(.985); }
-  #shopify-section-categories .collection-card:active img { transform: scale(.985); }
+  [id^="shopify-section-"][id$="__categories"] .collection-card:active img { transform: scale(.985); }
 
   /* Horizon hides quick-add on phones by default and that is right -- a
      hover affordance has no meaning here, and the tile should go to the
@@ -390,6 +692,7 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
 /* A phone held in the hand is a different reading distance from a laptop.
    The hero sub-line was set for the desktop column. */
 @media (max-width: 749px) {
-  #shopify-section-hero .text-block.paragraph { font-size: .95rem; max-width: 30ch; margin-inline: auto; }
-  #shopify-section-hero .button-primary { width: 100%; justify-content: center; }
+  [id^="shopify-section-"][id$="__hero"] .text-block.paragraph { font-size: .95rem; max-width: 32ch; }
+  [id^="shopify-section-"][id$="__hero"] .text-block.h1 { max-width: 11ch; }
+  [id^="shopify-section-"][id$="__hero"] .button-primary { width: 100%; justify-content: center; }
 }

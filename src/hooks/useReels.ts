@@ -57,23 +57,68 @@ const writeCache = (reels: Reel[]) => {
   }
 };
 
+/** Longest we will wait for storage to hand back signed URLs. */
+const SIGN_TIMEOUT_MS = 8000;
+
+/**
+ * Signs the media paths — and never lets that step sink the section.
+ *
+ * Two deliberate guarantees here, both learned the hard way:
+ *
+ *  - It always RESOLVES. It used to await the storage call bare, so a request
+ *    that hung (no timeout exists on the client) left the query pending for
+ *    ever. `isLoading` never cleared, the section showed its placeholder with
+ *    no error to retry from, and no amount of waiting or returning to the tab
+ *    brought it back. That is the failure shoppers hit in the Instagram
+ *    browser.
+ *  - It never THROWS. A signing failure used to reject the whole fetch, taking
+ *    the reels and their products with it — even though neither needs a signed
+ *    URL. The covers are bundled and the product tiles come from the row.
+ *
+ * A reel whose video could not be signed simply renders as its cover with its
+ * products, which is worth far more than an empty rail.
+ */
 const signAll = async (paths: string[]) => {
   const map = new Map<string, string>();
   const unique = Array.from(new Set(paths.filter(Boolean)));
   if (!unique.length) return map;
-  const { data } = await supabase.storage.from("reels").createSignedUrls(unique, SIGN_TTL);
-  data?.forEach((row) => {
-    if (row.path && row.signedUrl) map.set(row.path, row.signedUrl);
-  });
+  try {
+    const signing = supabase.storage.from("reels").createSignedUrls(unique, SIGN_TTL);
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), SIGN_TIMEOUT_MS));
+    const result = await Promise.race([signing, timeout]);
+    result?.data?.forEach((row) => {
+      if (row.path && row.signedUrl) map.set(row.path, row.signedUrl);
+    });
+  } catch {
+    /* Unsigned is survivable; empty is not. */
+  }
   return map;
 };
 
+/** Longest we will wait for the reel rows themselves. */
+const ROWS_TIMEOUT_MS = 10000;
+
+/*
+  Unlike signing, a missing row list leaves nothing to show — so this one
+  REJECTS on timeout rather than resolving empty, which is what hands the query
+  an error it can retry from instead of hanging pending for ever.
+*/
+const withDeadline = <T,>(work: PromiseLike<T>, ms: number, label: string): Promise<T> =>
+  Promise.race([
+    work,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(`${label} timed out`)), ms)),
+  ]);
+
 export const fetchReels = async (): Promise<Reel[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await withDeadline(
+    supabase
     .from("reels")
     .select("id,title,caption,video_path,poster_path,sort_order,published,reel_products(id,handle,title,price_label,image_url,variant_id,position)")
     .eq("published", true)
-    .order("sort_order", { ascending: true });
+      .order("sort_order", { ascending: true }),
+    ROWS_TIMEOUT_MS,
+    "reels",
+  );
 
   if (error) throw error;
   const rows = data ?? [];
@@ -106,7 +151,11 @@ export const useReels = (enabled: boolean) =>
     initialData: () => readCache(),
     staleTime: 30 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    /* Coming back to the tab is the shopper's natural "try again", so it must
+       actually retry. With this off, a single failed load stayed broken for the
+       whole session however many times they switched away and back. */
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     // A flaky signed-URL round trip used to empty the section entirely.
     retry: 3,
     retryDelay: (attempt) => Math.min(1500 * 2 ** attempt, 8000),

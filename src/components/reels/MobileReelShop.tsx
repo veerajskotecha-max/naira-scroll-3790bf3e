@@ -324,8 +324,19 @@ const ReelFrame = ({
   );
 };
 
-const InstantReelFallback = () => (
-  <article className="relative mt-5 ml-4 w-[60vw] max-w-[236px] border border-border bg-background">
+/*
+  Shown while the reels are still coming, and whenever they could not be
+  fetched. In the second case it is a button: a shopper who meets a failed
+  section can ask for it again instead of being stranded, which is what
+  happened before — one failure stayed broken for the whole visit.
+*/
+const InstantReelFallback = ({ onRetry }: { onRetry?: () => void } = {}) => (
+  <article
+    className="relative mt-5 ml-4 w-[60vw] max-w-[236px] border border-border bg-background"
+    {...(onRetry
+      ? { role: "button", tabIndex: 0, onClick: onRetry, "aria-label": "Reload the reel" }
+      : {})}
+  >
     <div className="relative aspect-[4/5] overflow-hidden bg-muted">
       <img
         src={localReelPoster}
@@ -340,7 +351,9 @@ const InstantReelFallback = () => (
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-3 pt-10 text-background">
         <p className="font-sans text-[7px] font-medium uppercase tracking-nf-15 opacity-80">Shop the reel</p>
-        <p className="mt-0.5 font-cormorant text-[15px] leading-tight">Tap to play</p>
+        <p className="mt-0.5 font-cormorant text-[15px] leading-tight">
+          {onRetry ? "Tap to reload" : "Tap to play"}
+        </p>
       </div>
     </div>
     <div className="grid h-[92px] grid-cols-3 divide-x divide-border" aria-hidden="true">
@@ -358,7 +371,7 @@ const MobileReelShop = () => {
   const [enabled, setEnabled] = useState(false);
   const [inView, setInView] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data, isLoading, isError, isSuccess } = useReels(enabled);
+  const { data, isLoading, isError, isSuccess, refetch } = useReels(enabled);
   /* If the refresh fails we keep the last reels we saw rather than letting the
      whole section disappear mid-page. */
   const fallback = useMemo(() => (isError ? readStaleReelCache() ?? [] : []), [isError]);
@@ -444,7 +457,9 @@ const MobileReelShop = () => {
       </header>
 
       {!enabled || isLoading || reels.length === 0 ? (
-        <InstantReelFallback />
+        <InstantReelFallback
+          onRetry={enabled && !isLoading && reels.length === 0 ? () => void refetch() : undefined}
+        />
       ) : (
         <>
           <div

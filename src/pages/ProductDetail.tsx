@@ -19,13 +19,22 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { jewellery as staticJewellery } from "@/data/jewellery";
+import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import ComingSoon from "./ComingSoon";
 import ReelPeek from "@/components/reels/ReelPeek";
 
 /* Ad clicks land on /products/<handle>. For a handle we already know is
    jewellery we hop to the real page on the first render, before the Shopify
-   lookup resolves — waiting for the fetch showed paid traffic a blank beat. */
-const knownJewelleryHandles = new Set(staticJewellery.map((p) => p.handle));
+   lookup resolves — waiting for the fetch showed paid traffic a blank beat.
+
+   The bundled catalogue only carries the 21 pieces needed for a first paint,
+   so on its own it recognised 21 of 56 and the rest still paid for the round
+   trip. JEWELLERY_HANDLES covers the whole line; the catalogue is unioned in
+   so a piece bundled but not yet in that list is never worse off. */
+const knownJewelleryHandles = new Set([
+  ...JEWELLERY_HANDLES,
+  ...staticJewellery.map((p) => p.handle),
+]);
 
 const ProductDetail = () => {
   const [selection, setSelection] = useState<ProductSelection | null>(null);

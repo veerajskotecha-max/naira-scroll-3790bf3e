@@ -102,7 +102,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 149 tests
+npx vitest run                          # currently 153 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -138,6 +138,31 @@ reel row.
 `src/lib/mediaType.ts` decides the type. It ignores `file.type` unless it really
 names a video: several Android pickers report `application/octet-stream` for an
 ordinary .mp4, which is most likely how the seeded files ended up this way.
+
+## There is ONE jewellery PDP, and /products hops to it
+
+Ads and the Shopify catalogue link to `/products/<handle>`; the site links to
+`/jewellery/<handle>`. These are different components — `ProductDetail` (apparel
+template) and `JewelDetail` (the real jewellery page, which carries the offer
+ladder and the reel). `ProductDetail` redirects jewellery to `JewelDetail`,
+**keeping the query string**, because ad clicks arrive with `?fbclid=` and
+`utm_*` and dropping them blinds the pixel on the page that fires ViewContent.
+
+Do not "fix" this by adding a second redirect — one already exists and is
+correct. Apparel must KEEP rendering on `/products/<handle>`: `JewelDetail`
+cannot render it and bounces it to the listing.
+
+Which line a product belongs to is decided in one place, `isJewelleryProduct`:
+vendor `Naira Petite` (or a jewellery-ish productType). Verified against the
+live store — all 19 apparel products are vendor `Naira Flore`, all jewellery is
+`Naira Petite`, so nothing is misrouted.
+
+`src/data/jewelleryHandles.ts` lets the hop happen on the FIRST render instead
+of after a Shopify lookup. The bundled catalogue knows only 21 of 56 pieces, so
+35 — including most handles the catalogue ads point at — used to mount the
+apparel page and fetch before redirecting. Measured: 2 round trips and 396 ms
+down to 1 and 256 ms. A handle missing from that list costs a round trip, never
+correctness, so it going stale is a slowdown rather than a broken page.
 
 ## Conventions
 

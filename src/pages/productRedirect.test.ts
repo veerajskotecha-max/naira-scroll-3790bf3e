@@ -1,0 +1,55 @@
+import { describe, expect, it } from "vitest";
+import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
+import { jewellery as staticJewellery } from "@/data/jewellery";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+
+/*
+  /products/<handle> must hand every jewellery piece to /jewellery/<handle> and
+  must never take an apparel piece there — JewelDetail cannot render apparel and
+  bounces it to the listing, so a handle in the wrong set loses the sale.
+*/
+describe("the /products -> /jewellery hop", () => {
+  it("recognises every bundled piece, so the catalogue can never outrun the list", () => {
+    const missing = staticJewellery.map((p) => p.handle).filter((h) => !JEWELLERY_HANDLES.has(h));
+    expect(missing).toEqual([]);
+  });
+
+  /* These are the handles the live Facebook catalogue ads point at. Each one
+     landing on /products/<handle> must be recognised on the FIRST render;
+     otherwise a paid click pays for a Shopify round trip before it sees the
+     page that actually sells. */
+  it("redirects every ad-linked handle without waiting for Shopify", () => {
+    const adLinked = [
+      "cushion-halo-ring",
+      "verdant-drop-earrings",
+      "petite-pave-band",
+      "vintage-halo-ring",
+      "textured-gold-hoops",
+      "filigree-bloom-studs",
+      "ribbon-bead-bracelet",
+      "star-point-band",
+    ];
+    expect(adLinked.filter((h) => !JEWELLERY_HANDLES.has(h))).toEqual([]);
+  });
+
+  /* Apparel lives on the /products template and must stay there. */
+  it("keeps apparel out of the jewellery set", () => {
+    const apparel = [
+      "blush-of-dawn",
+      "ethereal-lilac",
+      "royal-enigma",
+      "ivory-whisper-co-ord-set",
+      "crimson-legacy-set",
+      "noir-mela",
+    ];
+    expect(apparel.filter((h) => JEWELLERY_HANDLES.has(h))).toEqual([]);
+  });
+
+  /* The early hop is a shortcut for the same decision the resolved product
+     makes; the two must not disagree, or a piece would redirect on one path
+     and render in the apparel template on the other. */
+  it("agrees with the vendor rule the resolved product uses", () => {
+    expect(isJewelleryProduct({ vendor: "Naira Petite", productType: "Ring" })).toBe(true);
+    expect(isJewelleryProduct({ vendor: "Naira Flore", productType: "" })).toBe(false);
+  });
+});

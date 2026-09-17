@@ -40,6 +40,15 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     setOpen(true);
   };
 
+  // Some iOS in-app browsers never synthesize `click` when a video-backed
+  // fixed element is tapped. Open from the physical touch as well, and cancel
+  // its follow-up click so one tap always produces exactly one state change.
+  const openViewerFromTouch = (event: React.TouchEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openViewer();
+  };
+
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
 
@@ -199,22 +208,23 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
           <Button
             type="button"
             onClick={openViewer}
+            onTouchEnd={openViewerFromTouch}
             variant="ghost"
-            className="relative block h-auto w-full overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"
+            className="relative block h-auto w-full touch-manipulation select-none overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"
             style={{ aspectRatio: "9/16" }}
             aria-label="Open shoppable reels"
           >
             <img
               src={reelCover(reel.video_path) ?? reel.posterUrl ?? reel.products[0]?.image_url ?? ""}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
             />
             {reel.videoUrl && !instagramBrowser && (
               <video
                 ref={videoRef}
                 src={reel.videoUrl}
                 poster={reelCover(reel.video_path) ?? reel.posterUrl ?? undefined}
-                className="absolute inset-0 h-full w-full object-cover"
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover"
                 playsInline
                 loop
                 muted
@@ -226,7 +236,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
               />
             )}
             <span
-              className="absolute inset-x-0 bottom-0 whitespace-normal px-2 py-1.5 text-left text-[8px] uppercase leading-snug tracking-[0.12em] text-white"
+              className="pointer-events-none absolute inset-x-0 bottom-0 whitespace-normal px-2 py-1.5 text-left text-[8px] uppercase leading-snug tracking-[0.12em] text-white"
               style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)" }}
             >
               Click here to watch &amp; shop

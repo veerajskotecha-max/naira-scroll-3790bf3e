@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
-import { getPromoCode, getPromoDiscountRate, PROMO_EVENT } from "@/lib/promo";
+import { getPromoCode, itemsToQuantityOffer, PROMO_EVENT, QUANTITY_OFFER, resolveCartDiscount } from "@/lib/promo";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
@@ -46,9 +46,15 @@ const CartDrawer = () => {
      only. Quoting "3–5 working days" makes the shopper do this arithmetic. */
   const arrivesBy = formatDeliveryDate(addWorkingDays(new Date(), 5));
 
-  const discountRate = getPromoDiscountRate(promoCode);
-  const discountAmount = Math.round(subtotal * discountRate);
+  /* One resolver for the drawer and the checkout hand-off, so the total shown
+     here is the total charged. Shopify order discounts do not combine, so only
+     one wins — a typed code, or BUY2 once the bag holds two pieces. */
+  const discount = resolveCartDiscount({ totalItems, promoCode });
+  const discountAmount = Math.round(subtotal * discount.rate);
   const orderTotal = subtotal - discountAmount + SHIPPING_CHARGE;
+  /* Only worth nudging when one more piece would actually beat what they have. */
+  const piecesAway = itemsToQuantityOffer(totalItems);
+  const showQuantityNudge = piecesAway > 0 && discount.rate < QUANTITY_OFFER.rate;
 
 
   const handleCheckout = () => checkout();
@@ -153,6 +159,13 @@ const CartDrawer = () => {
               {/* Promo code */}
               <CartPromoField />
 
+              {showQuantityNudge && (
+                <p className="text-[12px] text-primary">
+                  Add {piecesAway === 1 ? "one more piece" : `${piecesAway} more pieces`} and take{" "}
+                  <strong className="font-semibold">{Math.round(QUANTITY_OFFER.rate * 100)}% off</strong> the order.
+                </p>
+              )}
+
               <div className="space-y-1 text-[12px] text-muted-foreground">
                 <div className="flex items-center justify-between">
                   <span>Subtotal</span>
@@ -164,7 +177,10 @@ const CartDrawer = () => {
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex items-center justify-between text-primary">
-                    <span>{promoCode} ({Math.round(discountRate * 100)}% off)</span>
+                    <span>
+                      {discount.code} ({Math.round(discount.rate * 100)}% off)
+                      {discount.automatic ? " — applied" : null}
+                    </span>
                     <span>−{formatPrice(discountAmount)}</span>
                   </div>
                 )}

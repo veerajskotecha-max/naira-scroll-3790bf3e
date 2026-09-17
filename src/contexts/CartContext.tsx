@@ -10,7 +10,7 @@ import {
   updateShopifyCartLine,
   updateCartTrackingAttributes,
 } from "@/lib/shopify";
-import { applyPromoToCheckoutUrl, getPromoCode } from "@/lib/promo";
+import { applyPromoToCheckoutUrl, getPromoCode, resolveCartDiscount } from "@/lib/promo";
 import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { setClarityTag } from "@/lib/clarity";
@@ -351,7 +351,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url));
+    /* The one discount the order actually gets. The bag earns BUY2 on two or
+       more pieces; a typed code can beat it. Resolved once here so the code
+       put on the cart, the code handed to Fastrr and the total shown in the
+       drawer are all the same discount. */
+    const resolved = resolveCartDiscount({
+      totalItems: latest.items.reduce((sum, i) => sum + i.quantity, 0),
+      promoCode: getPromoCode(),
+    });
+
+    let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url), resolved.code);
 
     /* Put the discount on the cart, not just in the query string. ?discount= is
        honoured on Shopify's /cart/... permalinks, but we hand over at
@@ -360,7 +369,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
        another (₹245 more on a ₹2,449 piece with NAIRA10). Setting it on the
        cart makes it travel with the cart. The URL parameter stays as a
        harmless belt-and-braces. */
-    const code = getPromoCode();
+    const code = resolved.code;
     const cartId = loadCart().cartId;
     if (code && cartId) {
       /* That call runs 437ms at the median and up to 1.2s, so the button has to
@@ -369,7 +378,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
       try {
         const res = await applyCartDiscountCodes(cartId, [code]);
-        if (res.checkoutUrl) target = applyPromoToCheckoutUrl(res.checkoutUrl);
+        if (res.checkoutUrl) target = applyPromoToCheckoutUrl(res.checkoutUrl, resolved.code);
       } catch (error) {
         /* Never block checkout on the discount call — the query string still
            carries the code, and Shopify's own field accepts it at checkout. */

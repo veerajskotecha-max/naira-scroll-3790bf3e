@@ -219,6 +219,8 @@ const ReelFrame = ({
          one-shot guard would make the second tap a no-op. */
       if (failed) recoveryTriedRef.current = false;
       video.src = objectUrlRef.current ?? reel.videoUrl;
+      video.muted = muted;
+      video.playsInline = true;
       video.load();
       void video.play().then(() => setPaused(false)).catch(() => setPaused(true));
       return;

@@ -6,7 +6,7 @@ import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 import { Helmet } from "react-helmet-async";
-import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag } from "lucide-react";
+import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag, TicketPercent } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
@@ -877,14 +877,32 @@ const JewelDetail = () => {
               </p>
             </div>
 
-            {/* One useful offer; on a phone it is a single line, not a box.
-                No code to remember — the bag applies the rung it reaches. */}
-            <p className="mt-3 text-[12px] leading-[1.6] md:border md:px-3 md:py-3" style={{ color: "hsl(0 0% 32%)" }}>
-              <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>
-                {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off 2 · {Math.round(TOP_QUANTITY_OFFER.rate * 100)}% off 3
-              </strong>
-              applied automatically in your bag
-            </p>
+            {/* Codes stay visible so the offer feels concrete, while the bag
+                still applies the best eligible one without shopper effort. */}
+            <section
+              className="mt-4 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-3 py-3"
+              aria-label="Multi-buy offers"
+            >
+              <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[var(--nf-track-18)] text-[var(--nf-accent-quiet)]">
+                <TicketPercent size={14} strokeWidth={1.6} aria-hidden="true" />
+                <span>The Naira Pairing Offer</span>
+              </div>
+              <div className="mt-2.5 grid grid-cols-2 divide-x divide-[color:rgb(var(--nf-gold-rgb)/0.32)]">
+                {QUANTITY_OFFERS.map((offer) => (
+                  <div key={offer.code} className="px-3 first:pl-0 last:pr-0">
+                    <p className="text-[15px] font-semibold leading-none text-[var(--nf-text)]">
+                      Buy {offer.minQuantity}, save {Math.round(offer.rate * 100)}%
+                    </p>
+                    <p className="mt-1.5 text-[10px] uppercase tracking-[var(--nf-track-16)] text-[var(--nf-accent-quiet)]">
+                      Code <span className="font-semibold text-[var(--nf-text)]">{offer.code}</span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2.5 border-t border-[color:rgb(var(--nf-ink-rgb)/0.08)] pt-2 text-[10px] leading-[1.5] text-muted-foreground">
+                Your best eligible code is applied automatically in your bag.
+              </p>
+            </section>
 
             {/* Mobile: the arrival date already sits under the price, so this
                 line only repeats the shipping and returns terms. */}

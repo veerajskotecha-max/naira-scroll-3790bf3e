@@ -327,10 +327,6 @@ const MobileReelShop = () => {
     rail.scrollTo({ left: slide.offsetLeft - 16, behavior: "smooth" });
   };
 
-  /* Only hide when we know for certain there is nothing to show. A loading or
-     failed fetch keeps the section (and its placeholder) in place. */
-  if (isSuccess && reels.length === 0) return null;
-
   return (
     <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">
       <header className="flex items-end justify-between gap-3 px-4">

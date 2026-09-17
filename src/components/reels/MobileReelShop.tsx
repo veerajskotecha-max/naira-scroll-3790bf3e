@@ -120,8 +120,8 @@ const ReelFrame = ({
   /* The bundled poster is the final fallback. Signed poster links can expire or
      be unavailable on a weak connection, but the frame must never go blank. */
   const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
-  const playable = Boolean(reel.videoUrl) && !failed;
-  const shouldMountVideo = canLoad && playable && (!instagramBrowser || userStarted);
+  const playable = Boolean(reel.videoUrl);
+  const shouldMountVideo = canLoad && playable && !failed;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -146,10 +146,18 @@ const ReelFrame = ({
   const togglePlayback = () => {
     const video = videoRef.current;
     if (!video) {
-      if (playable) {
-        setUserStarted(true);
-        setPaused(false);
-      }
+      return;
+    }
+    /* Instagram's webview must receive load() and play() inside the physical
+       tap handler; starting them from an effect after rendering is often
+       classified as autoplay and the range request is aborted. */
+    if (instagramBrowser && (!userStarted || failed)) {
+      setFailed(false);
+      setUserStarted(true);
+      setSlow(false);
+      video.src = reel.videoUrl;
+      video.load();
+      void video.play().then(() => setPaused(false)).catch(() => setPaused(true));
       return;
     }
     if (video.paused) void video.play().then(() => setPaused(false));
@@ -177,7 +185,7 @@ const ReelFrame = ({
       {shouldMountVideo && (
         <video
           ref={videoRef}
-          src={reel.videoUrl}
+          src={instagramBrowser && !userStarted ? undefined : reel.videoUrl}
           poster={stillUrl ?? undefined}
           onError={() => {
             setFailed(true);
@@ -189,7 +197,7 @@ const ReelFrame = ({
           playsInline
           loop
           muted={muted}
-          preload="auto"
+          preload={instagramBrowser && !userStarted ? "none" : "auto"}
           onClick={togglePlayback}
           onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}
@@ -222,7 +230,7 @@ const ReelFrame = ({
           >
             {paused || !ready ? <Play size={12} /> : <Pause size={12} />}
           </button>
-          {instagramBrowser && !userStarted && (
+          {instagramBrowser && (!userStarted || failed) && (
             <button
               type="button"
               onClick={togglePlayback}

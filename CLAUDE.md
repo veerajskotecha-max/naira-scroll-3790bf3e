@@ -102,7 +102,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 153 tests
+npx vitest run                          # currently 154 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -157,8 +157,25 @@ vendor `Naira Petite` (or a jewellery-ish productType). Verified against the
 live store — all 19 apparel products are vendor `Naira Flore`, all jewellery is
 `Naira Petite`, so nothing is misrouted.
 
-`src/data/jewelleryHandles.ts` lets the hop happen on the FIRST render instead
-of after a Shopify lookup. The bundled catalogue knows only 21 of 56 pieces, so
+The hop now happens BEFORE React boots. `index.html` carries a tiny inline
+rewrite (marker `<!--NAIRA_JEWELLERY_REDIRECT-->`, injected at build time by the
+`naira-jewellery-redirect` plugin in `vite.config.ts` from
+`src/data/jewelleryHandles.ts`, so there is one source of truth). It sits ahead
+of the pixel and Clarity snippets on purpose: those used to record
+`/products/...` as the page, which is why Clarity shows rows for pages nobody
+stayed on. It uses `replaceState`, so Back returns to the ad rather than to a
+URL that only redirects again. The plugin FAILS THE BUILD if it parses fewer
+than 20 handles — a reformat of the generated file must not silently ship an
+empty map. The ProductDetail redirect stays as the fallback for a handle not in
+the list.
+
+**This host does not honour `public/_headers` or `_redirects`** — verified live,
+nairaflore.com returns no CSP and no X-Frame-Options despite `_headers` setting
+both. So a server-side 301 is not available, and the security headers in that
+file are NOT in effect.
+
+`src/data/jewelleryHandles.ts` also lets ProductDetail's own hop happen on the
+first render instead of after a Shopify lookup. The bundled catalogue knows only 21 of 56 pieces, so
 35 — including most handles the catalogue ads point at — used to mount the
 apparel page and fetch before redirecting. Measured: 2 round trips and 396 ms
 down to 1 and 256 ms. A handle missing from that list costs a round trip, never

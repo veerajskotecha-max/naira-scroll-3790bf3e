@@ -33,6 +33,25 @@
     <meta name="author" content="Naira Flore" />
     <meta name="google-site-verification" content="Zg1NQwy9KQ09S80BpFx2PH2tqonPEhdKhFk2nmSkdCI" />
 
+    <!-- ONE PDP.
+
+         /products/<handle> and /product/<handle> are the URLs the Facebook
+         catalogue and the Shopify channel link to. For the jewellery line the
+         real page is /jewellery/<handle>, and ProductDetail already redirects
+         there — but only once React has booted, so the apparel template mounted
+         first and, worse, the pixel and Clarity both recorded the landing URL
+         as the page. That is why Clarity shows /products/... rows for pages
+         nobody actually stayed on.
+
+         Rewriting here, ahead of the pixel and Clarity below and of the app
+         bundle, means the wrong URL is never the page. Apparel is untouched:
+         only handles in the jewellery line are rewritten, and a handle missing
+         from that list simply falls through to the redirect in ProductDetail.
+
+         The list is injected at build time from src/data/jewelleryHandles.ts so
+         there is one source of truth; see the plugin in vite.config.ts. -->
+    <!--NAIRA_JEWELLERY_REDIRECT-->
+
     <!-- Meta Pixel Code
          fbevents.js (~108 KB) plus its config payload (~135 KB) were downloading
          alongside the app bundle and stealing bandwidth/CPU from first paint on

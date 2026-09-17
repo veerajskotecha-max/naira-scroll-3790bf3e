@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import { jewellery as staticJewellery } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 /*
   /products/<handle> must hand every jewellery piece to /jewellery/<handle> and
@@ -51,5 +53,17 @@ describe("the /products -> /jewellery hop", () => {
   it("agrees with the vendor rule the resolved product uses", () => {
     expect(isJewelleryProduct({ vendor: "Naira Petite", productType: "Ring" })).toBe(true);
     expect(isJewelleryProduct({ vendor: "Naira Flore", productType: "" })).toBe(false);
+  });
+
+  /* The pre-boot rewrite in index.html is generated at build time by the
+     naira-jewellery-redirect plugin in vite.config.ts, which reads this same
+     file with a regex. Reformatting the generated file would make that parse
+     come back short — the build refuses rather than shipping an empty map, but
+     this fails first and says why. */
+  it("keeps the generated shape the build-time injector parses", () => {
+    const source = readFileSync(resolve(__dirname, "../data/jewelleryHandles.ts"), "utf8");
+    const parsed = [...source.matchAll(/^\s*"([a-z0-9-]+)",\s*$/gm)].map((m) => m[1]);
+    expect(parsed.length).toBe(JEWELLERY_HANDLES.size);
+    expect(parsed.filter((h) => !JEWELLERY_HANDLES.has(h))).toEqual([]);
   });
 });

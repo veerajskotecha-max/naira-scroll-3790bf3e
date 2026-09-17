@@ -22,7 +22,7 @@ const SCRIPT_TIMEOUT_MS = 6000;
    Set VITE_CHECKOUT_PROVIDER=fastrr to switch back to Shiprocket Fastrr; the
    hand-off below stays in place, dormant, so the flip is one line. */
 export const CHECKOUT_PROVIDER =
-  ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "shopify";
+  ((import.meta.env.VITE_CHECKOUT_PROVIDER ?? "") as string).toString().trim().toLowerCase() || "fastrr";
 
 
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";

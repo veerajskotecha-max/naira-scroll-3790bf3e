@@ -397,8 +397,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (isFastrrEnabled()) {
       setIsLoading(true);
       try {
-        const fastrrUrl = await getFastrrCheckoutUrl(loadCart().items, { couponCode: code });
-        if (fastrrUrl) target = fastrrUrl;
+        const started = await startFastrrCheckout(loadCart().items, { couponCode: code, fallbackUrl: target });
+        if (started) {
+          /* Fastrr takes over the screen itself — no navigation from us. */
+          setDrawerOpen(false);
+          return;
+        }
       } catch (error) {
         console.error("Falling back to Shopify checkout", error);
       } finally {

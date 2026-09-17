@@ -9,6 +9,7 @@ import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
+import { reelCover } from "@/lib/reelCovers";
 import localReelPoster from "@/assets/reel-fallback.webp";
 
 const PREORDER_WHATSAPP = "919561557935";
@@ -119,7 +120,8 @@ const ReelFrame = ({
 
   /* The bundled poster is the final fallback. Signed poster links can expire or
      be unavailable on a weak connection, but the frame must never go blank. */
-  const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
+  const stillUrl =
+    reelCover(reel.video_path) ?? reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
   const playable = Boolean(reel.videoUrl);
   /*
     The element stays mounted even after an error.

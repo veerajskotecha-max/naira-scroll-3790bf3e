@@ -8,7 +8,7 @@
 
 export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
-  BUY2: 0.1,
+  BUY2: 0.15,
   BUY3: 0.2,
 } as const;
 
@@ -28,7 +28,7 @@ export const getPromoDiscountRate = (code: string | null): number => {
 };
 
 /*
-  The buy-more ladder: two pieces take 10% off, three take 20%.
+  The buy-more ladder: two pieces take 15% off, three take 20%.
 
   Both rungs are CODES in Shopify, not automatic discounts, and that is
   deliberate — Fastrr, which owns the payment page, ignores Shopify automatic
@@ -38,7 +38,7 @@ export const getPromoDiscountRate = (code: string | null): number => {
   bag applies whichever rung it has reached.
 */
 export const QUANTITY_OFFERS = [
-  { code: "BUY2", minQuantity: 2, rate: 0.1 },
+  { code: "BUY2", minQuantity: 2, rate: 0.15 },
   { code: "BUY3", minQuantity: 3, rate: 0.2 },
 ] as const;
 

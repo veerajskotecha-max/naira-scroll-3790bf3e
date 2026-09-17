@@ -1,6 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { X, Play, Volume2, VolumeX } from "lucide-react";
 import { useReels } from "@/hooks/useReels";
+import { reelCover } from "@/lib/reelCovers";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Code-split: none of the viewer JS ships with the product page bundle.
@@ -56,10 +57,11 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
 
   // Poster first: the still is a few KB and removes the black flash on reveal.
   useEffect(() => {
-    if (!reel?.posterUrl) return;
+    const still = reelCover(reel?.video_path) ?? reel?.posterUrl;
+    if (!still) return;
     const img = new Image();
-    img.src = reel.posterUrl;
-  }, [reel?.posterUrl]);
+    img.src = still;
+  }, [reel?.video_path, reel?.posterUrl]);
 
 
   // Anchor the reel to the Buy Now / Add to Cart block: it slides in once those
@@ -194,7 +196,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
             <video
               ref={videoRef}
               src={reel.videoUrl}
-              poster={reel.posterUrl ?? undefined}
+              poster={reelCover(reel.video_path) ?? reel.posterUrl ?? undefined}
               className="absolute inset-0 h-full w-full object-cover"
               playsInline
               loop

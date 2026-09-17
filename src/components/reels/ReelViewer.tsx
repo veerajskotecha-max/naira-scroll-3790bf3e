@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { X, Volume2, VolumeX, Play, ChevronUp, ChevronDown, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import type { Reel, ReelProduct } from "@/hooks/useReels";
+import { reelCover } from "@/lib/reelCovers";
 import { useCart } from "@/contexts/CartContext";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import type { JewelPiece } from "@/data/jewellery";
@@ -197,12 +198,12 @@ const ReelSlide = ({
           aspectRatio: "9/16",
           maxHeight: "100%",
           // Poster as backdrop: the frame is on screen instantly, no black flash.
-          backgroundImage: reel.posterUrl ? `url(${reel.posterUrl})` : undefined,
+          backgroundImage: (() => { const still = reelCover(reel.video_path) ?? reel.posterUrl; return still ? `url(${still})` : undefined; })(),
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        {active || neighbour || reel.posterUrl ? (
+        {active || neighbour || reelCover(reel.video_path) || reel.posterUrl ? (
           <video
             ref={ref}
             src={active || neighbour ? reel.videoUrl : undefined}

@@ -121,7 +121,65 @@ const ReelFrame = ({
      be unavailable on a weak connection, but the frame must never go blank. */
   const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
   const playable = Boolean(reel.videoUrl);
-  const shouldMountVideo = canLoad && playable && !failed;
+  /*
+    The element stays mounted even after an error.
+
+    It used to unmount on failure, which looked harmless — the poster is
+    underneath — but it destroyed `videoRef.current`, and every retry path
+    reads that ref before doing anything. So the first error made the reel
+    permanently dead: tapping did nothing, for the rest of the session. Keeping
+    it mounted (and invisible) is what makes recovery and re-tapping possible.
+  */
+  const shouldMountVideo = canLoad && playable;
+
+  /* Set once we have re-served the bytes ourselves; also the guard that stops
+     a failing video from refetching itself in a loop. */
+  const objectUrlRef = useRef<string | null>(null);
+  const recoveryTriedRef = useRef(false);
+
+  useEffect(
+    () => () => {
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    },
+    [],
+  );
+
+  /*
+    Recover a video the browser refuses on MIME grounds.
+
+    These reels are served from Supabase storage as `application/octet-stream`
+    (verified against the live signed URLs). Chromium tolerates it; Safari and
+    the Instagram webview do not — the element raises an error before the first
+    frame, which is why the reel never played on a phone. Range requests and
+    the bytes themselves are fine, so refetching and re-labelling them as
+    `video/mp4` plays the exact same file.
+
+    This is the fallback, not the happy path: the direct src is tried first and
+    costs nothing extra once the stored Content-Type is corrected, at which
+    point this never runs.
+  */
+  const recoverFromMimeError = useCallback(async () => {
+    if (recoveryTriedRef.current || !reel.videoUrl) return;
+    recoveryTriedRef.current = true;
+    try {
+      const response = await fetch(reel.videoUrl);
+      if (!response.ok) throw new Error(`video fetch ${response.status}`);
+      const url = URL.createObjectURL(new Blob([await response.blob()], { type: "video/mp4" }));
+      objectUrlRef.current = url;
+      const video = videoRef.current;
+      if (!video) return;
+      video.src = url;
+      video.load();
+      setFailed(false);
+      void video
+        .play()
+        .then(() => setPaused(false))
+        .catch(() => setPaused(true));
+    } catch {
+      /* Genuinely unavailable — the poster stays and the chrome hides. */
+      setFailed(true);
+    }
+  }, [reel.videoUrl]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -155,7 +213,10 @@ const ReelFrame = ({
       setFailed(false);
       setUserStarted(true);
       setSlow(false);
-      video.src = reel.videoUrl;
+      /* A deliberate tap earns a fresh recovery attempt; without this reset the
+         one-shot guard would make the second tap a no-op. */
+      if (failed) recoveryTriedRef.current = false;
+      video.src = objectUrlRef.current ?? reel.videoUrl;
       video.load();
       void video.play().then(() => setPaused(false)).catch(() => setPaused(true));
       return;
@@ -190,6 +251,7 @@ const ReelFrame = ({
           onError={() => {
             setFailed(true);
             setReady(false);
+            void recoverFromMimeError();
           }}
           className={`relative h-full w-full object-cover transition-opacity duration-500 ${
             ready ? "opacity-100" : "opacity-0"

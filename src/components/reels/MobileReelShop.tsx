@@ -222,6 +222,18 @@ const ReelFrame = ({
           >
             {paused || !ready ? <Play size={12} /> : <Pause size={12} />}
           </button>
+          {instagramBrowser && !userStarted && (
+            <button
+              type="button"
+              onClick={togglePlayback}
+              className="absolute inset-0 flex items-center justify-center text-background"
+              aria-label="Tap to play reel"
+            >
+              <span className="flex items-center gap-1.5 bg-foreground/60 px-3 py-2 font-sans text-[9px] uppercase tracking-nf-10 backdrop-blur-sm">
+                <Play size={12} fill="currentColor" /> Tap to play
+              </span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setMuted((value) => !value)}

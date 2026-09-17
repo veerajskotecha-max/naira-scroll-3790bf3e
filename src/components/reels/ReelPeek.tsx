@@ -1,11 +1,14 @@
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { X, Play, Volume2, VolumeX } from "lucide-react";
 import { useReels } from "@/hooks/useReels";
 import { reelCover } from "@/lib/reelCovers";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 // Code-split: none of the viewer JS ships with the product page bundle.
 const ReelViewer = lazy(() => import("./ReelViewer"));
+const MobileReelShop = lazy(() => import("./MobileReelShop"));
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
@@ -25,6 +28,10 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const instagramBrowser = useMemo(
+    () => typeof navigator !== "undefined" && /Instagram|FBAN|FBAV/i.test(navigator.userAgent),
+    [],
+  );
   // Position handed to the fullscreen viewer so it resumes on the same frame.
   const handoffTime = useRef(0);
 
@@ -47,6 +54,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     const id = idle(() => {
       setArmed(true);
       void import("./ReelViewer");
+      void import("./MobileReelShop");
     }, { timeout: 4000 });
     return () => {
       const cancel = (window as Window & { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback;
@@ -110,15 +118,16 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     };
   }, []);
 
-  // Reveal only once the media is actually available.
+  // The bundled cover is enough to reveal the preview. A failed signed URL must
+  // never remove the shopper's way into the reel drawer.
   useEffect(() => {
-    setShown(Boolean(reel?.videoUrl) && pastThreshold && !minimised && !suppressed);
-  }, [reel?.videoUrl, pastThreshold, minimised, suppressed]);
+    setShown(Boolean(reel) && pastThreshold && !minimised && !suppressed);
+  }, [reel, pastThreshold, minimised, suppressed]);
 
   // Always autoplay silently — audio stays opt-in via the mute toggle.
   const startPlayback = useCallback(async () => {
     const v = videoRef.current;
-    if (!v || prefersReducedMotion()) return;
+    if (!v || prefersReducedMotion() || instagramBrowser) return;
     v.muted = true;
     setMuted(true);
     try {
@@ -126,7 +135,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     } catch {
       /* autoplay blocked — poster stays */
     }
-  }, []);
+  }, [instagramBrowser]);
 
   // Kick playback whenever the widget becomes visible.
   useEffect(() => {
@@ -163,15 +172,16 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   return (
     <>
       {!suppressed && !open && pastThreshold && (minimised || !reel) && (
-        <button
+          <Button
           type="button"
           onClick={showReels}
           aria-label="Show shoppable reels"
-          className="fixed z-[35] flex min-h-11 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[10px] uppercase tracking-[0.14em] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.5)]"
-          style={{ right: isMobile ? 12 : 24, bottom: isMobile ? "calc(var(--pdp-sticky-bar-h, 72px) + 16px)" : 28, color: "hsl(0 0% 20%)" }}
+            variant="secondary"
+            className="fixed z-[35] min-h-11 gap-1.5 rounded-full px-4 py-2 text-[10px] uppercase tracking-nf-15 shadow-lg"
+            style={{ right: isMobile ? 12 : 24, bottom: isMobile ? "calc(var(--pdp-sticky-bar-h, 72px) + 16px)" : 28 }}
         >
           <Play size={12} /> Reels
-        </button>
+          </Button>
       )}
 
       {!suppressed && !open && !minimised && pastThreshold && reel && (
@@ -186,61 +196,72 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
             pointerEvents: shown ? "auto" : "none",
           }}
         >
-          <button
+          <Button
             type="button"
             onClick={openViewer}
-            className="relative block w-full overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
-            style={{ aspectRatio: "9/16", backgroundColor: "hsl(0 0% 8%)" }}
+            variant="ghost"
+            className="relative block h-auto w-full overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"
+            style={{ aspectRatio: "9/16" }}
             aria-label="Open shoppable reels"
           >
-            <video
-              ref={videoRef}
-              src={reel.videoUrl}
-              poster={reelCover(reel.video_path) ?? reel.posterUrl ?? undefined}
+            <img
+              src={reelCover(reel.video_path) ?? reel.posterUrl ?? reel.products[0]?.image_url ?? ""}
+              alt=""
               className="absolute inset-0 h-full w-full object-cover"
-              playsInline
-              loop
-              muted
-              autoPlay
-              preload="metadata"
-              onLoadedMetadata={() => void startPlayback()}
-              onLoadedData={() => void startPlayback()}
-              onCanPlay={() => void startPlayback()}
-
             />
+            {reel.videoUrl && !instagramBrowser && (
+              <video
+                ref={videoRef}
+                src={reel.videoUrl}
+                poster={reelCover(reel.video_path) ?? reel.posterUrl ?? undefined}
+                className="absolute inset-0 h-full w-full object-cover"
+                playsInline
+                loop
+                muted
+                autoPlay
+                preload="metadata"
+                onLoadedMetadata={() => void startPlayback()}
+                onLoadedData={() => void startPlayback()}
+                onCanPlay={() => void startPlayback()}
+              />
+            )}
             <span
-              className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-left text-[9px] uppercase tracking-[0.14em] text-white"
+              className="absolute inset-x-0 bottom-0 whitespace-normal px-2 py-1.5 text-left text-[8px] uppercase leading-snug tracking-[0.12em] text-white"
               style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)" }}
             >
-              Watch &amp; shop
+              Click here to watch &amp; shop
             </span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
             onClick={minimise}
             aria-label="Minimise reel"
-             className="absolute -top-3 -left-3 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow"
+            variant="secondary"
+            size="icon"
+            className="absolute -left-3 -top-3 h-11 w-11 rounded-full shadow"
           >
-            <X size={13} style={{ color: "hsl(0 0% 20%)" }} />
-          </button>
+            <X size={13} />
+          </Button>
 
-          <button
+          {!instagramBrowser && reel.videoUrl && <Button
             type="button"
             onClick={toggleMute}
             aria-label={muted ? "Unmute reel" : "Mute reel"}
-            className="absolute -top-3 -right-3 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow"
+            variant="secondary"
+            size="icon"
+            className="absolute -right-3 -top-3 h-11 w-11 rounded-full shadow"
           >
             {muted ? (
-              <VolumeX size={12} style={{ color: "hsl(0 0% 20%)" }} />
+              <VolumeX size={12} />
             ) : (
-              <Volume2 size={12} style={{ color: "hsl(0 0% 20%)" }} />
+              <Volume2 size={12} />
             )}
-          </button>
+          </Button>}
         </div>
       )}
 
-      {open && (
+      {open && !isMobile && (
         <Suspense fallback={null}>
           <ReelViewer
             reels={reels ?? []}
@@ -249,6 +270,20 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
             onClose={() => setOpen(false)}
           />
         </Suspense>
+      )}
+
+      {isMobile && (
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetContent
+            side="bottom"
+            className="h-[90dvh] overflow-y-auto border-border p-0 pb-[env(safe-area-inset-bottom)] [&>button]:right-3 [&>button]:top-3 [&>button]:rounded-none [&>button]:bg-secondary [&>button]:focus:ring-0 [&>button]:focus:ring-offset-0"
+          >
+            <SheetTitle className="sr-only">Shop the Reel</SheetTitle>
+            <Suspense fallback={<div className="h-full bg-background" aria-hidden="true" />}>
+              <MobileReelShop drawer />
+            </Suspense>
+          </SheetContent>
+        </Sheet>
       )}
     </>
   );

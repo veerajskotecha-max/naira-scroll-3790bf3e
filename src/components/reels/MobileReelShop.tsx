@@ -365,11 +365,11 @@ const InstantReelFallback = ({ onRetry }: { onRetry?: () => void } = {}) => (
 );
 
 
-const MobileReelShop = () => {
+const MobileReelShop = ({ drawer = false }: { drawer?: boolean }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
-  const [enabled, setEnabled] = useState(false);
-  const [inView, setInView] = useState(false);
+  const [enabled, setEnabled] = useState(drawer);
+  const [inView, setInView] = useState(drawer);
   const [activeIndex, setActiveIndex] = useState(0);
   const { data, isLoading, isError, isSuccess, refetch } = useReels(enabled);
   /* If the refresh fails we keep the last reels we saw rather than letting the
@@ -383,6 +383,11 @@ const MobileReelShop = () => {
   );
 
   useEffect(() => {
+    if (drawer) {
+      setEnabled(true);
+      setInView(true);
+      return;
+    }
     const section = sectionRef.current;
     if (!section) return;
     /* Start the tiny metadata request shortly after the PDP settles. This does
@@ -412,7 +417,7 @@ const MobileReelShop = () => {
       dataObserver.disconnect();
       videoObserver.disconnect();
     };
-  }, []);
+  }, [drawer]);
 
 
   const onScroll = useCallback(() => {
@@ -438,7 +443,11 @@ const MobileReelShop = () => {
   };
 
   return (
-    <section ref={sectionRef} className="border-b border-border bg-secondary/45 py-8 md:hidden" aria-labelledby="shop-reels-title">
+    <section
+      ref={sectionRef}
+      className={drawer ? "bg-background pb-8 pt-5" : "border-b border-border bg-secondary/45 py-8 md:hidden"}
+      aria-labelledby="shop-reels-title"
+    >
       <header className="flex items-end justify-between gap-3 px-4">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-primary">
@@ -465,7 +474,7 @@ const MobileReelShop = () => {
           <div
             ref={railRef}
             onScroll={onScroll}
-            className="scrollbar-hide mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 pr-[28%]"
+            className={`scrollbar-hide mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-1 ${drawer ? "pr-[18%]" : "pr-[28%]"}`}
             style={{ overscrollBehaviorX: "contain" }}
           >
             {reels.map((reel, index) => {
@@ -475,7 +484,7 @@ const MobileReelShop = () => {
                   key={reel.id}
                   data-reel-slide
                   onClick={() => !isActive && goToReel(index)}
-                  className={`w-[60vw] max-w-[236px] shrink-0 snap-start border border-border bg-background transition-all duration-300 ${
+                  className={`${drawer ? "w-[72vw] max-w-[280px]" : "w-[60vw] max-w-[236px]"} shrink-0 snap-start border border-border bg-background transition-all duration-300 ${
                     isActive ? "opacity-100 shadow-sm" : "opacity-60"
                   }`}
                 >

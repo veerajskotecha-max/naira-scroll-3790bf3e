@@ -21,7 +21,6 @@ import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import ReelPeek from "@/components/reels/ReelPeek";
-import MobileReelShop from "@/components/reels/MobileReelShop";
 import FomoPopup from "@/components/FomoPopup";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
@@ -997,9 +996,7 @@ const JewelDetail = () => {
 
       <PressMarquee />
 
-      <MobileReelShop />
-
-      {!isMobile && <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />}
+      <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />
       <FomoPopup
         suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
         mobileStickyVisible={stickyBarVisible}

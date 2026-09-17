@@ -15,3 +15,4 @@
 - [x] Replace mobile PDP recommendations and floating reel with an embedded swipeable Shop the Reel section and three products per reel
 - [x] Reintroduce mobile-only You May Also Like as a compact five-piece asymmetric broken-grid edit below the reels
 - [x] Restore the PDP-only FOMO notice for 2.3 seconds and simplify the mobile cart
+- [x] Restore the floating mobile reel preview and open the existing two-reel shopping grid in a bottom drawer

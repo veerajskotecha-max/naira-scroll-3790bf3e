@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
+import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
 interface StickyAddToCartProps {
   image: string;
@@ -230,15 +231,17 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
               </button>
               <button
                 onClick={handleBuyNow}
-                className="press-scale flex items-center justify-center py-3 text-[11px] font-medium uppercase tracking-[0.1em]"
+                className="press-scale flex min-h-[48px] flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium uppercase tracking-[0.1em]"
                 style={{
                   backgroundColor: "hsl(0 0% 12%)",
                   color: "hsl(0 0% 100%)",
                 }}
               >
-                Shop Now
+                <span>Shop Now</span>
+                <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fast checkout</span>
               </button>
             </div>
+            <CheckoutBenefit compact className="flex w-full" />
           </div>
         </div>
       </div>

@@ -42,8 +42,11 @@ gsap.registerPlugin(ScrollTrigger);
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
+/* Golden Duet was retired from Shopify; Cushion Halo is the solitaire the line
+   leads with now. The category fallback below still covers a future retirement
+   so this section can never render empty. */
 const solitaire =
-  jewellery.find((j) => j.handle === "golden-duet-ring") ??
+  jewellery.find((j) => j.handle === "cushion-halo-ring") ??
   jewellery.find((j) => j.category === "Rings") ??
   jewellery[0];
 

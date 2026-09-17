@@ -4,7 +4,7 @@
 - [x] Keep the reel feature light on PDP (lazy-loaded viewer, no fetch/video until scrolled, compressed media) and smooth on desktop
 - [x] Remove product counts from jewellery scrolling tabs
 - [x] Shorten jewellery PDP by consolidating repeated product, trust, delivery, and recommendation sections
-- [x] Pin Prism Reverie bracelet, Molten Bloom and Woven Gold Hoops at the top of /jewellery
+- [x] Pin Prism Rivière bracelet and Woven Gold Hoops at the top of /jewellery
 - [x] Mobile CRO first release: responsive PDP gallery, calm overlays, simplified cart, recoverable checkout handoff
 - [x] Match the compact Shopify-style mobile PDP: square image slides, overlay dots, quantity beside Add to Cart, full-width Shop Now
 - [x] Shorten the review section with a featured review, rating stars, expandable review wall, photo submission, and live updates
@@ -16,3 +16,4 @@
 - [x] Reintroduce mobile-only You May Also Like as a compact five-piece asymmetric broken-grid edit below the reels
 - [x] Restore the PDP-only FOMO notice for 2.3 seconds and simplify the mobile cart
 - [x] Restore the floating mobile reel preview and open the existing two-reel shopping grid in a bottom drawer
+- [x] Remove Molten Bloom Hoops from the pinned favourites and repair reel playback for Instagram on iOS

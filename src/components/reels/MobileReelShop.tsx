@@ -218,8 +218,12 @@ const ReelFrame = ({
       /* A deliberate tap earns a fresh recovery attempt; without this reset the
          one-shot guard would make the second tap a no-op. */
       if (failed) recoveryTriedRef.current = false;
-      video.src = objectUrlRef.current ?? reel.videoUrl;
-      video.load();
+      video.muted = muted;
+      video.playsInline = true;
+      if (failed) {
+        video.src = objectUrlRef.current ?? reel.videoUrl;
+        video.load();
+      }
       void video.play().then(() => setPaused(false)).catch(() => setPaused(true));
       return;
     }
@@ -248,7 +252,7 @@ const ReelFrame = ({
       {shouldMountVideo && (
         <video
           ref={videoRef}
-          src={instagramBrowser && !userStarted ? undefined : reel.videoUrl}
+          src={reel.videoUrl}
           poster={stillUrl ?? undefined}
           onError={() => {
             setFailed(true);
@@ -261,7 +265,7 @@ const ReelFrame = ({
           playsInline
           loop
           muted={muted}
-          preload={instagramBrowser && !userStarted ? "none" : "auto"}
+          preload={instagramBrowser && !userStarted ? "metadata" : "auto"}
           onClick={togglePlayback}
           onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}

@@ -27,7 +27,10 @@ export interface Reel {
 const SIGN_TTL = 60 * 60 * 6; // 6h — long enough for a browsing session
 // Bump when media paths change so returning shoppers never keep a stale,
 // lower-quality signed URL in session storage.
-const CACHE_KEY = "naira:reels:v3";
+// v4 clears signed URLs cached before the seeded objects were corrected from
+// application/octet-stream to video/mp4. iOS webviews otherwise keep retrying
+// the stale response even though storage now has the right metadata.
+const CACHE_KEY = "naira:reels:v4";
 const CACHE_MS = 1000 * 60 * 60 * 2; // re-sign well before the URLs expire
 
 /** Session cache so a second product page opens the reels instantly, with no round-trip. */

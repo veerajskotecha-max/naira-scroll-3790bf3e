@@ -48,10 +48,10 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Earrings", "Necklaces"];
 
-/* Merchandised leads: the multi-colour Prism Rivière bracelet, Molten Bloom
-   and Woven Gold Hoops open the grid on the default Featured sort. An explicit
+/* Merchandised leads: the multi-colour Prism Rivière bracelet and Woven Gold
+   Hoops open the grid on the default Featured sort. An explicit
    sort chosen by the shopper always wins over the pinning. */
-const FEATURED_LEADS = ["prism-riviere-bracelet", "molten-bloom-hoops", "woven-gold-hoops"];
+const FEATURED_LEADS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 
 /* One-tap budget chips beside the category tabs. */
 type PriceBand = { key: string; label: string; min: number | null; max: number | null };
@@ -166,8 +166,8 @@ const Jewellery = () => {
   const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
 
   /* Six leads, shown above the filters so the very first screen has a
-     piece, a price and a way to buy. Pinned leads (Prism Rivière, Molten
-     Bloom, Woven Gold) always show — even sold out, where the card carries
+     piece, a price and a way to buy. Pinned leads (Prism Rivière and Woven
+     Gold) always show — even sold out, where the card carries
      its pre-order treatment — so the row never loses its hero pieces. */
   const bestSellers = useMemo(() => {
     const leads = FEATURED_LEADS

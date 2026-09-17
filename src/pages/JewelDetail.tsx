@@ -4,6 +4,7 @@ import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
+import { QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 import { Helmet } from "react-helmet-async";
 import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag } from "lucide-react";
 
@@ -819,15 +820,7 @@ const JewelDetail = () => {
                 >
                   <MessageSquare size={13} /> Reserve on WhatsApp
                 </a>
-              ) : (
-                <button
-                  onClick={handleBuyNow}
-                  disabled={buying || cartLoading}
-                  className="press-scale mt-2 inline-flex h-[50px] w-full items-center justify-center gap-2.5 bg-foreground text-[12px] font-medium uppercase tracking-[0.12em] text-background transition-colors duration-200 hover:opacity-90 disabled:opacity-60 md:mt-3"
-                >
-                  {buying ? "Opening checkout…" : "Shop Now"}
-                </button>
-              )}
+              ) : null}
 
               {!soldOut && <CheckoutBenefit className="mt-2 flex" />}
               <p className="mt-1.5 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
@@ -884,10 +877,13 @@ const JewelDetail = () => {
               </p>
             </div>
 
-            {/* One useful offer; on a phone it is a single line, not a box. */}
+            {/* One useful offer; on a phone it is a single line, not a box.
+                No code to remember — the bag applies the rung it reaches. */}
             <p className="mt-3 text-[12px] leading-[1.6] md:border md:px-3 md:py-3" style={{ color: "hsl(0 0% 32%)" }}>
-              <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>NAIRA10</strong>
-              10% off your first order
+              <strong className="mr-1.5 tracking-[0.08em]" style={{ color: "#8A6A2A" }}>
+                {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off 2 · {Math.round(TOP_QUANTITY_OFFER.rate * 100)}% off 3
+              </strong>
+              applied automatically in your bag
             </p>
 
             {/* Mobile: the arrival date already sits under the price, so this
@@ -1039,19 +1035,10 @@ const JewelDetail = () => {
             <button
               onClick={handleAddToCart}
               disabled={buying || cartLoading}
-              className="press-scale flex-1 h-[48px] inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] border disabled:opacity-60"
-              style={{ borderColor: "hsl(0 0% 24%)", color: "hsl(0 0% 15%)" }}
-            >
-              Add to Cart
-            </button>
-            <button
-              onClick={handleBuyNow}
-              disabled={buying || cartLoading}
-              className="press-scale flex-1 h-[48px] inline-flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
+              className="press-scale h-[48px] w-full inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
               style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
             >
-              <span>{buying ? "Opening…" : "Shop now"}</span>
-              {!buying && <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fastrr checkout</span>}
+              Add to Cart
             </button>
           </>
         )}

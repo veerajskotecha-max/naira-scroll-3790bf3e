@@ -6,7 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
-import { discountedSubtotal, getPromoCode, itemsToQuantityOffer, PROMO_EVENT, QUANTITY_OFFER, resolveCartDiscount } from "@/lib/promo";
+import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
+import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
@@ -64,10 +65,6 @@ const CartDrawer = () => {
   const discountAmount = subtotal - goodsTotal;
   const orderTotal = goodsTotal + SHIPPING_CHARGE;
 
-  const piecesAway = itemsToQuantityOffer(totalItems);
-  const offerEarned = piecesAway === 0;
-  /* The bar only earns its space while there is a bag to fill. */
-  const offerProgress = Math.min(1, totalItems / QUANTITY_OFFER.minQuantity);
 
 
   const handleCheckout = () => checkout();
@@ -86,6 +83,11 @@ const CartDrawer = () => {
         </SheetHeader>
 
         <Separator className="shrink-0" />
+
+        {/* The buy-more ladder sits at the top of a filled bag, above the items
+            — met on the way in, not discovered next to the total. Hidden on an
+            empty bag, where there is nothing to make progress with. */}
+        {items.length > 0 && <OfferProgress totalItems={totalItems} />}
 
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
@@ -172,37 +174,6 @@ const CartDrawer = () => {
               {/* Promo code */}
               <CartPromoField />
 
-              {/* Progress toward the multi-buy offer. A bar rather than a line of
-                  copy because the shopper can read "how far" at a glance, and it
-                  turns the second piece into a goal instead of an upsell. */}
-              <div className="space-y-1.5">
-                <p className="text-[11px] uppercase tracking-[var(--nf-track-16)] text-muted-foreground">
-                  {offerEarned ? (
-                    <span className="text-primary">
-                      {Math.round(QUANTITY_OFFER.rate * 100)}% off unlocked
-                    </span>
-                  ) : (
-                    <>
-                      Add {piecesAway === 1 ? "1 more piece" : `${piecesAway} more pieces`} for{" "}
-                      <span className="text-primary">{Math.round(QUANTITY_OFFER.rate * 100)}% off</span>
-                    </>
-                  )}
-                </p>
-                <div
-                  className="h-[3px] w-full overflow-hidden bg-[color:rgb(var(--nf-ink-rgb)/0.10)]"
-                  role="progressbar"
-                  aria-valuemin={0}
-                  aria-valuemax={QUANTITY_OFFER.minQuantity}
-                  aria-valuenow={Math.min(totalItems, QUANTITY_OFFER.minQuantity)}
-                  aria-label={`${QUANTITY_OFFER.minQuantity} pieces unlock ${Math.round(QUANTITY_OFFER.rate * 100)}% off`}
-                >
-                  <span
-                    className="block h-full bg-[var(--nf-accent-strong)] transition-[width] duration-500 ease-reveal motion-reduce:transition-none"
-                    style={{ width: `${offerProgress * 100}%` }}
-                  />
-                </div>
-              </div>
-
               <div className="space-y-1 text-[12px] text-muted-foreground">
                 <div className="flex items-center justify-between">
                   <span>Subtotal</span>
@@ -212,16 +183,11 @@ const CartDrawer = () => {
                   <span>Insured shipping</span>
                   <span className="text-foreground">{formatPrice(SHIPPING_CHARGE)}</span>
                 </div>
-                {/* Only the discount the bag can GUARANTEE. Fastrr carries one
-                    coupon and no more, so naming a second here would quote a
-                    total the shopper is never charged. */}
-                {discountAmount > 0 && discount.passedCode && (
+                {discountAmount > 0 && discount.code && (
                   <div className="flex items-center justify-between text-primary">
                     <span>
-                      {discount.passedCode} ({Math.round(discount.rate * 100)}% off)
-                      {discount.lines.find((l) => l.code === discount.passedCode)?.automatic
-                        ? " — applied"
-                        : null}
+                      {discount.code} ({Math.round(discount.rate * 100)}% off)
+                      {discount.automatic ? " — applied" : null}
                     </span>
                     <span>−{formatPrice(discountAmount)}</span>
                   </div>

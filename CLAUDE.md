@@ -61,6 +61,29 @@ See `docs/measurement-playbook.md` for the full picture. The essentials:
   Do not widen that gate without the owner's explicit say-so — in particular the
   Inner Circle checkout email was given for a newsletter, not for ad matching.
 
+## Discounts — two rules that cost money if broken
+
+`src/lib/promo.ts` resolves the ONE discount an order gets. The bag's total and
+the total Fastrr charges both come from it, so a rate or code that drifts from
+Shopify quotes a total the shopper is never charged.
+
+1. **Fastrr ignores Shopify AUTOMATIC discounts.** Verified live: an active
+   "2 or more, 10% off" automatic discount left a two-item bag at
+   totalPrice 2398.00, totalDiscount 0.00, empty discountDetail. Every offer
+   must therefore be a discount CODE.
+2. **Fastrr carries exactly ONE coupon.** `buyDirect` reduces `couponCode` to a
+   single value. Joining two with a comma is worse than sending one — it read
+   "BUY2,NAIRA10" as a single unknown code and applied NEITHER. So the resolver
+   returns one code, never a pair, and nothing stacks.
+
+Live codes: `BUY2` (10%, min qty 2) and `BUY3` (20%, min qty 3), both PRODUCT
+class scoped to the hidden auto-updating collection `discount-scope-all` — do
+not delete it or both stop working. `FRIENDSANDFAMILY` (20%) still exists.
+`NAIRA10` was retired and is EXPIRED in Shopify; the app no longer accepts it.
+
+The ladder is applied by the bag, never typed. `src/components/cart/OfferProgress.tsx`
+renders it as a filling bar at the top of the cart.
+
 ## Verification expected before any push
 
 ```

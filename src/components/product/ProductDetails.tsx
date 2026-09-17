@@ -138,9 +138,12 @@ const ProductDetails = ({
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
+    /* Straight into the bag. The buy-more ladder lives there, so a shopper who
+       adds a piece should meet it at once — behind a toast action almost nobody
+       ever saw it. */
+    setDrawerOpen(true);
     toast("Added to cart", {
       description: `${quantity}× ${title}${selectedSize ? ` (${selectedSize})` : ""}`,
-      action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
     });
   };
 

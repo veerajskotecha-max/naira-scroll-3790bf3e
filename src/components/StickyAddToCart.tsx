@@ -51,9 +51,12 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
+    /* Straight into the bag. The buy-more ladder lives there, so a shopper who
+       adds a piece should meet it at once — behind a toast action almost nobody
+       ever saw it. */
+    setDrawerOpen(true);
     toast("Added to cart", {
       description: selectedSize ? `1× ${title} (${selectedSize})` : `1× ${title}`,
-      action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
     });
   };
 
@@ -228,17 +231,6 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
                     Add to Cart
                   </>
                 )}
-              </button>
-              <button
-                onClick={handleBuyNow}
-                className="press-scale flex min-h-[48px] flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium uppercase tracking-[0.1em]"
-                style={{
-                  backgroundColor: "hsl(0 0% 12%)",
-                  color: "hsl(0 0% 100%)",
-                }}
-              >
-                <span>Shop Now</span>
-                <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fastrr checkout</span>
               </button>
             </div>
             <CheckoutBenefit compact className="flex w-full" />

@@ -110,9 +110,12 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 1500);
+    /* Straight into the bag. The buy-more ladder lives there, so a shopper who
+       adds a piece should meet it at once — behind a toast action almost nobody
+       ever saw it. */
+    setDrawerOpen(true);
     toast("Added to cart", {
       description: product.name,
-      action: { label: "View Cart", onClick: () => setDrawerOpen(true) },
     });
   };
 

@@ -1,84 +1,64 @@
 import { describe, expect, it } from "vitest";
 import {
-  PROMO_CATALOGUE,
-  QUANTITY_OFFER,
+  ACCEPTED_PROMO_CODES,
+  PROMO_DISCOUNTS,
+  QUANTITY_OFFERS,
+  TOP_QUANTITY_OFFER,
   discountedSubtotal,
+  earnedQuantityOffer,
   itemsToQuantityOffer,
+  nextQuantityOffer,
+  quantityOfferProgress,
   resolveCartDiscount,
 } from "./promo";
 
 /**
- * The drawer's total and the total Fastrr charges both come from this
- * resolver. Every case here is a rupee amount a shopper would otherwise see
- * quoted and then not be given.
+ * The bag's total and the total Fastrr charges both come from this resolver.
+ * Every case here is a rupee amount a shopper would otherwise see quoted and
+ * then not be given.
  */
 describe("resolveCartDiscount", () => {
   it("gives nothing for a single piece and no code", () => {
-    const r = resolveCartDiscount({ totalItems: 1 });
-    expect(r.codes).toEqual([]);
-    expect(r.rate).toBe(0);
+    expect(resolveCartDiscount({ totalItems: 1 })).toEqual({ code: null, rate: 0, automatic: false });
   });
 
-  it("earns BUY2 on the second piece without the shopper typing anything", () => {
-    const r = resolveCartDiscount({ totalItems: 2 });
-    expect(r.codes).toEqual(["BUY2"]);
-    expect(r.lines[0].automatic).toBe(true);
-    expect(r.productRate).toBe(0.1);
-    expect(r.orderRate).toBe(0);
+  it("earns 10% on the second piece without the shopper typing anything", () => {
+    expect(resolveCartDiscount({ totalItems: 2 })).toEqual({ code: "BUY2", rate: 0.1, automatic: true });
   });
 
-  /* BUY2 is a PRODUCT discount and NAIRA10 an ORDER discount, and each is
-     configured in Shopify to combine with the other's class — so both apply. */
-  it("stacks the earned product offer with an order code", () => {
-    const r = resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" });
-    expect(r.codes.sort()).toEqual(["BUY2", "NAIRA10"]);
-    expect(r.productRate).toBe(0.1);
-    expect(r.orderRate).toBe(0.1);
+  it("climbs to 20% on the third piece", () => {
+    expect(resolveCartDiscount({ totalItems: 3 })).toEqual({ code: "BUY3", rate: 0.2, automatic: true });
   });
 
-  /* Shopify takes the product discount off the lines, THEN the order discount
-     off what remains. Adding the two would overstate every stacked bag. */
-  it("compounds rather than adds: 10 and 10 is 19 percent, not 20", () => {
-    const r = resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" });
-    expect(r.stackedRate).toBeCloseTo(0.19, 10);
-    expect(r.stackedRate).not.toBeCloseTo(0.2, 4);
+  it("keeps the top rung beyond its threshold", () => {
+    expect(resolveCartDiscount({ totalItems: 9 }).code).toBe("BUY3");
   });
 
-  /* Fastrr carries ONE coupon: comma-joining two was tested live and made it
-     apply neither. So `rate` — the number the bag deducts — must never be the
-     stacked figure, however much Shopify would allow. */
-  it("only counts the single code the checkout can actually carry", () => {
-    const r = resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" });
-    expect(r.rate).toBe(0.1);
-    expect(r.rate).toBeLessThan(r.stackedRate);
-    expect(r.passedCode).toBeTruthy();
-    expect(r.stackableCode).toBeTruthy();
-    expect(r.passedCode).not.toBe(r.stackableCode);
-  });
-
-  /* FRIENDSANDFAMILY is also a PRODUCT discount, so it and BUY2 compete for
-     the same slot — Shopify will never apply both. */
-  it("never doubles up within a class: the better product discount wins alone", () => {
+  /* Only ONE code can reach Fastrr — comma-joining two was tested live and made
+     it apply neither — so the resolver must return exactly one, never a pair. */
+  it("returns a single code, never a combination", () => {
     const r = resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" });
-    expect(r.codes).toEqual(["FRIENDSANDFAMILY"]);
-    expect(r.productRate).toBe(0.2);
-    expect(r.rate).toBeCloseTo(0.2, 10);
+    expect(typeof r.code).toBe("string");
+    expect(r.code).not.toContain(",");
+    expect(r.rate).toBe(0.2);
+  });
+
+  it("lets a richer typed code beat the earned rung", () => {
+    const r = resolveCartDiscount({ totalItems: 2, promoCode: "FRIENDSANDFAMILY" });
+    expect(r).toEqual({ code: "FRIENDSANDFAMILY", rate: 0.2, automatic: false });
+  });
+
+  it("keeps the earned rung when it beats the typed code", () => {
+    const r = resolveCartDiscount({ totalItems: 3, promoCode: "BUY2" });
+    expect(r).toEqual({ code: "BUY3", rate: 0.2, automatic: true });
   });
 
   it("keeps the typed code on an exact tie so the shopper sees the one they entered", () => {
-    const r = resolveCartDiscount({ totalItems: 2, promoCode: "BUY2" });
-    expect(r.codes).toEqual(["BUY2"]);
+    expect(resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" }).automatic).toBe(false);
   });
 
-  it("applies a typed order code on a single piece, with no product discount", () => {
-    const r = resolveCartDiscount({ totalItems: 1, promoCode: "NAIRA10" });
-    expect(r.codes).toEqual(["NAIRA10"]);
-    expect(r.productRate).toBe(0);
-    expect(r.orderRate).toBe(0.1);
-  });
-
-  it("falls back to the earned offer when the typed code is junk", () => {
-    expect(resolveCartDiscount({ totalItems: 2, promoCode: "NOTACODE" }).codes).toEqual(["BUY2"]);
+  it("falls back to the earned rung when the typed code is junk", () => {
+    expect(resolveCartDiscount({ totalItems: 2, promoCode: "NOTACODE" }).code).toBe("BUY2");
   });
 
   it("ignores a junk code on a single piece rather than inventing a discount", () => {
@@ -86,25 +66,38 @@ describe("resolveCartDiscount", () => {
   });
 
   it("tolerates the messy casing and punctuation mobile autofill produces", () => {
-    expect(resolveCartDiscount({ totalItems: 1, promoCode: " naira-10 " }).codes).toEqual(["NAIRA10"]);
+    expect(resolveCartDiscount({ totalItems: 1, promoCode: " friends-and-family " }).code).toBe(
+      "FRIENDSANDFAMILY"
+    );
   });
 
   it("treats an empty bag as no discount", () => {
     expect(resolveCartDiscount({ totalItems: 0 }).rate).toBe(0);
   });
+
+  /* NAIRA10 was retired and deactivated in Shopify. A shopper with it still in
+     localStorage must get the bag's own offer, not a dead code the checkout
+     would reject. */
+  it("ignores the retired welcome code", () => {
+    expect(ACCEPTED_PROMO_CODES).not.toContain("NAIRA10");
+    expect(resolveCartDiscount({ totalItems: 1, promoCode: "NAIRA10" })).toEqual({
+      code: null,
+      rate: 0,
+      automatic: false,
+    });
+    expect(resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" }).code).toBe("BUY2");
+  });
 });
 
 describe("discountedSubtotal", () => {
   it("matches what Fastrr charged on the verified two-piece bag", () => {
-    // 2 x Cushion Halo Ring at 1199 -> Fastrr returned totalDiscount 239.80.
-    const r = resolveCartDiscount({ totalItems: 2 });
-    expect(discountedSubtotal(2398, r)).toBe(2158);
+    // 2 x 1199 -> Fastrr returned totalDiscount 239.80.
+    expect(discountedSubtotal(2398, resolveCartDiscount({ totalItems: 2 }))).toBe(2158);
   });
 
-  it("deducts only the carried code, never the stacked ceiling", () => {
-    const r = resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" });
-    // Quoting the 19% stack here would promise 1,942 and charge 2,158.
-    expect(discountedSubtotal(2398, r)).toBe(2158);
+  it("matches what Fastrr charged on the verified four-piece bag", () => {
+    // 8896 -> Fastrr returned totalDiscount 1779.20 under BUY3.
+    expect(discountedSubtotal(8896, resolveCartDiscount({ totalItems: 4 }))).toBe(7117);
   });
 
   it("leaves the subtotal alone when nothing applies", () => {
@@ -112,30 +105,49 @@ describe("discountedSubtotal", () => {
   });
 });
 
-describe("itemsToQuantityOffer", () => {
-  it("counts down to the offer", () => {
+describe("the offer ladder", () => {
+  it("counts down to the next rung, not the first", () => {
     expect(itemsToQuantityOffer(0)).toBe(2);
     expect(itemsToQuantityOffer(1)).toBe(1);
+    // Two pieces earned 10%; the bar now points at the 3-piece rung.
+    expect(itemsToQuantityOffer(2)).toBe(1);
   });
 
-  it("is zero once earned", () => {
-    expect(itemsToQuantityOffer(2)).toBe(0);
+  it("is zero once the ladder is topped out", () => {
+    expect(itemsToQuantityOffer(3)).toBe(0);
     expect(itemsToQuantityOffer(7)).toBe(0);
   });
-});
 
-/* The catalogue must mirror Shopify. A class that drifts silently changes what
-   stacks; a rate that drifts makes the bag quote a total nobody is charged. */
-describe("PROMO_CATALOGUE mirrors Shopify", () => {
-  it("has BUY2 as a product discount so it can stack on an order code", () => {
-    expect(PROMO_CATALOGUE.BUY2).toEqual({ rate: QUANTITY_OFFER.rate, klass: "product" });
+  it("names the rung earned and the rung ahead", () => {
+    expect(earnedQuantityOffer(1)).toBeNull();
+    expect(nextQuantityOffer(1)?.code).toBe("BUY2");
+    expect(earnedQuantityOffer(2)?.code).toBe("BUY2");
+    expect(nextQuantityOffer(2)?.code).toBe("BUY3");
+    expect(earnedQuantityOffer(3)?.code).toBe("BUY3");
+    expect(nextQuantityOffer(3)).toBeNull();
   });
 
-  it("has NAIRA10 as an order discount", () => {
-    expect(PROMO_CATALOGUE.NAIRA10).toEqual({ rate: 0.1, klass: "order" });
+  /* Measured across the whole ladder so the bar never snaps backwards when a
+     rung is cleared. */
+  it("fills monotonically and caps at full", () => {
+    const steps = [0, 1, 2, 3, 4].map(quantityOfferProgress);
+    expect(steps).toEqual([0, 1 / 3, 2 / 3, 1, 1]);
+    steps.forEach((v, i) => i && expect(v).toBeGreaterThanOrEqual(steps[i - 1]));
   });
 
-  it("has FRIENDSANDFAMILY as a product discount", () => {
-    expect(PROMO_CATALOGUE.FRIENDSANDFAMILY).toEqual({ rate: 0.2, klass: "product" });
+  it("orders the rungs by rising threshold and rising reward", () => {
+    for (let i = 1; i < QUANTITY_OFFERS.length; i += 1) {
+      expect(QUANTITY_OFFERS[i].minQuantity).toBeGreaterThan(QUANTITY_OFFERS[i - 1].minQuantity);
+      expect(QUANTITY_OFFERS[i].rate).toBeGreaterThan(QUANTITY_OFFERS[i - 1].rate);
+    }
+    expect(TOP_QUANTITY_OFFER.code).toBe("BUY3");
+  });
+
+  /* Every rung must be a real Shopify code at the same rate, or the bag quotes
+     a discount the checkout will not give. */
+  it("has every rung in the discount table at the same rate", () => {
+    for (const offer of QUANTITY_OFFERS) {
+      expect(PROMO_DISCOUNTS[offer.code]).toBe(offer.rate);
+    }
   });
 });

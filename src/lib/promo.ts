@@ -1,14 +1,15 @@
-/* Welcome-offer promo code handling.
-   The code is captured through the welcome popup and auto-applied to the
-   Shopify checkout URL via the ?discount= parameter. */
+/* Cart discount handling.
 
-export const WELCOME_PROMO_CODE = "NAIRA10";
-export const WELCOME_PROMO_LABEL = "10% off your first order";
+   One discount reaches the checkout and one only. Fastrr's buyDirect carries a
+   single coupon — joining two with a comma was tested against the live
+   checkout and made it apply NEITHER (couponCodes [], totalDiscount 0.00) — so
+   the bag resolves exactly one code and never quotes a stacked total it cannot
+   deliver. */
 
 export const PROMO_DISCOUNTS = {
-  NAIRA10: 0.1,
   FRIENDSANDFAMILY: 0.2,
   BUY2: 0.1,
+  BUY3: 0.2,
 } as const;
 
 export type PromoCode = keyof typeof PROMO_DISCOUNTS;
@@ -27,151 +28,82 @@ export const getPromoDiscountRate = (code: string | null): number => {
 };
 
 /*
-  The multi-buy offer: two or more pieces, ten percent off.
+  The buy-more ladder: two pieces take 10% off, three take 20%.
 
-  It is a CODE in Shopify, not an automatic discount, and that is deliberate.
-  Shiprocket Fastrr — which owns the payment page — ignores Shopify automatic
-  discounts completely: verified live with an active "2 or more, 10% off"
-  automatic discount and a two-item bag, Fastrr returned totalPrice 2398.00,
-  totalDiscount 0.00 and an empty discountDetail. A code travels with the bag
-  (Fastrr couponCode, Shopify ?discount=) and both paths honour it.
-
-  The shopper never types it — the bag applies it once it qualifies.
+  Both rungs are CODES in Shopify, not automatic discounts, and that is
+  deliberate — Fastrr, which owns the payment page, ignores Shopify automatic
+  discounts entirely (verified live: an active "2 or more, 10% off" automatic
+  discount left a two-item bag at totalPrice 2398.00, totalDiscount 0.00). A
+  code travels with the bag and is honoured. The shopper never types one; the
+  bag applies whichever rung it has reached.
 */
-export const QUANTITY_OFFER = {
-  code: "BUY2",
-  minQuantity: 2,
-  rate: 0.1,
-} as const;
+export const QUANTITY_OFFERS = [
+  { code: "BUY2", minQuantity: 2, rate: 0.1 },
+  { code: "BUY3", minQuantity: 3, rate: 0.2 },
+] as const;
 
-export const QUANTITY_OFFER_LABEL = "Buy 2 or more — extra 10% off";
+export type QuantityOffer = (typeof QUANTITY_OFFERS)[number];
 
-/*
-  Shopify sorts every discount into a CLASS, and the class is what decides
-  stacking: two discounts of the SAME class can never both apply, while
-  discounts of DIFFERENT classes can, provided each is configured to combine
-  with the other's class.
+/** The top rung — what the ladder is worth once fully climbed. */
+export const TOP_QUANTITY_OFFER = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1];
 
-  A basic discount's class is derived from what it is scoped to — an
-  order-wide percentage is ORDER, one scoped to products or collections is
-  PRODUCT. That is why BUY2 is scoped to the hidden "discount-scope-all"
-  collection (all 90 products, auto-updating): it makes BUY2 a PRODUCT
-  discount, which is the only way it can stack on top of an ORDER code like
-  NAIRA10.
+/** The best rung the bag has already earned, or null below the first. */
+export const earnedQuantityOffer = (totalItems: number): QuantityOffer | null =>
+  [...QUANTITY_OFFERS].reverse().find((o) => totalItems >= o.minQuantity) ?? null;
 
-  Keep this table in step with Shopify. A rate or class that drifts from the
-  real discount makes the bag quote a total the shopper is not charged.
-*/
-export type DiscountClass = "order" | "product";
+/** The next rung up, or null once the ladder is topped out. */
+export const nextQuantityOffer = (totalItems: number): QuantityOffer | null =>
+  QUANTITY_OFFERS.find((o) => totalItems < o.minQuantity) ?? null;
 
-export const PROMO_CATALOGUE: Record<PromoCode, { rate: number; klass: DiscountClass }> = {
-  NAIRA10: { rate: 0.1, klass: "order" },
-  FRIENDSANDFAMILY: { rate: 0.2, klass: "product" },
-  BUY2: { rate: 0.1, klass: "product" },
+/** How many more pieces reach the next rung, or 0 at the top. */
+export const itemsToQuantityOffer = (totalItems: number): number => {
+  const next = nextQuantityOffer(totalItems);
+  return next ? Math.max(0, next.minQuantity - totalItems) : 0;
 };
 
-export type DiscountLine = {
-  code: string;
+/**
+ * How full the offer bar should be, 0 to 1.
+ *
+ * Measured across the WHOLE ladder rather than per rung, so the bar keeps
+ * creeping forward as pieces go in instead of snapping back to empty each time
+ * a rung is cleared.
+ */
+export const quantityOfferProgress = (totalItems: number): number =>
+  Math.min(1, totalItems / TOP_QUANTITY_OFFER.minQuantity);
+
+export type ResolvedDiscount = {
+  /** The single code the checkout carries, or null when nothing applies. */
+  code: string | null;
   rate: number;
-  klass: DiscountClass;
   /** True when the bag earned it rather than the shopper typing it. */
   automatic: boolean;
 };
 
-export type ResolvedDiscount = {
-  /** Every code Shopify would honour together on this bag. */
-  codes: string[];
-  lines: DiscountLine[];
-  /**
-   * The ONE code we can hand the checkout.
-   *
-   * Fastrr's buyDirect takes a single coupon and refuses two joined together,
-   * so this is the only discount the bag can guarantee. Whatever it is worth
-   * is safe to show as a deduction.
-   */
-  passedCode: string | null;
-  /**
-   * A second code Shopify would stack, which the shopper has to enter in
-   * Fastrr's own coupon field to receive. Never counted in the total — it is
-   * an invitation, not a promise.
-   */
-  stackableCode: string | null;
-  productRate: number;
-  orderRate: number;
-  /** Effective rate of `passedCode` alone — what the bag actually deducts. */
-  rate: number;
-  /** Effective rate if the shopper also enters `stackableCode`, compounded. */
-  stackedRate: number;
-};
-
 /**
- * Which discounts the order actually gets, and what they are worth together.
+ * The one discount the order gets.
  *
- * At most one per class can apply, so the better product discount wins its
- * slot and the better order discount wins its own. The two then COMPOUND
- * rather than add: Shopify takes the product discount off the line items
- * first, then the order discount off what is left. Ten and ten is nineteen
- * percent, not twenty — adding them would overstate every stacked bag.
+ * Only a single code can reach checkout, so the richer of what the bag earned
+ * and what the shopper typed wins outright — never both. A typed code takes an
+ * exact tie, so someone who went to the trouble of entering one sees it named.
  */
 export const resolveCartDiscount = (input: {
   totalItems: number;
   promoCode?: string | null;
 }): ResolvedDiscount => {
-  const candidates: DiscountLine[] = [];
-
   const typed = normalizePromoCode(input.promoCode ?? "");
-  if (isAcceptedPromoCode(typed) && typed !== QUANTITY_OFFER.code) {
-    candidates.push({ code: typed, ...PROMO_CATALOGUE[typed], automatic: false });
+  const typedRate = getPromoDiscountRate(typed);
+  const earned = earnedQuantityOffer(input.totalItems);
+
+  if (earned && earned.rate > typedRate) {
+    return { code: earned.code, rate: earned.rate, automatic: true };
   }
-  if (input.totalItems >= QUANTITY_OFFER.minQuantity) {
-    candidates.push({
-      code: QUANTITY_OFFER.code,
-      ...PROMO_CATALOGUE[QUANTITY_OFFER.code],
-      automatic: true,
-    });
-  }
-
-  /* One winner per class. A typed code takes an exact tie, so a shopper who
-     went to the trouble of entering one sees it named on the bag. */
-  const bestOf = (klass: DiscountClass) =>
-    candidates
-      .filter((c) => c.klass === klass)
-      .sort((a, b) => b.rate - a.rate || Number(a.automatic) - Number(b.automatic))[0];
-
-  const product = bestOf("product");
-  const order = bestOf("order");
-  const lines = [product, order].filter(Boolean) as DiscountLine[];
-
-  const productRate = product?.rate ?? 0;
-  const orderRate = order?.rate ?? 0;
-
-  /* Only one code can reach Fastrr, so the richer of the two is the one worth
-     sending; a tie goes to the code the shopper typed, which they expect to
-     see. The loser becomes the stacking invitation. */
-  const ranked = [...lines].sort((a, b) => b.rate - a.rate || Number(a.automatic) - Number(b.automatic));
-  const passed = ranked[0] ?? null;
-  const stackable = ranked[1] ?? null;
-
-  return {
-    codes: lines.map((l) => l.code),
-    lines,
-    passedCode: passed?.code ?? null,
-    stackableCode: stackable?.code ?? null,
-    productRate,
-    orderRate,
-    rate: passed?.rate ?? 0,
-    stackedRate: 1 - (1 - productRate) * (1 - orderRate),
-  };
+  if (typedRate > 0) return { code: typed, rate: typedRate, automatic: false };
+  return { code: null, rate: 0, automatic: false };
 };
 
-/** What the shopper pays for the goods before shipping, counting only the
-    discount the bag can guarantee. */
+/** What the shopper pays for the goods, before shipping. */
 export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount): number =>
   Math.round(subtotal * (1 - resolved.rate));
-
-/** How many more pieces earn the multi-buy offer, or 0 once it is earned. */
-export const itemsToQuantityOffer = (totalItems: number): number =>
-  Math.max(0, QUANTITY_OFFER.minQuantity - totalItems);
 
 const CODE_KEY = "naira-promo-code";
 const SEEN_KEY = "naira-promo-popup-seen";

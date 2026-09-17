@@ -360,16 +360,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       promoCode: getPromoCode(),
     });
 
-    let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url), resolved.passedCode);
+    let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url), resolved.code);
 
     /* Put the discount on the cart, not just in the query string. ?discount= is
        honoured on Shopify's /cart/... permalinks, but we hand over at
        /checkouts/cn/<token>, where it is not documented to apply — and if it
        silently does not, the drawer quotes one total and Shopify charges
-       another (₹245 more on a ₹2,449 piece with NAIRA10). Setting it on the
+       another (₹245 more on a ₹2,449 piece). Setting it on the
        cart makes it travel with the cart. The URL parameter stays as a
        harmless belt-and-braces. */
-    const code = resolved.passedCode;
+    const code = resolved.code;
     const cartId = loadCart().cartId;
     if (code && cartId) {
       /* That call runs 437ms at the median and up to 1.2s, so the button has to
@@ -377,8 +377,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
          visibly happens for a second — which reads as a broken button. */
       setIsLoading(true);
       try {
-        const res = await applyCartDiscountCodes(cartId, resolved.codes);
-        if (res.checkoutUrl) target = applyPromoToCheckoutUrl(res.checkoutUrl, resolved.passedCode);
+        const res = await applyCartDiscountCodes(cartId, [code]);
+        if (res.checkoutUrl) target = applyPromoToCheckoutUrl(res.checkoutUrl, resolved.code);
       } catch (error) {
         /* Never block checkout on the discount call — the query string still
            carries the code, and Shopify's own field accepts it at checkout. */
@@ -406,7 +406,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (isFastrrEnabled()) {
       setIsLoading(true);
       try {
-        const started = await startFastrrCheckout(loadCart().items, { couponCode: resolved.passedCode, fallbackUrl: target });
+        const started = await startFastrrCheckout(loadCart().items, { couponCode: resolved.code, fallbackUrl: target });
         if (started) {
           /* Fastrr takes over the screen itself — no navigation from us. */
           setDrawerOpen(false);

@@ -1,11 +1,15 @@
 import { Link } from "react-router-dom";
 
 /**
- * Clickable offer strip — the marquee doubles as the entry point to the
- * discounted edit, so the promise in the copy has somewhere to land.
+ * Clickable strip — the marquee doubles as the entry point to the jewellery,
+ * so the line in the copy has somewhere to land.
+ *
+ * It carries scarcity rather than a discount code: the buy-more ladder lives in
+ * the bag, where the shopper can act on it, and a code in the header would only
+ * compete with the one the bag applies by itself.
  */
 const AnnouncementBar = () => {
-  const text = "10% OFF YOUR FIRST ORDER \u2726 USE CODE NAIRA10";
+  const text = "LIMITED PIECES IN STOCK \u2726 EACH STYLE MADE IN A SMALL RUN";
 
   return (
     <div
@@ -14,7 +18,7 @@ const AnnouncementBar = () => {
     >
       <Link
         to="/jewellery"
-        aria-label="Shop jewellery and use code NAIRA10 for 10% off your first order"
+        aria-label="Shop the jewellery — limited pieces in stock"
         className="flex items-center h-full"
       >
         <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">

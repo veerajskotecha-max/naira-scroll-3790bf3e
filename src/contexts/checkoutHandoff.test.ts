@@ -26,15 +26,16 @@ describe("checkout hand-off", () => {
 /*
   The drawer quotes its own discounted total. If the code never reaches Shopify
   the shopper is charged full price — ₹245 more than shown on a ₹2,449 piece
-  with NAIRA10. Relying on ?discount= alone was the risk: that parameter is
+  with a code. Relying on ?discount= alone was the risk: that parameter is
   honoured on /cart/... permalinks, but the hand-off rewrites to
   /checkouts/cn/<token>. The code is set on the cart itself as well.
 */
 describe("discount reaches Shopify", () => {
   it("applies the code to the cart before handing over", () => {
-    /* Shopify's own cart accepts every code that combines, so the resolved
-       set goes on in full — unlike Fastrr, which takes only one. */
-    expect(code).toMatch(/applyCartDiscountCodes\(cartId, resolved\.codes\)/);
+    /* One code, both paths. Fastrr carries a single coupon, so the Shopify
+       cart is given the same single code rather than a set that could diverge
+       from what the hand-off actually sends. */
+    expect(code).toMatch(/applyCartDiscountCodes\(cartId, \[code\]\)/);
   });
 
   it("still keeps the query parameter as a fallback", () => {

@@ -13,6 +13,9 @@ import localReelPoster from "@/assets/reel-fallback.webp";
 
 const PREORDER_WHATSAPP = "919561557935";
 
+const isInstagramBrowser = () =>
+  typeof navigator !== "undefined" && /Instagram|FBAN|FBAV/i.test(navigator.userAgent);
+
 const parsePrice = (label?: string | null) =>
   label ? Number(label.replace(/[^\d.]/g, "")) || 0 : 0;
 
@@ -103,8 +106,10 @@ const ReelFrame = ({
   canLoad: boolean;
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const instagramBrowser = useMemo(isInstagramBrowser, []);
+  const [userStarted, setUserStarted] = useState(false);
   const [muted, setMuted] = useState(true);
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(instagramBrowser);
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
   /* A missing/blocked video must never collapse or blank the card: we fall back
@@ -116,6 +121,7 @@ const ReelFrame = ({
      be unavailable on a weak connection, but the frame must never go blank. */
   const stillUrl = reel.posterUrl ?? reel.products[0]?.image_url ?? localReelPoster;
   const playable = Boolean(reel.videoUrl) && !failed;
+  const shouldMountVideo = canLoad && playable && (!instagramBrowser || userStarted);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -124,21 +130,28 @@ const ReelFrame = ({
       video.pause();
       return;
     }
+    if (instagramBrowser && !userStarted) return;
     video.muted = muted;
     void video.play().then(() => setPaused(false)).catch(() => undefined);
-  }, [active, canLoad, muted]);
+  }, [active, canLoad, instagramBrowser, muted, userStarted]);
 
   /* Stop spinning forever on a stalled network: after 6s we simply show the
      still image while the video keeps loading quietly in the background. */
   useEffect(() => {
-    if (!canLoad || !playable || ready) return;
+    if (!shouldMountVideo || ready) return;
     const timer = window.setTimeout(() => setSlow(true), 6000);
     return () => window.clearTimeout(timer);
-  }, [canLoad, playable, ready]);
+  }, [ready, shouldMountVideo]);
 
   const togglePlayback = () => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      if (playable) {
+        setUserStarted(true);
+        setPaused(false);
+      }
+      return;
+    }
     if (video.paused) void video.play().then(() => setPaused(false));
     else {
       video.pause();
@@ -161,7 +174,7 @@ const ReelFrame = ({
           event.currentTarget.src = localReelPoster;
         }}
       />
-      {canLoad && playable && (
+      {shouldMountVideo && (
         <video
           ref={videoRef}
           src={reel.videoUrl}
@@ -190,7 +203,7 @@ const ReelFrame = ({
       )}
       {/* Soft shimmer + spinner over the still until the first frame can play —
           it gives up after a few seconds so the thumbnail stays clean. */}
-      {canLoad && playable && !ready && !slow && (
+      {shouldMountVideo && !ready && !slow && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/25 backdrop-blur-[1px]">
           <span className="absolute inset-0 animate-pulse bg-gradient-to-br from-background/10 via-transparent to-background/10" />
           <span className="h-6 w-6 animate-spin rounded-full border-2 border-background/40 border-t-background" />
@@ -207,7 +220,7 @@ const ReelFrame = ({
             aria-label={paused ? "Play reel" : "Pause reel"}
             className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center bg-foreground/45 text-background transition-colors hover:bg-foreground/65"
           >
-            {paused ? <Play size={12} /> : <Pause size={12} />}
+            {paused || !ready ? <Play size={12} /> : <Pause size={12} />}
           </button>
           <button
             type="button"

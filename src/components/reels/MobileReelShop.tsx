@@ -157,7 +157,8 @@ const ReelFrame = ({
         loading={active ? "eager" : "lazy"}
         decoding="async"
         onError={(event) => {
-          if (event.currentTarget.src !== localReelPoster) event.currentTarget.src = localReelPoster;
+          event.currentTarget.onerror = null;
+          event.currentTarget.src = localReelPoster;
         }}
       />
       {canLoad && playable && (

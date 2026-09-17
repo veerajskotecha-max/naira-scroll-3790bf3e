@@ -226,10 +226,10 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
               />
             )}
             <span
-              className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-left text-[9px] uppercase tracking-[0.14em] text-white"
+              className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-left text-[8px] uppercase tracking-[0.12em] text-white"
               style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)" }}
             >
-              Watch &amp; shop
+              Click here to watch &amp; shop
             </span>
           </Button>
 

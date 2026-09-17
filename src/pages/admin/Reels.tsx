@@ -1,12 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { fetchReels, type Reel } from "@/hooks/useReels";
+import { videoMimeFor, MEDIA_CACHE_SECONDS } from "@/lib/mediaType";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
+
+/** Splits a storage path into the folder and file name `list()` needs. */
+const splitPath = (path: string) => {
+  const cut = path.lastIndexOf("/");
+  return { dir: cut === -1 ? "" : path.slice(0, cut), name: path.slice(cut + 1) };
+};
+
+/** What storage records as each reel video's content type, keyed by path. */
+const fetchStoredTypes = async (list: Reel[]): Promise<Record<string, string>> => {
+  const entries = await Promise.all(
+    list.map(async (reel) => {
+      const { dir, name } = splitPath(reel.video_path);
+      const { data } = await supabase.storage.from("reels").list(dir, { search: name, limit: 100 });
+      const hit = data?.find((o) => o.name === name);
+      return [reel.video_path, (hit?.metadata as { mimetype?: string } | undefined)?.mimetype ?? ""] as const;
+    }),
+  );
+  return Object.fromEntries(entries);
+};
 
 const AdminReels = () => {
   const { user, loading } = useAuth();
@@ -20,6 +40,9 @@ const AdminReels = () => {
   const [caption, setCaption] = useState("");
   const [picked, setPicked] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  /* video_path -> the content type storage actually has on record, so a
+     mislabelled file is visible here instead of only on a shopper's iPhone. */
+  const [storedTypes, setStoredTypes] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) {
@@ -35,10 +58,18 @@ const AdminReels = () => {
       .then(({ data }) => setIsAdmin(Boolean(data)));
   }, [user, loading]);
 
-  const refresh = () => fetchReels().then(setReels).catch(() => undefined);
+  const refresh = useCallback(async () => {
+    try {
+      const list = await fetchReels();
+      setReels(list);
+      setStoredTypes(await fetchStoredTypes(list).catch(() => ({})));
+    } catch {
+      /* The list is best-effort; the upload form above still works. */
+    }
+  }, []);
   useEffect(() => {
     if (isAdmin) void refresh();
-  }, [isAdmin]);
+  }, [isAdmin, refresh]);
 
   const results = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -55,7 +86,11 @@ const AdminReels = () => {
       const stamp = Date.now();
       const videoPath = `uploads/${stamp}-${video.name.replace(/[^\w.-]/g, "_")}`;
       const { error: vErr } = await supabase.storage.from("reels").upload(videoPath, video, {
-        contentType: video.type || "video/mp4",
+        /* Not `video.type || "video/mp4"`: a picker that reports
+           application/octet-stream passes that truthy check and the file is
+           stored undecodable on iOS for ever. */
+        contentType: videoMimeFor(videoPath, video.type),
+        cacheControl: MEDIA_CACHE_SECONDS,
         upsert: false,
       });
       if (vErr) throw vErr;
@@ -65,6 +100,7 @@ const AdminReels = () => {
         posterPath = `uploads/${stamp}-poster-${poster.name.replace(/[^\w.-]/g, "_")}`;
         const { error: pErr } = await supabase.storage.from("reels").upload(posterPath, poster, {
           contentType: poster.type || "image/jpeg",
+          cacheControl: MEDIA_CACHE_SECONDS,
         });
         if (pErr) throw pErr;
       }
@@ -107,6 +143,54 @@ const AdminReels = () => {
       await refresh();
     } catch (e) {
       toast("Upload failed", { description: e instanceof Error ? e.message : "Try again" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /**
+   * Rewrites an already-uploaded video under the right content type.
+   *
+   * The seeded reels are stored as application/octet-stream, which iOS Safari
+   * will not decode, and storage has no way to edit an object's type in place
+   * — the bytes have to be written again. So this fetches the object and puts
+   * the SAME bytes back at the SAME path, changing only the content type and
+   * the cache lifetime. Re-uploading through the form above would not do it:
+   * that writes a new path and inserts a second reel row.
+   *
+   * The size check is the point of care here. An overwrite is destructive and
+   * we hold no other copy, so a download that came back short — a dropped
+   * connection, a proxy error page — must abort rather than replace a good
+   * video with a broken one.
+   */
+  const repairVideoType = async (reel: Reel) => {
+    setBusy(true);
+    try {
+      const { dir, name } = splitPath(reel.video_path);
+      const { data: listed } = await supabase.storage.from("reels").list(dir, { search: name, limit: 100 });
+      const expected = (listed?.find((o) => o.name === name)?.metadata as { size?: number } | undefined)?.size;
+
+      const { data: blob, error: dErr } = await supabase.storage.from("reels").download(reel.video_path);
+      if (dErr || !blob) throw dErr ?? new Error("Could not read the current video");
+      if (!blob.size) throw new Error("The download was empty — refusing to overwrite");
+      if (expected && blob.size !== expected) {
+        throw new Error(`Downloaded ${blob.size} bytes but storage holds ${expected} — refusing to overwrite`);
+      }
+
+      const contentType = videoMimeFor(reel.video_path);
+      const { error: uErr } = await supabase.storage.from("reels").upload(reel.video_path, blob, {
+        contentType,
+        cacheControl: MEDIA_CACHE_SECONDS,
+        upsert: true,
+      });
+      if (uErr) throw uErr;
+
+      toast(`Stored as ${contentType}`, { description: "iOS can decode this now." });
+      await refresh();
+    } catch (e) {
+      toast("Could not fix the video type", {
+        description: e instanceof Error ? e.message : "Try again",
+      });
     } finally {
       setBusy(false);
     }
@@ -222,7 +306,23 @@ const AdminReels = () => {
                 <p className="text-[11px]" style={{ color: "hsl(0 0% 45%)" }}>
                   {reel.products.length} tagged product(s)
                 </p>
+                {storedTypes[reel.video_path] && !storedTypes[reel.video_path].startsWith("video/") && (
+                  <p className="text-[11px]" style={{ color: "hsl(0 60% 40%)" }}>
+                    Stored as {storedTypes[reel.video_path]} — iOS will not play this
+                  </p>
+                )}
               </div>
+              {storedTypes[reel.video_path] && !storedTypes[reel.video_path].startsWith("video/") && (
+                <button
+                  type="button"
+                  onClick={() => repairVideoType(reel)}
+                  disabled={busy}
+                  className="text-[11px] underline disabled:opacity-60"
+                  style={{ color: "hsl(0 0% 12%)" }}
+                >
+                  {busy ? "Fixing…" : "Fix video type"}
+                </button>
+              )}
               <button type="button" onClick={() => togglePublished(reel)} className="text-[11px] underline">
                 {reel.published ? "Unpublish" : "Publish"}
               </button>

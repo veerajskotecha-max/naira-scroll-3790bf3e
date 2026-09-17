@@ -102,7 +102,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 141 tests
+npx vitest run                          # currently 149 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -114,6 +114,30 @@ enough: build, serve `dist/` (`python3 -m http.server 4173 --bind 127.0.0.1` —
 `vite preview` fails in this container on IPv6), and drive it with Playwright
 (`executablePath: '/opt/pw-browsers/chromium'`). That is how the pixel and Clarity
 work was actually confirmed.
+
+## Reel media in Supabase storage
+
+Storage serves back whatever content type it was given at upload and there is no
+way to edit it in place — the bytes have to be written again at the same path.
+Both seeded reels (`seed/reel-1.mp4`, `seed/reel-2.mp4`) are stored as
+`application/octet-stream`, which iOS Safari will not decode.
+
+Writing to the `reels` bucket needs an authenticated user with the `admin` role
+(`storage.objects` policies). The repo carries only the publishable key, so a
+session working from the checkout **cannot** repair these objects — verified: both
+`upload` and `update` return "new row violates row-level security policy".
+
+The fix is a button. `/admin/reels` shows each reel's stored content type and, when
+it is not a `video/*`, offers **Fix video type**: it downloads the object and puts
+the same bytes back at the same path with the right type and a cache lifetime. It
+refuses to write if the download size does not match what storage reports, because
+an overwrite is destructive and there is no second copy. Do not tell the owner to
+re-upload through the form instead — that writes a NEW path and inserts a SECOND
+reel row.
+
+`src/lib/mediaType.ts` decides the type. It ignores `file.type` unless it really
+names a video: several Android pickers report `application/octet-stream` for an
+ordinary .mp4, which is most likely how the seeded files ended up this way.
 
 ## Conventions
 

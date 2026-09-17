@@ -200,7 +200,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
             type="button"
             onClick={openViewer}
             variant="ghost"
-            className="relative block w-full overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)]"
+            className="relative block h-auto w-full overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"
             style={{ aspectRatio: "9/16" }}
             aria-label="Open shoppable reels"
           >
@@ -276,7 +276,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent
             side="bottom"
-            className="h-[90dvh] overflow-y-auto border-border p-0 pb-[env(safe-area-inset-bottom)]"
+            className="h-[90dvh] overflow-y-auto border-border p-0 pb-[env(safe-area-inset-bottom)] [&>button]:right-3 [&>button]:top-3 [&>button]:rounded-none [&>button]:bg-secondary [&>button]:focus:ring-0 [&>button]:focus:ring-offset-0"
           >
             <SheetTitle className="sr-only">Shop the Reel</SheetTitle>
             <Suspense fallback={<div className="h-full bg-background" aria-hidden="true" />}>

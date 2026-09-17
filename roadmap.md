@@ -16,3 +16,4 @@
 - [x] Reintroduce mobile-only You May Also Like as a compact five-piece asymmetric broken-grid edit below the reels
 - [x] Restore the PDP-only FOMO notice for 2.3 seconds and simplify the mobile cart
 - [x] Restore the floating mobile reel preview and open the existing two-reel shopping grid in a bottom drawer
+- [x] Remove Molten Bloom Hoops from the pinned favourites and repair reel playback for Instagram on iOS

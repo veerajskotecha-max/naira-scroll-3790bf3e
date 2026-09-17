@@ -8,11 +8,12 @@ type CheckoutBenefitProps = {
 
 /**
  * Keeps the purchase promise aligned with the checkout that can actually open.
- * Fastrr's name stays hidden until Shiprocket has activated the merchant account.
+ * Co-branding follows the activated checkout provider while preserving the
+ * neutral Shopify fallback message when the provider is switched off.
  */
 const CheckoutBenefit = ({ compact = false, className = "" }: CheckoutBenefitProps) => {
   const label = isFastrrBrandingEnabled()
-    ? "Faster one-click checkout · COD & prepaid"
+    ? "Fastrr one-click checkout · COD & prepaid"
     : "Fast, secure checkout · COD & prepaid";
 
   return (

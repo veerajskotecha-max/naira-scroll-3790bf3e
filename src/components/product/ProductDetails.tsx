@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { Camera, Check, Minus, Plus, Phone, Mail, MessageCircle, Truck, Wallet, Scissors, ReceiptText, ShieldCheck, Gem, RotateCcw, BadgeCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
@@ -404,6 +405,8 @@ const ProductDetails = ({
           {selectedInStock ? "Buy It Now" : "Notify Me on WhatsApp"}
         </button>
       </div>
+
+      {selectedInStock && <CheckoutBenefit className="mt-2 flex w-full" />}
 
       {/* Warranty & returns reassurance, next to the CTA */}
       <div

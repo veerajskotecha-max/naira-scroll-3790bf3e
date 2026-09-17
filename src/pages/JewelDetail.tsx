@@ -1051,7 +1051,7 @@ const JewelDetail = () => {
               style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
             >
               <span>{buying ? "Opening…" : "Shop now"}</span>
-              {!buying && <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fast checkout</span>}
+              {!buying && <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fastrr checkout</span>}
             </button>
           </>
         )}

@@ -238,7 +238,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
                 }}
               >
                 <span>Shop Now</span>
-                <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fast checkout</span>
+                <span className="text-[8px] font-normal tracking-nf-8 opacity-70">Fastrr checkout</span>
               </button>
             </div>
             <CheckoutBenefit compact className="flex w-full" />

@@ -32,13 +32,10 @@ export const CartPromoField = () => {
 
   if (applied) {
     return (
-      <div
-        className="flex items-center justify-between px-3 py-2.5"
-        style={{ border: "1px dashed hsl(186 35% 40%)", backgroundColor: "hsl(186 30% 97%)" }}
-      >
-        <span className="flex items-center gap-2 text-[12px]" style={{ color: "hsl(186 35% 24%)" }}>
+      <div className="flex items-center justify-between border border-dashed border-[color:rgb(var(--nf-gold-rgb)/0.55)] bg-[var(--nf-surface-raised)] px-3 py-2.5">
+        <span className="flex items-center gap-2 text-[12px] text-[var(--nf-accent-quiet)]">
           <Check size={13} strokeWidth={2} />
-          <strong className="font-semibold tracking-[0.08em]">{applied}</strong> applied
+          <strong className="font-semibold tracking-[var(--nf-track-8)]">{applied}</strong> applied
         </span>
         <button
           onClick={() => {
@@ -46,8 +43,7 @@ export const CartPromoField = () => {
             setApplied(null);
           }}
           aria-label="Remove promo code"
-          className="w-8 h-8 flex items-center justify-center"
-          style={{ color: "hsl(0 0% 45%)" }}
+          className="flex h-8 w-8 items-center justify-center text-[color:rgb(var(--nf-ink-rgb)/0.5)]"
         >
           <X size={13} />
         </button>
@@ -59,8 +55,7 @@ export const CartPromoField = () => {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 min-h-[36px] text-[12px] underline underline-offset-4"
-        style={{ color: "hsl(0 0% 45%)" }}
+        className="flex min-h-[36px] items-center gap-2 text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4"
       >
         <Tag size={13} strokeWidth={1.5} /> Have a promo code?
       </button>
@@ -78,18 +73,16 @@ export const CartPromoField = () => {
           autoFocus
           onChange={(e) => setValue(e.target.value)}
           placeholder="Promo code"
-          className="flex-1 h-[42px] px-3 text-[13px] uppercase tracking-[0.08em] outline-none"
-          style={{ border: "1px solid hsl(0 0% 82%)", color: "hsl(0 0% 18%)" }}
+          className="h-[42px] flex-1 border border-[color:rgb(var(--nf-ink-rgb)/0.18)] px-3 text-[13px] uppercase tracking-[var(--nf-track-8)] text-[var(--nf-text)] outline-none focus:border-[var(--nf-focus-ring)]"
         />
         <button
           type="submit"
-          className="px-4 h-[42px] text-[11px] font-medium uppercase tracking-[0.12em]"
-          style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+          className="h-[42px] bg-[var(--nf-text)] px-4 text-[11px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)]"
         >
           Apply
         </button>
       </div>
-      {error && <p className="mt-1.5 text-[11px]" style={{ color: "hsl(0 65% 45%)" }}>{error}</p>}
+      {error && <p className="mt-1.5 text-[11px] text-destructive">{error}</p>}
     </form>
   );
 };
@@ -110,8 +103,8 @@ export const CartUpsell = () => {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="px-5 py-4 border-t" style={{ borderColor: "hsl(0 0% 92%)", backgroundColor: "hsl(33 30% 98%)" }}>
-      <p className="text-[10px] uppercase tracking-[0.24em] font-medium mb-3" style={{ color: "hsl(186 35% 28%)" }}>
+    <div className="border-t border-[color:rgb(var(--nf-ink-rgb)/0.08)] bg-[var(--nf-surface-raised)] px-5 py-4">
+      <p className="mb-3 text-[10px] font-medium uppercase tracking-[var(--nf-track-24)] text-[var(--nf-accent-quiet)]">
         Complete the look
       </p>
       <div className="space-y-3">
@@ -129,8 +122,8 @@ export const CartUpsell = () => {
                 loading="lazy"
               />
               <div className="flex-1 min-w-0">
-                <p className="font-cormorant text-[14px] font-semibold truncate" style={{ color: "hsl(0 0% 18%)" }}>{product.title}</p>
-                <p className="text-[12px]" style={{ color: "hsl(186 35% 28%)" }}>{formatShopifyPrice(money)}</p>
+                <p className="truncate font-cormorant text-[14px] font-semibold text-[var(--nf-text)]">{product.title}</p>
+                <p className="text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.6)]">{formatShopifyPrice(money)}</p>
               </div>
               <button
                 disabled={isLoading || !variant?.id}
@@ -149,8 +142,7 @@ export const CartUpsell = () => {
                     selectedOptions: variant.selectedOptions,
                   })
                 }
-                className="press-scale shrink-0 inline-flex items-center gap-1 px-3 h-[36px] text-[10px] font-medium uppercase tracking-[0.12em] border disabled:opacity-50"
-                style={{ borderColor: "hsl(0 0% 30%)", color: "hsl(0 0% 20%)" }}
+                className="press-scale inline-flex h-[36px] shrink-0 items-center gap-1 border border-[color:rgb(var(--nf-ink-rgb)/0.3)] px-3 text-[10px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text)] disabled:opacity-50"
                 aria-label={`Add ${product.title} to cart`}
               >
                 {isLoading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add

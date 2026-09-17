@@ -42,7 +42,11 @@ const ScrollBloom = () => {
   if (!enabled) return null;
 
   return (
-    <div aria-hidden className="pointer-events-none fixed right-5 top-1/2 z-[8000] hidden h-[42vh] -translate-y-1/2 lg:flex flex-col items-center">
+    /* z-30, not z-8000: the rail is pinned to the right edge, which is exactly
+       where the cart drawer opens. Above the sheet's z-50 it painted the
+       flower and its progress line straight through the open bag on desktop.
+       It sits below the header (z-50) too, which it never overlaps anyway. */
+    <div aria-hidden className="pointer-events-none fixed right-5 top-1/2 z-30 hidden h-[42vh] -translate-y-1/2 lg:flex flex-col items-center">
       {/* flower */}
       <svg width="34" height="34" viewBox="0 0 40 40" className="mb-2" style={{ transition: "transform .25s ease" }}>
         <g style={{ transformOrigin: "20px 20px", transform: `rotate(${p * 90}deg)` }}>

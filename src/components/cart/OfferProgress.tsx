@@ -8,18 +8,25 @@ import {
 } from "@/lib/promo";
 
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
+const pieces = (n: number) => (n === 1 ? "1 piece" : `${n} pieces`);
 
 /**
  * The buy-more ladder, across the top of the bag.
  *
- * Both rungs are always on show, not just the next one — the shopper can see
- * that a third piece is worth more than a second before deciding how many to
- * buy, which is the whole point of a ladder. The bar fills across the full
- * ladder so adding a piece always moves it forward rather than resetting at
- * each rung, and each rung is marked at its true position on that bar.
+ * Three decisions worth keeping:
  *
- * It sits above the items rather than beside the totals because it is a reason
- * to keep shopping, not a line of arithmetic.
+ *  - It wears the same gold-on-linen band as the offer block on the product
+ *    page, so the promise a shopper read next to Add to Cart is recognisably
+ *    the same promise in the bag rather than a second, unfamiliar one.
+ *  - Both rungs sit on the track at their true positions, so a shopper can
+ *    SEE that the richer rung is further along and how far. A list of two
+ *    percentages states the offer; a track makes the third piece feel close.
+ *  - The bar measures the whole ladder rather than the current rung, so
+ *    adding a piece always moves it forward instead of resetting to empty
+ *    each time a rung is cleared.
+ *
+ * It sits above the items, not beside the totals: it is a reason to keep
+ * shopping, not a line of arithmetic.
  */
 const OfferProgress = ({ totalItems }: { totalItems: number }) => {
   const earned = earnedQuantityOffer(totalItems);
@@ -27,24 +34,30 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
   const away = itemsToQuantityOffer(totalItems);
   const progress = quantityOfferProgress(totalItems);
 
+  /* Kept short deliberately: the editorial serif renders as capitals, and a
+     sentence that wraps to two lines of caps reads as shouting rather than as
+     an offer. Every branch here fits one line at 360px. */
+  const headline = earned
+    ? next
+      ? `${pct(earned.rate)} off — add ${pieces(away)} for ${pct(next.rate)}`
+      : `${pct(earned.rate)} off — your best price`
+    : `Add ${pieces(away)}, save ${pct(next?.rate ?? 0)}`;
+
   return (
-    <div className="border-b border-[color:rgb(var(--nf-ink-rgb)/0.08)] bg-[var(--nf-surface-raised)] px-5 pb-3 pt-3">
-      <p className="flex items-baseline justify-between gap-3 text-[11px] uppercase tracking-[var(--nf-track-16)]">
-        <span className={earned ? "font-semibold text-primary" : "text-muted-foreground"}>
-          {earned ? `${pct(earned.rate)} off applied` : "Buy more, save more"}
-        </span>
-        {next ? (
-          <span className="shrink-0 text-muted-foreground">
-            {away === 1 ? "1 piece" : `${away} pieces`} to{" "}
-            <span className="font-semibold text-primary">{pct(next.rate)}</span>
-          </span>
-        ) : (
-          <span className="shrink-0 font-semibold text-primary">Best price unlocked</span>
-        )}
+    <div className="shrink-0 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-5 pb-3.5 pt-3">
+      <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[var(--nf-track-18)] text-[var(--nf-accent-quiet)]">
+        <span aria-hidden="true">&#10022;</span>
+        The Naira Pairing Offer
+      </p>
+
+      {/* Editorial serif, because this is the one line in the bag meant to
+          change the shopper's mind rather than report a number. */}
+      <p className="mt-1.5 font-cormorant text-[16px] font-semibold leading-snug text-[var(--nf-text)]">
+        {headline}
       </p>
 
       <div
-        className="relative mt-2.5 h-[3px] w-full bg-[color:rgb(var(--nf-ink-rgb)/0.10)]"
+        className="relative mt-3 h-[2px] w-full bg-[color:rgb(var(--nf-ink-rgb)/0.10)]"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={TOP_QUANTITY_OFFER.minQuantity}
@@ -62,8 +75,10 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
             <span
               key={offer.code}
               aria-hidden="true"
-              className={`absolute top-1/2 h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 transition-colors duration-300 ${
-                reached ? "bg-[var(--nf-accent-strong)]" : "bg-[color:rgb(var(--nf-ink-rgb)/0.18)]"
+              className={`absolute top-1/2 h-[8px] w-[8px] -translate-x-1/2 -translate-y-1/2 rotate-45 border transition-colors duration-300 ${
+                reached
+                  ? "border-[var(--nf-accent-strong)] bg-[var(--nf-accent-strong)]"
+                  : "border-[color:rgb(var(--nf-ink-rgb)/0.22)] bg-[var(--nf-surface-raised)]"
               }`}
               style={{ left: `${at * 100}%` }}
             />
@@ -71,25 +86,36 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
         })}
       </div>
 
-      {/* Both rungs, always legible, so the second one is a visible reason to
-          add a third piece rather than a surprise after the fact. */}
-      <ul className="mt-2 flex items-center gap-4">
-        {QUANTITY_OFFERS.map((offer) => {
+      {/* Each rung is labelled where it actually sits on the track, so the
+          ladder reads as a distance rather than as two unrelated coupons.
+
+          Stacked over two short lines rather than one long one: side by side,
+          "2 · 20% off" and "3 · 30% off" ran into each other at 390px, which
+          is most of the traffic. The last label right-aligns — centred on its
+          marker it would hang off the end of the bar. */}
+      <div className="relative mt-2 h-[26px]">
+        {QUANTITY_OFFERS.map((offer, i) => {
+          const at = offer.minQuantity / TOP_QUANTITY_OFFER.minQuantity;
           const reached = totalItems >= offer.minQuantity;
+          const last = i === QUANTITY_OFFERS.length - 1;
           return (
-            <li
+            <span
               key={offer.code}
-              className={`flex items-baseline gap-1 text-[10px] uppercase tracking-[var(--nf-track-10)] transition-opacity duration-300 ${
-                reached ? "text-primary opacity-100" : "text-muted-foreground opacity-70"
-              }`}
+              className={`absolute top-0 flex flex-col whitespace-nowrap leading-[1.25] transition-colors duration-300 ${
+                last ? "items-end text-right" : "items-center text-center"
+              } ${reached ? "text-[var(--nf-accent-quiet)]" : "text-[color:rgb(var(--nf-ink-rgb)/0.45)]"}`}
+              style={{ left: `${at * 100}%`, transform: last ? "translateX(-100%)" : "translateX(-50%)" }}
             >
-              <span className={reached ? "font-semibold" : ""}>{offer.minQuantity} pieces</span>
-              <span aria-hidden="true">·</span>
-              <span className="font-semibold">{pct(offer.rate)} off</span>
-            </li>
+              <span className="text-[9px] uppercase tracking-[var(--nf-track-10)]">
+                {offer.minQuantity} pieces
+              </span>
+              <span className={`text-[11px] uppercase tracking-[var(--nf-track-8)] ${reached ? "font-semibold" : "font-medium"}`}>
+                {pct(offer.rate)} off
+              </span>
+            </span>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 };

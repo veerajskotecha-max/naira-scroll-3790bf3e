@@ -38,10 +38,15 @@ Two rules that get broken most often:
    that already has a token.
 2. **Radius stays 0.** Sharp corners are a brand rule. Never add rounded corners.
 
-Known debt: `src/components/CartDrawer.tsx` is built almost entirely from hardcoded
-inline `hsl()` values that are off-palette — the CTA and every price use
-`hsl(186 35% 28%)`, a teal that appears nowhere in the brand palette. It is the last
-screen before payment and does not look like the rest of the site. Not yet fixed.
+The cart is now fully tokenised (`CartDrawer.tsx`, `cart/CartExtras.tsx`,
+`cart/OfferProgress.tsx`). The teal `hsl(186 35% 28%)` that used to carry the CTA
+and every price is gone; Secure Checkout leads in `--nf-accent-strong`, the same
+brand gold as Add to Cart on the product page, so one colour runs from choosing a
+piece to paying for it. Do not reintroduce a second accent here.
+
+Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
+`z-[8000]` on the right edge and painted straight through the open cart drawer on
+desktop; it is now `z-30`.
 
 ## Measurement stack
 
@@ -76,10 +81,20 @@ Shopify quotes a total the shopper is never charged.
    "BUY2,NAIRA10" as a single unknown code and applied NEITHER. So the resolver
    returns one code, never a pair, and nothing stacks.
 
-Live codes: `BUY2` (10%, min qty 2) and `BUY3` (20%, min qty 3), both PRODUCT
+Live codes: `BUY2` (20%, min qty 2) and `BUY3` (30%, min qty 3), both PRODUCT
 class scoped to the hidden auto-updating collection `discount-scope-all` — do
-not delete it or both stop working. `FRIENDSANDFAMILY` (20%) still exists.
-`NAIRA10` was retired and is EXPIRED in Shopify; the app no longer accepts it.
+not delete it or both stop working. `NAIRA10` was retired and is EXPIRED in
+Shopify; the app no longer accepts it.
+
+`FRIENDSANDFAMILY` (20%) still exists and is now WORTH LESS than the top rung.
+The resolver hands back the richer of earned and typed, so a three-piece bag
+correctly ignores it — but anyone handing that code out should know it no longer
+buys the holder anything a two-piece bag does not already get.
+
+3. **The rates live in two places and must be changed together.** `QUANTITY_OFFERS`
+   in `promo.ts` and the Shopify codes. `OfferProgress.test.tsx` asserts the
+   percentages as literals on purpose, so a one-sided change fails the suite
+   instead of silently quoting a discount the checkout will not honour.
 
 The ladder is applied by the bag, never typed. `src/components/cart/OfferProgress.tsx`
 renders it as a filling bar at the top of the cart.
@@ -87,7 +102,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 95 tests
+npx vitest run                          # currently 141 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

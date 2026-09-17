@@ -54,12 +54,9 @@ const CartDrawer = () => {
   const arrivesBy = formatDeliveryDate(addWorkingDays(new Date(), 5));
 
   /* One resolver for the drawer and the checkout hand-off, so the total shown
-     here is the total charged. Shopify order discounts do not combine, so only
-     one wins — a typed code, or BUY2 once the bag holds two pieces. */
-  /* One resolver for the drawer and the checkout hand-off, so the total shown
-     here is the total charged. A product discount and an order discount can
-     both apply and they compound, which is why the goods total comes from the
-     resolver rather than a single percentage off the subtotal. */
+     here is the total charged. Exactly one discount wins — Fastrr carries a
+     single coupon — so this must never render a stacked total it cannot
+     deliver. */
   const discount = resolveCartDiscount({ totalItems, promoCode });
   const goodsTotal = discountedSubtotal(subtotal, discount);
   const discountAmount = subtotal - goodsTotal;
@@ -76,8 +73,11 @@ const CartDrawer = () => {
         {/* Header */}
         <SheetHeader className="shrink-0 px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">
-            <SheetTitle className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
-              Your Cart ({totalItems})
+            <SheetTitle className="flex items-baseline gap-2 font-cormorant text-[21px] font-semibold text-[var(--nf-text)]">
+              Your Bag
+              <span className="font-sans text-[11px] font-medium uppercase tracking-[var(--nf-track-16)] text-[color:rgb(var(--nf-ink-rgb)/0.45)]">
+                {totalItems === 1 ? "1 piece" : `${totalItems} pieces`}
+              </span>
             </SheetTitle>
           </div>
         </SheetHeader>
@@ -91,26 +91,24 @@ const CartDrawer = () => {
 
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-            <div className="w-16 h-16 flex items-center justify-center border" style={{ borderColor: "hsl(36 47% 46% / 0.35)", backgroundColor: "hsl(33 41% 95%)" }}>
-              <ShoppingBag size={24} strokeWidth={1.3} style={{ color: "hsl(36 47% 46%)" }} />
+            <div className="flex h-16 w-16 items-center justify-center border border-[color:rgb(var(--nf-gold-rgb)/0.35)] bg-[var(--nf-surface-raised)]">
+              <ShoppingBag size={24} strokeWidth={1.3} className="text-[var(--nf-accent-strong)]" />
             </div>
-            <p className="mt-5 font-cormorant text-[22px] font-semibold" style={{ color: "hsl(0 0% 18%)" }}>Your cart is empty</p>
-            <p className="mt-2 font-cormorant text-[15px] leading-[1.7] max-w-[240px]" style={{ color: "hsl(0 0% 50%)" }}>
+            <p className="mt-5 font-cormorant text-[22px] font-semibold text-[var(--nf-text)]">Your bag is empty</p>
+            <p className="mt-2 max-w-[240px] font-cormorant text-[15px] leading-[1.7] text-[color:rgb(var(--nf-ink-rgb)/0.55)]">
               Pieces you choose will gather here, ready when you are.
             </p>
             <Link
               to="/shop"
               onClick={() => setDrawerOpen(false)}
-              className="mt-7 px-9 min-h-[48px] text-[12px] font-medium uppercase tracking-[0.14em] transition-colors duration-200 inline-flex items-center"
-              style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
+              className="mt-7 inline-flex min-h-[48px] items-center bg-[var(--nf-accent-strong)] px-9 text-[12px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-text-inverse)] transition-colors duration-200 hover:bg-[var(--nf-accent-quiet)]"
             >
               Continue Shopping
             </Link>
             <Link
               to="/jewellery"
               onClick={() => setDrawerOpen(false)}
-              className="mt-4 inline-flex items-center min-h-[44px] px-2 font-cormorant text-[14px] underline underline-offset-4 transition-colors duration-200"
-              style={{ color: "hsl(0 0% 45%)" }}
+              className="mt-4 inline-flex min-h-[44px] items-center px-2 font-cormorant text-[14px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors duration-200"
             >
               View the jewellery
             </Link>
@@ -129,25 +127,25 @@ const CartDrawer = () => {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="h-[76px] w-[76px] shrink-0 object-cover"
+                      className="h-[90px] w-[72px] shrink-0 bg-[var(--nf-surface-raised)] object-cover"
                       width={72}
                       height={90}
                       loading="lazy"
                     />
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div>
-                        <p className="line-clamp-2 font-cormorant text-[15px] font-semibold leading-tight" style={{ color: "hsl(0 0% 15%)" }}>{item.name}</p>
-                        {lineOptions(item) ? <p className="text-[12px] mt-0.5 truncate" style={{ color: "hsl(0 0% 55%)" }}>{lineOptions(item)}</p> : null}
-                        <p className="mt-1 font-cormorant text-[15px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{item.priceLabel}</p>
+                        <p className="line-clamp-2 font-cormorant text-[15px] font-semibold leading-tight text-[var(--nf-text)]">{item.name}</p>
+                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.5)]">{lineOptions(item)}</p> : null}
+                        <p className="mt-1 font-cormorant text-[15px] font-bold text-[var(--nf-text)]">{item.priceLabel}</p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 82%)" }}>
+                        <div className="inline-flex items-center border border-[color:rgb(var(--nf-ink-rgb)/0.18)]">
                           <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Decrease quantity"><Minus size={12} /></button>
                           <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
                           <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Increase quantity"><Plus size={12} /></button>
                         </div>
                         <button onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50" aria-label={`Remove ${item.name}`}>
-                          <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
+                          <X size={14} className="text-[color:rgb(var(--nf-ink-rgb)/0.5)]" />
                         </button>
                       </div>
                     </div>
@@ -159,44 +157,55 @@ const CartDrawer = () => {
 
             {/* Footer — always visible above the fold */}
             <div
-              className="shrink-0 space-y-2 border-t px-5 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]"
-              style={{ borderColor: "hsl(0 0% 90%)", backgroundColor: "hsl(0 0% 100%)" }}
+              className="shrink-0 space-y-2 border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] bg-white px-5 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]"
             >
               {/* Delivery — a named date, not a speed. Shoppers buying a gift
                   stall at checkout to work the days out themselves. */}
-              <div className="flex items-center gap-2 border border-border bg-muted/40 px-3 py-2">
-                <Truck size={13} strokeWidth={1.5} style={{ color: "hsl(142 50% 38%)" }} />
-                <p className="text-[12px]" style={{ color: "hsl(0 0% 38%)" }}>
-                  Order today, arrives by <strong className="font-semibold">{arrivesBy}</strong>
+              <div className="flex items-center gap-2 border border-[color:rgb(var(--nf-gold-rgb)/0.28)] bg-[var(--nf-surface-raised)] px-3 py-2">
+                <Truck size={13} strokeWidth={1.5} className="shrink-0 text-[var(--nf-accent-quiet)]" />
+                <p className="text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.7)]">
+                  Order today, arrives by <strong className="font-semibold text-[var(--nf-text)]">{arrivesBy}</strong>
                 </p>
               </div>
 
               {/* Promo code */}
               <CartPromoField />
 
-              <div className="space-y-1 text-[12px] text-muted-foreground">
+              <div className="space-y-1 text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.6)]">
                 <div className="flex items-center justify-between">
                   <span>Subtotal</span>
-                  <span className="text-foreground">{formatPrice(subtotal)}</span>
+                  <span className="text-[var(--nf-text)]">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Insured shipping</span>
-                  <span className="text-foreground">{formatPrice(SHIPPING_CHARGE)}</span>
+                  <span className="text-[var(--nf-text)]">{formatPrice(SHIPPING_CHARGE)}</span>
                 </div>
+                {/* The code is named, not just the amount: this is the one the
+                    hand-off sends to the checkout, and a shopper who sees a
+                    different code on the payment page loses trust in both. */}
                 {discountAmount > 0 && discount.code && (
-                  <div className="flex items-center justify-between text-primary">
-                    <span>
-                      {discount.code} ({Math.round(discount.rate * 100)}% off)
-                      {discount.automatic ? " — applied" : null}
+                  <div className="flex items-center justify-between font-medium text-[var(--nf-accent-quiet)]">
+                    <span className="tracking-[var(--nf-track-4)]">
+                      {discount.code} · {Math.round(discount.rate * 100)}% off
+                      {discount.automatic ? " applied" : null}
                     </span>
                     <span>−{formatPrice(discountAmount)}</span>
                   </div>
                 )}
               </div>
-              {/* Total */}
-              <div className="flex items-center justify-between pt-1.5 border-t" style={{ borderColor: "hsl(0 0% 90%)" }}>
-                <span className="font-cormorant text-[16px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>Total</span>
-                <span className="font-cormorant text-[18px] font-bold" style={{ color: "hsl(186 35% 28%)" }}>{formatPrice(orderTotal)}</span>
+              {/* Total — the pre-discount figure stays visible beside it, so
+                  what the ladder is worth is read at the moment of paying
+                  rather than only at the moment of adding. */}
+              <div className="flex items-baseline justify-between border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] pt-1.5">
+                <span className="font-cormorant text-[16px] font-semibold text-[var(--nf-text)]">Total</span>
+                <span className="flex items-baseline gap-2">
+                  {discountAmount > 0 && (
+                    <span className="font-cormorant text-[14px] text-[color:rgb(var(--nf-ink-rgb)/0.42)] line-through">
+                      {formatPrice(subtotal + SHIPPING_CHARGE)}
+                    </span>
+                  )}
+                  <span className="font-cormorant text-[19px] font-bold text-[var(--nf-text)]">{formatPrice(orderTotal)}</span>
+                </span>
               </div>
 
               {/* CTA */}
@@ -204,15 +213,12 @@ const CartDrawer = () => {
                 onClick={handleCheckout}
 
                 disabled={isLoading || isSyncing}
-                className="press-scale w-full py-3.5 text-[13px] font-medium uppercase tracking-[0.1em] flex items-center justify-center gap-2 min-h-[52px] disabled:opacity-70"
-                style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
+                className="press-scale flex min-h-[52px] w-full items-center justify-center gap-2 bg-[var(--nf-accent-strong)] py-3.5 text-[13px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)] transition-colors duration-200 hover:bg-[var(--nf-accent-quiet)] disabled:opacity-70"
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
               </button>
               <CheckoutBenefit className="flex w-full" />
-              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[36px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>
+              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex min-h-[36px] items-center justify-center text-center font-cormorant text-[14px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors">
                 Continue Shopping
               </Link>
             </div>

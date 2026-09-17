@@ -185,7 +185,7 @@ const CartDrawer = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 23%)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "hsl(186 35% 28%)")}
               >
-                {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
+                {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Fastrr Secure Checkout
               </button>
               <CheckoutBenefit className="flex w-full" />
               <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex items-center justify-center min-h-[36px] text-center font-cormorant text-[14px] underline underline-offset-4 transition-colors" style={{ color: "hsl(0 0% 45%)" }}>

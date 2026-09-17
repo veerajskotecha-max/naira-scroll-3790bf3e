@@ -32,12 +32,12 @@ export const CHECKOUT_PROVIDER =
 
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";
 
-/* Merchant-facing co-branding is a separate switch from the integration.
-   Keep it off until Shiprocket activation is confirmed end to end; the checkout
-   can currently fall back to Shopify, where a Fastrr promise would be untrue. */
+/* Shiprocket has activated the merchant account, so co-branding follows the
+   active Fastrr provider by default. It can still be suppressed explicitly
+   without disabling the integration or its Shopify safety fallback. */
 export const isFastrrBrandingEnabled = () =>
   isFastrrEnabled() &&
-  ((import.meta.env.VITE_FASTRR_BRANDING_ENABLED ?? "") as string).toString().trim().toLowerCase() === "true";
+  ((import.meta.env.VITE_FASTRR_BRANDING_ENABLED ?? "true") as string).toString().trim().toLowerCase() !== "false";
 
 /*
   The domain Fastrr has our configuration saved against.

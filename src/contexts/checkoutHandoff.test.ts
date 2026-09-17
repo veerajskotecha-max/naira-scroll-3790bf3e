@@ -32,7 +32,9 @@ describe("checkout hand-off", () => {
 */
 describe("discount reaches Shopify", () => {
   it("applies the code to the cart before handing over", () => {
-    expect(code).toMatch(/applyCartDiscountCodes\(cartId, \[code\]\)/);
+    /* Shopify's own cart accepts every code that combines, so the resolved
+       set goes on in full — unlike Fastrr, which takes only one. */
+    expect(code).toMatch(/applyCartDiscountCodes\(cartId, resolved\.codes\)/);
   });
 
   it("still keeps the query parameter as a fallback", () => {

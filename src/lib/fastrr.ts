@@ -212,6 +212,14 @@ export const startFastrrCheckout = async (
       products,
       cartAttributes: fastrrCartAttributes(),
       ...(utmParams ? { utmParams } : {}),
+      /* Their payload carries exactly ONE coupon code and there is no way to
+         hand it a second: the script reduces `couponCode` to a single
+         `couponCodeCookie`, falling back to a `discount_code` cookie. Joining
+         two with a comma was tried against the live checkout and is worse than
+         useless — Fastrr treated "BUY2,NAIRA10" as one unknown code and
+         applied NEITHER, returning couponCodes [] and totalDiscount 0.00. So
+         we send the single code the bag is sure of; a second one stacks only
+         if the shopper enters it in Fastrr's own coupon field. */
       ...(options.couponCode ? { couponCode: options.couponCode } : {}),
       ...(options.fallbackUrl ? { fallbackUrl: options.fallbackUrl } : {}),
     };

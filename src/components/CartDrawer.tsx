@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { CartPromoField } from "@/components/cart/CartExtras";
-import { getPromoCode, itemsToQuantityOffer, PROMO_EVENT, QUANTITY_OFFER, resolveCartDiscount } from "@/lib/promo";
+import { discountedSubtotal, getPromoCode, itemsToQuantityOffer, PROMO_EVENT, QUANTITY_OFFER, resolveCartDiscount } from "@/lib/promo";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
@@ -37,7 +37,13 @@ const CartDrawer = () => {
   // Reconcile with the real Shopify cart whenever the drawer opens, so lines
   // left over from an older session can never surprise the shopper.
   useEffect(() => {
-    if (isDrawerOpen) syncCart();
+    if (!isDrawerOpen) return;
+    syncCart();
+    /* Re-read the stored code on open. The drawer seeds it once at mount and
+       then listens for PROMO_EVENT, so a code written without that event —
+       another tab, a restored session — would leave the bag naming a different
+       discount from the one the hand-off actually sends. */
+    setActivePromoCode(getPromoCode());
   }, [isDrawerOpen, syncCart]);
 
   const formatPrice = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -49,12 +55,19 @@ const CartDrawer = () => {
   /* One resolver for the drawer and the checkout hand-off, so the total shown
      here is the total charged. Shopify order discounts do not combine, so only
      one wins — a typed code, or BUY2 once the bag holds two pieces. */
+  /* One resolver for the drawer and the checkout hand-off, so the total shown
+     here is the total charged. A product discount and an order discount can
+     both apply and they compound, which is why the goods total comes from the
+     resolver rather than a single percentage off the subtotal. */
   const discount = resolveCartDiscount({ totalItems, promoCode });
-  const discountAmount = Math.round(subtotal * discount.rate);
-  const orderTotal = subtotal - discountAmount + SHIPPING_CHARGE;
-  /* Only worth nudging when one more piece would actually beat what they have. */
+  const goodsTotal = discountedSubtotal(subtotal, discount);
+  const discountAmount = subtotal - goodsTotal;
+  const orderTotal = goodsTotal + SHIPPING_CHARGE;
+
   const piecesAway = itemsToQuantityOffer(totalItems);
-  const showQuantityNudge = piecesAway > 0 && discount.rate < QUANTITY_OFFER.rate;
+  const offerEarned = piecesAway === 0;
+  /* The bar only earns its space while there is a bag to fill. */
+  const offerProgress = Math.min(1, totalItems / QUANTITY_OFFER.minQuantity);
 
 
   const handleCheckout = () => checkout();
@@ -159,12 +172,36 @@ const CartDrawer = () => {
               {/* Promo code */}
               <CartPromoField />
 
-              {showQuantityNudge && (
-                <p className="text-[12px] text-primary">
-                  Add {piecesAway === 1 ? "one more piece" : `${piecesAway} more pieces`} and take{" "}
-                  <strong className="font-semibold">{Math.round(QUANTITY_OFFER.rate * 100)}% off</strong> the order.
+              {/* Progress toward the multi-buy offer. A bar rather than a line of
+                  copy because the shopper can read "how far" at a glance, and it
+                  turns the second piece into a goal instead of an upsell. */}
+              <div className="space-y-1.5">
+                <p className="text-[11px] uppercase tracking-[var(--nf-track-16)] text-muted-foreground">
+                  {offerEarned ? (
+                    <span className="text-primary">
+                      {Math.round(QUANTITY_OFFER.rate * 100)}% off unlocked
+                    </span>
+                  ) : (
+                    <>
+                      Add {piecesAway === 1 ? "1 more piece" : `${piecesAway} more pieces`} for{" "}
+                      <span className="text-primary">{Math.round(QUANTITY_OFFER.rate * 100)}% off</span>
+                    </>
+                  )}
                 </p>
-              )}
+                <div
+                  className="h-[3px] w-full overflow-hidden bg-[color:rgb(var(--nf-ink-rgb)/0.10)]"
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={QUANTITY_OFFER.minQuantity}
+                  aria-valuenow={Math.min(totalItems, QUANTITY_OFFER.minQuantity)}
+                  aria-label={`${QUANTITY_OFFER.minQuantity} pieces unlock ${Math.round(QUANTITY_OFFER.rate * 100)}% off`}
+                >
+                  <span
+                    className="block h-full bg-[var(--nf-accent-strong)] transition-[width] duration-500 ease-reveal motion-reduce:transition-none"
+                    style={{ width: `${offerProgress * 100}%` }}
+                  />
+                </div>
+              </div>
 
               <div className="space-y-1 text-[12px] text-muted-foreground">
                 <div className="flex items-center justify-between">
@@ -175,11 +212,16 @@ const CartDrawer = () => {
                   <span>Insured shipping</span>
                   <span className="text-foreground">{formatPrice(SHIPPING_CHARGE)}</span>
                 </div>
-                {discountAmount > 0 && (
+                {/* Only the discount the bag can GUARANTEE. Fastrr carries one
+                    coupon and no more, so naming a second here would quote a
+                    total the shopper is never charged. */}
+                {discountAmount > 0 && discount.passedCode && (
                   <div className="flex items-center justify-between text-primary">
                     <span>
-                      {discount.code} ({Math.round(discount.rate * 100)}% off)
-                      {discount.automatic ? " — applied" : null}
+                      {discount.passedCode} ({Math.round(discount.rate * 100)}% off)
+                      {discount.lines.find((l) => l.code === discount.passedCode)?.automatic
+                        ? " — applied"
+                        : null}
                     </span>
                     <span>−{formatPrice(discountAmount)}</span>
                   </div>

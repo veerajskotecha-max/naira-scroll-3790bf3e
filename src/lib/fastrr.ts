@@ -32,9 +32,26 @@ export const CHECKOUT_PROVIDER =
 
 export const isFastrrEnabled = () => CHECKOUT_PROVIDER === "fastrr";
 
-/* The domain Fastrr has our configuration saved against. */
+/*
+  The domain Fastrr has our configuration saved against.
+
+  This is NOT the Shopify permanent domain, which is the intuitive guess and is
+  what this used to send. Fastrr's seller lookup is keyed on the storefront
+  domain, and querying their own seller-config API settles it:
+
+    nc5eti-gp.myshopify.com   402  "Seller not found or inactive"
+    nairaflore.com            201  active
+    www.nairaflore.com        402
+    payments.nairaflore.com   402
+
+  With the wrong value their script still loads and the checkout UI still
+  mounts — it then fails seller lookup, reports
+  NATIVE_REDIRECT_THRESHOLD_BREACHED and redirects to the fallback, so the
+  symptom is a silent bounce to Shopify checkout rather than an error. Note it
+  is the apex domain: the www host is a separate, inactive record.
+*/
 export const FASTRR_DOMAIN =
-  ((import.meta.env.VITE_FASTRR_DOMAIN ?? "") as string).toString().trim() || "nc5eti-gp.myshopify.com";
+  ((import.meta.env.VITE_FASTRR_DOMAIN ?? "") as string).toString().trim() || "nairaflore.com";
 
 export interface FastrrProduct {
   variantId: string;

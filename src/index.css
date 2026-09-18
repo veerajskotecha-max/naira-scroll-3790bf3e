@@ -317,6 +317,8 @@ img {
   --nf-gold-shadow: #9A7634;      --nf-gold-shadow-rgb: 154 118 52; /* umbral gold, text-safe on ivory */
   --nf-sage: #99B4AF;             --nf-sage-rgb: 153 180 175;    /* brand sage */
   --nf-blush: #FFBDA8;            --nf-blush-rgb: 255 189 168;   /* pressed-flower blush */
+  --nf-conversion-green: #176B3A; --nf-conversion-green-rgb: 23 107 58; /* high-contrast checkout action */
+  --nf-conversion-green-deep: #11542D; --nf-conversion-green-deep-rgb: 17 84 45; /* hover and pressed edge */
 
   /* Colour, footer palette (derived from the Naira logo; distinct
      from --nf-sage on purpose, do not merge them) */
@@ -369,10 +371,12 @@ img {
   /* Jewel card */
   --nf-card-shadow: 0 16px 38px -20px rgb(122 90 40 / 0.5);
 
-  /* Cart checkout: a compact gold under-edge makes the primary action feel
-     physical without softening the brand's square silhouette. */
-  --nf-checkout-shadow: 0 4px 0 var(--nf-gold-shadow), 0 10px 20px -14px rgb(var(--nf-ink-rgb) / 0.6);
-  --nf-checkout-shadow-pressed: 0 1px 0 var(--nf-gold-shadow), 0 5px 12px -10px rgb(var(--nf-ink-rgb) / 0.5);
+  /* Cart checkout: deep green follows familiar high-conversion ecommerce
+     cues while the square silhouette and ivory copy keep it Naira. */
+  --nf-checkout-bg: var(--nf-conversion-green);
+  --nf-checkout-bg-hover: var(--nf-conversion-green-deep);
+  --nf-checkout-shadow: 0 4px 0 var(--nf-conversion-green-deep), 0 10px 20px -14px rgb(var(--nf-ink-rgb) / 0.6);
+  --nf-checkout-shadow-pressed: 0 1px 0 var(--nf-conversion-green-deep), 0 5px 12px -10px rgb(var(--nf-ink-rgb) / 0.5);
 
   /* Footer (sage block) */
   --nf-footer-surface: hsl(var(--nf-sage-logo-hsl));

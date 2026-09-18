@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import { jewellery } from "@/data/jewellery";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
    Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
-   with live piece counts, hover zoom + gold frame, linking into the
+   with hover zoom + gold frame, linking into the
    collection. Imagery is pulled straight from the live catalogue —
    the on-model ("worn") shot of a hero piece per category. */
 
@@ -28,10 +27,10 @@ const categoryImage = (category: string) => categoryImages[category] ?? "";
 
 
 const cats = [
-  { label: "Rings", img: categoryImage("Rings"), count: jewellery.filter((j) => j.category === "Rings").length, note: "solitaires, halo & stack" },
-  { label: "Bracelets", img: categoryImage("Bracelets"), count: jewellery.filter((j) => j.category === "Bracelets").length, note: "tennis, bow & baroque pearl" },
-  { label: "Earrings", img: categoryImage("Earrings"), count: jewellery.filter((j) => j.category === "Earrings").length, note: "hoops & the studs, three ways" },
-  { label: "Necklaces", img: categoryImage("Necklaces"), count: jewellery.filter((j) => j.category === "Necklaces").length, note: "lariats, chains & a cascade" },
+  { label: "Rings", img: categoryImage("Rings"), note: "solitaires, halo & stack" },
+  { label: "Bracelets", img: categoryImage("Bracelets"), note: "tennis, bow & baroque pearl" },
+  { label: "Earrings", img: categoryImage("Earrings"), note: "hoops & the studs, three ways" },
+  { label: "Necklaces", img: categoryImage("Necklaces"), note: "lariats, chains & a cascade" },
 ];
 
 
@@ -69,7 +68,7 @@ const JewelleryCategories = () => (
               <span className="block text-[20px] leading-tight text-[#1A1614] md:text-[24px]" style={velista}>{c.label}</span>
               <span className="mt-0.5 block text-[11px] italic text-[#6C6259]" style={editorial}>{c.note}</span>
               <span className="mt-2.5 inline-block border border-[#1A1614]/25 px-2.5 py-1 text-[9px] tracking-[0.28em] text-[#1A1614] transition-colors duration-300 group-hover:border-[#B0843A] group-hover:bg-[#B0843A] group-hover:text-[#FFFBF7] md:px-3 md:py-1.5" style={jost}>
-                {c.count} PIECES →
+                EXPLORE →
               </span>
             </span>
           </Link>

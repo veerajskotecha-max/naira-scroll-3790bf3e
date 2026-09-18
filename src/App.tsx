@@ -87,7 +87,7 @@ const AppShell = () => {
               URL safe for saved links, but make every general shop visit open
               the main jewellery collection instead. */}
           <Route path="/shop" element={<KeepQuery to="/jewellery" />} />
-          <Route path="/shop/jewellery" element={<ShopAll />} />
+          <Route path="/shop/jewellery" element={<KeepQuery to="/jewellery" />} />
           <Route path="/shop/indo-western" element={<ShopAll />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           {/* Meta and Google product feeds emit Shopify's canonical

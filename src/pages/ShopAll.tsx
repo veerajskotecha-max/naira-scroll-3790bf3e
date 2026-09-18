@@ -13,7 +13,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import Footer from "@/components/Footer";
-import ShopHero from "@/components/shop/ShopHero";
 import CustomizationCTA from "@/components/product/CustomizationCTA";
 import { fetchShopifyProducts } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
@@ -383,17 +382,6 @@ const ShopAll = () => {
               ? `Shop ${searchParams.get("category")} by Naira Flore`
               : "Shop all Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore"}
       </h1>
-      {/* ── Campaign Hero (only on the main /shop landing, not category views) ── */}
-      {location.pathname === "/shop" && !searchParams.get("category") && (
-        <ShopHero
-          eyebrow="New Arrivals"
-          title="The Festive"
-          titleAccent="Edit"
-          description="Curated silhouettes for the season, handwoven textures, refined embroidery, and contemporary drape."
-          primaryCta={{ label: "Shop the Festive Edit", to: "/shop?category=festive" }}
-        />
-      )}
-
       {/* ── Indo-Western Outfits section header ── */}
       {showIndoWestern && (
         <section

@@ -23,7 +23,7 @@ const ShopHero = ({
   titleAccent = "Edit",
   description = "Curated silhouettes crafted for the season. Handwoven textures, refined embroidery, contemporary drape.",
   badge,
-  primaryCta = { label: "Shop Now", to: "/shop" },
+  primaryCta = { label: "Shop Now", to: "/jewellery" },
   secondaryCta,
 }: ShopHeroProps) => {
   const ref = useRef<HTMLDivElement>(null);

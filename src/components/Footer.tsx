@@ -4,11 +4,10 @@ import { BadgeCheck, LockKeyhole, RotateCcw, Truck } from "lucide-react";
 import nairaLogo from "@/assets/naira-logo-footer.svg";
 
 const shopLinks = [
-  { label: "Dresses", to: "/shop?category=dresses" },
-  { label: "Co-ord Sets", to: "/shop?category=co-ord-sets" },
-  { label: "Fusion Sarees", to: "/shop?category=fusion-sarees" },
-  { label: "Festive Collection", to: "/shop?category=festive" },
-  { label: "New Arrivals", to: "/shop?category=new" },
+  { label: "Dresses", to: "/shop/indo-western?category=dresses" },
+  { label: "Co-ord Sets", to: "/shop/indo-western?category=co-ord-sets" },
+  { label: "Fusion Sarees", to: "/shop/indo-western?category=fusion-sarees" },
+  { label: "New Arrivals", to: "/jewellery?sort=newest" },
   { label: "Zircone Rings", to: "/jewellery/collections/rings" },
   { label: "Earrings", to: "/jewellery/collections/earrings" },
   { label: "Bracelets", to: "/jewellery/collections/bracelets" },
@@ -353,7 +352,7 @@ const Footer = ({ compact = false }: { compact?: boolean }) => {
                 ? "/customize"
                 : jewelTerms.includes(term)
                 ? "/jewellery"
-                : `/shop?search=${encodeURIComponent(term)}`;
+                : `/shop/indo-western?search=${encodeURIComponent(term)}`;
               return (
               <span key={term}>
                 <Link

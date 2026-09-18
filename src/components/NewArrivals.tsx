@@ -89,7 +89,7 @@ const NewArrivals = ({
 
         <div className="flex justify-center mt-10 md:mt-12 lg:mt-14">
           <Link
-            to="/shop"
+            to="/jewellery"
             className="inline-flex items-center gap-2 font-cormorant text-[15px] font-medium uppercase tracking-[0.08em] px-10 py-3.5 rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg relative z-20"
             style={{
               backgroundColor: "hsl(186 35% 28%)",

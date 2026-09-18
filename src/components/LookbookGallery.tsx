@@ -159,7 +159,7 @@ const LookbookGallery = () => {
       {/* CTA */}
       <div className="relative mt-20 flex justify-center">
         <Link
-          to="/shop"
+          to="/shop/indo-western"
           data-magnetic="strong"
           className="group relative inline-flex items-center gap-3 border border-[#1A1614]/40 px-10 py-4 text-[12px] tracking-[0.35em] text-[#1A1614] transition-colors duration-500 hover:text-[#FFF8F5]"
           style={jost}

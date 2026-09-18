@@ -22,3 +22,4 @@
 - [x] Refine the mobile checkout CTA with contrast-safe gold, deliberate top spacing, tactile feedback, and adjacent trust copy
 - [x] Remove category-card product counts and adopt a deep green Secure Checkout treatment
 - [x] Route general shopping and bag continuation to the main jewellery collection, never the Festive Edit
+- [x] Match the cart checkout action to the black reference treatment with payment marks and Shiprocket attribution

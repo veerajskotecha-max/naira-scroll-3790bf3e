@@ -61,6 +61,19 @@ See `docs/measurement-playbook.md` for the full picture. The essentials:
   `naira_vid` (a first-party cookie) is sent to Meta as `external_id` AND set as
   Clarity's `meta_vid` tag. That is a manual join key for investigation, not an
   integration. Do not tell anyone Clarity feeds the pixel.
+- **Both only report from the real shop.** `window.__nairaProd` in `index.html`
+  is an explicit hostname allowlist (`nairaflore.com` / `www.nairaflore.com`);
+  off it, the Clarity tag is never inserted and fbevents.js is never fetched.
+  Neither was gated before, so every localhost run and Lovable preview reported
+  into the live project and the live pixel — 40% of one day's Clarity sessions
+  were our own machines, and those sessions also fired PageView and ViewContent
+  into Meta, where they cannot be told apart from shoppers and are optimised
+  against. Both STUBS stay defined either way: `src/lib/clarity.ts` queues tags
+  until `window.clarity` exists, and app code calls `fbq()` directly. Do not
+  loosen the allowlist to a substring match — a preview host can carry the name.
+- Clarity's `totalSessionCount` already excludes what it classifies as bots
+  (`totalBotSessionCount` is separate and has been running ~4x the real count).
+  It does NOT exclude our own dev traffic; that is what the gate above is for.
 - Match keys (`em`, `ph`) are SHA-256'd **in the browser** and gated on
   `profile.ad_matching_consent`. Raw values never reach Meta or our own function.
   Do not widen that gate without the owner's explicit say-so — in particular the
@@ -117,7 +130,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 158 tests
+npx vitest run                          # currently 162 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

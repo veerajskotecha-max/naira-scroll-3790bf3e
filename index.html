@@ -52,6 +52,26 @@
          there is one source of truth; see the plugin in vite.config.ts. -->
     <!--NAIRA_JEWELLERY_REDIRECT-->
 
+    <!-- Is this the real shop?
+
+         Neither the pixel nor Clarity was gated, so every localhost run, every
+         Lovable preview and every id-preview build reported into the LIVE
+         project and the LIVE pixel. It is not a rounding error: 40% of one
+         day's Clarity sessions came from 127.0.0.1 and lovable hosts, and the
+         same sessions fired PageView and ViewContent into Meta, where they
+         cannot be told apart from shoppers and are optimised against.
+
+         An explicit allowlist rather than a pattern — a regex for "contains
+         nairaflore" would also match a preview host carrying the name. -->
+    <script>
+      window.__nairaProd = (function(){
+        try {
+          var h = location.hostname;
+          return h === "nairaflore.com" || h === "www.nairaflore.com";
+        } catch (e) { return false; }
+      })();
+    </script>
+
     <!-- Meta Pixel Code
          fbevents.js (~108 KB) plus its config payload (~135 KB) were downloading
          alongside the app bundle and stealing bandwidth/CPU from first paint on
@@ -116,6 +136,7 @@
         window.__nairaVid ? { external_id: window.__nairaVid } : undefined);
       fbq('track', 'PageView');
       (function(){
+        if (!window.__nairaProd) return;   /* queued events simply never send */
         var go = function(){ window.__fbLoad(); };
         ['pointerdown','keydown','touchstart','scroll'].forEach(function(ev){
           window.addEventListener(ev, go, { once: true, passive: true });
@@ -149,6 +170,9 @@
   <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        /* The stub above stays either way, so setClarityTag() still resolves
+           and never blocks; only the tag itself is withheld off the shop. */
+        if (!c.__nairaProd) return;
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "yizcbmxyht");

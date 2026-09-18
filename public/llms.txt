@@ -12,7 +12,7 @@ customisation run through WhatsApp on +91 9561557935.
 ## Core pages
 
 - [Home](/): New arrivals, the jewellery line, and the customisation journey.
-- [Shop All](/shop): The full catalogue — jewellery and Indo-Western wear, filterable by category.
+- [Indo-Western](/shop/indo-western): Made-to-measure Indo-Western wear, filterable by category.
 - [Naira Petite](/jewellery): The demi-fine jewellery line: rings, earrings, bracelets and necklaces.
 - [The Journal](/journal): Guides on sizing, materials, care and choosing demi-fine jewellery.
 - [Customise](/customize): Made-to-measure process — share a brief and co-create a piece.

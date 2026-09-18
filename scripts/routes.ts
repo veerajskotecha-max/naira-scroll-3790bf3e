@@ -27,12 +27,10 @@ export interface SiteRoute {
 
 export const siteRoutes: SiteRoute[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
-  { path: "/shop", changefreq: "weekly", priority: "0.9" },
-  /* /shop/indo-western and /shop/jewellery are deliberately absent. Both render
-     ShopAll, which hardcodes canonical=/shop, so listing them told Google to
-     index URLs the pages themselves disclaim. Jewellery already has the richer
-     /jewellery landing. They still route and still work — they are just no
-     longer advertised as canonical destinations. */
+  /* /shop now redirects to /jewellery, so it is not a prerenderable route and is
+     no longer advertised. /shop/indo-western and /shop/jewellery stay absent too:
+     both render ShopAll, which disclaims its own canonical. */
+
   { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
   ...categoryLandings.map<SiteRoute>((c) => ({
     path: `/jewellery/collections/${c.slug}`,

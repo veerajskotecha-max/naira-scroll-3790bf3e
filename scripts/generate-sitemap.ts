@@ -57,7 +57,7 @@ function generateLlmsTxt() {
     "## Core pages",
     "",
     line("/", "Home", "New arrivals, the jewellery line, and the customisation journey."),
-    line("/shop", "Shop All", "The full catalogue — jewellery and Indo-Western wear, filterable by category."),
+    line("/shop/indo-western", "Indo-Western", "Made-to-measure Indo-Western wear, filterable by category."),
     line("/jewellery", "Naira Petite", "The demi-fine jewellery line: rings, earrings, bracelets and necklaces."),
     line("/journal", "The Journal", "Guides on sizing, materials, care and choosing demi-fine jewellery."),
     line("/customize", "Customise", "Made-to-measure process — share a brief and co-create a piece."),

@@ -19,3 +19,4 @@
 - [x] Remove Molten Bloom Hoops from the pinned favourites and repair reel playback for Instagram on iOS
 - [x] Make the floating reel tab respond reliably to touch in Instagram and iPhone browsers
 - [x] Repair the mobile bag for two and three items with a compact offer, scrollable products, and stable checkout summary
+- [x] Refine the mobile checkout CTA with contrast-safe gold, deliberate top spacing, tactile feedback, and adjacent trust copy

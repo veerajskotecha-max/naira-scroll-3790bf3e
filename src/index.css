@@ -369,6 +369,11 @@ img {
   /* Jewel card */
   --nf-card-shadow: 0 16px 38px -20px rgb(122 90 40 / 0.5);
 
+  /* Cart checkout: a compact gold under-edge makes the primary action feel
+     physical without softening the brand's square silhouette. */
+  --nf-checkout-shadow: 0 4px 0 var(--nf-gold-shadow), 0 10px 20px -14px rgb(var(--nf-ink-rgb) / 0.6);
+  --nf-checkout-shadow-pressed: 0 1px 0 var(--nf-gold-shadow), 0 5px 12px -10px rgb(var(--nf-ink-rgb) / 0.5);
+
   /* Footer (sage block) */
   --nf-footer-surface: hsl(var(--nf-sage-logo-hsl));
   --nf-footer-cta: hsl(var(--nf-sage-logo-deep-hsl));

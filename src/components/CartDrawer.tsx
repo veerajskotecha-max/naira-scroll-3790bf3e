@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Loader2 } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Lock, Loader2, ArrowRight } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
@@ -197,15 +197,20 @@ const CartDrawer = () => {
               {/* Total — the pre-discount figure stays visible beside it, so
                   what the ladder is worth is read at the moment of paying
                   rather than only at the moment of adding. */}
-              <div className="flex items-baseline justify-between border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] pt-1">
-                <span className="font-cormorant text-[16px] font-semibold text-[var(--nf-text)]">Total</span>
+              <div className="flex items-end justify-between border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] pt-2 sm:pt-2.5">
+                <div>
+                  <span className="block text-[9px] font-medium uppercase tracking-[var(--nf-track-10)] text-[color:rgb(var(--nf-ink-rgb)/0.5)]">Total amount</span>
+                  {discountAmount > 0 && (
+                    <span className="mt-0.5 block text-[10px] font-medium text-[var(--nf-accent-quiet)]">You save {formatPrice(discountAmount)}</span>
+                  )}
+                </div>
                 <span className="flex items-baseline gap-2">
                   {discountAmount > 0 && (
                     <span className="font-cormorant text-[14px] text-[color:rgb(var(--nf-ink-rgb)/0.42)] line-through">
                       {formatPrice(subtotal + SHIPPING_CHARGE)}
                     </span>
                   )}
-                  <span className="font-cormorant text-[18px] font-bold text-[var(--nf-text)] sm:text-[19px]">{formatPrice(orderTotal)}</span>
+                  <span className="font-cormorant text-[21px] font-bold leading-none text-[var(--nf-text)] sm:text-[22px]">{formatPrice(orderTotal)}</span>
                 </span>
               </div>
 
@@ -213,11 +218,17 @@ const CartDrawer = () => {
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
-                className="press-scale min-h-12 w-full bg-[var(--nf-accent-strong)] py-3 text-[12px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)] hover:bg-[var(--nf-accent-quiet)] sm:min-h-[52px] sm:py-3.5 sm:text-[13px]"
+                className="mt-2 min-h-[54px] w-full justify-between border border-[color:rgb(var(--nf-ink-rgb)/0.18)] bg-[var(--nf-accent-strong)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-accent)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[56px] sm:px-6 sm:py-3.5 sm:text-[13px]"
               >
-                {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
+                <span className="flex items-center gap-2">
+                  {isLoading || isSyncing ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} strokeWidth={2} />}
+                  Secure Checkout
+                </span>
+                <span className="flex h-6 items-center border-l border-[color:rgb(var(--nf-ink-rgb)/0.22)] pl-4" aria-hidden="true">
+                  <ArrowRight size={17} strokeWidth={1.8} />
+                </span>
               </Button>
-              <CheckoutBenefit compact className="flex w-full sm:text-[11px]" />
+              <CheckoutBenefit compact className="flex min-h-5 w-full sm:text-[11px]" />
               <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
                 Continue Shopping
               </Link>

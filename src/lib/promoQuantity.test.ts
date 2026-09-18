@@ -26,12 +26,12 @@ describe("resolveCartDiscount", () => {
      codes (BUY2 20%, BUY3 30%, both min-quantity scoped to
      `discount-scope-all`). A rate that is generous here and stingy there
      quotes the shopper a total Fastrr never charges. */
-  it("earns 20% on the second piece without the shopper typing anything", () => {
-    expect(resolveCartDiscount({ totalItems: 2 })).toEqual({ code: "BUY2", rate: 0.2, automatic: true });
+  it("earns 10% on the second piece without the shopper typing anything", () => {
+    expect(resolveCartDiscount({ totalItems: 2 })).toEqual({ code: "BUY2", rate: 0.1, automatic: true });
   });
 
-  it("climbs to 30% on the third piece", () => {
-    expect(resolveCartDiscount({ totalItems: 3 })).toEqual({ code: "BUY3", rate: 0.3, automatic: true });
+  it("climbs to 20% on the third piece", () => {
+    expect(resolveCartDiscount({ totalItems: 3 })).toEqual({ code: "BUY3", rate: 0.2, automatic: true });
   });
 
   it("keeps the top rung beyond its threshold", () => {
@@ -44,15 +44,19 @@ describe("resolveCartDiscount", () => {
     const r = resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" });
     expect(typeof r.code).toBe("string");
     expect(r.code).not.toContain(",");
-    expect(r.rate).toBe(0.3);
+    expect(r.rate).toBe(0.2);
   });
 
-  /* Since the ladder was raised, the top rung out-earns every typed code, so
-     the bag must hand back its own — quoting FRIENDSANDFAMILY on a three-piece
-     bag would charge the shopper 10% more than the bag promised. */
-  it("beats a typed code with the richer earned rung", () => {
-    const r = resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" });
-    expect(r).toEqual({ code: "BUY3", rate: 0.3, automatic: true });
+  /* FRIENDSANDFAMILY is 20%, which now MATCHES the top rung and BEATS the
+     two-piece one, so it is worth the whole ladder on a single piece. Whoever
+     hands that code out should know it outranks the offer rather than topping
+     it up. */
+  it("lets the 20% code out-earn the two-piece rung", () => {
+    expect(resolveCartDiscount({ totalItems: 2, promoCode: "FRIENDSANDFAMILY" })).toEqual({
+      code: "FRIENDSANDFAMILY",
+      rate: 0.2,
+      automatic: false,
+    });
   });
 
   /* The rungs must stay ordered: a 2-piece rung that silently outranked the
@@ -65,13 +69,14 @@ describe("resolveCartDiscount", () => {
 
   it("keeps the earned rung when it beats the typed code", () => {
     const r = resolveCartDiscount({ totalItems: 3, promoCode: "BUY2" });
-    expect(r).toEqual({ code: "BUY3", rate: 0.3, automatic: true });
+    expect(r).toEqual({ code: "BUY3", rate: 0.2, automatic: true });
   });
 
-  /* Two pieces and FRIENDSANDFAMILY are both 20% — the shopper who typed one
-     must see the code they entered, not be told the bag did it for them. */
+  /* Three pieces and FRIENDSANDFAMILY are both 20% — the shopper who typed one
+     must see the code they entered, not be told the bag did it for them. The
+     charge is identical either way; this is about not confusing them. */
   it("keeps the typed code on an exact tie so the shopper sees the one they entered", () => {
-    const r = resolveCartDiscount({ totalItems: 2, promoCode: "FRIENDSANDFAMILY" });
+    const r = resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" });
     expect(r).toEqual({ code: "FRIENDSANDFAMILY", rate: 0.2, automatic: false });
   });
 
@@ -106,29 +111,36 @@ describe("resolveCartDiscount", () => {
     });
   });
 
-  it("still prefers the earned rung once the bag out-earns the welcome code", () => {
+  /* NAIRA10 and the two-piece rung are both 10% now, so a two-piece bag
+     holding the code names NAIRA10 rather than BUY2 — a tie goes to what the
+     shopper typed. The charge is the same either way, which is what matters.
+     The third piece still out-earns it and takes over. */
+  it("ties the welcome code at two pieces and out-earns it at three", () => {
     expect(resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" })).toEqual({
-      code: "BUY2",
+      code: "NAIRA10",
+      rate: 0.1,
+      automatic: false,
+    });
+    expect(resolveCartDiscount({ totalItems: 3, promoCode: "NAIRA10" })).toEqual({
+      code: "BUY3",
       rate: 0.2,
       automatic: true,
     });
-    expect(resolveCartDiscount({ totalItems: 3, promoCode: "NAIRA10" }).code).toBe("BUY3");
   });
 });
 
 describe("discountedSubtotal", () => {
-  it("takes 20% off a two-piece bag", () => {
-    // 2 x 1199 = 2398, less 20% = 1918.40.
-    expect(discountedSubtotal(2398, resolveCartDiscount({ totalItems: 2 }))).toBe(1918);
+  it("takes 10% off a two-piece bag", () => {
+    // 2 x 1199 = 2398, less 10% = 2158.20.
+    expect(discountedSubtotal(2398, resolveCartDiscount({ totalItems: 2 }))).toBe(2158);
   });
 
   /* The four-piece bag was the one driven through the live Fastrr checkout,
      which returned totalDiscount 1779.20 on 8896 back when the top rung was
-     20%. The bag agreed with the checkout then; this pins that it still
-     agrees now the rung is 30%, so the arithmetic moved with the rate rather
-     than quietly staying behind. */
+     20%. The bag agreed with the checkout then, and the top rung is 20% once
+     more, so this is again the exact figure Fastrr returned. */
   it("takes the top rung off the four-piece bag Fastrr was driven with", () => {
-    expect(discountedSubtotal(8896, resolveCartDiscount({ totalItems: 4 }))).toBe(6227);
+    expect(discountedSubtotal(8896, resolveCartDiscount({ totalItems: 4 }))).toBe(7117);
   });
 
   it("leaves the subtotal alone when nothing applies", () => {

@@ -14,27 +14,27 @@ afterEach(cleanup);
   rates cannot be moved without this file failing, which is the prompt to go
   and change BUY2/BUY3 in Shopify at the same time.
 
-  Live at the time of writing: BUY2 = 20% at 2+ pieces, BUY3 = 30% at 3+.
+  Live at the time of writing: BUY2 = 10% at 2+ pieces, BUY3 = 20% at 3+.
 */
 describe("OfferProgress", () => {
   it("pushes the shopper towards the first rung before they reach it", () => {
     render(<OfferProgress totalItems={1} />);
-    expect(screen.getByText("Add 1 piece, save 20%")).toBeInTheDocument();
+    expect(screen.getByText("Add 1 piece, save 10%")).toBeInTheDocument();
   });
 
   it("confirms the earned rung and names the next one", () => {
     render(<OfferProgress totalItems={2} />);
-    expect(screen.getByText("20% off — add 1 piece for 30%")).toBeInTheDocument();
+    expect(screen.getByText("10% off — add 1 piece for 20%")).toBeInTheDocument();
   });
 
   it("stops asking for more once the ladder is topped out", () => {
     render(<OfferProgress totalItems={3} />);
-    expect(screen.getByText("30% off — your best price")).toBeInTheDocument();
+    expect(screen.getByText("20% off — your best price")).toBeInTheDocument();
   });
 
   it("keeps the top rung's copy beyond its threshold", () => {
     render(<OfferProgress totalItems={7} />);
-    expect(screen.getByText(/^30% off —/)).toBeInTheDocument();
+    expect(screen.getByText(/^20% off —/)).toBeInTheDocument();
   });
 
   /* Both rungs stay on show at every state: the second one is the reason to
@@ -43,8 +43,8 @@ describe("OfferProgress", () => {
     render(<OfferProgress totalItems={n} />);
     expect(screen.getByText("2 pieces")).toBeInTheDocument();
     expect(screen.getByText("3 pieces")).toBeInTheDocument();
+    expect(screen.getByText("10% off")).toBeInTheDocument();
     expect(screen.getByText("20% off")).toBeInTheDocument();
-    expect(screen.getByText("30% off")).toBeInTheDocument();
   });
 
   it("reports progress across the whole ladder, not the current rung", () => {

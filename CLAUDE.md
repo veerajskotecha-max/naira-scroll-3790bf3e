@@ -108,7 +108,7 @@ Shopify quotes a total the shopper is never charged.
    "BUY2,NAIRA10" as a single unknown code and applied NEITHER. So the resolver
    returns one code, never a pair, and nothing stacks.
 
-Live codes: `BUY2` (20%, min qty 2) and `BUY3` (30%, min qty 3), both PRODUCT
+Live codes: `BUY2` (10%, min qty 2) and `BUY3` (20%, min qty 3), both PRODUCT
 class scoped to the hidden auto-updating collection `discount-scope-all` — do
 not delete it or both stop working.
 
@@ -119,19 +119,23 @@ title it was never restricted to first orders: verified live, `allCustomers:
 true`, `appliesOncePerCustomer: false`, no usage limit, no minimum, so the bag
 can offer it to anyone without quoting a discount the checkout would reject.
 
-NAIRA10 is the FLOOR, not a rung. It is typed; the rungs are earned. The
-resolver returns the richer of the two, so a two-piece bag correctly shows BUY2
-at 20% and ignores a stored NAIRA10 — verified in the browser: 1 piece +
-NAIRA10 = -₹250 on ₹2,499; adding a second piece switches to BUY2, -₹860 on
-₹4,298. It is NOT auto-applied: a shopper has to type it, which is why the
+NAIRA10 is typed; the rungs are earned, and the resolver returns the richer of
+the two with a TIE going to the typed code. At the current rates NAIRA10 (10%)
+exactly ties the two-piece rung, so a two-piece bag holding it names NAIRA10
+rather than BUY2 — the charge is identical, so this is cosmetic, but do not
+"fix" it by flipping the tie rule without checking `FRIENDSANDFAMILY` too. The
+third piece out-earns it and takes over. Verified in the browser at these rates:
+2 pieces = BUY2 -₹430 on ₹4,298; 3 pieces = BUY3 -₹1,349 on ₹6,747, total
+₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it, which is why the
 announcement strip carries it (`AnnouncementBar.tsx` alternates scarcity with
 the code). Deciding to auto-apply it is a margin call for the owner, not a
 code change to make unprompted.
 
-`FRIENDSANDFAMILY` (20%) still exists and is now WORTH LESS than the top rung.
-The resolver hands back the richer of earned and typed, so a three-piece bag
-correctly ignores it — but anyone handing that code out should know it no longer
-buys the holder anything a two-piece bag does not already get.
+`FRIENDSANDFAMILY` (20%) now MATCHES the top rung and BEATS the two-piece one.
+So it is worth the whole ladder on a SINGLE piece, and a two-piece bag holding
+it is charged 20% rather than the rung's 10%. Anyone handing that code out
+should know it outranks the offer rather than topping it up. Each time the
+ladder moves, re-check this code against it.
 
 3. **The rates live in two places and must be changed together.** `QUANTITY_OFFERS`
    in `promo.ts` and the Shopify codes. `OfferProgress.test.tsx` asserts the

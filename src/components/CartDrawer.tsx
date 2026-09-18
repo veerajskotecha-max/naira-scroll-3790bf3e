@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Lock, Loader2, ArrowRight } from "lucide-react";
+import { Minus, Plus, X, ShoppingBag, Truck, Loader2, Zap } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
@@ -9,7 +9,6 @@ import { CartPromoField } from "@/components/cart/CartExtras";
 import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
 import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
-import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 import { Button } from "@/components/ui/button";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
@@ -218,17 +217,27 @@ const CartDrawer = () => {
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
-                className="mt-2 min-h-[54px] w-full justify-between border border-[var(--nf-checkout-bg-hover)] bg-[var(--nf-checkout-bg)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[56px] sm:px-6 sm:py-3.5 sm:text-[13px]"
+                className="mt-2 min-h-[68px] w-full justify-between border border-[var(--nf-checkout-bg)] bg-[var(--nf-checkout-bg)] px-4 py-2.5 text-left text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[72px] sm:px-5"
               >
-                <span className="flex items-center gap-2">
-                  {isLoading || isSyncing ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} strokeWidth={2} />}
-                  Secure Checkout
+                <span className="flex min-w-0 flex-col items-start gap-1">
+                  <span className="flex items-center gap-2 font-sans text-[15px] font-medium tracking-[var(--nf-track-4)] sm:text-[16px]">
+                    {isLoading || isSyncing ? <Loader2 size={15} className="animate-spin" /> : null}
+                    Proceed To Checkout
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[10px] font-normal tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ivory-rgb)/0.82)] sm:text-[11px]">
+                    <Zap size={12} fill="currentColor" aria-hidden="true" />
+                    Insured delivery · COD & prepaid
+                  </span>
                 </span>
-                <span className="flex h-6 items-center border-l border-[color:rgb(var(--nf-ivory-rgb)/0.34)] pl-4" aria-hidden="true">
-                  <ArrowRight size={17} strokeWidth={1.8} />
+                <span className="flex shrink-0 -space-x-1" aria-label="Paytm, PhonePe and Google Pay accepted">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[7px] font-bold text-[var(--nf-text)]">paytm</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[14px] font-bold text-[var(--nf-accent-quiet)]">पे</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[8px] font-bold text-[var(--nf-text)]">G Pay</span>
                 </span>
               </Button>
-              <CheckoutBenefit compact className="flex min-h-5 w-full sm:text-[11px]" />
+              <p className="flex min-h-5 w-full items-center justify-center gap-1.5 text-[10px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] sm:text-[11px]">
+                Powered by <strong className="font-semibold text-[var(--nf-text)]">Shiprocket</strong>
+              </p>
               <Link to="/jewellery" onClick={() => setDrawerOpen(false)} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
                 Continue Shopping
               </Link>

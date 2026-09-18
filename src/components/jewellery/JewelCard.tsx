@@ -61,7 +61,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
 
   const toggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
+    /* No preventDefault: the button is outside the card's link now, so there
+       is no navigation to suppress. stopPropagation stays as cheap insurance
+       against a handler being added to the card wrapper later. */
     e.stopPropagation();
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
   };
@@ -137,6 +139,21 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
   return (
     <article className="jewel-shop-card group flex h-full flex-col" style={{ ["--i" as string]: index }}>
+      {/* The wishlist heart is a SIBLING of this link, not a child of it.
+
+          It used to sit inside the <a>, which is invalid HTML — an anchor may
+          not contain interactive content — and it showed on a phone: the tap
+          landed in the anchor's activation path as well as the button's, so it
+          took a preventDefault to stop the card navigating, and the card still
+          played its active:scale press as though the tile itself had been
+          tapped. Saving a piece and opening it are different intentions and
+          must not share a target.
+
+          This wrapper only exists to give the heart something to position
+          against now that it is outside the tilting image. That is also why it
+          no longer tilts with the image on hover, which is the better of the
+          two behaviours for a control you are trying to hit. */}
+      <div className="relative">
       <Link
         to={`/jewellery/${piece.handle}`}
         aria-label={`View ${piece.name}`}
@@ -205,6 +222,12 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             </span>
           )}
 
+          <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-nf-ivory/90 px-5 py-2 text-[10px] tracking-nf-30 text-nf-ink opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
+            VIEW DETAILS
+          </span>
+          <span className="pointer-events-none absolute inset-0 border border-nf-gold/0 transition-colors duration-500 group-hover:border-nf-gold/60" />
+        </div>
+      </Link>
           {/* Wishlist heart — saving a piece must never navigate away. */}
           <button
             type="button"
@@ -217,12 +240,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           >
             <Heart size={15} strokeWidth={1.5} fill={saved ? "currentColor" : "none"} />
           </button>
-          <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-2 bg-nf-ivory/90 px-5 py-2 text-[10px] tracking-nf-30 text-nf-ink opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100" style={jost}>
-            VIEW DETAILS
-          </span>
-          <span className="pointer-events-none absolute inset-0 border border-nf-gold/0 transition-colors duration-500 group-hover:border-nf-gold/60" />
-        </div>
-      </Link>
+      </div>
 
       <div className="flex flex-1 flex-col items-center px-1 pt-4 text-center sm:pt-5">
         <p className="text-[9px] tracking-nf-32 text-nf-gold-deep sm:text-[10px] sm:tracking-nf-34" style={jost}>

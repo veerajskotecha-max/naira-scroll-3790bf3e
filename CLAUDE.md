@@ -44,6 +44,20 @@ and every price is gone; Secure Checkout leads in `--nf-accent-strong`, the same
 brand gold as Add to Cart on the product page, so one colour runs from choosing a
 piece to paying for it. Do not reintroduce a second accent here.
 
+**Never nest interactive content inside a link.** `JewelCard.tsx` had the
+wishlist `<button>` inside the card's `<a>` — invalid HTML, and on a phone the
+tap landed in the anchor's activation path as well as the button's, so it took a
+`preventDefault` to stop the card navigating and the card still played its
+`active:scale` press as though the tile had been tapped. The heart is now a
+SIBLING of the link inside a shared `relative` wrapper; `JewelCard.test.tsx`
+asserts `a button` and `a a` are both empty. `/jewellery` carries 96% of the
+site's rage clicks and 63% of its dead clicks, so an ambiguous control on this
+card is expensive.
+
+Known debt, same shape as the cart's old teal: `WishlistDrawer.tsx` still uses
+`hsl(186 35% 28%)` on its CTA and prices (lines ~50 and ~88). Off-palette, and
+it is the panel the heart opens.
+
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on
 desktop; it is now `z-30`.
@@ -130,7 +144,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 162 tests
+npx vitest run                          # currently 166 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

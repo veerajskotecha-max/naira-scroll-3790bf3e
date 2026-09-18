@@ -230,9 +230,18 @@ const CartDrawer = () => {
                   </span>
                 </span>
                 <span className="flex shrink-0 -space-x-1" aria-label="Paytm, PhonePe and Google Pay accepted">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[7px] font-bold text-[var(--nf-text)]">paytm</span>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[14px] font-bold text-[var(--nf-accent-quiet)]">पे</span>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[8px] font-bold text-[var(--nf-text)]">G Pay</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[7px] font-extrabold tracking-[-0.04em]" aria-label="Paytm">
+                    <span className="text-[var(--nf-paytm-navy)]">pay</span><span className="text-[var(--nf-paytm-blue)]">tm</span>
+                  </span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[15px] font-bold text-[var(--nf-phonepe)]" aria-label="PhonePe">पे</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background" aria-label="Google Pay">
+                    <span className="relative block h-[18px] w-[15px]" aria-hidden="true">
+                      <span className="absolute left-0 top-0 h-[11px] w-[5px] -skew-x-[28deg] bg-[var(--nf-gpay-blue)]" />
+                      <span className="absolute right-0 top-0 h-[11px] w-[5px] skew-x-[28deg] bg-[var(--nf-gpay-red)]" />
+                      <span className="absolute bottom-0 left-[2px] h-[10px] w-[5px] skew-x-[28deg] bg-[var(--nf-gpay-green)]" />
+                      <span className="absolute bottom-0 right-[2px] h-[10px] w-[5px] -skew-x-[28deg] bg-[var(--nf-gpay-yellow)]" />
+                    </span>
+                  </span>
                 </span>
               </Button>
               <p className="flex min-h-5 w-full items-center justify-center gap-1.5 text-[10px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] sm:text-[11px]">

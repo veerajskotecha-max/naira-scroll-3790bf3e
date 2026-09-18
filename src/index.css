@@ -318,6 +318,15 @@ img {
   --nf-sage: #99B4AF;             --nf-sage-rgb: 153 180 175;    /* brand sage */
   --nf-blush: #FFBDA8;            --nf-blush-rgb: 255 189 168;   /* pressed-flower blush */
 
+  /* Payment marks — official brand colours, isolated to checkout badges. */
+  --nf-paytm-navy: #002970;
+  --nf-paytm-blue: #00BAF2;
+  --nf-phonepe: #5F259F;
+  --nf-gpay-blue: #4285F4;
+  --nf-gpay-red: #EA4335;
+  --nf-gpay-yellow: #FBBC04;
+  --nf-gpay-green: #34A853;
+
   /* Colour, footer palette (derived from the Naira logo; distinct
      from --nf-sage on purpose, do not merge them) */
   --nf-sage-logo-hsl: 162 14% 61%;

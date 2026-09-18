@@ -36,7 +36,12 @@ presses **Publish** in Lovable.
 Two rules that get broken most often:
 1. Never reintroduce a raw hex / `hsl()` / arbitrary `tracking-[...]` for a value
    that already has a token.
-2. **Radius stays 0.** Sharp corners are a brand rule. Never add rounded corners.
+2. **Radius stays 0**, with ONE deliberate exception. Sharp corners are the
+   brand, and the global `--radius` is `0px` — do not change it. The checkout
+   button in the cart is the exception, at `--nf-checkout-radius: 10px`: it is a
+   soft tappable target rather than an editorial edge, and it already carries
+   round payment marks. The exception is a component token so it stays visible
+   and lives in one place. Do not add a second exception without being asked.
 
 The cart is now fully tokenised (`CartDrawer.tsx`, `cart/CartExtras.tsx`,
 `cart/OfferProgress.tsx`). The teal `hsl(186 35% 28%)` that used to carry the CTA

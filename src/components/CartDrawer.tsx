@@ -218,7 +218,7 @@ const CartDrawer = () => {
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
-                className="mt-2 min-h-[68px] w-full justify-between border border-[var(--nf-checkout-bg)] bg-[var(--nf-checkout-bg)] px-4 py-2.5 text-left text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[72px] sm:px-5"
+                className="mt-2 min-h-[72px] w-full justify-between rounded-[var(--nf-checkout-radius)] border border-[var(--nf-checkout-bg)] bg-[var(--nf-checkout-bg)] px-5 py-3 text-left text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[76px] sm:px-6 sm:py-3.5"
               >
                 <span className="flex min-w-0 flex-col items-start gap-1">
                   <span className="flex items-center gap-2 font-sans text-[15px] font-medium tracking-[var(--nf-track-4)] sm:text-[16px]">

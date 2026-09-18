@@ -379,6 +379,12 @@ img {
   --nf-checkout-bg-hover: rgb(var(--nf-ink-rgb) / 0.9);
   --nf-checkout-shadow: 0 4px 0 rgb(var(--nf-ink-rgb) / 0.72), 0 10px 20px -14px rgb(var(--nf-ink-rgb) / 0.6);
   --nf-checkout-shadow-pressed: 0 1px 0 rgb(var(--nf-ink-rgb) / 0.72), 0 5px 12px -10px rgb(var(--nf-ink-rgb) / 0.5);
+  /* The one deliberate exception to radius 0. The global --radius stays 0px —
+     sharp corners are the brand — but the checkout button is a soft, tappable
+     target rather than an editorial edge, and it already carries round payment
+     marks. Kept as a component token so the exception is visible and lives in
+     exactly one place, instead of an arbitrary value buried in a className. */
+  --nf-checkout-radius: 10px;
 
   /* Footer (sage block) */
   --nf-footer-surface: hsl(var(--nf-sage-logo-hsl));

@@ -44,20 +44,22 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
     : `Add ${pieces(away)}, save ${pct(next?.rate ?? 0)}`;
 
   return (
-    <div className="shrink-0 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-5 pb-3.5 pt-3">
-      <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[var(--nf-track-18)] text-[var(--nf-accent-quiet)]">
-        <span aria-hidden="true">&#10022;</span>
-        The Naira Pairing Offer
-      </p>
+    <div className="shrink-0 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-4 py-2.5 sm:px-5 sm:pb-3.5 sm:pt-3">
+      <div className="flex min-w-0 items-baseline justify-between gap-3">
+        <p className="flex shrink-0 items-center gap-1 text-[9px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-accent-quiet)] sm:text-[10px] sm:tracking-[var(--nf-track-18)]">
+          <span aria-hidden="true">&#10022;</span>
+          Pairing Offer
+        </p>
 
-      {/* Editorial serif, because this is the one line in the bag meant to
-          change the shopper's mind rather than report a number. */}
-      <p className="mt-1.5 font-cormorant text-[16px] font-semibold leading-snug text-[var(--nf-text)]">
-        {headline}
-      </p>
+        {/* On short mobile screens the earned saving and the offer name share
+            one line. The desktop drawer keeps the roomier editorial treatment. */}
+        <p className="truncate text-right font-cormorant text-[14px] font-semibold leading-none text-[var(--nf-text)] sm:text-[16px] sm:leading-snug">
+          {headline}
+        </p>
+      </div>
 
       <div
-        className="relative mt-3 h-[2px] w-full bg-[color:rgb(var(--nf-ink-rgb)/0.10)]"
+        className="relative mt-2.5 h-[2px] w-full bg-[color:rgb(var(--nf-ink-rgb)/0.10)] sm:mt-3"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={TOP_QUANTITY_OFFER.minQuantity}
@@ -93,7 +95,7 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
           "2 · 20% off" and "3 · 30% off" ran into each other at 390px, which
           is most of the traffic. The last label right-aligns — centred on its
           marker it would hang off the end of the bar. */}
-      <div className="relative mt-2 h-[26px]">
+      <div className="relative mt-1.5 h-[22px] sm:mt-2 sm:h-[26px]">
         {QUANTITY_OFFERS.map((offer, i) => {
           const at = offer.minQuantity / TOP_QUANTITY_OFFER.minQuantity;
           const reached = totalItems >= offer.minQuantity;
@@ -106,10 +108,10 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
               } ${reached ? "text-[var(--nf-accent-quiet)]" : "text-[color:rgb(var(--nf-ink-rgb)/0.45)]"}`}
               style={{ left: `${at * 100}%`, transform: last ? "translateX(-100%)" : "translateX(-50%)" }}
             >
-              <span className="text-[9px] uppercase tracking-[var(--nf-track-10)]">
+              <span className="text-[8px] uppercase tracking-[var(--nf-track-8)] sm:text-[9px] sm:tracking-[var(--nf-track-10)]">
                 {offer.minQuantity} pieces
               </span>
-              <span className={`text-[11px] uppercase tracking-[var(--nf-track-8)] ${reached ? "font-semibold" : "font-medium"}`}>
+              <span className={`text-[10px] uppercase tracking-[var(--nf-track-8)] sm:text-[11px] ${reached ? "font-semibold" : "font-medium"}`}>
                 {pct(offer.rate)} off
               </span>
             </span>

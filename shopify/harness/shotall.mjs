@@ -47,7 +47,12 @@ const ctx = await b.newContext({
 await ctx.route('**/*', async (route) => {
   const req = route.request();
   let url = req.url();
-  if (url.startsWith(SHOP) && req.resourceType() === 'document')
+  // The preview flags have to ride on the section-rendering XHRs too, not just
+  // documents. product-recommendations fetches /recommendations/products?...
+  // and without them Shopify 302s to the primary domain and answers from the
+  // LIVE theme, where this section id does not exist -- so the section rendered
+  // as four empty skeleton boxes and looked like a broken page.
+  if (url.startsWith(SHOP) && (req.resourceType() === 'document' || /\/(recommendations|search|collections|cart)\//.test(url) || url.includes('section_id=')))
     url += (url.includes('?') ? '&' : '?') + PREVIEW;
   try {
     const r = await fetch(url, {
@@ -85,8 +90,18 @@ const shoot = async (side, name, path) => {
       // Product recommendations fetch their markup on intersection and need to
       // STAY in view while it resolves; a scroll that sweeps past them leaves
       // four empty skeleton boxes in the capture.
-      await page.evaluate(() => document.querySelector('product-recommendations')?.scrollIntoView({ block: 'center' }));
-      await page.waitForTimeout(3500);
+      // Wait for the fetch to actually land rather than guessing a duration --
+      // a fixed timeout screenshotted four empty skeleton boxes more than once.
+      const rec = await page.$('product-recommendations');
+      if (rec) {
+        await rec.scrollIntoViewIfNeeded().catch(() => {});
+        await page.waitForFunction(
+          () => { const r = document.querySelector('product-recommendations');
+                  return !r || r.querySelectorAll('product-card, .product-card').length > 0; },
+          { timeout: 15000 },
+        ).catch(() => console.log('  (recommendations never populated)'));
+        await page.waitForTimeout(1200);
+      }
       await page.evaluate(() => { const pw = document.querySelector('.page-wrapper'); (pw||window).scrollTo(0,0); window.scrollTo(0,0); });
       await page.waitForTimeout(900);
       // Above 990px Horizon scrolls .page-wrapper, not the window, so Playwright's

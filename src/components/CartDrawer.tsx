@@ -100,7 +100,7 @@ const CartDrawer = () => {
               Pieces you choose will gather here, ready when you are.
             </p>
             <Link
-              to="/shop"
+              to="/jewellery"
               onClick={() => setDrawerOpen(false)}
               className="mt-7 inline-flex min-h-[48px] items-center bg-[var(--nf-accent-strong)] px-9 text-[12px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-text-inverse)] transition-colors duration-200 hover:bg-[var(--nf-accent-quiet)]"
             >
@@ -229,7 +229,7 @@ const CartDrawer = () => {
                 </span>
               </Button>
               <CheckoutBenefit compact className="flex min-h-5 w-full sm:text-[11px]" />
-              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
+              <Link to="/jewellery" onClick={() => setDrawerOpen(false)} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
                 Continue Shopping
               </Link>
             </div>

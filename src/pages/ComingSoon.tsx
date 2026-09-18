@@ -70,7 +70,7 @@ const ComingSoon = ({
               <ArrowRight size={13} />
             </Link>
             <Link
-              to="/shop"
+              to="/jewellery"
               className="inline-flex items-center justify-center gap-2 border border-[#1A1614]/25 px-8 py-3.5 text-[11px] tracking-[0.22em] text-[#1A1614] transition-colors duration-300 hover:border-[#1A1614] hover:bg-[#1A1614] hover:text-[#FBF3EC]"
               style={jost}
             >

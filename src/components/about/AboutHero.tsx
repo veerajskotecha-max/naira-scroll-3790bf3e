@@ -88,7 +88,7 @@ const AboutHero = () => {
             </p>
 
             <Link
-              to="/shop"
+              to="/shop/indo-western"
               className={`inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-10 py-3.5 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
                 visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}

@@ -21,3 +21,4 @@
 - [x] Repair the mobile bag for two and three items with a compact offer, scrollable products, and stable checkout summary
 - [x] Refine the mobile checkout CTA with contrast-safe gold, deliberate top spacing, tactile feedback, and adjacent trust copy
 - [x] Remove category-card product counts and adopt a deep green Secure Checkout treatment
+- [x] Route general shopping and bag continuation to the main jewellery collection, never the Festive Edit

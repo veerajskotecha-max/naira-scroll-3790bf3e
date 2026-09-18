@@ -42,7 +42,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const goBack = () => {
     if (window.history.length > 1) navigate(-1);
-    else navigate("/shop");
+    else navigate("/shop/indo-western");
   };
 
   const earlyJewellery = Boolean(id && knownJewelleryHandles.has(id));
@@ -172,7 +172,7 @@ const ProductDetail = () => {
         eyebrow="This piece has moved"
         heading="Coming soon"
         body="This piece isn't available right now. The rest of the collection is live and shipping in 3–5 working days."
-        primaryTo="/shop"
+        primaryTo="/shop/indo-western"
         primaryLabel="Back to shop"
       />
     );
@@ -225,7 +225,7 @@ const ProductDetail = () => {
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
-          <Link to="/shop" className="transition-colors hover:text-foreground">Shop</Link>
+          <Link to="/shop/indo-western" className="transition-colors hover:text-foreground">Shop</Link>
           <span>/</span>
           <span style={{ color: "hsl(0 0% 30%)" }}>{title}</span>
         </nav>

@@ -26,6 +26,6 @@ export const menuOccasions: Array<{ label: string; to: string }> = [
 
 export const menuApparel: Array<{ label: string; to: string }> = [
   { label: "Indo-Western", to: "/shop/indo-western" },
-  { label: "Shop All", to: "/shop" },
+  { label: "Shop All", to: "/jewellery" },
   { label: "Made to Measure", to: "/customize" },
 ];

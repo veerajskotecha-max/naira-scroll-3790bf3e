@@ -40,7 +40,7 @@ const AboutCTA = () => (
         with care, heritage, and your story in mind.
       </p>
       <Link
-        to="/shop"
+        to="/shop/indo-western"
         className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-12 py-4 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
         style={{
           backgroundColor: "hsl(143 14% 63%)",

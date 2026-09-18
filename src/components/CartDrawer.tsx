@@ -10,6 +10,7 @@ import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } fr
 import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import { Button } from "@/components/ui/button";
+import googlePayMark from "@/assets/google-pay-mark.svg";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
    — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
@@ -235,12 +236,7 @@ const CartDrawer = () => {
                   </span>
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[15px] font-bold text-[var(--nf-phonepe)]" aria-label="PhonePe">पे</span>
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background" aria-label="Google Pay">
-                    <span className="relative block h-[18px] w-[15px]" aria-hidden="true">
-                      <span className="absolute left-0 top-0 h-[11px] w-[5px] -skew-x-[28deg] bg-[var(--nf-gpay-blue)]" />
-                      <span className="absolute right-0 top-0 h-[11px] w-[5px] skew-x-[28deg] bg-[var(--nf-gpay-red)]" />
-                      <span className="absolute bottom-0 left-[2px] h-[10px] w-[5px] skew-x-[28deg] bg-[var(--nf-gpay-green)]" />
-                      <span className="absolute bottom-0 right-[2px] h-[10px] w-[5px] -skew-x-[28deg] bg-[var(--nf-gpay-yellow)]" />
-                    </span>
+                    <img src={googlePayMark} alt="" className="h-[18px] w-auto" />
                   </span>
                 </span>
               </Button>

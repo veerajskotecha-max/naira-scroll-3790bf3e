@@ -218,13 +218,13 @@ const CartDrawer = () => {
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
-                className="mt-2 min-h-[54px] w-full justify-between border border-[color:rgb(var(--nf-ink-rgb)/0.18)] bg-[var(--nf-accent-strong)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-accent)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[56px] sm:px-6 sm:py-3.5 sm:text-[13px]"
+                className="mt-2 min-h-[54px] w-full justify-between border border-[var(--nf-checkout-bg-hover)] bg-[var(--nf-checkout-bg)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[56px] sm:px-6 sm:py-3.5 sm:text-[13px]"
               >
                 <span className="flex items-center gap-2">
                   {isLoading || isSyncing ? <Loader2 size={14} className="animate-spin" /> : <Lock size={14} strokeWidth={2} />}
                   Secure Checkout
                 </span>
-                <span className="flex h-6 items-center border-l border-[color:rgb(var(--nf-ink-rgb)/0.22)] pl-4" aria-hidden="true">
+                <span className="flex h-6 items-center border-l border-[color:rgb(var(--nf-ivory-rgb)/0.34)] pl-4" aria-hidden="true">
                   <ArrowRight size={17} strokeWidth={1.8} />
                 </span>
               </Button>

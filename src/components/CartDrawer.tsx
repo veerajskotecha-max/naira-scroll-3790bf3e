@@ -10,6 +10,7 @@ import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } fr
 import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
+import { Button } from "@/components/ui/button";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
    — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
@@ -69,9 +70,9 @@ const CartDrawer = () => {
 
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent ref={contentRef} className="bottom-0 top-auto flex h-auto max-h-[92dvh] w-full flex-col gap-0 p-0 sm:inset-y-0 sm:h-full sm:max-h-[100dvh] sm:max-w-[420px]">
+      <SheetContent ref={contentRef} className="inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[420px]">
         {/* Header */}
-        <SheetHeader className="shrink-0 px-5 pt-5 pb-3">
+        <SheetHeader className="shrink-0 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pb-3 sm:pt-5">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-baseline gap-2 font-cormorant text-[21px] font-semibold text-[var(--nf-text)]">
               Your Bag
@@ -116,37 +117,37 @@ const CartDrawer = () => {
         ) : (
           <>
             {/* Scroll region: cart items only — footer CTA always stays visible */}
-            <div className="max-h-[34dvh] min-h-0 overflow-y-auto overscroll-contain sm:flex-1 sm:max-h-none">
+            <div className="min-h-[88px] flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
 
               {/* Lines sit against the summary rather than floating at the top
                   of an empty panel, so a single-item cart reads as one block. */}
-              <div className="flex flex-col px-5 py-4 space-y-4">
+              <div className="flex flex-col space-y-2.5 px-4 py-2.5 sm:space-y-4 sm:px-5 sm:py-4">
 
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.size}`} className="flex gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
+                  <div key={`${item.id}-${item.size}`} className="flex min-h-[76px] gap-2.5 border-b border-border pb-2.5 last:border-b-0 last:pb-0 sm:min-h-0 sm:gap-3 sm:pb-4">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="h-[90px] w-[72px] shrink-0 bg-[var(--nf-surface-raised)] object-cover"
-                      width={72}
-                      height={90}
+                      className="h-[74px] w-[59px] shrink-0 bg-[var(--nf-surface-raised)] object-cover sm:h-[90px] sm:w-[72px]"
+                      width={59}
+                      height={74}
                       loading="lazy"
                     />
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
                       <div>
-                        <p className="line-clamp-2 font-cormorant text-[15px] font-semibold leading-tight text-[var(--nf-text)]">{item.name}</p>
-                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.5)]">{lineOptions(item)}</p> : null}
-                        <p className="mt-1 font-cormorant text-[15px] font-bold text-[var(--nf-text)]">{item.priceLabel}</p>
+                        <p className="line-clamp-1 font-cormorant text-[14px] font-semibold leading-tight text-[var(--nf-text)] sm:line-clamp-2 sm:text-[15px]">{item.name}</p>
+                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[10px] text-[color:rgb(var(--nf-ink-rgb)/0.5)] sm:text-[12px]">{lineOptions(item)}</p> : null}
+                        <p className="mt-0.5 font-cormorant text-[14px] font-bold text-[var(--nf-text)] sm:mt-1 sm:text-[15px]">{item.priceLabel}</p>
                       </div>
-                      <div className="flex items-center justify-between mt-2">
+                      <div className="mt-1 flex items-center justify-between sm:mt-2">
                         <div className="inline-flex items-center border border-[color:rgb(var(--nf-ink-rgb)/0.18)]">
-                          <button onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Decrease quantity"><Minus size={12} /></button>
-                          <span className="w-8 text-center text-[13px] font-medium">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} disabled={isLoading} className="press-scale w-10 h-10 flex items-center justify-center hover:bg-muted disabled:opacity-50" aria-label="Increase quantity"><Plus size={12} /></button>
+                          <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)} disabled={isLoading} className="press-scale h-9 w-9" aria-label="Decrease quantity"><Minus size={12} /></Button>
+                          <span className="w-7 text-center text-[12px] font-medium sm:w-8 sm:text-[13px]">{item.quantity}</span>
+                          <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} disabled={isLoading} className="press-scale h-9 w-9" aria-label="Increase quantity"><Plus size={12} /></Button>
                         </div>
-                        <button onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2 text-muted-foreground transition-colors hover:bg-muted disabled:opacity-50" aria-label={`Remove ${item.name}`}>
+                        <Button variant="ghost" size="icon" onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="h-11 w-11 text-muted-foreground" aria-label={`Remove ${item.name}`}>
                           <X size={14} className="text-[color:rgb(var(--nf-ink-rgb)/0.5)]" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -157,11 +158,11 @@ const CartDrawer = () => {
 
             {/* Footer — always visible above the fold */}
             <div
-              className="shrink-0 space-y-2 border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] bg-white px-5 pt-3 pb-[max(12px,env(safe-area-inset-bottom))]"
+              className="shrink-0 space-y-1.5 border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] bg-background px-4 pb-[max(8px,env(safe-area-inset-bottom))] pt-2.5 sm:space-y-2 sm:px-5 sm:pb-[max(12px,env(safe-area-inset-bottom))] sm:pt-3"
             >
               {/* Delivery — a named date, not a speed. Shoppers buying a gift
                   stall at checkout to work the days out themselves. */}
-              <div className="flex items-center gap-2 border border-[color:rgb(var(--nf-gold-rgb)/0.28)] bg-[var(--nf-surface-raised)] px-3 py-2">
+              <div className="flex min-h-8 items-center gap-2 border border-[color:rgb(var(--nf-gold-rgb)/0.28)] bg-[var(--nf-surface-raised)] px-2.5 py-1.5 sm:px-3 sm:py-2">
                 <Truck size={13} strokeWidth={1.5} className="shrink-0 text-[var(--nf-accent-quiet)]" />
                 <p className="text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.7)]">
                   Order today, arrives by <strong className="font-semibold text-[var(--nf-text)]">{arrivesBy}</strong>
@@ -171,7 +172,7 @@ const CartDrawer = () => {
               {/* Promo code */}
               <CartPromoField />
 
-              <div className="space-y-1 text-[12px] text-[color:rgb(var(--nf-ink-rgb)/0.6)]">
+              <div className="space-y-0.5 text-[11px] text-[color:rgb(var(--nf-ink-rgb)/0.6)] sm:space-y-1 sm:text-[12px]">
                 <div className="flex items-center justify-between">
                   <span>Subtotal</span>
                   <span className="text-[var(--nf-text)]">{formatPrice(subtotal)}</span>
@@ -196,7 +197,7 @@ const CartDrawer = () => {
               {/* Total — the pre-discount figure stays visible beside it, so
                   what the ladder is worth is read at the moment of paying
                   rather than only at the moment of adding. */}
-              <div className="flex items-baseline justify-between border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] pt-1.5">
+              <div className="flex items-baseline justify-between border-t border-[color:rgb(var(--nf-ink-rgb)/0.1)] pt-1">
                 <span className="font-cormorant text-[16px] font-semibold text-[var(--nf-text)]">Total</span>
                 <span className="flex items-baseline gap-2">
                   {discountAmount > 0 && (
@@ -204,21 +205,20 @@ const CartDrawer = () => {
                       {formatPrice(subtotal + SHIPPING_CHARGE)}
                     </span>
                   )}
-                  <span className="font-cormorant text-[19px] font-bold text-[var(--nf-text)]">{formatPrice(orderTotal)}</span>
+                  <span className="font-cormorant text-[18px] font-bold text-[var(--nf-text)] sm:text-[19px]">{formatPrice(orderTotal)}</span>
                 </span>
               </div>
 
               {/* CTA */}
-              <button
+              <Button
                 onClick={handleCheckout}
-
                 disabled={isLoading || isSyncing}
-                className="press-scale flex min-h-[52px] w-full items-center justify-center gap-2 bg-[var(--nf-accent-strong)] py-3.5 text-[13px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)] transition-colors duration-200 hover:bg-[var(--nf-accent-quiet)] disabled:opacity-70"
+                className="press-scale min-h-12 w-full bg-[var(--nf-accent-strong)] py-3 text-[12px] font-medium uppercase tracking-[var(--nf-track-10)] text-[var(--nf-text-inverse)] hover:bg-[var(--nf-accent-quiet)] sm:min-h-[52px] sm:py-3.5 sm:text-[13px]"
               >
                 {isLoading || isSyncing ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} strokeWidth={2} />} Secure Checkout
-              </button>
-              <CheckoutBenefit className="flex w-full" />
-              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex min-h-[36px] items-center justify-center text-center font-cormorant text-[14px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors">
+              </Button>
+              <CheckoutBenefit compact className="flex w-full sm:text-[11px]" />
+              <Link to="/shop" onClick={() => setDrawerOpen(false)} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
                 Continue Shopping
               </Link>
             </div>

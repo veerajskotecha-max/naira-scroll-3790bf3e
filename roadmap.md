@@ -18,3 +18,4 @@
 - [x] Restore the floating mobile reel preview and open the existing two-reel shopping grid in a bottom drawer
 - [x] Remove Molten Bloom Hoops from the pinned favourites and repair reel playback for Instagram on iOS
 - [x] Make the floating reel tab respond reliably to touch in Instagram and iPhone browsers
+- [x] Repair the mobile bag for two and three items with a compact offer, scrollable products, and stable checkout summary

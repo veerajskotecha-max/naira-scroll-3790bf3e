@@ -52,7 +52,7 @@ const WishlistDrawer = () => {
               View Jewellery
             </Link>
             <Link
-              to="/shop"
+              to="/jewellery"
               onClick={() => setDrawerOpen(false)}
               className="mt-4 inline-flex items-center min-h-[44px] px-2 font-cormorant text-[14px] underline underline-offset-4 transition-colors duration-200"
               style={{ color: "hsl(0 0% 45%)" }}

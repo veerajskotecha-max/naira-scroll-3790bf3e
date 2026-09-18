@@ -83,7 +83,10 @@ const AppShell = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/index" element={<Index />} />
-          <Route path="/shop" element={<ShopAll />} />
+          {/* The old general shop landing was an apparel Festive Edit. Keep the
+              URL safe for saved links, but make every general shop visit open
+              the main jewellery collection instead. */}
+          <Route path="/shop" element={<KeepQuery to="/jewellery" />} />
           <Route path="/shop/jewellery" element={<ShopAll />} />
           <Route path="/shop/indo-western" element={<ShopAll />} />
           <Route path="/product/:id" element={<ProductDetail />} />
@@ -126,7 +129,7 @@ const AppShell = () => {
           {/* Legacy / Shopify-shaped URLs (ads, old links, storefront exports)
               map onto the real pages instead of dead-ending. */}
           <Route path="/collections" element={<KeepQuery to="/jewellery" />} />
-          <Route path="/collections/all" element={<KeepQuery to="/shop" />} />
+          <Route path="/collections/all" element={<KeepQuery to="/jewellery" />} />
           <Route path="/collections/:slug" element={<JewelleryCategory />} />
           <Route path="/blogs" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog" element={<KeepQuery to="/journal" />} />

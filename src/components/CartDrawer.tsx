@@ -227,7 +227,7 @@ const CartDrawer = () => {
                   </span>
                   <span className="flex items-center gap-1.5 text-[10px] font-normal tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ivory-rgb)/0.82)] sm:text-[11px]">
                     <Zap size={12} fill="currentColor" aria-hidden="true" />
-                    Insured delivery · COD & prepaid
+                    Free insured delivery · COD & prepaid
                   </span>
                 </span>
                 <span className="flex shrink-0 -space-x-1" aria-label="Paytm, PhonePe and Google Pay accepted">

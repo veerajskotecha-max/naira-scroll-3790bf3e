@@ -217,7 +217,7 @@ const ProductDetails = ({
         <span className="text-[12px]" style={{ color: "hsl(0 0% 45%)" }}>
           {/* The info line below is jewellery-aware; this badge has to agree with
               it, or the same page states two different delivery windows. */}
-          Ships in <strong className="font-medium">{isJewellery ? "3–5 working days" : "3–7 working days"}</strong> · Flat ₹150 shipping
+          Ships in <strong className="font-medium">{isJewellery ? "3–5 working days" : "3–7 working days"}</strong> · Free insured shipping
         </span>
       </div>
 
@@ -240,7 +240,7 @@ const ProductDetails = ({
         style={{ color: "hsl(0 0% 50%)" }}
       >
         {isJewellery
-          ? "*Prices are inclusive of GST. Delivery in 3–5 working days, insured in transit, with flat ₹150 shipping across India."
+          ? "*Prices are inclusive of GST. Delivery in 3–5 working days, insured in transit, with free shipping across India."
           : "*Prices are inclusive of GST. Ready-to-ship pieces deliver within 3–7 working days; made-to-measure pieces take 4–8 weeks."}
       </p>
 

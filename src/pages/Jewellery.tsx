@@ -312,7 +312,7 @@ const Jewellery = () => {
           </div>
 
           <p className="mx-auto mt-2 max-w-6xl px-4 text-center text-[10.5px] tracking-nf-18 text-nf-ink/55 sm:px-6" style={jost}>
-            DELIVERY IN 3–5 WORKING DAYS · ₹150 INSURED · 7-DAY RETURNS
+            DELIVERY IN 3–5 WORKING DAYS · FREE INSURED SHIPPING · 7-DAY RETURNS
           </p>
         </div>
 

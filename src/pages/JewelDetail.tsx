@@ -664,7 +664,7 @@ const JewelDetail = () => {
               )}
             </div>
             <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Inclusive of taxes · ₹150 insured shipping across India
+              Inclusive of taxes · Free insured shipping across India
             </p>
             {/* The delivery + returns promise sits at the buy moment, not only
                 in the footer: it is the last question before Add to Cart. */}
@@ -906,7 +906,7 @@ const JewelDetail = () => {
             {/* Mobile: the arrival date already sits under the price, so this
                 line only repeats the shipping and returns terms. */}
             <p className="mt-3 md:hidden text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 40%)" }}>
-              ₹150 insured shipping · 7-day returns
+              Free insured shipping · 7-day returns
             </p>
 
 
@@ -956,7 +956,7 @@ const JewelDetail = () => {
                 <AtelierAccordionTrigger>Delivery &amp; Returns</AtelierAccordionTrigger>
                 <AccordionContent>
                   <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
-                    <p>{PREORDER_NOTE} Flat ₹150 insured shipping across India.</p>
+                    <p>{PREORDER_NOTE} Free insured shipping across India.</p>
                     <p>7-day returns apply. <Link to="/exchange-return-policy" className="underline underline-offset-4">Read policy</Link></p>
                   </div>
                 </AccordionContent>

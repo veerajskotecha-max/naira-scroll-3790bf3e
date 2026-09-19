@@ -30,11 +30,11 @@ describe("sold-out pieces never lead the grid", () => {
   });
 });
 
-/* Shopify's General profile charges a flat ₹150 domestic rate with no free
-   threshold. Every shipping figure on the site reads from this one constant, so
-   the page can never promise something checkout won't honour. */
+/* Shipping is free across India and every shipping figure on the site reads
+   from this one constant, so the page can never promise something checkout
+   won't honour. */
 describe("shipping charge", () => {
-  it("matches the flat rate configured in Shopify", () => {
-    expect(SHIPPING_CHARGE).toBe(150);
+  it("matches the free rate configured in Shopify", () => {
+    expect(SHIPPING_CHARGE).toBe(0);
   });
 });

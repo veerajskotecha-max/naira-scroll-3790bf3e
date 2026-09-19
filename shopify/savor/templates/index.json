@@ -28,7 +28,7 @@
                 "line_height": "normal",
                 "letter_spacing": "0.32em",
                 "case": "uppercase",
-                "text_color": "{{ settings.color_palette.foreground }}",
+                "text_color": "#4F7268",
                 "font_size": "0.625rem"
               },
               "blocks": {}
@@ -697,7 +697,7 @@
                 "line_height": "normal",
                 "letter_spacing": "0.32em",
                 "case": "uppercase",
-                "text_color": "{{ settings.color_palette.color2 }}",
+                "text_color": "#4F7268",
                 "font_size": "0.625rem"
               },
               "blocks": {}
@@ -767,7 +767,7 @@
                 "line_height": "normal",
                 "letter_spacing": "0.32em",
                 "case": "uppercase",
-                "text_color": "{{ settings.color_palette.color2 }}",
+                "text_color": "#4F7268",
                 "font_size": "0.625rem"
               },
               "blocks": {}
@@ -809,6 +809,270 @@
         "padding-block-start": 64,
         "padding-block-end": 24
       }
+    },
+    "vocab": {
+      "type": "marquee",
+      "blocks": {
+        "w0": {
+          "type": "text",
+          "settings": {
+            "text": "<p>hand-finished</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w1": {
+          "type": "text",
+          "settings": {
+            "text": "<p>slow-made</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w2": {
+          "type": "text",
+          "settings": {
+            "text": "<p>anti-tarnish</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w3": {
+          "type": "text",
+          "settings": {
+            "text": "<p>one at a time</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w4": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Mumbai atelier</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w5": {
+          "type": "text",
+          "settings": {
+            "text": "<p>gold tone plated</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w6": {
+          "type": "text",
+          "settings": {
+            "text": "<p>pressed flowers</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        },
+        "w7": {
+          "type": "text",
+          "settings": {
+            "text": "<p>worn every day</p>",
+            "width": "fit-content",
+            "alignment": "center",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "1.25rem",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "text_color": "{{ settings.color_palette.foreground }}"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "w0",
+        "w1",
+        "w2",
+        "w3",
+        "w4",
+        "w5",
+        "w6",
+        "w7"
+      ],
+      "settings": {
+        "movement_direction": "normal",
+        "background_color": "{{ settings.color_palette.background }}",
+        "gap_between_elements": 56,
+        "padding-block-start": 22,
+        "padding-block-end": 22
+      }
+    },
+    "story": {
+      "type": "hero",
+      "blocks": {
+        "story_group": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 18,
+            "width": "custom",
+            "custom_width": 100,
+            "width_mobile": "fill"
+          },
+          "blocks": {
+            "hero_eyebrow": {
+              "type": "text",
+              "settings": {
+                "text": "<p>Our atelier</p>",
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "0.32em",
+                "case": "uppercase",
+                "text_color": "#4F7268",
+                "font_size": "0.625rem"
+              },
+              "blocks": {}
+            },
+            "story_head": {
+              "type": "text",
+              "settings": {
+                "text": "<h2>Finished by hand, one at a time.</h2>",
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "h2",
+                "font": "var(--font-heading--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "{{ settings.color_palette.foreground }}"
+              },
+              "blocks": {}
+            },
+            "story_body": {
+              "type": "text",
+              "settings": {
+                "text": "<p>Every Naira piece is plated, polished and checked by hand in our Mumbai atelier before it is boxed — so the piece that reaches you is the piece someone chose to send.</p>",
+                "width": "100%",
+                "alignment": "left",
+                "type_preset": "paragraph",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "{{ settings.color_palette.foreground }}"
+              },
+              "blocks": {}
+            },
+            "story_btn": {
+              "type": "button",
+              "settings": {
+                "label": "Shop the edit",
+                "link": "shopify://collections/shop-all",
+                "style_class": "button-secondary",
+                "width": "fit-content",
+                "width_mobile": "fill"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "hero_eyebrow",
+            "story_head",
+            "story_body",
+            "story_btn"
+          ]
+        }
+      },
+      "block_order": [
+        "story_group"
+      ],
+      "settings": {
+        "media_type_1": "image",
+        "image_1": "shopify://shop_images/nf-atelier.jpg",
+        "custom_mobile_media": false,
+        "stack_media_on_mobile": false,
+        "blurred_reflection": false,
+        "toggle_overlay": false,
+        "content_direction": "column",
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 16,
+        "section_width": "page-width",
+        "section_height": "medium",
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 40,
+        "padding-block-end": 40
+      }
     }
   },
   "order": [
@@ -817,6 +1081,8 @@
     "categories",
     "gridintro",
     "grid",
+    "vocab",
+    "story",
     "reasons"
   ]
 }

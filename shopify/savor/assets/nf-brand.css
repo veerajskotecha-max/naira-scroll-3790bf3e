@@ -210,6 +210,92 @@ a.button-secondary {
 .product-card:is(:hover, :focus-within) .card-gallery .quick-add__button { translate: 0 0; }
 .card-gallery .quick-add__button > .add-to-cart-icon { display: none; }
 
+/* ── The announcement bar ──────────────────────────────────────────────── */
+
+/* Sage, because the store opened on an unbroken field of cream and the brand
+   has a second colour it was never using. Ink on sage is 7.1:1; cream on sage
+   is 1.9:1, which is why the type here is ink and not the reverse. */
+[id^="shopify-section-"][id$="__announcements"] .announcement-bar__text {
+  letter-spacing: .26em;
+  font-size: 10px;
+}
+[id^="shopify-section-"][id$="__announcements"] .slideshow-control { color: var(--nf-ink); opacity: .55; }
+[id^="shopify-section-"][id$="__announcements"] .slideshow-control:hover { opacity: 1; }
+
+/* ── The word marquee ─────────────────────────────────────────────────── */
+
+/* The live site runs a band of its own vocabulary between two hairlines, and
+   that band is most of what makes the page feel like a magazine rather than a
+   catalogue. Horizon's `marquee` section supplies the scrolling; everything
+   here is the dressing -- rules top and bottom, italic Cormorant, and a sage
+   dot between words so they read as a list and not a sentence. */
+[id^="shopify-section-"][id$="__vocab"] {
+  border-block: 1px solid color-mix(in srgb, var(--nf-sage) 55%, transparent);
+}
+[id^="shopify-section-"][id$="__vocab"] .text-block :is(p, a) {
+  font-family: 'Cormorant Garamond', 'Cormorant', Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: color-mix(in srgb, var(--nf-ink) 80%, transparent);
+  margin: 0;
+}
+/* The separator belongs to the gap, not to a word, so it is drawn rather than
+   typed -- no empty blocks in the template to keep in sync. */
+[id^="shopify-section-"][id$="__vocab"] .marquee__repeated-items > *::after {
+  content: '';
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--nf-sage);
+  transform: translateY(-50%);
+}
+[id^="shopify-section-"][id$="__vocab"] .marquee__repeated-items > * { position: relative; }
+
+/* ── The story band ───────────────────────────────────────────────────── */
+
+/* A second `hero` section, mirrored: photograph LEFT, type right. Using the
+   hero type rather than media-with-content means the image travels Horizon's
+   srcset and <picture> path, which is the whole reason the real hero stopped
+   rendering a cartoon. */
+[id^="shopify-section-"][id$="__story"] { position: relative; isolation: isolate; }
+[id^="shopify-section-"][id$="__story"] .hero__media-grid {
+  inset: 0 0 auto 0;
+  height: 58vh;
+  max-height: 440px;
+  z-index: 1;
+}
+[id^="shopify-section-"][id$="__story"] .hero__content-wrapper {
+  z-index: 2;
+  padding-block-start: calc(58vh + 28px);
+}
+[id^="shopify-section-"][id$="__story"] .text-block :is(h2, p) { max-width: 34ch; }
+[id^="shopify-section-"][id$="__story"] [class*="__story_head"] :is(h2, p) {
+  font-family: var(--font-heading--family);
+  font-size: clamp(1.9rem, 3vw, 2.9rem);
+  line-height: 1.02;
+  letter-spacing: -.01em;
+  margin-block: 0;
+}
+@media (min-width: 750px) {
+  [id^="shopify-section-"][id$="__story"] .hero__media-grid {
+    inset: 0 auto 0 0;
+    width: 44%;
+    height: auto;
+    max-height: none;
+  }
+  [id^="shopify-section-"][id$="__story"] .hero__content-wrapper {
+    padding-block-start: 0;
+    max-width: 46%;
+    margin-inline-start: auto;
+    margin-inline-end: 4%;
+    align-self: center;
+  }
+  [id^="shopify-section-"][id$="__story"] .hero__container { min-height: 34rem; }
+}
+
 /* ── Section intros ────────────────────────────────────────────────────── */
 
 /* Every band on the live site opens the same way: a letterspaced label in
@@ -217,9 +303,6 @@ a.button-secondary {
    is what makes a page of unrelated grids read as one magazine. The eyebrow
    is green (#4F7268, 5.07:1 on cream) and never sage, which at 2.1:1 cannot
    carry text at any size. */
-[class*="__cat_eyebrow"], [class*="__cat_eyebrow"] p,
-[class*="__newin_eyebrow"], [class*="__newin_eyebrow"] p { color: var(--nf-green); margin-block: 0; }
-
 [class*="__cat_head"] :is(h2, p),
 [class*="__newin_head"] :is(h2, p) {
   font-family: var(--font-heading--family);
@@ -547,20 +630,69 @@ zoom-dialog dialog.dialog-zoomed-gallery__dialog { background: var(--nf-cream); 
   text-wrap: balance;
 }
 
-/* The eyebrow: the label that tells you which chapter you are in. Green,
-   not sage -- sage on cream is 2.1:1 and cannot legally carry text.
-   `__hero_eyebrow` is the block id from index.json, which Horizon stamps into
-   the text-block class, so this reaches exactly one block. */
-[class*="__hero_eyebrow"],
-[class*="__hero_eyebrow"] p {
-  color: var(--nf-green);
-  margin-block: 0;
-}
+/* The eyebrow: the label that tells you which chapter you are in. Its colour
+   is set in the template rather than here, because Horizon emits a text
+   block's `text_color` as an inline style and an inline style beats any
+   selector this file can write. #4F7268 is the live site's deepest green and
+   the only one of the brand's greens that clears 4.5:1 on cream -- sage at
+   2.1:1 cannot carry text at any size. */
+[class*="_eyebrow"] p { margin-block: 0; }
 
 [id^="shopify-section-"][id$="__hero"] .button-primary {
   transition: color 200ms ease, background-color 200ms ease, transform 140ms cubic-bezier(.23, 1, .32, 1);
 }
 [id^="shopify-section-"][id$="__hero"] .button-primary:active { transform: scale(.97); }
+
+/* ── The hero's petals ────────────────────────────────────────────────── */
+
+/* Five petals drifting down behind the type, the gesture the live site opens
+   with. They are injected by nf-motion.js rather than written into the
+   template, so a blocked script means no petals and nothing else -- and they
+   are desktop-only, because on a 390px screen they cross the headline.
+
+   transform and opacity only: both composite, so a petal crossing the screen
+   cannot force a repaint while someone is scrolling a grid of photographs. */
+.nf-petal {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 750px) {
+  @keyframes nf-drift-a {
+    0%   { transform: translate(0, -12vh) rotate(0deg);      opacity: 0; }
+    12%  { opacity: .6; }
+    100% { transform: translate(9vw, 108vh) rotate(220deg);  opacity: 0; }
+  }
+  @keyframes nf-drift-b {
+    0%   { transform: translate(0, -12vh) rotate(0deg);      opacity: 0; }
+    15%  { opacity: .45; }
+    100% { transform: translate(-7vw, 108vh) rotate(-180deg); opacity: 0; }
+  }
+  .nf-petal { animation-iteration-count: infinite; animation-timing-function: linear; }
+}
+@media (prefers-reduced-motion: reduce), (max-width: 749px) {
+  .nf-petal { display: none; }
+}
+
+/* ── The headline, word by word ───────────────────────────────────────── */
+
+/* The h1 is the hero's LCP element, so this reveal moves the words and never
+   fades them: an element that starts at opacity 0 does not count as painted,
+   and a 0.9s stagger would have pushed LCP out by nearly a second. Transform
+   alone paints immediately and still reads as an entrance. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes nf-word { from { transform: translateY(26px); } to { transform: translateY(0); } }
+  html.nf-motion .nf-w {
+    display: inline-block;
+    animation: nf-word .85s var(--nf-ease-out) both;
+    animation-delay: calc(var(--nf-wi, 0) * .06s);
+  }
+  /* The words sit in a clipped line so they rise out of nothing rather than
+     sliding over the eyebrow above them. */
+  html.nf-motion .nf-wline { display: block; overflow: hidden; }
+}
 
 /* ── Motion: one system, below the fold only ───────────────────────────── */
 

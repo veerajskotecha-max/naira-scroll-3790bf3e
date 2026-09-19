@@ -179,7 +179,7 @@ const CartDrawer = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Insured shipping</span>
-                  <span className="text-[var(--nf-text)]">{formatPrice(SHIPPING_CHARGE)}</span>
+                  <span className="font-medium text-[var(--nf-accent-quiet)]">FREE</span>
                 </div>
                 {/* The code is named, not just the amount: this is the one the
                     hand-off sends to the checkout, and a shopper who sees a

@@ -13,11 +13,12 @@
  */
 
 /**
- * Flat domestic shipping, mirroring Shopify's General profile → Domestic →
- * Standard rate. There is no free-shipping threshold configured in Shopify, so
- * nothing on the site may promise one.
+ * Domestic shipping, mirroring Shopify's General profile → Domestic rate.
+ * Shipping is free and insured everywhere in India, so this is 0 and every
+ * shipping figure on the site reads from it. If Shopify's rate ever stops
+ * being free, this constant and the Shopify rate must change together.
  */
-export const SHIPPING_CHARGE = 150;
+export const SHIPPING_CHARGE = 0;
 
 export type CodStatus = "available" | "blocked";
 

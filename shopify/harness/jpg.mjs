@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+import { readFileSync, writeFileSync } from 'node:fs';
+const [src, out, W='820', Q='72'] = process.argv.slice(2);
+const data='data:image/png;base64,'+readFileSync(src).toString('base64');
+const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
+const p=await b.newPage({viewport:{width:+W,height:600}});
+await p.setContent(`<img id=i src="${data}">`);
+await p.waitForFunction(()=>{const i=document.getElementById('i');return i.complete&&i.naturalWidth;});
+const {nw,nh}=await p.evaluate(()=>({nw:i.naturalWidth,nh:i.naturalHeight}));
+const h=Math.round(nh*(+W/nw));
+await p.setViewportSize({width:+W,height:Math.min(h,30000)});
+await p.setContent(`<style>html,body{margin:0;background:#fff;overflow:hidden}img{width:${W}px;display:block}</style><img src="${data}">`);
+await p.waitForTimeout(400);
+writeFileSync(out, await p.screenshot({type:'jpeg', quality:+Q, fullPage:true}));
+console.log(out, `${nw}x${nh} -> ${W}x${h}`);
+await b.close();

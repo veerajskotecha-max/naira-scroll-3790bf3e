@@ -251,7 +251,7 @@
                 "letter_spacing": "0.22em",
                 "case": "uppercase",
                 "background_color": "#00000026",
-                "text_color": "{{ settings.color_palette.color2 }}"
+                "text_color": "#4F7268"
               },
               "blocks": {}
             },
@@ -302,7 +302,7 @@
                 "letter_spacing": "0.22em",
                 "case": "uppercase",
                 "background_color": "#00000026",
-                "text_color": "{{ settings.color_palette.color2 }}"
+                "text_color": "#4F7268"
               },
               "blocks": {}
             },
@@ -353,7 +353,7 @@
                 "letter_spacing": "0.22em",
                 "case": "uppercase",
                 "background_color": "#00000026",
-                "text_color": "{{ settings.color_palette.color2 }}"
+                "text_color": "#4F7268"
               },
               "blocks": {}
             },

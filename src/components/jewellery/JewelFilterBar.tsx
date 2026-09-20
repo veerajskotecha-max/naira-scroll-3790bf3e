@@ -42,7 +42,11 @@ export const collectTags = (pieces: JewelPiece[]) => {
 };
 
 /** Applies the sort + filter set to a list of pieces. Pure, so it is safe to memoise. */
-export const applyJewelFilters = (pieces: JewelPiece[], f: JewelFilters) => {
+export const applyJewelFilters = (
+  pieces: JewelPiece[],
+  f: JewelFilters,
+  opts?: { keepSoldOutInPlace?: boolean },
+) => {
   let out = pieces.slice();
   if (f.inStockOnly) out = out.filter((p) => p.availableForSale);
   if (f.maxPrice != null) out = out.filter((p) => p.price <= f.maxPrice!);

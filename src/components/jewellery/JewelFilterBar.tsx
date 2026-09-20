@@ -42,7 +42,11 @@ export const collectTags = (pieces: JewelPiece[]) => {
 };
 
 /** Applies the sort + filter set to a list of pieces. Pure, so it is safe to memoise. */
-export const applyJewelFilters = (pieces: JewelPiece[], f: JewelFilters) => {
+export const applyJewelFilters = (
+  pieces: JewelPiece[],
+  f: JewelFilters,
+  opts?: { keepSoldOutInPlace?: boolean },
+) => {
   let out = pieces.slice();
   if (f.inStockOnly) out = out.filter((p) => p.availableForSale);
   if (f.maxPrice != null) out = out.filter((p) => p.price <= f.maxPrice!);
@@ -69,6 +73,9 @@ export const applyJewelFilters = (pieces: JewelPiece[], f: JewelFilters) => {
   // A sold-out piece must never lead the grid, whatever the sort — the first
   // card on /jewellery was a zero-inventory necklace. Array#sort is stable, so
   // this only sinks them; the chosen order survives inside each group.
+  // Curated pages (the ads-only edit) opt out: the owner pins a sold-out lead
+  // piece deliberately and its badge says why it can't be bought.
+  if (opts?.keepSoldOutInPlace) return out;
   return out.sort((a, b) => Number(a.availableForSale === false) - Number(b.availableForSale === false));
 };
 

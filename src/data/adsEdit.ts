@@ -11,9 +11,12 @@ export type EditEntry = {
   match?: string[];
   /** Used when neither the handle nor the title match resolves. */
   fallbackHandle?: string;
+  /** Keep the piece visible even when sold out (renders with its badge). */
+  showSoldOut?: boolean;
 };
 
 export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
+  { handle: "riviere-of-light-bracelet", match: ["riviere of light", "prism riviere"], showSoldOut: true },
   { handle: "ribbon-bead-bracelet", match: ["ribbon bead", "yf8156"] },
   { handle: "baroque-shell-bracelet", match: ["baroque shell bracelet", "yf3925"] },
   { handle: "heartbead-bracelet", match: ["heartbead", "heart bead", "yf5215"] },
@@ -41,7 +44,7 @@ export const resolveEdit = (all: JewelPiece[], entries = GOLDEN_HOUR_HANDLES): J
       piece = all.find((p) => p.handle === entry.fallbackHandle);
     }
 
-    if (piece?.availableForSale && !seen.has(piece.handle)) {
+    if (piece && !seen.has(piece.handle) && (piece.availableForSale || entry.showSoldOut)) {
       seen.add(piece.handle);
       picked.push(piece);
     }

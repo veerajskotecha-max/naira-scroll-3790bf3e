@@ -90,7 +90,7 @@ const GoldenHourEdit = () => {
     () => (active === "All" ? edit : edit.filter((p) => p.category === active)),
     [active, edit]
   );
-  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters), [inCategory, activeFilters]);
+  const pieces = useMemo(() => applyJewelFilters(inCategory, activeFilters, { keepSoldOutInPlace: true }), [inCategory, activeFilters]);
   const url = `${SITE_URL}/the-golden-hour`;
 
   return (

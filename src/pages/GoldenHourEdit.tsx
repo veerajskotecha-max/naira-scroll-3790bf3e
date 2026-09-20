@@ -23,7 +23,7 @@ const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Ear
 /* The Golden Hour — a private edit used only in paid campaigns.
    Laid out exactly like the main jewellery shop-all page (hero, sticky
    category pills, sort/filter bar, product grid) but scoped to the
-   curated ten pieces. Deliberately absent from menus, footer and
+   curated bestsellers. Deliberately absent from menus, footer and
    sitemap, and marked noindex: the only way in is the ad link. */
 const GoldenHourEdit = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -97,7 +97,7 @@ const GoldenHourEdit = () => {
     <>
       <PageSEO
         title="The Golden Hour | A Private Edit"
-        description="Ten pieces from the Naira Flore atelier, chosen for the golden hour. 18K gold tone, waterproof and anti-tarnish, shipped insured in 3–5 working days."
+        description="Our selected Naira Flore bestsellers, chosen for the golden hour. 18K gold tone, waterproof and anti-tarnish, with free insured shipping."
         canonical={url}
         image={pieces[0]?.image}
         noindex
@@ -115,7 +115,7 @@ const GoldenHourEdit = () => {
               The Golden Hour
             </h1>
             <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
-              Ten pieces we keep aside for the last warm light of the day.
+              Our selected bestsellers, chosen for the last warm light of the day.
             </p>
           </header>
         </div>
@@ -124,7 +124,7 @@ const GoldenHourEdit = () => {
         <div className="mx-auto mt-6 flex max-w-6xl justify-center px-4 sm:px-6">
           <div className="inline-flex border border-nf-ink/25">
             {([
-              { key: "edit", label: "THE GOLDEN HOUR" },
+              { key: "edit", label: "OUR BESTSELLERS" },
               { key: "all", label: "ALL PIECES" },
             ] as const).map((o) => (
               <button

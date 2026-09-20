@@ -14,8 +14,12 @@ export type EditEntry = {
 };
 
 export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
-  { handle: "ivory-clasp-chain", match: ["toggle link"] },
+  { handle: "ribbon-bead-bracelet", match: ["ribbon bead", "yf8156"] },
   { handle: "woven-gold-hoops", match: ["woven gold hoop"] },
+  { handle: "bold-nocturne-chain", match: ["bold nocturne chain", "yf5144"] },
+  { handle: "bold-nocturne-bracelet", match: ["bold nocturne bracelet", "yf5144-bra"] },
+  { handle: "baroque-shell-bracelet", match: ["baroque shell bracelet", "yf3925"] },
+  { handle: "ivory-clasp-chain", match: ["toggle link"] },
   { handle: "prism-riviere-bracelet", match: ["prism riv", "prism"] },
   { handle: "molten-bloom-hoops", match: ["molten"] },
   { match: ["heartbead", "heart bead"], fallbackHandle: "cuban-pearl-bracelet" },
@@ -38,7 +42,7 @@ export const resolveEdit = (all: JewelPiece[], entries = GOLDEN_HOUR_HANDLES): J
 
     if (!piece && entry.match?.length) {
       piece = all.find((p) =>
-        entry.match!.some((m) => p.name.toLowerCase().includes(m.toLowerCase())),
+        entry.match?.some((m) => `${p.name} ${p.sku}`.toLowerCase().includes(m.toLowerCase())),
       );
     }
 
@@ -46,7 +50,7 @@ export const resolveEdit = (all: JewelPiece[], entries = GOLDEN_HOUR_HANDLES): J
       piece = all.find((p) => p.handle === entry.fallbackHandle);
     }
 
-    if (piece && !seen.has(piece.handle)) {
+    if (piece?.availableForSale && !seen.has(piece.handle)) {
       seen.add(piece.handle);
       picked.push(piece);
     }

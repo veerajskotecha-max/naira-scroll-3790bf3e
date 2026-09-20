@@ -15,19 +15,10 @@ export type EditEntry = {
 
 export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
   { handle: "ribbon-bead-bracelet", match: ["ribbon bead", "yf8156"] },
-  { handle: "woven-gold-hoops", match: ["woven gold hoop"] },
-  { handle: "bold-nocturne-chain", match: ["bold nocturne chain", "yf5144"] },
-  { handle: "bold-nocturne-bracelet", match: ["bold nocturne bracelet", "yf5144-bra"] },
   { handle: "baroque-shell-bracelet", match: ["baroque shell bracelet", "yf3925"] },
-  { handle: "ivory-clasp-chain", match: ["toggle link"] },
-  { handle: "prism-riviere-bracelet", match: ["prism riv", "prism"] },
-  { handle: "molten-bloom-hoops", match: ["molten"] },
-  { match: ["heartbead", "heart bead"], fallbackHandle: "cuban-pearl-bracelet" },
-  { handle: "brushed-gold-huggies", match: ["brushed gold huggies", "huggie"] },
-  { handle: "charm-box-chain", match: ["charm box"] },
-  { handle: "cushion-halo-ring", match: ["cushion halo"] },
-  { handle: "blush-halo-ring", match: ["blush cluster"], fallbackHandle: "chevron-whisper-ring" },
-  { handle: "heart-whisper-studs", match: ["pearl drop"] },
+  { handle: "heartbead-bracelet", match: ["heartbead", "heart bead", "yf5215"] },
+  { handle: "bold-nocturne-bracelet", match: ["bold nocturne bracelet", "yf5144-bra"] },
+  { handle: "bold-nocturne-chain", match: ["bold nocturne chain", "yf5144"] },
 ];
 
 /** Resolve the edit against the live catalogue, keeping the curated order. */

@@ -44,7 +44,7 @@ export const resolveEdit = (all: JewelPiece[], entries = GOLDEN_HOUR_HANDLES): J
       piece = all.find((p) => p.handle === entry.fallbackHandle);
     }
 
-    if (piece?.availableForSale && !seen.has(piece.handle)) {
+    if (piece && !seen.has(piece.handle) && (piece.availableForSale || entry.showSoldOut)) {
       seen.add(piece.handle);
       picked.push(piece);
     }

@@ -14,6 +14,7 @@ export type EditEntry = {
 };
 
 export const GOLDEN_HOUR_HANDLES: EditEntry[] = [
+  { handle: "riviere-of-light-bracelet", match: ["riviere of light", "prism riviere"] },
   { handle: "ribbon-bead-bracelet", match: ["ribbon bead", "yf8156"] },
   { handle: "baroque-shell-bracelet", match: ["baroque shell bracelet", "yf3925"] },
   { handle: "heartbead-bracelet", match: ["heartbead", "heart bead", "yf5215"] },

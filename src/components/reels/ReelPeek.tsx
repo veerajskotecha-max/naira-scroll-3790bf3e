@@ -29,7 +29,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const suppressNextClick = useRef(false);
+  const suppressClickUntil = useRef(0);
   const instagramBrowser = useMemo(
     () => typeof navigator !== "undefined" && /Instagram|FBAN|FBAV/i.test(navigator.userAgent),
     [],
@@ -43,10 +43,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   };
 
   const openViewerFromClick = () => {
-    if (suppressNextClick.current) {
-      suppressNextClick.current = false;
-      return;
-    }
+    if (Date.now() < suppressClickUntil.current) return;
     openViewer();
   };
 
@@ -57,7 +54,6 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     const touch = event.changedTouches[0];
     if (!touch) return;
     touchStart.current = { x: touch.clientX, y: touch.clientY };
-    suppressNextClick.current = false;
   };
 
   const openViewerFromTouch = (event: React.TouchEvent) => {
@@ -67,7 +63,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     if (!touch || !start) return;
     const moved = Math.hypot(touch.clientX - start.x, touch.clientY - start.y);
     if (moved > 10) {
-      suppressNextClick.current = true;
+      suppressClickUntil.current = Date.now() + 500;
       return;
     }
     event.preventDefault();

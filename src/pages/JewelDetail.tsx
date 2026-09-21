@@ -20,6 +20,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
+import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import ReelPeek from "@/components/reels/ReelPeek";
 import FomoPopup from "@/components/FomoPopup";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
@@ -671,6 +672,8 @@ const JewelDetail = () => {
             <p className="mt-1 text-[12px] font-medium tracking-[0.02em] leading-relaxed" style={{ color: "hsl(186 35% 28%)" }}>
               {arrivesBy ? `Order today, arrives by ${arrivesBy}` : PREORDER_NOTE} · 7-day returns · 2-year plating assurance
             </p>
+
+            <JewelTrustStrip />
 
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}

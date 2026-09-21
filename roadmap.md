@@ -24,3 +24,4 @@
 - [x] Route general shopping and bag continuation to the main jewellery collection, never the Festive Edit
 - [x] Match the cart checkout action to the black reference treatment with payment marks and Shiprocket attribution
 - [x] Refresh Golden Hour with available bestsellers, led by the multicolour bracelet and Woven Gold Hoops
+- [x] Add compact anti-tarnish, skin-safe, and 18K gold-tone assurances to every jewellery product page

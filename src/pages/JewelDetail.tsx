@@ -673,7 +673,7 @@ const JewelDetail = () => {
               {arrivesBy ? `Order today, arrives by ${arrivesBy}` : PREORDER_NOTE} · 7-day returns · 2-year plating assurance
             </p>
 
-            <JewelTrustStrip />
+            <JewelTrustStrip productKey={piece.handle} />
 
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}

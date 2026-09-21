@@ -75,7 +75,8 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   // viewer chunk into cache and decode the poster. No video bytes are touched,
   // so the PDP stays light while the reel opens instantly when it appears.
   useEffect(() => {
-    if (typeof window === "undefined" || saveData()) return;
+    if (typeof window === "undefined") return;
+
     const idle =
       (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number })
         .requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));

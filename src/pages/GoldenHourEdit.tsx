@@ -59,6 +59,18 @@ const GoldenHourEdit = () => {
   // Private toggle, only on this page: the curated edit, or the whole catalogue.
   const showAll = searchParams.get("view") === "all";
   const edit = showAll ? jewellery : curated;
+  const visibleFilters = useMemo(
+    () => filters.filter((filter) => filter === "All" || edit.some((piece) => piece.category === filter)),
+    [edit],
+  );
+
+  useEffect(() => {
+    if (visibleFilters.includes(active)) return;
+    setActive("All");
+    const params = new URLSearchParams(searchParams);
+    params.delete("category");
+    setSearchParams(params, { replace: true });
+  }, [active, searchParams, setSearchParams, visibleFilters]);
 
   const setView = (next: "edit" | "all") => {
     const params = new URLSearchParams(searchParams);
@@ -148,7 +160,7 @@ const GoldenHourEdit = () => {
         {/* filter */}
         <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
           <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
-            {filters.map((f) => (
+            {visibleFilters.map((f) => (
               <button
                 key={f}
                 onClick={() => selectCategory(f)}

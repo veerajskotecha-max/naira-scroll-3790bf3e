@@ -11,6 +11,9 @@ import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import { Button } from "@/components/ui/button";
 import googlePayMark from "@/assets/google-pay-mark.svg";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { shopifyNumericId, trackPixel } from "@/lib/pixel";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
    — that is 16 of 18 garments and every jewellery piece. Printing it verbatim put
@@ -25,7 +28,9 @@ const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: stri
 
 const CartDrawer = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
+  const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
+  const checkoutStarted = useRef(false);
   const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
   useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
 
@@ -65,7 +70,45 @@ const CartDrawer = () => {
 
 
 
-  const handleCheckout = () => checkout();
+  const handleCheckout = async () => {
+    if (checkoutStarted.current) return;
+    checkoutStarted.current = true;
+
+    trackPixel("AddPaymentInfo", {
+      currency: items[0]?.currencyCode || "INR",
+      value: orderTotal,
+      num_items: totalItems,
+      content_ids: items.map((item) => shopifyNumericId(item.variantId) ?? item.id),
+      content_type: "product",
+    });
+
+    try {
+      if (user) {
+        await supabase.from("member_orders").insert({
+          user_id: user.id,
+          email: user.email ?? null,
+          items: items.map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+            size: item.size ?? null,
+            image: item.image,
+            price: item.priceLabel,
+          })),
+          item_count: totalItems,
+          total: orderTotal,
+          currency: items[0]?.currencyCode || "INR",
+          checkout_url: checkoutUrl,
+          status: "checkout_started",
+          source: "website",
+        });
+      }
+    } catch {
+      /* Account history must never block the payment hand-off. */
+    } finally {
+      checkout();
+      checkoutStarted.current = false;
+    }
+  };
 
 
   return (

@@ -227,13 +227,14 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
           <Button
             type="button"
             onClick={openViewerFromClick}
-            onTouchStart={rememberTouchStart}
-            onTouchEnd={openViewerFromTouch}
+            onPointerDown={rememberTouchStart}
+            onPointerUp={openViewerFromTouch}
             variant="ghost"
             className="relative block h-auto w-full touch-manipulation select-none overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"
             style={{ aspectRatio: "9/16" }}
             aria-label="Open shoppable reels"
           >
+
             <img
               src={reelCover(reel.video_path) ?? reel.posterUrl ?? reel.products[0]?.image_url ?? ""}
               alt=""

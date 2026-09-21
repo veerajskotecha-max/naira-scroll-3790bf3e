@@ -47,29 +47,26 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     openViewer();
   };
 
-  // Some iOS in-app browsers never synthesize `click` when a video-backed
-  // fixed element is tapped. Open from the physical touch as well, and cancel
-  // its follow-up click so one tap always produces exactly one state change.
-  const rememberTouchStart = (event: React.TouchEvent) => {
-    const touch = event.changedTouches[0];
-    if (!touch) return;
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  // Some iOS in-app browsers (Instagram, Facebook) never synthesize `click` on
+  // a fixed, video-backed element. Pointer events are the one path every one of
+  // them fires, so open from pointerup too and swallow the follow-up click.
+  const rememberTouchStart = (event: React.PointerEvent) => {
+    touchStart.current = { x: event.clientX, y: event.clientY };
   };
 
-  const openViewerFromTouch = (event: React.TouchEvent) => {
-    const touch = event.changedTouches[0];
+  const openViewerFromTouch = (event: React.PointerEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!touch || !start) return;
-    const moved = Math.hypot(touch.clientX - start.x, touch.clientY - start.y);
-    if (moved > 10) {
+    if (event.pointerType === "mouse") return; // desktop keeps the click path
+    if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10) {
       suppressClickUntil.current = Date.now() + 500;
       return;
     }
-    event.preventDefault();
-    event.stopPropagation();
+    // Block the synthetic click this tap will produce, so one tap = one open.
+    suppressClickUntil.current = Date.now() + 500;
     openViewer();
   };
+
 
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];

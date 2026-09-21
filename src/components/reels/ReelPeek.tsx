@@ -28,6 +28,8 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   const [open, setOpen] = useState(false);
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const suppressClickUntil = useRef(0);
   const instagramBrowser = useMemo(
     () => typeof navigator !== "undefined" && /Instagram|FBAN|FBAV/i.test(navigator.userAgent),
     [],
@@ -40,10 +42,30 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     setOpen(true);
   };
 
+  const openViewerFromClick = () => {
+    if (Date.now() < suppressClickUntil.current) return;
+    openViewer();
+  };
+
   // Some iOS in-app browsers never synthesize `click` when a video-backed
   // fixed element is tapped. Open from the physical touch as well, and cancel
   // its follow-up click so one tap always produces exactly one state change.
+  const rememberTouchStart = (event: React.TouchEvent) => {
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  };
+
   const openViewerFromTouch = (event: React.TouchEvent) => {
+    const touch = event.changedTouches[0];
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!touch || !start) return;
+    const moved = Math.hypot(touch.clientX - start.x, touch.clientY - start.y);
+    if (moved > 10) {
+      suppressClickUntil.current = Date.now() + 500;
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     openViewer();
@@ -207,7 +229,8 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
         >
           <Button
             type="button"
-            onClick={openViewer}
+            onClick={openViewerFromClick}
+            onTouchStart={rememberTouchStart}
             onTouchEnd={openViewerFromTouch}
             variant="ghost"
             className="relative block h-auto w-full touch-manipulation select-none overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"

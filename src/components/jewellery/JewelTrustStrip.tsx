@@ -1,4 +1,4 @@
-import { Gem, ShieldCheck, Sparkles } from "lucide-react";
+import { Gem, ShieldCheck, Sparkles, Zap } from "lucide-react";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -13,27 +13,33 @@ const items = [
  * The compact horizontal treatment preserves Naira's sharp editorial edges.
  */
 const JewelTrustStrip = () => (
-  <ul
-    className="mt-3 flex list-none gap-2 overflow-x-auto pb-1 scrollbar-hide"
-    aria-label="Naira Flore jewellery assurances"
-  >
-    {items.map(({ icon: Icon, label }) => (
-      <li
-        key={label}
-        className="flex min-h-11 shrink-0 items-center gap-2 border border-[color:rgb(var(--nf-gold-rgb)/0.22)] bg-[var(--nf-surface)] px-3"
-      >
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center bg-[var(--nf-surface-raised)] text-[var(--nf-accent-quiet)]">
-          <Icon size={14} strokeWidth={1.5} aria-hidden="true" />
-        </span>
-        <span
-          className="whitespace-nowrap text-[10px] leading-none text-[var(--nf-text)] md:text-[11px]"
-          style={jost}
+  <div className="mt-3">
+    <ul
+      className="grid list-none grid-cols-3 gap-1.5"
+      aria-label="Naira Flore jewellery assurances"
+    >
+      {items.map(({ icon: Icon, label }) => (
+        <li
+          key={label}
+          className="flex min-w-0 flex-col items-center justify-center gap-1.5 border border-[color:rgb(var(--nf-gold-rgb)/0.22)] bg-[var(--nf-surface)] px-1.5 py-2 text-center md:min-h-11 md:flex-row md:gap-2 md:px-3 md:py-0"
         >
-          {label}
-        </span>
-      </li>
-    ))}
-  </ul>
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-[var(--nf-surface-raised)] text-[var(--nf-accent-quiet)] md:h-7 md:w-7">
+            <Icon size={13} strokeWidth={1.5} aria-hidden="true" />
+          </span>
+          <span
+            className="text-[8px] leading-[1.25] text-[var(--nf-text)] sm:text-[9px] md:text-[11px]"
+            style={jost}
+          >
+            {label}
+          </span>
+        </li>
+      ))}
+    </ul>
+    <p className="mt-3 flex items-center gap-1.5 border-l-2 border-[var(--nf-accent-strong)] pl-2.5 text-[11px] font-medium leading-5 text-[var(--nf-text)]">
+      <Zap size={14} className="shrink-0 fill-[var(--nf-accent-strong)] text-[var(--nf-accent-strong)]" aria-hidden="true" />
+      Popular at Naira exhibitions &amp; online
+    </p>
+  </div>
 );
 
 export default JewelTrustStrip;

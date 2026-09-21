@@ -106,7 +106,10 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   // moment the shopper scrolls back up above them (over the gallery).
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (saveData()) return;
+    // Data Saver must only cost the shopper the video, never the way in: this
+    // effect is what reveals the widget at all, and in-app browsers (Instagram
+    // on Android) can report saveData, which used to hide the reel entirely.
+
 
     let raf = 0;
     const evaluate = () => {

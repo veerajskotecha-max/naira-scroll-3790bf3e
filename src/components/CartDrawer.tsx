@@ -27,7 +27,7 @@ const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: stri
 };
 
 const CartDrawer = () => {
-  const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, isLoading, isSyncing, syncCart } = useCart();
+  const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, checkoutUrl, isLoading, isSyncing, syncCart } = useCart();
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const checkoutStarted = useRef(false);

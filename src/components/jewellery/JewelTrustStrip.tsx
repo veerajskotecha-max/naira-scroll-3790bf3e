@@ -1,32 +1,32 @@
-import { ShieldCheck, Droplets, Gem, Package } from "lucide-react";
+import { Gem, ShieldCheck, Sparkles } from "lucide-react";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 const items = [
-  { icon: ShieldCheck, label: "Anti-tarnish coating" },
-  { icon: Droplets, label: "Waterproof sealed" },
-  { icon: Gem, label: "18k gold / rhodium finish" },
-  { icon: Package, label: "Limited batches only" },
+  { icon: Sparkles, label: "Anti-Tarnish" },
+  { icon: ShieldCheck, label: "Skin Safe Jewellery" },
+  { icon: Gem, label: "18K Gold Tone Plated" },
 ] as const;
 
 /**
- * Four assurance chips for the jewellery PDP, mounted under the
- * pre-order CTA block. Gold icons, Jost letterspaced labels,
- * hairline borders, sharp corners.
+ * Material assurances sit beside the price, where shoppers compare finish.
+ * The compact horizontal treatment preserves Naira's sharp editorial edges.
  */
 const JewelTrustStrip = () => (
   <ul
-    className="mt-4 grid list-none grid-cols-2 gap-px bg-[#1A1614]/10 p-px md:grid-cols-4"
+    className="mt-3 flex list-none gap-2 overflow-x-auto pb-1 scrollbar-hide"
     aria-label="Naira Flore jewellery assurances"
   >
     {items.map(({ icon: Icon, label }) => (
       <li
         key={label}
-        className="flex flex-col items-center justify-center gap-2 bg-white px-2 py-4 text-center"
+        className="flex min-h-11 shrink-0 items-center gap-2 border border-[color:rgb(var(--nf-gold-rgb)/0.22)] bg-[var(--nf-surface)] px-3"
       >
-        <Icon size={16} strokeWidth={1.4} aria-hidden="true" style={{ color: "#B0843A" }} />
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center bg-[var(--nf-surface-raised)] text-[var(--nf-accent-quiet)]">
+          <Icon size={14} strokeWidth={1.5} aria-hidden="true" />
+        </span>
         <span
-          className="text-[10px] uppercase leading-[1.5] tracking-[0.14em] text-[#1A1614]/70 md:text-[11px]"
+          className="whitespace-nowrap text-[10px] leading-none text-[var(--nf-text)] md:text-[11px]"
           style={jost}
         >
           {label}

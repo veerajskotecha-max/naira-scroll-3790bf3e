@@ -244,7 +244,7 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
               alt=""
               className="pointer-events-none absolute inset-0 h-full w-full object-cover"
             />
-            {reel.videoUrl && !instagramBrowser && (
+            {reel.videoUrl && !instagramBrowser && !saveData() && (
               <video
                 ref={videoRef}
                 src={reel.videoUrl}

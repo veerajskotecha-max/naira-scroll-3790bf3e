@@ -47,29 +47,26 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
     openViewer();
   };
 
-  // Some iOS in-app browsers never synthesize `click` when a video-backed
-  // fixed element is tapped. Open from the physical touch as well, and cancel
-  // its follow-up click so one tap always produces exactly one state change.
-  const rememberTouchStart = (event: React.TouchEvent) => {
-    const touch = event.changedTouches[0];
-    if (!touch) return;
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  // Some iOS in-app browsers (Instagram, Facebook) never synthesize `click` on
+  // a fixed, video-backed element. Pointer events are the one path every one of
+  // them fires, so open from pointerup too and swallow the follow-up click.
+  const rememberTouchStart = (event: React.PointerEvent) => {
+    touchStart.current = { x: event.clientX, y: event.clientY };
   };
 
-  const openViewerFromTouch = (event: React.TouchEvent) => {
-    const touch = event.changedTouches[0];
+  const openViewerFromTouch = (event: React.PointerEvent) => {
     const start = touchStart.current;
     touchStart.current = null;
-    if (!touch || !start) return;
-    const moved = Math.hypot(touch.clientX - start.x, touch.clientY - start.y);
-    if (moved > 10) {
+    if (event.pointerType === "mouse") return; // desktop keeps the click path
+    if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10) {
       suppressClickUntil.current = Date.now() + 500;
       return;
     }
-    event.preventDefault();
-    event.stopPropagation();
+    // Block the synthetic click this tap will produce, so one tap = one open.
+    suppressClickUntil.current = Date.now() + 500;
     openViewer();
   };
+
 
   const { data: reels } = useReels(armed);
   const reel = reels?.[0];
@@ -78,7 +75,8 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   // viewer chunk into cache and decode the poster. No video bytes are touched,
   // so the PDP stays light while the reel opens instantly when it appears.
   useEffect(() => {
-    if (typeof window === "undefined" || saveData()) return;
+    if (typeof window === "undefined") return;
+
     const idle =
       (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number })
         .requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1500));
@@ -108,7 +106,10 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
   // moment the shopper scrolls back up above them (over the gallery).
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (saveData()) return;
+    // Data Saver must only cost the shopper the video, never the way in: this
+    // effect is what reveals the widget at all, and in-app browsers (Instagram
+    // on Android) can report saveData, which used to hide the reel entirely.
+
 
     let raf = 0;
     const evaluate = () => {
@@ -230,19 +231,20 @@ const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
           <Button
             type="button"
             onClick={openViewerFromClick}
-            onTouchStart={rememberTouchStart}
-            onTouchEnd={openViewerFromTouch}
+            onPointerDown={rememberTouchStart}
+            onPointerUp={openViewerFromTouch}
             variant="ghost"
             className="relative block h-auto w-full touch-manipulation select-none overflow-hidden p-0 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.45)] hover:bg-transparent"
             style={{ aspectRatio: "9/16" }}
             aria-label="Open shoppable reels"
           >
+
             <img
               src={reelCover(reel.video_path) ?? reel.posterUrl ?? reel.products[0]?.image_url ?? ""}
               alt=""
               className="pointer-events-none absolute inset-0 h-full w-full object-cover"
             />
-            {reel.videoUrl && !instagramBrowser && (
+            {reel.videoUrl && !instagramBrowser && !saveData() && (
               <video
                 ref={videoRef}
                 src={reel.videoUrl}

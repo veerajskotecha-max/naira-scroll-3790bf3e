@@ -345,3 +345,32 @@ The URL form returns an **empty** `upsertedThemeFiles` array whether or not it
 worked, so always read back `checksumMd5` from `theme.files`. Assets and
 stylesheets match their local md5 exactly; `templates/*.json` may be
 re-serialised by Shopify, so compare content, not bytes.
+
+## The Savor preview dies when the sharing token routes to the primary domain
+
+The preview URL is `?preview_theme_id=<id>`, and Shopify establishes the
+session by bouncing through
+`/services/access_tokens/create_sharing/<id>?return_to=...`. That bounce lands
+on the store's **primary domain**, `nairaflore.com` — which serves the Lovable
+React app, not Shopify. The token is never issued, and every subsequent request
+falls through to either the live theme or 197 kB of SPA `index.html`.
+
+Symptoms, in the order you will meet them:
+
+- `Shopify.theme.id` comes back as the **live** theme id, not the preview's.
+- Or `Shopify.theme` is **absent entirely** and every path — `/`,
+  `/collections`, a 404 — returns the same 197,484-byte document. That is the
+  React app; you are not looking at Shopify at all.
+
+Priming with the bare `?preview_theme_id=<id>` (no `_ab=0&_fd=0&_sc=1`) stays
+on myshopify and sometimes succeeds; the flagged form reliably bounces. Neither
+works once the session lapses. Opening the preview once from Shopify admin
+(Themes → Savor → Preview) mints a fresh token and unblocks it.
+
+`shotall.mjs` now **asserts the theme id after priming and throws** rather than
+capturing. Silently shooting the live site and reporting it as the preview is
+the worst failure mode available here — it has produced confident, wrong
+conclusions about "defects" that were never in the theme.
+
+Writes are unaffected: `themeFilesUpsert` goes through the Admin API and keeps
+working while the preview is down. You can ship, you just cannot look.

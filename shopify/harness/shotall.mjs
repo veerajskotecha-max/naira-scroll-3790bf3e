@@ -33,10 +33,32 @@ const cookieHeader = () => [...jar.entries()].map(([k, v]) => `${k}=${v}`).join(
 const eat = (r) => { for (const [k, v] of r.headers) if (k.toLowerCase() === 'set-cookie')
   v.split(/,(?=[^;]+=)/).forEach(c => { const [kk, vv] = c.split(';')[0].split('='); if (kk && vv) jar.set(kk.trim(), vv.trim()); }); };
 
-// Prime the preview cookie: the first document request otherwise races the
-// primary-domain redirect and Shopify serves MAIN instead of the preview.
-eat(await fetch(`${SHOP}/?${PREVIEW}`, { redirect: 'manual' }));
-console.log('primed:', [...jar.keys()].join(', ') || '(none)');
+// Prime the preview session, then PROVE it took.
+//
+// Priming with the `_ab=0&_fd=0&_sc=1` flags attached is what the preview URL
+// looks like, but as a priming request it is unreliable: the flagged form
+// redirects into `/services/access_tokens/create_sharing/<id>` on the PRIMARY
+// domain, and this store's primary domain serves the React app, not Shopify.
+// The token is never issued, the preview silently falls through to the live
+// theme -- or to 197kB of SPA index.html -- and every capture is of the wrong
+// site. Priming with the bare `preview_theme_id` param stays on myshopify and
+// sets the session. The flags still ride on every later request, where they
+// suppress the redirect.
+const primed = async () => {
+  jar.clear();
+  const r = await fetch(`${SHOP}/?preview_theme_id=${THEME}`, { headers: { 'user-agent': 'Mozilla/5.0' } });
+  eat(r);
+  const t = await r.text();
+  const id = (t.match(/Shopify\.theme\s*=\s*\{[^}]*"id":(\d+)/) || [, null])[1];
+  return id === THEME;
+};
+let ok = false;
+for (let i = 0; i < 4 && !ok; i++) {
+  ok = await primed();
+  if (!ok) { console.log(`  priming attempt ${i + 1} landed on the wrong theme, retrying`); await new Promise(r => setTimeout(r, 3000)); }
+}
+if (!ok) throw new Error('could not establish the Savor preview session -- every capture would be of the live site');
+console.log('primed:', [...jar.keys()].join(', '));
 
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({

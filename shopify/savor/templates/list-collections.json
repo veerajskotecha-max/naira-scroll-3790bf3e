@@ -1,0 +1,150 @@
+{
+  "sections": {
+    "collintro": {
+      "type": "section",
+      "blocks": {
+        "in_grp": {
+          "type": "group",
+          "settings": {
+            "content_direction": "column",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "horizontal_alignment_flex_direction_column": "center",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 10,
+            "width": "fill",
+            "width_mobile": "fill"
+          },
+          "blocks": {
+            "cat_eyebrow": {
+              "type": "text",
+              "settings": {
+                "text": "<p>Everything we make</p>",
+                "width": "100%",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "line_height": "normal",
+                "letter_spacing": "0.32em",
+                "case": "uppercase",
+                "text_color": "#4F7268",
+                "font_size": "0.625rem"
+              },
+              "blocks": {}
+            },
+            "cat_head": {
+              "type": "text",
+              "settings": {
+                "text": "<h2>Shop by collection.</h2>",
+                "width": "100%",
+                "alignment": "center",
+                "type_preset": "h2",
+                "font": "var(--font-heading--family)",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "text_color": "{{ settings.color_palette.foreground }}"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "cat_eyebrow",
+            "cat_head"
+          ]
+        }
+      },
+      "block_order": [
+        "in_grp"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 0,
+        "section_width": "page-width",
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 64,
+        "padding-block-end": 24
+      }
+    },
+    "collection_list_Y66Rtq": {
+      "type": "main-collection-list",
+      "blocks": {
+        "static-collection-card": {
+          "type": "_collection-card",
+          "name": "t:names.collection_card",
+          "static": true,
+          "settings": {
+            "placement": "below_image",
+            "horizontal_alignment": "center",
+            "vertical_alignment": "center",
+            "collection_card_gap": 12,
+            "background_color": "rgba(0,0,0,0)",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0
+          },
+          "blocks": {
+            "collection-card-image": {
+              "type": "_collection-card-image",
+              "name": "t:names.collection_card_image",
+              "static": true,
+              "settings": {
+                "image_ratio": "portrait",
+                "toggle_overlay": false,
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_radius": 0
+              },
+              "blocks": {}
+            },
+            "collection_title_UTMT6J": {
+              "type": "collection-title",
+              "name": "t:names.collection_title",
+              "settings": {
+                "width": "fill",
+                "alignment": "center",
+                "type_preset": "h6",
+                "font": "var(--font-body--family)",
+                "font_size": "0.75rem",
+                "line_height": "normal",
+                "letter_spacing": "0.18em",
+                "case": "uppercase"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "collection_title_UTMT6J"
+          ]
+        }
+      },
+      "block_order": [],
+      "name": "t:names.collection_list",
+      "settings": {
+        "layout_type": "grid",
+        "carousel_on_mobile": false,
+        "columns": 3,
+        "mobile_columns": "2",
+        "columns_gap": 12,
+        "bento_gap": 8,
+        "rows_gap": 40,
+        "max_collections": 12,
+        "section_width": "page-width",
+        "gap": 28,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 8,
+        "padding-block-end": 80
+      }
+    }
+  },
+  "order": [
+    "collintro",
+    "collection_list_Y66Rtq"
+  ]
+}

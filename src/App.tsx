@@ -26,7 +26,7 @@ import PageCurtain from "./components/wow/PageCurtain";
 const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
 // Unknown / retired URLs land on a brand "Coming soon" page instead of a raw 404.
-const ComingSoon = lazy(() => import("./pages/ComingSoon.tsx"));
+const CatchAll = lazy(() => import("./pages/CatchAll.tsx"));
 const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
 const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
 const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));
@@ -143,7 +143,7 @@ const AppShell = () => {
           <Route path="/policies/terms-of-service" element={<KeepQuery to="/terms" />} />
           <Route path="/policies/refund-policy" element={<KeepQuery to="/exchange-return-policy" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<ComingSoon />} />
+          <Route path="*" element={<CatchAll />} />
         </Routes>
       </Suspense>
     </>

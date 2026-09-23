@@ -17,6 +17,7 @@ import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
@@ -119,8 +120,20 @@ const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();
-  const { jewellery, isLoading: catalogueLoading } = useLiveJewellery();
-  const piece = useMemo(() => jewellery.find((j) => j.handle === handle) ?? null, [handle, jewellery]);
+  const { jewellery, isLive, isLoading: catalogueLoading } = useLiveJewellery();
+  /* Until live data arrives, fall back to the generated snapshot. Without it
+     only the 21 hand-authored pieces could draw on a cold load — every other
+     piece, including the #1 ad landing page, showed the skeleton for as long as
+     Shopify took to answer (measured: 1.3s to 4s). Once live data is in, the
+     snapshot is ignored entirely, so a piece Shopify has since unlisted is never
+     kept alive by stale data, and prices and stock always come from live. */
+  const piece = useMemo(
+    () =>
+      jewellery.find((j) => j.handle === handle) ??
+      (!isLive ? jewellerySnapshot.find((j) => j.handle === handle) : undefined) ??
+      null,
+    [handle, jewellery, isLive],
+  );
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
   const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();

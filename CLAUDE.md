@@ -27,6 +27,14 @@ presses **Publish** in Lovable.
   style, or observe. Client-side analytics go blind there.
 - Shopify bounces `/cart/c/<token>` to the primary domain, which this app serves —
   `src/pages/CartCheckoutRedirect.tsx` exists to catch that and is load-bearing.
+- Shopify ALSO bounces its shop-scoped pages here: the "View your order" link in
+  every order confirmation is `/<shop id>/orders/<token>/authenticate?key=…`
+  (shop id 68096065698). These used to fall through to "Coming Soon" — paying
+  customers, many of them COD, could not see their order. The `*` route is now
+  `src/pages/CatchAll.tsx`, which sends any path whose first segment is a 6+
+  digit number to `CHECKOUT_DOMAIN` unchanged (`src/lib/shopifyForward.ts`).
+  Every other unknown path still renders Coming Soon. Verified with a FAKE token
+  only — never probe with a real customer's order link.
 
 ## Design system
 
@@ -153,7 +161,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 166 tests
+npx vitest run                          # currently 177 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -226,11 +234,32 @@ both. So a server-side 301 is not available, and the security headers in that
 file are NOT in effect.
 
 `src/data/jewelleryHandles.ts` also lets ProductDetail's own hop happen on the
-first render instead of after a Shopify lookup. The bundled catalogue knows only 21 of 56 pieces, so
+first render instead of after a Shopify lookup. The bundled catalogue knows only 21 of 55 pieces, so
 35 — including most handles the catalogue ads point at — used to mount the
 apparel page and fetch before redirecting. Measured: 2 round trips and 396 ms
 down to 1 and 256 ms. A handle missing from that list costs a round trip, never
 correctness, so it going stale is a slowdown rather than a broken page.
+
+The PDP has the same gap, and it is closed by `src/data/jewellerySnapshot.ts`:
+every live piece the hand-authored `jewellery.ts` does not carry, generated from
+the store so the page draws on first paint instead of showing "Loading piece"
+until Shopify answers. `prism-riviere-bracelet` — the most-advertised piece —
+used to sit on that skeleton for 1.3–4 s; measured after, ~250 ms with Shopify
+delayed by 3 s. JewelDetail consults the snapshot ONLY until live data arrives,
+so a piece unlisted since the snapshot was taken never stays buyable, and a
+snapshot price is replaced by the live one within the same visit. It is
+imported only by JewelDetail so it stays out of the main chunk (+17 KB gzip on
+that route, main unchanged).
+
+Regenerate both files together from one live query:
+
+```
+npx vite-node scripts/generate-jewellery-snapshot.ts
+```
+
+`jewellerySnapshot.test.ts` fails if any handle in `jewelleryHandles.ts` has no
+first-paint data, so adding a piece in Shopify and regenerating only one file
+fails the suite rather than bringing the skeleton back.
 
 ## Conventions
 

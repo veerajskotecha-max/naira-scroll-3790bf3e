@@ -183,8 +183,10 @@ const parseDescription = (raw: string) => {
   };
 };
 
-/** Builds a full piece for a live Shopify listing that isn't in the bundled file. */
-const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
+/** Builds a full piece for a live Shopify listing that isn't in the bundled file.
+ * Exported so scripts/generate-jewellery-snapshot.ts can run the SAME mapping
+ * ahead of time — the PDP's first paint must be what live would have drawn. */
+export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
   const variant = node.variants.edges[0]?.node;
   const price = variant ? Math.round(Number(variant.price.amount)) : Math.round(Number(node.priceRange.minVariantPrice.amount));
   const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;

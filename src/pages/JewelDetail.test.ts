@@ -121,3 +121,22 @@ describe("ring size is chosen with buttons, not a dropdown", () => {
     expect(code).toMatch(/aria-checked=\{active\}/);
   });
 });
+
+/* The offer ladder and COD line were moved into the first screen because ad
+   visitors left before reaching them. Two ways that silently undoes itself: the
+   block drifting back below the Add to Cart area, or the sticky buy bar being
+   drawn over it on landing (it used to gate only on the price). */
+describe("first-screen buy facts", () => {
+  it("renders the facts between the price and the CTA block", () => {
+    const price = code.indexOf('id="product-price"');
+    const facts = code.indexOf("<PdpBuyFacts");
+    const actions = code.indexOf('id="product-actions"');
+    expect(price).toBeGreaterThan(-1);
+    expect(facts).toBeGreaterThan(price);
+    expect(actions).toBeGreaterThan(facts);
+  });
+
+  it("keeps the sticky buy bar off the facts, not just the price", () => {
+    expect(code).toMatch(/getElementById\("product-facts"\)/);
+  });
+});

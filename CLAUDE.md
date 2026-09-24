@@ -71,6 +71,19 @@ Known debt, same shape as the cart's old teal: `WishlistDrawer.tsx` still uses
 `hsl(186 35% 28%)` on its CTA and prices (lines ~50 and ~88). Off-palette, and
 it is the panel the heart opens.
 
+**The PDP's first screen is budgeted for the Instagram in-app browser** — half of
+all sessions, ~640px of visible page on a 360px Android. Rating, price, the
+multi-buy ladder and a delivery + COD line (`jewellery/PdpBuyFacts.tsx`) must all
+fit in it; measured 21–24 Sep, 76% of product-page visits saw no second page.
+Each fact is ONE line at 360px — adding a clause wraps it and pushes COD off the
+screen. The sticky buy bar waits until `#product-facts` is clear so it can never
+cover them. The COD line always carries its fee: Fastrr adds 5% to COD orders
+(verified on live orders), and that rate lives in `src/lib/payment.ts` with a
+literal test — change it there if the checkout setting changes.
+
+Known debt: `JewelTrustStrip.tsx` shows "Last 24 hours: N pieces sold", where N
+is a hash of the product handle, not a sales figure.
+
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on
 desktop; it is now `z-30`.
@@ -161,7 +174,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 177 tests
+npx vitest run                          # currently 185 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

@@ -22,6 +22,7 @@ import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
+import PdpBuyFacts from "@/components/jewellery/PdpBuyFacts";
 import ReelPeek from "@/components/reels/ReelPeek";
 import FomoPopup from "@/components/FomoPopup";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
@@ -227,8 +228,12 @@ const JewelDetail = () => {
       const offScreen = r.bottom < 0 || r.top > window.innerHeight;
       /* Never let the bar sit on top of the price. Pinned to the bottom of the
          screen it covered it outright — the shopper saw the name, two buy
-         buttons, and no price at all. */
-      const price = document.getElementById("product-price");
+         buttons, and no price at all. The offer and COD lines under the price
+         are held to the same rule: they were moved into the first screen, and
+         a bar drawn over them would put them straight back out of sight. They
+         sit below the price, so clearing them clears the price too. */
+      const price =
+        document.getElementById("product-facts") ?? document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear =
         !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
@@ -626,7 +631,7 @@ const JewelDetail = () => {
           <div className="hidden md:block">{!isMobile && Gallery}</div>
 
           {/* Details */}
-          <div className="mt-5 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
+          <div className="mt-4 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
             {/* Category, and the rating alongside it.
 
                 Contentsquare's 2026 benchmark puts mobile scroll rate at 45.2% —
@@ -657,12 +662,12 @@ const JewelDetail = () => {
             </div>
 
             {/* Title */}
-            <h1 className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em] mt-2" style={{ color: "hsl(0 0% 12%)" }}>
+            <h1 className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em] mt-1.5" style={{ color: "hsl(0 0% 12%)" }}>
               {piece.name}
             </h1>
 
             {/* Live price from the Shopify listing */}
-            <div id="product-price" className="mt-3 flex flex-wrap items-baseline gap-2">
+            <div id="product-price" className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
                 {piece.priceLabel}
               </span>
@@ -676,15 +681,12 @@ const JewelDetail = () => {
                   </span>
                 </>
               )}
+              <span className="text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.62)]">incl. taxes</span>
             </div>
-            <p className="mt-1.5 text-[12px] tracking-[0.02em] leading-relaxed" style={{ color: "hsl(0 0% 48%)" }}>
-              Inclusive of taxes · Free insured shipping across India
-            </p>
-            {/* The delivery + returns promise sits at the buy moment, not only
-                in the footer: it is the last question before Add to Cart. */}
-            <p className="mt-1 text-[12px] font-medium tracking-[0.02em] leading-relaxed" style={{ color: "hsl(186 35% 28%)" }}>
-              {arrivesBy ? `Order today, arrives by ${arrivesBy}` : PREORDER_NOTE} · 7-day returns · 2-year plating assurance
-            </p>
+            {/* Offer ladder, delivery date and COD, in the first screen with the
+                price. Returns and plating assurance moved to the line under Add
+                to Cart, which is where the shopper checks them. */}
+            <PdpBuyFacts arrivesBy={arrivesBy} soldOut={soldOut} />
 
             <JewelTrustStrip productKey={piece.handle} />
 
@@ -854,6 +856,7 @@ const JewelDetail = () => {
                     >
                       7-day returns
                     </Link>
+                    {" "}· 2-year plating assurance
                   </>
                 )}
               </p>

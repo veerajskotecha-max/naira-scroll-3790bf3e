@@ -1,6 +1,5 @@
 import { TicketPercent, Truck } from "lucide-react";
 import { QUANTITY_OFFERS } from "@/lib/promo";
-import { codFeeLabel } from "@/lib/payment";
 import { PREORDER_NOTE_SHORT } from "@/data/jewellery";
 
 /*
@@ -17,6 +16,10 @@ import { PREORDER_NOTE_SHORT } from "@/data/jewellery";
   browser — half of all sessions — where the visible page is ~640px tall. "Applied
   in your bag" is left to the Pairing Offer section further down; here it
   wrapped the line and pushed the COD line below the screen.
+
+  The COD fee is NOT quoted here — the owner's call, to keep the product page
+  clean. It is stated as its own line in the bag, in rupees, before the shopper
+  reaches the payment page (`CartDrawer.tsx`, rate in `src/lib/payment.ts`).
 
   Plain text, not links: a tappable-looking line that goes nowhere is a dead
   click, and /jewellery already carries most of the site's dead clicks.
@@ -46,7 +49,7 @@ const PdpBuyFacts = ({ arrivesBy, soldOut = false }: { arrivesBy: string | null;
           : arrivesBy
             ? `Free delivery by ${arrivesBy}`
             : `Free ${PREORDER_NOTE_SHORT.toLowerCase()}`}
-        <span className="text-[color:rgb(var(--nf-ink-rgb)/0.62)]"> · COD available ({codFeeLabel()})</span>
+        <span className="text-[color:rgb(var(--nf-ink-rgb)/0.62)]"> · COD available</span>
       </span>
     </p>
   </div>

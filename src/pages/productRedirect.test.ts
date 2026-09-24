@@ -67,3 +67,23 @@ describe("the /products -> /jewellery hop", () => {
     expect(parsed.filter((h) => !JEWELLERY_HANDLES.has(h))).toEqual([]);
   });
 });
+
+/* A catalogue or ad link to a piece since unlisted, and the bare /products
+   prefix, used to end on "Coming soon" — the one button there went to the
+   apparel line. Both must reach the jewellery listing with the ad's query. */
+describe("/products dead ends", () => {
+  const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+  const detail = strip(readFileSync(resolve(__dirname, "ProductDetail.tsx"), "utf8"));
+  const app = strip(readFileSync(resolve(__dirname, "../App.tsx"), "utf8"));
+
+  it("sends a handle Shopify does not return to the listing, keeping the query", () => {
+    const block = detail.match(/if \(isError \|\| !product\) \{[\s\S]*?replace \/>/)?.[0] ?? "";
+    expect(block).toMatch(/Navigate to=\{\{ pathname: "\/jewellery", search: window\.location\.search \}\}/);
+    expect(detail).not.toMatch(/shop\/indo-western"\s*\n?\s*primaryLabel/);
+  });
+
+  it("routes the bare /products and /product prefixes to the listing", () => {
+    expect(app).toMatch(/path="\/products" element=\{<KeepQuery to="\/jewellery" \/>\}/);
+    expect(app).toMatch(/path="\/product" element=\{<KeepQuery to="\/jewellery" \/>\}/);
+  });
+});

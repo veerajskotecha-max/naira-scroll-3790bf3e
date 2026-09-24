@@ -14,12 +14,13 @@ describe("PdpBuyFacts", () => {
     expect(screen.getByText("Buy 3, save 20%")).toBeTruthy();
   });
 
-  /* "COD available" next to "Free delivery" without the fee would put an
-     unannounced 5% in front of the shopper at payment. */
-  it("names COD together with its fee, never alone", () => {
+  /* The owner keeps the COD fee off the product page; the bag states it in
+     rupees instead. This pins that split so the fee is not re-added here. */
+  it("offers COD without quoting the fee, which the bag states", () => {
     const { container } = render(<PdpBuyFacts arrivesBy="Thu, 1 Oct" />);
     expect(container.textContent).toMatch(/Free delivery by Thu, 1 Oct/);
-    expect(container.textContent).toMatch(/COD available \(\+5%\)/);
+    expect(container.textContent).toMatch(/COD available/);
+    expect(container.textContent).not.toMatch(/%\)|\+5%/);
   });
 
   it("falls back to the working-day range when no date is computed", () => {

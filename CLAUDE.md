@@ -77,9 +77,11 @@ multi-buy ladder and a delivery + COD line (`jewellery/PdpBuyFacts.tsx`) must al
 fit in it; measured 21–24 Sep, 76% of product-page visits saw no second page.
 Each fact is ONE line at 360px — adding a clause wraps it and pushes COD off the
 screen. The sticky buy bar waits until `#product-facts` is clear so it can never
-cover them. The COD line always carries its fee: Fastrr adds 5% to COD orders
-(verified on live orders), and that rate lives in `src/lib/payment.ts` with a
-literal test — change it there if the checkout setting changes.
+cover them. The PDP says only "COD available" — the owner's call. The fee is
+stated in the BAG instead, as its own line in rupees ("COD fee · none if paid
+online"): Fastrr adds 5% of the post-discount total to COD orders (verified on
+live orders) and books it as shipping. The rate lives in `src/lib/payment.ts`
+with a literal test — change it there if the checkout setting changes.
 
 Known debt: `JewelTrustStrip.tsx` shows "Last 24 hours: N pieces sold", where N
 is a hash of the product handle, not a sales figure.
@@ -174,7 +176,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 185 tests
+npx vitest run                          # currently 188 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -239,7 +241,13 @@ stayed on. It uses `replaceState`, so Back returns to the ad rather than to a
 URL that only redirects again. The plugin FAILS THE BUILD if it parses fewer
 than 20 handles — a reformat of the generated file must not silently ship an
 empty map. The ProductDetail redirect stays as the fallback for a handle not in
-the list.
+the list. A handle Shopify does not return (a piece unlisted since the ad or
+catalogue entry was made), and the bare `/products` / `/product` prefixes, go to
+the `/jewellery` listing with the query kept — they used to end on a "Coming
+soon" page whose only button led to the apparel line. Verified 24 Sep: all 55
+jewellery URLs in the Meta catalogue (`www.nairaflore.com/products/<handle>?…
+&variant=…`, 302'd to the apex) reach their `/jewellery/` page with the query
+intact; the 18 apparel entries render on `/products/`.
 
 **This host does not honour `public/_headers` or `_redirects`** — verified live,
 nairaflore.com returns no CSP and no X-Frame-Options despite `_headers` setting

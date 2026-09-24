@@ -95,6 +95,9 @@ const AppShell = () => {
               handle, so alias the feed path onto it — without this every
               catalogue ad click falls through to the "*" Coming Soon route. */}
           <Route path="/products/:id" element={<ProductDetail />} />
+          {/* The bare prefixes rendered Coming Soon. */}
+          <Route path="/products" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/product" element={<KeepQuery to="/jewellery" />} />
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
           <Route path="/jewellery/collections/:slug" element={<JewelleryCategory />} />

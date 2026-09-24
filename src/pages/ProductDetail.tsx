@@ -20,7 +20,6 @@ import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { jewellery as staticJewellery } from "@/data/jewellery";
 import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
-import ComingSoon from "./ComingSoon";
 import ReelPeek from "@/components/reels/ReelPeek";
 
 /* Ad clicks land on /products/<handle>. For a handle we already know is
@@ -166,16 +165,12 @@ const ProductDetail = () => {
     );
   }
 
+  /* A handle Shopify no longer returns — a piece unlisted or drafted since
+     the ad or catalogue entry was made — used to land on a "Coming soon" page
+     whose only button went to the apparel line. Paid traffic goes to the
+     jewellery listing instead, keeping ?fbclid=/utm_* for the pixel. */
   if (isError || !product) {
-    return (
-      <ComingSoon
-        eyebrow="This piece has moved"
-        heading="Coming soon"
-        body="This piece isn't available right now. The rest of the collection is live and shipping in 3–5 working days."
-        primaryTo="/shop/indo-western"
-        primaryLabel="Back to shop"
-      />
-    );
+    return <Navigate to={{ pathname: "/jewellery", search: window.location.search }} replace />;
   }
 
 

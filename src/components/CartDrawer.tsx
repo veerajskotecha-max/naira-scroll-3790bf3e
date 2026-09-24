@@ -9,6 +9,7 @@ import { CartPromoField } from "@/components/cart/CartExtras";
 import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
 import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
+import { codFeeFor } from "@/lib/payment";
 import { Button } from "@/components/ui/button";
 import googlePayMark from "@/assets/google-pay-mark.svg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -236,6 +237,13 @@ const CartDrawer = () => {
                     <span>−{formatPrice(discountAmount)}</span>
                   </div>
                 )}
+                {/* The payment page adds this to a COD order and books it as
+                    shipping, under a bag that says shipping is free. Stated
+                    here, in rupees, it is known before the shopper leaves. */}
+                <div className="flex items-center justify-between">
+                  <span>COD fee · none if paid online</span>
+                  <span className="text-[var(--nf-text)]">+{formatPrice(Math.round(codFeeFor(orderTotal)))}</span>
+                </div>
               </div>
               {/* Total — the pre-discount figure stays visible beside it, so
                   what the ladder is worth is read at the moment of paying

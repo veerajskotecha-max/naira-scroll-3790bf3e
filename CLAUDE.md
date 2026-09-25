@@ -242,7 +242,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 229 tests
+npx vitest run                          # currently 231 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

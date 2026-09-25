@@ -23,7 +23,6 @@ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import PdpBuyFacts from "@/components/jewellery/PdpBuyFacts";
-import ReelPeek from "@/components/reels/ReelPeek";
 import FomoPopup from "@/components/FomoPopup";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
@@ -38,6 +37,7 @@ import { addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
+const MobileReelShop = lazy(() => import("@/components/reels/MobileReelShop"));
 
 
 /* Key facts distilled from the approved data model: finish and stone are
@@ -1015,7 +1015,9 @@ const JewelDetail = () => {
 
       <PressMarquee />
 
-      <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />
+      <Suspense fallback={<div className="min-h-[420px] border-b border-border bg-secondary/45 md:hidden" aria-hidden="true" />}>
+        <MobileReelShop />
+      </Suspense>
       <FomoPopup
         suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
         mobileStickyVisible={stickyBarVisible}

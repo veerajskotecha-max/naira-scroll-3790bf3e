@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { BEVEL, DEPTH, FILL, FRONT, GOLD, HOVER, SPIN } from "./config";
+import { BEVEL, DEPTH, FILL, FRONT, BLUSH, HOVER, SPIN } from "./config";
 import { FLOWER_SHAPES } from "./outline";
 
 /*
-  The brand-deck flower as a small gold charm beside the header wordmark,
+  The brand-deck flower as a small blush enamel charm beside the header wordmark,
   turning at the Naira box's pace.
 
   Loaded on demand by NairaFlower3D — never import this from anything in the
@@ -49,8 +49,7 @@ export function mountNairaFlower(
   renderer.toneMappingExposure = 0.92;
 
   const scene = new THREE.Scene();
-  // Polished metal is only as good as what it reflects: without a room around
-  // it the gold read as flat mustard.
+  // A soft room for the glaze to reflect, so the bevels pick out the shape.
   const pmrem = new THREE.PMREMGenerator(renderer);
   const env = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
   scene.environment = env;
@@ -63,8 +62,8 @@ export function mountNairaFlower(
   camera.position.set(0, 0, 1 / FILL / 2 / Math.tan(THREE.MathUtils.degToRad(FOV / 2)));
   camera.lookAt(0, 0, 0);
 
-  // Key from high and to the side: from the front it mirrored straight back
-  // off the face and the flower read pale cream, not gold, when face-on.
+  // Key from high and to the side: from the front it glared straight back off
+  // the flat face and the flower read pale cream when face-on.
   const key = new THREE.DirectionalLight(0xfff4e6, 1.6);
   key.position.set(4, 4, 1.2);
   scene.add(key);
@@ -74,12 +73,12 @@ export function mountNairaFlower(
 
   const geometry = buildFlower();
   const material = new THREE.MeshPhysicalMaterial({
-    color: GOLD.base,
-    metalness: 1,
-    roughness: GOLD.roughness,
-    // A thin lacquer keeps a crisp glint on the bevels over the satin face.
-    clearcoat: 0.25,
-    clearcoatRoughness: 0.3,
+    color: BLUSH.base,
+    metalness: 0,
+    roughness: BLUSH.roughness,
+    // The glaze: a clear coat that keeps a crisp glint on the bevels.
+    clearcoat: 0.6,
+    clearcoatRoughness: 0.25,
   });
   const flower = new THREE.Mesh(geometry, material);
 

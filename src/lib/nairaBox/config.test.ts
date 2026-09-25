@@ -48,3 +48,22 @@ describe("three.js stays out of the main bundle", () => {
     expect(component).not.toMatch(/from\s+["']@\/lib\/nairaFlower\/scene["']/);
   });
 });
+
+/* The owner asked for the box to open on its own and show the ring. Pins that
+   the loop exists, that each stage takes real time, and that the ring it shows
+   is the homepage's solitaire render, not a new asset that could drift. */
+describe("Naira box reveal", () => {
+  it("opens, holds and closes on a loop", async () => {
+    const { REVEAL } = await import("./config");
+    for (const key of ["firstAfter", "every", "open", "hold", "close"] as const) {
+      expect(REVEAL[key]).toBeGreaterThan(0);
+    }
+  });
+
+  it("reveals the solitaire from the homepage ring turn", () => {
+    const component = readFileSync(resolve(__dirname, "../../components/NairaBox3D.tsx"), "utf8");
+    const turn = readFileSync(resolve(__dirname, "../../components/jewellery/ZirconeTurn.tsx"), "utf8");
+    expect(component).toMatch(/import ringUrl from "@\/assets\/jewellery\/ring-cut-34\.webp"/);
+    expect(turn).toMatch(/ring-cut-34\.webp/);
+  });
+});

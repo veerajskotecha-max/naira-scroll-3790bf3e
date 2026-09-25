@@ -94,7 +94,14 @@ like the bag on bluorng.com, with the brand line under it. The band is a
 because the bubble sat over the copy on every PDP. It is the closed box from the real packaging (sleeve, lighter rim, drawer
 front and pull tab, lid print from the logo with the flower as the I), turns
 at the Bluorng bag's pace, ~35 s a turn (owner's brief after a 4 s turn was sent back; pinned in `config.test.ts`), hovers, spins on
-drag. There is no drawer interaction — the owner removed it. The copy says
+drag. On a loop (`REVEAL` in `config.ts`) it comes round to face the viewer,
+the drawer slides out and the homepage's solitaire render (`ring-cut-34.webp`)
+rises from a velvet cushion, holds with one glint, sinks and the drawer closes.
+The ring is hidden by two clipping planes updated per frame — the cushion's slot
+and the sleeve's front opening — never by fading: a fade left a ghost of the
+ring over the lid while the drawer slid home. The drawer body is drawn only
+while it is out; shut, its walls showed through near edge-on sides. Reduced
+motion gets the closed box with no reveal. Dragging mid-reveal closes it. The copy says
 "18K gold tone & rhodium plated", the listings' own words: "18K gold" alone would
 claim gold content, and materials are left out because some pieces are copper
 alloy. three.js (~146 KB gzip) must only arrive via the dynamic import in
@@ -106,13 +113,17 @@ front flickered as dotted lines mid-turn. Keep the camera's near/far tight
 
 **The header flower** (`components/NairaFlower3D.tsx`, scene in
 `lib/nairaFlower/`) is the stand-alone flower from the brand deck (p. 7),
-traced from the deck's own artwork into `outline.ts`, extruded and cast in
-satin 18K-gold-tone metal. It turns at the box's pace — its SPIN IS the box's
+traced from the deck's own artwork into `outline.ts`, extruded and glazed in
+the wordmark's blush (`--nf-blush`, the colour of the flower that is the I in
+NAIRA) — the owner's call after a gold version; enamel rather than metal,
+because a pink metal reads as rose gold. It stands exactly as tall as the
+wordmark: its box is a percentage of a wrapper around the logo `<img>`, so
+it follows every breakpoint's logo width. It turns at the box's pace — its SPIN IS the box's
 constant, pinned in its `config.test.ts` — with a lighter hover. It is
 positioned off the wordmark, not in the flow, so the logo stays centred: LEFT
 of it on phones (the icon row fills the right at 360px), RIGHT from `lg` (the
 nav links reach the wordmark at 1024). The header is on every page, so a flat
-gold SVG of the same outline paints first and three.js is fetched only after
+blush SVG of the same outline paints first and three.js is fetched only after
 `load` + idle; reduced motion and Data Saver keep the still and never
 download it. Face-on, a frontal key light mirrored off the flat face and read
 as cream — the key sits high and to the side on purpose.
@@ -207,7 +218,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 202 tests
+npx vitest run                          # currently 205 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

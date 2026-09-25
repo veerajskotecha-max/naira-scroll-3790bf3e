@@ -39,6 +39,14 @@ describe("NairaFlower3D", () => {
     expect(mount).toHaveBeenCalledTimes(1);
   });
 
+  /* The owner asked for the wordmark's pink: the flower that is the I in NAIRA
+     is blush, and this one is that I lifted out. The still is what shows until
+     the scene loads, and forever with reduced motion, so it must be blush too. */
+  it("draws the still in the wordmark's blush", () => {
+    const { container } = render(<NairaFlower3D />);
+    expect((container.querySelector("svg") as SVGElement).style.fill).toBe("var(--nf-blush)");
+  });
+
   /* It is decoration inside the home link; a screen reader should hear
      "NAIRA", not an unnamed image before it. */
   it("is hidden from assistive technology", () => {

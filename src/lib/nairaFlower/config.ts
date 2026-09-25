@@ -32,12 +32,14 @@ export const FILL = 0.76;
 export const DEPTH = 0.07;
 export const BEVEL = 0.018;
 
-/* 18K-gold-tone metal: the jewellery's own finish and the brand gold
-   (--nf-gold, #C99A4C). Metal needs a lighter base than the flat token to land
-   on it once the room's reflections are in. Satin rather than mirror: at 0.26
-   the flat face mirrored the room, blowing out white face-on and going olive
-   at a three-quarter turn. */
-export const GOLD = {
-  base: "#E0B060",
-  roughness: 0.4,
+/* The wordmark's own pink: the flower that stands as the I in NAIRA is blush
+   (--nf-blush, #FFBDA8, sampled from the logo at #FDBCA9), so the flower
+   beside it is the same colour and reads as that I lifted out and turned.
+   Glazed enamel, not metal: a metal pink tips into rose gold, which is not the
+   logo's colour. The base is a shade deeper than the token because lit and
+   tone-mapped it lands on it; at the flat token the lit face washed out to
+   near-white against the ivory bar. */
+export const BLUSH = {
+  base: "#F5A58F",
+  roughness: 0.5,
 };

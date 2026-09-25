@@ -1,19 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { SPIN as BOX_SPIN } from "@/lib/nairaBox/config";
 import { FILL, HALF_WIDTH, SECONDS_PER_TURN, SPIN, turnAngle } from "./config";
 import { FLOWER_ASPECT, FLOWER_SHAPES, flowerPath } from "./outline";
 import { WORDMARK, WORDMARK_FLOWER } from "./wordmark";
 
 const TAU = Math.PI * 2;
 
-/* The owner's brief: the box's slow, steady turn, then 30% quicker than it.
-   A rest-and-quick-turn shipped once and was sent back. Literals, so a change
-   of pace is a decision, not a drift. */
+/* The owner's number: one turn every 10 seconds, after the box's 35 s and
+   then ~27 s were each asked to go faster. Literal, so a change of pace is a
+   decision, not a drift. */
 describe("flower-I motion", () => {
-  it("turns steadily 30% faster than the Naira box, about once every 27 seconds", () => {
-    expect(SPIN).toBeCloseTo(BOX_SPIN * 1.3, 10);
-    expect(SECONDS_PER_TURN).toBeGreaterThan(26);
-    expect(SECONDS_PER_TURN).toBeLessThan(28);
+  it("turns steadily, once every 10 seconds", () => {
+    expect(SECONDS_PER_TURN).toBe(10);
+    expect(SPIN).toBeCloseTo((Math.PI * 2) / 10, 10);
   });
 
   it("starts face-on, over the flat flower, and never pauses", () => {

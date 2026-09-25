@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import printUrl from "@/assets/naira-box-print.webp";
 import posterUrl from "@/assets/naira-box-poster.webp";
+// The solitaire from the homepage ring turn, revealed when the drawer opens.
+import ringUrl from "@/assets/jewellery/ring-cut-34.webp";
 
 /*
   The Naira box, turning in 3D — the brand's answer to the bag above the
@@ -31,6 +33,7 @@ const NairaBox3D = ({ className = "" }: { className?: string }) => {
             if (cancelled) return;
             handle = mountNairaBox(canvas, {
               printUrl,
+              ringUrl,
               reducedMotion: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false,
               onReady: () => !cancelled && setLive(true),
             });

@@ -24,9 +24,23 @@ export const HOVER = {
    the wordmark reads from a lower, more product-like camera. */
 export const TILT = 0.16; // rad
 
-/* Resting three-quarter view — used for the still and for anyone with reduced
-   motion switched on. */
+/* Resting three-quarter view — used for the still, for anyone with reduced
+   motion switched on, and as the angle the box presents the ring from. */
 export const FRONT = -0.55;
+
+/* The reveal, on a loop: the box turns, comes round to face the viewer, the
+   drawer slides out and the solitaire rises from its cushion, holds, and the
+   drawer closes again. The first reveal comes soon after the band scrolls in,
+   because most visitors pass the foot of the page in seconds. */
+export const REVEAL = {
+  firstAfter: 2.5, // s of turning before the first reveal
+  every: 9, // s of turning between reveals
+  faceSpeed: 1.4, // rad/s while coming round to face the viewer
+  open: 1.1, // s for the drawer to slide out
+  hold: 2.8, // s with the ring up
+  close: 1.0, // s for the drawer to slide home
+  slide: 0.62, // world units the drawer travels
+};
 
 /* Proportions read off the packaging photography: a square lid and a depth a
    little under half the width. */
@@ -34,5 +48,7 @@ export const BOX = { w: 1.6, d: 1.6, h: 0.7, card: 0.03, tray: 0.022 };
 
 export const COLOURS = {
   card: "#D9BAB3",
+  cardDeep: "#C9A69E",
   rim: "#E8D2CB",
+  velvet: "#141112",
 };

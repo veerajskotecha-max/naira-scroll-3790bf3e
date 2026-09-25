@@ -129,9 +129,11 @@ blush SVG from the first paint; after `load` + idle three.js arrives, a blush
 enamel copy lands face-on exactly over it (checked in the browser: same box
 to a pixel, the bevel adds a one-pixel rim) and the two cross-fade. It turns
 on the I's STEM, not its own centre, so it circles the letter; edge-on it
-lines up with the stem and briefly becomes the I. It turns slowly and steadily at the box's pace — its SPIN IS the box's
-constant, pinned in `config.test.ts`. A rest-and-quick-turn (3 s face-on,
-1.6 s turn) shipped first and the owner sent it back for the box's pace. Reduced
+lines up with the stem and briefly becomes the I. It turns slowly and steadily, 30% quicker than the box (~27 s a turn) —
+its SPIN is the box's constant x `SPEED_OVER_BOX` 1.3, pinned in
+`config.test.ts`. A rest-and-quick-turn (3 s face-on, 1.6 s turn) shipped
+first and was sent back for the box's pace; the owner then asked for 30%
+more. Reduced
 motion and Data Saver keep the flat flower and never download three.js. The
 canvas is wider than the flower on purpose (`HALF_WIDTH`): the low leaf
 swings 0.42 flower-heights out from the stem. Face-on, a frontal key light

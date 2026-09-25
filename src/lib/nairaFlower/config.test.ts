@@ -6,13 +6,14 @@ import { WORDMARK, WORDMARK_FLOWER } from "./wordmark";
 
 const TAU = Math.PI * 2;
 
-/* The owner's brief, twice over: the box's slow turn. A rest-and-quick-turn
-   shipped once and was sent back, as a 4 s turn was on the box. */
+/* The owner's brief: the box's slow, steady turn, then 30% quicker than it.
+   A rest-and-quick-turn shipped once and was sent back. Literals, so a change
+   of pace is a decision, not a drift. */
 describe("flower-I motion", () => {
-  it("turns steadily at the Naira box's pace, about once every 35 seconds", () => {
-    expect(SPIN).toBe(BOX_SPIN);
-    expect(SECONDS_PER_TURN).toBeGreaterThan(34);
-    expect(SECONDS_PER_TURN).toBeLessThan(36);
+  it("turns steadily 30% faster than the Naira box, about once every 27 seconds", () => {
+    expect(SPIN).toBeCloseTo(BOX_SPIN * 1.3, 10);
+    expect(SECONDS_PER_TURN).toBeGreaterThan(26);
+    expect(SECONDS_PER_TURN).toBeLessThan(28);
   });
 
   it("starts face-on, over the flat flower, and never pauses", () => {

@@ -4,13 +4,15 @@ import { SPIN as BOX_SPIN } from "@/lib/nairaBox/config";
   How the flower that stands as the I in the header wordmark moves. Kept
   apart from the scene so the numbers can be tested without WebGL.
 
-  A slow, steady turn at the Naira box's pace — one revolution about every
-  35 seconds, Bluorng's. It is the box's constant, not a copy, so the two can
-  never drift apart. A rest-and-quick-turn (3 s face-on, 1.6 s turn) shipped
-  first and the owner asked for the box's slow turn back.
+  A slow, steady turn, 30% quicker than the Naira box — one revolution about
+  every 27 seconds. It is derived from the box's constant rather than copied,
+  so if the box's pace changes the flower keeps the same relation to it.
+  History: a rest-and-quick-turn (3 s face-on, 1.6 s turn) was sent back for
+  the box's pace; then the owner asked for 30% more speed than that.
 */
-export const SPIN = BOX_SPIN; // rad/s
-export const SECONDS_PER_TURN = (Math.PI * 2) / SPIN; // ≈ 35 s
+export const SPEED_OVER_BOX = 1.3;
+export const SPIN = BOX_SPIN * SPEED_OVER_BOX; // rad/s
+export const SECONDS_PER_TURN = (Math.PI * 2) / SPIN; // ≈ 27 s
 
 export function turnAngle(seconds: number): number {
   return seconds * SPIN;

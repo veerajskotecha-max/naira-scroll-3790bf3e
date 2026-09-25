@@ -129,10 +129,9 @@ blush SVG from the first paint; after `load` + idle three.js arrives, a blush
 enamel copy lands face-on exactly over it (checked in the browser: same box
 to a pixel, the bevel adds a one-pixel rim) and the two cross-fade. It turns
 on the I's STEM, not its own centre, so it circles the letter; edge-on it
-lines up with the stem and briefly becomes the I. Motion is a rest, not a
-spin (`REST` 3 s face-on, one eased `TURN` of 1.6 s, literals pinned in
-`config.test.ts`): the owner wanted more movement than the box's 35 s, and a
-steady spin never lets NAIRA read. Nothing is redrawn while it rests. Reduced
+lines up with the stem and briefly becomes the I. It turns slowly and steadily at the box's pace — its SPIN IS the box's
+constant, pinned in `config.test.ts`. A rest-and-quick-turn (3 s face-on,
+1.6 s turn) shipped first and the owner sent it back for the box's pace. Reduced
 motion and Data Saver keep the flat flower and never download three.js. The
 canvas is wider than the flower on purpose (`HALF_WIDTH`): the low leaf
 swings 0.42 flower-heights out from the stem. Face-on, a frontal key light
@@ -229,7 +228,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 210 tests
+npx vitest run                          # currently 209 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

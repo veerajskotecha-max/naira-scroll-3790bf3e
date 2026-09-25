@@ -1,32 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { CYCLE, FILL, HALF_WIDTH, REST, TURN, turnAngle } from "./config";
+import { SPIN as BOX_SPIN } from "@/lib/nairaBox/config";
+import { FILL, HALF_WIDTH, SECONDS_PER_TURN, SPIN, turnAngle } from "./config";
 import { FLOWER_ASPECT, FLOWER_SHAPES, flowerPath } from "./outline";
 import { WORDMARK, WORDMARK_FLOWER } from "./wordmark";
 
 const TAU = Math.PI * 2;
 
-/* The owner asked for more movement than the box's 35 s drift. The answer is
-   a rest face-on and one eased turn, not a faster spin: a steady spin never
-   lets NAIRA read. Literals, so a change of pace is a decision, not a drift. */
+/* The owner's brief, twice over: the box's slow turn. A rest-and-quick-turn
+   shipped once and was sent back, as a 4 s turn was on the box. */
 describe("flower-I motion", () => {
-  it("rests 3 s face-on, then turns once in 1.6 s", () => {
-    expect(REST).toBe(3);
-    expect(TURN).toBe(1.6);
+  it("turns steadily at the Naira box's pace, about once every 35 seconds", () => {
+    expect(SPIN).toBe(BOX_SPIN);
+    expect(SECONDS_PER_TURN).toBeGreaterThan(34);
+    expect(SECONDS_PER_TURN).toBeLessThan(36);
   });
 
-  it("holds exactly face-on through the rest, so it sits on the flat flower", () => {
-    for (const s of [0, 1, 2.99]) expect(turnAngle(s)).toBe(0);
-    expect(turnAngle(CYCLE + 1)).toBeCloseTo(TAU, 10);
-  });
-
-  it("turns one full revolution per cycle and never runs backwards", () => {
-    expect(turnAngle(REST + TURN / 2)).toBeCloseTo(Math.PI, 10);
-    let prev = 0;
-    for (let s = 0; s < CYCLE * 3; s += 0.01) {
-      const a = turnAngle(s);
-      expect(a).toBeGreaterThanOrEqual(prev - 1e-9);
-      prev = a;
-    }
+  it("starts face-on, over the flat flower, and never pauses", () => {
+    expect(turnAngle(0)).toBe(0);
+    expect(turnAngle(SECONDS_PER_TURN)).toBeCloseTo(TAU, 10);
+    expect(turnAngle(2) - turnAngle(1)).toBeCloseTo(turnAngle(10) - turnAngle(9), 10);
   });
 });
 

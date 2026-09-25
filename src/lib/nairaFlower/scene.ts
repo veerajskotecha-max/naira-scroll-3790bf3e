@@ -119,7 +119,6 @@ export function mountNairaFlower(
     last = now;
     t += dt;
     const angle = turnAngle(t);
-    // Resting is most of the cycle; nothing changes, so nothing is drawn.
     if (angle !== drawn) draw(angle);
   };
   raf = requestAnimationFrame(frame);

@@ -1,28 +1,19 @@
+import { SPIN as BOX_SPIN } from "@/lib/nairaBox/config";
+
 /*
   How the flower that stands as the I in the header wordmark moves. Kept
   apart from the scene so the numbers can be tested without WebGL.
 
-  It rests face-on, exactly over the still, then turns once around the I's
-  stem and settles again. The owner asked for more movement than the box's
-  35 s drift; a steady fast spin never lets the wordmark read, and a flower
-  that is always mid-turn is a thin line half the time. Resting face-on for
-  most of each cycle keeps NAIRA legible and makes the turn an event. The
-  turn is eased at both ends so it never snaps, which is the deck's "never
-  spin fast" kept in spirit.
+  A slow, steady turn at the Naira box's pace — one revolution about every
+  35 seconds, Bluorng's. It is the box's constant, not a copy, so the two can
+  never drift apart. A rest-and-quick-turn (3 s face-on, 1.6 s turn) shipped
+  first and the owner asked for the box's slow turn back.
 */
-export const REST = 3; // seconds face-on between turns
-export const TURN = 1.6; // seconds for one full turn
-export const CYCLE = REST + TURN;
+export const SPIN = BOX_SPIN; // rad/s
+export const SECONDS_PER_TURN = (Math.PI * 2) / SPIN; // ≈ 35 s
 
-const easeInOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-
-/* The flower's angle at a time: 0 while resting, one eased revolution per
-   cycle. Whole turns accumulate so the angle never jumps back. */
 export function turnAngle(seconds: number): number {
-  const n = Math.floor(seconds / CYCLE);
-  const phase = seconds - n * CYCLE;
-  const turned = phase < REST ? 0 : easeInOut((phase - REST) / TURN);
-  return (n + turned) * Math.PI * 2;
+  return seconds * SPIN;
 }
 
 /* Face-on, exactly as the flat still draws it, so the hand-over from the still

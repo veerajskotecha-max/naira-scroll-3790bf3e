@@ -86,6 +86,17 @@ with a literal test — change it there if the checkout setting changes.
 Known debt: `JewelTrustStrip.tsx` shows "Last 24 hours: N pieces sold", where N
 is a hash of the product handle, not a sales figure.
 
+**The 3D Naira box** (`components/NairaBox3D.tsx`, scene in `lib/nairaBox/`) sits
+in the full footer above the sign-off, like the bag on bluorng.com. It is built
+from the real packaging (sleeve, drawer, velvet, lid print from the logo with
+the flower as the I), turns once every 4 s (owner's brief, pinned in
+`config.test.ts`), hovers, spins on drag and opens the drawer on tap. three.js
+(~146 KB gzip) must only arrive via the dynamic import in NairaBox3D — the test
+fails on any other static import. The sleeve is ONE extruded mesh and the drawer
+front sits in the rim's plane under a polygonOffset rim: every version built
+from butted panels or with a recessed front flickered as dotted lines mid-turn.
+Keep the camera's near/far tight (1–15); at 0.1–30 the lining bled through.
+
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on
 desktop; it is now `z-30`.
@@ -176,7 +187,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 188 tests
+npx vitest run                          # currently 191 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

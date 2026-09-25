@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BadgeCheck, LockKeyhole, RotateCcw, Truck } from "lucide-react";
 import nairaLogo from "@/assets/naira-logo-footer.svg";
+import NairaBox3D from "@/components/NairaBox3D";
 
 const shopLinks = [
   { label: "Dresses", to: "/shop/indo-western?category=dresses" },
@@ -370,9 +371,12 @@ const Footer = ({ compact = false }: { compact?: boolean }) => {
           </p>
         </div>
 
+        {/* The box every piece is packed in, turning above the sign-off. */}
+        <NairaBox3D className="mt-10" />
+
         {/* Bottom bar */}
         <div
-          className="pt-6 mt-8 text-center"
+          className="pt-6 mt-4 text-center"
           style={{ borderTop: "1px solid var(--nf-footer-hairline-strong)" }}
         >
           <p

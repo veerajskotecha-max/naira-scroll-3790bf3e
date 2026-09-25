@@ -11,9 +11,10 @@ Built from the product record, not from a likeness:
 
 | From the product | In the model |
 | --- | --- |
-| Cushion cut CZ, ~5 mm | superellipse lofted through table → girdle → culet, flat shaded |
-| Fine pavé halo | 26 stones per link at 1/7 the centre stone's size |
-| Aqua, pink, yellow repeating | `#7FC8DC`, `#F0A6BE`, `#F2DC9B` |
+| Cushion cut CZ, ~5 mm | **step cut** — wide table, two concentric crown steps, girdle, pavilion |
+| Stone fills ~2/3 of the link | girdle 0.325 in a 1.0 frame, hole 0.72 |
+| Fine pavé halo | 28 stones per link at 1/11 the centre stone's size |
+| Aqua, pink, yellow repeating | `#6CC4DE`, `#F193AF`, `#F0DC8C` |
 | Rhodium plated | `metalness: 1`, `roughness: 0.07` |
 | Fold over clasp | plate + leaf + two lips, length = the chord of the gap |
 | 18 cm, 15–19 adjustable | 19 links, radius derived from link pitch |
@@ -43,5 +44,15 @@ them out through transmission and specular the same way the camera did.
 - **Element screenshots time out on a spinning canvas** — Playwright waits for
   the element to be stable and it never is. Clip a page screenshot instead.
 
-Rendered and compared against the product photography six times; the harness
+- **These are step cuts, not brilliants.** Zooming into the packshot shows a
+  wide flat table with two concentric bevels, which is why the real stones
+  hold flat blocks of colour where a brilliant scatters them into white
+  sparkle. Cutting them as brilliants is most of why the first version read
+  as "no colours".
+- **`color` alone barely tints a transmissive material.** `attenuationColor`
+  with a short `attenuationDistance` is what carries colour through the stone.
+- **The setting has to be open under the stone.** A solid back plate reflects
+  off the pavilion as an opaque grey lump in the middle of every gem.
+
+Rendered and compared against the product photography nine times; the harness
 is `shopify/harness/render3d.mjs`.

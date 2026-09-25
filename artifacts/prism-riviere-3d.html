@@ -135,8 +135,8 @@
   </div>
 
   <dl class="spec">
-    <div><dt>Stone</dt><dd>Cushion cut cubic zirconia, 5&nbsp;mm</dd></div>
-    <div><dt>Setting</dt><dd>Fine pavé halo, 26 stones per link</dd></div>
+    <div><dt>Stone</dt><dd>Step cut cushion, 5&nbsp;mm</dd></div>
+    <div><dt>Setting</dt><dd>Fine pavé halo, 28 stones per link</dd></div>
     <div><dt>Colour order</dt><dd>
       <span class="swatch" style="background:#7FC8DC"></span>aqua ·
       <span class="swatch" style="background:#F0A6BE"></span>pink ·
@@ -257,36 +257,56 @@
     }
     return pts;
   }
-  function cushionGeometry(r, crown, pav, p) {
-    var table = superellipse(r * 0.54, p);
-    var gTop = superellipse(r, p);
-    var gBot = superellipse(r * 0.985, p);
+
+  /* Zooming into the packshot settles what these stones actually are: a big
+     flat table with two concentric stepped bevels round it, not the radiating
+     brilliant fan the first version cut. That is a step cut — an emerald cut
+     on a cushion outline — and it is why the real stones hold flat blocks of
+     colour where a brilliant would scatter them into white sparkle. Getting
+     this wrong is most of why the render read as "no colours".
+
+     Rings, top to bottom: table (wide), two crown steps, girdle, pavilion to
+     a culet. Every quad gets its own vertices so flatShading makes each step
+     a real plane. */
+  function cushionGeometry(r, crown, pav, p, opts) {
+    opts = opts || {};
+    var tableR = opts.table || 0.62;        // table as a fraction of the girdle
+    var rings = [
+      { pts: superellipse(r * tableR, p),        y: crown },
+      { pts: superellipse(r * (tableR + (1 - tableR) * 0.45), p), y: crown * 0.62 },
+      { pts: superellipse(r * (tableR + (1 - tableR) * 0.80), p), y: crown * 0.28 },
+      { pts: superellipse(r, p),                 y: 0 },
+      { pts: superellipse(r * 0.985, p),         y: -0.07 * r }
+    ];
     var pos = [];
     function tri(a, b, c) { pos.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]); }
-    function ring(lo, loY, hi, hiY) {
-      for (var i = 0; i < SEG; i++) {
-        var j = (i + 1) % SEG;
-        var A = [lo[i][0], loY, lo[i][1]], B = [lo[j][0], loY, lo[j][1]];
-        var C = [hi[j][0], hiY, hi[j][1]], D = [hi[i][0], hiY, hi[i][1]];
+
+    // table
+    var t = rings[0];
+    for (var i = 0; i < SEG; i++) {
+      var j = (i + 1) % SEG;
+      tri([0, t.y, 0], [t.pts[i][0], t.y, t.pts[i][1]], [t.pts[j][0], t.y, t.pts[j][1]]);
+    }
+    // crown steps and girdle
+    for (var k = 0; k < rings.length - 1; k++) {
+      var hi = rings[k], lo = rings[k + 1];
+      for (var m = 0; m < SEG; m++) {
+        var n = (m + 1) % SEG;
+        var A = [lo.pts[m][0], lo.y, lo.pts[m][1]], B = [lo.pts[n][0], lo.y, lo.pts[n][1]];
+        var C = [hi.pts[n][0], hi.y, hi.pts[n][1]], D = [hi.pts[m][0], hi.y, hi.pts[m][1]];
         tri(A, B, C); tri(A, C, D);
       }
     }
-    // table, as a fan
-    for (var i = 0; i < SEG; i++) {
-      var j = (i + 1) % SEG;
-      tri([0, crown, 0], [table[i][0], crown, table[i][1]], [table[j][0], crown, table[j][1]]);
+    // pavilion
+    var g0 = rings[rings.length - 1];
+    for (var q = 0; q < SEG; q++) {
+      var w = (q + 1) % SEG;
+      tri([g0.pts[w][0], g0.y, g0.pts[w][1]], [g0.pts[q][0], g0.y, g0.pts[q][1]], [0, -pav, 0]);
     }
-    ring(gTop, 0.0, table, crown);          // crown facets
-    ring(gBot, -0.06 * r, gTop, 0.0);       // girdle
-    // pavilion, converging on the culet
-    for (var k = 0; k < SEG; k++) {
-      var m = (k + 1) % SEG;
-      tri([gBot[m][0], -0.06 * r, gBot[m][1]], [gBot[k][0], -0.06 * r, gBot[k][1]], [0, -pav, 0]);
-    }
-    var g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    g.computeVertexNormals();
-    return g;
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geo.computeVertexNormals();
+    return geo;
   }
 
   function gemMaterial(hex) {
@@ -296,12 +316,19 @@
          on a dark ground because it returns light internally. Dropping
          transmission and adding a little emissive of its own tint is what
          gets the pastels back. */
+      /* Transmission at 0.70 was letting a dark room through the stone and
+         bleaching the tint out of it; `attenuationColor` is what actually
+         carries colour through a transmissive material, and without it the
+         `color` barely shows. Saturated tints plus attenuation over a short
+         distance give the flat blocks of aqua, rose and lemon the photographs
+         hold. */
       color: new THREE.Color(hex),
-      emissive: new THREE.Color(hex), emissiveIntensity: 0.11,
+      attenuationColor: new THREE.Color(hex), attenuationDistance: 0.70,
+      emissive: new THREE.Color(hex), emissiveIntensity: 0.13,
       metalness: 0, roughness: 0.01,
-      transmission: 0.70, thickness: 0.30, ior: 2.15,
+      transmission: 0.62, thickness: 0.85, ior: 2.15,
       specularIntensity: 1, clearcoat: 1, clearcoatRoughness: 0.01,
-      envMapIntensity: 2.6, flatShading: true,
+      envMapIntensity: 2.2, flatShading: true,
       transparent: true, opacity: 1
     });
   }
@@ -335,7 +362,10 @@
     s.lineTo(-h, -h + r); s.quadraticCurveTo(-h, -h, -h + r, -h);
     return s;
   }
-  var FRAME = 1.0, HOLE = 0.50, PAVE_N = 26;
+  /* Measured off the packshot: the stone plus its halo fills about two thirds
+     of the link and the bezel is a thin rim. At HOLE 0.50 with a 0.235 stone
+     the setting was mostly metal and the stones read as small. */
+  var FRAME = 1.0, HOLE = 0.72, PAVE_N = 28;
   function makeLink(tint) {
     var link = new THREE.Group();
 
@@ -350,14 +380,24 @@
     frame.position.y = -0.085;
     link.add(frame);
 
-    // back plate, so you never see through the setting
-    var back = new THREE.Mesh(new THREE.BoxGeometry(FRAME * 0.92, 0.05, FRAME * 0.92), rhodium);
-    back.position.y = -0.11;
+    /* The back plate was sitting directly under the stone and the pavilion
+       reflected it as an opaque grey lump at the bottom of every gem. A real
+       setting is open under the stone, or the cavity is dark. This one is a
+       frame with a hole rather than a solid slab, dropped clear of the
+       pavilion, so the stone returns the environment instead. */
+    var backShape = roundedSquare(FRAME * 0.94, 0.16);
+    backShape.holes.push(new THREE.Path(roundedSquare(HOLE * 0.78, 0.09).getPoints(36)));
+    var back = new THREE.Mesh(new THREE.ExtrudeGeometry(backShape, {
+      depth: 0.05, bevelEnabled: false, curveSegments: 8
+    }), rhodium);
+    back.rotation.x = -Math.PI / 2;
+    back.position.y = -0.17;
     link.add(back);
 
     // centre stone
-    var gem = new THREE.Mesh(cushionGeometry(0.235, 0.125, 0.30, 3.1), gemMaterial(tint));
-    gem.position.y = 0.105;
+    // deeper pavilion, so it has somewhere to send light other than the plate
+    var gem = new THREE.Mesh(cushionGeometry(0.325, 0.135, 0.46, 3.0), gemMaterial(tint));
+    gem.position.y = 0.100;
     link.add(gem);
 
     /* Pavé halo: twenty tiny stones set into the bezel flat, walked around
@@ -368,9 +408,9 @@
        a seventh of the centre — at 0.084 against a 0.235 centre they were a
        THIRD of it, and twenty of those read as a daisy chain rather than
        pavé. 0.033 is the seventh. */
-    var paveGeo = cushionGeometry(0.033, 0.021, 0.036, 2.4);
+    var paveGeo = cushionGeometry(0.030, 0.019, 0.033, 2.4, { table: 0.5 });
     // hugging the centre stone (0.235) rather than out at the frame edge
-    var path = superellipse(0.292, 3.2);
+    var path = superellipse(0.382, 3.1);
     for (var i = 0; i < PAVE_N; i++) {
       var f = (i / PAVE_N) * path.length;
       var a = path[Math.floor(f) % path.length], b = path[Math.ceil(f) % path.length];
@@ -378,7 +418,7 @@
       var st = new THREE.Mesh(paveGeo, paveMat);
       // 0.055 put every halo stone UNDER the frame's top face (-0.085 + 0.17
       // extrude = +0.085), so the whole pavé was invisible in the first render.
-      st.position.set(a[0] + (b[0] - a[0]) * m, 0.100, a[1] + (b[1] - a[1]) * m);
+      st.position.set(a[0] + (b[0] - a[0]) * m, 0.094, a[1] + (b[1] - a[1]) * m);
       st.rotation.y = Math.random() * Math.PI;
       link.add(st);
     }
@@ -389,10 +429,14 @@
      19 links plus the clasp on an 18 cm loop. Modelled in link-widths: the
      radius follows from the count so the frames sit shoulder to shoulder the
      way they do on the wrist, instead of being spaced by eye. */
-  var TINTS = ['#7FC8DC', '#F0A6BE', '#F2DC9B'];
+  /* Halfway between the measured means (#9bc0c6 / #d2b9b8 / #d0b88d, which
+     are what the camera recorded after the highlights washed them out) and
+     the saturated version, which came out as candy. The product copy is
+     explicit: "aqua blue, soft pink and pale yellow" — pastels. */
+  var TINTS = ['#6CC4DE', '#F193AF', '#F0DC8C'];
   var LINKS = 19, CLASP_SPAN = 2.25;
   var bracelet = new THREE.Group();
-  var step = FRAME + 0.045;
+  var step = FRAME + 0.012;
   var total = LINKS * step + CLASP_SPAN * step;
   var R = total / (Math.PI * 2);
 

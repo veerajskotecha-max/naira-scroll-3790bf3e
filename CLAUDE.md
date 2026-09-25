@@ -86,16 +86,21 @@ with a literal test — change it there if the checkout setting changes.
 Known debt: `JewelTrustStrip.tsx` shows "Last 24 hours: N pieces sold", where N
 is a hash of the product handle, not a sales figure.
 
-**The 3D Naira box** (`components/NairaBox3D.tsx`, scene in `lib/nairaBox/`) sits
-in the full footer above the sign-off, like the bag on bluorng.com. It is built
-from the real packaging (sleeve, drawer, velvet, lid print from the logo with
-the flower as the I), turns once every 4 s (owner's brief, pinned in
-`config.test.ts`), hovers, spins on drag and opens the drawer on tap. three.js
-(~146 KB gzip) must only arrive via the dynamic import in NairaBox3D — the test
-fails on any other static import. The sleeve is ONE extruded mesh and the drawer
-front sits in the rim's plane under a polygonOffset rim: every version built
-from butted panels or with a recessed front flickered as dotted lines mid-turn.
-Keep the camera's near/far tight (1–15); at 0.1–30 the lining bled through.
+**The 3D Naira box** (`components/NairaBoxShowcase.tsx` → `NairaBox3D.tsx`, scene
+in `lib/nairaBox/`) sits on its own packshot band (`--nf-surface-raised`) just
+above the full footer, like the bag on bluorng.com, with one line of copy under
+it. It is the closed box from the real packaging (sleeve, lighter rim, drawer
+front and pull tab, lid print from the logo with the flower as the I), turns
+once every 4 s (owner's brief, pinned in `config.test.ts`), hovers, and spins on
+drag. There is no drawer interaction — the owner removed it. The copy says
+"18K gold tone & rhodium plated", the listings' own words: "18K gold" alone would
+claim gold content, and materials are left out because some pieces are copper
+alloy. three.js (~146 KB gzip) must only arrive via the dynamic import in
+NairaBox3D — the test fails on any other static import. The sleeve is ONE
+extruded mesh and the drawer front sits in the rim's plane under a
+polygonOffset rim: every version built from butted panels or with a recessed
+front flickered as dotted lines mid-turn. Keep the camera's near/far tight
+(1–15); at 0.1–30 inner faces bled through.
 
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on

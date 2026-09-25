@@ -4,7 +4,7 @@ import posterUrl from "@/assets/naira-box-poster.webp";
 
 /*
   The Naira box, turning in 3D — the brand's answer to the bag above the
-  footer on bluorng.com.
+  footer on bluorng.com. Rendered by NairaBoxShowcase.
 
   The scene is ~146 KB gzipped (three.js) and sits at the bottom of every page, so it is
   fetched only when the box comes within a screen of the viewport. Until the
@@ -51,7 +51,7 @@ const NairaBox3D = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={`relative mx-auto aspect-[5/4] w-full max-w-[380px] ${className}`}>
+    <div className={`relative mx-auto aspect-[5/4] w-full ${className}`}>
       <img
         src={posterUrl}
         alt=""
@@ -63,7 +63,7 @@ const NairaBox3D = ({ className = "" }: { className?: string }) => {
       <canvas
         ref={canvasRef}
         role="img"
-        aria-label="The Naira gift box, turning. Drag to spin it; tap it to open the drawer."
+        aria-label="The Naira gift box, turning. Drag to spin it."
         className={`absolute inset-0 h-full w-full cursor-grab touch-pan-y transition-opacity duration-500 active:cursor-grabbing ${live ? "opacity-100" : "opacity-0"}`}
       />
     </div>

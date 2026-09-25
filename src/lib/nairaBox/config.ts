@@ -16,12 +16,16 @@ export const DRAG = 0.012; // rad per px of drag
 export const HOVER = {
   lift: 0.07, // world units up and down
   period: 3.2, // seconds per float cycle
-  sway: 0.035, // rad of tilt at the top of the float
+  sway: 0.03, // rad of tilt at the top of the float
 };
 
-/* Resting three-quarter view, drawer towards the viewer — used when the drawer
-   opens and for anyone with reduced motion switched on. */
-export const FRONT = -0.35;
+/* The box leans its lid towards the viewer, as in the levitating packshot, so
+   the wordmark reads from a lower, more product-like camera. */
+export const TILT = 0.16; // rad
+
+/* Resting three-quarter view — used for the still and for anyone with reduced
+   motion switched on. */
+export const FRONT = -0.55;
 
 /* Proportions read off the packaging photography: a square lid and a depth a
    little under half the width. */
@@ -29,7 +33,5 @@ export const BOX = { w: 1.6, d: 1.6, h: 0.7, card: 0.03, tray: 0.022 };
 
 export const COLOURS = {
   card: "#D9BAB3",
-  cardDeep: "#C9A69E",
   rim: "#E8D2CB",
-  velvet: "#141112",
 };

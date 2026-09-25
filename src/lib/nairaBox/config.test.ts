@@ -24,16 +24,27 @@ describe("three.js stays out of the main bundle", () => {
       e.isDirectory() ? files(join(dir, e.name)) : /\.(tsx?|jsx?)$/.test(e.name) ? [join(dir, e.name)] : []
     );
 
-  it("is imported statically only by the scene module", () => {
+  it("is imported statically only by the scene modules", () => {
     const importers = files(src).filter((f) =>
       /from\s+["']three(\/[^"']*)?["']/.test(readFileSync(f, "utf8"))
     );
-    expect(importers.map((f) => f.replace(src, "src"))).toEqual(["src/lib/nairaBox/scene.ts"]);
+    expect(importers.map((f) => f.replace(src, "src")).sort()).toEqual([
+      "src/lib/nairaBox/scene.ts",
+      "src/lib/nairaFlower/scene.ts",
+    ]);
   });
 
   it("reaches the scene only through a dynamic import", () => {
     const component = readFileSync(resolve(src, "components/NairaBox3D.tsx"), "utf8");
     expect(component).toMatch(/import\("@\/lib\/nairaBox\/scene"\)/);
     expect(component).not.toMatch(/from\s+["']@\/lib\/nairaBox\/scene["']/);
+  });
+
+  /* The flower is in the header, on every page and above the fold — the worst
+     place for three.js to land in the first download. */
+  it("reaches the header flower's scene only through a dynamic import", () => {
+    const component = readFileSync(resolve(src, "components/NairaFlower3D.tsx"), "utf8");
+    expect(component).toMatch(/import\("@\/lib\/nairaFlower\/scene"\)/);
+    expect(component).not.toMatch(/from\s+["']@\/lib\/nairaFlower\/scene["']/);
   });
 });

@@ -5,6 +5,7 @@ import MobileMenu from "./MobileMenu";
 import MegaMenu from "./nav/MegaMenu";
 import SearchOverlay from "./nav/SearchOverlay";
 import nairaLogo from "@/assets/naira-logo.svg";
+import NairaFlower3D from "./NairaFlower3D";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -95,8 +96,13 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             </div>
           </div>
 
-          {/* Center logo */}
-          <Link to="/" className="flex items-center justify-center h-full">
+          {/* Center logo. The flower is positioned off the wordmark rather than
+              beside it in the flow, so the wordmark stays centred and neither
+              side column gives up room. It takes whichever side is empty: the
+              left on phones (the icon row fills the right at 360px), the right
+              from lg up (the nav links run right up to the wordmark at 1024). */}
+          <Link to="/" className="relative flex items-center justify-center h-full">
+            <NairaFlower3D className="absolute top-1/2 -translate-y-1/2 right-full mr-1 lg:right-auto lg:left-full lg:mr-0 lg:ml-2 h-[38px] md:h-[44px] lg:h-[54px]" />
             <img
               src={nairaLogo}
               alt="NAIRA"

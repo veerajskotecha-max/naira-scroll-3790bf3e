@@ -104,6 +104,19 @@ polygonOffset rim: every version built from butted panels or with a recessed
 front flickered as dotted lines mid-turn. Keep the camera's near/far tight
 (1–15); at 0.1–30 inner faces bled through.
 
+**The header flower** (`components/NairaFlower3D.tsx`, scene in
+`lib/nairaFlower/`) is the stand-alone flower from the brand deck (p. 7),
+traced from the deck's own artwork into `outline.ts`, extruded and cast in
+satin 18K-gold-tone metal. It turns at the box's pace — its SPIN IS the box's
+constant, pinned in its `config.test.ts` — with a lighter hover. It is
+positioned off the wordmark, not in the flow, so the logo stays centred: LEFT
+of it on phones (the icon row fills the right at 360px), RIGHT from `lg` (the
+nav links reach the wordmark at 1024). The header is on every page, so a flat
+gold SVG of the same outline paints first and three.js is fetched only after
+`load` + idle; reduced motion and Data Saver keep the still and never
+download it. Face-on, a frontal key light mirrored off the flat face and read
+as cream — the key sits high and to the side on purpose.
+
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on
 desktop; it is now `z-30`.
@@ -194,7 +207,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 193 tests
+npx vitest run                          # currently 202 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

@@ -125,7 +125,7 @@ const Auth = () => {
         canonical="https://nairaflore.com/auth"
         noindex
       />
-      <main className="min-h-[100svh] bg-[#FBF3EC] pt-[110px] text-[#1A1614] md:pt-[130px]">
+      <main className="min-h-[100svh] bg-[#FBF3EC] pt-[123px] text-[#1A1614] md:pt-[144px]">
         <section className="mx-auto flex max-w-md flex-col items-center px-6 py-14 text-center md:py-20">
           <p className="text-[10px] tracking-[0.45em] text-[#B0843A]" style={jost}>
             NAIRA FLORE MEMBERS

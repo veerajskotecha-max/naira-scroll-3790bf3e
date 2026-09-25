@@ -57,8 +57,19 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
+            {/* Search joins the menu on the left below lg. With four icons on the
+                right, the right column outgrew the left on a 360px phone: the
+                wordmark sat off-centre and ran into the search icon once it
+                grew 20%. Three a side keeps it centred with room to breathe. */}
+            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="lg:hidden -m-3 ml-1 p-3 flex items-center">
+              <Search
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+              />
+            </button>
 
-            <div className="hidden lg:flex items-center gap-[30px] lg:gap-[34px]">
+            <div className="hidden lg:flex items-center gap-[20px] xl:gap-[34px]">
               {leftLinks.map((link) =>
                 link.mega ? (
                   <div key={link.label} className="relative group">
@@ -97,7 +108,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
 
           {/* Center logo: the vector wordmark, whose flower-I turns in 3D. */}
           <Link to="/" className="flex items-center justify-center h-full">
-            <NairaWordmark className="w-[80px] sm:w-[90px] md:w-[100px] lg:w-[130px] xl:w-[140px]" />
+            <NairaWordmark className="w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
           </Link>
 
           {/* Right section */}
@@ -108,7 +119,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             >
               CONTACT
             </Link>
-            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="-m-3 p-3 flex items-center">
+            <button onClick={() => setSearchOpen(true)} aria-label="Search" className="hidden lg:flex -m-3 p-3 items-center">
               <Search
                 size={20}
                 strokeWidth={1.5}

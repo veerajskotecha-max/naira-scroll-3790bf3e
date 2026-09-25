@@ -40,7 +40,7 @@ const Gifting = () => {
           ]),
         ]}
       />
-      <div className="bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+      <div className="bg-nf-ivory pt-[107px] text-nf-ink md:pt-[114px] lg:pt-[132px]">
         <header className="mx-auto max-w-6xl px-4 pb-8 pt-10 sm:px-6 md:pt-14">
           <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>
             THE GIFT EDIT

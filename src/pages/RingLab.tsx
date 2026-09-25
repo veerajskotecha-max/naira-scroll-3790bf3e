@@ -19,7 +19,7 @@ const Bar = ({ n, label, note }: { n: string; label: string; note: string }) => 
 const RingLab = () => (
   <>
     <PageSEO title="Ring Effect | Variations" description="Three ways to improve the ring hero." canonical="https://nairaflore.com/ring-lab" noindex />
-    <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+    <div className="pt-[107px] md:pt-[114px] lg:pt-[132px]">
       <Bar n="1" label="LIVING FIRE" note="rotating light-caustics + cursor sparkle on the stone" />
       <RingLivingFire />
       <Bar n="2" label="MIRROR PLINTH" note="reflection + sweeping studio light, boutique display" />

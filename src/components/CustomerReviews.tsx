@@ -640,7 +640,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
   const featuredReview = filteredReviews[0] ?? localReviews[0];
 
   return (
-    <section id="customer-reviews" className="mx-auto max-w-[1200px] px-4 pb-14 md:pb-20" style={{ scrollMarginTop: "120px" }}>
+    <section id="customer-reviews" className="mx-auto max-w-[1200px] px-4 pb-14 md:pb-20" style={{ scrollMarginTop: "136px" }}>
       <div className="border-y border-border py-6 md:py-8">
         <div className="flex items-end justify-between gap-4">
           <div>

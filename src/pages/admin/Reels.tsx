@@ -229,7 +229,7 @@ const AdminReels = () => {
   return (
     <>
       <PageSEO title="Reel Studio | Naira Flore" description="Upload and manage shoppable reels." noindex />
-      <div className="mx-auto max-w-[880px] px-6 pt-[130px] pb-20">
+      <div className="mx-auto max-w-[880px] px-6 pt-[143px] pb-20">
         <h1 className="font-cormorant text-[34px]">Reel studio</h1>
         <p className="mb-8 text-sm" style={{ color: "hsl(0 0% 42%)" }}>
           Upload vertical (9:16) clips. Keep files under ~15 MB so product pages stay fast.

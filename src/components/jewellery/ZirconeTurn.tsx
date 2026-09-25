@@ -213,7 +213,7 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
       <div ref={rootRef}>
         <div
           ref={pinRef}
-          className="relative flex flex-col items-center justify-center px-4 pb-4 pt-[96px] md:h-[100svh] md:min-h-[560px] md:px-6 md:pb-10 md:pt-[120px]"
+          className="relative flex flex-col items-center justify-center px-4 pb-4 pt-[109px] md:h-[100svh] md:min-h-[560px] md:px-6 md:pb-10 md:pt-[134px]"
         >
           {/* atelier backdrop — paper wash, 3D drift, touch blooms */}
           {!inheritBackdrop && <RingAtelierBackdrop />}

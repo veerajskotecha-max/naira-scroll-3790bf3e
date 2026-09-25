@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 const MadeForYou = () => {
 
   return (
-    <div className="pt-[98px] md:pt-[108px] lg:pt-[120px]">
+    <div className="pt-[111px] md:pt-[122px] lg:pt-[136px]">
       <PageSEO
         title="Custom Made-to-Measure Outfits | Design Your Own"
         description="Design a made-to-measure Indo-Western outfit with the Naira Flore atelier: share a reference, approve a sketch, and we hand-craft it to your measurements."
@@ -19,16 +19,16 @@ const MadeForYou = () => {
       <section
         className="customize-hero-viewport relative w-full overflow-hidden flex items-center justify-center"
         style={{
-          height: "calc(100dvh - 98px)",
-          minHeight: "calc(100dvh - 98px)",
+          height: "calc(100dvh - 111px)",
+          minHeight: "calc(100dvh - 111px)",
         }}
       >
         <style>{`
           @media (min-width: 768px) {
-            .customize-hero-viewport { height: calc(100dvh - 108px) !important; min-height: calc(100dvh - 108px) !important; }
+            .customize-hero-viewport { height: calc(100dvh - 122px) !important; min-height: calc(100dvh - 122px) !important; }
           }
           @media (min-width: 1024px) {
-            .customize-hero-viewport { height: calc(100dvh - 120px) !important; min-height: calc(100dvh - 120px) !important; }
+            .customize-hero-viewport { height: calc(100dvh - 136px) !important; min-height: calc(100dvh - 136px) !important; }
           }
           @media (max-width: 767px) {
             .mfy-hero-bg { background-position: center 60% !important; }
@@ -109,7 +109,7 @@ const MadeForYou = () => {
       <section
         id="custom-journey"
         className="relative w-full overflow-hidden py-[32px] md:py-[44px] lg:py-[60px]"
-        style={{ backgroundColor: "hsl(30 25% 96%)", scrollMarginTop: "110px" }}
+        style={{ backgroundColor: "hsl(30 25% 96%)", scrollMarginTop: "126px" }}
       >
         <div
           className="absolute inset-0 pointer-events-none select-none"

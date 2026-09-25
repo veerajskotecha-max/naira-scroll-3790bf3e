@@ -24,16 +24,16 @@ const AboutHero = () => {
     <section
       className="about-hero-viewport relative w-full overflow-hidden flex items-center justify-center"
       style={{
-        height: "calc(100dvh - 98px)",
-        minHeight: "calc(100dvh - 98px)",
+        height: "calc(100dvh - 111px)",
+        minHeight: "calc(100dvh - 111px)",
       }}
     >
       <style>{`
         @media (min-width: 768px) {
-          .about-hero-viewport { height: calc(100dvh - 108px) !important; min-height: calc(100dvh - 108px) !important; }
+          .about-hero-viewport { height: calc(100dvh - 122px) !important; min-height: calc(100dvh - 122px) !important; }
         }
         @media (min-width: 1024px) {
-          .about-hero-viewport { height: calc(100dvh - 120px) !important; min-height: calc(100dvh - 120px) !important; }
+          .about-hero-viewport { height: calc(100dvh - 136px) !important; min-height: calc(100dvh - 136px) !important; }
         }
       `}</style>
       {/* Background image */}

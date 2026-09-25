@@ -93,7 +93,7 @@ const JournalArticle = () => {
 
       <ReadingProgress />
 
-      <div className="bg-[#FBF3EC] pt-[94px] text-[#1A1614] md:pt-[100px] lg:pt-[116px]">
+      <div className="bg-[#FBF3EC] pt-[107px] text-[#1A1614] md:pt-[114px] lg:pt-[132px]">
         <article className="mx-auto max-w-[760px] px-4 sm:px-6">
           <nav aria-label="Breadcrumb" className="pt-8 text-[10px] tracking-[0.24em] text-[#1A1614]/45" style={jost}>
             <Link to="/" className="hover:text-[#1A1614]">HOME</Link>

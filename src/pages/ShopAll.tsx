@@ -364,7 +364,7 @@ const ShopAll = () => {
   const sidebarTop = { lg: 116 + 52 + 16 }; // navbar + toolbar + gap
 
   return (
-    <div className="min-h-screen flex flex-col pt-[94px] md:pt-[100px] lg:pt-[116px]">
+    <div className="min-h-screen flex flex-col pt-[107px] md:pt-[114px] lg:pt-[132px]">
       <PageSEO
         title="Shop All, Indo-Western Dresses, Co-ord Sets & Fusion Sarees"
         description="Shop handcrafted Indo-Western dresses, co-ord sets and fusion sarees by Naira Flore. Made to measure in India, with custom fits and worldwide shipping."
@@ -387,7 +387,7 @@ const ShopAll = () => {
         <section
           id="indo-western"
           className="w-full"
-          style={{ scrollMarginTop: "120px", backgroundColor: "hsl(0 0% 98%)" }}
+          style={{ scrollMarginTop: "136px", backgroundColor: "hsl(0 0% 98%)" }}
         >
           <div className="max-w-[1400px] mx-auto px-5 md:px-8 lg:px-10 pt-8 md:pt-10 lg:pt-12 pb-6 text-center">
             <span
@@ -605,7 +605,7 @@ const ShopAll = () => {
         <div className="max-w-[1400px] mx-auto flex w-full">
           {/* Sidebar – desktop/tablet */}
           <aside
-            className="hidden md:block w-[240px] lg:w-[280px] shrink-0 px-8 lg:px-10 py-8 sticky top-[146px] md:top-[152px] lg:top-[168px] self-start max-h-[calc(100vh-168px)] overflow-y-auto"
+            className="hidden md:block w-[240px] lg:w-[280px] shrink-0 px-8 lg:px-10 py-8 sticky top-[159px] md:top-[166px] lg:top-[184px] self-start max-h-[calc(100vh-184px)] overflow-y-auto"
             style={{ borderRight: "1px solid hsl(0 0% 92%)" }}
           >
             <FilterSidebar {...filterProps} />

@@ -17,16 +17,16 @@ const Header = () => {
       style={
         {
           "--announcement-h": "34px",
-          "--navbar-h": "64px",
+          "--navbar-h": "77px",
         } as React.CSSProperties
       }
     >
       <style>{`
         @media (min-width: 768px) {
-          header { --announcement-h: 36px !important; --navbar-h: 72px !important; }
+          header { --announcement-h: 36px !important; --navbar-h: 86px !important; }
         }
         @media (min-width: 1024px) {
-          header { --announcement-h: 40px !important; --navbar-h: 80px !important; }
+          header { --announcement-h: 40px !important; --navbar-h: 96px !important; }
         }
       `}</style>
       <AnnouncementBar />

@@ -211,7 +211,7 @@ const Jewellery = () => {
           },
         ]}
       />
-      <div className="relative bg-nf-ivory pt-[94px] text-nf-ink md:pt-[100px] lg:pt-[116px]">
+      <div className="relative bg-nf-ivory pt-[107px] text-nf-ink md:pt-[114px] lg:pt-[132px]">
         {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
         <div className="relative overflow-hidden bg-[#FBF3EC]">
           {/* The drifting atelier backdrop is decorative; a phone spends its
@@ -273,7 +273,7 @@ const Jewellery = () => {
         )}
 
         {/* filter */}
-        <div ref={gridRef} className="sticky top-[94px] z-20 bg-nf-ivory py-4 md:top-[100px] md:py-5 lg:top-[116px]">
+        <div ref={gridRef} className="sticky top-[107px] z-20 bg-nf-ivory py-4 md:top-[114px] md:py-5 lg:top-[132px]">
 
           <div className="mx-auto flex max-w-6xl flex-nowrap items-center gap-2 overflow-x-auto scrollbar-hide px-4 sm:justify-center sm:overflow-visible sm:px-6">
             {filters.map((f) => (

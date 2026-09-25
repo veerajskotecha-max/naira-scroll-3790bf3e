@@ -34,7 +34,7 @@ const Journal = () => (
       ]}
     />
 
-    <div className="bg-[#FBF3EC] pt-[94px] text-[#1A1614] md:pt-[100px] lg:pt-[116px]">
+    <div className="bg-[#FBF3EC] pt-[107px] text-[#1A1614] md:pt-[114px] lg:pt-[132px]">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <Reveal as="header" className="relative border-b border-[#1A1614]/10 py-12 md:py-16">
           {/* quiet blush wash behind the masthead */}

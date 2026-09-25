@@ -176,7 +176,7 @@ const Account = () => {
         canonical="https://nairaflore.com/account"
         noindex
       />
-      <main className="min-h-[100svh] bg-[#FBF3EC] pt-[100px] text-[#1A1614] md:pt-[120px]">
+      <main className="min-h-[100svh] bg-[#FBF3EC] pt-[113px] text-[#1A1614] md:pt-[134px]">
         {/* Greeting */}
         <section className="relative overflow-hidden border-b border-[#1A1614]/10 bg-[#F6EADF]">
           <Sprig className="pointer-events-none absolute -left-6 bottom-[-20px] h-40 w-40 rotate-12 opacity-60" />

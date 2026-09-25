@@ -138,6 +138,20 @@ swings 0.42 flower-heights out from the stem. Face-on, a frontal key light
 mirrored off the flat face and read as cream — the key sits high and to the
 side on purpose. The footer and hero still use the old bitmap logos.
 
+**The header bar was made 20% taller** at the owner's ask, with the wordmark
+20% wider: `--navbar-h` 77 / 86 / 96px (phone / md / lg), wordmark 96–168px.
+Pages clear the fixed header with HARD-CODED top padding (`pt-[..px]`, sticky
+`top-[..px]`, `calc(100dvh - ..px)` heroes, `scrollMarginTop`) on ~25 files,
+so every one moved by the bar's growth per breakpoint (+13 / +14 / +16).
+`Header.test.ts` reads the bar's heights from `Header.tsx` and fails any
+page whose `pt`/`md:pt`/`lg:pt` offset falls more than 8px under it — change
+the bar and that test tells you which pages to move. Below `lg`, Search sits
+on the LEFT beside the menu: with four icons on the right the wordmark sat
+off-centre and ran into the search icon at 360px. From 1024–1279px the nav
+links are 20px apart (34px from `xl`) so CUSTOMISE clears the wordmark. The
+PDP first-screen budget took the 13px: at 360x640 the delivery + COD line
+now ends at 636px — 4px spare. Nothing more fits above it.
+
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on
 desktop; it is now `z-30`.
@@ -228,7 +242,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 209 tests
+npx vitest run                          # currently 229 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

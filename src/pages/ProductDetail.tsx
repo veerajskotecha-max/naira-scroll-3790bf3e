@@ -113,12 +113,12 @@ const ProductDetail = () => {
         <span className="sr-only" role="status">Loading product</span>
 
         {/* Breadcrumb placeholder (desktop) */}
-        <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:block" aria-hidden="true">
+        <div className="max-w-[1400px] mx-auto px-6 pt-[113px] md:pt-[126px] lg:pt-[136px] pb-3 hidden md:block" aria-hidden="true">
           <AtelierSkeleton className="h-3 w-56" />
         </div>
 
         {/* Mobile gallery placeholder */}
-        <div className="md:hidden pt-[94px]" aria-hidden="true">
+        <div className="md:hidden pt-[107px]" aria-hidden="true">
           <AtelierSkeleton className="w-full" style={{ aspectRatio: "3/4" }} />
           <div className="flex justify-center gap-2 mt-3 mb-1">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -216,7 +216,7 @@ const ProductDetail = () => {
         </script>
       </Helmet>
       {/* Breadcrumb - desktop only */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-[100px] md:pt-[112px] lg:pt-[120px] pb-3 hidden md:flex items-center justify-between gap-4">
+      <div className="max-w-[1400px] mx-auto px-6 pt-[113px] md:pt-[126px] lg:pt-[136px] pb-3 hidden md:flex items-center justify-between gap-4">
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
@@ -235,10 +235,10 @@ const ProductDetail = () => {
       </div>
 
       {/* Mobile gallery */}
-      <div className="md:hidden pt-[94px] relative">
+      <div className="md:hidden pt-[107px] relative">
         <button
           onClick={goBack}
-          className="absolute top-[106px] left-4 z-20 w-11 h-11 flex items-center justify-center shadow-md"
+          className="absolute top-[119px] left-4 z-20 w-11 h-11 flex items-center justify-center shadow-md"
           style={{ backgroundColor: "hsla(0,0%,100%,0.92)", borderRadius: "50%" }}
           aria-label="Go back"
         >

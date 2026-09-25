@@ -15,7 +15,7 @@ const AboutUs = () => (
       description="From B2B roots to a made-to-measure label: the story of Naira Flore, the Nashik atelier behind our Indo-Western wear and demi-fine zircone jewellery."
       canonical="https://nairaflore.com/about"
     />
-  <div className="pt-[98px] md:pt-[108px] lg:pt-[120px]">
+  <div className="pt-[111px] md:pt-[122px] lg:pt-[136px]">
     <AboutHero />
     <AboutTimeline />
     <AboutEthos />

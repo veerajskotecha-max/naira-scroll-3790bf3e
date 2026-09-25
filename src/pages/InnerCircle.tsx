@@ -22,7 +22,7 @@ const InnerCircle = () => (
       description="Naira Flore's Inner Circle — early access to new jewellery, private previews and members-only pricing. Opening soon."
       canonical="https://nairaflore.com/innercircle"
     />
-    <main className="min-h-[100svh] bg-[#FBF3EC] pt-[110px] text-[#1A1614] md:pt-[130px]">
+    <main className="min-h-[100svh] bg-[#FBF3EC] pt-[123px] text-[#1A1614] md:pt-[144px]">
       <section className="mx-auto flex max-w-2xl flex-col items-center px-6 py-16 text-center md:py-24">
         <p className="text-[10px] tracking-[0.45em] text-[#B0843A]" style={jost}>
           BY INVITATION

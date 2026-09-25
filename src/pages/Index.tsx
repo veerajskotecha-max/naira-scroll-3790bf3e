@@ -51,7 +51,7 @@ const Index = () => {
         canonical="https://nairaflore.com/"
         jsonLd={organizationLd as unknown as Record<string, unknown>}
       />
-      <div className="pt-[94px] md:pt-[100px] lg:pt-[116px]">
+      <div className="pt-[107px] md:pt-[114px] lg:pt-[132px]">
         <HeroScrollyWrapper
           beforeArrivals={
             <>

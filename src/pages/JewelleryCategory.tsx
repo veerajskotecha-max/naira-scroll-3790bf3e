@@ -96,7 +96,7 @@ const JewelleryCategory = () => {
         ]}
       />
 
-      <div className="bg-[#FBF3EC] pt-[94px] text-[#1A1614] md:pt-[100px] lg:pt-[116px]">
+      <div className="bg-[#FBF3EC] pt-[107px] text-[#1A1614] md:pt-[114px] lg:pt-[132px]">
         {/* hero — pressed-flower wash, one-line promise, straight into the grid */}
         <div className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0 z-0">
@@ -150,7 +150,7 @@ const JewelleryCategory = () => {
         {/* category bar — swipeable on mobile, lets ad traffic hop collections */}
         <nav
           aria-label="Shop jewellery by category"
-          className="sticky top-[92px] z-20 border-y border-[#1A1614]/10 bg-[#FBF3EC]/95 backdrop-blur-sm md:top-[98px] lg:top-[114px]"
+          className="sticky top-[105px] z-20 border-y border-[#1A1614]/10 bg-[#FBF3EC]/95 backdrop-blur-sm md:top-[112px] lg:top-[130px]"
         >
           <div className="mx-auto flex max-w-6xl items-stretch gap-2 overflow-x-auto px-4 py-3 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-6 sm:py-3.5 [&::-webkit-scrollbar]:hidden">
             {[

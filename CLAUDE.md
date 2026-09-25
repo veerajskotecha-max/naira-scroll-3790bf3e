@@ -83,19 +83,8 @@ online"): Fastrr adds 5% of the post-discount total to COD orders (verified on
 live orders) and books it as shipping. The rate lives in `src/lib/payment.ts`
 with a literal test — change it there if the checkout setting changes.
 
-The PDP carries no invented social proof. `JewelTrustStrip.tsx` used to add
-"Last 24 hours: N pieces sold", where N was a hash of the product handle, and
-`FomoPopup.tsx` announced randomly generated "just bought" shoppers. Both came
-off the PDP on 25 Sep at the owner's request (the popup file remains, unused);
-`JewelDetail.test.ts` fails if either returns.
-
-The mobile PDP follows a clean, Bluorng-style structure: photo, name, price with
-rating, the buy facts, sizes as one equal-width row, then Add to Bag (outline)
-and Buy Now (solid) stacked full width, then product information as ONE
-horizontal tab strip (Details & Description / Care / Shipping) with the first
-tab open on arrival. The boxed trust tiles, the Pairing Offer card, quantity and
-the Wishlist/WhatsApp button pair are desktop-only; on a phone the offer ladder
-is already the first line under the price.
+Known debt: `JewelTrustStrip.tsx` shows "Last 24 hours: N pieces sold", where N
+is a hash of the product handle, not a sales figure.
 
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on

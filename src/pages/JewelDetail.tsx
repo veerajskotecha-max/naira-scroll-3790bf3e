@@ -6,13 +6,14 @@ import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 import { Helmet } from "react-helmet-async";
-import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, TicketPercent } from "lucide-react";
+import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag, TicketPercent } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
+import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -23,6 +24,7 @@ import PressMarquee from "@/components/jewellery/PressMarquee";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import PdpBuyFacts from "@/components/jewellery/PdpBuyFacts";
 import ReelPeek from "@/components/reels/ReelPeek";
+import FomoPopup from "@/components/FomoPopup";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
@@ -111,14 +113,6 @@ const JewelDetailSkeleton = () => (
    pinned to the bottom of the screen at 0.94 — the shopper was being offered
    the button before the price. */
 const MOBILE_FRAME = "1/1";
-
-/* Horizontal product-information tabs, first one open on arrival. */
-const PDP_TABS = [
-  ["details", "Details & Description"],
-  ["care", "Care"],
-  ["shipping", "Shipping"],
-] as const;
-const PDP_TAB_HEADING = "text-[11px] font-medium uppercase tracking-nf-16 text-nf-ink";
 
 /* Google wants a validity horizon on an Offer. Rolling twelve months keeps the
    markup fresh without anyone having to remember to edit a hardcoded date. */
@@ -478,34 +472,31 @@ const JewelDetail = () => {
         ))}
           </div>
           {WishlistBtn}
+          <span
+            aria-hidden="true"
+            className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-1.5 bg-background/90 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+          >
+            <ZoomIn size={12} strokeWidth={1.7} /> Tap to zoom
+          </span>
           {images.length > 1 && (
-            /* Hairline bars rather than boxed dots, and no "tap to zoom" badge:
-               the photo is the page's first impression, so nothing sits on it
-               but the wishlist heart. Each bar keeps a 24px-tall button around
-               it so it is still easy to tap. */
             <div
-              className="absolute inset-x-0 bottom-2 z-10 flex items-center justify-center gap-0.5"
+              className="absolute inset-x-0 bottom-4 z-10 flex items-center justify-center gap-2"
               role="group"
               aria-label={`${piece.name} images`}
             >
               {images.map((_, i) => {
-                const active = selectedImage === i;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => scrollToImage(i)}
-                    aria-label={`View image ${i + 1} of ${images.length}`}
-                    aria-current={active ? "true" : undefined}
-                    data-active={active ? "true" : "false"}
-                    className="flex h-6 items-center px-1"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={`block h-[2px] transition-all duration-300 ${active ? "w-6 bg-nf-ink" : "w-3 bg-nf-ink/25"}`}
-                    />
-                  </button>
-                );
+            const active = selectedImage === i;
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => scrollToImage(i)}
+                aria-label={`View image ${i + 1} of ${images.length}`}
+                aria-current={active ? "true" : undefined}
+                data-active={active ? "true" : "false"}
+                className={`h-3 w-3 rounded-full border border-foreground/35 transition-colors ${active ? "bg-foreground" : "bg-background/60"}`}
+              />
+            );
               })}
             </div>
           )}
@@ -641,152 +632,155 @@ const JewelDetail = () => {
 
           {/* Details */}
           <div className="mt-4 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
-            {/* Category eyebrow, desktop only. On a phone the first screen is
-                budgeted for the Instagram in-app browser (~640px on a 360px
-                Android), and this row spent ~30px of it above the name while
-                saying nothing the shopper didn't already know from the ad. */}
-            <p
-              className="hidden md:block text-[10px] tracking-nf-34 text-nf-gold-deep"
-              style={{ fontFamily: "var(--nf-font-label)" }}
-            >
-              {piece.category.toUpperCase()} · DEMI-GOLD
-            </p>
-
-            {/* Title */}
-            <h1 className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em] md:mt-1.5 text-nf-ink">
-              {piece.name}
-            </h1>
-
-            {/* Price, with the rating on the same line.
+            {/* Category, and the rating alongside it.
 
                 Contentsquare's 2026 benchmark puts mobile scroll rate at 45.2% —
                 the average visitor never reaches the page's midpoint, and this
-                rating once sat at 5.14 folds. It rides on the price row, which
-                was half empty, so surfacing it costs no height. Baymard surveyed
-                5,170+ people and found a star average without a count erodes
-                trust, so the count is never rendered without it. */}
-            <div className="mt-2 flex items-baseline justify-between gap-3">
-              <div id="product-price" className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <span className="font-cormorant text-[24px] md:text-[28px] font-semibold text-nf-ink">
-                  {piece.priceLabel}
-                </span>
-                {piece.compareAtLabel && (
-                  <>
-                    <span className="text-[14px] line-through text-nf-ink/45">
-                      {piece.compareAtLabel}
-                    </span>
-                    <span className="text-[11.5px] font-medium tracking-nf-4 text-nf-gold-shadow">
-                      {discountPercent(piece)}% OFF
-                    </span>
-                  </>
-                )}
-                <span className="text-[11px] tracking-nf-4 text-nf-ink/60">incl. taxes</span>
-              </div>
+                rating sat at 5.14 folds. It rides on the category row because
+                that row was half empty, so surfacing it costs almost no height:
+                the price still clears the fold. Baymard surveyed 5,170+ people
+                and found a star average without a count erodes trust, so the
+                count is never rendered without it. */}
+            <div className="flex items-center justify-between gap-3 min-h-[26px]">
+              <p className="text-[10px] tracking-[0.34em]" style={{ color: "#B0843A", fontFamily: "'Jost', 'Inter', sans-serif" }}>
+                {piece.category.toUpperCase()} · DEMI-GOLD
+              </p>
               {rating && (
                 <a
                   href="#customer-reviews"
-                  className="inline-flex shrink-0 items-center gap-1 py-1 pl-2 -mr-1 text-[12px] tracking-[0.02em] text-nf-ink/70"
+                  className="inline-flex shrink-0 items-center gap-1 text-[12px] tracking-[0.02em] py-1 pl-2 -mr-1"
+                  style={{ color: "hsl(0 0% 35%)" }}
                   aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
                 >
-                  <span aria-hidden="true" className="text-nf-gold-deep">★</span>
-                  <span className="font-medium text-nf-ink">{rating.rating}</span>
-                  <span className="underline underline-offset-4 text-nf-ink/55">
+                  <span aria-hidden="true" style={{ color: "#B0843A" }}>★</span>
+                  <span className="font-medium" style={{ color: "hsl(0 0% 15%)" }}>{rating.rating}</span>
+                  <span className="underline underline-offset-4" style={{ color: "hsl(0 0% 48%)" }}>
                     ({rating.count})
                   </span>
                 </a>
               )}
             </div>
+
+            {/* Title */}
+            <h1 className="font-cormorant text-[26px] md:text-[32px] lg:text-[36px] font-semibold leading-[1.15] tracking-[-0.01em] mt-1.5" style={{ color: "hsl(0 0% 12%)" }}>
+              {piece.name}
+            </h1>
+
+            {/* Live price from the Shopify listing */}
+            <div id="product-price" className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <span className="font-cormorant text-[24px] md:text-[28px] font-semibold" style={{ color: "hsl(0 0% 12%)" }}>
+                {piece.priceLabel}
+              </span>
+              {piece.compareAtLabel && (
+                <>
+                  <span className="text-[14px] line-through" style={{ color: "hsl(0 0% 55%)" }}>
+                    {piece.compareAtLabel}
+                  </span>
+                  <span className="text-[11.5px] font-medium tracking-[0.04em]" style={{ color: "#8A6A2A" }}>
+                    {discountPercent(piece)}% OFF
+                  </span>
+                </>
+              )}
+              <span className="text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.62)]">incl. taxes</span>
+            </div>
             {/* Offer ladder, delivery date and COD, in the first screen with the
-                price. Returns and plating assurance sit on the line under the
-                buy buttons, which is where the shopper checks them. */}
+                price. Returns and plating assurance moved to the line under Add
+                to Cart, which is where the shopper checks them. */}
             <PdpBuyFacts arrivesBy={arrivesBy} soldOut={soldOut} />
 
-            {/* The three boxed assurance tiles are desktop-only. On a phone they
-                were a row of icon cards between the price and the size — visual
-                noise in the most valuable strip of the page — and their claims
-                now read as one line in the Details tab below. */}
-            <div className="hidden md:block">
-              <JewelTrustStrip />
-            </div>
+            <JewelTrustStrip productKey={piece.handle} />
+
+
+            {/* Size / Quantity / CTA moved directly under the price for conversion */}
+
 
             <div className="my-4 hidden md:block" style={{ borderTop: "1px solid hsl(0 0% 88%)" }} />
 
-            {piece.category === "Rings" ? (
-              <div className="mt-5 md:mt-0">
-                <div className="mb-2.5 flex items-center justify-between">
-                  <span
-                    className="text-[11px] font-medium uppercase tracking-nf-16 text-nf-ink/80"
-                    style={{ fontFamily: "var(--nf-font-label)" }}
-                  >
-                    Size · US
-                  </span>
+            {/* Size / One-size */}
+            <div className={piece.category === "Rings" ? "mt-4 md:mt-0" : "hidden md:block"}>
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
+                  {piece.category === "Rings" ? "Ring Size (US)" : "Size"}
+                </span>
+                {piece.category === "Rings" ? (
                   <button
                     type="button"
                     onClick={() => setSizeGuideOpen(true)}
-                    className="-mr-2 inline-flex min-h-[44px] items-center px-2 text-[12px] underline underline-offset-4 text-nf-ink/70"
+                    className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2"
+                    style={{ color: "hsl(186 35% 28%)" }}
                   >
-                    Size guide
+                    Size chart
                   </button>
-                </div>
-                {/* Buttons, not a dropdown. Baymard: 57% of sites hide size
-                    behind a select, and a dropdown conceals both the range of
-                    sizes and which are available until the shopper opens it.
-                    One equal-width row: three ring sizes fit at 360px. */}
-                <div role="radiogroup" aria-label="Ring size, US" className="grid grid-cols-3 gap-2">
-                  {ringSizesFor(piece.handle).map((s) => {
-                    const active = selectedSize === s.value;
-                    return (
-                      <button
-                        key={s.value}
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        onClick={() => setSelectedSize(s.value)}
-                        className={`flex min-h-[48px] flex-col items-center justify-center border text-[13px] font-medium tracking-nf-4 transition-colors duration-150 ${
-                          active
-                            ? "border-nf-ink bg-nf-ink text-nf-ivory"
-                            : "border-nf-ink/20 text-nf-ink hover:border-nf-ink/50"
-                        }`}
-                      >
-                        US {s.value}
-                        {s.status === "preorder" && (
-                          <span className="text-[9px] font-normal uppercase tracking-nf-8 opacity-70">
-                            Pre-order
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="mt-2 text-[12px] leading-[1.6] text-nf-ink/60">
-                  {adjustable
-                    ? `US ${selectedSize} is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
-                    : selectedSize === "6"
-                      ? "US 6 is in stock and ships now."
-                      : `US ${selectedSize} is a pre-order — 45 days delivery.`}
-                </p>
-              </div>
-            ) : (
-              <div className="hidden md:block">
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-[11px] uppercase tracking-[0.14em] font-medium" style={{ color: "hsl(0 0% 25%)" }}>
-                    Size
-                  </span>
+                ) : (
                   <a href={enquiryHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[11px] underline underline-offset-4 tracking-[0.02em] min-h-[44px] px-2 -mr-2" style={{ color: "hsl(186 35% 28%)" }}>
                     Sizing help
                   </a>
-                </div>
+                )}
+
+              </div>
+              {piece.category === "Rings" ? (
+                <>
+                  {/* Buttons, not a dropdown. Baymard: 57% of sites hide size
+                      behind a select, and a dropdown conceals both the range of
+                      sizes and which are available until the shopper opens it.
+                      Three ring sizes fit on one row at 390px. */}
+                  <div role="radiogroup" aria-label="Ring size, US" className="flex flex-wrap gap-2">
+                    {ringSizesFor(piece.handle).map((s) => {
+                      const active = selectedSize === s.value;
+                      return (
+                        <button
+                          key={s.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          onClick={() => setSelectedSize(s.value)}
+                          className="min-w-[64px] min-h-[44px] px-4 border text-[13px] font-medium tracking-[0.02em] transition-colors duration-150"
+                          style={{
+                            borderColor: active ? "hsl(0 0% 12%)" : "hsl(0 0% 80%)",
+                            backgroundColor: active ? "hsl(0 0% 12%)" : "transparent",
+                            color: active ? "hsl(0 0% 100%)" : "hsl(0 0% 20%)",
+                          }}
+                        >
+                          US {s.value}
+                          {s.status === "preorder" && (
+                            <span className="block text-[9.5px] font-normal tracking-[0.08em] uppercase opacity-70">
+                              Pre-order
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {adjustable
+                      ? `US ${selectedSize} is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
+                      : selectedSize === "6"
+                        ? "US 6 is in stock and ships now."
+                        : `US ${selectedSize} is a pre-order — 45 days delivery.`}
+                    {" "}
+                    <button
+                      type="button"
+                      onClick={() => setSizeGuideOpen(true)}
+                      className="underline underline-offset-4"
+                      style={{ color: "hsl(186 35% 28%)" }}
+                    >
+                      Not sure of your size?
+                    </button>
+                  </p>
+
+
+                </>
+              ) : (
                 <div className="w-full h-11 flex items-center px-3 border text-[13px]" style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}>
                   One Size · adjustable
                 </div>
-              </div>
-            )}
+              )}
+            </div>
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
 
 
-            {/* Quantity — desktop only; on a phone it crowded the buy buttons
-                and can be changed in the bag, which is also where the
-                multi-buy code is applied. */}
+            {/* Quantity — desktop only; on a phone it pushes the CTA below the
+                fold and can be changed in the cart. */}
             <div className="mt-4 hidden md:block">
               <span className="text-[11px] uppercase tracking-[0.14em] font-medium block mb-2.5" style={{ color: "hsl(0 0% 25%)" }}>Quantity</span>
               <div className="inline-flex items-center border" style={{ borderColor: "hsl(0 0% 80%)" }}>
@@ -800,81 +794,73 @@ const JewelDetail = () => {
               </div>
             </div>
 
-            {/* Two stacked, full-width actions: Add to Bag in outline, Buy Now
-                solid. Both are one clear tap target each, in ink, with no icon
-                or accent competing with the product photo above. */}
-            <div id="product-actions" className="mt-5 md:mt-6">
-              <div className="flex flex-col gap-2.5">
-                {soldOut ? (
-                  <>
-                    <button
-                      onClick={handlePreOrder}
-                      disabled={buying || cartLoading}
-                      className="press-scale h-[52px] w-full bg-nf-ink text-[12px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-opacity duration-200 hover:opacity-90 disabled:opacity-60"
-                    >
-                      Pre-order Now
+            {/* CTA block: live Shopify cart + checkout, WhatsApp supports.
+                Add to Cart leads in brand gold — a warm, high-contrast primary
+                converts better than an outline ghost button. */}
+            <div id="product-actions" className="mt-4 md:mt-6">
+              {soldOut ? (
+                <button
+                  onClick={handlePreOrder}
+                  disabled={buying || cartLoading}
+                  className="press-scale w-full h-[54px] inline-flex items-center justify-center gap-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90 disabled:opacity-60"
+                  style={{ backgroundColor: "#B0843A", color: "hsl(0 0% 100%)" }}
+                >
+                  Pre-order Now
+                </button>
+              ) : (
+                <div className="flex gap-2 md:block">
+                  <div className="flex h-[54px] w-[38%] shrink-0 items-center justify-between border border-border md:hidden">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity" className="press-scale flex h-full min-w-11 items-center justify-center text-foreground">
+                      <Minus size={15} />
                     </button>
-                    <a
-                      href={sizedEnquiryHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="press-scale inline-flex h-[52px] w-full items-center justify-center gap-2 border border-nf-ink text-[12px] font-medium uppercase tracking-nf-16 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory"
-                    >
-                      <MessageSquare size={13} /> Reserve on WhatsApp
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={buying || cartLoading}
-                      className="press-scale h-[52px] w-full border border-nf-ink bg-transparent text-[12px] font-medium uppercase tracking-nf-16 text-nf-ink transition-colors duration-200 hover:bg-nf-ink hover:text-nf-ivory disabled:opacity-60"
-                    >
-                      Add to Bag
+                    <span className="text-[15px] font-medium text-foreground" aria-live="polite">{quantity}</span>
+                    <button onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity" className="press-scale flex h-full min-w-11 items-center justify-center text-foreground">
+                      <Plus size={15} />
                     </button>
-                    <button
-                      onClick={handleBuyNow}
-                      disabled={buying || cartLoading}
-                      className="press-scale h-[52px] w-full bg-nf-ink text-[12px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-opacity duration-200 hover:opacity-90 disabled:opacity-60"
-                    >
-                      {buying ? "Opening checkout…" : "Buy Now"}
-                    </button>
-                  </>
-                )}
-              </div>
+                  </div>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={buying || cartLoading}
+                    className="press-scale inline-flex h-[54px] flex-1 items-center justify-center gap-2 bg-foreground text-[12px] font-medium uppercase tracking-[0.12em] text-background transition-colors duration-200 hover:opacity-90 disabled:opacity-60 md:w-full"
+                  >
+                    <ShoppingBag size={16} strokeWidth={1.6} /> Add to Cart
+                  </button>
+                </div>
+              )}
+              {soldOut ? (
+                <a
+                  href={sizedEnquiryHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press-scale w-full h-[50px] mt-3 inline-flex items-center justify-center gap-2.5 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-200 hover:opacity-90"
+                  style={{ backgroundColor: "hsl(0 0% 12%)", color: "hsl(0 0% 100%)" }}
+                >
+                  <MessageSquare size={13} /> Reserve on WhatsApp
+                </a>
+              ) : null}
 
-              {!soldOut && <CheckoutBenefit className="mt-2 hidden md:flex" />}
-              <p className="mt-3 text-center text-[11px] tracking-nf-4 text-nf-ink/55">
+              {!soldOut && <CheckoutBenefit className="mt-2 flex" />}
+              <p className="mt-1.5 text-center text-[11px] tracking-[0.02em]" style={{ color: "hsl(0 0% 50%)" }}>
                 {soldOut ? (
-                  "Reserve today — your piece ships within 2 weeks."
+                  "Reserve today — your piece is hand-finished and ships within 2 weeks."
                 ) : (
                   <>
                     {/* 60% of Baymard's subjects looked for the returns policy on the
                         product page itself, and 44% of sites neither show nor link it
-                        there. */}
+                        there. This said "Easy returns" and linked nowhere. */}
                     Insured delivery ·{" "}
-                    <Link to="/exchange-return-policy" className="underline underline-offset-4 text-nf-ink/70">
+                    <Link
+                      to="/exchange-return-policy"
+                      className="underline underline-offset-4"
+                      style={{ color: "hsl(0 0% 35%)" }}
+                    >
                       7-day returns
                     </Link>
                     {" "}· 2-year plating assurance
                   </>
                 )}
               </p>
-              {/* On a phone the Wishlist / WhatsApp button pair became one quiet
-                  line: the heart already sits on the photo and in the sticky bar. */}
-              {!soldOut && (
-                <p className="mt-2 text-center text-[12px] md:hidden">
-                  <a
-                    href={sizedEnquiryHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center underline underline-offset-4 text-nf-ink/70"
-                  >
-                    Questions? Chat with us on WhatsApp
-                  </a>
-                </p>
-              )}
-              <div className="mt-3 hidden gap-3 md:flex">
+              <div className="flex gap-3 mt-3">
                 <button
                   onClick={handleWishlist}
                   className="press-scale flex-1 h-[46px] text-[11px] font-medium uppercase tracking-[0.12em] border transition-colors duration-200 inline-flex items-center justify-center gap-2 hover:border-[hsl(0_0%_45%)]"
@@ -909,12 +895,10 @@ const JewelDetail = () => {
               </p>
             </div>
 
-            {/* The boxed offer card is desktop-only. On a phone the same ladder
-                is already the first line under the price, and the bag applies
-                the best code on its own, so a second gold-bordered box of codes
-                only repeated it. */}
+            {/* Codes stay visible so the offer feels concrete, while the bag
+                still applies the best eligible one without shopper effort. */}
             <section
-              className="mt-4 hidden md:block border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-3 py-3"
+              className="mt-4 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-3 py-3"
               aria-label="Multi-buy offers"
             >
               <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[var(--nf-track-18)] text-[var(--nf-accent-quiet)]">
@@ -938,6 +922,13 @@ const JewelDetail = () => {
               </p>
             </section>
 
+            {/* Mobile: the arrival date already sits under the price, so this
+                line only repeats the shipping and returns terms. */}
+            <p className="mt-3 md:hidden text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 40%)" }}>
+              Free insured shipping · 7-day returns
+            </p>
+
+
             {/* Key facts, at a glance */}
             <dl className="mt-4 hidden md:flex flex-wrap gap-2" aria-label="Key facts">
               {keyFacts.map((fact) => (
@@ -956,63 +947,63 @@ const JewelDetail = () => {
               <PincodeChecker />
             </div>
 
-            {/* Product information as one horizontal tab strip instead of five
-                stacked accordions. The first tab is open on arrival, so the
-                description and specs are readable without a tap — on a phone
-                they used to sit behind a closed "Product Details" row. The panel
-                runs edge to edge on a phone, on the ivory ground, and carries
-                what used to be separate phone-only rows (highlights, pincode). */}
+            <div className="my-4" style={{ borderTop: "1px solid hsl(0 0% 90%)" }} />
+
+            {/* Compact product information: one source for each buying fact. */}
             <div id="product-material-details" />
-            <Tabs defaultValue="details" className="-mx-4 mt-7 bg-[var(--nf-surface)] px-4 pb-6 md:mx-0 md:mt-8">
-              <TabsList className="scrollbar-hide flex h-auto w-full justify-start gap-6 overflow-x-auto rounded-none border-b border-nf-ink/10 bg-transparent p-0">
-                {PDP_TABS.map(([value, label]) => (
-                  <TabsTrigger
-                    key={value}
-                    value={value}
-                    className="-mb-px shrink-0 rounded-none border-b-2 border-transparent bg-transparent px-0 pb-3 pt-4 text-[13px] font-normal tracking-nf-4 text-nf-ink/45 shadow-none data-[state=active]:border-nf-ink data-[state=active]:bg-transparent data-[state=active]:text-nf-ink data-[state=active]:shadow-none"
-                    style={{ fontFamily: "var(--nf-font-label)" }}
-                  >
-                    {label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
-              <TabsContent value="details" className="mt-0 pt-5 text-[13px] leading-[1.7] text-nf-ink/70">
-                <h2 className={PDP_TAB_HEADING} style={{ fontFamily: "var(--nf-font-label)" }}>Details</h2>
-                {/* The Shopify spec lines already name the finish, stones and
-                    plating, so the derived key facts only stand in on a phone
-                    when a piece has no spec list of its own. Listing both read
-                    as the same three facts said twice. */}
-                <ul className="mt-2 space-y-1">
-                  {piece.details?.length
-                    ? piece.details.map((spec) => <li key={spec}>{spec}</li>)
-                    : keyFacts.map((fact) => (
-                        <li key={fact.label} className="md:hidden">
-                          <span className="text-nf-ink/45">{fact.label}</span> · {fact.value}
-                        </li>
-                      ))}
-                  <li>{piece.materials}</li>
-                </ul>
-                <h2 className={`${PDP_TAB_HEADING} mt-5`} style={{ fontFamily: "var(--nf-font-label)" }}>Description</h2>
-                <p className="mt-2">{piece.blurb}</p>
-              </TabsContent>
-
-              <TabsContent value="care" className="mt-0 space-y-2 pt-5 text-[13px] leading-[1.7] text-nf-ink/70">
-                <p>{piece.care ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
-                <p>Covered by our 2-year plating assurance.</p>
-              </TabsContent>
-
-              <TabsContent value="shipping" className="mt-0 space-y-2 pt-5 text-[13px] leading-[1.7] text-nf-ink/70">
-                <p>{PREORDER_NOTE} Free insured shipping across India.</p>
-                <p>
-                  7-day returns apply.{" "}
-                  <Link to="/exchange-return-policy" className="underline underline-offset-4">Read policy</Link>
-                </p>
-                <div className="pt-2 md:hidden">
-                  <PincodeChecker />
-                </div>
-              </TabsContent>
-            </Tabs>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="details" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Product Details</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2 pb-2 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <p>{piece.blurb}</p>
+                    {piece.details?.map((spec) => <p key={spec}>• {spec}</p>)}
+                    <p>{piece.materials}</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="care" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Care &amp; Plating Assurance</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-1.5 pb-2 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    <p>{piece.care ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
+                    <p>Covered by our 2-year plating assurance.</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="delivery" className="border-b" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Delivery &amp; Returns</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="text-[13px] leading-[1.7] pb-2 space-y-1.5" style={{ color: "hsl(0 0% 45%)" }}>
+                    <p>{PREORDER_NOTE} Free insured shipping across India.</p>
+                    <p>7-day returns apply. <Link to="/exchange-return-policy" className="underline underline-offset-4">Read policy</Link></p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              {/* Phone only: pincode check and key facts live inside dropdowns
+                  so the page stays short. */}
+              <AccordionItem value="pincode" className="border-b md:hidden" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Check Delivery Date</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <div className="pb-2">
+                    <PincodeChecker />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="facts" className="border-b md:hidden" style={{ borderColor: "hsl(0 0% 90%)" }}>
+                <AtelierAccordionTrigger>Highlights</AtelierAccordionTrigger>
+                <AccordionContent>
+                  <dl className="pb-2 space-y-1.5 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
+                    {keyFacts.map((fact) => (
+                      <div key={fact.label} className="flex gap-2">
+                        <dt style={{ color: "hsl(0 0% 30%)" }}>{fact.label}:</dt>
+                        <dd>{fact.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
           </div>
         </div>
@@ -1025,6 +1016,10 @@ const JewelDetail = () => {
       <PressMarquee />
 
       <ReelPeek suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen} />
+      <FomoPopup
+        suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
+        mobileStickyVisible={stickyBarVisible}
+      />
       
       <Footer compact />
 
@@ -1077,7 +1072,7 @@ const JewelDetail = () => {
               className="press-scale h-[48px] w-full inline-flex items-center justify-center text-[11px] font-medium uppercase tracking-[0.12em] disabled:opacity-60"
               style={{ backgroundColor: "hsl(0 0% 12%)", color: "#fff" }}
             >
-              Add to Bag
+              Add to Cart
             </button>
           </>
         )}

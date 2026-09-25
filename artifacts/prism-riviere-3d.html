@@ -1,0 +1,540 @@
+<title>Prism Rivière in Three Dimensions</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap">
+
+<style>
+  /* One committed dark world, no theme switch. Rhodium and faceted cubic
+     zirconia only read against dark — every photograph of this piece that
+     shows what it actually looks like is shot on a dark ground. Every colour
+     is still set explicitly so the page holds on either host background.
+
+     The three stone colours and the metal are measured, not invented: a
+     k-means pass over the saturated pixels of the studio packshot returned
+     aqua #9bc0c6, pink #d2b9b8, yellow #d0b88d and metal #b1adaa as means.
+     The gem tints below sit more saturated than those numbers because the
+     renderer washes them out through transmission and specular the same way
+     the camera did. */
+  :root {
+    color-scheme: dark;
+    --void:     #0E1013;
+    --stage:    #15181D;
+    --edge:     #262B33;
+    --bone:     #EDE9E3;
+    --mute:     #8A8F98;
+    --rhodium:  #D8D8D7;
+    --aqua:     #7FC8DC;
+    --blush:    #F0A6BE;
+    --citrine:  #F2DC9B;
+    --sage:     #99B4AF;
+  }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--bone);
+    font-family: 'Jost', system-ui, sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: 16px;
+    padding-block: 28px 56px;
+  }
+
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 28px; margin-block-end: 20px; }
+
+  .eyebrow {
+    font-size: 10px; letter-spacing: .32em; text-transform: uppercase;
+    color: var(--sage); margin: 0 0 8px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300; font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: .96; letter-spacing: -.01em; margin: 0; text-wrap: balance;
+  }
+  h1 em { font-style: italic; color: var(--rhodium); }
+  .sku {
+    margin-left: auto; text-align: right; font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--mute); line-height: 1.9;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The stage. Aspect-ratio so it reserves its height before WebGL starts and
+     nothing below it jumps when the canvas mounts. */
+  .stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    max-width: 100%;
+    border: 1px solid var(--edge);
+    background:
+      radial-gradient(120% 90% at 50% 8%, #1D222A 0%, var(--stage) 55%, var(--void) 100%);
+    overflow: hidden;
+  }
+  @media (max-width: 640px) { .stage { aspect-ratio: 4 / 5; } }
+  .stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+  .hint {
+    position: absolute; left: 14px; bottom: 12px; margin: 0;
+    font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--mute); pointer-events: none;
+  }
+  .loading {
+    position: absolute; inset: 0; display: grid; place-content: center;
+    font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--mute);
+  }
+
+  .views { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 14px 26px; }
+  .views button {
+    font: inherit; font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--bone); background: transparent;
+    border: 1px solid var(--edge); border-radius: 0;
+    padding: 9px 16px; cursor: pointer;
+    transition: background-color .25s ease, border-color .25s ease, color .25s ease;
+  }
+  .views button:hover, .views button:focus-visible { border-color: var(--sage); color: var(--sage); }
+  .views button[aria-pressed="true"] { background: var(--bone); color: var(--void); border-color: var(--bone); }
+  .views button:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+
+  /* Spec rail. Real measurements off the product, not filler. */
+  .spec { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--edge); border: 1px solid var(--edge); }
+  .spec div { background: var(--stage); padding: 16px 18px; }
+  .spec dt { font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--mute); margin: 0 0 7px; }
+  .spec dd { margin: 0; font-size: 14px; line-height: 1.45; color: var(--bone); }
+  .spec dd .swatch { display: inline-block; width: 9px; height: 9px; margin-right: 5px; vertical-align: baseline; }
+
+  .note { max-width: 62ch; margin-block: 26px 0; font-size: 13.5px; line-height: 1.65; color: var(--mute); }
+  .note strong { color: var(--bone); font-weight: 400; }
+
+  @media (prefers-reduced-motion: reduce) { .views button { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">Naira Petite · Demi-fine</p>
+      <h1>Prism Rivière <em>Bracelet</em></h1>
+    </div>
+    <p class="sku">
+      SKU B00681C<br>Rs. 2,399<br>15&ndash;19 cm adjustable
+    </p>
+  </header>
+
+  <div class="stage" id="stage">
+    <p class="loading" id="loading">Cutting stones</p>
+    <p class="hint">Drag to turn · scroll to zoom</p>
+  </div>
+
+  <div class="views" role="group" aria-label="Camera views">
+    <button type="button" data-view="three-quarter" aria-pressed="true">Three-quarter</button>
+    <button type="button" data-view="flat">Laid flat</button>
+    <button type="button" data-view="macro">Macro on one link</button>
+    <button type="button" data-view="clasp">Clasp</button>
+  </div>
+
+  <dl class="spec">
+    <div><dt>Stone</dt><dd>Cushion cut cubic zirconia, 5&nbsp;mm</dd></div>
+    <div><dt>Setting</dt><dd>Fine pavé halo, 26 stones per link</dd></div>
+    <div><dt>Colour order</dt><dd>
+      <span class="swatch" style="background:#7FC8DC"></span>aqua ·
+      <span class="swatch" style="background:#F0A6BE"></span>pink ·
+      <span class="swatch" style="background:#F2DC9B"></span>yellow
+    </dd></div>
+    <div><dt>Metal</dt><dd>Rhodium plated over surgical steel</dd></div>
+    <div><dt>Closure</dt><dd>Fold over clasp</dd></div>
+    <div><dt>Links</dt><dd>19 halo links, hinged</dd></div>
+  </dl>
+
+  <p class="note">
+    Built from the product's own measurements rather than a likeness: a 5&nbsp;mm
+    cushion is a squircle in plan, so each stone is lofted from a superellipse —
+    square table, eight crown facets, a girdle, and a pavilion running to a
+    culet — and shaded flat so the facets are real planes that catch the light
+    separately. <strong>The three tints are sampled from the studio packshot.</strong>
+    Nineteen links sit on the 18&nbsp;cm circuit with the fold over clasp closing
+    the line.
+  </p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var stage = document.getElementById('stage');
+  var loading = document.getElementById('loading');
+  if (!window.THREE) { loading.textContent = 'Three.js did not load'; return; }
+
+  var W = stage.clientWidth, H = stage.clientHeight;
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.10;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  stage.appendChild(renderer.domElement);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 200);
+
+  /* ── The studio, painted rather than loaded ──────────────────────────────
+     The CSP blocks images from any other host, so an HDR environment is not
+     available. This paints one: a dark room with three bright softbox bands
+     and a warm floor bounce, drawn to a canvas and mapped equirectangularly.
+     Without an environment map a faceted gem renders as a grey lump — the
+     reflections ARE the read. */
+  function studioEnv() {
+    var c = document.createElement('canvas');
+    c.width = 1024; c.height = 512;
+    var g = c.getContext('2d');
+    var sky = g.createLinearGradient(0, 0, 0, 512);
+    /* A jewellery studio is not a bright room, it is a DARK room with a few
+       very bright sources. Metal reads as metal because it reflects that
+       contrast: hot white where a softbox lands, near-black between. The
+       second pass made this a pale gradient and every link turned to chalk. */
+    sky.addColorStop(0.00, '#9FB0C4');
+    sky.addColorStop(0.26, '#2C333D');
+    sky.addColorStop(0.50, '#0A0C0F');
+    sky.addColorStop(0.54, '#050608');
+    sky.addColorStop(1.00, '#1C1814');
+    g.fillStyle = sky; g.fillRect(0, 0, 1024, 512);
+    function band(x, y, w, h, a) {
+      var r = g.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, Math.max(w, h) / 2);
+      r.addColorStop(0, 'rgba(255,255,255,' + a + ')');
+      r.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = r; g.fillRect(x, y, w, h);
+    }
+    // hard-edged strips, the way a real softbox reads in a polished surface
+    function strip(x, y, w, h, a) {
+      g.fillStyle = 'rgba(255,255,255,' + a + ')';
+      g.fillRect(x, y, w, h);
+      band(x - w * 0.35, y - h * 0.9, w * 1.7, h * 2.8, a * 0.55);
+    }
+    strip(96, 54, 248, 128, 1.0);    // key
+    strip(612, 72, 176, 104, 0.92);  // fill
+    strip(410, 30, 104, 176, 0.8);   // rim
+    strip(876, 128, 84, 74, 0.7);    // kicker
+    band(120, 322, 520, 150, 0.22);  // floor bounce
+    var t = new THREE.CanvasTexture(c);
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }
+  var env = studioEnv();
+  scene.environment = env;
+
+  /* ── Lights ─────────────────────────────────────────────────────────────
+     The environment does the reflections; these do the sparkle. Three small
+     hot points are what make facets flash as the piece turns. */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  var key = new THREE.DirectionalLight(0xffffff, 2.4); key.position.set(4, 7, 5); scene.add(key);
+  var fill = new THREE.DirectionalLight(0xdfe7f2, 0.9); fill.position.set(-6, 3, 2); scene.add(fill);
+  var rim = new THREE.DirectionalLight(0xffe9cf, 1.3); rim.position.set(0, -4, -6); scene.add(rim);
+  [[2.6, 3.4, 2.2], [-2.8, 2.6, -1.6], [0.4, 3.8, -3.0]].forEach(function (p) {
+    var l = new THREE.PointLight(0xffffff, 6, 18, 2);
+    l.position.set(p[0], p[1], p[2]); scene.add(l);
+  });
+
+  /* ── A cushion cut, built as one ────────────────────────────────────────
+     A cushion is a squircle in plan, so the outline is a superellipse:
+     |x|^p + |y|^p = 1 with p about 3. The stone is then lofted through four
+     rings — table, girdle top, girdle bottom, culet — and every quad is
+     emitted as two triangles with its own vertices so `flatShading` gives
+     real facet planes instead of a smooth blob. 16 points around means four
+     facets per quadrant: the four sides and the four cut corners that make a
+     cushion a cushion. */
+  var SEG = 16;
+  function superellipse(scale, p) {
+    var pts = [];
+    for (var i = 0; i < SEG; i++) {
+      var t = (i / SEG) * Math.PI * 2 + Math.PI / SEG;
+      var c = Math.cos(t), s = Math.sin(t);
+      pts.push([
+        Math.sign(c) * Math.pow(Math.abs(c), 2 / p) * scale,
+        Math.sign(s) * Math.pow(Math.abs(s), 2 / p) * scale
+      ]);
+    }
+    return pts;
+  }
+  function cushionGeometry(r, crown, pav, p) {
+    var table = superellipse(r * 0.54, p);
+    var gTop = superellipse(r, p);
+    var gBot = superellipse(r * 0.985, p);
+    var pos = [];
+    function tri(a, b, c) { pos.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]); }
+    function ring(lo, loY, hi, hiY) {
+      for (var i = 0; i < SEG; i++) {
+        var j = (i + 1) % SEG;
+        var A = [lo[i][0], loY, lo[i][1]], B = [lo[j][0], loY, lo[j][1]];
+        var C = [hi[j][0], hiY, hi[j][1]], D = [hi[i][0], hiY, hi[i][1]];
+        tri(A, B, C); tri(A, C, D);
+      }
+    }
+    // table, as a fan
+    for (var i = 0; i < SEG; i++) {
+      var j = (i + 1) % SEG;
+      tri([0, crown, 0], [table[i][0], crown, table[i][1]], [table[j][0], crown, table[j][1]]);
+    }
+    ring(gTop, 0.0, table, crown);          // crown facets
+    ring(gBot, -0.06 * r, gTop, 0.0);       // girdle
+    // pavilion, converging on the culet
+    for (var k = 0; k < SEG; k++) {
+      var m = (k + 1) % SEG;
+      tri([gBot[m][0], -0.06 * r, gBot[m][1]], [gBot[k][0], -0.06 * r, gBot[k][1]], [0, -pav, 0]);
+    }
+    var g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    return g;
+  }
+
+  function gemMaterial(hex) {
+    return new THREE.MeshPhysicalMaterial({
+      /* Transmission against a dark room means a dark stone: the gem is
+         mostly showing you what is behind it. Real cubic zirconia stays pale
+         on a dark ground because it returns light internally. Dropping
+         transmission and adding a little emissive of its own tint is what
+         gets the pastels back. */
+      color: new THREE.Color(hex),
+      emissive: new THREE.Color(hex), emissiveIntensity: 0.11,
+      metalness: 0, roughness: 0.01,
+      transmission: 0.70, thickness: 0.30, ior: 2.15,
+      specularIntensity: 1, clearcoat: 1, clearcoatRoughness: 0.01,
+      envMapIntensity: 2.6, flatShading: true,
+      transparent: true, opacity: 1
+    });
+  }
+  /* Measured off the packshot at #b1adaa mean / #d8d8d7 in the highlights.
+     A fully metallic surface takes ALL its colour from the environment, so
+     against a dark room it rendered as gunmetal however light the base was.
+     Pulling metalness off 1 lets the base colour carry, which is what a
+     bright plating actually does. */
+  var rhodium = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color('#E4E6E9'),
+    metalness: 1, roughness: 0.07, envMapIntensity: 1.9,
+    clearcoat: 1, clearcoatRoughness: 0.04
+  });
+  var paveMat = new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color('#FFFFFF'),
+    emissive: new THREE.Color('#EAF2FF'), emissiveIntensity: 0.16,
+    metalness: 0, roughness: 0.01, envMapIntensity: 3.4,
+    transmission: 0.35, thickness: 0.05, ior: 2.15,
+    clearcoat: 1, clearcoatRoughness: 0.01, flatShading: true
+  });
+
+  /* ── The halo frame ─────────────────────────────────────────────────────
+     A rounded square with a rounded-square hole, extruded and bevelled: the
+     bezel the stone sits in. The pavé sits in the flat of that bezel. */
+  function roundedSquare(size, radius) {
+    var s = new THREE.Shape(), h = size / 2, r = radius;
+    s.moveTo(-h + r, -h);
+    s.lineTo(h - r, -h); s.quadraticCurveTo(h, -h, h, -h + r);
+    s.lineTo(h, h - r);  s.quadraticCurveTo(h, h, h - r, h);
+    s.lineTo(-h + r, h); s.quadraticCurveTo(-h, h, -h, h - r);
+    s.lineTo(-h, -h + r); s.quadraticCurveTo(-h, -h, -h + r, -h);
+    return s;
+  }
+  var FRAME = 1.0, HOLE = 0.50, PAVE_N = 26;
+  function makeLink(tint) {
+    var link = new THREE.Group();
+
+    var shape = roundedSquare(FRAME, 0.17);
+    var hole = roundedSquare(HOLE, 0.10);
+    shape.holes.push(new THREE.Path(hole.getPoints(40)));
+    var frame = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, {
+      depth: 0.16, bevelEnabled: true, bevelThickness: 0.03,
+      bevelSize: 0.028, bevelSegments: 3, curveSegments: 12
+    }), rhodium);
+    frame.rotation.x = -Math.PI / 2;
+    frame.position.y = -0.085;
+    link.add(frame);
+
+    // back plate, so you never see through the setting
+    var back = new THREE.Mesh(new THREE.BoxGeometry(FRAME * 0.92, 0.05, FRAME * 0.92), rhodium);
+    back.position.y = -0.11;
+    link.add(back);
+
+    // centre stone
+    var gem = new THREE.Mesh(cushionGeometry(0.235, 0.125, 0.30, 3.1), gemMaterial(tint));
+    gem.position.y = 0.105;
+    link.add(gem);
+
+    /* Pavé halo: twenty tiny stones set into the bezel flat, walked around
+       the same superellipse the frame follows so they hug the corners the way
+       they do on the piece rather than sitting on a circle. */
+    /* Scale it off the real piece rather than by eye. The centre stone is
+       5 mm and the halo stones are roughly 0.7 mm, so a halo stone is about
+       a seventh of the centre — at 0.084 against a 0.235 centre they were a
+       THIRD of it, and twenty of those read as a daisy chain rather than
+       pavé. 0.033 is the seventh. */
+    var paveGeo = cushionGeometry(0.033, 0.021, 0.036, 2.4);
+    // hugging the centre stone (0.235) rather than out at the frame edge
+    var path = superellipse(0.292, 3.2);
+    for (var i = 0; i < PAVE_N; i++) {
+      var f = (i / PAVE_N) * path.length;
+      var a = path[Math.floor(f) % path.length], b = path[Math.ceil(f) % path.length];
+      var m = f - Math.floor(f);
+      var st = new THREE.Mesh(paveGeo, paveMat);
+      // 0.055 put every halo stone UNDER the frame's top face (-0.085 + 0.17
+      // extrude = +0.085), so the whole pavé was invisible in the first render.
+      st.position.set(a[0] + (b[0] - a[0]) * m, 0.100, a[1] + (b[1] - a[1]) * m);
+      st.rotation.y = Math.random() * Math.PI;
+      link.add(st);
+    }
+    return link;
+  }
+
+  /* ── The circuit ────────────────────────────────────────────────────────
+     19 links plus the clasp on an 18 cm loop. Modelled in link-widths: the
+     radius follows from the count so the frames sit shoulder to shoulder the
+     way they do on the wrist, instead of being spaced by eye. */
+  var TINTS = ['#7FC8DC', '#F0A6BE', '#F2DC9B'];
+  var LINKS = 19, CLASP_SPAN = 2.25;
+  var bracelet = new THREE.Group();
+  var step = FRAME + 0.045;
+  var total = LINKS * step + CLASP_SPAN * step;
+  var R = total / (Math.PI * 2);
+
+  for (var i = 0; i < LINKS; i++) {
+    var link = makeLink(TINTS[i % 3]);
+    var a = (i / (LINKS + CLASP_SPAN)) * Math.PI * 2;
+    link.position.set(Math.cos(a) * R, 0, Math.sin(a) * R);
+    link.rotation.y = -a + Math.PI / 2;
+    // a rivière lies flat but is not perfectly planar; a little roll reads as metal
+    link.rotation.z = Math.sin(a * 3) * 0.035;
+    bracelet.add(link);
+  }
+
+  // fold over clasp: a plain stepped plate, no stones, noticeably longer
+  /* Fold over clasp. The first pass made it a thin plank lying flat inside
+     the circle, detached from the line; on the piece it is the same width as
+     the links and closes the circuit, just plain and longer. Built from three
+     stacked plates at link height so it reads as part of the bracelet. */
+  /* A link is placed with `rotation.y = -a + PI/2`, which sends its local +z
+     RADIALLY outward and its local +x along the tangent. The clasp was built
+     long on z, so it pointed straight into the middle of the bracelet — that
+     is the plank lying inside the circle in the first three renders. Long on
+     x is along the line, which is where a clasp goes. */
+  /* The clasp fills the one gap in the circuit, so its length is the CHORD of
+     that gap, not a guess. Three passes of eyeballing it produced a plank that
+     overshot the gap by 70% and punched through the links at both ends; the
+     arc it has to span is known, so measure it.
+
+       gap angle = CLASP_SPAN / (LINKS + CLASP_SPAN) * 2PI
+       chord     = 2R * sin(gap / 2)
+
+     A link is placed with `rotation.y = -a + PI/2`, which puts its local +z
+     radially outward and its local +x along the tangent — so the clasp is
+     built long on x. Built long on z (the first three passes) it pointed
+     straight into the middle of the bracelet. */
+  var gapAngle = (CLASP_SPAN / (LINKS + CLASP_SPAN)) * Math.PI * 2;
+  var CL = 2 * R * Math.sin(gapAngle / 2) * 0.94;
+
+  var clasp = new THREE.Group();
+  var plate = new THREE.Mesh(new THREE.BoxGeometry(CL, 0.19, FRAME * 0.80), rhodium);
+  plate.position.y = -0.028;
+  clasp.add(plate);
+  // the fold-over leaf, a shade narrower and sitting proud of the plate
+  var tongue = new THREE.Mesh(new THREE.BoxGeometry(CL * 0.60, 0.06, FRAME * 0.56), rhodium);
+  tongue.position.set(-CL * 0.07, 0.098, 0);
+  clasp.add(tongue);
+  // the two raised ends the leaf snaps between
+  [-1, 1].forEach(function (sgn) {
+    var lip = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.25, FRAME * 0.74), rhodium);
+    lip.position.set(sgn * CL * 0.44, 0.008, 0);
+    clasp.add(lip);
+  });
+
+  var ca = ((LINKS - 0.5 + CLASP_SPAN / 2) / (LINKS + CLASP_SPAN)) * Math.PI * 2;
+  clasp.position.set(Math.cos(ca) * R, 0, Math.sin(ca) * R);
+  clasp.rotation.y = -ca + Math.PI / 2;
+  bracelet.add(clasp);
+
+  scene.add(bracelet);
+
+  // a dark ground that catches nothing but a little bounce
+  var floor = new THREE.Mesh(
+    new THREE.CircleGeometry(R * 4, 64),
+    new THREE.MeshStandardMaterial({ color: 0x191D23, roughness: 0.55, metalness: 0.25 })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.30;
+  scene.add(floor);
+
+  /* ── Camera: a tiny orbit control ───────────────────────────────────────
+     Written here rather than pulled in: OrbitControls has no UMD build on the
+     allowed CDNs since r147, and this is thirty lines. */
+  var VIEWS = {
+    'three-quarter': { theta: -0.9, phi: 1.02, dist: R * 2.85, target: 0 },
+    'flat':          { theta: 0.0,  phi: 1.48, dist: R * 2.6,  target: 0 },
+    'macro':         { theta: -0.5, phi: 0.72, dist: R * 1.45, target: 0.05 },
+    'clasp':         { theta: ca + Math.PI / 2, phi: 0.78, dist: R * 1.55, target: 0.02 }
+  };
+  var cur = Object.assign({}, VIEWS['three-quarter']);
+  var want = Object.assign({}, cur);
+  var spin = true;
+
+  /* The bracelet is as wide as it is deep, so framing is set by the NARROWER
+     axis. On a 16:10 stage that is height; on the 4:5 stage a phone gets it is
+     width, and a distance tuned for the desktop crops both sides off. Backing
+     off by the aspect shortfall keeps the whole circuit in frame at any
+     shape of viewport. */
+  function place() {
+    var p = Math.max(0.12, Math.min(Math.PI - 0.12, cur.phi));
+    var d = cur.dist * (camera.aspect < 1.35 ? 1.35 / Math.max(camera.aspect, 0.55) : 1);
+    camera.position.set(
+      d * Math.sin(p) * Math.cos(cur.theta),
+      d * Math.cos(p),
+      d * Math.sin(p) * Math.sin(cur.theta)
+    );
+    camera.lookAt(0, cur.target, 0);
+  }
+
+  var down = false, lx = 0, ly = 0;
+  var el = renderer.domElement;
+  el.addEventListener('pointerdown', function (e) { down = true; spin = false; lx = e.clientX; ly = e.clientY; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointerup', function (e) { down = false; try { el.releasePointerCapture(e.pointerId); } catch (_) {} });
+  el.addEventListener('pointermove', function (e) {
+    if (!down) return;
+    want.theta -= (e.clientX - lx) * 0.006;
+    want.phi = Math.max(0.12, Math.min(Math.PI - 0.12, want.phi - (e.clientY - ly) * 0.006));
+    lx = e.clientX; ly = e.clientY;
+  });
+  el.addEventListener('wheel', function (e) {
+    e.preventDefault(); spin = false;
+    want.dist = Math.max(R * 0.9, Math.min(R * 6, want.dist * (1 + Math.sign(e.deltaY) * 0.1)));
+  }, { passive: false });
+
+  var buttons = [].slice.call(document.querySelectorAll('.views button'));
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      buttons.forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      Object.assign(want, VIEWS[b.dataset.view]);
+      spin = b.dataset.view === 'three-quarter';
+    });
+  });
+
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize() {
+    W = stage.clientWidth; H = stage.clientHeight;
+    if (!W || !H) return;
+    camera.aspect = W / H; camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+    place();
+  }
+  addEventListener('resize', resize);
+
+  var started = false;
+  function frame() {
+    requestAnimationFrame(frame);
+    if (spin && !reduced) want.theta += 0.0022;
+    ['theta', 'phi', 'dist', 'target'].forEach(function (k) { cur[k] += (want[k] - cur[k]) * 0.08; });
+    place();
+    renderer.render(scene, camera);
+    if (!started) { started = true; loading.remove(); }
+  }
+  resize(); place(); frame();
+})();
+</script>

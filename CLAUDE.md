@@ -88,8 +88,10 @@ is a hash of the product handle, not a sales figure.
 
 **The 3D Naira box** (`components/NairaBoxShowcase.tsx` → `NairaBox3D.tsx`, scene
 in `lib/nairaBox/`) sits on its own packshot band (`--nf-surface-raised`) just
-above the full footer, like the bag on bluorng.com, with one line of copy under
-it. It is the closed box from the real packaging (sleeve, lighter rim, drawer
+above BOTH footers — the full one and the compact one every product page uses —
+like the bag on bluorng.com, with the brand line under it. The band is a
+`data-quiet-zone`: `useQuietZone` hides the reel bubble while it is on screen,
+because the bubble sat over the copy on every PDP. It is the closed box from the real packaging (sleeve, lighter rim, drawer
 front and pull tab, lid print from the logo with the flower as the I), turns
 once every 4 s (owner's brief, pinned in `config.test.ts`), hovers, and spins on
 drag. There is no drawer interaction — the owner removed it. The copy says
@@ -192,7 +194,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 191 tests
+npx vitest run                          # currently 193 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

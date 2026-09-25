@@ -2,27 +2,36 @@ import NairaBox3D from "@/components/NairaBox3D";
 
 /*
   The box on its own packshot band just above the footer, large and on a light
-  ground as the bag is on bluorng.com, with one line of copy under it.
+  ground as the bag is on bluorng.com, with the brand line under it.
 
-  The copy uses the listings' own words. Every piece is described as "18K gold
+  The plating words are the listings' own. Every piece is described as "18K gold
   tone plated" or "rhodium plated"; "18K gold" alone would claim gold content
   the pieces do not have. Materials are left out on purpose: most pieces are
   surgical stainless steel, but some are copper alloy with sterling posts.
+
+  "Arrives in the Naira gift box" is what 53 of the 56 live listings already
+  show in their photo galleries — the box is the packaging, not a prop. On a
+  product page it answers the gifting question at the point it is asked.
 */
 const NairaBoxShowcase = () => (
-  <section aria-label="The Naira box" className="bg-[var(--nf-surface-raised)] px-4 pb-12 pt-6 md:pb-16 md:pt-10">
+  <section data-quiet-zone aria-label="The Naira gift box" className="bg-[var(--nf-surface-raised)] px-4 pb-14 pt-6 md:pb-20 md:pt-10">
     <NairaBox3D className="max-w-[520px]" />
-    <div className="mx-auto -mt-2 flex max-w-[440px] flex-col items-center gap-3 text-center">
-      <p className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-24 text-[var(--nf-accent-quiet)]">
-        18K gold tone &amp; rhodium plated
+    <div className="mx-auto -mt-2 flex max-w-[460px] flex-col items-center text-center">
+      <p className="flex items-center gap-2.5 font-nf-label text-[10px] font-medium uppercase tracking-nf-20 text-[var(--nf-accent-quiet)] md:text-[11px] md:tracking-nf-24">
+        <span aria-hidden="true" className="h-px w-4 bg-[var(--nf-accent)] md:w-8" />
+        18K gold tone · rhodium plated
+        <span aria-hidden="true" className="h-px w-4 bg-[var(--nf-accent)] md:w-8" />
       </p>
       {/* Velista sets in capitals only, so the display line stays short and
-          the rest follows in the editorial italic. */}
-      <h2 className="font-nf-display text-[30px] leading-[1.05] text-[var(--nf-text)] md:text-[38px]">
+          the thought finishes in the editorial italic. */}
+      <h2 className="mt-4 whitespace-nowrap font-nf-display text-[26px] leading-none text-[var(--nf-text)] min-[400px]:text-[29px] md:text-[40px]">
         Luxury chic jewellery
       </h2>
-      <p className="-mt-1 font-nf-editorial text-[19px] italic leading-snug text-[color:rgb(var(--nf-ink-rgb)/0.7)] md:text-[21px]">
+      <p className="mt-2 font-nf-editorial text-[19px] italic leading-snug text-[color:rgb(var(--nf-ink-rgb)/0.7)] md:text-[22px]">
         Crafted for the moments you keep.
+      </p>
+      <p className="mt-6 font-nf-label text-[11px] uppercase tracking-nf-16 text-[color:rgb(var(--nf-ink-rgb)/0.55)]">
+        Every piece arrives in the Naira gift box
       </p>
     </div>
   </section>

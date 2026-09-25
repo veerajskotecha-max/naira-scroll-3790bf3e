@@ -5,6 +5,7 @@ import { reelCover } from "@/lib/reelCovers";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useQuietZone } from "@/hooks/useQuietZone";
 
 // Code-split: none of the viewer JS ships with the product page bundle.
 const ReelViewer = lazy(() => import("./ReelViewer"));
@@ -19,7 +20,10 @@ const saveData = () =>
   (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
 /** Floating shoppable reel that appears once the shopper scrolls past the fold. */
-const ReelPeek = ({ suppressed = false }: { suppressed?: boolean }) => {
+const ReelPeek = ({ suppressed: suppressedProp = false }: { suppressed?: boolean }) => {
+  // Also out of the way while a quiet zone (the 3D box band) is on screen.
+  const inQuietZone = useQuietZone();
+  const suppressed = suppressedProp || inQuietZone;
   const isMobile = useIsMobile();
   const [armed, setArmed] = useState(false);
   const [shown, setShown] = useState(false);

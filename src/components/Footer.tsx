@@ -139,6 +139,9 @@ const Footer = ({ compact = false }: { compact?: boolean }) => {
 
   if (compact) {
     return (
+      <>
+      {/* The product page ends on the box too: where the gifting question is asked. */}
+      <NairaBoxShowcase />
       <footer className="w-full border-t border-border" style={{ backgroundColor: SAGE }}>
         <section className="bg-background px-5 py-10 md:px-10 md:py-12" aria-label="Naira purchase assurances">
           <div className="mx-auto max-w-[880px]">
@@ -194,6 +197,7 @@ const Footer = ({ compact = false }: { compact?: boolean }) => {
           </p>
         </div>
       </footer>
+      </>
     );
   }
 

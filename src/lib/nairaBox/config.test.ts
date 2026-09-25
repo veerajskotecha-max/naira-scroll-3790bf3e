@@ -43,7 +43,7 @@ describe("three.js stays out of the main bundle", () => {
   /* The flower is in the header, on every page and above the fold — the worst
      place for three.js to land in the first download. */
   it("reaches the header flower's scene only through a dynamic import", () => {
-    const component = readFileSync(resolve(src, "components/NairaFlower3D.tsx"), "utf8");
+    const component = readFileSync(resolve(src, "components/NairaWordmark.tsx"), "utf8");
     expect(component).toMatch(/import\("@\/lib\/nairaFlower\/scene"\)/);
     expect(component).not.toMatch(/from\s+["']@\/lib\/nairaFlower\/scene["']/);
   });

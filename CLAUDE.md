@@ -118,22 +118,26 @@ polygonOffset rim: every version built from butted panels or with a recessed
 front flickered as dotted lines mid-turn. Keep the camera's near/far tight
 (1–15); at 0.1–30 inner faces bled through.
 
-**The header flower** (`components/NairaFlower3D.tsx`, scene in
-`lib/nairaFlower/`) is the stand-alone flower from the brand deck (p. 7),
-traced from the deck's own artwork into `outline.ts`, extruded and glazed in
-the wordmark's blush (`--nf-blush`, the colour of the flower that is the I in
-NAIRA) — the owner's call after a gold version; enamel rather than metal,
-because a pink metal reads as rose gold. It stands exactly as tall as the
-wordmark: its box is a percentage of a wrapper around the logo `<img>`, so
-it follows every breakpoint's logo width. It turns at the box's pace — its SPIN IS the box's
-constant, pinned in its `config.test.ts` — with a lighter hover. It is
-positioned off the wordmark, not in the flow, so the logo stays centred: LEFT
-of it on phones (the icon row fills the right at 360px), RIGHT from `lg` (the
-nav links reach the wordmark at 1024). The header is on every page, so a flat
-blush SVG of the same outline paints first and three.js is fetched only after
-`load` + idle; reduced motion and Data Saver keep the still and never
-download it. Face-on, a frontal key light mirrored off the flat face and read
-as cream — the key sits high and to the side on purpose.
+**The header wordmark** (`components/NairaWordmark.tsx`, data and scene in
+`lib/nairaFlower/`) is NAIRA as vector letters traced from the brand deck's
+2710px artwork (`wordmark.ts`), in `--nf-sage`. It replaced a 105x24 bitmap
+that was blurred on every phone. The I is rebuilt as a plain letter (the
+deck's top serif, mirrored for the bottom) and the flower that stands as the
+I is drawn on top from the stand-alone deck flower (`outline.ts`) — the same
+drawing, fitted to the deck's I-flower at 97.9% overlap. That flower is flat
+blush SVG from the first paint; after `load` + idle three.js arrives, a blush
+enamel copy lands face-on exactly over it (checked in the browser: same box
+to a pixel, the bevel adds a one-pixel rim) and the two cross-fade. It turns
+on the I's STEM, not its own centre, so it circles the letter; edge-on it
+lines up with the stem and briefly becomes the I. Motion is a rest, not a
+spin (`REST` 3 s face-on, one eased `TURN` of 1.6 s, literals pinned in
+`config.test.ts`): the owner wanted more movement than the box's 35 s, and a
+steady spin never lets NAIRA read. Nothing is redrawn while it rests. Reduced
+motion and Data Saver keep the flat flower and never download three.js. The
+canvas is wider than the flower on purpose (`HALF_WIDTH`): the low leaf
+swings 0.42 flower-heights out from the stem. Face-on, a frontal key light
+mirrored off the flat face and read as cream — the key sits high and to the
+side on purpose. The footer and hero still use the old bitmap logos.
 
 Decorative fixed overlays must stay BELOW `z-50`. `wow/ScrollBloom.tsx` sat at
 `z-[8000]` on the right edge and painted straight through the open cart drawer on
@@ -225,7 +229,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 206 tests
+npx vitest run                          # currently 210 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

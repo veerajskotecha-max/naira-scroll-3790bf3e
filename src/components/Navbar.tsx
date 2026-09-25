@@ -4,9 +4,7 @@ import { Search, Heart, ShoppingBag, Menu, User } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import MegaMenu from "./nav/MegaMenu";
 import SearchOverlay from "./nav/SearchOverlay";
-import nairaLogo from "@/assets/naira-logo.svg";
-import NairaFlower3D from "./NairaFlower3D";
-import { FILL as FLOWER_FILL } from "@/lib/nairaFlower/config";
+import NairaWordmark from "./NairaWordmark";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -97,26 +95,9 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             </div>
           </div>
 
-          {/* Center logo. The flower is positioned off the wordmark rather than
-              beside it in the flow, so the wordmark stays centred and neither
-              side column gives up room. It takes whichever side is empty: the
-              left on phones (the icon row fills the right at 360px), the right
-              from lg up (the nav links run right up to the wordmark at 1024).
-              Its box is sized off the wordmark's, so the flower stands exactly
-              as tall as the letters at every breakpoint. */}
+          {/* Center logo: the vector wordmark, whose flower-I turns in 3D. */}
           <Link to="/" className="flex items-center justify-center h-full">
-            <span className="relative block">
-              <NairaFlower3D
-                className="absolute top-1/2 -translate-y-1/2 right-full mr-1 lg:right-auto lg:left-full lg:mr-0 lg:ml-2"
-                style={{ height: `${100 / FLOWER_FILL}%` }}
-              />
-              <img
-                src={nairaLogo}
-                alt="NAIRA"
-                loading="eager"
-                className="object-contain block h-auto w-[80px] sm:w-[90px] md:w-[100px] lg:w-[130px] xl:w-[140px]"
-              />
-            </span>
+            <NairaWordmark className="w-[80px] sm:w-[90px] md:w-[100px] lg:w-[130px] xl:w-[140px]" />
           </Link>
 
           {/* Right section */}

@@ -1,13 +1,13 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { BEVEL, DEPTH, FILL, FRONT, BLUSH, HOVER, SPIN } from "./config";
+import { BEVEL, BLUSH, DEPTH, FILL, FRONT, turnAngle } from "./config";
 import { FLOWER_SHAPES } from "./outline";
 
 /*
-  The brand-deck flower as a small blush enamel charm beside the header wordmark,
-  turning at the Naira box's pace.
+  The flower that stands as the I in the header wordmark, as blush enamel,
+  turning around the I's stem.
 
-  Loaded on demand by NairaFlower3D — never import this from anything in the
+  Loaded on demand by NairaWordmark — never import this from anything in the
   main bundle, it pulls in three.js. It shares that chunk with the box scene.
 */
 
@@ -36,9 +36,12 @@ function buildFlower() {
   return geometry;
 }
 
+/* axisOffset: how far the flower's centre sits from the turning axis, in
+   flower heights. The flower's own centre is left of the I's stem; turning
+   on the stem makes it circle the letter rather than wobble beside it. */
 export function mountNairaFlower(
   canvas: HTMLCanvasElement,
-  { onReady }: { onReady?: () => void } = {}
+  { axisOffset = 0, onReady }: { axisOffset?: number; onReady?: () => void } = {}
 ): NairaFlowerHandle {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   // The canvas is a few dozen CSS pixels; full density keeps the petals crisp
@@ -55,7 +58,6 @@ export function mountNairaFlower(
   scene.environment = env;
   scene.environmentIntensity = 1.1;
 
-  // Tight near/far, as for the box, so the bevels do not fight in depth.
   const FOV = 22;
   const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 10);
   // Distance at which the 1-unit-tall flower fills FILL of the frame.
@@ -81,18 +83,21 @@ export function mountNairaFlower(
     clearcoatRoughness: 0.25,
   });
   const flower = new THREE.Mesh(geometry, material);
-
-  // Float on the outer group, turn on the inner one.
-  const float = new THREE.Group();
+  flower.position.x = axisOffset;
   const pivot = new THREE.Group();
   pivot.add(flower);
-  float.add(pivot);
-  scene.add(float);
+  scene.add(pivot);
 
-  let angle = FRONT;
   let raf = 0;
   let last = performance.now();
   let t = 0;
+  let drawn = NaN;
+
+  const draw = (angle: number) => {
+    pivot.rotation.y = FRONT + angle;
+    renderer.render(scene, camera);
+    drawn = angle;
+  };
 
   const resize = () => {
     const { clientWidth: cw, clientHeight: ch } = canvas;
@@ -100,28 +105,22 @@ export function mountNairaFlower(
     renderer.setSize(cw, ch, false);
     camera.aspect = cw / ch;
     camera.updateProjectionMatrix();
+    draw(turnAngle(t));
   };
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
   resize();
-
-  const draw = () => {
-    pivot.rotation.y = angle;
-    const phase = (t / HOVER.period) * Math.PI * 2;
-    float.position.y = Math.sin(phase) * HOVER.lift;
-    float.rotation.z = Math.cos(phase) * HOVER.sway;
-    renderer.render(scene, camera);
-  };
-  draw();
+  draw(0);
   onReady?.();
 
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame);
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
-    angle += SPIN * dt;
     t += dt;
-    draw();
+    const angle = turnAngle(t);
+    // Resting is most of the cycle; nothing changes, so nothing is drawn.
+    if (angle !== drawn) draw(angle);
   };
   raf = requestAnimationFrame(frame);
 

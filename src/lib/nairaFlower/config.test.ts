@@ -1,15 +1,32 @@
 import { describe, expect, it } from "vitest";
-import { SPIN as BOX_SPIN } from "@/lib/nairaBox/config";
-import { SECONDS_PER_TURN, SPIN } from "./config";
+import { CYCLE, FILL, HALF_WIDTH, REST, TURN, turnAngle } from "./config";
 import { FLOWER_ASPECT, FLOWER_SHAPES, flowerPath } from "./outline";
+import { WORDMARK, WORDMARK_FLOWER } from "./wordmark";
 
-/* The owner asked for the flower to turn "smooth and slow like the box". A
-   faster turn is what got the box sent back once; this keeps the two locked. */
-describe("header flower motion", () => {
-  it("turns at the Naira box's pace, about once every 35 seconds", () => {
-    expect(SPIN).toBe(BOX_SPIN);
-    expect(SECONDS_PER_TURN).toBeGreaterThan(34);
-    expect(SECONDS_PER_TURN).toBeLessThan(36);
+const TAU = Math.PI * 2;
+
+/* The owner asked for more movement than the box's 35 s drift. The answer is
+   a rest face-on and one eased turn, not a faster spin: a steady spin never
+   lets NAIRA read. Literals, so a change of pace is a decision, not a drift. */
+describe("flower-I motion", () => {
+  it("rests 3 s face-on, then turns once in 1.6 s", () => {
+    expect(REST).toBe(3);
+    expect(TURN).toBe(1.6);
+  });
+
+  it("holds exactly face-on through the rest, so it sits on the flat flower", () => {
+    for (const s of [0, 1, 2.99]) expect(turnAngle(s)).toBe(0);
+    expect(turnAngle(CYCLE + 1)).toBeCloseTo(TAU, 10);
+  });
+
+  it("turns one full revolution per cycle and never runs backwards", () => {
+    expect(turnAngle(REST + TURN / 2)).toBeCloseTo(Math.PI, 10);
+    let prev = 0;
+    for (let s = 0; s < CYCLE * 3; s += 0.01) {
+      const a = turnAngle(s);
+      expect(a).toBeGreaterThanOrEqual(prev - 1e-9);
+      prev = a;
+    }
   });
 });
 
@@ -34,5 +51,27 @@ describe("flower outline", () => {
 
   it("draws the still as one SVG path per piece", () => {
     expect(flowerPath().match(/M/g)).toHaveLength(5);
+  });
+});
+
+describe("flower in the wordmark", () => {
+  const F = WORDMARK_FLOWER;
+  const xs = FLOWER_SHAPES.flatMap((p) => p.filter((_, i) => i % 2 === 0));
+  const reach = Math.max(...xs.map((x) => Math.abs(F.cx - F.axis + x * F.height))) / F.height;
+
+  /* Turning on the stem, every point sweeps a circle round it. A canvas
+     narrower than the farthest point clips the low leaf mid-turn. */
+  it("gives the turning flower room for its farthest leaf on both sides", () => {
+    expect(HALF_WIDTH).toBeGreaterThan(reach);
+    expect(FILL).toBeLessThan(1);
+  });
+
+  /* The flower stands in for the I: it must sit on the I's stem and within
+     the letters' height, or the word stops reading NAIRA. */
+  it("stands on the I, inside the wordmark's height", () => {
+    expect(F.axis / WORDMARK.width).toBeGreaterThan(0.45);
+    expect(F.axis / WORDMARK.width).toBeLessThan(0.52);
+    expect(F.cy - F.height / 2).toBeGreaterThan(0);
+    expect(F.cy + F.height / 2).toBeLessThanOrEqual(WORDMARK.height + 1);
   });
 });

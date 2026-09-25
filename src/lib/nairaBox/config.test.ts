@@ -49,15 +49,31 @@ describe("three.js stays out of the main bundle", () => {
   });
 });
 
-/* The owner asked for the box to open on its own and show the ring. Pins that
-   the loop exists, that each stage takes real time, and that the ring it shows
-   is the homepage's solitaire render, not a new asset that could drift. */
+/* The owner first asked for the box to open on its own, then for a full 360
+   and for the opening to happen on a tap. The loop pulled the box back to the
+   front every nine seconds, so it never finished a turn — pins that nothing
+   schedules a reveal, that a tap is what starts one, and that the ring it
+   shows is the homepage's solitaire render, not a new asset that could drift. */
 describe("Naira box reveal", () => {
-  it("opens, holds and closes on a loop", async () => {
-    const { REVEAL } = await import("./config");
-    for (const key of ["firstAfter", "every", "open", "hold", "close"] as const) {
+  it("opens on a tap, never on a timer", async () => {
+    const { REVEAL, TAP_MS, TAP_PX } = await import("./config");
+    for (const key of ["open", "close", "faceSpeed", "slide"] as const) {
       expect(REVEAL[key]).toBeGreaterThan(0);
     }
+    expect(REVEAL).not.toHaveProperty("every");
+    expect(REVEAL).not.toHaveProperty("firstAfter");
+    expect(TAP_PX).toBeGreaterThan(0);
+    expect(TAP_MS).toBeGreaterThan(0);
+
+    const scene = readFileSync(resolve(__dirname, "scene.ts"), "utf8");
+    // The only way into the reveal is toggle(), and only a tap or a key calls it.
+    expect(scene.match(/go\("face"\)/g)).toHaveLength(1);
+    expect(scene).toMatch(/const toggle = \(\) =>[\s\S]*go\("face"\)[\s\S]*const onDown/);
+  });
+
+  it("keeps the ring smaller than the open drawer is deep", async () => {
+    const { RING_SIZE, BOX } = await import("./config");
+    expect(RING_SIZE).toBeLessThan(BOX.h * 1.2);
   });
 
   it("reveals the solitaire from the homepage ring turn", () => {

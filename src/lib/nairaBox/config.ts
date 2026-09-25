@@ -28,19 +28,27 @@ export const TILT = 0.16; // rad
    motion switched on, and as the angle the box presents the ring from. */
 export const FRONT = -0.55;
 
-/* The reveal, on a loop: the box turns, comes round to face the viewer, the
-   drawer slides out and the solitaire rises from its cushion, holds, and the
-   drawer closes again. The first reveal comes soon after the band scrolls in,
-   because most visitors pass the foot of the page in seconds. */
+/* The reveal, on a tap: the box comes round to face the viewer, the drawer
+   slides out and the solitaire rises from its cushion, and it stays open until
+   the next tap. It used to run on its own every nine seconds, which pulled the
+   box back to the front before it could ever finish a turn; the owner asked
+   for a full 360 and for the opening to be the shopper's to start. */
 export const REVEAL = {
-  firstAfter: 2.5, // s of turning before the first reveal
-  every: 9, // s of turning between reveals
-  faceSpeed: 1.4, // rad/s while coming round to face the viewer
+  faceSpeed: 2.8, // rad/s coming round to face the viewer — at most ~1.1 s
   open: 1.1, // s for the drawer to slide out
-  hold: 2.8, // s with the ring up
   close: 1.0, // s for the drawer to slide home
+  glintEvery: 4, // s between glints on the stone while the ring is up
   slide: 0.62, // world units the drawer travels
 };
+
+/* The solitaire's height in world units, against a 1.6 box. It stood almost
+   as tall as the open drawer was deep and the owner asked for it smaller. */
+export const RING_SIZE = 0.78;
+
+/* A press that moves less than this and lets go within TAP_MS is a tap, which
+   opens or closes the box; anything more is a drag, which spins it. */
+export const TAP_PX = 6;
+export const TAP_MS = 350;
 
 /* Proportions read off the packaging photography: a square lid and a depth a
    little under half the width. */

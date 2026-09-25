@@ -1,13 +1,13 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { BOX, COLOURS, DRAG, EASE, FRONT, HOVER, REVEAL, SPIN, TILT } from "./config";
+import { BOX, COLOURS, DRAG, EASE, FRONT, HOVER, REVEAL, RING_SIZE, SPIN, TAP_MS, TAP_PX, TILT } from "./config";
 
 /*
   The Naira drawer box, built from its real parts rather than a photo on a
   cube: a blush card sleeve with a lighter rim at each open end, a drawer with
   a pull tab and black velvet inside, and the wordmark printed on the lid with
-  the flower in place of the I. On a loop the drawer slides out and the
+  the flower in place of the I. Tap it and the drawer slides out and the
   solitaire from the homepage's ring turn rises from a velvet cushion.
 
   Loaded on demand by NairaBox3D — never import this from anything in the
@@ -236,7 +236,7 @@ function buildBox(print: THREE.Texture, ringTex: THREE.Texture | null): Built {
     // The band's foot sits 18% up the image; anchoring a little above it sinks
     // the band into the slot.
     ring.center.set(0.5, 0.21);
-    ring.scale.set(0.96, 0.96, 1);
+    ring.scale.set(RING_SIZE, RING_SIZE, 1);
     ring.position.set(0, cushionTop, cushionZ);
     drawer.add(ring);
 
@@ -281,7 +281,7 @@ function buildBox(print: THREE.Texture, ringTex: THREE.Texture | null): Built {
   };
 }
 
-export type NairaBoxHandle = { dispose: () => void };
+export type NairaBoxHandle = { toggle: () => void; dispose: () => void };
 
 export function mountNairaBox(
   canvas: HTMLCanvasElement,
@@ -290,7 +290,8 @@ export function mountNairaBox(
     ringUrl,
     reducedMotion = false,
     onReady,
-  }: { printUrl: string; ringUrl?: string; reducedMotion?: boolean; onReady?: () => void }
+    onOpen,
+  }: { printUrl: string; ringUrl?: string; reducedMotion?: boolean; onReady?: () => void; onOpen?: () => void }
 ): NairaBoxHandle {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   // Crisp on 3x phones; the canvas is small enough that full density is cheap.
@@ -357,6 +358,7 @@ export function mountNairaBox(
   let disposed = false;
   let angle = FRONT;
   let target = FRONT;
+  let press: { x: number; y: number; t: number } | null = null;
   let dragging = false;
   let lastX = 0;
   let raf = 0;
@@ -364,12 +366,12 @@ export function mountNairaBox(
   let last = performance.now();
   let hoverTime = 0;
 
-  // The reveal loop. "turn" is the Bluorng spin; "face" brings the box round to
-  // the three-quarter view; then the drawer opens, holds and closes.
+  // "turn" is the Bluorng spin, a full 360 that nothing interrupts on its own.
+  // A tap runs "face" (round to the three-quarter view) and "open"; the box
+  // then holds, ring up, until the next tap or a drag closes it.
   type Phase = "turn" | "face" | "open" | "hold" | "close";
   let phase: Phase = "turn";
   let phaseTime = 0;
-  let untilReveal = REVEAL.firstAfter;
   let faceFrom = 0;
   let faceTo = 0;
   let faceFor = 1;
@@ -396,7 +398,8 @@ export function mountNairaBox(
       t.anisotropy = renderer.capabilities.getMaxAnisotropy();
     }
     // Without the ring photo there is nothing to reveal, so the box just turns.
-    box = buildBox(tex, reducedMotion ? null : ringTex);
+    // Reduced motion keeps the reveal: it only ever runs when asked for.
+    box = buildBox(tex, ringTex);
     pivot.add(box.root);
     pivot.rotation.y = angle;
     box.inner.forEach((o) => (o.visible = false));
@@ -415,8 +418,8 @@ export function mountNairaBox(
   ro.observe(canvas);
   resize();
 
-  // Drag to spin, as on Bluorng: only a press that lands on the box starts it,
-  // so a swipe across the empty stage still scrolls the page.
+  // Drag to spin, as on Bluorng; tap to open. Only a press that lands on the
+  // box counts, so a swipe across the empty stage still scrolls the page.
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   const hitsBox = (e: PointerEvent) => {
@@ -426,30 +429,63 @@ export function mountNairaBox(
     ray.setFromCamera(ndc, camera);
     return ray.intersectObject(box.root, true).length > 0;
   };
-  const onDown = (e: PointerEvent) => {
-    if (!hitsBox(e)) return;
-    dragging = true;
-    // A drag takes over: any reveal in progress closes and the turn resumes
-    // from wherever the shopper leaves it.
-    if (phase !== "turn") {
+
+  const toggle = () => {
+    if (!box?.ring) return;
+    if (phase === "turn") {
+      // Round to the NEAREST front-facing angle, so the box never swings more
+      // than half a turn to present the drawer.
+      faceFrom = angle;
+      faceTo = FRONT + Math.round((angle - FRONT) / (Math.PI * 2)) * Math.PI * 2;
+      faceFor = Math.max(0.35, Math.abs(faceTo - faceFrom) / REVEAL.faceSpeed);
+      go("face");
+      onOpen?.();
+    } else if (phase === "close") {
+      go("open");
+    } else {
       target = angle;
       go(drawer > 0 ? "close" : "turn");
     }
+  };
+
+  const onDown = (e: PointerEvent) => {
+    if (!hitsBox(e)) return;
+    press = { x: e.clientX, y: e.clientY, t: performance.now() };
     lastX = e.clientX;
     canvas.setPointerCapture?.(e.pointerId);
   };
   const onMove = (e: PointerEvent) => {
+    if (!press) {
+      if (e.pointerType === "mouse") canvas.style.cursor = hitsBox(e) ? "pointer" : "";
+      return;
+    }
+    if (!dragging && Math.hypot(e.clientX - press.x, e.clientY - press.y) >= TAP_PX) {
+      dragging = true;
+      canvas.style.cursor = "grabbing";
+      // A drag takes over: an open box closes and the turn resumes from
+      // wherever the shopper leaves it.
+      if (phase !== "turn") {
+        target = angle;
+        go(drawer > 0 ? "close" : "turn");
+      }
+    }
     if (!dragging) return;
     target += (e.clientX - lastX) * DRAG;
     lastX = e.clientX;
   };
-  const onUp = () => {
+  const onUp = (e: PointerEvent) => {
+    if (press && !dragging && performance.now() - press.t < TAP_MS) toggle();
+    onCancel(e);
+  };
+  const onCancel = (e: PointerEvent) => {
+    press = null;
     dragging = false;
+    canvas.style.cursor = e.pointerType === "mouse" && hitsBox(e) ? "pointer" : "";
   };
   canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointermove", onMove);
   canvas.addEventListener("pointerup", onUp);
-  canvas.addEventListener("pointercancel", onUp);
+  canvas.addEventListener("pointercancel", onCancel);
 
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame);
@@ -459,18 +495,9 @@ export function mountNairaBox(
     // Easing is tuned per 60fps frame; scale it so 120Hz screens feel the same.
     const k = 1 - Math.pow(1 - EASE, dt * 60);
     phaseTime += dt;
-    const canReveal = !reducedMotion && !!box.ring;
 
     if (phase === "turn") {
       if (!dragging && !reducedMotion) target += SPIN * dt;
-      if (canReveal && !dragging && (untilReveal -= dt) <= 0) {
-        // Round to the NEAREST front-facing angle, so the box never swings more
-        // than half a turn, and never back past where it came from by much.
-        faceFrom = angle;
-        faceTo = FRONT + Math.round((angle - FRONT) / (Math.PI * 2)) * Math.PI * 2;
-        faceFor = Math.max(0.6, Math.abs(faceTo - faceFrom) / REVEAL.faceSpeed);
-        go("face");
-      }
       angle += (target - angle) * k;
     } else if (phase === "face") {
       const t = Math.min(phaseTime / faceFor, 1);
@@ -483,14 +510,11 @@ export function mountNairaBox(
         const t = Math.min(phaseTime / REVEAL.open, 1);
         drawer = drawerFrom + (1 - drawerFrom) * easeOut(t);
         if (t >= 1) go("hold");
-      } else if (phase === "hold") {
-        if (phaseTime >= REVEAL.hold) go("close");
       } else if (phase === "close") {
         const t = Math.min(phaseTime / REVEAL.close, 1);
         drawer = drawerFrom * (1 - easeInOut(t));
         if (t >= 1) {
           drawer = 0;
-          untilReveal = REVEAL.every;
           go("turn");
         }
       }
@@ -514,12 +538,12 @@ export function mountNairaBox(
       box.clip.slot.setFromNormalAndCoplanarPoint(up, box.drawer.localToWorld(tmp.set(0, box.clip.slotY, 0)));
       box.clip.sleeve.setFromNormalAndCoplanarPoint(out, box.root.localToWorld(tmp.set(0, 0, box.clip.sleeveZ)));
       if (box.glint) {
-        // One glint on the stone while the ring is up.
-        const g = phase === "hold" ? Math.sin(Math.min(phaseTime / 1.2, 1) * Math.PI) : 0;
+        // A glint on the stone every few seconds while the ring is up.
+        const g = phase === "hold" ? Math.sin(Math.min((phaseTime % REVEAL.glintEvery) / 1.2, 1) * Math.PI) : 0;
         box.glint.material.opacity = g * 0.9;
         box.glint.material.rotation = phaseTime * 0.8;
         // The stone sits 76% up the photo; the sprite is anchored at 21%.
-        box.glint.position.set(box.ring.position.x, box.ring.position.y + 0.96 * (0.76 - 0.21), box.ring.position.z + 0.01);
+        box.glint.position.set(box.ring.position.x, box.ring.position.y + RING_SIZE * (0.76 - 0.21), box.ring.position.z + 0.01);
       }
     }
     if (!reducedMotion) {
@@ -541,6 +565,7 @@ export function mountNairaBox(
   io.observe(canvas);
 
   return {
+    toggle,
     dispose() {
       disposed = true;
       cancelAnimationFrame(raf);
@@ -549,7 +574,7 @@ export function mountNairaBox(
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
-      canvas.removeEventListener("pointercancel", onUp);
+      canvas.removeEventListener("pointercancel", onCancel);
       box?.dispose();
       floorGeo.dispose();
       floorMat.dispose();

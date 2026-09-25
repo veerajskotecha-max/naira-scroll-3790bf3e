@@ -94,14 +94,21 @@ like the bag on bluorng.com, with the brand line under it. The band is a
 because the bubble sat over the copy on every PDP. It is the closed box from the real packaging (sleeve, lighter rim, drawer
 front and pull tab, lid print from the logo with the flower as the I), turns
 at the Bluorng bag's pace, ~35 s a turn (owner's brief after a 4 s turn was sent back; pinned in `config.test.ts`), hovers, spins on
-drag. On a loop (`REVEAL` in `config.ts`) it comes round to face the viewer,
-the drawer slides out and the homepage's solitaire render (`ring-cut-34.webp`)
-rises from a velvet cushion, holds with one glint, sinks and the drawer closes.
+drag. It turns a FULL 360 uninterrupted: an automatic reveal every 9 s pulled
+it back to the front before it could finish a turn, and the owner asked for the
+opening to be the shopper's. A TAP on the box (or Enter/Space) brings it round
+to face the viewer, the drawer slides out and the homepage's solitaire render
+(`ring-cut-34.webp`, `RING_SIZE` 0.78 after the owner asked for it smaller)
+rises from a velvet cushion and stays, glinting, until the next tap; then it
+sinks, the drawer closes and the turn resumes. A tap is under `TAP_PX`/`TAP_MS`
+in `config.ts`; anything longer is a drag. "Tap to open" shows under the box
+until the first open. `config.test.ts` fails if a timer starts a reveal again.
 The ring is hidden by two clipping planes updated per frame — the cushion's slot
 and the sleeve's front opening — never by fading: a fade left a ghost of the
 ring over the lid while the drawer slid home. The drawer body is drawn only
 while it is out; shut, its walls showed through near edge-on sides. Reduced
-motion gets the closed box with no reveal. Dragging mid-reveal closes it. The copy says
+motion gets a still box, but a tap still opens it — it only runs when asked
+for. Dragging an open box closes it. The copy says
 "18K gold tone & rhodium plated", the listings' own words: "18K gold" alone would
 claim gold content, and materials are left out because some pieces are copper
 alloy. three.js (~146 KB gzip) must only arrive via the dynamic import in
@@ -218,7 +225,7 @@ renders it as a filling bar at the top of the cart.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 205 tests
+npx vitest run                          # currently 206 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

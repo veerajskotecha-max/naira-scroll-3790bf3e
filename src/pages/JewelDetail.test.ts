@@ -140,3 +140,19 @@ describe("first-screen buy facts", () => {
     expect(code).toMatch(/getElementById\("product-facts"\)/);
   });
 });
+
+/* Instagram's in-app browser repeatedly failed to open the fixed reel launcher.
+   Keep the complete shoppable section in the normal document flow, immediately
+   after the press strip, so it stays reachable without popup event handling. */
+describe("embedded shoppable reels", () => {
+  it("renders the full reel shop after the press strip", () => {
+    const press = code.indexOf("<PressMarquee />");
+    const reels = code.indexOf("<MobileReelShop />");
+    expect(press).toBeGreaterThan(-1);
+    expect(reels).toBeGreaterThan(press);
+  });
+
+  it("does not mount the floating reel popup on jewellery pages", () => {
+    expect(code).not.toMatch(/<ReelPeek/);
+  });
+});

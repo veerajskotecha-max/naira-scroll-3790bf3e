@@ -28,3 +28,4 @@
 - [x] Refresh Golden Hour with available bestsellers, led by the multicolour bracelet and Woven Gold Hoops
 - [x] Add compact anti-tarnish, skin-safe, and 18K gold-tone assurances to every jewellery product page
 - [x] Fit all three jewellery assurances within mobile PDP width and add a truthful sales-momentum cue
+- [x] Restore the full mobile Shop the Reel section below the PDP press strip and remove its floating popup

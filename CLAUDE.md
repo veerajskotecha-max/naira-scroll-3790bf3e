@@ -93,7 +93,7 @@ like the bag on bluorng.com, with the brand line under it. The band is a
 `data-quiet-zone`: `useQuietZone` hides the reel bubble while it is on screen,
 because the bubble sat over the copy on every PDP. It is the closed box from the real packaging (sleeve, lighter rim, drawer
 front and pull tab, lid print from the logo with the flower as the I), turns
-once every 4 s (owner's brief, pinned in `config.test.ts`), hovers, and spins on
+at the Bluorng bag's pace, ~35 s a turn (owner's brief after a 4 s turn was sent back; pinned in `config.test.ts`), hovers, spins on
 drag. There is no drawer interaction — the owner removed it. The copy says
 "18K gold tone & rhodium plated", the listings' own words: "18K gold" alone would
 claim gold content, and materials are left out because some pieces are copper

@@ -3,12 +3,14 @@ import { readFileSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { SECONDS_PER_TURN, SPIN } from "./config";
 
-/* The owner's brief is one full turn about every four seconds. Asserted as a
-   literal so a tweak to the speed is a decision, not a drift. */
+/* The owner's brief is Bluorng's pace: 0.003 rad per frame at 60fps, about one
+   turn every 35 seconds. A four-second turn shipped once and was sent back.
+   Asserted as a literal so a tweak to the speed is a decision, not a drift. */
 describe("Naira box motion", () => {
-  it("turns once every four seconds", () => {
-    expect(SECONDS_PER_TURN).toBe(4);
-    expect(SPIN * 4).toBeCloseTo(Math.PI * 2, 10);
+  it("turns at the bluorng.com bag's pace", () => {
+    expect(SPIN).toBeCloseTo(0.18, 10);
+    expect(SECONDS_PER_TURN).toBeGreaterThan(34);
+    expect(SECONDS_PER_TURN).toBeLessThan(36);
   });
 });
 

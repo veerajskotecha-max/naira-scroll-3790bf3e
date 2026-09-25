@@ -2,13 +2,14 @@
   How the Naira box moves. Kept apart from the scene so the numbers can be
   tested without a WebGL context and read without loading three.js.
 
-  The turn is the owner's brief: about one full revolution every four seconds.
-  Everything else follows the bag on bluorng.com — drag to spin with an eased
-  catch-up, a soft contact shadow — plus a hover: the box floats and sways a
-  little, as in the levitating packshot on the product pages.
+  The turn is the bag's on bluorng.com exactly: 0.003 rad per frame at 60fps,
+  one slow revolution about every 35 seconds. A four-second turn was tried and
+  the owner asked for Bluorng's slower pace back. Everything else follows the
+  bag too — drag to spin with an eased catch-up, a soft contact shadow — plus a
+  hover: the box floats and sways a little, as in the levitating packshot.
 */
-export const SECONDS_PER_TURN = 4;
-export const SPIN = (Math.PI * 2) / SECONDS_PER_TURN; // rad/s
+export const SPIN = 0.003 * 60; // rad/s
+export const SECONDS_PER_TURN = (Math.PI * 2) / SPIN; // ≈ 35 s
 
 export const EASE = 0.1; // share of the remaining angle closed each 60fps frame
 export const DRAG = 0.012; // rad per px of drag

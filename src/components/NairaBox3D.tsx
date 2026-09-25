@@ -51,7 +51,7 @@ const NairaBox3D = ({ className = "" }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={`relative mx-auto aspect-[5/4] w-full ${className}`}>
+    <div className={`relative mx-auto aspect-[5/4] ${className || "w-full"}`}>
       <img
         src={posterUrl}
         alt=""

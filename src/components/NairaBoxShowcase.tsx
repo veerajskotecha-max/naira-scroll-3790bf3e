@@ -14,8 +14,10 @@ import NairaBox3D from "@/components/NairaBox3D";
   product page it answers the gifting question at the point it is asked.
 */
 const NairaBoxShowcase = () => (
-  <section data-quiet-zone aria-label="The Naira gift box" className="bg-[var(--nf-surface-raised)] px-4 pb-14 pt-6 md:pb-20 md:pt-10">
-    <NairaBox3D className="max-w-[520px]" />
+  <section data-quiet-zone aria-label="The Naira gift box" className="bg-[var(--nf-surface-raised)] px-4 pb-12 pt-4 md:pb-16 md:pt-8">
+    {/* A keepsake, not a hero: sized well under the column so the line below
+        it carries the band. */}
+    <NairaBox3D className="w-[72%] max-w-[340px]" />
     <div className="mx-auto -mt-2 flex max-w-[460px] flex-col items-center text-center">
       <p className="flex items-center gap-2.5 font-nf-label text-[10px] font-medium uppercase tracking-nf-20 text-[var(--nf-accent-quiet)] md:text-[11px] md:tracking-nf-24">
         <span aria-hidden="true" className="h-px w-4 bg-[var(--nf-accent)] md:w-8" />

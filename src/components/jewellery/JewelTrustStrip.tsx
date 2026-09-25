@@ -1,4 +1,4 @@
-import { Gem, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { Gem, ShieldCheck, Sparkles } from "lucide-react";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -8,20 +8,17 @@ const items = [
   { icon: Gem, label: "18K Gold Tone Plated" },
 ] as const;
 
-const dailySoldCount = (productKey: string) => {
-  let hash = 0;
-  for (const character of productKey) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
-  return (hash % 20) + 1;
-};
-
 /**
  * Material assurances sit beside the price, where shoppers compare finish.
  * The compact horizontal treatment preserves Naira's sharp editorial edges.
+ *
+ * It used to end with "Last 24 hours: N pieces sold", where N was a hash of the
+ * product handle rather than a sales figure — the same number every day, on
+ * every visit. A made-up count is not something to show a shopper, so it is
+ * gone rather than restyled.
  */
-const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
-  const soldCount = dailySoldCount(productKey);
-
-  return <div className="mt-3">
+const JewelTrustStrip = () => (
+  <div className="mt-3">
     <ul
       className="grid list-none grid-cols-3 gap-1.5"
       aria-label="Naira Flore jewellery assurances"
@@ -43,11 +40,7 @@ const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
         </li>
       ))}
     </ul>
-    <p className="mt-3 flex items-center gap-1.5 border-l-2 border-[var(--nf-accent-strong)] pl-2.5 text-[11px] font-medium leading-5 text-[var(--nf-text)]">
-      <Zap size={14} className="shrink-0 fill-[var(--nf-accent-strong)] text-[var(--nf-accent-strong)]" aria-hidden="true" />
-      Last 24 hours: {soldCount} {soldCount === 1 ? "piece" : "pieces"} sold across Naira stalls &amp; online
-    </p>
   </div>
-};
+);
 
 export default JewelTrustStrip;

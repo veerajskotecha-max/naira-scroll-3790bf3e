@@ -101,8 +101,28 @@ const clean = (html: string) =>
 const routeToFile = (routePath: string) =>
   routePath === "/" ? join(DIST, "index.html") : join(DIST, routePath, "index.html");
 
+/* The host kills a build that runs too long, and a killed build publishes
+   nothing. Stop starting new routes after this budget; unrendered routes fall
+   back to the SPA shell, which is degraded rather than broken. */
+const BUDGET_MS = Number(process.env.PRERENDER_BUDGET_MS ?? 6 * 60_000);
+const STARTED = Date.now();
+const CONCURRENCY = Number(process.env.PRERENDER_CONCURRENCY ?? 4);
+
 async function renderAll(browser: Browser, routes: SiteRoute[]) {
+  const queue = [...routes];
+  const results = await Promise.all(
+    Array.from({ length: CONCURRENCY }, () => renderWorker(browser, queue)),
+  );
+  return {
+    written: results.reduce((n, r) => n + r.written, 0),
+    failures: results.flatMap((r) => r.failures),
+    skipped: results.reduce((n, r) => n + r.skipped, 0),
+  };
+}
+
+async function renderWorker(browser: Browser, queue: SiteRoute[]) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  let skipped = 0;
 
   /* Never let the capture browser talk to Meta: its events would be attributed
      to 127.0.0.1 and its injected config tags would be captured into the HTML.
@@ -115,9 +135,10 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
      <h1> at capture time, which failed the whole build for a page that renders
      perfectly on a second look. Give each route up to three attempts, with a
      longer settle each time, before calling it a real defect. */
-  const ATTEMPTS = 3;
+  const ATTEMPTS = 2;
 
-  for (const route of routes) {
+  for (let route = queue.shift(); route; route = queue.shift()) {
+   if (Date.now() - STARTED > BUDGET_MS) { skipped += 1; continue; }
    let lastError: unknown;
    for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
     try {
@@ -210,7 +231,7 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
   }
 
   await page.close();
-  return { written, failures };
+  return { written, failures, skipped };
 }
 
 async function main() {
@@ -221,7 +242,9 @@ async function main() {
   const server = spawn(
     "npx",
     ["vite", "preview", "--port", String(PORT), "--host", "127.0.0.1", "--strictPort"],
-    { stdio: "ignore", detached: false },
+    // Own process group, so the whole npx -> vite tree can be killed; killing
+    // only npx left vite running and the build never exited.
+    { stdio: "ignore", detached: true },
   );
 
   try {
@@ -263,7 +286,8 @@ async function main() {
       return;
     }
     const routes = await resolveSiteRoutes();
-    const { written, failures } = await renderAll(browser, routes);
+    const { written, failures, skipped } = await renderAll(browser, routes);
+    if (skipped) console.warn(`prerender: time budget reached, ${skipped} route(s) left as SPA shell`);
     await browser.close();
 
     console.log(`prerendered ${written}/${routes.length} routes`);
@@ -275,11 +299,13 @@ async function main() {
       process.exitCode = 1;
     }
   } finally {
-    server.kill("SIGTERM");
+    try { if (server.pid) process.kill(-server.pid, "SIGKILL"); } catch { server.kill("SIGKILL"); }
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(process.exitCode ?? 0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

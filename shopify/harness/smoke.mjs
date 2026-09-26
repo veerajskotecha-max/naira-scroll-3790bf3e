@@ -6,7 +6,7 @@ const BASE = process.argv[2];
 const UA = 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
 const proxy = async (route) => {
   const q = route.request();
-  if (/(facebook\.net|facebook\.com|fbcdn\.net)/i.test(q.url())) return route.abort();
+  if (/(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google)/i.test(q.url())) return route.abort();   // never pollute the store's ad or analytics data
   try {
     const r = await fetch(q.url(), { method: q.method(), headers: q.headers(), body: q.postData() || undefined, redirect: 'follow' });
     const h = Object.fromEntries([...r.headers].filter(([k]) => !/^(content-encoding|content-length)$/i.test(k)));

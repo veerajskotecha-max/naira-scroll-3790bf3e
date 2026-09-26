@@ -87,16 +87,12 @@ from the **same local build** with only this patch stashed and unstashed
 between runs, so the comparison is not confounded by live data or a different
 bundle. `cartsheet.mjs` and `cartgrid.mjs` render the contact sheets.
 
-## Applying it
+## Shipped
 
-This branch is 595 commits behind `main` and its `CartDrawer.tsx` predates the
-payment marks entirely — the bug does not exist here, so the fix cannot be
-committed against this tree. `cart-checkout-button.patch` in this directory is
-the change against `main` and applies cleanly there:
+On `main` as `f894533`, 26 Sep. Before it went, the patch was applied to a
+clean `main` and checked on a full production build (`vite build` + prerender,
+136/136 routes): the same six widths pass with the same measurements, `tsc`
+is clean and all 231 tests pass.
 
-```
-git checkout -b fix/cart-checkout-button origin/main
-git apply docs/mobile/cart-checkout-button.patch
-```
-
-`npx tsc --noEmit` is clean with it applied.
+`cart-checkout-button.patch` in this directory is kept as the record of the
+change; it no longer needs applying.

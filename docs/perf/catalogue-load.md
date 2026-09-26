@@ -1,5 +1,15 @@
 # Why catalogue clicks don't land
 
+> **Status, 26 Sep.** Verified end to end on full production builds before
+> anything went to `main` — and verification overturned half of the original
+> fix, so this page has been rewritten to match what was measured.
+>
+> | | |
+> | --- | --- |
+> | on `main` since `0fe9e31` | review photos genuinely lazy (needed an attribute-order fix, see Cause 2) |
+> | **ready, awaiting your OK** | `catalogue-load.patch` — drop only the preloads for deliberately deferred imports (Cause 1). Modelled slow 4G: add-to-cart usable **11.5 s → 8.7 s**, hero image **19.6 s → 15.1 s** |
+> | rejected | the first version of Cause 1, which stripped *every* runtime preload — it made the page usable **1.2 s later** |
+
 Measured on a throttled phone, one product page
 (`/jewellery/prism-riviere-bracelet`):
 
@@ -47,31 +57,80 @@ Those injections get written to disk. Every real visitor then downloads the
 whole set eagerly, at high priority, before anything renders — which is the
 exact opposite of what `import()` was written to do.
 
-The product page carried **19 preload links pulling 1.8 MB of JavaScript**,
-including:
+The product page carried **18 preload links**. The first version of this fix
+assumed nearly all of them were waste. Measuring what the page actually needs
+before add-to-cart works showed otherwise — of the 13 injected at runtime:
 
-| chunk | kB | why it is on a product page |
+| chunk | kB | on a product page because |
 | --- | ---: | --- |
-| `RoomEnvironment-*.js` | 559 | three.js, reached only by the animated wordmark |
-| `index-*.js` | 441 | main bundle |
-| `supabase-*.js` | 215 | needed for cart writes, not for rendering a product |
-| `JewelDetail-*.js` | 150 | the only one this route actually needs first |
-| `MobileReelShop`, `useReels`, `reelCovers` | — | the reels feature |
-| `ringFit`, `PincodeChecker`, `accordion` | — | below the fold or rings-only |
+| `RoomEnvironment-*.js` | **559** | three.js — the 3D wordmark, which waits for load **and** idle on purpose |
+| `scene-*.js` | 1 | the 3D scene wrapper, same |
+| `index-*.js` | 440 | the entry itself (already loaded by its own `<script>`) |
+| `JewelDetail-*.js` | 149 | the product page |
+| `PincodeChecker-*.js` | 109 | rendered on the product page |
+| `MobileReelShop`, `useReels`, `reelCovers` | 11 | "Shop the Reel" is rendered on the product page |
+| `accordion`, `atelier-skeleton`, `ringFit`, `JewelPriceTag`, `index` | 6 | rendered on the product page |
 
-**The source is already correct** — both three.js scenes are behind
-`import("@/lib/nairaBox/scene")` and `import("@/lib/nairaFlower/scene")`. The
-build is what un-lazies them.
+So the waste is essentially **one chunk: 560 kB of three.js**, pulled ahead of
+the page by a preload the component itself never asked for. `NairaWordmark`
+says so in its own comment — the scene *"must not compete with the page for
+the first load"*, and it imports three.js only after the `load` event and an
+idle callback. The prerender undid that on 131 of 136 routes. Measured on the
+product page: three.js requested at **104 ms**, the load event at **839 ms**.
 
-**Fix.** Vite's build-time preloads (the entry's own static graph, written into
-`index.html`) carry no `as` attribute; every runtime-injected one sets
-`as="script"`. `clean()` now strips only the latter. Verified against the live
-HTML: **18 preload links → 5**, entry script untouched.
+### The first fix was wrong
 
-The router still `import()`s the route chunk the moment it resolves. That costs
-one round trip for `JewelDetail`; it saves downloading the entire application.
+It stripped every runtime (`as="script"`) preload. That removed three.js — and
+also the product page's own chunks. Those are then requested only after the
+entry has downloaded and run, so they queue behind everything the HTML already
+asked for, and a parallel download becomes a waterfall.
 
-## Cause 2 — 930 kB of eager thumbnails nobody sees
+Modelled slow 4G (one shared 1.6 Mbit/s pipe, 150 ms per request, 4× CPU
+throttle, cache pre-warmed so real network jitter does not leak in — a model
+for comparing builds, not a phone), same product page, identical over two
+alternated runs:
+
+| | add to cart usable | hero image |
+| --- | ---: | ---: |
+| `main` before today | 11.5 s | 19.6 s |
+| strip every runtime preload *(first fix)* | 12.7 s | 19.6 s |
+| strip only three.js + scene *(hand-edited HTML)* | **8.7 s** | **16.8 s** |
+
+### The fix
+
+In the capture browser, before any page script runs, count whenever the page
+is inside a `requestIdleCallback` or `IntersectionObserver` callback — the two
+APIs that exist to defer work — and tag any `modulepreload` added meanwhile.
+`clean()` drops exactly the tagged links. Vite's helper appends its links
+synchronously inside `import()`, so the attribution is exact, not a race on
+timing; the route's own chunks are imported while the page renders itself and
+are never tagged.
+
+Two traps found on the way, both of which would have shipped a silent no-op:
+
+- The script must go to `addInitScript` as a **string**. Passed as a function,
+  `tsx` wraps its named inner functions in a `__name()` helper that exists only
+  in Node, so it throws on its first line in the page and tags nothing — while
+  the build still passes.
+- It must be tested against a plain SPA build. Prerendered HTML already
+  contains the baked links, and Vite's helper skips any href already in the
+  document, so a probe against it shows nothing being tagged.
+
+Verified on a full production build (`vite build` + prerender, 136/136
+routes):
+
+- three.js and its scene chunk gone from **every** route; no preload **added**
+  anywhere; build-time preloads unchanged (680 → 680); no tag attribute left in
+  the HTML
+- the product page keeps all 11 of its own chunks
+- the 3D wordmark still loads and draws — now *after* load, as designed:
+  requested at 530 ms with the load event at **402 ms** (was 104 ms and 839 ms)
+- modelled slow 4G: add to cart usable **8.7 s** (was 11.5), hero image
+  **15.1 s** (was 19.6; this build also carries the lazy review photos)
+- headings, client-side navigation, console output and the cart at six phone
+  widths match the baseline
+
+## Cause 2 — review photos that were never actually lazy
 
 13 images are rendered 9–19× larger than their box. The worst:
 
@@ -82,9 +141,21 @@ one round trip for `JewelDetail`; it saves downloading the entire application.
 | 32 × 32 | 1,097 px | 226 |
 | 88 × 20 | 1,644 px | 101 |
 
-The six 48 px review thumbnails in `CustomerReviews.tsx` had **no `loading`
-attribute**, so they were fetched eagerly — 930 kB, below the fold, none of it
-on screen. They are now `loading="lazy" decoding="async"`.
+The 48 px review thumbnails in `CustomerReviews.tsx` had no `loading`
+attribute. Adding `loading="lazy"` **changed nothing**: the app mounts with
+`createRoot`, so React builds these `<img>`s itself, and React 18 sets
+attributes in the order they are written. With `src` first, the browser starts
+the fetch the moment `src` lands, before it learns the image is lazy. Measured:
+every photo fetched the instant React mounted, 1,600 px below the fold.
+
+With `loading` written before `src` (on `main` in `0fe9e31`), the photos
+unique to the list now wait until the visitor scrolls to them. The saving is
+smaller than first claimed: four of the six files are also shown in the
+32 px "customer photos" strip higher up, and that strip sits inside Chrome's
+lazy-load window at first render — before the product above it loads and
+pushes it down — so those four still load early. The strip had the same
+attribute-order bug and got the same fix, which makes no measurable
+difference on today's pages.
 
 ## What is left, and what it is worth
 
@@ -114,6 +185,21 @@ throttle**, so its own timings run optimistic — trust its byte counts, not its
 clock. The timings at the top of this page are the ones measured on a real
 throttled phone.
 
+The verification behind the status table used these, all in `shopify/harness/`:
+
+| script | what it answers |
+| --- | --- |
+| `mkverify.mjs` | makes an untracked copy of `prerender.ts` whose capture browser fetches through Node — Chromium here cannot complete TLS through the sandbox proxy. `clean()` is untouched |
+| `distserve.mjs` | serves a built `dist/` like a prerender-aware host |
+| `slowpipe.mjs` | the modelled slow-4G comparison above |
+| `distcompare.mjs`, `diffclass.mjs` | route-by-route HTML diff against a baseline, and where each residual difference falls — run a control (same code built twice) first, because capture timing alone changes about two thirds of routes |
+| `livetitles.mjs` | which live pages ship the generic fallback `<title>` or a homepage canonical (pass a sitemap.xml path) |
+| `preloaddelta.mjs` | which runtime preloads a build drops or adds, per chunk |
+| `tagprobe.mjs` | which preloads the deferred-import tagging marks on a live page |
+| `wordmark3d.mjs` | when three.js is requested relative to the load event, and whether the canvas draws |
+| `lazyprobe.mjs`, `whouses.mjs` | when each review photo is fetched, and which other elements share its file |
+| `smoke.mjs`, `cartrow.mjs` | headings, client-side navigation, console, lazy photos; the cart at six widths |
+
 ---
 
 # How it got heavy, and what to watch next time
@@ -140,8 +226,9 @@ brought in `three`, which is **559 kB**, for a decorative box that sits above
 the footer sign-off.
 
 The code was written correctly: it is behind `import("@/lib/nairaBox/scene")`
-and never touches the first render. But the prerender promoted it to an eager
-`modulepreload` on **every page**, so every visitor paid 559 kB up front. At
+and never touches the first render (the 3D wordmark that followed is deferred
+the same way). But the prerender promoted it to an eager `modulepreload` on
+131 of 136 pages, so nearly every visitor paid 559 kB up front. At
 1.6 Mbit that is 2.8 seconds of a 20 second wait, spent on an ornament below
 the fold that most visitors never scroll to.
 
@@ -155,11 +242,15 @@ the number in kB at the point someone proposes the feature, not after.
 **2. Lazy in the source is not lazy in production.** Every `import()` here was
 written properly and the build undid all of it. The import statement is not
 evidence. The built HTML is. One line in CI would have caught this the day it
-landed:
+landed — fail the build if any page preloads the 3D chunks:
 
 ```sh
-test "$(grep -c 'rel="modulepreload"' dist/jewellery/*/index.html | head -1)" -le 6
+! grep -rlE --include=index.html 'rel="modulepreload"[^>]*/assets/(RoomEnvironment|scene)-' dist
 ```
+
+(Not a cap on the *number* of preloads: a product page legitimately keeps 16
+once the deferred ones are gone, and capping the count is what led to the
+first, wrong fix.)
 
 **3. Give the critical path a budget and fail the build on it.** Something
 like *"a product page ships ≤ 500 kB before the product is visible"*. A number

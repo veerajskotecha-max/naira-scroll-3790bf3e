@@ -1,51 +1,75 @@
 diff --git a/scripts/prerender.ts b/scripts/prerender.ts
-index 19bd296..24d3ae9 100644
+index 19bd296..03a7bcf 100644
 --- a/scripts/prerender.ts
 +++ b/scripts/prerender.ts
-@@ -96,7 +96,28 @@ const clean = (html: string) =>
+@@ -96,7 +96,61 @@ const clean = (html: string) =>
      */
      .replace(/<script[^>]+src="[^"]*(?:facebook\.net|facebook\.com|fbcdn\.net)[^"]*"[^>]*><\/script>/gi, "")
      .replace(/<link[^>]+href="[^"]*(?:facebook\.net|facebook\.com|fbcdn\.net)[^"]*"[^>]*\/?>/gi, "")
 -    .replace(/<img[^>]+src="[^"]*facebook\.com\/tr[^"]*"[^>]*\/?>/gi, "");
 +    .replace(/<img[^>]+src="[^"]*facebook\.com\/tr[^"]*"[^>]*\/?>/gi, "")
-+    /*
-+      Vite's runtime preload helper injects
-+        <link rel="modulepreload" as="script" href="/assets/<chunk>.js">
-+      into <head> for every chunk a dynamic import() reaches. The capture above
-+      serialises the LIVE DOM after the app has mounted and run, so every chunk
-+      this prerender happened to touch is written to disk as an eager,
-+      high-priority preload — the exact opposite of what import() is for.
++    // Preloads for imports the app deliberately deferred — tagged during the
++    // capture, see MARK_DEFERRED_PRELOADS below.
++    .replace(/<link(?=[^>]*\brel="modulepreload")(?=[^>]*\bdata-deferred-preload\b)[^>]*>/gi, "");
 +
-+      On a product page that shipped 19 preload links pulling 1.8 MB of
-+      JavaScript ahead of everything else, including 559 kB of three.js that
-+      only the animated wordmark ever loads, plus the reels bundle, the ring
-+      sizer and the pincode checker. At 1.6 Mbit (Lighthouse's slow 4G, ~200
-+      kB/s) that is most of a 20 second wait before the product is on screen.
++/*
++  Some imports are deferred on purpose. The 3D wordmark waits for load and an
++  idle moment because it "must not compete with the page for the first load";
++  the gift box waits until it is nearly on screen; the reels warm up when the
++  browser is idle. Vite's preload helper still announces each one with a
++  <link rel="modulepreload"> in <head> the moment its import() runs, and the
++  capture serialises the live DOM — so every one of those was being written
++  into the static HTML as an eager, high-priority download for every visitor.
++  On a product page that put 559 kB of three.js ahead of the product itself.
 +
-+      The two kinds are easy to tell apart: preloads Vite writes into
-+      index.html at build time — the entry's own static graph — carry no `as`
-+      attribute, while every runtime-injected one sets as="script". Strip only
-+      the latter. The router still import()s the route chunk the moment it
-+      resolves; it just no longer drags the whole application with it.
-+    */
-+    .replace(/<link(?=[^>]*\brel="modulepreload")(?=[^>]*\bas="script")[^>]*>/gi, "");
++  Runs in the capture browser before any page script. While the page is inside
++  a requestIdleCallback or IntersectionObserver callback — the two APIs that
++  exist to defer work — any modulepreload it adds is tagged, and clean() drops
++  exactly those. The helper appends its links synchronously inside import(),
++  so the attribution is exact rather than timing-based.
++
++  Everything else is kept on purpose: the route's own chunk and its imports
++  are announced while the page renders itself, and it needs them before it
++  works. Dropping those as well turns one parallel download into a waterfall.
++  On a modelled slow-4G product page, stripping every runtime preload made
++  add-to-cart usable 1.2 s LATER than doing nothing; stripping only the
++  deferred ones made it 2.8 s earlier.
++
++  It is a string, not a function: Playwright ships functions to the page via
++  toString(), and tsx wraps named inner functions in a __name() helper that
++  only exists in Node — the script would throw on its first line in the page
++  and silently tag nothing.
++*/
++const MARK_DEFERRED_PRELOADS = `(() => {
++  let deferred = 0;
++  const within = (fn) => function (...args) {
++    deferred += 1;
++    try { return fn.apply(this, args); } finally { deferred -= 1; }
++  };
++  const idle = window.requestIdleCallback && window.requestIdleCallback.bind(window);
++  if (idle) window.requestIdleCallback = (cb, opts) => idle(within(cb), opts);
++  const Observer = window.IntersectionObserver;
++  if (Observer) {
++    window.IntersectionObserver = class extends Observer {
++      constructor(cb, opts) { super(within(cb), opts); }
++    };
++  }
++  const append = HTMLHeadElement.prototype.appendChild;
++  HTMLHeadElement.prototype.appendChild = function (node) {
++    if (deferred > 0 && node instanceof HTMLLinkElement && node.rel === "modulepreload") {
++      node.setAttribute("data-deferred-preload", "");
++    }
++    return append.call(this, node);
++  };
++})();`;
  
  const routeToFile = (routePath: string) =>
    routePath === "/" ? join(DIST, "index.html") : join(DIST, routePath, "index.html");
-diff --git a/src/components/CustomerReviews.tsx b/src/components/CustomerReviews.tsx
-index 31eb4d2..100e217 100644
---- a/src/components/CustomerReviews.tsx
-+++ b/src/components/CustomerReviews.tsx
-@@ -768,7 +768,11 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
-               {review.hasPhotos && review.images.length > 0 && (
-                 <div className="flex gap-2 mt-3">
-                   {review.images.map((img, idx) => (
--                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 object-cover" />
-+                    /* These are the full-resolution review photographs, drawn
-+                       into a 48px box. Without loading="lazy" the browser
-+                       fetches all of them eagerly — six of them, 930 kB, none
-+                       of it on screen. */
-+                    <img key={idx} src={img} alt="Review photo" loading="lazy" decoding="async" className="w-12 h-12 object-cover" />
-                   ))}
-                 </div>
-               )}
+@@ -128,6 +182,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
+      to 127.0.0.1 and its injected config tags would be captured into the HTML.
+      Belt and braces with the strip in clean(). */
+   await page.route(/(facebook\.net|facebook\.com|fbcdn\.net)/i, (r) => r.abort());
++  await page.addInitScript({ content: MARK_DEFERRED_PRELOADS });
+   const failures: { path: string; reason: string }[] = [];
+   let written = 0;
+ 

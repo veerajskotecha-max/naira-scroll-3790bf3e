@@ -1,11 +1,12 @@
-import { useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
-import { X, Heart } from "lucide-react";
+import { useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronLeft, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { jewellery, PREORDER_LABEL } from "@/data/jewellery";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
+import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 
 /* Jewellery is wishlisted by handle; route those to the jewellery PDP. */
 const jewelHandles = new Set(jewellery.map((j) => j.handle));
@@ -13,14 +14,27 @@ const jewelHandles = new Set(jewellery.map((j) => j.handle));
 const WishlistDrawer = () => {
   const { items, removeItem, isDrawerOpen, setDrawerOpen } = useWishlist();
   const contentRef = useRef<HTMLDivElement>(null);
-  const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
-  useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
+  // The phone's back button closes the wishlist — see useBackToClose.
+  const { requestClose, closeThen } = useBackToClose("nfWishlist", isDrawerOpen, setDrawerOpen);
+  useSwipeDismiss(contentRef, isDrawerOpen, requestClose);
+  const leave = followOut(closeThen, useNavigate());
 
   return (
-    <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent ref={contentRef} className="w-full sm:max-w-[420px] flex flex-col p-0">
+    <Sheet open={isDrawerOpen} onOpenChange={(next) => (next ? setDrawerOpen(true) : requestClose())}>
+      {/* Same as the bag: a back arrow on phones, the corner cross on desktop. */}
+      <SheetContent ref={contentRef} closeClassName="hidden sm:flex" className="w-full sm:max-w-[420px] flex flex-col p-0">
         <SheetHeader className="px-5 pt-5 pb-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={requestClose}
+              aria-label="Back to shopping"
+              /* Full 44px tap area; the negative margins keep it from making
+                 the header taller or pushing the title away. */
+              className="-my-1.5 -ml-3 -mr-1 flex h-11 w-11 shrink-0 items-center justify-center text-[var(--nf-text)] transition-opacity duration-150 active:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--nf-accent)] sm:hidden"
+            >
+              <ChevronLeft size={22} strokeWidth={1.4} aria-hidden="true" />
+            </button>
             <SheetTitle className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(0 0% 15%)" }}>
               Your Wishlist
             </SheetTitle>
@@ -45,7 +59,7 @@ const WishlistDrawer = () => {
             </p>
             <Link
               to="/jewellery"
-              onClick={() => setDrawerOpen(false)}
+              onClick={leave}
               className="mt-7 px-9 min-h-[48px] text-[12px] font-medium uppercase tracking-[0.14em] transition-colors duration-200 inline-flex items-center"
               style={{ backgroundColor: "hsl(186 35% 28%)", color: "hsl(0 0% 100%)" }}
             >
@@ -53,7 +67,7 @@ const WishlistDrawer = () => {
             </Link>
             <Link
               to="/jewellery"
-              onClick={() => setDrawerOpen(false)}
+              onClick={leave}
               className="mt-4 inline-flex items-center min-h-[44px] px-2 font-cormorant text-[14px] underline underline-offset-4 transition-colors duration-200"
               style={{ color: "hsl(0 0% 45%)" }}
             >
@@ -66,7 +80,7 @@ const WishlistDrawer = () => {
               <Link
                 key={item.id}
                 to={jewelHandles.has(item.id) ? `/jewellery/${item.id}` : `/product/${item.id}`}
-                onClick={() => setDrawerOpen(false)}
+                onClick={leave}
                 className="flex gap-3 group"
               >
                 <img
@@ -90,12 +104,15 @@ const WishlistDrawer = () => {
                       </p>
                     )}
                   </div>
+                  {/* A word, not a cross — as in the bag, where the only cross
+                      left on a phone would otherwise be this one. */}
                   <button
+                    type="button"
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeItem(item.id); }}
-                    className="self-start -ml-2 min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors hover:bg-muted"
+                    className="self-start inline-flex min-h-[44px] items-center px-1 text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline decoration-[color:rgb(var(--nf-ink-rgb)/0.25)] underline-offset-4 transition-colors duration-150 hover:text-[var(--nf-text)]"
                     aria-label={`Remove ${item.name} from wishlist`}
                   >
-                    <X size={14} style={{ color: "hsl(0 0% 50%)" }} />
+                    Remove
                   </button>
                 </div>
               </Link>

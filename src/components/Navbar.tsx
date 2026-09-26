@@ -8,6 +8,7 @@ import NairaWordmark from "./NairaWordmark";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useBackToClose } from "@/hooks/useBackToClose";
 
 interface NavbarProps {
   scrolled: boolean;
@@ -23,6 +24,8 @@ const leftLinks: { label: string; to: string; mega?: boolean }[] = [
 
 const Navbar = ({ scrolled }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  // The phone's back button closes the menu — see useBackToClose.
+  const menu = useBackToClose("nfMenu", mobileOpen, setMobileOpen);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -166,7 +169,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
         </div>
       </nav>
 
-      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileMenu isOpen={mobileOpen} onClose={menu.requestClose} closeThen={menu.closeThen} />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
     </>

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { Minus, Plus, X, ShoppingBag, Truck, Loader2, Zap } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronLeft, Minus, Plus, ShoppingBag, Truck, Loader2, Zap } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
+import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
 import OfferProgress from "@/components/cart/OfferProgress";
@@ -32,8 +33,11 @@ const CartDrawer = () => {
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const checkoutStarted = useRef(false);
-  const dismiss = useCallback(() => setDrawerOpen(false), [setDrawerOpen]);
-  useSwipeDismiss(contentRef, isDrawerOpen, dismiss);
+  const navigate = useNavigate();
+  // The phone's back button closes the bag — see useBackToClose.
+  const { requestClose, closeThen, releaseEntry } = useBackToClose("nfBag", isDrawerOpen, setDrawerOpen);
+  useSwipeDismiss(contentRef, isDrawerOpen, requestClose);
+  const leave = followOut(closeThen, navigate);
 
   const [promoCode, setActivePromoCode] = useState<string | null>(() => getPromoCode());
   useEffect(() => {
@@ -74,6 +78,9 @@ const CartDrawer = () => {
   const handleCheckout = async () => {
     if (checkoutStarted.current) return;
     checkoutStarted.current = true;
+    // Checkout starts from the history it always had; the bag stays on screen
+    // until checkout covers it. See releaseEntry.
+    await releaseEntry();
 
     trackPixel("AddPaymentInfo", {
       currency: items[0]?.currencyCode || "INR",
@@ -113,11 +120,23 @@ const CartDrawer = () => {
 
 
   return (
-    <Sheet open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-      <SheetContent ref={contentRef} className="inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[420px]">
+    <Sheet open={isDrawerOpen} onOpenChange={(next) => (next ? setDrawerOpen(true) : requestClose())}>
+      {/* On a phone the bag is a full screen and leaves by the back arrow at
+          top left, like any page; the corner cross is for the desktop panel. */}
+      <SheetContent ref={contentRef} closeClassName="hidden sm:flex" className="inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[420px]">
         {/* Header */}
         <SheetHeader className="shrink-0 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pb-3 sm:pt-5">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={requestClose}
+              aria-label="Back to shopping"
+              /* Full 44px tap area; the negative margins keep it from making
+                 the header taller or pushing the title away. */
+              className="-my-1.5 -ml-3 -mr-1 flex h-11 w-11 shrink-0 items-center justify-center text-[var(--nf-text)] transition-opacity duration-150 active:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--nf-accent)] sm:hidden"
+            >
+              <ChevronLeft size={22} strokeWidth={1.4} aria-hidden="true" />
+            </button>
             <SheetTitle className="flex items-baseline gap-2 font-cormorant text-[21px] font-semibold text-[var(--nf-text)]">
               Your Bag
               <span className="font-sans text-[11px] font-medium uppercase tracking-[var(--nf-track-16)] text-[color:rgb(var(--nf-ink-rgb)/0.45)]">
@@ -145,14 +164,14 @@ const CartDrawer = () => {
             </p>
             <Link
               to="/jewellery"
-              onClick={() => setDrawerOpen(false)}
+              onClick={leave}
               className="mt-7 inline-flex min-h-[48px] items-center bg-[var(--nf-accent-strong)] px-9 text-[12px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-text-inverse)] transition-colors duration-200 hover:bg-[var(--nf-accent-quiet)]"
             >
               Continue Shopping
             </Link>
             <Link
               to="/jewellery"
-              onClick={() => setDrawerOpen(false)}
+              onClick={leave}
               className="mt-4 inline-flex min-h-[44px] items-center px-2 font-cormorant text-[14px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors duration-200"
             >
               View the jewellery
@@ -189,9 +208,18 @@ const CartDrawer = () => {
                           <span className="w-7 text-center text-[12px] font-medium sm:w-8 sm:text-[13px]">{item.quantity}</span>
                           <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)} disabled={isLoading} className="press-scale h-9 w-9" aria-label="Increase quantity"><Plus size={12} /></Button>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => removeItem(item.id, item.size)} disabled={isLoading} className="h-11 w-11 text-muted-foreground" aria-label={`Remove ${item.name}`}>
-                          <X size={14} className="text-[color:rgb(var(--nf-ink-rgb)/0.5)]" />
-                        </Button>
+                        {/* A word, not a cross: the only cross in the bag used
+                            to be this one, which deletes the piece — right where
+                            a shopper looking for "close" would tap. */}
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.id, item.size)}
+                          disabled={isLoading}
+                          aria-label={`Remove ${item.name}`}
+                          className="-mr-1 inline-flex min-h-11 items-center px-1 text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline decoration-[color:rgb(var(--nf-ink-rgb)/0.25)] underline-offset-4 transition-colors duration-150 hover:text-[var(--nf-text)] disabled:opacity-50"
+                        >
+                          Remove
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -318,7 +346,7 @@ const CartDrawer = () => {
               <p className="flex min-h-5 w-full items-center justify-center gap-1.5 text-[10px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] sm:text-[11px]">
                 Powered by <strong className="font-semibold text-[var(--nf-text)]">Shiprocket</strong>
               </p>
-              <Link to="/jewellery" onClick={() => setDrawerOpen(false)} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
+              <Link to="/jewellery" onClick={leave} className="flex min-h-7 items-center justify-center text-center font-cormorant text-[13px] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline underline-offset-4 transition-colors sm:min-h-[36px] sm:text-[14px]">
                 Continue Shopping
               </Link>
             </div>

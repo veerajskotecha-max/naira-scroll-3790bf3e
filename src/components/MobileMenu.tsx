@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { X, Heart, ShoppingBag, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { menuCategories, menuEdits, menuOccasions, menuApparel } from "@/data/navigation";
+import { followOut } from "@/hooks/useBackToClose";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Close through history, then run the follow-up — see useBackToClose. */
+  closeThen: (next: () => void) => void;
 }
 
 type Section = { label: string; to?: string; links?: { label: string; to: string }[] };
@@ -32,7 +35,8 @@ const sections: Section[] = [
 ];
 
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
+  const leave = followOut(closeThen, useNavigate());
   const [openSection, setOpenSection] = useState<string | null>("JEWELLERY");
   const { totalItems, setDrawerOpen: openCart }       = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: openWishlist } = useWishlist();
@@ -47,16 +51,11 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  const handleOpenCart = () => {
-    onClose();
-    // slight delay so menu slide-out doesn't fight drawer slide-in
-    setTimeout(() => openCart(true), 220);
-  };
-
-  const handleOpenWishlist = () => {
-    onClose();
-    setTimeout(() => openWishlist(true), 220);
-  };
+  // The menu's history entry goes first, so the drawer's own lands on top of
+  // the page rather than on top of a menu that is no longer there. The delay
+  // keeps the menu's slide-out from fighting the drawer's slide-in.
+  const handleOpenCart = () => closeThen(() => setTimeout(() => openCart(true), 220));
+  const handleOpenWishlist = () => closeThen(() => setTimeout(() => openWishlist(true), 220));
 
   return (
     <>
@@ -115,7 +114,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                       <li key={l.label}>
                         <Link
                           to={l.to}
-                          onClick={onClose}
+                          onClick={leave}
                           className="block min-h-[42px] py-2 font-cormorant text-[15px] uppercase tracking-[0.1em] opacity-60"
                         >
                           {l.label}
@@ -129,7 +128,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               <Link
                 key={item.label}
                 to={item.to!}
-                onClick={onClose}
+                onClick={leave}
                 className="flex min-h-[52px] items-center border-b border-black/5 font-cormorant text-[19px] font-medium uppercase tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 last:border-0"
               >
                 {item.label}

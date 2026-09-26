@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigationType } from "react-router-dom";
 
 /**
@@ -14,6 +14,7 @@ const positions = new Map<string, number>();
 const ScrollToTop = () => {
   const { pathname, key } = useLocation();
   const navigationType = useNavigationType();
+  const lastEntry = useRef<string | null>(null);
 
   // Continuously record the scroll position for this history entry.
   // A sudden programmatic jump to the very top (which happens as the next
@@ -35,6 +36,15 @@ const ScrollToTop = () => {
 
 
   useEffect(() => {
+    /* The same entry again: closing the bag or wishlist with back steps onto
+       the entry they were opened from. Nothing navigated, so leave the page
+       where it is — re-applying the saved offset for 900 ms would fight a
+       shopper who starts scrolling straight away. */
+    const entry = `${key}|${pathname}`;
+    const sameEntry = lastEntry.current === entry;
+    lastEntry.current = entry;
+    if (sameEntry) return;
+
     if (navigationType === "REPLACE") return;
 
     const html = document.documentElement;

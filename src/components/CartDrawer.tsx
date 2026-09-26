@@ -269,24 +269,48 @@ const CartDrawer = () => {
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading || isSyncing}
-                className="mt-2 min-h-[72px] w-full justify-between rounded-[var(--nf-checkout-radius)] border border-[var(--nf-checkout-bg)] bg-[var(--nf-checkout-bg)] px-5 py-3 text-left text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[76px] sm:px-6 sm:py-3.5"
+                className="mt-3 h-auto min-h-[72px] w-full justify-between gap-3 rounded-[var(--nf-checkout-radius)] border border-[var(--nf-checkout-bg)] bg-[var(--nf-checkout-bg)] px-5 py-3 text-left text-[var(--nf-text-inverse)] shadow-[shadow:var(--nf-checkout-shadow)] transition-[background-color,box-shadow,transform] duration-150 hover:bg-[var(--nf-checkout-bg-hover)] active:translate-y-[3px] active:shadow-[shadow:var(--nf-checkout-shadow-pressed)] sm:min-h-[76px] sm:px-6 sm:py-3.5"
               >
-                <span className="flex min-w-0 flex-col items-start gap-1">
+                <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
                   <span className="flex items-center gap-2 font-sans text-[15px] font-medium tracking-[var(--nf-track-4)] sm:text-[16px]">
                     {isLoading || isSyncing ? <Loader2 size={15} className="animate-spin" /> : null}
                     Proceed To Checkout
                   </span>
-                  <span className="flex items-center gap-1.5 text-[10px] font-normal tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ivory-rgb)/0.82)] sm:text-[11px]">
-                    <Zap size={12} fill="currentColor" aria-hidden="true" />
-                    Free insured delivery · COD & prepaid
+                  {/*
+                    Two facts, each able to hold its own line. They used to be one
+                    run of text that overflowed the column and ran underneath the
+                    payment marks, which are shrink-0 — at 360px it read "Free
+                    insured delivery · COD & pr" with the rest covered by the
+                    badge, and at 344px it lost more. Below ~400px the sentence
+                    genuinely does not fit beside the marks (it wants ~248px and
+                    has ~191px), so it wraps rather than truncates: COD is most of
+                    why people trust this checkout and is not worth an ellipsis.
+
+                    No middot separator — it would lead the wrapped line. The gap
+                    does the separating on one line and costs nothing on two.
+                  */}
+                  <span className="flex min-w-0 items-start gap-1.5 text-[10px] font-normal tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ivory-rgb)/0.82)] sm:text-[11px]">
+                    {/*
+                      The bolt sits outside the wrapping group, in its own fixed
+                      column, so the second fact lands under the first instead of
+                      under the icon. !size-3 because the Button base sets
+                      [&_svg]:size-4 on every descendant svg, which outranks a
+                      plain class on the icon and was rendering this 16px next to
+                      10px text.
+                    */}
+                    <Zap fill="currentColor" aria-hidden="true" className="mt-[3px] !size-3 shrink-0" />
+                    <span className="flex min-w-0 flex-wrap gap-x-3 gap-y-0.5">
+                      <span>Free insured delivery</span>
+                      <span>COD &amp; prepaid</span>
+                    </span>
                   </span>
                 </span>
-                <span className="flex shrink-0 -space-x-1" aria-label="Paytm, PhonePe and Google Pay accepted">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[7px] font-extrabold tracking-[-0.04em]" aria-label="Paytm">
+                <span className="flex shrink-0 -space-x-1 pl-2" aria-label="Paytm, PhonePe and Google Pay accepted">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[6px] font-extrabold tracking-[-0.04em] sm:h-8 sm:w-8 sm:text-[7px]" aria-label="Paytm">
                     <span className="text-[var(--nf-paytm-navy)]">pay</span><span className="text-[var(--nf-paytm-blue)]">tm</span>
                   </span>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[15px] font-bold text-[var(--nf-phonepe)]" aria-label="PhonePe">पे</span>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background" aria-label="Google Pay">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background text-[13px] font-bold text-[var(--nf-phonepe)] sm:h-8 sm:w-8 sm:text-[15px]" aria-label="PhonePe">पे</span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-[color:rgb(var(--nf-ink-rgb)/0.12)] bg-background sm:h-8 sm:w-8" aria-label="Google Pay">
                     <img src={googlePayMark} alt="" className="h-[18px] w-auto" />
                   </span>
                 </span>

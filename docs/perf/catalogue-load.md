@@ -1,13 +1,13 @@
 # Why catalogue clicks don't land
 
-> **Status, 26 Sep.** Verified end to end on full production builds before
-> anything went to `main` — and verification overturned half of the original
-> fix, so this page has been rewritten to match what was measured.
+> **Status, 26 Sep (evening).** Verified end to end on full production
+> builds before anything went to `main`.
 >
 > | | |
 > | --- | --- |
-> | on `main` since `0fe9e31` | review photos genuinely lazy (needed an attribute-order fix, see Cause 2) |
-> | **ready, awaiting your OK** | `catalogue-load.patch` — drop only the preloads for deliberately deferred imports (Cause 1). Modelled slow 4G: add-to-cart usable **11.5 s → 8.7 s**, hero image **19.6 s → 15.1 s** |
+> | on `main` since `0fe9e31` (live) | review photos genuinely lazy (needed an attribute-order fix, see Cause 2) |
+> | on `main` since `5d18202` (**publish to go live**) | the prerender captures with reduced motion, so the 3D wordmark never loads during capture and its three.js preload is no longer baked into **129 of 131** pages. Modelled slow 4G, catalogue landing page: add-to-cart usable **11.5 s → 8.6 s**, hero **19.6 s → 15.0 s**. It was fixing a different bug — see *Why the pages lost their heads* below — and delivered most of Cause 1 on the way |
+> | optional | `catalogue-load.patch` — tags preloads added from idle or intersection callbacks and drops them. After `5d18202` it only still matters on `/innercircle` and `/track-order` (the 3D gift box is near the fold there) and for the reels' idle warm-up chunks |
 > | rejected | the first version of Cause 1, which stripped *every* runtime preload — it made the page usable **1.2 s later** |
 
 Measured on a throttled phone, one product page
@@ -202,6 +202,42 @@ The verification behind the status table used these, all in `shopify/harness/`:
 
 ---
 
+# Why the pages lost their heads
+
+The publish that followed Lovable's publish-timeout change (prerender four
+pages at once) put **47 of 136 live pages** — products, collections, every
+journal article, About, FAQs, Privacy, Terms — under the homepage's title,
+description and canonical. Each told search engines it was a duplicate of the
+homepage. The publish before it had 1 such page.
+
+Two things combined:
+
+1. `dist/index.html` is both the homepage's file and what the preview server,
+   and the live host, hands out for any path without a file of its own. The
+   prerender wrote the captured homepage over it mid-run, so every page
+   captured afterwards *started from the homepage's HTML*, `<head>` included.
+   In a local reproduction, all 71 bad pages had a `<head>` byte-identical to
+   the homepage's.
+2. Captures beat Helmet to the `<head>`. The 3D wordmark set up a WebGL scene
+   on the capture browser's software GPU and blocked each page's main thread
+   for seconds — headings up to 11 s late, the `<head>` up to 11 s after
+   that, zero animation frames meanwhile. Helmet writes the head on an
+   animation frame, and Playwright's `waitForFunction` polls on frames by
+   default, so both stalled. Four pages at once turned a rare race into a
+   common one.
+
+`5d18202` captures with reduced motion (which the wordmark already honours by
+keeping its flat flower), keeps the shell untouched until the last capture,
+waits for each page's own canonical on a timer and fails a page whose
+canonical still points elsewhere, and gives any page left without a capture
+the untouched shell instead of the homepage. Full build: 0 bad heads (71
+before), no content lost, prerender **204 s → 54 s**.
+
+`helmetlag.mjs` in the harness is the probe that found it: it times heading
+vs `<head>` with four pages sharing one browser, and counts animation frames.
+
+---
+
 # How it got heavy, and what to watch next time
 
 ## It was not one change
@@ -266,7 +302,12 @@ them 9–19× larger than the element they render into — a 1,097 px photograph
 a 48 px avatar. Before adding an `<img>`, answer: what size box, what does it
 need at 2× DPR, and is it above the fold. Three questions, most of a megabyte.
 
-**6. Sweep the scaffold.** `recharts` sits in `dependencies` for
+**6. Check the live site after every publish, not just the build log.**
+The publish that shipped 47 pages under the homepage's canonical reported
+success. `node shopify/harness/livehealth.mjs` checks every sitemap URL's raw
+HTML — status, own content, heading, canonical, noindex — in about a minute.
+
+**7. Sweep the scaffold.** `recharts` sits in `dependencies` for
 `src/components/ui/chart.tsx`, which nothing imports. Tree-shaking keeps it out
 of the bundle, so it costs nothing today — but a shadcn scaffold ships a lot
 that is never used, and it is worth a periodic look at what is declared versus

@@ -679,7 +679,8 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
           <div className="flex -space-x-2" aria-label="Customer photos">
             {photos.slice(0, 4).map((photo, i) => (
               <button key={photo} type="button" onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }} className="h-9 w-9 overflow-hidden rounded-full border-2 border-background" aria-label={`Open customer photo ${i + 1}`}>
-                <img src={photo} alt="" loading="lazy" className="h-full w-full object-cover" />
+                {/* loading before src — see the review photos below for why */}
+                <img loading="lazy" decoding="async" src={photo} alt="" className="h-full w-full object-cover" />
               </button>
             ))}
           </div>
@@ -768,7 +769,18 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
               {review.hasPhotos && review.images.length > 0 && (
                 <div className="flex gap-2 mt-3">
                   {review.images.map((img, idx) => (
-                    <img key={idx} src={img} alt="Review photo" className="w-12 h-12 object-cover" />
+                    /* Full-resolution review photographs, ~150 kB each, drawn
+                       into a 48px box well below the fold. Nothing here is
+                       worth fetching before someone scrolls to it.
+
+                       loading must come BEFORE src. The app mounts with
+                       createRoot, so React builds these <img>s itself and, in
+                       React 18, sets attributes in the order written: with src
+                       first, the fetch starts the moment src lands, before the
+                       element is ever told it is lazy. Measured: every one was
+                       fetched the instant React mounted, 1,600px below the
+                       fold, until the order was swapped. */
+                    <img key={idx} loading="lazy" decoding="async" src={img} alt="Review photo" className="w-12 h-12 object-cover" />
                   ))}
                 </div>
               )}

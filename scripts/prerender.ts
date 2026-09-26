@@ -17,7 +17,7 @@
 */
 
 import { spawn } from "child_process";
-import { mkdirSync, writeFileSync, existsSync, readdirSync } from "fs";
+import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync } from "fs";
 import { resolve, join } from "path";
 import { chromium, type Browser } from "playwright";
 import { resolveSiteRoutes, type SiteRoute } from "./routes";
@@ -101,6 +101,19 @@ const clean = (html: string) =>
 const routeToFile = (routePath: string) =>
   routePath === "/" ? join(DIST, "index.html") : join(DIST, routePath, "index.html");
 
+/*
+  dist/index.html is two things at once: the homepage's own file, and what the
+  preview server — and the live host — hands out for any path that has no file
+  of its own. Writing the captured homepage over it mid-run meant every route
+  captured afterwards started from the homepage's HTML, <head> included, and
+  kept it whenever the capture beat Helmet to the head. Live, after rendering
+  four routes at a time: 47 of 136 pages, products and journal alike, declaring
+  the homepage as their canonical. So the shell stays untouched until the last
+  capture is done, and the homepage is written in main() afterwards.
+*/
+const SHELL_FILE = join(DIST, "index.html");
+let capturedHome: string | undefined;
+
 /* The host kills a build that runs too long, and a killed build publishes
    nothing. Stop starting new routes after this budget; unrendered routes fall
    back to the SPA shell, which is degraded rather than broken. */
@@ -121,7 +134,17 @@ async function renderAll(browser: Browser, routes: SiteRoute[]) {
 }
 
 async function renderWorker(browser: Browser, queue: SiteRoute[]) {
-  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  /*
+    Captured with reduced motion on. The header's 3D wordmark skips three.js
+    for reduced-motion visitors and keeps its flat flower — which is all the
+    captured HTML can hold anyway, since a live canvas does not serialise. With
+    motion on, every captured page set up a WebGL scene on the software GPU a
+    headless build has, and blocked its main thread for seconds: headings came
+    up to 11 s late and Helmet's <head> another 11 s after that, which is how
+    captures ended up with the wrong <head>. With it off, the same pages render
+    in about a second and write their <head> within 100 ms.
+  */
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   let skipped = 0;
 
   /* Never let the capture browser talk to Meta: its events would be attributed
@@ -194,6 +217,28 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
           /* fall through — the assertion below reports it properly */
         });
 
+      /* The <h1> can land before Helmet has written the page's <head>, which it
+         does on an animation frame. Wait until the canonical names this route —
+         until then the head is still the shell's. Polled on a timer, not on
+         frames: a headless page can go seconds without one. */
+      await page
+        .waitForFunction(
+          (path) => {
+            const href = document.querySelector('link[rel="canonical"]')?.getAttribute("href");
+            if (!href) return false;
+            try {
+              return new URL(href, location.origin).pathname.replace(/\/+$/, "") === path.replace(/\/+$/, "");
+            } catch {
+              return false;
+            }
+          },
+          route.path,
+          { timeout: 10_000 * attempt, polling: 100 },
+        )
+        .catch(() => {
+          /* the assertion below reports it properly */
+        });
+
       const html = clean(await page.content());
       const words = await page.evaluate(() => (document.body.innerText || "").trim().split(/\s+/).filter(Boolean).length);
       if (words < 20) throw new Error(`only ${words} words rendered`);
@@ -204,6 +249,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
         noindex: !!document.querySelector('meta[name="robots"][content*="noindex"]'),
         h1: document.querySelectorAll("h1").length,
         title: document.title,
+        canonical: document.querySelector('link[rel="canonical"]')?.getAttribute("href") ?? null,
       }));
       if (shape.noindex) {
         throw new Error(`still noindex after load — captured a skeleton ("${shape.title}")`);
@@ -211,10 +257,24 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
       if (shape.h1 === 0) {
         throw new Error(`no <h1> rendered ("${shape.title}")`);
       }
+      const canonicalPath = shape.canonical
+        ? new URL(shape.canonical, ORIGIN).pathname.replace(/\/+$/, "")
+        : null;
+      if (canonicalPath !== route.path.replace(/\/+$/, "")) {
+        throw new Error(
+          shape.canonical
+            ? `canonical is ${shape.canonical}, not this page — captured before its <head> was written`
+            : `no canonical — captured before the page's <head> was written ("${shape.title}")`,
+        );
+      }
 
       const file = routeToFile(route.path);
-      mkdirSync(resolve(file, ".."), { recursive: true });
-      writeFileSync(file, html, "utf8");
+      if (file === SHELL_FILE) {
+        capturedHome = html; // written after the run — see SHELL_FILE
+      } else {
+        mkdirSync(resolve(file, ".."), { recursive: true });
+        writeFileSync(file, html, "utf8");
+      }
       written += 1;
       lastError = undefined;
       break;
@@ -289,6 +349,22 @@ async function main() {
     const { written, failures, skipped } = await renderAll(browser, routes);
     if (skipped) console.warn(`prerender: time budget reached, ${skipped} route(s) left as SPA shell`);
     await browser.close();
+
+    /* A route with no file of its own would be answered with SHELL_FILE, which
+       is about to become the homepage — its title, description and canonical.
+       Give every such route (skipped by the budget, or failed) a copy of the
+       untouched shell instead: degraded, but never claiming to be the homepage. */
+    const shell = readFileSync(SHELL_FILE, "utf8");
+    let shelled = 0;
+    for (const route of routes) {
+      const file = routeToFile(route.path);
+      if (file === SHELL_FILE || existsSync(file)) continue;
+      mkdirSync(resolve(file, ".."), { recursive: true });
+      writeFileSync(file, shell, "utf8");
+      shelled += 1;
+    }
+    if (shelled) console.warn(`prerender: ${shelled} route(s) had no capture and were given the SPA shell`);
+    if (capturedHome) writeFileSync(SHELL_FILE, capturedHome, "utf8");
 
     console.log(`prerendered ${written}/${routes.length} routes`);
     if (failures.length) {

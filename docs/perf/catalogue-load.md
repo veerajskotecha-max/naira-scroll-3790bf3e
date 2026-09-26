@@ -113,3 +113,70 @@ container has no direct network access. That proxying **bypasses the CDP
 throttle**, so its own timings run optimistic — trust its byte counts, not its
 clock. The timings at the top of this page are the ones measured on a real
 throttled phone.
+
+---
+
+# How it got heavy, and what to watch next time
+
+## It was not one change
+
+Sampling `main` back as far as the history goes:
+
+| | 19 Aug | 25 Sep |
+| --- | ---: | ---: |
+| dependencies | 52 | 56 |
+| components | 132 | 151 |
+| routes | 30 | 52 |
+| committed assets | 7.4 MB | 7.6 MB |
+
+Five weeks added 19 components, 22 routes and 4 dependencies. The components
+and routes cost almost nothing — they are lazy, and they split. **One of the
+four dependencies cost more than all of that put together.**
+
+## The one change with a real price
+
+`70d47b5` — *"Add the 3D Naira box above the footer sign-off"*, 25 Sep. That
+brought in `three`, which is **559 kB**, for a decorative box that sits above
+the footer sign-off.
+
+The code was written correctly: it is behind `import("@/lib/nairaBox/scene")`
+and never touches the first render. But the prerender promoted it to an eager
+`modulepreload` on **every page**, so every visitor paid 559 kB up front. At
+1.6 Mbit that is 2.8 seconds of a 20 second wait, spent on an ornament below
+the fold that most visitors never scroll to.
+
+## What to keep in mind
+
+**1. A flourish has a price. Quote it before merging.** "3D box above the
+footer" is a design decision until you write it as *"+559 kB, +2.8 s on slow
+4G, for something below the fold"* — then it is a business decision. Ask for
+the number in kB at the point someone proposes the feature, not after.
+
+**2. Lazy in the source is not lazy in production.** Every `import()` here was
+written properly and the build undid all of it. The import statement is not
+evidence. The built HTML is. One line in CI would have caught this the day it
+landed:
+
+```sh
+test "$(grep -c 'rel="modulepreload"' dist/jewellery/*/index.html | head -1)" -le 6
+```
+
+**3. Give the critical path a budget and fail the build on it.** Something
+like *"a product page ships ≤ 500 kB before the product is visible"*. A number
+in CI is the only thing that survives a busy week.
+
+**4. Weight dependencies far above code.** 19 new components and 22 new routes
+were free. One library was not. When reaching for a package, the question is
+not "does this work" but "what does it add to the entry graph, and is it
+behind an `import()` that the build actually honours".
+
+**5. Every image needs a box.** 1,402 kB of images on one product page, 13 of
+them 9–19× larger than the element they render into — a 1,097 px photograph in
+a 48 px avatar. Before adding an `<img>`, answer: what size box, what does it
+need at 2× DPR, and is it above the fold. Three questions, most of a megabyte.
+
+**6. Sweep the scaffold.** `recharts` sits in `dependencies` for
+`src/components/ui/chart.tsx`, which nothing imports. Tree-shaking keeps it out
+of the bundle, so it costs nothing today — but a shadcn scaffold ships a lot
+that is never used, and it is worth a periodic look at what is declared versus
+what is reached.

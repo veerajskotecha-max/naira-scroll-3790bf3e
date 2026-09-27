@@ -1,8 +1,21 @@
 # What a catalogue-ad click costs the shopper
 
-> **Status, 27 Sep.** Analysis only — nothing here is on `main` yet. The
-> fixes at the bottom are measured on live (fix 1, simulated) and on a local
-> production build (fixes 2–3); none ships without an explicit go-ahead.
+> **Status, 27 Sep — shipped on `main` in `738ee58` (publish in Lovable to go
+> live).** Everything below except the `www` hop (a live Meta/Shopify
+> setting) is done. Production build of that commit, modelled phone, median
+> of 3 runs, the ad link `/products/prism-riviere-bracelet?utm…`:
+>
+> | | good 4G before → after | weak 4G before → after |
+> | --- | --- | --- |
+> | what shows first | homepage 0.7 s → **the product 0.7 s** | homepage 1.9 s → **the product 1.4 s** |
+> | product photo | 2.4 s → **0.8 s** | 8.2 s → **1.9 s** |
+> | Add to cart works | 2.1 s → **1.5 s** | 7.3 s → **2.8 s** |
+> | blank screen | 0.7 s → none | 2.2 s → none |
+> | page code before first render | 363 KB → 177 KB gzipped | same |
+>
+> Filmstrips: `ad-landing-after-good-4g.jpg`, `ad-landing-after-weak-4g.jpg`.
+> Behaviour checks: `shopify/harness/shipprobe.mjs` (23/23), plus
+> `bagprobe`, `overlayprobe` and `backprobe` all passing on the build.
 
 The question was: *"The PDP load for catalogue links is 8 s? Average is 3 s.
 Why is ours slow, what did we fix, is it OK now?"*

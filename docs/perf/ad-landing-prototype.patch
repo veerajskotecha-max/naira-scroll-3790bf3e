@@ -1,0 +1,205 @@
+diff --git a/scripts/prerender.ts b/scripts/prerender.ts
+index 2fd68ab..02bf306 100644
+--- a/scripts/prerender.ts
++++ b/scripts/prerender.ts
+@@ -17,7 +17,7 @@
+ */
+ 
+ import { spawn } from "child_process";
+-import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync } from "fs";
++import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync, copyFileSync } from "fs";
+ import { resolve, join } from "path";
+ import { chromium, type Browser } from "playwright";
+ import { resolveSiteRoutes, type SiteRoute } from "./routes";
+@@ -366,6 +366,24 @@ async function main() {
+     if (shelled) console.warn(`prerender: ${shelled} route(s) had no capture and were given the SPA shell`);
+     if (capturedHome) writeFileSync(SHELL_FILE, capturedHome, "utf8");
+ 
++    /* PROTOTYPE: catalogue ads link to /products/<handle>. With no file there
++       the host answers with the homepage, and the product is rebuilt in the
++       browser. Give every jewellery PDP a copy at its /products/ path — same
++       HTML, canonical still /jewellery/<handle>, and the inline script in
++       index.html moves the address bar there before the app boots. */
++    let aliased = 0;
++    for (const route of routes) {
++      const m = route.path.match(/^\/jewellery\/([^/]+)$/);
++      if (!m || m[1] === "collections") continue;
++      const src = routeToFile(route.path);
++      const dest = join(DIST, "products", m[1], "index.html");
++      if (!existsSync(src) || existsSync(dest)) continue;
++      mkdirSync(resolve(dest, ".."), { recursive: true });
++      copyFileSync(src, dest);
++      aliased += 1;
++    }
++    console.log(`prerender: ${aliased} product page(s) copied to /products/<handle>`);
++
+     console.log(`prerendered ${written}/${routes.length} routes`);
+     if (failures.length) {
+       console.error(`\n${failures.length} route(s) failed:`);
+diff --git a/src/App.tsx b/src/App.tsx
+index d90610a..28b0bb2 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,4 +1,5 @@
+ import { lazy, Suspense } from "react";
++import { lazyRoute } from "@/lib/lazyRoute";
+ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+ import { HelmetProvider } from "react-helmet-async";
+@@ -28,8 +29,8 @@ const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
+ // Unknown / retired URLs land on a brand "Coming soon" page instead of a raw 404.
+ const CatchAll = lazy(() => import("./pages/CatchAll.tsx"));
+ const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
+-const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
+-const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));
++const Jewellery = lazyRoute(() => import("./pages/Jewellery.tsx"));
++const JewelDetail = lazyRoute(() => import("./pages/JewelDetail.tsx"));
+ const Concepts = lazy(() => import("./pages/Concepts.tsx"));
+ const RingLab = lazy(() => import("./pages/RingLab.tsx"));
+ const RingExample = lazy(() => import("./pages/RingExample.tsx"));
+@@ -40,7 +41,7 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService.tsx"));
+ const ExchangeReturnPolicy = lazy(() => import("./pages/ExchangeReturnPolicy.tsx"));
+ const FAQs = lazy(() => import("./pages/FAQs.tsx"));
+ const CartCheckoutRedirect = lazy(() => import("./pages/CartCheckoutRedirect.tsx"));
+-const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
++const JewelleryCategory = lazyRoute(() => import("./pages/JewelleryCategory.tsx"));
+ const Journal = lazy(() => import("./pages/Journal.tsx"));
+ const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
+ const Gifting = lazy(() => import("./pages/Gifting.tsx"));
+@@ -55,6 +56,19 @@ const AdminReels = lazy(() => import("./pages/admin/Reels.tsx"));
+ 
+ const queryClient = new QueryClient();
+ 
++/* PROTOTYPE: load the landing route's code before React's first render, so
++   the first commit replaces the pre-built page with the same page, not with
++   an empty Suspense fallback. Resolves anyway after 4 s. */
++export const preloadRouteFor = (pathname: string): Promise<unknown> => {
++  const p = pathname.replace(/\/+$/, "") || "/";
++  const job =
++    /^\/jewellery\/collections\/[^/]+$/.test(p) ? JewelleryCategory.preload()
++    : /^\/jewellery\/[^/]+$/.test(p) ? JewelDetail.preload()
++    : p === "/jewellery" ? Jewellery.preload()
++    : Promise.resolve();
++  return Promise.race([job.catch(() => {}), new Promise((r) => setTimeout(r, 4000))]);
++};
++
+ /**
+  * Redirect that keeps the query string. Ad clicks land on legacy Shopify-shaped
+  * URLs carrying ?fbclid= and utm_*; a plain <Navigate to="/path"> drops them,
+diff --git a/src/lib/lazyRoute.ts b/src/lib/lazyRoute.ts
+new file mode 100644
+index 0000000..20a65f1
+--- /dev/null
++++ b/src/lib/lazyRoute.ts
+@@ -0,0 +1,12 @@
++import { createElement, lazy, type ComponentType } from "react";
++
++/* PROTOTYPE: a React.lazy route that can be loaded before the first render.
++   Once preload() has resolved, the route renders synchronously — no Suspense
++   fallback, so React's first commit already contains the page. */
++export function lazyRoute(load: () => Promise<{ default: ComponentType }>) {
++  let Loaded: ComponentType | null = null;
++  const Lazy = lazy(() => load().then((m) => { Loaded = m.default; return m; }));
++  const Route = () => (Loaded ? createElement(Loaded) : createElement(Lazy));
++  Route.preload = () => load().then((m) => { Loaded = m.default; });
++  return Route;
++}
+diff --git a/src/main.tsx b/src/main.tsx
+index 1cd6ab5..c2ef453 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -1,5 +1,5 @@
+ import { createRoot } from "react-dom/client";
+-import App from "./App.tsx";
++import App, { preloadRouteFor } from "./App.tsx";
+ import "./index.css";
+ 
+ /* A page loaded before a rebuild or publish still points at the old chunk
+@@ -26,4 +26,4 @@ window.addEventListener("load", () => {
+   setTimeout(() => sessionStorage.removeItem(RELOAD_KEY), 10_000);
+ });
+ 
+-createRoot(document.getElementById("root")!).render(<App />);
++preloadRouteFor(location.pathname).then(() => createRoot(document.getElementById("root")!).render(<App />));
+diff --git a/src/pages/JewelDetail.tsx b/src/pages/JewelDetail.tsx
+index 798592f..58643a1 100644
+--- a/src/pages/JewelDetail.tsx
++++ b/src/pages/JewelDetail.tsx
+@@ -423,7 +423,14 @@ const JewelDetail = () => {
+       />
+     </button>
+   );
+-  const Gallery = isMobile ? (
++  /* PROTOTYPE: both galleries always render; CSS picks one. The first photo
++     uses the same URL in both, so a phone downloads it once, from the HTML. */
++  const HERO_SIZES = "(max-width: 1024px) 100vw, 50vw";
++  const HERO_WIDTHS = [480, 600, 720, 800, 900, 1000, 1200, 1400];
++  /* The pre-built page carries only the first photo: the rest would start
++     downloading from the HTML and slow the app on a weak connection. */
++  const prerendering = typeof navigator !== "undefined" && navigator.webdriver;
++  const MobileGallery = (
+     <div className="relative">
+       {/* The overlays are positioned against this wrapper, which covers only the
+           photo. When they shared a box with the dot strip, a taller strip pushed
+@@ -456,10 +463,10 @@ const JewelDetail = () => {
+             }}
+             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+           >
+-            <img
++            {(i === 0 || !prerendering) && <img
+               src={shopifyImage(img, 900)}
+-              srcSet={shopifySrcSet(img, [480, 720, 900, 1200]) || undefined}
+-              sizes="100vw"
++              srcSet={(i === 0 ? shopifySrcSet(img, HERO_WIDTHS) : shopifySrcSet(img, [480, 720, 900, 1200])) || undefined}
++              sizes={i === 0 ? HERO_SIZES : "100vw"}
+               alt={`${piece.name} view ${i + 1}`}
+               className="w-full h-full object-cover"
+               width={900}
+@@ -467,7 +474,7 @@ const JewelDetail = () => {
+               loading={i === 0 ? "eager" : "lazy"}
+               fetchPriority={i === 0 ? "high" : "auto"}
+               decoding={i === 0 ? "sync" : "async"}
+-            />
++            />}
+           </button>
+         ))}
+           </div>
+@@ -502,7 +509,8 @@ const JewelDetail = () => {
+           )}
+       </div>
+     </div>
+-  ) : (
++  );
++  const DesktopGallery = (
+     (() => {
+       /* Desktop/tablet: only ever show each photo once. Layout adapts to how
+          many unique images the piece actually has (1 → full bleed, 2 → split,
+@@ -528,9 +536,9 @@ const JewelDetail = () => {
+                 aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+               >
+             <img
+-              src={shopifyImage(img, 1000)}
+-              srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || undefined}
+-              sizes="(max-width: 1024px) 100vw, 50vw"
++              src={i === 0 ? shopifyImage(img, 900) : shopifyImage(img, 1000)}
++              srcSet={(i === 0 ? shopifySrcSet(img, HERO_WIDTHS) : shopifySrcSet(img, [600, 800, 1000, 1400])) || undefined}
++              sizes={i === 0 ? HERO_SIZES : "(max-width: 1024px) 100vw, 50vw"}
+               alt={`${piece.name} view ${i + 1}`}
+               className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+               width={1000}
+@@ -622,13 +630,13 @@ const JewelDetail = () => {
+             phone the listener sat on the hidden 0-width copy. Swiping moved
+             photos the code never measured, which is why the dots never followed
+             the finger, and tapping a dot scrolled the invisible gallery. */}
+-        {isMobile && Gallery}
++        <div className="md:hidden">{MobileGallery}</div>
+       </div>
+ 
+ 
+       <div className="max-w-[1400px] mx-auto md:px-6 pb-24 md:pb-24">
+         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
+-          <div className="hidden md:block">{!isMobile && Gallery}</div>
++          <div className="hidden md:block">{DesktopGallery}</div>
+ 
+           {/* Details */}
+           <div className="mt-4 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">

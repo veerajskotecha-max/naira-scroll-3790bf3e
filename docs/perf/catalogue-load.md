@@ -1,5 +1,12 @@
 # Why catalogue clicks don't land
 
+> **Superseded numbers, 27 Sep.** The timings in this doc came from a model
+> that counted bytes uncompressed and served every file through one queue, so
+> they run 2–4× too slow, and "it is bandwidth, not latency" holds only for
+> that model. It also measured `/jewellery/…`, not the `/products/…` address
+> catalogue ads actually open. Current measurements, the ad path and the fixes
+> are in [`ad-landing.md`](ad-landing.md). The causes below still stand.
+
 > **Status, 26 Sep (evening).** Verified end to end on full production
 > builds before anything went to `main`.
 >

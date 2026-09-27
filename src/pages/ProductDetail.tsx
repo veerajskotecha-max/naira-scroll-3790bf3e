@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { Helmet } from "react-helmet-async";
+import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import CustomerReviews from "@/components/CustomerReviews";
 import JudgeMeReviews, { judgeMeEnabled } from "@/components/JudgeMeReviews";
@@ -200,21 +201,19 @@ const ProductDetail = () => {
         <meta name="twitter:title" content={`${title} | Naira Flore`} />
         <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
         <meta name="twitter:image" content={ogImageUrl} />
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
-              { "@type": "ListItem", position: 2, name: "Shop", item: "https://nairaflore.com/shop" },
-              { "@type": "ListItem", position: 3, name: title, item: `https://nairaflore.com/product/${id}` },
-            ],
-          })}
-        </script>
       </Helmet>
+      <JsonLd data={structuredData} />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
+            { "@type": "ListItem", position: 2, name: "Shop", item: "https://nairaflore.com/shop" },
+            { "@type": "ListItem", position: 3, name: title, item: `https://nairaflore.com/product/${id}` },
+          ],
+        }}
+      />
       {/* Breadcrumb - desktop only */}
       <div className="max-w-[1400px] mx-auto px-6 pt-[113px] md:pt-[126px] lg:pt-[136px] pb-3 hidden md:flex items-center justify-between gap-4">
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>

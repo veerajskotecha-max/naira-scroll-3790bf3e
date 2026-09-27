@@ -14,11 +14,16 @@
     <link rel="preload" as="image" href="/src/assets/floral-pattern-bg.webp" fetchpriority="high" />
 
     <!-- Preload Velista (self-hosted) so headings render with the brand font without blocking -->
-    <link rel="preload" as="font" type="font/ttf" href="/fonts/Velista.ttf" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Velista.woff2" crossorigin />
     <!-- Editorial hero fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <!-- Loaded as print so it never blocks rendering, then switched on: at once
+         on the homepage, whose hero is set in Cormorant; everywhere else by
+         main.tsx once the page's code is in — on a weak connection these fonts
+         otherwise share the line with that code and hold Add to cart back by
+         about 0.4 s. Text shows in the fallback face until then (display=swap). -->
+    <link id="nf-fonts" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="if(location.pathname==='/')this.media='all'" />
     <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" /></noscript>
     <!--
       No canonical, description, OG or Twitter tags here on purpose. Every route

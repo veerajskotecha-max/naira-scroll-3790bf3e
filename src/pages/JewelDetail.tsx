@@ -6,24 +6,22 @@ import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
 import { QUANTITY_OFFERS, TOP_QUANTITY_OFFER } from "@/lib/promo";
 import { Helmet } from "react-helmet-async";
+import JsonLd from "@/components/JsonLd";
 import { Heart, Minus, Plus, Truck, MessageSquare, ArrowLeft, ZoomIn, ShoppingBag, TicketPercent } from "lucide-react";
 
 import { toast } from "sonner";
 import Footer from "@/components/Footer";
-import { reviewSummary } from "@/components/CustomerReviews";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import PdpBuyFacts from "@/components/jewellery/PdpBuyFacts";
-import FomoPopup from "@/components/FomoPopup";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
@@ -38,6 +36,9 @@ import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PRE
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 const MobileReelShop = lazy(() => import("@/components/reels/MobileReelShop"));
+// First shown 5 s in; loading it with the page put the whole review data set
+// (its name list) into the page's first download.
+const FomoPopup = lazy(() => import("@/components/FomoPopup"));
 
 
 /* Key facts distilled from the approved data model: finish and stone are
@@ -118,23 +119,64 @@ const MOBILE_FRAME = "1/1";
    markup fresh without anyone having to remember to edit a hardcoded date. */
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
 
+/*
+  What the pre-built page knew about its piece, written into it as JSON (the
+  <script id="nf-piece"> rendered below). An ad click lands on the pre-built
+  page, so the first render draws from this rather than importing the
+  whole-catalogue snapshot and the review wall — about 31 KB gzipped off the
+  page's first download. Both still load, after first paint, for a page opened
+  without its pre-built HTML. Read during the first render, before React
+  replaces the pre-built DOM; on a later visit to another piece the handle no
+  longer matches and it is ignored.
+*/
+type EmbeddedPiece = { piece: JewelPiece; rating: { rating: number; count: number } | null };
+const readEmbeddedPiece = (handle?: string): EmbeddedPiece | null => {
+  if (typeof document === "undefined" || !handle) return null;
+  try {
+    const data = JSON.parse(document.getElementById("nf-piece")?.textContent || "null") as EmbeddedPiece | null;
+    return data?.piece?.handle === handle ? data : null;
+  } catch {
+    return null;
+  }
+};
+type ReviewWall = typeof import("@/data/reviewWall");
+
 const JewelDetail = () => {
   const { handle } = useParams();
   const navigate = useNavigate();
   const { jewellery, isLive, isLoading: catalogueLoading } = useLiveJewellery();
-  /* Until live data arrives, fall back to the generated snapshot. Without it
-     only the 21 hand-authored pieces could draw on a cold load — every other
-     piece, including the #1 ad landing page, showed the skeleton for as long as
-     Shopify took to answer (measured: 1.3s to 4s). Once live data is in, the
-     snapshot is ignored entirely, so a piece Shopify has since unlisted is never
-     kept alive by stale data, and prices and stock always come from live. */
+  const embedded = useMemo(() => readEmbeddedPiece(handle), [handle]);
+  /* Until live data arrives: the pre-built page's own piece first — captured
+     from live Shopify data when the site was built, where the hand-authored
+     list can hold a months-old price (Molten Bloom Hoops read ₹2,949 there,
+     ₹1,300 live, and the first render flashed the old one) — then the bundled
+     list, then the generated snapshot. Without the snapshot only the 21
+     hand-authored pieces could draw on a cold load; every other piece showed
+     the skeleton for as long as Shopify took to answer (1.3s to 4s). Once live
+     data is in, all of these are ignored, so a piece Shopify has since unlisted
+     is never kept alive by stale data, and prices and stock come from live. */
+  const [snapshot, setSnapshot] = useState<JewelPiece[] | null>(null);
+  const needSnapshot = !isLive && !embedded && !jewellery.some((j) => j.handle === handle);
+  useEffect(() => {
+    if (!needSnapshot || snapshot) return;
+    let cancelled = false;
+    import("@/data/jewellerySnapshot")
+      .then((module) => !cancelled && setSnapshot(module.jewellerySnapshot))
+      .catch(() => !cancelled && setSnapshot([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [needSnapshot, snapshot]);
   const piece = useMemo(
     () =>
-      jewellery.find((j) => j.handle === handle) ??
-      (!isLive ? jewellerySnapshot.find((j) => j.handle === handle) : undefined) ??
-      null,
-    [handle, jewellery, isLive],
+      (isLive
+        ? jewellery.find((j) => j.handle === handle)
+        : embedded?.piece ??
+          jewellery.find((j) => j.handle === handle) ??
+          snapshot?.find((j) => j.handle === handle)) ?? null,
+    [handle, jewellery, isLive, embedded, snapshot],
   );
+  const snapshotPending = needSnapshot && snapshot === null;
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
   const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
@@ -154,10 +196,22 @@ const JewelDetail = () => {
      visitor never reaches the page's midpoint. The rating sat at 5.14 folds, so
      most shoppers never saw it. It moves up beside the title, always paired with
      its count. */
-  const rating = useMemo(
-    () => (piece ? reviewSummary(piece.name, "jewellery") : null),
-    [piece?.name]
-  );
+  const [reviewWall, setReviewWall] = useState<ReviewWall | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    import("@/data/reviewWall")
+      .then((module) => !cancelled && setReviewWall(module))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const pieceName = piece?.name;
+  const rating = useMemo(() => {
+    if (!pieceName) return null;
+    if (reviewWall) return reviewWall.reviewSummary(pieceName, "jewellery");
+    return embedded?.piece.name === pieceName ? embedded.rating : null;
+  }, [pieceName, reviewWall, embedded]);
   useEffect(() => {
     setSelectedSize(sizedCategory ? "6" : "One Size");
   }, [sizedCategory, piece?.handle]);
@@ -308,7 +362,7 @@ const JewelDetail = () => {
      product links straight back to the listing — wait for the query to settle
      before deciding the piece really doesn't exist. */
   if (!piece) {
-    if (catalogueLoading) return <JewelDetailSkeleton />;
+    if (catalogueLoading || snapshotPending) return <JewelDetailSkeleton />;
     return <Navigate to="/jewellery" replace />;
   }
 
@@ -423,7 +477,18 @@ const JewelDetail = () => {
       />
     </button>
   );
-  const Gallery = isMobile ? (
+  /* The first photo is the phone's largest paint and the reason the page is
+     pre-built, so both galleries ask for it with the same srcset and sizes:
+     whichever gallery the screen shows, the browser picks the same file and
+     downloads it once, straight from the HTML. */
+  const HERO_WIDTHS = [480, 600, 720, 800, 900, 1000, 1200, 1400];
+  const HERO_SIZES = "(max-width: 1024px) 100vw, 50vw";
+  /* The pre-built copy keeps only the first phone photo. With all of them in
+     the HTML, photos 2–4 started downloading at once and on weak 4G held Add
+     to cart back by 0.8 s; the app draws the rest as soon as it takes over. */
+  const prerendering = typeof navigator !== "undefined" && navigator.webdriver;
+
+  const MobileGallery = (
     <div className="relative">
       {/* The overlays are positioned against this wrapper, which covers only the
           photo. When they shared a box with the dot strip, a taller strip pushed
@@ -456,18 +521,20 @@ const JewelDetail = () => {
             }}
             aria-label={`Open ${piece.name} image ${i + 1} full screen`}
           >
-            <img
-              src={shopifyImage(img, 900)}
-              srcSet={shopifySrcSet(img, [480, 720, 900, 1200]) || undefined}
-              sizes="100vw"
-              alt={`${piece.name} view ${i + 1}`}
-              className="w-full h-full object-cover"
-              width={900}
-              height={1200}
-              loading={i === 0 ? "eager" : "lazy"}
-              fetchPriority={i === 0 ? "high" : "auto"}
-              decoding={i === 0 ? "sync" : "async"}
-            />
+            {(i === 0 || !prerendering) && (
+              <img
+                src={shopifyImage(img, 900)}
+                srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [480, 720, 900, 1200]) || undefined}
+                sizes={i === 0 ? HERO_SIZES : "100vw"}
+                alt={`${piece.name} view ${i + 1}`}
+                className="w-full h-full object-cover"
+                width={900}
+                height={1200}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                decoding={i === 0 ? "sync" : "async"}
+              />
+            )}
           </button>
         ))}
           </div>
@@ -502,7 +569,9 @@ const JewelDetail = () => {
           )}
       </div>
     </div>
-  ) : (
+  );
+
+  const DesktopGallery = (
     (() => {
       /* Desktop/tablet: only ever show each photo once. Layout adapts to how
          many unique images the piece actually has (1 → full bleed, 2 → split,
@@ -528,9 +597,9 @@ const JewelDetail = () => {
                 aria-label={`Open ${piece.name} image ${i + 1} full screen`}
               >
             <img
-              src={shopifyImage(img, 1000)}
-              srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || undefined}
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              src={shopifyImage(img, i === 0 ? 900 : 1000)}
+              srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [600, 800, 1000, 1400]) || undefined}
+              sizes={HERO_SIZES}
               alt={`${piece.name} view ${i + 1}`}
               className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
               width={1000}
@@ -575,19 +644,24 @@ const JewelDetail = () => {
         <meta name="twitter:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
         <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
         <meta name="twitter:image" content={ogImageUrl} />
-        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
-              { "@type": "ListItem", position: 2, name: "Jewellery", item: "https://nairaflore.com/jewellery" },
-              { "@type": "ListItem", position: 3, name: piece.name, item: `https://nairaflore.com/jewellery/${piece.handle}` },
-            ],
-          })}
-        </script>
       </Helmet>
+      <JsonLd data={structuredData} />
+      <script
+        type="application/json"
+        id="nf-piece"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({ piece, rating }).replace(/</g, "\\u003c") }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
+            { "@type": "ListItem", position: 2, name: "Jewellery", item: "https://nairaflore.com/jewellery" },
+            { "@type": "ListItem", position: 3, name: piece.name, item: `https://nairaflore.com/jewellery/${piece.handle}` },
+          ],
+        }}
+      />
 
       {/* Breadcrumb (desktop) */}
       <div className="max-w-[1400px] mx-auto px-6 pt-[113px] md:pt-[126px] lg:pt-[136px] pb-3 hidden md:flex items-center justify-between gap-4">
@@ -616,19 +690,20 @@ const JewelDetail = () => {
         >
           <ArrowLeft size={16} strokeWidth={1.6} style={{ color: "hsl(0 0% 20%)" }} />
         </button>
-        {/* Rendered in exactly one of the two slots. Both used to mount it and
-            hide one with CSS, which put two copies in the DOM sharing a single
-            scrollRef — React handed the ref to whichever mounted last, so on a
-            phone the listener sat on the hidden 0-width copy. Swiping moved
-            photos the code never measured, which is why the dots never followed
-            the finger, and tapping a dot scrolled the invisible gallery. */}
-        {isMobile && Gallery}
+        {/* Both galleries are in the page and CSS shows one, so the pre-built
+            HTML — captured at desktop width — carries the phone gallery too and
+            a phone paints the product photo before any JavaScript runs.
+            They are two different galleries, not one mounted twice: only the
+            phone gallery holds scrollRef. (Mounting the same gallery in both
+            slots once handed the ref to a hidden 0-width copy, which is why
+            the dots stopped following the finger.) */}
+        <div className="md:hidden">{MobileGallery}</div>
       </div>
 
 
       <div className="max-w-[1400px] mx-auto md:px-6 pb-24 md:pb-24">
         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-          <div className="hidden md:block">{!isMobile && Gallery}</div>
+          <div className="hidden md:block">{DesktopGallery}</div>
 
           {/* Details */}
           <div className="mt-4 md:mt-0 lg:py-2 flex flex-col w-full items-stretch px-4 lg:px-8 xl:px-10">
@@ -1018,10 +1093,12 @@ const JewelDetail = () => {
       <Suspense fallback={<div className="min-h-[420px] border-b border-border bg-secondary/45 md:hidden" aria-hidden="true" />}>
         <MobileReelShop />
       </Suspense>
-      <FomoPopup
-        suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
-        mobileStickyVisible={stickyBarVisible}
-      />
+      <Suspense fallback={null}>
+        <FomoPopup
+          suppressed={isDrawerOpen || lightboxOpen || sizeGuideOpen}
+          mobileStickyVisible={stickyBarVisible}
+        />
+      </Suspense>
       
       <Footer compact />
 

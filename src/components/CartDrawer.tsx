@@ -14,7 +14,7 @@ import { codFeeFor } from "@/lib/payment";
 import { Button } from "@/components/ui/button";
 import googlePayMark from "@/assets/google-pay-mark.svg";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabase } from "@/integrations/supabase/lazy";
 import { shopifyNumericId, trackPixel } from "@/lib/pixel";
 
 /* Shopify reports a single-variant product as [{name:"Title",value:"Default Title"}]
@@ -92,6 +92,7 @@ const CartDrawer = () => {
 
     try {
       if (user) {
+        const supabase = await getSupabase();
         await supabase.from("member_orders").insert({
           user_id: user.id,
           email: user.email ?? null,

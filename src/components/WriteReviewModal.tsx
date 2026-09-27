@@ -3,7 +3,7 @@ import { Star, X, Camera, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabase } from "@/integrations/supabase/lazy";
 import { toast } from "@/hooks/use-toast";
 
 const MAX_PHOTOS = 4;
@@ -75,6 +75,7 @@ const ReviewForm = ({ onSubmit, onClose }: { onSubmit: WriteReviewModalProps["on
 
   const uploadPhotos = async () => {
     const urls: string[] = [];
+    const supabase = await getSupabase();
     for (const { file } of photos) {
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
       const path = `${crypto.randomUUID()}.${ext}`;

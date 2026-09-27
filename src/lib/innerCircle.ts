@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabase } from "@/integrations/supabase/lazy";
 import { trackPixel } from "@/lib/pixel";
 
 export const memberEmailSchema = z
@@ -40,6 +40,7 @@ export const joinInnerCircle = async ({
     return { ok: false, message: parsedName.error.issues[0].message };
   }
 
+  const supabase = await getSupabase();
   const { error } = await supabase.from("inner_circle_signups").insert({
     email: parsedEmail.data,
     name: parsedName.data || null,

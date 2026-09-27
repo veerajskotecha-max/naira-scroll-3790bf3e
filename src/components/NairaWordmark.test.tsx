@@ -9,9 +9,14 @@ afterEach(() => {
   cleanup();
   mount.mockClear();
   vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
-const flush = () => new Promise((r) => setTimeout(r, 1300));
+/* The scene starts 5 s after load (then waits for idle, which jsdom lacks). */
+const afterLoad = async (ms: number) => {
+  window.dispatchEvent(new Event("load"));
+  await vi.advanceTimersByTimeAsync(ms);
+};
 
 describe("NairaWordmark", () => {
   /* It replaced an <img alt="NAIRA">; the home link's only name is this. */
@@ -33,21 +38,48 @@ describe("NairaWordmark", () => {
   /* Reduced motion asks for no turning flower; downloading three.js for it
      would be 146 KB spent on nothing. */
   it("never loads the scene with reduced motion on", async () => {
+    vi.useFakeTimers();
     vi.stubGlobal("matchMedia", (q: string) => ({ matches: q.includes("reduce") }));
     render(<NairaWordmark />);
-    window.dispatchEvent(new Event("load"));
-    await flush();
+    await afterLoad(12000);
     expect(mount).not.toHaveBeenCalled();
+  });
+
+  /* A phone that is short on memory or on a slow connection gets the flat
+     flower for good: three.js is 146 KB and its first frame blocks the page. */
+  it("never loads the scene on a low-memory phone or a slow connection", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    vi.stubGlobal("navigator", { ...navigator, deviceMemory: 2 });
+    render(<NairaWordmark />);
+    await afterLoad(12000);
+    cleanup();
+    vi.stubGlobal("navigator", { ...navigator, deviceMemory: 8, connection: { effectiveType: "3g" } });
+    render(<NairaWordmark />);
+    await afterLoad(12000);
+    expect(mount).not.toHaveBeenCalled();
+  });
+
+  /* It used to start as soon as the page went idle — which on a catalogue ad
+     landing was while the product page was still arriving. */
+  it("waits five seconds after load before starting", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    render(<NairaWordmark />);
+    await afterLoad(4900);
+    expect(mount).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mount).toHaveBeenCalledTimes(1);
   });
 
   /* The flower's own centre sits left of the I's stem. Turned on its own
      centre it wobbled beside the letter; the scene is told the offset so it
      turns on the stem. */
   it("loads the scene once the page has loaded, turning on the I's stem", async () => {
+    vi.useFakeTimers();
     vi.stubGlobal("matchMedia", () => ({ matches: false }));
     render(<NairaWordmark />);
-    window.dispatchEvent(new Event("load"));
-    await flush();
+    await afterLoad(5200);
     expect(mount).toHaveBeenCalledTimes(1);
     const opts = (mount.mock.calls[0] as unknown[])[1] as { axisOffset: number };
     expect(opts.axisOffset).toBeLessThan(0);

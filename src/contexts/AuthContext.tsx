@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabase } from "@/integrations/supabase/lazy";
 
 export type MemberProfile = {
   id: string;
@@ -37,16 +37,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Listener first, then the existing session — so no event is missed.
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next);
-      setLoading(false);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
+    // The client loads after first paint (see integrations/supabase/lazy.ts);
+    // `loading` stays true until it has answered.
+    let cancelled = false;
+    let unsubscribe = () => {};
+    getSupabase()
+      .then((supabase) => {
+        if (cancelled) return;
+        // Listener first, then the existing session — so no event is missed.
+        const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+          setSession(next);
+          setLoading(false);
+        });
+        unsubscribe = () => sub.subscription.unsubscribe();
+        return supabase.auth.getSession().then(({ data }) => {
+          if (cancelled) return;
+          setSession(data.session);
+          setLoading(false);
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false); // signed out is the safe reading
+      });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   const userId = session?.user?.id ?? null;
@@ -56,6 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setProfile(null);
       return;
     }
+    const supabase = await getSupabase();
     const { data } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
     setProfile((data as unknown as MemberProfile) ?? null);
   }, [userId]);
@@ -65,6 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [refreshProfile]);
 
   const signOut = useCallback(async () => {
+    const supabase = await getSupabase();
     await supabase.auth.signOut();
     setProfile(null);
   }, []);

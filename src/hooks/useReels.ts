@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabase } from "@/integrations/supabase/lazy";
 
 export interface ReelProduct {
   id: string;
@@ -86,6 +86,7 @@ const signAll = async (paths: string[]) => {
   const unique = Array.from(new Set(paths.filter(Boolean)));
   if (!unique.length) return map;
   try {
+    const supabase = await getSupabase();
     const signing = supabase.storage.from("reels").createSignedUrls(unique, SIGN_TTL);
     const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), SIGN_TIMEOUT_MS));
     const result = await Promise.race([signing, timeout]);
@@ -113,6 +114,7 @@ const withDeadline = <T,>(work: PromiseLike<T>, ms: number, label: string): Prom
   ]);
 
 export const fetchReels = async (): Promise<Reel[]> => {
+  const supabase = await getSupabase();
   const { data, error } = await withDeadline(
     supabase
     .from("reels")

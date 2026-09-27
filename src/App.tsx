@@ -1,10 +1,9 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -12,7 +11,6 @@ import { useCartSync } from "./hooks/useCartSync";
 import Header from "./components/Header";
 import CartDrawer from "./components/CartDrawer";
 import WishlistDrawer from "./components/WishlistDrawer";
-import Index from "./pages/Index.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 import PixelEvents from "./components/PixelEvents";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
@@ -20,37 +18,36 @@ import PixelEvents from "./components/PixelEvents";
 import FilmGrain from "./components/wow/FilmGrain";
 import ScrollBloom from "./components/wow/ScrollBloom";
 import PageCurtain from "./components/wow/PageCurtain";
-
-
-// Non-home routes are code-split so the homepage bundle stays small.
-const ShopAll = lazy(() => import("./pages/ShopAll.tsx"));
-const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
-// Unknown / retired URLs land on a brand "Coming soon" page instead of a raw 404.
-const CatchAll = lazy(() => import("./pages/CatchAll.tsx"));
-const MadeForYou = lazy(() => import("./pages/MadeForYou.tsx"));
-const Jewellery = lazy(() => import("./pages/Jewellery.tsx"));
-const JewelDetail = lazy(() => import("./pages/JewelDetail.tsx"));
-const Concepts = lazy(() => import("./pages/Concepts.tsx"));
-const RingLab = lazy(() => import("./pages/RingLab.tsx"));
-const RingExample = lazy(() => import("./pages/RingExample.tsx"));
-const AboutUs = lazy(() => import("./pages/AboutUs.tsx"));
-const ContactUs = lazy(() => import("./pages/ContactUs.tsx"));
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService.tsx"));
-const ExchangeReturnPolicy = lazy(() => import("./pages/ExchangeReturnPolicy.tsx"));
-const FAQs = lazy(() => import("./pages/FAQs.tsx"));
-const CartCheckoutRedirect = lazy(() => import("./pages/CartCheckoutRedirect.tsx"));
-const JewelleryCategory = lazy(() => import("./pages/JewelleryCategory.tsx"));
-const Journal = lazy(() => import("./pages/Journal.tsx"));
-const JournalArticle = lazy(() => import("./pages/JournalArticle.tsx"));
-const Gifting = lazy(() => import("./pages/Gifting.tsx"));
-const GoldenHourEdit = lazy(() => import("./pages/GoldenHourEdit.tsx"));
-const TrackOrder = lazy(() => import("./pages/TrackOrder.tsx"));
-const InnerCircle = lazy(() => import("./pages/InnerCircle.tsx"));
-const Auth = lazy(() => import("./pages/Auth.tsx"));
-const Account = lazy(() => import("./pages/Account.tsx"));
-const OAuthConsent = lazy(() => import("./pages/OAuthConsent.tsx"));
-const AdminReels = lazy(() => import("./pages/admin/Reels.tsx"));
+import {
+  Index,
+  ShopAll,
+  ProductDetail,
+  CatchAll,
+  MadeForYou,
+  Jewellery,
+  JewelDetail,
+  Concepts,
+  RingLab,
+  RingExample,
+  AboutUs,
+  ContactUs,
+  PrivacyPolicy,
+  TermsOfService,
+  ExchangeReturnPolicy,
+  FAQs,
+  CartCheckoutRedirect,
+  JewelleryCategory,
+  Journal,
+  JournalArticle,
+  Gifting,
+  GoldenHourEdit,
+  TrackOrder,
+  InnerCircle,
+  Auth,
+  Account,
+  OAuthConsent,
+  AdminReels,
+} from "./pageCode";
 
 
 const queryClient = new QueryClient();
@@ -156,8 +153,10 @@ const AppShell = () => {
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
+      {/* No TooltipProvider: nothing uses a tooltip, and the provider alone
+          put Radix Tooltip and Floating UI — about 25 KB gzipped — into the
+          first download of every page. Add it back with the first tooltip. */}
+      <AuthProvider>
         <CartProvider>
           <WishlistProvider>
             <Toaster />
@@ -167,8 +166,7 @@ const App = () => (
             </BrowserRouter>
           </WishlistProvider>
         </CartProvider>
-        </AuthProvider>
-      </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </HelmetProvider>
 );

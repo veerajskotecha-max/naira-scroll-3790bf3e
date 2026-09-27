@@ -5,7 +5,8 @@
 /* Brand serif — self-hosted, non-render-blocking. Replaces Cormorant Garamond. */
 @font-face {
   font-family: 'Velista';
-  src: url('/fonts/Velista.ttf') format('truetype');
+  /* WOFF2 is 11 KB against the TrueType file's 37 KB; the .ttf stays as the fallback. */
+  src: url('/fonts/Velista.woff2') format('woff2'), url('/fonts/Velista.ttf') format('truetype');
   font-weight: 400 600;
   font-style: normal;
   font-display: swap;

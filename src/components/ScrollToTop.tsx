@@ -41,9 +41,16 @@ const ScrollToTop = () => {
        where it is — re-applying the saved offset for 900 ms would fight a
        shopper who starts scrolling straight away. */
     const entry = `${key}|${pathname}`;
+    const firstMount = lastEntry.current === null;
     const sameEntry = lastEntry.current === entry;
     lastEntry.current = entry;
     if (sameEntry) return;
+
+    /* The first page is pre-built: the shopper can already be scrolling it
+       when the app takes over, seconds in on a slow connection. Jumping them
+       to the top then would undo that, and it would also override the
+       browser's own scroll restore on a reload. Only navigations scroll. */
+    if (firstMount) return;
 
     if (navigationType === "REPLACE") return;
 

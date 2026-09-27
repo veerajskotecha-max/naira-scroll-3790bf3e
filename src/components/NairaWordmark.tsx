@@ -24,11 +24,28 @@ const pct = (v: number, of: number) => `${(v / of) * 100}%`;
   The header is on every page and above the fold, so three.js (~146 KB gzip)
   must not compete with the page for the first load. The flat flower is part
   of the wordmark from the first paint; the scene is fetched only once the
-  page has loaded and the browser is idle, lands face-on exactly over the
-  flat flower, and the two cross-fade. Anyone with reduced motion or Data
-  Saver keeps the flat flower and never downloads three.js at all, and so does
-  a browser without WebGL — the logo is whole either way.
+  page has loaded, a few seconds have passed and the browser is idle, lands
+  face-on exactly over the flat flower, and the two cross-fade. Its first
+  frame costs a phone a few hundred milliseconds of main thread; "idle" alone
+  used to fire while a catalogue-ad visitor's product page was still coming
+  in, so the wait is also measured from load.
+
+  Anyone with reduced motion, Data Saver, a slow connection or a low-memory
+  phone keeps the flat flower and never downloads three.js at all, and so
+  does a browser without WebGL — the logo is whole either way.
 */
+const START_AFTER_LOAD_MS = 5000;
+
+type NetworkInfo = { saveData?: boolean; effectiveType?: string };
+
+/** Whether this device should skip the 3D flower entirely. */
+const keepFlatFlower = (): boolean => {
+  const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  const nav = navigator as Navigator & { connection?: NetworkInfo; deviceMemory?: number };
+  const slowNetwork = /^(slow-2g|2g|3g)$/.test(nav.connection?.effectiveType ?? "");
+  const lowMemory = typeof nav.deviceMemory === "number" && nav.deviceMemory < 4;
+  return reduced || Boolean(nav.connection?.saveData) || slowNetwork || lowMemory;
+};
 const NairaWordmark = ({ className = "" }: { className?: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [live, setLive] = useState(false);
@@ -36,9 +53,7 @@ const NairaWordmark = ({ className = "" }: { className?: string }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
-    if (reduced || saveData) return;
+    if (keepFlatFlower()) return;
 
     let cancelled = false;
     let handle: { dispose: () => void } | null = null;
@@ -57,13 +72,15 @@ const NairaWordmark = ({ className = "" }: { className?: string }) => {
           .catch(() => {
             /* No WebGL or the chunk failed: the flat flower stays. */
           });
-      if (window.requestIdleCallback) {
-        const id = window.requestIdleCallback(run, { timeout: 3000 });
-        cancelWait = () => window.cancelIdleCallback(id);
-      } else {
-        const id = window.setTimeout(run, 1200);
-        cancelWait = () => window.clearTimeout(id);
-      }
+      const later = window.setTimeout(() => {
+        if (window.requestIdleCallback) {
+          const id = window.requestIdleCallback(run, { timeout: 5000 });
+          cancelWait = () => window.cancelIdleCallback(id);
+        } else {
+          run();
+        }
+      }, START_AFTER_LOAD_MS);
+      cancelWait = () => window.clearTimeout(later);
     };
 
     if (document.readyState === "complete") start();

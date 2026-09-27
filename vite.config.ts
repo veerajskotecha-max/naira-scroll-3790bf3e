@@ -62,14 +62,28 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    // Read by scripts/prerender.ts to tell a page's own code from what it loads
+    // later (src/lib/routePreloads.ts); deleted once the prerender is done.
+    manifest: true,
+    /* Review thumbnails are ~3 KB, under Vite's 4 KB inline limit, and inlined
+       as base64 they added ~50 KB to the product page's first download. They
+       are only shown by the reviews section, which loads after first paint. */
+    assetsInlineLimit: (filePath: string) => (filePath.includes("/review-thumbs/") ? false : undefined),
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+          /* tslib is listed so it lands here, not in the first chunk that happens
+             to depend on it: it used to sit inside the supabase chunk, and since
+             the dialog code shares its helpers, every page downloaded all of
+             Supabase (56 KB gzipped) just to get three tiny functions. */
+          vendor: ['react', 'react-dom', 'react-router-dom', 'tslib'],
           ui: ['lucide-react'],
           gsap: ['gsap'],
           query: ['@tanstack/react-query'],
           supabase: ['@supabase/supabase-js'],
+          // Named so src/lib/optionalChunk.ts can tell it apart: a failed
+          // three.js download falls back to flat art instead of a page reload.
+          three: ['three'],
         }
       }
     }

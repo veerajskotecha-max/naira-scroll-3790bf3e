@@ -17,10 +17,14 @@
 */
 
 import { spawn } from "child_process";
-import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync } from "fs";
+import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync, rmSync } from "fs";
 import { resolve, join } from "path";
 import { chromium, type Browser } from "playwright";
 import { resolveSiteRoutes, type SiteRoute } from "./routes";
+import { productAliasFor, withAliasRedirect } from "../src/lib/productAlias";
+import { dropUnusedImagePreloads } from "../src/lib/unusedPreloads";
+import { keepOnlyRoutePreloads, staticClosure, type ViteManifest } from "../src/lib/routePreloads";
+import { routeKeyFor } from "../src/lib/routeCode";
 
 const PORT = Number(process.env.PRERENDER_PORT ?? 4180);
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -96,7 +100,14 @@ const clean = (html: string) =>
     */
     .replace(/<script[^>]+src="[^"]*(?:facebook\.net|facebook\.com|fbcdn\.net)[^"]*"[^>]*><\/script>/gi, "")
     .replace(/<link[^>]+href="[^"]*(?:facebook\.net|facebook\.com|fbcdn\.net)[^"]*"[^>]*\/?>/gi, "")
-    .replace(/<img[^>]+src="[^"]*facebook\.com\/tr[^"]*"[^>]*\/?>/gi, "");
+    .replace(/<img[^>]+src="[^"]*facebook\.com\/tr[^"]*"[^>]*\/?>/gi, "")
+    /*
+      The Google Fonts stylesheet ships as media="print" and is switched to
+      "all" at runtime (see index.html). Captured after the switch, every page
+      carried it as a normal stylesheet: render-blocking, on another domain,
+      before first paint. Put it back the way index.html has it.
+    */
+    .replace(/(<link\b[^>]*\bid="nf-fonts"[^>]*\bmedia=")all(")/g, "$1print$2");
 
 const routeToFile = (routePath: string) =>
   routePath === "/" ? join(DIST, "index.html") : join(DIST, routePath, "index.html");
@@ -113,6 +124,22 @@ const routeToFile = (routePath: string) =>
 */
 const SHELL_FILE = join(DIST, "index.html");
 let capturedHome: string | undefined;
+/* Written by `vite build` (build.manifest in vite.config.ts). A route may keep
+   the module preloads of its own page chunk and that chunk's static imports;
+   see src/lib/routePreloads.ts. */
+const MANIFEST_FILE = join(DIST, ".vite", "manifest.json");
+let manifest: ViteManifest | null | undefined;
+const withRoutePreloadsOnly = (html: string, routePath: string): string => {
+  manifest ??= existsSync(MANIFEST_FILE) ? (JSON.parse(readFileSync(MANIFEST_FILE, "utf8")) as ViteManifest) : null;
+  // No manifest, no way to tell the page's code apart: keep every preload
+  // rather than risk dropping the page's own (that cost 1.2 s once).
+  if (!manifest) return html;
+  const key = routeKeyFor(routePath);
+  return keepOnlyRoutePreloads(html, key ? staticClosure(manifest, `src/pages/${key}.tsx`) : new Set());
+};
+
+/** Routes whose capture was written — the only pages worth a /products/ twin. */
+const captured = new Set<string>();
 
 /* The host kills a build that runs too long, and a killed build publishes
    nothing. Stop starting new routes after this budget; unrendered routes fall
@@ -239,7 +266,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
           /* the assertion below reports it properly */
         });
 
-      const html = clean(await page.content());
+      const html = withRoutePreloadsOnly(dropUnusedImagePreloads(clean(await page.content())), route.path);
       const words = await page.evaluate(() => (document.body.innerText || "").trim().split(/\s+/).filter(Boolean).length);
       if (words < 20) throw new Error(`only ${words} words rendered`);
 
@@ -275,6 +302,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
         mkdirSync(resolve(file, ".."), { recursive: true });
         writeFileSync(file, html, "utf8");
       }
+      captured.add(route.path);
       written += 1;
       lastError = undefined;
       break;
@@ -365,6 +393,26 @@ async function main() {
     }
     if (shelled) console.warn(`prerender: ${shelled} route(s) had no capture and were given the SPA shell`);
     if (capturedHome) writeFileSync(SHELL_FILE, capturedHome, "utf8");
+
+    /* Catalogue ads link to /products/<handle>, which had no page of its own:
+       the host answered with the homepage and the phone rebuilt the product in
+       the browser — the product photo 8.2 s after the tap on weak 4G, against
+       5.2 s for the pre-built page. Each captured product page gets a twin at
+       that address: the same HTML (its canonical still names the real page),
+       plus a first script that moves the address bar there. A copy, not a new
+       capture, so it adds nothing to the time budget. See src/lib/productAlias.ts. */
+    let aliased = 0;
+    for (const path of captured) {
+      const twin = productAliasFor(path);
+      if (!twin) continue;
+      const dest = routeToFile(twin.alias);
+      if (existsSync(dest)) continue;
+      mkdirSync(resolve(dest, ".."), { recursive: true });
+      writeFileSync(dest, withAliasRedirect(readFileSync(routeToFile(path), "utf8"), twin.canonical), "utf8");
+      aliased += 1;
+    }
+    console.log(`prerender: ${aliased} product page(s) also served at /products/<handle>`);
+    rmSync(join(DIST, ".vite"), { recursive: true, force: true }); // build-internal, not for the host
 
     console.log(`prerendered ${written}/${routes.length} routes`);
     if (failures.length) {

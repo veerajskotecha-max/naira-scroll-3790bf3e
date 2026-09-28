@@ -132,3 +132,19 @@ export const addWorkingDays = (start: Date, days: number) => {
 
 export const formatDeliveryDate = (d: Date) =>
   d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+
+/** Formats a delivery window: "3–6 Oct" within a month, "30 Sep – 2 Oct" across. */
+export const formatDeliveryRange = (from: Date, to: Date) => {
+  const day = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric" });
+  const dayMonth = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  const sameMonth = from.getMonth() === to.getMonth() && from.getFullYear() === to.getFullYear();
+  return sameMonth ? `${day(from)}–${dayMonth(to)}` : `${dayMonth(from)} – ${dayMonth(to)}`;
+};
+
+/**
+ * The quoted window: 3 working days covers Maharashtra, 5 the rest of India,
+ * so one range is always true wherever the order ships — the same arithmetic
+ * the courier quotes, never a speed the shopper has to count themselves.
+ */
+export const deliveryRangeFromNow = () =>
+  formatDeliveryRange(addWorkingDays(new Date(), 3), addWorkingDays(new Date(), 5));

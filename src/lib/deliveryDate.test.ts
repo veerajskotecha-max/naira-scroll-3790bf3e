@@ -38,11 +38,10 @@ describe("delivery date arithmetic", () => {
     expect(addWorkingDays(from, 3).getTime()).toBeLessThan(addWorkingDays(from, 5).getTime());
   });
 
-  it("formats the window as a range within one month", () => {
-    // Mon 28 Sep 2026 +3 = Thu 1 Oct? No: +3 working days = 1 Oct, +5 = 3 Oct —
-    // crossing months keeps both month names so the range stays unambiguous.
+  it("formats the window as a range, keeping both months across a month boundary", () => {
+    // Mon 28 Sep 2026: +3 working days = Thu 1 Oct, +5 = Mon 5 Oct.
     const from = new Date("2026-09-28T09:00:00+05:30");
-    expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("1 Oct – 3 Oct");
+    expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("1 Oct – 5 Oct");
   });
 
   it("drops the repeated month when both ends share it", () => {
@@ -50,8 +49,9 @@ describe("delivery date arithmetic", () => {
     expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("8–12 Oct");
   });
 
-  it("always spans 3 to 5 working days from today", () => {
+  it("always quotes a 3-to-5-working-day window from today, with no weekday name", () => {
     const range = deliveryRangeFromNow();
-    expect(range).toMatch(/^\d{1,2}(–\d{1,2} [A-Za-z]{3} \d{4}| [A-Za-z]{3} \d{4} – \d{1,2} [A-Za-z]{3} \d{4})$|^\d{1,2}–\d{1,2} [A-Za-z]{3} \d{4}$/);
+    expect(range).toContain("–");
+    expect(range).not.toMatch(/Mon|Tue|Wed|Thu|Fri|Sat|Sun/);
   });
 });

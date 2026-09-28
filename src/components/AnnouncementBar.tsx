@@ -4,22 +4,15 @@ import { Link } from "react-router-dom";
  * Clickable strip — the marquee doubles as the entry point to the jewellery,
  * so the line in the copy has somewhere to land.
  *
- * It carries two messages, alternating: scarcity, and the welcome code.
- *
- * The code earns its place back here. Two thirds of orders are a single piece,
- * which the buy-more ladder in the bag gives nothing, and the ladder is applied
- * by the bag rather than typed — so without a line telling shoppers NAIRA10
- * exists, the most common order carries no discount at all. The ladder stays
- * out of this strip: it belongs in the bag, where it can be acted on.
+ * It carries ONE message now. NAIRA10 used to alternate here, but the owner
+ * asked for the strip to carry only the shipping promise — on a narrow phone
+ * the two-line marquee crowded the header. The code still exists in Shopify
+ * and the resolver still accepts it; it is simply no longer advertised here.
  *
  * The marquee animates to translateX(-50%), so the run must be exactly two
- * identical halves or it visibly jumps on loop. Repeating the PAIR twice keeps
- * that true — do not add a third message without making it four.
+ * identical halves or it visibly jumps on loop.
  */
-const MESSAGES = [
-  "LIMITED PIECES IN STOCK ✦ EACH STYLE MADE IN A SMALL RUN",
-  "10% OFF YOUR ORDER WITH CODE NAIRA10",
-];
+const MESSAGES = ["FREE INSURED SHIPPING ON ALL ORDERS"];
 
 const AnnouncementBar = () => (
   <div
@@ -28,7 +21,7 @@ const AnnouncementBar = () => (
   >
     <Link
       to="/jewellery"
-      aria-label="Shop the jewellery — limited pieces in stock, 10% off with code NAIRA10"
+      aria-label="Shop the jewellery — free insured shipping on all orders"
       className="flex items-center h-full"
     >
       <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">

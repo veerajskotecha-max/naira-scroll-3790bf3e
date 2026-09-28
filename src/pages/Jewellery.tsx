@@ -53,6 +53,17 @@ const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Ear
    sort chosen by the shopper always wins over the pinning. */
 const FEATURED_LEADS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 
+/* The "Most loved" rail is pinned to exactly three pieces, so the row never
+   drifts with tags. Each leads with its styled shot — on model / on form —
+   so the three tiles read as one editorial set; the grid below keeps its
+   calm packshots (see cardCover). */
+const MOST_LOVED_HANDLES = ["prism-riviere-bracelet", "woven-gold-hoops", "bold-nocturne-chain"];
+const MOST_LOVED_COVERS: Record<string, string> = {
+  "prism-riviere-bracelet": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-u09-prism-riviere-bracelet.jpg?v=1789656223",
+  "woven-gold-hoops": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-u23-woven-gold-hoops.jpg?v=1789656224",
+  "bold-nocturne-chain": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_2_worn.png?v=1786123099",
+};
+
 /* One-tap budget chips beside the category tabs. */
 type PriceBand = { key: string; label: string; min: number | null; max: number | null };
 const PRICE_BANDS: PriceBand[] = [

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { addWorkingDays, formatDeliveryDate } from "./serviceability";
+import { addWorkingDays, formatDeliveryDate, formatDeliveryRange, deliveryRangeFromNow } from "./serviceability";
 
 /*
   Baymard found 41% of sites quote a shipping speed instead of a delivery date,
@@ -36,5 +36,23 @@ describe("delivery date arithmetic", () => {
   it("quotes Maharashtra sooner than the rest of India", () => {
     const from = new Date("2026-08-27T09:00:00+05:30");
     expect(addWorkingDays(from, 3).getTime()).toBeLessThan(addWorkingDays(from, 5).getTime());
+  });
+
+  it("formats the window as a range, keeping both months across a month boundary", () => {
+    // Fri 25 Sep 2026: +3 working days = Wed 30 Sep, +5 = Fri 2 Oct.
+    // en-IN spells September "Sept"; both month names stay so it's unambiguous.
+    const from = new Date("2026-09-25T09:00:00+05:30");
+    expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("30 Sept – 2 Oct");
+  });
+
+  it("drops the repeated month when both ends share it", () => {
+    const from = new Date("2026-10-05T09:00:00+05:30");
+    expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("8–12 Oct");
+  });
+
+  it("always quotes a 3-to-5-working-day window from today, with no weekday name", () => {
+    const range = deliveryRangeFromNow();
+    expect(range).toContain("–");
+    expect(range).not.toMatch(/Mon|Tue|Wed|Thu|Fri|Sat|Sun/);
   });
 });

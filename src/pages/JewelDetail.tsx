@@ -31,7 +31,7 @@ import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
+import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
@@ -249,7 +249,7 @@ const JewelDetail = () => {
   const [arrivesBy, setArrivesBy] = useState<string | null>(null);
   useEffect(() => {
     if (typeof navigator !== "undefined" && navigator.webdriver) return;
-    setArrivesBy(formatDeliveryDate(addWorkingDays(new Date(), 5)));
+    setArrivesBy(deliveryRangeFromNow());
   }, []);
   const [heartPopped, setHeartPopped] = useState(false);
 

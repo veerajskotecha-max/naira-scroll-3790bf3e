@@ -9,7 +9,7 @@ import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
 import OfferProgress from "@/components/cart/OfferProgress";
-import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
+import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import { Button } from "@/components/ui/button";
 import googlePayMark from "@/assets/google-pay-mark.svg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -61,7 +61,7 @@ const CartDrawer = () => {
 
   /* A dated arrival promise, computed the way a courier counts: working days
      only. Quoting "3–5 working days" makes the shopper do this arithmetic. */
-  const arrivesBy = formatDeliveryDate(addWorkingDays(new Date(), 5));
+  const arrivesBy = deliveryRangeFromNow();
 
   /* One resolver for the drawer and the checkout hand-off, so the total shown
      here is the total charged. Exactly one discount wins — Fastrr carries a

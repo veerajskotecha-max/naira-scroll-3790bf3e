@@ -31,7 +31,7 @@ import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
+import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));

@@ -249,7 +249,7 @@ const JewelDetail = () => {
   const [arrivesBy, setArrivesBy] = useState<string | null>(null);
   useEffect(() => {
     if (typeof navigator !== "undefined" && navigator.webdriver) return;
-    setArrivesBy(formatDeliveryDate(addWorkingDays(new Date(), 5)));
+    setArrivesBy(deliveryRangeFromNow());
   }, []);
   const [heartPopped, setHeartPopped] = useState(false);
 

@@ -61,7 +61,7 @@ const CartDrawer = () => {
 
   /* A dated arrival promise, computed the way a courier counts: working days
      only. Quoting "3–5 working days" makes the shopper do this arithmetic. */
-  const arrivesBy = formatDeliveryDate(addWorkingDays(new Date(), 5));
+  const arrivesBy = deliveryRangeFromNow();
 
   /* One resolver for the drawer and the checkout hand-off, so the total shown
      here is the total charged. Exactly one discount wins — Fastrr carries a

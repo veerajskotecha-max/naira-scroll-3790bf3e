@@ -1,0 +1,8 @@
+seg/
+ov/
+fonts/
+ffmpeg
+*.mp4
+*.wav
+*.svg
+ov_spec.json

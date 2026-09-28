@@ -176,20 +176,16 @@ const Jewellery = () => {
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [active, activeFilters]);
   const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
 
-  /* Six leads, shown above the filters so the very first screen has a
-     piece, a price and a way to buy. Pinned leads (Prism Rivière and Woven
-     Gold) always show — even sold out, where the card carries
-     its pre-order treatment — so the row never loses its hero pieces. */
-  const bestSellers = useMemo(() => {
-    const leads = FEATURED_LEADS
-      .map((handle) => jewellery.find((p) => p.handle === handle))
-      .filter((p): p is (typeof jewellery)[number] => Boolean(p));
-    const inStock = jewellery.filter((p) => p.availableForSale !== false);
-    const rest = inStock.filter((p) => !FEATURED_LEADS.includes(p.handle));
-    const tagged = rest.filter((p) => p.tag === "BESTSELLER" || p.tag === "NEW");
-    const others = rest.filter((p) => p.tag !== "BESTSELLER" && p.tag !== "NEW");
-    return [...leads, ...tagged, ...others].slice(0, 6);
-  }, [jewellery]);
+  /* Pinned trio, shown above the filters so the very first screen has a
+     piece, a price and a way to buy. Sold-out pieces stay — the card
+     carries its pre-order treatment — so the row never loses a hero. */
+  const bestSellers = useMemo(
+    () =>
+      MOST_LOVED_HANDLES
+        .map((handle) => jewellery.find((p) => p.handle === handle))
+        .filter((p): p is (typeof jewellery)[number] => Boolean(p)),
+    [jewellery]
+  );
 
   return (
     <>

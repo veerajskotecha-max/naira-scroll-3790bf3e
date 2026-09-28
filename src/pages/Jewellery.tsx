@@ -53,6 +53,17 @@ const filters: Array<"All" | JewelCategory> = ["All", "Rings", "Bracelets", "Ear
    sort chosen by the shopper always wins over the pinning. */
 const FEATURED_LEADS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 
+/* The "Most loved" rail is pinned to exactly three pieces, so the row never
+   drifts with tags. Each leads with its styled shot — on model / on form —
+   so the three tiles read as one editorial set; the grid below keeps its
+   calm packshots (see cardCover). */
+const MOST_LOVED_HANDLES = ["prism-riviere-bracelet", "woven-gold-hoops", "bold-nocturne-chain"];
+const MOST_LOVED_COVERS: Record<string, string> = {
+  "prism-riviere-bracelet": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-u09-prism-riviere-bracelet.jpg?v=1789656223",
+  "woven-gold-hoops": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/naira-u23-woven-gold-hoops.jpg?v=1789656224",
+  "bold-nocturne-chain": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/YF5144_2_worn.png?v=1786123099",
+};
+
 /* One-tap budget chips beside the category tabs. */
 type PriceBand = { key: string; label: string; min: number | null; max: number | null };
 const PRICE_BANDS: PriceBand[] = [
@@ -165,20 +176,16 @@ const Jewellery = () => {
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [active, activeFilters]);
   const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
 
-  /* Six leads, shown above the filters so the very first screen has a
-     piece, a price and a way to buy. Pinned leads (Prism Rivière and Woven
-     Gold) always show — even sold out, where the card carries
-     its pre-order treatment — so the row never loses its hero pieces. */
-  const bestSellers = useMemo(() => {
-    const leads = FEATURED_LEADS
-      .map((handle) => jewellery.find((p) => p.handle === handle))
-      .filter((p): p is (typeof jewellery)[number] => Boolean(p));
-    const inStock = jewellery.filter((p) => p.availableForSale !== false);
-    const rest = inStock.filter((p) => !FEATURED_LEADS.includes(p.handle));
-    const tagged = rest.filter((p) => p.tag === "BESTSELLER" || p.tag === "NEW");
-    const others = rest.filter((p) => p.tag !== "BESTSELLER" && p.tag !== "NEW");
-    return [...leads, ...tagged, ...others].slice(0, 6);
-  }, [jewellery]);
+  /* Pinned trio, shown above the filters so the very first screen has a
+     piece, a price and a way to buy. Sold-out pieces stay — the card
+     carries its pre-order treatment — so the row never loses a hero. */
+  const bestSellers = useMemo(
+    () =>
+      MOST_LOVED_HANDLES
+        .map((handle) => jewellery.find((p) => p.handle === handle))
+        .filter((p): p is (typeof jewellery)[number] => Boolean(p)),
+    [jewellery]
+  );
 
   return (
     <>
@@ -240,7 +247,7 @@ const Jewellery = () => {
             <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
             <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
               {bestSellers.map((p, i) => {
-                const cover = cardCover(p);
+                const cover = MOST_LOVED_COVERS[p.handle] ?? cardCover(p);
                 return (
                 <Link
                   key={p.handle}

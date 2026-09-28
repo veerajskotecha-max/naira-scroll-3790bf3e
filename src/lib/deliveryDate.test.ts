@@ -39,9 +39,10 @@ describe("delivery date arithmetic", () => {
   });
 
   it("formats the window as a range, keeping both months across a month boundary", () => {
-    // Fri 25 Sep 2026: +3 working days = Tue 29 Sep, +5 = Thu 1 Oct.
+    // Fri 25 Sep 2026: +3 working days = Wed 30 Sep, +5 = Fri 2 Oct.
+    // en-IN spells September "Sept"; both month names stay so it's unambiguous.
     const from = new Date("2026-09-25T09:00:00+05:30");
-    expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("29 Sep – 1 Oct");
+    expect(formatDeliveryRange(addWorkingDays(from, 3), addWorkingDays(from, 5))).toBe("30 Sept – 2 Oct");
   });
 
   it("drops the repeated month when both ends share it", () => {

@@ -247,7 +247,7 @@ const Jewellery = () => {
             <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
             <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
               {bestSellers.map((p, i) => {
-                const cover = cardCover(p);
+                const cover = MOST_LOVED_COVERS[p.handle] ?? cardCover(p);
                 return (
                 <Link
                   key={p.handle}

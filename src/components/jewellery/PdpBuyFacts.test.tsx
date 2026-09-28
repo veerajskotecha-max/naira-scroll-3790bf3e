@@ -18,14 +18,14 @@ describe("PdpBuyFacts", () => {
      rupees instead. This pins that split so the fee is not re-added here. */
   it("offers COD without quoting the fee, which the bag states", () => {
     const { container } = render(<PdpBuyFacts arrivesBy="Thu, 1 Oct" />);
-    expect(container.textContent).toMatch(/Free delivery by Thu, 1 Oct/);
+    expect(container.textContent).toMatch(/Free insured shipping · arrives by Thu, 1 Oct/);
     expect(container.textContent).toMatch(/COD available/);
     expect(container.textContent).not.toMatch(/%\)|\+5%/);
   });
 
   it("falls back to the working-day range when no date is computed", () => {
     const { container } = render(<PdpBuyFacts arrivesBy={null} />);
-    expect(container.textContent).toMatch(/Free delivery in 3–5 working days/);
+    expect(container.textContent).toMatch(/Free insured shipping · delivery in 3–5 working days/);
   });
 
   /* Sold-out pieces are pre-orders shipping within two weeks; quoting the

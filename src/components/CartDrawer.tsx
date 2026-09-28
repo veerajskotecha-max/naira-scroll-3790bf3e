@@ -251,7 +251,7 @@ const CartDrawer = () => {
                   <span className="text-[var(--nf-text)]">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Insured shipping</span>
+                  <span>Free insured shipping</span>
                   <span className="font-medium text-[var(--nf-accent-quiet)]">FREE</span>
                 </div>
                 {/* The code is named, not just the amount: this is the one the
@@ -329,8 +329,8 @@ const CartDrawer = () => {
                     */}
                     <Zap fill="currentColor" aria-hidden="true" className="mt-[3px] !size-3 shrink-0" />
                     <span className="flex min-w-0 flex-wrap gap-x-3 gap-y-0.5">
-                      <span>Free insured delivery</span>
-                      <span>COD &amp; prepaid</span>
+                      <span>Free insured shipping</span>
+                      <span>COD available</span>
                     </span>
                   </span>
                 </span>

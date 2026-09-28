@@ -45,10 +45,10 @@ const PdpBuyFacts = ({ arrivesBy, soldOut = false }: { arrivesBy: string | null;
       <Truck size={15} strokeWidth={1.6} className="mt-px shrink-0 text-[var(--nf-accent-strong)]" aria-hidden="true" />
       <span>
         {soldOut
-          ? "Pre-order · ships within 2 weeks, free"
+          ? "Pre-order · ships within 2 weeks"
           : arrivesBy
-            ? `Free delivery by ${arrivesBy}`
-            : `Free ${PREORDER_NOTE_SHORT.toLowerCase()}`}
+            ? `Free insured shipping · arrives by ${arrivesBy}`
+            : `Free insured shipping · ${PREORDER_NOTE_SHORT.toLowerCase()}`}
         <span className="text-[color:rgb(var(--nf-ink-rgb)/0.62)]"> · COD available</span>
       </span>
     </p>

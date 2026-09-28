@@ -13,12 +13,13 @@ const bar = () =>
   );
 
 describe("AnnouncementBar", () => {
-  /* The owner asked for the strip to carry only the shipping promise — no
-     promo code up here. The code still resolves in the bag; it just is not
-     advertised on the header any more, so nothing here may name one. */
-  it("carries only the free insured shipping line", () => {
+  /* The owner asked for the code to come off the header, but wanted the
+     small-run scarcity line kept alongside the shipping promise — the strip
+     carries exactly those two messages and nothing here may name a code. */
+  it("carries the shipping promise and the limited-pieces line, no promo code", () => {
     bar();
     expect(screen.getAllByText(/FREE INSURED SHIPPING/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/LIMITED PIECES IN STOCK/)[0]).toBeInTheDocument();
     expect(screen.queryByText(/NAIRA10/)).toBeNull();
   });
 

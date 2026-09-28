@@ -4,15 +4,19 @@ import { Link } from "react-router-dom";
  * Clickable strip — the marquee doubles as the entry point to the jewellery,
  * so the line in the copy has somewhere to land.
  *
- * It carries ONE message now. NAIRA10 used to alternate here, but the owner
- * asked for the strip to carry only the shipping promise — on a narrow phone
- * the two-line marquee crowded the header. The code still exists in Shopify
- * and the resolver still accepts it; it is simply no longer advertised here.
+ * It carries TWO messages: the shipping promise and the small-run scarcity
+ * line. NAIRA10 used to alternate here too, but the owner asked for the code
+ * to come off the header — the strip keeps the two lines around it. The code
+ * still exists in Shopify and the resolver still accepts it; it is simply no
+ * longer advertised here.
  *
  * The marquee animates to translateX(-50%), so the run must be exactly two
  * identical halves or it visibly jumps on loop.
  */
-const MESSAGES = ["FREE INSURED SHIPPING ON ALL ORDERS"];
+const MESSAGES = [
+  "FREE INSURED SHIPPING ON ALL ORDERS",
+  "LIMITED PIECES IN STOCK ✦ EACH STYLE MADE IN A SMALL RUN",
+];
 
 const AnnouncementBar = () => (
   <div
@@ -21,7 +25,7 @@ const AnnouncementBar = () => (
   >
     <Link
       to="/jewellery"
-      aria-label="Shop the jewellery — free insured shipping on all orders"
+      aria-label="Shop the jewellery — free insured shipping on all orders, limited pieces in stock"
       className="flex items-center h-full"
     >
       <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">

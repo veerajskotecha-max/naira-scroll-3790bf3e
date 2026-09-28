@@ -10,7 +10,6 @@ import { CartPromoField } from "@/components/cart/CartExtras";
 import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
 import OfferProgress from "@/components/cart/OfferProgress";
 import { SHIPPING_CHARGE, addWorkingDays, formatDeliveryDate } from "@/lib/serviceability";
-import { codFeeFor } from "@/lib/payment";
 import { Button } from "@/components/ui/button";
 import googlePayMark from "@/assets/google-pay-mark.svg";
 import { useAuth } from "@/contexts/AuthContext";

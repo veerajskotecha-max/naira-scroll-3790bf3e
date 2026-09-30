@@ -11,6 +11,7 @@
 //   VIEW=desktop  a 1440x900 laptop instead of a phone.
 import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, SITEMAP = '/tmp/mainwt/dist/sitemap.xml'] = process.argv.slice(2);
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const xml = SITEMAP.startsWith('http') ? await (await fetch(SITEMAP)).text() : readFileSync(SITEMAP, 'utf8');
@@ -25,6 +26,9 @@ const CONC = Number(process.env.CONC || 4);
 const SANDBOX = [
   [/^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\/.*(net::ERR_CERT_AUTHORITY_INVALID|opening handshake timed out)/, 'WebSocket blocked by the sandbox proxy (live reviews)'],
   [/^Refused to display 'https:\/\/www\.instagram\.com\/' in a frame/, 'Instagram login wall for data-centre traffic'],
+  // a live page served through route() has no certificate in Chrome's eyes, so the checkout script's
+  // payment check (PaymentRequest) is refused; a shopper's phone sees the real certificate
+  [/^(SSL certificate is not valid\. Security level: NONE|No UI will be shown\. CanMakePayment)/, 'payment check refused: no real certificate on a routed page (checkout script)'],
 ];
 const sandboxOnly = new Map();
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
@@ -36,9 +40,11 @@ const visit = async (path) => {
   await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
   const blocked = new Set();
   const bad = [];
-  await ctx.route('**/*', async (route) => {
+  const waiting = new Set(); // asked for and not yet answered: a stall shows here, not as an error
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request(); const u = q.url();
     if (BLOCK.test(u)) { blocked.add(u); return route.abort(); }
+    waiting.add(u);
     try {
       const r = await fetch(u, { method: q.method(), headers: q.headers(), body: q.postDataBuffer() || undefined, redirect: 'manual' });
       const body = Buffer.from(await r.arrayBuffer());
@@ -46,6 +52,7 @@ const visit = async (path) => {
       const headers = Object.fromEntries([...r.headers].filter(([k]) => !/^(content-encoding|content-length)$/i.test(k)));
       await route.fulfill({ status: r.status, headers, body });
     } catch (e) { bad.push(`FAILED ${u.replace(BASE, '').slice(0, 110)} (${String(e).slice(0, 40)})`); await route.abort().catch(() => {}); }
+    finally { waiting.delete(u); }
   });
   const p = await ctx.newPage();
   const errors = [];
@@ -66,7 +73,8 @@ const visit = async (path) => {
     const res = await p.goto(BASE + path, { waitUntil: 'domcontentloaded', timeout: 45000 });
     if (!res || res.status() >= 400) bad.push(`document ${res?.status()}`);
     if (ad) row.firstH1 = await p.evaluate(() => document.querySelector('#root h1')?.textContent.trim().slice(0, 50) ?? null);
-    await p.waitForSelector('#root h1', { timeout: 25000 }).catch(() => {});
+    // the title once the app has taken over: a pre-built page's own <h1> can vanish while the app loads
+    await p.waitForFunction(() => document.querySelector('#root h1') && Object.keys(document.getElementById('root')?.firstElementChild || {}).some((k) => k.startsWith('__react')), null, { timeout: 25000 }).catch(() => {});
     row.h1 = await p.evaluate(() => document.querySelector('#root h1')?.textContent.trim().slice(0, 50) ?? null);
     if (/^\/(jewellery|products)\/(?!collections\/)[^/]+$/.test(pathOnly)) {
       row.atc = await p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => /add to cart|pre-order/i.test(x.textContent) && !x.disabled && Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 25000 }).then(() => true, () => false);
@@ -81,6 +89,7 @@ const visit = async (path) => {
     }
   } catch (e) { errors.push(`visit: ${String(e).slice(0, 120)}`); }
   row.ms = Date.now() - t0;
+  if (!row.h1 || row.atc === false) for (const u of waiting) bad.push(`NO ANSWER yet ${u.replace(BASE, '').slice(0, 110)}`);
   await ctx.close();
   return row;
 };

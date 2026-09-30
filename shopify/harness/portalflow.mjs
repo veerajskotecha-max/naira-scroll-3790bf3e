@@ -1,11 +1,12 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 /* Drives the gate and the offer for real: tabs, validation, error copy,
    focus, keyboard. Supabase is stubbed so nothing leaves the machine. */
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 await ctx.addInitScript(() => { try { localStorage.setItem('naira-promo-popup-seen', '1'); } catch (e) {} });
 const seen = [];
-await ctx.route('**/*.supabase.co/**', async (route) => {
+await ctx.route('**/*.supabase.co/**', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const url = route.request().url();
   let body = route.request().postData() || '';
   seen.push({ url: url.replace(/^https:\/\/[^/]+/, ''), body });

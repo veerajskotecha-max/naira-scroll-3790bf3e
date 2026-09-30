@@ -1,13 +1,14 @@
 // The phone menu and the wishlist: does back close them, and do their links
 // leave clean history behind?
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const BASE = process.argv[2];
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const mk = async () => {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
     userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' });
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request(); if (BLOCK.test(q.url())) return route.abort();
     try { const r = await fetch(q.url(), { method: q.method(), headers: q.headers(), body: q.postData() || undefined, redirect: 'follow' });
       const h = Object.fromEntries([...r.headers].filter(([k]) => !/^(content-encoding|content-length)$/i.test(k)));

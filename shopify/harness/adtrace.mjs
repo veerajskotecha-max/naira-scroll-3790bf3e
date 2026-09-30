@@ -28,6 +28,7 @@
 import { chromium } from 'playwright';
 import { gzipSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [URL0, PROFILE = 'fast4g'] = process.argv.slice(2);
 const PROFILES = { fast4g: { kbps: 9000, rtt: 60 }, slow4g: { kbps: 1600, rtt: 150 } };
 const { kbps, rtt: RTT } = PROFILES[PROFILE];
@@ -114,7 +115,7 @@ const run = async (modelled) => {
     for (let i = queue.length - 1; i >= 0; i--) if (queue[i].left <= 0) queue.splice(i, 1);
   };
   const timer = modelled && MODEL === 'h2' ? setInterval(tick, 3) : null;
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request();
     if (BLOCK.test(q.url()) || (process.env.BLOCK_EXTRA && new RegExp(process.env.BLOCK_EXTRA).test(q.url()))) return route.abort();
     try {

@@ -11,6 +11,7 @@
 //   PEEK_AT=ms       tap the box ("Open the gift box") this long after the bag opens
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, OUT, RATE = '1'] = process.argv.slice(2);
 mkdirSync(OUT, { recursive: true });
 const BLOCK = /(facebook|clarity\.ms|googletagmanager|google-analytics|doubleclick|meta-capi|~api\/analytics)/i;
@@ -20,7 +21,7 @@ const ctx = await b.newContext({ ...(DESKTOP ? { viewport: { width: 1440, height
 await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
 const cartLog = [];
 let tapAt = 0;
-await ctx.route('**/*', async (route) => { const q = route.request(); const u = q.url(); if (BLOCK.test(u)) return route.abort();
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort(); const q = route.request(); const u = q.url(); if (BLOCK.test(u)) return route.abort();
   const t = Date.now(); const cart = /graphql\.json/.test(u) && /cart/i.test(q.postData() || '');
   try { const r = await fetch(u, { method: q.method(), headers: q.headers(), body: q.postData() || undefined, redirect: 'manual' }); const body = Buffer.from(await r.arrayBuffer());
     if (cart && tapAt) cartLog.push([(q.postData() || '').match(/(mutation|query) (\w+)/)?.[2], t, Date.now()]);

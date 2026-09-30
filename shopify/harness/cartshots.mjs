@@ -6,6 +6,7 @@
 //   PICK="css"   click this first (a size, say) before adding
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [URL0, OUT, LABEL] = process.argv.slice(2);
 mkdirSync(OUT, { recursive: true });
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com\/v1|\/api\/collect|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|gokwik|snapchat|twitter|lightboxcdn|wigzo|netcore|smartech|\/functions\/v1\/meta-capi|~api\/analytics)/i;
@@ -27,7 +28,7 @@ const cookiesFrom = (setCookies, url) => setCookies.map((line) => {
   if (c.sameSite === 'None') c.secure = true;
   return c;
 }).filter((c) => c.name && !(c.expires !== undefined && c.expires < Date.now() / 1000));
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   if (BLOCK.test(q.url())) return route.abort();
   try {

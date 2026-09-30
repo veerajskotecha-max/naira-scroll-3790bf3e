@@ -2,13 +2,14 @@
 // goBack() is a history traversal — exactly what Android's back button and
 // iOS's swipe-back do to a web page.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const BASE = process.argv[2] || 'https://nairaflore.com';
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const mk = async () => {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
     userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' });
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request();
     if (BLOCK.test(q.url())) return route.abort();
     try {

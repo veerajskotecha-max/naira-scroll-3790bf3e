@@ -3,6 +3,7 @@
 // Analytics and ad tags are blocked so a look never reaches anyone's reports.
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [URL0, OUT, LABEL = 'page'] = process.argv.slice(2);
 mkdirSync(OUT, { recursive: true });
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com\/v1|\/api\/collect|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|\/functions\/v1\/meta-capi|~api\/analytics)/i;
@@ -13,7 +14,7 @@ const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceSc
 // "HeadlessChrome" brand in the client hints (some stores challenge those).
 await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
 const HINTS = { 'sec-ch-ua': '"Chromium";v="120", "Google Chrome";v="120", "Not?A_Brand";v="99"', 'sec-ch-ua-mobile': '?1', 'sec-ch-ua-platform': '"Android"' };
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   if (BLOCK.test(q.url())) return route.abort();
   try {

@@ -4,6 +4,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const DIST = path.resolve('/home/user/naira-scroll-3790bf3e/dist');
 const TYPES = { '.html':'text/html; charset=utf-8', '.js':'application/javascript', '.css':'text/css',
   '.webp':'image/webp', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg',
@@ -19,7 +20,7 @@ const srv = http.createServer((req, res) => {
 
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox','--disable-dev-shm-usage'] });
 const p = await b.newPage();
-await p.route('**/*', async r => { const u = r.request().url();
+await p.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u = r.request().url();
   if (u.includes('127.0.0.1')) return r.continue();
   try { const res = await fetch(u, { redirect: 'follow' }); const body = Buffer.from(await res.arrayBuffer());
     const h = Object.fromEntries(res.headers); delete h['content-encoding']; delete h['content-length'];

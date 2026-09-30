@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 /* Every visible text run in the portal, measured against what is actually
    painted behind it. Flags anything under the WCAG AA line for its size. */
 const W = Number(process.env.W || 390);
@@ -13,7 +14,7 @@ if (!process.env.SIGNEDOUT) {
   await ctx.addInitScript(([s,r]) => { try { localStorage.setItem(`sb-${r}-auth-token`, JSON.stringify(s)); } catch(e){} }, [session,'xlsejigpjlqfvzfhhntf']);
 }
 await ctx.addInitScript(() => { try { localStorage.setItem('naira-promo-popup-seen','1'); } catch(e){} });
-await ctx.route('**/*.supabase.co/**', r => { const u=r.request().url(); const j=v=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(v)});
+await ctx.route('**/*.supabase.co/**', r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u=r.request().url(); const j=v=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(v)});
   if (u.includes('/auth/v1/user')) return j(user); if (u.includes('/auth/v1/token')) return j(session);
   if (u.includes('member_orders')) return j(orders); if (u.includes('profiles')) return j([{id:user.id,full_name:'Ananya Rao',phone:null,birthday:null,city:'Mumbai'}]); return j([]); });
 const px = Buffer.from('R0lGODlhAQABAPAAAMmaTP///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==','base64');

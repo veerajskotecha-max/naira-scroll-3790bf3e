@@ -6,6 +6,7 @@
 // Analytics and ad tags are blocked so no run reaches anyone's reports.
 import { chromium } from 'playwright';
 import { gzipSync } from 'node:zlib';
+import { NO_REPORT } from './noreport.mjs';
 const [URL0, LABEL = 'page'] = process.argv.slice(2);
 const SETTLE_S = Number(process.env.SETTLE_S || 12);
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|\/api\/collect|trekkie|web-pixels|wpm@|snapchat|sc-static|quora|ads-twitter|linkedin|\/functions\/v1\/meta-capi|~api\/analytics)/i;
@@ -17,7 +18,7 @@ const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceSc
 await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
 const log = [];
 let phase = 'load';
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   if (BLOCK.test(q.url())) return route.abort();
   try {

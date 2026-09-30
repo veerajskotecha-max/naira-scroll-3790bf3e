@@ -1,8 +1,9 @@
 // Hover the SHOP entry on both sides and compare the mega panel.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const LAUNCH = { executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox','--disable-dev-shm-usage'] };
 // Headless chromium can't reach external hosts here; proxy them through Node fetch.
-const proxy = (p) => p.route('**/*', async r => {
+const proxy = (p) => p.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort();
   const u = r.request().url();
   if (u.includes('127.0.0.1')) return r.continue();
   try {

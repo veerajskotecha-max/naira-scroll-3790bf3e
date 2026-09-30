@@ -5,13 +5,14 @@
 // just by Node instead of Chromium. The HTML transform under test — clean() —
 // is untouched, so the output is what the real prerender would write.
 import { readFileSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const dir = process.argv[2];
 const src = readFileSync(`${dir}/scripts/prerender.ts`, 'utf8');
 const anchor = 'await page.route(/(facebook\\.net|facebook\\.com|fbcdn\\.net)/i, (r) => r.abort());';
 if (src.split(anchor).length !== 2) throw new Error('anchor not found exactly once — prerender.ts changed shape');
 const shim = `
   // ---- VERIFY-ONLY network shim (not part of the real prerender) ----
-  await page.route(/.*/, async (r) => {
+  await page.route(/.*/, async (r) => { if (NO_REPORT.test(r.request().url())) return r.abort();
     const q = r.request();
     if (/(facebook\\.net|facebook\\.com|fbcdn\\.net)/i.test(q.url())) return r.abort();
     try {

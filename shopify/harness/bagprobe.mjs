@@ -4,6 +4,7 @@
 // exit prompt and push again), so the hand-off can be checked without opening
 // a real checkout.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const BASE = process.argv[2];
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const FASTRR_STUB = `(() => {
@@ -26,7 +27,7 @@ const mk = async (phone = true) => {
     ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
         userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' }
     : { viewport: { width: 1280, height: 900 } });
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request(); const u = q.url();
     if (BLOCK.test(u)) return route.abort();
     if (/pickrr\.com|shiprocket/i.test(u)) return route.fulfill({ status: 200, contentType: u.endsWith('.css') ? 'text/css' : 'application/javascript', body: u.endsWith('.css') ? '' : FASTRR_STUB });

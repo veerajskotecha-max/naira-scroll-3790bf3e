@@ -4,6 +4,7 @@
 // ad and analytics tags are blocked so no run reaches live accounts.
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, OUT] = process.argv.slice(2);
 mkdirSync(OUT, { recursive: true });
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|\/functions\/v1\/meta-capi|~api\/analytics)/i;
@@ -14,7 +15,7 @@ const newPage = async (w = 390, h = 844) => {
   const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
     userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' });
   await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request(); const u = q.url();
     if (BLOCK.test(u)) return route.abort();
     try {
@@ -29,8 +30,10 @@ const newPage = async (w = 390, h = 844) => {
   p.on('pageerror', (e) => errors.push(e.message));
   // Chromium fetching payment-app manifests (cred.club) directly fails on this
   // sandbox's proxy certificate; that is the test machine, not the page.
-  // the live-reviews WebSocket can't open through this sandbox's proxy (Node gets 101 from it); not a page error
-  p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|net::ERR|payment manifest|^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\//.test(m.text()) && errors.push(m.text()));
+  // Not page errors, this sandbox: the live-reviews WebSocket can't open through its proxy (Node gets 101
+  // from it), and on a live page served through route() Chrome sees no certificate, so the checkout
+  // script's payment check (PaymentRequest) is refused with "SSL certificate is not valid".
+  p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|net::ERR|payment manifest|^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\/|^SSL certificate is not valid\. Security level: NONE|^No UI will be shown\. CanMakePayment/.test(m.text()) && errors.push(m.text()));
   return { ctx, p, errors };
 };
 const shot = async (p, name, opts = {}) => writeFileSync(`${OUT}/${name}.jpg`, await p.screenshot({ type: 'jpeg', quality: 80, ...opts }));
@@ -272,7 +275,7 @@ for (const [w, h] of [[360, 780], [414, 896]]) {
 for (const [label, path] of [['next', `/preview/jewellery/${H}`], ['live', `/jewellery/${H}`]]) {
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
   await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request(); const u = q.url();
     if (BLOCK.test(u)) return route.abort();
     try {

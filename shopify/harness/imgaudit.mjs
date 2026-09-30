@@ -1,9 +1,10 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({ viewport:{width:390,height:844}, deviceScaleFactor:2, isMobile:true, hasTouch:true,
   userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' });
 const sizes = new Map();
-await ctx.route('**/*', async r => { const q=r.request();
+await ctx.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const q=r.request();
   try{const x=await fetch(q.url(),{headers:q.headers()});const buf=Buffer.from(await x.arrayBuffer());
   if(q.resourceType()==='image') sizes.set(q.url(), buf.length);
   const h=Object.fromEntries([...x.headers].filter(([k])=>!/^(content-encoding|content-length)$/i.test(k)));

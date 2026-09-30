@@ -1,6 +1,7 @@
 // Screenshot named elements (CSS selectors) instead of the whole page.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const SEL = process.argv.slice(3);
 const OUT = process.argv[2] || '/tmp/sec';
 fs.mkdirSync(OUT, { recursive: true });
@@ -8,7 +9,7 @@ const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium', ar
 for (const view of [{tag:'desktop',w:1440,h:900,dsf:1},{tag:'mobile',w:390,h:844,dsf:2,mob:true}]) {
   const ctx = await b.newContext({ viewport:{width:view.w,height:view.h}, deviceScaleFactor:view.dsf, isMobile:view.mob, hasTouch:view.mob, reducedMotion:'reduce' });
   const p = await ctx.newPage();
-  await p.route('**/*', async r => { const u=r.request().url();
+  await p.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u=r.request().url();
     if (u.includes('127.0.0.1')) return r.continue();
     try { const res=await fetch(u,{redirect:'follow'}); const body=Buffer.from(await res.arrayBuffer());
       const h=Object.fromEntries(res.headers); delete h['content-encoding']; delete h['content-length'];

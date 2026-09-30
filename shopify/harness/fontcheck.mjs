@@ -1,8 +1,9 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox','--disable-dev-shm-usage'] });
 for (const [label, url] of [['theme','http://127.0.0.1:4310/index'], ['react','http://127.0.0.1:4325/']]) {
   const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
-  await p.route('**/*', async r => { const u=r.request().url();
+  await p.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u=r.request().url();
     if (u.includes('127.0.0.1')) return r.continue();
     try { const res=await fetch(u,{redirect:'follow'}); const body=Buffer.from(await res.arrayBuffer());
       const h=Object.fromEntries(res.headers); delete h['content-encoding']; delete h['content-length'];

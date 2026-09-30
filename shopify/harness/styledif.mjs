@@ -10,6 +10,7 @@
 // Usage: node styledif.mjs <reactPath> <themePath> [--width 1440] [--json out.json]
 import { chromium } from 'playwright';
 import fs from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 
 const args = process.argv.slice(2);
 const reactPath = args[0] ?? '/';
@@ -83,7 +84,7 @@ const collect = () => {
 async function grab(browser, url, label) {
   const ctx = await browser.newContext({ viewport: { width, height: 1000 }, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
-  await page.route('**/*', async r => {
+  await page.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort();
     const u = r.request().url();
     if (u.includes('127.0.0.1')) return r.continue();
     try {

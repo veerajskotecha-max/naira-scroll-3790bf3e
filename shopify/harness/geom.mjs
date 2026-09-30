@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const W = Number(process.env.W || 1024);
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({ viewport: { width: W, height: 900 } });
@@ -8,7 +9,7 @@ const user = { id:'00000000-0000-4000-8000-000000000001', aud:'authenticated', r
 const session = { access_token: jwt({sub:user.id,role:'authenticated',exp:now+3600,aud:'authenticated'}), refresh_token:'m', token_type:'bearer', expires_in:3600, expires_at:now+3600, user };
 const orders = [{ id:'o1', created_at:'2026-08-28T09:12:00Z', status:'fulfilled', total:18400, currency:'INR', item_count:2, checkout_url:null, items:[{name:'Molten Bloom Hoops',quantity:1,size:null,image:null,price:'₹2,949'}] }];
 await ctx.addInitScript(([s,r]) => { try { localStorage.setItem(`sb-${r}-auth-token`, JSON.stringify(s)); localStorage.setItem('naira-promo-popup-seen','1'); } catch(e){} }, [session,'xlsejigpjlqfvzfhhntf']);
-await ctx.route('**/*.supabase.co/**', r => { const u=r.request().url(); const j=b=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(b)});
+await ctx.route('**/*.supabase.co/**', r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u=r.request().url(); const j=b=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(b)});
   if (u.includes('/auth/v1/user')) return j(user); if (u.includes('/auth/v1/token')) return j(session);
   if (u.includes('member_orders')) return j(orders); if (u.includes('profiles')) return j([{id:user.id,full_name:'Ananya Rao',phone:null,birthday:null,city:'Mumbai'}]); return j([]); });
 /* A 1x1 gold pixel for every product photo, so geometry is measured against

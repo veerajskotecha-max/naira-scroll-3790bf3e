@@ -1,9 +1,10 @@
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium',
   args:['--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader'] });
 const ctx = await b.newContext({ viewport:{width:400,height:900}, deviceScaleFactor:2 });
-await ctx.route('**/*', async r => { const u=r.request().url(); if(u.startsWith('file:')) return r.continue();
+await ctx.route('**/*', async r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u=r.request().url(); if(u.startsWith('file:')) return r.continue();
   try{const x=await fetch(u,{headers:r.request().headers()});const buf=Buffer.from(await x.arrayBuffer());
   const h=Object.fromEntries([...x.headers].filter(([k])=>!/^(content-encoding|content-length)$/i.test(k)));
   await r.fulfill({status:x.status,headers:h,body:buf});}catch{await r.abort();}});

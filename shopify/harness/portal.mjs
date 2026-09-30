@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const URL = process.env.URL || 'http://127.0.0.1:4177/innercircle';
 const W = Number(process.env.W || 390);
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
@@ -40,7 +41,7 @@ if (process.env.MOCK) {
       localStorage.setItem('naira-promo-popup-seen', '1');
     } catch (e) {}
   }, [session, 'xlsejigpjlqfvzfhhntf']);
-  await ctx.route('**/*.supabase.co/**', async (route) => {
+  await ctx.route('**/*.supabase.co/**', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const url = route.request().url();
     const json = (b) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(b) });
     if (url.includes('/auth/v1/user')) return json(user);

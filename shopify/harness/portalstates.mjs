@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 /* The states a screenshot of the happy path never reaches: no orders yet,
    three pieces picked, and the true-to-scale view. */
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
@@ -11,7 +12,7 @@ const px = Buffer.from('R0lGODlhAQABAPAAAMmaTP///yH5BAAAAAAALAAAAAABAAEAAAICRAEA
 const open = async (orders) => {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   await ctx.addInitScript(([s,r]) => { try { localStorage.setItem(`sb-${r}-auth-token`, JSON.stringify(s)); localStorage.setItem('naira-promo-popup-seen','1'); } catch(e){} }, [session,'xlsejigpjlqfvzfhhntf']);
-  await ctx.route('**/*.supabase.co/**', r => { const u=r.request().url(); const j=v=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(v)});
+  await ctx.route('**/*.supabase.co/**', r => { if (NO_REPORT.test(r.request().url())) return r.abort(); const u=r.request().url(); const j=v=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(v)});
     if (u.includes('/auth/v1/user')) return j(user); if (u.includes('/auth/v1/token')) return j(session);
     if (u.includes('member_orders')) return j(orders); if (u.includes('profiles')) return j([{id:user.id,full_name:'Ananya Rao',phone:null,birthday:null,city:'Mumbai'}]); return j([]); });
   await ctx.route('**/cdn.shopify.com/**', r => r.fulfill({ status:200, contentType:'image/gif', body:px }));

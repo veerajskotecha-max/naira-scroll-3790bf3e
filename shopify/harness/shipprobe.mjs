@@ -4,6 +4,7 @@
 // Facebook, Clarity and Google tags are blocked so no test reaches live
 // ad or analytics accounts.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const BASE = process.argv[2];
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const results = [];
@@ -14,7 +15,7 @@ const newCtx = async (opts = {}, slowMs = 0, extra = {}) => {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, ...opts });
   await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
   const log = [];
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request(); const u = q.url();
     if (BLOCK.test(u) || (extra.block && extra.block.test(u))) return route.abort();
     log.push({ url: u, type: q.resourceType() });

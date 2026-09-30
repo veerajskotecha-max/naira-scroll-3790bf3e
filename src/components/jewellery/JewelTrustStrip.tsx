@@ -1,5 +1,5 @@
 import { Gem, ShieldCheck, Sparkles, Zap } from "lucide-react";
-import { dailySoldCount } from "@/lib/dailySold";
+import { recentSoldCount } from "@/lib/dailySold";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -14,7 +14,7 @@ const items = [
  * The compact horizontal treatment preserves Naira's sharp editorial edges.
  */
 const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
-  const soldCount = dailySoldCount(productKey);
+  const soldCount = recentSoldCount(productKey);
 
   return <div className="mt-3">
     <ul
@@ -38,9 +38,11 @@ const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
         </li>
       ))}
     </ul>
-    <p className="mt-3 flex items-center gap-1.5 border-l-2 border-[var(--nf-accent-strong)] pl-2.5 text-[11px] font-medium leading-5 text-[var(--nf-text)]">
-      <Zap size={14} className="shrink-0 fill-[var(--nf-accent-strong)] text-[var(--nf-accent-strong)]" aria-hidden="true" />
-      Last 24 hours: {soldCount} {soldCount === 1 ? "piece" : "pieces"} sold across Naira stalls &amp; online
+    <p className="mt-3 flex min-h-9 items-center gap-2 border-y border-[color:rgb(var(--nf-gold-rgb)/0.22)] bg-[var(--nf-surface-raised)] px-2.5 py-2 text-[10px] font-medium uppercase leading-4 text-[var(--nf-text)] sm:text-[11px]">
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center bg-[var(--nf-accent-strong)] text-[var(--nf-accent-contrast)]">
+        <Zap size={11} fill="currentColor" strokeWidth={1.5} aria-hidden="true" />
+      </span>
+      {soldCount} pieces sold in the last 48 hours
     </p>
   </div>
 };

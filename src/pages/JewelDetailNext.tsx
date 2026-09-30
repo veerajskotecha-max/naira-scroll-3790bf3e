@@ -1,7 +1,7 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gift, Heart, MessageSquare, Plus } from "lucide-react";
+import { ArrowLeft, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -23,6 +23,7 @@ import { productParams, trackPixel } from "@/lib/pixel";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, moreLikeThis } from "@/lib/pairings";
+import { useBackToClose } from "@/hooks/useBackToClose";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -34,7 +35,8 @@ import { completeTheLook, moreLikeThis } from "@/lib/pairings";
   first screen to what a decision needs and folds the rest away, the way
   Nishorama does:
 
-    photo (and the reel the piece is in) → name and price → ring size (rings
+    photo (and the reel the piece is in) → name and price → anti-tarnish,
+    skin-friendly and its plating, as Palmonas badges them → ring size (rings
     only) → Add to cart → the gift box line → Details / Care / Delivery &
     returns, closed until asked for → complete the look → reviews → press →
     reels → more of the category.
@@ -68,6 +70,21 @@ const finishOf = (piece: JewelPiece) => {
   if (rhodium) return "Rhodium";
   return "Demi-gold";
 };
+
+/* The badges under the price. Every piece is sealed anti-tarnish over a
+   hypoallergenic, nickel-free base (the anti-tarnish collection and the Care
+   answers say the same); the plating is the piece's own. */
+const platingBadge = (finish: string) =>
+  finish === "Rhodium" ? "Rhodium-plated" : finish === "18K gold & rhodium" ? "Gold & rhodium" : finish;
+
+/* A gold bar with a glint, drawn like the lucide icons around it. */
+const Ingot = () => (
+  <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 19h15l-2.8-7.5H7.3L4.5 19Z" />
+    <path d="M8.6 15.3h6.8" />
+    <path d="M12 8.6V5.6M8.5 9.4 7.1 7.3M15.5 9.4l1.4-2.1" />
+  </svg>
+);
 
 const stoneOf = (piece: JewelPiece) => {
   const m = piece.materials.toLowerCase();
@@ -249,8 +266,20 @@ const JewelDetailNext = () => {
     return () => root.classList.remove("nf-next");
   }, []);
 
+  /* Back inside Naira, never off the site. history.length counts every page
+     the tab has shown, so a shopper who came from Google, WhatsApp or an ad
+     in the same tab was sent back there, and one in a new tab to a blank one.
+     React Router numbers its own entries from 0; above 0, or straight after
+     another Naira page, the step back is ours. Otherwise go to the jewellery. */
   const goBack = () => {
-    if (window.history.length > 1) navigate(-1);
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
+    let fromNaira = false;
+    try {
+      fromNaira = !!document.referrer && new URL(document.referrer).origin === window.location.origin;
+    } catch {
+      /* no usable referrer */
+    }
+    if (idx > 0 || (fromNaira && window.history.length > 1)) navigate(-1);
     else navigate("/jewellery");
   };
 
@@ -284,6 +313,16 @@ const JewelDetailNext = () => {
     setLightboxIndex(index);
     setLightboxOpen(true);
   }, []);
+  /* The phone's back closes the photo zoom and the size guide, as it does the
+     bag, instead of leaving the piece behind them (see useBackToClose). */
+  const zoom = useBackToClose("nfZoom", lightboxOpen, setLightboxOpen);
+  const guide = useBackToClose("nfSizeGuide", sizeGuideOpen, setSizeGuideOpen);
+  /* The rating scrolls to the reviews without a history step of its own, so
+     back and ← still go where the shopper came from. */
+  const toReviews = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    document.getElementById("customer-reviews")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const scrollRef = useRef<HTMLDivElement>(null);
   const [stickyBarVisible, setStickyBarVisible] = useState(false);
   const stickyBarRef = useRef<HTMLDivElement>(null);
@@ -677,6 +716,7 @@ const JewelDetailNext = () => {
               {rating && (
                 <a
                   href="#customer-reviews"
+                  onClick={toReviews}
                   className="-mr-1 inline-flex shrink-0 items-center gap-1 py-1 pl-2 text-[11.5px] text-nf-ink/75"
                   aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
                 >
@@ -704,6 +744,26 @@ const JewelDetailNext = () => {
               )}
               <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. taxes</span>
             </div>
+
+            {/* Palmonas' badges as square chips, the brand's corner. One row on a
+                360px phone, sized for the widest plating label. */}
+            <ul aria-label="Made to last" className="mt-3.5 flex flex-wrap gap-[5px]">
+              {[
+                { icon: <Sparkles size={11} strokeWidth={1.7} />, text: "Anti-tarnish" },
+                { icon: <Leaf size={11} strokeWidth={1.7} />, text: "Skin-friendly" },
+                { icon: <Ingot />, text: platingBadge(finish) },
+              ].map(({ icon, text }) => (
+                <li
+                  key={text}
+                  className="inline-flex items-center gap-1 border border-nf-gold/30 bg-nf-ivory-deep/70 py-[3px] pl-[3px] pr-2 text-[10px] leading-none text-nf-ink/80 min-[375px]:text-[10.5px]"
+                >
+                  <span aria-hidden="true" className="flex h-[18px] w-[18px] items-center justify-center bg-nf-blush/35 text-nf-gold-text">
+                    {icon}
+                  </span>
+                  {text}
+                </li>
+              ))}
+            </ul>
 
             {/* Ring size, the one choice a piece needs before the bag. Every
                 other detail waits in the fold-downs below, as on Nishorama. */}
@@ -756,7 +816,7 @@ const JewelDetailNext = () => {
                 )}
               </div>
             )}
-            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={selectedSize} />
 
             {/* One button. How many is the bag's business (and the ladder's). */}
             <div id="product-actions" className="mt-2">
@@ -955,7 +1015,13 @@ const JewelDetailNext = () => {
         </button>
       </div>
 
-      <ImageLightbox images={images} name={piece.name} open={lightboxOpen} initialIndex={lightboxIndex} onOpenChange={setLightboxOpen} />
+      <ImageLightbox
+        images={images}
+        name={piece.name}
+        open={lightboxOpen}
+        initialIndex={lightboxIndex}
+        onOpenChange={(open) => (open ? setLightboxOpen(true) : zoom.requestClose())}
+      />
     </div>
   );
 };

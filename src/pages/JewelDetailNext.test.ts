@@ -96,4 +96,34 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/root\.classList\.add\("nf-next"\)/);
     expect(code).toMatch(/return \(\) => root\.classList\.remove\("nf-next"\)/);
   });
+
+  it("steps back only inside Naira: a shopper from Google, WhatsApp, an ad or a new tab goes to the jewellery", () => {
+    const back = code.match(/const goBack = \(\) => \{[\s\S]*?\n  \};/)![0];
+    expect(back).not.toMatch(/history\.length > 1\) navigate\(-1\)/); // every page the tab showed, other sites included
+    expect(back).toMatch(/history\.state[\s\S]*?\.idx/);
+    expect(back).toMatch(/document\.referrer/);
+    expect(back).toMatch(/navigate\("\/jewellery"\)/);
+  });
+
+  it("lets the phone's back close the photo zoom and the size guide, not leave the piece", () => {
+    expect(code).toMatch(/useBackToClose\("nfZoom", lightboxOpen, setLightboxOpen\)/);
+    expect(code).toMatch(/useBackToClose\("nfSizeGuide", sizeGuideOpen, setSizeGuideOpen\)/);
+    expect(code).toMatch(/<RingSizeGuideModal[^>]*onClose=\{guide\.requestClose\}/);
+    expect(code).toMatch(/onOpenChange=\{\(open\) => \(open \? setLightboxOpen\(true\) : zoom\.requestClose\(\)\)\}/);
+  });
+
+  it("scrolls to the reviews without a history step, so back still goes where the shopper came from", () => {
+    expect(code).toMatch(/href="#customer-reviews"\s+onClick=\{toReviews\}/);
+    expect(code).toMatch(/const toReviews = [\s\S]*?e\.preventDefault\(\);[\s\S]*?scrollIntoView/);
+  });
+
+  it("badges anti-tarnish, skin-friendly and the piece's own plating under the price, before Add to cart", () => {
+    const badges = code.indexOf('aria-label="Made to last"');
+    expect(badges).toBeGreaterThan(code.indexOf('id="product-price"'));
+    expect(badges).toBeLessThan(code.indexOf('id="product-actions"'));
+    const row = code.slice(badges, badges + 900);
+    expect(row).toMatch(/"Anti-tarnish"/);
+    expect(row).toMatch(/"Skin-friendly"/);
+    expect(row).toMatch(/platingBadge\(finish\)/);
+  });
 });

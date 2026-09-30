@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { trackPixel } from "@/lib/pixel";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
@@ -34,7 +34,17 @@ const POPULAR = ["Rings", "Zircone", "Necklace", "Gifting", "Under 1500"];
  * products are indexed client-side by title, category and Shopify tags, so a
  * query resolves without a round trip.
  */
-const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+/* onFollow, when given, takes over a result tap (closing first, then going) —
+   for a search that holds a history entry while open; see useBackToClose. */
+const SearchOverlay = ({
+  open,
+  onClose,
+  onFollow,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onFollow?: (e: MouseEvent<HTMLAnchorElement>) => void;
+}) => {
   const [q, setQ] = useState("");
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -137,9 +147,10 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
                 <li key={h.key}>
                   <Link
                     to={h.to}
-                    onClick={() => {
+                    onClick={(e) => {
                       remember(q);
-                      onClose();
+                      if (onFollow) onFollow(e);
+                      else onClose();
                     }}
                     className="flex items-center gap-3 p-2 transition-colors hover:bg-black/5"
                   >

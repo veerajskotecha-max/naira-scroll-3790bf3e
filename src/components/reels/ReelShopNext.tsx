@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
@@ -49,6 +49,8 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
   const price = live?.priceLabel ?? product.price_label ?? "";
   const name = live?.name ?? product.title;
   const href = hrefFor(product.handle);
+  // On this piece's own page the row names it rather than linking to itself.
+  const here = useLocation().pathname === href;
 
   const add = async () => {
     const variantId = live?.variantId || product.variant_id;
@@ -79,18 +81,31 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
     window.open(`https://wa.me/${PREORDER_WHATSAPP}?text=${message}`, "_blank", "noopener");
   };
 
+  const thumb = image && (
+    <img src={shopifyImage(image, 160)} alt={name} className="h-full w-full object-cover" loading="lazy" decoding="async" width={48} height={48} />
+  );
+
   return (
     <li className="flex items-center gap-3 py-2.5">
-      <Link to={href} className="block h-12 w-12 shrink-0 overflow-hidden bg-nf-ivory-deep">
-        {image && (
-          <img src={shopifyImage(image, 160)} alt={name} className="h-full w-full object-cover" loading="lazy" decoding="async" width={48} height={48} />
-        )}
-      </Link>
-      <div className="min-w-0 flex-1">
-        <Link to={href} className="block truncate font-cormorant text-[15px] leading-tight text-nf-ink">
-          {name}
+      {here ? (
+        <span className="block h-12 w-12 shrink-0 overflow-hidden bg-nf-ivory-deep">{thumb}</span>
+      ) : (
+        <Link to={href} className="block h-12 w-12 shrink-0 overflow-hidden bg-nf-ivory-deep">
+          {thumb}
         </Link>
-        <p className="mt-0.5 text-[12px] text-nf-ink/70">{soldOut ? "Pre-order" : price}</p>
+      )}
+      <div className="min-w-0 flex-1">
+        {here ? (
+          <span className="block truncate font-cormorant text-[15px] leading-tight text-nf-ink">{name}</span>
+        ) : (
+          <Link to={href} className="block truncate font-cormorant text-[15px] leading-tight text-nf-ink">
+            {name}
+          </Link>
+        )}
+        <p className="mt-0.5 text-[12px] text-nf-ink/70">
+          {soldOut ? "Pre-order" : price}
+          {here && <span className="text-nf-gold-text"> · this piece</span>}
+        </p>
       </div>
       {soldOut ? (
         <button
@@ -305,7 +320,7 @@ export const ReelFrame = ({
             <button
               type="button"
               onClick={togglePlayback}
-              aria-label={paused ? "Play reel" : "Pause reel"}
+              aria-label={paused || !ready ? "Play reel" : "Pause reel"}
               className={`${control} absolute ${inGallery ? "bottom-5 right-14" : "left-3 top-5"}`}
             >
               {paused || !ready ? <Play size={13} fill="currentColor" /> : <Pause size={13} fill="currentColor" />}

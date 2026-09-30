@@ -65,7 +65,7 @@ const GiftBox = ({ items }: { items: CartItem[] }) => {
   const { jewellery } = useLiveJewellery();
   const [ringUp, setRingUp] = useState(false);
   const still = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  const latest = jewellery.find((piece) => piece.handle === items.at(-1)?.id);
+  const latest = jewellery.find((piece) => piece.handle === items[items.length - 1]?.id);
   return (
     <div data-gift-row className="my-auto flex flex-col items-center px-4 pb-4 pt-6">
       <BagGiftBox size={92} ring={latest && familyOf(latest) === "silver" ? ringSilver : ringGold} onRing={setRingUp} />

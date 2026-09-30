@@ -367,10 +367,11 @@ const JewelDetailNext = () => {
 
   /* The phone's buy bar shows whenever Add to cart is not fully on screen —
      so a buy button is visible from the moment the page opens — but never
-     over the price. */
+     over the price. It watches the button itself: the gift line below it
+     reaching past the screen's edge put the bar over a button in full view. */
   useEffect(() => {
     const check = () => {
-      const target = document.getElementById("product-actions");
+      const target = document.querySelector("#product-actions > button");
       if (!target) return;
       const r = target.getBoundingClientRect();
       const notFullyShown = r.bottom < 0 || r.bottom > window.innerHeight;

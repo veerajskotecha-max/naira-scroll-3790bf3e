@@ -24,6 +24,7 @@ describe("redesigned product page", () => {
   it("shows the buy bar whenever Add to cart is not fully on screen, never over the price", () => {
     const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
     expect(effect).toMatch(/stickyBarRef/);
+    expect(effect).toMatch(/querySelector\("#product-actions > button"\)/); // the button, not the gift line under it
     expect(effect).toMatch(/getElementById\("product-price"\)/);
     expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
     expect(effect).toMatch(/setStickyBarVisible\(notFullyShown && priceClear\)/);

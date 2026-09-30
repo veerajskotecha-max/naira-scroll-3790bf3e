@@ -258,7 +258,8 @@ const sweep = async (path) => {
   await prepare(p, path);
   const controls = await p.evaluate((KEY) => {
     const key = eval(KEY);
-    const strip = (el) => { for (let a = el.parentElement; a; a = a.parentElement) { const ox = getComputedStyle(a).overflowX; if (ox === 'auto' || ox === 'scroll') return true; } return false; };
+    // a strip that really scrolls sideways (a drawer that only scrolls down reports overflow-x auto too)
+    const strip = (el) => { for (let a = el.parentElement; a; a = a.parentElement) { const ox = getComputedStyle(a).overflowX; if ((ox === 'auto' || ox === 'scroll') && a.scrollWidth > a.clientWidth + 1) return true; } return false; };
     // a fixed bar slid off the screen (the buy bar before it is needed) can't be tapped until it slides in
     const parked = (el) => { const r = el.getBoundingClientRect(); for (let a = el; a; a = a.parentElement) if (getComputedStyle(a).position === 'fixed') return r.top >= innerHeight || r.bottom <= 0; return false; };
     const vis = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && cs.pointerEvents !== 'none' && !el.closest('footer') && !el.closest('[aria-hidden="true"]') && !parked(el)

@@ -12,6 +12,8 @@
 // account (noreport.mjs).
 //   ONLY=journeys|sweep   one part     SWEEP=<path>   sweep another page
 //   LIST=1                with ONLY=sweep: list the controls it would tap, tap none
+//   ONLY=listing          the listing and a collection: back lands on the card opened
+//   SAMPLE=3              tap at most 3 of each kind of control (a grid's cards, a row's chips)
 import { chromium } from 'playwright';
 import { NO_REPORT } from './noreport.mjs';
 const [BASE, HANDLE = 'prism-riviere-bracelet', RING = 'cushion-halo-ring'] = process.argv.slice(2);
@@ -241,11 +243,69 @@ const journeys = async () => {
   }
 };
 
+// The listing and a collection: back lands on the card the shopper opened,
+// with the filter they chose, after "Show more" too.
+const GRID = '#root .grid a[href^="/jewellery/"]:not([href*="/collections/"])';
+const openFromGrid = async (p, nth) => {
+  const link = p.locator(GRID).nth(nth);
+  await link.scrollIntoViewIfNeeded();
+  await settle(p, 500);
+  const href = await link.getAttribute('href');
+  await link.click();
+  await pdpReady(p);
+  await settle(p, 800);
+  return href;
+};
+const cardOnScreen = (p, href) => p.evaluate((href) => {
+  const a = [...document.querySelectorAll(`#root .grid a[href="${href}"]`)].find((x) => x.getBoundingClientRect().height > 0);
+  if (!a) return 'not in the grid';
+  const r = a.getBoundingClientRect();
+  return r.bottom > 60 && r.top < innerHeight - 40 ? 'on screen' : `off screen (top ${Math.round(r.top)}, scrollY ${Math.round(scrollY)})`;
+}, href);
+const listingJourneys = async () => {
+  for (const [label, more, nth] of [['a card in the first 12', 0, 8], ['a card after “Show more”', 1, 17]]) {
+    for (const how of ['←', 'phone back']) {
+      const { ctx, p } = await newPage();
+      await p.goto(`${BASE}/jewellery`, { waitUntil: 'domcontentloaded' }); await reactReady(p); await settle(p, 1500);
+      for (let i = 0; i < more; i++) { await p.locator('#root button', { hasText: /^SHOW MORE/ }).first().click(); await settle(p, 900); }
+      const href = await openFromGrid(p, nth);
+      if (how === '←') await tapPageBack(p); else { await p.goBack(); await settle(p); }
+      await settle(p, 800);
+      const where = await cardOnScreen(p, href);
+      check(`listing → ${label} → ${how} lands back on that card`, pathOf(p) === '/jewellery' && where === 'on screen', `${pathOf(p)} · ${href.split('/').pop()} ${where}`);
+      await ctx.close();
+    }
+  }
+  {
+    const { ctx, p } = await newPage();
+    await p.goto(`${BASE}/jewellery`, { waitUntil: 'domcontentloaded' }); await reactReady(p); await settle(p, 1500);
+    await p.locator('#root button', { hasText: /^rings$/i }).first().click(); await settle(p, 900);
+    const chosen = new URL(p.url()).search;
+    const href = await openFromGrid(p, 3);
+    await p.goBack(); await settle(p, 1600);
+    const where = await cardOnScreen(p, href);
+    check('the Rings filter survives opening a ring and coming back', /rings/i.test(chosen) && new URL(p.url()).search === chosen && where === 'on screen', `${chosen} → ${new URL(p.url()).search} · ${where}`);
+    await ctx.close();
+  }
+  {
+    const { ctx, p } = await newPage();
+    const coll = '/jewellery/collections/anti-tarnish-jewellery';
+    await p.goto(BASE + coll, { waitUntil: 'domcontentloaded' }); await reactReady(p); await settle(p, 1500);
+    const href = await openFromGrid(p, 5);
+    await p.goBack(); await settle(p, 1600);
+    const where = await cardOnScreen(p, href);
+    check('collection → a piece → phone back lands back on that card', pathOf(p) === coll && where === 'on screen', `${pathOf(p)} · ${where}`);
+    await ctx.close();
+  }
+};
+
 // Every control, one at a time on a fresh load.
 const KEY = `(el) => [el.tagName.toLowerCase(), el.getAttribute('aria-label') || '', (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 40), el.getAttribute('href') || ''].join('|')`;
+const isPiece = (path) => /^\/jewellery\/(?!collections\/)[^/]+$/.test(path);
 const prepare = async (p, path) => {
   await p.goto(BASE + path, { waitUntil: 'domcontentloaded' });
-  await pdpReady(p);
+  if (isPiece(path)) await pdpReady(p);
+  else await p.waitForFunction(() => document.querySelector('#root h1') && Object.keys(document.getElementById('root')?.firstElementChild || {}).some((k) => k.startsWith('__react')), null, { timeout: 30000 });
   // mount the lazy sections, open the fold-downs, come back to the top
   await p.evaluate(async () => {
     for (let y = 0; y < document.body.scrollHeight; y += 500) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); }
@@ -269,9 +329,14 @@ const sweep = async (path) => {
     const seen = {};
     return [...document.querySelectorAll('#root button, #root a[href], #root summary, #root [role="button"]')].filter(vis).map((el) => {
       const k = key(el); seen[k] = (seen[k] ?? -1) + 1;
-      return { key: k, nth: seen[k], label: el.getAttribute('aria-label') || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 44) || el.getAttribute('href'), href: el.getAttribute('href'), target: el.getAttribute('target'), disabled: !!el.disabled };
+      return { key: k, nth: seen[k], kind: `${el.tagName}.${el.className}`, label: el.getAttribute('aria-label') || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 44) || el.getAttribute('href'), href: el.getAttribute('href'), target: el.getAttribute('target'), disabled: !!el.disabled };
     });
-  }, KEY);
+  }, KEY).then((all) => {
+    const n = Number(process.env.SAMPLE || 0);
+    if (!n) return all;
+    const per = {};
+    return all.filter((c) => (per[c.kind] = (per[c.kind] ?? 0) + 1) <= n);
+  });
   await ctx.close();
   if (process.env.LIST) { console.log(`${path}: ${controls.length} controls\n  ` + controls.map((c) => c.label.slice(0, 40)).join('\n  ')); return; }
   const origin = new URL(BASE).origin;
@@ -334,6 +399,7 @@ const sweep = async (path) => {
   check(`every control on ${path} does something`, dead.length === 0, dead.map(([c]) => c.label.slice(0, 30)).join(' | '));
 };
 
+if (process.env.ONLY === 'listing') { await listingJourneys(); console.log(`\n${results.filter((r) => r.ok).length}/${results.length} checks passed`); await b.close(); process.exit(results.every((r) => r.ok) ? 0 : 1); }
 if (process.env.ONLY !== 'sweep') await journeys();
 if (process.env.ONLY !== 'journeys') { await sweep(process.env.SWEEP || PDP); if (!process.env.SWEEP) await sweep(RING_PDP); }
 console.log(`\n${results.filter((r) => r.ok).length}/${results.length} checks passed`);

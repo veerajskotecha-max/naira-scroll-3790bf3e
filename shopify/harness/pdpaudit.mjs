@@ -259,7 +259,11 @@ const sweep = async (path) => {
   const controls = await p.evaluate((KEY) => {
     const key = eval(KEY);
     const strip = (el) => { for (let a = el.parentElement; a; a = a.parentElement) { const ox = getComputedStyle(a).overflowX; if (ox === 'auto' || ox === 'scroll') return true; } return false; };
-    const vis = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && cs.pointerEvents !== 'none' && !el.closest('footer') && !el.closest('[aria-hidden="true"]') && ((r.right > 0 && r.left < innerWidth) || strip(el)); };
+    // a fixed bar slid off the screen (the buy bar before it is needed) can't be tapped until it slides in
+    const parked = (el) => { const r = el.getBoundingClientRect(); for (let a = el; a; a = a.parentElement) if (getComputedStyle(a).position === 'fixed') return r.top >= innerHeight || r.bottom <= 0; return false; };
+    const vis = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && cs.pointerEvents !== 'none' && !el.closest('footer') && !el.closest('[aria-hidden="true"]') && !parked(el)
+      && el.getAttribute('aria-checked') !== 'true' // the option already chosen: tapping it again rightly does nothing
+      && ((r.right > 0 && r.left < innerWidth) || strip(el)); };
     const seen = {};
     return [...document.querySelectorAll('#root button, #root a[href], #root summary, #root [role="button"]')].filter(vis).map((el) => {
       const k = key(el); seen[k] = (seen[k] ?? -1) + 1;

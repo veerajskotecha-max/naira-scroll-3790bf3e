@@ -1,0 +1,16 @@
+seg/
+frames/
+panelL/
+panelRw/
+sfx/
+fonts/
+engine/out/
+engine/node_modules
+engine/data.json
+ffmpeg
+*.mp4
+*.mov
+*.wav
+*.png
+*.jpg
+x264pass*

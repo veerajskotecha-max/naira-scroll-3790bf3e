@@ -14,6 +14,7 @@
 //   LIST=1                with ONLY=sweep: list the controls it would tap, tap none
 //   ONLY=listing          the listing and a collection: back lands on the card opened
 //   SAMPLE=3              tap at most 3 of each kind of control (a grid's cards, a row's chips)
+//   PICK=<regex>          only the controls whose name matches
 import { chromium } from 'playwright';
 import { NO_REPORT } from './noreport.mjs';
 const [BASE, HANDLE = 'prism-riviere-bracelet', RING = 'cushion-halo-ring'] = process.argv.slice(2);
@@ -330,10 +331,12 @@ const sweep = async (path) => {
     const seen = {};
     return [...document.querySelectorAll('#root button, #root a[href], #root summary, #root [role="button"]')].filter(vis).map((el) => {
       const k = key(el); seen[k] = (seen[k] ?? -1) + 1;
-      return { key: k, nth: seen[k], kind: `${el.tagName}.${el.className}`, label: el.getAttribute('aria-label') || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 44) || el.getAttribute('href'), href: el.getAttribute('href'), target: el.getAttribute('target'), disabled: !!el.disabled };
+      return { key: k, nth: seen[k], tag: el.tagName, kind: `${el.tagName}.${el.className}`, label: el.getAttribute('aria-label') || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 44) || el.getAttribute('href'), href: el.getAttribute('href'), target: el.getAttribute('target'), disabled: !!el.disabled };
     });
   }, KEY).then((all) => {
     const n = Number(process.env.SAMPLE || 0);
+    const pick = process.env.PICK && new RegExp(process.env.PICK, 'i');
+    if (pick) all = all.filter((c) => pick.test(c.label));
     if (!n) return all;
     const per = {};
     return all.filter((c) => (per[c.kind] = (per[c.kind] ?? 0) + 1) <= n);
@@ -344,6 +347,7 @@ const sweep = async (path) => {
   const rows = [];
   for (const c of controls) {
     if (c.disabled) { rows.push([c, 'skip', 'disabled']); continue; }
+    if (c.tag === 'CANVAS') { rows.push([c, 'skip', 'drawn in 3D: what a tap does happens inside the canvas, check by eye']); continue; }
     if (c.href && /^(mailto:|tel:)/.test(c.href)) { rows.push([c, 'ok', c.href.slice(0, 40)]); continue; }
     if (c.href && /^https?:/.test(c.href) && new URL(c.href).origin !== origin) {
       const ok = /^https:\/\/(wa\.me|api\.whatsapp\.com|www\.instagram\.com|instagram\.com)\//.test(c.href) || /^https:\/\//.test(c.href);
@@ -377,7 +381,10 @@ const sweep = async (path) => {
       const before = await snap(); const apiBefore = traffic.api;
       let popup = false; ctx.on('page', () => { popup = true; });
       let clickErr = null;
-      await el.click({ timeout: 4000 }).catch((e) => { clickErr = String(e).split('\n')[0].slice(0, 80); });
+      await el.click({ timeout: 4000 }).catch((e) => {
+        const who = String(e).match(/<[^\n]{0,140}?>[^\n]{0,40}?(?= (?:from <[^\n]*> subtree )?intercepts pointer events)/);
+        clickErr = who ? `covered by ${who[0].replace(/\s+/g, ' ').slice(0, 110)}` : String(e).split('\n')[0].slice(0, 80);
+      });
       await settle(p, 1300);
       const after = await snap().catch(() => ({ url: p.url() }));
       const did = [

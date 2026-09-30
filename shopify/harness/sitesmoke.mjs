@@ -1,7 +1,10 @@
 // Every page in the sitemap on a phone: does it load cleanly?
-//   node sitesmoke.mjs <base> [sitemap file or URL]
+//   node sitesmoke.mjs <base> [sitemap file or URL | .txt list of paths]
 // For each page: page errors, console errors, failed or 4xx/5xx requests,
 // whether it drew its <h1>, and on product pages whether Add to cart is ready.
+// A .txt list can hold ad links (/products/<handle>?fbclid=…): each must open
+// on its own product (the pre-built <h1> is the product's, not the homepage's),
+// move to /jewellery/<handle> and keep its query.
 // Network goes through Node (the sandbox CA); ad and analytics tags and the
 // site's own Meta relay are blocked so a run never reaches anyone's reports.
 //   CONC=4 pages at a time; ONLY=regex to test a subset of paths;
@@ -11,7 +14,8 @@ import { readFileSync } from 'node:fs';
 const [BASE, SITEMAP = '/tmp/mainwt/dist/sitemap.xml'] = process.argv.slice(2);
 const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const xml = SITEMAP.startsWith('http') ? await (await fetch(SITEMAP)).text() : readFileSync(SITEMAP, 'utf8');
-let paths = [...new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname))];
+let paths = SITEMAP.endsWith('.txt') ? xml.split('\n').map((x) => x.trim()).filter(Boolean)
+  : [...new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname))];
 if (process.env.ONLY) paths = paths.filter((x) => new RegExp(process.env.ONLY).test(x));
 const CONC = Number(process.env.CONC || 4);
 // What this sandbox causes, not the site: its Chromium can't verify the proxy's
@@ -55,17 +59,26 @@ const visit = async (path) => {
     errors.push(`console: ${t.slice(0, 140)}`);
   });
   const row = { path, h1: null, atc: null, ms: 0, errors, bad };
+  const [pathOnly, query = ''] = path.split('?');
+  const ad = pathOnly.startsWith('/products/');
   const t0 = Date.now();
   try {
     const res = await p.goto(BASE + path, { waitUntil: 'domcontentloaded', timeout: 45000 });
     if (!res || res.status() >= 400) bad.push(`document ${res?.status()}`);
+    if (ad) row.firstH1 = await p.evaluate(() => document.querySelector('#root h1')?.textContent.trim().slice(0, 50) ?? null);
     await p.waitForSelector('#root h1', { timeout: 25000 }).catch(() => {});
     row.h1 = await p.evaluate(() => document.querySelector('#root h1')?.textContent.trim().slice(0, 50) ?? null);
-    if (/^\/jewellery\/(?!collections\/)[^/]+$/.test(path)) {
+    if (/^\/(jewellery|products)\/(?!collections\/)[^/]+$/.test(pathOnly)) {
       row.atc = await p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => /add to cart|pre-order/i.test(x.textContent) && !x.disabled && Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 25000 }).then(() => true, () => false);
     }
     await p.waitForTimeout(2500); // late errors: reviews, reels, lazy sections
-    row.landed = new URL(p.url()).pathname;
+    const at = new URL(p.url());
+    row.landed = at.pathname;
+    if (ad) {
+      if (row.landed === pathOnly.replace('/products/', '/jewellery/')) row.landed = pathOnly; // the expected move
+      if (query && at.search !== `?${query}`) errors.push(`query changed: ?${query} → ${at.search || '(none)'}`);
+      if (row.firstH1 !== row.h1) errors.push(`pre-built page was "${row.firstH1}", not the product "${row.h1}"`);
+    }
   } catch (e) { errors.push(`visit: ${String(e).slice(0, 120)}`); }
   row.ms = Date.now() - t0;
   await ctx.close();
@@ -79,7 +92,7 @@ await Promise.all(Array.from({ length: CONC }, async () => {
     const path = paths[next++];
     const row = await visit(path);
     rows.push(row);
-    const flags = [!row.h1 && 'NO H1', row.atc === false && 'ATC NOT READY', row.landed && row.landed !== path && `→ ${row.landed}`, row.errors.length && `${row.errors.length} error(s)`, row.bad.length && `${row.bad.length} bad request(s)`].filter(Boolean);
+    const flags = [!row.h1 && 'NO H1', row.atc === false && 'ATC NOT READY', row.landed && row.landed !== path.split('?')[0] && `→ ${row.landed}`, row.errors.length && `${row.errors.length} error(s)`, row.bad.length && `${row.bad.length} bad request(s)`].filter(Boolean);
     console.log(`${flags.length ? 'ISSUE' : 'ok   '} ${path}${flags.length ? '  — ' + flags.join(', ') : ''}`);
   }
 }));

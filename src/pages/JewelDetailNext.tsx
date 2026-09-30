@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles, Zap } from "lucide-react";
+import { ArrowLeft, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -775,11 +775,17 @@ const JewelDetailNext = () => {
               ))}
             </ul>
 
-            <p className="mt-2.5 flex min-h-8 items-center gap-2 border-y border-nf-gold/30 bg-nf-ivory-deep/70 px-2.5 py-1.5 font-nf-label text-[10px] font-medium uppercase leading-4 tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center bg-nf-gold text-nf-ink" aria-hidden="true">
-                <Zap size={11} fill="currentColor" strokeWidth={1.5} />
+            <p className="mt-2.5 flex min-h-8 items-center justify-center gap-3 border-y border-nf-gold/30 bg-nf-ivory-deep/70 px-2.5 py-1.5">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="shrink-0 text-nf-gold">
+                <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor" />
+              </svg>
+              <span className="flex items-baseline gap-1.5">
+                <span className="font-cormorant text-[15px] italic leading-none text-nf-gold-text">{soldCount}</span>
+                <span className="whitespace-nowrap font-nf-label text-[10px] font-light uppercase leading-none tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
+                  pieces sold in the last 48 hours
+                </span>
               </span>
-              {soldCount} pieces sold in the last 48 hours
+              <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
 
             {/* Ring size, the one choice a piece needs before the bag. Every

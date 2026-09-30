@@ -38,8 +38,11 @@ const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmana
 const TEXT = /(javascript|css|html|json|svg|xml|text\/plain)/i;
 const cache = new Map();
 const key = (q) => q.method() + ' ' + q.url() + ' ' + (q.postData() || '');
+// Client hints of the phone browser the page thinks it is, not "HeadlessChrome"
+// (some stores answer that with a bot check instead of the product page).
+const HINTS = { 'sec-ch-ua': '"Chromium";v="120", "Google Chrome";v="120", "Not?A_Brand";v="99"', 'sec-ch-ua-mobile': '?1', 'sec-ch-ua-platform': '"Android"' };
 const load = async (url, q) => {
-  const r = await fetch(url, { method: q.method(), headers: q.headers(), body: q.postData() || undefined, redirect: 'manual' });
+  const r = await fetch(url, { method: q.method(), headers: { ...q.headers(), ...HINTS }, body: q.postData() || undefined, redirect: 'manual' });
   const body = Buffer.from(await r.arrayBuffer());
   const headers = Object.fromEntries([...r.headers].filter(([h]) => !/^(content-encoding|content-length)$/i.test(h)));
   const wire = TEXT.test(r.headers.get('content-type') || '') && body.length > 1024 ? gzipSync(body, { level: 6 }).length : body.length;

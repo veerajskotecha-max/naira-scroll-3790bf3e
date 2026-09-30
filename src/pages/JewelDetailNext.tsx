@@ -835,7 +835,7 @@ const JewelDetailNext = () => {
               >
                 {isPreorder ? "Reserve now" : "Add to cart"}
               </button>
-              {soldOut && (
+              {false && (
                 <a
                   href={sizedEnquiryHref}
                   target="_blank"

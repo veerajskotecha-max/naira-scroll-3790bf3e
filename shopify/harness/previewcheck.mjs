@@ -212,9 +212,9 @@ const H = 'prism-riviere-bracelet';
   check('a tap raises the ring and says "your piece comes in this gift box", then it closes', /comes in this gift box/i.test(upCap) && /tap to open/i.test(backCap), `${upCap} → ${backCap}`);
   // one more of the same piece earns the 2-piece offer
   await p.locator('[role="dialog"][data-state="open"] button[aria-label="Increase quantity"]').first().click();
-  await p.waitForFunction(() => /BUY2 · 10% off/i.test(document.querySelector('[role="dialog"][data-state="open"]')?.innerText || ''), null, { timeout: 20000 }).catch(() => {});
+  await p.waitForFunction(() => /2 pieces · 10% off/i.test(document.querySelector('[role="dialog"][data-state="open"]')?.innerText || ''), null, { timeout: 20000 }).catch(() => {});
   const after = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText.replace(/\s+/g, ' '));
-  check('a second piece earns the 10% in the bag', /BUY2 · 10% off applied/i.test(after), (after.match(/BUY2[^₹]*₹[\d,]+/) || [after.slice(0, 120)])[0]);
+  check('a second piece earns the 10%, named as the 2-piece offer, no code name', /2 pieces · 10% off applied/i.test(after) && !/BUY2|NAIRA10/.test(after), (after.match(/2 pieces[^₹]*₹[\d,]+/) || [after.slice(0, 120)])[0]);
   await shot(p, 'next-bag-2');
   // the phone back button closes the bag
   await p.goBack();
@@ -288,21 +288,58 @@ for (const [label, path] of [['next', `/preview/jewellery/${H}`], ['live', `/jew
   await ctx.close();
 }
 
-// D. The live page and bag are untouched.
+// D. The live product page and bag are the new design.
 {
-  const { ctx, p } = await newPage();
+  const { ctx, p, errors } = await newPage();
   await p.goto(`${BASE}/jewellery/${H}`, { waitUntil: 'domcontentloaded' });
   await mounted(p, /Prism Rivi/);
   await p.waitForTimeout(1500);
-  const live = await p.evaluate(() => ({ cls: document.documentElement.className, tiles: !!document.querySelector('[aria-label="Naira Flore jewellery assurances"]') }));
-  check('live page: palette class absent', !/\bnf-next\b/.test(live.cls));
-  check('live page: still the current layout', live.tiles);
+  const live = await p.evaluate(() => ({ cls: document.documentElement.className, robots: document.querySelector('meta[name="robots"]')?.content ?? '', folds: document.querySelectorAll('#root details').length }));
+  check('live page: the new design, in search', /\bnf-next\b/.test(live.cls) && !/noindex/.test(live.robots) && live.folds >= 3, JSON.stringify(live));
   await p.locator('#product-actions button', { hasText: /add to cart/i }).first().click();
-  await p.waitForSelector('[role="dialog"][data-state="open"]', { timeout: 20000 });
+  await p.waitForSelector('[role="dialog"][data-state="open"] [data-gift-row]', { timeout: 20000 });
   await p.waitForTimeout(1500);
-  const oldBag = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText);
-  check('live page: still the current bag', /Proceed To Checkout/i.test(oldBag));
+  const bag = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return { text: d.innerText.replace(/\s+/g, ' '), palette: d.classList.contains('nf-palette') }; });
+  check('live page: the new bag with the gift box', /Checkout · ₹/i.test(bag.text) && /tap to open/i.test(bag.text) && bag.palette, bag.text.slice(0, 120));
+  check('no page errors on the live product page', errors.length === 0, errors.slice(0, 2).join(' | '));
   await shot(p, 'live-bag');
+  await ctx.close();
+}
+
+// E. The bag is the same on other pages (opened from the header).
+{
+  const { ctx, p, errors } = await newPage();
+  await p.goto(`${BASE}/jewellery`, { waitUntil: 'domcontentloaded' });
+  await p.waitForFunction(() => [...document.querySelectorAll('button[aria-label="Open cart"]')].some((x) => Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 30000 });
+  await p.waitForTimeout(1500);
+  await p.locator('button[aria-label="Open cart"]').first().click();
+  await p.waitForSelector('[role="dialog"][data-state="open"].nf-palette', { timeout: 20000 }).catch(() => {});
+  await p.waitForTimeout(1200);
+  const bag = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return d ? { palette: d.classList.contains('nf-palette'), bg: getComputedStyle(d).backgroundColor, text: d.innerText.replace(/\s+/g, ' ') } : null; });
+  check('bag opens from the header on the listing, in Naira colours', !!bag && bag.palette && bag.bg === 'rgb(251, 243, 236)', bag ? `${bag.bg} · ${bag.text.slice(0, 80)}` : 'no bag');
+  const hits = await offBrand(p);
+  check('no stock navy / slate in the bag on the listing', Object.keys(hits).length === 0, JSON.stringify(hits).slice(0, 300));
+  check('no page errors on the listing', errors.length === 0, errors.slice(0, 2).join(' | '));
+  await shot(p, 'listing-bag');
+  await ctx.close();
+}
+
+// F. A shopper with NAIRA10 stored from an earlier visit: one 10%, never shown twice, never named.
+{
+  const { ctx, p, errors } = await newPage();
+  await ctx.addInitScript({ content: "try { localStorage.setItem('naira-promo-code', 'NAIRA10'); } catch {}" });
+  await p.goto(`${BASE}/jewellery/${H}`, { waitUntil: 'domcontentloaded' });
+  await mounted(p, /Prism Rivi/);
+  await p.waitForTimeout(1500);
+  await p.locator('#product-actions button', { hasText: /add to cart/i }).first().click();
+  await p.waitForSelector('[role="dialog"][data-state="open"] [data-gift-row]', { timeout: 20000 });
+  await p.waitForTimeout(1500);
+  const one = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText.replace(/\s+/g, ' '));
+  check('NAIRA10 never shown in the bag', !/NAIRA/i.test(one), one.slice(0, 160));
+  check('with a 10% code, the band offers only the 20% rung', /10% off — add 2 pieces for 20%/i.test(one) && !/save 10%/i.test(one), (one.match(/[^·]*off — add[^%]*%/i) || [one.slice(0, 80)])[0]);
+  check('the one discount is named for what it is', /Promo code · 10% off applied/i.test(one), (one.match(/Promo code[^₹]*₹[\d,]+/) || [''])[0]);
+  await shot(p, 'bag-naira10');
+  check('no page errors with a stored code', errors.length === 0, errors.slice(0, 2).join(' | '));
   await ctx.close();
 }
 

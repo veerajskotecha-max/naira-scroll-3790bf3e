@@ -67,15 +67,15 @@ const Q = '?utm_source=facebook&utm_content=Facebook_UA&fbclid=TESTCLICK';
     return { photo: !!img, react: Object.keys(document.getElementById('root')?.firstElementChild || {}).some((k) => k.startsWith('__react')) };
   });
   check('phone photo is in the pre-built HTML', preBuilt.photo, preBuilt.react ? '(app already running)' : 'before the app ran');
-  await p.waitForFunction(() => [...document.querySelectorAll('button[aria-label^="View image"]')].some((x) => Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 30000 });
+  await p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 30000 });
   await p.waitForTimeout(800);
-  const dots = await p.evaluate(async () => {
+  const counter = await p.evaluate(async () => {
     const strip = document.querySelector('#root .md\\:hidden .snap-x');
     strip.scrollTo({ left: strip.clientWidth * 2, behavior: 'instant' });
     await new Promise((r) => setTimeout(r, 400));
-    return [...document.querySelectorAll('#root .md\\:hidden button[aria-label^="View image"]')].findIndex((d) => d.getAttribute('aria-current') === 'true');
+    return [...document.querySelectorAll('#root span')].find((x) => /^\d+ \/ \d+$/.test(x.textContent.trim()))?.textContent.trim();
   });
-  check('dots follow a swipe to photo 3', dots === 2, `active dot ${dots + 1}`);
+  check('photo counter follows a swipe to photo 3', /^3 \/ \d+$/.test(counter || ''), counter);
   const imgs = await p.evaluate(() => document.querySelectorAll('#root .md\\:hidden .snap-x img').length);
   check('the app draws the full phone gallery', imgs > 1, `${imgs} photos`);
   await ctx.close();

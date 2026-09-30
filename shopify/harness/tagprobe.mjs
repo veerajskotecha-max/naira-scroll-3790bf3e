@@ -3,12 +3,13 @@
 // HTML are parsed, not appended, and would hide what the helper does.
 import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, PRERENDER] = process.argv.slice(2);
 const script = readFileSync(PRERENDER, 'utf8').match(/const MARK_DEFERRED_PRELOADS = `([\s\S]*?)`;/)[1];
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 for (const path of ['/jewellery/prism-riviere-bracelet', '/']) {
   const p = await b.newPage({ viewport: { width: 1280, height: 900 } });   // the prerender's own viewport
-  await p.route(/.*/, async (route) => {
+  await p.route(/.*/, async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request();
     if (/(facebook\.net|facebook\.com|fbcdn\.net)/i.test(q.url())) return route.abort();
     try {

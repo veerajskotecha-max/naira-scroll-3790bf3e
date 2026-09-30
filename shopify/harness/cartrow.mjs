@@ -5,12 +5,13 @@
 // comparison with the unsplit version. This one always takes the outer row.
 import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const BASE = process.env.BASE || 'http://localhost:8080';
 const OUT = process.argv[2]; mkdirSync(OUT, { recursive: true });
 const PATHNAME = process.env.PDP || '/jewellery/prism-riviere-bracelet';
 const PHONES = [['fold-cover',344,882],['android-360',360,640],['android-360t',360,800],
                 ['iphone-se',375,667],['iphone-14',390,844],['pixel',412,915]];
-const proxy = async (route) => {
+const proxy = async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   try {
     const r = await fetch(q.url(), { method: q.method(), headers: q.headers(), body: q.postData() || undefined, redirect: 'follow' });

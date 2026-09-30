@@ -11,6 +11,7 @@
 // CPU is throttled 4x as Lighthouse does. Output is a model, not a phone: use it
 // to compare A against B, not as an absolute.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const URL = process.argv[2];
 const RATE = 1600 * 1024 / 8;   // bytes per second
 const RTT = 150;                // ms
@@ -32,7 +33,7 @@ const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' })
 const run = async (modelled) => {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: UA });
   let pipeFree = 0; const log = []; let t0 = 0;
-  await ctx.route('**/*', async (route) => {
+  await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request();
     if (/(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics)/i.test(q.url())) return route.abort();
     try {

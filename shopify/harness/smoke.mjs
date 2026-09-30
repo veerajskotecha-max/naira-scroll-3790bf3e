@@ -2,9 +2,10 @@
 // navigation into a product (route chunk fetched on demand), and lazy review
 // photos actually loading once scrolled to.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const BASE = process.argv[2];
 const UA = 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
-const proxy = async (route) => {
+const proxy = async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   if (/(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google)/i.test(q.url())) return route.abort();   // never pollute the store's ad or analytics data
   try {

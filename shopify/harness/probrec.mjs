@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const THEME='151142826146', SHOP='https://nc5eti-gp.myshopify.com';
 const PREVIEW=`_ab=0&_fd=0&_sc=1&preview_theme_id=${THEME}`;
 const jar=new Map(); const ch=()=>[...jar].map(([k,v])=>`${k}=${v}`).join('; ');
@@ -6,7 +7,7 @@ const eat=r=>{for(const[k,v]of r.headers)if(k.toLowerCase()==='set-cookie')v.spl
 eat(await fetch(`${SHOP}/?${PREVIEW}`,{redirect:'manual'}));
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
 const ctx=await b.newContext({viewport:{width:1440,height:1000}});
-await ctx.route('**/*',async route=>{const q=route.request();let u=q.url();
+await ctx.route('**/*',async route=>{ if (NO_REPORT.test(route.request().url())) return route.abort();const q=route.request();let u=q.url();
  if(u.startsWith(SHOP)&&(q.resourceType()==='document'||u.includes('/recommendations/')))u+=(u.includes('?')?'&':'?')+PREVIEW;
  try{const r=await fetch(u,{method:q.method(),headers:{...q.headers(),cookie:ch()},body:q.postData()||undefined,redirect:'follow'});eat(r);
  if(u.includes('/recommendations/')) console.error('REC FETCH', r.status, r.headers.get('content-type'), u.slice(40,150));

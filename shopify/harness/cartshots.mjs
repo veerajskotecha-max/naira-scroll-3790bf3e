@@ -8,7 +8,7 @@ import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 const [URL0, OUT, LABEL] = process.argv.slice(2);
 mkdirSync(OUT, { recursive: true });
-const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com\/v1|\/api\/collect|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|gokwik|snapchat|twitter|lightboxcdn|wigzo|netcore|smartech|\/functions\/v1\/meta-capi)/i;
+const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com\/v1|\/api\/collect|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|gokwik|snapchat|twitter|lightboxcdn|wigzo|netcore|smartech|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
   userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' });

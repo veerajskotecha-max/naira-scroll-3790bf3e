@@ -5,7 +5,7 @@
 // a real checkout.
 import { chromium } from 'playwright';
 const BASE = process.argv[2];
-const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi)/i;
+const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi|~api\/analytics)/i;
 const FASTRR_STUB = `(() => {
   window.shiprocketCheckoutEvents = { buyDirect() {
     window.__handoff = { historyLength: history.length, state: history.state,

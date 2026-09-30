@@ -3,6 +3,7 @@
 // through Node fetch because Chromium here cannot reach external hosts.
 import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 
 const THEME   = '151142826146';
 const SHOP    = 'https://nc5eti-gp.myshopify.com';
@@ -66,7 +67,7 @@ const ctx = await b.newContext({
   userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
 });
 
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const req = route.request();
   let url = req.url();
   // The preview flags have to ride on the section-rendering XHRs too, not just

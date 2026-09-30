@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 /* The live site, on a phone, all the way to the checkout handoff. */
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({
@@ -10,7 +11,7 @@ await ctx.addInitScript(() => { try { localStorage.setItem('naira-promo-popup-se
 /* Headless Chromium has no route to the outside here, but Node's fetch goes
    through the agent proxy. So every request the page makes is fulfilled by
    Node instead. */
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const req = route.request();
   try {
     const r = await fetch(req.url(), {

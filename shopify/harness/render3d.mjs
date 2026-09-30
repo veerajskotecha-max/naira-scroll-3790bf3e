@@ -3,6 +3,7 @@
 // through Node fetch, same as the storefront harness.
 import { chromium } from 'playwright';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const FILE = process.argv[2], OUT = process.argv[3];
 const VIEW = process.argv[4] || '';
 const W = +(process.argv[5] || 1280), H = +(process.argv[6] || 860);
@@ -12,7 +13,7 @@ const b = await chromium.launch({
   args: ['--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist'],
 });
 const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const u = route.request().url();
   if (u.startsWith('file:')) return route.continue();
   try {

@@ -1,10 +1,11 @@
 // Does the deferred 3D wordmark still arrive and go live — and when, relative
 // to the page's load event?
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, PATH = '/'] = process.argv.slice(2);
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   if (/(facebook\.net|facebook\.com|fbcdn\.net)/i.test(q.url())) return route.abort();
   try {

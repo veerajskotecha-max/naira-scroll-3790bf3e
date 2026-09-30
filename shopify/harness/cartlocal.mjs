@@ -7,6 +7,7 @@
 // underneath the payment marks and clip mid-word.
 import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 
 const BASE = process.env.BASE || 'http://localhost:8080';
 const OUT = process.argv[2];
@@ -24,7 +25,7 @@ const PHONES = [
 
 // Chromium has no direct egress here; Node does. Everything goes through fetch,
 // including localhost — the dev server answers it the same way.
-const proxy = async (route) => {
+const proxy = async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   try {
     const r = await fetch(q.url(), {

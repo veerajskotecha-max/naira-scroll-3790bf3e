@@ -2,6 +2,7 @@
 // Chromium here has no direct network access, so every request is proxied.
 import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const OUT = process.argv[2];
 mkdirSync(OUT, { recursive: true });
 
@@ -15,7 +16,7 @@ const PHONES = [
   ['pixel',       412, 915, 'Pixel / large Android'],
 ];
 
-const proxy = async (route) => {
+const proxy = async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   try {
     const r = await fetch(q.url(), { method: q.method(), headers: q.headers(), body: q.postData() || undefined, redirect: 'follow' });

@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 import { writeFileSync, mkdirSync } from 'node:fs';
+import { NO_REPORT } from './noreport.mjs';
 const THEME = '151142826146';
 const HOST  = 'https://nc5eti-gp.myshopify.com';
 const PREVIEW = `_ab=0&_fd=0&_sc=1&preview_theme_id=${THEME}`;
@@ -27,7 +28,7 @@ const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({ viewport:{width:1440,height:1000}, deviceScaleFactor:2,
   userAgent:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' });
 
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const req = route.request();
   let url = req.url();
   // keep the preview flags on every document request to this shop

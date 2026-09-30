@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const THEME='151142826146', HOST='https://nc5eti-gp.myshopify.com';
 const PREVIEW=`_ab=0&_fd=0&_sc=1&preview_theme_id=${THEME}`;
 const jar=new Map(); const ck=()=>[...jar].map(([k,v])=>`${k}=${v}`).join('; ');
@@ -7,7 +8,7 @@ const jar=new Map(); const ck=()=>[...jar].map(([k,v])=>`${k}=${v}`).join('; ');
     v.split(/,(?=[^;]+=)/).forEach(c=>{const[a,b]=c.split(';')[0].split('=');if(a&&b)jar.set(a.trim(),b.trim());}); }
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
 const ctx=await b.newContext({viewport:{width:1440,height:1000},deviceScaleFactor:1});
-await ctx.route('**/*', async route=>{
+await ctx.route('**/*', async route=>{ if (NO_REPORT.test(route.request().url())) return route.abort();
   const rq=route.request(); let u=rq.url();
   if(u.startsWith(HOST)&&rq.resourceType()==='document') u+=(u.includes('?')?'&':'?')+PREVIEW;
   try{ const r=await fetch(u,{method:rq.method(),headers:{...rq.headers(),cookie:ck()},body:rq.postData()||undefined,redirect:'follow'});

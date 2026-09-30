@@ -4,7 +4,8 @@
 // whether it drew its <h1>, and on product pages whether Add to cart is ready.
 // Network goes through Node (the sandbox CA); ad and analytics tags and the
 // site's own Meta relay are blocked so a run never reaches anyone's reports.
-//   CONC=4 pages at a time; ONLY=regex to test a subset of paths.
+//   CONC=4 pages at a time; ONLY=regex to test a subset of paths;
+//   VIEW=desktop  a 1440x900 laptop instead of a phone.
 import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
 const [BASE, SITEMAP = '/tmp/mainwt/dist/sitemap.xml'] = process.argv.slice(2);
@@ -13,10 +14,20 @@ const xml = SITEMAP.startsWith('http') ? await (await fetch(SITEMAP)).text() : r
 let paths = [...new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname))];
 if (process.env.ONLY) paths = paths.filter((x) => new RegExp(process.env.ONLY).test(x));
 const CONC = Number(process.env.CONC || 4);
+// What this sandbox causes, not the site: its Chromium can't verify the proxy's
+// certificate on WebSockets (route() never sees them; the same socket answers
+// 101 from Node), and Instagram serves data-centre traffic its login wall, which
+// refuses to be framed. Counted and reported apart, never silently dropped.
+const SANDBOX = [
+  [/^WebSocket connection to .*net::ERR_CERT_AUTHORITY_INVALID/, 'WebSocket refused the sandbox certificate (live reviews)'],
+  [/^Refused to display 'https:\/\/www\.instagram\.com\/' in a frame/, 'Instagram login wall for data-centre traffic'],
+];
+const sandboxOnly = new Map();
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 
+const DESKTOP = process.env.VIEW === 'desktop';
 const visit = async (path) => {
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true,
+  const ctx = await b.newContext(DESKTOP ? { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 } : { viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true,
     userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36' });
   await ctx.addInitScript({ content: "Object.defineProperty(Navigator.prototype,'webdriver',{get:()=>false});" });
   const blocked = new Set();
@@ -39,6 +50,8 @@ const visit = async (path) => {
     if (m.type() !== 'error') return;
     const t = m.text();
     if (/Failed to load resource|net::ERR_FAILED|payment manifest/.test(t)) return; // our own blocks; reported via requests
+    const known = SANDBOX.find(([re]) => re.test(t));
+    if (known) { sandboxOnly.set(known[1], (sandboxOnly.get(known[1]) ?? 0) + 1); return; }
     errors.push(`console: ${t.slice(0, 140)}`);
   });
   const row = { path, h1: null, atc: null, ms: 0, errors, bad };
@@ -74,6 +87,7 @@ await b.close();
 
 const withIssues = rows.filter((r) => !r.h1 || r.atc === false || r.errors.length || r.bad.length);
 console.log(`\n${rows.length} pages · ${rows.length - withIssues.length} clean · ${withIssues.length} with something to look at`);
+for (const [label, n] of sandboxOnly) console.log(`   sandbox only, not the site: ${n} × ${label}`);
 for (const r of withIssues) {
   console.log(`\n${r.path}  (h1: ${r.h1 ?? 'none'}${r.atc === null ? '' : `, add to cart ${r.atc ? 'ready' : 'NOT ready'}`})`);
   for (const e of [...r.errors, ...r.bad].slice(0, 8)) console.log(`   ${e}`);

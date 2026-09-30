@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
 const ctx=await b.newContext({viewport:{width:1440,height:1000}});
-await ctx.route('**/*',async route=>{const q=route.request();
+await ctx.route('**/*',async route=>{ if (NO_REPORT.test(route.request().url())) return route.abort();const q=route.request();
  try{const r=await fetch(q.url(),{method:q.method(),headers:q.headers(),body:q.postData()||undefined,redirect:'follow'});
  const buf=Buffer.from(await r.arrayBuffer());const h=Object.fromEntries([...r.headers].filter(([k])=>!/^(content-encoding|content-length|set-cookie)$/i.test(k)));
  await route.fulfill({status:r.status,headers:h,body:buf});}catch{await route.abort();}});

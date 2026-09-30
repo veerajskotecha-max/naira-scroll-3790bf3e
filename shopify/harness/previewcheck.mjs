@@ -38,10 +38,11 @@ const mounted = (p, re) => p.waitForFunction((src) => {
   return h1 && new RegExp(src, 'i').test(h1.textContent || '') && [...document.querySelectorAll('button')].some((x) => /add to cart|pre-order/i.test(x.textContent || '') && Object.keys(x).some((k) => k.startsWith('__react')));
 }, re.source, { timeout: 60000 });
 // Stock shadcn navy / slate / blue-grey values, as computed colours.
-const offBrand = (p) => p.evaluate(() => {
+// scope: which elements to scan (the whole page by default, or just the bag)
+const offBrand = (p, scope = '#root *, [role="dialog"] *') => p.evaluate((scope) => {
   const bad = { 'rgb(15, 23, 42)': 'navy', 'rgb(2, 8, 23)': 'navy-black', 'rgb(100, 116, 139)': 'slate', 'rgb(226, 232, 240)': 'blue-grey border', 'rgb(241, 245, 249)': 'blue-grey fill', 'rgb(248, 250, 252)': 'blue-white' };
   const hits = {};
-  for (const el of document.querySelectorAll('#root *, [role="dialog"] *')) {
+  for (const el of document.querySelectorAll(scope)) {
     const r = el.getBoundingClientRect(); if (!r.width || !r.height) continue;
     const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none') continue;
     for (const prop of ['color', 'backgroundColor', 'borderTopColor']) {
@@ -53,7 +54,7 @@ const offBrand = (p) => p.evaluate(() => {
     }
   }
   return hits;
-});
+}, scope);
 
 const H = 'prism-riviere-bracelet';
 
@@ -317,7 +318,7 @@ for (const [label, path] of [['next', `/preview/jewellery/${H}`], ['live', `/jew
   await p.waitForTimeout(1200);
   const bag = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return d ? { palette: d.classList.contains('nf-palette'), bg: getComputedStyle(d).backgroundColor, text: d.innerText.replace(/\s+/g, ' ') } : null; });
   check('bag opens from the header on the listing, in Naira colours', !!bag && bag.palette && bag.bg === 'rgb(251, 243, 236)', bag ? `${bag.bg} · ${bag.text.slice(0, 80)}` : 'no bag');
-  const hits = await offBrand(p);
+  const hits = await offBrand(p, '[role="dialog"][data-state="open"] *'); // the listing behind keeps its own colours
   check('no stock navy / slate in the bag on the listing', Object.keys(hits).length === 0, JSON.stringify(hits).slice(0, 300));
   check('no page errors on the listing', errors.length === 0, errors.slice(0, 2).join(' | '));
   await shot(p, 'listing-bag');

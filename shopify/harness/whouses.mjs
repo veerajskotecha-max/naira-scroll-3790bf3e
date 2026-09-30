@@ -1,9 +1,10 @@
 // Which elements on the page use the same URLs as the review thumbnails?
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, PATH = '/jewellery/verdant-eternity-band'] = process.argv.slice(2);
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const q = route.request();
   if (/(facebook\.net|facebook\.com|fbcdn\.net)/i.test(q.url())) return route.abort();
   try {

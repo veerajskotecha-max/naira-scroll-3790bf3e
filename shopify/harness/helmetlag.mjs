@@ -2,13 +2,14 @@
 // pages share one headless browser the way the prerender runs them — and are
 // animation frames being rationed?
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const [BASE, N = '4'] = process.argv.slice(2);
 const ROUTES = ['/jewellery/prism-riviere-bracelet', '/journal', '/about', '/jewellery/baroque-shell-bracelet',
                 '/faqs', '/jewellery/charm-box-chain', '/journal/zirconia-vs-diamond', '/jewellery/collections/bridal-jewellery'];
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--no-sandbox'] });
 const run = async (path) => {
   const p = await b.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: process.env.RM || 'no-preference' });
-  await p.route(/.*/, async (route) => {
+  await p.route(/.*/, async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const q = route.request();
     if (/(facebook\.net|facebook\.com|fbcdn\.net)/i.test(q.url())) return route.abort();
     try {

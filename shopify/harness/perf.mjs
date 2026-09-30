@@ -3,6 +3,7 @@
 // every request is proxied through Node fetch; the throttling is applied in
 // the browser via CDP so the proxy does not distort it.
 import { chromium } from 'playwright';
+import { NO_REPORT } from './noreport.mjs';
 const URL = process.argv[2];
 const PROFILE = process.argv[3] || 'slow4g';
 const PROFILES = {
@@ -17,7 +18,7 @@ const ctx = await b.newContext({
   userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
 });
 const res = [];
-await ctx.route('**/*', async (route) => {
+await ctx.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
   const req = route.request();
   try {
     const r = await fetch(req.url(), { method: req.method(), headers: req.headers(), body: req.postData() || undefined, redirect: 'follow' });

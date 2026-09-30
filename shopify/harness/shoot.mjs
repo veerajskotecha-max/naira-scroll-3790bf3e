@@ -5,6 +5,7 @@ import fs from 'node:fs';
 // Sandbox has Chromium 1194; playwright 1.57 expects 1217. Pin the binary.
 const CHROME = '/opt/pw-browsers/chromium';
 import path from 'node:path';
+import { NO_REPORT } from './noreport.mjs';
 
 const OUT  = process.env.OUT_DIR  || path.join(import.meta.dirname, '..', 'rendered');
 const SHOT = process.env.SHOT_DIR || path.join(import.meta.dirname, '..', 'shots');
@@ -32,7 +33,7 @@ for (const v of VIEWS) {
   // Localhost is reachable directly; every external host (Shopify CDN images,
   // Google Fonts) must go through Node fetch — headless Chromium in this
   // sandbox gets ERR_CONNECTION_RESET on direct external navigation.
-  await page.route('**/*', async (route) => {
+  await page.route('**/*', async (route) => { if (NO_REPORT.test(route.request().url())) return route.abort();
     const url = route.request().url();
     if (url.includes('127.0.0.1') || url.includes('localhost')) return route.continue();
     try {

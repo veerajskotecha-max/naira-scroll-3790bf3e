@@ -8,7 +8,7 @@
 //   HANDLE=h         the piece to film (default prism-riviere-bracelet)
 //   RM=1             prefers-reduced-motion (the box should stay still)
 //   SCROLL_AT=ms     scroll the bag's list to the box this long after it opens
-//   PEEK_AT=ms       tap "Peek inside" this long after the bag opens
+//   PEEK_AT=ms       tap the box ("Open the gift box") this long after the bag opens
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 const [BASE, OUT, RATE = '1'] = process.argv.slice(2);
@@ -66,14 +66,14 @@ tapAt = await p.evaluate(() => window.__tapWall);
 await p.waitForSelector(BAG, { timeout: 15000 }).catch(() => {});
 const openWall = tapAt + await p.evaluate(() => Math.round(window.__open - window.__tap));
 if (process.env.SCROLL_AT) { await p.waitForTimeout(Math.max(0, Number(process.env.SCROLL_AT) - (Date.now() - openWall))); await p.evaluate((BAG) => document.querySelector(BAG)?.scrollIntoView({ block: 'nearest', behavior: 'instant' }), BAG); }
-if (process.env.PEEK_AT) { await p.waitForTimeout(Math.max(0, Number(process.env.PEEK_AT) - (Date.now() - openWall))); await p.locator(`${BAG} button`, { hasText: /peek inside/i }).click(); }
+if (process.env.PEEK_AT) { await p.waitForTimeout(Math.max(0, Number(process.env.PEEK_AT) - (Date.now() - openWall))); await p.locator(`${BAG} [aria-label="Open the gift box"]`).click(); }
 await p.waitForTimeout(Number(process.env.FILM_MS || 6500) - (Date.now() - openWall));
 await cdp.send('Page.stopScreencast');
 const t = await p.evaluate(() => ({ open: Math.round(window.__open - window.__tap), peek: window.__peek ? Math.round(window.__peek - window.__tap) : null }));
 const state = await p.evaluate((BAG) => {
   const row = document.querySelector(BAG); const list = row?.closest('.overflow-y-auto');
   const r = row?.getBoundingClientRect(); const l = list?.getBoundingClientRect();
-  return { row: row?.innerText.replace(/\s+/g, ' '), rowInView: !!(r && l && r.top >= l.top - 1 && r.bottom <= l.bottom + 1), peekButton: !!row?.querySelector('button'),
+  return { row: row?.innerText.replace(/\s+/g, ' '), rowInView: !!(r && l && r.top >= l.top - 1 && r.bottom <= l.bottom + 1), tapToOpen: !!row?.querySelector('[aria-label="Open the gift box"]'), caption: row?.querySelector('[aria-live]')?.textContent.trim(),
     running: row ? [...row.querySelectorAll('*')].flatMap((el) => el.getAnimations()).filter((a) => a.playState === 'running').length : 0 };
 }, BAG);
 const cartRequests = cartLog.map(([name, a, z]) => `${name} ${a - tapAt}→${z - tapAt} ms`);

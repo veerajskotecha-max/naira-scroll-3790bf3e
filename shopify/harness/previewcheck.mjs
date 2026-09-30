@@ -68,28 +68,30 @@ const H = 'prism-riviere-bracelet';
     body: getComputedStyle(document.body).backgroundColor,
     cta: getComputedStyle([...document.querySelectorAll('#product-actions button')].find((x) => /add to cart/i.test(x.textContent))).backgroundColor,
     counter: [...document.querySelectorAll('#root span')].find((s) => /^\d+ \/ \d+$/.test(s.textContent.trim()))?.textContent.trim(),
-    size: [...document.querySelectorAll('#root span')].find((s) => s.textContent.trim() === 'Size')?.nextElementSibling?.textContent.trim(),
-    finish: [...document.querySelectorAll('#root span')].find((s) => s.textContent.trim() === 'Finish')?.nextElementSibling?.textContent.trim(),
-    sold: [...document.querySelectorAll('#root p')].find((x) => /sold in the last 24 hours/.test(x.textContent))?.textContent.trim(),
+    rows: [...document.querySelectorAll('#root span')].filter((s) => ['Size', 'Finish'].includes(s.textContent.trim())).length,
+    facts: !!document.getElementById('product-facts'),
+    sold: [...document.querySelectorAll('#root p')].some((x) => /sold in the last 24 hours/.test(x.textContent)),
     robots: document.querySelector('meta[name="robots"]')?.content,
     canonical: document.querySelector('link[rel="canonical"]')?.href,
     title: document.title,
-    priceBottom: document.getElementById('product-facts')?.getBoundingClientRect().bottom,
+    priceBottom: document.getElementById('product-price')?.getBoundingClientRect().bottom,
     ctaBottom: document.getElementById('product-actions')?.getBoundingClientRect().bottom,
   }));
   check('palette class on while the preview is open', /\bnf-next\b/.test(info.cls), info.cls);
   check('ivory page ground', info.body === 'rgb(251, 243, 236)', info.body);
   check('Add to cart is deep sage', info.cta === 'rgb(79, 114, 104)', info.cta);
   check('photo counter shows 1 / 6 (or 1 / 7 once the reel slide joins)', /^1 \/ [67]$/.test(info.counter || ''), info.counter);
-  check('size row reads the piece\'s own length', /15–19 cm/.test(info.size || ''), info.size);
-  check('finish row', /Rhodium/.test(info.finish || ''), info.finish);
-  check('sold line kept, one quiet line', /pieces? sold in the last 24 hours/.test(info.sold || ''), info.sold);
+  check('first screen cleared: no facts block, size or finish rows, sold line', !info.facts && info.rows === 0 && !info.sold, JSON.stringify({ facts: info.facts, rows: info.rows, sold: info.sold }));
   check('kept out of search', /noindex/.test(info.robots || ''), info.robots);
   check('canonical names the live page', info.canonical === `https://nairaflore.com/jewellery/${H}`, info.canonical);
-  check('price and facts in the first screen', info.priceBottom < 844, `facts end at ${Math.round(info.priceBottom)}px`);
+  check('price and Add to cart in the first screen', info.priceBottom < 844 && info.ctaBottom <= 844, `price ends ${Math.round(info.priceBottom)}px, button ${Math.round(info.ctaBottom)}px`);
   console.log(`      (Add to cart ends at ${Math.round(info.ctaBottom)}px of an 844px screen)`);
-  const barAtLanding = await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /add to cart\s*·/i.test(x.textContent || '')); return b ? getComputedStyle(b.parentElement).visibility : 'none'; });
-  check('a buy button is on screen from landing (390×844)', barAtLanding === 'visible', barAtLanding);
+  const buyAtLanding = await p.evaluate(() => {
+    const bar = [...document.querySelectorAll('button')].find((x) => /add to cart\s*·/i.test(x.textContent || ''));
+    const main = document.querySelector('#product-actions button')?.getBoundingClientRect();
+    return (bar && getComputedStyle(bar.parentElement).visibility === 'visible') || (main && main.bottom <= innerHeight) ? 'visible' : 'none';
+  });
+  check('a buy button is on screen from landing (390×844)', buyAtLanding === 'visible', buyAtLanding);
   await shot(p, 'next-390-00');
   // swipe the gallery
   await p.evaluate(() => { const s = document.querySelector('#root .md\\:hidden .snap-x'); s.scrollTo({ left: s.clientWidth * 2, behavior: 'instant' }); });
@@ -106,9 +108,8 @@ const H = 'prism-riviere-bracelet';
     await shot(p, 'next-gallery-video', { clip: { x: 0, y: 0, width: 390, height: 520 } });
   }
   const first = await p.evaluate(() => ({
-    saving: [...document.querySelectorAll('#product-price span')].map((x) => x.textContent.trim()).find((t) => /^Save ₹/.test(t)),
-    stock: document.getElementById('product-facts')?.innerText.includes('In stock'),
-    trust: document.querySelector('[aria-label="Naira assurances"]')?.innerText.replace(/\s+/g, ' ').trim() ?? '',
+    saving: [...document.querySelectorAll('#product-price span')].map((x) => x.textContent.trim()).find((t) => /% off$/i.test(t)),
+    folds: [...document.querySelectorAll('#root details')].filter((d) => d.querySelector('#pdp-panel-details, #pdp-panel-care, #pdp-panel-delivery')).map((d) => d.open),
     gift: [...document.querySelectorAll('#product-actions p')].map((x) => x.textContent.trim()).find((t) => /gift box/i.test(t)),
     look: document.querySelectorAll('section[aria-labelledby="complete-the-look"] article').length,
     care: document.getElementById('pdp-panel-care')?.textContent.replace(/\s+/g, ' ') ?? '',
@@ -117,14 +118,13 @@ const H = 'prism-riviere-bracelet';
     jsonld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((x) => { try { return JSON.parse(x.textContent)['@type']; } catch { return '?'; } }),
     embedded: !!document.getElementById('nf-piece'),
   }));
-  check('saving shown in rupees', /^Save ₹1,801 \(43%\)$/.test(first.saving || ''), first.saving);
-  check('stock status in the facts', first.stock === true);
-  check('returns and plating assurance under the button', /7-day returns/.test(first.trust) && /plating/.test(first.trust), first.trust);
+  check('saving shown as a percentage', /^43% off$/i.test(first.saving || ''), first.saving);
+  check('details, care and delivery as three closed fold-downs', first.folds.length === 3 && first.folds.every((o) => !o), JSON.stringify(first.folds));
   check('gift box stated under the button', !!first.gift, first.gift);
   check('complete the look: three pieces', first.look === 3, `${first.look} card(s)`);
   check('tarnish and skin answered in Care, no separate FAQ section', /tarnish/i.test(first.care) && /skin/i.test(first.care) && !first.faqSection, first.care.slice(0, 120));
   check('more of the category', first.more >= 2, `${first.more} card(s)`);
-  check('product, breadcrumb and FAQ data, embedded piece', ['Product', 'BreadcrumbList', 'FAQPage'].every((t) => first.jsonld.includes(t)) && first.embedded, first.jsonld.join(', '));
+  check('product and breadcrumb data, embedded piece, no FAQ data', ['Product', 'BreadcrumbList'].every((t) => first.jsonld.includes(t)) && !first.jsonld.includes('FAQPage') && first.embedded, first.jsonld.join(', '));
   await p.evaluate(() => { const s = document.querySelector('#root .md\\:hidden .snap-x'); s.scrollTo({ left: 0, behavior: 'instant' }); });
   // off-brand colours anywhere on the page
   await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 700) { window.scrollTo({ top: y, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 250)); } });
@@ -139,19 +139,19 @@ const H = 'prism-riviere-bracelet';
     await p.waitForTimeout(700);
     await shot(p, `next-390-seg${i}`);
   }
-  // tabs
-  await p.evaluate(() => { document.getElementById('pdp-tab-details').scrollIntoView({ block: 'start', behavior: 'instant' }); window.scrollBy({ top: -120, behavior: 'instant' }); });
+  // fold-downs
+  await p.evaluate(() => { document.getElementById('pdp-panel-details').closest('details').scrollIntoView({ block: 'start', behavior: 'instant' }); window.scrollBy({ top: -160, behavior: 'instant' }); });
   await p.waitForTimeout(400);
-  await shot(p, 'next-tab-details');
-  await p.click('#pdp-tab-care');
-  const careShown = await p.evaluate(() => !document.getElementById('pdp-panel-care').hidden && document.getElementById('pdp-panel-details').hidden);
-  check('Care tab switches the panel', careShown);
-  await p.click('#pdp-tab-delivery');
+  await shot(p, 'next-folds-closed');
+  await p.evaluate(() => document.getElementById('pdp-panel-care').closest('details').querySelector('summary').click());
+  const careShown = await p.evaluate(() => document.getElementById('pdp-panel-care').closest('details').open && document.getElementById('pdp-panel-care').offsetHeight > 0);
+  check('Care opens on a tap', careShown);
+  await p.evaluate(() => document.getElementById('pdp-panel-delivery').closest('details').querySelector('summary').click());
   await p.waitForTimeout(300);
-  await shot(p, 'next-tab-delivery');
+  await shot(p, 'next-fold-delivery');
   const deliv = await p.evaluate(() => document.getElementById('pdp-panel-delivery').innerText);
   const hasPin = await p.evaluate(() => !!document.querySelector('#pdp-panel-delivery input'));
-  check('Delivery tab carries pincode check and WhatsApp help', hasPin && /WhatsApp/.test(deliv), deliv.replace(/\s+/g, ' ').slice(0, 160));
+  check('Delivery & returns carries pincode check and WhatsApp help', hasPin && /WhatsApp/.test(deliv), deliv.replace(/\s+/g, ' ').slice(0, 160));
   // new sections
   for (const [id, name] of [['complete-the-look', 'next-look'], ['more-like-this', 'next-more']]) {
     await p.evaluate((i) => { document.getElementById(i)?.scrollIntoView({ block: 'start', behavior: 'instant' }); window.scrollBy({ top: -130, behavior: 'instant' }); }, id);
@@ -197,17 +197,25 @@ const H = 'prism-riviere-bracelet';
   check('bag drops Shiprocket line, Continue shopping and repeated shipping', !/Powered by|Continue Shopping/i.test(bag.text) && (bag.text.match(/free insured shipping/gi) || []).length <= 1, bag.text.slice(0, 160));
   const bagHits = await offBrand(p);
   check('no stock navy / slate in the bag', Object.keys(bagHits).length === 0, JSON.stringify(bagHits).slice(0, 300));
-  const bagPick = await p.evaluate(() => [...document.querySelectorAll('[role="dialog"][data-state="open"] #bag-pairings ~ ul li')].map((li) => li.innerText.replace(/\s+/g, ' ').trim()));
-  check('bag suggests pieces toward the 2-piece offer', bagPick.length === 2, bagPick.join(' | '));
+  check('bag kept clean: no suggestions, no subtotal and shipping rows', !/Complete the look|Subtotal/i.test(bag.text) && !(await p.$('[role="dialog"][data-state="open"] #bag-pairings')), bag.text.slice(0, 160));
   await shot(p, 'next-bag');
-  if (bagPick.length) {
-    await p.locator('[role="dialog"][data-state="open"] #bag-pairings ~ ul li button').first().click();
-    await p.waitForFunction(() => /10% off applied|BUY2/i.test(document.querySelector('[role="dialog"][data-state="open"]')?.innerText || ''), null, { timeout: 20000 }).catch(() => {});
-    await p.waitForTimeout(1500);
-    const after = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText.replace(/\s+/g, ' '));
-    check('adding a suggestion earns the 10% in the bag', /BUY2 · 10% off/i.test(after), (after.match(/BUY2[^₹]*₹[\d,]+/) || [after.slice(0, 120)])[0]);
-    await shot(p, 'next-bag-2');
-  }
+  // the gift box: hovering, ring shut; a tap opens it and says what it means, then it closes
+  const caption = () => p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] [aria-live]')?.textContent.trim() ?? '');
+  const idleCap = await caption();
+  check('gift box hovers in the bag, ring shut, tap to open', /tap to open/i.test(idleCap), idleCap);
+  await p.locator('[role="dialog"][data-state="open"] [aria-label="Open the gift box"]').click();
+  await p.waitForFunction(() => /comes in this gift box/i.test(document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] [aria-live]')?.textContent || ''), null, { timeout: 6000 }).catch(() => {});
+  const upCap = await caption();
+  await shot(p, 'next-bag-box-open');
+  await p.waitForFunction(() => /tap to open/i.test(document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] [aria-live]')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});
+  const backCap = await caption();
+  check('a tap raises the ring and says "your piece comes in this gift box", then it closes', /comes in this gift box/i.test(upCap) && /tap to open/i.test(backCap), `${upCap} → ${backCap}`);
+  // one more of the same piece earns the 2-piece offer
+  await p.locator('[role="dialog"][data-state="open"] button[aria-label="Increase quantity"]').first().click();
+  await p.waitForFunction(() => /BUY2 · 10% off/i.test(document.querySelector('[role="dialog"][data-state="open"]')?.innerText || ''), null, { timeout: 20000 }).catch(() => {});
+  const after = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText.replace(/\s+/g, ' '));
+  check('a second piece earns the 10% in the bag', /BUY2 · 10% off applied/i.test(after), (after.match(/BUY2[^₹]*₹[\d,]+/) || [after.slice(0, 120)])[0]);
+  await shot(p, 'next-bag-2');
   // the phone back button closes the bag
   await p.goBack();
   await p.waitForTimeout(800);

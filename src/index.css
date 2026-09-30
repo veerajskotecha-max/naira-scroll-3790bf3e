@@ -268,6 +268,14 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* On the redesigned product page, the same guard without making <body> a
+   scroll container, so the laptop photo column can stay in view (sticky).
+   Browsers without `clip` keep `hidden` from the rule above. */
+html.nf-next,
+html.nf-next body {
+  overflow-x: clip;
+}
+
 /* Smooth scroll only for users who haven't requested reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   html {

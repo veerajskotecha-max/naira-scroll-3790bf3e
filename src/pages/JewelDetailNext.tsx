@@ -729,7 +729,9 @@ const JewelDetailNext = () => {
 
       <div className="mx-auto max-w-[1400px] pb-12 md:px-6">
         <div className="flex flex-col lg:grid lg:items-start lg:gap-0" style={{ gridTemplateColumns: "1fr 1fr" }}>
-          <div className="hidden md:block">{DesktopGallery}</div>
+          {/* On a laptop the photos stay in view while the details scroll past
+              them, sized to the screen so the lower row is never cut off. */}
+          <div className="hidden md:block lg:sticky lg:top-[140px] lg:h-[calc(100vh-156px)] lg:self-start">{DesktopGallery}</div>
 
           <div className="flex w-full flex-col items-stretch px-4 pt-5 md:pt-6 lg:px-10 lg:pt-2 xl:px-12">
             {/* Category and rating; the count always travels with the average. */}

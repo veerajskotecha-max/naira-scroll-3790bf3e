@@ -11,6 +11,7 @@
 // Network through Node (the sandbox CA); nothing reaches an ad or analytics
 // account (noreport.mjs).
 //   ONLY=journeys|sweep   one part     SWEEP=<path>   sweep another page
+//   LIST=1                with ONLY=sweep: list the controls it would tap, tap none
 import { chromium } from 'playwright';
 import { NO_REPORT } from './noreport.mjs';
 const [BASE, HANDLE = 'prism-riviere-bracelet', RING = 'cushion-halo-ring'] = process.argv.slice(2);
@@ -272,6 +273,7 @@ const sweep = async (path) => {
     });
   }, KEY);
   await ctx.close();
+  if (process.env.LIST) { console.log(`${path}: ${controls.length} controls\n  ` + controls.map((c) => c.label.slice(0, 40)).join('\n  ')); return; }
   const origin = new URL(BASE).origin;
   const rows = [];
   for (const c of controls) {

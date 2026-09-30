@@ -124,6 +124,15 @@ const H = 'prism-riviere-bracelet';
     embedded: !!document.getElementById('nf-piece'),
   }));
   check('saving shown as a percentage', /^43% off$/i.test(first.saving || ''), first.saving);
+  const badges = await p.evaluate(() => {
+    const ul = document.querySelector('[aria-label="Made to last"]');
+    const lis = [...(ul?.children ?? [])];
+    const price = document.getElementById('product-price')?.getBoundingClientRect();
+    const btn = [...document.querySelectorAll('#product-actions button')].find((x) => /add to cart/i.test(x.textContent))?.getBoundingClientRect();
+    const top = ul?.getBoundingClientRect().top ?? -1;
+    return { text: lis.map((li) => li.textContent.trim()), rows: new Set(lis.map((li) => Math.round(li.getBoundingClientRect().top))).size, between: !!(price && btn && top > price.top && top < btn.top) };
+  });
+  check('Palmonas-style badges under the price: anti-tarnish, skin-friendly, the plating, one row', badges.text.join('|') === 'Anti-tarnish|Skin-friendly|Rhodium-plated' && badges.rows === 1 && badges.between, `${badges.text.join(' · ')} · ${badges.rows} row(s)`);
   check('details, care and delivery as three closed fold-downs', first.folds.length === 3 && first.folds.every((o) => !o), JSON.stringify(first.folds));
   check('gift box stated under the button', !!first.gift, first.gift);
   check('complete the look: three pieces', first.look === 3, `${first.look} card(s)`);

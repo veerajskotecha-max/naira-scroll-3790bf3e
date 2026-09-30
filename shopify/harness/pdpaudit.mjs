@@ -46,7 +46,7 @@ const newPage = async (desktop = false) => {
 };
 const pathOf = (p) => { const u = new URL(p.url()); return u.origin === new URL(BASE).origin ? u.pathname : u.href; };
 const reactReady = (p) => p.waitForFunction(() => Object.keys(document.getElementById('root')?.firstElementChild || {}).some((k) => k.startsWith('__react')), null, { timeout: 30000 });
-const pdpReady = (p) => p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => /add to cart|pre-order/i.test(x.textContent) && Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 30000 });
+const pdpReady = (p) => p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => /add to cart|pre-order|reserve/i.test(x.textContent) && Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 30000 });
 const settle = (p, ms = 1200) => p.waitForTimeout(ms);
 // big fixed layers on screen: the bag, the menu, a zoom, a dialog
 const overlays = (p) => p.evaluate(() => [...document.querySelectorAll('body *')].filter((el) => {
@@ -75,7 +75,7 @@ const fromListing = async (p, desktop = false) => {
   return href;
 };
 const addToBag = async (p) => {
-  await p.locator('#product-actions button', { hasText: /add to cart|pre-order/i }).first().click();
+  await p.locator('#product-actions button', { hasText: /add to cart|pre-order|reserve/i }).first().click();
   await p.waitForSelector('[role="dialog"][data-state="open"]', { timeout: 15000 });
   await settle(p, 1500);
 };
@@ -324,7 +324,8 @@ const sweep = async (path) => {
     // a fixed bar slid off the screen (the buy bar before it is needed) can't be tapped until it slides in
     const parked = (el) => { const r = el.getBoundingClientRect(); for (let a = el; a; a = a.parentElement) if (getComputedStyle(a).position === 'fixed') return r.top >= innerHeight || r.bottom <= 0; return false; };
     const vis = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && cs.pointerEvents !== 'none' && !el.closest('footer') && !el.closest('[aria-hidden="true"]') && !parked(el)
-      && el.getAttribute('aria-checked') !== 'true' // the option already chosen: tapping it again rightly does nothing
+      && el.getAttribute('aria-checked') !== 'true' && el.getAttribute('aria-pressed') !== 'true' // the option already chosen: tapping it again rightly does nothing
+      && el.getAttribute('aria-current') !== 'page' && !(el.getAttribute('href') === location.pathname) // a link to this very page
       && ((r.right > 0 && r.left < innerWidth) || strip(el)); };
     const seen = {};
     return [...document.querySelectorAll('#root button, #root a[href], #root summary, #root [role="button"]')].filter(vis).map((el) => {
@@ -356,10 +357,16 @@ const sweep = async (path) => {
         const key = eval(KEY);
         return [...document.querySelectorAll('#root button, #root a[href], #root summary, #root [role="button"]')].filter((el) => key(el) === k)[nth] ?? null;
       }, { ...c, KEY });
-      const el = handle.asElement();
+      let el = handle.asElement();
       if (!el) { rows.push([c, 'skip', 'not there on a fresh load']); continue; }
       await el.scrollIntoViewIfNeeded().catch(() => {});
       await settle(p, 250);
+      // find it again: a sticky bar re-renders as it sticks, and a stale handle can't be tapped
+      el = (await p.evaluateHandle(({ key: k, nth, KEY }) => {
+        const key = eval(KEY);
+        return [...document.querySelectorAll('#root button, #root a[href], #root summary, #root [role="button"]')].filter((x) => key(x) === k)[nth] ?? null;
+      }, { ...c, KEY })).asElement() ?? el;
+      if (await el.evaluate((x) => { const r = x.getBoundingClientRect(); return r.width < 2 || r.height < 2; })) { rows.push([c, 'skip', 'hidden on this screen']); continue; }
       const snap = () => p.evaluate((el) => ({
         url: location.href, layers: [...document.querySelectorAll('body *')].filter((x) => { const cs = getComputedStyle(x); return cs.position === 'fixed' && cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.1 && x.getBoundingClientRect().width * x.getBoundingClientRect().height > innerWidth * innerHeight * 0.4; }).length,
         dialogs: document.querySelectorAll('[role="dialog"], [aria-modal="true"]').length,

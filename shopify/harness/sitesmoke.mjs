@@ -77,7 +77,7 @@ const visit = async (path) => {
     await p.waitForFunction(() => document.querySelector('#root h1') && Object.keys(document.getElementById('root')?.firstElementChild || {}).some((k) => k.startsWith('__react')), null, { timeout: 25000 }).catch(() => {});
     row.h1 = await p.evaluate(() => document.querySelector('#root h1')?.textContent.trim().slice(0, 50) ?? null);
     if (/^\/(jewellery|products)\/(?!collections\/)[^/]+$/.test(pathOnly)) {
-      row.atc = await p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => /add to cart|pre-order/i.test(x.textContent) && !x.disabled && Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 25000 }).then(() => true, () => false);
+      row.atc = await p.waitForFunction(() => [...document.querySelectorAll('#product-actions button')].some((x) => /add to cart|pre-order|reserve/i.test(x.textContent) && !x.disabled && Object.keys(x).some((k) => k.startsWith('__react'))), null, { timeout: 25000 }).then(() => true, () => false);
     }
     await p.waitForTimeout(2500); // late errors: reviews, reels, lazy sections
     const at = new URL(p.url());

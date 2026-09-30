@@ -108,7 +108,9 @@ const CompactPaymentMarks = () => (
   </div>
 );
 
-const Footer = ({ compact = false }: { compact?: boolean }) => {
+/* `slim` (the redesigned product page) leaves out the assurance grid and
+   payment marks: the page states those facts beside Add to cart already. */
+const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: boolean }) => {
   const [email, setEmail] = useState("");
 
   const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
@@ -143,7 +145,7 @@ const Footer = ({ compact = false }: { compact?: boolean }) => {
       {/* The product page ends on the box too: where the gifting question is asked. */}
       <NairaBoxShowcase />
       <footer className="w-full border-t border-border" style={{ backgroundColor: SAGE }}>
-        <section className="bg-background px-5 py-10 md:px-10 md:py-12" aria-label="Naira purchase assurances">
+        {!slim && <section className="bg-background px-5 py-10 md:px-10 md:py-12" aria-label="Naira purchase assurances">
           <div className="mx-auto max-w-[880px]">
             <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
               {compactTrustItems.map(({ icon: Icon, title, detail }) => (
@@ -165,7 +167,7 @@ const Footer = ({ compact = false }: { compact?: boolean }) => {
               <p className="mt-4 font-sans text-[10px] text-muted-foreground">UPI, major cards, net banking and Cash on Delivery on serviceable pincodes</p>
             </div>
           </div>
-        </section>
+        </section>}
 
         <div className="max-w-[1200px] mx-auto px-5 py-8 md:px-10 md:py-10">
           <div className="flex flex-col items-center gap-5 text-center md:flex-row md:justify-between md:text-left">

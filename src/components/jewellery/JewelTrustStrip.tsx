@@ -1,4 +1,5 @@
 import { Gem, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { dailySoldCount } from "@/lib/dailySold";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -7,12 +8,6 @@ const items = [
   { icon: ShieldCheck, label: "Skin Safe Jewellery" },
   { icon: Gem, label: "18K Gold Tone Plated" },
 ] as const;
-
-const dailySoldCount = (productKey: string) => {
-  let hash = 0;
-  for (const character of productKey) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
-  return (hash % 20) + 1;
-};
 
 /**
  * Material assurances sit beside the price, where shoppers compare finish.

@@ -17,6 +17,7 @@ export const ROUTE_CODE = [
   ["/jewellery/collections/:slug", "JewelleryCategory"],
   ["/jewellery/:handle", "JewelDetail"],
   ["/jewelry/:handle", "JewelDetail"],
+  ["/preview/jewellery/:handle", "JewelDetailNext"],
   ["/collections/:slug", "JewelleryCategory"],
   ["/journal", "Journal"],
   ["/journal/:slug", "JournalArticle"],

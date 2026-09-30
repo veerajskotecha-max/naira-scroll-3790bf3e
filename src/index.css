@@ -102,6 +102,45 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* The product-page redesign while it is in preview (/preview/…): Naira's
+     palette in place of the stock blue-grey one above, which is where the navy
+     buttons and grey-blue text on the product page and bag come from. The
+     preview page sets the class on <html>, so the bag, dialogs and toasts —
+     rendered outside the page — take it too. */
+  :root.nf-next {
+    --background: 28 65% 95.5%; /* ivory #FBF3EC */
+    --foreground: 20 13% 9%; /* ink #1A1614 */
+    --card: 28 65% 95.5%;
+    --card-foreground: 20 13% 9%;
+    --popover: 28 65% 95.5%;
+    --popover-foreground: 20 13% 9%;
+    --primary: var(--nf-sage-logo-deep-hsl); /* deep sage: the buttons */
+    --primary-foreground: 28 65% 95.5%;
+    --secondary: 30 45% 92%; /* ivory-deep #F4EBE2 */
+    --secondary-foreground: 20 13% 9%;
+    --muted: 30 45% 92%;
+    --muted-foreground: 24 8% 39%; /* warm grey, 5.4:1 on ivory */
+    --accent: 30 45% 92%;
+    --accent-foreground: 20 13% 9%;
+    --border: 32 28% 85%; /* linen hairline */
+    --input: 32 28% 85%;
+    --ring: 38 50% 46%; /* gold-deep */
+  }
+}
+
+/* Press logos with a white box (JPG/PNG) sit on the ivory ground without it. */
+.nf-next [aria-label="Press features"] img {
+  mix-blend-mode: multiply;
+}
+
+/* The review stars are drawn in stock yellow; on the preview page they take
+   the brand gold. */
+.nf-next .text-yellow-500 {
+  color: var(--nf-gold);
+}
+.nf-next .fill-yellow-500 {
+  fill: var(--nf-gold);
 }
 
 @layer base {
@@ -386,6 +425,11 @@ img {
      marks. Kept as a component token so the exception is visible and lives in
      exactly one place, instead of an arbitrary value buried in a className. */
   --nf-checkout-radius: 10px;
+
+  /* Buy buttons on the redesigned product page and bag: the logo's sage,
+     deepened so ivory lettering on it reads at 4.8:1. */
+  --nf-cta: hsl(var(--nf-sage-logo-deep-hsl));
+  --nf-cta-hover: hsl(162 20% 32%);
 
   /* Footer (sage block) */
   --nf-footer-surface: hsl(var(--nf-sage-logo-hsl));

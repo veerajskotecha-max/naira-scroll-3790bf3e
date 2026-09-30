@@ -392,6 +392,22 @@ async function main() {
       shelled += 1;
     }
     if (shelled) console.warn(`prerender: ${shelled} route(s) had no capture and were given the SPA shell`);
+
+    /* The product-page redesign under review, /preview/jewellery/<handle>, is
+       not pre-built. Without a file of its own the host would answer with the
+       homepage, which showed until the app replaced it; the empty shell opens
+       straight on the app instead. Removed with the preview. */
+    let previews = 0;
+    for (const path of captured) {
+      const handle = /^\/jewellery\/(?!collections\/)([^/]+)$/.exec(path)?.[1];
+      if (!handle) continue;
+      const dest = routeToFile(`/preview/jewellery/${handle}`);
+      if (existsSync(dest)) continue;
+      mkdirSync(resolve(dest, ".."), { recursive: true });
+      writeFileSync(dest, shell, "utf8");
+      previews += 1;
+    }
+    if (previews) console.log(`prerender: ${previews} preview page(s) given the SPA shell`);
     if (capturedHome) writeFileSync(SHELL_FILE, capturedHome, "utf8");
 
     /* Catalogue ads link to /products/<handle>, which had no page of its own:

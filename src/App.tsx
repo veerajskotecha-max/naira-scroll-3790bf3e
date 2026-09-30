@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -10,6 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { useCartSync } from "./hooks/useCartSync";
 import Header from "./components/Header";
 import CartDrawer from "./components/CartDrawer";
+import { isPreviewPath } from "./lib/preview";
 import WishlistDrawer from "./components/WishlistDrawer";
 import ScrollToTop from "./components/ScrollToTop";
 import PixelEvents from "./components/PixelEvents";
@@ -26,6 +27,7 @@ import {
   MadeForYou,
   Jewellery,
   JewelDetail,
+  JewelDetailNext,
   Concepts,
   RingLab,
   RingExample,
@@ -62,6 +64,18 @@ const KeepQuery = ({ to }: { to: string }) => {
   return <Navigate to={{ pathname: to, search }} replace />;
 };
 
+/* The redesigned bag goes with the redesigned product page, on preview pages
+   only; everyone else keeps the live bag. */
+const CartDrawerNext = lazy(() => import("./components/CartDrawerNext"));
+const Bag = () =>
+  isPreviewPath(useLocation().pathname) ? (
+    <Suspense fallback={null}>
+      <CartDrawerNext />
+    </Suspense>
+  ) : (
+    <CartDrawer />
+  );
+
 const AppShell = () => {
   useCartSync();
 
@@ -74,7 +88,7 @@ const AppShell = () => {
       <ScrollBloom />
       
       <Header />
-      <CartDrawer />
+      <Bag />
       <WishlistDrawer />
       <Suspense fallback={null}>
         <Routes>
@@ -99,6 +113,7 @@ const AppShell = () => {
           <Route path="/jewellery" element={<Jewellery />} />
           <Route path="/jewellery/collections/:slug" element={<JewelleryCategory />} />
           <Route path="/jewellery/:handle" element={<JewelDetail />} />
+          <Route path="/preview/jewellery/:handle" element={<JewelDetailNext />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
           <Route path="/gifting" element={<Gifting />} />

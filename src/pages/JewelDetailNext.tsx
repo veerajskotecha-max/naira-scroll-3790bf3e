@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles, Zap } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -24,6 +24,7 @@ import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, moreLikeThis } from "@/lib/pairings";
 import { useBackToClose } from "@/hooks/useBackToClose";
+import { recentSoldCount } from "@/lib/dailySold";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -433,6 +434,7 @@ const JewelDetailNext = () => {
   const soldOut = piece.availableForSale === false && !adjustable;
   const isRing = piece.category === "Rings";
   const finish = finishOf(piece);
+  const soldCount = recentSoldCount(piece.handle);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
   const saving = piece.compareAtPrice && piece.compareAtPrice > piece.price ? piece.compareAtPrice - piece.price : 0;
@@ -772,6 +774,13 @@ const JewelDetailNext = () => {
                 </li>
               ))}
             </ul>
+
+            <p className="mt-2.5 flex min-h-8 items-center gap-2 border-y border-nf-gold/30 bg-nf-ivory-deep/70 px-2.5 py-1.5 font-nf-label text-[10px] font-medium uppercase leading-4 tracking-nf-8 text-nf-ink min-[375px]:text-[10.5px]">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center bg-nf-gold text-nf-ink" aria-hidden="true">
+                <Zap size={11} fill="currentColor" strokeWidth={1.5} />
+              </span>
+              {soldCount} pieces sold in the last 48 hours
+            </p>
 
             {/* Ring size, the one choice a piece needs before the bag. Every
                 other detail waits in the fold-downs below, as on Nishorama. */}

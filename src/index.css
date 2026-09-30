@@ -355,6 +355,7 @@ img {
   --nf-gold: #C99A4C;             --nf-gold-rgb: 201 154 76;     /* bright gold */
   --nf-gold-deep: #B0843A;        --nf-gold-deep-rgb: 176 132 58;/* mid gold */
   --nf-gold-shadow: #9A7634;      --nf-gold-shadow-rgb: 154 118 52; /* umbral gold, text-safe on ivory */
+  --nf-gold-text: #80612A;        --nf-gold-text-rgb: 128 97 42; /* small gold lettering: 5.2:1 on ivory, 4.9:1 on ivory-deep (AA) */
   --nf-sage: #99B4AF;             --nf-sage-rgb: 153 180 175;    /* brand sage */
   --nf-blush: #FFBDA8;            --nf-blush-rgb: 255 189 168;   /* pressed-flower blush */
 

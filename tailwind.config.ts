@@ -52,6 +52,7 @@ export default {
           gold: "rgb(var(--nf-gold-rgb) / <alpha-value>)",
           "gold-deep": "rgb(var(--nf-gold-deep-rgb) / <alpha-value>)",
           "gold-shadow": "rgb(var(--nf-gold-shadow-rgb) / <alpha-value>)",
+          "gold-text": "rgb(var(--nf-gold-text-rgb) / <alpha-value>)",
           sage: "rgb(var(--nf-sage-rgb) / <alpha-value>)",
           blush: "rgb(var(--nf-blush-rgb) / <alpha-value>)",
           cream: "hsl(var(--nf-cream-hsl) / <alpha-value>)",

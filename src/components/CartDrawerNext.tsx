@@ -1,6 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { bagPairings } from "@/lib/pairings";
+import { QUANTITY_OFFERS } from "@/lib/promo";
+import { isPreviewPath, previewProductPath } from "@/lib/preview";
+import type { JewelPiece } from "@/data/jewellery";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
@@ -50,6 +55,75 @@ const PayMarks = () => (
     </span>
   </span>
 );
+
+/* "Add one more": two pieces that complete the look of what is in the bag,
+   while a rung of the ladder is still ahead. Adding one moves the bar and
+   the total at once; the bag stays open. */
+const BagPairings = ({
+  inBag,
+  totalItems,
+  onPick,
+}: {
+  inBag: string[];
+  totalItems: number;
+  /* Closes the bag on the way to the piece's page. */
+  onPick: (event: MouseEvent<HTMLAnchorElement>) => void;
+}) => {
+  const { jewellery } = useLiveJewellery();
+  const { addItem, isLoading } = useCart();
+  const [adding, setAdding] = useState<string | null>(null);
+  const picks = useMemo(() => bagPairings(inBag, jewellery, 2), [inBag.join(","), jewellery]); // eslint-disable-line react-hooks/exhaustive-deps
+  const next = QUANTITY_OFFERS.find((offer) => totalItems < offer.minQuantity);
+  if (!next || picks.length === 0) return null;
+  const hrefFor = (h: string) => (isPreviewPath(window.location.pathname) ? previewProductPath(h) : `/jewellery/${h}`);
+  const add = async (piece: JewelPiece) => {
+    setAdding(piece.handle);
+    try {
+      await addItem({
+        id: piece.handle,
+        variantId: piece.variantId,
+        name: piece.name,
+        price: piece.price,
+        priceLabel: piece.priceLabel,
+        currencyCode: "INR",
+        image: piece.image,
+        size: piece.category === "Rings" ? "US 6" : undefined,
+      });
+    } finally {
+      setAdding(null);
+    }
+  };
+  const away = next.minQuantity - totalItems;
+  return (
+    <section className="mx-4 mb-4 border-t border-nf-gold/25 pt-4 sm:mx-5" aria-labelledby="bag-pairings">
+      <p id="bag-pairings" className="font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-gold-text">
+        Add {away === 1 ? "one more" : `${away} more`} · save {Math.round(next.rate * 100)}%
+      </p>
+      <ul className="mt-2">
+        {picks.map((piece) => (
+          <li key={piece.handle} className="flex items-center gap-3 py-2">
+            <Link to={hrefFor(piece.handle)} onClick={onPick} className="block h-14 w-14 shrink-0 overflow-hidden bg-nf-ivory-deep">
+              <img src={shopifyImage(piece.image, 160)} alt={piece.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
+            </Link>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-cormorant text-[15px] font-semibold leading-tight text-nf-ink">{piece.name}</p>
+              <p className="mt-0.5 text-[12.5px] text-nf-ink/75">{piece.priceLabel}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => add(piece)}
+              disabled={isLoading || adding !== null}
+              aria-label={`Add ${piece.name} to bag`}
+              className="press-scale h-9 shrink-0 bg-[var(--nf-cta)] px-4 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ivory transition-colors hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+            >
+              {adding === piece.handle ? "Adding…" : "Add"}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
 
 const CartDrawerNext = () => {
   const { items, totalItems, subtotal, updateQuantity, removeItem, isDrawerOpen, setDrawerOpen, checkout, checkoutUrl, isLoading, isSyncing, syncCart } =
@@ -143,7 +217,7 @@ const CartDrawerNext = () => {
             </button>
             <SheetTitle className="flex items-baseline gap-2.5 font-cormorant text-[22px] font-semibold text-nf-ink">
               Your bag
-              <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink/50">
+              <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
                 {totalItems === 1 ? "1 piece" : `${totalItems} pieces`}
               </span>
             </SheetTitle>
@@ -156,7 +230,7 @@ const CartDrawerNext = () => {
           <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
             <ShoppingBag size={28} strokeWidth={1.2} className="text-nf-gold-deep" aria-hidden="true" />
             <p className="mt-4 font-cormorant text-[22px] font-semibold text-nf-ink">Your bag is empty</p>
-            <p className="mt-2 max-w-[240px] font-nf-editorial text-[16px] leading-[1.6] text-nf-ink/60">
+            <p className="mt-2 max-w-[240px] font-nf-editorial text-[16px] leading-[1.6] text-nf-ink/75">
               Pieces you choose will gather here, ready when you are.
             </p>
             <Link
@@ -184,7 +258,7 @@ const CartDrawerNext = () => {
                     <div className="flex min-w-0 flex-1 flex-col justify-between">
                       <div>
                         <p className="line-clamp-2 font-cormorant text-[16px] font-semibold leading-tight text-nf-ink">{item.name}</p>
-                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[11.5px] text-nf-ink/55">{lineOptions(item)}</p> : null}
+                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[11.5px] text-nf-ink/70">{lineOptions(item)}</p> : null}
                         <p className="mt-1 text-[13.5px] font-medium text-nf-ink">{item.priceLabel}</p>
                       </div>
                       <div className="mt-2 flex items-center justify-between">
@@ -215,7 +289,7 @@ const CartDrawerNext = () => {
                           onClick={() => removeItem(item.id, item.size)}
                           disabled={isLoading}
                           aria-label={`Remove ${item.name}`}
-                          className="-mr-1 inline-flex min-h-11 items-center px-1 text-[12px] text-nf-ink/55 underline decoration-nf-ink/20 underline-offset-4 hover:text-nf-ink disabled:opacity-50"
+                          className="-mr-1 inline-flex min-h-11 items-center px-1 text-[12px] text-nf-ink/70 underline decoration-nf-ink/25 underline-offset-4 hover:text-nf-ink disabled:opacity-50"
                         >
                           Remove
                         </button>
@@ -224,26 +298,27 @@ const CartDrawerNext = () => {
                   </li>
                 ))}
               </ul>
+              <BagPairings inBag={items.map((item) => item.id)} totalItems={totalItems} onPick={leave} />
             </div>
 
             <div className="shrink-0 space-y-2.5 border-t border-nf-gold/25 bg-nf-ivory px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:pb-[max(14px,env(safe-area-inset-bottom))]">
               <p className="flex items-center gap-2 text-[12.5px] text-nf-ink/75">
                 <Truck size={14} strokeWidth={1.5} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
                 <span>
-                  Arrives by <strong className="font-semibold text-nf-ink">{arrivesBy}</strong> · free insured shipping
+                  Arrives by <strong className="font-semibold text-nf-ink">{arrivesBy}</strong> · free insured shipping · gift‑boxed
                 </span>
               </p>
 
               <CartPromoField />
 
-              <div className="space-y-1 text-[12.5px] text-nf-ink/65">
+              <div className="space-y-1 text-[12.5px] text-nf-ink/75">
                 <div className="flex items-center justify-between">
                   <span>Subtotal</span>
                   <span className="text-nf-ink">{formatPrice(subtotal)}</span>
                 </div>
                 {/* The code is named: it is the one the checkout receives. */}
                 {discountAmount > 0 && discount.code && (
-                  <div className="flex items-center justify-between font-medium text-nf-gold-shadow">
+                  <div className="flex items-center justify-between font-medium text-nf-gold-text">
                     <span className="tracking-nf-4">
                       {discount.code} · {Math.round(discount.rate * 100)}% off{discount.automatic ? " applied" : null}
                     </span>
@@ -252,17 +327,17 @@ const CartDrawerNext = () => {
                 )}
                 <div className="flex items-center justify-between">
                   <span>Shipping</span>
-                  <span className="font-medium text-nf-gold-shadow">Free</span>
+                  <span className="font-medium text-nf-gold-text">Free</span>
                 </div>
               </div>
               <div className="flex items-baseline justify-between border-t border-nf-gold/20 pt-2.5">
-                <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
+                <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink/75">
                   Total
-                  {discountAmount > 0 && <span className="ml-2 normal-case tracking-nf-4 text-nf-gold-shadow">you save {formatPrice(discountAmount)}</span>}
+                  {discountAmount > 0 && <span className="ml-2 normal-case tracking-nf-4 text-nf-gold-text">you save {formatPrice(discountAmount)}</span>}
                 </span>
                 <span className="flex items-baseline gap-2">
                   {discountAmount > 0 && (
-                    <span className="font-cormorant text-[14px] text-nf-ink/40 line-through">{formatPrice(subtotal + SHIPPING_CHARGE)}</span>
+                    <span className="font-cormorant text-[14px] text-nf-ink/65 line-through">{formatPrice(subtotal + SHIPPING_CHARGE)}</span>
                   )}
                   <span className="font-cormorant text-[23px] font-bold leading-none text-nf-ink">{formatPrice(orderTotal)}</span>
                 </span>
@@ -277,7 +352,7 @@ const CartDrawerNext = () => {
                 {busy ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : null}
                 Checkout · {formatPrice(orderTotal)}
               </button>
-              <p className="flex items-center justify-center gap-2 pb-0.5 text-[11.5px] text-nf-ink/60">
+              <p className="flex items-center justify-center gap-2 pb-0.5 text-[11.5px] text-nf-ink/75">
                 <PayMarks />
                 UPI, cards or cash on delivery
               </p>

@@ -90,7 +90,7 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
         <Link to={href} className="block truncate font-cormorant text-[15px] leading-tight text-nf-ink">
           {name}
         </Link>
-        <p className="mt-0.5 text-[12px] text-nf-ink/60">{soldOut ? "Pre-order" : price}</p>
+        <p className="mt-0.5 text-[12px] text-nf-ink/70">{soldOut ? "Pre-order" : price}</p>
       </div>
       {soldOut ? (
         <button
@@ -119,7 +119,22 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
 const control =
   "flex h-9 w-9 items-center justify-center bg-nf-ivory/85 text-nf-ink shadow-[0_2px_10px_-4px_rgb(var(--nf-ink-rgb)/0.5)] backdrop-blur-sm transition-colors hover:bg-nf-ivory";
 
-const ReelFrame = ({ reel, active, canLoad }: { reel: Reel; active: boolean; canLoad: boolean }) => {
+/* Also the video slide in the product page's photo gallery (square there). */
+export const ReelFrame = ({
+  reel,
+  active,
+  canLoad,
+  frameClassName = "aspect-[4/5]",
+  inGallery = false,
+}: {
+  reel: Reel;
+  active: boolean;
+  canLoad: boolean;
+  frameClassName?: string;
+  /* In the photo gallery the page's back and wishlist buttons hold the top
+     corners and the counter the bottom-left: controls go bottom-right. */
+  inGallery?: boolean;
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const instagramBrowser = useMemo(isInstagramBrowser, []);
   /* Instagram's webview only plays from inside the tap; a data-saver or slow
@@ -227,7 +242,7 @@ const ReelFrame = ({ reel, active, canLoad }: { reel: Reel; active: boolean; can
   const askFirst = waitForTap && (!userStarted || failed);
 
   return (
-    <div className="relative aspect-[4/5] overflow-hidden bg-nf-ink">
+    <div className={`relative overflow-hidden bg-nf-ink ${frameClassName}`}>
       <img
         src={stillUrl}
         alt={reel.title ?? "Naira Flore reel"}
@@ -272,7 +287,7 @@ const ReelFrame = ({ reel, active, canLoad }: { reel: Reel; active: boolean; can
       )}
       {playable && (
         <>
-          <div className="absolute inset-x-3 top-3 h-[2px] bg-nf-ivory/30">
+          <div className={`absolute inset-x-3 h-[2px] bg-nf-ivory/30 ${inGallery ? "bottom-2" : "top-3"}`}>
             <div className="h-full bg-nf-ivory transition-[width] duration-150" style={{ width: `${progress}%` }} />
           </div>
           {askFirst ? (
@@ -287,7 +302,12 @@ const ReelFrame = ({ reel, active, canLoad }: { reel: Reel; active: boolean; can
               </span>
             </button>
           ) : (
-            <button type="button" onClick={togglePlayback} aria-label={paused ? "Play reel" : "Pause reel"} className={`${control} absolute left-3 top-5`}>
+            <button
+              type="button"
+              onClick={togglePlayback}
+              aria-label={paused ? "Play reel" : "Pause reel"}
+              className={`${control} absolute ${inGallery ? "bottom-5 right-14" : "left-3 top-5"}`}
+            >
               {paused || !ready ? <Play size={13} fill="currentColor" /> : <Pause size={13} fill="currentColor" />}
             </button>
           )}
@@ -295,13 +315,13 @@ const ReelFrame = ({ reel, active, canLoad }: { reel: Reel; active: boolean; can
             type="button"
             onClick={() => setMuted((value) => !value)}
             aria-label={muted ? "Unmute reel" : "Mute reel"}
-            className={`${control} absolute right-3 top-5`}
+            className={`${control} absolute ${inGallery ? "bottom-5 right-3" : "right-3 top-5"}`}
           >
             {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
           </button>
         </>
       )}
-      {reel.title && (
+      {reel.title && !inGallery && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-nf-ink/70 to-transparent px-4 pb-3.5 pt-12">
           <p className="line-clamp-1 font-cormorant text-[17px] leading-tight text-nf-ivory">{reel.title}</p>
         </div>
@@ -322,7 +342,7 @@ const ReelPlaceholder = ({ onRetry }: { onRetry?: () => void }) => (
         <Play size={20} fill="currentColor" className="ml-0.5" />
       </span>
     </div>
-    <p className="px-4 py-3 text-[12px] text-nf-ink/60">{onRetry ? "Tap to reload the reel" : "Loading the reel…"}</p>
+    <p className="px-4 py-3 text-[12px] text-nf-ink/70">{onRetry ? "Tap to reload the reel" : "Loading the reel…"}</p>
   </div>
 );
 
@@ -391,13 +411,13 @@ const ReelShopNext = ({ hrefFor = productHref }: { hrefFor?: HrefFor }) => {
     <section ref={sectionRef} className="border-y border-nf-gold/25 bg-nf-ivory-deep py-10 md:hidden" aria-labelledby="shop-reels-title">
       <header className="flex items-end justify-between gap-3 px-4">
         <div className="min-w-0">
-          <p className="font-nf-label text-[10px] uppercase tracking-nf-24 text-nf-gold-shadow">Seen on Naira</p>
+          <p className="font-nf-label text-[10px] uppercase tracking-nf-24 text-nf-gold-text">Seen on Naira</p>
           <h2 id="shop-reels-title" className="mt-1.5 font-cormorant text-[26px] leading-none text-nf-ink">
             Shop the reel
           </h2>
         </div>
         {reels.length > 1 && (
-          <p className="shrink-0 font-nf-label text-[11px] tabular-nums tracking-nf-8 text-nf-ink/55">
+          <p className="shrink-0 font-nf-label text-[11px] tabular-nums tracking-nf-8 text-nf-ink/70">
             {activeIndex + 1} / {reels.length}
           </p>
         )}
@@ -427,7 +447,7 @@ const ReelShopNext = ({ hrefFor = productHref }: { hrefFor?: HrefFor }) => {
                   <ReelFrame reel={reel} active={isActive} canLoad={inView && isActive} />
                   {reel.products.length > 0 && (
                     <div className="px-3.5 pb-1 pt-2">
-                      <p className="pt-1 font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-shadow">In this reel</p>
+                      <p className="pt-1 font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-text">In this reel</p>
                       <ul className="divide-y divide-nf-gold/20">
                         {reel.products.slice(0, 3).map((product) => (
                           <ReelPiece key={product.id} product={product} live={liveByHandle.get(product.handle)} hrefFor={hrefFor} />
@@ -452,7 +472,7 @@ const ReelShopNext = ({ hrefFor = productHref }: { hrefFor?: HrefFor }) => {
               <button
                 type="button"
                 onClick={() => goToReel((activeIndex + 1) % reels.length)}
-                className="inline-flex min-h-[40px] shrink-0 items-center gap-1 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-gold-shadow"
+                className="inline-flex min-h-[40px] shrink-0 items-center gap-1 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-gold-text"
               >
                 Next reel <ChevronRight size={13} />
               </button>

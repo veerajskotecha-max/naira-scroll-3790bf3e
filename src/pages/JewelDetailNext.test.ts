@@ -21,11 +21,12 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/const MOBILE_FRAME = "1\/1"/);
   });
 
-  it("never draws the buy bar over the price and facts", () => {
+  it("shows the buy bar whenever Add to cart is not fully on screen, never over the price and facts", () => {
     const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
     expect(effect).toMatch(/stickyBarRef/);
     expect(effect).toMatch(/getElementById\("product-facts"\)/);
-    expect(effect).toMatch(/setStickyBarVisible\(offScreen && priceClear\)/);
+    expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
+    expect(effect).toMatch(/setStickyBarVisible\(notFullyShown && priceClear\)/);
     expect(code).toMatch(/new ResizeObserver\(check\)/);
   });
 
@@ -44,7 +45,7 @@ describe("redesigned product page", () => {
 
   it("puts price, then buy facts, then size, then Add to cart", () => {
     const price = code.indexOf('id="product-price"');
-    const facts = code.indexOf("<PdpBuyFacts");
+    const facts = code.indexOf('id="product-facts"');
     const size = code.indexOf('aria-label="Ring size, US"');
     const actions = code.indexOf('id="product-actions"');
     expect(price).toBeGreaterThan(-1);
@@ -61,11 +62,25 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/<ReelPeek/);
   });
 
-  it("stays out of search and names the live page as canonical", () => {
-    expect(code).toMatch(/<meta name="robots" content="noindex, nofollow" \/>/);
+  it("stays out of search while in preview and names the live page as canonical", () => {
+    expect(code).toMatch(/<meta name="robots" content=\{inPreview \? "noindex, nofollow" : "index, follow, max-image-preview:large"\} \/>/);
+    expect(code).toMatch(/const inPreview = isPreviewPath\(pathname\)/);
     expect(code).toMatch(/<link rel="canonical" href=\{canonical\} \/>/);
     // `src`, not `code`: stripping line comments would cut the URL at "//".
     expect(src).toMatch(/const canonical = `https:\/\/nairaflore\.com\/jewellery\/\$\{piece\.handle\}`/);
+  });
+
+  it("keeps what the pre-built page needs: embedded piece, product, breadcrumb and FAQ data", () => {
+    expect(code).toMatch(/id="nf-piece"/);
+    expect(code).toMatch(/"@type": "BreadcrumbList"/);
+    expect(code).toMatch(/"@type": "FAQPage"/);
+  });
+
+  it("suggests a second piece before the reviews", () => {
+    const look = code.indexOf('id="complete-the-look"');
+    const reviews = code.indexOf("<CustomerReviews");
+    expect(look).toBeGreaterThan(-1);
+    expect(reviews).toBeGreaterThan(look);
   });
 
   it("switches the palette on for its own lifetime only", () => {

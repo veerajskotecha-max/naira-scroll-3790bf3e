@@ -29,21 +29,26 @@ const pieces = (n: number) => (n === 1 ? "1 piece" : `${n} pieces`);
  * shopping, not a line of arithmetic.
  */
 /* `quiet` (the redesigned bag): no eyebrow and no rung labels, so the band
-   carries one headline over one track rather than six scraps of capitals. */
-const OfferProgress = ({ totalItems, quiet = false }: { totalItems: number; quiet?: boolean }) => {
+   carries one headline over one track rather than six scraps of capitals.
+   `appliedRate` is the discount the bag actually gets (a typed code can give
+   as much as a rung), so the band never offers a saving already in hand. */
+const OfferProgress = ({ totalItems, quiet = false, appliedRate }: { totalItems: number; quiet?: boolean; appliedRate?: number }) => {
   const earned = earnedQuantityOffer(totalItems);
   const next = nextQuantityOffer(totalItems);
   const away = itemsToQuantityOffer(totalItems);
   const progress = quantityOfferProgress(totalItems);
+  const applied = Math.max(appliedRate ?? 0, earned?.rate ?? 0);
+  const better = QUANTITY_OFFERS.find((offer) => totalItems < offer.minQuantity && offer.rate > applied) ?? null;
 
   /* Kept short deliberately: the editorial serif renders as capitals, and a
      sentence that wraps to two lines of caps reads as shouting rather than as
      an offer. Every branch here fits one line at 360px. */
-  const headline = earned
-    ? next
-      ? `${pct(earned.rate)} off — add ${pieces(away)} for ${pct(next.rate)}`
-      : `${pct(earned.rate)} off — your best price`
-    : `Add ${pieces(away)}, save ${pct(next?.rate ?? 0)}`;
+  const headline =
+    applied > 0
+      ? better
+        ? `${pct(applied)} off — add ${pieces(better.minQuantity - totalItems)} for ${pct(better.rate)}`
+        : `${pct(applied)} off — your best price`
+      : `Add ${pieces(away)}, save ${pct(next?.rate ?? 0)}`;
 
   return (
     <div className="shrink-0 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-4 py-2.5 sm:px-5 sm:pb-3.5 sm:pt-3">

@@ -12,7 +12,7 @@ import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import { CartPromoField } from "@/components/cart/CartExtras";
 import OfferProgress from "@/components/cart/OfferProgress";
-import { discountedSubtotal, getPromoCode, PROMO_EVENT, resolveCartDiscount } from "@/lib/promo";
+import { discountedSubtotal, getPromoCode, PROMO_EVENT, QUANTITY_OFFERS, resolveCartDiscount } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import googlePayMark from "@/assets/google-pay-mark.svg";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,7 +21,8 @@ import { shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { shopifyImage } from "@/lib/shopifyImage";
 
 /*
-  The bag for the redesigned product page (shown on /preview/ pages only).
+  The bag, on every page. It replaced CartDrawer.tsx (kept for now so the
+  switch can be undone in one line in App.tsx).
 
   Same cart, discount resolver and checkout hand-off as CartDrawer.tsx. What
   goes: the second "Free insured shipping" (it is in the arrival line), the
@@ -101,6 +102,7 @@ const CartDrawerNext = () => {
   const arrivesBy = deliveryRangeFromNow();
   /* One resolver for the bag and the checkout hand-off: the total shown is the total charged. */
   const discount = resolveCartDiscount({ totalItems, promoCode });
+  const rung = discount.automatic ? QUANTITY_OFFERS.find((offer) => offer.code === discount.code) : undefined;
   const goodsTotal = discountedSubtotal(subtotal, discount);
   const discountAmount = subtotal - goodsTotal;
   const orderTotal = goodsTotal + SHIPPING_CHARGE;
@@ -153,7 +155,7 @@ const CartDrawerNext = () => {
       <SheetContent
         ref={contentRef}
         closeClassName="hidden sm:flex"
-        className="inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-gold/15 bg-nf-ivory p-0 text-nf-ink sm:max-w-[420px]"
+        className="nf-palette inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-gold/15 bg-nf-ivory p-0 text-nf-ink sm:max-w-[420px]"
       >
         <SheetHeader className="shrink-0 border-b border-nf-gold/15 px-4 pb-3 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
           <div className="flex items-center">
@@ -174,7 +176,7 @@ const CartDrawerNext = () => {
           </div>
         </SheetHeader>
 
-        {items.length > 0 && <OfferProgress totalItems={totalItems} quiet />}
+        {items.length > 0 && <OfferProgress totalItems={totalItems} quiet appliedRate={discount.rate} />}
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
@@ -265,10 +267,12 @@ const CartDrawerNext = () => {
                 <p className="mt-1 text-[11px] text-nf-ink/65">
                   Free insured shipping · arrives by <strong className="font-semibold text-nf-ink/80">{arrivesBy}</strong>
                 </p>
-                {/* The code is named: it is the one the checkout receives. */}
-                {discountAmount > 0 && discount.code && (
+                {/* The one discount the order gets, named for what it is, never
+                    by its code: a code name beside the bag's offer reads as a
+                    second discount. */}
+                {discountAmount > 0 && (
                   <p className="mt-0.5 text-[11px] font-medium text-nf-gold-text">
-                    {discount.code} · {Math.round(discount.rate * 100)}% off{discount.automatic ? " applied" : null} · you save {formatPrice(discountAmount)}
+                    {rung ? `${rung.minQuantity} pieces` : "Promo code"} · {Math.round(discount.rate * 100)}% off applied · you save {formatPrice(discountAmount)}
                   </p>
                 )}
               </div>
@@ -286,7 +290,7 @@ const CartDrawerNext = () => {
                 <PayMarks />
                 UPI, cards or cash on delivery · 7-day returns
               </p>
-              <CartPromoField />
+              <CartPromoField inUse={!discount.automatic} />
             </div>
           </>
         )}

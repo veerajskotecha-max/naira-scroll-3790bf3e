@@ -14,8 +14,7 @@ export const ProductDetail = lazyRoute(() => import("./pages/ProductDetail.tsx")
 export const CatchAll = lazyRoute(() => import("./pages/CatchAll.tsx"));
 export const MadeForYou = lazyRoute(() => import("./pages/MadeForYou.tsx"));
 export const Jewellery = lazyRoute(() => import("./pages/Jewellery.tsx"));
-export const JewelDetail = lazyRoute(() => import("./pages/JewelDetail.tsx"));
-// The redesigned product page, in preview at /preview/jewellery/:handle.
+// The product page (/jewellery/:handle; also at /preview/jewellery/:handle).
 export const JewelDetailNext = lazyRoute(() => import("./pages/JewelDetailNext.tsx"));
 export const Concepts = lazyRoute(() => import("./pages/Concepts.tsx"));
 export const RingLab = lazyRoute(() => import("./pages/RingLab.tsx"));
@@ -41,7 +40,7 @@ export const AdminReels = lazyRoute(() => import("./pages/admin/Reels.tsx"));
 
 
 const PAGES: Record<RouteKey, LazyRoute> = {
-  Index, ShopAll, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetail, JewelDetailNext,
+  Index, ShopAll, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetailNext,
   Journal, JournalArticle, Gifting, GoldenHourEdit, TrackOrder, InnerCircle, Auth, Account,
   AboutUs, ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs,
 };

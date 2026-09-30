@@ -103,12 +103,13 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  /* The product-page redesign while it is in preview (/preview/…): Naira's
-     palette in place of the stock blue-grey one above, which is where the navy
-     buttons and grey-blue text on the product page and bag come from. The
-     preview page sets the class on <html>, so the bag, dialogs and toasts —
-     rendered outside the page — take it too. */
-  :root.nf-next {
+  /* Naira's palette in place of the stock blue-grey one above, which is where
+     navy buttons and grey-blue text come from. The product page sets the class
+     on <html> while it is open, so dialogs and toasts rendered outside it take
+     it too; the bag carries .nf-palette itself, so it is Naira's on every
+     page. */
+  :root.nf-next,
+  .nf-palette {
     --background: 28 65% 95.5%; /* ivory #FBF3EC */
     --foreground: 20 13% 9%; /* ink #1A1614 */
     --card: 28 65% 95.5%;

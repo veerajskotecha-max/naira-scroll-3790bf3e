@@ -25,9 +25,11 @@ import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, moreLikeThis } from "@/lib/pairings";
 
 /*
-  The redesigned product page, in preview at /preview/jewellery/<handle>.
+  The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
+  kept out of search). It replaced JewelDetail.tsx, kept for now so the switch
+  can be undone in one line in App.tsx.
 
-  Same data, prices, cart and checkout as the live page (JewelDetail.tsx). Set
+  Same data, prices, cart and checkout as before. Set
   against Nishorama, Bluorng, Project Shades, Palmonas and GIVA, it keeps the
   first screen to what a decision needs and folds the rest away, the way
   Nishorama does:
@@ -39,11 +41,11 @@ import { completeTheLook, moreLikeThis } from "@/lib/pairings";
 
   Colours are Naira's (ivory ground, ink, gold detail, deep-sage buttons); the
   html.nf-next class swaps the stock blue-grey palette the shared components
-  draw from for the brand one, bag and dialogs included. Small text is held to
-  4.5:1 or better.
+  draw from for the brand one, dialogs included. Small text is held to 4.5:1
+  or better.
 
-  Ready to replace the live page: outside /preview/ it indexes, links to the
-  live product pages and carries the same structured data and embedded piece.
+  Outside /preview/ it indexes, links to the product pages and carries the
+  structured data and the embedded piece the pre-built page is drawn from.
 */
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));

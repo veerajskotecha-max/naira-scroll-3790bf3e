@@ -9,8 +9,6 @@ import { WishlistProvider } from "@/contexts/WishlistContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useCartSync } from "./hooks/useCartSync";
 import Header from "./components/Header";
-import CartDrawer from "./components/CartDrawer";
-import { isPreviewPath } from "./lib/preview";
 import WishlistDrawer from "./components/WishlistDrawer";
 import ScrollToTop from "./components/ScrollToTop";
 import PixelEvents from "./components/PixelEvents";
@@ -26,7 +24,6 @@ import {
   CatchAll,
   MadeForYou,
   Jewellery,
-  JewelDetail,
   JewelDetailNext,
   Concepts,
   RingLab,
@@ -64,17 +61,14 @@ const KeepQuery = ({ to }: { to: string }) => {
   return <Navigate to={{ pathname: to, search }} replace />;
 };
 
-/* The redesigned bag goes with the redesigned product page, on preview pages
-   only; everyone else keeps the live bag. */
+/* The bag (the Naira box hovering under the pieces), on every page. Its code
+   arrives after the page's own, so it never slows a landing. */
 const CartDrawerNext = lazy(() => import("./components/CartDrawerNext"));
-const Bag = () =>
-  isPreviewPath(useLocation().pathname) ? (
-    <Suspense fallback={null}>
-      <CartDrawerNext />
-    </Suspense>
-  ) : (
-    <CartDrawer />
-  );
+const Bag = () => (
+  <Suspense fallback={null}>
+    <CartDrawerNext />
+  </Suspense>
+);
 
 const AppShell = () => {
   useCartSync();
@@ -112,7 +106,7 @@ const AppShell = () => {
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
           <Route path="/jewellery/collections/:slug" element={<JewelleryCategory />} />
-          <Route path="/jewellery/:handle" element={<JewelDetail />} />
+          <Route path="/jewellery/:handle" element={<JewelDetailNext />} />
           <Route path="/preview/jewellery/:handle" element={<JewelDetailNext />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
@@ -150,7 +144,7 @@ const AppShell = () => {
           <Route path="/blogs/:blog" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
           <Route path="/jewelry" element={<KeepQuery to="/jewellery" />} />
-          <Route path="/jewelry/:handle" element={<JewelDetail />} />
+          <Route path="/jewelry/:handle" element={<JewelDetailNext />} />
           <Route path="/pages/about" element={<KeepQuery to="/about" />} />
           <Route path="/pages/contact" element={<KeepQuery to="/contact" />} />
           <Route path="/pages/faqs" element={<KeepQuery to="/faqs" />} />

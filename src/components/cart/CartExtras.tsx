@@ -5,14 +5,23 @@ import { useCart } from "@/contexts/CartContext";
 import { fetchShopifyProducts, formatShopifyPrice } from "@/lib/shopify";
 import { getPromoCode, setPromoCode, clearPromoCode, PROMO_EVENT, isAcceptedPromoCode, normalizePromoCode } from "@/lib/promo";
 
-export const CartPromoField = () => {
-  const [applied, setApplied] = useState<string | null>(() => getPromoCode());
+/* The code itself is never shown back: a code name next to the bag's own
+   offers reads as a second discount. `inUse` is false when a better offer
+   (the 3-piece rung, say) is what the order gets instead. */
+export const CartPromoField = ({ inUse = true }: { inUse?: boolean }) => {
+  /* A code the bag no longer accepts (an old one left from a past visit) is
+     not shown as added. */
+  const stored = () => {
+    const code = getPromoCode();
+    return code && isAcceptedPromoCode(normalizePromoCode(code)) ? code : null;
+  };
+  const [applied, setApplied] = useState<string | null>(stored);
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const sync = () => setApplied(getPromoCode());
+    const sync = () => setApplied(stored());
     window.addEventListener(PROMO_EVENT, sync);
     return () => window.removeEventListener(PROMO_EVENT, sync);
   }, []);
@@ -35,7 +44,7 @@ export const CartPromoField = () => {
       <div className="flex items-center justify-between border border-dashed border-[color:rgb(var(--nf-gold-rgb)/0.55)] bg-[var(--nf-surface-raised)] px-3 py-2.5">
         <span className="flex items-center gap-2 text-[12px] text-[var(--nf-accent-quiet)]">
           <Check size={13} strokeWidth={2} />
-          <strong className="font-semibold tracking-[var(--nf-track-8)]">{applied}</strong> applied
+          {inUse ? "Code added" : "Code added · a better offer applies"}
         </span>
         <button
           onClick={() => {

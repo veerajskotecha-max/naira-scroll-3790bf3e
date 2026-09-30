@@ -108,20 +108,21 @@ const H = 'prism-riviere-bracelet';
   const first = await p.evaluate(() => ({
     saving: [...document.querySelectorAll('#product-price span')].map((x) => x.textContent.trim()).find((t) => /^Save ₹/.test(t)),
     stock: document.getElementById('product-facts')?.innerText.includes('In stock'),
-    trust: [...document.querySelectorAll('[aria-label="Naira assurances"] li')].map((li) => li.innerText.replace(/\s+/g, ' ').trim()),
+    trust: document.querySelector('[aria-label="Naira assurances"]')?.innerText.replace(/\s+/g, ' ').trim() ?? '',
     gift: [...document.querySelectorAll('#product-actions p')].map((x) => x.textContent.trim()).find((t) => /gift box/i.test(t)),
     look: document.querySelectorAll('section[aria-labelledby="complete-the-look"] article').length,
-    faqs: document.querySelectorAll('#pdp-faq ~ div details').length,
+    care: document.getElementById('pdp-panel-care')?.textContent.replace(/\s+/g, ' ') ?? '',
+    faqSection: !!document.getElementById('pdp-faq'),
     more: document.querySelectorAll('#more-like-this ~ div article').length,
     jsonld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((x) => { try { return JSON.parse(x.textContent)['@type']; } catch { return '?'; } }),
     embedded: !!document.getElementById('nf-piece'),
   }));
   check('saving shown in rupees', /^Save ₹1,801 \(43%\)$/.test(first.saving || ''), first.saving);
   check('stock status in the facts', first.stock === true);
-  check('four assurances under the button', first.trust.length === 4, first.trust.join(' | '));
+  check('returns and plating assurance under the button', /7-day returns/.test(first.trust) && /plating/.test(first.trust), first.trust);
   check('gift box stated under the button', !!first.gift, first.gift);
   check('complete the look: three pieces', first.look === 3, `${first.look} card(s)`);
-  check('six buying questions answered', first.faqs === 6, `${first.faqs}`);
+  check('tarnish and skin answered in Care, no separate FAQ section', /tarnish/i.test(first.care) && /skin/i.test(first.care) && !first.faqSection, first.care.slice(0, 120));
   check('more of the category', first.more >= 2, `${first.more} card(s)`);
   check('product, breadcrumb and FAQ data, embedded piece', ['Product', 'BreadcrumbList', 'FAQPage'].every((t) => first.jsonld.includes(t)) && first.embedded, first.jsonld.join(', '));
   await p.evaluate(() => { const s = document.querySelector('#root .md\\:hidden .snap-x'); s.scrollTo({ left: 0, behavior: 'instant' }); });
@@ -152,7 +153,7 @@ const H = 'prism-riviere-bracelet';
   const hasPin = await p.evaluate(() => !!document.querySelector('#pdp-panel-delivery input'));
   check('Delivery tab carries pincode check and WhatsApp help', hasPin && /WhatsApp/.test(deliv), deliv.replace(/\s+/g, ' ').slice(0, 160));
   // new sections
-  for (const [id, name] of [['complete-the-look', 'next-look'], ['pdp-faq', 'next-faq'], ['more-like-this', 'next-more']]) {
+  for (const [id, name] of [['complete-the-look', 'next-look'], ['more-like-this', 'next-more']]) {
     await p.evaluate((i) => { document.getElementById(i)?.scrollIntoView({ block: 'start', behavior: 'instant' }); window.scrollBy({ top: -130, behavior: 'instant' }); }, id);
     await p.waitForTimeout(1500);
     await shot(p, name);

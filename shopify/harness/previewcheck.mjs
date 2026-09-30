@@ -166,12 +166,12 @@ const H = 'prism-riviere-bracelet';
   const reel = await p.evaluate(() => ({
     slides: document.querySelectorAll('[data-reel-slide]').length,
     rows: document.querySelectorAll('[data-reel-slide] li').length,
-    add: [...document.querySelectorAll('[data-reel-slide] li button')].filter((x) => /^add/i.test(x.textContent.trim())).map((x) => getComputedStyle(x).backgroundColor)[0],
+    add: [...document.querySelectorAll('[data-reel-slide] li button')].filter((x) => /^add/i.test(x.textContent.trim())).map((x) => { const cs = getComputedStyle(x); return `${cs.borderTopColor} / ${cs.color}`; })[0],
     smallest: Math.min(...[...document.querySelectorAll('#shop-reels-title ~ *, [data-reel-slide] *')].filter((e) => e.childNodes.length && [...e.childNodes].some((c) => c.nodeType === 3 && c.textContent.trim())).map((e) => parseFloat(getComputedStyle(e).fontSize))),
     video: !!document.querySelector('[data-reel-slide] video'),
   }));
   check('reel section shows the reels with a piece list', reel.slides > 0 && reel.rows > 0, `${reel.slides} reel(s), ${reel.rows} piece row(s)`);
-  check('reel Add buttons are deep sage', reel.add === 'rgb(79, 114, 104)', reel.add);
+  check('reel Add buttons are outlined in deep sage (the filled one is Add to cart)', reel.add === 'rgb(79, 114, 104) / rgb(79, 114, 104)', reel.add);
   check('no text under 9.5px in the reel section', reel.smallest >= 9.5, `smallest ${reel.smallest}px`);
   // sticky bar mid-page
   await p.evaluate(() => window.scrollTo({ top: 1500, behavior: 'instant' }));

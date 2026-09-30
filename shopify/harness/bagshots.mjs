@@ -2,7 +2,7 @@
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 const [BASE, OUT] = process.argv.slice(2); mkdirSync(OUT, { recursive: true });
-const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google)/i;
+const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi)/i;
 const SIZES = [['344', 344, 882, true], ['360', 360, 780, true], ['390', 390, 844, true], ['412', 412, 915, true], ['desktop', 1280, 860, false]];
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 for (const [name, w, h, phone] of SIZES) {

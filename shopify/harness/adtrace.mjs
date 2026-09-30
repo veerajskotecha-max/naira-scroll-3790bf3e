@@ -34,7 +34,7 @@ const { kbps, rtt: RTT } = PROFILES[PROFILE];
 const MODEL = process.env.MODEL || 'h2';
 const PRI = { VeryHigh: 4, High: 3, Medium: 2, Low: 1, VeryLow: 0 };
 const RATE = kbps * 1024 / 8;
-const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick)/i;
+const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|\/functions\/v1\/meta-capi)/i;
 const TEXT = /(javascript|css|html|json|svg|xml|text\/plain)/i;
 const cache = new Map();
 const key = (q) => q.method() + ' ' + q.url() + ' ' + (q.postData() || '');

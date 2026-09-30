@@ -8,7 +8,7 @@ import { chromium } from 'playwright';
 import { gzipSync } from 'node:zlib';
 const [URL0, LABEL = 'page'] = process.argv.slice(2);
 const SETTLE_S = Number(process.env.SETTLE_S || 12);
-const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|\/api\/collect|trekkie|web-pixels|wpm@|snapchat|sc-static|quora|ads-twitter|linkedin)/i;
+const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|doubleclick|hotjar|monorail-edge|shopifysvc\.com|klaviyo|webengage|moengage|clevertap|tiktok|pinterest|criteo|bat\.bing|\/api\/collect|trekkie|web-pixels|wpm@|snapchat|sc-static|quora|ads-twitter|linkedin|\/functions\/v1\/meta-capi)/i;
 const TEXT = /(javascript|css|html|json|svg|xml|text\/plain)/i;
 const HINTS = { 'sec-ch-ua': '"Chromium";v="120", "Google Chrome";v="120", "Not?A_Brand";v="99"', 'sec-ch-ua-mobile': '?1', 'sec-ch-ua-platform': '"Android"' };
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });

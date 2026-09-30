@@ -2,7 +2,7 @@
 // leave clean history behind?
 import { chromium } from 'playwright';
 const BASE = process.argv[2];
-const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google)/i;
+const BLOCK = /(facebook\.net|facebook\.com|fbcdn\.net|clarity\.ms|googletagmanager|google-analytics|analytics\.google|\/functions\/v1\/meta-capi)/i;
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
 const mk = async () => {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,

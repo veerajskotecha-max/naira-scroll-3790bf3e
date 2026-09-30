@@ -19,7 +19,7 @@ const CONC = Number(process.env.CONC || 4);
 // 101 from Node), and Instagram serves data-centre traffic its login wall, which
 // refuses to be framed. Counted and reported apart, never silently dropped.
 const SANDBOX = [
-  [/^WebSocket connection to .*net::ERR_CERT_AUTHORITY_INVALID/, 'WebSocket refused the sandbox certificate (live reviews)'],
+  [/^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\/.*(net::ERR_CERT_AUTHORITY_INVALID|opening handshake timed out)/, 'WebSocket blocked by the sandbox proxy (live reviews)'],
   [/^Refused to display 'https:\/\/www\.instagram\.com\/' in a frame/, 'Instagram login wall for data-centre traffic'],
 ];
 const sandboxOnly = new Map();

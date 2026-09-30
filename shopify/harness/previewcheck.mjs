@@ -29,7 +29,8 @@ const newPage = async (w = 390, h = 844) => {
   p.on('pageerror', (e) => errors.push(e.message));
   // Chromium fetching payment-app manifests (cred.club) directly fails on this
   // sandbox's proxy certificate; that is the test machine, not the page.
-  p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|net::ERR|payment manifest/.test(m.text()) && errors.push(m.text()));
+  // the live-reviews WebSocket can't open through this sandbox's proxy (Node gets 101 from it); not a page error
+  p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|net::ERR|payment manifest|^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\//.test(m.text()) && errors.push(m.text()));
   return { ctx, p, errors };
 };
 const shot = async (p, name, opts = {}) => writeFileSync(`${OUT}/${name}.jpg`, await p.screenshot({ type: 'jpeg', quality: 80, ...opts }));

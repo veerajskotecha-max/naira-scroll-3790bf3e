@@ -105,7 +105,7 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
           type="button"
           onClick={add}
           disabled={adding || isLoading}
-          className="press-scale h-9 shrink-0 bg-[var(--nf-cta)] px-4 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ivory transition-colors hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+          className="press-scale h-8 shrink-0 border border-[var(--nf-cta)] px-3.5 font-nf-label text-[9.5px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
           aria-label={`Add ${name} to bag`}
         >
           {adding ? "Adding…" : "Add"}

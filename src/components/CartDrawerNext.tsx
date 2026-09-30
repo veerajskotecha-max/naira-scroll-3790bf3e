@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus, ShoppingBag, Truck } from "lucide-react";
+import { ChevronLeft, Loader2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { bagPairings } from "@/lib/pairings";
-import { QUANTITY_OFFERS } from "@/lib/promo";
-import { isPreviewPath, previewProductPath } from "@/lib/preview";
-import type { JewelPiece } from "@/data/jewellery";
+import { familyOf } from "@/lib/pairings";
+import BagGiftBox from "@/components/giftbox/BagGiftBox";
+import ringGold from "@/assets/naira-box-ring-sm.webp";
+import ringSilver from "@/assets/naira-box-ring-sm-silver.webp";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useCart } from "@/contexts/CartContext";
+import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import { CartPromoField } from "@/components/cart/CartExtras";
@@ -56,72 +56,22 @@ const PayMarks = () => (
   </span>
 );
 
-/* "Add one more": two pieces that complete the look of what is in the bag,
-   while a rung of the ladder is still ahead. Adding one moves the bar and
-   the total at once; the bag stays open. */
-const BagPairings = ({
-  inBag,
-  totalItems,
-  onPick,
-}: {
-  inBag: string[];
-  totalItems: number;
-  /* Closes the bag on the way to the piece's page. */
-  onPick: (event: MouseEvent<HTMLAnchorElement>) => void;
-}) => {
+/* The box every piece is packed in, hovering under the pieces with the ring
+   shut inside; a tap opens it and, while the ring is up, it says so. The
+   ring is silver when the latest piece is silver-toned, gold otherwise. Not
+   a cart line — it costs nothing and checkout never sees it. */
+const GiftBox = ({ items }: { items: CartItem[] }) => {
   const { jewellery } = useLiveJewellery();
-  const { addItem, isLoading } = useCart();
-  const [adding, setAdding] = useState<string | null>(null);
-  const picks = useMemo(() => bagPairings(inBag, jewellery, 2), [inBag.join(","), jewellery]); // eslint-disable-line react-hooks/exhaustive-deps
-  const next = QUANTITY_OFFERS.find((offer) => totalItems < offer.minQuantity);
-  if (!next || picks.length === 0) return null;
-  const hrefFor = (h: string) => (isPreviewPath(window.location.pathname) ? previewProductPath(h) : `/jewellery/${h}`);
-  const add = async (piece: JewelPiece) => {
-    setAdding(piece.handle);
-    try {
-      await addItem({
-        id: piece.handle,
-        variantId: piece.variantId,
-        name: piece.name,
-        price: piece.price,
-        priceLabel: piece.priceLabel,
-        currencyCode: "INR",
-        image: piece.image,
-        size: piece.category === "Rings" ? "US 6" : undefined,
-      });
-    } finally {
-      setAdding(null);
-    }
-  };
-  const away = next.minQuantity - totalItems;
+  const [ringUp, setRingUp] = useState(false);
+  const still = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const latest = jewellery.find((piece) => piece.handle === items.at(-1)?.id);
   return (
-    <section className="mx-4 mb-4 border-t border-nf-gold/25 pt-4 sm:mx-5" aria-labelledby="bag-pairings">
-      <p id="bag-pairings" className="font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-gold-text">
-        Add {away === 1 ? "one more" : `${away} more`} · save {Math.round(next.rate * 100)}%
+    <div data-gift-row className="my-auto flex flex-col items-center px-4 pb-4 pt-6">
+      <BagGiftBox size={92} ring={latest && familyOf(latest) === "silver" ? ringSilver : ringGold} onRing={setRingUp} />
+      <p className="mt-1 min-h-[16px] text-center font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-text" aria-live="polite">
+        {still ? "Every piece arrives in the Naira gift box" : ringUp ? "Your piece comes in this gift box" : "Your gift box · tap to open"}
       </p>
-      <ul className="mt-2">
-        {picks.map((piece) => (
-          <li key={piece.handle} className="flex items-center gap-3 py-2">
-            <Link to={hrefFor(piece.handle)} onClick={onPick} className="block h-14 w-14 shrink-0 overflow-hidden bg-nf-ivory-deep">
-              <img src={shopifyImage(piece.image, 160)} alt={piece.name} className="h-full w-full object-cover" loading="lazy" width={56} height={56} />
-            </Link>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-cormorant text-[15px] font-semibold leading-tight text-nf-ink">{piece.name}</p>
-              <p className="mt-0.5 text-[12.5px] text-nf-ink/75">{piece.priceLabel}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => add(piece)}
-              disabled={isLoading || adding !== null}
-              aria-label={`Add ${piece.name} to bag`}
-              className="press-scale h-9 shrink-0 bg-[var(--nf-cta)] px-4 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ivory transition-colors hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
-            >
-              {adding === piece.handle ? "Adding…" : "Add"}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </section>
+    </div>
   );
 };
 
@@ -203,9 +153,9 @@ const CartDrawerNext = () => {
       <SheetContent
         ref={contentRef}
         closeClassName="hidden sm:flex"
-        className="inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-gold/25 bg-nf-ivory p-0 text-nf-ink sm:max-w-[420px]"
+        className="inset-y-0 flex h-[100dvh] max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-gold/15 bg-nf-ivory p-0 text-nf-ink sm:max-w-[420px]"
       >
-        <SheetHeader className="shrink-0 border-b border-nf-gold/25 px-4 pb-3 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
+        <SheetHeader className="shrink-0 border-b border-nf-gold/15 px-4 pb-3 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
           <div className="flex items-center">
             <button
               type="button"
@@ -215,51 +165,51 @@ const CartDrawerNext = () => {
             >
               <ChevronLeft size={22} strokeWidth={1.4} aria-hidden="true" />
             </button>
-            <SheetTitle className="flex items-baseline gap-2.5 font-cormorant text-[22px] font-semibold text-nf-ink">
+            <SheetTitle className="flex items-baseline gap-2.5 font-cormorant text-[18px] font-semibold text-nf-ink">
               Your bag
-              <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
+              <span className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
                 {totalItems === 1 ? "1 piece" : `${totalItems} pieces`}
               </span>
             </SheetTitle>
           </div>
         </SheetHeader>
 
-        {items.length > 0 && <OfferProgress totalItems={totalItems} />}
+        {items.length > 0 && <OfferProgress totalItems={totalItems} quiet />}
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
             <ShoppingBag size={28} strokeWidth={1.2} className="text-nf-gold-deep" aria-hidden="true" />
-            <p className="mt-4 font-cormorant text-[22px] font-semibold text-nf-ink">Your bag is empty</p>
-            <p className="mt-2 max-w-[240px] font-nf-editorial text-[16px] leading-[1.6] text-nf-ink/75">
+            <p className="mt-4 font-cormorant text-[18px] font-semibold text-nf-ink">Your bag is empty</p>
+            <p className="mt-2 max-w-[240px] font-nf-editorial text-[14px] leading-[1.6] text-nf-ink/75">
               Pieces you choose will gather here, ready when you are.
             </p>
             <Link
               to="/jewellery"
               onClick={leave}
-              className="mt-7 inline-flex min-h-[48px] items-center bg-[var(--nf-cta)] px-9 font-nf-label text-[12px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors hover:bg-[var(--nf-cta-hover)]"
+              className="mt-7 inline-flex min-h-[46px] items-center bg-[var(--nf-cta)] px-9 font-nf-label text-[11px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors hover:bg-[var(--nf-cta-hover)]"
             >
               Explore jewellery
             </Link>
           </div>
         ) : (
           <>
-            <div className="min-h-[96px] flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
+            <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
               <ul className="flex flex-col px-4 sm:px-5">
                 {items.map((item) => (
-                  <li key={`${item.id}-${item.size}`} className="flex gap-3 border-b border-nf-gold/20 py-3.5 last:border-b-0">
+                  <li key={`${item.id}-${item.size}`} className="flex gap-3 border-b border-nf-gold/15 py-3.5 last:border-b-0">
                     <img
                       src={shopifyImage(item.image, 200) || item.image}
                       alt={item.name}
-                      className="h-[90px] w-[72px] shrink-0 bg-nf-ivory-deep object-cover"
+                      className="h-[80px] w-[64px] shrink-0 bg-nf-ivory-deep object-cover"
                       width={72}
                       height={90}
                       loading="lazy"
                     />
                     <div className="flex min-w-0 flex-1 flex-col justify-between">
                       <div>
-                        <p className="line-clamp-2 font-cormorant text-[16px] font-semibold leading-tight text-nf-ink">{item.name}</p>
-                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[11.5px] text-nf-ink/70">{lineOptions(item)}</p> : null}
-                        <p className="mt-1 text-[13.5px] font-medium text-nf-ink">{item.priceLabel}</p>
+                        <p className="line-clamp-2 font-cormorant text-[13px] font-semibold leading-tight text-nf-ink">{item.name}</p>
+                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[11px] text-nf-ink/70">{lineOptions(item)}</p> : null}
+                        <p className="mt-1 text-[12.5px] font-medium text-nf-ink">{item.priceLabel}</p>
                       </div>
                       <div className="mt-2 flex items-center justify-between">
                         <div className="inline-flex items-center border border-nf-ink/20">
@@ -272,7 +222,7 @@ const CartDrawerNext = () => {
                           >
                             <Minus size={13} strokeWidth={1.6} />
                           </button>
-                          <span className="w-7 text-center text-[13px] font-medium">{item.quantity}</span>
+                          <span className="w-7 text-center text-[12px] font-medium">{item.quantity}</span>
                           <button
                             type="button"
                             onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
@@ -289,7 +239,7 @@ const CartDrawerNext = () => {
                           onClick={() => removeItem(item.id, item.size)}
                           disabled={isLoading}
                           aria-label={`Remove ${item.name}`}
-                          className="-mr-1 inline-flex min-h-11 items-center px-1 text-[12px] text-nf-ink/70 underline decoration-nf-ink/25 underline-offset-4 hover:text-nf-ink disabled:opacity-50"
+                          className="-mr-1 inline-flex min-h-11 items-center px-1 text-[11px] text-nf-ink/70 underline decoration-nf-ink/25 underline-offset-4 hover:text-nf-ink disabled:opacity-50"
                         >
                           Remove
                         </button>
@@ -298,64 +248,45 @@ const CartDrawerNext = () => {
                   </li>
                 ))}
               </ul>
-              <BagPairings inBag={items.map((item) => item.id)} totalItems={totalItems} onPick={leave} />
+              <GiftBox items={items} />
             </div>
 
-            <div className="shrink-0 space-y-2.5 border-t border-nf-gold/25 bg-nf-ivory px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:pb-[max(14px,env(safe-area-inset-bottom))]">
-              <p className="flex items-center gap-2 text-[12.5px] text-nf-ink/75">
-                <Truck size={14} strokeWidth={1.5} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                <span>
-                  Arrives by <strong className="font-semibold text-nf-ink">{arrivesBy}</strong> · free insured shipping · gift‑boxed
-                </span>
-              </p>
-
-              <CartPromoField />
-
-              <div className="space-y-1 text-[12.5px] text-nf-ink/75">
-                <div className="flex items-center justify-between">
-                  <span>Subtotal</span>
-                  <span className="text-nf-ink">{formatPrice(subtotal)}</span>
+            <div className="shrink-0 space-y-3 border-t border-nf-gold/15 bg-nf-ivory px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-3.5 sm:px-5 sm:pb-[max(14px,env(safe-area-inset-bottom))]">
+              <div>
+                <div className="flex items-baseline justify-between">
+                  <span className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-ink/75">Total</span>
+                  <span className="flex items-baseline gap-2">
+                    {discountAmount > 0 && (
+                      <span className="font-cormorant text-[13px] text-nf-ink/65 line-through">{formatPrice(subtotal + SHIPPING_CHARGE)}</span>
+                    )}
+                    <span className="font-cormorant text-[19px] font-bold leading-none text-nf-ink">{formatPrice(orderTotal)}</span>
+                  </span>
                 </div>
+                <p className="mt-1 text-[11px] text-nf-ink/65">
+                  Free insured shipping · arrives by <strong className="font-semibold text-nf-ink/80">{arrivesBy}</strong>
+                </p>
                 {/* The code is named: it is the one the checkout receives. */}
                 {discountAmount > 0 && discount.code && (
-                  <div className="flex items-center justify-between font-medium text-nf-gold-text">
-                    <span className="tracking-nf-4">
-                      {discount.code} · {Math.round(discount.rate * 100)}% off{discount.automatic ? " applied" : null}
-                    </span>
-                    <span>−{formatPrice(discountAmount)}</span>
-                  </div>
+                  <p className="mt-0.5 text-[11px] font-medium text-nf-gold-text">
+                    {discount.code} · {Math.round(discount.rate * 100)}% off{discount.automatic ? " applied" : null} · you save {formatPrice(discountAmount)}
+                  </p>
                 )}
-                <div className="flex items-center justify-between">
-                  <span>Shipping</span>
-                  <span className="font-medium text-nf-gold-text">Free</span>
-                </div>
-              </div>
-              <div className="flex items-baseline justify-between border-t border-nf-gold/20 pt-2.5">
-                <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink/75">
-                  Total
-                  {discountAmount > 0 && <span className="ml-2 normal-case tracking-nf-4 text-nf-gold-text">you save {formatPrice(discountAmount)}</span>}
-                </span>
-                <span className="flex items-baseline gap-2">
-                  {discountAmount > 0 && (
-                    <span className="font-cormorant text-[14px] text-nf-ink/65 line-through">{formatPrice(subtotal + SHIPPING_CHARGE)}</span>
-                  )}
-                  <span className="font-cormorant text-[23px] font-bold leading-none text-nf-ink">{formatPrice(orderTotal)}</span>
-                </span>
               </div>
 
               <button
                 type="button"
                 onClick={handleCheckout}
                 disabled={busy}
-                className="press-scale flex h-[54px] w-full items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[13px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-150 hover:bg-[var(--nf-cta-hover)] disabled:opacity-70"
+                className="press-scale flex h-[50px] w-full items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-150 hover:bg-[var(--nf-cta-hover)] disabled:opacity-70"
               >
                 {busy ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : null}
                 Checkout · {formatPrice(orderTotal)}
               </button>
-              <p className="flex items-center justify-center gap-2 pb-0.5 text-[11.5px] text-nf-ink/75">
+              <p className="flex items-center justify-center gap-2 pb-0.5 text-[10.5px] text-nf-ink/75">
                 <PayMarks />
-                UPI, cards or cash on delivery
+                UPI, cards or cash on delivery · 7-day returns
               </p>
+              <CartPromoField />
             </div>
           </>
         )}

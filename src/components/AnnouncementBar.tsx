@@ -20,6 +20,7 @@ const MESSAGES = [
 
 const AnnouncementBar = () => (
   <div
+    data-announcement
     className="pause-animation w-full overflow-hidden"
     style={{ backgroundColor: "#AEBDB6", height: "var(--announcement-h)" }}
   >

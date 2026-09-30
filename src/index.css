@@ -143,6 +143,21 @@ All colors MUST be HSL.
   fill: var(--nf-gold);
 }
 
+/* On the preview page the announcement strip holds still: one line, centred
+   and a size smaller. The product is the thing that moves the eye there, and
+   the page states shipping beside Add to cart already. */
+.nf-next [data-announcement] .animate-marquee {
+  animation: none;
+  width: 100%;
+  justify-content: center;
+}
+.nf-next [data-announcement] .animate-marquee > span {
+  font-size: 10px;
+}
+.nf-next [data-announcement] .animate-marquee > span:not(:first-child) {
+  display: none;
+}
+
 @layer base {
   * {
     @apply border-border;

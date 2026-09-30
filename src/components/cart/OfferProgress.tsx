@@ -28,7 +28,9 @@ const pieces = (n: number) => (n === 1 ? "1 piece" : `${n} pieces`);
  * It sits above the items, not beside the totals: it is a reason to keep
  * shopping, not a line of arithmetic.
  */
-const OfferProgress = ({ totalItems }: { totalItems: number }) => {
+/* `quiet` (the redesigned bag): no eyebrow and no rung labels, so the band
+   carries one headline over one track rather than six scraps of capitals. */
+const OfferProgress = ({ totalItems, quiet = false }: { totalItems: number; quiet?: boolean }) => {
   const earned = earnedQuantityOffer(totalItems);
   const next = nextQuantityOffer(totalItems);
   const away = itemsToQuantityOffer(totalItems);
@@ -46,14 +48,16 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
   return (
     <div className="shrink-0 border-y border-[color:rgb(var(--nf-gold-rgb)/0.38)] bg-[var(--nf-surface-raised)] px-4 py-2.5 sm:px-5 sm:pb-3.5 sm:pt-3">
       <div className="flex min-w-0 items-baseline justify-between gap-3">
-        <p className="flex shrink-0 items-center gap-1 text-[9px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-accent-quiet)] sm:text-[10px] sm:tracking-[var(--nf-track-18)]">
-          <span aria-hidden="true">&#10022;</span>
-          Pairing Offer
-        </p>
+        {!quiet && (
+          <p className="flex shrink-0 items-center gap-1 text-[9px] font-medium uppercase tracking-[var(--nf-track-16)] text-[var(--nf-accent-quiet)] sm:text-[10px] sm:tracking-[var(--nf-track-18)]">
+            <span aria-hidden="true">&#10022;</span>
+            Pairing Offer
+          </p>
+        )}
 
         {/* On short mobile screens the earned saving and the offer name share
             one line. The desktop drawer keeps the roomier editorial treatment. */}
-        <p className="truncate text-right font-cormorant text-[14px] font-semibold leading-none text-[var(--nf-text)] sm:text-[16px] sm:leading-snug">
+        <p className={`truncate font-cormorant font-semibold leading-none text-[var(--nf-text)] sm:leading-snug ${quiet ? "text-left text-[13px] sm:text-[14px]" : "text-right text-[14px] sm:text-[16px]"}`}>
           {headline}
         </p>
       </div>
@@ -95,29 +99,31 @@ const OfferProgress = ({ totalItems }: { totalItems: number }) => {
           "2 · 20% off" and "3 · 30% off" ran into each other at 390px, which
           is most of the traffic. The last label right-aligns — centred on its
           marker it would hang off the end of the bar. */}
-      <div className="relative mt-1.5 h-[22px] sm:mt-2 sm:h-[26px]">
-        {QUANTITY_OFFERS.map((offer, i) => {
-          const at = offer.minQuantity / TOP_QUANTITY_OFFER.minQuantity;
-          const reached = totalItems >= offer.minQuantity;
-          const last = i === QUANTITY_OFFERS.length - 1;
-          return (
-            <span
-              key={offer.code}
-              className={`absolute top-0 flex flex-col whitespace-nowrap leading-[1.25] transition-colors duration-300 ${
-                last ? "items-end text-right" : "items-center text-center"
-              } ${reached ? "text-[var(--nf-accent-quiet)]" : "text-[color:rgb(var(--nf-ink-rgb)/0.45)]"}`}
-              style={{ left: `${at * 100}%`, transform: last ? "translateX(-100%)" : "translateX(-50%)" }}
-            >
-              <span className="text-[8px] uppercase tracking-[var(--nf-track-8)] sm:text-[9px] sm:tracking-[var(--nf-track-10)]">
-                {offer.minQuantity} pieces
+      {!quiet && (
+        <div className="relative mt-1.5 h-[22px] sm:mt-2 sm:h-[26px]">
+          {QUANTITY_OFFERS.map((offer, i) => {
+            const at = offer.minQuantity / TOP_QUANTITY_OFFER.minQuantity;
+            const reached = totalItems >= offer.minQuantity;
+            const last = i === QUANTITY_OFFERS.length - 1;
+            return (
+              <span
+                key={offer.code}
+                className={`absolute top-0 flex flex-col whitespace-nowrap leading-[1.25] transition-colors duration-300 ${
+                  last ? "items-end text-right" : "items-center text-center"
+                } ${reached ? "text-[var(--nf-accent-quiet)]" : "text-[color:rgb(var(--nf-ink-rgb)/0.45)]"}`}
+                style={{ left: `${at * 100}%`, transform: last ? "translateX(-100%)" : "translateX(-50%)" }}
+              >
+                <span className="text-[8px] uppercase tracking-[var(--nf-track-8)] sm:text-[9px] sm:tracking-[var(--nf-track-10)]">
+                  {offer.minQuantity} pieces
+                </span>
+                <span className={`text-[10px] uppercase tracking-[var(--nf-track-8)] sm:text-[11px] ${reached ? "font-semibold" : "font-medium"}`}>
+                  {pct(offer.rate)} off
+                </span>
               </span>
-              <span className={`text-[10px] uppercase tracking-[var(--nf-track-8)] sm:text-[11px] ${reached ? "font-semibold" : "font-medium"}`}>
-                {pct(offer.rate)} off
-              </span>
-            </span>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

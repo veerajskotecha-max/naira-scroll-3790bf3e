@@ -1,21 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import {
-  ArrowLeft,
-  BadgeCheck,
-  Banknote,
-  ChevronDown,
-  Gift,
-  Heart,
-  MessageSquare,
-  Minus,
-  Plus,
-  RotateCcw,
-  Sparkles,
-  TicketPercent,
-  Truck,
-} from "lucide-react";
+import { ArrowLeft, Gift, Heart, MessageSquare, Plus } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -23,7 +9,6 @@ import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
-import { dailySoldCount } from "@/lib/dailySold";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { useReels } from "@/hooks/useReels";
@@ -31,8 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
-import { jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, PREORDER_NOTE_SHORT, type JewelPiece } from "@/data/jewellery";
-import { QUANTITY_OFFERS } from "@/lib/promo";
+import { jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
@@ -44,13 +28,14 @@ import { completeTheLook, moreLikeThis } from "@/lib/pairings";
   The redesigned product page, in preview at /preview/jewellery/<handle>.
 
   Same data, prices, cart and checkout as the live page (JewelDetail.tsx). Set
-  against Nishorama, Bluorng, Project Shades, Palmonas and GIVA, it says each
-  fact once, in the order a shopper decides:
+  against Nishorama, Bluorng, Project Shades, Palmonas and GIVA, it keeps the
+  first screen to what a decision needs and folds the rest away, the way
+  Nishorama does:
 
-    photo (and the reel the piece is in) → price and saving → offer, delivery,
-    stock → size and finish → Add to cart → gift box and four assurances →
-    Details / Care / Delivery → complete the look → reviews → questions →
-    press → reels → more of the category → gift box.
+    photo (and the reel the piece is in) → name and price → ring size (rings
+    only) → Add to cart → the gift box line → Details / Care / Delivery &
+    returns, closed until asked for → complete the look → reviews → press →
+    reels → more of the category.
 
   Colours are Naira's (ivory ground, ink, gold detail, deep-sage buttons); the
   html.nf-next class swaps the stock blue-grey palette the shared components
@@ -102,7 +87,7 @@ const tidy = (value: string) =>
 /* Shopify listings end "… Material: Surgical stainless steel Care Waterproof
    and tarnish free, …", and the catalogue folds that care paragraph into the
    last spec. It is split back out here, so the spec reads "Surgical stainless
-   steel" and the Care tab gets the piece's own care text. */
+   steel" and Care gets the piece's own care text. */
 const CARE_BREAK = /\s+Care\s+(?=[A-Z])/;
 const specsOf = (piece: JewelPiece) => {
   let care: string | null = null;
@@ -113,16 +98,6 @@ const specsOf = (piece: JewelPiece) => {
     return at > 0 ? { label: spec.slice(0, at).trim(), value: tidy(spec.slice(at + 1)) } : { label: "", value: tidy(spec) };
   });
   return { specs, care };
-};
-
-/* The measurement a shopper sizes by. Rings choose a size instead. */
-const SIZE_SPECS = ["Length", "Size", "Drop", "Fit"];
-const sizeOf = (specs: { label: string; value: string }[]) => {
-  for (const label of SIZE_SPECS) {
-    const spec = specs.find((s) => s.label.toLowerCase() === label.toLowerCase());
-    if (spec) return spec.value;
-  }
-  return null;
 };
 
 const ringSizes: { value: string; status: "available" | "preorder" }[] = [
@@ -168,14 +143,11 @@ const readEmbeddedPiece = (handle?: string): EmbeddedPiece | null => {
 };
 type ReviewWall = typeof import("@/data/reviewWall");
 
-const TABS = [
-  { id: "details", label: "Details" },
-  { id: "care", label: "Care" },
-  { id: "delivery", label: "Delivery" },
-] as const;
-type TabId = (typeof TABS)[number]["id"];
-
-const label = "font-nf-label text-[10px] uppercase tracking-nf-24 text-nf-gold-text";
+const label = "font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-text";
+/* A fold-down's row, and its plus, which turns to a cross when open. */
+const fold =
+  "flex min-h-[50px] cursor-pointer list-none items-center justify-between font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink [&::-webkit-details-marker]:hidden";
+const foldMark = "shrink-0 text-nf-ink/70 transition-transform duration-200 group-open:rotate-45";
 
 /* A suggested piece: photo, name, price, and a one-tap Add that opens the bag
    with the ladder already counting it. */
@@ -215,17 +187,17 @@ const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href
           height={360}
         />
       </Link>
-      <Link to={href} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[14px] leading-[1.2] text-nf-ink">
+      <Link to={href} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
         {piece.name}
       </Link>
-      <p className="mt-0.5 text-[12.5px] text-nf-ink/75">{piece.priceLabel}</p>
+      <p className="mt-0.5 text-[12px] text-nf-ink/75">{piece.priceLabel}</p>
       {compact && (
         <button
           type="button"
           onClick={add}
           disabled={adding || isLoading}
           aria-label={`Add ${piece.name} to bag`}
-          className="press-scale mt-2 h-9 w-full bg-[var(--nf-cta)] font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ivory transition-colors hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+          className="press-scale mt-2 h-8 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
         >
           {adding ? "Adding…" : "Add"}
         </button>
@@ -303,11 +275,9 @@ const JewelDetailNext = () => {
   }, [sizedCategory, piece?.handle]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
-  const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [tab, setTab] = useState<TabId>("details");
   const openLightbox = useCallback((index: number) => {
     setLightboxIndex(index);
     setLightboxOpen(true);
@@ -356,14 +326,14 @@ const JewelDetailNext = () => {
 
   /* The phone's buy bar shows whenever Add to cart is not fully on screen —
      so a buy button is visible from the moment the page opens — but never
-     over the price and the facts under it. */
+     over the price. */
   useEffect(() => {
     const check = () => {
       const target = document.getElementById("product-actions");
       if (!target) return;
       const r = target.getBoundingClientRect();
       const notFullyShown = r.bottom < 0 || r.bottom > window.innerHeight;
-      const price = document.getElementById("product-facts") ?? document.getElementById("product-price");
+      const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
       setStickyBarVisible(notFullyShown && priceClear);
@@ -423,14 +393,12 @@ const JewelDetailNext = () => {
   const finish = finishOf(piece);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
-  const size = sizeOf(specs);
-  const soldToday = dailySoldCount(piece.handle);
   const saving = piece.compareAtPrice && piece.compareAtPrice > piece.price ? piece.compareAtPrice - piece.price : 0;
   const steel = /stainless steel/i.test(piece.materials);
   const waterproof = /waterproof/i.test(piece.materials) || /waterproof/i.test(listedCare ?? "");
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to order the "${piece.name}"${isRing ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`,
+    `Hi Naira Flore, I'd love to order the "${piece.name}"${isRing ? ` in size ${selectedSize}` : ""} Could you share availability and next steps?`,
   )}`;
 
   const cartItem = () => ({
@@ -445,13 +413,13 @@ const JewelDetailNext = () => {
   });
 
   const handleAddToCart = async () => {
-    await addItem(cartItem(), quantity);
+    await addItem(cartItem());
     setDrawerOpen(true);
   };
 
   /* Sold-out pieces take pre-orders: the cart first, WhatsApp if Shopify refuses. */
   const handlePreOrder = async () => {
-    const added = await addItem(cartItem(), quantity).catch(() => false);
+    const added = await addItem(cartItem()).catch(() => false);
     if (added) setDrawerOpen(true);
     else window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
   };
@@ -461,36 +429,17 @@ const JewelDetailNext = () => {
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
   };
 
-  /* The questions shoppers ask before buying jewellery online, answered from
-     the piece's own materials and the shop's policies. */
-  const faqs = [
+  /* Tarnish and skin, answered from the piece's own materials, in Care. */
+  const care = [
     {
-      q: "Will it tarnish or fade?",
+      q: "Will it tarnish?",
       a: `It is ${finish === "Demi-gold" ? "demi-gold" : finish.toLowerCase()} finished${steel ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
-      }. Keep it away from perfume and harsh chemicals, and the finish is covered by our 2-year plating assurance.`,
+      }, and the finish is covered by our 2-year plating assurance.`,
     },
     {
-      q: "Is it safe for sensitive skin?",
-      a: `Every Naira piece is made to be skin-safe for everyday wear${steel ? ", on a surgical stainless steel base" : ""}. If it does not suit you, you can return it within 7 days.`,
-    },
-    {
-      q: "When will it arrive?",
-      a: soldOut
-        ? "This piece is a pre-order: it is hand-finished and shipped within 2 weeks, insured and free across India."
-        : `It is dispatched insured from our Mumbai atelier and arrives in 3–5 working days${arrivesBy ? ` — order today and it arrives by ${arrivesBy}` : ""}. Shipping is free across India.`,
-    },
-    {
-      q: "Can I pay cash on delivery?",
-      a: "Yes. Cash on delivery is available on serviceable pincodes, alongside UPI, cards and net banking.",
-    },
-    {
-      q: "Does it come gift-ready?",
-      a: "Yes — every piece arrives in the Naira gift box, ready to give.",
-    },
-    {
-      q: "What if I want to return it?",
-      a: "Eligible pieces can be returned within 7 days of delivery. The returns policy has the details.",
+      q: "Sensitive skin?",
+      a: `Every Naira piece is made to be skin-safe for everyday wear${steel ? ", on a surgical stainless steel base" : ""}. If it does not suit you, return it within 7 days.`,
     },
   ];
 
@@ -534,7 +483,7 @@ const JewelDetailNext = () => {
   );
   /* Square, like every corner on the site (tailwind.config.ts sets all radii to 0). */
   const overlayButton =
-    "press-scale z-10 flex h-10 w-10 items-center justify-center bg-nf-ivory/90 shadow-[0_2px_10px_-4px_rgb(var(--nf-ink-rgb)/0.35)] backdrop-blur-sm";
+    "press-scale z-10 flex h-10 w-10 items-center justify-center bg-nf-ivory/75 backdrop-blur-sm";
 
   /* The first photo shares one srcset between the two galleries, so it is
      downloaded once whichever the screen shows (see JewelDetail.tsx). */
@@ -591,14 +540,14 @@ const JewelDetailNext = () => {
       </button>
       {slideCount > 1 && (
         <span
-          className="pointer-events-none absolute bottom-3 left-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[11px] tabular-nums tracking-nf-8 text-nf-ink backdrop-blur-sm"
+          className="pointer-events-none absolute bottom-3 left-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10.5px] tabular-nums tracking-nf-8 text-nf-ink backdrop-blur-sm"
           aria-hidden="true"
         >
           {selectedImage + 1} / {slideCount}
         </span>
       )}
       {galleryReel && selectedImage < images.length && (
-        <span className="pointer-events-none absolute bottom-3 right-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm" aria-hidden="true">
+        <span className="pointer-events-none absolute bottom-3 right-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm" aria-hidden="true">
           ▶ Video
         </span>
       )}
@@ -644,13 +593,6 @@ const JewelDetailNext = () => {
     );
   })();
 
-  const assurances = [
-    { icon: Truck, top: "Free insured", bottom: "shipping" },
-    { icon: Banknote, top: "Cash on", bottom: "delivery" },
-    { icon: RotateCcw, top: "7-day", bottom: "returns", to: "/exchange-return-policy" },
-    { icon: BadgeCheck, top: "2-year plating", bottom: "assurance" },
-  ];
-
   return (
     <div className="min-h-screen bg-nf-ivory text-nf-ink">
       <Helmet>
@@ -685,13 +627,6 @@ const JewelDetailNext = () => {
             { "@type": "ListItem", position: 2, name: "Jewellery", item: "https://nairaflore.com/jewellery" },
             { "@type": "ListItem", position: 3, name: piece.name, item: canonical },
           ],
-        }}
-      />
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
         }}
       />
       {/* The piece the pre-built page was made from, read by the first render (see JewelDetail.tsx). */}
@@ -740,7 +675,7 @@ const JewelDetailNext = () => {
               {rating && (
                 <a
                   href="#customer-reviews"
-                  className="-mr-1 inline-flex shrink-0 items-center gap-1 py-1 pl-2 text-[12px] text-nf-ink/75"
+                  className="-mr-1 inline-flex shrink-0 items-center gap-1 py-1 pl-2 text-[11.5px] text-nf-ink/75"
                   aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
                 >
                   <span aria-hidden="true" className="text-nf-gold-deep">★</span>
@@ -750,285 +685,186 @@ const JewelDetailNext = () => {
               )}
             </div>
 
-            <h1 className="mt-2 font-cormorant text-[27px] font-semibold leading-[1.1] text-nf-ink md:text-[32px] lg:text-[36px]">
+            <h1 className="mt-2 font-cormorant text-[22px] font-semibold leading-[1.1] text-nf-ink md:text-[26px] lg:text-[30px]">
               {piece.name}
             </h1>
 
-            {/* Price, the MRP it replaces and the saving in rupees as well as percent. */}
+            {/* Price, the MRP it replaces and the saving, as the percentage shoppers compare. */}
             <div id="product-price" className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-cormorant text-[24px] font-semibold leading-none text-nf-ink md:text-[27px]">{piece.priceLabel}</span>
+              <span className="font-cormorant text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{piece.priceLabel}</span>
               {piece.compareAtLabel && saving > 0 && (
                 <>
-                  <span className="text-[13px] text-nf-ink/65 line-through">{piece.compareAtLabel}</span>
-                  <span className="font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
-                    Save {inr(saving)} ({discountPercent(piece)}%)
+                  <span className="text-[12px] text-nf-ink/65 line-through">{piece.compareAtLabel}</span>
+                  <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
+                    {discountPercent(piece)}% off
                   </span>
                 </>
               )}
-              <span className="text-[11px] tracking-nf-4 text-nf-ink/65">incl. taxes</span>
+              <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. taxes</span>
             </div>
 
-            {/* Offer, delivery with COD, and stock with today's sales: the three
-                facts an ad visitor needs before deciding, in the first screen. */}
-            <div id="product-facts" className="mt-3 flex flex-col gap-1 text-[12px] leading-[1.45] text-nf-ink">
-              <p className="flex items-start gap-2">
-                <TicketPercent size={15} strokeWidth={1.6} className="mt-px shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                <span className="font-semibold">
-                  {QUANTITY_OFFERS.map((offer) => `Buy ${offer.minQuantity}, save ${Math.round(offer.rate * 100)}%`).join(" · ")}
-                </span>
-              </p>
-              <p className="flex items-start gap-2">
-                <Truck size={15} strokeWidth={1.6} className="mt-px shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                <span>
-                  {soldOut
-                    ? "Pre-order · ships within 2 weeks"
-                    : arrivesBy
-                      ? <>Free insured shipping · arrives by <strong className="font-semibold">{arrivesBy}</strong></>
-                      : `Free insured shipping · ${PREORDER_NOTE_SHORT.toLowerCase()}`}
-                  <span className="text-nf-ink/70"> · COD available</span>
-                </span>
-              </p>
-              <p className="flex items-start gap-2 text-nf-ink/75">
-                <Sparkles size={15} strokeWidth={1.6} className="mt-px shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                <span>
-                  {!soldOut && <span className="font-medium text-nf-ink">In stock · </span>}
-                  {soldToday} {soldToday === 1 ? "piece" : "pieces"} sold in the last 24 hours
-                </span>
-              </p>
-            </div>
-
-            {/* Size and finish, the way Nishorama and Bluorng show size: one
-                labelled row next to the choice, not inside a fold-down. */}
-            <div className="mt-4 border-t border-nf-gold/25">
-              {isRing ? (
-                <div className="pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className={label}>Ring size · US</span>
-                    <button
-                      type="button"
-                      onClick={() => setSizeGuideOpen(true)}
-                      className="-mr-2 inline-flex min-h-[40px] items-center px-2 text-[12px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-                    >
-                      Size guide
-                    </button>
-                  </div>
-                  <div role="radiogroup" aria-label="Ring size, US" className="mt-1 flex flex-wrap gap-2">
-                    {ringSizesFor(piece.handle).map((s) => {
-                      const active = selectedSize === s.value;
-                      return (
-                        <button
-                          key={s.value}
-                          type="button"
-                          role="radio"
-                          aria-checked={active}
-                          onClick={() => setSelectedSize(s.value)}
-                          className={`min-h-[46px] min-w-[68px] border px-4 text-[13px] font-medium transition-colors duration-150 ${
-                            active
-                              ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
-                              : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
-                          }`}
-                        >
-                          {s.value}
-                          {s.status === "preorder" && (
-                            <span className="block text-[9.5px] font-normal uppercase tracking-nf-8 opacity-80">Pre-order</span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {/* A sold-out ring is made to order in every size; the line
-                      under Pre-order says when it ships. */}
-                  {!soldOut && (
-                    <p className="mt-2 text-[12px] leading-[1.6] text-nf-ink/75">
-                      {adjustable
-                        ? `US ${selectedSize} ships now. ${ADJUSTABLE_FIT_NOTE}`
-                        : selectedSize === "6"
-                          ? "US 6 is in stock and ships now."
-                          : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
-                    </p>
-                  )}
+            {/* Ring size, the one choice a piece needs before the bag. Every
+                other detail waits in the fold-downs below, as on Nishorama. */}
+            {isRing && (
+              <div className="mt-5">
+                <div className="flex items-center justify-between">
+                  <span className={label}>Ring size · US</span>
+                  <button
+                    type="button"
+                    onClick={() => setSizeGuideOpen(true)}
+                    className="-mr-2 inline-flex min-h-[40px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+                  >
+                    Size guide
+                  </button>
                 </div>
-              ) : (
-                size && (
-                  <div className="flex items-baseline justify-between gap-4 border-b border-nf-gold/25 py-2.5">
-                    <span className={label}>Size</span>
-                    <span className="text-right text-[13px] text-nf-ink">{size}</span>
-                  </div>
-                )
-              )}
-              <div className={`flex items-baseline justify-between gap-4 py-2.5 ${isRing ? "mt-3 border-t border-nf-gold/25" : ""}`}>
-                <span className={label}>Finish</span>
-                <span className="text-right text-[13px] text-nf-ink">
-                  {finish}
-                  <span className="text-nf-ink/70"> · anti-tarnish · skin-safe</span>
-                </span>
+                <div role="radiogroup" aria-label="Ring size, US" className="mt-1 flex flex-wrap gap-2">
+                  {ringSizesFor(piece.handle).map((s) => {
+                    const active = selectedSize === s.value;
+                    return (
+                      <button
+                        key={s.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={active}
+                        onClick={() => setSelectedSize(s.value)}
+                        className={`min-h-[42px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
+                          active
+                            ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
+                            : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
+                        }`}
+                      >
+                        {s.value}
+                        {s.status === "preorder" && (
+                          <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">Pre-order</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* A sold-out ring is made to order in every size; the line
+                    under Pre-order says when it ships. */}
+                {!soldOut && (
+                  <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
+                    {adjustable
+                      ? `US ${selectedSize} ships now. ${ADJUSTABLE_FIT_NOTE}`
+                      : selectedSize === "6"
+                        ? "US 6 is in stock and ships now."
+                        : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
+                  </p>
+                )}
               </div>
-            </div>
+            )}
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
 
-            {/* Quantity and Add to cart. */}
+            {/* One button. How many is the bag's business (and the ladder's). */}
             <div id="product-actions" className="mt-2">
-              <div className="flex gap-2">
-                <div className="flex h-[54px] w-[34%] max-w-[150px] shrink-0 items-center justify-between border border-nf-ink/25">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    aria-label="Decrease quantity"
-                    className="press-scale flex h-full min-w-11 items-center justify-center text-nf-ink"
-                  >
-                    <Minus size={15} strokeWidth={1.6} />
-                  </button>
-                  <span className="text-[15px] font-medium text-nf-ink" aria-live="polite">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    aria-label="Increase quantity"
-                    className="press-scale flex h-full min-w-11 items-center justify-center text-nf-ink"
-                  >
-                    <Plus size={15} strokeWidth={1.6} />
-                  </button>
-                </div>
-                <button
-                  onClick={soldOut ? handlePreOrder : handleAddToCart}
-                  disabled={cartLoading}
-                  className="press-scale inline-flex h-[54px] flex-1 items-center justify-center bg-[var(--nf-cta)] font-nf-label text-[12.5px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-200 hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
-                >
-                  {soldOut ? "Pre-order now" : "Add to cart"}
-                </button>
-              </div>
+              <button
+                onClick={soldOut ? handlePreOrder : handleAddToCart}
+                disabled={cartLoading}
+                className="press-scale inline-flex h-[50px] w-full items-center justify-center bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-200 hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+              >
+                {soldOut ? "Pre-order now" : "Add to cart"}
+              </button>
               {soldOut && (
                 <a
                   href={sizedEnquiryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="press-scale mt-2 inline-flex h-[48px] w-full items-center justify-center gap-2 border border-nf-ink/25 font-nf-label text-[11.5px] uppercase tracking-nf-16 text-nf-ink"
+                  className="press-scale mt-2 inline-flex h-[44px] w-full items-center justify-center gap-2 border border-nf-ink/25 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-ink"
                 >
                   <MessageSquare size={13} strokeWidth={1.6} /> Reserve on WhatsApp
                 </a>
               )}
-              <p className="mt-3 flex items-center justify-center gap-2 text-center text-[12px] text-nf-ink/80">
+              <p className="mt-3 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
                 <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
                 {soldOut ? "Hand-finished for you and shipped within 2 weeks, gift-boxed" : "Gift-ready: every piece arrives in the Naira gift box"}
               </p>
             </div>
 
-            {/* Four assurances as one row of icons (GIVA's pattern), where the
-                shopper checks them: just under the button. */}
-            <ul className="mt-4 grid grid-cols-4 gap-1 border-y border-nf-gold/25 py-3.5" aria-label="Naira assurances">
-              {assurances.map(({ icon: Icon, top, bottom, to }) => {
-                const body = (
-                  <>
-                    <Icon size={18} strokeWidth={1.5} className="text-nf-gold-text" aria-hidden="true" />
-                    <span className="text-[10.5px] leading-[1.3] text-nf-ink/85">
-                      {top}
-                      <br />
-                      {bottom}
-                    </span>
-                  </>
-                );
-                return (
-                  <li key={top} className="flex flex-col items-center gap-1.5 text-center">
-                    {to ? (
-                      <Link to={to} className="flex flex-col items-center gap-1.5">
-                        {body}
-                      </Link>
-                    ) : (
-                      body
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            {/* Details, care and delivery as fold-downs, closed until asked for
+                (Nishorama's pattern): the first screen stays the photo, the
+                name, the price and the button. Every panel stays in the page,
+                so all of it is in the HTML. */}
+            <div className="mt-8 border-t border-nf-gold/15">
+              <details className="group border-b border-nf-gold/15">
+                <summary className={fold}>
+                  Details
+                  <Plus size={14} strokeWidth={1.4} className={foldMark} aria-hidden="true" />
+                </summary>
+                <div id="pdp-panel-details" className="pb-6">
+                  <p className="text-[13px] leading-[1.7] text-nf-ink/85">{piece.blurb}</p>
+                  {specs.length > 0 && (
+                    <dl className="mt-5 border-t border-nf-gold/15">
+                      {specs.map((s, i) => (
+                        <div key={i} className="grid grid-cols-[34%_1fr] gap-3 border-b border-nf-gold/15 py-2.5 text-[12px] leading-[1.55]">
+                          <dt className="font-nf-label text-[9.5px] uppercase tracking-nf-10 text-nf-gold-text">{s.label || "Detail"}</dt>
+                          <dd className="text-nf-ink/90">{s.value}</dd>
+                        </div>
+                      ))}
+                      {stone && !specs.some((s) => /stone/i.test(s.label)) && (
+                        <div className="grid grid-cols-[34%_1fr] gap-3 border-b border-nf-gold/15 py-2.5 text-[12px]">
+                          <dt className="font-nf-label text-[9.5px] uppercase tracking-nf-10 text-nf-gold-text">Stone</dt>
+                          <dd className="text-nf-ink/90">{stone}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  )}
+                  {/* The spec list names plating and metal; the summary line is for pieces without one. */}
+                  {specs.length === 0 && <p className="mt-4 text-[12px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
+                  {piece.stylingTip && (
+                    <p className="mt-4 border-l-2 border-nf-gold/60 pl-3 font-nf-editorial text-[15px] italic leading-[1.5] text-nf-ink/85">
+                      {piece.stylingTip}
+                    </p>
+                  )}
+                </div>
+              </details>
 
-            {/* Description, care and delivery as three tabs (Bluorng's pattern).
-                Every panel stays in the page, so all of it is in the HTML. */}
-            <div className="mt-8">
-              <div role="tablist" aria-label="About this piece" className="flex border-b border-nf-gold/30">
-                {TABS.map((t) => {
-                  const on = tab === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      role="tab"
-                      id={`pdp-tab-${t.id}`}
-                      aria-selected={on}
-                      aria-controls={`pdp-panel-${t.id}`}
-                      tabIndex={on ? 0 : -1}
-                      onClick={() => setTab(t.id)}
-                      onKeyDown={(e) => {
-                        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-                        const at = TABS.findIndex((x) => x.id === tab);
-                        const next = TABS[(at + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
-                        setTab(next.id);
-                        document.getElementById(`pdp-tab-${next.id}`)?.focus();
-                      }}
-                      className={`-mb-px min-h-[46px] flex-1 border-b-2 font-nf-label text-[11px] uppercase tracking-nf-16 transition-colors ${
-                        on ? "border-nf-gold-deep text-nf-ink" : "border-transparent text-nf-ink/70 hover:text-nf-ink"
-                      }`}
-                    >
-                      {t.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div id="pdp-panel-details" role="tabpanel" aria-labelledby="pdp-tab-details" hidden={tab !== "details"} className="pt-5">
-                <p className="text-[14px] leading-[1.75] text-nf-ink/85">{piece.blurb}</p>
-                {specs.length > 0 && (
-                  <dl className="mt-5 border-t border-nf-gold/20">
-                    {specs.map((s, i) => (
-                      <div key={i} className="grid grid-cols-[34%_1fr] gap-3 border-b border-nf-gold/20 py-2.5 text-[13px] leading-[1.55]">
-                        <dt className="font-nf-label text-[10.5px] uppercase tracking-nf-10 text-nf-gold-text">{s.label || "Detail"}</dt>
-                        <dd className="text-nf-ink/90">{s.value}</dd>
-                      </div>
-                    ))}
-                    {stone && !specs.some((s) => /stone/i.test(s.label)) && (
-                      <div className="grid grid-cols-[34%_1fr] gap-3 border-b border-nf-gold/20 py-2.5 text-[13px]">
-                        <dt className="font-nf-label text-[10.5px] uppercase tracking-nf-10 text-nf-gold-text">Stone</dt>
-                        <dd className="text-nf-ink/90">{stone}</dd>
-                      </div>
-                    )}
-                  </dl>
-                )}
-                {/* The spec list names plating and metal; the summary line is for pieces without one. */}
-                {specs.length === 0 && <p className="mt-4 text-[12.5px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
-                {piece.stylingTip && (
-                  <p className="mt-4 border-l-2 border-nf-gold/60 pl-3 font-nf-editorial text-[16px] italic leading-[1.5] text-nf-ink/85">
-                    {piece.stylingTip}
-                  </p>
-                )}
-              </div>
-
-              <div id="pdp-panel-care" role="tabpanel" aria-labelledby="pdp-tab-care" hidden={tab !== "care"} className="pt-5">
-                <div className="space-y-2.5 text-[14px] leading-[1.75] text-nf-ink/85">
+              <details className="group border-b border-nf-gold/15">
+                <summary className={fold}>
+                  Care
+                  <Plus size={14} strokeWidth={1.4} className={foldMark} aria-hidden="true" />
+                </summary>
+                <div id="pdp-panel-care" className="space-y-2.5 pb-6 text-[13px] leading-[1.7] text-nf-ink/85">
                   <p>{piece.care ?? listedCare ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
-                  <p>Covered by our 2-year plating assurance.</p>
+                  {/* The two questions every jewellery buyer asks, answered for this piece. */}
+                  {care.map((c) => (
+                    <p key={c.q}>
+                      <strong className="font-semibold text-nf-ink">{c.q}</strong> {c.a}
+                    </p>
+                  ))}
                 </div>
-              </div>
+              </details>
 
-              <div id="pdp-panel-delivery" role="tabpanel" aria-labelledby="pdp-tab-delivery" hidden={tab !== "delivery"} className="pt-5">
-                <div className="space-y-2.5 text-[14px] leading-[1.75] text-nf-ink/85">
-                  <p>
-                    {arrivesBy && !soldOut ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
-                    Free insured shipping across India, dispatched from our Mumbai atelier.
-                  </p>
-                  <p>
-                    Cash on delivery available. 7-day returns —{" "}
-                    <Link to="/exchange-return-policy" className="underline decoration-nf-gold underline-offset-4">
-                      read the policy
-                    </Link>
-                    .
-                  </p>
+              <details className="group border-b border-nf-gold/15">
+                <summary className={fold}>
+                  Delivery & returns
+                  <Plus size={14} strokeWidth={1.4} className={foldMark} aria-hidden="true" />
+                </summary>
+                <div id="pdp-panel-delivery" className="pb-6">
+                  <div className="space-y-2.5 text-[13px] leading-[1.7] text-nf-ink/85">
+                    <p>
+                      {arrivesBy && !soldOut ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
+                      Free insured shipping across India, dispatched from our Mumbai atelier.
+                    </p>
+                    <p>
+                      Cash on delivery available. 7-day returns —{" "}
+                      <Link to="/exchange-return-policy" className="underline decoration-nf-gold underline-offset-4">
+                        read the policy
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                  <PincodeChecker />
+                  <a
+                    href={isRing ? sizedEnquiryHref : enquiryHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-flex min-h-[44px] items-center gap-2 text-[12px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+                  >
+                    <MessageSquare size={14} strokeWidth={1.6} className="text-nf-gold-deep" /> Questions? Chat with us on WhatsApp
+                  </a>
                 </div>
-                <PincodeChecker />
-                <a
-                  href={isRing ? sizedEnquiryHref : enquiryHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-5 inline-flex min-h-[44px] items-center gap-2 text-[13px] text-nf-ink underline decoration-nf-gold underline-offset-4"
-                >
-                  <MessageSquare size={14} strokeWidth={1.6} className="text-nf-gold-deep" /> Questions? Chat with us on WhatsApp
-                </a>
-              </div>
+              </details>
             </div>
 
             {/* A second piece, one tap from the bag: the bag's ladder takes 10%
@@ -1036,10 +872,10 @@ const JewelDetailNext = () => {
             {pairings.length > 0 && (
               <section className="mt-10" aria-labelledby="complete-the-look">
                 <div className="flex items-end justify-between gap-3">
-                  <h2 id="complete-the-look" className="font-cormorant text-[22px] leading-none text-nf-ink">
+                  <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
                     Complete the look
                   </h2>
-                  <p className="font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-gold-text">2 pieces · 10% off</p>
+                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">2 pieces · 10% off</p>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   {pairings.map((p) => (
@@ -1056,35 +892,6 @@ const JewelDetailNext = () => {
         <CustomerReviews productName={piece.name} variant="jewellery" />
       </Suspense>
 
-      {/* The questions shoppers ask before buying jewellery online. */}
-      <section className="mx-auto max-w-[760px] px-4 py-10" aria-labelledby="pdp-faq">
-        <h2 id="pdp-faq" className="font-cormorant text-[24px] leading-none text-nf-ink">
-          Before you buy
-        </h2>
-        <div className="mt-4 border-t border-nf-gold/25">
-          {faqs.map((f) => (
-            <details key={f.q} className="group border-b border-nf-gold/25">
-              <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-4 py-3 text-[14px] font-medium text-nf-ink [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <ChevronDown size={16} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep transition-transform group-open:rotate-180" aria-hidden="true" />
-              </summary>
-              <p className="pb-4 text-[13.5px] leading-[1.7] text-nf-ink/85">
-                {f.a}
-                {f.q.startsWith("What if") && (
-                  <>
-                    {" "}
-                    <Link to="/exchange-return-policy" className="underline decoration-nf-gold underline-offset-4">
-                      Read the returns policy
-                    </Link>
-                    .
-                  </>
-                )}
-              </p>
-            </details>
-          ))}
-        </div>
-      </section>
-
       <PressMarquee />
 
       <Suspense fallback={<div className="min-h-[420px] bg-nf-ivory-deep md:hidden" aria-hidden="true" />}>
@@ -1093,7 +900,7 @@ const JewelDetailNext = () => {
 
       {similar.length > 0 && (
         <section className="mx-auto max-w-[1400px] py-10 md:px-6" aria-labelledby="more-like-this">
-          <h2 id="more-like-this" className="px-4 font-cormorant text-[24px] leading-none text-nf-ink md:px-0">
+          <h2 id="more-like-this" className="px-4 font-cormorant text-[19px] leading-none text-nf-ink md:px-0">
             More {piece.category.toLowerCase()}
           </h2>
           <div className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:grid md:grid-cols-4 md:overflow-visible md:px-0" style={{ overscrollBehaviorX: "contain" }}>
@@ -1120,7 +927,7 @@ const JewelDetailNext = () => {
       {/* Phone buy bar: shown whenever Add to cart is not fully on screen. */}
       <div
         ref={stickyBarRef}
-        className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-nf-gold/25 bg-nf-ivory/95 px-3 pt-2 backdrop-blur transition-[transform,visibility] duration-300 ease-out md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-nf-gold/15 bg-nf-ivory/95 px-3 pt-2 backdrop-blur transition-[transform,visibility] duration-300 ease-out md:hidden"
         style={{
           paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom, 0px))",
           transform: stickyBarVisible ? "translateY(0)" : "translateY(110%)",
@@ -1139,7 +946,7 @@ const JewelDetailNext = () => {
         <button
           onClick={soldOut ? handlePreOrder : handleAddToCart}
           disabled={cartLoading}
-          className="press-scale inline-flex h-[48px] flex-1 items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[12px] font-medium uppercase tracking-nf-16 text-nf-ivory hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+          className="press-scale inline-flex h-[48px] flex-1 items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
         >
           {soldOut ? "Pre-order" : "Add to cart"}
           <span className="font-normal normal-case tracking-nf-4 text-nf-ivory/90">· {piece.priceLabel}</span>

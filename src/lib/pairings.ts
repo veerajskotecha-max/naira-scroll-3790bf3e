@@ -12,7 +12,7 @@ import type { JewelPiece } from "@/data/jewellery";
 */
 
 type Family = "silver" | "gold";
-const familyOf = (piece: JewelPiece): Family =>
+export const familyOf = (piece: JewelPiece): Family =>
   /rhodium|silver/i.test(piece.materials) && !/18k gold/i.test(piece.materials) ? "silver" : "gold";
 
 const buyable = (piece: JewelPiece) => piece.availableForSale !== false && Boolean(piece.variantId) && Boolean(piece.image);

@@ -21,10 +21,10 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/const MOBILE_FRAME = "1\/1"/);
   });
 
-  it("shows the buy bar whenever Add to cart is not fully on screen, never over the price and facts", () => {
+  it("shows the buy bar whenever Add to cart is not fully on screen, never over the price", () => {
     const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
     expect(effect).toMatch(/stickyBarRef/);
-    expect(effect).toMatch(/getElementById\("product-facts"\)/);
+    expect(effect).toMatch(/getElementById\("product-price"\)/);
     expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
     expect(effect).toMatch(/setStickyBarVisible\(notFullyShown && priceClear\)/);
     expect(code).toMatch(/new ResizeObserver\(check\)/);
@@ -43,15 +43,18 @@ describe("redesigned product page", () => {
     expect(code).toMatch(/aria-checked=\{active\}/);
   });
 
-  it("puts price, then buy facts, then size, then Add to cart", () => {
+  it("keeps the first screen to price, ring size and Add to cart, the details folded away below", () => {
     const price = code.indexOf('id="product-price"');
-    const facts = code.indexOf('id="product-facts"');
     const size = code.indexOf('aria-label="Ring size, US"');
     const actions = code.indexOf('id="product-actions"');
+    const details = code.indexOf('id="pdp-panel-details"');
     expect(price).toBeGreaterThan(-1);
-    expect(facts).toBeGreaterThan(price);
-    expect(size).toBeGreaterThan(facts);
+    expect(size).toBeGreaterThan(price);
     expect(actions).toBeGreaterThan(size);
+    expect(details).toBeGreaterThan(actions);
+    expect(code).not.toMatch(/id="product-facts"/);
+    expect(code).not.toMatch(/role="tablist"/);
+    expect(code.match(/<details className="group/g)?.length).toBe(3);
   });
 
   it("keeps the shoppable reels in the page, after the press strip", () => {
@@ -70,10 +73,16 @@ describe("redesigned product page", () => {
     expect(src).toMatch(/const canonical = `https:\/\/nairaflore\.com\/jewellery\/\$\{piece\.handle\}`/);
   });
 
-  it("keeps what the pre-built page needs: embedded piece, product, breadcrumb and FAQ data", () => {
+  it("keeps what the pre-built page needs: embedded piece, product and breadcrumb data", () => {
     expect(code).toMatch(/id="nf-piece"/);
     expect(code).toMatch(/"@type": "BreadcrumbList"/);
-    expect(code).toMatch(/"@type": "FAQPage"/);
+    // The questions live in the Care tab now, not as an FAQ section.
+    expect(code).not.toMatch(/"@type": "FAQPage"/);
+  });
+
+  it("asks one decision of the shopper: a single full-width Add to cart, no quantity picker", () => {
+    expect(code).not.toMatch(/aria-label="Decrease quantity"/);
+    expect(code).toMatch(/inline-flex h-\[\d+px\] w-full items-center justify-center bg-\[var\(--nf-cta\)\]/);
   });
 
   it("suggests a second piece before the reviews", () => {

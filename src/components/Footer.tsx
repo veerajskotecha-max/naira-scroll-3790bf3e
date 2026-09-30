@@ -109,7 +109,9 @@ const CompactPaymentMarks = () => (
 );
 
 /* `slim` (the redesigned product page) leaves out the assurance grid and
-   payment marks: the page states those facts beside Add to cart already. */
+   payment marks: the page states those facts beside Add to cart already. It
+   leaves out the 3D box too: there the box lives in the bag, where a piece
+   goes into it. */
 const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: boolean }) => {
   const [email, setEmail] = useState("");
 
@@ -143,7 +145,7 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
     return (
       <>
       {/* The product page ends on the box too: where the gifting question is asked. */}
-      <NairaBoxShowcase />
+      {!slim && <NairaBoxShowcase />}
       <footer className="w-full border-t border-border" style={{ backgroundColor: SAGE }}>
         {!slim && <section className="bg-background px-5 py-10 md:px-10 md:py-12" aria-label="Naira purchase assurances">
           <div className="mx-auto max-w-[880px]">

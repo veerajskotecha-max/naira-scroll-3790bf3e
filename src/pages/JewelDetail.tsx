@@ -32,7 +32,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
-import { jewellery as staticJewellery, jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+import { jewellery as staticJewellery, jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 const MobileReelShop = lazy(() => import("@/components/reels/MobileReelShop"));
@@ -374,6 +374,15 @@ const JewelDetail = () => {
   const soldOut = piece.availableForSale === false && !adjustable;
   const keyFacts = deriveKeyFacts(piece);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
+  /* A pre-order is a sold-out piece, or a ring size we do not stock (US 5 / 7). */
+  const sizePreorder = piece.category === "Rings" && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
+  const isPreorder = soldOut || sizePreorder;
+  const preorderHref = preorderWhatsAppUrl({
+    name: piece.name,
+    handle: piece.handle,
+    priceLabel: piece.priceLabel,
+    size: piece.category === "Rings" ? `US ${selectedSize}` : undefined,
+  });
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, I'd love to order the "${piece.name}"${piece.category === "Rings" ? ` in size ${selectedSize}` : ""} (qty ${quantity}). Could you share availability and next steps?`
   )}`;
@@ -424,10 +433,8 @@ const JewelDetail = () => {
 
   /* Sold-out pieces take pre-orders: try the cart first, and if Shopify
      refuses the variant, fall back to a WhatsApp reservation. */
-  const handlePreOrder = async () => {
-    const added = await addToCart().catch(() => false);
-    if (added) setDrawerOpen(true);
-    else window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
+  const handlePreOrder = () => {
+    window.open(preorderHref, "_blank", "noopener,noreferrer");
   };
 
   const handleWishlist = () => {

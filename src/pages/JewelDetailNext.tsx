@@ -16,7 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
-import { jewelleryEnquiryUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
@@ -439,6 +439,15 @@ const JewelDetailNext = () => {
   const steel = /stainless steel/i.test(piece.materials);
   const waterproof = /waterproof/i.test(piece.materials) || /waterproof/i.test(listedCare ?? "");
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
+  /* A pre-order is a sold-out piece, or a ring size we do not stock (US 5 / 7). */
+  const sizePreorder = isRing && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
+  const isPreorder = soldOut || sizePreorder;
+  const preorderHref = preorderWhatsAppUrl({
+    name: piece.name,
+    handle: piece.handle,
+    priceLabel: piece.priceLabel,
+    size: isRing ? `US ${selectedSize}` : undefined,
+  });
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, I'd love to order the "${piece.name}"${isRing ? ` in size ${selectedSize}` : ""} Could you share availability and next steps?`,
   )}`;
@@ -460,10 +469,8 @@ const JewelDetailNext = () => {
   };
 
   /* Sold-out pieces take pre-orders: the cart first, WhatsApp if Shopify refuses. */
-  const handlePreOrder = async () => {
-    const added = await addItem(cartItem()).catch(() => false);
-    if (added) setDrawerOpen(true);
-    else window.open(sizedEnquiryHref, "_blank", "noopener,noreferrer");
+  const handlePreOrder = () => {
+    window.open(preorderHref, "_blank", "noopener,noreferrer");
   };
 
   const handleWishlist = () => {
@@ -822,11 +829,11 @@ const JewelDetailNext = () => {
             {/* One button. How many is the bag's business (and the ladder's). */}
             <div id="product-actions" className="mt-2">
               <button
-                onClick={soldOut ? handlePreOrder : handleAddToCart}
+                onClick={isPreorder ? handlePreOrder : handleAddToCart}
                 disabled={cartLoading}
                 className="press-scale inline-flex h-[50px] w-full items-center justify-center bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-200 hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
               >
-                {soldOut ? "Pre-order now" : "Add to cart"}
+                {isPreorder ? "Reserve now" : "Add to cart"}
               </button>
               {soldOut && (
                 <a
@@ -1007,11 +1014,11 @@ const JewelDetailNext = () => {
           {heart}
         </button>
         <button
-          onClick={soldOut ? handlePreOrder : handleAddToCart}
+          onClick={isPreorder ? handlePreOrder : handleAddToCart}
           disabled={cartLoading}
           className="press-scale inline-flex h-[48px] flex-1 items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
         >
-          {soldOut ? "Pre-order" : "Add to cart"}
+          {isPreorder ? "Reserve now" : "Add to cart"}
           <span className="font-normal normal-case tracking-nf-4 text-nf-ivory/90">· {piece.priceLabel}</span>
         </button>
       </div>

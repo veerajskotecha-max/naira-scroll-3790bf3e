@@ -51,6 +51,14 @@ export const jewelleryEnquiryUrl = (name: string) =>
   )}`;
 
 
+/* Pre-orders are booked by hand on WhatsApp, never through checkout: the piece
+   is not in stock, so a paid checkout would take money for something we cannot
+   ship on the stated date. */
+export const preorderWhatsAppUrl = (p: { name: string; handle: string; priceLabel?: string; size?: string }) =>
+  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    `Hello Naira Flore, I would like to pre-order the "${p.name}"${p.size ? ` in size ${p.size}` : ""}${p.priceLabel ? ` (${p.priceLabel})` : ""}. Please book this piece for me, and let me know what further details you need to reserve it.\n\nhttps://nairaflore.com/jewellery/${p.handle}`
+  )}`;
+
 export const formatJewelPrice = (v: number) =>
   `₹${v.toLocaleString("en-IN")}`;
 

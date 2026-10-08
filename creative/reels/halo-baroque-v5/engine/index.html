@@ -493,7 +493,7 @@ function render(t) {
   const e = segAt(t), sp_ = srcPos(e, t), f = sp_.u < .5 ? sp_.a : sp_.b;
   let crossCut = false; for (let c = sp_.a + 1; c <= sp_.b; c++) if (CUTSET.has(c)) crossCut = true;
   const blend = 0;                    // real frames only: blending between them read as synthetic
-  setImg($('vid'), D.frames + pad(blend ? sp_.a : f, 5) + '.jpg'); setImg($('vid2'), D.frames + pad(sp_.b, 5) + '.jpg');
+  setImg($('vid'), D.frames + pad(blend ? sp_.a : f, 5) + (D.ext || '.jpg')); setImg($('vid2'), D.frames + pad(sp_.b, 5) + (D.ext || '.jpg'));
   $('vid2').style.opacity = blend.toFixed(3);
   // zoom: the segment's slow push, a punch on every cut, a bigger one into the pearl section
   const pk = 1;

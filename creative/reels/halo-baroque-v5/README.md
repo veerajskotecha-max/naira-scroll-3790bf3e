@@ -24,6 +24,30 @@ no-music cut. The two files are sample-aligned (lag 0, same length), so the phra
 and the word timings did not change. Her pauses dropped from about -45 dB to about
 -52 dB.
 
+**No grade on the picture.** Every version up to here was built from graded frames:
+- 6000 K warmth, mixed in at 22%
+- a soft contrast curve
+- the reds desaturated by 14%
+- slight sharpening (`cas`)
+
+Measured, that is about 5 levels per pixel and 7% less saturation on the dress. The
+final is built from untouched frames instead:
+
+- **Frames.** They are decoded with the BT.709 matrix to lossless PNG (`srcf_raw/`).
+- **Strip the colour chunks.** Run `strip_png_color.py` on the frames. ffmpeg writes
+  cICP/cHRM/gAMA into the PNGs, and Chrome honours them, which brightened the video by
+  about 10 levels.
+- **Render.** Use `engine/render_hq.mjs`, which screenshots as PNG.
+- **Encode.** Use `encode_master.sh`, which writes H.264 at CRF 12 (BT.709, limited
+  range, tagged).
+
+To check it, take a zoom-1.0 frame (output 58 against source 98). It matches the
+original to the pixel in 99.9% of the picture. After encoding, the mean difference is
+about 1.5 levels, with no colour shift.
+
+The copy under 30 MB is a two-pass encode at 5.8 Mbps from the same PNG frames. Against
+the CRF 12 master it scores SSIM 0.9946.
+
 **Sound changes:**
 - **Voice:** `afftdn` goes from nr 14 to nr 20. The gaps carry a trace of room tone
   (×0.12) instead of ×0.6, which takes the hiss in the pauses from -38 to -52 dB.

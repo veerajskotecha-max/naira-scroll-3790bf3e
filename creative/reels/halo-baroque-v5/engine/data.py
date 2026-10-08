@@ -83,7 +83,7 @@ for e in E:
 ring_img = Image.open(f'{W}/cut4/ring_cut.png'); det_img = Image.open(f'{W}/cut/lariat_detail.png'); full_img = Image.open(f'{W}/cut/lariat_full.png')
 B = TL and 0.6375
 ring = json.load(open(f'{W}/ring_pair.json'))      # stones tracked as a pair (colour detection jumped to her hair)
-D = dict(fps=30, dur=round(END_T + 5.6, 2), nSrc=1240, dups=dups, srcCuts=src_cuts, jumps=sorted(jumps), frames='../srcf/f_', edl=E, caps=caps, words=words, ring=ring,
+D = dict(fps=30, dur=round(END_T + 5.6, 2), nSrc=1240, dups=dups, srcCuts=src_cuts, jumps=sorted(jumps), frames='../srcf_raw/f_', ext='.png', edl=E, caps=caps, words=words, ring=ring,
          marks=dict(flower=M['flower'], wordmark=dict(w=M['wordmark']['w'], h=M['wordmark']['h'], letters=M['letters'])),
          cut=dict(ring='../cut4/ring_cut.png', ringW=ring_img.width, ringH=ring_img.height,
                   det='../cut/lariat_detail.png', detW=det_img.width, detH=det_img.height, pearl=pearl,

@@ -8,7 +8,7 @@ W = S + '/v12'; FF = S + '/ffmpeg'; SR = 48000; TEMPO = 1.06
 chain = ("highpass=f=75,afftdn=nr=20:nf=-50:tn=1,equalizer=f=280:t=q:w=1.1:g=-2.5,"
          "equalizer=f=3300:t=q:w=1.2:g=2.5,highshelf=f=10500:g=2.5,deesser=i=0.35:m=0.5:f=0.55,"
          "acompressor=threshold=-26dB:ratio=3:attack=6:release=90:makeup=4,alimiter=limit=0.89")
-subprocess.run([FF, '-loglevel', 'error', '-y', '-i', W + '/vo_raw48.wav', '-af', chain, '-ar', '48000', '-c:a', 'pcm_f32le', W + '/vo_clean.wav'], check=True)
+subprocess.run([FF, '-loglevel', 'error', '-y', '-i', W + '/a48.wav', '-af', chain, '-ar', '48000', '-c:a', 'pcm_f32le', W + '/vo_clean.wav'], check=True)
 y, sr = sf.read(W + '/vo_clean.wav'); assert sr == SR
 # 2) phrases (source seconds) and the gap after each, in output seconds before the tempo change
 SEG = [(0.00, 3.00, .16), (3.40, 9.26, .22), (9.74, 14.00, .12), (14.36, 17.48, .34), (18.05, 19.32, .18),

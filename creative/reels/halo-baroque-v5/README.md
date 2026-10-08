@@ -17,6 +17,13 @@ fixed. It also uses the new ring cut-out from v4 (`cut4/ring_cut.png`).
 - the drawn, morphing pearl (the loupe shows only the real photo)
 - the front petals (7 remain behind)
 
+**The voice comes from the music-free upload.** `a48.wav` is the audio of the first
+Drive file, and it has no music. Up to v5, the voice was taken from the second upload
+("with music"), and that file's background track sat under her voice even in the
+no-music cut. The two files are sample-aligned (lag 0, same length), so the phrase cuts
+and the word timings did not change. Her pauses dropped from about -45 dB to about
+-52 dB.
+
 **Sound changes:**
 - **Voice:** `afftdn` goes from nr 14 to nr 20. The gaps carry a trace of room tone
   (×0.12) instead of ×0.6, which takes the hiss in the pauses from -38 to -52 dB.

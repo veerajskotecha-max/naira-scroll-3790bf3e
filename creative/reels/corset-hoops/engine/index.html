@@ -1,0 +1,598 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: CG; src: url('../../fonts/CG.ttf'); font-weight: 300 700; }
+@font-face { font-family: CG; font-style: italic; src: url('../../fonts/CG-Italic.ttf'); font-weight: 300 700; }
+@font-face { font-family: Jost; src: url('../../fonts/Jost.ttf'); font-weight: 100 900; }
+:root { --ivory:#FBF3EC; --ink:#1A1614; --blush:#FFBDA8; --sage:#99B4AF; --deep:#50726A; }
+html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:#151211; }
+#stage { position:absolute; inset:0; overflow:hidden; background:#151211; }
+.panel { position:absolute; inset:0; overflow:hidden; }
+.panel img, .panel canvas { position:absolute; left:0; top:0; width:1080px; height:1920px; transform-origin:0 0; display:block; }
+.abs { position:absolute; left:0; top:0; }
+#behind, #fg, #ui { position:absolute; inset:0; }
+#behind { overflow:hidden; }
+#ov { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:visible; }
+/* type */
+.t { position:absolute; white-space:nowrap; will-change:transform,opacity; }
+.cg { font-family:CG; font-style:italic; font-weight:500; color:var(--ivory); line-height:1.02;
+      filter:drop-shadow(0 2px 12px rgba(26,22,20,.55)) drop-shadow(0 1px 2px rgba(26,22,20,.5)); }
+.kick { font-family:Jost; font-weight:500; text-transform:uppercase; letter-spacing:.22em; color:var(--ivory);
+      filter:drop-shadow(0 1px 6px rgba(26,22,20,.7)) drop-shadow(0 1px 1px rgba(26,22,20,.6)); }
+.print { color:var(--deep); filter:drop-shadow(0 0 10px rgba(251,243,236,.85)) drop-shadow(0 0 2px rgba(251,243,236,.9)); }
+.center { text-align:center; }
+/* giant type that sits behind her; sizes are fitted to the frame once the fonts are in */
+.big { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap; font-family:Jost; font-weight:600; letter-spacing:.01em; line-height:.86; color:var(--deep); will-change:transform,opacity; }
+.bigi { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap; font-family:CG; font-style:italic; font-weight:600; line-height:.9; color:var(--deep); font-feature-settings:"lnum" 1; }
+.marq { position:absolute; left:-400px; width:2400px; height:96px; background:var(--blush); overflow:hidden; box-shadow:0 10px 26px rgba(26,22,20,.18); transform-origin:50% 50%; }
+.marq .mq { position:absolute; left:0; top:0; white-space:nowrap; font-family:Jost; font-weight:600; font-size:50px; line-height:96px; letter-spacing:.14em; color:var(--deep); }
+/* product tag: the brand's sharp corners, ivory card, blush hairline */
+.tag { position:absolute; width:420px; height:176px; background:var(--ivory); box-shadow:0 14px 30px rgba(26,22,20,.32), 0 2px 5px rgba(26,22,20,.2); }
+.tag::after { content:''; position:absolute; inset:9px; border:2px solid var(--blush); }
+.tag .nm { position:absolute; left:30px; top:28px; font-family:Jost; font-weight:500; font-size:26px; letter-spacing:.16em; color:var(--deep); }
+.tag .pr { position:absolute; left:28px; top:70px; font-family:CG; font-weight:500; font-size:84px; line-height:1; color:var(--deep); font-feature-settings:"lnum" 1; }
+.chip { position:absolute; height:66px; padding:0 28px 0 34px; background:rgba(251,243,236,.95); font-family:Jost; font-weight:500; font-size:30px;
+      letter-spacing:.16em; line-height:66px; color:var(--deep); box-shadow:0 8px 20px rgba(26,22,20,.25); white-space:nowrap; }
+.chip::before { content:''; position:absolute; left:0; top:0; bottom:0; width:7px; background:var(--blush); }
+.card { position:absolute; background:var(--ivory); box-shadow:0 20px 44px rgba(26,22,20,.34), 0 3px 8px rgba(26,22,20,.2); }
+.card::after { content:''; position:absolute; inset:12px; border:2px solid var(--blush); pointer-events:none; }
+.loupe { position:absolute; border-radius:50%; overflow:hidden; background:#000; box-shadow:0 0 0 5px var(--ivory), 0 0 0 8px var(--blush), 0 16px 34px rgba(26,22,20,.45); }
+.loupe img { position:absolute; left:0; top:0; width:1080px; height:1920px; transform-origin:0 0; }
+.sticker { position:absolute; border-radius:50%; background:var(--blush); display:flex; flex-direction:column; align-items:center; justify-content:center;
+      box-shadow:0 10px 24px rgba(26,22,20,.3); color:var(--deep); }
+.photo { position:absolute; width:392px; height:520px; background:var(--ivory); box-shadow:0 24px 50px rgba(26,22,20,.42), 0 3px 8px rgba(26,22,20,.25); }
+.photo .ph { position:absolute; left:18px; top:18px; width:356px; height:430px; overflow:hidden; background:#000; }
+.photo .ph img { position:absolute; left:0; top:0; width:1080px; height:1920px; transform-origin:0 0; }
+.photo .cap { position:absolute; left:20px; right:20px; bottom:20px; font-family:Jost; font-weight:500; font-size:20px; letter-spacing:.2em; color:var(--deep); display:flex; justify-content:space-between; }
+#flash { position:absolute; inset:0; background:var(--ivory); opacity:0; pointer-events:none; }
+#iris { position:absolute; inset:0; pointer-events:none; }
+#end { position:absolute; inset:0; display:none; background:
+  radial-gradient(95% 55% at 50% 102%, rgba(255,189,168,.62), rgba(255,189,168,.14) 58%, rgba(251,243,236,0) 78%), var(--ivory); }
+#end .btn { position:absolute; background:var(--deep); color:var(--ivory); font-family:Jost; font-weight:500; letter-spacing:.2em; text-align:center; }
+#measure { position:absolute; left:0; top:0; visibility:hidden; white-space:nowrap; }
+</style></head>
+<body><div id="stage">
+  <div id="vid"></div>
+  <div id="behind"></div>
+  <div id="fg"></div>
+  <svg id="ov" viewBox="0 0 1080 1920"></svg>
+  <div id="ui"></div>
+  <div id="flash"></div>
+  <svg id="iris" class="abs" width="1080" height="1920"></svg>
+  <div id="end"></div>
+</div>
+<span id="measure"></span>
+<script>
+const D = window.D, FPS = D.fps, C = D.cues, V = D.version;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const E = { lin: p => p, out: p => 1 - (1 - p) ** 3, io: p => p < .5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2, out5: p => 1 - (1 - p) ** 5,
+  back: p => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * (p - 1) ** 3 + c1 * (p - 1) ** 2; } };
+const P = (t, t0, d, e = 'out') => E[e](clamp((t - t0) / d));
+const win = (t, a, b, fi = .2, fo = .2) => (t < a || t > b) ? 0 : P(t, a, fi) * (1 - P(t, b - fo, fo, 'io'));
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const sv = (tag, at = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); if (parent) parent.appendChild(e); return e; };
+const el = (cls, html = '', parent = $('ui'), st = {}) => { const e = document.createElement('div'); if (cls) e.className = cls; e.innerHTML = html; Object.assign(e.style, st); parent.appendChild(e); return e; };
+const f1 = v => (+v).toFixed(1);
+const pad4 = n => String(n).padStart(4, '0');
+const show = (e, on, disp = '') => { e.style.display = on ? disp : 'none'; };
+function setImg(img, src) { if (img.getAttribute('src') !== src) img.setAttribute('src', src); }
+const cf = f => clamp(Math.round(f), 1, D.nSrc);
+const frameSrc = f => D.frames + pad4(cf(f)) + '.png';
+const matteSrc = f => D.matte + pad4(cf(f)) + '.png';
+const srcFrameAt = s => Math.round(s * FPS) + 1;
+const face = f => D.faces[String(cf(f))];
+// the hoop track exists only where the hoop is in view; [x, y, diameter, a] where a fades to 0 at an occlusion
+const hoopAt = f => D.hoop[String(cf(f))] || null;
+const hoopR = f => { const h = hoopAt(f); return h ? h[2] / 2 : .1 * face(f)[2]; };
+const inWin = (t, ws) => (ws || []).some(w => t >= w[0] && t < w[1]);
+
+// ---------- camera ----------
+function segAt(t) { let s = D.edl[0]; for (const e of D.edl) if (t >= e.t0 - 1e-6) s = e; return s; }
+function frameOf(e, t) {
+  if (e.kind === 'freeze') return e.f;
+  if (e.kind === 'stut') { const d = t - e.t0, k = Math.floor(d / e.slot), u = d - k * e.slot; return srcFrameAt(e.s0 + k * e.step + u); }
+  return srcFrameAt(e.s0 + (t - e.t0));
+}
+const anchorCache = new Map();
+function anchorOf(e) {                                   // a segment zooms about the mean face centre of its frames
+  if (anchorCache.has(e)) return anchorCache.get(e);
+  const fs = []; if (e.kind === 'freeze') fs.push(e.f); else for (let t = e.t0; t < Math.min(e.t1, D.dur); t += .1) fs.push(frameOf(e, t));
+  let x = 0, y = 0; for (const f of fs) { const fc = face(f); x += fc[0] + fc[2] / 2; y += fc[1] + fc[3] * .62; }
+  const a = [x / fs.length, y / fs.length]; anchorCache.set(e, a); return a;
+}
+// one full-frame shot at time t: which source frame, and where it sits on screen
+function camAt(t) {
+  const e = segAt(t); if (e.kind === 'split' || e.kind === 'merge' || e.kind === 'tri') return null;
+  const f = cf(frameOf(e, t)), [ax, ay] = anchorOf(e);
+  let z = lerp(e.z0, e.z1, E.io(clamp((t - e.t0) / Math.max(.01, e.t1 - e.t0))));
+  if (D.pulse && t >= D.pulse[0] && t < D.pulse[1]) {                 // a 2.5% kick on every beat
+    let lb = -1; for (const g of D.grid) if (g <= t) lb = g; if (lb >= 0) z *= 1 + .025 * (1 - E.out(clamp((t - lb) / .22)));
+  }
+  let tx = 0, ty = 0; if (z > 1) { tx = clamp(ax - ax * z, 1080 - 1080 * z, 0); ty = clamp(ay - ay * z, 1920 - 1920 * z, 0); }
+  return { e, f, z, tx, ty };
+}
+// every face on screen at time t (one per panel), as [x0, y0, x1, y1, clipX0, clipX1]; head=true widens it to her hair
+function faceBoxes(t, head = false) {
+  const e = segAt(t), out = [];
+  const box = (f, z, tx, ty, c0 = 0, c1 = 1080) => { const fc = face(f);
+    const x0 = head ? fc[0] - .3 * fc[2] : fc[0], x1 = head ? fc[0] + 1.3 * fc[2] : fc[0] + fc[2], y0 = head ? fc[1] - .55 * fc[3] : fc[1], y1 = fc[1] + fc[3];
+    out.push([Math.max(c0, tx + z * x0), ty + z * y0, Math.min(c1, tx + z * x1), ty + z * y1]); };
+  if (e.kind === 'tri') { for (let i = 0; i < 3; i++) { const g = triGeom(e, t, i); box(g.f, 1, g.x, 0, i * 360, (i + 1) * 360); } }
+  else if (e.kind === 'split' || e.kind === 'merge') { for (const g of splitGeom(e, t)) box(g.f, 1, g.x, 0, g.c0, g.c1); }
+  else { const c = camAt(t); box(c.f, c.z, c.tx, c.ty); }
+  return out;
+}
+// 1 when nothing of her is under the box over the next/last quarter second, easing to 0 as her head arrives
+function duck(b, t) {
+  let m = 0; const area = (b[2] - b[0]) * (b[3] - b[1]);
+  for (let k = -3; k <= 3; k++) for (const h of faceBoxes(clamp(t + k * .08, 0, D.dur - .001), true)) {
+    const ix = Math.min(b[2], h[2]) - Math.max(b[0], h[0]), iy = Math.min(b[3], h[3]) - Math.max(b[1], h[1]);
+    if (ix > 0 && iy > 0) m = Math.max(m, ix * iy / area); }
+  return 1 - E.io(clamp(m / .12));
+}
+
+// ---------- video: panels, each with a matte-cut copy of her (for type behind her) ----------
+const VID = $('vid'), FG = $('fg');
+function mkPanel(withFG) {
+  const p = document.createElement('div'); p.className = 'panel'; const im = document.createElement('img'); p.appendChild(im); VID.appendChild(p);
+  let fg = null;
+  if (withFG) { const fp = document.createElement('div'); fp.className = 'panel'; const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1920; fp.appendChild(cv); FG.appendChild(fp);
+    fg = { p: fp, cv, ctx: cv.getContext('2d'), mt: new Image() }; }
+  return { p, im, fg, tx: 0, ty: 0, z: 1, f: 1, on: false };
+}
+const PA = mkPanel(true), PB = mkPanel(true), PC = mkPanel(false);
+const PANELS = [PA, PB, PC];
+function place(pn, f, z, tx, ty) {
+  setImg(pn.im, frameSrc(f)); pn.f = cf(f); pn.on = true; pn.p.style.display = '';
+  pn.tx = tx; pn.ty = ty; pn.z = z;
+  const tr = `translate(${f1(tx)}px, ${f1(ty)}px) scale(${z.toFixed(5)})`;
+  pn.im.style.transform = tr;
+  if (pn.fg) { pn.fg.cv.style.transform = tr; setImg(pn.fg.mt, matteSrc(pn.f)); }
+}
+const toS = (pn, x, y) => [pn.tx + pn.z * x, pn.ty + pn.z * y];
+let CUR = { main: PA, seg: null, f: 1, left: null };
+function clip(pn, c) { pn.p.style.clipPath = c; if (pn.fg) pn.fg.p.style.clipPath = c; }
+function splitGeom(e, t) {
+  if (e.kind === 'split') return [{ f: srcFrameAt(e.left + (t - e.t0)), x: 270 - e.cxl, c0: 0, c1: 540 }, { f: srcFrameAt(e.right + (t - e.t0)), x: 810 - e.cxr, c0: 540, c1: 1080 }];
+  const p = E.io(clamp((t - e.t0) / e.mdur)), sp = D.edl.find(x => x.kind === 'split');
+  const g = [];
+  if (p < 1) g.push({ f: srcFrameAt(sp.left + (e.t0 - sp.t0) + Math.min(t - e.t0, e.mdur)), x: 270 - sp.cxl - 560 * p, c0: 0, c1: 540 - 540 * p });
+  g.push({ f: srcFrameAt(e.right + (t - e.t0)), x: (810 - e.cxr) * (1 - p), c0: 540 * (1 - p), c1: 1080 });
+  return g;
+}
+function triGeom(e, t, i) {
+  const f = srcFrameAt(e.s0 + Math.max(0, t - e.t0 - e.lag[i])), fc = face(f), cx = fc[0] + fc[2] / 2;
+  const slide = (1 - E.out5(clamp((t - e.t0) / .35))) * (i - 1) * 260;
+  return { f, x: 180 + i * 360 - cx + slide };
+}
+function drawVideo(t) {
+  const e = segAt(t); CUR.seg = e; CUR.left = null;
+  for (const pn of PANELS) { pn.on = false; pn.p.style.display = 'none'; clip(pn, 'none'); }
+  if (e.kind === 'split' || e.kind === 'merge') {
+    const g = splitGeom(e, t), R = g[g.length - 1];
+    place(PB, R.f, 1, R.x, 0); clip(PB, `inset(0 0 0 ${f1(R.c0)}px)`); CUR.main = PB;
+    if (g.length > 1) { place(PA, g[0].f, 1, g[0].x, 0); clip(PA, `inset(0 ${f1(1080 - g[0].c1)}px 0 0)`); CUR.left = PA; }
+  } else if (e.kind === 'tri') {
+    [PA, PB, PC].forEach((pn, i) => { const g = triGeom(e, t, i); place(pn, g.f, 1, g.x, 0);
+      clip(pn, `inset(0 ${1080 - (i + 1) * 360 + (i < 2 ? 3 : 0)}px 0 ${i * 360 + (i > 0 ? 3 : 0)}px)`); });
+    CUR.main = PB;
+  } else { const c = camAt(t); place(PA, c.f, c.z, c.tx, c.ty); CUR.main = PA; }
+  CUR.f = CUR.main.f;
+  // depth: her matte-cut copy goes on top only while something sits behind her
+  const depth = inWin(t, D.depth) && e.kind !== 'tri';
+  FG.style.display = depth ? '' : 'none'; $('behind').style.display = depth ? '' : 'none';
+  for (const pn of [PA, PB]) if (pn.fg) pn.fg.p.style.display = depth && pn.on ? '' : 'none';
+}
+// compose her cut-out for every visible matte panel once both the frame and its matte have decoded
+async function composeFG() {
+  for (const pn of [PA, PB]) {
+    if (!pn.fg || !pn.on || FG.style.display === 'none') continue;
+    try { await pn.im.decode(); await pn.fg.mt.decode(); } catch (e) {}
+    const c = pn.fg.ctx; c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, 1080, 1920);
+    c.drawImage(pn.im, 0, 0, 1080, 1920); c.globalCompositeOperation = 'destination-in'; c.drawImage(pn.fg.mt, 0, 0, 1080, 1920);
+    c.globalCompositeOperation = 'source-over';
+  }
+}
+
+// ---------- fitting giant type to the frame (after the fonts are in) ----------
+const FITS = [];
+function fitLater(e, maxW, maxPx) { FITS.push(() => {
+  const m = $('measure'); m.className = e.className; m.style.cssText = 'position:absolute;left:0;top:0;width:auto;visibility:hidden;white-space:nowrap;font-size:' + maxPx + 'px';
+  m.innerHTML = e.innerHTML; const w = m.getBoundingClientRect().width; m.innerHTML = '';
+  e.style.fontSize = (w > maxW ? maxPx * maxW / w : maxPx).toFixed(1) + 'px'; e.dataset.px = e.style.fontSize; }); }
+
+// ---------- brand marks ----------
+const FL = D.marks.flower, WM = D.marks.wordmark;
+function makeLogo(parent, width, letterFill = '#99B4AF', flowerFill = '#FFBDA8', shadow = false) {
+  const h = width * WM.h / WM.w; const s = sv('svg', { width, height: h, viewBox: `0 0 ${WM.w} ${WM.h}`, class: 'abs', style: 'overflow:visible' + (shadow ? ';filter:drop-shadow(0 2px 8px rgba(26,22,20,.35))' : '') }, parent);
+  for (const L of WM.letters) sv('path', { d: L.d, fill: letterFill }, s);
+  const g = sv('g', { transform: `translate(${FL.left} ${FL.top}) scale(${FL.scale})` }, s); sv('path', { d: FL.d, fill: flowerFill }, g);
+  return { s, h };
+}
+function logoDiv(width, x, y, opts = {}) {
+  const d = el('', '', opts.parent || $('ui'), { position: 'absolute', left: x + 'px', top: y + 'px', width: width + 'px' });
+  const L = makeLogo(d, width, opts.letter, opts.flower, opts.shadow); d.style.height = L.h + 'px'; return d;
+}
+// the corner bug: top left, where her head goes least (measured: hidden 13-30% of the time there, 54-74% top centre);
+// it steps aside (fades) whenever her head is about to pass under it
+function mkBug(w = 200, x = 64, y = 272, letter = '#6E918A') { const d = logoDiv(w, x, y, { letter }); const h = w * WM.h / WM.w;
+  return { d, box: [x - 10, y - 8, x + w + 10, y + h + 8] }; }
+function drawBug(B, t, extra = 1) { B.d.style.opacity = (duck(B.box, t) * extra).toFixed(3); }
+
+// ---------- components ----------
+function mkTag(x, y, parent = $('ui')) { return el('tag', `<div class="nm">${D.product.name}</div><div class="pr">${D.product.price}</div>`, parent, { left: x + 'px', top: y + 'px' }); }
+function drawTagAt(e, t, t0, t1, from = 'up') {
+  const on = t >= t0 && t < t1; show(e, on); if (!on) return 0;
+  const p = E.out5(clamp((t - t0) / .55)), o = P(t, t1 - .25, .25, 'io');
+  e.style.opacity = (clamp((t - t0) / .25) * (1 - o)).toFixed(3);
+  e.style.transform = from === 'left' ? `translateX(${f1((1 - p) * -60)}px)` : `translateY(${f1((1 - p) * 28)}px)`;
+  return clamp((t - t0) / .25) * (1 - o);
+}
+function mkText(html, cls, x, y, size, opts = {}) {
+  const e = el('t ' + cls + (opts.center ? ' center' : ''), html, opts.parent || $('ui'), { left: (opts.center ? 0 : x) + 'px', top: y + 'px', fontSize: size + 'px', width: opts.center ? '1080px' : 'auto' });
+  if (opts.color) e.style.color = opts.color; if (opts.ls) e.style.letterSpacing = opts.ls; return e;
+}
+function rise(e, t, t0, t1, dy = 22, fi = .35, fo = .25) {
+  const on = t >= t0 && t < t1; show(e, on); if (!on) return;
+  const p = E.out5(clamp((t - t0) / (fi + .2))), o = P(t, t1 - fo, fo, 'io');
+  e.style.opacity = (clamp((t - t0) / fi) * (1 - o)).toFixed(3); e.style.transform = `translateY(${f1((1 - p) * dy - o * 10)}px)`;
+}
+function slam(e, t, t0, t1, big = 1.22, drift = 0) {
+  const on = t >= t0 && t < t1; show(e, on); if (!on) return;
+  const p = E.out(clamp((t - t0) / .14)), o = P(t, t1 - .08, .08, 'lin');
+  e.style.opacity = (clamp((t - t0) / .06) * (1 - o)).toFixed(3); e.style.transform = `scale(${(lerp(big, 1, p) * (1 + drift * (t - t0))).toFixed(4)})`; e.style.transformOrigin = '50% 55%';
+}
+// the loupe: a circle holding the sharpest real frame of the hoop, magnified, with a leader to the live hoop
+const OV = $('ov');
+function mkLoupe(r) {
+  const d = el('loupe', '', $('ui'), { width: 2 * r + 'px', height: 2 * r + 'px' }); const im = document.createElement('img'); d.appendChild(im);
+  const g = sv('g', {}, OV); const ln = sv('line', { stroke: '#FBF3EC', 'stroke-width': 3, 'stroke-linecap': 'round' }, g);
+  const ring = sv('circle', { fill: 'none', stroke: '#FBF3EC', 'stroke-width': 3 }, g); const dot = sv('circle', { r: 5, fill: '#FFBDA8' }, g);
+  g.style.filter = 'drop-shadow(0 1px 4px rgba(26,22,20,.6))';
+  return { d, im, g, ln, ring, dot, r };
+}
+function drawLoupe(L, t, t0, t1, cx, cy, lead = null, mag = 2.3) {
+  const on = t >= t0 && t < t1; show(L.d, on); L.g.style.display = on ? '' : 'none'; if (!on) return;
+  const k = E.back(clamp((t - t0) / .45)), o = P(t, t1 - .25, .25, 'io'), op = clamp((t - t0) / .2) * (1 - o);
+  const r = L.r * k * (1 - .2 * o);
+  Object.assign(L.d.style, { left: f1(cx - r) + 'px', top: f1(cy - r) + 'px', width: f1(2 * r) + 'px', height: f1(2 * r) + 'px', opacity: op.toFixed(3) });
+  const sf = C.loupe_src, sh = hoopAt(sf), Z = mag * (1 + .06 * clamp((t - t0) / (t1 - t0)));   // a slow push into the braid
+  setImg(L.im, frameSrc(sf)); L.im.style.transform = `translate(${f1(r - sh[0] * Z)}px, ${f1(r - sh[1] * Z)}px) scale(${Z.toFixed(4)})`;
+  const pn = CUR.main, h = hoopAt(pn.f), la = lead && h ? h[3] * win(t, lead[0], lead[1], .01, .3) : 0;
+  L.g.setAttribute('opacity', (op * la).toFixed(3)); if (la <= 0) return;
+  const [hx, hy] = toS(pn, h[0], h[1]), rr = h[2] / 2 * pn.z * 1.25;
+  const ang = Math.atan2(hy - cy, hx - cx), sx = cx + Math.cos(ang) * (r + 8), sy = cy + Math.sin(ang) * (r + 8);
+  const ex = hx - Math.cos(ang) * rr, ey = hy - Math.sin(ang) * rr, dl = clamp((t - t0 - .15) / .3);
+  L.ln.setAttribute('x1', f1(sx)); L.ln.setAttribute('y1', f1(sy)); L.ln.setAttribute('x2', f1(lerp(sx, ex, E.io(dl)))); L.ln.setAttribute('y2', f1(lerp(sy, ey, E.io(dl))));
+  L.ring.setAttribute('cx', f1(hx)); L.ring.setAttribute('cy', f1(hy)); L.ring.setAttribute('r', f1(rr * E.out(clamp((t - t0 - .3) / .3))));
+  L.dot.setAttribute('cx', f1(sx)); L.dot.setAttribute('cy', f1(sy));
+}
+const STAR = 'M0,-1 C.07,-.15 .15,-.07 1,0 C.15,.07 .07,.15 0,1 C-.07,.15 -.15,.07 -1,0 C-.15,-.07 -.07,-.15 0,-1Z';
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function chip(text, x, y) { return el('chip', text, $('ui'), { left: x + 'px', top: y + 'px' }); }
+function drawChip(e, t, t0, t1) {
+  const on = t >= t0 && t < t1; show(e, on); if (!on) return;
+  const p = E.out5(clamp((t - t0) / .4)), o = P(t, t1 - .18, .18, 'io');
+  e.style.opacity = (clamp((t - t0) / .15) * (1 - o)).toFixed(3); e.style.transform = `translateX(${f1((1 - p) * -70)}px)`;
+  e.style.clipPath = `inset(0 ${f1((1 - p) * 100)}% 0 0)`;
+}
+// a ticker band, rotated, scrolling; behind her when it is in #behind
+function mkMarquee(text, y, rot, parent) {
+  const b = el('marq', '', parent, { top: y + 'px', transform: `rotate(${rot}deg)` }); const s = el('mq', (text + '  ·  ').repeat(8).replace(/ /g, '&nbsp;'), b);
+  return { b, s, rot };
+}
+function drawMarquee(M, t, t0, t1, speed = 240) {
+  const on = t >= t0 && t < t1; show(M.b, on); if (!on) return;
+  const k = E.out5(clamp((t - t0) / .35)), o = P(t, t1 - .15, .15, 'io');
+  M.b.style.transform = `rotate(${M.rot}deg) scaleY(${(k * (1 - o)).toFixed(3)})`;
+  M.s.style.transform = `translateX(${f1(-(t - t0) * speed - 120)}px)`;
+}
+// offer card (ads): what the bag does, in its own words; it sits under her chin, inside the safe zone
+function mkOffer() {
+  const c = el('card', '', $('ui'), { left: '110px', top: '944px', width: '860px', height: '302px' });
+  const row = (y, k, v) => { el('', k, c, { position: 'absolute', left: '58px', top: (y + 22) + 'px', fontFamily: 'Jost', fontWeight: 500, fontSize: '31px', letterSpacing: '.16em', color: '#50726A' });
+    el('', v, c, { position: 'absolute', right: '58px', top: y + 'px', fontFamily: 'CG', fontStyle: 'italic', fontWeight: 500, fontSize: '74px', lineHeight: 1, color: '#50726A' }); };
+  row(26, 'ANY 2 PIECES', '10% off'); row(100, 'ANY 3 PIECES', '20% off');
+  el('', 'applied automatically in your bag', c, { position: 'absolute', left: 0, width: '860px', top: '178px', textAlign: 'center', fontFamily: 'CG', fontStyle: 'italic', fontSize: '34px', color: '#50726A' });
+  el('', 'FREE DELIVERY · COD AVAILABLE', c, { position: 'absolute', left: '36px', right: '36px', top: '226px', height: '54px', lineHeight: '54px', background: '#FFBDA8', textAlign: 'center',
+    fontFamily: 'Jost', fontWeight: 500, fontSize: '25px', letterSpacing: '.2em', color: '#50726A' });
+  return c;
+}
+function drawCard(e, t, t0, t1) {
+  const on = t >= t0 && t < t1; show(e, on); if (!on) return;
+  const p = E.out5(clamp((t - t0) / .5)), o = P(t, t1 - .2, .2, 'io');
+  e.style.opacity = (clamp((t - t0) / .18) * (1 - o)).toFixed(3); e.style.transform = `translateY(${f1((1 - p) * 60)}px) scale(${lerp(.96, 1, p).toFixed(4)})`;
+}
+// shop card (ads): logo, the hoops themselves (a light runs across the gold), name, price, address
+const END = $('end');
+function mkEnd() {
+  const lg = logoDiv(560, 260, 318, { parent: END }); const rule = el('', '', END, { position: 'absolute', left: '480px', top: '480px', width: '120px', height: '2px', background: '#FFBDA8' });
+  const pw = 640, ph = pw * D.product.h / D.product.w; const sh = el('', '', END, { position: 'absolute', left: (540 - 300) + 'px', top: (548 + ph - 34) + 'px', width: '600px', height: '60px', borderRadius: '50%',
+    background: 'radial-gradient(closest-side, rgba(80,114,106,.32), rgba(80,114,106,0))' });
+  const wrap = el('', '', END, { position: 'absolute', left: (540 - pw / 2) + 'px', top: '540px', width: pw + 'px', height: ph + 'px' });
+  const pr = document.createElement('img'); pr.src = D.product.img; Object.assign(pr.style, { position: 'absolute', left: 0, top: 0, width: pw + 'px', height: ph + 'px', filter: 'drop-shadow(0 18px 22px rgba(26,22,20,.22))' }); wrap.appendChild(pr);
+  const mask = `url(${D.product.img})`;
+  const gl = el('', '', wrap, { position: 'absolute', left: 0, top: 0, width: pw + 'px', height: ph + 'px', mixBlendMode: 'screen', backgroundRepeat: 'no-repeat',
+    background: 'linear-gradient(105deg, rgba(255,246,226,0) 0%, rgba(255,244,214,0) 45%, rgba(255,244,214,.62) 50%, rgba(255,244,214,0) 55%, rgba(255,246,226,0) 100%)', backgroundSize: '1920px 100%',
+    webkitMaskImage: mask, maskImage: mask, webkitMaskSize: '100% 100%', maskSize: '100% 100%' });
+  const nm = el('', D.product.name, END, { position: 'absolute', left: 0, width: '1080px', top: '1044px', textAlign: 'center', fontFamily: 'Jost', fontWeight: 500, fontSize: '30px', letterSpacing: '.24em', color: '#50726A' });
+  const price = el('', D.product.price, END, { position: 'absolute', left: 0, width: '1080px', top: '1078px', textAlign: 'center', fontFamily: 'CG', fontStyle: 'italic', fontWeight: 500, fontSize: '104px', lineHeight: 1, color: '#50726A', fontFeatureSettings: '"lnum" 1' });
+  const btn = el('btn', 'SHOP NOW · NAIRAFLORE.COM', END, { left: '230px', top: '1190px', width: '620px', height: '62px', lineHeight: '62px', fontSize: '24px' });
+  return { lg, rule, wrap, gl, sh, nm, price, btn, ph };
+}
+let EN = null;
+function drawEnd(t, t0) {
+  const on = t >= t0; END.style.display = on ? 'block' : 'none'; if (!on) return;
+  const wipe = E.io(clamp((t - t0) / .45));
+  END.style.clipPath = `inset(${f1((1 - wipe) * 100)}% 0 0 0)`;
+  const it = (e, d, dy = 26) => { const p = E.out5(clamp((t - t0 - d) / .55)); e.style.opacity = clamp((t - t0 - d) / .25).toFixed(3); e.style.transform = `translateY(${f1((1 - p) * dy)}px)`; };
+  it(EN.lg, .2); EN.rule.style.transform = `scaleX(${E.io(clamp((t - t0 - .45) / .4)).toFixed(3)})`;
+  const d = t - t0 - .3, w = 2 * Math.PI * 1.6, zt = .45, off = d > 0 ? 160 * Math.exp(-zt * w * d) * Math.cos(w * d * Math.sqrt(1 - zt * zt)) : 160;
+  EN.wrap.style.opacity = clamp(d / .1).toFixed(3); const bob = d > 1.2 ? Math.sin((d - 1.2) * 2.2) * 4 : 0;
+  EN.wrap.style.transform = `translateY(${f1(off + bob)}px)`; EN.sh.style.opacity = (clamp(1 - Math.abs(off) / 160) * clamp(d / .2)).toFixed(3);
+  // the light crosses the gold once the hoops have settled, then again before the loop
+  const sweep = q => q > 0 && q < 1 ? q : null, s1 = sweep((d - 1.15) / .8), s2 = sweep((d - 2.7) / .8), s = s1 ?? s2;
+  EN.gl.style.display = s == null ? 'none' : ''; if (s != null) EN.gl.style.backgroundPosition = `${f1(-1100 + 920 * E.io(s))}px 0`;   // band centre runs -140 -> 780 px
+  it(EN.nm, .7); it(EN.price, .82); it(EN.btn, 1.0, 18);
+}
+// shutter (post 1): an iris that closes on the beat and opens onto the cover
+const IRIS = $('iris');
+const irisMask = sv('mask', { id: 'im' }, sv('defs', {}, IRIS)); sv('rect', { width: 1080, height: 1920, fill: '#fff' }, irisMask);
+const irisHole = sv('circle', { cx: 540, cy: 860, r: 1200, fill: '#000' }, irisMask);
+sv('rect', { width: 1080, height: 1920, fill: '#1A1614', mask: 'url(#im)' }, IRIS);
+const blades = [...Array(6)].map(() => sv('line', { stroke: '#50726A', 'stroke-width': 3, opacity: .7 }, IRIS));
+IRIS.style.display = 'none';
+function drawShutter(t, ts) {
+  const d = t - ts, on = d > -0.01 && d < .34; IRIS.style.display = on ? '' : 'none'; if (!on) return false;
+  const r = d < .13 ? lerp(1200, 0, E.io(d / .13)) : lerp(0, 1200, E.out(clamp((d - .16) / .18)));
+  irisHole.setAttribute('r', f1(r));
+  blades.forEach((b, i) => { const a = i / 6 * Math.PI * 2 + d * 3; const rr = Math.max(r, 2);
+    b.setAttribute('x1', f1(540 + Math.cos(a) * rr)); b.setAttribute('y1', f1(860 + Math.sin(a) * rr));
+    b.setAttribute('x2', f1(540 + Math.cos(a + .9) * (rr + 1400))); b.setAttribute('y2', f1(860 + Math.sin(a + .9) * (rr + 1400))); b.setAttribute('opacity', (.7 * (r < 1100)).toString()); });
+  $('flash').style.opacity = d > .16 ? (.8 * (1 - clamp((d - .16) / .16))).toFixed(3) : 0;
+  return true;
+}
+
+// ================= versions =================
+const R = {};
+// ---------- POST 1 · The Cover ----------
+R.post1 = () => {
+  const mast = logoDiv(780, 150, 262, { parent: $('behind'), letter: '#5E8279' });          // the masthead, behind her head
+  const issue = mkText('NO. 01 · THE FESTIVE ISSUE · OCTOBER 2026', 'kick', 0, 236, 19, { center: true });
+  const L = {
+    kick1: mkText('THE BRAIDED ISSUE', 'kick print', 70, 548, 24),
+    tex: mkText('25mm of<br>texture.', 'cg print', 66, 588, 76),
+    wp: mkText('waterproof.', 'cg print', 68, 790, 52), tf: mkText('tarnish-free.', 'cg print', 68, 850, 52), fp: mkText('festive-proof.', 'cg print', 68, 910, 52),
+    gold: mkText('18K GOLD-TONE · SURGICAL STEEL', 'kick print', 70, 1000, 20),
+    next: mkText('NEXT ISSUE: THE BANGLE', 'kick print', 70, 1176, 20),
+  };
+  const st = el('sticker', `<div style="font-family:CG;font-style:italic;font-weight:600;font-size:58px;line-height:1">${D.product.price}</div><div style="font-family:Jost;font-weight:500;font-size:16px;letter-spacing:.2em;margin-top:6px">THE HOOPS</div>`, $('ui'), { left: '836px', top: '1010px', width: '172px', height: '172px' });
+  const bar = el('', '', $('ui'), { position: 'absolute', left: '70px', top: '1206px', width: '150px', height: '34px', background: 'repeating-linear-gradient(90deg, #50726A 0 3px, transparent 3px 5px, #50726A 5px 6px, transparent 6px 9px, #50726A 9px 13px, transparent 13px 15px)', opacity: .9 });
+  const border = el('frame', '', $('ui'), { position: 'absolute', left: '34px', top: '218px', right: '34px', bottom: '640px', border: '2px solid rgba(251,243,236,.75)', pointerEvents: 'none' });
+  const head = mkText('let it down.', 'cg', 0, 1040, 140, { center: true }), stay = mkText('(the hoops stay.)', 'cg', 0, 1196, 56, { center: true });
+  const loupe = mkLoupe(112); const tag = mkTag(590, 1040);
+  const credit = mkText('ON HER: WOVEN GOLD HOOPS · NAIRAFLORE.COM', 'kick', 0, 1232, 19, { center: true });
+  const rot = [-7, 5, -2], pos = [[90, 470], [600, 560], [330, 700]];
+  const photos = C.photos.map((p, i) => { const e = el('photo', `<div class="ph"><img src="${frameSrc(p.f)}"></div><div class="cap"><span>NAIRA · NO. 01</span><span>0${i + 1}</span></div>`, $('ui'), { left: pos[i][0] + 'px', top: pos[i][1] + 'px' });
+    const fc = face(p.f), s = 356 / (fc[2] * 2.1), cx = fc[0] + fc[2] / 2, cy = fc[1] + fc[3] * .7;
+    e.querySelector('.ph img').style.transform = `translate(${f1(178 - cx * s)}px, ${f1(215 - cy * s)}px) scale(${s.toFixed(4)})`; return { ...p, e, r: rot[i] }; });
+  const order = C.lines.map(l => l.id), when = Object.fromEntries(C.lines.map(l => [l.id, l.t]));
+  return t => {
+    const coverHold = (t < C.cover_on[0][1]) || t >= C.cover_on[1][0];
+    const clearP = E.io(clamp((t - C.clear) / .6));
+    const lineDraw = (e, id, i) => {
+      const t0 = when[id]; let o = 0, dy = 0, dx = 0;
+      const exiting = t >= C.cover_exit && t < C.cover_exit + .5;
+      if (coverHold) o = 1;
+      else if (exiting) { const q = E.io(clamp((t - C.cover_exit - i * .04) / .3)); o = 1 - q; dx = -90 * q; }
+      else if (t >= t0 && t < C.clear + .7) { const p = E.out5(clamp((t - t0) / .5)); o = clamp((t - t0) / .2) * (1 - clearP); dx = (1 - p) * -40; dy = -60 * clearP; }
+      e.style.display = o > 0 ? '' : 'none'; e.style.opacity = o.toFixed(3); e.style.transform = `translate(${f1(dx)}px, ${f1(dy)}px)`;
+      e.style.clipPath = (coverHold || exiting) ? 'none' : `inset(0 ${f1(100 - 100 * E.out(clamp((t - t0) / .45)))}% 0 0)`;
+    };
+    order.forEach((id, i) => { if (id !== 'sticker') lineDraw(L[id], id, i); });
+    lineDraw(bar, 'next', 6);
+    { const t0 = when.sticker; let o = 0, s = 1, r = -8;
+      if (coverHold) o = 1; else if (t >= C.cover_exit && t < C.cover_exit + .5) { const q = E.io(clamp((t - C.cover_exit) / .3)); o = 1 - q; s = 1 - .3 * q; }
+      else if (t >= t0 && t < C.clear + .7) { o = clamp((t - t0) / .12) * (1 - clearP); s = E.back(clamp((t - t0) / .45)); r = lerp(-30, -8, E.out(clamp((t - t0) / .5))); }
+      st.style.display = o > 0 ? 'flex' : 'none'; st.style.opacity = o.toFixed(3); st.style.transform = `rotate(${f1(r)}deg) scale(${s.toFixed(3)})`; }
+    // the masthead swells behind her as the hair comes down, and settles back for the cover
+    const sw = coverHold ? 0 : E.io(clamp((t - C.lift + .6) / 1.2)) * (1 - E.io(clamp((t - C.photos[0].t + .4) / .8)));
+    mast.style.transformOrigin = '50% 30%'; mast.style.transform = `scale(${(1 + .2 * sw).toFixed(4)}) translateY(${f1(-20 * sw)}px)`;
+    border.style.opacity = (coverHold ? 1 : .55 * (1 - E.io(clamp((t - C.lift) / .5)))).toFixed(3);
+    issue.style.opacity = (coverHold || t < C.lift ? 1 : 1 - E.io(clamp((t - C.lift) / .4))).toFixed(3);
+    rise(head, t, C.lift, C.loupe[0] - .1, 30, .3, .3); head.style.filter = `blur(${f1((1 - clamp((t - C.lift) / .22)) * 6)}px) drop-shadow(0 2px 12px rgba(26,22,20,.55))`;
+    rise(stay, t, C.stay, C.loupe[0] - .1, 16);
+    drawLoupe(loupe, t, C.loupe[0], C.loupe[1], 185, 1088, C.leader);
+    drawTagAt(tag, t, C.tag[0], C.tag[1]); rise(credit, t, C.credit, C.tag[1], 10);
+    // contact sheet: three frames of her drop onto the screen on the half-beats before the shutter
+    let fl = 0;
+    photos.forEach((p, i) => { const d = t - p.t, on = d >= 0 && t < C.shutter + .13; show(p.e, on); if (!on) return;
+      const k = E.out5(clamp(d / .3)); p.e.style.opacity = clamp(d / .06).toFixed(3);
+      p.e.style.transform = `rotate(${f1(p.r * k + (1 - k) * (p.r * 3))}deg) scale(${lerp(1.35, 1, k).toFixed(3)})`;
+      if (d < .1) fl = Math.max(fl, .55 * (1 - d / .1)); });
+    if (!drawShutter(t, C.shutter)) $('flash').style.opacity = fl.toFixed(3);
+  };
+};
+// ---------- POST 2 · Two Little Moons ----------
+R.post2 = () => {
+  const bug = mkBug();
+  const moonDisc = el('', '', $('behind'), { position: 'absolute', width: '640px', height: '640px', borderRadius: '50%',
+    background: 'radial-gradient(circle at 38% 34%, #FFE3D8 0%, #FFCDBA 38%, #FFBDA8 70%, #F6AE97 100%)', boxShadow: '0 0 80px rgba(255,189,168,.55)' });
+  const halo = el('', '', $('behind'), { position: 'absolute', width: '780px', height: '780px', borderRadius: '50%', border: '2px solid rgba(251,243,236,.8)' });
+  const g = sv('g', { style: 'filter:drop-shadow(0 1px 5px rgba(26,22,20,.55))' }, OV);
+  const orb = sv('ellipse', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 4, pathLength: 100, 'stroke-dasharray': '100 100' }, g);
+  const orb2 = sv('ellipse', { fill: 'none', stroke: '#FBF3EC', 'stroke-width': 1.5, 'stroke-dasharray': '2 9', opacity: .9 }, g);
+  const moon = sv('circle', { r: 8, fill: '#FBF3EC' }, g);
+  const r = rng(5); const stars = [...Array(9)].map(() => ({ e: sv('path', { d: STAR, fill: r() < .5 ? '#FBF3EC' : '#FFBDA8' }, g), x: r(), y: r(), s: 12 + r() * 16, ph: r() * 6 }));
+  const moons = mkText('two little moons.', 'cg', 0, 1062, 96, { center: true });
+  const kick = mkText('BRAIDED · 25MM · NO STONES', 'kick', 0, 1196, 24, { center: true });
+  const golden = mkText('golden hour,', 'cg', 0, 1052, 88, { center: true }), earring = mkText('but make it an earring.', 'cg', 0, 1150, 62, { center: true });
+  const tag = el('card', `<div style="position:absolute;left:30px;top:26px;font-family:Jost;font-weight:500;font-size:24px;letter-spacing:.16em;color:#50726A">${D.product.name}</div>
+    <div style="position:absolute;left:28px;top:60px;font-family:CG;font-style:italic;font-weight:500;font-size:68px;line-height:1;color:#50726A">${D.product.price}</div>
+    <div class="u" style="position:absolute;left:30px;top:136px;font-family:CG;font-style:italic;font-weight:500;font-size:34px;color:#50726A">nairaflore.com</div>`, $('ui'), { left: '70px', top: '300px', width: '390px', height: '196px' });
+  const url = tag.querySelector('.u');
+  const up = mkText('hair up,', 'cg', 0, 1052, 96, { center: true }), down = mkText('hair down.', 'cg', 0, 1150, 96, { center: true });
+  const burst = [0, 1, 2].map(i => sv('circle', { fill: 'none', stroke: i === 1 ? '#FBF3EC' : '#FFBDA8', 'stroke-width': i === 1 ? 2 : 4 }, OV));
+  // the moon follows her head through the SOURCE frames (±8), so it glides and the ring edit's loop point matches
+  const headAt = f => { let x = 0, y = 0, n = 0; for (let k = -8; k <= 8; k++) { const fc = face(cf(f + k)); x += fc[0] + fc[2] / 2; y += fc[1] + fc[3] * .35; n++; } return [x / n, y / n]; };
+  return t => {
+    drawBug(bug, t, 1 - win(t, C.tag[0] - .25, C.tag[1] + .25, .25, .25));
+    const pn = CUR.main, [fx, fy] = headAt(pn.f);
+    const mx = fx + 150, my = fy - 120;
+    const breathe = 1 + .02 * Math.sin(t * 1.3) + .06 * Math.exp(-Math.max(0, t - C.hit) * 4) * (t >= C.hit ? 1 : 0);
+    Object.assign(moonDisc.style, { left: f1(mx - 320) + 'px', top: f1(my - 320) + 'px', transform: `scale(${breathe.toFixed(4)})` });
+    Object.assign(halo.style, { left: f1(mx - 390) + 'px', top: f1(my - 390) + 'px', transform: `scale(${(breathe * (1 + .04 * Math.sin(t * .9))).toFixed(4)})`, opacity: .85 });
+    const h = hoopAt(pn.f), oOn = t >= C.orbit[0] && t < C.orbit[1] && h;
+    const sw = C.sparkles.find(w => t >= w[0] && t < w[1]);                // stars come back between the card and 'hair up'
+    g.style.display = sw ? '' : 'none';
+    if (oOn) {
+      const [hx, hy] = toS(pn, h[0], h[1]), rr = h[2] / 2 * pn.z, rx = rr * 2.7, ry = rr * 1.6, ang = -18;
+      for (const e of [orb, orb2]) { e.setAttribute('cx', f1(hx)); e.setAttribute('cy', f1(hy)); e.setAttribute('rx', f1(rx)); e.setAttribute('ry', f1(ry)); e.setAttribute('transform', `rotate(${ang} ${f1(hx)} ${f1(hy)})`); }
+      const dr = E.io(clamp((t - C.orbit[0]) / .55)), fo = (1 - P(t, C.orbit[1] - .3, .3, 'io')) * h[3];
+      orb.setAttribute('stroke-dashoffset', f1(100 - 100 * dr)); orb.setAttribute('opacity', fo.toFixed(3)); orb2.setAttribute('opacity', (.85 * fo * dr).toFixed(3));
+      const a = (t - C.orbit[0]) * 3.2, c = Math.cos(ang * Math.PI / 180), s = Math.sin(ang * Math.PI / 180), ex = Math.cos(a) * rx, ey = Math.sin(a) * ry;
+      moon.setAttribute('cx', f1(hx + ex * c - ey * s)); moon.setAttribute('cy', f1(hy + ex * s + ey * c)); moon.setAttribute('opacity', (fo * dr).toFixed(3));
+      moon.setAttribute('r', (Math.sin(a) > 0 ? 8 : 6).toString());
+    } else { orb.setAttribute('opacity', 0); orb2.setAttribute('opacity', 0); moon.setAttribute('opacity', 0); }
+    const fbs = faceBoxes(t, true)[0];
+    stars.forEach((st, i) => {   // stars twinkle on the beat, in the space around her head
+      let x = 80 + st.x * 920, y = 330 + st.y * 680;
+      if (x > fbs[0] - 40 && x < fbs[2] + 40 && y > fbs[1] - 40 && y < fbs[3] + 40) x = x < (fbs[0] + fbs[2]) / 2 ? fbs[0] - 60 - st.x * 50 : fbs[2] + 60 + st.x * 50;
+      const beat = D.beat, ph = ((t + st.ph) % (beat * 2)) / (beat * 2), k = Math.max(0, Math.sin(ph * Math.PI)) ** 3;
+      const on = sw ? win(t, sw[0] + i * .3, sw[1], .3, .4) : 0;
+      st.e.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(t * 20 + i * 30)}) scale(${(st.s * k * on).toFixed(2)})`);
+    });
+    rise(moons, t, C.moons[0], C.moons[1], 24, .5, .35); rise(kick, t, C.kick[0], C.kick[1], 14, .4, .35);
+    rise(golden, t, C.golden[0], C.golden[1], 22, .5); rise(earring, t, C.earring[0], C.earring[1], 18, .5);
+    drawTagAt(tag, t, C.tag[0], C.tag[1], 'left'); url.style.opacity = clamp((t - C.url[0]) / .4).toFixed(3);
+    { const d = t - C.iris[0], hh = hoopAt(CUR.main.f) || [390, 786];   // the cut: a ring bursts off the new shot's hoop
+      burst.forEach((c, i) => { const q = d - i * .07, on = q >= 0 && q < .7; c.style.display = on ? '' : 'none'; if (!on) return;
+        const [hx, hy] = toS(CUR.main, hh[0], hh[1]); c.setAttribute('cx', f1(hx)); c.setAttribute('cy', f1(hy));
+        c.setAttribute('r', f1(30 + 520 * E.out(q / .7))); c.setAttribute('opacity', (1 - E.io(q / .7)).toFixed(3)); }); }
+    const endFade = 1 - P(t, D.dur - .14, .14, 'lin');
+    rise(up, t, C.up[0], C.up[1] + 1, 22, .45); up.style.opacity = (+up.style.opacity * endFade).toFixed(3);
+    rise(down, t, C.down[0], C.down[1] + 1, 22, .3); down.style.opacity = (+down.style.opacity * endFade).toFixed(3);
+  };
+};
+// ---------- POST 3 · Festive Mode ----------
+R.post3 = () => {
+  const bug = mkBug();
+  const kick = mkText('THE FESTIVE EDIT', 'kick', 68, 326, 19); const kbox = [56, 320, 380, 352];
+  const behind = C.behind.map(b => { const e = el('big', b.w, $('behind'), { top: '0px' }); fitLater(e, 1010, 330); return { ...b, e }; });
+  const words = C.words.map(w => ({ ...w, e: mkText(w.w, 'cg', 0, w.big ? 1030 : w.small ? 1120 : 1060, w.big ? 168 : w.small ? 70 : 120, { center: true }) }));
+  const dots = C.dots.map((tt, i) => ({ t: tt, e: el('', '', $('ui'), { position: 'absolute', left: (510 + i * 30) + 'px', top: '1216px', width: '14px', height: '14px', borderRadius: '50%', border: '2px solid #FBF3EC', boxSizing: 'border-box' }) }));
+  const mq = mkMarquee('WOVEN GOLD HOOPS  ·  ₹1,499  ·  WATERPROOF  ·  TARNISH-FREE', 720, -7, $('behind'));
+  const tag = mkTag(70, 1020); const g = sv('g', { style: 'filter:drop-shadow(0 1px 4px rgba(26,22,20,.6))' }, OV);
+  const ln = sv('polyline', { fill: 'none', stroke: '#FBF3EC', 'stroke-width': 3 }, g), ring = sv('circle', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 4 }, g);
+  const sign = el('card', '', $('ui'), { left: '170px', top: '1000px', width: '740px', height: '240px' });
+  logoDiv(420, 160, 44, { parent: sign });
+  el('', 'WOVEN GOLD HOOPS · NAIRAFLORE.COM', sign, { position: 'absolute', left: 0, width: '740px', top: '150px', textAlign: 'center', fontFamily: 'Jost', fontWeight: 500, fontSize: '20px', letterSpacing: '.2em', color: '#50726A' });
+  el('', 'next drop: the bangle', sign, { position: 'absolute', left: 0, width: '740px', top: '182px', textAlign: 'center', fontFamily: 'CG', fontStyle: 'italic', fontWeight: 500, fontSize: '36px', color: '#50726A' });
+  return t => {
+    drawBug(bug, t); rise(kick, t, 0, C.kick[1], 10, .01, .2); if (t < C.kick[1]) kick.style.opacity = (+kick.style.opacity * duck(kbox, t)).toFixed(3);
+    for (const b of behind) { slam(b.e, t, b.t, b.t1, 1.3, .03);   // the word's cap band sits across the top of her head
+      const px = parseFloat(b.e.dataset.px || 300); b.e.style.top = f1(452 - px * .62) + 'px'; }
+    for (const w of words) slam(w.e, t, w.t, w.t1, w.small ? 1.08 : 1.25);
+    dots.forEach(d => { const on = t >= C.words[2].t && t < C.words[2].t1; show(d.e, on); d.e.style.background = t >= d.t ? '#FFBDA8' : 'transparent'; d.e.style.borderColor = t >= d.t ? '#FFBDA8' : '#FBF3EC'; });
+    $('flash').style.opacity = (t >= C.flash && t < C.flash + .2 ? .85 * (1 - (t - C.flash) / .2) : 0).toFixed(3);
+    drawMarquee(mq, t, C.marquee[0], C.marquee[1]);
+    const a = drawTagAt(tag, t, C.tag[0], C.tag[1], 'left'); const pn = CUR.main, h = hoopAt(pn.f);
+    if (a > 0 && h) { const [hx, hy] = toS(pn, h[0], h[1]), rr = h[2] / 2 * pn.z * 1.3, dl = E.io(clamp((t - C.tag[0] - .2) / .35));
+      const sx = 160, sy = 1020; ln.setAttribute('points', `${sx},${sy} ${sx},${f1(lerp(sy, hy + rr + 30, dl))} ${f1(lerp(sx, hx - rr * .5, dl))},${f1(lerp(sy, hy + rr * .9, dl))}`);
+      ring.setAttribute('cx', f1(hx)); ring.setAttribute('cy', f1(hy)); ring.setAttribute('r', f1(rr * E.out(clamp((t - C.tag[0] - .45) / .3)))); g.setAttribute('opacity', (a * h[3]).toFixed(3)); g.style.display = ''; }
+    else g.style.display = 'none';
+    drawCard(sign, t, C.signoff[0] + .1, C.signoff[1]);
+  };
+};
+// ---------- AD 1 · the ₹1,499 hoops ----------
+R.ad1 = () => {
+  const big = el('bigi', D.product.price, $('behind'), { top: '0px' }); fitLater(big, 960, 300);
+  const h1 = mkText('these hoops are', 'cg', 0, 1040, 86, { center: true }), h2 = mkText('doing all the work.', 'cg', 0, 1134, 86, { center: true });
+  // a single hoop from the product shoot flips in beside her and hands over to the real one
+  const FH = 290 * D.product.sh / D.product.sw;
+  const fly = el('', '', $('ui'), { position: 'absolute', left: 0, top: 0, width: '290px', height: FH + 'px', filter: 'drop-shadow(0 14px 18px rgba(26,22,20,.35))', transformOrigin: '50% 50%' });
+  const fim = document.createElement('img'); fim.src = D.product.single; Object.assign(fim.style, { position: 'absolute', left: 0, top: 0, width: '290px', height: FH + 'px' }); fly.appendChild(fim);
+  const flyRing = [0, 1].map(i => sv('circle', { fill: 'none', stroke: i ? '#FBF3EC' : '#FFBDA8', 'stroke-width': i ? 2 : 4 }, OV));
+  const flyLab = mkText('WOVEN GOLD HOOPS', 'kick', 0, 1170, 34, { center: true });
+  const loupe = mkLoupe(112); const lab = mkText('braided · 25mm · no stones', 'cg', 316, 1120, 40);
+  const chips = C.chips.map((c, i) => ({ ...c, e: chip(c.w, 70, 1066 + (i % 2) * 82) }));
+  const mq = mkMarquee('WOVEN GOLD HOOPS  ·  ₹1,499  ·  WATERPROOF  ·  TARNISH-FREE', 690, -7, $('behind'));
+  const tag = mkTag(70, 1030), offer = mkOffer(); EN = mkEnd();
+  return t => {
+    const hk = t < C.hook[1]; show(h1, hk); show(h2, hk); show(big, hk);
+    if (hk) { const o = P(t, C.hook[1] - .15, .15, 'io');
+      h1.style.opacity = (1 - o).toFixed(3); h2.style.opacity = (clamp((t - .1) / .15) * (1 - o)).toFixed(3);
+      h2.style.transform = `translateY(${f1((1 - E.out5(clamp((t - .1) / .4))) * 16)}px)`;
+      const px = parseFloat(big.dataset.px || 300); big.style.top = f1(392 - px * .66) + 'px';
+      big.style.opacity = (1 - o).toFixed(3); big.style.transform = `scale(${(1.02 + .05 * (t / C.hook[1])).toFixed(4)})`; }
+    { const d = t - C.fly[0], on = d >= 0 && d < .9; show(fly, on); flyRing.forEach(c => c.style.display = 'none');
+      const pn = CUR.main, h = hoopAt(pn.f);
+      // it pops up big beside her head, then flips once and shrinks onto her ear, bowing out to the left of her face
+      if (on && h) { const [hx, hy] = toS(pn, h[0], h[1]), pop = E.back(clamp(d / .2)), p = E.io(clamp((d - .18) / .67));
+        const sc = lerp(lerp(.55, 1, pop), h[2] * pn.z * 1.1 / 290, p);
+        const x = lerp(230, hx, p) - Math.sin(Math.PI * p) * 80, y = lerp(420, hy, p);
+        fly.style.transform = `translate(${f1(x - 145)}px, ${f1(y - FH / 2)}px) perspective(900px) rotateY(${f1(360 * p)}deg) rotate(${f1(lerp(-10, 0, p))}deg) scale(${sc.toFixed(4)})`;
+        fly.style.opacity = (clamp(d / .06) * (1 - E.io(clamp((p - .7) / .3)))).toFixed(3); }
+      const q = (t - C.fly[0] - .72) / .6;                                                  // the real hoop answers with two rings
+      if (q > 0 && q < 1.12 && h) { const [hx, hy] = toS(pn, h[0], h[1]); flyRing.forEach((c, i) => { const qq = clamp(q - i * .12); if (qq <= 0 || qq >= 1) return; c.style.display = '';
+        c.setAttribute('cx', f1(hx)); c.setAttribute('cy', f1(hy)); c.setAttribute('r', f1(h[2] / 2 * pn.z * (1.2 + 2.4 * E.out(qq)))); c.setAttribute('opacity', ((1 - qq) * h[3]).toFixed(3)); }); } }
+    rise(flyLab, t, C.fly[0] + .55, C.loupe[1], 12, .25, .2);
+    drawLoupe(loupe, t, C.loupe[0], C.loupe[1], 185, 1080, [C.loupe[0], C.loupe[1]]); rise(lab, t, C.loupe[0] + .25, C.loupe[1], 10, .3, .25);
+    chips.forEach((c, i) => drawChip(c.e, t, c.t, i < 2 ? C.chips[2].t - .02 : C.chips_off));
+    drawMarquee(mq, t, C.marquee[0], C.marquee[1]);
+    drawTagAt(tag, t, C.tag[0], C.tag[1]); drawCard(offer, t, C.offer[0], C.offer[1]); drawEnd(t, C.end);
+  };
+};
+// ---------- AD 2 · hair up or hair down? ----------
+R.ad2 = () => {
+  const halfL = el('', '', $('behind'), { position: 'absolute', left: '0px', top: '0px', width: '540px', height: '1920px', overflow: 'hidden' });
+  const halfR = el('', '', $('behind'), { position: 'absolute', left: '540px', top: '0px', width: '540px', height: '1920px', overflow: 'hidden' });
+  const upB = el('big', 'UP', halfL, { top: '0px', width: '540px' }), dnB = el('big', 'DOWN', halfR, { top: '0px', width: '540px' });
+  fitLater(upB, 470, 360); fitLater(dnB, 480, 360);
+  const hook = mkText('hair up or hair down?', 'cg', 0, 1060, 92, { center: true });
+  const div = el('', '', $('ui'), { position: 'absolute', left: '538px', top: '0px', width: '4px', height: '1920px', background: '#FBF3EC', boxShadow: '0 0 12px rgba(26,22,20,.35)' });
+  const g = sv('g', { style: 'filter:drop-shadow(0 1px 4px rgba(26,22,20,.6))' }, OV);
+  const rL = sv('circle', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 5, pathLength: 100, 'stroke-dasharray': '100 100' }, g), rR = sv('circle', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 5, pathLength: 100, 'stroke-dasharray': '100 100' }, g);
+  const same = mkText('same hoops.', 'cg', 0, 1172, 70, { center: true, color: '#FFD9CB' });
+  const ei = mkText('either way,', 'cg', 0, 1050, 100, { center: true }), wi = mkText('the hoops win.', 'cg', 0, 1158, 80, { center: true });
+  const let_ = mkText('let it down.', 'cg', 0, 1060, 120, { center: true });
+  const tag = mkTag(70, 300), offer = mkOffer(); EN = mkEnd();
+  return t => {
+    rise(hook, t, 0, C.hook[1], 10, .01, .2); hook.style.opacity = t < C.hook[1] ? (1 - P(t, C.hook[1] - .2, .2, 'io')).toFixed(3) : 0;
+    const sp = D.edl[1].t0, mp = t >= sp ? E.io(clamp((t - sp) / D.edl[1].mdur)) : 0; show(div, t < sp + D.edl[1].mdur);
+    div.style.transform = `translateX(${f1(-540 * mp)}px)`; div.style.opacity = (1 - mp).toFixed(3);
+    // giant UP / DOWN behind her on each half, slammed in on the first beats; UP leaves with its half
+    for (const e of [upB, dnB]) { const px = parseFloat(e.dataset.px || 300); e.style.top = f1(430 - px * .62) + 'px'; }
+    slam(upB, t, C.updown[0], C.updown[1], 1.25, .02); halfL.style.transform = `translateX(${f1(-560 * mp)}px)`;
+    slam(dnB, t, C.updown[0] + D.beat, C.updown[1], 1.25, .02); dnB.style.opacity = (+dnB.style.opacity * (1 - mp)).toFixed(3);
+    const ring = (c, pn) => { const h = pn && hoopAt(pn.f), on = h && t >= C.rings[0] && t < C.rings[1] + .3; c.style.display = on ? '' : 'none'; if (!on) return;
+      const [hx, hy] = toS(pn, h[0], h[1]); c.setAttribute('cx', f1(hx)); c.setAttribute('cy', f1(hy)); c.setAttribute('r', f1(h[2] / 2 * 1.45));
+      c.setAttribute('stroke-dashoffset', f1(100 - 100 * E.io(clamp((t - C.rings[0]) / .4)))); c.setAttribute('opacity', ((1 - P(t, C.rings[1], .3, 'io')) * h[3]).toFixed(3)); };
+    ring(rL, CUR.left); ring(rR, CUR.main);
+    rise(same, t, C.same[0], C.same[1], 14, .4);
+    rise(ei, t, C.either[0], C.either[1], 22, .4); rise(wi, t, C.win[0], C.win[1], 18, .4);
+    rise(let_, t, C.letdown[0], C.letdown[1], 30, .3); drawTagAt(tag, t, C.tag[0], C.tag[1], 'left');
+    drawCard(offer, t, C.offer[0], C.offer[1]); drawEnd(t, C.end);
+  };
+};
+const DRAW = R[V]();
+let fitted = false;
+function render(t) { if (!fitted) { FITS.forEach(f => f()); fitted = true; } drawVideo(t); DRAW(t); }
+window.render = render;
+window.waitImages = async () => { await Promise.all([...document.images].filter(i => i.getAttribute('src') && i.offsetParent !== null).map(i => i.decode().catch(() => {}))); await composeFG(); };
+// load every face the page uses up front: a font only loads when shown, and most type starts hidden
+window.ready = Promise.all(['500 50px Jost', '600 50px Jost', 'italic 500 50px CG', 'italic 600 50px CG', '500 50px CG'].map(f => document.fonts.load(f))).then(() => document.fonts.ready);
+// overlap audit: every visible overlay box against the face box (in screen space) of each visible panel
+window.probe = t => {
+  const out = { els: [], faces: [] };
+  for (const e of document.querySelectorAll('#ui > *')) {
+    if (e.style.display === 'none' || e.classList.contains('frame')) continue; const cs = getComputedStyle(e); if (+cs.opacity < .05 || cs.display === 'none') continue;
+    const r = e.getBoundingClientRect(); if (r.width < 2 || r.height < 2) continue;
+    out.els.push({ n: (e.className || 'div') + ':' + (e.textContent || '').trim().slice(0, 24), x0: r.left, y0: r.top, x1: r.right, y1: r.bottom });
+  }
+  if (END.style.display !== 'block') for (const b of faceBoxes(t)) out.faces.push({ x0: b[0], y0: b[1], x1: b[2], y1: b[3] });
+  return out;
+};
+</script></body></html>

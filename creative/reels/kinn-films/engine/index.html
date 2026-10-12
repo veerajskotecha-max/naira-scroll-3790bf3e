@@ -1,0 +1,393 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: CG; src: url('../../fonts/CG.ttf'); font-weight: 300 700; }
+@font-face { font-family: CG; font-style: italic; src: url('../../fonts/CG-Italic.ttf'); font-weight: 300 700; }
+@font-face { font-family: Jost; src: url('../../fonts/Jost.ttf'); font-weight: 100 900; }
+@font-face { font-family: Rozha; src: url('../../fonts/RozhaOne.ttf'); }
+@font-face { font-family: Pixel; src: url('../../fonts/PressStart2P.ttf'); }
+@font-face { font-family: Barlow; src: url('../../fonts/BarlowCond-600.ttf'); font-weight: 600; }
+@font-face { font-family: Barlow; src: url('../../fonts/BarlowCond-700.ttf'); font-weight: 700; }
+@font-face { font-family: Barlow; src: url('../../fonts/BarlowCond-800.ttf'); font-weight: 800; }
+:root { --ivory:#FBF3EC; --ink:#1A1614; --blush:#FFBDA8; --sage:#99B4AF; --deep:#50726A; }
+html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:#151211; }
+#stage { position:absolute; inset:0; overflow:hidden; background:#151211; }
+#stage canvas { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#behind, #ui { position:absolute; inset:0; overflow:hidden; }
+.abs { position:absolute; left:0; top:0; }
+.e { position:absolute; will-change:transform,opacity; transform-origin:50% 50%; }
+.emo { font-family: Jost, 'Noto Color Emoji'; }
+/* Instagram-native caption: one box per line, brand ivory or blush */
+.nc { position:absolute; left:40px; width:1000px; text-align:center; }
+.nc span { display:inline; font-family:Jost,'Noto Color Emoji'; font-weight:500; color:var(--ink); background:var(--ivory); line-height:1.46;
+  padding:.06em .36em .1em; border-radius:.26em; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+.nc.bl span { background:var(--blush); }
+.nc.ink span { background:var(--ink); color:var(--ivory); }
+/* chat bubbles */
+.bub { position:absolute; max-width:820px; }
+.bub .who { display:block; font-family:Jost,'Noto Color Emoji'; font-weight:600; font-size:27px; letter-spacing:.03em; color:var(--ivory); margin:0 0 8px 6px;
+  filter:drop-shadow(0 1px 4px rgba(26,22,20,.8)); }
+.bub .msg { display:inline-block; font-family:Jost,'Noto Color Emoji'; font-weight:500; font-size:46px; line-height:1.24; color:var(--ink); background:var(--ivory);
+  padding:22px 34px 24px; border-radius:40px 40px 40px 10px; box-shadow:0 12px 28px rgba(26,22,20,.32); }
+.bub.me { text-align:right; } .bub.me .who { margin:0 6px 8px 0; }
+.bub.me .msg { background:var(--blush); border-radius:40px 40px 10px 40px; }
+.dots { display:inline-flex; gap:12px; padding:30px 36px; background:var(--blush); border-radius:40px 40px 10px 40px; box-shadow:0 12px 28px rgba(26,22,20,.32); }
+.dots i { width:18px; height:18px; border-radius:50%; background:var(--ink); display:block; }
+/* big type */
+.slam { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap; font-family:Barlow; font-weight:800; text-transform:uppercase; color:var(--ivory); line-height:.9; }
+.slam.sh { text-shadow:0 8px 0 rgba(26,22,20,.9), 0 14px 30px rgba(26,22,20,.5); }
+.serif { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap; font-family:CG; font-style:italic; font-weight:600; color:var(--ivory); line-height:1;
+  filter:drop-shadow(0 2px 14px rgba(26,22,20,.6)) drop-shadow(0 1px 2px rgba(26,22,20,.5)); }
+.kick { font-family:Jost; font-weight:600; text-transform:uppercase; letter-spacing:.24em; color:var(--ivory); filter:drop-shadow(0 1px 6px rgba(26,22,20,.75)); }
+.chip { position:absolute; height:68px; padding:0 30px 0 26px; background:rgba(251,243,236,.96); font-family:Jost,'Noto Color Emoji'; font-weight:600; font-size:32px;
+  letter-spacing:.06em; line-height:68px; color:var(--deep); box-shadow:0 8px 20px rgba(26,22,20,.28); white-space:nowrap; border-radius:34px; }
+.chip b { color:var(--ink); font-weight:600; }
+.pin { position:absolute; }
+.pin .tx { position:absolute; white-space:nowrap; font-family:Jost,'Noto Color Emoji'; font-weight:600; font-size:34px; letter-spacing:.04em; color:var(--ink);
+  background:var(--ivory); padding:10px 22px 12px; border-radius:30px; box-shadow:0 8px 22px rgba(26,22,20,.3); }
+.pin .tx b { color:var(--deep); }
+.pin svg { position:absolute; left:0; top:0; overflow:visible; }
+/* the loading card */
+.load { position:absolute; left:110px; width:860px; top:236px; }
+.load .ti { font-family:CG; font-style:italic; font-weight:600; font-size:90px; line-height:1; color:var(--ivory); text-align:center;
+  filter:drop-shadow(0 2px 14px rgba(26,22,20,.6)) drop-shadow(0 1px 2px rgba(26,22,20,.5)); }
+.load .sub { margin-top:12px; font-family:Jost; font-weight:600; font-size:34px; letter-spacing:.32em; text-transform:uppercase; color:var(--ivory); text-align:center;
+  filter:drop-shadow(0 1px 6px rgba(26,22,20,.8)); }
+.load .row { display:flex; align-items:center; gap:22px; margin-top:26px; }
+.load .tr { position:relative; flex:1; height:30px; background:rgba(251,243,236,.42); border-radius:15px; overflow:visible; box-shadow:0 6px 18px rgba(26,22,20,.3); }
+.load .fl { position:absolute; left:0; top:0; bottom:0; width:0; background:var(--blush); border-radius:15px; }
+.load .pc { width:150px; text-align:right; font-family:Barlow; font-weight:800; font-size:64px; line-height:1; color:var(--ivory); font-variant-numeric:tabular-nums;
+  filter:drop-shadow(0 2px 8px rgba(26,22,20,.7)); }
+.load .ck { display:flex; justify-content:center; gap:14px; margin-top:24px; flex-wrap:wrap; }
+.load .ck span { font-family:Jost,"Noto Color Emoji"; font-weight:600; font-size:27px; color:var(--ink); background:var(--ivory); padding:8px 20px 10px; border-radius:24px;
+  box-shadow:0 6px 16px rgba(26,22,20,.3); opacity:0; }
+/* dialog */
+.dlg { position:absolute; left:150px; width:780px; background:var(--ivory); border-radius:34px; box-shadow:0 26px 60px rgba(26,22,20,.5); overflow:hidden; }
+.dlg .h { padding:34px 40px 10px; font-family:Jost,'Noto Color Emoji'; font-weight:700; font-size:44px; color:var(--ink); text-align:center; }
+.dlg .m { padding:0 40px 30px; font-family:Jost,'Noto Color Emoji'; font-weight:500; font-size:34px; color:#6B625D; text-align:center; }
+.dlg .bt { display:flex; border-top:2px solid rgba(26,22,20,.12); }
+.dlg .bt div { flex:1; text-align:center; padding:26px 0; font-family:Jost,'Noto Color Emoji'; font-weight:600; font-size:40px; color:var(--deep); }
+.dlg .bt div + div { border-left:2px solid rgba(26,22,20,.12); }
+.dlg .bt div.on { background:rgba(80,114,106,.14); }
+/* letterbox */
+.lbx { position:absolute; left:0; width:1080px; height:176px; background:#000; }
+/* filmi title card */
+.filmi { position:absolute; left:0; width:1080px; text-align:center; color:var(--ivory); line-height:1;
+  text-shadow:0 0 26px rgba(255,189,168,.65), 0 6px 18px rgba(0,0,0,.7); }
+.filmi small { display:block; font-family:CG; font-style:italic; font-weight:600; font-size:70px; }
+.filmi b { display:block; font-family:Rozha; font-weight:400; font-size:150px; margin-top:8px; letter-spacing:.01em; }
+.filmi i { display:block; font-style:normal; font-family:Jost; font-weight:600; font-size:34px; letter-spacing:.3em; text-transform:uppercase; margin-top:20px; }
+/* checklist */
+.chk { position:absolute; left:110px; width:860px; display:grid; gap:18px; font-family:Jost,'Noto Color Emoji'; font-weight:600; font-size:52px; color:var(--ivory);
+  text-shadow:0 2px 16px rgba(0,0,0,.7); }
+.chk .h { font-family:CG; font-style:italic; font-weight:600; font-size:76px; line-height:1.02; margin-bottom:6px; }
+.chk .i { display:flex; align-items:center; gap:24px; opacity:0; }
+.chk .i::before { content:""; flex:none; width:48px; height:48px; border:6px solid var(--ivory); border-radius:6px; box-sizing:border-box; box-shadow:0 2px 10px rgba(0,0,0,.5); }
+.chk .i.on::before { content:"\2713"; background:var(--blush); border-color:var(--blush); color:var(--ink); font-size:38px; line-height:38px; text-align:center; font-weight:700; text-shadow:none; }
+/* credits */
+.cred { position:absolute; left:0; width:1080px; }
+.cred .r { display:flex; justify-content:space-between; align-items:baseline; padding:0 110px; margin:0 0 30px; }
+.cred .r span:first-child { font-family:Jost; font-weight:600; font-size:28px; letter-spacing:.2em; text-transform:uppercase; color:var(--blush); }
+.cred .r span:last-child { font-family:CG; font-weight:600; font-size:52px; color:var(--ivory); text-align:right; }
+.cred .r span.rs { font-family:Jost; font-weight:600; font-size:44px; }
+.cred .end { text-align:center; font-family:CG; font-style:italic; font-weight:600; font-size:46px; color:var(--ivory); margin-top:20px; }
+.credbg { position:absolute; left:0; right:0; bottom:0; height:1100px; background:linear-gradient(to bottom, rgba(26,22,20,0), rgba(26,22,20,.86) 30%); }
+/* meter */
+.meter { position:absolute; left:90px; width:900px; height:96px; display:flex; border-radius:48px; overflow:hidden; box-shadow:0 12px 30px rgba(26,22,20,.4); }
+.meter .u, .meter .d { display:flex; align-items:center; font-family:Barlow; font-weight:800; font-size:50px; letter-spacing:.06em; color:var(--ink); white-space:nowrap; overflow:hidden; }
+.meter .u { background:var(--sage); padding-left:34px; } .meter .d { background:var(--blush); justify-content:flex-end; padding-right:34px; flex:1; }
+.stamp { position:absolute; font-family:Barlow; font-weight:800; font-size:120px; line-height:1; padding:6px 30px 2px; border:10px solid currentColor; border-radius:18px; text-transform:uppercase; }
+/* game ui */
+.px { font-family:Pixel; font-weight:400; }
+.selh { position:absolute; left:0; width:1080px; text-align:center; font-family:Pixel; font-size:46px; line-height:1.4; color:var(--blush); text-shadow:6px 6px 0 #000; }
+.tile { position:absolute; outline:8px solid var(--deep); }
+.tile.on { outline:12px solid var(--blush); }
+.tile .nm { position:absolute; left:0; right:0; bottom:0; background:rgba(26,22,20,.88); color:var(--ivory); font-family:Pixel; font-size:19px; line-height:1.4; padding:12px 6px; text-align:center; }
+.tile .p1 { position:absolute; left:10px; top:10px; background:var(--blush); color:var(--ink); font-family:Pixel; font-size:24px; padding:8px 10px; }
+.stats { position:absolute; left:80px; width:920px; font-family:Pixel; font-size:30px; line-height:1.7; color:var(--ivory); text-shadow:4px 4px 0 #000; }
+.stats b { color:var(--blush); font-weight:400; } .stats i { font-style:normal; color:var(--sage); }
+.item { position:absolute; left:70px; width:940px; background:var(--ink); outline:9px solid var(--blush); padding:32px 36px; color:var(--ivory); font-family:Pixel; font-size:36px; line-height:1.6;
+  box-shadow:0 0 0 18px var(--ink); }
+.item b { display:block; font-weight:400; color:var(--blush); font-size:26px; } .item i { font-style:normal; color:var(--sage); }
+.banner { position:absolute; left:0; width:1080px; text-align:center; font-family:Pixel; font-size:44px; line-height:1.6; color:var(--blush); text-shadow:6px 6px 0 #000; }
+.banner i { display:block; font-style:normal; color:var(--ivory); font-size:72px; margin-top:16px; }
+.hp { position:absolute; left:70px; width:940px; font-family:Pixel; font-size:30px; line-height:1.5; color:var(--ivory); text-shadow:4px 4px 0 #000; }
+.hp .bar { height:40px; margin-top:14px; border:6px solid var(--ivory); background:rgba(26,22,20,.6); box-shadow:4px 4px 0 #000; }
+.hp .bar i { display:block; height:100%; background:var(--blush); }
+.ko { position:absolute; left:0; width:1080px; text-align:center; font-family:Pixel; font-size:230px; line-height:1; color:var(--blush); text-shadow:16px 16px 0 #000; }
+.ko small { display:block; font-size:40px; line-height:1.6; color:var(--ivory); margin-top:40px; text-shadow:5px 5px 0 #000; }
+/* rec overlay */
+.rec { position:absolute; left:70px; right:70px; top:230px; display:flex; justify-content:space-between; align-items:center; font-family:Jost; font-weight:600; font-size:40px; letter-spacing:.1em;
+  color:var(--ivory); text-shadow:0 2px 10px rgba(0,0,0,.8); }
+.rec .dot { display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--blush); margin-right:16px; vertical-align:-3px; }
+.rec .n { font-family:Barlow; font-weight:800; font-size:58px; letter-spacing:.02em; font-variant-numeric:tabular-nums; }
+/* speech bubble (POV) */
+.sb { position:absolute; max-width:700px; background:var(--ivory); color:var(--ink); font-family:Jost,'Noto Color Emoji'; font-weight:600; font-size:52px; line-height:1.18;
+  padding:24px 34px 28px; border-radius:40px; box-shadow:0 14px 34px rgba(26,22,20,.35); white-space:nowrap; }
+.sb i { display:block; font-style:normal; font-size:26px; letter-spacing:.14em; text-transform:uppercase; color:var(--deep); margin-bottom:6px; }
+.sb.k { background:var(--blush); } .sb.k i { color:#6E3B2C; }
+.sb .tl { position:absolute; width:46px; height:46px; background:inherit; transform:rotate(45deg); border-radius:6px; }
+.pov { position:absolute; left:0; width:1080px; text-align:center; font-family:CG; font-style:italic; font-weight:600; font-size:86px; color:var(--ivory);
+  filter:drop-shadow(0 2px 14px rgba(26,22,20,.65)); }
+.dpring { position:absolute; border-radius:50%; box-shadow:0 0 0 18px var(--ivory), 0 0 0 34px var(--blush); }
+.hnd { position:absolute; left:0; width:1080px; text-align:center; font-family:Jost; font-weight:600; font-size:34px; letter-spacing:.14em; color:var(--ivory);
+  filter:drop-shadow(0 1px 5px rgba(26,22,20,.85)); }
+#measure { position:absolute; left:0; top:0; visibility:hidden; white-space:nowrap; }
+</style></head>
+<body><div id="stage">
+  <canvas id="cv" width="1080" height="1920"></canvas>
+  <div id="behind"></div>
+  <canvas id="fgc" width="1080" height="1920"></canvas>
+  <div id="ui"></div>
+  <canvas id="fx" width="1080" height="1920"></canvas>
+</div>
+<span id="measure"></span>
+<script>
+const D = window.D, FPS = D.fps, W = 1080, H = 1920;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const E = { lin: p => p, out: p => 1 - (1 - p) ** 3, in: p => p ** 3, io: p => p < .5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2, out5: p => 1 - (1 - p) ** 5,
+  back: p => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (p - 1) ** 3 + c1 * (p - 1) ** 2; },
+  el: p => p === 0 || p === 1 ? p : 2 ** (-10 * p) * Math.sin((p * 10 - .75) * (2 * Math.PI) / 3) + 1 };
+const P = (t, t0, d, e = 'out') => E[e](clamp((t - t0) / Math.max(1e-6, d)));
+const win = (t, a, b, fi = .12, fo = .12) => (t < a || t > b) ? 0 : Math.min(fi > 0 ? P(t, a, fi) : 1, fo > 0 ? 1 - P(t, b - fo, fo, 'io') : 1);
+const on = (t, a, b) => t >= a - 1e-6 && t < b - 1e-6;
+const $ = id => document.getElementById(id);
+const pad4 = n => String(n).padStart(4, '0');
+const B = k => k * D.beat;                                    // reel time of beat k (every reel starts on a downbeat)
+const rng = seed => { let s = (seed * 2654435761) >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; };
+const el = (cls, html = '', parent = $('ui'), st = {}) => { const e = document.createElement('div'); if (cls) e.className = cls; e.innerHTML = html; Object.assign(e.style, st); parent.appendChild(e); return e; };
+function tf(e, o = {}) {
+  const { x = 0, y = 0, s = 1, sx = 1, sy = 1, r = 0, op = 1 } = o;
+  e.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${r.toFixed(2)}deg) scale(${(s * sx).toFixed(4)},${(s * sy).toFixed(4)})`;
+  e.style.opacity = clamp(op).toFixed(3); e.style.display = op <= 0.001 ? 'none' : '';
+}
+// pop in with overshoot, hold, fade out
+function popT(t, a, b, { dur = .28, from = .6, fo = .12, rise = 0 } = {}) {
+  if (t < a || t > b) return { s: 1, op: 0, y: 0 };
+  const p = P(t, a, dur, 'back'); const q = fo > 0 ? 1 - P(t, b - fo, fo, 'io') : 1;
+  return { s: lerp(from, 1, p), op: Math.min(P(t, a, dur * .5), q), y: lerp(rise, 0, P(t, a, dur)) };
+}
+// slam: big and fast down to size, small shake
+function slamT(t, a, b, { from = 2.2, dur = .16, fo = .1, rot = 0 } = {}) {
+  if (t < a || t > b) return { s: 1, op: 0, r: 0 };
+  const p = P(t, a, dur, 'out'); const q = fo > 0 ? 1 - P(t, b - fo, fo, 'io') : 1;
+  const wob = t - a < .3 ? Math.sin((t - a) * 60) * (1 - (t - a) / .3) * 3 : 0;
+  return { s: lerp(from, 1, p), op: Math.min(P(t, a, dur * .6), q), r: rot + wob };
+}
+// ---------------------------------------------------------------- shots, frames, mattes
+const SH = {}; for (const s of D.shots) SH[s.id] = s;
+function srcTime(s, t) {
+  if (s.map) {                                                  // piecewise linear [[reelT, srcT], ...]
+    const m = s.map; if (t <= m[0][0]) return m[0][1];
+    for (let i = 1; i < m.length; i++) if (t <= m[i][0]) return lerp(m[i - 1][1], m[i][1], (t - m[i - 1][0]) / Math.max(1e-6, m[i][0] - m[i - 1][0]));
+    return m[m.length - 1][1];
+  }
+  let lt = (t - s.t0) * (s.rate ?? 1);
+  if (s.loop) lt = ((lt % s.loop) + s.loop) % s.loop;
+  return s.s0 + lt;
+}
+const fidx = (s, src) => clamp(Math.round((src - s.ext0) * FPS), 0, s.n - 1);
+const fURL = (s, t) => `../fr/${s.key}/f_${pad4(fidx(s, srcTime(s, t)) + 1)}.jpg`;
+const mURL = (s, t) => `../mt/${s.key}/m_${pad4(fidx(s, srcTime(s, t)) + 1)}.png`;
+const CACHE = new Map();
+function im(url) {
+  let e = CACHE.get(url);
+  if (!e) { e = new Image(); e.src = url; CACHE.set(url, e); if (CACHE.size > 220) CACHE.delete(CACHE.keys().next().value); }
+  return e;
+}
+function face(s, t) {                                           // face box [x0, y0, x1, y1] in 1080 px, from the scan, if known
+  const F = D.faces && D.faces[s.clip]; if (!F) return null;
+  const k = String(Math.round(srcTime(s, t) * FPS)); return F[k] || null;
+}
+// ---------------------------------------------------------------- canvases
+const cv = $('cv'), cx = cv.getContext('2d'), fgc = $('fgc'), gx = fgc.getContext('2d'), fxc = $('fx'), fx = fxc.getContext('2d');
+const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; };
+const T1 = mk(), t1 = T1.getContext('2d'), T2 = mk(), t2 = T2.getContext('2d'), T3 = mk(), t3 = T3.getContext('2d'), T4 = mk(), t4 = T4.getContext('2d');
+[cx, gx, fx, t1, t2, t3, t4].forEach(c => { c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; });
+// a video layer: { shot, rect, z, dx, dy, rot, alpha, focus, tt (time override), depth, sticker }
+function xm(L, t) {
+  // Full frame: zoom about the focus point (it stays where it is). In a tile: put the focus at the tile's centre.
+  // Either way the image is clamped so it always covers its rect; offsets (shake, slides) are added after the clamp.
+  const s = SH[L.shot]; const r = L.rect || { x: 0, y: 0, w: W, h: H };
+  const base = Math.max(r.w / W, r.h / H);
+  const tt = L.tt ?? t; const p = clamp((tt - s.t0) / Math.max(1e-6, s.t1 - s.t0));
+  const zz = s.z ? lerp(s.z[0], s.z[1], E.io(p)) : 1;
+  const k = base * zz * (L.z ?? 1);
+  const f = L.focus || s.focus || [W / 2, H / 2];
+  const T = L.rect ? [r.x + r.w / 2, r.y + r.h / 2] : [r.x + f[0] * base, r.y + f[1] * base];
+  let ox = T[0] - f[0] * k, oy = T[1] - f[1] * k;
+  if (W * k >= r.w - .5) ox = clamp(ox, r.x + r.w - W * k, r.x);
+  if (H * k >= r.h - .5) oy = clamp(oy, r.y + r.h - H * k, r.y);
+  const pan = s.pan ? [lerp(s.pan[0][0], s.pan[1][0], E.io(p)), lerp(s.pan[0][1], s.pan[1][1], E.io(p))] : [0, 0];
+  ox += pan[0] + (L.dx || 0); oy += pan[1] + (L.dy || 0);
+  let M = new DOMMatrix();
+  if (L.rot) { const cxr = r.x + r.w / 2, cyr = r.y + r.h / 2; M = M.translate(cxr, cyr).rotate(L.rot).translate(-cxr, -cyr); }
+  return s.flip ? M.translate(ox + W * k, oy).scale(-k, k) : M.translate(ox, oy).scale(k, k);
+}
+function xform(c, L, t) { const M = xm(L, t); c.transform(M.a, M.b, M.c, M.d, M.e, M.f); }
+// where a source pixel lands on screen for a layer (kicks included when K is passed), and tracked points
+const kl = (L, K) => (!K || L.nokick) ? L : { ...L, z: (L.z ?? 1) * K.z, dx: (L.dx || 0) + K.dx, dy: (L.dy || 0) + K.dy, rot: (L.rot || 0) + K.rot };
+function toScr(L, t, x, y, K) { const q = xm(kl(L, K), t).transformPoint({ x, y }); return [q.x, q.y]; }
+function trk(id, t) { const T = D.tracks && D.tracks[id]; if (!T) return null; const s = SH[T.shot]; return T.pts[fidx(s, srcTime(s, t))] || null; }
+function trkScr(id, t, K, L = null) { const p = trk(id, t); if (!p) return null; return toScr(L || { shot: D.tracks[id].shot }, t, p[0], p[1], K); }
+function clipRect(c, L) {
+  if (L.circ) { c.beginPath(); c.arc(L.circ.x, L.circ.y, L.circ.r, 0, Math.PI * 2); c.clip(); return; }
+  const r = L.rect; if (!r) return; c.beginPath(); if (L.round) c.roundRect(r.x, r.y, r.w, r.h, L.round); else c.rect(r.x, r.y, r.w, r.h); c.clip(); }
+function drawLayer(c, L, t, src = null) {
+  const s = SH[L.shot]; const img = src || im(fURL(s, L.tt ?? t));
+  c.save(); clipRect(c, L); c.globalAlpha = L.alpha ?? 1; xform(c, L, t); c.drawImage(img, 0, 0, W, H); c.restore();
+}
+function cutout(L, t) {                                          // T1 <- frame masked by the matte
+  const s = SH[L.shot]; const tt = L.tt ?? t;
+  t1.globalCompositeOperation = 'source-over'; t1.clearRect(0, 0, W, H); t1.drawImage(im(fURL(s, tt)), 0, 0, W, H);
+  t1.globalCompositeOperation = 'destination-in'; t1.drawImage(im(mURL(s, tt)), 0, 0, W, H); t1.globalCompositeOperation = 'source-over';
+  return T1;
+}
+function sticker(c, L, t, stroke = 16, color = '#FBF3EC') {      // matte cutout with a solid outline, like a sticker
+  const s = SH[L.shot]; const tt = L.tt ?? t;
+  t2.globalCompositeOperation = 'source-over'; t2.clearRect(0, 0, W, H); t2.drawImage(im(mURL(s, tt)), 0, 0, W, H);
+  t2.globalCompositeOperation = 'source-in'; t2.fillStyle = color; t2.fillRect(0, 0, W, H); t2.globalCompositeOperation = 'source-over';
+  const cut = cutout(L, t);
+  c.save(); clipRect(c, L); xform(c, L, t);
+  for (let a = 0; a < 24; a++) { const q = a / 24 * Math.PI * 2; c.drawImage(T2, Math.cos(q) * stroke, Math.sin(q) * stroke, W, H); }
+  c.drawImage(cut, 0, 0, W, H); c.restore();
+}
+// ---------------------------------------------------------------- effects on the video canvas
+function flash(c, color, a) { if (a <= .002) return; c.save(); c.globalAlpha = clamp(a); c.fillStyle = color; c.fillRect(0, 0, W, H); c.restore(); }
+function channel(dst, dctx, src, color) {
+  dctx.globalCompositeOperation = 'source-over'; dctx.clearRect(0, 0, W, H); dctx.drawImage(src, 0, 0);
+  dctx.globalCompositeOperation = 'multiply'; dctx.fillStyle = color; dctx.fillRect(0, 0, W, H); dctx.globalCompositeOperation = 'source-over';
+}
+function rgbSplit(amt) {                                         // red left, blue right, summed back
+  if (amt < .5) return;
+  t1.globalCompositeOperation = 'source-over'; t1.clearRect(0, 0, W, H); t1.drawImage(cv, 0, 0);
+  channel(T2, t2, T1, '#ff0000'); channel(T3, t3, T1, '#00ff00'); channel(T4, t4, T1, '#0000ff');
+  cx.save(); cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H); cx.globalCompositeOperation = 'lighter';
+  cx.drawImage(T2, -amt, 0); cx.drawImage(T3, 0, 0); cx.drawImage(T4, amt, 0); cx.restore();
+}
+function slices(amt, seed, n = 7) {                               // horizontal slice displacement
+  if (amt < .5) return; const R = rng(seed);
+  t1.globalCompositeOperation = 'source-over'; t1.clearRect(0, 0, W, H); t1.drawImage(cv, 0, 0);
+  for (let i = 0; i < n; i++) { const y = R() * H, h = 30 + R() * 160, dx = (R() - .5) * 2 * amt; cx.drawImage(T1, 0, y, W, h, dx, y, W, h); }
+}
+// kicks from the reel's fx list: punch (scale), shake (offset), spin (rotation), flash, glitch
+function kicks(t) {
+  let z = 1, dx = 0, dy = 0, rot = 0;
+  for (const f of D.fx || []) {
+    const a = t - f.t; if (a < 0 || a > (f.d ?? .3)) continue; const p = a / (f.d ?? .3);
+    if (f.type === 'punch') z *= 1 + (f.a ?? .08) * (1 - E.out(p)) ;
+    if (f.type === 'shake') { const R = rng(Math.round(t * FPS) + 7); dx += (R() - .5) * 2 * (f.a ?? 22) * (1 - p); dy += (R() - .5) * 2 * (f.a ?? 22) * (1 - p); }
+    if (f.type === 'spin') rot += (f.a ?? 12) * (1 - E.out(p));
+    if (f.type === 'zoomin') z *= lerp(f.a ?? 1.35, 1, E.out(p));
+  }
+  if (rot) { const q = Math.abs(rot) * Math.PI / 180; z *= Math.cos(q) + (H / W) * Math.sin(q); }   // enough zoom that a turned frame still covers
+  return { z, dx, dy, rot };
+}
+function postFX(t) {
+  for (const f of D.fx || []) {
+    const a = t - f.t; if (a < 0 || a > (f.d ?? .3)) continue; const p = a / (f.d ?? .3);
+    if (f.type === 'flash') flash(cx, f.c || '#FBF3EC', (f.a ?? .85) * (1 - E.out(p)));
+    if (f.type === 'glitch') { rgbSplit((f.a ?? 18) * (1 - p)); slices((f.a ?? 18) * 2.2 * (1 - p), Math.round(t * FPS)); }
+  }
+}
+// ---------------------------------------------------------------- particles and ornaments (fx canvas)
+function star4(c, x, y, r, rot = 0) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.beginPath();
+  for (let i = 0; i < 8; i++) { const q = i / 8 * Math.PI * 2, rr = i % 2 ? r * .22 : r; c.lineTo(Math.cos(q) * rr, Math.sin(q) * rr); }
+  c.closePath(); c.fill(); c.restore();
+}
+function burst(c, t, t0, x, y, { n = 46, speed = 1100, life = .9, seed = 1, size = 22, colors = ['#FBF3EC', '#FFBDA8', '#FBF3EC', '#99B4AF'], grav = 900, spread = Math.PI * 2, dir = 0 } = {}) {
+  const a = t - t0; if (a < 0 || a > life * 1.6) return; const R = rng(seed);
+  for (let i = 0; i < n; i++) {
+    const ang = dir + (R() - .5) * spread, v = speed * (.25 + .75 * R()), lf = life * (.55 + .45 * R()), sz = size * (.4 + .9 * R()), col = colors[Math.floor(R() * colors.length)], spin = (R() - .5) * 8;
+    if (a > lf) continue; const k = a / lf;
+    const px = x + Math.cos(ang) * v * a * (1 - k * .45), py = y + Math.sin(ang) * v * a * (1 - k * .45) + grav * a * a * .5;
+    c.globalAlpha = (1 - k) ** 1.3; c.fillStyle = col; c.shadowColor = 'rgba(255,189,168,.9)'; c.shadowBlur = 14;
+    star4(c, px, py, sz * (1 - k * .5), spin * a);
+  }
+  c.globalAlpha = 1; c.shadowBlur = 0;
+}
+function twinkle(c, t, x, y, r, phase = 0) {                     // a single glint that breathes
+  const k = .5 + .5 * Math.sin(t * 9 + phase); c.save(); c.globalAlpha = .35 + .65 * k; c.fillStyle = '#FBF3EC'; c.shadowColor = '#FFBDA8'; c.shadowBlur = 20;
+  star4(c, x, y, r * (.65 + .5 * k), t * 1.5 + phase); c.restore();
+}
+function rangoli(c, t, t0, x, y, { life = 1.1, r0 = 80, r1 = 900 } = {}) {   // dotted rings, sage and blush, opening out
+  const a = t - t0; if (a < 0 || a > life) return; const k = a / life;
+  const rings = [[1, 36, '#FFBDA8', 9], [.78, 28, '#99B4AF', 8], [.56, 20, '#FBF3EC', 7], [.38, 14, '#FFBDA8', 6]];
+  for (const [m, n, col, dot] of rings) {
+    const r = lerp(r0, r1, E.out(k)) * m; c.globalAlpha = (1 - k) ** 1.2; c.fillStyle = col;
+    for (let i = 0; i < n; i++) { const q = i / n * Math.PI * 2 + k * (m > .6 ? .9 : -.9); c.beginPath(); c.arc(x + Math.cos(q) * r, y + Math.sin(q) * r, dot * (1 + (1 - k)), 0, Math.PI * 2); c.fill(); }
+  }
+  c.globalAlpha = 1;
+}
+function diya(size = 70) {                                       // a little lamp: blush body, ivory flame
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="display:inline-block;vertical-align:middle">
+    <path d="M50 8 C60 26 64 36 50 52 C36 36 40 26 50 8Z" fill="#FBF3EC"/><path d="M50 26 C55 34 56 40 50 48 C44 40 45 34 50 26Z" fill="#FFBDA8"/>
+    <path d="M10 58 Q50 54 90 58 Q86 86 50 90 Q14 86 10 58Z" fill="#FFBDA8"/><path d="M24 64 Q50 61 76 64" stroke="#50726A" stroke-width="4" fill="none"/></svg>`;
+}
+// leader-line label pinned to a point
+function mkPin(html) { const e = el('pin'); e.innerHTML = `<svg width="1" height="1"><line stroke="#FBF3EC" stroke-width="5" stroke-linecap="round"/><circle r="11" fill="#FFBDA8" stroke="#FBF3EC" stroke-width="5"/></svg><div class="tx">${html}</div>`; return e; }
+function drawPin(e, t, a, b, px, py, lx, ly) {                   // point (px,py), label centre (lx,ly)
+  const w = win(t, a, b, .18, .1); if (w <= 0) { e.style.display = 'none'; return; } e.style.display = '';
+  const ln = e.querySelector('line'), ci = e.querySelector('circle'), tx = e.querySelector('.tx');
+  const p = P(t, a, .25);
+  const ex = lerp(px, lx, p), ey = lerp(py, ly, p);
+  ln.setAttribute('x1', px); ln.setAttribute('y1', py); ln.setAttribute('x2', ex); ln.setAttribute('y2', ey); ci.setAttribute('cx', px); ci.setAttribute('cy', py);
+  e.style.opacity = w; const r = tx.getBoundingClientRect();
+  tx.style.left = (lx - tx.offsetWidth / 2) + 'px'; tx.style.top = (ly - tx.offsetHeight / 2) + 'px';
+  tx.style.transform = `scale(${lerp(.4, 1, P(t, a + .08, .25, 'back')).toFixed(3)})`;
+}
+// a speech bubble whose tail points at (px, py): side 'up' = bubble above the point, 'down' = below
+function placeSB(e, px, py, { side = 'up', gap = 34, ax = .3, minX = 40, maxX = 1040 } = {}) {
+  let tl = e.querySelector('.tl'); if (!tl) { tl = document.createElement('div'); tl.className = 'tl'; e.appendChild(tl); }
+  const w = e.offsetWidth, h = e.offsetHeight;
+  const left = clamp(px - w * ax, minX, maxX - w); const top = side === 'up' ? py - gap - h : py + gap;
+  e.style.left = left.toFixed(1) + 'px'; e.style.top = top.toFixed(1) + 'px';
+  const tx = clamp(px - left, 40, w - 40);
+  tl.style.left = (tx - 23).toFixed(1) + 'px'; tl.style.top = side === 'up' ? (h - 26) + 'px' : '-20px';
+  e.style.transformOrigin = `${tx.toFixed(0)}px ${side === 'up' ? h + 20 : -20}px`;
+}
+// fit a single-line element to a width
+function fitW(e, maxW, maxPx) { const m = $('measure'); m.className = e.className; m.style.cssText = ''; m.style.fontSize = '100px'; m.innerHTML = e.innerHTML;
+  const w = m.getBoundingClientRect().width; e.style.fontSize = Math.min(maxPx, 100 * maxW / w).toFixed(1) + 'px'; }
+// ---------------------------------------------------------------- frame loop
+let REEL = null;
+function needs(Ls, t) {
+  const u = [];
+  for (const L of Ls) { const s = SH[L.shot]; if (!s) continue; u.push(fURL(s, L.tt ?? t)); if (L.depth || L.sticker || L.cut) u.push(mURL(s, L.tt ?? t)); }
+  return u;
+}
+async function renderAt(t) {
+  const plan = REEL.plan(t);
+  const Ls = plan.layers || []; const extra = plan.extra || [];
+  await Promise.all([...needs(Ls, t), ...extra].map(u => { const i = im(u); return i.complete && i.naturalWidth ? null : i.decode().catch(() => console.error('missing ' + u)); }));
+  cx.save(); cx.fillStyle = plan.bg || '#151211'; cx.fillRect(0, 0, W, H); cx.restore();
+  if (plan.pre) plan.pre(cx, t);
+  const K = kicks(t);
+  for (const L of Ls) {
+    if (L.sticker) continue;
+    const LL = L.nokick ? L : { ...L, z: (L.z ?? 1) * K.z, dx: (L.dx || 0) + K.dx, dy: (L.dy || 0) + K.dy, rot: (L.rot || 0) + K.rot };
+    drawLayer(cx, LL, t);
+  }
+  if (plan.under) plan.under(cx, t);
+  postFX(t);
+  gx.clearRect(0, 0, W, H);
+  for (const L of Ls) {
+    const LL = L.nokick ? L : { ...L, z: (L.z ?? 1) * K.z, dx: (L.dx || 0) + K.dx, dy: (L.dy || 0) + K.dy, rot: (L.rot || 0) + K.rot };
+    if (L.depth) { const c = cutout(LL, t); gx.save(); clipRect(gx, LL); xform(gx, LL, t); gx.drawImage(c, 0, 0, W, H); gx.restore(); }
+    if (L.sticker) sticker(gx, LL, t, L.stroke ?? 16, L.color ?? '#FBF3EC');
+  }
+  fx.clearRect(0, 0, W, H);
+  REEL.draw(t, K);
+}
+window.renderAt = renderAt;
+window.ready = (async () => {
+  await Promise.all(['500 50px Jost', '600 50px Jost', '700 50px Jost', 'italic 600 50px CG', '600 50px CG', '50px Rozha', '50px Pixel', '800 50px Barlow', '700 50px Barlow', '600 50px Barlow']
+    .map(f => document.fonts.load(f)));
+  await document.fonts.ready;
+  await new Promise((res, rej) => { const s = document.createElement('script'); s.src = `reels/${D.name}.js`; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  REEL = window.REEL; REEL.init();
+})();
+</script>
+</body></html>

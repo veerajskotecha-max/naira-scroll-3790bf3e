@@ -23,12 +23,12 @@ def faces(clip):
     return scan[clip]
 
 class Reel:
-    def __init__(self, name, song, k_start, beats, title):
-        self.name, self.song, self.title = name, song, title
-        g = SONG[song]; self.beat = g['beat']; self.start = g['k0'] + k_start * g['beat']
-        self.frames = round(beats * g['beat'] * FPS); self.dur = self.frames / FPS
+    def __init__(self, name, song, k_start, beats, title, off=0.0):
+        self.name, self.song, self.title, self.off = name, song, title, off
+        g = SONG[song]; self.beat = g['beat']; self.start = g['k0'] + k_start * g['beat'] - off
+        self.frames = round((off + beats * g['beat']) * FPS); self.dur = self.frames / FPS
         self.shots, self.fx, self.cues = [], [], {}
-    def B(self, k): return fsnap(k * self.beat)
+    def B(self, k): return fsnap(self.off + k * self.beat)
     def shot(self, id, clip, k0, k1, s0=None, rate=1.0, **kw):
         t0 = self.B(k0) if not isinstance(k0, tuple) else fsnap(k0[0]); t1 = self.B(k1) if not isinstance(k1, tuple) else fsnap(k1[0])
         s = dict(id=id, clip=clip, t0=t0, t1=t1, s0=s0, rate=rate); s.update(kw)
@@ -57,7 +57,7 @@ class Reel:
             for i in range(round(s['ext0'] * FPS), round(s['ext0'] * FPS) + s['n']):
                 if i in F: fz[s['clip']][str(i)] = [round(v) for v in F[i]]
         song = SONG[self.song]
-        D = dict(name=self.name, title=self.title, fps=FPS, frames=self.frames, dur=self.dur, beat=self.beat, song=self.song,
+        D = dict(name=self.name, title=self.title, fps=FPS, frames=self.frames, dur=self.dur, beat=self.beat, off=self.off, song=self.song,
                  audio=dict(file=song['file'], start=round(self.start, 4)), shots=self.shots, fx=self.fx, cues=self.cues, faces=fz)
         json.dump(D, open(f'{V15}/eng/data_{self.name}.json', 'w'))
         return D
@@ -298,6 +298,31 @@ for kk in range(12, 20): r.add('punch', kk, a=.03, d=.22)
 for kk in [x / 2 for x in range(40, 48)]: r.add('punch', kk, a=.035, d=.16)
 r.add('flash', 12, c='#FBF3EC', a=.35, d=.16); r.add('flash', 27, c='#FBF3EC', a=.6, d=.22); r.add('punch', 4, a=.05, d=.32)   # the bass comes in
 r.cues = dict(drop=r.B(27), gap=[fsnap(17.25 - r.start), fsnap(17.52 - r.start)], fan=[r.B(24), r.B(26)], dp=r.B(27), vid=[r.B(12), r.B(24)])
+# =====================================================================================================================
+# 5d · I ASKED FOR ONE PHOTO, the final cut: track D from its first note (beat 0 at 0.245 s, so off=0.245) to just before bar
+#      10's downbeat (26.33 s). Bars of 2.608 s: the ask in bars 0-1 (the Naira line on bar 1's bass), the gallery in bar 2's
+#      breakdown, twelve videos one a beat through bars 3-5, the fan in bar 6 (frozen on its beat-2 hit), her laugh in the
+#      silence, a clap that snaps the camera's focus onto her, the shutter on the drop (17.85 s), the DP held through bar 7's
+#      drum roll, the profile on bar 8's heavy kick, comments on its snares, and her reply on bar 9's sub hit
+r = Reel('onephoto4', 'D2', 0, 40, 'I asked for ONE photo', off=0.245); R[r.name] = r
+r.shot('a1', '62379666', (0.0,), 2, 0.00, z=[1.0, 1.06], focus='face')
+r.shot('a2', '041FCDC6', 2, 4, 8.10, z=[1.02, 1.07], focus='face')
+r.shot('a3', '212E5E27', 4, 6, 18.40, z=[1.0, 1.05], focus='face')
+r.shot('a4', '398F157B', 6, 8, 7.90, z=[1.02, 1.08], focus='face')
+VID4 = [('F2532C01', 27.0), ('74FA1A49', 20.4), ('CF686DEA', 18.6), ('5627AA72', 7.85), ('E2552016', 4.6), ('1AEDD2D8', 15.2),
+        ('84BD71C7', 58.6), ('267E722A', 6.6), ('212E5E27', 20.2), ('C64FD42F', 13.0), ('76D95B49', 4.3), ('2FB96BA5', 2.6)]
+for i, (c, s0) in enumerate(VID4):
+    r.shot(f'v{i + 1:02d}', c, 12 + i, 13 + i, s0, z=[1.04, 1.08], focus='face')
+r.shot('vfan', 'BD3B07AF', 24, 26, map=[[r.B(24), 21.95], [r.B(25), 22.60], [r.B(26), 22.60]], z=[1.0, 1.06])
+r.shot('vlaugh', 'DE17C1BF', 26, 27, map=[[r.B(26), 7.72], [r.B(27), 8.37]])
+r.shot('dp', '62379666', 27, 40, map=[[r.B(27), 4.00], [r.B(40), 4.00]], focus='face')
+r.add('punch', 4, a=.05, d=.32)                                              # the bass comes in
+for kk in range(12, 24): r.add('punch', kk, a=.035, d=.24)                   # a kick under every video
+r.add('flash', 12, c='#FBF3EC', a=.35, d=.16); r.add('punch', 25, a=.06, d=.3)   # the bass returns; the fan freezes
+r.add('flash', 27, c='#FBF3EC', a=.6, d=.22)                                 # the camera flash on the shutter
+r.cues = dict(drop=r.B(27), gap=[fsnap(17.25 - r.start), fsnap(17.52 - r.start)], clap=fsnap(17.541 - r.start), fan=[r.B(24), r.B(26)],
+              freeze=r.B(25), dp=r.B(27), vid=[r.B(12), r.B(24)],
+              roll=[fsnap(t - r.start) for t in (18.679, 18.841, 19.495, 19.657, 20.147)])   # bar 7's drum roll: glints on the jewellery
 # =====================================================================================================================
 # 6 · POV: YOU'RE HER HOOP · C from 1.758 s: one bubble a bar; the spin lands on the drop (bar 4)
 r = Reel('hoop', 'C', 3, 32, "POV: you're her hoop"); R[r.name] = r

@@ -154,7 +154,7 @@ const win = (t, a, b, fi = .12, fo = .12) => (t < a || t > b) ? 0 : Math.min(fi 
 const on = (t, a, b) => t >= a - 1e-6 && t < b - 1e-6;
 const $ = id => document.getElementById(id);
 const pad4 = n => String(n).padStart(4, '0');
-const B = k => k * D.beat;                                    // reel time of beat k (every reel starts on a downbeat)
+const B = k => (D.off || 0) + k * D.beat;                    // reel time of beat k (a reel may start D.off before its first beat)
 const rng = seed => { let s = (seed * 2654435761) >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; };
 const el = (cls, html = '', parent = $('ui'), st = {}) => { const e = document.createElement('div'); if (cls) e.className = cls; e.innerHTML = html; Object.assign(e.style, st); parent.appendChild(e); return e; };
 function tf(e, o = {}) {

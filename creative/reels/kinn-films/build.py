@@ -465,10 +465,11 @@ r.shot('ga', '212E5E27', 0, 4, 20.81 - 4 * 0.65201, z=[1.0, 1.04], focus='face')
 seg(0, r.B(4), 'full', ['ga'])
 seg(r.B(4), r.B(6), '2v', tiles('gb', 4, 6, [('041FCDC6', 8.00), ('FB8CD2FD', 6.10)]))
 seg(r.B(6), r.B(8), '2x2', tiles('gc', 6, 8, [('62379666', 0.10), ('267E722A', 0.00), ('C64FD42F', 21.00), ('76D95B49', 1.80)]))
-ring9 = [('398F157B', 8.00), ('E3C6EA7D', 10.00), ('069EEAED', 0.60), ('2FB96BA5', 2.60), None, ('C64FD42F', 44.40), ('74FA1A49', 20.20),
+ring9 = [('398F157B', 8.00), ('E3C6EA7D', 10.00), ('069EEAED', 0.60), ('2FB96BA5', 2.60), None, ('C64FD42F', 44.40), ('A352935A', 10.20),
          ('1AEDD2D8', 1.40), ('F2532C01', 56.40)]
 ring9[4] = ('5627AA72', 13.75 - (SIL0 - r.B(8)))                        # the centre: frozen just before the whip, which plays on the drop
-seg(r.B(8), DROP, '3x3', tiles('gd', 8, (DROP,), ring9), freeze=SIL0, flash=CLAP)
+seg(r.B(8), DROP, '3x3', tiles('gd', 8, (DROP,), ring9), freeze=SIL0, flash=CLAP,
+    num=[f'{i + 1:02d}' for i in range(9)], sel=dict(tile=4, t=CLAP))          # numbered tiles; the clap picks 05, the drop bursts it
 r.shot('ge', '5627AA72', (DROP,), 12, 13.75)
 seg(DROP, r.B(12), 'full', ['ge'], grow=4)                                 # grows out of the centre tile
 WH = [('5627AA72', 13.85), ('CF686DEA', 51.85), ('FB8CD2FD', 11.10), ('E2552016', 4.90), ('C64FD42F', 13.20), ('DE17C1BF', 2.30),
@@ -490,13 +491,16 @@ seg(r.B(20), r.B(22), '2x2', tiles('gi', 20, 22, [('041FCDC6', 8.50), ('212E5E27
 r.shot('gi5', 'E3C6EA7D', 22, 24, 9.85, z=[1.0, 1.05], focus='face'); seg(r.B(22), r.B(24), 'full', ['gi5'])
 for i, (c, s0) in enumerate([('FB8CD2FD', 11.00), ('CF686DEA', 51.70), ('267E722A', 6.80), ('C64FD42F', 13.10)]):
     r.shot(f'gj{i + 1}', c, 24 + i, 25 + i, s0, z=[1.04, 1.0], focus='face'); seg(r.B(24 + i), r.B(25 + i), 'full', [f'gj{i + 1}'])
-k9 = [('041FCDC6', 8.60), ('212E5E27', 18.60), ('62379666', 0.30), ('398F157B', 8.20), None, ('C64FD42F', 44.60), ('74FA1A49', 20.60),
+k9 = [('041FCDC6', 8.60), ('212E5E27', 18.60), ('62379666', 0.30), ('398F157B', 8.20), None, ('C64FD42F', 44.60), ('5627AA72', 4.25),
       ('FB8CD2FD', 6.40), ('267E722A', 0.30)]
 ids = []
 for i, c in enumerate(k9):
     if c is None: ids.append('brand'); continue
     sid = f'gk{i + 1}'; r.shot(sid, c[0], 28, 32, c[1], focus='face'); ids.append(sid)
-seg(r.B(28), r.B(32) + 1, '3x3', ids, build=[r.B(28 + j / 4) for j in range(9)], order=[0, 1, 2, 5, 8, 7, 6, 3, 4])   # round the edge, the credit last
+ORDER = [0, 1, 2, 5, 8, 7, 6, 3, 4]                                         # round the edge clockwise, the brand last, in the centre
+NUM = [''] * 9
+for j, i in enumerate(ORDER[:8]): NUM[i] = f'{j + 1:02d}'                  # each tile's number counts up as it lands
+seg(r.B(28), r.B(32) + 1, '3x3', ids, build=[r.B(28 + j / 4) for j in range(9)], order=ORDER, num=NUM)
 r.add('punch', 4, a=.05, d=.2); r.add('punch', 6, a=.05, d=.2); r.add('punch', 8, a=.05, d=.2)
 r.add('flash', (CLAP,), c='#FBF3EC', a=.45, d=.16); r.add('flash', (DROP,), c='#FBF3EC', a=.7, d=.3)
 for t in [r.B(12), RH[0], RH[1], r.B(13), RH[2], RH[3], r.B(14), RH[4], r.B(15)]: r.add('punch', (t,), a=.06, d=.16)

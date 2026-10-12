@@ -1,5 +1,8 @@
 // MULTIPLY: the frame splits with the song (1, 2, 4, 9 tiles), freezes in the silence, and the centre tile bursts back to full
 // screen on the drop. Layouts and their tiles come from the cues; each tile is a shot drawn cover-scaled into its cell.
+// The graphics stay small: the nine-tile grids carry an index number per tile (the comment prompt), the clap draws a blush
+// frame round 05 before the drop bursts it, and the last grid closes on the brand tile: the NAIRA wordmark, sage with the
+// blush flower, the same drawing as the site's header.
 window.REEL = (() => {
   const C = D.cues, SEG = C.seg, GUT = 8, IVORY = '#FBF3EC';
   const cell = (cols, rows) => { const w = (W - (cols - 1) * GUT) / cols, h = (H - (rows - 1) * GUT) / rows;
@@ -7,16 +10,28 @@ window.REEL = (() => {
   const RECTS = { full: [{ x: 0, y: 0, w: W, h: H }], '2v': cell(1, 2), '2x2': cell(2, 2), '3x3': cell(3, 3) };
   const mix = (a, b, p) => ({ x: lerp(a.x, b.x, p), y: lerp(a.y, b.y, p), w: lerp(a.w, b.w, p), h: lerp(a.h, b.h, p) });
   const segAt = t => SEG.find(s => t >= s.t0 - 1e-6 && t < s.t1 - 1e-6) || SEG[SEG.length - 1];
-  let brand;
+  const NUM_Y = 252;      // the index sits this far down each tile: clear of Instagram's top bar in row 1, of its caption in row 3
+  const LOGO = '../img/logo_sage.svg';   // drawn on the fx canvas from the preloaded image, so a frame never catches it loading
+  let brand, nums = [], sel;
   return {
     init() {
       const st = document.createElement('style'); st.textContent = `
-        .brand { position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#99B4AF; }
-        .brand b { font-family:CG; font-style:italic; font-weight:500; font-size:50px; line-height:1; color:#FBF3EC; }
-        .brand i { font-style:normal; font-family:Jost; font-weight:500; font-size:17px; letter-spacing:.26em; text-transform:uppercase; color:#1A1614; }`;
+        .brand { position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#FBF3EC; }
+        .brand .wm { width:250px; height:56px; }
+        .brand .rule { width:46px; height:2px; background:#99B4AF; margin:30px 0 22px; }
+        .brand i { font-style:italic; font-family:CG; font-weight:500; font-size:31px; line-height:1; color:#50726A; }
+        .brand b { margin-top:14px; font-family:Jost; font-weight:500; font-size:16px; letter-spacing:.22em; color:#1A1614; }
+        .num { position:absolute; font-family:Jost; font-weight:500; font-size:30px; line-height:1; letter-spacing:.14em; color:#FBF3EC;
+          font-variant-numeric:tabular-nums; filter:drop-shadow(0 1px 2px rgba(26,22,20,.65)) drop-shadow(0 2px 10px rgba(26,22,20,.45)); }
+        .num::before { content:''; display:inline-block; width:18px; height:2px; margin:0 10px 0 0; vertical-align:.32em; background:currentColor; }
+        .num.on { color:#FFBDA8; }
+        .sel { position:absolute; box-sizing:border-box; border:9px solid #FFBDA8; box-shadow:inset 0 0 0 2px rgba(26,22,20,.35), 0 0 0 2px rgba(26,22,20,.35), 0 0 36px rgba(255,189,168,.7); }`;
       document.head.appendChild(st);
       const c = RECTS['3x3'][4];
-      brand = el('brand', '<b>@nairaflore</b><i>woven gold hoops</i>', $('ui'), { left: c.x + 'px', top: c.y + 'px', width: c.w + 'px', height: c.h + 'px' });
+      brand = el('brand', '<div class="wm"></div><div class="rule"></div><i>woven gold hoops</i><b>@NAIRAFLORE</b>', $('ui'),
+        { left: c.x + 'px', top: c.y + 'px', width: c.w + 'px', height: c.h + 'px' });
+      nums = RECTS['3x3'].map(r => el('num', '', $('ui'), { left: (r.x + 20) + 'px', top: (r.y + NUM_Y) + 'px' }));
+      sel = el('sel', '', $('ui'), { left: c.x + 'px', top: c.y + 'px', width: c.w + 'px', height: c.h + 'px' });
     },
     plan(t) {
       const sg = segAt(t), R = RECTS[sg.kind], layers = [];
@@ -36,13 +51,27 @@ window.REEL = (() => {
         if (sg.grow != null) L.rect = mix(RECTS['3x3'][sg.grow], RECTS.full[0], P(t, sg.t0, .22, 'out'));   // out of the centre tile
         layers.push(L);
       });
-      return { bg: IVORY, layers };
+      return { bg: IVORY, layers, extra: [LOGO] };
     },
     draw(t) {
-      const sg = segAt(t), i = sg.tiles.indexOf('brand');
+      const sg = segAt(t);
+      // the index numbers: the first nine-grid shows them all a beat after it opens; the last one counts them in as tiles land
+      nums.forEach((e, i) => {
+        const n = sg.num && sg.num[i];
+        if (!n) { tf(e, { op: 0 }); return; }
+        const t0 = sg.build ? sg.build[sg.order.indexOf(i)] : sg.t0 + D.beat / 2;
+        e.textContent = n; e.classList.toggle('on', !!(sg.sel && i === sg.sel.tile && t >= sg.sel.t));
+        tf(e, { op: P(t, t0, .14), x: lerp(-10, 0, P(t, t0, .3)) });
+      });
+      // the clap picks 05
+      if (sg.sel && t >= sg.sel.t) tf(sel, { op: P(t, sg.sel.t, .05), s: lerp(1.06, 1, P(t, sg.sel.t, .14, 'out')) });
+      else tf(sel, { op: 0 });
+      // the brand tile lands last, in the centre
+      const i = sg.tiles.indexOf('brand');
       if (i < 0 || !sg.build) { tf(brand, { op: 0 }); return; }
-      const b = sg.build[sg.order.indexOf(i)];
-      tf(brand, { op: P(t, b, .1), s: lerp(.9, 1, P(t, b, .35, 'out')) });
+      const b = sg.build[sg.order.indexOf(i)], op = P(t, b, .1);
+      tf(brand, { op, s: lerp(.9, 1, P(t, b, .35, 'out')) });
+      if (op > 0) { const r = brand.querySelector('.wm').getBoundingClientRect(); fx.save(); fx.globalAlpha = op; fx.drawImage(im(LOGO), r.left, r.top, r.width, r.height); fx.restore(); }
     }
   };
 })();

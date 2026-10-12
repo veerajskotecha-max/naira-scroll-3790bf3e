@@ -386,7 +386,7 @@ window.ready = (async () => {
   await Promise.all(['500 50px Jost', '600 50px Jost', '700 50px Jost', 'italic 600 50px CG', '600 50px CG', '50px Rozha', '50px Pixel', '800 50px Barlow', '700 50px Barlow', '600 50px Barlow']
     .map(f => document.fonts.load(f)));
   await document.fonts.ready;
-  await new Promise((res, rej) => { const s = document.createElement('script'); s.src = `reels/${D.name}.js`; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  await new Promise((res, rej) => { const s = document.createElement('script'); s.src = `reels/${D.script || D.name}.js`; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   REEL = window.REEL; REEL.init();
 })();
 </script>

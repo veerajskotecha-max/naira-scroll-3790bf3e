@@ -1,4 +1,4 @@
-# Kinn Films shoot — seven concept reels and a 30 s best-parts cut
+# Kinn Films shoot — an elegant set, seven concept reels and a 30 s best-parts cut
 
 27 unique handheld clips from the Kinn Films shoot (10:43 in all, 720x1280 HEVC, full-range
 BT.709, no audio): one look, the brocade corset, the **Woven Gold Hoops** (live), a kada and
@@ -9,13 +9,54 @@ The videos, frames and mattes are not in git.
 Every reel starts on a downbeat of its song, so beat k of a reel is at `k * beat` seconds,
 and every cut lands on a frame. Each one is built round one moment in its song.
 
+## The elegant set (latest: post these)
+
+Re-made at the owner's ask ("too much graphic… make it elegant… less tacky"): no stickers,
+chat bubbles, emoji, sparkles, shakes, glitches or zoom kicks. One line of type at a time
+(Cormorant Garamond italic in ivory, a soft shadow, a 0.3 s fade), straight cuts on the song's
+felt beat, sage and ivory only, and the hoops credited once, on the last frame ("woven gold
+hoops · @nairaflore"). The kada and the ring are shown and never named.
+
+| Reel | Song (from) | Length | The idea |
+| --- | --- | --- | --- |
+| **onephoto5 · I asked for one photo** | B, the moon song (0.0 s) | 34.2 s | The DP story told quietly. "i asked for one photo." / "just one. for my new dp." over two posed shots; "she sent twenty-seven videos." and all 27, one a beat, then two a beat as the song builds, under a small `video 01 / 27` counter. The 27th is the DP clip itself (62379666 from 1.60 s): it plays into the breakdown ("not one photo.") and freezes on the song's silence at 22.20 s on frame 120, the best frame in the shoot ("so i paused one."). The drop (23.24 s) is a screenshot flash. The photo becomes a print on sage, eight more stills from the DP ranking land on it one a beat ("(and eight more.)"), the stack lifts away, and the DP rounds into a profile circle: "new dp." It ends before beat 48 (34.196 s), after the beat where the song's bass drops out, so the loop breathes. |
+| **golden · The finishing touches** | D (0.0 s) | 21.1 s | A get-ready, bar by bar: a still close-up (her hand at the choker, the cuff) and the hoop being fastened under the song's first line; the hoop going in, in macro, as the bass enters; the cuff sliding on in the breakdown; her hand to the lens so the ring fills the frame, a wipe into the hair coming down on the drums (the fall on beat 18); over-the-shoulder looks in the full groove; her eyes to the lens through the silence; the spin on the drop (17.85 s); the cover close-up and the credit. The first two lines are subtitled in English. |
+| **intezaar · Tera karaan intezaar** | D (17.849 s, the drop hit) | 18.9 s | Portraits a bar each from the drop, two a bar in the middle, inside a 2 px ivory hairline frame: the turn that shows the laced back, the over-the-shoulder look with her hair up, the hoop close-up, hair cascading, the hair swish, the cuff at her collar. The hook is subtitled where it is sung ("i wait for you.", 22.36 s), and the credit closes it. |
+
+The songs, identified with whisper (`tools/lang.py`, `tools/lyrics.py`): **B** is in English,
+"Take me to the moon where we both fell in love", and is cut here at its felt pace, 87.6 BPM
+(**B2** in `build.py`: beat 0.68476 s from 1.3277 s). Read with `tools/bands.py`: the bass
+leaves at 19.8 s, the silence is 22.20–22.45 s, the drop 23.240 s, and the bass drops out for
+one beat at 33.5 s. **D** is Punjabi (pa 0.97): "puraane same vaangu aaja kariye pyaar" (come,
+let's love like the old days, 0–2.4 s), "tere naam diyaan chitthiyaan main likhiyaan hazaar"
+(I've written a thousand letters in your name, 2.4–5.5 s) and the hook "tera karaan intezaar"
+(I wait for you, 22.36 s). The subtitles are those translations; someone who knows the song
+should read them before posting.
+
+A reel's data can name a shared script: golden and intezaar set `script: 'elegant'`, and
+`engine/reels/elegant.js` cuts one shot at a time and draws the lines and the credit from the
+reel's cues. In `onephoto5.js` the DP is one shape the whole way, a full frame, then a print
+(rotated 1.2°, an ivory border, a soft shadow), then the circle: a rounded rectangle whose
+corner radius grows to half its side while the image eases from the whole frame to the face,
+fist and hoop, so the photo never cuts. The stack is composited off screen before it fades,
+so the prints do not ghost through one another.
+
+Every in-point was checked on `tools/shotsheet.py` sheets before rendering (a blurred hand on
+golden's first frame and a camera jump 0.3 s in were cut out that way), and every reel was
+reviewed at 3 frames a second after encoding. Measured in the final files: exact frame counts
+(1026, 633, 567), 1080x1920, 30 fps, BT.709 TV range, 27.3–27.6 MB. Every picture cut sits on
+its edit frame (`tools/qcsync.py`). The moon song's bass jumps 42 dB across the drop cut, its
+steepest rise at 0 ms, and the screenshot flash peaks on that frame. Each of intezaar's cuts
+sits 10–40 ms before the kick's energy peak, which is the analysis window's lag. The frozen DP
+frame matches the camera original to −1.1 / −0.5 / −1.1 levels (R, G, B), mean |diff| 1.9 of 255.
+
 | Reel | Song (from) | Length | The idea | Built on |
 | --- | --- | --- | --- | --- |
 | **diwali · Diwali look loading…** | B (12.284 s) | 21.9 s | A blush bar fills one item a bar: kada, ring, hoops. It stalls at 43% on a lost earring back (a retry / cry dialog), holds at 99% while she pulls the clip, and hits 100% on the drop. Then 8 bars of the look with a transition on every hit: DIWALI behind her (person matte), pinned ✓ labels, strips, a 3×3 grid, a sticker beat. Ends "diwali look: loaded ✨" and the bar resets for the loop. | B's silence (22.20–22.45 s) and drop (23.24 s) |
 | **hair · Hair up or hair down?** | C (1.758 s) | 15.4 s | Split screen with UP / DOWN stamps, a duel of whips cut on every half beat with a tug-of-war meter, a tie in the breakdown, the clip out on the drop with HAIR DOWN behind her. A speed gun on the spin (132.4 km/h), a fake-out on the one hair-up close-up, the vote. | C's drop (7.518 s) |
 | **pawan · Introducing Pawan Kumar** | B (12.284 s) | 16.4 s | A letterboxed 90s heroine entry with a checklist. The look and the hair tick on the beat; on B's silence it freezes on the hand fan, the bars snap off, everything but the fan dims, and the fan gets a filmi debut card. She breaks on the drop; credits roll. | B's silence and drop |
 | **cyc · Choose your character** | A (4.182 s) | 12.9 s | A fighting-game select screen of six live tiles, the cursor on every beat. Power-ups (hoops, kada, ring), the hair tornado combo, a boss HUD; the final boss (the fan) arrives in A's bass gap; K.O. on the bass return. Back to the grid: comment 1–6. | A's bass gap (14.0 s) and return (15.26 s) |
-| **onephoto4 · I asked for ONE photo** (final, the one to post) | D from its first note (`off=0.245`: beat 0 is 0.245 s in) | 26.3 s | onephoto3 tightened to the song bar by bar (bars of 2.608 s from 0.245 s): the audio now starts on the song's first note, the twelve best videos play one a beat (no two-a-beat stretch), the fan freezes on bar 6's beat-2 hit (16.56 s), camera focus brackets snap onto her face on the clap in the silence (17.54 s), the DP holds through bar 7's drum roll with a sparkle on the hoop or kada on each roll hit, and settles into the profile on the roll's last beat. Measured in the final file, every graphic sits within 32 ms of its hit (the clap 8 ms, the reply 4 ms). | Every cut on a kick, every pop on a hit |
+| onephoto4 · I asked for ONE photo (the graphic-heavy final, replaced by onephoto5) | D from its first note (`off=0.245`: beat 0 is 0.245 s in) | 26.3 s | onephoto3 tightened to the song bar by bar (bars of 2.608 s from 0.245 s): the audio now starts on the song's first note, the twelve best videos play one a beat (no two-a-beat stretch), the fan freezes on bar 6's beat-2 hit (16.56 s), camera focus brackets snap onto her face on the clap in the silence (17.54 s), the DP holds through bar 7's drum roll with a sparkle on the hoop or kada on each roll hit, and settles into the profile on the roll's last beat. Measured in the final file, every graphic sits within 32 ms of its hit (the clap 8 ms, the reply 4 ms). | Every cut on a kick, every pop on a hit |
 | onephoto3 · third cut | D at its felt 92 BPM (0.245 s) | 26.1 s | Re-cut at the owner's ask to the song's own slow groove, every cut on a kick. The ask over four posed shots (cover, hoop, side profile, profile), the Naira line landing as the bass comes in (2.9 s). The bestie's notification, then the gallery in the song's breakdown (`tools/gallery.py` with `engine/gallery3_order.json`, so thumbnail N is VIDEO N), a tap and a zoom into video 1 on the bass's return. Sixteen videos, one a beat and then two a beat as the groove fills out, under a REC counter; video 19 freezes on the fan; her laugh plays in the silence (video 27/27, "DP status: still pending"). A shutter on the drop opens on the DP, which settles into a profile circle with a sage-and-blush ring that breathes on the beat; hearts on the heavy kick (21.1 s), three comments one a beat, and her reply on the biggest bass hit (23.7 s): "@nairaflore ✨ woven gold hoops", with her new DP as its avatar. | D's bass entry, breakdown, silence (17.25–17.52 s), drop (17.849 s), kick (21.1 s) and sub hit (23.72 s) |
 | onephoto2 · second cut | D (12.633 s) | 14.3 s | The DP request in chat, with the reason: "naira wale hoops pehne hain, dikhne chahiye ✨". A notification, her gallery of the 27 real clips (`tools/gallery.py`) holding on D's silence, a snare zoom into video 1, 27 cuts from D's drop under a REC counter, the fan freeze on video 19, "DP status: still pending" on her laugh. On D's bass hit a camera shutter opens on the DP she wanted (041FCDC6 8.50 s: eyes to the lens, hoop in), which settles into a profile circle with a sage-and-blush story ring that pulses on the beat, a product tag on the hoop ("Woven Gold Hoops · @nairaflore") and "profile photo updated ✓". | D's silence (17.25–17.52 s), drop (17.849 s) and bass hit (23.717 s) |
 | onephoto · first cut | B (17.762 s) | 13.7 s | The same idea on B, ending on her laugh as the DP. Replaced at the owner's ask: the DP should be a photo where she looks her best. | B's silence and drop |
@@ -104,6 +145,13 @@ tools/remux_alt.sh
 python3 tools/encode.py $WORK <reel> frames/<reel> audio/<reel>.wav     # final (<=29 MB) + web preview
 python3 sel/best30b.py $WORK && selects.py best30b.json best30b_silent.mp4  # see ../../../.. v14 tools
 python3 tools/qcfinal.py $WORK diwali hair pawan cyc onephoto2 hoop maine best30
+# the elegant set
+python3 tools/lang.py <whisper dir> <song.wav> ...                 # which language each song is sung in
+python3 tools/lyrics.py <whisper dir> <song.wav> [lang]           # word timings of the lyrics
+python3 tools/bands.py $WORK/ffmpeg <song.wav> <beat 0> <beat>     # sub / mid / air energy per beat: the sections
+python3 tools/shotsheet.py $WORK <reel> sheet.jpg                  # first, middle and last frame of every shot
+python3 tools/mix.py $WORK onephoto5 golden intezaar
+python3 tools/qcfinal.py $WORK onephoto5 golden intezaar && python3 tools/qcsync.py $WORK onephoto5 golden intezaar
 ```
 
 ## Checked (12 Oct 2026)

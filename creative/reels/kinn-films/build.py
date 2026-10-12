@@ -13,7 +13,8 @@ SONG = {'B': dict(file=f'{V15}/an/song_full.wav', beat=0.34238, k0=23.240 - 64 *
         'C': dict(file=f'{S}/v13/work/song_c.wav', beat=0.47999, k0=0.3178),
         'A': dict(file=f'{S}/v13/work/song_a.wav', beat=0.46159, k0=0.489),
         'D': dict(file=f'{S}/v16/an/ref2.wav', beat=0.3260, k0=0.245),
-        'D2': dict(file=f'{S}/v16/an/ref2.wav', beat=0.65201, k0=0.245)}  # D at the pace it is felt: 92 BPM, kicks on these beats   # the owner's newest track (from her own edit): 184.05 BPM, gap 17.25-17.52, drop 17.849 (beat 54)
+        'D2': dict(file=f'{S}/v16/an/ref2.wav', beat=0.65201, k0=0.245),
+        'B2': dict(file=f'{V15}/an/song_full.wav', beat=2 * 0.34238, k0=23.240 - 64 * 0.34238)}  # B at the pace it is felt: 87.6 BPM  # D at the pace it is felt: 92 BPM, kicks on these beats   # the owner's newest track (from her own edit): 184.05 BPM, gap 17.25-17.52, drop 17.849 (beat 54)
 fsnap = lambda x: round(x * FPS) / FPS
 scan = {}
 def faces(clip):
@@ -58,7 +59,8 @@ class Reel:
                 if i in F: fz[s['clip']][str(i)] = [round(v) for v in F[i]]
         song = SONG[self.song]
         D = dict(name=self.name, title=self.title, fps=FPS, frames=self.frames, dur=self.dur, beat=self.beat, off=self.off, song=self.song,
-                 audio=dict(file=song['file'], start=round(self.start, 4)), shots=self.shots, fx=self.fx, cues=self.cues, faces=fz)
+                 audio=dict(file=song['file'], start=max(0.0, round(self.start, 4))), shots=self.shots, fx=self.fx, cues=self.cues, faces=fz)
+        if getattr(self, 'script', None): D['script'] = self.script            # a shared script, configured by the cues
         json.dump(D, open(f'{V15}/eng/data_{self.name}.json', 'w'))
         return D
 
@@ -346,6 +348,69 @@ r.add('flash', 8, c='#FFBDA8', a=.9, d=.35); r.add('zoomin', 8, a=1.3, d=.45); r
 for k in [2, 12, 16, 20]: r.add('flash', k, c='#FBF3EC', a=.35, d=.18)
 for k in range(9, 24, 2): r.add('punch', k, a=.05, d=.22)
 r.cues = dict(lift=r.B(8), gap=fsnap(14.0 - r.start))
+
+# =====================================================================================================================
+# 5e · I ASKED FOR ONE PHOTO, the elegant final, on track B (the moon song) from its first note, cut at B's felt pace (87.6 BPM:
+#      beat 0.68476 s, beat 0 at 1.328 s, so off=1.32768 puts the song's 0.0 at reel 0.0). The ask over two posed shots, then all
+#      27 of her videos, one a beat and two a beat through the build; the 27th is the DP clip itself, which plays into B's
+#      breakdown and freezes on B's silence (22.20 s) on the best frame in the shoot. The drop (23.24 s, beat 32) is the
+#      screenshot. Eight more stills stack up as prints on sage, one a beat, and the profile card lands on beat 44. It ends before
+#      beat 48 (34.196 s), after the beat where B's bass drops out, so the loop breathes.
+r = Reel('onephoto5', 'B2', 0, 48, 'I asked for ONE photo', off=1.32768); R[r.name] = r
+r.shot('a1', 'FB8CD2FD', (0.0,), 2, 1.00, z=[1.0, 1.03], focus='face')       # posing for the one photo
+r.shot('a2', '041FCDC6', 2, 6, 1.00, z=[1.0, 1.03], focus='face')
+VID5 = [('041FCDC6', 8.20), ('267E722A', 0.00), ('74FA1A49', 20.30), ('A352935A', 10.30), ('E3C6EA7D', 9.80), ('212E5E27', 18.70),
+        ('1AEDD2D8', 17.60), ('FB8CD2FD', 6.20), ('C64FD42F', 44.30), ('398F157B', 8.00), ('F2532C01', 45.90), ('76D95B49', 2.40),
+        ('069EEAED', 0.50), ('0C1A5F38', 1.60), ('50E69BE9', 0.90), ('D0798597', 1.50),
+        ('5627AA72', 13.85), ('E2552016', 4.85), ('2FB96BA5', 2.60), ('CF686DEA', 51.60), ('DE17C1BF', 1.50), ('84BD71C7', 40.60),
+        ('20AA749D', 0.50), ('A9E89517', 3.20), ('BD3B07AF', 2.30), ('8FC2055C', 0.40)]      # videos 1-26; 27 is the DP clip
+for i, (c, s0) in enumerate(VID5):
+    k0 = 6 + i if i < 16 else 22 + (i - 16) / 2
+    r.shot(f'v{i + 1:02d}', c, k0, k0 + (1 if i < 16 else .5), s0, z=[1.0, 1.03], focus='face')
+gap0, gap1 = fsnap(22.20 - r.start), fsnap(22.45 - r.start)
+r.shot('dp', '62379666', 27, 48, map=[[r.B(27), 4.00 - (gap0 - r.B(27))], [gap0, 4.00], [r.B(48), 4.00]], focus='face')
+STILLS5 = [('E2552016', 11.93), ('50E69BE9', 5.70), ('E3C6EA7D', 17.53), ('C64FD42F', 0.00), ('CF686DEA', 40.87), ('041FCDC6', 12.43),
+           ('0C1A5F38', 4.60), ('398F157B', 1.00)]                          # sharp frames from the DP ranking, none a montage frame
+for i, (c, s) in enumerate(STILLS5):
+    r.shot(f'c{i + 1}', c, 36 + i, 48, map=[[r.B(36 + i), s], [r.B(48), s]])
+r.add('flash', 32, c='#FBF3EC', a=.92, d=.42)                               # the screenshot
+r.cues = dict(gap=[gap0, gap1], drop=r.B(32), freeze=gap0, vid=[r.B(6), r.B(27)], fast=r.B(22), shrink=[r.B(34), r.B(35)],
+              stack=r.B(36), card=r.B(44))
+# =====================================================================================================================
+# 8 · THE FINISHING TOUCHES · track D (Punjabi) from its first note to bar 8 (21.109 s), at its felt 92 BPM (bars of 2.608 s
+#     from 0.245 s): the hoop goes in as the bass enters, the cuff slides on in the breakdown, the ring on the bass's return, the
+#     hair comes down with the drums, the look in the full groove, her eyes to the lens through the silence, the spin on the
+#     drop (17.849 s), the cover close-up through the drum roll. The opening lines are subtitled in English.
+r = Reel('golden', 'D2', 0, 32, 'The finishing touches', off=0.245); R[r.name] = r
+r.shot('g0', '069EEAED', (0.0,), 2, 0.50, z=[1.0, 1.03], focus='face')            # a close, still first frame: her hand at the choker, the cuff
+r.shot('g1', '1AEDD2D8', 2, 4, 1.20, z=[1.0, 1.03], focus='face')                 # fastening the hoop
+r.shot('g2', '74FA1A49', 4, 8, 20.00, z=[1.0, 1.03])
+r.shot('g3', '74FA1A49', 8, 12, 4.90, z=[1.0, 1.04])
+r.shot('g4', '5627AA72', 12, 16, 8.85 - 4 * 0.65201, z=[1.0, 1.03])  # the cuff at her collar, then her hand to the lens: the ring fills the frame, a wipe into the hair
+r.shot('g6', 'E3C6EA7D', 16, 20, 13.55, z=[1.0, 1.04])
+r.shot('g7', 'FB8CD2FD', 20, 22, 6.10, z=[1.0, 1.03], focus='face')
+r.shot('g8', '212E5E27', 22, 24, 18.45, z=[1.0, 1.03], focus='face')
+r.shot('g9', '041FCDC6', 24, 27, 8.00, z=[1.0, 1.05], focus='face')
+r.shot('g10', '5627AA72', 27, 29, 13.75)
+r.shot('g11', '62379666', 29, 32, 0.00, z=[1.0, 1.05], focus='face')
+r.script = 'elegant'
+r.cues = dict(silence=[fsnap(17.25 - r.start), fsnap(17.52 - r.start)], drop=r.B(27), credit=r.B(29) + .35,
+              lines=[["come, let's love like the old days.", 0.1, r.B(4) - .2], ["i've written you a thousand letters.", r.B(4) + .05, r.B(8) - .15]])
+# =====================================================================================================================
+# 9 · TERA KARAAN INTEZAAR (I wait for you) · track D from its drop hit (17.849 s) to bar 14 (36.758 s): portraits a bar each,
+#     two a bar in the middle; the hook is subtitled where it is sung (22.36 s), and the credit closes it.
+r = Reel('intezaar', 'D2', 27, 29, 'I wait for you'); R[r.name] = r
+r.shot('i1', 'C64FD42F', 0, 1, 13.00)
+r.shot('i2', '267E722A', 1, 5, 5.90, z=[1.0, 1.04])
+r.shot('i3', 'E3C6EA7D', 5, 9, 9.30, z=[1.0, 1.05], focus='face')
+r.shot('i4', '041FCDC6', 9, 13, 7.90, z=[1.0, 1.04], focus='face')
+r.shot('i5', 'C64FD42F', 13, 15, 20.80, z=[1.0, 1.03], focus='face')
+r.shot('i6', '212E5E27', 15, 17, 18.50, z=[1.0, 1.03], focus='face')
+r.shot('i7', 'FB8CD2FD', 17, 21, 10.80, z=[1.0, 1.03])
+r.shot('i8', 'A352935A', 21, 25, 9.80, z=[1.0, 1.04], focus='face')
+r.shot('i9', '76D95B49', 25, 29, 1.00, z=[1.0, 1.05], focus='face')
+r.script = 'elegant'
+r.cues = dict(credit=r.B(25) + .35, frame=True, lines=[['i wait for you.', fsnap(22.36 - r.start) - .05, fsnap(25.34 - r.start) + .2]])
 
 jobs = {}
 for r in R.values():

@@ -50,6 +50,27 @@ html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:
   radial-gradient(95% 55% at 50% 102%, rgba(255,189,168,.62), rgba(255,189,168,.14) 58%, rgba(251,243,236,0) 78%), var(--ivory); }
 #end .btn { position:absolute; background:var(--deep); color:var(--ivory); font-family:Jost; font-weight:500; letter-spacing:.2em; text-align:center; }
 #measure { position:absolute; left:0; top:0; visibility:hidden; white-space:nowrap; }
+/* price line, as the product page shows it: the price, the MRP struck through, the saving */
+.prow { display:flex; align-items:baseline; gap:16px; white-space:nowrap; }
+.prow .p { font-family:CG; font-style:italic; font-weight:500; color:var(--deep); font-feature-settings:"lnum" 1; line-height:1; }
+.prow .m { font-family:Jost; font-weight:400; color:rgba(80,114,106,.6); text-decoration:line-through; text-decoration-thickness:2px; }
+.prow .o { font-family:Jost; font-weight:600; letter-spacing:.12em; color:var(--deep); background:var(--blush); padding:3px 10px 3px 12px; }
+.tag .pw { position:absolute; left:28px; top:66px; }
+.tag .u { position:absolute; left:30px; top:158px; font-family:CG; font-style:italic; font-weight:500; font-size:32px; color:var(--deep); }
+/* posts: Instagram's own "background" text style, per-line boxes, in the brand's ivory and blush */
+.nc { position:absolute; left:40px; width:1000px; text-align:center; will-change:transform,opacity; }
+.nc span { display:inline; font-family:Jost, 'Noto Color Emoji'; font-weight:500; color:var(--ink); background:var(--ivory); line-height:1.46;
+      padding:.06em .36em .1em; border-radius:.26em; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+.nc.bl span { background:var(--blush); }
+/* posts: chat bubbles (Mummy on the left in ivory, me on the right in blush) */
+.bub { position:absolute; max-width:800px; will-change:transform,opacity; }
+.bub .who { display:block; font-family:Jost, 'Noto Color Emoji'; font-weight:600; font-size:27px; letter-spacing:.03em; color:var(--deep); margin:0 0 6px; text-align:left; }
+.bub .msg { display:inline-block; text-align:left; font-family:Jost, 'Noto Color Emoji'; font-weight:500; font-size:45px; line-height:1.24; color:var(--ink); background:var(--ivory);
+      padding:22px 34px 24px; border-radius:40px 40px 40px 10px; box-shadow:0 12px 28px rgba(26,22,20,.32); }
+.bub.me { text-align:right; }
+.bub.me .msg { background:var(--blush); border-radius:40px 40px 10px 40px; }
+.hnd { position:absolute; left:0; width:1080px; text-align:center; font-family:Jost; font-weight:500; font-size:24px; letter-spacing:.12em; color:var(--ivory);
+      filter:drop-shadow(0 1px 4px rgba(26,22,20,.75)); }
 </style></head>
 <body><div id="stage">
   <div id="vid"></div>
@@ -57,9 +78,9 @@ html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:
   <div id="fg"></div>
   <svg id="ov" viewBox="0 0 1080 1920"></svg>
   <div id="ui"></div>
+  <div id="end"></div>
   <div id="flash"></div>
   <svg id="iris" class="abs" width="1080" height="1920"></svg>
-  <div id="end"></div>
 </div>
 <span id="measure"></span>
 <script>
@@ -222,7 +243,12 @@ function mkBug(w = 200, x = 64, y = 272, letter = '#6E918A') { const d = logoDiv
 function drawBug(B, t, extra = 1) { B.d.style.opacity = (duck(B.box, t) * extra).toFixed(3); }
 
 // ---------- components ----------
-function mkTag(x, y, parent = $('ui')) { return el('tag', `<div class="nm">${D.product.name}</div><div class="pr">${D.product.price}</div>`, parent, { left: x + 'px', top: y + 'px' }); }
+// product tag: the name and the price line, and the address where a card has to carry it
+const priceRow = (p = 76, m = 30, o = 22) => `<div class="prow"><span class="p" style="font-size:${p}px">${D.product.price}</span><span class="m" style="font-size:${m}px">${D.product.mrp}</span><span class="o" style="font-size:${o}px">${D.product.off}% OFF</span></div>`;
+function mkTag(x, y, parent = $('ui'), url = false) {
+  return el('tag', `<div class="nm">${D.product.name}</div><div class="pw">${priceRow()}</div>${url ? '<div class="u">nairaflore.com</div>' : ''}`, parent,
+    { left: x + 'px', top: y + 'px', width: '520px', height: (url ? 212 : 176) + 'px' });
+}
 function drawTagAt(e, t, t0, t1, from = 'up') {
   const on = t >= t0 && t < t1; show(e, on); if (!on) return 0;
   const p = E.out5(clamp((t - t0) / .55)), o = P(t, t1 - .25, .25, 'io');
@@ -305,37 +331,46 @@ function drawCard(e, t, t0, t1) {
   const p = E.out5(clamp((t - t0) / .5)), o = P(t, t1 - .2, .2, 'io');
   e.style.opacity = (clamp((t - t0) / .18) * (1 - o)).toFixed(3); e.style.transform = `translateY(${f1((1 - p) * 60)}px) scale(${lerp(.96, 1, p).toFixed(4)})`;
 }
-// shop card (ads): logo, the hoops themselves (a light runs across the gold), name, price, address
+// shop card (ads): logo, the hoops (a light runs across the gold), name, the price line, the offer, the address.
+// The moon ad sets the hoops on a blush moon.
 const END = $('end');
-function mkEnd() {
-  const lg = logoDiv(560, 260, 318, { parent: END }); const rule = el('', '', END, { position: 'absolute', left: '480px', top: '480px', width: '120px', height: '2px', background: '#FFBDA8' });
-  const pw = 640, ph = pw * D.product.h / D.product.w; const sh = el('', '', END, { position: 'absolute', left: (540 - 300) + 'px', top: (548 + ph - 34) + 'px', width: '600px', height: '60px', borderRadius: '50%',
+function mkEnd(moon = false) {
+  const lg = logoDiv(520, 280, 300, { parent: END }); const rule = el('', '', END, { position: 'absolute', left: '480px', top: '440px', width: '120px', height: '2px', background: '#FFBDA8' });
+  const disc = moon ? el('', '', END, { position: 'absolute', left: '240px', top: '400px', width: '600px', height: '600px', borderRadius: '50%',
+    background: 'radial-gradient(circle at 38% 34%, #FFE3D8 0%, #FFCDBA 38%, #FFBDA8 70%, #F6AE97 100%)', boxShadow: '0 0 80px rgba(255,189,168,.5)' }) : null;
+  const pw = 600, ph = pw * D.product.h / D.product.w, top = 476;
+  const sh = el('', '', END, { position: 'absolute', left: '255px', top: f1(top + ph - 30) + 'px', width: '570px', height: '56px', borderRadius: '50%',
     background: 'radial-gradient(closest-side, rgba(80,114,106,.32), rgba(80,114,106,0))' });
-  const wrap = el('', '', END, { position: 'absolute', left: (540 - pw / 2) + 'px', top: '540px', width: pw + 'px', height: ph + 'px' });
-  const pr = document.createElement('img'); pr.src = D.product.img; Object.assign(pr.style, { position: 'absolute', left: 0, top: 0, width: pw + 'px', height: ph + 'px', filter: 'drop-shadow(0 18px 22px rgba(26,22,20,.22))' }); wrap.appendChild(pr);
+  const wrap = el('', '', END, { position: 'absolute', left: (540 - pw / 2) + 'px', top: top + 'px', width: pw + 'px', height: f1(ph) + 'px' });
+  const pr = document.createElement('img'); pr.src = D.product.img; Object.assign(pr.style, { position: 'absolute', left: 0, top: 0, width: pw + 'px', height: f1(ph) + 'px', filter: 'drop-shadow(0 18px 22px rgba(26,22,20,.22))' }); wrap.appendChild(pr);
   const mask = `url(${D.product.img})`;
-  const gl = el('', '', wrap, { position: 'absolute', left: 0, top: 0, width: pw + 'px', height: ph + 'px', mixBlendMode: 'screen', backgroundRepeat: 'no-repeat',
+  const gl = el('', '', wrap, { position: 'absolute', left: 0, top: 0, width: pw + 'px', height: f1(ph) + 'px', mixBlendMode: 'screen', backgroundRepeat: 'no-repeat',
     background: 'linear-gradient(105deg, rgba(255,246,226,0) 0%, rgba(255,244,214,0) 45%, rgba(255,244,214,.62) 50%, rgba(255,244,214,0) 55%, rgba(255,246,226,0) 100%)', backgroundSize: '1920px 100%',
     webkitMaskImage: mask, maskImage: mask, webkitMaskSize: '100% 100%', maskSize: '100% 100%' });
-  const nm = el('', D.product.name, END, { position: 'absolute', left: 0, width: '1080px', top: '1044px', textAlign: 'center', fontFamily: 'Jost', fontWeight: 500, fontSize: '30px', letterSpacing: '.24em', color: '#50726A' });
-  const price = el('', D.product.price, END, { position: 'absolute', left: 0, width: '1080px', top: '1078px', textAlign: 'center', fontFamily: 'CG', fontStyle: 'italic', fontWeight: 500, fontSize: '104px', lineHeight: 1, color: '#50726A', fontFeatureSettings: '"lnum" 1' });
-  const btn = el('btn', 'SHOP NOW · NAIRAFLORE.COM', END, { left: '230px', top: '1190px', width: '620px', height: '62px', lineHeight: '62px', fontSize: '24px' });
-  return { lg, rule, wrap, gl, sh, nm, price, btn, ph };
+  const line = (html, y, st) => el('', html, END, Object.assign({ position: 'absolute', left: 0, width: '1080px', top: y + 'px', textAlign: 'center', fontFamily: 'Jost', fontWeight: 500, color: '#50726A' }, st));
+  const nm = line(D.product.name, 958, { fontSize: '28px', letterSpacing: '.24em' });
+  const prc = el('', priceRow(96, 36, 26), END, { position: 'absolute', left: 0, width: '1080px', top: '996px', display: 'flex', justifyContent: 'center' });
+  const of = line('ANY 2 · 10% OFF &nbsp;&nbsp;&nbsp; ANY 3 · 20% OFF', 1108, { fontSize: '24px', letterSpacing: '.16em' });
+  const dl = line('FREE DELIVERY · COD AVAILABLE', 1146, { fontSize: '19px', letterSpacing: '.22em', opacity: .85 });
+  const btn = el('btn', 'SHOP NOW · NAIRAFLORE.COM', END, { left: '230px', top: '1182px', width: '620px', height: '62px', lineHeight: '62px', fontSize: '24px' });
+  return { lg, rule, disc, wrap, gl, sh, nm, prc, of, dl, btn, ph };
 }
 let EN = null;
-function drawEnd(t, t0) {
+// k speeds the card up for short end bars (the moon ad has two seconds, the cover ad two and a half)
+function drawEnd(t, t0, wipeIn = true, k = 1) {
   const on = t >= t0; END.style.display = on ? 'block' : 'none'; if (!on) return;
-  const wipe = E.io(clamp((t - t0) / .45));
-  END.style.clipPath = `inset(${f1((1 - wipe) * 100)}% 0 0 0)`;
-  const it = (e, d, dy = 26) => { const p = E.out5(clamp((t - t0 - d) / .55)); e.style.opacity = clamp((t - t0 - d) / .25).toFixed(3); e.style.transform = `translateY(${f1((1 - p) * dy)}px)`; };
-  it(EN.lg, .2); EN.rule.style.transform = `scaleX(${E.io(clamp((t - t0 - .45) / .4)).toFixed(3)})`;
-  const d = t - t0 - .3, w = 2 * Math.PI * 1.6, zt = .45, off = d > 0 ? 160 * Math.exp(-zt * w * d) * Math.cos(w * d * Math.sqrt(1 - zt * zt)) : 160;
+  END.style.clipPath = wipeIn ? `inset(${f1((1 - E.io(clamp((t - t0) / .45))) * 100)}% 0 0 0)` : 'none';
+  const T = (t - t0) * k;
+  const it = (e, d, dy = 26) => { const p = E.out5(clamp((T - d) / .55)); e.style.opacity = clamp((T - d) / .25).toFixed(3); e.style.transform = `translateY(${f1((1 - p) * dy)}px)`; };
+  it(EN.lg, .2); EN.rule.style.transform = `scaleX(${E.io(clamp((T - .45) / .4)).toFixed(3)})`;
+  if (EN.disc) { const q = E.back(clamp((T - .1) / .5)); EN.disc.style.opacity = clamp((T - .1) / .2).toFixed(3); EN.disc.style.transform = `scale(${(q * (1 + .015 * Math.sin(T * 1.6))).toFixed(4)})`; }
+  const d = T - .3, w = 2 * Math.PI * 1.6, zt = .45, off = d > 0 ? 160 * Math.exp(-zt * w * d) * Math.cos(w * d * Math.sqrt(1 - zt * zt)) : 160;
   EN.wrap.style.opacity = clamp(d / .1).toFixed(3); const bob = d > 1.2 ? Math.sin((d - 1.2) * 2.2) * 4 : 0;
   EN.wrap.style.transform = `translateY(${f1(off + bob)}px)`; EN.sh.style.opacity = (clamp(1 - Math.abs(off) / 160) * clamp(d / .2)).toFixed(3);
   // the light crosses the gold once the hoops have settled, then again before the loop
   const sweep = q => q > 0 && q < 1 ? q : null, s1 = sweep((d - 1.15) / .8), s2 = sweep((d - 2.7) / .8), s = s1 ?? s2;
   EN.gl.style.display = s == null ? 'none' : ''; if (s != null) EN.gl.style.backgroundPosition = `${f1(-1100 + 920 * E.io(s))}px 0`;   // band centre runs -140 -> 780 px
-  it(EN.nm, .7); it(EN.price, .82); it(EN.btn, 1.0, 18);
+  it(EN.nm, .6); it(EN.prc, .72); it(EN.of, .86); it(EN.dl, .94); it(EN.btn, 1.02, 18);
 }
 // shutter (post 1): an iris that closes on the beat and opens onto the cover
 const IRIS = $('iris');
@@ -357,159 +392,73 @@ function drawShutter(t, ts) {
 
 // ================= versions =================
 const R = {};
-// ---------- POST 1 · The Cover ----------
-R.post1 = () => {
+// the 46%-off sticker: a blush disc, the saving, and the MRP struck through under it
+function mkSticker(x, y, d = 176) {
+  return el('sticker', `<div style="font-family:CG;font-style:italic;font-weight:600;font-size:${Math.round(d * .38)}px;line-height:1;font-feature-settings:'lnum' 1">${D.product.off}%</div>
+    <div style="font-family:Jost;font-weight:600;font-size:${Math.round(d * .12)}px;letter-spacing:.22em;margin-top:2px;padding-left:.22em">OFF</div>
+    <div style="font-family:Jost;font-weight:400;font-size:${Math.round(d * .1)}px;margin-top:5px;text-decoration:line-through;opacity:.75">${D.product.mrp}</div>`,
+    $('ui'), { left: x + 'px', top: y + 'px', width: d + 'px', height: d + 'px' });
+}
+function drawSticker(e, t, t0, t1, rot = -8) {
+  const on = t >= t0 && t < t1; e.style.display = on ? 'flex' : 'none'; if (!on) return;
+  const first = t0 <= 0, s = first ? 1 : E.back(clamp((t - t0) / .4)), o = P(t, t1 - .18, .18, 'io');
+  e.style.opacity = ((first ? 1 : clamp((t - t0) / .08)) * (1 - o)).toFixed(3);
+  e.style.transform = `rotate(${f1(rot + 2.5 * Math.sin(t * Math.PI / D.beat))}deg) scale(${(s * (1 - .25 * o)).toFixed(3)})`;
+}
+// posts: native-looking captions and chat bubbles; they snap in with a little overshoot and leave fast
+function mkNC(html, y, size = 52, blush = false) { return el('nc' + (blush ? ' bl' : ''), `<span>${html}</span>`, $('ui'), { top: y + 'px', fontSize: size + 'px' }); }
+function mkBubble(who, msg, me, y) {
+  const b = el('bub' + (me ? ' me' : ''), `<div class="msg"><span class="who">${who}</span>${msg}</div>`, $('ui'), me ? { top: y + 'px', right: '150px' } : { top: y + 'px', left: '60px' });
+  b.style.transformOrigin = me ? '100% 100%' : '0% 100%'; return b;
+}
+function pop(e, t, t0, t1, from = .82) {
+  const on = t >= t0 && t < t1; show(e, on); if (!on) return;
+  const first = t0 <= 0, s = first ? 1 : lerp(from, 1, E.back(clamp((t - t0) / .28))), o = P(t, t1 - .12, .12, 'lin');
+  e.style.opacity = ((first ? 1 : clamp((t - t0) / .06)) * (1 - o)).toFixed(3); e.style.transform = `scale(${s.toFixed(4)})`;
+}
+const flashAt = (t, t0, k = .85) => { $('flash').style.opacity = (t >= t0 && t < t0 + .2 ? k * (1 - (t - t0) / .2) : 0).toFixed(3); };
+
+// ---------- AD · The Cover ----------
+R.ad_cover = () => {
   const mast = logoDiv(780, 150, 262, { parent: $('behind'), letter: '#5E8279' });          // the masthead, behind her head
   const issue = mkText('NO. 01 · THE FESTIVE ISSUE · OCTOBER 2026', 'kick', 0, 236, 19, { center: true });
-  const L = {
-    kick1: mkText('THE BRAIDED ISSUE', 'kick print', 70, 548, 24),
-    tex: mkText('25mm of<br>texture.', 'cg print', 66, 588, 76),
-    wp: mkText('waterproof.', 'cg print', 68, 790, 52), tf: mkText('tarnish-free.', 'cg print', 68, 850, 52), fp: mkText('festive-proof.', 'cg print', 68, 910, 52),
-    gold: mkText('18K GOLD-TONE · SURGICAL STEEL', 'kick print', 70, 1000, 20),
-    next: mkText('NEXT ISSUE: THE BANGLE', 'kick print', 70, 1176, 20),
-  };
-  const st = el('sticker', `<div style="font-family:CG;font-style:italic;font-weight:600;font-size:58px;line-height:1">${D.product.price}</div><div style="font-family:Jost;font-weight:500;font-size:16px;letter-spacing:.2em;margin-top:6px">THE HOOPS</div>`, $('ui'), { left: '836px', top: '1010px', width: '172px', height: '172px' });
-  const bar = el('', '', $('ui'), { position: 'absolute', left: '70px', top: '1206px', width: '150px', height: '34px', background: 'repeating-linear-gradient(90deg, #50726A 0 3px, transparent 3px 5px, #50726A 5px 6px, transparent 6px 9px, #50726A 9px 13px, transparent 13px 15px)', opacity: .9 });
   const border = el('frame', '', $('ui'), { position: 'absolute', left: '34px', top: '218px', right: '34px', bottom: '640px', border: '2px solid rgba(251,243,236,.75)', pointerEvents: 'none' });
-  const head = mkText('let it down.', 'cg', 0, 1040, 140, { center: true }), stay = mkText('(the hoops stay.)', 'cg', 0, 1196, 56, { center: true });
-  const loupe = mkLoupe(112); const tag = mkTag(590, 1040);
-  const credit = mkText('ON HER: WOVEN GOLD HOOPS · NAIRAFLORE.COM', 'kick', 0, 1232, 19, { center: true });
-  const rot = [-7, 5, -2], pos = [[90, 470], [600, 560], [330, 700]];
-  const photos = C.photos.map((p, i) => { const e = el('photo', `<div class="ph"><img src="${frameSrc(p.f)}"></div><div class="cap"><span>NAIRA · NO. 01</span><span>0${i + 1}</span></div>`, $('ui'), { left: pos[i][0] + 'px', top: pos[i][1] + 'px' });
-    const fc = face(p.f), s = 356 / (fc[2] * 2.1), cx = fc[0] + fc[2] / 2, cy = fc[1] + fc[3] * .7;
-    e.querySelector('.ph img').style.transform = `translate(${f1(178 - cx * s)}px, ${f1(215 - cy * s)}px) scale(${s.toFixed(4)})`; return { ...p, e, r: rot[i] }; });
-  const order = C.lines.map(l => l.id), when = Object.fromEntries(C.lines.map(l => [l.id, l.t]));
+  const kick = mkText('THE HOOPS OF THE SEASON', 'kick print', 70, 552, 22);
+  const head = mkText(`the ${D.product.price}<br>hoops.`, 'cg print', 64, 590, 96);
+  const st = mkSticker(836, 1004, 176);
+  const words = { wp: 'waterproof.', tf: 'tarnish-free.', gold: '18K gold-tone.', steel: 'surgical steel.' };
+  const lines = C.lines.map((l, i) => ({ ...l, e: mkText(words[l.id], 'cg print', 68, 790 + i * 60, 52) }));
+  const loupe = mkLoupe(112); const lab = mkText('25mm · braided · no stones', 'cg', 316, 1120, 40);
+  const let_ = mkText('let it down.', 'cg', 0, 1040, 140, { center: true }), stay = mkText('(the hoops stay.)', 'cg', 0, 1196, 56, { center: true });
+  const tag = mkTag(510, 1030); EN = mkEnd();
   return t => {
-    const coverHold = (t < C.cover_on[0][1]) || t >= C.cover_on[1][0];
-    const clearP = E.io(clamp((t - C.clear) / .6));
-    const lineDraw = (e, id, i) => {
-      const t0 = when[id]; let o = 0, dy = 0, dx = 0;
-      const exiting = t >= C.cover_exit && t < C.cover_exit + .5;
-      if (coverHold) o = 1;
-      else if (exiting) { const q = E.io(clamp((t - C.cover_exit - i * .04) / .3)); o = 1 - q; dx = -90 * q; }
-      else if (t >= t0 && t < C.clear + .7) { const p = E.out5(clamp((t - t0) / .5)); o = clamp((t - t0) / .2) * (1 - clearP); dx = (1 - p) * -40; dy = -60 * clearP; }
-      e.style.display = o > 0 ? '' : 'none'; e.style.opacity = o.toFixed(3); e.style.transform = `translate(${f1(dx)}px, ${f1(dy)}px)`;
-      e.style.clipPath = (coverHold || exiting) ? 'none' : `inset(0 ${f1(100 - 100 * E.out(clamp((t - t0) / .45)))}% 0 0)`;
-    };
-    order.forEach((id, i) => { if (id !== 'sticker') lineDraw(L[id], id, i); });
-    lineDraw(bar, 'next', 6);
-    { const t0 = when.sticker; let o = 0, s = 1, r = -8;
-      if (coverHold) o = 1; else if (t >= C.cover_exit && t < C.cover_exit + .5) { const q = E.io(clamp((t - C.cover_exit) / .3)); o = 1 - q; s = 1 - .3 * q; }
-      else if (t >= t0 && t < C.clear + .7) { o = clamp((t - t0) / .12) * (1 - clearP); s = E.back(clamp((t - t0) / .45)); r = lerp(-30, -8, E.out(clamp((t - t0) / .5))); }
-      st.style.display = o > 0 ? 'flex' : 'none'; st.style.opacity = o.toFixed(3); st.style.transform = `rotate(${f1(r)}deg) scale(${s.toFixed(3)})`; }
-    // the masthead swells behind her as the hair comes down, and settles back for the cover
-    const sw = coverHold ? 0 : E.io(clamp((t - C.lift + .6) / 1.2)) * (1 - E.io(clamp((t - C.photos[0].t + .4) / .8)));
-    mast.style.transformOrigin = '50% 30%'; mast.style.transform = `scale(${(1 + .2 * sw).toFixed(4)}) translateY(${f1(-20 * sw)}px)`;
-    border.style.opacity = (coverHold ? 1 : .55 * (1 - E.io(clamp((t - C.lift) / .5)))).toFixed(3);
-    issue.style.opacity = (coverHold || t < C.lift ? 1 : 1 - E.io(clamp((t - C.lift) / .4))).toFixed(3);
-    rise(head, t, C.lift, C.loupe[0] - .1, 30, .3, .3); head.style.filter = `blur(${f1((1 - clamp((t - C.lift) / .22)) * 6)}px) drop-shadow(0 2px 12px rgba(26,22,20,.55))`;
-    rise(stay, t, C.stay, C.loupe[0] - .1, 16);
-    drawLoupe(loupe, t, C.loupe[0], C.loupe[1], 185, 1088, C.leader);
-    drawTagAt(tag, t, C.tag[0], C.tag[1]); rise(credit, t, C.credit, C.tag[1], 10);
-    // contact sheet: three frames of her drop onto the screen on the half-beats before the shutter
-    let fl = 0;
-    photos.forEach((p, i) => { const d = t - p.t, on = d >= 0 && t < C.shutter + .13; show(p.e, on); if (!on) return;
-      const k = E.out5(clamp(d / .3)); p.e.style.opacity = clamp(d / .06).toFixed(3);
-      p.e.style.transform = `rotate(${f1(p.r * k + (1 - k) * (p.r * 3))}deg) scale(${lerp(1.35, 1, k).toFixed(3)})`;
-      if (d < .1) fl = Math.max(fl, .55 * (1 - d / .1)); });
-    if (!drawShutter(t, C.shutter)) $('flash').style.opacity = fl.toFixed(3);
+    // the cover is all there in frame 1; its lines slide off as the first bar turns
+    [issue, kick, head].forEach((e, i) => { const q = E.io(clamp((t - (C.cover[1] - .34) - i * .04) / .3)); show(e, q < 1);
+      e.style.opacity = (1 - q).toFixed(3); e.style.transform = `translateX(${f1(-90 * q)}px)`; });
+    border.style.opacity = (.85 * (1 - E.io(clamp((t - (C.cover[1] - .34)) / .3)))).toFixed(3);
+    drawSticker(st, t, C.sticker[0], C.sticker[1]);
+    // the benefits land on the beats while she reaches for her hair, and clear just before the lift
+    lines.forEach(l => { const on = t >= l.t && t < C.lift - .02; show(l.e, on); if (!on) return;
+      const p = E.out5(clamp((t - l.t) / .45)), o = P(t, C.lift - .28, .26, 'io');
+      l.e.style.opacity = (clamp((t - l.t) / .15) * (1 - o)).toFixed(3); l.e.style.transform = `translateX(${f1((1 - p) * -40)}px)`;
+      l.e.style.clipPath = `inset(0 ${f1(100 - 100 * E.out(clamp((t - l.t) / .4)))}% 0 0)`; });
+    // the masthead swells behind her as the hair comes down
+    const sw = E.io(clamp((t - C.lift + .5) / 1.0)) * (1 - E.io(clamp((t - C.tag[0] + .2) / .8)));
+    mast.style.transformOrigin = '50% 30%'; mast.style.transform = `scale(${(1 + .18 * sw).toFixed(4)}) translateY(${f1(-18 * sw)}px)`;
+    drawLoupe(loupe, t, C.loupe[0], C.loupe[1], 185, 1088, C.leader); rise(lab, t, C.loupe[0] + .25, C.loupe[1], 10, .3, .25);
+    rise(let_, t, C.lift, C.tag[0] - .05, 30, .3, .25); let_.style.filter = `blur(${f1((1 - clamp((t - C.lift) / .22)) * 6)}px) drop-shadow(0 2px 12px rgba(26,22,20,.55))`;
+    rise(stay, t, C.stay, C.tag[0] - .05, 16);
+    drawTagAt(tag, t, C.tag[0], C.tag[1] + .2);
+    // a shutter closes on the last bar and opens on the back cover
+    drawShutter(t, C.shutter); drawEnd(t, C.end, false, 1.3);
   };
 };
-// ---------- POST 2 · Two Little Moons ----------
-R.post2 = () => {
-  const bug = mkBug();
-  const moonDisc = el('', '', $('behind'), { position: 'absolute', width: '640px', height: '640px', borderRadius: '50%',
-    background: 'radial-gradient(circle at 38% 34%, #FFE3D8 0%, #FFCDBA 38%, #FFBDA8 70%, #F6AE97 100%)', boxShadow: '0 0 80px rgba(255,189,168,.55)' });
-  const halo = el('', '', $('behind'), { position: 'absolute', width: '780px', height: '780px', borderRadius: '50%', border: '2px solid rgba(251,243,236,.8)' });
-  const g = sv('g', { style: 'filter:drop-shadow(0 1px 5px rgba(26,22,20,.55))' }, OV);
-  const orb = sv('ellipse', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 4, pathLength: 100, 'stroke-dasharray': '100 100' }, g);
-  const orb2 = sv('ellipse', { fill: 'none', stroke: '#FBF3EC', 'stroke-width': 1.5, 'stroke-dasharray': '2 9', opacity: .9 }, g);
-  const moon = sv('circle', { r: 8, fill: '#FBF3EC' }, g);
-  const r = rng(5); const stars = [...Array(9)].map(() => ({ e: sv('path', { d: STAR, fill: r() < .5 ? '#FBF3EC' : '#FFBDA8' }, g), x: r(), y: r(), s: 12 + r() * 16, ph: r() * 6 }));
-  const moons = mkText('two little moons.', 'cg', 0, 1062, 96, { center: true });
-  const kick = mkText('BRAIDED · 25MM · NO STONES', 'kick', 0, 1196, 24, { center: true });
-  const golden = mkText('golden hour,', 'cg', 0, 1052, 88, { center: true }), earring = mkText('but make it an earring.', 'cg', 0, 1150, 62, { center: true });
-  const tag = el('card', `<div style="position:absolute;left:30px;top:26px;font-family:Jost;font-weight:500;font-size:24px;letter-spacing:.16em;color:#50726A">${D.product.name}</div>
-    <div style="position:absolute;left:28px;top:60px;font-family:CG;font-style:italic;font-weight:500;font-size:68px;line-height:1;color:#50726A">${D.product.price}</div>
-    <div class="u" style="position:absolute;left:30px;top:136px;font-family:CG;font-style:italic;font-weight:500;font-size:34px;color:#50726A">nairaflore.com</div>`, $('ui'), { left: '70px', top: '300px', width: '390px', height: '196px' });
-  const url = tag.querySelector('.u');
-  const up = mkText('hair up,', 'cg', 0, 1052, 96, { center: true }), down = mkText('hair down.', 'cg', 0, 1150, 96, { center: true });
-  const burst = [0, 1, 2].map(i => sv('circle', { fill: 'none', stroke: i === 1 ? '#FBF3EC' : '#FFBDA8', 'stroke-width': i === 1 ? 2 : 4 }, OV));
-  // the moon follows her head through the SOURCE frames (±8), so it glides and the ring edit's loop point matches
-  const headAt = f => { let x = 0, y = 0, n = 0; for (let k = -8; k <= 8; k++) { const fc = face(cf(f + k)); x += fc[0] + fc[2] / 2; y += fc[1] + fc[3] * .35; n++; } return [x / n, y / n]; };
-  return t => {
-    drawBug(bug, t, 1 - win(t, C.tag[0] - .25, C.tag[1] + .25, .25, .25));
-    const pn = CUR.main, [fx, fy] = headAt(pn.f);
-    const mx = fx + 150, my = fy - 120;
-    const breathe = 1 + .02 * Math.sin(t * 1.3) + .06 * Math.exp(-Math.max(0, t - C.hit) * 4) * (t >= C.hit ? 1 : 0);
-    Object.assign(moonDisc.style, { left: f1(mx - 320) + 'px', top: f1(my - 320) + 'px', transform: `scale(${breathe.toFixed(4)})` });
-    Object.assign(halo.style, { left: f1(mx - 390) + 'px', top: f1(my - 390) + 'px', transform: `scale(${(breathe * (1 + .04 * Math.sin(t * .9))).toFixed(4)})`, opacity: .85 });
-    const h = hoopAt(pn.f), oOn = t >= C.orbit[0] && t < C.orbit[1] && h;
-    const sw = C.sparkles.find(w => t >= w[0] && t < w[1]);                // stars come back between the card and 'hair up'
-    g.style.display = sw ? '' : 'none';
-    if (oOn) {
-      const [hx, hy] = toS(pn, h[0], h[1]), rr = h[2] / 2 * pn.z, rx = rr * 2.7, ry = rr * 1.6, ang = -18;
-      for (const e of [orb, orb2]) { e.setAttribute('cx', f1(hx)); e.setAttribute('cy', f1(hy)); e.setAttribute('rx', f1(rx)); e.setAttribute('ry', f1(ry)); e.setAttribute('transform', `rotate(${ang} ${f1(hx)} ${f1(hy)})`); }
-      const dr = E.io(clamp((t - C.orbit[0]) / .55)), fo = (1 - P(t, C.orbit[1] - .3, .3, 'io')) * h[3];
-      orb.setAttribute('stroke-dashoffset', f1(100 - 100 * dr)); orb.setAttribute('opacity', fo.toFixed(3)); orb2.setAttribute('opacity', (.85 * fo * dr).toFixed(3));
-      const a = (t - C.orbit[0]) * 3.2, c = Math.cos(ang * Math.PI / 180), s = Math.sin(ang * Math.PI / 180), ex = Math.cos(a) * rx, ey = Math.sin(a) * ry;
-      moon.setAttribute('cx', f1(hx + ex * c - ey * s)); moon.setAttribute('cy', f1(hy + ex * s + ey * c)); moon.setAttribute('opacity', (fo * dr).toFixed(3));
-      moon.setAttribute('r', (Math.sin(a) > 0 ? 8 : 6).toString());
-    } else { orb.setAttribute('opacity', 0); orb2.setAttribute('opacity', 0); moon.setAttribute('opacity', 0); }
-    const fbs = faceBoxes(t, true)[0];
-    stars.forEach((st, i) => {   // stars twinkle on the beat, in the space around her head
-      let x = 80 + st.x * 920, y = 330 + st.y * 680;
-      if (x > fbs[0] - 40 && x < fbs[2] + 40 && y > fbs[1] - 40 && y < fbs[3] + 40) x = x < (fbs[0] + fbs[2]) / 2 ? fbs[0] - 60 - st.x * 50 : fbs[2] + 60 + st.x * 50;
-      const beat = D.beat, ph = ((t + st.ph) % (beat * 2)) / (beat * 2), k = Math.max(0, Math.sin(ph * Math.PI)) ** 3;
-      const on = sw ? win(t, sw[0] + i * .3, sw[1], .3, .4) : 0;
-      st.e.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(t * 20 + i * 30)}) scale(${(st.s * k * on).toFixed(2)})`);
-    });
-    rise(moons, t, C.moons[0], C.moons[1], 24, .5, .35); rise(kick, t, C.kick[0], C.kick[1], 14, .4, .35);
-    rise(golden, t, C.golden[0], C.golden[1], 22, .5); rise(earring, t, C.earring[0], C.earring[1], 18, .5);
-    drawTagAt(tag, t, C.tag[0], C.tag[1], 'left'); url.style.opacity = clamp((t - C.url[0]) / .4).toFixed(3);
-    { const d = t - C.iris[0], hh = hoopAt(CUR.main.f) || [390, 786];   // the cut: a ring bursts off the new shot's hoop
-      burst.forEach((c, i) => { const q = d - i * .07, on = q >= 0 && q < .7; c.style.display = on ? '' : 'none'; if (!on) return;
-        const [hx, hy] = toS(CUR.main, hh[0], hh[1]); c.setAttribute('cx', f1(hx)); c.setAttribute('cy', f1(hy));
-        c.setAttribute('r', f1(30 + 520 * E.out(q / .7))); c.setAttribute('opacity', (1 - E.io(q / .7)).toFixed(3)); }); }
-    const endFade = 1 - P(t, D.dur - .14, .14, 'lin');
-    rise(up, t, C.up[0], C.up[1] + 1, 22, .45); up.style.opacity = (+up.style.opacity * endFade).toFixed(3);
-    rise(down, t, C.down[0], C.down[1] + 1, 22, .3); down.style.opacity = (+down.style.opacity * endFade).toFixed(3);
-  };
-};
-// ---------- POST 3 · Festive Mode ----------
-R.post3 = () => {
-  const bug = mkBug();
-  const kick = mkText('THE FESTIVE EDIT', 'kick', 68, 326, 19); const kbox = [56, 320, 380, 352];
-  const behind = C.behind.map(b => { const e = el('big', b.w, $('behind'), { top: '0px' }); fitLater(e, 1010, 330); return { ...b, e }; });
-  const words = C.words.map(w => ({ ...w, e: mkText(w.w, 'cg', 0, w.big ? 1030 : w.small ? 1120 : 1060, w.big ? 168 : w.small ? 70 : 120, { center: true }) }));
-  const dots = C.dots.map((tt, i) => ({ t: tt, e: el('', '', $('ui'), { position: 'absolute', left: (510 + i * 30) + 'px', top: '1216px', width: '14px', height: '14px', borderRadius: '50%', border: '2px solid #FBF3EC', boxSizing: 'border-box' }) }));
-  const mq = mkMarquee('WOVEN GOLD HOOPS  ·  ₹1,499  ·  WATERPROOF  ·  TARNISH-FREE', 720, -7, $('behind'));
-  const tag = mkTag(70, 1020); const g = sv('g', { style: 'filter:drop-shadow(0 1px 4px rgba(26,22,20,.6))' }, OV);
-  const ln = sv('polyline', { fill: 'none', stroke: '#FBF3EC', 'stroke-width': 3 }, g), ring = sv('circle', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 4 }, g);
-  const sign = el('card', '', $('ui'), { left: '170px', top: '1000px', width: '740px', height: '240px' });
-  logoDiv(420, 160, 44, { parent: sign });
-  el('', 'WOVEN GOLD HOOPS · NAIRAFLORE.COM', sign, { position: 'absolute', left: 0, width: '740px', top: '150px', textAlign: 'center', fontFamily: 'Jost', fontWeight: 500, fontSize: '20px', letterSpacing: '.2em', color: '#50726A' });
-  el('', 'next drop: the bangle', sign, { position: 'absolute', left: 0, width: '740px', top: '182px', textAlign: 'center', fontFamily: 'CG', fontStyle: 'italic', fontWeight: 500, fontSize: '36px', color: '#50726A' });
-  return t => {
-    drawBug(bug, t); rise(kick, t, 0, C.kick[1], 10, .01, .2); if (t < C.kick[1]) kick.style.opacity = (+kick.style.opacity * duck(kbox, t)).toFixed(3);
-    for (const b of behind) { slam(b.e, t, b.t, b.t1, 1.3, .03);   // the word's cap band sits across the top of her head
-      const px = parseFloat(b.e.dataset.px || 300); b.e.style.top = f1(452 - px * .62) + 'px'; }
-    for (const w of words) slam(w.e, t, w.t, w.t1, w.small ? 1.08 : 1.25);
-    dots.forEach(d => { const on = t >= C.words[2].t && t < C.words[2].t1; show(d.e, on); d.e.style.background = t >= d.t ? '#FFBDA8' : 'transparent'; d.e.style.borderColor = t >= d.t ? '#FFBDA8' : '#FBF3EC'; });
-    $('flash').style.opacity = (t >= C.flash && t < C.flash + .2 ? .85 * (1 - (t - C.flash) / .2) : 0).toFixed(3);
-    drawMarquee(mq, t, C.marquee[0], C.marquee[1]);
-    const a = drawTagAt(tag, t, C.tag[0], C.tag[1], 'left'); const pn = CUR.main, h = hoopAt(pn.f);
-    if (a > 0 && h) { const [hx, hy] = toS(pn, h[0], h[1]), rr = h[2] / 2 * pn.z * 1.3, dl = E.io(clamp((t - C.tag[0] - .2) / .35));
-      const sx = 160, sy = 1020; ln.setAttribute('points', `${sx},${sy} ${sx},${f1(lerp(sy, hy + rr + 30, dl))} ${f1(lerp(sx, hx - rr * .5, dl))},${f1(lerp(sy, hy + rr * .9, dl))}`);
-      ring.setAttribute('cx', f1(hx)); ring.setAttribute('cy', f1(hy)); ring.setAttribute('r', f1(rr * E.out(clamp((t - C.tag[0] - .45) / .3)))); g.setAttribute('opacity', (a * h[3]).toFixed(3)); g.style.display = ''; }
-    else g.style.display = 'none';
-    drawCard(sign, t, C.signoff[0] + .1, C.signoff[1]);
-  };
-};
-// ---------- AD 1 · the ₹1,499 hoops ----------
-R.ad1 = () => {
+// ---------- AD · Doing all the work ----------
+R.ad_work = () => {
   const big = el('bigi', D.product.price, $('behind'), { top: '0px' }); fitLater(big, 960, 300);
   const h1 = mkText('these hoops are', 'cg', 0, 1040, 86, { center: true }), h2 = mkText('doing all the work.', 'cg', 0, 1134, 86, { center: true });
+  const st = mkSticker(84, 560, 168);
+  const bug = mkBug();
   // a single hoop from the product shoot flips in beside her and hands over to the real one
   const FH = 290 * D.product.sh / D.product.sw;
   const fly = el('', '', $('ui'), { position: 'absolute', left: 0, top: 0, width: '290px', height: FH + 'px', filter: 'drop-shadow(0 14px 18px rgba(26,22,20,.35))', transformOrigin: '50% 50%' });
@@ -518,7 +467,7 @@ R.ad1 = () => {
   const flyLab = mkText('WOVEN GOLD HOOPS', 'kick', 0, 1170, 34, { center: true });
   const loupe = mkLoupe(112); const lab = mkText('braided · 25mm · no stones', 'cg', 316, 1120, 40);
   const chips = C.chips.map((c, i) => ({ ...c, e: chip(c.w, 70, 1066 + (i % 2) * 82) }));
-  const mq = mkMarquee('WOVEN GOLD HOOPS  ·  ₹1,499  ·  WATERPROOF  ·  TARNISH-FREE', 690, -7, $('behind'));
+  const mq = mkMarquee(`WOVEN GOLD HOOPS  ·  ${D.product.price}  ·  ${D.product.off}% OFF  ·  WATERPROOF  ·  TARNISH-FREE`, 690, -7, $('behind'));
   const tag = mkTag(70, 1030), offer = mkOffer(); EN = mkEnd();
   return t => {
     const hk = t < C.hook[1]; show(h1, hk); show(h2, hk); show(big, hk);
@@ -527,11 +476,13 @@ R.ad1 = () => {
       h2.style.transform = `translateY(${f1((1 - E.out5(clamp((t - .1) / .4))) * 16)}px)`;
       const px = parseFloat(big.dataset.px || 300); big.style.top = f1(392 - px * .66) + 'px';
       big.style.opacity = (1 - o).toFixed(3); big.style.transform = `scale(${(1.02 + .05 * (t / C.hook[1])).toFixed(4)})`; }
+    drawSticker(st, t, C.sticker[0], C.sticker[1], 8);
+    drawBug(bug, t, win(t, C.bug[0], C.bug[1], .25, .25));
     { const d = t - C.fly[0], on = d >= 0 && d < .9; show(fly, on); flyRing.forEach(c => c.style.display = 'none');
       const pn = CUR.main, h = hoopAt(pn.f);
       // it pops up big beside her head, then flips once and shrinks onto her ear, bowing out to the left of her face
-      if (on && h) { const [hx, hy] = toS(pn, h[0], h[1]), pop = E.back(clamp(d / .2)), p = E.io(clamp((d - .18) / .67));
-        const sc = lerp(lerp(.55, 1, pop), h[2] * pn.z * 1.1 / 290, p);
+      if (on && h) { const [hx, hy] = toS(pn, h[0], h[1]), pop_ = E.back(clamp(d / .2)), p = E.io(clamp((d - .18) / .67));
+        const sc = lerp(lerp(.55, 1, pop_), h[2] * pn.z * 1.1 / 290, p);
         const x = lerp(230, hx, p) - Math.sin(Math.PI * p) * 80, y = lerp(420, hy, p);
         fly.style.transform = `translate(${f1(x - 145)}px, ${f1(y - FH / 2)}px) perspective(900px) rotateY(${f1(360 * p)}deg) rotate(${f1(lerp(-10, 0, p))}deg) scale(${sc.toFixed(4)})`;
         fly.style.opacity = (clamp(d / .06) * (1 - E.io(clamp((p - .7) / .3)))).toFixed(3); }
@@ -545,36 +496,116 @@ R.ad1 = () => {
     drawTagAt(tag, t, C.tag[0], C.tag[1]); drawCard(offer, t, C.offer[0], C.offer[1]); drawEnd(t, C.end);
   };
 };
-// ---------- AD 2 · hair up or hair down? ----------
-R.ad2 = () => {
+// ---------- AD · Two little moons ----------
+R.ad_moons = () => {
+  const bug = mkBug();
+  const moonDisc = el('', '', $('behind'), { position: 'absolute', width: '640px', height: '640px', borderRadius: '50%',
+    background: 'radial-gradient(circle at 38% 34%, #FFE3D8 0%, #FFCDBA 38%, #FFBDA8 70%, #F6AE97 100%)', boxShadow: '0 0 80px rgba(255,189,168,.55)' });
+  const halo = el('', '', $('behind'), { position: 'absolute', width: '780px', height: '780px', borderRadius: '50%', border: '2px solid rgba(251,243,236,.8)' });
+  const g = sv('g', { style: 'filter:drop-shadow(0 1px 5px rgba(26,22,20,.55))' }, OV);
+  const orb = sv('ellipse', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 4, pathLength: 100, 'stroke-dasharray': '100 100' }, g);
+  const orb2 = sv('ellipse', { fill: 'none', stroke: '#FBF3EC', 'stroke-width': 1.5, 'stroke-dasharray': '2 9', opacity: .9 }, g);
+  const moon = sv('circle', { r: 8, fill: '#FBF3EC' }, g);
+  const r = rng(5); const stars = [...Array(9)].map(() => ({ e: sv('path', { d: STAR, fill: r() < .5 ? '#FBF3EC' : '#FFBDA8' }, g), x: r(), y: r(), s: 12 + r() * 16, ph: r() * 6 }));
+  const moons = mkText('two little moons.', 'cg', 0, 1062, 96, { center: true });
+  const kick = mkText(`WOVEN GOLD HOOPS · ${D.product.price}`, 'kick', 0, 1196, 27, { center: true });
+  const golden = mkText('golden hour,', 'cg', 0, 1052, 88, { center: true }), earring = mkText('but make it an earring.', 'cg', 0, 1150, 62, { center: true });
+  const tag = mkTag(70, 300, $('ui'), true);
+  const ben = mkText('WATERPROOF · TARNISH-FREE · 18K GOLD-TONE', 'kick', 0, 1196, 23, { center: true });
+  const offer = mkOffer(); EN = mkEnd(true);
+  const burst = [0, 1, 2].map(i => sv('circle', { fill: 'none', stroke: i === 1 ? '#FBF3EC' : '#FFBDA8', 'stroke-width': i === 1 ? 2 : 4 }, OV));
+  // the moon follows her head through the SOURCE frames (±8), so it glides
+  const headAt = f => { let x = 0, y = 0, n = 0; for (let k = -8; k <= 8; k++) { const fc = face(cf(f + k)); x += fc[0] + fc[2] / 2; y += fc[1] + fc[3] * .35; n++; } return [x / n, y / n]; };
+  return t => {
+    drawBug(bug, t, win(t, C.bug[0], C.bug[1], .01, .25) * (1 - win(t, C.tag[0] - .25, C.tag[1] + .25, .25, .25)));
+    const pn = CUR.main, [fx, fy] = headAt(pn.f), mx = fx + 150, my = fy - 120, breathe = 1 + .02 * Math.sin(t * 1.3);
+    Object.assign(moonDisc.style, { left: f1(mx - 320) + 'px', top: f1(my - 320) + 'px', transform: `scale(${breathe.toFixed(4)})` });
+    Object.assign(halo.style, { left: f1(mx - 390) + 'px', top: f1(my - 390) + 'px', transform: `scale(${(breathe * (1 + .04 * Math.sin(t * .9))).toFixed(4)})`, opacity: .85 });
+    const sw = C.sparkles.find(w => t >= w[0] && t < w[1]); g.style.display = sw ? '' : 'none';
+    const h = hoopAt(pn.f), oOn = t >= C.orbit[0] && t < C.orbit[1] && h;
+    if (oOn) {
+      const [hx, hy] = toS(pn, h[0], h[1]), rr = h[2] / 2 * pn.z, rx = rr * 2.7, ry = rr * 1.6, ang = -18;
+      for (const e of [orb, orb2]) { e.setAttribute('cx', f1(hx)); e.setAttribute('cy', f1(hy)); e.setAttribute('rx', f1(rx)); e.setAttribute('ry', f1(ry)); e.setAttribute('transform', `rotate(${ang} ${f1(hx)} ${f1(hy)})`); }
+      const dr = E.io(clamp((t - C.orbit[0]) / .55)), fo = (1 - P(t, C.orbit[1] - .3, .3, 'io')) * h[3];
+      orb.setAttribute('stroke-dashoffset', f1(100 - 100 * dr)); orb.setAttribute('opacity', fo.toFixed(3)); orb2.setAttribute('opacity', (.85 * fo * dr).toFixed(3));
+      const a = (t - C.orbit[0]) * 3.2, c = Math.cos(ang * Math.PI / 180), s = Math.sin(ang * Math.PI / 180), ex = Math.cos(a) * rx, ey = Math.sin(a) * ry;
+      moon.setAttribute('cx', f1(hx + ex * c - ey * s)); moon.setAttribute('cy', f1(hy + ex * s + ey * c)); moon.setAttribute('opacity', (fo * dr).toFixed(3));
+      moon.setAttribute('r', (Math.sin(a) > 0 ? 8 : 6).toString());
+    } else { orb.setAttribute('opacity', 0); orb2.setAttribute('opacity', 0); moon.setAttribute('opacity', 0); }
+    const fbs = faceBoxes(t, true)[0];
+    stars.forEach((st, i) => {   // stars twinkle on the beat, in the space around her head
+      let x = 80 + st.x * 920, y = 330 + st.y * 680;
+      if (x > fbs[0] - 40 && x < fbs[2] + 40 && y > fbs[1] - 40 && y < fbs[3] + 40) x = x < (fbs[0] + fbs[2]) / 2 ? fbs[0] - 60 - st.x * 50 : fbs[2] + 60 + st.x * 50;
+      const ph = ((t + st.ph) % (D.beat * 2)) / (D.beat * 2), k = Math.max(0, Math.sin(ph * Math.PI)) ** 3;
+      const on = sw ? win(t, sw[0] + i * .3, sw[1], .3, .4) : 0;
+      st.e.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(t * 20 + i * 30)}) scale(${(st.s * k * on).toFixed(2)})`);
+    });
+    rise(moons, t, -1, C.moons[1], 24, .5, .3); rise(kick, t, C.kick[0], C.kick[1], 14, .35, .3);
+    rise(golden, t, C.golden[0], C.golden[1], 22, .4); rise(earring, t, C.earring[0], C.earring[1], 18, .4);
+    { const d = t - C.iris[0], hh = hoopAt(CUR.main.f) || [390, 786];   // the cut: a ring bursts off the new shot's hoop
+      burst.forEach((c, i) => { const q = d - i * .07, on = q >= 0 && q < .7; c.style.display = on ? '' : 'none'; if (!on) return;
+        const [hx, hy] = toS(CUR.main, hh[0], hh[1]); c.setAttribute('cx', f1(hx)); c.setAttribute('cy', f1(hy));
+        c.setAttribute('r', f1(30 + 520 * E.out(q / .7))); c.setAttribute('opacity', (1 - E.io(q / .7)).toFixed(3)); }); }
+    drawTagAt(tag, t, C.tag[0], C.tag[1], 'left'); rise(ben, t, C.benefits[0], C.benefits[1], 12, .3, .25);
+    drawCard(offer, t, C.offer[0], C.offer[1]); drawEnd(t, C.end, true, 1.6);
+  };
+};
+// ---------- POST · Mummy vs me ----------
+R.post_mummy = () => {
+  const hook = mkNC('every diwali with mummy 🪔', 300, 54);
+  const ask = mkBubble('Mummy 🌸', 'wear the heavy jhumkas<br>for diwali 🙏', false, 1004);
+  const reply = mkBubble('me', 'mummy trust me 💅', true, 1250);
+  const wait = mkNC('wait for it.', 1110, 58);
+  const dots = C.dots.map((tt, i) => ({ t: tt, e: el('', '', $('ui'), { position: 'absolute', left: (510 + i * 30) + 'px', top: '1216px', width: '14px', height: '14px', borderRadius: '50%', border: '2px solid #FBF3EC', boxSizing: 'border-box' }) }));
+  const big = el('big', 'HOOPS.', $('behind'), { top: '0px' }); fitLater(big, 1000, 330);
+  const drop = mkNC('not jhumkas. 😌', 1110, 62, true);
+  const goldish = mkNC('gold-ish ✨', 1060, 62), specs = mkNC('waterproof · tarnish-free', 1166, 40);
+  const ask2 = mkBubble('Mummy 🌸 · 2 seconds later', 'beta where are these from?? 😍😍', false, 1004);
+  const reply2 = mkBubble('me', '@nairaflore 😌', true, 1250);
+  const share = mkNC('send this to your mummy 😭', 1110, 56, true);
+  return t => {
+    pop(hook, t, C.hook[0], C.hook[1]); pop(ask, t, C.ask[0], C.ask[1], .5); pop(reply, t, C.reply[0], C.reply[1], .5);
+    pop(wait, t, C.wait[0], C.wait[1]);
+    dots.forEach(d => { const on = t >= C.wait[0] && t < C.wait[1]; show(d.e, on); d.e.style.background = t >= d.t ? '#FFBDA8' : 'transparent'; d.e.style.borderColor = t >= d.t ? '#FFBDA8' : '#FBF3EC'; });
+    flashAt(t, C.flash);
+    slam(big, t, C.behind[0], C.behind[1], 1.3, .03); { const px = parseFloat(big.dataset.px || 300); big.style.top = f1(452 - px * .62) + 'px'; }
+    pop(drop, t, C.drop[0], C.drop[1]); pop(goldish, t, C.goldish[0], C.goldish[1]); pop(specs, t, C.specs[0], C.specs[1]);
+    pop(ask2, t, C.ask2[0], C.ask2[1], .5); pop(reply2, t, C.reply2[0], C.reply2[1], .5); pop(share, t, C.share[0], C.share[1]);
+  };
+};
+// ---------- POST · Hair up or hair down? ----------
+R.post_poll = () => {
   const halfL = el('', '', $('behind'), { position: 'absolute', left: '0px', top: '0px', width: '540px', height: '1920px', overflow: 'hidden' });
   const halfR = el('', '', $('behind'), { position: 'absolute', left: '540px', top: '0px', width: '540px', height: '1920px', overflow: 'hidden' });
   const upB = el('big', 'UP', halfL, { top: '0px', width: '540px' }), dnB = el('big', 'DOWN', halfR, { top: '0px', width: '540px' });
   fitLater(upB, 470, 360); fitLater(dnB, 480, 360);
-  const hook = mkText('hair up or hair down?', 'cg', 0, 1060, 92, { center: true });
+  const q = mkNC('hair up or hair down?', 1004, 60);     // under her lowest chin in the split (994 px)
   const div = el('', '', $('ui'), { position: 'absolute', left: '538px', top: '0px', width: '4px', height: '1920px', background: '#FBF3EC', boxShadow: '0 0 12px rgba(26,22,20,.35)' });
   const g = sv('g', { style: 'filter:drop-shadow(0 1px 4px rgba(26,22,20,.6))' }, OV);
   const rL = sv('circle', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 5, pathLength: 100, 'stroke-dasharray': '100 100' }, g), rR = sv('circle', { fill: 'none', stroke: '#FFBDA8', 'stroke-width': 5, pathLength: 100, 'stroke-dasharray': '100 100' }, g);
-  const same = mkText('same hoops.', 'cg', 0, 1172, 70, { center: true, color: '#FFD9CB' });
-  const ei = mkText('either way,', 'cg', 0, 1050, 100, { center: true }), wi = mkText('the hoops win.', 'cg', 0, 1158, 80, { center: true });
-  const let_ = mkText('let it down.', 'cg', 0, 1060, 120, { center: true });
-  const tag = mkTag(70, 300), offer = mkOffer(); EN = mkEnd();
+  const same = mkNC('same hoops.', 1112, 42, true);
+  const comment = mkNC('comment UP or DOWN 👇', 1330, 50);
+  const tie = mkNC('wait— tie-breaker 👀', 1110, 56), watch = mkNC('watch this.', 1110, 58);
+  const verdict = mkNC('okay hair down hits different', 1090, 52), verdict2 = mkNC('(the hoops win either way)', 1180, 40, true);
+  const ask = mkNC('your turn: UP or DOWN? 👇', 1110, 56, true);
+  const handle = el('hnd', 'hoops: @nairaflore', $('ui'), { top: '1214px' });
   return t => {
-    rise(hook, t, 0, C.hook[1], 10, .01, .2); hook.style.opacity = t < C.hook[1] ? (1 - P(t, C.hook[1] - .2, .2, 'io')).toFixed(3) : 0;
+    pop(q, t, C.question[0], C.question[1]);
     const sp = D.edl[1].t0, mp = t >= sp ? E.io(clamp((t - sp) / D.edl[1].mdur)) : 0; show(div, t < sp + D.edl[1].mdur);
     div.style.transform = `translateX(${f1(-540 * mp)}px)`; div.style.opacity = (1 - mp).toFixed(3);
-    // giant UP / DOWN behind her on each half, slammed in on the first beats; UP leaves with its half
+    // giant UP / DOWN behind her on each half, there from frame 1, bumping on every beat of the first bar; UP leaves with its half
+    let lb = 0; for (const gg of D.grid) if (gg <= t) lb = gg; const bump = t < 2.6 ? 1 + .05 * (1 - E.out(clamp((t - lb) / .25))) : 1;
     for (const e of [upB, dnB]) { const px = parseFloat(e.dataset.px || 300); e.style.top = f1(430 - px * .62) + 'px'; }
-    slam(upB, t, C.updown[0], C.updown[1], 1.25, .02); halfL.style.transform = `translateX(${f1(-560 * mp)}px)`;
-    slam(dnB, t, C.updown[0] + D.beat, C.updown[1], 1.25, .02); dnB.style.opacity = (+dnB.style.opacity * (1 - mp)).toFixed(3);
+    slam(upB, t, -1, C.updown[1], 1, .015); upB.style.transform += ` scale(${bump.toFixed(4)})`; halfL.style.transform = `translateX(${f1(-560 * mp)}px)`;
+    slam(dnB, t, -1, C.updown[1], 1, .015); dnB.style.transform += ` scale(${bump.toFixed(4)})`; dnB.style.opacity = (+dnB.style.opacity * (1 - mp)).toFixed(3);
     const ring = (c, pn) => { const h = pn && hoopAt(pn.f), on = h && t >= C.rings[0] && t < C.rings[1] + .3; c.style.display = on ? '' : 'none'; if (!on) return;
       const [hx, hy] = toS(pn, h[0], h[1]); c.setAttribute('cx', f1(hx)); c.setAttribute('cy', f1(hy)); c.setAttribute('r', f1(h[2] / 2 * 1.45));
       c.setAttribute('stroke-dashoffset', f1(100 - 100 * E.io(clamp((t - C.rings[0]) / .4)))); c.setAttribute('opacity', ((1 - P(t, C.rings[1], .3, 'io')) * h[3]).toFixed(3)); };
     ring(rL, CUR.left); ring(rR, CUR.main);
-    rise(same, t, C.same[0], C.same[1], 14, .4);
-    rise(ei, t, C.either[0], C.either[1], 22, .4); rise(wi, t, C.win[0], C.win[1], 18, .4);
-    rise(let_, t, C.letdown[0], C.letdown[1], 30, .3); drawTagAt(tag, t, C.tag[0], C.tag[1], 'left');
-    drawCard(offer, t, C.offer[0], C.offer[1]); drawEnd(t, C.end);
+    pop(same, t, C.same[0], C.same[1]); pop(comment, t, C.comment[0], C.comment[1]);
+    pop(tie, t, C.tie[0], C.tie[1]); pop(watch, t, C.watch[0], C.watch[1]);
+    pop(verdict, t, C.verdict[0], C.verdict[1]); pop(verdict2, t, C.verdict2[0], C.verdict2[1]);
+    pop(ask, t, C.ask[0], C.ask[1]); rise(handle, t, C.handle[0], C.handle[1], 8, .25, .15);
   };
 };
 const DRAW = R[V]();

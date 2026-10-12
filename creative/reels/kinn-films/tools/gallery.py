@@ -2,10 +2,12 @@
 import io, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont
 S, OUT = sys.argv[1], sys.argv[2]; FONT = f'{S}/fonts/Jost.ttf'
+import json as _json
 order = [('62379666', 0.4), ('041FCDC6', 8.7), ('E2552016', 5.0), ('5627AA72', 14.0), ('267E722A', 0.3), ('212E5E27', 20.6), ('2FB96BA5', 2.8),
          ('F2532C01', 28.0), ('E3C6EA7D', 10.2), ('D0798597', 2.0), ('1AEDD2D8', 17.8), ('74FA1A49', 20.6), ('A9E89517', 9.0), ('0C1A5F38', 12.5),
          ('A352935A', 12.0), ('FB8CD2FD', 6.5), ('C64FD42F', 21.2), ('84BD71C7', 59.2), ('BD3B07AF', 22.95), ('398F157B', 8.2), ('76D95B49', 2.0),
          ('CF686DEA', 19.5), ('20AA749D', 0.8), ('DE17C1BF', 8.3), ('069EEAED', 1.0), ('50E69BE9', 1.3), ('8FC2055C', 0.6)]
+if len(sys.argv) > 3: order = [tuple(x) for x in _json.load(open(sys.argv[3]))]   # another order, e.g. one reel's video order
 INK, IVORY, BLUSH, GREY = (26, 22, 20), (251, 243, 236), (255, 189, 168), (150, 140, 134)
 W, H = 1080, 1920; cols = 5; gap = 4; cell = (W - gap * (cols - 1)) // cols
 img = Image.new('RGB', (W, H), INK); d = ImageDraw.Draw(img)

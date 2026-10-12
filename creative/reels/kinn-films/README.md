@@ -15,7 +15,8 @@ and every cut lands on a frame. Each one is built round one moment in its song.
 | **hair · Hair up or hair down?** | C (1.758 s) | 15.4 s | Split screen with UP / DOWN stamps, a duel of whips cut on every half beat with a tug-of-war meter, a tie in the breakdown, the clip out on the drop with HAIR DOWN behind her. A speed gun on the spin (132.4 km/h), a fake-out on the one hair-up close-up, the vote. | C's drop (7.518 s) |
 | **pawan · Introducing Pawan Kumar** | B (12.284 s) | 16.4 s | A letterboxed 90s heroine entry with a checklist. The look and the hair tick on the beat; on B's silence it freezes on the hand fan, the bars snap off, everything but the fan dims, and the fan gets a filmi debut card. She breaks on the drop; credits roll. | B's silence and drop |
 | **cyc · Choose your character** | A (4.182 s) | 12.9 s | A fighting-game select screen of six live tiles, the cursor on every beat. Power-ups (hoops, kada, ring), the hair tornado combo, a boss HUD; the final boss (the fan) arrives in A's bass gap; K.O. on the bass return. Back to the grid: comment 1–6. | A's bass gap (14.0 s) and return (15.26 s) |
-| **onephoto2 · I asked for ONE photo** (the one to post) | D (12.633 s) | 14.3 s | The DP request in chat, with the reason: "naira wale hoops pehne hain, dikhne chahiye ✨". A notification, her gallery of the 27 real clips (`tools/gallery.py`) holding on D's silence, a snare zoom into video 1, 27 cuts from D's drop under a REC counter, the fan freeze on video 19, "DP status: still pending" on her laugh. On D's bass hit a camera shutter opens on the DP she wanted (041FCDC6 8.50 s: eyes to the lens, hoop in), which settles into a profile circle with a sage-and-blush story ring that pulses on the beat, a product tag on the hoop ("Woven Gold Hoops · @nairaflore") and "profile photo updated ✓". | D's silence (17.25–17.52 s), drop (17.849 s) and bass hit (23.717 s) |
+| **onephoto3 · I asked for ONE photo** (the one to post) | D at its felt 92 BPM (0.245 s) | 26.1 s | Re-cut at the owner's ask to the song's own slow groove, every cut on a kick. The ask over four posed shots (cover, hoop, side profile, profile), the Naira line landing as the bass comes in (2.9 s). The bestie's notification, then the gallery in the song's breakdown (`tools/gallery.py` with `engine/gallery3_order.json`, so thumbnail N is VIDEO N), a tap and a zoom into video 1 on the bass's return. Sixteen videos, one a beat and then two a beat as the groove fills out, under a REC counter; video 19 freezes on the fan; her laugh plays in the silence (video 27/27, "DP status: still pending"). A shutter on the drop opens on the DP, which settles into a profile circle with a sage-and-blush ring that breathes on the beat; hearts on the heavy kick (21.1 s), three comments one a beat, and her reply on the biggest bass hit (23.7 s): "@nairaflore ✨ woven gold hoops", with her new DP as its avatar. | D's bass entry, breakdown, silence (17.25–17.52 s), drop (17.849 s), kick (21.1 s) and sub hit (23.72 s) |
+| onephoto2 · second cut | D (12.633 s) | 14.3 s | The DP request in chat, with the reason: "naira wale hoops pehne hain, dikhne chahiye ✨". A notification, her gallery of the 27 real clips (`tools/gallery.py`) holding on D's silence, a snare zoom into video 1, 27 cuts from D's drop under a REC counter, the fan freeze on video 19, "DP status: still pending" on her laugh. On D's bass hit a camera shutter opens on the DP she wanted (041FCDC6 8.50 s: eyes to the lens, hoop in), which settles into a profile circle with a sage-and-blush story ring that pulses on the beat, a product tag on the hoop ("Woven Gold Hoops · @nairaflore") and "profile photo updated ✓". | D's silence (17.25–17.52 s), drop (17.849 s) and bass hit (23.717 s) |
 | onephoto · first cut | B (17.762 s) | 13.7 s | The same idea on B, ending on her laugh as the DP. Replaced at the owner's ask: the DP should be a photo where she looks her best. | B's silence and drop |
 | **hoop · POV: you're her hoop** | C (1.758 s) | 15.4 s | The hoop narrates in speech bubbles pinned to it frame by frame (`tools/track.py`), one a bar; the kada answers back in blush. | C's drop |
 | **maine · Kisne diya? Maine.** | A (11.567 s) | 11.1 s | The Diwali-party aunty asks who gave it, mummy or the in-laws; typing dots through A's bass gap; "Maine." slams on the return; khud kamaya, khud liya; a gift tag pinned to the hoop. | A's bass gap and return |
@@ -38,6 +39,20 @@ this shoot (sent 12 Oct as `8BB38387-….mp4`, audio extracted): 184.05 BPM, bea
 of the grid at 0.245 s; the gap runs 17.25–17.52 s, a snare hits at 17.54 s (beat 53), the drop
 lands at 17.849 s (beat 54) and a sub hit at 23.717 s (beat 72). Measured in the final file: the
 snare 8 ms and the drop 33 ms after their cuts (one frame), the shutter 5 ms after its cut.
+D is felt at half that rate, 92 BPM (**D2** in `build.py`: beat 0.65201 s, kicks on these beats, the
+snares and hats between them), which is how onephoto3 is cut. Measured in its final file, the bass
+entry, the drop, the heavy kick and the sub hit each land 0–25 ms after their cuts.
+
+**The DP** is the best frame in the shoot, not a guess. `tools/dp_rank.py` scores all 18,639
+single-face frames from the scan: face sharpness, stillness, eyes open and to the lens (head yaw
+corrected by the eye blendshapes), mouth closed or a soft smile, the face's size, a hoop showing.
+The top 48 (best per 1.5 s, at most 4 per clip) went to a sheet (`tools/dp_grab.py`), ten
+finalists were refined to their sharpest frame by the eye band's sharpness, and the last five were
+compared as circles. 62379666 at 4.00 s (frame 120) won: fist under the chin with the ring, a
+three-quarter turn, eyes to the lens, the hoop showing, and the sharpest face of the ten.
+
+**Drafted, not rendered:** `diwali2` and `pawan2` put Diwali and Pawan Kumar on D at 184 BPM
+(stopped at the owner's redirect; at D's felt 92 BPM they would need re-cutting like onephoto3).
 
 ## What makes it work
 

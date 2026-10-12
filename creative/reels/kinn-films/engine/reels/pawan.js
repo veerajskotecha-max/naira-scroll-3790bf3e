@@ -2,7 +2,7 @@
 // needs. The look and the hair tick on the beat; "the wind machine" blinks. On the song's own silence the frame freezes on
 // the real wind machine, a hand fan, the bars snap off and it gets a filmi debut card. She breaks on the drop. Credits roll.
 window.REEL = (() => {
-  const C = D.cues, [G0] = C.gap, DROP = C.drop;
+  const C = D.cues, G0 = C.fan0 ?? C.gap[0], DROP = C.drop;    // the freeze: on the song's silence, or (track D) a beat before it
   const sh = (id, extra = {}) => ({ shot: id, ...extra });
   const cut = [['p01', 0], ['p02', 4], ['p03', 8], ['p04', 12], ['p06', 20], ['p07', 24], ['p08', 28], ['p09', 32], ['p10', 38], ['p11', 44]];
   const which = t => { let c = cut[0]; for (const x of cut) if (t >= B(x[1]) - 1e-6) c = x; return c[0]; };

@@ -12,7 +12,8 @@ V15 = f'{S}/v15'; FPS = 30
 SONG = {'B': dict(file=f'{V15}/an/song_full.wav', beat=0.34238, k0=23.240 - 64 * 0.34238),
         'C': dict(file=f'{S}/v13/work/song_c.wav', beat=0.47999, k0=0.3178),
         'A': dict(file=f'{S}/v13/work/song_a.wav', beat=0.46159, k0=0.489),
-        'D': dict(file=f'{S}/v16/an/ref2.wav', beat=0.3260, k0=0.245)}   # the owner's newest track (from her own edit): 184.05 BPM, gap 17.25-17.52, drop 17.849 (beat 54)
+        'D': dict(file=f'{S}/v16/an/ref2.wav', beat=0.3260, k0=0.245),
+        'D2': dict(file=f'{S}/v16/an/ref2.wav', beat=0.65201, k0=0.245)}  # D at the pace it is felt: 92 BPM, kicks on these beats   # the owner's newest track (from her own edit): 184.05 BPM, gap 17.25-17.52, drop 17.849 (beat 54)
 fsnap = lambda x: round(x * FPS) / FPS
 scan = {}
 def faces(clip):
@@ -209,6 +210,94 @@ r.add('flash', 16, c='#FBF3EC', a=.9, d=.3); r.add('shake', 16, a=20, d=.3)
 for kk in [x / 2 for x in range(32, 64)]: r.add('punch', kk, a=.05, d=.14)
 r.add('glitch', 25, a=22, d=.3); r.add('flash', 32, c='#FFBDA8', a=.5, d=.2); r.add('flash', 34, c='#FBF3EC', a=.6, d=.22)   # the camera flash on the shutter
 r.cues = dict(drop=r.B(16), gap=[fsnap(17.25 - r.start), fsnap(17.52 - r.start)], snare=r.B(15), fan=[r.B(25), r.B(27)], dp=r.B(34))
+# =====================================================================================================================
+# 1b · DIWALI LOOK LOADING on track D from 7.417 s (beat 22): the same 64 beats, so D's silence (17.25-17.52), snare (beat 53)
+#      and drop (beat 54) fall where B's did; D's gap is one beat before its drop, so the clip-pull is re-timed round it
+r = Reel('diwali2', 'D', 22, 64, 'Diwali look loading…'); R[r.name] = r
+gap0, gap1 = fsnap(17.25 - r.start), fsnap(17.52 - r.start)
+r.shot('d01', 'F2532C01', 0, 4, 2.40, z=[1.03, 1.10], focus='face')
+r.shot('d02', '74FA1A49', 4, 8, 5.50, z=[1.0, 1.06])
+r.shot('d03', '0C1A5F38', 8, 11, 2.95, z=[1.02, 1.07], focus='face')
+r.shot('d04', '5627AA72', 11, 12, 8.02)
+r.shot('d05', 'F2532C01', 12, 16, 26.75, z=[1.04, 1.10], focus='face')
+r.shot('d06', 'F2532C01', 16, 18, 36.95, z=[1.10, 1.16], focus='face')
+r.shot('d07', '74FA1A49', 18, 20, 20.35, z=[1.0, 1.08])
+r.shot('d08', 'E2552016', 20, 24, 4.55, z=[1.02, 1.06], focus='face')
+r.shot('d09', 'E3C6EA7D', 24, 28, 9.70, z=[1.10, 1.18], focus='face')
+r.shot('d10', 'E3C6EA7D', 28, 32, map=[[r.B(28), 14.10], [gap0, 14.78], [gap1, 14.78], [r.B(32), 15.40]], z=[1.08, 1.30], focus='face', matte=True)
+r.shot('d11', '5627AA72', 32, 34, 13.75, z=[1.06, 1.0])
+r.shot('d12', '5627AA72', 34, 35, 15.38, z=[1.18, 1.10], focus='face')
+r.shot('d13', '62379666', 35, 37, 6.25, z=[1.0, 1.04], matte=True)
+r.shot('d14', '041FCDC6', 37, 39, 8.25, z=[1.0, 1.06])
+r.shot('d15', '62379666', 39, 41, 3.60, z=[1.04, 1.0])
+r.shot('d16', '212E5E27', 41, 43, 19.85, z=[1.0, 1.05])
+r.shot('d17', '5627AA72', 43, 44, 8.08)
+r.shot('d18', '398F157B', 44, 46, 8.05, z=[1.05, 1.12])
+r.shot('d19a', 'FB8CD2FD', 46, 47, 6.20, focus='face'); r.shot('d19b', '041FCDC6', 46, 47, 8.50, focus='face'); r.shot('d19c', '212E5E27', 46, 47, 18.70, focus='face')
+r.shot('d20', 'FB8CD2FD', 47, 49, 6.00, z=[1.02, 1.08])
+r.shot('d21', '041FCDC6', 49, 51, 11.00, z=[1.0, 1.05])
+for i, (c, s0) in enumerate([('62379666', 0.2), ('041FCDC6', 8.5), ('212E5E27', 20.0), ('398F157B', 8.3), ('FB8CD2FD', 6.3), ('5627AA72', 15.5), ('62379666', 3.8), ('041FCDC6', 11.3), ('E3C6EA7D', 22.8)]):
+    r.shot(f'dg{i}', c, 51, 52, s0, loop=0.34, focus='face')
+r.shot('d22', '62379666', 52, 53, map=[[r.B(52), 0.40], [r.B(53), 0.40]], matte=True)
+r.shot('d23', '212E5E27', 53, 55, 18.45, z=[1.0, 1.06])
+r.shot('d24', 'D0798597', 55, 57, 1.30, z=[1.10, 1.16], focus='face')
+r.shot('d25', '5627AA72', 57, 59, 2.55, z=[1.12, 1.18], focus='face')
+r.shot('d26', 'E3C6EA7D', 59, 61, 22.65, z=[1.08, 1.14], focus='face')
+r.shot('d27', 'DE17C1BF', 61, 64, 7.85, z=[1.0, 1.06])
+for k in [32]: r.add('flash', k, c='#FBF3EC', a=.95, d=.35); r.add('zoomin', k, a=1.35, d=.45); r.add('shake', k, a=26, d=.4)
+for k in range(33, 64, 2): r.add('punch', k, a=.07, d=.26)
+for k in [35, 41, 47, 52, 57, 59, 61]: r.add('flash', k, c='#FFBDA8', a=.55, d=.22)
+for k in [39, 45, 51, 55]: r.add('glitch', k, a=20, d=.2)
+for k in [37, 43, 53]: r.add('shake', k, a=18, d=.25)
+r.add('spin', 47, a=-14, d=.3); r.add('zoomin', 47, a=1.28, d=.3); r.add('zoomin', 41, a=1.22, d=.28)
+r.add('glitch', 11, a=14, d=.12); r.add('flash', 12, c='#FBF3EC', a=.6, d=.15); r.add('shake', 14, a=10, d=.5); r.add('glitch', 16, a=10, d=.14)
+r.add('flash', 19, c='#FFBDA8', a=.5, d=.2); r.add('punch', 22, a=.08); r.add('punch', 25, a=.06); r.add('flash', 4, c='#FBF3EC', a=.4, d=.15); r.add('flash', 8, c='#FBF3EC', a=.4, d=.15)
+r.add('flash', 31, c='#FBF3EC', a=.35, d=.12)                                      # D's snare: the clip starts to come out
+r.add('zoomin', 50, a=1.2, d=.3); r.add('flash', 50, c='#FFBDA8', a=.45, d=.2)        # D's sub hit at 23.717 s
+r.cues = dict(gap=[gap0, gap1], drop=r.B(32), riser=[gap1, r.B(32)])
+# =====================================================================================================================
+# 3b · INTRODUCING PAWAN KUMAR on track D from 7.417 s (beat 22): the fan freezes a beat before D's silence (beat 29), so the
+#      debut card holds for three beats through the silence and the snare, and she breaks on the drop
+r = Reel('pawan2', 'D', 22, 48, 'Introducing Pawan Kumar'); R[r.name] = r
+gap0, gap1 = fsnap(17.25 - r.start), fsnap(17.52 - r.start)
+r.shot('p01', 'FB8CD2FD', 0, 4, 5.90, z=[1.04, 1.10], focus='face')
+r.shot('p02', '041FCDC6', 4, 8, 8.20, z=[1.0, 1.08])
+r.shot('p03', '62379666', 8, 12, 3.40, z=[1.0, 1.10])
+r.shot('p04', '5627AA72', 12, 20, map=[[r.B(12), 13.30], [r.B(20) - .2, 15.62], [r.B(20), 15.62]], z=[1.04, 1.12], matte=True)
+r.shot('p06', '398F157B', 20, 24, 7.90, z=[1.02, 1.10])
+r.shot('p07', 'BD3B07AF', 24, 28, 12.90, z=[1.0, 1.05])
+r.shot('p08', 'BD3B07AF', 28, 32, map=[[r.B(28), 22.20], [r.B(29), 22.60], [r.B(32), 22.60]], z=[1.0, 1.04])
+r.shot('p09', 'BD3B07AF', 32, 38, 22.95, z=[1.04, 1.0])
+r.shot('p10', '62379666', 38, 44, 0.00, z=[1.0, 1.06])
+r.shot('p11', 'DE17C1BF', 44, 48, 7.80, z=[1.0, 1.05])
+r.add('flash', 32, c='#FBF3EC', a=.9, d=.3); r.add('shake', 32, a=22, d=.4)
+for k in [4, 8, 12, 20, 24]: r.add('flash', k, c='#FBF3EC', a=.35, d=.18)
+for k in range(33, 48, 2): r.add('punch', k, a=.05, d=.24)
+r.cues = dict(gap=[gap0, gap1], drop=r.B(32), fan0=r.B(29), fan=[800, 1380])
+# =====================================================================================================================
+# 5c · I ASKED FOR ONE PHOTO, re-cut at track D's own pace (92 BPM: every cut on a kick), 40 beats = 26.1 s. The ask over four
+#      posed shots (the bass comes in on the Naira line), the gallery in D's breakdown, the videos one a beat from the bass's
+#      return and two a beat in the full groove, the fan frozen, her laugh in D's silence, the shutter on the drop, and the
+#      DP: the best frame in the shoot (62379666 at 4.00 s, ranked over every frame: face sharpness, stillness, eyes to the
+#      lens, mouth, a hoop showing), then the profile, the comments, and her reply on D's heaviest bass hit
+r = Reel('onephoto3', 'D2', 0, 40, 'I asked for ONE photo'); R[r.name] = r
+r.shot('a1', '62379666', 0, 2, 0.00, z=[1.0, 1.06], focus='face')
+r.shot('a2', '041FCDC6', 2, 4, 8.10, z=[1.02, 1.07], focus='face')
+r.shot('a3', '212E5E27', 4, 6, 18.40, z=[1.0, 1.05], focus='face')
+r.shot('a4', '398F157B', 6, 8, 7.90, z=[1.02, 1.08], focus='face')
+VID = [('F2532C01', 27.0), ('74FA1A49', 20.4), ('CF686DEA', 18.6), ('5627AA72', 7.85), ('E2552016', 4.6), ('1AEDD2D8', 15.2), ('84BD71C7', 58.6), ('267E722A', 6.6),
+       ('212E5E27', 20.2), ('0C1A5F38', 12.6), ('C64FD42F', 13.0), ('2FB96BA5', 2.6), ('A352935A', 10.4), ('76D95B49', 4.3), ('E3C6EA7D', 15.0), ('D0798597', 1.4)]
+k = 12.0
+for i, (c, s0) in enumerate(VID):
+    span = 1 if i < 8 else .5                                       # one a beat, then two a beat in the full groove
+    r.shot(f'v{i + 1:02d}', c, k, k + span, s0, z=[1.04, 1.08], focus='face'); k += span
+r.shot('vfan', 'BD3B07AF', 24, 26, map=[[r.B(24), 22.20], [r.B(24) + .4, 22.60], [r.B(26), 22.60]], z=[1.0, 1.06])
+r.shot('vlaugh', 'DE17C1BF', 26, 27, map=[[r.B(26), 7.72], [r.B(27), 8.38]])
+r.shot('dp', '62379666', 27, 40, map=[[r.B(27), 4.00], [r.B(40), 4.00]], focus='face')
+for kk in range(12, 20): r.add('punch', kk, a=.03, d=.22)
+for kk in [x / 2 for x in range(40, 48)]: r.add('punch', kk, a=.035, d=.16)
+r.add('flash', 12, c='#FBF3EC', a=.35, d=.16); r.add('flash', 27, c='#FBF3EC', a=.6, d=.22); r.add('punch', 4, a=.05, d=.32)   # the bass comes in
+r.cues = dict(drop=r.B(27), gap=[fsnap(17.25 - r.start), fsnap(17.52 - r.start)], fan=[r.B(24), r.B(26)], dp=r.B(27), vid=[r.B(12), r.B(24)])
 # =====================================================================================================================
 # 6 · POV: YOU'RE HER HOOP · C from 1.758 s: one bubble a bar; the spin lands on the drop (bar 4)
 r = Reel('hoop', 'C', 3, 32, "POV: you're her hoop"); R[r.name] = r

@@ -412,6 +412,163 @@ r.shot('i9', '76D95B49', 25, 29, 1.00, z=[1.0, 1.05], focus='face')
 r.script = 'elegant'
 r.cues = dict(credit=r.B(25) + .35, frame=True, lines=[['i wait for you.', fsnap(22.36 - r.start) - .05, fsnap(25.34 - r.start) + .2]])
 
+# =====================================================================================================================
+# THE PUNJABI SET (track D, no lyrics on screen): four ways to hit the same drop. D at its felt 92 BPM (D2): beat k of the song
+# at 0.245 + k * 0.65201 s; bars of 2.608 s; the silence 17.25-17.52 s, a clap at 17.541 s, the drop on beat 27 (17.849 s), the
+# drum roll's hits (18.679, 18.841, 19.495, 19.657, 20.147 s), the heavy kick on beat 32 (21.109 s), the hook from 22.36 s, the
+# sub hit on beat 36 (23.717 s). The vocal line that follows ends at 31.38 s, so the long cuts end on beat 48 (31.541 s).
+DT = lambda k: 0.245 + k * 0.65201                                      # song time of D's beat k
+ROLL = (18.679, 18.841, 19.495, 19.657, 20.147)
+def rt(r, t): return fsnap(t - r.start)                                 # a song time as reel time
+# ---------------------------------------------------------------------------------------------------------------------
+# P1 · THE DROP · bars 3-7 (8.069-21.109 s): hair-up looks, two a bar, then one a beat, then two a beat as the song fills;
+#      bar 6 is one take of her taking the clip out, frozen with her hands at it through the silence, moving again on the clap,
+#      and the hair falls on the drop. Then the drum roll: a cut on every hit of it.
+r = Reel('pj_drop', 'D2', 12, 20, 'The drop'); R[r.name] = r
+r.script = 'elegant'
+r.shot('d01', '267E722A', 0, 2, 0.00, z=[1.0, 1.05], focus='face')
+r.shot('d02', 'E2552016', 2, 4, 7.85, z=[1.0, 1.04], focus='face')
+for i, (c, s0) in enumerate([('C64FD42F', 44.35), ('F2532C01', 56.38), ('267E722A', 6.75), ('C64FD42F', 31.65)]):
+    r.shot(f'd{i + 3:02d}', c, 4 + i, 5 + i, s0, z=[1.02, 1.06], focus='face')
+for i, (c, s0) in enumerate([('E2552016', 4.80), ('267E722A', 2.00), ('E3C6EA7D', 10.00), ('E3C6EA7D', 7.60),
+                             ('E2552016', 23.10), ('E3C6EA7D', 3.90), ('267E722A', 7.25), ('E2552016', 8.90)]):
+    r.shot(f'd{i + 7:02d}', c, 8 + i / 2, 8.5 + i / 2, s0, z=[1.03, 1.07], focus='face')
+SIL0, CLAP, DROP = rt(r, 17.25), rt(r, 17.541), r.B(15)
+r.shot('d15a', 'C64FD42F', 12, 13, 55.25, z=[1.0, 1.04], focus='face')       # one beat of her profile, hair up
+r.shot('d15', 'E2552016', 13, 16, map=[[r.B(13), 26.87 - (SIL0 - r.B(13))], [SIL0, 26.87], [CLAP, 26.87], [DROP, 27.07], [r.B(16), 27.07 + r.B(16) - DROP]],
+       z=[1.0, 1.06], focus='face')                                   # hands at the clip in the silence; the clap pulls it; the hair falls on the drop
+cuts = [r.B(16)] + [rt(r, h) for h in ROLL[:2]] + [r.B(17)] + [rt(r, h) for h in ROLL[2:4]] + [r.B(18), rt(r, ROLL[4]), r.B(19), r.B(20)]
+for i, (c, s0) in enumerate([('5627AA72', 13.80), ('CF686DEA', 51.80), ('FB8CD2FD', 11.00), ('C64FD42F', 13.10), ('DE17C1BF', 2.25),
+                             ('5627AA72', 15.40), ('212E5E27', 18.60), ('041FCDC6', 8.40), ('398F157B', 7.95)]):
+    r.shot(f'd{i + 16:02d}', c, (cuts[i],), (cuts[i + 1],), s0, z=[1.04, 1.0] if i < 8 else [1.0, 1.05], focus='face')
+for k in range(4, 8): r.add('punch', k, a=.04, d=.2)
+for k in [8 + i / 2 for i in range(8)]: r.add('punch', k, a=.05, d=.16)
+r.add('flash', 15, c='#FBF3EC', a=.8, d=.32); r.add('zoomin', 15, a=1.2, d=.4)
+for t in cuts[:-1]: r.add('punch', (t,), a=.08, d=.18)
+r.cues = dict(lines=[], credit=999, silence=[SIL0, rt(r, 17.52)], clap=CLAP, drop=DROP, cuts=cuts)
+# ---------------------------------------------------------------------------------------------------------------------
+# P2 · MULTIPLY · bars 4-11 (10.677-31.541 s): one frame becomes two (on her hand covering the lens), four, then nine, all
+#      frozen in the silence; the centre tile bursts to full screen on the drop with the hair whip. The drum roll flickers the
+#      screen into 4 and 9 on its hits; the heavy kick ripples one spin across nine tiles; the hook is one calm close-up; the
+#      grid builds back tile by tile in the last bar round a sage tile carrying the only credit.
+r = Reel('pj_grid', 'D2', 16, 32, 'Multiply'); R[r.name] = r
+SIL0, CLAP, DROP, HOOK = rt(r, 17.25), rt(r, 17.541), r.B(11), rt(r, 22.36)
+RH = [rt(r, h) for h in ROLL]
+SEG = []
+def seg(t0, t1, kind, tiles, **kw): SEG.append(dict(t0=t0, t1=t1, kind=kind, tiles=tiles, **kw))
+def tiles(prefix, k0, k1, clips, t0=None):
+    ids = []
+    for i, (c, s0) in enumerate(clips):
+        sid = f'{prefix}{i + 1}'; r.shot(sid, c, k0 if t0 is None else (t0,), k1, s0, focus='face'); ids.append(sid)
+    return ids
+r.shot('ga', '212E5E27', 0, 4, 20.81 - 4 * 0.65201, z=[1.0, 1.04], focus='face')     # ends on her hand over the lens, ring in
+seg(0, r.B(4), 'full', ['ga'])
+seg(r.B(4), r.B(6), '2v', tiles('gb', 4, 6, [('041FCDC6', 8.00), ('FB8CD2FD', 6.10)]))
+seg(r.B(6), r.B(8), '2x2', tiles('gc', 6, 8, [('62379666', 0.10), ('267E722A', 0.00), ('C64FD42F', 21.00), ('76D95B49', 1.80)]))
+ring9 = [('398F157B', 8.00), ('E3C6EA7D', 10.00), ('069EEAED', 0.60), ('2FB96BA5', 2.60), None, ('C64FD42F', 44.40), ('74FA1A49', 20.20),
+         ('1AEDD2D8', 1.40), ('F2532C01', 56.40)]
+ring9[4] = ('5627AA72', 13.75 - (SIL0 - r.B(8)))                        # the centre: frozen just before the whip, which plays on the drop
+seg(r.B(8), DROP, '3x3', tiles('gd', 8, (DROP,), ring9), freeze=SIL0, flash=CLAP)
+r.shot('ge', '5627AA72', (DROP,), 12, 13.75)
+seg(DROP, r.B(12), 'full', ['ge'], grow=4)                                 # grows out of the centre tile
+WH = [('5627AA72', 13.85), ('CF686DEA', 51.85), ('FB8CD2FD', 11.10), ('E2552016', 4.90), ('C64FD42F', 13.20), ('DE17C1BF', 2.30),
+      ('267E722A', 7.00), ('E2552016', 27.10), ('E3C6EA7D', 14.75)]
+r.shot('gf1', 'CF686DEA', 12, (RH[0],), 51.60); seg(r.B(12), RH[0], 'full', ['gf1'])
+seg(RH[0], RH[1], '2x2', tiles('gf2', (RH[0],), (RH[1],), WH[:4], t0=RH[0]))
+r.shot('gf3', 'FB8CD2FD', (RH[1],), 13, 11.00); seg(RH[1], r.B(13), 'full', ['gf3'])
+r.shot('gf4', 'C64FD42F', 13, (RH[2],), 13.10); seg(r.B(13), RH[2], 'full', ['gf4'])
+seg(RH[2], RH[3], '2x2', tiles('gf5', (RH[2],), (RH[3],), WH[4:8], t0=RH[2]))
+r.shot('gf6', 'DE17C1BF', (RH[3],), 14, 2.20); seg(RH[3], r.B(14), 'full', ['gf6'])
+r.shot('gf7', '212E5E27', 14, (RH[4],), 18.55); seg(r.B(14), RH[4], 'full', ['gf7'])
+seg(RH[4], r.B(15), '3x3', tiles('gf8', (RH[4],), 15, WH, t0=RH[4]))
+r.shot('gf9', '041FCDC6', 15, 16, 8.40, z=[1.0, 1.05], focus='face'); seg(r.B(15), r.B(16), 'full', ['gf9'])
+CAS = 0.07                                                                 # the ripple: each tile 70 ms behind the last
+r.shot('gcas', '5627AA72', (r.B(16) - 8 * CAS,), (HOOK,), 13.62 - 8 * CAS)
+seg(r.B(16), HOOK, '3x3', ['gcas'] * 9, cascade=CAS)
+r.shot('gh', '62379666', (HOOK,), 20, 0.00, z=[1.0, 1.08], focus='face'); seg(HOOK, r.B(20), 'full', ['gh'])
+seg(r.B(20), r.B(22), '2x2', tiles('gi', 20, 22, [('041FCDC6', 8.50), ('212E5E27', 18.45), ('C64FD42F', 44.50), ('398F157B', 8.10)]))
+r.shot('gi5', 'E3C6EA7D', 22, 24, 9.85, z=[1.0, 1.05], focus='face'); seg(r.B(22), r.B(24), 'full', ['gi5'])
+for i, (c, s0) in enumerate([('FB8CD2FD', 11.00), ('CF686DEA', 51.70), ('267E722A', 6.80), ('C64FD42F', 13.10)]):
+    r.shot(f'gj{i + 1}', c, 24 + i, 25 + i, s0, z=[1.04, 1.0], focus='face'); seg(r.B(24 + i), r.B(25 + i), 'full', [f'gj{i + 1}'])
+k9 = [('041FCDC6', 8.60), ('212E5E27', 18.60), ('62379666', 0.30), ('398F157B', 8.20), None, ('C64FD42F', 44.60), ('74FA1A49', 20.60),
+      ('FB8CD2FD', 6.40), ('267E722A', 0.30)]
+ids = []
+for i, c in enumerate(k9):
+    if c is None: ids.append('brand'); continue
+    sid = f'gk{i + 1}'; r.shot(sid, c[0], 28, 32, c[1], focus='face'); ids.append(sid)
+seg(r.B(28), r.B(32) + 1, '3x3', ids, build=[r.B(28 + j / 4) for j in range(9)], order=[0, 1, 2, 5, 8, 7, 6, 3, 4])   # round the edge, the credit last
+r.add('punch', 4, a=.05, d=.2); r.add('punch', 6, a=.05, d=.2); r.add('punch', 8, a=.05, d=.2)
+r.add('flash', (CLAP,), c='#FBF3EC', a=.45, d=.16); r.add('flash', (DROP,), c='#FBF3EC', a=.7, d=.3)
+for t in [r.B(12), RH[0], RH[1], r.B(13), RH[2], RH[3], r.B(14), RH[4], r.B(15)]: r.add('punch', (t,), a=.06, d=.16)
+r.add('punch', 16, a=.08, d=.3); r.add('punch', 20, a=.06, d=.3)
+for k in range(24, 28): r.add('punch', k, a=.05, d=.2)
+r.cues = dict(seg=SEG, silence=[SIL0, rt(r, 17.52)], clap=CLAP, drop=DROP, hook=HOOK)
+# ---------------------------------------------------------------------------------------------------------------------
+# P3 · HOOP ZOOM · bars 6-11 (15.893-31.541 s): the hoops are the main character. A slow push on her profile, frozen in the
+#      silence, snaps into the hoop on the clap; the drop is the hair whip. Through the drum roll every shot lands wide and
+#      the camera snaps into the hoop on the roll's hits; the heavy kick is the hoop in macro; the hook is slow pushes into it;
+#      bars 10-11 snap in on every off-beat; the last bar pushes into the cover close-up's hoop and names it.
+r = Reel('pj_zoom', 'D2', 24, 24, 'Hoop zoom'); R[r.name] = r
+SIL0, CLAP, DROP, HOOK = rt(r, 17.25), rt(r, 17.541), r.B(3), rt(r, 22.36)
+RH = [rt(r, h) for h in ROLL]
+Z = {}                                                                     # shot -> [[t, zoom, ease seconds], ...]
+r.shot('z01', '212E5E27', 0, 3, map=[[0, 18.40], [SIL0, 19.55], [DROP, 19.55]])
+Z['z01'] = [[0, 1.25, SIL0, 'io'], [CLAP, 2.0, .09, 'out']]
+r.shot('z02', '5627AA72', 3, 4, 13.75)
+plan = [('z03', '041FCDC6', 8.20, 4, 5, [[RH[0], 1.6], [RH[1], 2.1]]), ('z04', '069EEAED', 0.60, 5, 6, [[RH[2], 1.6], [RH[3], 2.1]]),
+        ('z05', '398F157B', 7.95, 6, 7, [[RH[4], 1.8]]), ('z06', 'C64FD42F', 44.40, 7, 8, [[r.B(7.5), 1.8]])]
+for sid, c, s0, k0, k1, zz in plan:
+    r.shot(sid, c, k0, k1, s0); Z[sid] = [[t, z, .08, 'out'] for t, z in zz]
+r.shot('z07', '74FA1A49', 8, (HOOK,), 20.00)                               # the heavy kick: the hoop in macro
+for sid, c, s0, t0, t1, zt in [('z08', 'C64FD42F', 20.85, (HOOK,), 12, 1.35), ('z09', '212E5E27', 18.30, 12, 16, 1.3)]:   # z09 ends on her hand over the lens
+    r.shot(sid, c, t0, t1, s0); a, b = (fsnap(t0[0]) if isinstance(t0, tuple) else r.B(t0)), r.B(t1); Z[sid] = [[a, zt, b - a, 'io']]
+for i, (c, s0) in enumerate([('E3C6EA7D', 9.90), ('267E722A', 0.10), ('2FB96BA5', 2.55), ('041FCDC6', 11.50), ('398F157B', 8.90), ('76D95B49', 2.00)]):
+    sid = f'z{i + 11}'; r.shot(sid, c, 16 + i, 17 + i, s0); Z[sid] = [[r.B(16.5 + i), 1.75, .08, 'out']]
+r.shot('z17', '62379666', 22, 24, 0.00); Z['z17'] = [[r.B(22), 1.55, r.B(24) - r.B(22), 'io']]
+r.add('flash', (DROP,), c='#FBF3EC', a=.75, d=.3); r.add('zoomin', (DROP,), a=1.22, d=.4)
+r.add('punch', 8, a=.12, d=.35)
+for k in [4, 5, 6, 7] + list(range(16, 22)): r.add('punch', k, a=.05, d=.16)
+r.cues = dict(zoom=Z, silence=[SIL0, rt(r, 17.52)], clap=CLAP, drop=DROP, hook=HOOK, credit=r.B(22) + .3)
+# ---------------------------------------------------------------------------------------------------------------------
+# P4 · FLASH · the song from its first note to bar 8 (0-21.109 s): a photoshoot. Each camera flash freezes her for a beat's
+#      fraction, then the take runs on: one shot a bar and two flashes a bar in the slow intro, then a flash every beat, then
+#      a freeze every half beat; black in the silence; the clap's flash shows her hands at the clip; the drop is a burst of
+#      eight stills, an eighth of a beat each; the drum roll flashes on its hits. White flashes stay at most two a second.
+r = Reel('pj_flash', 'D2', 0, 32, 'Flash', off=0.245); R[r.name] = r
+SIL0, CLAP, DROP = rt(r, 17.25), rt(r, 17.541), r.B(27)
+RH = [rt(r, h) for h in ROLL]
+POSES = [(2, '212E5E27', 18.45, .40, 1), (4, '041FCDC6', 8.30, .40, 1), (6, 'FB8CD2FD', 5.90, .40, 1), (8, 'E3C6EA7D', 9.55, .45, 1),
+         (10, '267E722A', 0.00, .45, 1), (12, 'C64FD42F', 44.40, .30, 1), (13, '398F157B', 7.90, .30, 0), (14, '5627AA72', 5.50, .30, 1),
+         (15, 'A352935A', 10.20, .30, 0), (16, '069EEAED', 0.60, .30, 1), (17, '2FB96BA5', 2.60, .30, 1), (18, 'E2552016', 7.90, .30, 1),
+         (19, '76D95B49', 1.90, .30, 1), (20, 'C64FD42F', 21.00, .20, 1), (20.5, '212E5E27', 18.90, .15, 0), (21, '267E722A', 7.25, .20, 1),
+         (21.5, 'F2532C01', 56.40, .15, 0), (22, 'E3C6EA7D', 3.90, .20, 1), (22.5, '041FCDC6', 12.40, .15, 0), (23, 'CF686DEA', 41.00, .20, 1),
+         (23.5, 'E3C6EA7D', 7.60, .15, 0), (24, 'E2552016', 4.75, .20, 1), (24.5, 'C64FD42F', 31.70, .15, 0), (25, '267E722A', 6.80, .20, 1),
+         (25.5, '5627AA72', 13.80, .15, 0)]
+r.shot('f01', '62379666', (0.0,), POSES[0][0], 0.00, focus='face')
+EV = []
+for i, (k, c, s0, h, fl) in enumerate(POSES):
+    end = POSES[i + 1][0] if i + 1 < len(POSES) else (SIL0,)
+    r.shot(f'f{i + 2:02d}', c, k, end, s0, focus='face'); EV.append([r.B(k), h, fl])
+r.shot('fclap', 'E2552016', (CLAP,), 27, map=[[CLAP, 26.87], [DROP, 26.87]], focus='face')      # the clap's photo: hands at the clip
+for i, (c, s0) in enumerate([('E2552016', 27.40), ('5627AA72', 13.90), ('CF686DEA', 51.90), ('FB8CD2FD', 11.20), ('C64FD42F', 13.25),
+                             ('267E722A', 7.00), ('DE17C1BF', 2.40), ('041FCDC6', 8.50)]):
+    a, b = r.B(27 + i / 8), r.B(27 + (i + 1) / 8); r.shot(f'b{i + 1}', c, (a,), (b,), map=[[a, s0], [b, s0]], focus='face')
+for sid, c, s0, k0, k1 in [('fr1', '5627AA72', 13.70, 28, 29), ('fr2', 'CF686DEA', 51.50, 29, 30), ('fr3', 'C64FD42F', 12.95, 30, 31)]:
+    r.shot(sid, c, k0, k1, s0, focus='face')
+r.shot('fend', '041FCDC6', 31, 32, 8.30, z=[1.0, 1.06], focus='face')
+EV += [[RH[0], .12, 1], [RH[1], .1, 0], [RH[2], .12, 1], [RH[3], .1, 0], [RH[4], .15, 1], [r.B(31), .3, 0]]   # no white on beat 31: three flashes in a second is the limit
+EV.sort()
+for t, h, fl in EV:
+    r.add('punch', (t,), a=.03, d=.2)
+    if fl: r.add('flash', (t,), c='#FBF3EC', a=.5, d=.18)
+r.add('flash', (CLAP,), c='#FBF3EC', a=.6, d=.2); r.add('flash', (DROP,), c='#FBF3EC', a=.6, d=.25)
+r.cues = dict(events=EV, black=[SIL0, CLAP], clap=CLAP, drop=DROP)
+
+# the two elegant Punjabi reels again with no lyrics on screen (the owner's note: the lyrics did not look good); the credit stays
+import copy
+for base in ['golden', 'intezaar']:
+    c = copy.deepcopy(R[base]); c.name = base + '_clean'; c.cues = dict(c.cues, lines=[]); R[c.name] = c
+
 jobs = {}
 for r in R.values():
     D = r.finish()

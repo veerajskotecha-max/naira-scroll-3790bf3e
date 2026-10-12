@@ -1,4 +1,4 @@
-# Kinn Films shoot — an elegant set, seven concept reels and a 30 s best-parts cut
+# Kinn Films shoot — the Punjabi song four ways, an elegant set, seven concept reels and a 30 s best-parts cut
 
 27 unique handheld clips from the Kinn Films shoot (10:43 in all, 720x1280 HEVC, full-range
 BT.709, no audio): one look, the brocade corset, the **Woven Gold Hoops** (live), a kada and
@@ -9,7 +9,33 @@ The videos, frames and mattes are not in git.
 Every reel starts on a downbeat of its song, so beat k of a reel is at `k * beat` seconds,
 and every cut lands on a frame. Each one is built round one moment in its song.
 
-## The elegant set (latest: post these)
+## The Punjabi song, four ways (latest)
+
+The owner's note on the elegant set: the lyrics did not look good on screen. So four new edits on track D carry no words at
+all (two carry one small credit), each built round a different trick, every effect on a hit of D. `tools/hits.py` lists the
+kick, snare and hat hits by band with their place on D's felt-beat grid (D2: beat 0.65201 s from 0.245 s); the cues it gave:
+the bass back at 8.069 s, the drums at 10.677 s, the silence 17.25–17.52 s, a clap at 17.541 s, the drop at 17.849 s, the drum
+roll's hits at 18.679, 18.841, 19.495, 19.657 and 20.147 s, the heavy kick at 21.109 s, the hook from 22.36 s.
+
+| Reel | Song (from) | Length | The trick |
+| --- | --- | --- | --- |
+| **pj_drop · The drop** | D (8.069 s) | 13.0 s | Hair-up looks, two a bar, one a beat, then two a beat; a beat of her profile; then one take of her taking the clip out (E2552016), held with her hands at the clip through the silence, moving again on the clap, the hair falling on the drop with a flash; a cut on every hit of the roll; a close side profile to end. Uses `elegant.js` with no lines and no credit. |
+| **pj_grid · Multiply** | D (10.677 s) | 20.9 s | The frame splits with the song (`pj_grid.js`, layouts in the cues): one shot ending on her hand over the lens, then 2, 4 and 9 tiles; all nine freeze in the silence; the centre tile bursts to full screen on the drop with the hair whip, over the frozen grid. The roll flickers between 1, 4 and 9 tiles on its hits; on the heavy kick one spin ripples across nine tiles 70 ms apart; the hook is one calm close-up; the last bar builds the grid back round the edge to a sage tile in the centre: @nairaflore, woven gold hoops. |
+| **pj_zoom · Hoop zoom** | D (15.893 s) | 15.6 s | Every shot is framed on the hoop, tracked frame by frame: `tools/hoopseed.py` finds the gold blob beside the face box to seed `tools/track.py`, and every track was checked on a `trackcrop.py` sheet. A slow push on her face holds in the silence and snaps into the hoop on the clap; the hair whip on the drop; the roll snaps into the hoop on its hits; the hoop in macro on the heavy kick; slow pushes through the hook (one ends on her hand over the lens, the ring filling the frame); snaps on the off-beats; a push into the cover close-up's hoop and the credit. |
+| **pj_flash · Flash** | D (0.0 s) | 21.1 s | A photoshoot (`pj_flash.js`): every flash is a new pose that freezes for a fraction of a beat, then plays on; one a bar in the slow intro, one a beat, then two a beat (white only on the beat); black in the silence; the clap's photo shows her hands at the clip; the drop is a burst of eight stills, an eighth of a beat each; the roll flashes on its hits. At most two white flashes in any second (beat 31's was dropped for that; three is the photosensitivity limit). |
+
+`golden_clean` and `intezaar_clean` are the two elegant Punjabi reels again with no lyrics (a deep copy of each with
+`lines: []`), the credit kept.
+
+Checked in the final files: exact frame counts (391, 626, 469, 633), 1080x1920, 30 fps, BT.709 TV range, 27.4–27.8 MB.
+`tools/qcsync.py`: every picture cut sits on its edit frame (the grid's one exception is the ripple shot, which starts
+0.56 s early on purpose so its tiles can lag), and the drop's bass rise peaks 10–40 ms before each drop cut's frame
+boundary. A frame with no effects on it matches the camera original to −1.1 / −0.5 / −1.0 levels (R, G, B).
+
+Review sheets come from the rendered frames or a plain `fps=` pass over the encode. An ffmpeg `select` followed by `fps`
+fills the dropped stretches with copies of the last frame, which reads as a frozen video; it caught two good encodes as bad.
+
+## The elegant set
 
 Re-made at the owner's ask ("too much graphic… make it elegant… less tacky"): no stickers,
 chat bubbles, emoji, sparkles, shakes, glitches or zoom kicks. One line of type at a time
@@ -152,6 +178,13 @@ python3 tools/bands.py $WORK/ffmpeg <song.wav> <beat 0> <beat>     # sub / mid /
 python3 tools/shotsheet.py $WORK <reel> sheet.jpg                  # first, middle and last frame of every shot
 python3 tools/mix.py $WORK onephoto5 golden intezaar
 python3 tools/qcfinal.py $WORK onephoto5 golden intezaar && python3 tools/qcsync.py $WORK onephoto5 golden intezaar
+# the Punjabi set
+python3 tools/hits.py $WORK/ffmpeg <song D> 0.245 0.65201 0 39.2 [hits.json]   # kick / snare / hat hits on the felt grid
+python3 tools/strip.py $WORK strip.jpg <clip>:<t0>:<t1>:<fps> ...              # source moments, for picking in-points
+python3 tools/hoopseed.py $WORK pj_zoom <shot>:<t> ...                           # hoop seeds for track.py (+ a check sheet)
+python3 tools/track.py $WORK pj_zoom <seed specs> && python3 tools/trackcrop.py $WORK pj_zoom check.jpg <ids>
+python3 tools/mix.py $WORK pj_drop pj_grid pj_zoom pj_flash
+python3 tools/qcfinal.py $WORK pj_drop pj_grid pj_zoom pj_flash && python3 tools/qcsync.py $WORK pj_drop pj_grid pj_zoom pj_flash
 ```
 
 ## Checked (12 Oct 2026)

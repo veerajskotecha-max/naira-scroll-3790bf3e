@@ -5,8 +5,8 @@ describe("routeKeyFor", () => {
   it("finds the page behind the URLs shoppers land on", () => {
     expect(routeKeyFor("/")).toBe("Index");
     expect(routeKeyFor("/jewellery")).toBe("Jewellery");
-    expect(routeKeyFor("/jewellery/prism-riviere-bracelet")).toBe("JewelDetail");
-    expect(routeKeyFor("/jewellery/prism-riviere-bracelet/")).toBe("JewelDetail");
+    expect(routeKeyFor("/jewellery/prism-riviere-bracelet")).toBe("JewelDetailNext");
+    expect(routeKeyFor("/jewellery/prism-riviere-bracelet/")).toBe("JewelDetailNext");
     expect(routeKeyFor("/jewellery/collections/bracelets")).toBe("JewelleryCategory");
     expect(routeKeyFor("/collections/bracelets")).toBe("JewelleryCategory");
     expect(routeKeyFor("/product/royal-enigma")).toBe("ProductDetail");

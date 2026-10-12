@@ -102,6 +102,61 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* Naira's palette in place of the stock blue-grey one above, which is where
+     navy buttons and grey-blue text come from. The product page sets the class
+     on <html> while it is open, so dialogs and toasts rendered outside it take
+     it too; the bag carries .nf-palette itself, so it is Naira's on every
+     page. */
+  :root.nf-next,
+  .nf-palette {
+    --background: 28 65% 95.5%; /* ivory #FBF3EC */
+    --foreground: 20 13% 9%; /* ink #1A1614 */
+    --card: 28 65% 95.5%;
+    --card-foreground: 20 13% 9%;
+    --popover: 28 65% 95.5%;
+    --popover-foreground: 20 13% 9%;
+    --primary: var(--nf-sage-logo-deep-hsl); /* deep sage: the buttons */
+    --primary-foreground: 28 65% 95.5%;
+    --secondary: 30 45% 92%; /* ivory-deep #F4EBE2 */
+    --secondary-foreground: 20 13% 9%;
+    --muted: 30 45% 92%;
+    --muted-foreground: 24 8% 39%; /* warm grey, 5.4:1 on ivory */
+    --accent: 30 45% 92%;
+    --accent-foreground: 20 13% 9%;
+    --border: 32 28% 85%; /* linen hairline */
+    --input: 32 28% 85%;
+    --ring: 38 50% 46%; /* gold-deep */
+  }
+}
+
+/* Press logos with a white box (JPG/PNG) sit on the ivory ground without it. */
+.nf-next [aria-label="Press features"] img {
+  mix-blend-mode: multiply;
+}
+
+/* The review stars are drawn in stock yellow; on the preview page they take
+   the brand gold. */
+.nf-next .text-yellow-500 {
+  color: var(--nf-gold);
+}
+.nf-next .fill-yellow-500 {
+  fill: var(--nf-gold);
+}
+
+/* On the preview page the announcement strip holds still: one line, centred
+   and a size smaller. The product is the thing that moves the eye there, and
+   the page states shipping beside Add to cart already. */
+.nf-next [data-announcement] .animate-marquee {
+  animation: none;
+  width: 100%;
+  justify-content: center;
+}
+.nf-next [data-announcement] .animate-marquee > span {
+  font-size: 10px;
+}
+.nf-next [data-announcement] .animate-marquee > span:not(:first-child) {
+  display: none;
 }
 
 @layer base {
@@ -229,6 +284,14 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* On the redesigned product page, the same guard without making <body> a
+   scroll container, so the laptop photo column can stay in view (sticky).
+   Browsers without `clip` keep `hidden` from the rule above. */
+html.nf-next,
+html.nf-next body {
+  overflow-x: clip;
+}
+
 /* Smooth scroll only for users who haven't requested reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -316,6 +379,7 @@ img {
   --nf-gold: #C99A4C;             --nf-gold-rgb: 201 154 76;     /* bright gold */
   --nf-gold-deep: #B0843A;        --nf-gold-deep-rgb: 176 132 58;/* mid gold */
   --nf-gold-shadow: #9A7634;      --nf-gold-shadow-rgb: 154 118 52; /* umbral gold, text-safe on ivory */
+  --nf-gold-text: #80612A;        --nf-gold-text-rgb: 128 97 42; /* small gold lettering: 5.2:1 on ivory, 4.9:1 on ivory-deep (AA) */
   --nf-sage: #99B4AF;             --nf-sage-rgb: 153 180 175;    /* brand sage */
   --nf-blush: #FFBDA8;            --nf-blush-rgb: 255 189 168;   /* pressed-flower blush */
 
@@ -386,6 +450,11 @@ img {
      marks. Kept as a component token so the exception is visible and lives in
      exactly one place, instead of an arbitrary value buried in a className. */
   --nf-checkout-radius: 10px;
+
+  /* Buy buttons on the redesigned product page and bag: the logo's sage,
+     deepened so ivory lettering on it reads at 4.8:1. */
+  --nf-cta: hsl(var(--nf-sage-logo-deep-hsl));
+  --nf-cta-hover: hsl(162 20% 32%);
 
   /* Footer (sage block) */
   --nf-footer-surface: hsl(var(--nf-sage-logo-hsl));

@@ -1,4 +1,5 @@
-import { Gem, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { Gem, ShieldCheck, Sparkles } from "lucide-react";
+import { recentSoldCount } from "@/lib/dailySold";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -8,18 +9,12 @@ const items = [
   { icon: Gem, label: "18K Gold Tone Plated" },
 ] as const;
 
-const dailySoldCount = (productKey: string) => {
-  let hash = 0;
-  for (const character of productKey) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
-  return (hash % 20) + 1;
-};
-
 /**
  * Material assurances sit beside the price, where shoppers compare finish.
  * The compact horizontal treatment preserves Naira's sharp editorial edges.
  */
 const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
-  const soldCount = dailySoldCount(productKey);
+  const soldCount = recentSoldCount(productKey);
 
   return <div className="mt-3">
     <ul
@@ -43,9 +38,29 @@ const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
         </li>
       ))}
     </ul>
-    <p className="mt-3 flex items-center gap-1.5 border-l-2 border-[var(--nf-accent-strong)] pl-2.5 text-[11px] font-medium leading-5 text-[var(--nf-text)]">
-      <Zap size={14} className="shrink-0 fill-[var(--nf-accent-strong)] text-[var(--nf-accent-strong)]" aria-hidden="true" />
-      Last 24 hours: {soldCount} {soldCount === 1 ? "piece" : "pieces"} sold across Naira stalls &amp; online
+    <p className="mt-3 flex min-h-9 items-center justify-center gap-3 border-y border-[color:rgb(var(--nf-gold-rgb)/0.35)] bg-[var(--nf-surface-raised)] px-3 py-2.5">
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 12 12"
+        fill="none"
+        aria-hidden="true"
+        className="shrink-0 text-[var(--nf-accent-strong)]"
+      >
+        <path d="M6 0L7.5 4.5L12 6L7.5 7.5L6 12L4.5 7.5L0 6L4.5 4.5L6 0Z" fill="currentColor" />
+      </svg>
+      <span className="flex items-baseline gap-1.5">
+        <span className="font-cormorant text-[15px] italic leading-none text-[var(--nf-accent-strong)]">
+          {soldCount}
+        </span>
+        <span
+          className="whitespace-nowrap text-[9px] font-light uppercase leading-none tracking-[0.2em] text-[var(--nf-text)] sm:text-[10px]"
+          style={jost}
+        >
+          pieces sold in the last 48 hours
+        </span>
+      </span>
+      <span className="h-2 w-px shrink-0 bg-[color:rgb(var(--nf-gold-rgb)/0.3)]" aria-hidden="true" />
     </p>
   </div>
 };

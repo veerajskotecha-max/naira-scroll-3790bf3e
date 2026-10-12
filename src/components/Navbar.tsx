@@ -8,11 +8,15 @@ import NairaWordmark from "./NairaWordmark";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useBackToClose } from "@/hooks/useBackToClose";
+import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 
 interface NavbarProps {
   scrolled: boolean;
 }
+
+// The clothing pages keep their header exactly as it was.
+const CLOTHING = /^\/(product|products)\/|^\/shop\/indo-western/;
+const leaveAsIs = () => {};
 
 const leftLinks: { label: string; to: string; mega?: boolean }[] = [
   { label: "HOME", to: "/" },
@@ -29,6 +33,9 @@ const Navbar = ({ scrolled }: NavbarProps) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  // Search closes on back as well, off the clothing pages.
+  const clothing = CLOTHING.test(location.pathname);
+  const search = useBackToClose("nfSearch", searchOpen && !clothing, clothing ? leaveAsIs : setSearchOpen);
   const { totalItems, setDrawerOpen } = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: setWishlistOpen } = useWishlist();
 
@@ -170,7 +177,11 @@ const Navbar = ({ scrolled }: NavbarProps) => {
       </nav>
 
       <MobileMenu isOpen={mobileOpen} onClose={menu.requestClose} closeThen={menu.closeThen} />
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay
+        open={searchOpen}
+        onClose={clothing ? () => setSearchOpen(false) : search.requestClose}
+        onFollow={clothing ? undefined : followOut(search.closeThen, navigate)}
+      />
 
     </>
   );

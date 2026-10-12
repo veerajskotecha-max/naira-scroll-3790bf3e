@@ -47,6 +47,25 @@ describe("OfferProgress", () => {
     expect(screen.getByText("20% off")).toBeInTheDocument();
   });
 
+  /* A typed 10% code (NAIRA10) already gives what the first rung gives: the
+     band must not offer that 10% again, only the rung that beats it. */
+  it("never offers a saving the bag already has from a code", () => {
+    render(<OfferProgress totalItems={1} appliedRate={0.1} quiet />);
+    expect(screen.getByText("10% off — add 2 pieces for 20%")).toBeInTheDocument();
+    expect(screen.queryByText(/save 10%/)).not.toBeInTheDocument();
+  });
+
+  it("stops at a code that beats every rung", () => {
+    render(<OfferProgress totalItems={2} appliedRate={0.2} quiet />);
+    expect(screen.getByText("20% off — your best price")).toBeInTheDocument();
+  });
+
+  it("shows no rung labels in the quiet bag", () => {
+    render(<OfferProgress totalItems={1} quiet />);
+    expect(screen.getByText("Add 1 piece, save 10%")).toBeInTheDocument();
+    expect(screen.queryByText("2 pieces")).not.toBeInTheDocument();
+  });
+
   it("reports progress across the whole ladder, not the current rung", () => {
     render(<OfferProgress totalItems={2} />);
     const bar = screen.getByRole("progressbar");

@@ -71,10 +71,16 @@ const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
 interface FomoPopupProps {
   suppressed?: boolean;
   mobileStickyVisible?: boolean;
+  /** A smaller, lighter card (the redesigned product page). */
+  quiet?: boolean;
+  /** Where a piece links to; the product page by default. */
+  hrefFor?: (handle: string) => string;
 }
 
-const FomoPopup = ({ suppressed = false, mobileStickyVisible = false }: FomoPopupProps) => {
+const FomoPopup = ({ suppressed = false, mobileStickyVisible = false, quiet = false, hrefFor }: FomoPopupProps) => {
   const { jewellery } = useLiveJewellery();
+  const hrefForRef = useRef(hrefFor);
+  hrefForRef.current = hrefFor;
   const [item, setItem] = useState<Shown | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -133,7 +139,7 @@ const FomoPopup = ({ suppressed = false, mobileStickyVisible = false }: FomoPopu
         minutes: 1 + Math.floor(Math.random() * 24),
         title: piece.name,
         image: piece.image,
-        to: `/jewellery/${piece.handle}`,
+        to: hrefForRef.current ? hrefForRef.current(piece.handle) : `/jewellery/${piece.handle}`,
       });
       setVisible(true);
 
@@ -155,6 +161,45 @@ const FomoPopup = ({ suppressed = false, mobileStickyVisible = false }: FomoPopu
   }, [suppressed]);
 
   if (!item || !visible || suppressed) return null;
+
+  const dismiss = () => {
+    setVisible(false);
+    snoozeUntil.current = Date.now() + SNOOZE;
+  };
+  const position = mobileStickyVisible
+    ? "bottom-[calc(var(--pdp-sticky-bar-h)+env(safe-area-inset-bottom,0px)+12px)]"
+    : "top-[166px]";
+
+  if (quiet) {
+    return (
+      <div
+        className={`fixed left-3 z-[39] w-[min(236px,calc(100vw-24px))] md:bottom-6 md:left-6 md:top-auto md:z-[90] ${position}`}
+        aria-live="polite"
+      >
+        <div className="relative flex w-full items-center gap-2 border border-nf-gold/25 bg-nf-ivory/95 p-1 pr-7 shadow-[0_6px_18px_-12px_rgb(var(--nf-ink-rgb)/0.45)] backdrop-blur-md">
+          <Link to={item.to} className="shrink-0">
+            <img src={item.image} alt={item.title} className="h-9 w-9 object-cover" loading="lazy" decoding="async" />
+          </Link>
+          <div className="min-w-0 leading-tight">
+            <Link to={item.to} className="block truncate text-[11px] text-nf-ink">
+              {item.name.split(" ")[0]}, {item.city} · <span className="text-nf-ink/60">{item.minutes === 1 ? "1 min ago" : `${item.minutes} min ago`}</span>
+            </Link>
+            <Link to={item.to} className="block truncate font-cormorant text-[13px] text-nf-ink">
+              bought the {item.title}
+            </Link>
+          </div>
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label="Dismiss notification"
+            className="absolute right-0 top-0 flex h-8 w-8 items-center justify-center text-nf-ink/45"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -10,7 +10,7 @@ F = {
  'sonal_kinn': "Sonal · Kinn Films shoot",
  'sonal_grwm': "Sonal · her GRWM cut",
  'pankti': "Pankti × Naira · huggies + toggle chain",
- 'riya': "Riya × Naira · Halo ring + Baroque lariat",
+ 'riya': "Halo ring + Baroque lariat · creator reel",
  'pearl': "Creator reel · Pearl Point Studs + Heartline necklace",
 }
 R = []
@@ -77,20 +77,20 @@ add('B3', 'sonal_kinn', 'Best parts · labelled (30 s and 40 s)', 39.2, 'v14/out
 add('G1', 'sonal_grwm', 'Get ready with Naira', 23.9, 'v20/out/naira-grwm-final.mp4', h(6, 6, 3, 4, 6), 'organic',
     'Her own post with the title. Best used as a partnership ad from her handle once it is live, not as a cold Naira ad. A no-music file exists.', alts=['naira-grwm-final-no-music.mp4'])
 # ---- Pankti
-add('P1', 'pankti', 'Pankti × Naira · v11 motion graphics', 19.6, 'pk/naira-pankti-v11.mp4', h(9, 10, 9, 9, 6), 'run',
-    'The best-made ad of everything here. Huggies fill frame 1, "not all gold has to shine", swing tags with real prices, end card "both for ₹2,338". Her earlier collab reel ran at ROAS 0.79 (₹28k spent), so test it small before scaling. Her sound needs swapping.')
+add('P1', 'pankti', 'Pankti × Naira · v11 motion graphics', 19.6, 'pk/naira-pankti-v11.mp4', h(9, 10, 9, 9, 7), 'run',
+    'The best-made ad of everything here. Huggies fill frame 1, "not all gold has to shine", swing tags with today\'s prices, end card "both for ₹2,338". Her original collab reel had the best click and add-to-cart rates of any reel; it lost money because its luxury-interest audience cost ₹944 per 1,000 views. Run this one on a broad audience. Her sound needs swapping.')
 add('P2', 'pankti', 'Pankti × Naira · v10', 19.3, 'pk/naira-pankti-final.mp4', h(9, 10, 9, 8, 5), 'superseded', 'The cut before v11, with fewer graphics.')
 add('P3', 'pankti', 'Pankti × Naira · v7 re-cut', 17.8, 'final/naira-pankti-v7.mp4', h(9, 9, 8, 8, 4), 'superseded', 'Earlier re-cut; its end card uses the old dark wordmark, not the sage and pink one.')
 # ---- Riya
-add('R1', 'riya', 'Riya × Naira · final (with the original music bed)', 39.6, 'v12/naira-halo-baroque-FINAL-no-music.mp4', h(7, 7, 9, 6, 3), 'hold',
-    'The "where is this from?" DM format with live prices and a pair card. But it runs 40 s, her earlier reel ran at ROAS 0.71 with few people past the first quarter, and the Baroque Pearl Lariat has 2 left. Hold, or cut a 15 s version once it is restocked.')
-add('R2', 'riya', 'Riya × Naira · final with music (graded)', 39.6, 'v12/naira-halo-baroque-final-with-music.mp4', h(7, 7, 9, 6, 3), 'superseded', 'Same edit on the earlier graded frames. The ad file above uses the final frames and the same cleared music bed.')
-add('R3', 'riya', 'Riya × Naira · v5', 39.6, 'v12/naira-halo-baroque-v5.mp4', h(7, 7, 9, 6, 3), 'superseded', 'Replaced by the final.')
-add('R4', 'riya', 'Riya × Naira · v4 (macro)', 39.6, 'v12/naira-halo-baroque-v4.mp4', h(5, 8, 9, 6, 2), 'no', 'The macro zoom and blur read as AI-made; you sent it back.')
+add('R1', 'riya', 'Where is this from? · final (with the original music bed)', 39.6, 'v12/naira-halo-baroque-FINAL-no-music.mp4', h(7, 7, 9, 6, 3), 'hold',
+    'The "where is this from?" DM format with live prices and a pair card. But it runs 40 s, long for a cold ad, and the Baroque Pearl Lariat has 2 left. Hold, or cut a 15 s version once it is restocked.')
+add('R2', 'riya', 'Where is this from? · final with music (graded)', 39.6, 'v12/naira-halo-baroque-final-with-music.mp4', h(7, 7, 9, 6, 3), 'superseded', 'Same edit on the earlier graded frames. The ad file above uses the final frames and the same cleared music bed.')
+add('R3', 'riya', 'Where is this from? · v5', 39.6, 'v12/naira-halo-baroque-v5.mp4', h(7, 7, 9, 6, 3), 'superseded', 'Replaced by the final.')
+add('R4', 'riya', 'Where is this from? · v4 (macro)', 39.6, 'v12/naira-halo-baroque-v4.mp4', h(5, 8, 9, 6, 2), 'no', 'The macro zoom and blur read as AI-made; you sent it back.')
 # ---- Pearl creator reel
 add('H1', 'pearl', 'Found my favourite jewellery · final', 28.2, 'v8/naira-pearl-heartline-final.mp4', h(5, 7, 7, 6, 3), 'hold',
     '"Not going to gatekeep" UGC with tags for both pieces. The first frames are out of focus, it runs 28 s, and the studs have 3 left and the necklace 4.')
-DRAFTS = [('riya', 'Riya × Naira · v1–v3', 'Earlier drafts of the final; not rated separately.'),
+DRAFTS = [('riya', 'Where is this from? · v1–v3', 'Earlier drafts of the final; not rated separately.'),
           ('pankti', 'Pankti × Naira · v8, v9', 'Earlier drafts of v11; not rated separately.'),
           ('pearl', 'Found my favourite jewellery · v8', 'The draft before the final; not rated separately.')]
 json.dump({'families': F, 'rows': R, 'drafts': DRAFTS, 'weights': W}, open(sys.argv[1], 'w'), indent=1, ensure_ascii=False)

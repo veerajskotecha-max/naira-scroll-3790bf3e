@@ -12,11 +12,23 @@ each picked ad's file, link, text and button, and a JSON block with the asset id
 Hook 25%, product 20%, offer and brand 20%, works muted 10%, ad fit 25%. Ad fit covers length, licensed sound, claims, stock,
 timing, and what the account has already shown. Every edit was reviewed from frame sheets (`tools/sheets.py`) on 14 Oct 2026.
 The numbers behind "what the account has shown" come from the owner's Ads Board artifact on that date: break-even ROAS 2.1,
-the original Pankti collab reel at ROAS 0.79 (₹28k spent) and the Riya reel at 0.71, and a billing stop since 12 Oct.
+and a billing stop since 12 Oct.
+
+The Pankti and Riya collab reels that ran from 30 Aug to 21 Sep (the creators' own Instagram posts, promoted):
+
+| | Spent | Per 1,000 views | Outbound CTR | Carts / landing views | Buys | ROAS | Saw a quarter |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Pankti | ₹28,182 | ₹944 | 2.73% | 70 / 768 | 8 | 0.79 | 7.0% |
+| Riya | ₹17,382 | ₹355 | 1.87% | 42 / 766 | 6 | 0.71 | 4.0% |
+
+Pankti's needed under about ₹356 per 1,000 views to break even and paid ₹800–1,240 in every week of a narrow
+luxury-interest audience; its clicks and carts were the best of any reel. Riya's needed under about ₹120; its weak
+opening (3–4 s of her face before any jewellery) shows in the 4% who saw a quarter of it.
 
 Run first: Doing all the work (price-led, Woven Gold Hoops), Mummy vs me (festive story, retire after 8 Nov) and Pankti v11
 (product-first, huggies + toggle chain). They are three angles on two product lines, not simply the three top scores. The
-Riya reel is held: it runs 40 s, the earlier cut did not pay back, and the Baroque Pearl Lariat had 2 in stock.
+Halo ring + Baroque lariat reel ("where is this from?", a different creator from Riya) is held: it runs 40 s and the
+Baroque Pearl Lariat had 2 in stock.
 
 ## The ad files
 
@@ -28,7 +40,7 @@ Riya reel is held: it runs 40 s, the earlier cut did not pay back, and the Baroq
 - the master split into two parts with its sha256. The artifact's asset store takes at most 20 MiB a file, and the page
   rejoins the parts and checks the hash before saving.
 
-Riya's master keeps her voice and the original synth bed (`halo-baroque-v4/audio/music.py`, cleared), muxed from `mix.wav`.
+The Halo ring master keeps the creator's voice and the original synth bed (`halo-baroque-v4/audio/music.py`, cleared), muxed from `mix.wav`.
 That file is sample-aligned with the final video (lag 0).
 
 Covers and posters go through RGB (`in_color_matrix=bt709:in_range=tv,format=rgb24`) before JPEG. A direct

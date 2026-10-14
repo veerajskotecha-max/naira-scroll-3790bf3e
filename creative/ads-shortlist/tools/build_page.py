@@ -40,7 +40,7 @@ C = [
  dict(id='K6', rec='yes', title='One photo, new DP', angle='Relatable skit', products=[HOOPS], slug='one-photo-new-dp',
       primary='Bas ek photo… 27 videos later, new DP ✨ Woven Gold Hoops, ₹1,499.',
       headline='Worth the 27 videos'),
- dict(id='R1', rec='hold', title='Riya · where is this from?', angle='UGC testimonial', products=[HALO, LAR], pair=3283, slug='riya-where-is-this-from',
+ dict(id='R1', rec='hold', title='Where is this from?', angle='UGC testimonial', products=[HALO, LAR], pair=3283, slug='riya-where-is-this-from',
       primary='“Where is this from?” Halo Curve Ring ₹2,049 + Baroque Pearl Lariat ₹1,599. Any 2 pieces get 10% off in the bag: both for ₹3,283.',
       headline='Both for ₹3,283'),
 ]
@@ -48,21 +48,22 @@ cards = []
 for c in C:
     m = man[c['id']]; hero = c['products'][0]
     riya = c['id'] == 'R1'
-    cards.append(dict(c, url=link(hero['handle'], c['slug']), file=m['file'], size=m['size'], sha256=m['sha256'],
+    fname = 'naira-ad-halo-ring-pearl-lariat.mp4' if riya else m['file']
+    cards.append(dict(c, url=link(hero['handle'], c['slug']), file=fname, size=m['size'], sha256=m['sha256'],
         parts=[aid(p['path']) for p in m['parts']], preview=aid(m['preview']), poster=aid(m['poster']),
-        cover=dict(file=m['file'][:-4] + '-cover.jpg', asset=aid(f"{A}/out/cover/{m['file'][:-4]}-cover.jpg")),
-        music=("Riya's voice and the original music bed, which is cleared for paid use." if riya else SILENT),
+        cover=dict(file=fname[:-4] + '-cover.jpg', asset=aid(f"{A}/out/cover/{m['file'][:-4]}-cover.jpg")),
+        music=("Her voice and the original music bed, which is cleared for paid use." if riya else SILENT),
         musicShort=('her voice + cleared original music' if riya else 'no song'),
-        capnote=("Preview and ad file: Riya's voice and the original music bed." if riya else 'Preview plays the original song. The ad file has no song.'),
+        capnote=("Preview and ad file: her voice and the original music bed." if riya else 'Preview plays the original song. The ad file has no song.'),
         products=[{k: v for k, v in p.items() if k != 'handle'} for p in c['products']]))
 BOARD = 'https://claude.ai/artifact/DazCYqyXArfKwAy3n7rwDV'; DL = 'https://claude.ai/artifact/1WJmCGEH1kVAbQ6La9e5fF'
 D = dict(url=URL, pixel='1232524215695667', asOf='14 Oct 2026', asOfShort='14 Oct 2026', families=rat['families'], rows=rat['rows'], drafts=rat['drafts'],
   sprite=dict(rat['sprite'], asset=aid(f'{A}/out/thumbs.jpg')), cards=cards,
   alerts=[
     dict(html=f'<b>The ad account has been stopped since 12 Oct for an unpaid balance</b> (your <a href="{BOARD}" target="_blank" rel="noopener">Ads Board</a>, 14 Oct, 19:10 IST). Nothing new will deliver until it is paid.'),
-    dict(calm=True, html="<b>The ad files have no song.</b> Meta can mute or reject commercial music in paid ads, so each file is the edit with its song taken out. Add a track from Meta's Sound Collection in Ads Manager. Riya's file keeps her voice and the original music bed, which is cleared."),
-    dict(calm=True, html='<b>What the account already shows.</b> The original Pankti and Riya reels ran as ads at ROAS 0.79 and 0.71, against a break-even of 2.1. The Woven Gold Hoops are selling: the last order, on 11 Oct, was the hoops. So the ratings lean towards the hoops.'),
-    dict(calm=True, html="<b>Sonal, Pankti and Riya are in these.</b> Get each one's OK for paid use, or run them as partnership ads from their own handles."),
+    dict(calm=True, html="<b>The ad files have no song.</b> Meta can mute or reject commercial music in paid ads, so each file is the edit with its song taken out. Add a track from Meta's Sound Collection in Ads Manager. The Halo ring file keeps the creator's voice and the original music bed, which is cleared."),
+    dict(calm=True, html='<b>What the account already shows.</b> Pankti\'s and Riya\'s collab reels ran as ads from 30 Aug to 21 Sep: ₹28,182 and ₹17,382 spent, returning 0.79 and 0.71 per rupee against a break-even of 2.1. Pankti\'s pulled the best clicks and carts of any reel but paid ₹944 per 1,000 views in a narrow luxury-interest audience; Riya\'s cost less to show but sold less per view. The Woven Gold Hoops are selling: the last order, on 11 Oct, was the hoops.'),
+    dict(calm=True, html="<b>Sonal, Pankti and the Halo ring creator are in these.</b> Get each one's OK for paid use, or run them as partnership ads from their own handles."),
   ],
   method='How the scores work: hook 25%, product 20%, offer and brand 20%, works with the sound off 10%, ad fit 25% (length, licensed sound, claims, stock, timing and what the account has already shown). Every edit was reviewed frame by frame on 14 Oct. Edits that differ only in their song share one row.',
   footer=f'<span>Prices and stock: live from Shopify, 14 Oct 2026. Past ad results and the billing stop: the <a href="{BOARD}" target="_blank" rel="noopener">Ads Board</a>.</span><span>The originals with their songs are in <a href="{DL}" target="_blank" rel="noopener">Naira Reel Downloads</a> (Kinn Films reels) and in the chat.</span>',
@@ -70,8 +71,9 @@ D = dict(url=URL, pixel='1232524215695667', asOf='14 Oct 2026', asOfShort='14 Oc
     'The ad account has been stopped for an unpaid balance since 12 Oct (Ads Board, 14 Oct, 19:10 IST). Pay it first; nothing new delivers until then.',
     "Build everything as drafts in a new ad set (or campaign) for this test. Do not edit, duplicate or add ads to the two live ad sets, 'one winner – Copy' and 'Naira · IG Top 20 · Stories + Feed'.",
     'Placements: Instagram and Facebook Reels and Stories. The files are 9:16 with text near the top; Feed crops them to 4:5 and cuts it off.',
-    "Sound: the ad files carry no song, because Meta can mute or reject unlicensed music. Add a track from Meta's Sound Collection, or run silent. Riya's file keeps her voice and a cleared original bed. Leave Advantage+ music off unless the owner chooses it.",
-    'Creators: Sonal, Pankti and Riya appear in these ads. Confirm each agreed to paid use, or run them as partnership ads from their handles.',
+    "Sound: the ad files carry no song, because Meta can mute or reject unlicensed music. Add a track from Meta's Sound Collection, or run silent. The Halo ring file keeps the creator's voice and a cleared original bed. Leave Advantage+ music off unless the owner chooses it.",
+    'Creators: Sonal, Pankti and the Halo ring creator appear in these ads. Confirm each agreed to paid use, or run them as partnership ads from their handles.',
+    'Audience: broad (Advantage+). The narrow interest audiences behind the Pankti and Riya collab reels cost ₹355–944 per 1,000 views, which is most of why they lost money.',
     'The owner decides the budget, the AI-disclosure setting (these are filmed footage with designed graphics, no generated media) and when to publish.',
     'Judge each ad against the break-even ROAS of 2.1 on the Ads Board (operating target 2.8).',
     'Mummy vs me is a Diwali joke: stop it after 8 Nov.'],

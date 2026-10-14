@@ -1,0 +1,425 @@
+<title>Naira Ad Shortlist</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Layout: a review desk. Summary and warnings first, then one card per ad file (video beside its scores, copy and pick),
+   then every edit as a rated list, then the hand-off to Claude. Sharp corners throughout: the brand's radius is 0. */
+:root {
+  --bg: #FBF3EC; --paper: #FFFFFF; --ink: #1A1614; --muted: #6B625D; --line: #E7DCD2; --soft: #F4EAE1;
+  --deep: #50726A; --on-deep: #FBF3EC; --sage: #99B4AF; --sage-wash: #E6EEEC; --blush: #FFBDA8; --blush-wash: #FFE9E0;
+  --warn: #A4402C; --warn-wash: #FBE4DD;
+  --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1A1614; --paper: #241F1C; --ink: #FBF3EC; --muted: #B7ABA3; --line: #3A322D; --soft: #2C2622;
+  --deep: #99B4AF; --on-deep: #1A1614; --sage: #7E9A95; --sage-wash: #24302D; --blush: #FFBDA8; --blush-wash: #3A2B26;
+  --warn: #FF9C85; --warn-wash: #3A2420; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1A1614; --paper: #241F1C; --ink: #FBF3EC; --muted: #B7ABA3; --line: #3A322D; --soft: #2C2622;
+  --deep: #99B4AF; --on-deep: #1A1614; --sage: #7E9A95; --sage-wash: #24302D; --blush: #FFBDA8; --blush-wash: #3A2B26;
+  --warn: #FF9C85; --warn-wash: #3A2420; color-scheme: dark }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--body); margin: 0; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 72px; display: grid; gap: 40px; }
+a { color: var(--deep); text-underline-offset: 3px; }
+h1, h2 { font-family: var(--display); font-style: italic; font-weight: 600; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(40px, 7vw, 60px); line-height: 1; }
+h2 { font-size: clamp(28px, 4.4vw, 36px); line-height: 1.1; }
+.eyebrow { font: 600 12px/1.2 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--deep); }
+.lead { margin: 0; color: var(--muted); max-width: 66ch; }
+header { display: grid; gap: 12px; }
+.num { font-variant-numeric: tabular-nums; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blush); outline-offset: 2px; }
+
+/* warnings */
+.alerts { display: grid; gap: 10px; }
+.alert { border-left: 4px solid var(--warn); background: var(--warn-wash); padding: 12px 16px; font-size: 15px; max-width: 80ch; }
+.alert.calm { border-left-color: var(--sage); background: var(--sage-wash); }
+.alert b { font-weight: 600; }
+
+/* summary bar */
+.summary { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 14px 18px; background: var(--paper); border: 1px solid var(--line); }
+.summary .stat { display: grid; gap: 0; }
+.summary .stat b { font: 600 28px/1 var(--body); font-variant-numeric: tabular-nums; }
+.summary .stat span { font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.summary .go { margin-left: auto; }
+.btn { font: 600 13px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; padding: 12px 16px; border: 1px solid var(--deep); background: var(--deep); color: var(--on-deep); cursor: pointer; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.btn.ghost { background: transparent; color: var(--deep); }
+.btn:hover { filter: brightness(1.06); }
+.btn:disabled { cursor: progress; opacity: .7; }
+.btn.small { padding: 9px 12px; font-size: 12px; }
+
+/* cards */
+.group { display: grid; gap: 14px; }
+.group > p { margin: 0; color: var(--muted); max-width: 70ch; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 16px; }
+.card { background: var(--paper); border: 1px solid var(--line); display: grid; grid-template-columns: minmax(118px, 36%) minmax(0, 1fr); scroll-margin-top: 16px; }
+.card.pick-run { border-color: var(--deep); box-shadow: inset 4px 0 0 var(--deep); }
+.card.pick-no { opacity: .72; }
+.media { position: relative; background: #000; align-self: start; }
+.media video { display: block; width: 100%; aspect-ratio: 9 / 16; max-width: 100%; object-fit: cover; background: #000; }
+.media .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 8px 6px; font-size: 11px; line-height: 1.3; color: #FBF3EC; background: linear-gradient(transparent, rgba(26,22,20,.75)); pointer-events: none; }
+.media.playing .cap { display: none; }
+.info { min-width: 0; padding: 14px 16px 16px; display: grid; gap: 10px; align-content: start; }
+.top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+.top h3 { font: italic 600 25px/1.05 var(--display); margin: 4px 0 0; text-wrap: balance; }
+.who { margin: 2px 0 0; font-size: 13.5px; color: var(--muted); }
+.score { text-align: right; flex: none; }
+.score b { display: block; font: 600 34px/1 var(--body); font-variant-numeric: tabular-nums; color: var(--deep); }
+.score span { font-size: 11.5px; color: var(--muted); letter-spacing: .06em; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; padding: 5px 7px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.tag.run { background: var(--deep); border-color: var(--deep); color: var(--on-deep); }
+.tag.yes { border-color: var(--sage); color: var(--deep); background: var(--sage-wash); }
+.tag.hold { border-color: var(--blush); background: var(--blush-wash); color: var(--ink); }
+.tag.no { border-color: var(--warn); color: var(--warn); }
+.bars { display: grid; grid-template-columns: auto minmax(0, 1fr) 1.6em; gap: 3px 10px; align-items: center; font-size: 12px; }
+.bars .l { color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-size: 11px; }
+.bars .t { height: 6px; background: var(--soft); position: relative; }
+.bars .t i { position: absolute; inset: 0 auto 0 0; background: var(--sage); }
+.bars .v { text-align: right; font-variant-numeric: tabular-nums; }
+.why { margin: 0; font-size: 14.5px; }
+.prod { margin: 0; font-size: 13.5px; color: var(--muted); }
+.prod b { color: var(--ink); font-weight: 600; }
+.prod .low { color: var(--warn); font-weight: 600; }
+details.copy { border-top: 1px solid var(--line); padding-top: 8px; }
+details.copy summary { cursor: pointer; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--deep); }
+.copy dl { margin: 8px 0 4px; display: grid; gap: 6px; font-size: 14px; }
+.copy dt { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.copy dd { margin: 0; overflow-wrap: anywhere; }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--deep); }
+.seg button { border: 0; border-left: 1px solid var(--deep); background: transparent; color: var(--deep); padding: 10px 6px; font: 600 12px/1.1 var(--body); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--deep); color: var(--on-deep); }
+.seg button[data-v="no"][aria-pressed="true"] { background: var(--muted); color: var(--bg); }
+.hint { margin: -4px 0 0; font-size: 12.5px; color: var(--muted); min-height: 1em; }
+.note-in { width: 100%; border: 1px solid var(--line); background: var(--bg); padding: 9px 10px; font: 400 16px/1.3 var(--body); color: var(--ink); }
+.dlrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.st { margin: 0; font-size: 13px; color: var(--deep); overflow-wrap: anywhere; }
+.st:empty { display: none; }
+.st.bad { color: var(--warn); }
+@media (max-width: 520px) {
+  .card { grid-template-columns: minmax(0, 1fr); }
+  .media { max-width: 260px; justify-self: center; width: 100%; margin-top: 12px; }
+}
+
+/* every edit, rated */
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters button { border: 1px solid var(--line); background: var(--paper); padding: 8px 11px; font-size: 13px; cursor: pointer; }
+.filters button[aria-pressed="true"] { border-color: var(--deep); background: var(--deep); color: var(--on-deep); }
+.list { display: grid; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding-block: 12px; border-bottom: 1px solid var(--line); }
+.thumb { width: 54px; height: 96px; background-color: var(--line); background-repeat: no-repeat; }
+.rt { min-width: 0; display: grid; gap: 3px; }
+.rt h4 { margin: 0; font: 600 15.5px/1.3 var(--body); overflow-wrap: anywhere; }
+.rt .meta { margin: 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rt .n { margin: 0; font-size: 14px; max-width: 72ch; }
+.rt .alts { margin: 0; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.rs { display: grid; gap: 6px; justify-items: end; text-align: right; }
+.rs b { font: 600 22px/1 var(--body); font-variant-numeric: tabular-nums; }
+.rs b.na { color: var(--muted); font-size: 15px; }
+.want { display: flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.want input { width: 18px; height: 18px; accent-color: var(--deep); }
+.drafts { margin: 0; font-size: 13.5px; color: var(--muted); }
+@media (max-width: 520px) { .row { grid-template-columns: 54px minmax(0, 1fr); } .rs { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; text-align: left; } }
+
+/* hand-off */
+.send { background: var(--paper); border: 1px solid var(--line); padding: 20px; display: grid; gap: 14px; }
+.send ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 74ch; }
+.send .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.send pre { margin: 0; max-height: 360px; overflow: auto; background: var(--bg); border: 1px solid var(--line); padding: 12px; font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.method { font-size: 13.5px; color: var(--muted); max-width: 80ch; margin: 0; }
+footer { color: var(--muted); font-size: 13.5px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Naira Flore · Meta ads</div>
+    <h1>Ad shortlist</h1>
+    <p class="lead" id="lead">Every edit made so far, rated for paid ads, with the ad-ready files for the ones worth running. Pick Run first, Shortlist or Skip on each card. Your picks save here and go into the brief for Claude at the bottom.</p>
+  </header>
+
+  <div class="alerts" id="alerts"></div>
+
+  <div class="summary" aria-live="polite">
+    <div class="stat"><b id="nRun">0</b><span>Run first</span></div>
+    <div class="stat"><b id="nYes">0</b><span>Shortlist</span></div>
+    <div class="stat"><b id="nNo">0</b><span>Skipped</span></div>
+    <div class="stat"><b id="nWant">0</b><span>Other edits wanted</span></div>
+    <a class="btn go" href="#send">Send to Claude</a>
+  </div>
+  <p class="st bad" id="dbState" hidden></p>
+
+  <section class="group" id="g-run"><h2>Run these first</h2><p>Three different angles on two product lines, so the first test teaches something: price-led, a festive story and product-first.</p><div class="cards"></div></section>
+  <section class="group" id="g-yes"><h2>Shortlist</h2><p>Strong enough to run. Rotate these in once the first three have a result, or swap one in now.</p><div class="cards"></div></section>
+  <section class="group" id="g-hold"><h2>You asked about this one</h2><p>Rated and ready as a file, but not one to put money behind yet.</p><div class="cards"></div></section>
+
+  <section class="group" id="all">
+    <h2>Every edit, rated</h2>
+    <p class="method" id="method"></p>
+    <div class="filters" id="filters" role="group" aria-label="Filter by shoot"></div>
+    <div class="list" id="list"></div>
+    <p class="drafts" id="drafts"></p>
+  </section>
+
+  <section class="send" id="send">
+    <h2>Send to Claude</h2>
+    <ol>
+      <li>Save the ad file for each ad you picked (on its card, or all at once below). On an iPhone, choose Save Video.</li>
+      <li>Save the brief. It lists every picked ad with its file name, link, text and button, plus the setup rules.</li>
+      <li>In a Claude chat with the Meta Ads connector, attach the brief and say "build these as drafts". Claude asks you to choose each saved file, then creates the ads as drafts in a new test ad set. Nothing goes live until you publish it.</li>
+    </ol>
+    <p class="method">Or just tell Claude in the chat where this page was made that your picks are done: it reads them straight from this page.</p>
+    <div class="actions">
+      <button class="btn" type="button" id="saveBrief">Save brief for Claude</button>
+      <button class="btn ghost" type="button" id="copyBrief">Copy brief</button>
+      <button class="btn ghost" type="button" id="saveAll">Save picked ad files</button>
+    </div>
+    <p class="st" id="sendSt" aria-live="polite"></p>
+    <details><summary class="eyebrow" style="cursor:pointer">See the brief</summary><pre id="briefPre"></pre></details>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const D = /*__DATA__*/null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const blob = id => '/_blob/' + id;
+const MB = n => (n / 1e6).toFixed(1) + ' MB';
+const PICK = { run: 'Run first', yes: 'Shortlist', no: 'Skip', hold: 'Hold' };
+const VERDICT = { run: 'Run first', yes: 'Shortlist', hold: 'Hold', superseded: 'Replaced', organic: "Post, don't boost", no: "Don't run", footage: 'Footage', internal: 'Internal' };
+const LABEL = { hook: 'Hook', product: 'Product', offer: 'Offer & brand', muted: 'Works muted', fit: 'Ad fit' };
+const rowById = Object.fromEntries(D.rows.map(r => [r.id, r]));
+const cardIds = new Set(D.cards.map(c => c.id));
+let picks = {};                                  // id -> {pick, note, at}, live from the page's store
+let dbNs = null, canWrite = true;
+
+// what a card shows as picked: the viewer's choice, else Claude's recommendation ("hold" counts as skip)
+const eff = c => (picks[c.id] && picks[c.id].pick) || (c.rec === 'hold' ? 'no' : c.rec);
+
+// ---------- header pieces ----------
+$('alerts').innerHTML = D.alerts.map(a => `<div class="alert${a.calm ? ' calm' : ''}">${a.html}</div>`).join('');
+$('method').innerHTML = D.method;
+$('drafts').textContent = D.drafts.map(d => `${d[1]}: ${d[2]}`).join(' ');
+$('foot').innerHTML = D.footer;
+
+// ---------- cards ----------
+function cardHTML(c) {
+  const r = rowById[c.id];
+  const bars = Object.keys(LABEL).map(k => `<span class="l">${LABEL[k]}</span><span class="t"><i style="width:${r.s[k] * 10}%"></i></span><span class="v">${r.s[k]}</span>`).join('');
+  const prod = c.products.map(p => `<b>${esc(p.name)}</b> ₹${p.price.toLocaleString('en-IN')} <s>₹${p.mrp.toLocaleString('en-IN')}</s> · <span class="${p.stock <= 5 ? 'low' : ''}">${p.stock} in stock</span>`).join('<br>');
+  return `<article class="card" id="ad-${c.id}">
+    <div class="media"><video controls playsinline preload="none" poster="${blob(c.poster)}" aria-label="Preview of ${esc(r.name)}"><source src="${blob(c.preview)}" type="video/mp4"></video>
+      <div class="cap">${esc(c.capnote)}</div></div>
+    <div class="info">
+      <div class="top"><div><div class="tags"><span class="tag ${c.rec}">${VERDICT[c.rec]}</span><span class="tag">${esc(c.angle)}</span></div>
+        <h3>${esc(c.title)}</h3><p class="who">${esc(D.families[r.fam])} · ${r.secs.toFixed(1)} s</p></div>
+        <div class="score"><b>${r.score.toFixed(1)}</b><span>out of 10</span></div></div>
+      <div class="bars">${bars}</div>
+      <p class="why">${esc(r.note)}</p>
+      <p class="prod">${prod}${c.pair ? `<br>Any 2 pieces 10% off in the bag: <b>both for ₹${c.pair.toLocaleString('en-IN')}</b>` : ''}<br><span style="font-size:12px">Live prices and stock, ${esc(D.asOf)}.</span></p>
+      <details class="copy"><summary>Ad text</summary><dl>
+        <div><dt>Primary text</dt><dd>${esc(c.primary)}</dd></div>
+        <div><dt>Headline</dt><dd>${esc(c.headline)}</dd></div>
+        <div><dt>Button</dt><dd>Shop now</dd></div>
+        <div><dt>Link</dt><dd>${esc(c.url)}</dd></div>
+        <div><dt>Sound</dt><dd>${esc(c.music)}</dd></div></dl>
+        <button class="btn ghost small" type="button" data-copy="${c.id}">Copy ad text</button></details>
+      <div class="seg" role="group" aria-label="Your pick for ${esc(c.title)}">
+        <button type="button" data-v="run">Run first</button><button type="button" data-v="yes">Shortlist</button><button type="button" data-v="no">Skip</button></div>
+      <p class="hint"></p>
+      <input class="note-in" id="note-${c.id}" type="text" maxlength="400" placeholder="Note for this ad (optional)" aria-label="Note for ${esc(c.title)}">
+      <div class="dlrow"><button class="btn small" type="button" data-dl="${c.id}">Save ad file · ${MB(c.size)}</button>
+        <button class="btn ghost small" type="button" data-cover="${c.id}">Save cover image</button></div>
+      <p class="st" aria-live="polite"></p>
+    </div></article>`;
+}
+for (const g of ['run', 'yes', 'hold']) {
+  const box = document.querySelector(`#g-${g} .cards`);
+  box.innerHTML = D.cards.filter(c => c.rec === g).map(cardHTML).join('');
+}
+document.querySelectorAll('.media video').forEach(v => {
+  v.addEventListener('play', () => v.parentElement.classList.add('playing'));
+  v.addEventListener('pause', () => v.parentElement.classList.remove('playing'));
+});
+
+// ---------- every edit ----------
+const FAMS = Object.keys(D.families);
+let fam = 'all';
+$('filters').innerHTML = [['all', 'All ' + D.rows.length], ...FAMS.map(f => [f, D.families[f].split(' · ')[0] + ' · ' + D.families[f].split(' · ')[1].split(',')[0]])]
+  .map(([k, t]) => `<button type="button" data-f="${k}" aria-pressed="${k === 'all'}">${esc(t)}</button>`).join('');
+$('filters').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; fam = b.dataset.f;
+  $('filters').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderList(); });
+function thumbStyle(id) {
+  const sp = D.sprite, i = sp.idx[id], s = 54 / sp.w;
+  return `background-image:url(${blob(sp.asset)});background-size:${sp.cols * sp.w * s}px ${sp.rows * sp.h * s}px;background-position:-${(i % sp.cols) * 54}px -${Math.floor(i / sp.cols) * 96}px`;
+}
+function renderList() {
+  const rows = D.rows.filter(r => fam === 'all' || r.fam === fam).slice().sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+  $('list').innerHTML = rows.map(r => {
+    const inCards = cardIds.has(r.id);
+    const want = inCards ? `<a href="#ad-${r.id}" class="want">On its card above</a>`
+      : `<label class="want"><input type="checkbox" data-want="${r.id}"${picks[r.id] && picks[r.id].pick === 'yes' ? ' checked' : ''}> Want as an ad</label>`;
+    return `<div class="row"><div class="thumb" style="${thumbStyle(r.id)}" role="img" aria-label=""></div>
+      <div class="rt"><h4>${esc(r.name)}</h4><p class="meta">${esc(D.families[r.fam])} · ${r.secs.toFixed(1)} s</p><p class="n">${esc(r.note)}</p>
+      ${r.alts ? `<p class="alts">Also: ${r.alts.map(esc).join(', ')}</p>` : ''}</div>
+      <div class="rs"><b class="${r.score == null ? 'na' : ''}">${r.score == null ? '—' : r.score.toFixed(1)}</b><span class="tag ${['run', 'yes', 'hold', 'no'].includes(r.verdict) ? r.verdict : ''}">${VERDICT[r.verdict]}</span>${want}</div></div>`;
+  }).join('');
+}
+renderList();
+$('list').addEventListener('change', e => { const x = e.target.closest('input[data-want]'); if (!x) return;
+  write(x.dataset.want, x.checked ? { pick: 'yes', note: '' } : null); });
+
+// ---------- picks: render + store ----------
+function renderPicks() {
+  let n = { run: 0, yes: 0, no: 0 };
+  for (const c of D.cards) {
+    const el = $('ad-' + c.id), p = eff(c); n[p]++;
+    el.classList.toggle('pick-run', p === 'run'); el.classList.toggle('pick-no', p === 'no');
+    el.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === p)));
+    const mine = picks[c.id] && picks[c.id].pick, rec = c.rec === 'hold' ? 'no' : c.rec;
+    el.querySelector('.hint').textContent = mine && mine !== rec ? `Claude suggested ${c.rec === 'hold' ? 'holding it' : PICK[c.rec]}. Yours: ${PICK[mine]}.` : (mine ? 'Your pick matches Claude\'s.' : `Claude's suggestion. Tap to change.`);
+    const ni = $('note-' + c.id); if (document.activeElement !== ni) ni.value = (picks[c.id] && picks[c.id].note) || '';
+  }
+  const want = Object.keys(picks).filter(id => !cardIds.has(id) && picks[id].pick === 'yes').length;
+  $('nRun').textContent = n.run; $('nYes').textContent = n.yes; $('nNo').textContent = n.no; $('nWant').textContent = want;
+  document.querySelectorAll('input[data-want]').forEach(x => { x.checked = !!(picks[x.dataset.want] && picks[x.dataset.want].pick === 'yes'); });
+  $('briefPre').textContent = brief();
+}
+const queue = {};                                // one write at a time per document
+function write(id, val) {
+  if (val) picks[id] = { ...val, at: new Date().toISOString() }; else delete picks[id];
+  renderPicks();
+  if (!dbNs || !canWrite) return;
+  const ref = dbNs.doc('picks/' + id), body = val ? { pick: val.pick, note: val.note || '', at: picks[id].at } : null;
+  queue[id] = (queue[id] || Promise.resolve()).then(() => body ? ref.set(body) : ref.delete()).catch(e => {
+    if (e && e.code === 'invalid_argument') { canWrite = false; showDb('This view can read picks but not change them. Picks made here are not saved.'); }
+    else showDb("Couldn't save that pick. Check your connection; it will save with your next change.");
+  });
+}
+function showDb(t) { const el = $('dbState'); el.textContent = t; el.hidden = false; }
+document.addEventListener('click', e => {
+  const b = e.target.closest('.seg button'); if (!b) return;
+  const id = b.closest('.card').id.slice(3);
+  write(id, { pick: b.dataset.v, note: (picks[id] && picks[id].note) || $('note-' + id).value || '' });
+});
+document.addEventListener('change', e => {
+  const n = e.target.closest('.note-in'); if (!n) return;
+  const id = n.id.slice(5), c = D.cards.find(x => x.id === id);
+  write(id, { pick: eff(c), note: n.value.trim() });
+});
+renderPicks();
+(async () => {
+  try { dbNs = window.claude && window.claude.use ? await window.claude.use('db') : null; } catch (_) { dbNs = null; }
+  if (!dbNs) { showDb("Picks can't be saved in this view, so they'll reset when you leave. Open the page on claude.ai or in the Claude app to save them."); return; }
+  dbNs.collection('picks').onSnapshot(snap => {
+    const next = {}; snap.docs.forEach(d => { const v = d.data(); if (v && v.pick) next[d.id] = v; });
+    picks = next; renderPicks();
+  }, () => showDb("Lost the connection to saved picks. Reload the page to see the latest."));
+})();
+
+// ---------- saving files ----------
+const ready = (async () => { try { return window.claude && window.claude.use ? await window.claude.use('downloads') : null; } catch (_) { return null; } })();
+const NO_SAVE = "Saving isn't available in this view. Open the page on claude.ai or in the Claude app.";
+const MSG = { declined: 'Save cancelled.', rate_limited: 'Another save is waiting for your answer. Finish that one, then try again.',
+  unavailable: NO_SAVE, not_granted: NO_SAVE, capability_disabled: NO_SAVE, capability_removed: NO_SAVE,
+  too_large: 'This app cannot save a file this size. Try claude.ai in a browser.', incomplete: "The file didn't arrive complete. Try again.",
+  fetch: "Couldn't fetch the file. Check your connection and try again." };
+async function fetchParts(ids, total, progress) {
+  let got = 0; const pieces = [];
+  for (const id of ids) {
+    const res = await fetch(blob(id)); if (!res.ok) throw { code: 'fetch' };
+    if (res.body && res.body.getReader) { const rd = res.body.getReader(), ch = [];
+      for (;;) { const { done, value } = await rd.read(); if (done) break; ch.push(value); got += value.byteLength; progress(got / total); }
+      pieces.push(new Blob(ch));
+    } else { const bl = await res.blob(); got += bl.size; progress(got / total); pieces.push(bl); }
+  }
+  return new Blob(pieces, { type: 'video/mp4' });
+}
+async function sha256(b) { if (!(window.crypto && crypto.subtle)) return null;
+  const h = await crypto.subtle.digest('SHA-256', await b.arrayBuffer()); return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+const busy = new Set();
+async function saveAd(c, b, st) {
+  if (busy.has(c.id)) return; busy.add(c.id);
+  const label = b.textContent; st.classList.remove('bad'); st.textContent = ''; b.disabled = true; b.textContent = 'Fetching 0%';
+  try {
+    const ns = await ready; if (!ns) throw { code: 'unavailable' };
+    const data = await fetchParts(c.parts, c.size, p => { b.textContent = `Fetching ${Math.min(99, Math.floor(p * 100))}%`; });
+    b.textContent = 'Checking';
+    if (data.size !== c.size) throw { code: 'incomplete' };
+    const h = await sha256(data); if (h && h !== c.sha256) throw { code: 'incomplete' };
+    b.textContent = 'Confirm save'; await ns.save({ filename: c.file, data });
+    st.textContent = 'Saved as ' + c.file; return true;
+  } catch (e) {
+    const k = e && e.code ? e.code : (e instanceof TypeError ? 'fetch' : '');
+    st.textContent = MSG[k] || "Couldn't save the file. Try again."; if (k !== 'declined') st.classList.add('bad'); return k === 'declined' ? 'declined' : false;
+  } finally { b.disabled = false; b.textContent = label; busy.delete(c.id); }
+}
+async function saveCover(c, b, st) {
+  st.classList.remove('bad'); st.textContent = '';
+  try { const ns = await ready; if (!ns) throw { code: 'unavailable' };
+    const res = await fetch(blob(c.cover.asset)); if (!res.ok) throw { code: 'fetch' };
+    await ns.save({ filename: c.cover.file, data: await res.blob() }); st.textContent = 'Saved as ' + c.cover.file;
+  } catch (e) { const k = e && e.code ? e.code : 'fetch'; st.textContent = MSG[k] || "Couldn't save the image."; if (k !== 'declined') st.classList.add('bad'); }
+}
+document.addEventListener('click', e => {
+  const d = e.target.closest('[data-dl]'), cv = e.target.closest('[data-cover]'), cp = e.target.closest('[data-copy]');
+  if (d) { const c = D.cards.find(x => x.id === d.dataset.dl); saveAd(c, d, d.closest('.info').querySelector('.st')); }
+  if (cv) { const c = D.cards.find(x => x.id === cv.dataset.cover); saveCover(c, cv, cv.closest('.info').querySelector('.st')); }
+  if (cp) { const c = D.cards.find(x => x.id === cp.dataset.copy); copyText(`${c.primary}\n\nHeadline: ${c.headline}\nButton: Shop now\nLink: ${c.url}`, cp.closest('.info').querySelector('.st')); }
+});
+async function copyText(t, st) {
+  try { await navigator.clipboard.writeText(t); st.classList.remove('bad'); st.textContent = 'Copied.'; }
+  catch (_) { st.classList.add('bad'); st.textContent = "Copying isn't allowed in this view. Open \"See the brief\" and select the text."; }
+}
+$('saveAll').addEventListener('click', async () => {
+  const st = $('sendSt'), list = D.cards.filter(c => eff(c) !== 'no');
+  if (!list.length) { st.textContent = 'No ads are picked yet.'; return; }
+  for (const [i, c] of list.entries()) {
+    st.classList.remove('bad'); st.textContent = `Saving ${i + 1} of ${list.length}: ${c.file}`;
+    const b = document.querySelector(`[data-dl="${c.id}"]`);
+    const ok = await saveAd(c, b, b.closest('.info').querySelector('.st'));
+    if (ok !== true) { st.textContent = ok === 'declined' ? `Stopped at ${c.file}. Saved ${i} of ${list.length}.` : `Stopped at ${c.file}: see the message on its card.`; if (ok !== 'declined') st.classList.add('bad'); return; }
+  }
+  st.textContent = `Saved all ${list.length} ad files.`;
+});
+
+// ---------- the brief ----------
+function brief() {
+  const picked = D.cards.filter(c => eff(c) !== 'no').sort((a, b) => (eff(a) === 'run' ? 0 : 1) - (eff(b) === 'run' ? 0 : 1) || rowById[b.id].score - rowById[a.id].score);
+  const wanted = Object.keys(picks).filter(id => !cardIds.has(id) && picks[id].pick === 'yes').map(id => rowById[id]).filter(Boolean);
+  const L = [];
+  L.push('# Naira Flore · Meta ads brief', '', `From the Naira Ad Shortlist (${D.url}), saved ${new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}.`,
+    `Picked: ${picked.filter(c => eff(c) === 'run').length} to run first, ${picked.filter(c => eff(c) === 'yes').length} on the shortlist${wanted.length ? `, ${wanted.length} more wanted without an ad file yet` : ''}.`, '', '## Before you build');
+  D.rules.forEach((t, i) => L.push(`${i + 1}. ${t}`));
+  L.push('', '## Setup', ...D.setup.map(t => '- ' + t), '', `## Ads (${picked.length})`);
+  picked.forEach((c, i) => {
+    const r = rowById[c.id], n = picks[c.id] && picks[c.id].note;
+    L.push('', `### ${i + 1}. ${c.title} · ${PICK[eff(c)]} (${r.score.toFixed(1)}/10)`,
+      `- Ad file: ${c.file} (1080×1920, ${r.secs.toFixed(1)} s, ${MB(c.size)}; ${c.musicShort})`, `- Cover image: ${c.cover.file}`,
+      ...c.products.map(p => `- Product: ${p.name} · ₹${p.price.toLocaleString('en-IN')} (MRP ₹${p.mrp.toLocaleString('en-IN')}) · ${p.stock} in stock on ${D.asOfShort}`),
+      ...(c.pair ? [`- Pair price in the bag: ₹${c.pair.toLocaleString('en-IN')} (any 2 pieces, 10% off)`] : []),
+      `- Link: ${c.url}`, `- Primary text: ${c.primary}`, `- Headline: ${c.headline}`, '- Call to action: SHOP_NOW', `- Angle: ${c.angle}`, ...(c.until ? [`- Run until: ${c.until}`] : []), ...(n ? [`- Owner's note: ${n}`] : []));
+  });
+  if (wanted.length) { L.push('', '## Also wanted (no ad file yet)'); wanted.forEach(r => L.push(`- ${r.name} (${r.id}, ${r.secs.toFixed(1)} s): ask Claude to make an ad file for it first.`)); }
+  L.push('', '## How Claude builds them (Meta Ads connector)', ...D.howto.map((t, i) => `${i + 1}. ${t}`), '', '## Machine-readable', '```json',
+    JSON.stringify({ source: D.url, saved: new Date().toISOString(), pixel: D.pixel, ads: picked.map(c => ({ id: c.id, pick: eff(c), title: c.title, file: c.file, bytes: c.size, sha256: c.sha256,
+      seconds: rowById[c.id].secs, part_asset_ids: c.parts, cover: c.cover, link_url: c.url, primary_text: c.primary, headline: c.headline, call_to_action_type: 'SHOP_NOW',
+      products: c.products, pair_price: c.pair || null, sound: c.music, run_until: c.until || null, owner_note: (picks[c.id] && picks[c.id].note) || '' })),
+      also_wanted: wanted.map(r => ({ id: r.id, name: r.name, source: r.src })) }, null, 1), '```');
+  return L.join('\n');
+}
+$('saveBrief').addEventListener('click', async () => {
+  const st = $('sendSt'); st.classList.remove('bad');
+  try { const ns = await ready; if (!ns) throw { code: 'unavailable' }; await ns.save({ filename: 'naira-ads-brief.md', data: brief() }); st.textContent = 'Saved naira-ads-brief.md.'; }
+  catch (e) { const k = e && e.code ? e.code : ''; st.textContent = MSG[k] || "Couldn't save the brief. Use Copy brief instead."; if (k !== 'declined') st.classList.add('bad'); }
+});
+$('copyBrief').addEventListener('click', () => copyText(brief(), $('sendSt')));
+</script>

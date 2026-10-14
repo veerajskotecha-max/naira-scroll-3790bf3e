@@ -10,6 +10,8 @@ HUG = dict(name='Brushed Gold Huggies', handle='brushed-gold-huggies', price=109
 TOG = dict(name='Toggle Link Chain', handle='toggle-link-chain', price=1499, mrp=2900, stock=80)
 HALO = dict(name='Halo Curve Ring', handle='halo-curve-ring', price=2049, mrp=3419, stock=5)
 LAR = dict(name='Baroque Pearl Lariat', handle='baroque-pearl-lariat', price=1599, mrp=3829, stock=2)
+CUSH = dict(name='Cushion Halo Ring', handle='cushion-halo-ring', price=1199, mrp=2200, stock=0)
+PRISM = dict(name='Prism Rivière Bracelet', handle='prism-riviere-bracelet', price=2399, mrp=4200, stock=68)
 link = lambda h, slug: f'https://nairaflore.com/jewellery/{h}?utm_source=meta&utm_medium=paid_social&utm_campaign=creative_test_oct&utm_content={slug}'
 SILENT = "No song in the ad file (Meta can mute or reject unlicensed music). Add a track from Meta's Sound Collection, or run it silent."
 C = [
@@ -43,22 +45,31 @@ C = [
  dict(id='R1', rec='hold', title='Where is this from?', angle='UGC testimonial', products=[HALO, LAR], pair=3283, slug='riya-where-is-this-from',
       primary='“Where is this from?” Halo Curve Ring ₹2,049 + Baroque Pearl Lariat ₹1,599. Any 2 pieces get 10% off in the bag: both for ₹3,283.',
       headline='Both for ₹3,283'),
+ dict(id='PK0', rec='past', title='Pankti · the collab reel that ran', angle='Unboxing', products=[HUG, TOG], pair=2338, slug='pankti-collab-reel', cta='Order now', ctaCode='ORDER_NOW',
+      primary='Two pieces from Naira, opened today. \n\nBrushed Gold Huggies, satin rather than mirror. \n\nToggle Link Chain,closes with a turn.\n\nTarnish free. Waterproof. Safe on sensitive skin.\n\n10% off on your first order  with NAIRA10.\n\n[ fyp, explore page, trending, trending audio, jewelry, indian brands naira, viral, reels ]',
+      headline='', warn='Its on-screen prices are out of date: ₹1,449 for the huggies and ₹3,448 for the pair. Today they are ₹1,099 and ₹2,598.',
+      ran=dict(dates='30 Aug – 21 Sep 2026', audience='Luxury + first-class travel interests × shoppers, 7 metros', spent=28182, cpm=944, ctr=2.73, lpv=768, atc=70, purch=8, value=22313, roas=0.79, q25=7.0)),
+ dict(id='RY0', rec='past', title='Riya · the collab reel that ran', angle='Haul', products=[CUSH, HOOPS, PRISM], hero='woven-gold-hoops', slug='riya-collab-reel', cta='Shop now', ctaCode='SHOP_NOW',
+      primary='You’re welcome, but keep it between us 💌\n\n.\n.\n.\n@naira.flore 🤍\n\n.\n.\n.\n#antitarnish #jewellery #viral #haul #reels',
+      headline='', warn='It opens on the Cushion Halo Ring, which is sold out today.',
+      ran=dict(dates='2 – 21 Sep 2026', audience='Online shopping interests × shoppers, 7 metros', spent=17382, cpm=355, ctr=1.87, lpv=766, atc=42, purch=6, value=12363, roas=0.71, q25=4.0)),
 ]
 cards = []
 for c in C:
     m = man[c['id']]; hero = c['products'][0]
-    riya = c['id'] == 'R1'
+    riya = c['id'] == 'R1'; past = c['rec'] == 'past'
+    hero_handle = c.get('hero', hero['handle'])
     fname = 'naira-ad-halo-ring-pearl-lariat.mp4' if riya else m['file']
-    cards.append(dict(c, url=link(hero['handle'], c['slug']), file=fname, size=m['size'], sha256=m['sha256'],
+    cards.append(dict(c, url=link(hero_handle, c['slug']), file=fname, size=m['size'], sha256=m['sha256'],
         parts=[aid(p['path']) for p in m['parts']], preview=aid(m['preview']), poster=aid(m['poster']),
-        cover=dict(file=fname[:-4] + '-cover.jpg', asset=aid(f"{A}/out/cover/{m['file'][:-4]}-cover.jpg")),
-        music=("Her voice and the original music bed, which is cleared for paid use." if riya else SILENT),
-        musicShort=('her voice + cleared original music' if riya else 'no song'),
-        capnote=("Preview and ad file: her voice and the original music bed." if riya else 'Preview plays the original song. The ad file has no song.'),
+        cover=(None if past else dict(file=fname[:-4] + '-cover.jpg', asset=aid(f"{A}/out/cover/{m['file'][:-4]}-cover.jpg"))),
+        music=("Her original audio, as posted. Its song is not cleared for paid use." if past else "Her voice and the original music bed, which is cleared for paid use." if riya else SILENT),
+        musicShort=('original audio, song not cleared for paid use' if past else 'her voice + cleared original music' if riya else 'no song'),
+        capnote=('The reel as you shared it, with its original audio.' if past else "Preview and ad file: her voice and the original music bed." if riya else 'Preview plays the original song. The ad file has no song.'),
         products=[{k: v for k, v in p.items() if k != 'handle'} for p in c['products']]))
 BOARD = 'https://claude.ai/artifact/DazCYqyXArfKwAy3n7rwDV'; DL = 'https://claude.ai/artifact/1WJmCGEH1kVAbQ6La9e5fF'
 D = dict(url=URL, pixel='1232524215695667', asOf='14 Oct 2026', asOfShort='14 Oct 2026', families=rat['families'], rows=rat['rows'], drafts=rat['drafts'],
-  sprite=dict(rat['sprite'], asset=aid(f'{A}/out/thumbs.jpg')), cards=cards,
+  sprite=dict(rat['sprite'], asset=aid(f'{A}/out/thumbs2.jpg')), cards=cards,
   alerts=[
     dict(html=f'<b>The ad account has been stopped since 12 Oct for an unpaid balance</b> (your <a href="{BOARD}" target="_blank" rel="noopener">Ads Board</a>, 14 Oct, 19:10 IST). Nothing new will deliver until it is paid.'),
     dict(calm=True, html="<b>The ad files have no song.</b> Meta can mute or reject commercial music in paid ads, so each file is the edit with its song taken out. Add a track from Meta's Sound Collection in Ads Manager. The Halo ring file keeps the creator's voice and the original music bed, which is cleared."),
@@ -86,5 +97,5 @@ D = dict(url=URL, pixel='1232524215695667', asOf='14 Oct 2026', asOfShort='14 Oc
 tpl = open(f'{A}/page.tpl.html').read()
 html = tpl.replace('/*__DATA__*/null', json.dumps(D, ensure_ascii=False).replace('</', '<\\/'))
 open(f'{A}/naira-ad-shortlist.html', 'w').write(html)
-missing = [k for c in cards for k in (c['poster'], c['preview'], c['cover']['asset'], *c['parts']) if not k]
+missing = [k for c in cards for k in (c['poster'], c['preview'], *([c['cover']['asset']] if c['cover'] else []), *c['parts']) if not k]
 print('wrote', len(html), 'bytes; cards', len(cards), '; missing asset ids', len(missing), '; url', URL)

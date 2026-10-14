@@ -77,6 +77,15 @@ button { font: inherit; color: inherit; }
 .tag.yes { border-color: var(--sage); color: var(--deep); background: var(--sage-wash); }
 .tag.hold { border-color: var(--blush); background: var(--blush-wash); color: var(--ink); }
 .tag.no { border-color: var(--warn); color: var(--warn); }
+.tag.past { border-color: var(--ink); color: var(--ink); }
+.ran { border-top: 1px solid var(--line); padding-top: 8px; display: grid; gap: 6px; }
+.ranhd { margin: 0; font-size: 12.5px; color: var(--muted); }
+.stats { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px 12px; }
+.stats div { min-width: 0; }
+.stats dt { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stats dd { margin: 0; font: 600 16px/1.2 var(--body); font-variant-numeric: tabular-nums; }
+.warnline { margin: 0; font-size: 13.5px; color: var(--warn); font-weight: 500; }
+.copy dd.pre { white-space: pre-wrap; }
 .bars { display: grid; grid-template-columns: auto minmax(0, 1fr) 1.6em; gap: 3px 10px; align-items: center; font-size: 12px; }
 .bars .l { color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-size: 11px; }
 .bars .t { height: 6px; background: var(--soft); position: relative; }
@@ -159,6 +168,8 @@ footer { color: var(--muted); font-size: 13.5px; display: grid; gap: 6px; }
   <section class="group" id="g-yes"><h2>Shortlist</h2><p>Strong enough to run. Rotate these in once the first three have a result, or swap one in now.</p><div class="cards"></div></section>
   <section class="group" id="g-hold"><h2>You asked about this one</h2><p>Rated and ready as a file, but not one to put money behind yet.</p><div class="cards"></div></section>
 
+  <section class="group" id="g-past"><h2>Pankti's and Riya's reels, as they ran</h2><p>Their collab posts ran as ads from 30 Aug to 21 Sep. Here are the reels as you shared them, the text they ran with and what they returned. Neither is suggested to run again as it is.</p><div class="cards"></div></section>
+
   <section class="group" id="all">
     <h2>Every edit, rated</h2>
     <p class="method" id="method"></p>
@@ -193,8 +204,8 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const blob = id => '/_blob/' + id;
 const MB = n => (n / 1e6).toFixed(1) + ' MB';
-const PICK = { run: 'Run first', yes: 'Shortlist', no: 'Skip', hold: 'Hold' };
-const VERDICT = { run: 'Run first', yes: 'Shortlist', hold: 'Hold', superseded: 'Replaced', organic: "Post, don't boost", no: "Don't run", footage: 'Footage', internal: 'Internal' };
+const PICK = { run: 'Run first', yes: 'Shortlist', no: 'Skip', hold: 'Hold', past: 'Skip' };
+const VERDICT = { run: 'Run first', yes: 'Shortlist', hold: 'Hold', superseded: 'Replaced', organic: "Post, don't boost", no: "Don't run", footage: 'Footage', internal: 'Internal', past: 'Ran as an ad' };
 const LABEL = { hook: 'Hook', product: 'Product', offer: 'Offer & brand', muted: 'Works muted', fit: 'Ad fit' };
 const rowById = Object.fromEntries(D.rows.map(r => [r.id, r]));
 const cardIds = new Set(D.cards.map(c => c.id));
@@ -202,7 +213,7 @@ let picks = {};                                  // id -> {pick, note, at}, live
 let dbNs = null, canWrite = true;
 
 // what a card shows as picked: the viewer's choice, else Claude's recommendation ("hold" counts as skip)
-const eff = c => (picks[c.id] && picks[c.id].pick) || (c.rec === 'hold' ? 'no' : c.rec);
+const eff = c => (picks[c.id] && picks[c.id].pick) || (c.rec === 'hold' || c.rec === 'past' ? 'no' : c.rec);
 
 // ---------- header pieces ----------
 $('alerts').innerHTML = D.alerts.map(a => `<div class="alert${a.calm ? ' calm' : ''}">${a.html}</div>`).join('');
@@ -214,7 +225,13 @@ $('foot').innerHTML = D.footer;
 function cardHTML(c) {
   const r = rowById[c.id];
   const bars = Object.keys(LABEL).map(k => `<span class="l">${LABEL[k]}</span><span class="t"><i style="width:${r.s[k] * 10}%"></i></span><span class="v">${r.s[k]}</span>`).join('');
-  const prod = c.products.map(p => `<b>${esc(p.name)}</b> ₹${p.price.toLocaleString('en-IN')} <s>₹${p.mrp.toLocaleString('en-IN')}</s> · <span class="${p.stock <= 5 ? 'low' : ''}">${p.stock} in stock</span>`).join('<br>');
+  const prod = c.products.map(p => `<b>${esc(p.name)}</b> ₹${p.price.toLocaleString('en-IN')} <s>₹${p.mrp.toLocaleString('en-IN')}</s> · <span class="${p.stock <= 5 ? 'low' : ''}">${p.stock <= 0 ? 'sold out' : p.stock + ' in stock'}</span>`).join('<br>');
+  const inr = n => '₹' + n.toLocaleString('en-IN');
+  const ran = c.ran ? `<div class="ran"><p class="ranhd">Ran as an ad, ${esc(c.ran.dates)} · ${esc(c.ran.audience)}</p><dl class="stats">
+      <div><dt>Spent</dt><dd>${inr(c.ran.spent)}</dd></div><div><dt>Per 1,000 views</dt><dd>${inr(c.ran.cpm)}</dd></div>
+      <div><dt>Clicked through</dt><dd>${c.ran.ctr.toFixed(2)}%</dd></div><div><dt>Carts</dt><dd>${c.ran.atc} of ${c.ran.lpv}</dd></div>
+      <div><dt>Purchases</dt><dd>${c.ran.purch}</dd></div><div><dt>Back per ₹1</dt><dd>${c.ran.roas.toFixed(2)}</dd></div>
+      <div><dt>Saw a quarter</dt><dd>${c.ran.q25.toFixed(1)}%</dd></div></dl></div>` : '';
   return `<article class="card" id="ad-${c.id}">
     <div class="media"><video controls playsinline preload="none" poster="${blob(c.poster)}" aria-label="Preview of ${esc(r.name)}"><source src="${blob(c.preview)}" type="video/mp4"></video>
       <div class="cap">${esc(c.capnote)}</div></div>
@@ -223,12 +240,12 @@ function cardHTML(c) {
         <h3>${esc(c.title)}</h3><p class="who">${esc(D.families[r.fam])} · ${r.secs.toFixed(1)} s</p></div>
         <div class="score"><b>${r.score.toFixed(1)}</b><span>out of 10</span></div></div>
       <div class="bars">${bars}</div>
-      <p class="why">${esc(r.note)}</p>
+      <p class="why">${esc(r.note)}</p>${c.warn ? `<p class="warnline">${esc(c.warn)}</p>` : ''}${ran}
       <p class="prod">${prod}${c.pair ? `<br>Any 2 pieces 10% off in the bag: <b>both for ₹${c.pair.toLocaleString('en-IN')}</b>` : ''}<br><span style="font-size:12px">Live prices and stock, ${esc(D.asOf)}.</span></p>
-      <details class="copy"><summary>Ad text</summary><dl>
-        <div><dt>Primary text</dt><dd>${esc(c.primary)}</dd></div>
-        <div><dt>Headline</dt><dd>${esc(c.headline)}</dd></div>
-        <div><dt>Button</dt><dd>Shop now</dd></div>
+      <details class="copy"><summary>${c.ran ? 'The ad text it ran with' : 'Ad text'}</summary><dl>
+        <div><dt>Primary text</dt><dd class="pre">${esc(c.primary)}</dd></div>
+        ${c.headline ? `<div><dt>Headline</dt><dd>${esc(c.headline)}</dd></div>` : ''}
+        <div><dt>Button</dt><dd>${esc(c.cta || 'Shop now')}</dd></div>
         <div><dt>Link</dt><dd>${esc(c.url)}</dd></div>
         <div><dt>Sound</dt><dd>${esc(c.music)}</dd></div></dl>
         <button class="btn ghost small" type="button" data-copy="${c.id}">Copy ad text</button></details>
@@ -236,12 +253,12 @@ function cardHTML(c) {
         <button type="button" data-v="run">Run first</button><button type="button" data-v="yes">Shortlist</button><button type="button" data-v="no">Skip</button></div>
       <p class="hint"></p>
       <input class="note-in" id="note-${c.id}" type="text" maxlength="400" placeholder="Note for this ad (optional)" aria-label="Note for ${esc(c.title)}">
-      <div class="dlrow"><button class="btn small" type="button" data-dl="${c.id}">Save ad file · ${MB(c.size)}</button>
-        <button class="btn ghost small" type="button" data-cover="${c.id}">Save cover image</button></div>
+      <div class="dlrow"><button class="btn small" type="button" data-dl="${c.id}">${c.ran ? 'Save the reel' : 'Save ad file'} · ${MB(c.size)}</button>
+        ${c.cover ? `<button class="btn ghost small" type="button" data-cover="${c.id}">Save cover image</button>` : ''}</div>
       <p class="st" aria-live="polite"></p>
     </div></article>`;
 }
-for (const g of ['run', 'yes', 'hold']) {
+for (const g of ['run', 'yes', 'hold', 'past']) {
   const box = document.querySelector(`#g-${g} .cards`);
   box.innerHTML = D.cards.filter(c => c.rec === g).map(cardHTML).join('');
 }
@@ -282,10 +299,10 @@ function renderPicks() {
   let n = { run: 0, yes: 0, no: 0 };
   for (const c of D.cards) {
     const el = $('ad-' + c.id), p = eff(c); n[p]++;
-    el.classList.toggle('pick-run', p === 'run'); el.classList.toggle('pick-no', p === 'no');
+    el.classList.toggle('pick-run', p === 'run'); el.classList.toggle('pick-no', p === 'no' && !!(picks[c.id] && picks[c.id].pick));
     el.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === p)));
-    const mine = picks[c.id] && picks[c.id].pick, rec = c.rec === 'hold' ? 'no' : c.rec;
-    el.querySelector('.hint').textContent = mine && mine !== rec ? `Claude suggested ${c.rec === 'hold' ? 'holding it' : PICK[c.rec]}. Yours: ${PICK[mine]}.` : (mine ? 'Your pick matches Claude\'s.' : `Claude's suggestion. Tap to change.`);
+    const mine = picks[c.id] && picks[c.id].pick, rec = c.rec === 'hold' || c.rec === 'past' ? 'no' : c.rec;
+    el.querySelector('.hint').textContent = mine && mine !== rec ? `Claude suggested ${c.rec === 'hold' ? 'holding it' : c.rec === 'past' ? 'not rerunning it as it is' : PICK[c.rec]}. Yours: ${PICK[mine]}.` : (mine ? 'Your pick matches Claude\'s.' : (c.rec === 'past' ? 'Shown for reference; skipped unless you pick it.' : `Claude's suggestion. Tap to change.`));
     const ni = $('note-' + c.id); if (document.activeElement !== ni) ni.value = (picks[c.id] && picks[c.id].note) || '';
   }
   const want = Object.keys(picks).filter(id => !cardIds.has(id) && picks[id].pick === 'yes').length;
@@ -373,7 +390,7 @@ document.addEventListener('click', e => {
   const d = e.target.closest('[data-dl]'), cv = e.target.closest('[data-cover]'), cp = e.target.closest('[data-copy]');
   if (d) { const c = D.cards.find(x => x.id === d.dataset.dl); saveAd(c, d, d.closest('.info').querySelector('.st')); }
   if (cv) { const c = D.cards.find(x => x.id === cv.dataset.cover); saveCover(c, cv, cv.closest('.info').querySelector('.st')); }
-  if (cp) { const c = D.cards.find(x => x.id === cp.dataset.copy); copyText(`${c.primary}\n\nHeadline: ${c.headline}\nButton: Shop now\nLink: ${c.url}`, cp.closest('.info').querySelector('.st')); }
+  if (cp) { const c = D.cards.find(x => x.id === cp.dataset.copy); copyText(`${c.primary}\n\n${c.headline ? `Headline: ${c.headline}\n` : ''}Button: ${c.cta || 'Shop now'}\nLink: ${c.url}`, cp.closest('.info').querySelector('.st')); }
 });
 async function copyText(t, st) {
   try { await navigator.clipboard.writeText(t); st.classList.remove('bad'); st.textContent = 'Copied.'; }
@@ -403,15 +420,17 @@ function brief() {
   picked.forEach((c, i) => {
     const r = rowById[c.id], n = picks[c.id] && picks[c.id].note;
     L.push('', `### ${i + 1}. ${c.title} · ${PICK[eff(c)]} (${r.score.toFixed(1)}/10)`,
-      `- Ad file: ${c.file} (1080×1920, ${r.secs.toFixed(1)} s, ${MB(c.size)}; ${c.musicShort})`, `- Cover image: ${c.cover.file}`,
+      `- Ad file: ${c.file} (1080×1920, ${r.secs.toFixed(1)} s, ${MB(c.size)}; ${c.musicShort})`, ...(c.cover ? [`- Cover image: ${c.cover.file}`] : []),
+      ...(c.warn ? [`- Warning: ${c.warn}`] : []),
+      ...(c.ran ? [`- Ran before (${c.ran.dates}, ${c.ran.audience}): ₹${c.ran.spent.toLocaleString('en-IN')} spent, ₹${c.ran.cpm} per 1,000 views, ${c.ran.purch} purchases, ₹${c.ran.roas.toFixed(2)} back per ₹1`] : []),
       ...c.products.map(p => `- Product: ${p.name} · ₹${p.price.toLocaleString('en-IN')} (MRP ₹${p.mrp.toLocaleString('en-IN')}) · ${p.stock} in stock on ${D.asOfShort}`),
       ...(c.pair ? [`- Pair price in the bag: ₹${c.pair.toLocaleString('en-IN')} (any 2 pieces, 10% off)`] : []),
-      `- Link: ${c.url}`, `- Primary text: ${c.primary}`, `- Headline: ${c.headline}`, '- Call to action: SHOP_NOW', `- Angle: ${c.angle}`, ...(c.until ? [`- Run until: ${c.until}`] : []), ...(n ? [`- Owner's note: ${n}`] : []));
+      `- Link: ${c.url}`, `- Primary text${c.ran ? ' (as it ran)' : ''}: ${c.primary.replace(/\n+/g, ' ')}`, ...(c.headline ? [`- Headline: ${c.headline}`] : []), `- Call to action: ${c.ctaCode || 'SHOP_NOW'}`, `- Angle: ${c.angle}`, ...(c.until ? [`- Run until: ${c.until}`] : []), ...(n ? [`- Owner's note: ${n}`] : []));
   });
   if (wanted.length) { L.push('', '## Also wanted (no ad file yet)'); wanted.forEach(r => L.push(`- ${r.name} (${r.id}, ${r.secs.toFixed(1)} s): ask Claude to make an ad file for it first.`)); }
   L.push('', '## How Claude builds them (Meta Ads connector)', ...D.howto.map((t, i) => `${i + 1}. ${t}`), '', '## Machine-readable', '```json',
     JSON.stringify({ source: D.url, saved: new Date().toISOString(), pixel: D.pixel, ads: picked.map(c => ({ id: c.id, pick: eff(c), title: c.title, file: c.file, bytes: c.size, sha256: c.sha256,
-      seconds: rowById[c.id].secs, part_asset_ids: c.parts, cover: c.cover, link_url: c.url, primary_text: c.primary, headline: c.headline, call_to_action_type: 'SHOP_NOW',
+      seconds: rowById[c.id].secs, part_asset_ids: c.parts, cover: c.cover, link_url: c.url, primary_text: c.primary, headline: c.headline || null, call_to_action_type: c.ctaCode || 'SHOP_NOW', warning: c.warn || null, ran_before: c.ran || null,
       products: c.products, pair_price: c.pair || null, sound: c.music, run_until: c.until || null, owner_note: (picks[c.id] && picks[c.id].note) || '' })),
       also_wanted: wanted.map(r => ({ id: r.id, name: r.name, source: r.src })) }, null, 1), '```');
   return L.join('\n');

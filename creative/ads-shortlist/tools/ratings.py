@@ -12,6 +12,7 @@ F = {
  'pankti': "Pankti × Naira · huggies + toggle chain",
  'riya': "Halo ring + Baroque lariat · creator reel",
  'pearl': "Creator reel · Pearl Point Studs + Heartline necklace",
+ 'past': "Ran as ads · Pankti's and Riya's collab reels",
 }
 R = []
 def add(id, fam, name, secs, src, s, verdict, note, **kw):
@@ -90,6 +91,11 @@ add('R4', 'riya', 'Where is this from? · v4 (macro)', 39.6, 'v12/naira-halo-bar
 # ---- Pearl creator reel
 add('H1', 'pearl', 'Found my favourite jewellery · final', 28.2, 'v8/naira-pearl-heartline-final.mp4', h(5, 7, 7, 6, 3), 'hold',
     '"Not going to gatekeep" UGC with tags for both pieces. The first frames are out of focus, it runs 28 s, and the studs have 3 left and the necklace 4.')
+# ---- the two creator collab reels that already ran as ads (30 Aug - 21 Sep 2026)
+add('PK0', 'past', "Pankti · the collab reel that ran", 29.3, 'pankti_edit.mp4', h(8, 9, 7, 7, 3), 'superseded',
+    'The unboxing that ran as an ad. Best clicks and carts of any reel, but it paid ₹944 per 1,000 views in a narrow luxury-interest audience and returned 0.79. Its cards show the old prices (₹1,449 huggies, ₹3,448 the pair; today ₹1,099 and ₹2,598), so do not rerun it as it is. Pankti v11 is the same footage with today\'s prices.')
+add('RY0', 'past', "Riya · the collab reel that ran", 34.4, 'riya_edit.mp4', h(5, 7, 5, 6, 3), 'hold',
+    'The haul that ran as an ad. 3–4 s of her face before any jewellery, so only 4% saw a quarter of it; it returned 0.71. It opens on the Cushion Halo Ring, sold out today, then the Woven Gold Hoops and the Prism Rivière bracelet, your two current sellers. Re-cut it to open on the hoops.')
 DRAFTS = [('riya', 'Where is this from? · v1–v3', 'Earlier drafts of the final; not rated separately.'),
           ('pankti', 'Pankti × Naira · v8, v9', 'Earlier drafts of v11; not rated separately.'),
           ('pearl', 'Found my favourite jewellery · v8', 'The draft before the final; not rated separately.')]

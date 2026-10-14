@@ -7,6 +7,11 @@ cover. Picks live in the page's `db` (`picks/<id>`: `{pick, note, at}`; no docum
 Claude can read them back with `ArtifactData list picks`. "Save brief for Claude" writes `naira-ads-brief.md`: setup rules,
 each picked ad's file, link, text and button, and a JSON block with the asset ids and sha256 of every file.
 
+The page also carries the two creator collab reels that ran as ads ("Pankti's and Riya's reels, as they ran"): the files
+exactly as shared (`pankti_edit.mp4`, `riya_edit.mp4`), the text each ran with (read from Meta), and their results. Both
+default to Skip. Pankti's shows old prices on screen (₹1,449 huggies, ₹3,448 the pair), and Riya's opens on the Cushion
+Halo Ring, which was sold out on 14 Oct.
+
 ## How the scores work
 
 Hook 25%, product 20%, offer and brand 20%, works muted 10%, ad fit 25%. Ad fit covers length, licensed sound, claims, stock,

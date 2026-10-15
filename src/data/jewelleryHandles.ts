@@ -20,7 +20,7 @@
 
    keeping vendor "Naira Petite" and status ACTIVE.
 
-   Last regenerated 2026-09-23 against the live store: 55 pieces. */
+   Last regenerated 2026-10-15 against the live store: 55 pieces. */
 export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "baguette-arc-hoops",
   "baguette-eclat-bracelet",

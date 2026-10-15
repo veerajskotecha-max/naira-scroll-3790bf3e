@@ -1,0 +1,9 @@
+{
+  "SH": 300,
+  "mast_w": 720, "mast_top": 340,
+  "frame_top": 300, "frame_bottom": 314,
+  "issue_top": 312, "issue": "NO. 01 · THE FESTIVE ISSUE · OCTOBER 2026",
+  "kick": {"x": 70, "y": 524, "size": 20, "text": "THE HOOPS OF THE SEASON"},
+  "head": {"x": 64, "y": 558, "size": 80, "html": "the ₹1,499<br>hoops."},
+  "sticker": {"x": 852, "y": 1236, "d": 176, "pct": "46%", "was": "₹2,769"}
+}

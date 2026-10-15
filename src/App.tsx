@@ -174,7 +174,9 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <AppShell />
+              <ChunkErrorBoundary>
+                <AppShell />
+              </ChunkErrorBoundary>
             </BrowserRouter>
           </WishlistProvider>
         </CartProvider>

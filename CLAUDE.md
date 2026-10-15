@@ -349,6 +349,24 @@ npx vite-node scripts/generate-jewellery-snapshot.ts
 first-paint data, so adding a piece in Shopify and regenerating only one file
 fails the suite rather than bringing the skeleton back.
 
+## A page whose code never arrives
+
+Every route is code-split, so a tab opened before a rebuild still points at
+chunk files the server no longer has: the next navigation fails to import and
+the screen goes blank. `src/lib/chunkFailure.ts` owns the one rule — recognise
+each browser's wording (`chunkFailure.test.ts` pins Safari's "Importing a
+module script failed", the wording that blanked an iPhone) and reload **once**
+per session, so a genuinely missing file cannot reload the tab forever.
+
+The two listeners in `main.tsx` only catch a download that fails on its own.
+When React throws the same failure while rendering a route, `React.lazy` has
+already attached its own handlers to the import's promise (so no
+`unhandledrejection` fires) and Vite's preload event exists only in built
+output — neither listener sees it. `ChunkErrorBoundary`, wrapped around
+`AppShell` in `App.tsx`, is what saves that path, and it shows a brand panel
+rather than a blank page. Keep it outside `AppShell`: a failure in the header
+or the bag has to land on it too.
+
 ## Conventions
 
 - Comments explain *why*, never *what*. Match the density already in the file.

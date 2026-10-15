@@ -29,3 +29,4 @@
 - [x] Add compact anti-tarnish, skin-safe, and 18K gold-tone assurances to every jewellery product page
 - [x] Fit all three jewellery assurances within mobile PDP width and add a truthful sales-momentum cue
 - [x] Restore the full mobile Shop the Reel section below the PDP press strip and remove its floating popup
+- [x] Recover from a page whose code never arrives: one-shot stale-build reload and a branded panel instead of a blank screen

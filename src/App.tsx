@@ -12,6 +12,9 @@ import Header from "./components/Header";
 import WishlistDrawer from "./components/WishlistDrawer";
 import ScrollToTop from "./components/ScrollToTop";
 import PixelEvents from "./components/PixelEvents";
+// A route whose code fails to arrive is thrown while rendering; without this the
+// whole tree unmounts and the shopper sits on a blank page. See the component.
+import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
 // a flash on first paint (film grain, page curtain, scroll bloom).
 import FilmGrain from "./components/wow/FilmGrain";
@@ -171,7 +174,9 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <AppShell />
+              <ChunkErrorBoundary>
+                <AppShell />
+              </ChunkErrorBoundary>
             </BrowserRouter>
           </WishlistProvider>
         </CartProvider>

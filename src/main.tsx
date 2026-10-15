@@ -3,17 +3,16 @@ import App from "./App.tsx";
 import { preloadRouteFor } from "./pageCode";
 import "./index.css";
 import { isOptionalChunkFailure } from "./lib/optionalChunk";
+import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
 
 /* A page loaded before a rebuild or publish still points at the old chunk
    files, so the next lazy route fails with "Importing a module script failed"
    and the screen goes blank. Reload once to pick up the new build; the
-   session flag stops a genuinely missing file from reloading forever. */
-const RELOAD_KEY = "naira:chunk-reload";
-const reloadForStaleChunk = () => {
-  if (sessionStorage.getItem(RELOAD_KEY)) return;
-  sessionStorage.setItem(RELOAD_KEY, "1");
-  window.location.reload();
-};
+   session flag stops a genuinely missing file from reloading forever.
+
+   These two listeners only catch a download that fails on its own. When React
+   throws the same failure while rendering a route, nothing here sees it — that
+   path is ChunkErrorBoundary's. */
 window.addEventListener("vite:preloadError", (e) => {
   // The 3D decorations fall back to flat art on their own; never reload for them.
   if (isOptionalChunkFailure((e as Event & { payload?: unknown }).payload)) return;
@@ -21,14 +20,11 @@ window.addEventListener("vite:preloadError", (e) => {
   reloadForStaleChunk();
 });
 window.addEventListener("unhandledrejection", (e) => {
-  const msg = String((e.reason as Error | undefined)?.message ?? e.reason ?? "");
   if (isOptionalChunkFailure(e.reason)) return;
-  if (/Importing a module script failed|Failed to fetch dynamically imported module|error loading dynamically imported module/i.test(msg)) {
-    reloadForStaleChunk();
-  }
+  if (isChunkImportFailure(e.reason)) reloadForStaleChunk();
 });
 window.addEventListener("load", () => {
-  setTimeout(() => sessionStorage.removeItem(RELOAD_KEY), 10_000);
+  setTimeout(clearChunkReloadFlag, 10_000);
 });
 
 /* The page is pre-built, so the shopper is already looking at it; React takes

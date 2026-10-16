@@ -21,7 +21,6 @@ const PEEK = { tilt: -40, turn: 18 }; // looking down into the open drawer
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)"; // --nf-ease-reveal
 const DRAWER_PARTS = ["front", "tray", "left", "right"] as const;
 
-const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 const pose = (tilt: number, turn: number) => poseTransform({ tilt, turn });
 
 const prefersReducedMotion = () =>
@@ -40,9 +39,13 @@ type Props = {
   autoOpen?: boolean;
   /** Told when an opening has played through and the box is shut again. */
   onDone?: () => void;
+  /** Keep the reveal open until its surrounding Back control is used. */
+  holdOpen?: boolean;
+  /** The surrounding row owns the controls, not the drawing. */
+  decorative?: boolean;
 };
 
-const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Props) => {
+const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone, holdOpen = false, decorative = false }: Props) => {
   const stage = useRef<HTMLDivElement>(null);
   const lift = useRef<HTMLDivElement>(null);
   const shadow = useRef<HTMLDivElement>(null);
@@ -65,6 +68,14 @@ const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Pro
     if (still) return;
     const drawer = { front, tray, left, right };
     let alive = true;
+    const waits = new Map<number, () => void>();
+    const wait = (ms: number) => new Promise<void>((resolve) => {
+      const timer = window.setTimeout(() => {
+        waits.delete(timer);
+        resolve();
+      }, ms);
+      waits.set(timer, resolve);
+    });
     const run = (el: HTMLElement | null, keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
       el && alive ? el.animate(keyframes, { fill: "forwards", ...options }) : null;
     const done = (animation: Animation | null) => animation?.finished.then(() => undefined) ?? Promise.resolve();
@@ -104,12 +115,14 @@ const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Pro
           duration: Math.min(900, Math.max(450, Math.abs(to - now) * 5)),
           easing: EASE,
         }));
+        if (!alive) return;
         const shut = drawerTransforms(size, 0);
         const out = drawerTransforms(size, 1);
         DRAWER_PARTS.forEach((part) =>
           run(drawer[part].current, [{ transform: shut[part] }, { transform: out[part] }], { duration: 520, easing: EASE }),
         );
         await wait(380);
+        if (!alive) return;
         await done(run(riser.current, [{ transform: "translateY(100%)" }, { transform: "translateY(0%)" }], { duration: 760, easing: EASE }));
         if (!alive) return;
         told.current?.(true);
@@ -120,7 +133,9 @@ const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Pro
             { opacity: 0, transform: "scale(0.3) rotate(90deg)" },
           ], { duration: 720, easing: "ease-out" });
         sparkle();
+        if (holdOpen) return;
         await wait(1300);
+        if (!alive) return;
         sparkle();
         await wait(1500);
         if (!alive) return;
@@ -165,22 +180,27 @@ const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Pro
     return () => {
       alive = false;
       window.clearTimeout(auto);
+      waits.forEach((resolve, timer) => {
+        window.clearTimeout(timer);
+        resolve();
+      });
+      waits.clear();
       watcher.disconnect();
       open.current = () => {};
       [box, lift, shadow, gleam, riser, glint, front, tray, left, right].forEach((part) =>
         part.current?.getAnimations().forEach((animation) => animation.cancel()),
       );
     };
-  }, [size, still, autoOpen]);
+  }, [size, still, autoOpen, holdOpen]);
 
   return (
     /* Room for the drawer out and the box looking down into it. A div (the
        box is drawn in divs, which a <button> may not hold) that acts as one. */
     <div
       ref={stage}
-      role={still ? undefined : "button"}
-      tabIndex={still ? undefined : 0}
-      aria-label={still ? undefined : "Open the gift box"}
+      role={still || decorative ? undefined : "button"}
+      tabIndex={still || decorative ? undefined : 0}
+      aria-label={still || decorative ? undefined : "Open the gift box"}
       onClick={() => (onTap ? onTap() : open.current())}
       onKeyDown={(event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
@@ -194,9 +214,12 @@ const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Pro
       <NairaBoxCSS
         size={size}
         withDrawer
+        open={still && autoOpen ? 1 : 0}
+        pose={still && autoOpen ? PEEK : REST_POSE}
         print={printSm}
         ring={ring}
         ringFacing={PEEK}
+        ringRaised={still && autoOpen}
         parts={{ lift, shadow, box, gleam, ring: riser, glint, front, tray, left, right }}
       />
     </div>

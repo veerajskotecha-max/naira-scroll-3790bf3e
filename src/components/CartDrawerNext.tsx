@@ -3,9 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, Minus, Plus } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { bagAddOns, familyOf, wornWithNoun } from "@/lib/pairings";
-import BagGiftBox from "@/components/giftbox/BagGiftBox";
-import ringGold from "@/assets/naira-box-ring-sm.webp";
-import ringSilver from "@/assets/naira-box-ring-sm-silver.webp";
+import BagGiftRow from "@/components/giftbox/BagGiftRow";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
@@ -60,9 +58,6 @@ const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: stri
   return item.size ? `Size: ${item.size}` : "";
 };
 
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
-
 /* A piece from the catalogue as a cart line. */
 const asCartItem = (piece: JewelPiece) => ({
   id: piece.handle,
@@ -106,60 +101,6 @@ const PieceCard = ({ piece, note, onAdd, busy }: { piece: JewelPiece; note?: str
     </button>
   </div>
 );
-
-/* "Comes with a Naira gift box", with the box itself, small and floating. A
-   tap lifts it into a larger view above the row where it opens, the ring rises
-   and it shuts again, so the bag never gives it room of its own. The ring is
-   silver when the latest piece is silver-toned, gold otherwise. */
-const GiftRow = ({ items }: { items: CartItem[] }) => {
-  const { jewellery } = useLiveJewellery();
-  const [lifted, setLifted] = useState(false);
-  const [ringUp, setRingUp] = useState(false);
-  const still = prefersReducedMotion();
-  const latest = jewellery.find((piece) => piece.handle === items[items.length - 1]?.id);
-  const ring = latest && familyOf(latest) === "silver" ? ringSilver : ringGold;
-  return (
-    <div data-gift-row className="relative flex items-center gap-2 px-4 py-1 sm:px-5">
-      <span className={`-my-1 transition-opacity duration-200 ${lifted ? "opacity-0" : ""}`}>
-        <BagGiftBox
-          size={20}
-          ring={ring}
-          onTap={
-            still
-              ? undefined
-              : () => {
-                  if (lifted) return;
-                  setLifted(true);
-                  clarityEvent("bag_gift_opened");
-                }
-          }
-        />
-      </span>
-      <p className="text-[11.5px] text-nf-ink/80">Comes with a Naira gift box</p>
-      {lifted && (
-        <div
-          data-gift-lifted
-          className="absolute bottom-[calc(100%-8px)] left-2 z-20 flex flex-col items-center border border-nf-gold/25 bg-nf-ivory px-3 pb-2 shadow-[0_16px_32px_-18px_rgb(var(--nf-ink-rgb)/0.55)] duration-200 animate-in fade-in zoom-in-90 sm:left-3"
-          style={{ transformOrigin: "16px 100%" }}
-        >
-          <BagGiftBox
-            size={60}
-            ring={ring}
-            autoOpen
-            onRing={setRingUp}
-            onDone={() => {
-              setRingUp(false);
-              setLifted(false);
-            }}
-          />
-          <p className="-mt-1 font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text" aria-live="polite">
-            {ringUp ? "Your piece comes in this box" : "The Naira gift box"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const CartDrawerNext = () => {
   const {
@@ -499,7 +440,7 @@ const CartDrawerNext = () => {
                 </section>
               )}
 
-              <GiftRow items={items} />
+              <BagGiftRow items={items} jewellery={jewellery} />
 
               <div className="px-4 pb-2 sm:px-5">
                 {!codeAdded && !promoOpen && (

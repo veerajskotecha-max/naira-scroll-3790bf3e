@@ -76,7 +76,7 @@ const bandKey = (f: JewelFilters) =>
 
 /* The grid opens with one screen-and-a-bit of pieces; the rest load on tap.
    Rendering all 57 tiles up front pulled megabytes of images nobody scrolled to. */
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 30;
 
 const Jewellery = () => {
   const [searchParams, setSearchParams] = useSearchParams();

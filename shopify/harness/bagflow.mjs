@@ -334,7 +334,17 @@ const read = (p) =>
   await p.locator(`[data-line="${last.handle}"] button`, { hasText: /^Remove$/ }).click();
   await lineCount(p, 2);
   s = await read(p);
-  check('Remove takes the piece out and offers Undo', s.undo.startsWith(`${last.name} removed`) && /Undo$/.test(s.undo), s.undo);
+  // In view, not just in the page: from low in a long bag the list is scrolled
+  // down, and an Undo at the top of the list would be out of sight.
+  const undoInView = () =>
+    p.evaluate(() => {
+      const note = window.__bag()?.querySelector('[data-undo]');
+      if (!note) return false;
+      const r = note.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return Boolean(hit && note.contains(hit)) && r.top >= 0 && r.bottom <= innerHeight;
+    });
+  check('Remove takes the piece out and offers Undo, in view even from low in a long bag', s.undo.startsWith(`${last.name} removed`) && /Undo$/.test(s.undo) && (await undoInView()), s.undo);
   await shot(p, '5-removed-undo');
   await p.locator('[data-undo] button', { hasText: 'Undo' }).click();
   await lineCount(p, 3);
@@ -343,7 +353,7 @@ const read = (p) =>
   await p.locator(`[data-line="${last.handle}"] button[aria-label="Remove ${last.name}"]`).first().click();
   await lineCount(p, 2);
   s = await read(p);
-  check('"−" at one piece removes it, with Undo too', s.undo.startsWith(`${last.name} removed`), s.undo);
+  check('"−" at one piece removes it, with Undo too', s.undo.startsWith(`${last.name} removed`) && (await undoInView()), s.undo);
 
   // The promo field: opened in place, one discount, the code never named.
   sub = sum(s.lines, (l) => rupees(l.price));

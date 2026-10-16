@@ -183,7 +183,7 @@ const JewelDetail = () => {
   const [buying, setBuying] = useState(false);
 
   const goBack = () => {
-    if (window.history.length > 1) navigate(-1);
+    if (((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0) navigate(-1);
     else navigate("/jewellery");
   };
 

@@ -540,6 +540,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/golden-duet-ring</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/blush-cluster-ring</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -586,6 +591,11 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/petite-pave-band</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/teardrop-lariat</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

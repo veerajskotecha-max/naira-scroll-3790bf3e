@@ -13,7 +13,7 @@ import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewelle
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { allLandings as categoryLandings, SITE_URL } from "@/data/seoContent";
 import { breadcrumbLd, faqLd } from "@/components/PageSEO";
-import { Link, useNavigationType, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigationType, useSearchParams } from "react-router-dom";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { cardCover } from "@/lib/cardCover";
 

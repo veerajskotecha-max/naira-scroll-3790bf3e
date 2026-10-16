@@ -53,6 +53,7 @@ type Props = {
   print?: string;
   /** A ring cut-out standing in the cushion's slot, hidden until raised. */
   ring?: string;
+  ringRaised?: boolean;
   /** The pose the ring is turned to face (it is flat, like the 3D box's sprite). */
   ringFacing?: BoxPose;
   parts?: Parts;
@@ -86,7 +87,7 @@ const GLINT_FADE = "radial-gradient(circle, #000 0 22%, transparent 68%)";
 const RING_ASPECT = 172 / 132; // the cut-out's height to width; the band's foot is its bottom edge
 const SLOT = 0.56; // how far along the pulled-out part the cushion's slot is
 
-const NairaBoxCSS = ({ size, pose = REST_POSE, open = 0, withDrawer = false, print, ring, ringFacing = pose, parts = {}, className = "", style, shadow = true }: Props) => {
+const NairaBoxCSS = ({ size, pose = REST_POSE, open = 0, withDrawer = false, print, ring, ringRaised = false, ringFacing = pose, parts = {}, className = "", style, shadow = true }: Props) => {
   const { W, D, H, travel: E } = boxGeometry(size);
   const rim = `${Math.max(1, size * 0.012)}px solid ${COLOURS.rim}`;
   const wall = Math.max(1.5, size * 0.03); // the drawer's walls, seen from above
@@ -230,7 +231,7 @@ const NairaBoxCSS = ({ size, pose = REST_POSE, open = 0, withDrawer = false, pri
                 WebkitBackfaceVisibility: "hidden",
               }}
             >
-              <div ref={parts.ring} style={{ ...fill, transform: "translateY(100%)" }}>
+              <div ref={parts.ring} style={{ ...fill, transform: ringRaised ? "translateY(0%)" : "translateY(100%)" }}>
                 <img src={ring} alt="" draggable={false} style={{ display: "block", width: "100%", height: "100%" }} />
                 <div
                   ref={parts.glint}

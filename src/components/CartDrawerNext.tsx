@@ -2,10 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, Minus, Plus } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { bagAddOns, familyOf, wornWithNoun } from "@/lib/pairings";
-import BagGiftBox from "@/components/giftbox/BagGiftBox";
-import ringGold from "@/assets/naira-box-ring-sm.webp";
-import ringSilver from "@/assets/naira-box-ring-sm-silver.webp";
+import { bagAddOns, wornWithNoun } from "@/lib/pairings";
+import BagGiftRow from "@/components/giftbox/BagGiftRow";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
@@ -60,9 +58,6 @@ const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: stri
   return item.size ? `Size: ${item.size}` : "";
 };
 
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
-
 /* A piece from the catalogue as a cart line. */
 const asCartItem = (piece: JewelPiece) => ({
   id: piece.handle,
@@ -107,60 +102,6 @@ const PieceCard = ({ piece, note, onAdd, busy }: { piece: JewelPiece; note?: str
   </div>
 );
 
-/* "Comes with a Naira gift box", with the box itself, small and floating. A
-   tap lifts it into a larger view above the row where it opens, the ring rises
-   and it shuts again, so the bag never gives it room of its own. The ring is
-   silver when the latest piece is silver-toned, gold otherwise. */
-const GiftRow = ({ items }: { items: CartItem[] }) => {
-  const { jewellery } = useLiveJewellery();
-  const [lifted, setLifted] = useState(false);
-  const [ringUp, setRingUp] = useState(false);
-  const still = prefersReducedMotion();
-  const latest = jewellery.find((piece) => piece.handle === items[items.length - 1]?.id);
-  const ring = latest && familyOf(latest) === "silver" ? ringSilver : ringGold;
-  return (
-    <div data-gift-row className="relative flex items-center gap-2 px-4 py-1 sm:px-5">
-      <span className={`-my-1 transition-opacity duration-200 ${lifted ? "opacity-0" : ""}`}>
-        <BagGiftBox
-          size={20}
-          ring={ring}
-          onTap={
-            still
-              ? undefined
-              : () => {
-                  if (lifted) return;
-                  setLifted(true);
-                  clarityEvent("bag_gift_opened");
-                }
-          }
-        />
-      </span>
-      <p className="text-[11.5px] text-nf-ink/80">Comes with a Naira gift box</p>
-      {lifted && (
-        <div
-          data-gift-lifted
-          className="absolute bottom-[calc(100%-8px)] left-2 z-20 flex flex-col items-center border border-nf-gold/25 bg-nf-ivory px-3 pb-2 shadow-[0_16px_32px_-18px_rgb(var(--nf-ink-rgb)/0.55)] duration-200 animate-in fade-in zoom-in-90 sm:left-3"
-          style={{ transformOrigin: "16px 100%" }}
-        >
-          <BagGiftBox
-            size={60}
-            ring={ring}
-            autoOpen
-            onRing={setRingUp}
-            onDone={() => {
-              setRingUp(false);
-              setLifted(false);
-            }}
-          />
-          <p className="-mt-1 font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text" aria-live="polite">
-            {ringUp ? "Your piece comes in this box" : "The Naira gift box"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
-
 const CartDrawerNext = () => {
   const {
     items,
@@ -178,6 +119,7 @@ const CartDrawerNext = () => {
     syncCart,
   } = useCart();
   const { jewellery } = useLiveJewellery();
+  const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const checkoutStarted = useRef(false);
@@ -227,7 +169,7 @@ const CartDrawerNext = () => {
   /* The deal from the product page, kept in view: each piece's MRP from the
      live catalogue, and one saving against it at the total. */
   const mrpOf = (item: CartItem) => {
-    const mrp = jewellery.find((piece) => piece.handle === item.id)?.compareAtPrice;
+    const mrp = catalogueByHandle.get(item.id)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
   const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
@@ -341,7 +283,7 @@ const CartDrawerNext = () => {
 
   const stepper =
     "press-scale relative flex h-8 w-8 items-center justify-center text-nf-ink before:absolute before:-inset-1.5 before:content-[''] disabled:opacity-40";
-  const best = BEST_SELLERS.map((handle) => jewellery.find((piece) => piece.handle === handle)).filter(
+  const best = BEST_SELLERS.map((handle) => catalogueByHandle.get(handle)).filter(
     (piece): piece is JewelPiece => Boolean(piece && piece.availableForSale !== false && piece.variantId),
   );
 
@@ -412,7 +354,7 @@ const CartDrawerNext = () => {
           <>
             <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
               <ul className="flex flex-col">
-                {items.map((item) => {
+                {items.map((item, index) => {
                   const mrp = mrpOf(item);
                   return (
                     <li key={`${item.id}-${item.size}`} data-line={item.id} className="flex gap-3 border-b border-nf-gold/15 px-4 py-3 sm:px-5">
@@ -422,7 +364,8 @@ const CartDrawerNext = () => {
                         className="h-[80px] w-[64px] shrink-0 bg-nf-ivory-deep object-cover"
                         width={64}
                         height={80}
-                        loading="lazy"
+                        loading={index < 2 ? "eager" : "lazy"}
+                        decoding="async"
                       />
                       <div className="flex min-w-0 flex-1 flex-col">
                         <p className="line-clamp-2 font-nf-editorial text-[15.5px] font-medium leading-tight text-nf-ink">{item.name}</p>
@@ -499,7 +442,7 @@ const CartDrawerNext = () => {
                 </section>
               )}
 
-              <GiftRow items={items} />
+              <BagGiftRow items={items} jewellery={jewellery} />
 
               <div className="px-4 pb-2 sm:px-5">
                 {!codeAdded && !promoOpen && (

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Smooth the bag gift-box reveal, add tap-to-open wording and a Back control, and verify lightweight loading
+
 - [x] Repair signed-in reel access, Golden Hour filters, reel touch handling, and member order recording
 
 - [x] Shoppable reels: floating mini-reel on product pages, full-screen swipe gallery, product tags with Add to cart, admin upload at /admin/reels

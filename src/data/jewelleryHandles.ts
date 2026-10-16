@@ -20,15 +20,18 @@
 
    keeping vendor "Naira Petite" and status ACTIVE.
 
-   Last regenerated 2026-10-15 against the live store: 55 pieces. */
+   Last regenerated 2026-10-16 against the live store: 65 pieces. */
 export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
+  "aqua-heart-drops-silver",
   "baguette-arc-hoops",
   "baguette-eclat-bracelet",
+  "baguette-halo-drops",
   "baroque-bloom-cuff",
   "baroque-pearl-lariat",
   "baroque-shell-bracelet",
   "blush-cluster-ring",
   "blush-station-bracelet",
+  "bold-dome-huggies",
   "bold-nocturne-bracelet",
   "bold-nocturne-chain",
   "brushed-gold-huggies",
@@ -44,6 +47,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "halo-curve-ring",
   "heartbead-bracelet",
   "heartline-paperclip-necklace",
+  "lilac-papillon-ring",
   "lumiere-oval-bracelet",
   "lumiere-oval-necklace",
   "marquise-layering-set",
@@ -54,12 +58,17 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "pearl-point-studs",
   "pearl-reverie-bracelet",
   "pearl-ribbon-ring",
+  "petite-bow-studs",
   "petite-pave-band",
   "petite-pearl-chain",
+  "petite-square-huggies",
+  "prism-cluster-studs-silver",
   "prism-riviere-bracelet",
+  "quatrefoil-eclat-studs",
   "ribbon-bead-bracelet",
   "ribbon-bow-earrings",
   "riviere-eternal-necklace",
+  "riviere-huggies-silver",
   "riviere-of-light-bracelet",
   "rose-verdant-band",
   "serpentine-whisper-chain",
@@ -70,6 +79,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "star-point-band",
   "textured-gold-hoops",
   "toggle-link-chain",
+  "torsade-huggies",
   "triple-dawn-cuff",
   "verdant-circlet-studs",
   "verdant-drop-earrings",

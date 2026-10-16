@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, Minus, Plus } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { bagAddOns, familyOf, wornWithNoun } from "@/lib/pairings";
+import { bagAddOns, wornWithNoun } from "@/lib/pairings";
 import BagGiftRow from "@/components/giftbox/BagGiftRow";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
@@ -119,6 +119,7 @@ const CartDrawerNext = () => {
     syncCart,
   } = useCart();
   const { jewellery } = useLiveJewellery();
+  const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const checkoutStarted = useRef(false);
@@ -168,7 +169,7 @@ const CartDrawerNext = () => {
   /* The deal from the product page, kept in view: each piece's MRP from the
      live catalogue, and one saving against it at the total. */
   const mrpOf = (item: CartItem) => {
-    const mrp = jewellery.find((piece) => piece.handle === item.id)?.compareAtPrice;
+    const mrp = catalogueByHandle.get(item.id)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
   const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
@@ -282,7 +283,7 @@ const CartDrawerNext = () => {
 
   const stepper =
     "press-scale relative flex h-8 w-8 items-center justify-center text-nf-ink before:absolute before:-inset-1.5 before:content-[''] disabled:opacity-40";
-  const best = BEST_SELLERS.map((handle) => jewellery.find((piece) => piece.handle === handle)).filter(
+  const best = BEST_SELLERS.map((handle) => catalogueByHandle.get(handle)).filter(
     (piece): piece is JewelPiece => Boolean(piece && piece.availableForSale !== false && piece.variantId),
   );
 
@@ -353,7 +354,7 @@ const CartDrawerNext = () => {
           <>
             <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
               <ul className="flex flex-col">
-                {items.map((item) => {
+                {items.map((item, index) => {
                   const mrp = mrpOf(item);
                   return (
                     <li key={`${item.id}-${item.size}`} data-line={item.id} className="flex gap-3 border-b border-nf-gold/15 px-4 py-3 sm:px-5">
@@ -363,7 +364,8 @@ const CartDrawerNext = () => {
                         className="h-[80px] w-[64px] shrink-0 bg-nf-ivory-deep object-cover"
                         width={64}
                         height={80}
-                        loading="lazy"
+                        loading={index < 2 ? "eager" : "lazy"}
+                        decoding="async"
                       />
                       <div className="flex min-w-0 flex-1 flex-col">
                         <p className="line-clamp-2 font-nf-editorial text-[15.5px] font-medium leading-tight text-nf-ink">{item.name}</p>

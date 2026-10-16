@@ -39,6 +39,8 @@ const MAX_TAG_LENGTH = 200;
   parked and replayed rather than dropped.
 */
 const pending = new Map<string, string>();
+/* Custom events asked for before Clarity loaded, sent in order once it has. */
+const pendingEvents: string[] = [];
 let waiting = false;
 
 const flush = () => {
@@ -52,6 +54,13 @@ const flush = () => {
     }
   }
   pending.clear();
+  for (const name of pendingEvents.splice(0)) {
+    try {
+      clarity("event", name);
+    } catch {
+      /* measurement must never break the shop */
+    }
+  }
   return true;
 };
 
@@ -75,6 +84,17 @@ export const setClarityTag = (key: string, value?: string | null) => {
   const clean = value?.toString().trim().slice(0, MAX_TAG_LENGTH);
   if (!key || !clean) return;
   pending.set(key, clean);
+  if (!flush()) waitForClarity();
+};
+
+/**
+ * Marks a moment in the session recording (a Clarity custom event), so a
+ * session can be found by what happened in it: "bag_opened", "bag_pair_added".
+ * Safe if Clarity is not loaded.
+ */
+export const clarityEvent = (name: string) => {
+  if (typeof window === "undefined" || !name) return;
+  pendingEvents.push(name.slice(0, 64));
   if (!flush()) waitForClarity();
 };
 
@@ -134,4 +154,6 @@ export const tagClaritySession = (options?: { signedIn?: boolean }) => {
 export const resetClarityForTest = () => {
   landingSearch = undefined;
   pending.clear();
+  pendingEvents.length = 0;
+  waiting = false;
 };

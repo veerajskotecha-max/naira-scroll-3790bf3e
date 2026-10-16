@@ -8,7 +8,7 @@ import { getPromoCode, setPromoCode, clearPromoCode, PROMO_EVENT, isAcceptedProm
 /* The code itself is never shown back: a code name next to the bag's own
    offers reads as a second discount. `inUse` is false when a better offer
    (the 3-piece rung, say) is what the order gets instead. */
-export const CartPromoField = ({ inUse = true }: { inUse?: boolean }) => {
+export const CartPromoField = ({ inUse = true, startOpen = false }: { inUse?: boolean; startOpen?: boolean }) => {
   /* A code the bag no longer accepts (an old one left from a past visit) is
      not shown as added. */
   const stored = () => {
@@ -18,7 +18,7 @@ export const CartPromoField = ({ inUse = true }: { inUse?: boolean }) => {
   const [applied, setApplied] = useState<string | null>(stored);
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen);
 
   useEffect(() => {
     const sync = () => setApplied(stored());

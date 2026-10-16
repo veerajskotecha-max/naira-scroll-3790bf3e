@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { campaignTags, parseFbclid, resetClarityForTest, setClarityTag } from "./clarity";
+import { campaignTags, clarityEvent, parseFbclid, resetClarityForTest, setClarityTag } from "./clarity";
 
 describe("parseFbclid", () => {
   it("pulls the click id out of Meta's _fbc cookie", () => {
@@ -77,3 +77,33 @@ describe("setClarityTag", () => {
     expect(clarity).not.toHaveBeenCalled();
   });
 });
+
+describe("clarityEvent", () => {
+  beforeEach(() => {
+    resetClarityForTest();
+    delete (window as { clarity?: unknown }).clarity;
+    vi.useRealTimers();
+  });
+
+  it("marks the moment in the session when Clarity is loaded", () => {
+    const clarity = vi.fn();
+    (window as { clarity?: unknown }).clarity = clarity;
+    clarityEvent("bag_opened");
+    expect(clarity).toHaveBeenCalledWith("event", "bag_opened");
+  });
+
+  it("holds events from before Clarity loads and sends them in order", () => {
+    vi.useFakeTimers();
+    clarityEvent("bag_opened");
+    clarityEvent("bag_pair_added");
+    const clarity = vi.fn();
+    (window as { clarity?: unknown }).clarity = clarity;
+    vi.advanceTimersByTime(600);
+    expect(clarity.mock.calls.filter(([verb]) => verb === "event")).toEqual([
+      ["event", "bag_opened"],
+      ["event", "bag_pair_added"],
+    ]);
+    vi.useRealTimers();
+  });
+});
+

@@ -115,6 +115,42 @@ export const resolveCartDiscount = (input: {
 export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount): number =>
   Math.round(subtotal * (1 - resolved.rate));
 
+/**
+ * What one more piece does to the bag: what it adds to the total and what the
+ * bag then saves on it, by the same resolver and rounding as the checkout.
+ * A ₹1,499 piece beside a ₹2,399 one adds ₹1,109 and saves ₹390.
+ */
+export const addOnEffect = (bag: { subtotal: number; totalItems: number; promoCode?: string | null }, price: number) => {
+  const now = discountedSubtotal(bag.subtotal, resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode }));
+  const after = resolveCartDiscount({ totalItems: bag.totalItems + 1, promoCode: bag.promoCode });
+  const adds = discountedSubtotal(bag.subtotal + price, after) - now;
+  return { adds, saves: price - adds, rate: after.rate };
+};
+
+const ORDINAL = ["", "first", "second", "third", "fourth", "fifth"];
+const percent = (rate: number) => `${Math.round(rate * 100)}%`;
+
+/**
+ * The band over the bag, one line: what the ladder does for this bag now and
+ * what the next piece would do. `appliedRate` is the discount the bag gets (a
+ * typed code can give as much as a rung), so it never offers a saving in hand.
+ */
+export const ladderHeadline = (totalItems: number, appliedRate = 0): string => {
+  const earned = earnedQuantityOffer(totalItems);
+  const applied = Math.max(appliedRate, earned?.rate ?? 0);
+  const better = QUANTITY_OFFERS.find((offer) => totalItems < offer.minQuantity && offer.rate > applied);
+  if (!better) return applied > 0 ? `${percent(applied)} off your bag, the best price` : "";
+  const away = better.minQuantity - totalItems;
+  const next =
+    away === 1
+      ? `a ${ORDINAL[better.minQuantity] ?? `${better.minQuantity}th`} piece`
+      : `${better.minQuantity} pieces`;
+  if (applied === 0) {
+    return away === 1 ? `A ${ORDINAL[better.minQuantity]} piece takes ${percent(better.rate)} off your bag` : `${next} take ${percent(better.rate)} off your bag`;
+  }
+  return `${percent(applied)} off your bag · ${next} ${away === 1 ? "makes" : "make"} it ${percent(better.rate)}`;
+};
+
 const CODE_KEY = "naira-promo-code";
 const SEEN_KEY = "naira-promo-popup-seen";
 const LEAD_KEY = "naira-promo-lead";

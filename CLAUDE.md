@@ -240,10 +240,39 @@ ladder moves, re-check this code against it.
 The ladder is applied by the bag, never typed. `src/components/cart/OfferProgress.tsx`
 renders it as a filling bar at the top of the cart.
 
+## The bag (`CartDrawerNext.tsx`)
+
+The live bag; `App.tsx` lazy-loads it and `CartDrawer.tsx` is kept so the switch
+back is one line. Since 16 Oct it is the bag of the "Naira Bag CRO Plan": the
+ladder band says what the discount applies to and labels its rungs
+(`cart/LadderBand.tsx`, copy from `ladderHeadline`), each line keeps its struck
+MRP and "₹X off", one add-on carries its exact effect ("Adds ₹1,109 · saves
+₹390", `addOnEffect`: the checkout's resolver and rounding, so the total moves by
+exactly that), the gift box is one line that lifts open above itself on a tap,
+and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
+
+- The add-on comes from `bagAddOns` (`src/lib/pairings.ts`) and only ever from
+  `DEEP_STOCK`, the 13 non-ring pieces Shopify held 20 or more of on 16 Oct, so
+  a one-tap add never meets a piece about to sell out. Re-check the list when
+  stock moves. Never a ring (it needs a size), nothing once the bag holds three.
+- The pairing is a small network (`FIT` by kind, hoops and huggies a kind of
+  their own), then proven sales, metal colour and a smaller ticket. Woven Gold
+  Hoops is in every multi-piece website order since September, so it outranks a
+  metal match: nearly every first piece is offered it, and hoops are offered the
+  Toggle Link Chain. `familyOf` trusts a "— Silver" name over a materials line
+  that fell back to gold.
+- Clarity events, via `clarityEvent()`: bag_opened, bag_closed, bag_pair_shown,
+  bag_pair_added, bag_gift_opened, bag_promo_opened, bag_empty_added,
+  bag_checkout_tapped. Count Checkout taps per bag opened, not per bag-add: an
+  add-on also fires AddToCart.
+- End to end: `shopify/harness/bagflow.mjs <base>` on the
+  `claude/install-mem-skill-jsd971` branch drives a whole phone visit against a
+  served build, with stand-ins for Shiprocket and Clarity so neither is reached.
+
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 231 tests
+npx vitest run                          # currently 315 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

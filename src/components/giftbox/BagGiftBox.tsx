@@ -34,9 +34,15 @@ type Props = {
   ring?: string;
   /** Told true once the ring is up, false as it goes back down. */
   onRing?: (up: boolean) => void;
+  /** A tap does this instead of opening the box here (the bag lifts it into a larger view). */
+  onTap?: () => void;
+  /** Opens once by itself, soon after it appears. */
+  autoOpen?: boolean;
+  /** Told when an opening has played through and the box is shut again. */
+  onDone?: () => void;
 };
 
-const BagGiftBox = ({ size, ring, onRing }: Props) => {
+const BagGiftBox = ({ size, ring, onRing, onTap, autoOpen = false, onDone }: Props) => {
   const stage = useRef<HTMLDivElement>(null);
   const lift = useRef<HTMLDivElement>(null);
   const shadow = useRef<HTMLDivElement>(null);
@@ -51,6 +57,8 @@ const BagGiftBox = ({ size, ring, onRing }: Props) => {
   const open = useRef<() => void>(() => {});
   const told = useRef(onRing);
   told.current = onRing;
+  const finished = useRef(onDone);
+  finished.current = onDone;
   const still = prefersReducedMotion();
 
   useEffect(() => {
@@ -64,7 +72,8 @@ const BagGiftBox = ({ size, ring, onRing }: Props) => {
     /* Idle: a slow float with the shadow breathing under it, and a turn. */
     const float = { duration: 1700, direction: "alternate" as const, iterations: Infinity, easing: "ease-in-out" };
     const idle = [
-      run(lift.current, [{ transform: "translateY(0px) rotate(0deg)" }, { transform: `translateY(${-size * 0.06}px) rotate(-1deg)` }], float),
+      // at least 2.5px of lift, so a small box still reads as floating
+      run(lift.current, [{ transform: "translateY(0px) rotate(0deg)" }, { transform: `translateY(${-Math.max(size * 0.06, 2.5)}px) rotate(-1deg)` }], float),
       run(shadow.current, [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(0.84)", opacity: 0.62 }], float),
     ];
     let spin: Animation | null = null;
@@ -130,6 +139,7 @@ const BagGiftBox = ({ size, ring, onRing }: Props) => {
           easing: "cubic-bezier(0.45, 0, 0.55, 1)",
         }));
         if (alive) startSpin(to - 12);
+        if (alive) finished.current?.();
       } catch {
         /* the bag closed mid-way */
       } finally {
@@ -150,16 +160,18 @@ const BagGiftBox = ({ size, ring, onRing }: Props) => {
       { threshold: 0 },
     );
     if (stage.current) watcher.observe(stage.current);
+    const auto = autoOpen ? window.setTimeout(() => open.current(), 120) : 0;
 
     return () => {
       alive = false;
+      window.clearTimeout(auto);
       watcher.disconnect();
       open.current = () => {};
       [box, lift, shadow, gleam, riser, glint, front, tray, left, right].forEach((part) =>
         part.current?.getAnimations().forEach((animation) => animation.cancel()),
       );
     };
-  }, [size, still]);
+  }, [size, still, autoOpen]);
 
   return (
     /* Room for the drawer out and the box looking down into it. A div (the
@@ -169,11 +181,12 @@ const BagGiftBox = ({ size, ring, onRing }: Props) => {
       role={still ? undefined : "button"}
       tabIndex={still ? undefined : 0}
       aria-label={still ? undefined : "Open the gift box"}
-      onClick={() => open.current()}
+      onClick={() => (onTap ? onTap() : open.current())}
       onKeyDown={(event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
         event.preventDefault();
-        open.current();
+        if (onTap) onTap();
+        else open.current();
       }}
       className={`relative flex shrink-0 justify-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-nf-gold-deep ${still ? "" : "cursor-pointer"}`}
       style={{ width: size * 1.75, height: size * 1.5, paddingTop: size * 0.16 }}

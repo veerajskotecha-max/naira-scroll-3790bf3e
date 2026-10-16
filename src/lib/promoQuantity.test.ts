@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   ACCEPTED_PROMO_CODES,
   PROMO_DISCOUNTS,
+  addOnEffect,
+  ladderHeadline,
   QUANTITY_OFFERS,
   TOP_QUANTITY_OFFER,
   discountedSubtotal,
@@ -194,3 +196,39 @@ describe("the offer ladder", () => {
     }
   });
 });
+
+describe("addOnEffect: what one more piece does to the bag", () => {
+  it("adds ₹1,109 and saves ₹390 when ₹1,499 hoops join a ₹2,399 bracelet", () => {
+    expect(addOnEffect({ subtotal: 2399, totalItems: 1 }, 1499)).toEqual({ adds: 1109, saves: 390, rate: 0.1 });
+  });
+
+  it("counts the third piece's 20% on the whole bag", () => {
+    // 2,399 + 1,499 at 10% is 3,508; with a third ₹1,499 at 20% it is 4,318.
+    expect(addOnEffect({ subtotal: 3898, totalItems: 2 }, 1499)).toEqual({ adds: 810, saves: 689, rate: 0.2 });
+  });
+
+  it("with a 10% code already in hand, saves only the code's 10% on the new piece", () => {
+    expect(addOnEffect({ subtotal: 2399, totalItems: 1, promoCode: "NAIRA10" }, 1499)).toEqual({ adds: 1349, saves: 150, rate: 0.1 });
+  });
+});
+
+describe("ladderHeadline: the band over the bag", () => {
+  it("names what a second piece does, as the plan's mock-up reads", () => {
+    expect(ladderHeadline(1)).toBe("A second piece takes 10% off your bag");
+  });
+
+  it("says what the bag has and what a third piece adds", () => {
+    expect(ladderHeadline(2, 0.1)).toBe("10% off your bag · a third piece makes it 20%");
+  });
+
+  it("stops at the top rung", () => {
+    expect(ladderHeadline(3, 0.2)).toBe("20% off your bag, the best price");
+    expect(ladderHeadline(5, 0.2)).toBe("20% off your bag, the best price");
+  });
+
+  it("never offers a saving already in hand from a code", () => {
+    expect(ladderHeadline(1, 0.1)).toBe("10% off your bag · 3 pieces make it 20%");
+    expect(ladderHeadline(1, 0.2)).toBe("20% off your bag, the best price");
+  });
+});
+

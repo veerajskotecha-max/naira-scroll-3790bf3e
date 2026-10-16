@@ -202,7 +202,7 @@ const FilterSidebar = ({
 );
 
 /* One screen-and-a-bit of pieces, then "Show more". */
-const SHOP_PAGE_SIZE = 12;
+const SHOP_PAGE_SIZE = 30;
 
 /* ───── Main Page ───── */
 

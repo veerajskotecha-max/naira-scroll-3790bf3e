@@ -19,6 +19,10 @@ const ScrollToTop = () => {
   // Continuously record the scroll position for this history entry.
   // A sudden programmatic jump to the very top (which happens as the next
   // page mounts) must not overwrite a real position, so it is ignored.
+  /* No save on cleanup: cleanup runs after the next page is already in the
+     DOM, so a long listing's scrollY has been clamped to the shorter PDP's
+     height by then. Saving it there overwrote the real spot, and every back
+     from a product landed at that same clamped point. */
   useEffect(() => {
     let lastY = window.scrollY;
     const save = () => {
@@ -28,10 +32,7 @@ const ScrollToTop = () => {
       positions.set(key, y);
     };
     window.addEventListener("scroll", save, { passive: true });
-    return () => {
-      save();
-      window.removeEventListener("scroll", save);
-    };
+    return () => window.removeEventListener("scroll", save);
   }, [key]);
 
 

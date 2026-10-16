@@ -33,7 +33,10 @@ const newPage = async (w = 390, h = 844) => {
   // Not page errors, this sandbox: the live-reviews WebSocket can't open through its proxy (Node gets 101
   // from it), and on a live page served through route() Chrome sees no certificate, so the checkout
   // script's payment check (PaymentRequest) is refused with "SSL certificate is not valid".
-  p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|net::ERR|payment manifest|^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\/|^SSL certificate is not valid\. Security level: NONE|^No UI will be shown\. CanMakePayment/.test(m.text()) && errors.push(m.text()));
+  // Not ours either: once the bag opens, Shiprocket's script preloads its checkout in a hidden
+  // frame (fastrr-boost-ui.pickrr.com/?prefetch=true), and that page's own web app manifest has a
+  // "serviceworker" field Chrome rejects.
+  p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|net::ERR|payment manifest|^WebSocket connection to 'wss:\/\/[^']*supabase\.co\/realtime\/|^SSL certificate is not valid\. Security level: NONE|^No UI will be shown\. CanMakePayment|^"serviceworker" must be a dictionary in your web app manifest\.$/.test(m.text()) && errors.push(m.text()));
   return { ctx, p, errors };
 };
 const shot = async (p, name, opts = {}) => writeFileSync(`${OUT}/${name}.jpg`, await p.screenshot({ type: 'jpeg', quality: 80, ...opts }));
@@ -211,24 +214,23 @@ const H = 'prism-riviere-bracelet';
   check('bag drops Shiprocket line, Continue shopping and repeated shipping', !/Powered by|Continue Shopping/i.test(bag.text) && (bag.text.match(/free insured shipping/gi) || []).length <= 1, bag.text.slice(0, 160));
   const bagHits = await offBrand(p);
   check('no stock navy / slate in the bag', Object.keys(bagHits).length === 0, JSON.stringify(bagHits).slice(0, 300));
-  check('bag kept clean: no suggestions, no subtotal and shipping rows', !/Complete the look|Subtotal/i.test(bag.text) && !(await p.$('[role="dialog"][data-state="open"] #bag-pairings')), bag.text.slice(0, 160));
+  const pair = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"] [data-pair]'); return d ? { head: d.querySelector('p')?.textContent.trim(), notes: [...d.querySelectorAll('[data-piece-card]')].map((c) => c.querySelectorAll('p')[1]?.textContent.trim()) } : null; });
+  check('the bag offers one add-on with what it adds and saves; no subtotal or shipping rows', !!pair && /^Wears well with your /.test(pair.head) && pair.notes.length >= 1 && pair.notes.every((n) => /^Adds ₹[\d,]+ · saves ₹[\d,]+$/.test(n || '')) && !/Subtotal/i.test(bag.text), pair ? `${pair.head} · ${pair.notes.join(' | ')}` : 'no add-on');
   await shot(p, 'next-bag');
-  // the gift box: hovering, ring shut; a tap opens it and says what it means, then it closes
-  const caption = () => p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] [aria-live]')?.textContent.trim() ?? '');
-  const idleCap = await caption();
-  check('gift box hovers in the bag, ring shut, tap to open', /tap to open/i.test(idleCap), idleCap);
-  await p.locator('[role="dialog"][data-state="open"] [aria-label="Open the gift box"]').click();
-  await p.waitForFunction(() => /comes in this gift box/i.test(document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] [aria-live]')?.textContent || ''), null, { timeout: 6000 }).catch(() => {});
-  const upCap = await caption();
+  // the gift box: a small floating box on one line; a tap lifts it open above the line, then it settles back
+  const giftLine = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] > p')?.textContent.trim() ?? '');
+  check('one gift line: "Comes with a Naira gift box", with the small box beside it', giftLine === 'Comes with a Naira gift box' && !!(await p.$('[role="dialog"][data-state="open"] [data-gift-row] [aria-label="Open the gift box"]')), giftLine);
+  await p.locator('[role="dialog"][data-state="open"] [data-gift-row] [aria-label="Open the gift box"]').first().click();
+  await p.waitForFunction(() => /Your piece comes in this box/.test(document.querySelector('[role="dialog"][data-state="open"] [data-gift-lifted]')?.textContent || ''), null, { timeout: 6000 }).catch(() => {});
+  const upCap = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"] [data-gift-lifted]')?.textContent.trim() ?? '');
   await shot(p, 'next-bag-box-open');
-  await p.waitForFunction(() => /tap to open/i.test(document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] [aria-live]')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});
-  const backCap = await caption();
-  check('a tap raises the ring and says "your piece comes in this gift box", then it closes', /comes in this gift box/i.test(upCap) && /tap to open/i.test(backCap), `${upCap} → ${backCap}`);
+  const settled = await p.waitForFunction(() => !document.querySelector('[role="dialog"][data-state="open"] [data-gift-lifted]'), null, { timeout: 10000 }).then(() => true, () => false);
+  check('a tap lifts the box open, the ring rises ("Your piece comes in this box"), then it settles back', /Your piece comes in this box/.test(upCap) && settled, `${upCap} → ${settled ? 'settled' : 'still open'}`);
   // one more of the same piece earns the 2-piece offer
   await p.locator('[role="dialog"][data-state="open"] button[aria-label="Increase quantity"]').first().click();
-  await p.waitForFunction(() => /2 pieces · 10% off/i.test(document.querySelector('[role="dialog"][data-state="open"]')?.innerText || ''), null, { timeout: 20000 }).catch(() => {});
-  const after = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText.replace(/\s+/g, ' '));
-  check('a second piece earns the 10%, named as the 2-piece offer, no code name', /2 pieces · 10% off applied/i.test(after) && !/BUY2|NAIRA10/.test(after), (after.match(/2 pieces[^₹]*₹[\d,]+/) || [after.slice(0, 120)])[0]);
+  await p.waitForFunction(() => /for 2 pieces$/.test(document.querySelector('[role="dialog"][data-state="open"] [data-you-save]')?.textContent.trim() || ''), null, { timeout: 20000 }).catch(() => {});
+  const after = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return { band: d.querySelector('[data-ladder] p')?.textContent.trim() ?? '', save: d.querySelector('[data-you-save]')?.textContent.trim() ?? '', text: d.textContent }; });
+  check('a second piece earns the 10%, named as the 2-piece offer, no code name', after.band === '10% off your bag · a third piece makes it 20%' && /· includes 10% for 2 pieces$/.test(after.save) && !/BUY2|NAIRA10/.test(after.text), `${after.band} · ${after.save}`);
   await shot(p, 'next-bag-2');
   // the phone back button closes the bag
   await p.goBack();
@@ -314,7 +316,7 @@ for (const [label, path] of [['next', `/preview/jewellery/${H}`], ['live', `/jew
   await p.waitForSelector('[role="dialog"][data-state="open"] [data-gift-row]', { timeout: 20000 });
   await p.waitForTimeout(1500);
   const bag = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return { text: d.innerText.replace(/\s+/g, ' '), palette: d.classList.contains('nf-palette') }; });
-  check('live page: the new bag with the gift box', /Checkout · ₹/i.test(bag.text) && /tap to open/i.test(bag.text) && bag.palette, bag.text.slice(0, 120));
+  check('live page: the new bag with the gift box', /Checkout · ₹/i.test(bag.text) && /Comes with a Naira gift box/.test(bag.text) && bag.palette, bag.text.slice(0, 120));
   check('no page errors on the live product page', errors.length === 0, errors.slice(0, 2).join(' | '));
   await shot(p, 'live-bag');
   await ctx.close();
@@ -349,9 +351,10 @@ for (const [label, path] of [['next', `/preview/jewellery/${H}`], ['live', `/jew
   await p.waitForSelector('[role="dialog"][data-state="open"] [data-gift-row]', { timeout: 20000 });
   await p.waitForTimeout(1500);
   const one = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"]').innerText.replace(/\s+/g, ' '));
-  check('NAIRA10 never shown in the bag', !/NAIRA/i.test(one), one.slice(0, 160));
-  check('with a 10% code, the band offers only the 20% rung', /10% off — add 2 pieces for 20%/i.test(one) && !/save 10%/i.test(one), (one.match(/[^·]*off — add[^%]*%/i) || [one.slice(0, 80)])[0]);
-  check('the one discount is named for what it is', /Promo code · 10% off applied/i.test(one), (one.match(/Promo code[^₹]*₹[\d,]+/) || [''])[0]);
+  check('NAIRA10 never shown in the bag', !/NAIRA10/i.test(one), one.slice(0, 160));
+  const parts = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return { band: d.querySelector('[data-ladder] p')?.textContent.trim() ?? '', save: d.querySelector('[data-you-save]')?.textContent.trim() ?? '' }; });
+  check('with a 10% code, the band offers only the 20% rung', parts.band === '10% off your bag · 3 pieces make it 20%', parts.band);
+  check('the one discount is named for what it is', /Code added/.test(one) && /· includes 10% with your code$/.test(parts.save), parts.save);
   await shot(p, 'bag-naira10');
   check('no page errors with a stored code', errors.length === 0, errors.slice(0, 2).join(' | '));
   await ctx.close();

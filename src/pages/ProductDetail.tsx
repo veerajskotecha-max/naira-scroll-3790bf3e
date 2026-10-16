@@ -41,7 +41,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const goBack = () => {
-    if (window.history.length > 1) navigate(-1);
+    if (((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0) navigate(-1);
     else navigate("/shop/indo-western");
   };
 

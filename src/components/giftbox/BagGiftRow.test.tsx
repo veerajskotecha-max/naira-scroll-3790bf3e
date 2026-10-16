@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import BagGiftRow from "./BagGiftRow";
 
 vi.mock("@/lib/clarity", () => ({ clarityEvent: vi.fn() }));
@@ -27,8 +28,8 @@ describe("bag gift-box preview", () => {
   });
 
   it("keeps heavy 3D and duplicate catalogue subscriptions out of the bag preview", () => {
-    const row = readFileSync(new URL("./BagGiftRow.tsx", import.meta.url), "utf8");
-    const box = readFileSync(new URL("./BagGiftBox.tsx", import.meta.url), "utf8");
+    const row = readFileSync(resolve(__dirname, "BagGiftRow.tsx"), "utf8");
+    const box = readFileSync(resolve(__dirname, "BagGiftBox.tsx"), "utf8");
     expect(row).not.toMatch(/useLiveJewellery|NairaBox3D|from ["']three/);
     expect(box).toContain("waits.clear()");
     expect(box).toContain("if (holdOpen) return");

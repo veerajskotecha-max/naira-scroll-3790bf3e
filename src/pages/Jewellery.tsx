@@ -171,9 +171,25 @@ const Jewellery = () => {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  /* Paged grid: one tap loads the next twelve. */
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [active, activeFilters]);
+  /* Paged grid. The count is remembered per history entry so Back from a
+     product lands on the same expanded grid; resetting it on return shrank
+     the page under the restored scroll and threw the shopper up or down. */
+  const { key: entryKey } = useLocation();
+  const storeKey = `nf-jewel-shown:${entryKey}`;
+  const [visibleCount, setVisibleCount] = useState(() => {
+    const saved = Number(sessionStorage.getItem(storeKey));
+    return navigationType === "POP" && saved > PAGE_SIZE ? saved : PAGE_SIZE;
+  });
+  const filterSig = `${active}|${JSON.stringify(activeFilters)}`;
+  const lastSig = useRef(filterSig);
+  useEffect(() => {
+    if (lastSig.current === filterSig) return;
+    lastSig.current = filterSig;
+    setVisibleCount(PAGE_SIZE);
+  }, [filterSig]);
+  useEffect(() => {
+    try { sessionStorage.setItem(storeKey, String(visibleCount)); } catch { /* private mode */ }
+  }, [storeKey, visibleCount]);
   const visiblePieces = useMemo(() => pieces.slice(0, visibleCount), [pieces, visibleCount]);
 
   /* Pinned trio, shown above the filters so the very first screen has a

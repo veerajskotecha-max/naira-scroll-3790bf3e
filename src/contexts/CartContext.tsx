@@ -438,12 +438,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
      to Shopify checkout using the URL that add returned (no stale-state race). */
   const buyNow = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
     const url = await addItem(item, quantity);
-    const target = url ?? loadCart().checkoutUrl;
-    if (!target) {
+    if (!url) {
       toast.error("Could not open checkout. Please try again.");
       return;
     }
-    openCheckout(target);
+    await openCheckout(url);
   }, [addItem, openCheckout]);
 
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);

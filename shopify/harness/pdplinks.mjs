@@ -2,7 +2,8 @@
 // go, and should it?
 //   node pdplinks.mjs <base> <catalogue.json> [out.json]
 // catalogue.json is the live catalogue as the site builds it (an array of
-// { handle, name, category, sale, tags, adjustable }). Each page is opened once; its
+// { handle, name, category, sale, tags, adjustable, need }, need being the
+// size or month a piece must be chosen in first). Each page is opened once; its
 // "Complete the look", "More …" and reel product links are read and checked
 // against the catalogue and against the pages that actually rendered:
 //   broken    the link's piece is not in the catalogue or its page did not render
@@ -11,6 +12,8 @@
 //   sold out  a recommended piece that cannot be bought
 //   ring add  a one-tap Add on a ring sized to the finger (open-back rings,
 //             adjustable in the catalogue, fit US 6 to 8 and may be added)
+//   month add a one-tap Add on a piece chosen by month (a birthstone)
+//   needless size / month   "Choose …" on a piece that needs no such choice
 //   pre-order a one-tap Add on a piece Shopify tags pre-order
 // Network through Node (the sandbox CA); nothing reaches an ad or analytics
 // account (noreport.mjs). CONC=4 pages at a time; ONLY=regex for a subset.
@@ -65,7 +68,7 @@ const visit = async (piece) => {
           [...document.querySelectorAll(`${selector} article`)].map((a) => ({
             href: a.querySelector('a')?.getAttribute('href') || '',
             name: (a.querySelectorAll('a')[1]?.textContent || a.querySelector('a')?.textContent || '').trim(),
-            action: [...a.querySelectorAll('button, a')].map((x) => x.textContent.trim()).filter((t) => /^(add|adding…|choose size|pre-order|view)/i.test(t))[0] || '',
+            action: [...a.querySelectorAll('button, a')].map((x) => x.textContent.trim()).filter((t) => /^(add|adding…|choose size|choose month|pre-order|view)/i.test(t))[0] || '',
           }));
         return {
           rendered: true,
@@ -116,7 +119,9 @@ for (const r of rows) {
       if (h) seen.add(h);
       if (target && target.sale === false) flag(r.handle, 'sold out', `${row}: ${h}`);
       if (target && /^add/i.test(c.action) && target.category === 'Rings' && !target.adjustable) flag(r.handle, 'ring add', `${row}: ${h}`);
-      if (target && /^choose size/i.test(c.action) && (target.category !== 'Rings' || target.adjustable)) flag(r.handle, 'needless size', `${row}: ${h}`);
+      if (target && /^choose size/i.test(c.action) && (target.need ? target.need !== 'size' : target.category !== 'Rings' || target.adjustable)) flag(r.handle, 'needless size', `${row}: ${h}`);
+      if (target && /^add/i.test(c.action) && target.need === 'month') flag(r.handle, 'month add', `${row}: ${h}`);
+      if (target && /^choose month/i.test(c.action) && target.need !== 'month') flag(r.handle, 'needless month', `${row}: ${h}`);
       if (target && /^add/i.test(c.action) && /pre-order/i.test(target.tags || '')) flag(r.handle, 'pre-order', `${row}: ${h}`);
     }
   }
@@ -127,9 +132,9 @@ for (const r of rows) {
 }
 
 const count = (kind) => problems.filter((x) => x.kind === kind).length;
-const kinds = ['page', 'broken', 'self', 'twice', 'sold out', 'ring add', 'needless size', 'pre-order'];
+const kinds = ['page', 'broken', 'self', 'twice', 'sold out', 'ring add', 'month add', 'needless size', 'needless month', 'pre-order'];
 console.log(`${rows.length} product pages · ${rendered.size} rendered · ${rows.reduce((t, r) => t + r.look.length + r.more.length, 0)} recommendation links · ${rows.reduce((t, r) => t + r.reels.length, 0)} reel links`);
-for (const kind of kinds) console.log(`  ${kind.padEnd(9)} ${count(kind)}`);
+for (const kind of kinds) console.log(`  ${kind.padEnd(14)} ${count(kind)}`);
 const byKind = {};
 for (const x of problems) (byKind[x.kind] ||= []).push(`${x.page} → ${x.detail}`);
 for (const kind of kinds) if (byKind[kind]) console.log(`\n${kind}:\n  ${[...new Set(byKind[kind])].slice(0, 12).join('\n  ')}${byKind[kind].length > 12 ? `\n  … ${byKind[kind].length - 12} more` : ''}`);

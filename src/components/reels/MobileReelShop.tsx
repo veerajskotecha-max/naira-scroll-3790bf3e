@@ -11,6 +11,7 @@ import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hoo
 import { shopifyImage } from "@/lib/shopifyImage";
 import { reelCover } from "@/lib/reelCovers";
 import localReelPoster from "@/assets/reel-fallback.webp";
+import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
 const PREORDER_WHATSAPP = "919561557935";
 
@@ -29,22 +30,19 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
 
   const add = async () => {
     const variantId = live?.variantId || product.variant_id;
-    if (!variantId) {
+    // A piece that needs a size or a month is chosen on its own page.
+    if (!variantId || (live && choiceNeeded(live))) {
       toast("Choose your options", { description: "Opening the product page." });
       window.location.assign(`/jewellery/${product.handle}`);
       return;
     }
     setAdding(true);
     try {
-      await addItem({
-        id: product.handle,
-        variantId,
-        name: live?.name ?? product.title,
-        price: live?.price ?? parsePrice(product.price_label),
-        priceLabel: price,
-        currencyCode: "INR",
-        image,
-      });
+      await addItem(
+        live
+          ? cartLineFor(live, oneTapVariant(live))
+          : { id: product.handle, variantId, name: product.title, price: parsePrice(product.price_label), priceLabel: price, currencyCode: "INR", image },
+      );
       setDrawerOpen(true);
     } finally {
       setAdding(false);

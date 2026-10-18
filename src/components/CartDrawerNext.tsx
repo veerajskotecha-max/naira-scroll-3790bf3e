@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, Minus, Plus } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { bagAddOns, wornWithNoun } from "@/lib/pairings";
+import { cartLineFor, chosenOf, oneTapVariant, variantById, variantLabel } from "@/lib/variants";
 import BagGiftRow from "@/components/giftbox/BagGiftRow";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
@@ -26,7 +27,7 @@ import { getSupabase } from "@/integrations/supabase/lazy";
 import { shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { clarityEvent } from "@/lib/clarity";
-import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
+import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewellery";
 
 /*
   The bag, on every page, as the CRO plan of 16 October draws it ("Naira Bag
@@ -50,24 +51,15 @@ import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 
-const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: string }>; size?: string }) => {
-  const real = (item.selectedOptions ?? []).filter(
-    (o) => o.name.toLowerCase() !== "title" && o.value.toLowerCase() !== "default title",
-  );
-  if (real.length) return real.map((o) => `${o.name}: ${o.value}`).join(" · ");
-  return item.size ? `Size: ${item.size}` : "";
-};
-
-/* A piece from the catalogue as a cart line. */
-const asCartItem = (piece: JewelPiece) => ({
-  id: piece.handle,
-  variantId: piece.variantId,
-  name: piece.name,
-  price: piece.price,
-  priceLabel: piece.priceLabel,
-  currencyCode: "INR",
-  image: piece.image,
-});
+/* "Metal: Silver · Size: 7": the line's choices, and a ring size noted beside
+   them (Star Point Band is sold in gold and silver, sized from the list). */
+const lineOptions = (item: { selectedOptions?: Array<{ name: string; value: string }>; size?: string }) =>
+  [
+    ...(item.selectedOptions ?? [])
+      .filter((o) => o.name.toLowerCase() !== "title" && o.value.toLowerCase() !== "default title")
+      .map((o) => `${o.name}: ${o.value}`),
+    ...(item.size ? [`Size: ${item.size}`] : []),
+  ].join(" · ");
 
 /* The two best-sellers, offered in an empty bag: in 7 of the 16 orders of
    1–15 October each, and kept in deep stock. */
@@ -78,11 +70,26 @@ type Follow = ReturnType<typeof followOut>;
 /* One small card with an Add: the pair row, and the empty bag's best-sellers.
    The photo and name open the piece's page, so it can be seen before it is
    added; the bag closes on the way out and the phone's back returns. */
-const PieceCard = ({ piece, note, onAdd, busy, follow }: { piece: JewelPiece; note?: string; onAdd: () => void; busy: boolean; follow: Follow }) => (
-  <div data-piece-card={piece.handle} className="flex items-center gap-2.5 border border-nf-gold/20 bg-white px-2 py-1.5">
+const PieceCard = ({
+  piece,
+  variant,
+  note,
+  onAdd,
+  busy,
+  follow,
+}: {
+  piece: JewelPiece;
+  /** The metal or stone it adds in, when it is sold in more than one. */
+  variant?: JewelVariant;
+  note?: string;
+  onAdd: () => void;
+  busy: boolean;
+  follow: Follow;
+}) => (
+  <div data-piece-card={piece.handle} data-variant={variant ? variantLabel(variant) : undefined} className="flex items-center gap-2.5 border border-nf-gold/20 bg-white px-2 py-1.5">
     <Link to={`/jewellery/${piece.handle}`} onClick={follow} tabIndex={-1} aria-hidden="true" className="shrink-0">
       <img
-        src={shopifyImage(piece.image, 120) || piece.image}
+        src={shopifyImage(variant?.image ?? piece.image, 120) || variant?.image || piece.image}
         alt=""
         className="h-[45px] w-[36px] bg-nf-ivory-deep object-cover"
         width={36}
@@ -95,7 +102,7 @@ const PieceCard = ({ piece, note, onAdd, busy, follow }: { piece: JewelPiece; no
         <Link to={`/jewellery/${piece.handle}`} onClick={follow} className="underline-offset-4 hover:underline">
           {piece.name}
         </Link>{" "}
-        · {piece.priceLabel}
+        {variant ? `· ${variantLabel(variant)} · ₹${variant.price.toLocaleString("en-IN")}` : `· ${piece.priceLabel}`}
       </p>
       {note && <p className="text-[12px] leading-[1.3] text-nf-ink/75">{note}</p>}
     </div>
@@ -103,7 +110,7 @@ const PieceCard = ({ piece, note, onAdd, busy, follow }: { piece: JewelPiece; no
       type="button"
       onClick={onAdd}
       disabled={busy}
-      aria-label={`Add ${piece.name} to bag`}
+      aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""} to bag`}
       className="press-scale inline-flex min-h-[32px] shrink-0 items-center justify-center border border-nf-ink px-3 font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink transition-colors hover:bg-nf-ink hover:text-nf-ivory disabled:opacity-50"
     >
       {busy ? <Loader2 size={12} className="animate-spin" aria-hidden="true" /> : "Add"}
@@ -181,7 +188,8 @@ const CartDrawerNext = () => {
   /* The deal from the product page, kept in view: each piece's MRP from the
      live catalogue, and one saving against it at the total. */
   const mrpOf = (item: CartItem) => {
-    const mrp = catalogueByHandle.get(item.id)?.compareAtPrice;
+    const piece = catalogueByHandle.get(item.id);
+    const mrp = (variantById(piece, item.variantId) ?? piece)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
   const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
@@ -189,6 +197,11 @@ const CartDrawerNext = () => {
 
   /* The pair row: one piece that completes the look, with its exact effect. */
   const offer = useMemo(() => bagAddOns(items.map((item) => item.id), totalItems, jewellery), [items, totalItems, jewellery]);
+  /* What the shopper chose for the piece the add-on is for ("Stone" → "Emerald"). */
+  const anchorChoice = useMemo(() => {
+    const line = [...items].reverse().find((item) => item.id === offer?.anchor.handle);
+    return line ? chosenOf(line) : {};
+  }, [items, offer]);
   const offerKey = offer?.pieces.map((piece) => piece.handle).join(",") ?? "";
   const shownFor = useRef("");
   useEffect(() => {
@@ -201,11 +214,11 @@ const CartDrawerNext = () => {
   }, [isDrawerOpen]);
 
   const [adding, setAdding] = useState<string | null>(null);
-  const addPiece = async (piece: JewelPiece, event: string) => {
+  const addPiece = async (piece: JewelPiece, event: string, variant?: JewelVariant) => {
     if (adding) return;
     setAdding(piece.handle);
     try {
-      const added = await addItem(asCartItem(piece));
+      const added = await addItem(cartLineFor(piece, variant));
       if (added) clarityEvent(event);
     } finally {
       setAdding(null);
@@ -223,7 +236,7 @@ const CartDrawerNext = () => {
   }, [removed]);
   const remove = async (item: CartItem) => {
     setRemoved(item);
-    await removeItem(item.id, item.size);
+    await removeItem(item.id, item.size, item.variantId);
   };
   const undo = async () => {
     const item = removed;
@@ -369,7 +382,7 @@ const CartDrawerNext = () => {
                 {items.map((item, index) => {
                   const mrp = mrpOf(item);
                   return (
-                    <li key={`${item.id}-${item.size}`} data-line={item.id} className="flex gap-3 border-b border-nf-gold/15 px-4 py-3 sm:px-5">
+                    <li key={`${item.id}-${item.size}-${item.variantId}`} data-line={item.id} data-variant={item.variantId} className="flex gap-3 border-b border-nf-gold/15 px-4 py-3 sm:px-5">
                       <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
                         <img
                           src={shopifyImage(item.image, 200) || item.image}
@@ -404,7 +417,7 @@ const CartDrawerNext = () => {
                           <div className="inline-flex items-center border border-nf-ink/20">
                             <button
                               type="button"
-                              onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1))}
+                              onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
                               disabled={isLoading}
                               className={stepper}
                               aria-label={item.quantity <= 1 ? `Remove ${item.name}` : "Decrease quantity"}
@@ -416,7 +429,7 @@ const CartDrawerNext = () => {
                             </span>
                             <button
                               type="button"
-                              onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
+                              onClick={() => updateQuantity(item.id, item.size, item.quantity + 1, item.variantId)}
                               disabled={isLoading}
                               className={stepper}
                               aria-label="Increase quantity"
@@ -448,15 +461,19 @@ const CartDrawerNext = () => {
                   </p>
                   <div className="mt-2 grid gap-2">
                     {offer.pieces.map((piece) => {
-                      const effect = addOnEffect({ subtotal, totalItems, promoCode }, piece.price);
+                      /* In the metal or stone of the piece it is for: Emerald
+                         huggies beside an Emerald bracelet, silver beside silver. */
+                      const variant = oneTapVariant(piece, anchorChoice);
+                      const effect = addOnEffect({ subtotal, totalItems, promoCode }, variant?.price ?? piece.price);
                       return (
                         <PieceCard
                           key={piece.handle}
                           piece={piece}
+                          variant={variant}
                           busy={adding === piece.handle}
                           follow={leave}
                           note={effect.saves > 0 ? `Adds ${formatPrice(effect.adds)} · saves ${formatPrice(effect.saves)}` : `Adds ${formatPrice(effect.adds)}`}
-                          onAdd={() => addPiece(piece, "bag_pair_added")}
+                          onAdd={() => addPiece(piece, "bag_pair_added", variant)}
                         />
                       );
                     })}

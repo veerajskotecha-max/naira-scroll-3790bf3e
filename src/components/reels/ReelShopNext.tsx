@@ -10,6 +10,7 @@ import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hoo
 import { shopifyImage } from "@/lib/shopifyImage";
 import { reelCover } from "@/lib/reelCovers";
 import localReelPoster from "@/assets/reel-fallback.webp";
+import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
 /*
   "Shop the reel" for the redesigned product page.
@@ -54,22 +55,19 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
 
   const add = async () => {
     const variantId = live?.variantId || product.variant_id;
-    if (!variantId) {
+    // A piece that needs a size or a month is chosen on its own page.
+    if (!variantId || (live && choiceNeeded(live))) {
       toast("Choose your options", { description: "Opening the product page." });
       window.location.assign(href);
       return;
     }
     setAdding(true);
     try {
-      await addItem({
-        id: product.handle,
-        variantId,
-        name,
-        price: live?.price ?? parsePrice(product.price_label),
-        priceLabel: price,
-        currencyCode: "INR",
-        image,
-      });
+      await addItem(
+        live
+          ? cartLineFor(live, oneTapVariant(live))
+          : { id: product.handle, variantId, name, price: parsePrice(product.price_label), priceLabel: price, currencyCode: "INR", image },
+      );
       setDrawerOpen(true);
     } finally {
       setAdding(false);

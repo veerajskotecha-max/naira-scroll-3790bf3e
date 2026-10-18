@@ -292,10 +292,40 @@ on the harness branch opens every product page and checks each link.
   `claude/install-mem-skill-jsd971` branch drives a whole phone visit against a
   served build, with stand-ins for Shiprocket and Clarity so neither is reached.
 
+## Variants (`src/lib/variants.ts`)
+
+Shopify sells some pieces more than one way: a metal (Silk Mesh Cuff; Triple
+Coil Wrap Bangle, ₹1,899 gold and ₹1,799 silver), a stone (Baguette Huggies,
+Baguette Tennis Bracelet), a size (Golden Duet Ring), a metal and a size
+(Tubogas Dome Ring and the other Edition Two rings), a stone and a size
+(Baguette Eternity Band), a month (Birthstone Heart Necklace). Until 18 Oct the
+site read only a product's first variant: a second colour could not be chosen
+or added, two colours of one piece merged into one bag line, a ring's size went
+to Shopify as a note on its size-6 variant, and silver showed the gold price.
+
+- `fromShopify` and `mergeLive` lead with the first buyable variant's price and
+  id, and carry `variants` and `options` only for a piece with a real choice,
+  which keeps the first-paint snapshot lean.
+- The PDP has one picker per option: swatches for metals and stones, a list
+  past six values (the months), "Pre-order" on a value that cannot be bought
+  with the other choices. The price is the variant's, and its photo leads the
+  gallery once picked. A sold-out variant is reserved on WhatsApp by name.
+- A bag line is a variant. `cartKeyOf` (`src/lib/cartLines.ts`) keys lines by
+  piece, size note and variant, and the line reads "Metal: Silver · Size: 7".
+- Every one-tap Add (listing cards, "Complete the look", the bag's add-on,
+  reels) asks `choiceNeeded` first: a piece sold in sizes, a ring sized to the
+  finger, or a birthstone goes to its page ("Choose size", "Choose month"). A
+  metal or stone is added as `oneTapVariant` picks it: the anchor's own metal or
+  stone when there is one, else the first buyable, and the card shows which.
+- A ring Shopify does not sell in sizes keeps the US size list and sends the
+  size as the line's `Size` attribute, whatever its metal (Star Point Band).
+- `shopify/harness/variantflow.mjs <base>` on the harness branch checks all of
+  it on a phone against a served build, reading Shopify's own cart back.
+
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 324 tests
+npx vitest run                          # currently 343 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -399,7 +429,10 @@ npx vite-node scripts/generate-jewellery-snapshot.ts
 
 `jewellerySnapshot.test.ts` fails if any handle in `jewelleryHandles.ts` has no
 first-paint data, so adding a piece in Shopify and regenerating only one file
-fails the suite rather than bringing the skeleton back.
+fails the suite rather than bringing the skeleton back. Run it whenever pieces
+go live: on 18 Oct the 31 Edition Two pieces, already in the catalogue ads, were
+in neither file, and an ad click on one reached the piece only after the slow
+redirect (about 2.4 s on the live site).
 
 ## A page whose code never arrives
 

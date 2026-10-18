@@ -13,6 +13,7 @@ import {
 import { applyPromoToCheckoutUrl, getPromoCode, resolveCartDiscount } from "@/lib/promo";
 import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
+import { cartKeyOf, findCartLine } from "@/lib/cartLines";
 import { setClarityTag } from "@/lib/clarity";
 
 export interface CartItem {
@@ -34,8 +35,8 @@ interface CartContextType {
   items: CartItem[];
   addItem: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<string | null>;
   buyNow: (item: Omit<CartItem, "quantity" | "lineId">, quantity?: number) => Promise<void>;
-  removeItem: (id: string, size?: string) => Promise<void>;
-  updateQuantity: (id: string, size: string | undefined, quantity: number) => Promise<void>;
+  removeItem: (id: string, size?: string, variantId?: string) => Promise<void>;
+  updateQuantity: (id: string, size: string | undefined, quantity: number, variantId?: string) => Promise<void>;
   clearCart: () => void;
   syncCart: () => Promise<void>;
   checkout: () => void;
@@ -69,7 +70,8 @@ const loadCart = (): StoredCart => {
   }
 };
 
-const getCartKey = (id: string, size?: string) => `${id}__${size ?? ""}`;
+const keyOf = cartKeyOf;
+const findLine = findCartLine;
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [storedCart, setStoredCart] = useState<StoredCart>(loadCart);
@@ -117,8 +119,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const latest = loadCart();
-      const key = getCartKey(item.id, item.size);
-      const existing = latest.items.find((cartItem) => getCartKey(cartItem.id, cartItem.size) === key);
+      const key = keyOf(item);
+      const existing = latest.items.find((cartItem) => keyOf(cartItem) === key);
 
       if (!latest.cartId) {
         const result = await createShopifyCart(item.variantId, quantity, item.size);
@@ -144,7 +146,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
           items: current.items.map((cartItem) =>
-            getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
+            keyOf(cartItem) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
           ),
         }));
         return committed.checkoutUrl;
@@ -161,7 +163,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
         // An orphaned local row (no lineId) for the same piece would double-count.
         items: [
-          ...current.items.filter((cartItem) => getCartKey(cartItem.id, cartItem.size) !== key),
+          ...current.items.filter((cartItem) => keyOf(cartItem) !== key),
           { ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null },
         ],
       }));
@@ -191,11 +193,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return url;
   }, [addItemToCart]);
 
-  const removeItem = useCallback(async (id: string, size?: string) => {
+  const removeItem = useCallback(async (id: string, size?: string, variantId?: string) => {
     const latest = loadCart();
-    const key = getCartKey(id, size);
-    const item = latest.items.find((cartItem) => getCartKey(cartItem.id, cartItem.size) === key);
+    const item = findLine(latest.items, id, size, variantId);
     if (!item) return;
+    const key = keyOf(item);
 
     setIsLoading(true);
     try {
@@ -206,7 +208,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         commitCart((current) => {
-          const nextItems = current.items.filter((cartItem) => getCartKey(cartItem.id, cartItem.size) !== key);
+          const nextItems = current.items.filter((cartItem) => keyOf(cartItem) !== key);
           return nextItems.length === 0
             ? emptyCart
             : { ...current, checkoutUrl: result.checkoutUrl ?? current.checkoutUrl, items: nextItems };
@@ -214,7 +216,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } else {
         commitCart((current) => ({
           ...current,
-          items: current.items.filter((cartItem) => getCartKey(cartItem.id, cartItem.size) !== key),
+          items: current.items.filter((cartItem) => keyOf(cartItem) !== key),
         }));
       }
     } catch (error) {
@@ -225,16 +227,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart, commitCart]);
 
-  const updateQuantity = useCallback(async (id: string, size: string | undefined, quantity: number) => {
+  const updateQuantity = useCallback(async (id: string, size: string | undefined, quantity: number, variantId?: string) => {
     if (quantity <= 0) {
-      await removeItem(id, size);
+      await removeItem(id, size, variantId);
       return;
     }
 
     const latest = loadCart();
-    const key = getCartKey(id, size);
-    const item = latest.items.find((cartItem) => getCartKey(cartItem.id, cartItem.size) === key);
+    const item = findLine(latest.items, id, size, variantId);
     if (!item) return;
+    const key = keyOf(item);
 
     setIsLoading(true);
     try {
@@ -249,7 +251,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         commitCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-          items: current.items.map((cartItem) => (getCartKey(cartItem.id, cartItem.size) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem)),
+          items: current.items.map((cartItem) => (keyOf(cartItem) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem)),
         }));
       }
     } catch (error) {

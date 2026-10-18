@@ -18,6 +18,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { Heart } from "lucide-react";
 import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { isAdjustableRing } from "@/data/ringFit";
+import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
@@ -88,19 +89,14 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     }
   };
 
-  /* Shopify-backed cart add: real variant, real cart. */
+  /* Shopify-backed cart add: real variant, real cart. A piece sold in metals
+     or stones goes in as pictured; one that needs a size or a month is chosen
+     on its own page (the button says so), never added in a choice nobody made. */
+  const need = choiceNeeded(piece);
   const handleAdd = async () => {
     setAdding(true);
     try {
-      const added = await addItem({
-        id: piece.handle,
-        variantId: piece.variantId,
-        name: piece.name,
-        price: piece.price,
-        priceLabel: piece.priceLabel,
-        currencyCode: "INR",
-        image: piece.image,
-      });
+      const added = await addItem(cartLineFor(piece, oneTapVariant(piece)));
       /* Opening the drawer on a failed add showed the shopper an empty cart. */
       if (added) setDrawerOpen(true);
     } finally {
@@ -265,14 +261,25 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
         <div className="mt-auto flex w-full flex-col items-center gap-2 pt-3">
 
-          <button
-            onClick={handleAdd}
-            disabled={soldOut || adding || cartLoading}
-            className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 disabled:opacity-60 sm:text-[10.5px] sm:tracking-nf-30"
-            style={jost}
-          >
-            {soldOut ? "SOLD OUT" : adding ? "ADDING…" : "ADD TO CART"}
-          </button>
+          {need && !soldOut ? (
+            <Link
+              to={`/jewellery/${piece.handle}`}
+              aria-label={`Choose a ${need} for ${piece.name}`}
+              className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 sm:text-[10.5px] sm:tracking-nf-30"
+              style={jost}
+            >
+              {`CHOOSE ${need.toUpperCase()}`}
+            </Link>
+          ) : (
+            <button
+              onClick={handleAdd}
+              disabled={soldOut || adding || cartLoading}
+              className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 disabled:opacity-60 sm:text-[10.5px] sm:tracking-nf-30"
+              style={jost}
+            >
+              {soldOut ? "SOLD OUT" : adding ? "ADDING…" : "ADD TO CART"}
+            </button>
+          )}
         </div>
 
       </div>

@@ -41,6 +41,24 @@ export interface JewelPiece {
   tag?: string;
   /** Shopify tags — power the style/occasion filters on the listing page. */
   tags?: string[];
+  /** The choices Shopify offers ("Metal", "Stone", "Size", "Month"), each with
+      its values. Absent on a piece sold one way only. */
+  options?: Array<{ name: string; values: string[] }>;
+  /** Every way the piece is sold, when there is more than one. */
+  variants?: JewelVariant[];
+}
+
+/** One way a piece is sold: a Shopify variant, a metal, a stone, a size or a month. */
+export interface JewelVariant {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  price: number;
+  compareAtPrice?: number;
+  /** "Metal" → "Silver", "Size" → "7". Shopify's "Title" placeholder is left out. */
+  options: Record<string, string>;
+  /** Its own photo, when Shopify has one. */
+  image?: string;
 }
 
 export const WHATSAPP_NUMBER = "919561557935";
@@ -54,9 +72,9 @@ export const jewelleryEnquiryUrl = (name: string) =>
 /* Pre-orders are booked by hand on WhatsApp, never through checkout: the piece
    is not in stock, so a paid checkout would take money for something we cannot
    ship on the stated date. */
-export const preorderWhatsAppUrl = (p: { name: string; handle: string; priceLabel?: string; size?: string }) =>
+export const preorderWhatsAppUrl = (p: { name: string; handle: string; priceLabel?: string; size?: string; choice?: string }) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hello Naira Flore, I would like to pre-order the "${p.name}"${p.size ? ` in size ${p.size}` : ""}${p.priceLabel ? ` (${p.priceLabel})` : ""}. Please book this piece for me, and let me know what further details you need to reserve it.\n\nhttps://nairaflore.com/jewellery/${p.handle}`
+    `Hello Naira Flore, I would like to pre-order the "${p.name}"${p.choice ? ` in ${p.choice}` : p.size ? ` in size ${p.size}` : ""}${p.priceLabel ? ` (${p.priceLabel})` : ""}. Please book this piece for me, and let me know what further details you need to reserve it.\n\nhttps://nairaflore.com/jewellery/${p.handle}`
   )}`;
 
 export const formatJewelPrice = (v: number) =>

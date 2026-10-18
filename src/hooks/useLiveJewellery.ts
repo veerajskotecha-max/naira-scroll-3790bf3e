@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
+import { variantFields } from "@/lib/variants";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
@@ -45,11 +46,11 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
   if (!node) return piece;
   const images = productImagesFirst(node);
   const gallery = coverFirst(piece.handle, images.length ? images : piece.gallery);
-  const variant = node.variants.edges[0]?.node;
-  const price = variant ? Math.round(Number(variant.price.amount)) : piece.price;
+  // The first buyable variant leads: its price is one the shopper can pay.
+  const { lead, availableForSale, choice } = variantFields(node);
+  const price = lead ? lead.price : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
-  const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
-  const compareAtPrice = compareRaw > price ? compareRaw : undefined;
+  const compareAtPrice = lead?.compareAtPrice;
 
   return {
     ...piece,
@@ -58,12 +59,13 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     priceLabel: `₹${price.toLocaleString("en-IN")}`,
     compareAtPrice,
     compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
-    variantId: variant?.id ?? piece.variantId,
-    availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
+    variantId: lead?.id ?? piece.variantId,
+    availableForSale,
     image: gallery[0] ?? piece.image,
     gallery,
     description: normalizeMetalCopy(node.description) || piece.description,
     tags: node.tags?.length ? node.tags : piece.tags,
+    ...choice,
   };
 };
 
@@ -187,10 +189,9 @@ const parseDescription = (raw: string) => {
  * Exported so scripts/generate-jewellery-snapshot.ts can run the SAME mapping
  * ahead of time — the PDP's first paint must be what live would have drawn. */
 export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
-  const variant = node.variants.edges[0]?.node;
-  const price = variant ? Math.round(Number(variant.price.amount)) : Math.round(Number(node.priceRange.minVariantPrice.amount));
-  const compareRaw = variant?.compareAtPrice ? Math.round(Number(variant.compareAtPrice.amount)) : 0;
-  const compareAtPrice = compareRaw > price ? compareRaw : undefined;
+  const { lead, availableForSale, choice } = variantFields(node);
+  const price = lead ? lead.price : Math.round(Number(node.priceRange.minVariantPrice.amount));
+  const compareAtPrice = lead?.compareAtPrice;
   const images = coverFirst(node.handle, productImagesFirst(node));
   const description = normalizeMetalCopy(node.description);
   const parsed = parseDescription(description);
@@ -205,8 +206,8 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     priceLabel: `₹${price.toLocaleString("en-IN")}`,
     compareAtPrice,
     compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
-    variantId: variant?.id ?? "",
-    availableForSale: node.availableForSale && (variant?.availableForSale ?? true),
+    variantId: lead?.id ?? "",
+    availableForSale,
     image: images[0] ?? "",
     gallery: images,
     blurb: parsed.blurb,
@@ -218,6 +219,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
       ? "Rhodium coated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish"
       : "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
     tags: node.tags,
+    ...choice,
   };
 };
 

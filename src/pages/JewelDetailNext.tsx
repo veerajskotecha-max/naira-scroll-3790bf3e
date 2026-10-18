@@ -23,6 +23,7 @@ import { productParams, trackPixel } from "@/lib/pixel";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
+import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, initialChoice, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -149,28 +150,51 @@ const fold =
   "flex min-h-[50px] cursor-pointer list-none items-center justify-between font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink [&::-webkit-details-marker]:hidden";
 const foldMark = "shrink-0 text-nf-ink/70 transition-transform duration-200 group-open:rotate-45";
 
-/* A ring sized to the finger needs its size chosen on its own page, as that
-   page asks; an open-back ring fits US 6 to 8, so one tap is enough. */
-const needsSize = (piece: JewelPiece) => piece.category === "Rings" && !isAdjustableRing(piece.handle);
+/* A small square of the metal or stone beside its name. These picture the
+   pieces themselves (a ruby, an emerald), not the brand's palette. */
+const SWATCHES: Array<[RegExp, string]> = [
+  [/rose/i, "#d7a593"],
+  [/gold/i, "#c9a55a"],
+  [/silver|rhodium/i, "#c8ccd2"],
+  [/crystal|clear/i, "#eef3f6"],
+  [/ruby/i, "#9b1b30"],
+  [/emerald/i, "#1f7a4d"],
+  [/light amethyst/i, "#b9a0d6"],
+  [/amethyst/i, "#7b4fa0"],
+  [/sapphire/i, "#2d4f9e"],
+  [/aquamarine/i, "#7fc8d6"],
+  [/peridot/i, "#a3c14a"],
+  [/topaz/i, "#e0a64a"],
+  [/garnet/i, "#7a1f2b"],
+  [/blue zircon/i, "#3ba7c9"],
+];
+const swatchOf = (value: string) => SWATCHES.find(([pattern]) => pattern.test(value))?.[1];
+
+/* "Silver, size 7": a variant's choices as the WhatsApp reserve names them. */
+const choiceText = (options: Record<string, string>) =>
+  Object.entries(options)
+    .map(([name, value]) => (/size/i.test(name) ? `size ${value}` : value))
+    .join(", ");
+const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 /* A suggested piece: photo, name, price, and a one-tap Add that opens the bag
-   with the ladder already counting it. A ring that needs a size goes to its
-   page instead, rather than into the bag in a size nobody chose. */
-const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href: string; compact?: boolean }) => {
+   with the ladder already counting it. A piece that needs a size or a month
+   goes to its page instead, rather than into the bag in a choice nobody made.
+   A piece sold in metals or stones is added in the one beside it (`prefer`, the
+   anchor's own choice), else as pictured, and the card shows that one. */
+const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPiece; href: string; compact?: boolean; prefer?: Record<string, string> }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
+  const need = choiceNeeded(piece);
+  const variant = compact ? oneTapVariant(piece, prefer) : undefined;
+  const image = variant?.image ?? piece.image;
   const add = async () => {
     setAdding(true);
     try {
       await addItem({
-        id: piece.handle,
-        variantId: piece.variantId,
-        name: piece.name,
-        price: piece.price,
-        priceLabel: piece.priceLabel,
-        currencyCode: "INR",
-        image: piece.image,
-        size: piece.category === "Rings" ? "US 6" : undefined, // open-back: fits US 6 to 8
+        ...cartLineFor(piece, variant),
+        // an open-back ring sold one way fits US 6 to 8
+        ...(piece.category === "Rings" && !variant ? { size: "US 6" } : {}),
       });
       setDrawerOpen(true);
     } finally {
@@ -178,11 +202,11 @@ const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href
     }
   };
   return (
-    <article className="flex min-w-0 flex-col">
+    <article className="flex min-w-0 flex-col" data-variant={variant ? variantLabel(variant) : undefined}>
       <Link to={href} className="block aspect-square overflow-hidden bg-nf-ivory-deep">
         <img
-          src={shopifyImage(piece.image, 360)}
-          srcSet={shopifySrcSet(piece.image, [240, 360, 480]) || undefined}
+          src={shopifyImage(image, 360)}
+          srcSet={shopifySrcSet(image, [240, 360, 480]) || undefined}
           sizes={compact ? "30vw" : "(max-width: 768px) 44vw, 220px"}
           alt={piece.name}
           className="h-full w-full object-cover"
@@ -195,22 +219,25 @@ const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href
       <Link to={href} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
         {piece.name}
       </Link>
-      <p className="mt-0.5 text-[12px] text-nf-ink/75">{piece.priceLabel}</p>
+      <p className="mt-0.5 text-[12px] text-nf-ink/75">
+        {variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel}
+        {variant && !need && <span className="text-nf-ink/60"> · {variantLabel(variant)}</span>}
+      </p>
       {compact &&
-        (needsSize(piece) ? (
+        (need ? (
           <Link
             to={href}
-            aria-label={`Choose a size for ${piece.name}`}
+            aria-label={`Choose a ${need} for ${piece.name}`}
             className="press-scale mt-2 flex h-8 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
           >
-            Choose size
+            Choose {need}
           </Link>
         ) : (
           <button
             type="button"
             onClick={add}
             disabled={adding || isLoading}
-            aria-label={`Add ${piece.name} to bag`}
+            aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""} to bag`}
             className="press-scale mt-2 h-8 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
           >
             {adding ? "Adding…" : "Add"}
@@ -300,6 +327,25 @@ const JewelDetailNext = () => {
   }, [sizedCategory, piece?.handle]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
+  /* The metal, stone, size or month chosen, for a piece Shopify sells more than
+     one way. It opens on the first variant that can be bought; once the shopper
+     picks, that variant's own photo leads the gallery. */
+  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? initialChoice(piece) : {}));
+  const [picked, setPicked] = useState(false);
+  const variantKey = piece?.variants?.map((v) => v.id).join(",") ?? "";
+  useEffect(() => {
+    setChosen(piece ? initialChoice(piece) : {});
+    setPicked(false);
+    // A refetch of the same variants must not undo the shopper's choice.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [piece?.handle, variantKey]);
+  const variant = piece ? findVariant(piece, chosen) : undefined;
+  const pick = (option: string, value: string) => {
+    if (!piece) return;
+    setChosen((current) => choose(piece, current, option, value));
+    setPicked(true);
+  };
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -386,10 +432,20 @@ const JewelDetailNext = () => {
     };
   }, [handle]);
 
+  const leadImage = picked ? variant?.image : undefined;
   const images = useMemo(() => {
     if (!piece) return [];
-    return piece.gallery && piece.gallery.length > 0 ? piece.gallery : [piece.image];
-  }, [piece]);
+    const base = piece.gallery && piece.gallery.length > 0 ? piece.gallery : [piece.image];
+    if (!leadImage) return base;
+    const path = (url: string) => url.split("?")[0];
+    return [leadImage, ...base.filter((url) => path(url) !== path(leadImage))];
+  }, [piece, leadImage]);
+  /* A new choice's photo leads the gallery: show it. */
+  useEffect(() => {
+    if (!leadImage) return;
+    setSelectedImage(0);
+    scrollRef.current?.scrollTo({ left: 0, behavior: "smooth" });
+  }, [leadImage]);
   const slideCount = images.length + (galleryReel ? 1 : 0);
 
   /* The counter follows the swipe, read once per frame. */
@@ -430,33 +486,60 @@ const JewelDetailNext = () => {
   const soldCount = recentSoldCount(piece.handle);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
-  const saving = piece.compareAtPrice && piece.compareAtPrice > piece.price ? piece.compareAtPrice - piece.price : 0;
+  /* A size Shopify sells as variants (6, 7, 8) replaces the fixed list below. */
+  const sizeName = sizeOption(piece);
+  /* The piece as chosen: the variant's own price and MRP. */
+  const shown = variant
+    ? {
+        ...piece,
+        price: variant.price,
+        priceLabel: `₹${variant.price.toLocaleString("en-IN")}`,
+        compareAtPrice: variant.compareAtPrice,
+        compareAtLabel: variant.compareAtPrice ? `₹${variant.compareAtPrice.toLocaleString("en-IN")}` : undefined,
+      }
+    : piece;
+  const variantSoldOut = Boolean(variant && !variant.availableForSale);
+  const saving = shown.compareAtPrice && shown.compareAtPrice > shown.price ? shown.compareAtPrice - shown.price : 0;
   const steel = /stainless steel/i.test(piece.materials);
   const waterproof = /waterproof/i.test(piece.materials) || /waterproof/i.test(listedCare ?? "");
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
   /* A pre-order is a sold-out piece, or a ring size we do not stock (US 5 / 7). */
-  const sizePreorder = isRing && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
-  const isPreorder = soldOut || sizePreorder;
+  const sizePreorder = isRing && !sizeName && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
+  /* ...or a variant Shopify has sold out of. */
+  const isPreorder = soldOut || sizePreorder || variantSoldOut;
+  /* A ring Shopify does not sell in sizes is sized from the US list
+     (`ringSizes`), and the size rides on the line as a note, a metal chosen or
+     not (Star Point Band is sold in gold and silver, not in sizes). */
+  const noteSize = isRing && !sizeName ? `US ${selectedSize}` : undefined;
+  /* "Silver, size 7" or "size US 6": what a WhatsApp message names. */
+  const choiceLine = variant
+    ? [choiceText(variant.options), noteSize && `size ${noteSize}`].filter(Boolean).join(", ")
+    : noteSize && `size ${noteSize}`;
   const preorderHref = preorderWhatsAppUrl({
     name: piece.name,
     handle: piece.handle,
-    priceLabel: piece.priceLabel,
-    size: isRing ? `US ${selectedSize}` : undefined,
+    priceLabel: shown.priceLabel,
+    choice: choiceLine || undefined,
   });
   const sizedEnquiryHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi Naira Flore, I'd love to order the "${piece.name}"${isRing ? ` in size ${selectedSize}` : ""} Could you share availability and next steps?`,
+    `Hi Naira Flore, I'd love to order the "${piece.name}"${choiceLine ? ` in ${choiceLine}` : ""} Could you share availability and next steps?`,
   )}`;
 
-  const cartItem = () => ({
-    id: piece.handle,
-    variantId: piece.variantId,
-    name: piece.name,
-    price: piece.price,
-    priceLabel: piece.priceLabel,
-    currencyCode: "INR",
-    image: piece.image,
-    size: isRing ? `US ${selectedSize}` : undefined,
-  });
+  /* The variant chosen goes in the bag as itself, its size included; a ring
+     sized from the list carries the size as a note on the line. */
+  const cartItem = () =>
+    variant
+      ? { ...cartLineFor(piece, variant), ...(noteSize ? { size: noteSize } : {}) }
+      : {
+          id: piece.handle,
+          variantId: piece.variantId,
+          name: piece.name,
+          price: piece.price,
+          priceLabel: piece.priceLabel,
+          currencyCode: "INR",
+          image: piece.image,
+          size: noteSize,
+        };
 
   const handleAddToCart = async () => {
     await addItem(cartItem());
@@ -736,12 +819,12 @@ const JewelDetailNext = () => {
 
             {/* Price, the MRP it replaces and the saving, as the percentage shoppers compare. */}
             <div id="product-price" className="mt-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-              <span className="font-cormorant text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{piece.priceLabel}</span>
-              {piece.compareAtLabel && saving > 0 && (
+              <span className="font-cormorant text-[19px] font-semibold leading-none text-nf-ink md:text-[22px]">{shown.priceLabel}</span>
+              {shown.compareAtLabel && saving > 0 && (
                 <>
-                  <span className="text-[12px] text-nf-ink/65 line-through">{piece.compareAtLabel}</span>
+                  <span className="text-[12px] text-nf-ink/65 line-through">{shown.compareAtLabel}</span>
                   <span className="font-nf-label text-[10.5px] font-medium uppercase tracking-nf-8 text-nf-gold-text">
-                    {discountPercent(piece)}% off
+                    {discountPercent(shown)}% off
                   </span>
                 </>
               )}
@@ -781,9 +864,79 @@ const JewelDetailNext = () => {
               <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
 
-            {/* Ring size, the one choice a piece needs before the bag. Every
-                other detail waits in the fold-downs below, as on Nishorama. */}
-            {isRing && (
+            {/* The ways Shopify sells this piece: a metal, a stone, a size, a
+                month. Each value shows whether it can be bought with the other
+                choices as they stand; a sold-out one can still be reserved. */}
+            {choices(piece).map((option) => {
+              const buyable = buyableValues(piece, option.name, chosen);
+              const isSize = option.name === sizeName;
+              /* Ring sizes are US sizes, with a guide; any other size is as Shopify names it. */
+              const ringSize = isSize && isRing;
+              return (
+                <div key={option.name} className="mt-5" data-option={option.name}>
+                  <div className="flex items-center justify-between">
+                    <span className={label}>
+                      {ringSize ? `${option.name} · US` : option.name}
+                      {chosen[option.name] && <span className="ml-2 normal-case tracking-normal text-nf-ink/80">{chosen[option.name]}</span>}
+                    </span>
+                    {ringSize && (
+                      <button
+                        type="button"
+                        onClick={() => setSizeGuideOpen(true)}
+                        className="-mr-2 inline-flex min-h-[40px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+                      >
+                        Size guide
+                      </button>
+                    )}
+                  </div>
+                  {option.values.length > 6 ? (
+                    <select
+                      value={chosen[option.name] ?? ""}
+                      onChange={(event) => pick(option.name, event.target.value)}
+                      aria-label={option.name}
+                      className="mt-2 h-[44px] w-full border border-nf-ink/25 bg-transparent px-3 text-[13px] text-nf-ink"
+                    >
+                      {option.values.map((value) => (
+                        <option key={value} value={value}>
+                          {buyable[value] ? value : `${value} · pre-order`}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div role="radiogroup" aria-label={option.name} className="mt-1 flex flex-wrap gap-2">
+                      {option.values.map((value) => {
+                        const active = chosen[option.name] === value;
+                        const swatch = isSize ? undefined : swatchOf(value);
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            role="radio"
+                            aria-checked={active}
+                            onClick={() => pick(option.name, value)}
+                            className={`flex min-h-[42px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
+                              active
+                                ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
+                                : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
+                            }`}
+                          >
+                            <span className="inline-flex items-center gap-1.5">
+                              {swatch && <span aria-hidden="true" className="h-3 w-3 shrink-0 border border-nf-ink/15" style={{ background: swatch }} />}
+                              {value}
+                            </span>
+                            {!buyable[value] && <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">Pre-order</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {/* A ring Shopify does not sell in sizes: the US size, after any
+                metal, as on the rings sold in sizes. Every other detail waits
+                in the fold-downs below, as on Nishorama. */}
+            {isRing && !sizeName && (
               <div className="mt-5">
                 <div className="flex items-center justify-between">
                   <span className={label}>Ring size · US</span>
@@ -819,9 +972,9 @@ const JewelDetailNext = () => {
                     );
                   })}
                 </div>
-                {/* A sold-out ring is made to order in every size; the line
-                    under Pre-order says when it ships. */}
-                {!soldOut && (
+                {/* A sold-out ring (or metal) is made to order in every size;
+                    the line under Pre-order says when it ships. */}
+                {!soldOut && !variantSoldOut && (
                   <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
                     {adjustable
                       ? `US ${selectedSize} ships now. ${ADJUSTABLE_FIT_NOTE}`
@@ -832,7 +985,14 @@ const JewelDetailNext = () => {
                 )}
               </div>
             )}
-            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={selectedSize} />
+            {variant && (sizeName || variantSoldOut) && (
+              <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
+                {variantSoldOut
+                  ? `${sentence(choiceText(variant.options))} is sold out for now. Reserve it and we will confirm the date on WhatsApp.`
+                  : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
+              </p>
+            )}
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} />
 
             {/* One button. How many is the bag's business (and the ladder's). */}
             <div id="product-actions" className="mt-2">
@@ -957,7 +1117,7 @@ const JewelDetailNext = () => {
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   {pairings.map((p) => (
-                    <PairingCard key={p.handle} piece={p} href={hrefFor(p.handle)} compact />
+                    <PairingCard key={p.handle} piece={p} href={hrefFor(p.handle)} compact prefer={variant?.options} />
                   ))}
                 </div>
               </section>
@@ -1027,7 +1187,7 @@ const JewelDetailNext = () => {
           className="press-scale inline-flex h-[48px] flex-1 items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
         >
           {isPreorder ? "Reserve now" : "Add to cart"}
-          <span className="font-normal normal-case tracking-nf-4 text-nf-ivory/90">· {piece.priceLabel}</span>
+          <span className="font-normal normal-case tracking-nf-4 text-nf-ivory/90">· {shown.priceLabel}</span>
         </button>
       </div>
 

@@ -8,6 +8,7 @@ import { reelCover } from "@/lib/reelCovers";
 import { useCart } from "@/contexts/CartContext";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import type { JewelPiece } from "@/data/jewellery";
+import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
 interface Props {
   reels: Reel[];
@@ -48,22 +49,27 @@ const ProductTag = ({
   const add = async () => {
     // Prefer the live Shopify variant so the add always lands on a real SKU.
     const variantId = live?.variantId || product.variant_id;
-    if (!variantId) {
+    // A piece that needs a size or a month is chosen on its own page.
+    if (!variantId || (live && choiceNeeded(live))) {
       toast("Choose your options", { description: "Opening the product page." });
       goToProduct();
       return;
     }
     setAdding(true);
     try {
-      await addItem({
-        id: product.handle,
-        variantId,
-        name: live?.name ?? product.title,
-        price: live?.price ?? parsePrice(product.price_label),
-        priceLabel: live?.priceLabel ?? product.price_label ?? "",
-        currencyCode: "INR",
-        image: live?.image ?? product.image_url ?? "",
-      });
+      await addItem(
+        live
+          ? cartLineFor(live, oneTapVariant(live))
+          : {
+              id: product.handle,
+              variantId,
+              name: product.title,
+              price: parsePrice(product.price_label),
+              priceLabel: product.price_label ?? "",
+              currencyCode: "INR",
+              image: product.image_url ?? "",
+            },
+      );
       setDrawerOpen(true);
     } finally {
       setAdding(false);

@@ -1,5 +1,6 @@
 import type { JewelPiece } from "@/data/jewellery";
 import { TOP_QUANTITY_OFFER } from "@/lib/promo";
+import { choiceNeeded } from "@/lib/variants";
 
 /*
   How the shop's pieces connect: what to suggest beside a piece on its product
@@ -278,7 +279,7 @@ export const bagAddOns = (
   if (!anchor) return null;
   const taken = new Set(inBag);
   const scored = catalogue
-    .filter((p) => STOCK.has(p.handle) && !taken.has(p.handle) && kindOf(p) !== "ring" && oneTap(p))
+    .filter((p) => STOCK.has(p.handle) && !taken.has(p.handle) && kindOf(p) !== "ring" && oneTap(p) && !choiceNeeded(p))
     .map((p) => ({ piece: p, score: matchScore(anchor, p) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || stockOf(b.piece) - stockOf(a.piece) || a.piece.handle.localeCompare(b.piece.handle));

@@ -23,6 +23,8 @@ export interface ShopifyProductVariant {
   /** Shopify "compare at" price — the MRP struck through on cards and PDPs. */
   compareAtPrice?: ShopifyMoney | null;
   selectedOptions: ShopifySelectedOption[];
+  /** The variant's own photo (a metal or stone), when Shopify has one. */
+  image?: { url: string } | null;
 }
 
 export interface ShopifyProductNode {
@@ -113,6 +115,9 @@ export const PRODUCTS_QUERY = `
                   name
                   value
                 }
+                image {
+                  url
+                }
               }
             }
           }
@@ -168,6 +173,9 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             selectedOptions {
               name
               value
+            }
+            image {
+              url
             }
           }
         }
@@ -482,10 +490,11 @@ type CartLineNode = {
 const lineSize = (node: CartLineNode) =>
   node.attributes?.find((a) => a.key === SIZE_ATTRIBUTE)?.value ?? "";
 
-/* Every ring in the catalogue is a single "Default Title" variant, so size can
-   only be told apart by the line attribute. Matching on merchandise id alone
-   handed both sizes the same lineId — the drawer then showed two rows against
-   one Shopify line and doubled the subtotal. */
+/* A ring Shopify does not sell in sizes (one "Default Title" variant, or one
+   per metal) can only be told apart by size through the line attribute.
+   Matching on merchandise id alone handed both sizes the same lineId — the
+   drawer then showed two rows against one Shopify line and doubled the
+   subtotal. A ring sold in sizes is a variant per size and needs no note. */
 export const getLineForVariant = (
   lines: Array<{ node: CartLineNode }>,
   variantId: string,

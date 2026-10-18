@@ -11,6 +11,8 @@ export const ADJUSTABLE_RING_HANDLES = new Set<string>([
   "halo-curve-ring",
   "silver-dome-ring",
   "petite-pave-band",
+  // Edition Two: "Open at the back, so it adjusts to fit" (and tagged Adjustable).
+  "droplet-open-ring",
 ]);
 
 export const isAdjustableRing = (handle?: string): boolean =>

@@ -81,9 +81,15 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/"@type": "FAQPage"/);
   });
 
-  it("asks one decision of the shopper: a single full-width Add to cart, no quantity picker", () => {
+  it("keeps quantity changes in the bag", () => {
     expect(code).not.toMatch(/aria-label="Decrease quantity"/);
-    expect(code).toMatch(/inline-flex h-\[\d+px\] w-full items-center justify-center bg-\[var\(--nf-cta\)\]/);
+  });
+
+  it("routes Buy Now through checkout with the chosen variant, but reserves pre-orders on WhatsApp", () => {
+    const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n  \};/)?.[0] ?? "";
+    expect(handler).toContain("if (isPreorder) return handlePreOrder();");
+    expect(handler).toContain("await buyNow(cartItem());");
+    expect(handler).toContain("if (buying || cartLoading) return;");
   });
 
   it("suggests a second piece before the reviews", () => {

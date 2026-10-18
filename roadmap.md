@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Make the bag's background the site's own page ground instead of white, keeping its edges and offer track readable
+
 - [x] Check ad landings and bag speed; reduce closed-bag loading and prevent checkout after a failed product add
 
 - [x] Remove bag promo entry and restore Buy Now on PDP and sticky purchase bars; verify the purchase flow

@@ -1,18 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus } from "lucide-react";
+import { ChevronLeft, Loader2, Minus, Plus, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { bagAddOns, wornWithNoun } from "@/lib/pairings";
-import { cartLineFor, chosenOf, oneTapVariant, variantById, variantLabel } from "@/lib/variants";
-import BagGiftRow from "@/components/giftbox/BagGiftRow";
+import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import { CartPromoField } from "@/components/cart/CartExtras";
-import LadderBand from "@/components/cart/LadderBand";
 import {
-  addOnEffect,
   discountedSubtotal,
   getPromoCode,
   isAcceptedPromoCode,
@@ -118,6 +114,35 @@ const PieceCard = ({
   </div>
 );
 
+/* Project Shades' ladder: a thin track, an open ring at each rung that fills
+   once reached, and the offer spelt out under it. */
+const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
+  const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
+  const fill = Math.min(totalItems, top) / top;
+  return (
+    <div data-ladder className="shrink-0 bg-white px-5 pb-4 pt-5">
+      <div className="relative mx-3 h-[3px] bg-nf-ink/15" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
+        <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
+        {QUANTITY_OFFERS.map((o) => (
+          <span
+            key={o.code}
+            aria-hidden="true"
+            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/20 bg-white"}`}
+            style={{ left: `${(o.minQuantity / top) * 100}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-5 flex justify-around text-[12.5px] text-nf-ink">
+        {QUANTITY_OFFERS.map((o) => (
+          <span key={o.code} className={totalItems >= o.minQuantity ? "font-medium" : "text-nf-ink/75"}>
+            Buy {o.minQuantity} get {pct(o.rate)} off
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const CartDrawerNext = () => {
   const {
     items,
@@ -194,24 +219,6 @@ const CartDrawerNext = () => {
   };
   const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
-
-  /* The pair row: one piece that completes the look, with its exact effect. */
-  const offer = useMemo(() => bagAddOns(items.map((item) => item.id), totalItems, jewellery), [items, totalItems, jewellery]);
-  /* What the shopper chose for the piece the add-on is for ("Stone" → "Emerald"). */
-  const anchorChoice = useMemo(() => {
-    const line = [...items].reverse().find((item) => item.id === offer?.anchor.handle);
-    return line ? chosenOf(line) : {};
-  }, [items, offer]);
-  const offerKey = offer?.pieces.map((piece) => piece.handle).join(",") ?? "";
-  const shownFor = useRef("");
-  useEffect(() => {
-    if (!isDrawerOpen || !offerKey || shownFor.current === offerKey) return;
-    shownFor.current = offerKey;
-    clarityEvent("bag_pair_shown");
-  }, [isDrawerOpen, offerKey]);
-  useEffect(() => {
-    if (!isDrawerOpen) shownFor.current = "";
-  }, [isDrawerOpen]);
 
   const [adding, setAdding] = useState<string | null>(null);
   const addPiece = async (piece: JewelPiece, event: string, variant?: JewelVariant) => {
@@ -326,9 +333,9 @@ const CartDrawerNext = () => {
       <SheetContent
         ref={contentRef}
         closeClassName="hidden sm:flex"
-        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-gold/15 bg-nf-ivory p-0 text-nf-ink sm:max-w-[420px]"
+        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/10 bg-white p-0 text-nf-ink sm:max-w-[420px]"
       >
-        <SheetHeader className="shrink-0 border-b border-nf-gold/15 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
+        <SheetHeader className="shrink-0 border-b border-nf-ink/10 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
           <div className="flex items-center">
             <button
               type="button"
@@ -349,7 +356,7 @@ const CartDrawerNext = () => {
           </div>
         </SheetHeader>
 
-        {items.length > 0 && <LadderBand totalItems={totalItems} appliedRate={discount.rate} />}
+        {items.length > 0 && <SimpleLadder totalItems={totalItems} />}
         {undoNotice}
 
         {items.length === 0 ? (
@@ -377,187 +384,115 @@ const CartDrawerNext = () => {
           </div>
         ) : (
           <>
-            <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
+            <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain bg-white">
               <ul className="flex flex-col">
-                {items.map((item, index) => {
-                  const mrp = mrpOf(item);
-                  return (
-                    <li key={`${item.id}-${item.size}-${item.variantId}`} data-line={item.id} data-variant={item.variantId} className="flex gap-3 border-b border-nf-gold/15 px-4 py-3 sm:px-5">
-                      <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
-                        <img
-                          src={shopifyImage(item.image, 200) || item.image}
-                          alt={item.name}
-                          className="h-[80px] w-[64px] bg-nf-ivory-deep object-cover"
-                          width={64}
-                          height={80}
-                          loading={index < 2 ? "eager" : "lazy"}
-                          decoding="async"
-                        />
-                      </Link>
-                      <div className="flex min-w-0 flex-1 flex-col">
+                {items.map((item, index) => (
+                  <li key={`${item.id}-${item.size}-${item.variantId}`} data-line={item.id} data-variant={item.variantId} className="flex gap-4 px-5 py-5">
+                    <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
+                      <img
+                        src={shopifyImage(item.image, 200) || item.image}
+                        alt={item.name}
+                        className="h-[90px] w-[72px] bg-nf-ivory-deep object-cover"
+                        width={72}
+                        height={90}
+                        loading={index < 2 ? "eager" : "lazy"}
+                        decoding="async"
+                      />
+                    </Link>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
                         <Link
                           to={pageOf(item)}
                           onClick={leave}
                           data-line-name
-                          className="line-clamp-2 font-nf-editorial text-[15.5px] font-medium leading-tight text-nf-ink underline-offset-4 hover:underline"
+                          className="line-clamp-2 text-[14.5px] font-medium leading-snug text-nf-ink"
                         >
                           {item.name}
                         </Link>
-                        {lineOptions(item) ? <p className="mt-0.5 truncate text-[11px] text-nf-ink/70">{lineOptions(item)}</p> : null}
-                        <p data-line-price className="mt-1 text-[13px] text-nf-ink">
-                          <span className="font-medium">{item.priceLabel}</span>
-                          {mrp && (
-                            <>
-                              <s className="ml-1.5 text-[12px] text-nf-ink/65">{formatPrice(mrp)}</s>
-                              <span className="ml-1.5 text-[11.5px] font-medium text-nf-gold-text">{formatPrice(mrp - item.price)} off</span>
-                            </>
-                          )}
-                        </p>
-                        <div className="mt-auto flex items-center justify-between pt-1.5">
-                          <div className="inline-flex items-center border border-nf-ink/20">
-                            <button
-                              type="button"
-                              onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
-                              disabled={isLoading}
-                              className={stepper}
-                              aria-label={item.quantity <= 1 ? `Remove ${item.name}` : "Decrease quantity"}
-                            >
-                              <Minus size={13} strokeWidth={1.6} />
-                            </button>
-                            <span className="w-6 text-center text-[12px] font-medium" aria-label={`Quantity ${item.quantity}`}>
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.size, item.quantity + 1, item.variantId)}
-                              disabled={isLoading}
-                              className={stepper}
-                              aria-label="Increase quantity"
-                            >
-                              <Plus size={13} strokeWidth={1.6} />
-                            </button>
-                          </div>
-                          {/* A word, not a cross: a cross here reads as "close". */}
-                          <button
-                            type="button"
-                            onClick={() => remove(item)}
-                            disabled={isLoading}
-                            aria-label={`Remove ${item.name}`}
-                            className="-mr-1 inline-flex min-h-11 items-center px-1 text-[11px] text-nf-ink/70 underline decoration-nf-ink/25 underline-offset-4 hover:text-nf-ink disabled:opacity-50"
-                          >
-                            Remove
-                          </button>
-                        </div>
+                        <span className="shrink-0 text-[14px] text-nf-ink">{formatPrice(item.price * item.quantity)}</span>
                       </div>
-                    </li>
-                  );
-                })}
+                      {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-nf-ink/60">{lineOptions(item)}</p> : null}
+                      <p data-line-price className="mt-1 text-[13.5px] text-nf-ink/80">{item.priceLabel}</p>
+                      <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/25">
+                        <button
+                          type="button"
+                          onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
+                          disabled={isLoading}
+                          className={stepper}
+                          aria-label={item.quantity <= 1 ? `Remove ${item.name}` : "Decrease quantity"}
+                        >
+                          <Minus size={14} strokeWidth={1.5} />
+                        </button>
+                        <span className="w-8 text-center text-[13px]" aria-label={`Quantity ${item.quantity}`}>
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => updateQuantity(item.id, item.size, item.quantity + 1, item.variantId)}
+                          disabled={isLoading}
+                          className={stepper}
+                          aria-label="Increase quantity"
+                        >
+                          <Plus size={14} strokeWidth={1.5} />
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => remove(item)}
+                        disabled={isLoading}
+                        aria-label={`Remove ${item.name}`}
+                        className="mt-1 flex min-h-11 items-center gap-1.5 text-[13px] text-nf-ink/60 hover:text-nf-ink disabled:opacity-50"
+                      >
+                        <X size={14} strokeWidth={1.5} aria-hidden="true" /> Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
               </ul>
 
-              {offer && (
-                <section data-pair className="border-b border-nf-gold/15 px-4 pb-3 pt-2.5 sm:px-5" aria-label="Wears well with your piece">
-                  <p className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-gold-text">
-                    Wears well with your {wornWithNoun(offer.anchor)}
-                  </p>
-                  <div className="mt-2 grid gap-2">
-                    {offer.pieces.map((piece) => {
-                      /* In the metal or stone of the piece it is for: Emerald
-                         huggies beside an Emerald bracelet, silver beside silver. */
-                      const variant = oneTapVariant(piece, anchorChoice);
-                      const effect = addOnEffect({ subtotal, totalItems, promoCode }, variant?.price ?? piece.price);
-                      return (
-                        <PieceCard
-                          key={piece.handle}
-                          piece={piece}
-                          variant={variant}
-                          busy={adding === piece.handle}
-                          follow={leave}
-                          note={effect.saves > 0 ? `Adds ${formatPrice(effect.adds)} · saves ${formatPrice(effect.saves)}` : `Adds ${formatPrice(effect.adds)}`}
-                          onAdd={() => addPiece(piece, "bag_pair_added", variant)}
-                        />
-                      );
-                    })}
-                  </div>
-                </section>
-              )}
-
-              <BagGiftRow items={items} jewellery={jewellery} />
-
-              <div className="px-4 pb-2 sm:px-5">
-                {!codeAdded && !promoOpen && (
-                  <p className="flex flex-wrap items-center gap-x-1.5 text-[11.5px] text-nf-ink/75">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPromoOpen(true);
-                        clarityEvent("bag_promo_opened");
-                      }}
-                      className="min-h-[32px] underline decoration-nf-ink/30 underline-offset-4 hover:text-nf-ink"
-                    >
-                      Have a promo code?
-                    </button>
-                    <span aria-hidden="true">·</span>
-                    <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="min-h-[32px] leading-[32px] underline decoration-nf-ink/30 underline-offset-4 hover:text-nf-ink">
-                      Questions? WhatsApp us
-                    </a>
-                  </p>
-                )}
-                {(codeAdded || promoOpen) && (
-                  <div className="pt-1">
-                    <CartPromoField inUse={!discount.automatic} startOpen={promoOpen} />
-                    <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-[32px] items-center text-[11.5px] text-nf-ink/75 underline decoration-nf-ink/30 underline-offset-4">
-                      Questions? WhatsApp us
-                    </a>
-                  </div>
+              <div className="px-5 pb-3">
+                {!codeAdded && !promoOpen ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPromoOpen(true);
+                      clarityEvent("bag_promo_opened");
+                    }}
+                    className="min-h-[36px] text-[12.5px] text-nf-ink/60 underline decoration-nf-ink/25 underline-offset-4"
+                  >
+                    Have a promo code?
+                  </button>
+                ) : (
+                  <CartPromoField inUse={!discount.automatic} startOpen={promoOpen} />
                 )}
               </div>
             </div>
 
-            <div data-bag-foot className="shrink-0 space-y-1.5 border-t border-nf-gold/15 bg-nf-ivory px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-2.5 sm:px-5 sm:pb-[max(14px,env(safe-area-inset-bottom))]">
+            {/* The foot, as plain as Project Shades': total, one line of terms,
+                one black button. Every extra line here was a reason to pause. */}
+            <div data-bag-foot className="shrink-0 border-t border-nf-ink/10 bg-white px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-4">
               <div className="flex items-baseline justify-between">
-                <span className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-ink/75">Total · incl. taxes</span>
-                <span className="flex items-baseline gap-1.5">
-                  {youSave > 0 && <s data-mrp-total className="font-nf-editorial text-[14px] text-nf-ink/65">{formatPrice(mrpTotal)}</s>}
-                  <span data-total className="font-nf-editorial text-[21px] font-medium leading-none text-nf-ink">{formatPrice(orderTotal)}</span>
-                </span>
+                <span className="text-[15px] font-medium text-nf-ink">Total</span>
+                <span data-total className="text-[17px] font-medium text-nf-ink">{formatPrice(orderTotal)}</span>
               </div>
-              <div className="text-[11px] leading-[1.45]">
-                {/* One saving, against MRP and the ladder together, never two
-                    percentages added up. The discount is named for what it is,
-                    never by its code. */}
-                {youSave > 0 && (
-                  <p data-you-save className="font-medium text-nf-gold-text">
-                    You save {formatPrice(youSave)}
-                    {mrpTotal > subtotal + SHIPPING_CHARGE ? " against MRP" : ""}
-                    {discountAmount > 0 ? ` · includes ${pct(discount.rate)} ${rung ? `for ${rung.minQuantity} pieces` : "with your code"}` : ""}
-                  </p>
-                )}
-                <p className="text-nf-ink/70">
-                  Free insured shipping · arrives <span className="text-nf-ink/85">{arrivesBy}</span>
+              {discountAmount > 0 && (
+                <p data-you-save className="mt-1 text-[12.5px] font-medium text-nf-gold-text">
+                  You save {formatPrice(discountAmount)} · {pct(discount.rate)} {rung ? `for ${rung.minQuantity} pieces` : "with your code"}
                 </p>
-              </div>
-
+              )}
+              <p className="mt-2 text-[12.5px] leading-[1.5] text-nf-ink/65">
+                Tax included. Free insured shipping · arrives {arrivesBy}.
+              </p>
               <button
                 type="button"
                 data-checkout
                 onClick={handleCheckout}
                 disabled={busy || opening}
-                className="press-scale flex h-[48px] w-full items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-150 hover:bg-[var(--nf-cta-hover)] disabled:opacity-80"
+                className="press-scale mt-4 flex h-[52px] w-full items-center justify-center gap-2 bg-nf-ink text-[15px] font-medium tracking-[0.02em] text-nf-ivory transition-opacity duration-150 hover:opacity-90 disabled:opacity-80"
               >
-                {busy || opening ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : null}
-                {opening ? "Opening secure checkout…" : `Checkout · ${formatPrice(orderTotal)}`}
+                {busy || opening ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
+                {opening ? "Opening checkout…" : "Checkout"}
               </button>
-              <ul data-trust className="flex flex-wrap justify-center gap-x-3 gap-y-0.5 text-[10.5px] text-nf-ink/75">
-                {["UPI, cards or cash on delivery", "7-day returns", "2-year plating assurance"].map((line) => (
-                  <li key={line} className="whitespace-nowrap">
-                    <span aria-hidden="true" className="mr-1 font-semibold text-[var(--nf-cta)]">
-                      ✓
-                    </span>
-                    {line}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-center text-[10.5px] text-nf-ink/70">Next: a quick OTP, then address and payment</p>
             </div>
           </>
         )}

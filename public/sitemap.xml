@@ -720,6 +720,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/tile-stone-bangle</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/kiss-knot-bangle</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -751,6 +756,11 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/emerald-halo-c-hoops</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/baguette-tennis-necklace</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

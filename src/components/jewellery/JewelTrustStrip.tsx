@@ -1,24 +1,26 @@
 import { Gem, ShieldCheck, Sparkles } from "lucide-react";
 import { recentSoldCount } from "@/lib/dailySold";
+import type { JewelPiece } from "@/data/jewellery";
+import { coatingOf, hasZirconeStone } from "@/lib/jewelleryPresentation";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
-
-const items = [
-  { icon: Sparkles, label: "Anti-Tarnish" },
-  { icon: ShieldCheck, label: "Skin Safe Jewellery" },
-  { icon: Gem, label: "18K Gold Tone Plated" },
-] as const;
 
 /**
  * Material assurances sit beside the price, where shoppers compare finish.
  * The compact horizontal treatment preserves Naira's sharp editorial edges.
  */
-const JewelTrustStrip = ({ productKey }: { productKey: string }) => {
-  const soldCount = recentSoldCount(productKey);
+const JewelTrustStrip = ({ piece }: { piece: JewelPiece }) => {
+  const soldCount = recentSoldCount(piece.handle);
+  const items = [
+    { icon: Sparkles, label: "Anti-Tarnish" },
+    { icon: ShieldCheck, label: "Skin Safe Jewellery" },
+    { icon: Gem, label: coatingOf(piece) },
+    ...(hasZirconeStone(piece) ? [{ icon: Gem, label: "Zircone Stone" }] : []),
+  ];
 
   return <div className="mt-3">
     <ul
-      className="grid list-none grid-cols-3 gap-1.5"
+      className={`grid list-none gap-1.5 ${items.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}
       aria-label="Naira Flore jewellery assurances"
     >
       {items.map(({ icon: Icon, label }) => (

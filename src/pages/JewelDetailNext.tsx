@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
+import { ArrowLeft, Gem, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
@@ -25,6 +25,7 @@ import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, moreLikeThis } from "@/lib/pairings";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
+import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -62,21 +63,10 @@ const MOBILE_FRAME = "1/1";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
-const finishOf = (piece: JewelPiece) => {
-  const m = piece.materials.toLowerCase();
-  const gold = m.includes("18k gold");
-  const rhodium = m.includes("rhodium");
-  if (gold && rhodium) return "18K gold & rhodium";
-  if (gold) return "18K gold-tone";
-  if (rhodium) return "Rhodium";
-  return "Demi-gold";
-};
-
 /* The badges under the price. Every piece is sealed anti-tarnish over a
    hypoallergenic, nickel-free base (the anti-tarnish collection and the Care
    answers say the same); the plating is the piece's own. */
-const platingBadge = (finish: string) =>
-  finish === "Rhodium" ? "Rhodium-plated" : finish === "18K gold & rhodium" ? "Gold & rhodium" : finish;
+const platingBadge = (finish: string) => finish;
 
 /* A gold bar with a glint, drawn like the lucide icons around it. */
 const Ingot = () => (
@@ -86,16 +76,6 @@ const Ingot = () => (
     <path d="M12 8.6V5.6M8.5 9.4 7.1 7.3M15.5 9.4l1.4-2.1" />
   </svg>
 );
-
-const stoneOf = (piece: JewelPiece) => {
-  const m = piece.materials.toLowerCase();
-  const pearl = m.includes("pearl");
-  const zircon = m.includes("zircon");
-  if (pearl && zircon) return "Pearl & zircone";
-  if (pearl) return "Freshwater pearl";
-  if (zircon) return "Brilliant-cut zircone";
-  return null;
-};
 
 /* "Length: 15-19cm adjustable links" → { label: "Length", value: "15–19 cm adjustable links" }. */
 const tidy = (value: string) =>
@@ -248,10 +228,9 @@ const JewelDetailNext = () => {
   }, [needSnapshot, snapshot]);
   const piece = useMemo(
     () =>
-      (isLive
+      presentJewellery(isLive
         ? jewellery.find((j) => j.handle === handle)
-        : embedded?.piece ?? jewellery.find((j) => j.handle === handle) ?? snapshot?.find((j) => j.handle === handle)) ??
-      null,
+        : embedded?.piece ?? jewellery.find((j) => j.handle === handle) ?? snapshot?.find((j) => j.handle === handle)),
     [handle, jewellery, isLive, embedded, snapshot],
   );
   const snapshotPending = needSnapshot && snapshot === null;
@@ -433,7 +412,7 @@ const JewelDetailNext = () => {
   const adjustable = isAdjustableRing(piece.handle);
   const soldOut = piece.availableForSale === false && !adjustable;
   const isRing = piece.category === "Rings";
-  const finish = finishOf(piece);
+  const finish = coatingOf(piece);
   const soldCount = recentSoldCount(piece.handle);
   const stone = stoneOf(piece);
   const { specs, care: listedCare } = specsOf(piece);
@@ -484,7 +463,7 @@ const JewelDetailNext = () => {
   const care = [
     {
       q: "Will it tarnish?",
-      a: `It is ${finish === "Demi-gold" ? "demi-gold" : finish.toLowerCase()} finished${steel ? " on surgical stainless steel" : ""}${
+      a: `It is ${finish.toLowerCase()}${steel ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
       }, and the finish is covered by our 2-year plating assurance.`,
     },
@@ -755,13 +734,13 @@ const JewelDetailNext = () => {
               <span className="text-[10.5px] tracking-nf-4 text-nf-ink/65">incl. taxes</span>
             </div>
 
-            {/* Palmonas' badges as square chips, the brand's corner. One row on a
-                360px phone, sized for the widest plating label. */}
+            {/* Stone evidence comes from the listing, not the generic summary. */}
             <ul aria-label="Made to last" className="mt-3.5 flex flex-wrap gap-[5px]">
               {[
                 { icon: <Sparkles size={11} strokeWidth={1.7} />, text: "Anti-tarnish" },
                 { icon: <Leaf size={11} strokeWidth={1.7} />, text: "Skin-friendly" },
                 { icon: <Ingot />, text: platingBadge(finish) },
+                ...(hasZirconeStone(piece) ? [{ icon: <Gem size={11} strokeWidth={1.7} />, text: "Zircone Stone" }] : []),
               ].map(({ icon, text }) => (
                 <li
                   key={text}

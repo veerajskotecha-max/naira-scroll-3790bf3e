@@ -21,6 +21,7 @@ import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
+import { coatingOf, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import PdpBuyFacts from "@/components/jewellery/PdpBuyFacts";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
 
@@ -44,13 +45,8 @@ const FomoPopup = lazy(() => import("@/components/FomoPopup"));
 /* Key facts distilled from the approved data model: finish and stone are
    read out of the materials line, edition from the engraved number. */
 const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] => {
-  const m = piece.materials.toLowerCase();
-  const hasGold = m.includes("18k gold");
-  const hasRhodium = m.includes("rhodium");
-  const finish = hasGold && hasRhodium ? "18k gold & rhodium" : hasGold ? "18k gold" : hasRhodium ? "Rhodium" : "Demi-gold";
-  const hasPearl = m.includes("pearl");
-  const hasZircone = m.includes("zircon");
-  const stone = hasPearl && hasZircone ? "Pearl & zircone" : hasPearl ? "Freshwater pearl" : hasZircone ? "Brilliant-cut zircone" : "Polished metal";
+  const finish = coatingOf(piece);
+  const stone = stoneOf(piece) ?? "Polished metal";
   return [
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
@@ -169,11 +165,11 @@ const JewelDetail = () => {
   }, [needSnapshot, snapshot]);
   const piece = useMemo(
     () =>
-      (isLive
+      presentJewellery(isLive
         ? jewellery.find((j) => j.handle === handle)
         : embedded?.piece ??
           jewellery.find((j) => j.handle === handle) ??
-          snapshot?.find((j) => j.handle === handle)) ?? null,
+          snapshot?.find((j) => j.handle === handle)),
     [handle, jewellery, isLive, embedded, snapshot],
   );
   const snapshotPending = needSnapshot && snapshot === null;
@@ -770,7 +766,7 @@ const JewelDetail = () => {
                 to Cart, which is where the shopper checks them. */}
             <PdpBuyFacts arrivesBy={arrivesBy} soldOut={soldOut} />
 
-            <JewelTrustStrip productKey={piece.handle} />
+            <JewelTrustStrip piece={piece} />
 
 
             {/* Size / Quantity / CTA moved directly under the price for conversion */}

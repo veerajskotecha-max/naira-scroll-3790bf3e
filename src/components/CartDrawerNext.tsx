@@ -326,9 +326,9 @@ const CartDrawerNext = () => {
       <SheetContent
         ref={contentRef}
         closeClassName="hidden sm:flex"
-        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/10 bg-[var(--nf-surface)] p-0 text-nf-ink sm:max-w-[420px]"
+        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/20 bg-[var(--nf-surface)] p-0 text-nf-ink sm:max-w-[420px]"
       >
-        <SheetHeader className="shrink-0 border-b border-nf-ink/10 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
+        <SheetHeader className="shrink-0 border-b border-nf-ink/20 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
           <div className="flex items-center">
             <button
               type="button"
@@ -406,7 +406,7 @@ const CartDrawerNext = () => {
                       </div>
                       {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-nf-ink/60">{lineOptions(item)}</p> : null}
                       <p data-line-price className="mt-1 text-[13.5px] text-nf-ink/80">{item.priceLabel}</p>
-                      <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/25">
+                      <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/40">
                         <button
                           type="button"
                           onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
@@ -447,7 +447,7 @@ const CartDrawerNext = () => {
 
             {/* The foot, as plain as Project Shades': total, one line of terms,
                 one black button. Every extra line here was a reason to pause. */}
-            <div data-bag-foot className="shrink-0 border-t border-nf-ink/10 bg-[var(--nf-surface)] px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-4">
+            <div data-bag-foot className="shrink-0 border-t border-nf-ink/20 bg-[var(--nf-surface)] px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-4">
               <div className="flex items-baseline justify-between">
                 <span className="text-[15px] font-medium text-nf-ink">Total</span>
                 <span data-total className="text-[17px] font-medium text-nf-ink">{formatPrice(orderTotal)}</span>

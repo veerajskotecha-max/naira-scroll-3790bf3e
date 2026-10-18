@@ -78,7 +78,7 @@ const PieceCard = ({
   busy: boolean;
   follow: Follow;
 }) => (
-  <div data-piece-card={piece.handle} data-variant={variant ? variantLabel(variant) : undefined} className="flex items-center gap-2.5 border border-nf-gold/20 bg-white px-2 py-1.5">
+  <div data-piece-card={piece.handle} data-variant={variant ? variantLabel(variant) : undefined} className="flex items-center gap-2.5 border border-nf-gold/20 bg-[var(--nf-surface)] px-2 py-1.5">
     <Link to={`/jewellery/${piece.handle}`} onClick={follow} tabIndex={-1} aria-hidden="true" className="shrink-0">
       <img
         src={shopifyImage(variant?.image ?? piece.image, 120) || variant?.image || piece.image}
@@ -116,14 +116,14 @@ const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
   const fill = Math.min(totalItems, top) / top;
   return (
-    <div data-ladder className="shrink-0 bg-white px-5 pb-4 pt-5">
+    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-5">
       <div className="relative mx-3 h-[3px] bg-nf-ink/15" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
         {QUANTITY_OFFERS.map((o) => (
           <span
             key={o.code}
             aria-hidden="true"
-            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/20 bg-white"}`}
+            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/20 bg-[var(--nf-surface)]"}`}
             style={{ left: `${(o.minQuantity / top) * 100}%` }}
           />
         ))}
@@ -326,7 +326,7 @@ const CartDrawerNext = () => {
       <SheetContent
         ref={contentRef}
         closeClassName="hidden sm:flex"
-        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/10 bg-white p-0 text-nf-ink sm:max-w-[420px]"
+        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/10 bg-[var(--nf-surface)] p-0 text-nf-ink sm:max-w-[420px]"
       >
         <SheetHeader className="shrink-0 border-b border-nf-ink/10 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
           <div className="flex items-center">
@@ -377,7 +377,7 @@ const CartDrawerNext = () => {
           </div>
         ) : (
           <>
-            <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain bg-white">
+            <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain bg-[var(--nf-surface)]">
               <ul className="flex flex-col">
                 {items.map((item, index) => (
                   <li key={`${item.id}-${item.size}-${item.variantId}`} data-line={item.id} data-variant={item.variantId} className="flex gap-4 px-5 py-5">
@@ -447,7 +447,7 @@ const CartDrawerNext = () => {
 
             {/* The foot, as plain as Project Shades': total, one line of terms,
                 one black button. Every extra line here was a reason to pause. */}
-            <div data-bag-foot className="shrink-0 border-t border-nf-ink/10 bg-white px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-4">
+            <div data-bag-foot className="shrink-0 border-t border-nf-ink/10 bg-[var(--nf-surface)] px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-4">
               <div className="flex items-baseline justify-between">
                 <span className="text-[15px] font-medium text-nf-ink">Total</span>
                 <span data-total className="text-[17px] font-medium text-nf-ink">{formatPrice(orderTotal)}</span>

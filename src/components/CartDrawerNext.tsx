@@ -155,7 +155,7 @@ const CartDrawerNext = () => {
     isSyncing,
     syncCart,
   } = useCart();
-  const { jewellery } = useLiveJewellery();
+  const { jewellery } = useLiveJewellery(isDrawerOpen);
   const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);

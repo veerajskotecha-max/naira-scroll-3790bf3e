@@ -229,14 +229,15 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
  * grid card's packshot-swap must not second-guess them. */
 export const EXPLICIT_COVERS = new Set(Object.keys(COVER_PICKS));
 
-export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
+export const useLiveJewellery = (enabled = true): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
     queryFn: () => fetchShopifyProducts(250),
+    enabled,
     // Stock state must read live: refresh often and whenever the tab regains
     // focus so a piece that sells out in Shopify shows Sold Out here quickly.
     staleTime: 1000 * 30,
-    refetchInterval: 1000 * 60,
+    refetchInterval: enabled ? 1000 * 60 : false,
     refetchOnWindowFocus: true,
   });
 

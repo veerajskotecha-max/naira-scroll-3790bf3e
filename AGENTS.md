@@ -4,3 +4,4 @@
 - Pass the bag's existing catalogue to its gift-box row rather than subscribing again; one catalogue observer avoids duplicate mapping and refresh work.
 - Keep jewellery PDP coating presentation and stone evidence in the shared jewelleryPresentation module; live, embedded and snapshot pages must agree without inferring stones from generic materials summaries.
 - PDP Buy Now must use CartContext.buyNow with the selected cart line; this keeps checkout provider, discount and tracking handoffs shared with the bag.
+- Closed bag catalogue observers must stay disabled while reading shared cached data; this avoids starting catalogue requests on unrelated landing pages.

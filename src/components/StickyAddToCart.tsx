@@ -3,6 +3,7 @@ import { Check, ShoppingBag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import CheckoutBenefit from "@/components/checkout/CheckoutBenefit";
+import { Button } from "@/components/ui/button";
 
 interface StickyAddToCartProps {
   image: string;
@@ -143,6 +144,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
 
             {/* Right — controls */}
             <div className="flex items-center gap-3 shrink-0">
+              <Button variant="outline" onClick={handleBuyNow} disabled={!inStock} className="h-10 border-foreground text-foreground">Buy Now</Button>
               <div
                 className="px-4 py-1.5 text-[12px] font-medium"
                 style={{
@@ -212,6 +214,7 @@ const StickyAddToCart = ({ image, title, price, selectedSize, productHandle = ""
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" onClick={handleBuyNow} disabled={!inStock} className="h-11 border-foreground text-[11px] uppercase text-foreground">Buy Now</Button>
               <button
                 onClick={handleAdd}
                 className="press-scale flex items-center justify-center gap-1.5 py-3 text-[11px] font-medium uppercase tracking-[0.1em] border"

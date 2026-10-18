@@ -1,5 +1,7 @@
 import reelCover1 from "@/assets/reel-cover-1.webp";
 import reelCover2 from "@/assets/reel-cover-2.webp";
+import reelCoverAnanya from "@/assets/reel-cover-ananya.webp";
+import reelCoverSonal from "@/assets/reel-cover-sonal.webp";
 
 /*
   Hand-picked cover frames, bundled with the app.
@@ -23,5 +25,18 @@ const COVERS: Record<string, string> = {
   "seed/reel-2.mp4": reelCover2,
 };
 
-export const reelCover = (videoPath?: string | null): string | undefined =>
-  videoPath ? COVERS[videoPath] : undefined;
+/* Edits made for the site, keyed by their file name: /admin/reels stores an
+   upload as uploads/<time>-<file name>, so the path is not known until then.
+   Each is the edit's designed cover, cropped to the 4:5 tile. */
+const COVERS_BY_FILE: Record<string, string> = {
+  "ananya-where-is-this-from.mp4": reelCoverAnanya,
+  "sonal-doing-all-the-work.mp4": reelCoverSonal,
+};
+
+export const reelCover = (videoPath?: string | null): string | undefined => {
+  if (!videoPath) return undefined;
+  if (COVERS[videoPath]) return COVERS[videoPath];
+  const file = videoPath.slice(videoPath.lastIndexOf("/") + 1);
+  const name = Object.keys(COVERS_BY_FILE).find((known) => file === known || file.endsWith(`-${known}`));
+  return name ? COVERS_BY_FILE[name] : undefined;
+};

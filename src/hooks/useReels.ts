@@ -144,6 +144,17 @@ export const fetchReels = async (): Promise<Reel[]> => {
 };
 
 /**
+ * The reel a product page plays in its gallery: one made for the piece (it is
+ * the reel's first piece) before one it only appears in. Woven Gold Hoops is
+ * the second piece of the first reel, which opens on the Cushion Halo Ring;
+ * the hoops' own reel is the one to play on the hoops' page.
+ */
+export const reelForPiece = (reels: Reel[] | undefined, handle: string): Reel | null => {
+  const playable = (reels ?? []).filter((reel) => reel.videoUrl && reel.products.some((p) => p.handle === handle));
+  return playable.find((reel) => reel.products[0]?.handle === handle) ?? playable[0] ?? null;
+};
+
+/**
  * Reels are only fetched once `enabled` flips true (i.e. the shopper has
  * scrolled far enough) so the product page never pays for them on first paint.
  * A session cache seeds the query so repeat views render with zero latency.

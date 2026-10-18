@@ -11,7 +11,7 @@ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { useReels } from "@/hooks/useReels";
+import { reelForPiece, useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
@@ -386,10 +386,7 @@ const JewelDetailNext = () => {
     return () => window.clearTimeout(timer);
   }, []);
   const { data: reels } = useReels(reelsWanted);
-  const galleryReel = useMemo(
-    () => (piece ? reels?.find((r) => r.videoUrl && r.products.some((p) => p.handle === piece.handle)) ?? null : null),
-    [reels, piece],
-  );
+  const galleryReel = useMemo(() => (piece ? reelForPiece(reels, piece.handle) : null), [reels, piece]);
 
   useEffect(() => {
     if (!piece) return;

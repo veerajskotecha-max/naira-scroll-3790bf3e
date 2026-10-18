@@ -325,7 +325,7 @@ to Shopify as a note on its size-6 variant, and silver showed the gold price.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 343 tests
+npx vitest run                          # currently 349 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -361,6 +361,27 @@ reel row.
 `src/lib/mediaType.ts` decides the type. It ignores `file.type` unless it really
 names a video: several Android pickers report `application/octet-stream` for an
 ordinary .mp4, which is most likely how the seeded files ended up this way.
+
+### Adding a reel
+
+New reels go up through the `/admin/reels` form, by the owner (the admin login
+above). What keeps a new one as fast as the others:
+
+- The file in the live reels' format: 720 × 1280 H.264 High at about 1 Mbps,
+  AAC, `+faststart` (the index first, so it plays while downloading). The
+  seeded reels are 3.4 and 4.5 MB; an ad master at 1080p is 25–30 MB.
+- A bundled cover in `src/lib/reelCovers.ts`: a 640 × 782 webp of the designed
+  cover, so the tile paints at once instead of waiting on a signed poster. The
+  form stores an upload as `uploads/<time>-<file name>`, so an edit's cover is
+  keyed by its file name (`COVERS_BY_FILE`); upload the file under that name.
+- The site's own host cannot serve the video: it ignores byte-range requests,
+  and iOS will not play a video from a host that does.
+
+A product page's gallery plays the reel made for the piece (its first tagged
+piece) before one it only appears in (`reelForPiece`). Sandbox Chromium has no
+H.264 decoder, so a reel's playback is checked with ffmpeg; the harness branch's
+`reelpreview.mjs` shows the rail and galleries with new edits added, writing
+nothing.
 
 ## There is ONE jewellery PDP, and /products hops to it
 

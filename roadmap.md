@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Remove bag promo entry and restore Buy Now on PDP and sticky purchase bars; verify the purchase flow
+- [x] Remove bag promo entry and restore Buy Now on PDP and sticky purchase bars; verify the purchase flow
 
 - [x] Update all jewellery PDP coating wording and add product-specific zircone feature blocks
 

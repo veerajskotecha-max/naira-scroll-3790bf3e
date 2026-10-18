@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Update all jewellery PDP coating wording and add product-specific zircone feature blocks
+
 - [x] Smooth the bag gift-box reveal, add tap-to-open wording and a Back control, and verify lightweight loading
 
 - [x] Repair signed-in reel access, Golden Hour filters, reel touch handling, and member order recording

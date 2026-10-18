@@ -217,15 +217,18 @@ const H = 'prism-riviere-bracelet';
   const pair = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"] [data-pair]'); return d ? { head: d.querySelector('p')?.textContent.trim(), notes: [...d.querySelectorAll('[data-piece-card]')].map((c) => c.querySelectorAll('p')[1]?.textContent.trim()) } : null; });
   check('the bag offers one add-on with what it adds and saves; no subtotal or shipping rows', !!pair && /^Wears well with your /.test(pair.head) && pair.notes.length >= 1 && pair.notes.every((n) => /^Adds ₹[\d,]+ · saves ₹[\d,]+$/.test(n || '')) && !/Subtotal/i.test(bag.text), pair ? `${pair.head} · ${pair.notes.join(' | ')}` : 'no add-on');
   await shot(p, 'next-bag');
-  // the gift box: a small floating box on one line; a tap lifts it open above the line, then it settles back
-  const giftLine = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"] [data-gift-row] > p')?.textContent.trim() ?? '');
-  check('one gift line: "Comes with a Naira gift box", with the small box beside it', giftLine === 'Comes with a Naira gift box' && !!(await p.$('[role="dialog"][data-state="open"] [data-gift-row] [aria-label="Open the gift box"]')), giftLine);
-  await p.locator('[role="dialog"][data-state="open"] [data-gift-row] [aria-label="Open the gift box"]').first().click();
-  await p.waitForFunction(() => /Your piece comes in this box/.test(document.querySelector('[role="dialog"][data-state="open"] [data-gift-lifted]')?.textContent || ''), null, { timeout: 6000 }).catch(() => {});
-  const upCap = await p.evaluate(() => document.querySelector('[role="dialog"][data-state="open"] [data-gift-lifted]')?.textContent.trim() ?? '');
+  // the gift box: one line with the small box; a tap opens it in the bag, Back returns to the line
+  const BAG = '[role="dialog"][data-state="open"]';
+  const giftLine = await p.evaluate((BAG) => document.querySelector(`${BAG} [data-gift-row]`)?.textContent.trim() ?? '', BAG);
+  check('one gift line: "Tap to open your Naira gift box", with the small box beside it', giftLine === 'Tap to open your Naira gift box' && !!(await p.$(`${BAG} [data-gift-row] button span`)), giftLine);
+  await p.locator(`${BAG} [data-gift-row] button`, { hasText: 'Tap to open your Naira gift box' }).click();
+  await p.waitForFunction((BAG) => /Every piece comes with this box/.test(document.querySelector(`${BAG} [data-gift-lifted]`)?.textContent || ''), BAG, { timeout: 6000 }).catch(() => {});
+  const openCap = await p.evaluate((BAG) => document.querySelector(`${BAG} [data-gift-lifted]`)?.textContent.trim() ?? '', BAG);
+  await p.waitForTimeout(2500);
   await shot(p, 'next-bag-box-open');
-  const settled = await p.waitForFunction(() => !document.querySelector('[role="dialog"][data-state="open"] [data-gift-lifted]'), null, { timeout: 10000 }).then(() => true, () => false);
-  check('a tap lifts the box open, the ring rises ("Your piece comes in this box"), then it settles back', /Your piece comes in this box/.test(upCap) && settled, `${upCap} → ${settled ? 'settled' : 'still open'}`);
+  await p.locator(`${BAG} [data-gift-lifted] button[aria-label="Back to your bag"]`).click().catch(() => {});
+  const closed = await p.waitForFunction((BAG) => !document.querySelector(`${BAG} [data-gift-lifted]`), BAG, { timeout: 5000 }).then(() => true, () => false);
+  check('a tap opens the box in the bag ("Every piece comes with this box"), and Back returns to the line', /Every piece comes with this box/.test(openCap) && closed, `${openCap} → ${closed ? 'closed' : 'still open'}`);
   // one more of the same piece earns the 2-piece offer
   await p.locator('[role="dialog"][data-state="open"] button[aria-label="Increase quantity"]').first().click();
   await p.waitForFunction(() => /for 2 pieces$/.test(document.querySelector('[role="dialog"][data-state="open"] [data-you-save]')?.textContent.trim() || ''), null, { timeout: 20000 }).catch(() => {});
@@ -316,7 +319,7 @@ for (const [label, path] of [['next', `/preview/jewellery/${H}`], ['live', `/jew
   await p.waitForSelector('[role="dialog"][data-state="open"] [data-gift-row]', { timeout: 20000 });
   await p.waitForTimeout(1500);
   const bag = await p.evaluate(() => { const d = document.querySelector('[role="dialog"][data-state="open"]'); return { text: d.innerText.replace(/\s+/g, ' '), palette: d.classList.contains('nf-palette') }; });
-  check('live page: the new bag with the gift box', /Checkout · ₹/i.test(bag.text) && /Comes with a Naira gift box/.test(bag.text) && bag.palette, bag.text.slice(0, 120));
+  check('live page: the new bag with the gift box', /Checkout · ₹/i.test(bag.text) && /Tap to open your Naira gift box/.test(bag.text) && bag.palette, bag.text.slice(0, 120));
   check('no page errors on the live product page', errors.length === 0, errors.slice(0, 2).join(' | '));
   await shot(p, 'live-bag');
   await ctx.close();

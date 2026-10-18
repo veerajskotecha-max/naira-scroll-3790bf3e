@@ -18,12 +18,16 @@ if (!BASE) {
 if (OUT) mkdirSync(OUT, { recursive: true });
 
 const PDP = '/jewellery/prism-riviere-bracelet';
-// The pieces Shopify holds 20 or more of (src/lib/pairings.ts DEEP_STOCK, 16
+// The pieces Shopify holds 20 or more of (src/lib/pairings.ts DEEP_STOCK, 18
 // October): the only add-ons the bag may offer.
 const DEEP_STOCK = [
-  'toggle-link-chain', 'prism-riviere-bracelet', 'woven-gold-hoops', 'aqua-heart-drops-silver', 'baguette-halo-drops',
-  'bold-dome-huggies', 'quatrefoil-eclat-studs', 'torsade-huggies', 'verdant-cushion-studs', 'heartbead-bracelet',
-  'petite-square-huggies', 'prism-cluster-studs-silver', 'riviere-huggies-silver',
+  'toggle-link-chain', 'baguette-tennis-bracelet', 'prism-riviere-bracelet', 'woven-gold-hoops', 'baguette-huggies',
+  'bold-nocturne-chain', 'bold-nocturne-bracelet', 'kiss-knot-bangle', 'marquise-layering-set', 'silk-mesh-cuff',
+  'brushed-gold-huggies', 'ribbon-bead-bracelet', 'riviere-eternal-bracelet', 'heartbead-bracelet', 'baroque-shell-bracelet',
+  'serpentine-whisper-chain-silver', 'bold-nocturne-drops', 'charm-box-chain', 'droplet-open-cuff', 'duo-link-bracelet',
+  'duo-link-necklace', 'emerald-square-ear-cuff', 'fine-tennis-bracelet', 'garnet-cable-cuff', 'marquise-drop-choker',
+  'mint-pear-drop-earrings', 'north-star-bangle', 'pear-point-open-cuff', 'petal-flower-studs', 'serpentine-whisper-chain',
+  'triple-coil-wrap-bangle',
 ];
 const SHIPROCKET = /fastrr-boost-ui\.pickrr\.com/i;
 const ANDROID = 'Mozilla/5.0 (Linux; Android 13; SM-A536B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
@@ -154,15 +158,16 @@ const read = (p) =>
       bar: bar && { now: Number(bar.getAttribute('aria-valuenow')), max: Number(bar.getAttribute('aria-valuemax')), fill: bar.querySelector(':scope > span')?.style.width },
       lines: [...bag.querySelectorAll('[data-line]')].map((li) => ({
         handle: li.dataset.line,
-        name: t(li.querySelector('p')),
+        name: t(li.querySelector('[data-line-name]')),
+        href: li.querySelector('[data-line-name]')?.getAttribute('href') || '',
         price: t(li.querySelector('[data-line-price] > span')),
         mrp: t(li.querySelector('[data-line-price] s')),
         off: t(li.querySelector('[data-line-price] s + span')),
         qty: Number(t(li.querySelector('[aria-label^="Quantity"]'))) || 1,
       })),
       pairHead: t(bag.querySelector('[data-pair] > p')),
-      cards: [...bag.querySelectorAll('[data-pair] [data-piece-card]')].map((c) => ({ handle: c.dataset.pieceCard, title: t(c.querySelector('p')), note: t(c.querySelectorAll('p')[1]) })),
-      gift: t(bag.querySelector('[data-gift-row] > p')),
+      cards: [...bag.querySelectorAll('[data-pair] [data-piece-card]')].map((c) => ({ handle: c.dataset.pieceCard, title: t(c.querySelector('p')), note: t(c.querySelectorAll('p')[1]), href: c.querySelector('p a')?.getAttribute('href') || '' })),
+      gift: t(bag.querySelector('[data-gift-row]')),
       undo: t(bag.querySelector('[data-undo]')),
       whatsapp: bag.querySelector('a[href^="https://wa.me/"]')?.getAttribute('href') || '',
       total: t(bag.querySelector('[data-total]')),
@@ -208,13 +213,19 @@ const read = (p) =>
     card.note === `Adds ${inr(adds)} · saves ${inr(cardPrice - adds)}`,
     `${card.title} · ${card.note} (expected Adds ${inr(adds)} · saves ${inr(cardPrice - adds)})`,
   );
-  check('gift line: "Comes with a Naira gift box", no gift-note offer, nothing called free', s.gift === 'Comes with a Naira gift box', s.gift);
+  check('gift line: "Tap to open your Naira gift box", no gift-note offer, nothing called free', s.gift === 'Tap to open your Naira gift box', s.gift);
   const gift = await p.evaluate(() => {
     const row = window.__bag().querySelector('[data-gift-row]');
-    const box = row.querySelector('[aria-label="Open the gift box"]')?.getBoundingClientRect();
+    const box = row.querySelector('button span')?.getBoundingClientRect();
     return { row: Math.round(row.getBoundingClientRect().height), box: box ? [Math.round(box.width), Math.round(box.height)] : null };
   });
-  check('the box is small and its line slim: it no longer takes half the bag', gift.box && gift.box[0] <= 40 && gift.box[1] <= 36 && gift.row <= 36, `box ${gift.box?.join('×')}px, line ${gift.row}px`);
+  // One line, a 44px tap target with its padding: the box no longer takes half the bag.
+  check('the box is small and its line slim: it no longer takes half the bag', gift.box && gift.box[0] <= 40 && gift.box[1] <= 40 && gift.row <= 64, `box ${gift.box?.join('×')}px, line ${gift.row}px`);
+  check(
+    'each piece links to its own page: the line and the add-on',
+    first.href === `/jewellery/${first.handle}` && card.href === `/jewellery/${card.handle}`,
+    `${first.href} · ${card.href}`,
+  );
   check('Total · incl. taxes, with the MRP struck beside it', /^Total · incl\. taxes/.test(s.foot) && rupees(s.total) === price && rupees(s.mrpTotal) === mrp, `${s.mrpTotal} → ${s.total}`);
   check('one saving line: "You save … against MRP"', s.youSave === `You save ${inr(mrp - price)} against MRP`, s.youSave);
   check('free insured shipping, with an arrival date', /Free insured shipping · arrives \d{1,2}/.test(s.foot), (s.foot.match(/Free insured shipping · arrives [^C]*/) || [''])[0].trim());
@@ -264,26 +275,19 @@ const read = (p) =>
   check('the bag records itself in Clarity: bag_opened, bag_pair_shown', ev.includes('bag_opened') && ev.includes('bag_pair_shown'), ev.join(', '));
   await shot(p, '1-one-piece');
 
-  // The gift box: a tap lifts it open above the line; nothing in the bag moves.
-  const tops = () =>
-    p.evaluate(() => {
-      const bag = window.__bag();
-      const pop = bag.querySelector('[data-gift-lifted]')?.getBoundingClientRect();
-      return {
-        tops: ['[data-pair]', '[data-gift-row]', '[data-bag-foot]'].map((q) => Math.round(bag.querySelector(q).getBoundingClientRect().top)).join(','),
-        pop: pop && { left: Math.round(pop.left), top: Math.round(pop.top), right: Math.round(pop.right), w: innerWidth },
-      };
-    });
-  const still = await tops();
-  await p.locator('[data-gift-row] [aria-label="Open the gift box"]').first().click();
-  const lifted = await until(p, () => window.__bag()?.querySelector('[data-gift-lifted]'), null, 3000);
-  const moving = await tops();
-  check('a tap lifts the box open above its line, and nothing in the bag moves', lifted && still.tops === moving.tops, `${still.tops} → ${moving.tops}`);
-  check('the lifted box stays on screen', moving.pop && moving.pop.left >= 0 && moving.pop.top >= 0 && moving.pop.right <= moving.pop.w, JSON.stringify(moving.pop));
-  const ringUp = await until(p, () => /Your piece comes in this box/.test(window.__bag()?.querySelector('[data-gift-lifted]')?.textContent || ''), null, 6000);
+  // The gift box: a tap opens it in the bag, and Back returns to the line.
+  await p.locator('[data-gift-row] button', { hasText: 'Tap to open your Naira gift box' }).click();
+  const opened = await until(p, () => /Every piece comes with this box/.test(window.__bag()?.querySelector('[data-gift-lifted]')?.textContent || ''), null, 3000);
+  check('a tap opens the gift box in the bag: "Every piece comes with this box"', opened);
+  await p.waitForTimeout(2600); // the drawer slides out and the ring rises
   await shot(p, '2-gift-open');
-  check('it opens by itself and the ring rises: "Your piece comes in this box"', ringUp);
-  check('then it shuts and settles back into the line', await until(p, () => !window.__bag()?.querySelector('[data-gift-lifted]'), null, 10000));
+  const panel = await p.evaluate(() => {
+    const r = window.__bag()?.querySelector('[data-gift-lifted]')?.getBoundingClientRect();
+    return r && { left: Math.round(r.left), right: Math.round(r.right), vw: innerWidth };
+  });
+  check('the open box keeps to the bag, nothing off the edge', panel && panel.left >= 0 && panel.right <= panel.vw, JSON.stringify(panel));
+  await p.locator('[data-gift-lifted] button[aria-label="Back to your bag"]').click();
+  check('Back closes it and the line returns', await until(p, () => !window.__bag()?.querySelector('[data-gift-lifted]') && /Tap to open/.test(window.__bag()?.querySelector('[data-gift-row]')?.textContent || ''), null, 3000));
   ev = await events(p);
   check('the tap is recorded: bag_gift_opened', ev.includes('bag_gift_opened'));
 
@@ -440,6 +444,24 @@ const read = (p) =>
   check('Add from the empty bag fills it', await lineCount(p, 1));
   ev = await events(p);
   check('recorded: bag_empty_added', ev.includes('bag_empty_added'));
+
+  // Out of the bag by its links: a piece's name opens its page, the bag closes
+  // on the way, and the phone's back returns to where the bag was opened.
+  await until(p, () => window.__bag()?.querySelector('[data-pair] [data-piece-card]'), null, 15000);
+  s = await read(p);
+  const from = p.url();
+  const pairCard = s.cards[0];
+  await p.locator(`[data-pair] [data-piece-card="${pairCard.handle}"] p a`).click();
+  const reached = await until(p, (h) => location.pathname === `/jewellery/${h}` && !window.__bag() && document.querySelector('#root h1'), pairCard.handle, 30000);
+  const reachedName = await p.evaluate(() => document.querySelector('#root h1')?.textContent.trim());
+  check("the add-on's name opens its page, and the bag gets out of the way", reached && reachedName === pairCard.title.split(' · ')[0], `${new URL(p.url()).pathname} · ${reachedName}`);
+  await p.goBack();
+  await p.waitForTimeout(1200);
+  check("the phone's back returns to where the bag was, the bag closed", p.url() === from && (await p.evaluate(() => !window.__bag())), new URL(p.url()).pathname);
+  await openBagFromHeader(p);
+  const lineHandle = (await read(p)).lines[0]?.handle;
+  await p.locator(`[data-line="${lineHandle}"] [data-line-name]`).click();
+  check("a piece's name in the bag opens its own page", await until(p, (h) => location.pathname === `/jewellery/${h}` && !window.__bag(), lineHandle, 30000), new URL(p.url()).pathname);
   check('no page errors through the whole visit', errors.length === 0, errors.slice(0, 3).join(' | '));
   check('the visit never left the shop for a real checkout page', log.left.length === 0, log.left.join(' | '));
   await ctx.close();

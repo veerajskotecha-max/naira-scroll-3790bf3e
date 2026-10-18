@@ -94,7 +94,11 @@ const Q = '?utm_source=facebook&utm_content=Facebook_UA&fbclid=TESTCLICK';
   }));
   check('desktop gallery visible at 1440 px', vis.desktop);
   check('phone gallery hidden at 1440 px', !vis.mobileShown);
-  const extra = log.filter((l) => /prism-riviere-bracelet-[25]\.jpg/.test(l.url) && /width=(480|720|900|1200)\b/.test(l.url)).length;
+  // Only what the hidden gallery fetches for itself counts: a photo the desktop
+  // gallery also shows, at the same size, is one file (the photo order moves
+  // whenever the listing is re-shot, so no photo number is assumed).
+  const shown = new Set(await p.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.getBoundingClientRect().width > 0).map((i) => i.currentSrc)));
+  const extra = [...new Set(log.filter((l) => /prism-riviere-bracelet-\d+\.jpg/.test(l.url) && /width=(480|720|900|1200)\b/.test(l.url) && !shown.has(l.url)).map((l) => l.url))].length;
   check('hidden phone gallery downloads nothing extra', extra === 0, `${extra} phone-size files`);
   await ctx.close();
 }

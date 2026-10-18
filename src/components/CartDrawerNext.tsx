@@ -7,12 +7,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
-import { CartPromoField } from "@/components/cart/CartExtras";
 import {
   discountedSubtotal,
   getPromoCode,
-  isAcceptedPromoCode,
-  normalizePromoCode,
   PROMO_EVENT,
   QUANTITY_OFFERS,
   resolveCartDiscount,
@@ -35,7 +32,6 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
     the piece, its MRP struck and "₹1,801 off"
     Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
-    Have a promo code? · Questions? WhatsApp us
     Total · incl. taxes, one savings line, arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
 
@@ -173,7 +169,6 @@ const CartDrawerNext = () => {
   const pageOf = (item: CartItem) => (catalogueByHandle.has(item.id) ? `/jewellery/${item.id}` : `/products/${item.id}`);
 
   const [promoCode, setActivePromoCode] = useState<string | null>(() => getPromoCode());
-  const [promoOpen, setPromoOpen] = useState(false);
   /* Every tap answered at once: the hand-off can take two network waits. */
   const [opening, setOpening] = useState(false);
   useEffect(() => {
@@ -186,7 +181,6 @@ const CartDrawerNext = () => {
     syncCart();
     setActivePromoCode(getPromoCode());
   }, [isDrawerOpen, syncCart]);
-  const codeAdded = Boolean(promoCode && isAcceptedPromoCode(normalizePromoCode(promoCode)));
 
   /* The bag in the session recording: opened, and closed with pieces in it. */
   const wasOpen = useRef(false);
@@ -195,7 +189,6 @@ const CartDrawerNext = () => {
     if (!isDrawerOpen && wasOpen.current && items.length) clarityEvent("bag_closed");
     wasOpen.current = isDrawerOpen;
     if (!isDrawerOpen) {
-      setPromoOpen(false);
       setOpening(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -450,22 +443,6 @@ const CartDrawerNext = () => {
                 ))}
               </ul>
 
-              <div className="px-5 pb-3">
-                {!codeAdded && !promoOpen ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPromoOpen(true);
-                      clarityEvent("bag_promo_opened");
-                    }}
-                    className="min-h-[36px] text-[12.5px] text-nf-ink/60 underline decoration-nf-ink/25 underline-offset-4"
-                  >
-                    Have a promo code?
-                  </button>
-                ) : (
-                  <CartPromoField inUse={!discount.automatic} startOpen={promoOpen} />
-                )}
-              </div>
             </div>
 
             {/* The foot, as plain as Project Shades': total, one line of terms,

@@ -8,6 +8,7 @@ import PincodeChecker from "@/components/product/PincodeChecker";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -277,7 +278,8 @@ const JewelDetailNext = () => {
   const snapshotPending = needSnapshot && snapshot === null;
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
-  const { addItem, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
+  const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
+  const [buying, setBuying] = useState(false);
 
   /* Naira's palette for everything on screen while this page is open,
      including the bag and dialogs, which render outside the page. */
@@ -539,11 +541,23 @@ const JewelDetailNext = () => {
         };
 
   const handleAddToCart = async () => {
-    await addItem(cartItem());
-    setDrawerOpen(true);
+    if (isPreorder) return handlePreOrder();
+    const added = await addItem(cartItem());
+    if (added) setDrawerOpen(true);
   };
 
-  /* Sold-out pieces take pre-orders: the cart first, WhatsApp if Shopify refuses. */
+  const handleBuyNow = async () => {
+    if (isPreorder) return handlePreOrder();
+    if (buying || cartLoading) return;
+    setBuying(true);
+    try {
+      await buyNow(cartItem());
+    } finally {
+      setBuying(false);
+    }
+  };
+
+  /* Reservations never enter the payment flow. */
   const handlePreOrder = () => {
     window.open(preorderHref, "_blank", "noopener,noreferrer");
   };
@@ -991,15 +1005,20 @@ const JewelDetailNext = () => {
             )}
             <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} />
 
-            {/* One button. How many is the bag's business (and the ladder's). */}
-            <div id="product-actions" className="mt-2">
-              <button
+            {/* Quantity stays in the bag; both actions use the same chosen variant. */}
+            <div id="product-actions" className="mt-2 grid grid-cols-2 gap-2">
+              <Button
                 onClick={isPreorder ? handlePreOrder : handleAddToCart}
-                disabled={cartLoading}
-                className="press-scale inline-flex h-[50px] w-full items-center justify-center bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory transition-colors duration-200 hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+                disabled={cartLoading || buying}
+                className={`press-scale inline-flex h-[50px] w-full items-center justify-center bg-nf-ink px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:opacity-60 ${isPreorder ? "col-span-2" : "col-start-2 row-start-1"}`}
               >
                 {isPreorder ? "Reserve now" : "Add to cart"}
-              </button>
+              </Button>
+              {!isPreorder && (
+                <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[50px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
+                  {buying ? "Opening checkout…" : "Buy Now"}
+                </Button>
+              )}
               {false && (
                 <a
                   href={sizedEnquiryHref}
@@ -1010,7 +1029,7 @@ const JewelDetailNext = () => {
                   <MessageSquare size={13} strokeWidth={1.6} /> Reserve on WhatsApp
                 </a>
               )}
-              <p className="mt-3 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
+              <p className="col-span-2 mt-1 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
                 <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
                 {soldOut ? "Hand-finished for you and shipped within 2 weeks, gift-boxed" : "Gift-ready: every piece arrives in the Naira gift box"}
               </p>
@@ -1171,21 +1190,25 @@ const JewelDetailNext = () => {
         }}
         aria-hidden={!stickyBarVisible}
       >
-        <button
+        <Button variant="outline"
           onClick={handleWishlist}
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
           className="press-scale flex h-[48px] w-[48px] shrink-0 items-center justify-center border border-nf-ink/25"
         >
           {heart}
-        </button>
-        <button
+        </Button>
+        {!isPreorder && (
+          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
+            {buying ? "Opening…" : "Buy Now"}
+          </Button>
+        )}
+        <Button
           onClick={isPreorder ? handlePreOrder : handleAddToCart}
-          disabled={cartLoading}
-          className="press-scale inline-flex h-[48px] flex-1 items-center justify-center gap-2 bg-[var(--nf-cta)] font-nf-label text-[11.5px] font-medium uppercase tracking-nf-16 text-nf-ivory hover:bg-[var(--nf-cta-hover)] disabled:opacity-60"
+          disabled={cartLoading || buying}
+          className="press-scale inline-flex h-[48px] min-w-0 flex-1 items-center justify-center gap-1 bg-nf-ink px-2 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ivory hover:bg-nf-ink/90 disabled:opacity-60"
         >
           {isPreorder ? "Reserve now" : "Add to cart"}
-          <span className="font-normal normal-case tracking-nf-4 text-nf-ivory/90">· {shown.priceLabel}</span>
-        </button>
+        </Button>
       </div>
 
       <ImageLightbox

@@ -1,18 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus } from "lucide-react";
+import { ChevronLeft, Loader2, Minus, Plus, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { bagAddOns, wornWithNoun } from "@/lib/pairings";
-import { cartLineFor, chosenOf, oneTapVariant, variantById, variantLabel } from "@/lib/variants";
-import BagGiftRow from "@/components/giftbox/BagGiftRow";
+import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import { CartPromoField } from "@/components/cart/CartExtras";
-import LadderBand from "@/components/cart/LadderBand";
 import {
-  addOnEffect,
   discountedSubtotal,
   getPromoCode,
   isAcceptedPromoCode,
@@ -118,6 +114,35 @@ const PieceCard = ({
   </div>
 );
 
+/* Project Shades' ladder: a thin track, an open ring at each rung that fills
+   once reached, and the offer spelt out under it. */
+const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
+  const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
+  const fill = Math.min(totalItems, top) / top;
+  return (
+    <div data-ladder className="shrink-0 bg-white px-5 pb-4 pt-5">
+      <div className="relative mx-3 h-[3px] bg-nf-ink/15" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
+        <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
+        {QUANTITY_OFFERS.map((o) => (
+          <span
+            key={o.code}
+            aria-hidden="true"
+            className={`absolute top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-colors duration-300 ${totalItems >= o.minQuantity ? "border-nf-ink bg-nf-ink" : "border-nf-ink/20 bg-white"}`}
+            style={{ left: `${(o.minQuantity / top) * 100}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-5 flex justify-around text-[12.5px] text-nf-ink">
+        {QUANTITY_OFFERS.map((o) => (
+          <span key={o.code} className={totalItems >= o.minQuantity ? "font-medium" : "text-nf-ink/75"}>
+            Buy {o.minQuantity} get {pct(o.rate)} off
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const CartDrawerNext = () => {
   const {
     items,
@@ -194,24 +219,6 @@ const CartDrawerNext = () => {
   };
   const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
-
-  /* The pair row: one piece that completes the look, with its exact effect. */
-  const offer = useMemo(() => bagAddOns(items.map((item) => item.id), totalItems, jewellery), [items, totalItems, jewellery]);
-  /* What the shopper chose for the piece the add-on is for ("Stone" → "Emerald"). */
-  const anchorChoice = useMemo(() => {
-    const line = [...items].reverse().find((item) => item.id === offer?.anchor.handle);
-    return line ? chosenOf(line) : {};
-  }, [items, offer]);
-  const offerKey = offer?.pieces.map((piece) => piece.handle).join(",") ?? "";
-  const shownFor = useRef("");
-  useEffect(() => {
-    if (!isDrawerOpen || !offerKey || shownFor.current === offerKey) return;
-    shownFor.current = offerKey;
-    clarityEvent("bag_pair_shown");
-  }, [isDrawerOpen, offerKey]);
-  useEffect(() => {
-    if (!isDrawerOpen) shownFor.current = "";
-  }, [isDrawerOpen]);
 
   const [adding, setAdding] = useState<string | null>(null);
   const addPiece = async (piece: JewelPiece, event: string, variant?: JewelVariant) => {
@@ -326,9 +333,9 @@ const CartDrawerNext = () => {
       <SheetContent
         ref={contentRef}
         closeClassName="hidden sm:flex"
-        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-gold/15 bg-nf-ivory p-0 text-nf-ink sm:max-w-[420px]"
+        className="nf-palette inset-y-0 flex h-[100dvh] font-nf-label max-h-[100dvh] w-full flex-col gap-0 overflow-hidden border-l border-nf-ink/10 bg-white p-0 text-nf-ink sm:max-w-[420px]"
       >
-        <SheetHeader className="shrink-0 border-b border-nf-gold/15 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
+        <SheetHeader className="shrink-0 border-b border-nf-ink/10 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] sm:px-5 sm:pt-5">
           <div className="flex items-center">
             <button
               type="button"

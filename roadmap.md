@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Update all jewellery PDP coating wording and add product-specific zircone feature blocks
+- [x] Update all jewellery PDP coating wording and add product-specific zircone feature blocks
 
 - [x] Smooth the bag gift-box reveal, add tap-to-open wording and a Back control, and verify lightweight loading
 

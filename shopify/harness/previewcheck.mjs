@@ -135,7 +135,13 @@ const H = 'prism-riviere-bracelet';
     const top = ul?.getBoundingClientRect().top ?? -1;
     return { text: lis.map((li) => li.textContent.trim()), rows: new Set(lis.map((li) => Math.round(li.getBoundingClientRect().top))).size, between: !!(price && btn && top > price.top && top < btn.top) };
   });
-  check('Palmonas-style badges under the price: anti-tarnish, skin-friendly, the plating, one row', badges.text.join('|') === 'Anti-tarnish|Skin-friendly|Rhodium-plated' && badges.rows === 1 && badges.between, `${badges.text.join(' · ')} · ${badges.rows} row(s)`);
+  // Since 18 October the coating is worded "… coated" and a stone badge follows
+  // (src/lib/jewelleryPresentation.ts); four badges take two rows on a phone.
+  check(
+    'Palmonas-style badges under the price: anti-tarnish, skin-friendly, the coating, the stone, at most two rows',
+    badges.text.join('|') === 'Anti-tarnish|Skin-friendly|Rhodium coated|Zircone Stone' && badges.rows <= 2 && badges.between,
+    `${badges.text.join(' · ')} · ${badges.rows} row(s)`,
+  );
   check('details, care and delivery as three closed fold-downs', first.folds.length === 3 && first.folds.every((o) => !o), JSON.stringify(first.folds));
   check('gift box stated under the button', !!first.gift, first.gift);
   check('complete the look: three pieces', first.look === 3, `${first.look} card(s)`);
@@ -210,7 +216,9 @@ const H = 'prism-riviere-bracelet';
       btn: btn?.textContent.trim(), btnBg: btn ? getComputedStyle(btn).backgroundColor : null };
   });
   check('Add to cart opens the new bag', /Checkout · ₹/.test(bag.btn || ''), bag.btn);
-  check('bag is ivory with a deep-sage Checkout', bag.bg === 'rgb(251, 243, 236)' && bag.btnBg === 'rgb(79, 114, 104)', `${bag.bg} / ${bag.btnBg}`);
+  // Deep sage, or its hover shade: under touch emulation :hover stays on whatever
+  // sits under the last tap, and Checkout opens where Add to cart was tapped.
+  check('bag is ivory with a deep-sage Checkout', bag.bg === 'rgb(251, 243, 236)' && ['rgb(79, 114, 104)', 'rgb(65, 98, 88)'].includes(bag.btnBg), `${bag.bg} / ${bag.btnBg}`);
   check('bag drops Shiprocket line, Continue shopping and repeated shipping', !/Powered by|Continue Shopping/i.test(bag.text) && (bag.text.match(/free insured shipping/gi) || []).length <= 1, bag.text.slice(0, 160));
   const bagHits = await offBrand(p);
   check('no stock navy / slate in the bag', Object.keys(bagHits).length === 0, JSON.stringify(bagHits).slice(0, 300));

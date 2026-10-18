@@ -22,7 +22,7 @@ import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/li
 import { productParams, trackPixel } from "@/lib/pixel";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
-import { completeTheLook, moreLikeThis } from "@/lib/pairings";
+import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -149,8 +149,13 @@ const fold =
   "flex min-h-[50px] cursor-pointer list-none items-center justify-between font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink [&::-webkit-details-marker]:hidden";
 const foldMark = "shrink-0 text-nf-ink/70 transition-transform duration-200 group-open:rotate-45";
 
+/* A ring sized to the finger needs its size chosen on its own page, as that
+   page asks; an open-back ring fits US 6 to 8, so one tap is enough. */
+const needsSize = (piece: JewelPiece) => piece.category === "Rings" && !isAdjustableRing(piece.handle);
+
 /* A suggested piece: photo, name, price, and a one-tap Add that opens the bag
-   with the ladder already counting it. */
+   with the ladder already counting it. A ring that needs a size goes to its
+   page instead, rather than into the bag in a size nobody chose. */
 const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href: string; compact?: boolean }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
@@ -165,7 +170,7 @@ const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href
         priceLabel: piece.priceLabel,
         currencyCode: "INR",
         image: piece.image,
-        size: piece.category === "Rings" ? "US 6" : undefined,
+        size: piece.category === "Rings" ? "US 6" : undefined, // open-back: fits US 6 to 8
       });
       setDrawerOpen(true);
     } finally {
@@ -191,17 +196,26 @@ const PairingCard = ({ piece, href, compact = false }: { piece: JewelPiece; href
         {piece.name}
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">{piece.priceLabel}</p>
-      {compact && (
-        <button
-          type="button"
-          onClick={add}
-          disabled={adding || isLoading}
-          aria-label={`Add ${piece.name} to bag`}
-          className="press-scale mt-2 h-8 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
-        >
-          {adding ? "Adding…" : "Add"}
-        </button>
-      )}
+      {compact &&
+        (needsSize(piece) ? (
+          <Link
+            to={href}
+            aria-label={`Choose a size for ${piece.name}`}
+            className="press-scale mt-2 flex h-8 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
+          >
+            Choose size
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={add}
+            disabled={adding || isLoading}
+            aria-label={`Add ${piece.name} to bag`}
+            className="press-scale mt-2 h-8 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
+          >
+            {adding ? "Adding…" : "Add"}
+          </button>
+        ))}
     </article>
   );
 };
@@ -937,7 +951,7 @@ const JewelDetailNext = () => {
               <section className="mt-10" aria-labelledby="complete-the-look">
                 <div className="flex items-end justify-between gap-3">
                   <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
-                    Complete the look
+                    {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
                   </h2>
                   <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">2 pieces · 10% off</p>
                 </div>

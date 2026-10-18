@@ -73,20 +73,29 @@ const asCartItem = (piece: JewelPiece) => ({
    1–15 October each, and kept in deep stock. */
 const BEST_SELLERS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 
-/* One small card with an Add: the pair row, and the empty bag's best-sellers. */
-const PieceCard = ({ piece, note, onAdd, busy }: { piece: JewelPiece; note?: string; onAdd: () => void; busy: boolean }) => (
+type Follow = ReturnType<typeof followOut>;
+
+/* One small card with an Add: the pair row, and the empty bag's best-sellers.
+   The photo and name open the piece's page, so it can be seen before it is
+   added; the bag closes on the way out and the phone's back returns. */
+const PieceCard = ({ piece, note, onAdd, busy, follow }: { piece: JewelPiece; note?: string; onAdd: () => void; busy: boolean; follow: Follow }) => (
   <div data-piece-card={piece.handle} className="flex items-center gap-2.5 border border-nf-gold/20 bg-white px-2 py-1.5">
-    <img
-      src={shopifyImage(piece.image, 120) || piece.image}
-      alt=""
-      className="h-[45px] w-[36px] shrink-0 bg-nf-ivory-deep object-cover"
-      width={36}
-      height={45}
-      loading="lazy"
-    />
+    <Link to={`/jewellery/${piece.handle}`} onClick={follow} tabIndex={-1} aria-hidden="true" className="shrink-0">
+      <img
+        src={shopifyImage(piece.image, 120) || piece.image}
+        alt=""
+        className="h-[45px] w-[36px] bg-nf-ivory-deep object-cover"
+        width={36}
+        height={45}
+        loading="lazy"
+      />
+    </Link>
     <div className="min-w-0 flex-1">
       <p className="truncate text-[12.5px] leading-[1.3] text-nf-ink">
-        {piece.name} · {piece.priceLabel}
+        <Link to={`/jewellery/${piece.handle}`} onClick={follow} className="underline-offset-4 hover:underline">
+          {piece.name}
+        </Link>{" "}
+        · {piece.priceLabel}
       </p>
       {note && <p className="text-[12px] leading-[1.3] text-nf-ink/75">{note}</p>}
     </div>
@@ -127,6 +136,9 @@ const CartDrawerNext = () => {
   const { requestClose, closeThen, releaseEntry } = useBackToClose("nfBag", isDrawerOpen, setDrawerOpen);
   useSwipeDismiss(contentRef, isDrawerOpen, requestClose);
   const leave = followOut(closeThen, navigate);
+  /* A line's own page: jewellery at /jewellery/, anything else at /products/,
+     which sends jewellery on and keeps apparel where it is. */
+  const pageOf = (item: CartItem) => (catalogueByHandle.has(item.id) ? `/jewellery/${item.id}` : `/products/${item.id}`);
 
   const [promoCode, setActivePromoCode] = useState<string | null>(() => getPromoCode());
   const [promoOpen, setPromoOpen] = useState(false);
@@ -336,7 +348,7 @@ const CartDrawerNext = () => {
                   <p className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-gold-text">Most loved</p>
                   <div className="mt-2 grid gap-2">
                     {best.map((piece) => (
-                      <PieceCard key={piece.handle} piece={piece} busy={adding === piece.handle} onAdd={() => addPiece(piece, "bag_empty_added")} />
+                      <PieceCard key={piece.handle} piece={piece} busy={adding === piece.handle} follow={leave} onAdd={() => addPiece(piece, "bag_empty_added")} />
                     ))}
                   </div>
                 </div>
@@ -358,17 +370,26 @@ const CartDrawerNext = () => {
                   const mrp = mrpOf(item);
                   return (
                     <li key={`${item.id}-${item.size}`} data-line={item.id} className="flex gap-3 border-b border-nf-gold/15 px-4 py-3 sm:px-5">
-                      <img
-                        src={shopifyImage(item.image, 200) || item.image}
-                        alt={item.name}
-                        className="h-[80px] w-[64px] shrink-0 bg-nf-ivory-deep object-cover"
-                        width={64}
-                        height={80}
-                        loading={index < 2 ? "eager" : "lazy"}
-                        decoding="async"
-                      />
+                      <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
+                        <img
+                          src={shopifyImage(item.image, 200) || item.image}
+                          alt={item.name}
+                          className="h-[80px] w-[64px] bg-nf-ivory-deep object-cover"
+                          width={64}
+                          height={80}
+                          loading={index < 2 ? "eager" : "lazy"}
+                          decoding="async"
+                        />
+                      </Link>
                       <div className="flex min-w-0 flex-1 flex-col">
-                        <p className="line-clamp-2 font-nf-editorial text-[15.5px] font-medium leading-tight text-nf-ink">{item.name}</p>
+                        <Link
+                          to={pageOf(item)}
+                          onClick={leave}
+                          data-line-name
+                          className="line-clamp-2 font-nf-editorial text-[15.5px] font-medium leading-tight text-nf-ink underline-offset-4 hover:underline"
+                        >
+                          {item.name}
+                        </Link>
                         {lineOptions(item) ? <p className="mt-0.5 truncate text-[11px] text-nf-ink/70">{lineOptions(item)}</p> : null}
                         <p data-line-price className="mt-1 text-[13px] text-nf-ink">
                           <span className="font-medium">{item.priceLabel}</span>
@@ -433,6 +454,7 @@ const CartDrawerNext = () => {
                           key={piece.handle}
                           piece={piece}
                           busy={adding === piece.handle}
+                          follow={leave}
                           note={effect.saves > 0 ? `Adds ${formatPrice(effect.adds)} · saves ${formatPrice(effect.saves)}` : `Adds ${formatPrice(effect.adds)}`}
                           onAdd={() => addPiece(piece, "bag_pair_added")}
                         />

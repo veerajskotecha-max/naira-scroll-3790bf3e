@@ -239,7 +239,11 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; 
   });
 
   if (!data?.length) return { jewellery: staticJewellery, isLive: false, isLoading };
+  return { jewellery: liveCatalogue(data), isLive: true, isLoading: false };
+};
 
+/** The catalogue the site shows, from Shopify's products: the hook's work, for scripts and tests too. */
+export const liveCatalogue = (data: ShopifyProductNode[]): JewelPiece[] => {
   const byHandle = new Map(data.map((node) => [node.handle, node]));
   // Only keep pieces that are still live listings in Shopify.
   const merged = staticJewellery
@@ -254,8 +258,7 @@ export const useLiveJewellery = (): { jewellery: JewelPiece[]; isLive: boolean; 
     .map((node, i) => fromShopify(node, merged.length + i));
 
   const all = [...merged, ...extras];
-
-  return { jewellery: all.length ? all : staticJewellery, isLive: true, isLoading: false };
+  return all.length ? all : staticJewellery;
 };
 
 

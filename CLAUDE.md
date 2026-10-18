@@ -252,15 +252,38 @@ exactly that), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 
 - The add-on comes from `bagAddOns` (`src/lib/pairings.ts`) and only ever from
-  `DEEP_STOCK`, the 13 non-ring pieces Shopify held 20 or more of on 16 Oct, so
+  `DEEP_STOCK`, the 31 non-ring pieces Shopify held 20 or more of on 18 Oct, so
   a one-tap add never meets a piece about to sell out. Re-check the list when
-  stock moves. Never a ring (it needs a size), nothing once the bag holds three.
-- The pairing is a small network (`FIT` by kind, hoops and huggies a kind of
-  their own), then proven sales, metal colour and a smaller ticket. Woven Gold
-  Hoops is in every multi-piece website order since September, so it outranks a
-  metal match: nearly every first piece is offered it, and hoops are offered the
-  Toggle Link Chain. `familyOf` trusts a "— Silver" name over a materials line
-  that fell back to gold.
+  stock moves: the public Storefront token cannot read stock levels (it lacks
+  `unauthenticated_read_product_inventory`), so the list cannot be live yet.
+  Never a ring (it needs a size), never a piece tagged `pre-order` (the KAVNAR
+  Edition One pieces), nothing once the bag holds three.
+- Each line in the bag, and the add-on and best-seller cards, link to the
+  piece's page through `followOut`, so the bag closes on the way and back works.
+
+## Product links (`src/lib/pairings.ts`)
+
+One network decides every "what goes with this" on the site: the product
+page's "Complete the look" (one-tap Add) and "More …" rows, and the bag's
+add-on. Pieces join three ways, strongest first:
+
+- the same set: `LINES`, read from names (and the Pearl tag): Nocturne, Duo
+  Link, Lumière, Whisper, Verdant/emerald, Prism, Rivière, Marquise, Torsade,
+  Baguette, Pearl, Blush, Droplet, Baroque, Molten, Mesh. A shared set adds 15 to
+  `matchScore`, more than one step of `FIT`, so a piece's own set comes before
+  the hoops ("Complete the set" heads the row when two of its three are the
+  set). Motifs (heart, star, halo, dome, pear, bow, bloom, link, pavé…) add 5.
+- the same look: `FIT` between kinds (hoops and huggies a kind of their own),
+  hoops first; Woven Gold Hoops, in every multi-piece website order since
+  September, outranks a metal match.
+- the same style: `styleOf` (tennis, cuff, bangle, studs, huggies, band…) for
+  "More …", with the set and metal.
+
+A new piece named "… Nocturne …" joins its set with no code change. A one-tap
+Add never takes a pre-order piece, and a ring sized to the finger gets "Choose
+size" (its own page) instead of a silent US 6; open-back rings
+(`isAdjustableRing`) fit US 6–8 and are added. `shopify/harness/pdplinks.mjs`
+on the harness branch opens every product page and checks each link.
 - Clarity events, via `clarityEvent()`: bag_opened, bag_closed, bag_pair_shown,
   bag_pair_added, bag_gift_opened, bag_promo_opened, bag_empty_added,
   bag_checkout_tapped. Count Checkout taps per bag opened, not per bag-add: an
@@ -272,7 +295,7 @@ and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 315 tests
+npx vitest run                          # currently 324 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```

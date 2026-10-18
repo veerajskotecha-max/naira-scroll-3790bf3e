@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { JewelPiece } from "@/data/jewellery";
-import { addOnScore, bagAddOns, completeTheLook, DEEP_STOCK, familyOf, isHoops, kindOf, moreLikeThis, wornWithNoun } from "./pairings";
+import { bagAddOns, completeTheLook, DEEP_STOCK, familyOf, isPreorder, isSetRow, kindOf, linesOf, matchScore, moreLikeThis, sharedLine, styleOf, wornWithNoun } from "./pairings";
 
 const piece = (handle: string, category: JewelPiece["category"], price: number, materials: string, extra: Partial<JewelPiece> = {}): JewelPiece => ({
   handle,
@@ -33,9 +33,9 @@ const catalogue = [
 const prism = catalogue[0];
 
 describe("completeTheLook", () => {
-  it("suggests one piece from each other category, same metal colour first", () => {
+  it("suggests one piece from each other category, same metal colour first, a smaller ticket before a larger one", () => {
     const picks = completeTheLook(prism, catalogue).map((p) => p.handle);
-    expect(picks).toEqual(["silver-chain", "silver-studs", "silver-ring"]);
+    expect(picks).toEqual(["silver-ring", "silver-studs", "silver-chain"]);
   });
 
   it("never suggests the piece itself, its own category or a sold-out piece", () => {
@@ -56,84 +56,150 @@ describe("moreLikeThis", () => {
   });
 });
 
-/* The live pieces with their real prices and metals on 16 October: the deep-stock
-   ones, and a few the bag must never offer (3 or fewer in stock, or a ring). */
+/* Live pieces with their real prices, metals and tags on 18 October: a few from
+   each set, the deep-stock ones the bag may add, and some it must never add. */
 const live = [
   piece("prism-riviere-bracelet", "Bracelets", 2399, silver, { name: "Prism Rivière Bracelet" }),
   piece("woven-gold-hoops", "Earrings", 1499, gold, { name: "Woven Gold Hoops" }),
   piece("toggle-link-chain", "Necklaces", 1499, gold, { name: "Toggle Link Chain" }),
-  piece("heartbead-bracelet", "Bracelets", 1299, gold, { name: "Heartbead Bracelet" }),
-  piece("bold-dome-huggies", "Earrings", 1649, gold, { name: "Bold Dome Huggies" }),
-  piece("torsade-huggies", "Earrings", 1799, gold, { name: "Torsade Huggies" }),
-  piece("petite-square-huggies", "Earrings", 1599, gold, { name: "Petite Square Huggies" }),
-  // Its listing names no plating, so the materials line falls back to gold.
-  piece("riviere-huggies-silver", "Earrings", 1999, gold, { name: "Rivière Huggies — Silver" }),
-  piece("quatrefoil-eclat-studs", "Earrings", 2449, gold, { name: "Quatrefoil Éclat Studs" }),
+  piece("heartbead-bracelet", "Bracelets", 1299, silver, { name: "Heartbead Bracelet" }),
+  piece("heartline-paperclip-necklace", "Necklaces", 1899, gold, { name: "Heartline Paperclip Necklace" }),
+  piece("bold-nocturne-chain", "Necklaces", 1799, gold, { name: "Bold Nocturne Chain" }),
+  piece("bold-nocturne-bracelet", "Bracelets", 1599, gold, { name: "Bold Nocturne Bracelet" }),
+  piece("bold-nocturne-drops", "Earrings", 1299, gold, { name: "Bold Nocturne Drops" }),
+  piece("baguette-tennis-bracelet", "Bracelets", 1699, gold, { name: "Baguette Tennis Bracelet" }),
+  piece("baguette-huggies", "Earrings", 1199, gold, { name: "Baguette Huggies" }),
+  piece("baguette-eternity-band", "Rings", 1299, gold, { name: "Baguette Eternity Band" }),
+  piece("serpentine-whisper-chain", "Necklaces", 1849, gold, { name: "Serpentine Whisper Chain" }),
+  piece("serpentine-whisper-chain-silver", "Necklaces", 1499, silver, { name: "Serpentine Whisper Chain — Silver" }),
+  piece("whisper-pave-band", "Rings", 899, silver, { name: "Whisper Pavé Band" }),
+  piece("cushion-halo-ring", "Rings", 1199, silver, { name: "Cushion Halo Ring" }),
+  piece("star-point-band", "Rings", 799, gold, { name: "Star Point Band" }),
+  piece("north-star-bangle", "Bracelets", 1499, gold, { name: "North Star Bangle" }),
+  piece("baroque-shell-bracelet", "Bracelets", 1799, gold, { name: "Baroque Shell Bracelet", tags: ["Pearl", "Bracelet"] }),
+  piece("pearl-drop-studs", "Earrings", 1199, gold, { name: "Pearl Drop Studs", tags: ["Pearl", "Earrings"] }),
+  // The KAVNAR Edition One pieces: 30 in Shopify, tagged pre-order, the listing names no plating.
+  piece("prism-cluster-studs-silver", "Earrings", 1899, gold, { name: "Prism Cluster Studs", tags: ["Earrings", "Edition One", "KAVNAR", "pre-order"] }),
+  // 3 in stock: linked on product pages, never added from the bag.
   piece("textured-gold-hoops", "Earrings", 1699, gold, { name: "Textured Gold Hoops" }),
-  piece("cushion-halo-ring", "Rings", 1999, silver, { name: "Cushion Halo Ring" }),
-  piece("lilac-papillon-ring", "Rings", 1499, gold, { name: "Lilac Papillon Ring" }),
-  piece("charm-box-chain", "Necklaces", 1599, gold, { name: "Charm Box Chain" }),
+  piece("riviere-eternal-necklace", "Necklaces", 1799, gold, { name: "Rivière Eternal Necklace", availableForSale: false }),
 ];
 const byHandle = (handle: string) => live.find((p) => p.handle === handle)!;
+const handles = (pieces: JewelPiece[]) => pieces.map((p) => p.handle);
 const pick = (inBag: string[], pieces = inBag.length, catalogue = live) => bagAddOns(inBag, pieces, catalogue)?.pieces.map((p) => p.handle) ?? [];
 
 describe("the metal colour of a piece", () => {
-  it("is silver when the name says so, whatever the materials line fell back to", () => {
-    expect(familyOf(byHandle("riviere-huggies-silver"))).toBe("silver");
+  it("is silver when the name or the handle says so, whatever the materials line fell back to", () => {
+    expect(familyOf(byHandle("serpentine-whisper-chain-silver"))).toBe("silver");
+    expect(familyOf(byHandle("prism-cluster-studs-silver"))).toBe("silver");
     expect(familyOf(byHandle("prism-riviere-bracelet"))).toBe("silver");
     expect(familyOf(byHandle("woven-gold-hoops"))).toBe("gold");
   });
 });
 
+describe("the lines that join pieces", () => {
+  it("reads sets and motifs from names, and pearls from the Pearl tag too", () => {
+    expect(sharedLine(byHandle("bold-nocturne-chain"), byHandle("bold-nocturne-bracelet"))).toBe("set");
+    expect(sharedLine(byHandle("baroque-shell-bracelet"), byHandle("pearl-drop-studs"))).toBe("set");
+    expect(sharedLine(byHandle("heartline-paperclip-necklace"), byHandle("heartbead-bracelet"))).toBe("motif");
+    expect(sharedLine(byHandle("star-point-band"), byHandle("north-star-bangle"))).toBe("motif");
+    expect(sharedLine(byHandle("woven-gold-hoops"), byHandle("prism-riviere-bracelet"))).toBeNull();
+    expect(linesOf(byHandle("serpentine-whisper-chain-silver")).map(([line]) => line)).toEqual(["whisper"]);
+  });
+
+  it("names each piece's style within its category", () => {
+    expect(["baguette-tennis-bracelet", "north-star-bangle", "baguette-huggies", "pearl-drop-studs", "star-point-band", "cushion-halo-ring", "heartline-paperclip-necklace", "toggle-link-chain"].map((h) => styleOf(byHandle(h)))).toEqual([
+      "tennis",
+      "bangle",
+      "huggies",
+      "studs",
+      "band",
+      "statement",
+      "pendant",
+      "chain",
+    ]);
+  });
+});
+
+describe("completeTheLook: the product page's one-tap row", () => {
+  it("puts a piece's own set first: the Bold Nocturne bracelet gets its drops and chain, then a ring", () => {
+    const look = completeTheLook(byHandle("bold-nocturne-bracelet"), live);
+    expect(handles(look)).toEqual(["bold-nocturne-drops", "bold-nocturne-chain", "baguette-eternity-band"]);
+    expect(isSetRow(byHandle("bold-nocturne-bracelet"), look)).toBe(true);
+  });
+
+  it("gives a piece without a set the hoops, then one piece of each other kind in its own metal", () => {
+    const look = completeTheLook(byHandle("prism-riviere-bracelet"), live);
+    expect(handles(look)).toEqual(["woven-gold-hoops", "serpentine-whisper-chain-silver", "cushion-halo-ring"]);
+    expect(isSetRow(byHandle("prism-riviere-bracelet"), look)).toBe(false);
+  });
+
+  it("never offers its own category, a sold-out piece or a pre-order piece for a one-tap Add", () => {
+    for (const anchor of live) {
+      const look = completeTheLook(anchor, live);
+      expect(new Set(look.map((p) => p.category)).size).toBe(look.length);
+      for (const p of look) {
+        expect(p.category).not.toBe(anchor.category);
+        expect(p.availableForSale).not.toBe(false);
+        expect(isPreorder(p)).toBe(false);
+      }
+    }
+  });
+});
+
+describe("moreLikeThis: the same category, closest first", () => {
+  it("puts the same design in the other metal first", () => {
+    expect(handles(moreLikeThis(byHandle("serpentine-whisper-chain"), live))[0]).toBe("serpentine-whisper-chain-silver");
+  });
+
+  it("keeps a style together: bands beside a band", () => {
+    const more = moreLikeThis(byHandle("star-point-band"), live).map((p) => styleOf(p));
+    expect(more.slice(0, 2)).toEqual(["band", "band"]);
+  });
+
+  it("links pre-order pieces for browsing, but never a sold-out one", () => {
+    expect(handles(moreLikeThis(byHandle("pearl-drop-studs"), live))).toContain("prism-cluster-studs-silver");
+    expect(handles(moreLikeThis(byHandle("toggle-link-chain"), live))).not.toContain("riviere-eternal-necklace");
+  });
+});
+
 describe("bagAddOns: the one piece the bag offers", () => {
-  it("offers Woven Gold Hoops beside the Prism Rivière Bracelet, as the plan's mock-up shows, over huggies in its own silver", () => {
+  it("offers Woven Gold Hoops beside the Prism Rivière Bracelet, as the plan's mock-up shows", () => {
     const offer = bagAddOns(["prism-riviere-bracelet"], 1, live)!;
-    expect(offer.pieces.map((p) => p.handle)).toEqual(["woven-gold-hoops"]);
+    expect(handles(offer.pieces)).toEqual(["woven-gold-hoops"]);
     expect(wornWithNoun(offer.anchor)).toBe("bracelet");
   });
 
-  it("puts hoops first beside a necklace, a ring or a pair of studs", () => {
-    expect(pick(["charm-box-chain"])).toEqual(["woven-gold-hoops"]);
-    expect(pick(["cushion-halo-ring"])).toEqual(["woven-gold-hoops"]);
-    expect(pick(["quatrefoil-eclat-studs"])).toEqual(["woven-gold-hoops"]);
-  });
-
-  it("counts huggies as hoops, and names them as a shopper would", () => {
-    expect(kindOf(byHandle("torsade-huggies"))).toBe("hoops");
-    expect(isHoops(byHandle("bold-dome-huggies"))).toBe(true);
-    expect(wornWithNoun(byHandle("torsade-huggies"))).toBe("huggies");
-    expect(wornWithNoun(byHandle("woven-gold-hoops"))).toBe("hoops");
-  });
-
-  it("completes hoops or huggies with a chain, in the same gold", () => {
+  it("completes hoops with a chain", () => {
     expect(pick(["woven-gold-hoops"])).toEqual(["toggle-link-chain"]);
-    expect(pick(["torsade-huggies"])).toEqual(["toggle-link-chain"]);
   });
 
-  it("after the hoops and a chain, offers huggies to stack: two only when equally good, deeper stock first", () => {
-    expect(pick(["woven-gold-hoops", "toggle-link-chain"])).toEqual(["bold-dome-huggies", "torsade-huggies"]);
+  it("matches a piece from its own set when the set is in deep stock", () => {
+    expect(pick(["bold-nocturne-bracelet"])).toEqual(["bold-nocturne-drops"]);
+    expect(pick(["baguette-tennis-bracelet"])).toEqual(["baguette-huggies"]);
   });
 
-  it("matches a silver piece in silver once the gold hoops are in the bag", () => {
-    expect(pick(["woven-gold-hoops", "prism-riviere-bracelet"])).toEqual(["riviere-huggies-silver"]);
+  it("lets a shared motif lose to the proven hoops: Heartline Paperclip Necklace was bought with them (#1088)", () => {
+    expect(pick(["heartline-paperclip-necklace"])).toEqual(["woven-gold-hoops"]);
   });
 
-  it("pairs with the piece added last", () => {
-    expect(pick(["cushion-halo-ring", "woven-gold-hoops"])).toEqual(["toggle-link-chain"]);
+  it("never adds a pre-order piece in one tap, even from its own set", () => {
+    const preorder = live.map((p) => (p.handle === "baguette-huggies" ? { ...p, tags: ["pre-order"] } : p));
+    expect(pick(["baguette-tennis-bracelet"], 1, preorder)).toEqual(["woven-gold-hoops"]);
   });
 
   it("offers only deep-stock pieces: never hoops with 3 in stock, never a ring", () => {
-    const bags = [["prism-riviere-bracelet"], ["charm-box-chain"], ["woven-gold-hoops"], ["woven-gold-hoops", "toggle-link-chain"], ["toggle-link-chain", "woven-gold-hoops"]];
-    const offered = new Set(bags.flatMap((bag) => pick(bag)));
+    const offered = new Set(live.flatMap((p) => pick([p.handle])));
     for (const handle of offered) expect(Object.keys(DEEP_STOCK)).toContain(handle);
     expect(offered.has("textured-gold-hoops")).toBe(false);
     expect([...offered].some((h) => kindOf(byHandle(h)) === "ring")).toBe(false);
   });
 
-  it("never offers a piece already in the bag, or one that has sold out", () => {
+  it("pairs with the piece added last, never one already in the bag or sold out", () => {
+    expect(pick(["cushion-halo-ring", "woven-gold-hoops"])).toEqual(["toggle-link-chain"]);
     expect(pick(["prism-riviere-bracelet", "woven-gold-hoops"])).not.toContain("woven-gold-hoops");
     const soldOut = live.map((p) => (p.handle === "woven-gold-hoops" ? { ...p, availableForSale: false } : p));
-    expect(pick(["prism-riviere-bracelet"], 1, soldOut)).toEqual(["riviere-huggies-silver"]);
+    expect(pick(["prism-riviere-bracelet"], 1, soldOut)).not.toContain("woven-gold-hoops");
   });
 
   it("offers nothing once the bag holds three pieces, or for a bag it cannot read", () => {
@@ -143,13 +209,13 @@ describe("bagAddOns: the one piece the bag offers", () => {
   });
 
   it("never offers a second piece of the same kind, except hoops stacked beside hoops", () => {
-    expect(addOnScore(byHandle("prism-riviere-bracelet"), byHandle("heartbead-bracelet"))).toBe(0);
-    expect(addOnScore(byHandle("toggle-link-chain"), byHandle("charm-box-chain"))).toBe(0);
-    expect(addOnScore(byHandle("woven-gold-hoops"), byHandle("torsade-huggies"))).toBeGreaterThan(0);
+    expect(matchScore(byHandle("prism-riviere-bracelet"), byHandle("heartbead-bracelet"))).toBe(0);
+    expect(matchScore(byHandle("toggle-link-chain"), byHandle("bold-nocturne-chain"))).toBe(0);
+    expect(matchScore(byHandle("woven-gold-hoops"), byHandle("baguette-huggies"))).toBeGreaterThan(0);
   });
 
   it("is stable from one render to the next", () => {
     expect(bagAddOns(["prism-riviere-bracelet"], 1, live)).toEqual(bagAddOns(["prism-riviere-bracelet"], 1, [...live].reverse()));
-    expect(pick(["woven-gold-hoops", "toggle-link-chain"], 2, [...live].reverse())).toEqual(["bold-dome-huggies", "torsade-huggies"]);
+    expect(completeTheLook(byHandle("prism-riviere-bracelet"), live)).toEqual(completeTheLook(byHandle("prism-riviere-bracelet"), [...live].reverse()));
   });
 });

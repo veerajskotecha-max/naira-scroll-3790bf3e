@@ -1,0 +1,152 @@
+{%- doc -%}
+  Naira: the product page's reviews, and only real ones.
+
+  It reads Shopify's standard review metafields (reviews.rating and
+  reviews.rating_count), which review apps such as Judge.me write once
+  reviews come in, and it is the slot a review app's widget is placed in
+  from the theme editor. Until a product has a rating or the slot holds an
+  app block, the section prints nothing at all: an empty "Reviews" heading
+  or a row of grey stars would cost more trust than it earns.
+
+  The star line under the product title is Whisper's own review block,
+  which reads the same metafields.
+{%- enddoc -%}
+
+{%- liquid
+  assign rating = closest.product.metafields.reviews.rating.value
+  assign rating_count = closest.product.metafields.reviews.rating_count.value | default: 0
+  assign has_rating = false
+  if rating != blank and rating_count > 0
+    assign has_rating = true
+  endif
+-%}
+
+{%- capture app_blocks -%}
+  {%- content_for 'blocks' -%}
+{%- endcapture -%}
+{%- assign has_app = false -%}
+{%- if app_blocks != blank -%}
+  {%- assign stripped = app_blocks | strip -%}
+  {%- if stripped != blank -%}
+    {%- assign has_app = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- if has_rating or has_app or request.design_mode -%}
+  <div class="section-background color-{{ section.settings.color_scheme }}"></div>
+  <div class="section section--page-width color-{{ section.settings.color_scheme }}">
+    <div
+      class="nf-reviews spacing-style"
+      style="{% render 'spacing-style', settings: section.settings %}"
+    >
+      <div class="nf-reviews__head">
+        <h2 class="h4">{{ section.settings.heading | escape }}</h2>
+        {%- if has_rating -%}
+          <p class="nf-reviews__summary">
+            <span class="nf-reviews__score">{{ rating.rating | round: 1 }}</span>
+            <span class="nf-reviews__star" aria-hidden="true">★</span>
+            <span>
+              {{- ' · ' -}}
+              {{- rating_count -}}
+              {%- if rating_count == 1 %} review{% else %} reviews{% endif -%}
+            </span>
+          </p>
+        {%- elsif request.design_mode and has_app == false -%}
+          <p class="nf-reviews__summary">
+            Add your review app's block here. This section stays hidden on the live store until a product has reviews
+            or an app block is added.
+          </p>
+        {%- endif -%}
+      </div>
+      {{ app_blocks }}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .nf-reviews {
+    display: grid;
+    gap: 20px;
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .nf-reviews__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 24px;
+  }
+
+  .nf-reviews__head .h4 {
+    margin: 0;
+  }
+
+  .nf-reviews__summary {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .nf-reviews__score {
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+  }
+
+  .nf-reviews__star {
+    color: var(--color-primary);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira reviews",
+  "class": "section-wrapper",
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Reviews"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Colour scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira reviews"
+    }
+  ]
+}
+{% endschema %}

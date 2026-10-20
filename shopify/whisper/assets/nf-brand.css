@@ -1,0 +1,103 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAIRA — the brand layer over Whisper (Horizon 3.5.1)
+
+   Almost all of the look lives in config/settings_data.json: the palette is
+   six colour schemes, the type is four font slots and a scale, and buttons,
+   inputs, badges and swatches are theme settings. This file carries only what
+   settings cannot express.
+
+   Cascade: layout/theme.liquid renders `stylesheets` (which loads this file)
+   BEFORE `theme-styles-variables` prints its inline :root block, so any
+   Horizon token redefined here is written as :root:root (0-2-0) to win the
+   tie. Own --nf-* names need a single :root. Out-specify, never out-order.
+
+   Velista's @font-face is printed by snippets/stylesheets.liquid rather than
+   here, so its URL is the same asset_url the preload asks for and the font is
+   fetched once.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root:root {
+  /* Velista draws a-z as capitals: a display face for names and titles.
+     Cormorant, the heading font in settings, is the fallback. */
+  --font-heading--family: 'Velista', 'Cormorant', Georgia, serif;
+
+  /* h4 and h5 are the uppercase Jost labels. The theme's loosest step is
+     0.03em; the brand tracks its labels at 0.16-0.2em. */
+  --font-h4--letter-spacing: 0.16em;
+  --font-h5--letter-spacing: 0.18em;
+}
+
+/* Digits that line up instead of shimmering as a price changes. */
+product-price,
+.price,
+.compare-at-price,
+.cart-items__price,
+.cart-totals__total-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Tap targets ─────────────────────────────────────────────────────────
+   Whisper draws several controls smaller than a fingertip. Each keeps its
+   look; the area that answers a tap grows to 44px. */
+
+/* The gallery's slide dots are 18px: the dot stays, a 44px halo takes taps. */
+.slideshow-controls__dots .slideshow-control {
+  position: relative;
+}
+
+.slideshow-controls__dots .slideshow-control::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+/* Footer: the Instagram icon, the menu headings (an accordion on phones),
+   their links, the contact lines and the copyright and policy links. */
+.social-icons__icon-wrapper > a,
+.footer-utilities__text a,
+.policy-list-trigger,
+.facets-toggle__button,
+a.size-style.link {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.social-icons__icon-wrapper > a {
+  justify-content: center;
+}
+
+body > footer .menu__heading {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+body > footer .menu__item a,
+body > footer .text-block a {
+  display: inline-block;
+  padding-block: 11px;
+}
+
+body > footer .text-block p {
+  margin: 0;
+}
+
+/* The footer shares the header's cream and logo, so a hairline in the
+   scheme's border colour marks where the page ends and the footer begins. */
+body > footer {
+  border-block-start: 1px solid #E8DCD3;
+}
+
+/* The saving beside the struck MRP: quiet, in the brand's green. */
+.nf-price-off {
+  color: var(--color-primary);
+  font-size: 0.75em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}

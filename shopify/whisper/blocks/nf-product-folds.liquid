@@ -1,0 +1,418 @@
+{%- doc -%}
+  Naira: the product description, split into what a shopper reads first and
+  what they open when they need it.
+
+  Every Naira Petite description is written to one pattern (an intro, a
+  STYLING TIP paragraph, a "Details" list, a "Care" paragraph and the box
+  line), so it is cut on those markers: the intro and the tip stay open, and
+  Details, Care, the ring size guide and Delivery & returns fold away. A
+  description without the markers is shown whole as the intro, and the Care
+  fold falls back to the general care note in the settings.
+
+  The box line is dropped here because the assurances above the folds
+  already say it.
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+  assign product = closest.product
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign description = product.description
+  assign intro = description
+  assign tip = ''
+  assign details = ''
+  assign care = ''
+
+  assign marker_details = '<p><strong>Details</strong></p>'
+  assign marker_care = '<p><strong>Care</strong></p>'
+  assign marker_tip = '<p><strong>STYLING TIP:</strong>'
+  assign marker_box = '<p>You will receive your piece'
+
+  if description contains marker_details
+    assign halves = description | split: marker_details
+    assign intro = halves.first
+    assign rest = halves.last
+    if rest contains marker_care
+      assign parts = rest | split: marker_care
+      assign details = parts.first
+      assign care = parts.last
+    else
+      assign details = rest
+    endif
+  endif
+
+  if intro contains marker_tip
+    assign parts = intro | split: marker_tip
+    assign intro = parts.first
+    assign tip = parts.last | split: '</p>' | first | strip
+  endif
+
+  if care contains marker_box
+    assign care = care | split: marker_box | first
+  endif
+  if details contains marker_box
+    assign details = details | split: marker_box | first
+  endif
+  if care == blank
+    assign care = block_settings.care_fallback
+  endif
+
+  comment
+    The ring size guide shows on a ring sold in sizes, with only the sizes it
+    comes in. Measurements are the ones the live site publishes.
+  endcomment
+  assign size_option = null
+  if block_settings.show_size_guide and product.type == 'Ring'
+    for option in product.options_with_values
+      assign option_name = option.name | downcase
+      if option_name contains 'size'
+        assign size_option = option
+        break
+      endif
+    endfor
+  endif
+-%}
+
+<div
+  class="nf-folds spacing-style"
+  style="{% render 'spacing-style', settings: block_settings %}"
+  {{ block.shopify_attributes }}
+>
+  {%- if block_settings.show_intro and intro != blank -%}
+    <div class="nf-folds__intro rte">{{ intro }}</div>
+  {%- endif -%}
+
+  {%- if block_settings.show_tip and tip != blank -%}
+    <p class="nf-folds__tip">
+      <span class="nf-folds__label">{{ block_settings.tip_label | escape }}</span>
+      {{ tip }}
+    </p>
+  {%- endif -%}
+
+  <div class="nf-folds__list">
+    {%- if details != blank -%}
+      <details class="nf-fold"{% if block_settings.open_details %} open{% endif %}>
+        <summary class="nf-fold__summary">
+          <span>{{ block_settings.details_heading | escape }}</span>
+          <span class="nf-fold__mark" aria-hidden="true"></span>
+        </summary>
+        <div class="nf-fold__body rte">{{ details }}</div>
+      </details>
+    {%- endif -%}
+
+    {%- if size_option -%}
+      <details class="nf-fold">
+        <summary class="nf-fold__summary">
+          <span>{{ block_settings.size_heading | escape }}</span>
+          <span class="nf-fold__mark" aria-hidden="true"></span>
+        </summary>
+        <div class="nf-fold__body">
+          <table class="nf-sizes">
+            <thead>
+              <tr>
+                <th scope="col">US size</th>
+                <th scope="col">Inner diameter</th>
+                <th scope="col">Circumference</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for value in size_option.values -%}
+                {%- liquid
+                  case value.name
+                    when '5'
+                      assign diameter = '15.7 mm'
+                      assign circumference = '4.93 cm'
+                    when '6'
+                      assign diameter = '16.5 mm'
+                      assign circumference = '5.19 cm'
+                    when '7'
+                      assign diameter = '17.3 mm'
+                      assign circumference = '5.44 cm'
+                    when '8'
+                      assign diameter = '18.1 mm'
+                      assign circumference = '5.69 cm'
+                    when '9'
+                      assign diameter = '18.9 mm'
+                      assign circumference = '5.95 cm'
+                    else
+                      assign diameter = '—'
+                      assign circumference = '—'
+                  endcase
+                -%}
+                <tr>
+                  <th scope="row">{{ value.name | escape }}</th>
+                  <td>{{ diameter }}</td>
+                  <td>{{ circumference }}</td>
+                </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+          <div class="rte">{{ block_settings.size_note }}</div>
+        </div>
+      </details>
+    {%- endif -%}
+
+    {%- if care != blank -%}
+      <details class="nf-fold">
+        <summary class="nf-fold__summary">
+          <span>{{ block_settings.care_heading | escape }}</span>
+          <span class="nf-fold__mark" aria-hidden="true"></span>
+        </summary>
+        <div class="nf-fold__body rte">{{ care }}</div>
+      </details>
+    {%- endif -%}
+
+    {%- if block_settings.delivery_text != blank -%}
+      <details class="nf-fold">
+        <summary class="nf-fold__summary">
+          <span>{{ block_settings.delivery_heading | escape }}</span>
+          <span class="nf-fold__mark" aria-hidden="true"></span>
+        </summary>
+        <div class="nf-fold__body rte">{{ block_settings.delivery_text }}</div>
+      </details>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .nf-folds {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .nf-folds__intro > :first-child {
+    margin-block-start: 0;
+  }
+
+  .nf-folds__intro > :last-child {
+    margin-block-end: 0;
+  }
+
+  .nf-folds__tip {
+    margin: 0;
+    padding-inline-start: 12px;
+    border-inline-start: 1px solid var(--color-primary);
+    font-size: var(--font-size--sm);
+    line-height: 1.5;
+  }
+
+  .nf-folds__label {
+    display: block;
+    margin-block-end: 2px;
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: var(--font-size--2xs);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+
+  .nf-folds__list {
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .nf-fold {
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .nf-fold__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 52px;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-subheading--family);
+    font-weight: var(--font-subheading--weight);
+    font-size: var(--font-size--xs);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .nf-fold__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nf-fold__summary:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* A plus that becomes a minus: two hairlines, the upright one folds flat. */
+  .nf-fold__mark {
+    position: relative;
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+  }
+
+  .nf-fold__mark::before,
+  .nf-fold__mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 1px;
+    background: currentColor;
+    transition: transform 240ms ease;
+  }
+
+  .nf-fold__mark::after {
+    transform: rotate(90deg);
+  }
+
+  .nf-fold[open] .nf-fold__mark::after {
+    transform: rotate(0deg);
+  }
+
+  .nf-fold__body {
+    padding-block-end: 20px;
+    font-size: var(--font-size--sm);
+  }
+
+  .nf-fold__body > :first-child {
+    margin-block-start: 0;
+  }
+
+  .nf-fold__body ul {
+    padding-inline-start: 1.1em;
+  }
+
+  .nf-sizes {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block-end: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .nf-sizes :is(th, td) {
+    padding: 8px 0;
+    text-align: start;
+    font-weight: inherit;
+    border-block-end: 1px solid var(--color-border);
+  }
+
+  .nf-sizes thead th {
+    font-size: var(--font-size--2xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-fold__mark::before,
+    .nf-fold__mark::after {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Naira description folds",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_intro",
+      "label": "Show the opening paragraph",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tip",
+      "label": "Show the styling tip",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tip_label",
+      "label": "Styling tip label",
+      "default": "Styling tip"
+    },
+    {
+      "type": "text",
+      "id": "details_heading",
+      "label": "Details heading",
+      "default": "Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_details",
+      "label": "Open Details by default",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_guide",
+      "label": "Show the ring size guide on rings sold in sizes",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "size_heading",
+      "label": "Size guide heading",
+      "default": "Ring size guide"
+    },
+    {
+      "type": "richtext",
+      "id": "size_note",
+      "label": "Size guide note",
+      "default": "<p>Wrap a thin strip of paper snugly around the base of your finger, mark where it overlaps and measure it in cm: that is your circumference. Between two sizes, choose the larger.</p>"
+    },
+    {
+      "type": "text",
+      "id": "care_heading",
+      "label": "Care heading",
+      "default": "Care"
+    },
+    {
+      "type": "richtext",
+      "id": "care_fallback",
+      "label": "General care note",
+      "info": "Shown when a description has no Care section.",
+      "default": "<p>Keep it away from perfume and harsh chemicals. Wipe with a soft dry cloth and store it in its pouch.</p>"
+    },
+    {
+      "type": "text",
+      "id": "delivery_heading",
+      "label": "Delivery heading",
+      "default": "Delivery & returns"
+    },
+    {
+      "type": "richtext",
+      "id": "delivery_text",
+      "label": "Delivery & returns text",
+      "default": "<p>Ships in 3–5 working days, packed in a Naira Petite box.</p><p>Returns within 7 days of delivery on eligible pieces.</p>"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Naira description folds"
+    }
+  ]
+}
+{% endschema %}

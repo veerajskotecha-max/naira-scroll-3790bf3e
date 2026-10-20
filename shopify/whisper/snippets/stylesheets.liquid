@@ -1,0 +1,20 @@
+{{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
+{{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- comment -%}
+  Naira: Velista, the brand's display face, and the brand layer. The
+  @font-face is printed here rather than in nf-brand.css so its URL is the
+  same asset_url the preload asks for, and the font is fetched once.
+{%- endcomment -%}
+{%- assign velista_url = 'nf-velista.woff2' | asset_url -%}
+<link rel="preload" href="{{ velista_url }}" as="font" type="font/woff2" crossorigin>
+{% style %}
+  @font-face {
+    font-family: 'Velista';
+    src: url('{{ velista_url }}') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+{% endstyle %}
+{{ 'nf-brand.css' | asset_url | stylesheet_tag }}

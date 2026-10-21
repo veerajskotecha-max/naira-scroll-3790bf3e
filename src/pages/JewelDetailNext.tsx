@@ -232,7 +232,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           <Link
             to={href}
             aria-label={`Choose a ${need} for ${piece.name}`}
-            className="press-scale mt-2 flex h-8 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
+            className="press-scale mt-2 flex h-11 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
           >
             Choose {need}
           </Link>
@@ -242,7 +242,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
             onClick={add}
             disabled={adding || isLoading}
             aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""} to bag`}
-            className="press-scale mt-2 h-8 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
+            className="press-scale mt-2 h-11 w-full border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
           >
             {adding ? "Adding…" : "Add"}
           </button>
@@ -648,7 +648,7 @@ const JewelDetailNext = () => {
   );
   /* Square, like every corner on the site (tailwind.config.ts sets all radii to 0). */
   const overlayButton =
-    "press-scale z-10 flex h-10 w-10 items-center justify-center bg-nf-ivory/75 backdrop-blur-sm";
+    "press-scale z-10 flex h-11 w-11 items-center justify-center bg-nf-ivory/75 backdrop-blur-sm";
 
   /* The first photo shares one srcset between the two galleries, so it is
      downloaded once whichever the screen shows (see JewelDetail.tsx). */
@@ -720,8 +720,12 @@ const JewelDetailNext = () => {
   );
 
   const DesktopGallery = (() => {
-    const unique = Array.from(new Set(images)).slice(0, 4);
+    const all = Array.from(new Set(images));
+    const unique = all.slice(0, 4);
     const count = unique.length;
+    /* The grid holds four; the rest (the size guide among them) were only in
+       the full-screen view, with nothing saying they were there. */
+    const more = all.length - count;
     const gridClass =
       count <= 1 ? "grid grid-cols-1 grid-rows-1" : count === 2 ? "grid grid-cols-1 grid-rows-2" : "grid grid-cols-2 grid-rows-2";
     return (
@@ -748,6 +752,11 @@ const JewelDetailNext = () => {
                 fetchPriority={i === 0 ? "high" : "auto"}
                 decoding={i === 0 ? "sync" : "async"}
               />
+              {more > 0 && i === count - 1 && (
+                <span className="absolute bottom-3 right-3 bg-nf-ivory/90 px-2.5 py-1.5 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink">
+                  +{more} {more === 1 ? "photo" : "photos"}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -841,7 +850,7 @@ const JewelDetailNext = () => {
                 <a
                   href="#customer-reviews"
                   onClick={toReviews}
-                  className="-mr-1 inline-flex shrink-0 items-center gap-1 py-1 pl-2 text-[11.5px] text-nf-ink/75"
+                  className="-mr-1 -my-[10px] inline-flex min-h-[44px] shrink-0 items-center gap-1 pl-2 text-[11.5px] text-nf-ink/75"
                   aria-label={`Rated ${rating.rating} out of 5 from ${rating.count} reviews. Jump to reviews.`}
                 >
                   <span aria-hidden="true" className="text-nf-gold-deep">★</span>
@@ -921,7 +930,7 @@ const JewelDetailNext = () => {
                       <button
                         type="button"
                         onClick={() => setSizeGuideOpen(true)}
-                        className="-mr-2 inline-flex min-h-[40px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+                        className="-mr-2 inline-flex min-h-[44px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
                       >
                         Size guide
                       </button>
@@ -952,7 +961,7 @@ const JewelDetailNext = () => {
                             role="radio"
                             aria-checked={active}
                             onClick={() => pick(option.name, value)}
-                            className={`flex min-h-[42px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
+                            className={`flex min-h-[44px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
                               active
                                 ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
                                 : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
@@ -981,7 +990,7 @@ const JewelDetailNext = () => {
                   <button
                     type="button"
                     onClick={() => setSizeGuideOpen(true)}
-                    className="-mr-2 inline-flex min-h-[40px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
+                    className="-mr-2 inline-flex min-h-[44px] items-center px-2 text-[11.5px] text-nf-ink underline decoration-nf-gold underline-offset-4"
                   >
                     Size guide
                   </button>
@@ -996,7 +1005,7 @@ const JewelDetailNext = () => {
                         role="radio"
                         aria-checked={active}
                         onClick={() => setSelectedSize(s.value)}
-                        className={`min-h-[42px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
+                        className={`min-h-[44px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
                           active
                             ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
                             : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"

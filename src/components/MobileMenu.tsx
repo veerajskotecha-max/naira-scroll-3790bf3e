@@ -68,15 +68,18 @@ const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
         aria-hidden="true"
       />
 
-      {/* Slide-in panel */}
+      {/* Slide-in panel. Closed, it is hidden as well as off screen: its links
+          were still reachable by keyboard and screen readers, and announced as
+          an open dialog on every page. */}
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        className={`fixed inset-y-0 left-0 z-[70] w-[85%] max-w-sm flex flex-col transition-transform ${
+        aria-hidden={!isOpen}
+        className={`fixed inset-y-0 left-0 z-[70] w-[85%] max-w-sm flex flex-col transition-[transform,visibility] ${
           isOpen
-            ? "translate-x-0 duration-300 ease-drawer"
-            : "-translate-x-full duration-250 ease-exit-in"
+            ? "visible translate-x-0 duration-300 ease-drawer"
+            : "invisible -translate-x-full duration-250 ease-exit-in"
         }`}
         style={{ backgroundColor: "#F4F1ED" }}
       >
@@ -85,7 +88,7 @@ const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="w-10 h-10 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-200"
+            className="w-11 h-11 flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity duration-200"
           >
             <X size={22} strokeWidth={1.5} />
           </button>
@@ -115,7 +118,7 @@ const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
                         <Link
                           to={l.to}
                           onClick={leave}
-                          className="block min-h-[42px] py-2 font-cormorant text-[15px] uppercase tracking-[0.1em] opacity-60"
+                          className="flex min-h-[44px] items-center py-2 font-cormorant text-[15px] uppercase tracking-[0.1em] opacity-60"
                         >
                           {l.label}
                         </Link>
@@ -186,7 +189,7 @@ const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
             href="https://wa.me/919561557935"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-auto font-cormorant text-[13px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity duration-200"
+            className="ml-auto inline-flex min-h-[44px] items-center font-cormorant text-[13px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity duration-200"
             onClick={onClose}
           >
             WhatsApp Us

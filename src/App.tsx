@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -65,6 +65,23 @@ const KeepQuery = ({ to }: { to: string }) => {
   return <Navigate to={{ pathname: to, search }} replace />;
 };
 
+/* Each piece, collection and product opens as a fresh page. Going from one to
+   the next through a link reuses the route's component, so it kept the last
+   page's state: the next piece opened on image 3 when the shopper had been on
+   image 3, with the last piece's panels open and its rails scrolled. */
+const PieceRoute = () => {
+  const { handle } = useParams();
+  return <JewelDetailNext key={handle} />;
+};
+const CollectionRoute = () => {
+  const { slug } = useParams();
+  return <JewelleryCategory key={slug} />;
+};
+const ProductRoute = () => {
+  const { id } = useParams();
+  return <ProductDetail key={id} />;
+};
+
 /* The bag (the Naira box hovering under the pieces), on every page. Its code
    arrives after the page's own, so it never slows a landing. */
 const CartDrawerNext = lazy(() => import("./components/CartDrawerNext"));
@@ -100,20 +117,20 @@ const AppShell = () => {
           <Route path="/shop" element={<KeepQuery to="/jewellery" />} />
           <Route path="/shop/jewellery" element={<KeepQuery to="/jewellery" />} />
           <Route path="/shop/indo-western" element={<ShopAll />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/product/:id" element={<ProductRoute />} />
           {/* Meta and Google product feeds emit Shopify's canonical
               /products/<handle> URLs. ProductDetail resolves its :id param by
               handle, so alias the feed path onto it — without this every
               catalogue ad click falls through to the "*" Coming Soon route. */}
-          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route path="/products/:id" element={<ProductRoute />} />
           {/* The bare prefixes rendered Coming Soon. */}
           <Route path="/products" element={<KeepQuery to="/jewellery" />} />
           <Route path="/product" element={<KeepQuery to="/jewellery" />} />
           <Route path="/customize" element={<MadeForYou />} />
           <Route path="/jewellery" element={<Jewellery />} />
-          <Route path="/jewellery/collections/:slug" element={<JewelleryCategory />} />
-          <Route path="/jewellery/:handle" element={<JewelDetailNext />} />
-          <Route path="/preview/jewellery/:handle" element={<JewelDetailNext />} />
+          <Route path="/jewellery/collections/:slug" element={<CollectionRoute />} />
+          <Route path="/jewellery/:handle" element={<PieceRoute />} />
+          <Route path="/preview/jewellery/:handle" element={<PieceRoute />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalArticle />} />
           <Route path="/gifting" element={<Gifting />} />
@@ -146,12 +163,12 @@ const AppShell = () => {
               map onto the real pages instead of dead-ending. */}
           <Route path="/collections" element={<KeepQuery to="/jewellery" />} />
           <Route path="/collections/all" element={<KeepQuery to="/jewellery" />} />
-          <Route path="/collections/:slug" element={<JewelleryCategory />} />
+          <Route path="/collections/:slug" element={<CollectionRoute />} />
           <Route path="/blogs" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
           <Route path="/jewelry" element={<KeepQuery to="/jewellery" />} />
-          <Route path="/jewelry/:handle" element={<JewelDetailNext />} />
+          <Route path="/jewelry/:handle" element={<PieceRoute />} />
           <Route path="/pages/about" element={<KeepQuery to="/about" />} />
           <Route path="/pages/contact" element={<KeepQuery to="/contact" />} />
           <Route path="/pages/faqs" element={<KeepQuery to="/faqs" />} />

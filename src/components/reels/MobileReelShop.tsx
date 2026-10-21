@@ -520,7 +520,7 @@ const MobileReelShop = ({ drawer = false }: { drawer?: boolean }) => {
                 type="button"
                 variant="ghost"
                 onClick={() => goToReel((activeIndex + 1) % reels.length)}
-                className="h-7 shrink-0 gap-1 px-2 font-sans text-[8px] uppercase tracking-nf-10"
+                className="h-11 shrink-0 gap-1 px-2 font-sans text-[8px] uppercase tracking-nf-10"
               >
                 Next reel <ChevronRight size={11} />
               </Button>

@@ -262,7 +262,7 @@ const ReelSlide = ({
           type="button"
           onClick={onToggleMute}
           aria-label={muted ? "Unmute" : "Mute"}
-          className="absolute right-3 top-4 flex h-9 w-9 items-center justify-center rounded-full"
+          className="absolute right-3 top-4 flex h-11 w-11 items-center justify-center rounded-full"
           style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
         >
           {muted ? <VolumeX size={16} color="#fff" /> : <Volume2 size={16} color="#fff" />}
@@ -441,7 +441,7 @@ const ReelViewer = ({ reels, startIndex = 0, startTime, onClose }: Props) => {
         type="button"
         onClick={onClose}
         aria-label="Close reels"
-        className="absolute left-3 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full"
+        className="absolute left-3 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full"
         style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
       >
         <X size={17} color="#fff" />

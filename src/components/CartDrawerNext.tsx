@@ -103,7 +103,7 @@ const PieceCard = ({
       onClick={onAdd}
       disabled={busy}
       aria-label={`Add ${piece.name}${variant ? ` in ${variantLabel(variant)}` : ""} to bag`}
-      className="press-scale inline-flex min-h-[32px] shrink-0 items-center justify-center border border-nf-ink px-3 font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink transition-colors hover:bg-nf-ink hover:text-nf-ivory disabled:opacity-50"
+      className="press-scale inline-flex min-h-[44px] min-w-[52px] shrink-0 items-center justify-center border border-nf-ink px-3 font-nf-label text-[10.5px] font-medium uppercase tracking-nf-16 text-nf-ink transition-colors hover:bg-nf-ink hover:text-nf-ivory disabled:opacity-50"
     >
       {busy ? <Loader2 size={12} className="animate-spin" aria-hidden="true" /> : "Add"}
     </button>

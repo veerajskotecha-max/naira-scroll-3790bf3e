@@ -96,7 +96,7 @@ const FounderStoryTeaser = () => (
 
           <Link
             to="/about"
-            className="inline-flex items-center gap-2 font-cormorant text-[12px] md:text-[13px] uppercase tracking-[0.16em] font-medium pb-1 transition-opacity hover:opacity-70"
+            className="inline-flex min-h-[44px] items-center gap-2 font-cormorant text-[12px] md:text-[13px] uppercase tracking-[0.16em] font-medium pb-1 transition-opacity hover:opacity-70"
             style={{
               color: "hsl(0 0% 18%)",
               borderBottom: "1px solid hsl(0 0% 18%)",

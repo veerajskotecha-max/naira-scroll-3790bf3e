@@ -180,7 +180,7 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               was inviting shoppers to reserve stock that does not exist. */}
 
           <button
-            className="press-scale absolute top-3 right-3 z-20 w-10 h-10 flex items-center justify-center"
+            className="press-scale absolute top-3 right-3 z-20 w-11 h-11 flex items-center justify-center"
             style={{ borderRadius: "50%", backgroundColor: "hsla(0,0%,100%,0.85)" }}
             onClick={(e) => {
               e.preventDefault();

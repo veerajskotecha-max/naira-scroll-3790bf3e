@@ -96,8 +96,12 @@ const Jewellery = () => {
      to the exact card they opened. */
   useEffect(() => {
     const match = filters.find((f) => f.toLowerCase() === (paramCategory ?? "").toLowerCase());
-    if (match && match !== active) setActive(match);
-    if (navigationType !== "POP" && match && match !== "All" && !didScrollToGrid.current) {
+    /* A link without a category is the whole shop: the menu's Shop All, opened
+       from Rings, kept showing only rings. */
+    const next = (match ?? "All") as "All" | JewelCategory;
+    if (next !== active) setActive(next);
+    /* Each category opened from the menu lands on its grid, not only the first. */
+    if (navigationType !== "POP" && match && match !== "All" && (!didScrollToGrid.current || navigationType === "PUSH")) {
       didScrollToGrid.current = true;
       window.setTimeout(() => gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 260);
     }
@@ -413,7 +417,7 @@ const Jewellery = () => {
                 <Link
                   key={c.slug}
                   to={`/jewellery/collections/${c.slug}`}
-                  className="border border-nf-ink/20 px-3.5 py-2 text-[9.5px] tracking-nf-20 text-nf-ink/60 transition-colors hover:border-nf-ink hover:text-nf-ink"
+                  className="inline-flex min-h-[44px] items-center border border-nf-ink/20 px-3.5 text-[9.5px] tracking-nf-20 text-nf-ink/60 transition-colors hover:border-nf-ink hover:text-nf-ink"
                   style={jost}
                 >
                   {(c.crumb ?? c.category ?? c.h1).toUpperCase()}

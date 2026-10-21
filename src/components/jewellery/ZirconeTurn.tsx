@@ -267,11 +267,11 @@ const ZirconeTurn = ({ idAttr, showViewAll = true, inheritBackdrop = false }: { 
           <div data-finale className="relative z-20 mt-3 text-center md:mt-8">
             <p className="mt-1 text-[13px] italic text-[#1A1614]/55 md:text-[13px]" style={editorial}>Rhodium finished · brilliant-cut zircone · 4-prong</p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-3 md:mt-4 md:gap-4">
-              <button onClick={() => setQv(solitaire)} className="press-scale border border-[#1A1614] px-6 py-2.5 text-[10px] tracking-[0.3em] hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
+              <button onClick={() => setQv(solitaire)} className="press-scale inline-flex min-h-[44px] items-center border border-[#1A1614] px-6 text-[10px] tracking-[0.3em] hover:bg-[#1A1614] hover:text-[#FBF3EC] md:px-7" style={jost}>
                 ENQUIRE
               </button>
               {showViewAll && (
-                <Link to="/jewellery" className="border-b border-[#B0843A] pb-0.5 text-[10px] tracking-[0.25em] text-[#8A6A2F]" style={jost}>
+                <Link to="/jewellery" className="inline-flex min-h-[44px] items-center text-[10px] tracking-[0.25em] text-[#8A6A2F] underline decoration-[#B0843A] underline-offset-[6px]" style={jost}>
                   VIEW ALL →
                 </Link>
               )}

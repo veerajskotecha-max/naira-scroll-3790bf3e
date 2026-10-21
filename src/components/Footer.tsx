@@ -59,7 +59,7 @@ const SocialIcon = ({
     target="_blank"
     rel="noopener noreferrer"
     aria-label={label}
-    className="w-8 h-8 flex items-center justify-center transition-colors duration-200"
+    className="w-11 h-11 flex items-center justify-center transition-colors duration-200"
     style={{ borderRadius: '50%', backgroundColor: "var(--nf-footer-chip-bg)" }}
     onMouseEnter={(e) =>
       (e.currentTarget.style.backgroundColor = "var(--nf-footer-chip-bg-hover)")
@@ -173,7 +173,7 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
 
         <div className="max-w-[1200px] mx-auto px-5 py-8 md:px-10 md:py-10">
           <div className="flex flex-col items-center gap-5 text-center md:flex-row md:justify-between md:text-left">
-            <Link to="/" aria-label="Naira home">
+            <Link to="/" aria-label="Naira home" className="inline-flex min-h-[44px] items-center">
               <img
                 src={nairaLogo}
                 alt="NAIRA"
@@ -302,7 +302,7 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="w-full px-4 py-2.5 rounded-md text-[13px] font-cormorant outline-none transition-colors duration-200 placeholder:text-nf-cream/85"
+                className="w-full min-h-[44px] px-4 py-2.5 rounded-md text-[13px] font-cormorant outline-none transition-colors duration-200 placeholder:text-nf-cream/85"
                 style={{
                   backgroundColor: "var(--nf-footer-input-bg)",
                   border: "1.5px solid var(--nf-footer-text)",
@@ -313,7 +313,7 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
               />
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-md font-cormorant text-[13px] font-medium uppercase tracking-nf-8 transition-all duration-200 hover:opacity-90"
+                className="w-full min-h-[44px] py-2.5 rounded-md font-cormorant text-[13px] font-medium uppercase tracking-nf-8 transition-all duration-200 hover:opacity-90"
                 style={{
                   backgroundColor: SAGE_DEEP,
                   color: CREAM,

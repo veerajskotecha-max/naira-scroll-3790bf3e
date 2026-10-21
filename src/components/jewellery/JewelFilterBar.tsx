@@ -107,7 +107,7 @@ const JewelFilterBar = ({
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          className={`press-scale inline-flex min-h-[40px] items-center gap-2 border px-3.5 text-[10px] tracking-nf-18 transition-colors sm:px-4 sm:text-[10.5px] ${
+          className={`press-scale inline-flex min-h-[44px] items-center gap-2 border px-3.5 text-[10px] tracking-nf-18 transition-colors sm:px-4 sm:text-[10.5px] ${
             activeCount ? "border-nf-ink bg-nf-ink text-nf-ivory" : "border-nf-ink/25 text-nf-ink/70 hover:border-nf-ink/60"
           }`}
           style={jost}
@@ -121,7 +121,7 @@ const JewelFilterBar = ({
           <select
             value={value.sort}
             onChange={(e) => set({ sort: e.target.value as SortKey })}
-            className="min-h-[40px] border border-nf-ink/25 bg-transparent px-3 text-[10px] tracking-nf-14 text-nf-ink/80 focus:border-nf-ink focus:outline-none sm:text-[10.5px]"
+            className="min-h-[44px] border border-nf-ink/25 bg-transparent px-3 text-[10px] tracking-nf-14 text-nf-ink/80 focus:border-nf-ink focus:outline-none sm:text-[10.5px]"
             style={jost}
           >
             {SORT_OPTIONS.map((o) => (
@@ -164,7 +164,7 @@ const JewelFilterBar = ({
               <p className="text-[9.5px] tracking-nf-24 text-nf-ink/50" style={jost}>
                 AVAILABILITY
               </p>
-              <label className="mt-3 inline-flex min-h-[40px] cursor-pointer items-center gap-2 text-[12px] text-nf-ink/75">
+              <label className="mt-3 inline-flex min-h-[44px] cursor-pointer items-center gap-2 text-[12px] text-nf-ink/75">
                 <input
                   type="checkbox"
                   checked={value.inStockOnly}

@@ -118,7 +118,7 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
           type="button"
           onClick={add}
           disabled={adding || isLoading}
-          className="press-scale h-8 shrink-0 border border-[var(--nf-cta)] px-3.5 font-nf-label text-[9.5px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
+          className="press-scale h-11 shrink-0 border border-[var(--nf-cta)] px-3.5 font-nf-label text-[9.5px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory disabled:opacity-60"
           aria-label={`Add ${name} to bag`}
         >
           {adding ? "Adding…" : "Add"}
@@ -130,7 +130,7 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
 
 /* Square, like every corner on the site. */
 const control =
-  "flex h-9 w-9 items-center justify-center bg-nf-ivory/85 text-nf-ink shadow-[0_2px_10px_-4px_rgb(var(--nf-ink-rgb)/0.5)] backdrop-blur-sm transition-colors hover:bg-nf-ivory";
+  "flex h-11 w-11 items-center justify-center bg-nf-ivory/85 text-nf-ink shadow-[0_2px_10px_-4px_rgb(var(--nf-ink-rgb)/0.5)] backdrop-blur-sm transition-colors hover:bg-nf-ivory";
 
 /* Also the video slide in the product page's photo gallery (square there). */
 export const ReelFrame = ({
@@ -485,7 +485,7 @@ const ReelShopNext = ({ hrefFor = productHref }: { hrefFor?: HrefFor }) => {
               <button
                 type="button"
                 onClick={() => goToReel((activeIndex + 1) % reels.length)}
-                className="inline-flex min-h-[40px] shrink-0 items-center gap-1 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-gold-text"
+                className="inline-flex min-h-[44px] shrink-0 items-center gap-1 font-nf-label text-[11px] uppercase tracking-nf-16 text-nf-gold-text"
               >
                 Next reel <ChevronRight size={13} />
               </button>

@@ -278,7 +278,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         <div className="mt-5 flex items-center justify-between gap-4 border-t border-border pt-4">
           <div className="flex -space-x-2" aria-label="Customer photos">
             {photos.slice(0, 4).map((photo, i) => (
-              <button key={photo} type="button" onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }} className="h-9 w-9 overflow-hidden rounded-full border-2 border-background" aria-label={`Open customer photo ${i + 1}`}>
+              <button key={photo} type="button" onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }} className="h-11 w-11 overflow-hidden rounded-full border-2 border-background" aria-label={`Open customer photo ${i + 1}`}>
                 {/* loading before src — see the review photos below for why */}
                 <img loading="lazy" decoding="async" src={reviewThumb(photo)} alt="" className="h-full w-full object-cover" />
               </button>
@@ -321,7 +321,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
             key={f}
             onClick={() => handleFilterChange(f)}
             tabIndex={reviewsExpanded ? 0 : -1}
-            className={`shrink-0 border px-3 py-2 text-[11px] font-medium transition-colors ${activeFilter === f ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
+            className={`inline-flex min-h-[44px] shrink-0 items-center border px-3 text-[11px] font-medium transition-colors ${activeFilter === f ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground"}`}
           >
             {f}
           </button>

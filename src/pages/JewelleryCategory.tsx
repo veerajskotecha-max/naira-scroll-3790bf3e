@@ -111,10 +111,10 @@ const JewelleryCategory = () => {
             <RingAtelierBackdrop variant="section" />
           </div>
           <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">
-            <nav aria-label="Breadcrumb" className="pt-6 text-[10px] tracking-[0.24em] text-[#1A1614]/45" style={jost}>
-              <Link to="/" className="hover:text-[#1A1614]">HOME</Link>
+            <nav aria-label="Breadcrumb" className="flex items-center pt-3 text-[10px] tracking-[0.24em] text-[#1A1614]/45" style={jost}>
+              <Link to="/" className="inline-flex min-h-[44px] items-center hover:text-[#1A1614]">HOME</Link>
               <span className="px-2">/</span>
-              <Link to="/jewellery" className="hover:text-[#1A1614]">JEWELLERY</Link>
+              <Link to="/jewellery" className="inline-flex min-h-[44px] items-center hover:text-[#1A1614]">JEWELLERY</Link>
               <span className="px-2">/</span>
               <span className="text-[#1A1614]/80">{label.toUpperCase()}</span>
             </nav>
@@ -173,7 +173,7 @@ const JewelleryCategory = () => {
                 <span
                   key={c.label}
                   aria-current="page"
-                  className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#1A1614] bg-[#1A1614] px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#FBF3EC]"
+                  className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap border border-[#1A1614] bg-[#1A1614] px-4 text-[10px] tracking-[0.22em] text-[#FBF3EC]"
                   style={jost}
                 >
                   {c.label}
@@ -182,7 +182,7 @@ const JewelleryCategory = () => {
                 <Link
                   key={c.label}
                   to={c.to}
-                  className="inline-flex shrink-0 items-center whitespace-nowrap border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.22em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+                  className="inline-flex min-h-[44px] shrink-0 items-center whitespace-nowrap border border-[#1A1614]/25 px-4 text-[10px] tracking-[0.22em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
                   style={jost}
                 >
                   {c.label}
@@ -268,7 +268,7 @@ const JewelleryCategory = () => {
                 <Link
                   key={c.slug}
                   to={`/jewellery/collections/${c.slug}`}
-                  className="border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.24em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+                  className="inline-flex min-h-[44px] items-center border border-[#1A1614]/25 px-4 text-[10px] tracking-[0.24em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
                   style={jost}
                 >
                   {(c.crumb ?? c.category ?? c.h1).toUpperCase()}
@@ -276,7 +276,7 @@ const JewelleryCategory = () => {
               ))}
             <Link
               to="/jewellery"
-              className="border border-[#1A1614]/25 px-4 py-2.5 text-[10px] tracking-[0.24em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
+              className="inline-flex min-h-[44px] items-center border border-[#1A1614]/25 px-4 text-[10px] tracking-[0.24em] text-[#1A1614]/70 transition-colors hover:border-[#1A1614] hover:text-[#1A1614]"
               style={jost}
             >
               ALL JEWELLERY

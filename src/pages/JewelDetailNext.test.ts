@@ -22,13 +22,15 @@ describe("redesigned product page", () => {
   });
 
   it("shows the buy bar whenever Add to cart is not fully on screen, never over the price", () => {
-    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
+    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^;]*\);/)![0];
     expect(effect).toMatch(/stickyBarRef/);
     expect(effect).toMatch(/querySelector\("#product-actions > button"\)/); // the button, not the gift line under it
     expect(effect).toMatch(/getElementById\("product-price"\)/);
     expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
-    expect(effect).toMatch(/setStickyBarVisible\(notFullyShown && priceClear\)/);
-    expect(code).toMatch(/new ResizeObserver\(check\)/);
+    expect(effect).toMatch(/setStickyBarVisible\(\(prev\) => \(prev === visible \? prev : visible\)\)/);
+    // A same-value state may still render once, reflowing the watched body and
+    // throwing the ResizeObserver loop error; the guard must stay.
+    expect(code).toMatch(/new ResizeObserver\(\(\) => requestAnimationFrame\(check\)\)/);
   });
 
   it("shows the rating only with its count", () => {

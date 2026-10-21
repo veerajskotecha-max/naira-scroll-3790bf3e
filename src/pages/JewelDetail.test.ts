@@ -79,10 +79,10 @@ describe("the buy bar never precedes the price", () => {
   });
 
   it("gates the bar on the price being clear of it", () => {
-    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
+    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^;]*\);/)![0];
     expect(effect, "expected the bar to measure its own height").toMatch(/stickyBarRef/);
     expect(effect, "expected a price-clearance check").toMatch(/priceClear/);
-    expect(effect).toMatch(/setStickyBarVisible\(offScreen && priceClear\)/);
+    expect(effect).toMatch(/setStickyBarVisible\(\(prev\) => \(prev === visible \? prev : visible\)\)/);
   });
 
   it("re-checks when the layout reflows, not only on scroll", () => {

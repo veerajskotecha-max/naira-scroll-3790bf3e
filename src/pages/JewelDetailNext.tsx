@@ -444,12 +444,17 @@ const JewelDetailNext = () => {
       const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
-      setStickyBarVisible(notFullyShown && priceClear);
+      /* React may still render once before bailing out on a same-value state,
+         and a render inside the observer's own frame reflows the body the
+         observer watches — the browser then throws "ResizeObserver loop
+         completed with undelivered notifications" and the preview blanks. */
+      const visible = notFullyShown && priceClear;
+      setStickyBarVisible((prev) => (prev === visible ? prev : visible));
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
     window.addEventListener("resize", check);
-    const ro = new ResizeObserver(check);
+    const ro = new ResizeObserver(() => requestAnimationFrame(check));
     ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", check);

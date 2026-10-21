@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Re-apply the menu change the repository overwrite removed: one Customised Apparel entry in the desktop and phone menus
+
+- [x] Re-apply the product-page fix the repository overwrite removed: the buy-bar check waits a frame and skips no-change writes, so the size guide cannot blank the page
+
 - [x] Add a shared US 5–9 centimetre chart and measuring instructions to all ring PDP Details and size guides; verify ring and non-ring pages
 
 - [x] Add production-only shopper timing and broken-link reporting

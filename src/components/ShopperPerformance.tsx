@@ -38,7 +38,8 @@ export default function ShopperPerformance() {
     if (documentVisit) {
       try {
         paint = new PerformanceObserver(list => {
-          const entry = list.getEntries().at(-1);
+          const entries = list.getEntries();
+          const entry = entries[entries.length - 1];
           if (entry) lcp = ms(entry.startTime);
         });
         paint.observe({ type: "largest-contentful-paint", buffered: true });
@@ -47,6 +48,7 @@ export default function ShopperPerformance() {
     check();
     const flush = window.setTimeout(send, 5000);
     const timeout = window.setTimeout(() => {
+      observer.disconnect();
       if (ready === null) reportShopperPerformance("route_timeout", { path: pathname });
       else send();
     }, 15000);

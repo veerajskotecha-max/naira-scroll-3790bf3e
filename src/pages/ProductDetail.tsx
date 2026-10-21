@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -54,6 +55,12 @@ const ProductDetail = () => {
     staleTime: 1000 * 60 * 5,
     retry: 1,
   });
+
+  useEffect(() => {
+    if (!earlyJewellery && !isLoading && (isError || !product)) {
+      reportShopperPerformance(isError ? "product_load_error" : "missing_product");
+    }
+  }, [earlyJewellery, isLoading, isError, product, id]);
 
   /* Ads and the Shopify catalogue link to /product/<handle>. Jewellery must
      never render inside the apparel template, so send it to its own page. */

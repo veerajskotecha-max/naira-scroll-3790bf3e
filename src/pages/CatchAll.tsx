@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ComingSoon from "@/pages/ComingSoon";
 import { shopifyForwardTarget } from "@/lib/shopifyForward";
+import { reportShopperPerformance } from "@/lib/shopperPerformance";
 
 /**
  * The unmatched-route handler.
@@ -16,6 +17,10 @@ const CatchAll = () => {
   const { pathname, search } = useLocation();
   const target = shopifyForwardTarget(pathname, search);
   const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    if (!target) reportShopperPerformance("unknown_page");
+  }, [target, pathname]);
 
   useEffect(() => {
     if (!target) return;

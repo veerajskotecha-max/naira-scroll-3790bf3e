@@ -28,6 +28,7 @@ import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant,
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
+import { reportShopperPerformance } from "@/lib/shopperPerformance";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -276,6 +277,11 @@ const JewelDetailNext = () => {
     [handle, jewellery, isLive, embedded, snapshot],
   );
   const snapshotPending = needSnapshot && snapshot === null;
+  useEffect(() => {
+    if (!piece && !catalogueLoading && !snapshotPending) {
+      reportShopperPerformance(isLive ? "missing_product" : "product_load_error");
+    }
+  }, [piece, catalogueLoading, snapshotPending, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
   const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();

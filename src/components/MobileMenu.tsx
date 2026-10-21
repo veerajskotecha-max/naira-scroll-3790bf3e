@@ -3,7 +3,7 @@ import { X, Heart, ShoppingBag, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { menuCategories, menuEdits, menuOccasions, menuApparel } from "@/data/navigation";
+import { menuCategories, menuEdits, menuOccasions } from "@/data/navigation";
 import { followOut } from "@/hooks/useBackToClose";
 
 interface MobileMenuProps {
@@ -26,7 +26,7 @@ const sections: Section[] = [
   },
   { label: "THE EDITS", links: menuEdits },
   { label: "OCCASION", links: menuOccasions },
-  { label: "APPAREL", links: menuApparel },
+  { label: "CUSTOMISED APPAREL", to: "/customize" },
   { label: "GIFTING", to: "/gifting" },
   { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },

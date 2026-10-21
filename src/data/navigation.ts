@@ -24,8 +24,7 @@ export const menuOccasions: Array<{ label: string; to: string }> = [
   { label: "Gifting", to: "/gifting" },
 ];
 
+/** The menu carries only the customised apparel offering; ready-wear apparel has no menu entry. */
 export const menuApparel: Array<{ label: string; to: string }> = [
-  { label: "Indo-Western", to: "/shop/indo-western" },
-  { label: "Shop All", to: "/jewellery" },
-  { label: "Made to Measure", to: "/customize" },
+  { label: "Customised Apparel", to: "/customize" },
 ];

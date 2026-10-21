@@ -288,7 +288,12 @@ const JewelDetail = () => {
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear =
         !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
-      setStickyBarVisible(offScreen && priceClear);
+      /* React may still render once before bailing out on a same-value state,
+         and a render inside the observer's own frame reflows the body the
+         observer watches — the browser then throws "ResizeObserver loop
+         completed with undelivered notifications" and the preview blanks. */
+      const visible = offScreen && priceClear;
+      setStickyBarVisible((prev) => (prev === visible ? prev : visible));
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
@@ -296,8 +301,10 @@ const JewelDetail = () => {
     /* The first check runs before the gallery images have loaded, when the page
        is still short and the CTA is wrongly on screen. Nothing re-checked until
        the shopper scrolled, so the bar stayed hidden on a page they had not
-       touched. Watching the document height catches the reflow instead. */
-    const ro = new ResizeObserver(check);
+       touched. Watching the document height catches the reflow instead — but
+       the callback must not touch layout in the observer's own frame, so rAF
+       moves the check to the next one. */
+    const ro = new ResizeObserver(() => requestAnimationFrame(check));
     ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", check);

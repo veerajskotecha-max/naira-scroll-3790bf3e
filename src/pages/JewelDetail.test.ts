@@ -79,16 +79,18 @@ describe("the buy bar never precedes the price", () => {
   });
 
   it("gates the bar on the price being clear of it", () => {
-    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
+    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^;]*\);/)![0];
     expect(effect, "expected the bar to measure its own height").toMatch(/stickyBarRef/);
     expect(effect, "expected a price-clearance check").toMatch(/priceClear/);
-    expect(effect).toMatch(/setStickyBarVisible\(offScreen && priceClear\)/);
+    expect(effect).toMatch(/setStickyBarVisible\(\(prev\) => \(prev === visible \? prev : visible\)\)/);
   });
 
   it("re-checks when the layout reflows, not only on scroll", () => {
     // The first check runs before images load; without this the bar's state
-    // was frozen until the shopper scrolled.
-    expect(code).toMatch(/new ResizeObserver\(check\)/);
+    // was frozen until the shopper scrolled. The rAF defer keeps the callback
+    // from reflowing the watched body inside the observer's own frame —
+    // without it the browser throws the ResizeObserver loop error.
+    expect(code).toMatch(/new ResizeObserver\(\(\) => requestAnimationFrame\(check\)\)/);
   });
 });
 

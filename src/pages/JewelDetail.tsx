@@ -19,6 +19,7 @@ import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import JewelTrustStrip from "@/components/jewellery/JewelTrustStrip";
 import { coatingOf, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -854,7 +855,7 @@ const JewelDetail = () => {
                 </div>
               )}
             </div>
-            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} />
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} highlightSize={selectedSize} adjustable={adjustable} />
 
 
             {/* Quantity — desktop only; on a phone it pushes the CTA below the
@@ -1037,6 +1038,7 @@ const JewelDetail = () => {
                     <p>{piece.blurb}</p>
                     {piece.details?.map((spec) => <p key={spec}>• {spec}</p>)}
                     <p>{piece.materials}</p>
+                    {piece.category === "Rings" && <RingSizeGuide highlightSize={selectedSize} adjustable={adjustable} />}
                   </div>
                 </AccordionContent>
               </AccordionItem>

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Add a shared US 5–9 centimetre chart and measuring instructions to all ring PDP Details and size guides; verify ring and non-ring pages
+
 - [x] Add production-only shopper timing and broken-link reporting
 - [x] Add an admin-only performance dashboard and verify permissions and reporting
 

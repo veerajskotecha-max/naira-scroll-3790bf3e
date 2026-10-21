@@ -79,16 +79,26 @@ describe("the buy bar never precedes the price", () => {
   });
 
   it("gates the bar on the price being clear of it", () => {
-    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([^)]*\);/)![0];
+    const effect = code.match(/const check = \(\) => \{[\s\S]*?setStickyBarVisible\([\s\S]*?\);/)![0];
     expect(effect, "expected the bar to measure its own height").toMatch(/stickyBarRef/);
     expect(effect, "expected a price-clearance check").toMatch(/priceClear/);
-    expect(effect).toMatch(/setStickyBarVisible\(offScreen && priceClear\)/);
+    expect(effect).toMatch(/const next = offScreen && priceClear/);
+    /* The observer used to call check() from its own callback, so the bar's
+       state was written inside the browser's layout pass. When the size guide's
+       chart changed the page height, Chromium threw "ResizeObserver loop
+       completed with undelivered notifications" and the page went blank. The
+       write must wait for the next frame, and must not render at all when
+       nothing changed. */
+    expect(effect).toMatch(/setStickyBarVisible\(\(cur\) => \(cur === next \? cur : next\)\)/);
   });
 
   it("re-checks when the layout reflows, not only on scroll", () => {
     // The first check runs before images load; without this the bar's state
     // was frozen until the shopper scrolled.
-    expect(code).toMatch(/new ResizeObserver\(check\)/);
+    expect(code).not.toMatch(/new ResizeObserver\(check\)/);
+    const observer = code.match(/new ResizeObserver\([\s\S]*?ro\.observe\(document\.body\)/)![0];
+    expect(observer).toMatch(/requestAnimationFrame/);
+    expect(observer).toMatch(/check\(\)/);
   });
 });
 

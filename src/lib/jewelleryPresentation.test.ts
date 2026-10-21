@@ -1,11 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { jewellery } from "@/data/jewellery";
 import { jewellerySnapshot } from "@/data/jewellerySnapshot";
-import { coatingOf, hasZirconeStone, presentJewellery } from "./jewelleryPresentation";
+import { coatingOf, hasZirconeStone, presentJewellery, PRISM_BRACELET_SIZE_CM } from "./jewelleryPresentation";
 
 const piece = jewellery[0];
 
 describe("product-specific coating and stones", () => {
+  it("keeps Prism's adjustable measurement at 15–19 cm across live and snapshot fields", () => {
+    // Shopify's introduction still says 18 cm while its details give a range.
+    expect(PRISM_BRACELET_SIZE_CM).toEqual({ min: 15, max: 19 });
+    const prism = jewellerySnapshot.find((p) => p.handle === "prism-riviere-bracelet");
+    if (!prism) throw new Error("Missing Prism bracelet fixture");
+    for (const source of [prism, { ...prism, details: ["Length: 18 cm"] }]) {
+      const shown = presentJewellery(source);
+      if (!shown) throw new Error("Missing presented bracelet");
+      for (const field of [shown.blurb, shown.description, ...(shown.details ?? []).filter((line) => /^Length:/i.test(line))]) {
+        const numbers = field?.match(/\d+(?=\s*–)|(?<=–)\d+(?=\s*cm)/g)?.map(Number);
+        expect(numbers).toEqual([15, 19]);
+        expect(field).not.toMatch(/\b18\s*cm\b/i);
+        expect(field).toMatch(/adjustable/i);
+      }
+    }
+    expect(presentJewellery({ ...piece, blurb: "Length: 18 cm" })?.blurb).toBe("Length: 18 cm");
+  });
   it("recognises explicitly listed zircone and cubic zirconia", () => {
     expect(hasZirconeStone({ ...piece, blurb: "", description: "", details: ["Stone: Zircone"] })).toBe(true);
     expect(hasZirconeStone(piece)).toBe(true);

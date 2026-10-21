@@ -35,14 +35,25 @@ const coatingCopy = (text: string) => text
   .replace(/rhodium[- ]plated(?:\s+silver[- ]tone)?/gi, "rhodium coated")
   .replace(/silver[- ]tone(?:\s+plated)?/gi, "silver coated");
 
+export const PRISM_BRACELET_SIZE_CM = { min: 15, max: 19 } as const;
+
+const productCopy = (piece: JewelPiece, text: string): string => {
+  const coated = coatingCopy(text);
+  if (piece.handle !== "prism-riviere-bracelet") return coated;
+  const { min, max } = PRISM_BRACELET_SIZE_CM;
+  return coated
+    .replace(/\b18\s*cm\b/gi, `${min}–${max} cm adjustable`)
+    .replace(/\b15\s*[-–—]\s*19\s*cm(?:\s+adjustable)?/gi, `${min}–${max} cm adjustable`);
+};
+
 // Apply equally to live data, embedded pages and cold-load snapshots without
 // altering Shopify's catalogue, stock, prices or the original product name.
 export const presentJewellery = (piece?: JewelPiece | null): JewelPiece | null => piece ? {
   ...piece,
-  blurb: coatingCopy(piece.blurb),
-  description: piece.description ? coatingCopy(piece.description) : undefined,
-  stylingTip: piece.stylingTip ? coatingCopy(piece.stylingTip) : undefined,
-  details: piece.details?.map(coatingCopy),
-  materials: coatingCopy(piece.materials),
-  care: piece.care ? coatingCopy(piece.care) : undefined,
+  blurb: productCopy(piece, piece.blurb),
+  description: piece.description ? productCopy(piece, piece.description) : undefined,
+  stylingTip: piece.stylingTip ? productCopy(piece, piece.stylingTip) : undefined,
+  details: piece.details?.map((line) => productCopy(piece, line)),
+  materials: productCopy(piece, piece.materials),
+  care: piece.care ? productCopy(piece, piece.care) : undefined,
 } : null;

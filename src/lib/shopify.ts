@@ -89,7 +89,7 @@ export const PRODUCTS_QUERY = `
               currencyCode
             }
           }
-          images(first: 6) {
+          images(first: 12) {
             edges {
               node {
                 url
@@ -148,7 +148,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
           currencyCode
         }
       }
-      images(first: 9) {
+      images(first: 12) {
         edges {
           node {
             url

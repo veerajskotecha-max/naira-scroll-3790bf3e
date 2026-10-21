@@ -8,6 +8,7 @@ import { EXPLICIT_COVERS } from "@/hooks/useLiveJewellery";
  *  1. A deliberate cover pick (see COVER_PICKS) always wins.
  *  2. Otherwise prefer a clean packshot over an on-model / packaging frame, so
  *     no card ever leads with a gift box or a cropped model shot.
+ *  The size guide photo is never a cover.
  *
  * Every listing surface must use this — the grid card, the "Most loved" rail
  * and any future rail — or the same piece shows two different covers.
@@ -17,7 +18,8 @@ export const cardCover = (piece: JewelPiece): string => {
   if (EXPLICIT_COVERS.has(piece.handle)) return piece.image;
 
   const named = (g: string) => /worn|model|onmodel|_2_/i.test(g);
-  const packaging = (g: string) => /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton|_box|-box)/i.test(g);
+  const packaging = (g: string) =>
+    g === piece.sizeGuide || /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton|_box|-box|size[-_ ]?guide)/i.test(g);
   const anyNamed = gallery.some(named) || named(piece.image);
   const isWorn = (g: string) => (anyNamed ? named(g) : g === gallery[0]);
 

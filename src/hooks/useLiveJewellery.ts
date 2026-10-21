@@ -4,19 +4,30 @@ import { variantFields } from "@/lib/variants";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
+/** A listing's size guide photo: alt text or file name says "size guide". */
+const SIZE_GUIDE = /size[-_ ]?guide/i;
+const isSizeGuide = (edge: { node: { url: string; altText: string | null } }) =>
+  SIZE_GUIDE.test(`${edge.node.url} ${edge.node.altText ?? ""}`);
+
 /** Shopify occasionally places the Naira gift-box photo before the product
- * photo. Packaging is useful in the gallery, but must never become the cover. */
+ * photo. Packaging is useful in the gallery, but must never become the cover.
+ * The size guide always comes last: the product shots, then the box, then size. */
 const productImagesFirst = (node: ShopifyProductNode): string[] =>
   node.images.edges
     .map((edge, index) => ({
       url: edge.node.url,
       index,
-      packaging: /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton)/i.test(
-        `${edge.node.url} ${edge.node.altText ?? ""}`
-      ),
+      rank: isSizeGuide(edge)
+        ? 2
+        : /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton)/i.test(`${edge.node.url} ${edge.node.altText ?? ""}`)
+          ? 1
+          : 0,
     }))
-    .sort((a, b) => Number(a.packaging) - Number(b.packaging) || a.index - b.index)
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
     .map(({ url }) => url);
+
+/** The size guide photo, shown again inside the Details fold. */
+const sizeGuideOf = (node: ShopifyProductNode): string | undefined => node.images.edges.find(isSizeGuide)?.node.url;
 
 /** Per-piece cover picks. Some listings read better with a specific photo
  * leading the card and the gallery — the shot that sells the piece goes first. */
@@ -63,6 +74,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     availableForSale,
     image: gallery[0] ?? piece.image,
     gallery,
+    sizeGuide: sizeGuideOf(node),
     description: normalizeMetalCopy(node.description) || piece.description,
     tags: node.tags?.length ? node.tags : piece.tags,
     ...choice,
@@ -210,6 +222,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     availableForSale,
     image: images[0] ?? "",
     gallery: images,
+    sizeGuide: sizeGuideOf(node),
     blurb: parsed.blurb,
     description,
     stylingTip: parsed.stylingTip,

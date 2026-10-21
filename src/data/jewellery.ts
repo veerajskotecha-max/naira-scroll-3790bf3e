@@ -30,6 +30,8 @@ export interface JewelPiece {
   availableForSale: boolean;
   image: string;
   gallery?: string[];
+  /** The listing's size guide photo (also the last gallery photo), shown in Details. */
+  sizeGuide?: string;
   blurb: string;
   /** Full Shopify listing description. */
   description?: string;

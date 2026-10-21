@@ -1065,6 +1065,18 @@ const JewelDetailNext = () => {
                   )}
                   {/* The spec list names plating and metal; the summary line is for pieces without one. */}
                   {specs.length === 0 && <p className="mt-4 text-[12px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
+                  {/* The size guide photo again, right where the sizes are read. */}
+                  {piece.sizeGuide && (
+                    <img
+                      src={shopifyImage(piece.sizeGuide, 720)}
+                      srcSet={shopifySrcSet(piece.sizeGuide, [480, 720, 960]) || undefined}
+                      sizes="(min-width: 1024px) 420px, 100vw"
+                      alt={`${piece.name} size guide`}
+                      loading="lazy"
+                      decoding="async"
+                      className="mt-5 block w-full max-w-[420px] border border-nf-gold/15 bg-nf-ivory"
+                    />
+                  )}
                   {piece.stylingTip && (
                     <p className="mt-4 border-l-2 border-nf-gold/60 pl-3 font-nf-editorial text-[15px] italic leading-[1.5] text-nf-ink/85">
                       {piece.stylingTip}

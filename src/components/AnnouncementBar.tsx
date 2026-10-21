@@ -27,7 +27,7 @@ const AnnouncementBar = () => (
   >
     <Link
       to="/jewellery"
-      aria-label="Shop the jewellery — free insured shipping on all orders, limited pieces in stock"
+      aria-label="Shop the jewellery — sitewide sale up to 20% off, free insured shipping on all orders, limited pieces in stock"
       className="flex items-center h-full"
     >
       <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">

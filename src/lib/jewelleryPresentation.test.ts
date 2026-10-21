@@ -15,8 +15,9 @@ describe("product-specific coating and stones", () => {
       const shown = presentJewellery(source);
       if (!shown) throw new Error("Missing presented bracelet");
       for (const field of [shown.blurb, shown.description, ...(shown.details ?? []).filter((line) => /^Length:/i.test(line))]) {
-        const numbers = field?.match(/\d+(?=\s*–)|(?<=–)\d+(?=\s*cm)/g)?.map(Number);
-        expect(numbers).toEqual([15, 19]);
+        const ranges = [...(field ?? "").matchAll(/(\d+)–(\d+)\s*cm/g)];
+        expect(ranges.length).toBeGreaterThan(0);
+        for (const range of ranges) expect(range.slice(1).map(Number)).toEqual([15, 19]);
         expect(field).not.toMatch(/\b18\s*cm\b/i);
         expect(field).toMatch(/adjustable/i);
       }

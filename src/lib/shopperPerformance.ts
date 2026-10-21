@@ -27,7 +27,7 @@ export const initPerformanceLanding = () => {
 export const reportShopperPerformance = (kind: PerformanceKind, timing: Record<string, unknown> = {}) => {
   if (!productionShop(window.location.hostname)) return;
   initPerformanceLanding();
-  const path = safePerformancePath(window.location.pathname);
+  const path = safePerformancePath(typeof timing.path === "string" ? timing.path : window.location.pathname);
   if (!path || !landing) return;
   const payload = {
     id: crypto.randomUUID(), path, ...landing, kind,

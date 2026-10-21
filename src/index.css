@@ -338,6 +338,15 @@ img {
   image-rendering: -webkit-optimize-contrast;
 }
 
+/* 6. Shiprocket's "Initiating Checkout" screen is drawn into our page by
+      their script, and prints its session code (e.g. "c08c282b") in grey under
+      the spinner. Hide only that line: it is the one message with no id and a
+      bottom position. The "having to wait? Click here" and error lines carry
+      ids and stay, so a stuck checkout still offers the way through. */
+#fastrr-pre-loader .redirect-button-fastrr:not([id])[style*="bottom"] {
+  display: none !important;
+}
+
 /* Section reveal — gentle fade-up for CustomisationSteps after New Arrivals pin.
    Uses .is-visible toggled by IntersectionObserver in Index.tsx instead of
    animation-timeline:view() which clashes with GSAP pin spacers. */

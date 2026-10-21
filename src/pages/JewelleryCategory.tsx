@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { Link, useParams, Navigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
@@ -43,6 +44,9 @@ const JewelleryCategory = () => {
   const { slug } = useParams();
   const landing = categoryBySlug(slug);
   const { jewellery } = useLiveJewellery();
+  useEffect(() => {
+    if (!landing) reportShopperPerformance("unknown_page");
+  }, [landing, slug]);
 
   const label = landing?.crumb ?? landing?.category ?? "Collection";
   const inCategory = useMemo(

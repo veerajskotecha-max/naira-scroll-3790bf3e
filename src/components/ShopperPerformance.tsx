@@ -27,6 +27,7 @@ export default function ShopperPerformance() {
       });
     };
     const check = () => {
+      if (frame || ready !== null) return;
       const heading = document.querySelector("h1");
       const loading = [...document.querySelectorAll('[role="status"]')].some(el => /loading (piece|product)/i.test(el.textContent ?? ""));
       if (!heading || !heading.getBoundingClientRect().height || loading || ready !== null) return;

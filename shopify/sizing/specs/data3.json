@@ -1,0 +1,234 @@
+[
+ {
+  "id": "molten-bloom-hoops",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/molten-bloom-hoops-01.jpg",
+  "srcW": 1649,
+  "srcH": 1649,
+  "crop": {
+   "x0": 0,
+   "y0": 0.0,
+   "size": 1649
+  },
+  "marks": [
+   {
+    "x1": 357.2833333333333,
+    "y1": 458.05555555555554,
+    "x2": 357.2833333333333,
+    "y2": 1233.0855555555556,
+    "label": "19 mm",
+    "side": "left"
+   }
+  ],
+  "scale": {
+   "x": 1124.9844444444445,
+   "y": 531.3444444444444,
+   "pxPerMm": 40.79105263157895
+  },
+  "caption": "21 mm wide \u00b7 19 mm tall"
+ },
+ {
+  "id": "clover-trio-edit",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/clover-trio-edit-01.jpg",
+  "srcW": 1649,
+  "srcH": 1649,
+  "crop": {
+   "x0": 0,
+   "y0": 0.0,
+   "size": 1649
+  },
+  "marks": [
+   {
+    "x1": 366.44444444444446,
+    "y1": 463.5522222222222,
+    "x2": 529.5122222222222,
+    "y2": 463.5522222222222,
+    "label": "10.2 mm",
+    "side": "above"
+   },
+   {
+    "x1": 780.5266666666666,
+    "y1": 652.271111111111,
+    "x2": 950.9233333333333,
+    "y2": 652.271111111111,
+    "label": "6.2 mm",
+    "side": "above"
+   }
+  ],
+  "scale": {
+   "x": 366.44444444444446,
+   "y": 868.4733333333334,
+   "pxPerMm": 15.98703703703704
+  },
+  "caption": "Huggie 10.2 mm \u00b7 studs 6.2 and 3.7 mm"
+ },
+ {
+  "id": "filigree-bloom-studs",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/filigree-bloom-studs-01.jpg",
+  "srcW": 1649,
+  "srcH": 1649,
+  "crop": {
+   "x0": 0,
+   "y0": 0.0,
+   "size": 1649
+  },
+  "marks": [
+   {
+    "x1": 412.25,
+    "y1": 580.8144444444445,
+    "x2": 820.8355555555555,
+    "y2": 580.8144444444445,
+    "label": "30 mm",
+    "side": "above"
+   }
+  ],
+  "scale": {
+   "x": 412.25,
+   "y": 1154.3,
+   "pxPerMm": 13.619518518518518
+  },
+  "caption": "30 mm across \u00b7 pearl 8 mm"
+ },
+ {
+  "id": "pearl-nugget-hoops",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/pearl-nugget-hoops-01.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 0,
+   "y0": 82.28888888888888,
+   "size": 1288
+  },
+  "marks": [
+   {
+    "x1": 184.61333333333332,
+    "y1": 443.6444444444444,
+    "x2": 613.9466666666666,
+    "y2": 443.6444444444444,
+    "label": "20.5 mm",
+    "side": "above"
+   }
+  ],
+  "scale": {
+   "x": 685.5022222222221,
+   "y": 535.2355555555555,
+   "pxPerMm": 20.943089430894307
+  },
+  "caption": "23 mm tall \u00b7 20.5 mm wide"
+ },
+ {
+  "id": "silver-drop-earrings",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/silver-drop-earrings-02.jpg",
+  "srcW": 1600,
+  "srcH": 1986,
+  "crop": {
+   "x0": 0,
+   "y0": 232.88888888888889,
+   "size": 1600
+  },
+  "marks": [
+   {
+    "x1": 542.2222222222222,
+    "y1": 670.2222222222222,
+    "x2": 542.2222222222222,
+    "y2": 1395.5555555555554,
+    "label": "44 mm",
+    "side": "left"
+   }
+  ],
+  "scale": {
+   "x": 869.3333333333333,
+   "y": 741.3333333333333,
+   "pxPerMm": 16.484848484848484
+  },
+  "caption": "44 mm long"
+ },
+ {
+  "id": "pearl-point-studs",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/pearl-point-studs-08.jpg",
+  "srcW": 1600,
+  "srcH": 1986,
+  "crop": {
+   "x0": 0,
+   "y0": 202.66666666666666,
+   "size": 1600
+  },
+  "marks": [
+   {
+    "x1": 318.22222222222223,
+    "y1": 748.4444444444445,
+    "x2": 784.0,
+    "y2": 748.4444444444445,
+    "label": "18.5 mm",
+    "side": "above"
+   }
+  ],
+  "scale": {
+   "x": 318.22222222222223,
+   "y": 1320.888888888889,
+   "pxPerMm": 25.177177177177175
+  },
+  "caption": "18.5 mm across \u00b7 pearl 9 mm"
+ },
+ {
+  "id": "emerald-deco-hoops",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/emerald-deco-hoops-01.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 0,
+   "y0": 62.25333333333333,
+   "size": 1288
+  },
+  "marks": [
+   {
+    "x1": 310.5511111111111,
+    "y1": 459.38666666666666,
+    "x2": 310.5511111111111,
+    "y2": 953.1199999999999,
+    "label": "22 mm",
+    "side": "left"
+   }
+  ],
+  "scale": {
+   "x": 685.5022222222221,
+   "y": 516.6311111111111,
+   "pxPerMm": 22.44242424242424
+  },
+  "caption": "22 mm across"
+ },
+ {
+  "id": "baguette-arc-hoops",
+  "type": "B",
+  "img": "/tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizing/hi/baguette-arc-hoops-05.jpg",
+  "srcW": 896,
+  "srcH": 1200,
+  "crop": {
+   "x0": 0,
+   "y0": 304.0,
+   "size": 896
+  },
+  "marks": [
+   {
+    "x1": 183.0,
+    "y1": 539.0,
+    "x2": 183.0,
+    "y2": 999.0,
+    "label": "52 mm",
+    "side": "left"
+   }
+  ],
+  "scale": {
+   "x": 583.0,
+   "y": 579.0,
+   "pxPerMm": 8.846153846153847
+  },
+  "caption": "52 mm across"
+ }
+]

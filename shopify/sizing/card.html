@@ -171,13 +171,13 @@ function cardR(c, card) {
   const t = el('text', { x: cx, y: cy + 17, 'text-anchor': 'middle', 'font-size': 50, 'font-weight': 500, fill: '#1A1614' }, svg);
   t.textContent = `${c.inner} mm`;
   const sub = el('text', { x: cx, y: cy - r - 46, 'text-anchor': 'middle', 'font-size': 30, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
-  sub.textContent = c.open ? 'INNER DIAMETER · OPEN BACK' : 'INNER DIAMETER';
+  sub.textContent = c.sub || (c.open ? 'INNER DIAMETER · OPEN BACK' : 'INNER DIAMETER');
   // US size strip
   const sizes = [['5', 15.7], ['6', 16.5], ['6½', 16.9], ['7', 17.3], ['8', 18.1], ['9', 18.9]];
   const near = sizes.reduce((a, b) => Math.abs(b[1] - c.inner) < Math.abs(a[1] - c.inner) ? b : a);
   const bw = 190, gap = 18, total = sizes.length * bw + (sizes.length - 1) * gap, sx = cx - total / 2, sy = 1150;
   sizes.forEach(([us, mm], i) => {
-    const on = us === near[0];
+    const on = c.sizes ? c.sizes.includes(us) : us === near[0];
     const x = sx + i * (bw + gap);
     el('rect', { x, y: sy, width: bw, height: 104, fill: on ? '#1A1614' : 'none', stroke: '#1A1614', 'stroke-width': 2, opacity: on ? 1 : .35 }, svg);
     const a = el('text', { x: x + bw / 2, y: sy + 46, 'text-anchor': 'middle', 'font-size': 32, 'font-weight': 500, fill: on ? '#F4EBE2' : '#1A1614' }, svg); a.textContent = `US ${us}`;
@@ -186,10 +186,55 @@ function cardR(c, card) {
   footer(c, card);
 }
 
+
+// C: an open cuff seen from above, with the inner width (and depth, when known) marked.
+function cardC(c, card) {
+  header(c, card);
+  const svg = el('svg', { width: 1600, height: 1600, viewBox: '0 0 1600 1600', style: 'position:absolute;inset:0' }, card);
+  const cx = 800, cy = 760, s = 110; // px per cm
+  const rx = c.width * s / 2, ry = (c.depth || c.width * 0.86) * s / 2;
+  const gap = 0.3; // radians either side of the open back
+  const a0 = Math.PI / 2 + gap, a1 = Math.PI / 2 - gap + 2 * Math.PI;
+  const pt = (a, k = 0) => [cx + (rx + k) * Math.cos(a), cy + (ry + k) * Math.sin(a)];
+  const [x0, y0] = pt(a0, 12), [x1, y1] = pt(a1, 12);
+  el('path', { d: `M ${x0} ${y0} A ${rx + 12} ${ry + 12} 0 1 1 ${x1} ${y1}`, fill: 'none', stroke: '#9A7634', 'stroke-width': 22, 'stroke-linecap': 'round', opacity: .9 }, svg);
+  const g = el('g', { stroke: '#1A1614', 'stroke-width': 3 }, svg);
+  if (c.around) {
+    // only the length of the cuff itself is known: say so, without inventing a width
+    const t = el('text', { x: cx, y: cy + 17, 'text-anchor': 'middle', 'font-size': 56, 'font-weight': 500, fill: '#1A1614' }, svg);
+    t.textContent = `${c.around} cm`;
+    const u = el('text', { x: cx, y: cy + 72, 'text-anchor': 'middle', 'font-size': 28, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+    u.textContent = 'END TO END, ALONG THE CUFF';
+  } else {
+  el('line', { x1: cx - rx, y1: cy, x2: cx + rx, y2: cy }, g);
+  el('line', { x1: cx - rx, y1: cy - 18, x2: cx - rx, y2: cy + 18 }, g);
+  el('line', { x1: cx + rx, y1: cy - 18, x2: cx + rx, y2: cy + 18 }, g);
+  el('rect', { x: cx - 110, y: cy - 44, width: 220, height: 88, rx: 44, fill: '#F4EBE2' }, svg);
+  const t = el('text', { x: cx, y: cy + 17, 'text-anchor': 'middle', 'font-size': 50, 'font-weight': 500, fill: '#1A1614' }, svg);
+  t.textContent = `${c.width} cm`;
+  }
+  if (c.depth) {
+    // depth runs front to back, drawn just outside the cuff so nothing crosses the metal
+    const dx = cx + rx + 110;
+    el('line', { x1: dx, y1: cy - ry, x2: dx, y2: cy + ry }, g);
+    el('line', { x1: dx - 18, y1: cy - ry, x2: dx + 18, y2: cy - ry }, g);
+    el('line', { x1: dx - 18, y1: cy + ry, x2: dx + 18, y2: cy + ry }, g);
+    const d = el('text', { x: dx + 34, y: cy + 16, 'font-size': 44, 'font-weight': 500, fill: '#1A1614' }, svg);
+    d.textContent = `${c.depth} cm`;
+  }
+  const sub = el('text', { x: cx, y: cy - ry - 60, 'text-anchor': 'middle', 'font-size': 30, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+  sub.textContent = c.around ? 'OPEN CUFF · SEEN FROM ABOVE' : 'INSIDE THE CUFF · SEEN FROM ABOVE';
+  const back = el('text', { x: cx, y: cy + ry + 92, 'text-anchor': 'middle', 'font-size': 28, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+  back.textContent = 'OPEN BACK';
+  const how = el('text', { x: cx, y: 1235, 'text-anchor': 'middle', 'font-size': 28, fill: '#6E655E' }, svg);
+  how.textContent = c.how || 'Slip it on sideways at the narrowest part of your wrist.';
+  footer(c, card);
+}
+
 window.renderCard = async (c) => {
   const card = document.getElementById('card');
   card.innerHTML = '';
-  ({ A: cardA, B: cardB, N: cardN, W: cardW, R: cardR })[c.type](c, card);
+  ({ A: cardA, B: cardB, N: cardN, W: cardW, R: cardR, C: cardC })[c.type](c, card);
   await document.fonts.ready;
   await Promise.all([...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })));
   return true;

@@ -1,0 +1,23 @@
+[
+ {"id": "riviere-eternal-necklace", "type": "N", "length": 40, "ext": 0, "caption": "40 cm · sits at the base of the neck"},
+ {"id": "charm-box-chain", "type": "N", "length": 50, "ext": 0, "caption": "50 cm · charm 10 mm"},
+ {"id": "toggle-link-chain", "type": "N", "length": 50, "ext": 0, "caption": "50 cm · 4 mm wide"},
+ {"id": "petite-pearl-chain", "type": "N", "length": 42, "ext": 0, "caption": "42 cm · pearls 5 mm"},
+ {"id": "teardrop-lariat", "type": "N", "length": 40.5, "ext": 5, "caption": "40.5 + 5 cm · 11.5 cm drop"},
+ {"id": "clover-charm-necklace", "type": "N", "length": 42, "ext": 0, "caption": "42 cm · clover 10 mm"},
+ {"id": "first-light-set", "type": "N", "length": 42, "ext": 5, "caption": "42 + 5 cm · studs 7.3 mm"},
+ {"id": "birthstone-heart-necklace", "type": "N", "length": 40, "ext": 0, "caption": "40 cm plus extender · heart 7 mm"},
+ {"id": "dewdrop-bezel-necklace", "type": "N", "length": 42, "ext": 5, "caption": "42 + 5 cm · drop 15 mm"},
+ {"id": "riviere-of-light-bracelet", "type": "W", "length": 17.5, "ext": 0, "caption": "17.5 cm · fits wrists about 15–16 cm"},
+ {"id": "pearl-reverie-bracelet", "type": "W", "length": 19, "ext": 3, "caption": "19 + 3 cm · fits wrists about 16.5–20.5 cm"},
+ {"id": "blush-station-bracelet", "type": "W", "length": 19, "ext": 5, "caption": "19 + 5 cm · fits wrists about 16.5–22.5 cm"},
+ {"id": "baguette-eclat-bracelet", "type": "W", "length": 16.5, "ext": 0, "caption": "16.5 cm · fits wrists about 14–15 cm"},
+ {"id": "chevron-whisper-ring", "type": "R", "inner": 17.3, "open": false, "caption": "US 7 · 17.3 mm inside · fixed size"},
+ {"id": "pearl-ribbon-ring", "type": "R", "inner": 17.3, "open": false, "caption": "US 7 · 17.3 mm inside · fixed size"},
+ {"id": "granule-dome-ring", "type": "R", "inner": 17.3, "open": true, "caption": "Open back · fits about US 7"},
+ {"id": "silver-dome-ring", "type": "R", "inner": 17.3, "open": true, "caption": "Open back · fits about US 7"},
+ {"id": "golden-duet-ring", "type": "R", "inner": 17.3, "open": true, "sizes": ["6", "7", "8"], "sub": "US 7 SHOWN · ALSO IN US 6 AND 8", "caption": "US 6, 7, 8 · open back gives a little"},
+ {"id": "baroque-bloom-cuff", "type": "C", "width": 6, "depth": 5.5, "caption": "Open cuff · 6 × 5.5 cm inside"},
+ {"id": "garnet-cable-cuff", "type": "C", "width": 6, "caption": "Open cuff · 6 cm inside · cable 5 mm"},
+ {"id": "pear-point-open-cuff", "type": "C", "width": 6, "caption": "Open cuff · 6 cm inside · stones 7 mm"}
+]

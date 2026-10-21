@@ -444,16 +444,33 @@ const JewelDetailNext = () => {
       const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
-      setStickyBarVisible(notFullyShown && priceClear);
+      const next = notFullyShown && priceClear;
+      /* Writing the same value back keeps React from rendering at all, so a
+         reflow that changed nothing cannot ask for another layout pass. */
+      setStickyBarVisible((cur) => (cur === next ? cur : next));
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
     window.addEventListener("resize", check);
-    const ro = new ResizeObserver(check);
+    /* The observer fires inside the browser's own layout pass, and the check it
+       triggered wrote state right there. When the size guide's chart changed the
+       page height, the pass asked for a notification it could no longer deliver
+       and Chromium threw "ResizeObserver loop completed with undelivered
+       notifications" — the screen went blank. Deferring to the next frame takes
+       the write out of the pass that caused it. */
+    let frame = 0;
+    const ro = new ResizeObserver(() => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        check();
+      });
+    });
     ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", check);
       window.removeEventListener("resize", check);
+      if (frame) cancelAnimationFrame(frame);
       ro.disconnect();
     };
   }, [handle]);

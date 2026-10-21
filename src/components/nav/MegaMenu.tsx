@@ -87,7 +87,7 @@ const MegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
 
         <Column title="The Edits" links={menuEdits} onNavigate={onNavigate} />
         <Column title="By Occasion" links={menuOccasions} onNavigate={onNavigate} />
-        <Column title="Apparel" links={menuApparel} onNavigate={onNavigate} />
+        <Column title="Customised" links={menuApparel} onNavigate={onNavigate} />
       </div>
     </div>
   );

@@ -334,6 +334,51 @@ export type Database = {
         }
         Relationships: []
       }
+      shopper_performance_events: {
+        Row: {
+          campaign: string
+          created_at: string
+          device: string
+          id: string
+          kind: string
+          landing_path: string
+          lcp_ms: number | null
+          load_ms: number | null
+          navigation: string
+          path: string
+          ready_ms: number | null
+          source: string
+        }
+        Insert: {
+          campaign?: string
+          created_at?: string
+          device: string
+          id: string
+          kind: string
+          landing_path: string
+          lcp_ms?: number | null
+          load_ms?: number | null
+          navigation: string
+          path: string
+          ready_ms?: number | null
+          source?: string
+        }
+        Update: {
+          campaign?: string
+          created_at?: string
+          device?: string
+          id?: string
+          kind?: string
+          landing_path?: string
+          lcp_ms?: number | null
+          load_ms?: number | null
+          navigation?: string
+          path?: string
+          ready_ms?: number | null
+          source?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -367,6 +412,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      shopper_performance_report: { Args: { days?: number }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

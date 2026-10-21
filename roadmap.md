@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Add production-only shopper timing and broken-link reporting
+- [x] Add an admin-only performance dashboard and verify permissions and reporting
+
 - [x] Make the bag's background the site's own page ground instead of white, keeping its edges and offer track readable
 
 - [x] Check ad landings and bag speed; reduce closed-bag loading and prevent checkout after a failed product add

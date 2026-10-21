@@ -12,6 +12,7 @@ import Header from "./components/Header";
 import WishlistDrawer from "./components/WishlistDrawer";
 import ScrollToTop from "./components/ScrollToTop";
 import PixelEvents from "./components/PixelEvents";
+import ShopperPerformance from "./components/ShopperPerformance";
 // A route whose code fails to arrive is thrown while rendering; without this the
 // whole tree unmounts and the shopper sits on a blank page. See the component.
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
@@ -67,6 +68,7 @@ const KeepQuery = ({ to }: { to: string }) => {
 /* The bag (the Naira box hovering under the pieces), on every page. Its code
    arrives after the page's own, so it never slows a landing. */
 const CartDrawerNext = lazy(() => import("./components/CartDrawerNext"));
+const PerformanceDashboard = lazy(() => import("./pages/admin/Performance"));
 const Bag = () => (
   <Suspense fallback={null}>
     <CartDrawerNext />
@@ -80,6 +82,7 @@ const AppShell = () => {
     <>
       <ScrollToTop />
       <PixelEvents />
+      <ShopperPerformance />
       <PageCurtain />
       <FilmGrain />
       <ScrollBloom />
@@ -122,6 +125,7 @@ const AppShell = () => {
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
           <Route path="/admin/reels" element={<AdminReels />} />
+          <Route path="/admin/performance" element={<PerformanceDashboard />} />
           <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
           <Route path="/concepts" element={<Concepts />} />

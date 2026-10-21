@@ -1,0 +1,216 @@
+{
+ "aqua-heart-drops-silver": {
+  "img": "aqua-heart-drops-silver-01.jpg",
+  "marks": [
+   {
+    "x1": 225,
+    "y1": 312,
+    "x2": 225,
+    "y2": 767,
+    "label": "29 mm",
+    "side": "left"
+   }
+  ],
+  "ppm": 15.689655172413794,
+  "scale": {
+   "x": 249,
+   "y": 847
+  }
+ },
+ "quatrefoil-eclat-studs": {
+  "img": "quatrefoil-eclat-studs-01.jpg",
+  "marks": [
+   {
+    "x1": 178,
+    "y1": 714,
+    "x2": 426,
+    "y2": 714,
+    "label": "15 mm",
+    "side": "below"
+   }
+  ],
+  "ppm": 16.533333333333335,
+  "scale": {
+   "x": 178,
+   "y": 840
+  }
+ },
+ "bold-dome-huggies": {
+  "img": "bold-dome-huggies-01.jpg",
+  "marks": [
+   {
+    "x1": 160,
+    "y1": 358,
+    "x2": 469,
+    "y2": 358,
+    "label": "16 mm",
+    "side": "above"
+   }
+  ],
+  "ppm": 19.3125,
+  "scale": {
+   "x": 160,
+   "y": 796
+  }
+ },
+ "torsade-huggies": {
+  "img": "torsade-huggies-01.jpg",
+  "marks": [
+   {
+    "x1": 166,
+    "y1": 393,
+    "x2": 166,
+    "y2": 683,
+    "label": "20 mm",
+    "side": "top"
+   },
+   {
+    "x1": 190,
+    "y1": 707,
+    "x2": 467,
+    "y2": 707,
+    "label": "18 mm",
+    "side": "below"
+   }
+  ],
+  "ppm": 14.5,
+  "scale": {
+   "x": 190,
+   "y": 833
+  }
+ },
+ "verdant-circlet-studs": {
+  "img": "verdant-circlet-studs-01.jpg",
+  "marks": [
+   {
+    "x1": 183,
+    "y1": 305,
+    "x2": 183,
+    "y2": 593,
+    "label": "16.8 mm",
+    "side": "top"
+   }
+  ],
+  "ppm": 17.142857142857142,
+  "scale": {
+   "x": 207,
+   "y": 673
+  }
+ },
+ "verdant-drop-earrings": {
+  "img": "verdant-drop-earrings-01.jpg",
+  "marks": [
+   {
+    "x1": 333,
+    "y1": 230,
+    "x2": 333,
+    "y2": 386,
+    "label": "20 mm",
+    "side": "left"
+   }
+  ],
+  "ppm": 7.8,
+  "scale": {
+   "x": 357,
+   "y": 466
+  }
+ },
+ "ribbon-bow-earrings": {
+  "img": "ribbon-bow-earrings-01.jpg",
+  "marks": [
+   {
+    "x1": 204,
+    "y1": 219,
+    "x2": 439,
+    "y2": 219,
+    "label": "12 mm",
+    "side": "above"
+   }
+  ],
+  "ppm": 19.583333333333332,
+  "scale": {
+   "x": 204,
+   "y": 525
+  }
+ },
+ "textured-gold-hoops": {
+  "img": "textured-gold-hoops-01.jpg",
+  "marks": [
+   {
+    "x1": 257,
+    "y1": 290,
+    "x2": 257,
+    "y2": 564,
+    "label": "20 mm",
+    "side": "top"
+   }
+  ],
+  "ppm": 13.7,
+  "scale": {
+   "x": 281,
+   "y": 644
+  }
+ },
+ "solitaire-whisper-studs": {
+  "img": "solitaire-whisper-studs-01.jpg",
+  "marks": [
+   {
+    "x1": 184,
+    "y1": 214,
+    "x2": 413,
+    "y2": 214,
+    "label": "9 mm",
+    "side": "above"
+   }
+  ],
+  "ppm": 25.444444444444443,
+  "scale": {
+   "x": 184,
+   "y": 564
+  }
+ },
+ "brushed-gold-huggies": {
+  "img": "brushed-gold-huggies-01.jpg",
+  "marks": [
+   {
+    "x1": 266,
+    "y1": 296,
+    "x2": 266,
+    "y2": 487,
+    "label": "14 mm",
+    "side": "top"
+   },
+   {
+    "x1": 290,
+    "y1": 511,
+    "x2": 429,
+    "y2": 511,
+    "label": "9.8 mm",
+    "side": "below"
+   }
+  ],
+  "ppm": 13.642857142857142,
+  "scale": {
+   "x": 290,
+   "y": 637
+  }
+ },
+ "pearl-blossom-earrings": {
+  "img": "pearl-blossom-earrings-01.jpg",
+  "marks": [
+   {
+    "x1": 193,
+    "y1": 355,
+    "x2": 193,
+    "y2": 646,
+    "label": "13.5 mm",
+    "side": "top"
+   }
+  ],
+  "ppm": 21.555555555555557,
+  "scale": {
+   "x": 217,
+   "y": 687.5
+  }
+ }
+}

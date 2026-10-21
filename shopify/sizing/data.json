@@ -1,0 +1,1349 @@
+[
+ {
+  "handle": "tubogas-dome-ring",
+  "code": "YF3608",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Band 5.8 mm wide",
+   "Weight 2.7 g",
+   "Sizes 6, 7, 8"
+  ],
+  "propose": [
+   "Width: Approximately 5.8mm",
+   "Weight: Approximately 2.7g"
+  ],
+  "caption": "Band 5.8 mm wide \u00b7 US 6, 7, 8",
+  "card": "A",
+  "img": "r10_c8_40.jpg",
+  "conflicts": [
+   "Page says width ~10 mm; supplier 5.8 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "marquise-layering-set",
+  "code": "YF5244",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Solitaire necklace 40 + 5 cm, marquise 13 mm",
+   "Y-lariat 45 + 5 cm, drop 9 cm",
+   "Lariat 6 g"
+  ],
+  "propose": [
+   "Necklace one: 40cm plus a 5cm extender, marquise stone approximately 13mm",
+   "Necklace two: 45cm plus a 5cm extender, the Y-drop approximately 9cm"
+  ],
+  "caption": "40 + 5 cm and 45 + 5 cm \u00b7 9 cm drop",
+  "card": "A",
+  "img": "r12_c8_41.jpg",
+  "conflicts": [
+   "Page says marquise ~10 \u00d7 5 mm; supplier 13 mm",
+   "Page gives no extender and no length for the lariat"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "silk-mesh-cuff",
+  "code": "YF3482",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "19 mm wide",
+   "Weight 32 g"
+  ],
+  "propose": [
+   "Width: Approximately 19mm",
+   "Weight: Approximately 32g"
+  ],
+  "caption": "Cuff 19 mm wide \u00b7 32 g",
+  "card": "A",
+  "img": "r15_c8_44.jpg",
+  "conflicts": [
+   "Page says mesh ~15 mm wide; supplier 19 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "fine-tennis-bracelet",
+  "code": "YF7116",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "3 mm wide",
+   "Length 17 cm",
+   "Weight 4.7 g"
+  ],
+  "propose": [
+   "Width: Approximately 3mm",
+   "Weight: Approximately 4.7g"
+  ],
+  "caption": "17 cm long \u00b7 3 mm wide",
+  "card": "A",
+  "img": "r17_c8_45.jpg",
+  "conflicts": [
+   "Page says stones ~2.5 mm; supplier line 3 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "petal-flower-studs",
+  "code": "YF7126",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "11.5 mm tall \u00d7 9 mm wide",
+   "Weight 1.6 g"
+  ],
+  "propose": [
+   "Size: Approximately 11.5mm tall and 9mm wide",
+   "Weight: Approximately 1.6g"
+  ],
+  "caption": "11.5 mm tall \u00b7 9 mm wide",
+  "card": "A",
+  "img": "r18_c8_46.jpg",
+  "conflicts": [
+   "Page says ~13 mm tall; supplier 11.5 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "kiss-knot-bangle",
+  "code": "YF4152",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Knot 10 mm",
+   "Weight 14.2 g"
+  ],
+  "propose": [
+   "Knot: Approximately 10mm",
+   "Weight: Approximately 14.2g"
+  ],
+  "caption": "Knot 10 mm \u00b7 14 g",
+  "card": "A",
+  "img": "r20_c8_47.jpg",
+  "conflicts": [
+   "Page says X ~12 mm; supplier 10 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "droplet-open-cuff",
+  "code": "YF3791-B",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Teardrop end 12.3 mm",
+   "Weight 30 g"
+  ],
+  "propose": [
+   "Teardrop: Approximately 12.3mm",
+   "Weight: Approximately 30g"
+  ],
+  "caption": "Teardrop 12.3 mm \u00b7 30 g",
+  "card": "A",
+  "img": "r23_c8_48.jpg",
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "droplet-open-ring",
+  "code": "YF3791-R",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Teardrop end 6.6 mm",
+   "Weight 4.6 g"
+  ],
+  "propose": [
+   "Teardrop: Approximately 6.6mm",
+   "Weight: Approximately 4.6g"
+  ],
+  "caption": "Teardrop 6.6 mm \u00b7 open, adjustable",
+  "card": "A",
+  "img": "r23_c8_48.jpg",
+  "conflicts": [
+   "Page says teardrop ~9 mm; supplier 6.6 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "roman-numeral-trio-ring",
+  "code": "YF2931",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Bands 3.1, 3.3 and 3.9 mm wide",
+   "Weight 9 g",
+   "Sizes 6 to 9"
+  ],
+  "propose": [
+   "Bands: Three bands, approximately 3.1mm, 3.3mm and 3.9mm wide",
+   "Weight: Approximately 9g the set"
+  ],
+  "caption": "Three bands \u00b7 3.1, 3.3, 3.9 mm",
+  "card": "A",
+  "img": "r26_c8_49.jpg",
+  "conflicts": [
+   "Page says height ~16 mm; supplier gives each band width (and a 17 mm mark)"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "mint-pear-drop-earrings",
+  "code": "YF7034",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "18 mm long",
+   "Green pear 7 mm",
+   "Weight 2.7 g"
+  ],
+  "propose": [
+   "Length: Approximately 18mm",
+   "Stone: Mint green pear, approximately 7mm",
+   "Weight: Approximately 2.7g"
+  ],
+  "caption": "18 mm long \u00b7 7 mm stone",
+  "card": "A",
+  "img": "r27_c8_50.jpg",
+  "conflicts": [
+   "Page says ~22 mm long and ~9 mm stone; supplier 18 mm and 7 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "baguette-tennis-necklace",
+  "code": "YF3165-NE",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 36 cm",
+   "6 mm wide",
+   "Weight 12 g"
+  ],
+  "propose": [
+   "Length: Approximately 36cm",
+   "Width: Approximately 6mm",
+   "Weight: Approximately 12g"
+  ],
+  "caption": "36 cm \u00b7 sits close at the base of the neck",
+  "card": "N",
+  "img": null,
+  "conflicts": [
+   "Page says ~40 cm; supplier 36 cm. A 36 cm necklace is choker length"
+  ],
+  "flags": [
+   "Supplier photo shows black and green stones, not our colours, so a drawn guide is used"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "baguette-tennis-bracelet",
+  "code": "YF3165-BR",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 17 cm",
+   "6 mm wide",
+   "Weight 8 g"
+  ],
+  "propose": [
+   "Width: Approximately 6mm",
+   "Weight: Approximately 8g"
+  ],
+  "caption": "17 cm \u00b7 fits wrists about 14.5\u201315.5 cm",
+  "card": "W",
+  "img": null,
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "crystal-baguette-eternity-ring",
+  "code": "YF2604",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "8 mm wide",
+   "Weight 5.4 g",
+   "Sizes 6, 7, 8"
+  ],
+  "propose": [
+   "Width: Approximately 8mm",
+   "Weight: Approximately 5.4g"
+  ],
+  "caption": "Band 8 mm wide \u00b7 US 6, 7, 8",
+  "card": "A",
+  "img": "r36_c8_68.jpg",
+  "conflicts": [
+   "Page says width ~5 mm; supplier 8 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "chain-drop-dome-ring",
+  "code": "YF8086",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Band 4.9 mm",
+   "Pear drop 6.3 mm",
+   "Weight 6.2 g"
+  ],
+  "propose": [
+   "Band: Approximately 4.9mm wide",
+   "Drop: Pear cut stone, approximately 6.3mm",
+   "Weight: Approximately 6.2g"
+  ],
+  "caption": "Band 4.9 mm \u00b7 pear 6.3 mm",
+  "card": "A",
+  "img": "r37_c8_53.jpg",
+  "conflicts": [
+   "Page says dome ~6 mm and pear ~7 mm; supplier 4.9 mm and 6.3 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "watch-link-ring",
+  "code": "YF2645",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "7.5 mm wide",
+   "Weight 5 g",
+   "Sizes 6 to 9"
+  ],
+  "propose": [
+   "Width: Approximately 7.5mm",
+   "Weight: Approximately 5g"
+  ],
+  "caption": "Band 7.5 mm wide \u00b7 US 6, 7, 8",
+  "card": "A",
+  "img": "r38_c8_54.jpg",
+  "conflicts": [
+   "Page says width ~11 mm; supplier 7.5 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "crystal-pear-ear-cuff",
+  "code": "YF3652-WHT",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "12.8 mm across",
+   "Pear 7.8 mm",
+   "Weight 3.3 g"
+  ],
+  "propose": [
+   "Size: Approximately 12.8mm across",
+   "Stone: Pear cut, approximately 7.8mm",
+   "Weight: Approximately 3.3g"
+  ],
+  "caption": "12.8 mm across \u00b7 7.8 mm stone",
+  "card": "A",
+  "img": "r40_c8_55.jpg",
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "emerald-square-ear-cuff",
+  "code": "YF3652-GRN",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "12.8 mm across",
+   "Square stone 5.1 mm",
+   "Weight 3 g"
+  ],
+  "propose": [
+   "Size: Approximately 12.8mm across",
+   "Weight: Approximately 3g"
+  ],
+  "caption": "12.8 mm across \u00b7 5.1 mm stone",
+  "card": "A",
+  "img": "r40_c8_55.jpg",
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "marquise-drop-choker",
+  "code": "YF7059",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 41 + 5 cm",
+   "Marquise 12.3 mm",
+   "Drop marked 14.7 mm",
+   "Weight 9.3 g"
+  ],
+  "propose": [
+   "Length: 41cm plus a 5cm extender",
+   "Stone: Marquise cut, approximately 12.3mm",
+   "Weight: Approximately 9.3g"
+  ],
+  "caption": "41 + 5 cm \u00b7 12.3 mm marquise",
+  "card": "A",
+  "img": "r43_c8_57.jpg",
+  "conflicts": [
+   "Page says marquise ~10 mm; supplier 12.3 mm",
+   "Page says drop ~6 cm; supplier marks 14.7 mm, so measure one"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "mesh-band-ring",
+  "code": "YF3558",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "8 mm wide",
+   "Weight 3.2 g",
+   "Sizes 6 to 9"
+  ],
+  "propose": [
+   "Width: Approximately 8mm",
+   "Weight: Approximately 3.2g"
+  ],
+  "caption": "Band 8 mm wide \u00b7 US 6, 7, 8",
+  "card": "A",
+  "img": "r44_c8_58.jpg",
+  "conflicts": [
+   "Page says width ~10 mm; supplier 8 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "duo-link-necklace",
+  "code": "YF8079-NEC",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 41 + 5 cm",
+   "Links 7 mm wide",
+   "Weight 21.4 g"
+  ],
+  "propose": [
+   "Length: 41cm plus a 5cm extender",
+   "Links: Approximately 7mm wide",
+   "Weight: Approximately 21.4g"
+  ],
+  "caption": "41 + 5 cm \u00b7 7 mm links",
+  "card": "A",
+  "img": "r46_c8_60.jpg",
+  "conflicts": [
+   "Page says ~45 cm; supplier 41 cm + 5 cm extender"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "duo-link-bracelet",
+  "code": "YF8079-BRA",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 17 + 5 cm",
+   "Links 7 mm wide",
+   "Weight 9.6 g"
+  ],
+  "propose": [
+   "Length: 17cm plus a 5cm extender",
+   "Weight: Approximately 9.6g"
+  ],
+  "caption": "17 + 5 cm \u00b7 7 mm links",
+  "card": "A",
+  "img": "r47_c8_59.jpg",
+  "conflicts": [
+   "Page says ~18 cm; supplier 17 cm + 5 cm extender"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "triple-coil-wrap-bangle",
+  "code": "YF3937",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "6 cm across inside",
+   "End caps 8 mm and 4 mm"
+  ],
+  "propose": [
+   "Inner width: Approximately 6cm",
+   "Ends: Pave caps, approximately 8mm"
+  ],
+  "caption": "6 cm across inside",
+  "card": "A",
+  "img": "r48_c8_61.jpg",
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "ribbon-bead-bracelet",
+  "code": "YF8156",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Bow 10 \u00d7 5.5 mm",
+   "Length 16\u201319 cm",
+   "Weight 2 g"
+  ],
+  "propose": [
+   "Weight: Approximately 2g"
+  ],
+  "caption": "16\u201319 cm \u00b7 bow 10 mm",
+  "card": "A",
+  "img": "r50_c8_62.jpg",
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "baroque-shell-bracelet",
+  "code": "YF3925",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 21 cm",
+   "Pearls 9\u201311 mm",
+   "Toggle 12 mm",
+   "Weight 27.6 g"
+  ],
+  "propose": [
+   "Length: Approximately 21cm",
+   "Pearls: Approximately 9 to 11mm",
+   "Clasp: Toggle, approximately 12mm",
+   "Weight: Approximately 27.6g"
+  ],
+  "caption": "21 cm \u00b7 pearls 9\u201311 mm",
+  "card": "A",
+  "img": "r51_c8_63.jpg",
+  "conflicts": [
+   "Page has no size at all"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "bold-nocturne-chain",
+  "code": "YF5144",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 46 + 5 cm",
+   "Links 10 mm",
+   "Clasp 11.7 mm",
+   "Weight 47.6 g"
+  ],
+  "propose": [],
+  "caption": "46 + 5 cm \u00b7 10 mm links",
+  "card": "A",
+  "img": "r53_c8_64.jpg",
+  "conflicts": [],
+  "flags": [
+   "Page already matches the supplier"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "bold-nocturne-bracelet",
+  "code": "YF5144-BRA",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 20 + 3 cm",
+   "Weight 20.6 g"
+  ],
+  "propose": [],
+  "caption": "20 + 3 cm",
+  "card": "A",
+  "img": "r53_c8_64.jpg",
+  "conflicts": [],
+  "flags": [
+   "Page already matches the supplier"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "bold-nocturne-drops",
+  "code": "YF5144-EAR",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "23 mm long",
+   "Weight 11.8 g"
+  ],
+  "propose": [
+   "Length: Approximately 23mm",
+   "Weight: Approximately 11.8g the pair"
+  ],
+  "caption": "23 mm long",
+  "card": "A",
+  "img": "r53_c8_64.jpg",
+  "conflicts": [
+   "Page says ~30 mm; supplier 23 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "halo-curve-ring",
+  "code": "YF8453",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Inner diameter 17 mm",
+   "Band 1.5 mm",
+   "Stone 11.8 mm",
+   "Weight 4 g"
+  ],
+  "propose": [],
+  "caption": "17 mm inside \u00b7 about US 6\u00bd",
+  "card": "A",
+  "img": "r55_c8_65.jpg",
+  "conflicts": [],
+  "flags": [
+   "Page already matches the supplier"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "star-point-band",
+  "code": "YF5214",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "6 mm wide",
+   "Weight 5.2 g",
+   "Sizes 6, 7, 8"
+  ],
+  "propose": [
+   "Width: Approximately 6mm",
+   "Weight: Approximately 5.2g"
+  ],
+  "caption": "Band 6 mm wide",
+  "card": "A",
+  "img": "r56_c8_66.jpg",
+  "conflicts": [],
+  "flags": [
+   "Store has a Metal option but no Size option, while the page says sizes are confirmed at order; the supplier offers US 6, 7, 8"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "north-star-bangle",
+  "code": "YF5204",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "5.8 mm wide",
+   "Weight 19.2 g"
+  ],
+  "propose": [
+   "Width: Approximately 5.8mm",
+   "Weight: Approximately 19.2g"
+  ],
+  "caption": "Bangle 5.8 mm wide",
+  "card": "A",
+  "img": "r58_c8_67.jpg",
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "baguette-huggies",
+  "code": "YF3923",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Hoop 15 mm",
+   "Stone row 4.4 mm",
+   "Weight 3.3 g"
+  ],
+  "propose": [
+   "Size: Approximately 15mm",
+   "Stones: Baguette row, approximately 4.4mm wide",
+   "Weight: Approximately 3.3g"
+  ],
+  "caption": "Hoop 15 mm \u00b7 4.4 mm stone row",
+  "card": "A",
+  "img": "r61_c8_69.jpg",
+  "conflicts": [
+   "Page says ~18 mm; supplier 15 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "baguette-eternity-band",
+  "code": "YF3143",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "6.8 mm wide",
+   "Weight 3.8 g",
+   "Sizes 6 to 9"
+  ],
+  "propose": [
+   "Width: Approximately 6.8mm",
+   "Weight: Approximately 3.8g"
+  ],
+  "caption": "Band 6.8 mm wide \u00b7 US 6, 7, 8",
+  "card": "A",
+  "img": "r65_c8_71.jpg",
+  "conflicts": [
+   "Page says width ~5 mm; supplier 6.8 mm"
+  ],
+  "flags": [
+   "Supplier photo shows clear stones; the listing offers ruby, emerald and amethyst"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "serpentine-whisper-chain",
+  "code": "YF8439",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 40 + 5 cm",
+   "Weight 10 g"
+  ],
+  "propose": [],
+  "caption": "40 + 5 cm \u00b7 base of the neck",
+  "card": "N",
+  "img": null,
+  "conflicts": [],
+  "flags": [
+   "Page already matches the supplier"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "serpentine-whisper-chain-silver",
+  "code": "YF8439-SLV",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 40 + 5 cm",
+   "Weight 10 g"
+  ],
+  "propose": [],
+  "caption": "40 + 5 cm \u00b7 base of the neck",
+  "card": "N",
+  "img": null,
+  "conflicts": [],
+  "flags": [
+   "Page already matches the supplier"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "riviere-eternal-bracelet",
+  "code": "YF7085",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "5 mm wide",
+   "Length 18 cm",
+   "Weight 6.3 g"
+  ],
+  "propose": [
+   "Weight: Approximately 6.3g"
+  ],
+  "caption": "18 cm \u00b7 fits wrists about 15.5\u201316.5 cm",
+  "card": "W",
+  "img": null,
+  "conflicts": [],
+  "flags": [
+   "Supplier photo shows oval coloured stones, while the page describes 3 mm round clear stones and a buckle; confirm it is the same piece"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "birthstone-heart-necklace",
+  "code": "heart birthstone",
+  "source": "Yiss Fera quotation (22 Sep 2026)",
+  "supplier": [
+   "Length 45 cm",
+   "Pendant 4.3 mm",
+   "Weight 1.8 g"
+  ],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "Page says ~40 cm plus extender; supplier 45 cm"
+  ],
+  "flags": [
+   "Supplier photo shows a bar pendant, not a heart; measure before changing"
+  ],
+  "measure": true
+ },
+ {
+  "handle": "aqua-heart-drops-silver",
+  "code": "WE22108C3",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "29 mm long"
+  ],
+  "propose": [
+   "Length: Approximately 29mm"
+  ],
+  "caption": "Drop 29 mm, post to tip",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page has no size"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "quatrefoil-eclat-studs",
+  "code": "FE03783B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "15 mm"
+  ],
+  "propose": [
+   "Size: Approximately 15mm"
+  ],
+  "caption": "Stud 15 mm, tip to tip",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page has no size"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "bold-dome-huggies",
+  "code": "E20057O",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "16 mm"
+  ],
+  "propose": [
+   "Size: Approximately 16mm across"
+  ],
+  "caption": "Hoop 16 mm across",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page has no size"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "torsade-huggies",
+  "code": "E15697O",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "20 \u00d7 18 mm"
+  ],
+  "propose": [
+   "Size: Approximately 20mm by 18mm"
+  ],
+  "caption": "20 \u00d7 18 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page has no size"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "verdant-circlet-studs",
+  "code": "FE02847B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "16.8 mm"
+  ],
+  "propose": [
+   "Size: Approximately 16.8mm"
+  ],
+  "caption": "16.8 mm tall",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says height ~20 mm; supplier 16.8 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "verdant-drop-earrings",
+  "code": "E21572E1",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "20 \u00d7 8 mm"
+  ],
+  "propose": [
+   "Size: Approximately 20mm long and 8mm wide"
+  ],
+  "caption": "20 mm long \u00b7 8 mm wide",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says drop ~25 mm and stone ~9 mm; supplier 20 \u00d7 8 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "ribbon-bow-earrings",
+  "code": "E16075B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "12 mm"
+  ],
+  "propose": [
+   "Size: Approximately 12mm"
+  ],
+  "caption": "Bow 12 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~15 mm wide; supplier 12 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "textured-gold-hoops",
+  "code": "FE03586B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "20 \u00d7 20 mm"
+  ],
+  "propose": [
+   "Size: Approximately 20mm across"
+  ],
+  "caption": "Hoop 20 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~22 mm; supplier 20 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "baguette-arc-hoops",
+  "code": "WE14387B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "5.2 cm"
+  ],
+  "propose": [
+   "Size: Approximately 52mm across"
+  ],
+  "caption": "Hoop 52 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~20 mm across; supplier 5.2 cm (52 mm). Check which is right before anything goes live"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "solitaire-whisper-studs",
+  "code": "E16355C",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "9 mm"
+  ],
+  "propose": [
+   "Size: Approximately 9mm square"
+  ],
+  "caption": "Stud 9 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~12 mm square; supplier 9 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "brushed-gold-huggies",
+  "code": "E14776S",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "14 \u00d7 9.8 mm"
+  ],
+  "propose": [
+   "Size: Approximately 14mm by 9.8mm"
+  ],
+  "caption": "14 \u00d7 9.8 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~12 mm across; supplier 14 \u00d7 9.8 mm"
+  ],
+  "flags": [
+   "Supplier photo shows brushed bean studs; the page calls them huggies"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "silver-drop-earrings",
+  "code": "E16676C",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "44 mm long"
+  ],
+  "propose": [
+   "Length: Approximately 44mm"
+  ],
+  "caption": "Drop 44 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~40 mm; supplier 44 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "pearl-blossom-earrings",
+  "code": "E20997C",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "13.5 \u00d7 12 mm"
+  ],
+  "propose": [
+   "Size: Approximately 13.5mm by 12mm"
+  ],
+  "caption": "13.5 \u00d7 12 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~18 mm tall; supplier 13.5 \u00d7 12 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "pearl-point-studs",
+  "code": "E19263B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "18.5 mm"
+  ],
+  "propose": [
+   "Size: Approximately 18.5mm across"
+  ],
+  "caption": "Stud 18.5 mm",
+  "card": "B",
+  "img": null,
+  "conflicts": [
+   "Page says ~16 mm; supplier 18.5 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "prism-riviere-bracelet",
+  "code": "B00681C",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "Length 18 cm"
+  ],
+  "propose": [
+   "Length: 18cm"
+  ],
+  "caption": "18 cm",
+  "card": "W",
+  "img": null,
+  "conflicts": [
+   "Page says 15\u201319 cm adjustable links; supplier 18 cm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "cushion-halo-ring",
+  "code": "WR20902K8",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "21 mm tall",
+   "Inner diameter 17 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 17mm (between US 6 and 7)"
+  ],
+  "caption": "17 mm inside \u00b7 about US 6\u00bd",
+  "card": "R",
+  "img": null,
+  "conflicts": [
+   "Page says US 7 (17.3 mm); supplier 17 mm"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "blush-cluster-ring",
+  "code": "WR10914B2",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "21 mm tall",
+   "Inner diameter 17 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 17mm (between US 6 and 7)"
+  ],
+  "caption": "17 mm inside \u00b7 about US 6\u00bd",
+  "card": "R",
+  "img": null,
+  "conflicts": [
+   "Page says US 7, fixed, not adjustable; the supplier photo shows an open band"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "rose-verdant-band",
+  "code": "R18345A1",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "20.5 mm tall",
+   "Inner diameter 16.5 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 16.5mm (US 6) at rest, the open back eases a little larger"
+  ],
+  "caption": "16.5 mm inside \u00b7 US 6, open back",
+  "card": "R",
+  "img": null,
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "verdant-eternity-band",
+  "code": "WR23024K",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "20.5 mm tall",
+   "Inner diameter 16.5 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 16.5mm at rest"
+  ],
+  "caption": "16.5 mm inside \u00b7 open back",
+  "card": "R",
+  "img": null,
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "vintage-halo-ring",
+  "code": "WR23569K8",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "21 mm tall",
+   "Inner diameter 16.5 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 16.5mm (US 6)"
+  ],
+  "caption": "16.5 mm inside \u00b7 US 6",
+  "card": "R",
+  "img": null,
+  "conflicts": [
+   "Page says US 7; supplier inner diameter 16.5 mm is US 6. A US 7 buyer would find it tight"
+  ],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "whisper-pave-band",
+  "code": "WR10170K7",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "21 mm tall",
+   "Inner diameter 17 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 17mm (between US 6 and 7)"
+  ],
+  "caption": "17 mm inside \u00b7 about US 6\u00bd",
+  "card": "R",
+  "img": null,
+  "conflicts": [
+   "Page says US 7"
+  ],
+  "flags": [
+   "The page describes an 8 mm stone in a 12 mm halo, copied from Cushion Halo Ring; the supplier photo shows a solitaire with pave shoulders"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "petite-pave-band",
+  "code": "WR12518B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "20.5 mm tall",
+   "Inner diameter 17 mm"
+  ],
+  "propose": [
+   "Inner diameter: Approximately 17mm at rest"
+  ],
+  "caption": "17 mm inside \u00b7 open back",
+  "card": "R",
+  "img": null,
+  "conflicts": [],
+  "flags": [],
+  "measure": false
+ },
+ {
+  "handle": "pearl-nugget-hoops",
+  "code": "WE25240B",
+  "source": "KAVNAR quotation",
+  "supplier": [
+   "23 \u00d7 20.5 mm"
+  ],
+  "propose": [
+   "Size: Approximately 23mm tall and 20.5mm wide"
+  ],
+  "caption": "23 \u00d7 20.5 mm",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "Page says ~22 mm across; supplier 23 \u00d7 20.5 mm"
+  ],
+  "flags": [
+   "Matched by photo: the listing SKU is our own code (N20-PEARL), the piece is KAVNAR WE25240B"
+  ],
+  "measure": false
+ },
+ {
+  "handle": "woven-gold-hoops",
+  "code": "E20267O",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "No size in the quotation; page says ~25 mm"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "verdant-cushion-studs",
+  "code": "E19712C",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "Quotation says 18 cm, impossible for a stud"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "baguette-halo-drops",
+  "code": "WE23818B",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "No size in the quotation"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "petite-square-huggies",
+  "code": "WE25284B1",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "Same piece as KAVNAR E15284B1 (matched by photo), whose row says 18 cm, impossible for a huggie"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "pearl-circlet-studs",
+  "code": "WE20796C",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "Not on this quotation"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "petite-bow-studs",
+  "code": "E17967C",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "No size in the quotation"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "prism-cluster-studs-silver",
+  "code": "E15838C1",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "No size in the quotation"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "lilac-papillon-ring",
+  "code": "WR11674B2",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "No size and no photo in the quotation"
+  ],
+  "flags": [],
+  "measure": true
+ },
+ {
+  "handle": "pearl-ribbon-ring",
+  "code": "FR03136B",
+  "source": "KAVNAR quotation",
+  "supplier": [],
+  "propose": [],
+  "caption": "",
+  "card": null,
+  "img": null,
+  "conflicts": [
+   "No size in the quotation; page says US 7"
+  ],
+  "flags": [],
+  "measure": true
+ }
+]

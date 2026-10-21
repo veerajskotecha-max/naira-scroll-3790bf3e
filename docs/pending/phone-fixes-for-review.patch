@@ -1,0 +1,811 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index 657b0da..36aab7c 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,5 +1,6 @@
+ import { lazy, Suspense } from "react";
+-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
++import { QueryClientProvider } from "@tanstack/react-query";
++import { queryClient } from "@/lib/queryClient";
+ import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
+ import { HelmetProvider } from "react-helmet-async";
+ import { Toaster as Sonner } from "@/components/ui/sonner";
+@@ -53,7 +54,6 @@ import {
+ } from "./pageCode";
+ 
+ 
+-const queryClient = new QueryClient();
+ 
+ /**
+  * Redirect that keeps the query string. Ad clicks land on legacy Shopify-shaped
+diff --git a/src/components/Footer.tsx b/src/components/Footer.tsx
+index c25f146..7a8f5f7 100644
+--- a/src/components/Footer.tsx
++++ b/src/components/Footer.tsx
+@@ -182,12 +182,12 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
+                 className="w-[88px] h-auto brightness-0 invert"
+               />
+             </Link>
+-            <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+-              <Link to="/contact" className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
++            <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5">
++              <Link to="/contact" className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
+                 Contact Us
+               </Link>
+               {compactPolicyLinks.map((link) => (
+-                <Link key={link.label} to={link.to} className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
++                <Link key={link.label} to={link.to} className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
+                   {link.label}
+                 </Link>
+               ))}
+diff --git a/src/components/NairaBoxShowcase.tsx b/src/components/NairaBoxShowcase.tsx
+index 29bfe8c..2c02ddb 100644
+--- a/src/components/NairaBoxShowcase.tsx
++++ b/src/components/NairaBoxShowcase.tsx
+@@ -26,7 +26,9 @@ const NairaBoxShowcase = () => (
+       </p>
+       {/* Velista sets in capitals only, so the display line stays short and
+           the thought finishes in the editorial italic. */}
+-      <h2 className="mt-4 whitespace-nowrap font-nf-display text-[26px] leading-none text-[var(--nf-text)] min-[400px]:text-[29px] md:text-[40px]">
++      {/* 22px below 330px: at 26px the one-line title ran 20px past a 280px
++          screen (a folded phone, or a large system text setting). */}
++      <h2 className="mt-4 whitespace-nowrap font-nf-display text-[22px] leading-none text-[var(--nf-text)] min-[330px]:text-[26px] min-[400px]:text-[29px] md:text-[40px]">
+         Luxury chic jewellery
+       </h2>
+       <p className="mt-2 font-nf-editorial text-[19px] italic leading-snug text-[color:rgb(var(--nf-ink-rgb)/0.7)] md:text-[22px]">
+diff --git a/src/components/Navbar.tsx b/src/components/Navbar.tsx
+index a33e27c..8e43f3c 100644
+--- a/src/components/Navbar.tsx
++++ b/src/components/Navbar.tsx
+@@ -54,7 +54,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
+           height: "var(--navbar-h)",
+         }}
+       >
+-        <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-10">
++        <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-4 min-[360px]:px-5 lg:px-10">
+           {/* Left: hamburger (mobile) / nav links (desktop) */}
+           <div className="flex items-center">
+             {/* Icon buttons carry a 44px hit area through padding and pull it
+@@ -116,9 +116,11 @@ const Navbar = ({ scrolled }: NavbarProps) => {
+             </div>
+           </div>
+ 
+-          {/* Center logo: the vector wordmark, whose flower-I turns in 3D. */}
++          {/* Center logo: the vector wordmark, whose flower-I turns in 3D.
++              Below 360px (iPhone SE, small Androids, large system text) the
++              full-size mark ran into the account icon, so it steps down. */}
+           <Link to="/" className="flex items-center justify-center h-full">
+-            <NairaWordmark className="w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
++            <NairaWordmark className="w-[84px] min-[360px]:w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
+           </Link>
+ 
+           {/* Right section */}
+diff --git a/src/components/jewellery/JewelFilterBar.tsx b/src/components/jewellery/JewelFilterBar.tsx
+index f4c59d2..a60e39b 100644
+--- a/src/components/jewellery/JewelFilterBar.tsx
++++ b/src/components/jewellery/JewelFilterBar.tsx
+@@ -1,5 +1,5 @@
+ import { useMemo, useState } from "react";
+-import { SlidersHorizontal, X } from "lucide-react";
++import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+ import type { JewelPiece } from "@/data/jewellery";
+ 
+ const jost = { fontFamily: "var(--nf-font-label)" } as const;
+@@ -116,13 +116,22 @@ const JewelFilterBar = ({
+           FILTER{activeCount ? ` (${activeCount})` : ""}
+         </button>
+ 
+-        <label className="inline-flex items-center gap-2">
++        {/* The sort menu shows its choice in the bar's small type, while the
++            real <select> sits on top of it, invisible, at 16px. A phone-sized
++            select (10px) made iPhones zoom the whole shop in on every tap. */}
++        <label
++          className="relative inline-flex min-h-[44px] items-center gap-2 border border-nf-ink/25 px-3 text-[10px] tracking-nf-14 text-nf-ink/80 focus-within:border-nf-ink has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[color:var(--nf-focus-ring)] sm:text-[10.5px]"
++          style={jost}
++        >
+           <span className="sr-only">Sort pieces</span>
++          <span aria-hidden="true" className="pointer-events-none whitespace-nowrap">
++            {SORT_OPTIONS.find((o) => o.key === value.sort)?.label ?? SORT_OPTIONS[0].label}
++          </span>
++          <ChevronDown aria-hidden="true" size={12} strokeWidth={1.6} className="pointer-events-none shrink-0" />
+           <select
+             value={value.sort}
+             onChange={(e) => set({ sort: e.target.value as SortKey })}
+-            className="min-h-[44px] border border-nf-ink/25 bg-transparent px-3 text-[10px] tracking-nf-14 text-nf-ink/80 focus:border-nf-ink focus:outline-none sm:text-[10.5px]"
+-            style={jost}
++            className="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent text-base opacity-0"
+           >
+             {SORT_OPTIONS.map((o) => (
+               <option key={o.key} value={o.key}>
+diff --git a/src/components/nav/SearchOverlay.tsx b/src/components/nav/SearchOverlay.tsx
+index 7d27d01..f330fdc 100644
+--- a/src/components/nav/SearchOverlay.tsx
++++ b/src/components/nav/SearchOverlay.tsx
+@@ -1,10 +1,11 @@
+-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
++import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent } from "react";
+ import { trackPixel } from "@/lib/pixel";
+ import { Link } from "react-router-dom";
+ import { Search, X } from "lucide-react";
+ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+ import { useQuery } from "@tanstack/react-query";
+ import { fetchShopifyProducts } from "@/lib/shopify";
++import { parseQuery, searchPieces, shopPageFor } from "@/lib/search";
+ 
+ const jost = { fontFamily: "var(--nf-font-label)" } as const;
+ 
+@@ -27,7 +28,9 @@ interface Hit {
+   to: string;
+ }
+ 
+-const POPULAR = ["Rings", "Zircone", "Necklace", "Gifting", "Under 1500"];
++/* Each of these returns pieces; "Gifting" never matched anything. */
++const POPULAR = ["Rings", "Zircone", "Necklace", "Pearl", "Under 1500"];
++const MAX_RESULTS = 10;
+ 
+ /**
+  * Instant search over the live catalogue — jewellery pieces and apparel
+@@ -48,6 +51,7 @@ const SearchOverlay = ({
+   const [q, setQ] = useState("");
+   const [recent, setRecent] = useState<string[]>([]);
+   const inputRef = useRef<HTMLInputElement>(null);
++  const listRef = useRef<HTMLDivElement>(null);
+   const { jewellery } = useLiveJewellery();
+   const { data: apparel } = useQuery({
+     queryKey: ["shopify-products", "search-index"],
+@@ -79,17 +83,9 @@ const SearchOverlay = ({
+     return () => window.removeEventListener("keydown", onKey);
+   }, [open, onClose]);
+ 
+-  const index: Hit[] = useMemo(() => {
+-    const jewels: Hit[] = jewellery.map((p) => ({
+-      key: `j-${p.handle}`,
+-      title: p.name,
+-      caption: `${p.category} · ${(p.tags ?? []).slice(0, 2).join(", ")}`,
+-      price: p.priceLabel,
+-      image: p.image,
+-      to: `/jewellery/${p.handle}`,
+-    }));
++  const clothes: Hit[] = useMemo(() => {
+     const jewelHandles = new Set(jewellery.map((p) => p.handle));
+-    const clothes: Hit[] = (apparel ?? [])
++    return (apparel ?? [])
+       .filter((n) => !jewelHandles.has(n.handle))
+       .map((n) => ({
+         key: `p-${n.handle}`,
+@@ -99,16 +95,40 @@ const SearchOverlay = ({
+         image: n.images.edges[0]?.node.url ?? "",
+         to: `/product/${n.handle}`,
+       }));
+-    return [...jewels, ...clothes];
+   }, [jewellery, apparel]);
+ 
+-  const results = useMemo(() => {
+-    const term = q.trim().toLowerCase();
+-    if (term.length < 2) return [];
+-    return index
+-      .filter((h) => `${h.title} ${h.caption}`.toLowerCase().includes(term))
+-      .slice(0, 8);
+-  }, [q, index]);
++  /* Jewellery is ranked by lib/search; apparel keeps its plain text match and
++     only fills the list after the pieces. */
++  const { results, total, seeAll } = useMemo(() => {
++    const term = q.trim();
++    if (term.length < 2) return { results: [] as Hit[], total: 0, seeAll: null as null | { to: string; label: string } };
++    const pieces = searchPieces(jewellery, term);
++    const jewels: Hit[] = pieces.map((p) => ({
++      key: `j-${p.handle}`,
++      title: p.name,
++      caption: `${p.category} · ${(p.tags ?? []).slice(0, 2).join(", ")}`,
++      price: p.priceLabel,
++      image: p.image,
++      to: `/jewellery/${p.handle}`,
++    }));
++    const lower = term.toLowerCase();
++    const matches = [...jewels, ...clothes.filter((h) => `${h.title} ${h.caption}`.toLowerCase().includes(lower))];
++    const to = shopPageFor(term);
++    const { category } = parseQuery(term);
++    return {
++      results: matches.slice(0, MAX_RESULTS),
++      total: matches.length,
++      seeAll: to ? { to, label: `See all ${category ? category.toLowerCase() : "pieces"}${pieces.length ? ` (${pieces.length})` : ""}` } : null,
++    };
++  }, [q, jewellery, clothes]);
++
++  /* The keyboard's Go / Enter: the filtered shop page when the search is a
++     category or a price, otherwise the best match. It clicks the same link a
++     tap would, so closing and history work the same way. */
++  const go = (e: FormEvent) => {
++    e.preventDefault();
++    listRef.current?.querySelector<HTMLAnchorElement>("a[data-search-go]")?.click();
++  };
+ 
+   const remember = (term: string) => {
+     const clean = term.trim();
+@@ -125,28 +145,31 @@ const SearchOverlay = ({
+     <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Search">
+       <button className="absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close search" tabIndex={-1} />
+       <div className="relative mx-auto w-full max-w-3xl animate-fade-in bg-[#F4F1ED] p-5 shadow-xl sm:p-7">
+-        <div className="flex items-center gap-3 border-b border-nf-ink/15 pb-3">
++        <form role="search" onSubmit={go} className="flex items-center gap-3 border-b border-nf-ink/15 pb-3">
+           <Search size={18} strokeWidth={1.5} className="opacity-50" />
+           <input
+             ref={inputRef}
++            type="search"
++            enterKeyHint="search"
+             value={q}
+             onChange={(e) => setQ(e.target.value)}
+             placeholder="Search rings, necklaces, outfits…"
+-            className="w-full bg-transparent text-[15px] text-nf-ink placeholder:text-nf-ink/35 focus:outline-none"
++            className="w-full bg-transparent text-base text-nf-ink placeholder:text-nf-ink/35 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+             aria-label="Search products"
+           />
+-          <button onClick={onClose} aria-label="Close search" className="p-1 opacity-60 hover:opacity-100">
++          <button type="button" onClick={onClose} aria-label="Close search" className="-my-2 -mr-3 flex h-11 w-11 shrink-0 items-center justify-center opacity-60 hover:opacity-100">
+             <X size={18} strokeWidth={1.5} />
+           </button>
+-        </div>
++        </form>
+ 
+-        <div className="max-h-[60vh] overflow-y-auto">
++        <div ref={listRef} className="max-h-[60vh] overflow-y-auto">
+           {results.length > 0 ? (
+             <ul className="mt-4 space-y-1">
+-              {results.map((h) => (
++              {results.map((h, i) => (
+                 <li key={h.key}>
+                   <Link
+                     to={h.to}
++                    data-search-go={!seeAll && i === 0 ? "" : undefined}
+                     onClick={(e) => {
+                       remember(q);
+                       if (onFollow) onFollow(e);
+@@ -169,6 +192,28 @@ const SearchOverlay = ({
+                   </Link>
+                 </li>
+               ))}
++              {seeAll && (
++                <li>
++                  <Link
++                    to={seeAll.to}
++                    data-search-go=""
++                    onClick={(e) => {
++                      remember(q);
++                      if (onFollow) onFollow(e);
++                      else onClose();
++                    }}
++                    className="flex min-h-[44px] items-center justify-between p-2 text-[12px] tracking-nf-14 text-nf-ink underline decoration-nf-gold underline-offset-4"
++                    style={jost}
++                  >
++                    {seeAll.label.toUpperCase()} <span aria-hidden="true">→</span>
++                  </Link>
++                </li>
++              )}
++              {!seeAll && total > results.length && (
++                <li className="p-2 text-[12px] text-nf-ink/55">
++                  Showing {results.length} of {total}. Add a word to narrow it down.
++                </li>
++              )}
+             </ul>
+           ) : q.trim().length >= 2 ? (
+             <p className="mt-6 text-[13px] text-nf-ink/55">
+@@ -186,7 +231,7 @@ const SearchOverlay = ({
+                       <button
+                         key={r}
+                         onClick={() => setQ(r)}
+-                        className="min-h-[34px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
++                        className="min-h-[44px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
+                         style={jost}
+                       >
+                         {r}
+@@ -204,7 +249,7 @@ const SearchOverlay = ({
+                     <button
+                       key={p}
+                       onClick={() => setQ(p)}
+-                      className="min-h-[34px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
++                      className="min-h-[44px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
+                       style={jost}
+                     >
+                       {p.toUpperCase()}
+diff --git a/src/components/product/PincodeChecker.tsx b/src/components/product/PincodeChecker.tsx
+index 0592edc..737bf56 100644
+--- a/src/components/product/PincodeChecker.tsx
++++ b/src/components/product/PincodeChecker.tsx
+@@ -65,12 +65,14 @@ const PincodeChecker = () => {
+           value={pincode}
+           onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+           placeholder="Enter pincode"
+-          className="flex-1 h-11 px-3 text-[16px] md:text-[13px] tracking-[0.02em] border outline-none bg-transparent"
++          /* min-w-0: a text field will not shrink below its default 20-character
++             width, which pushed Check past the edge of every phone screen. */
++          className="min-w-0 flex-1 h-11 px-3 text-[16px] md:text-[13px] tracking-[0.02em] border outline-none bg-transparent"
+           style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}
+         />
+         <button
+           onClick={() => check(pincode)}
+-          className="h-11 px-5 text-[11px] font-medium uppercase tracking-[0.14em] border border-l-0 transition-colors duration-200"
++          className="h-11 shrink-0 px-5 text-[11px] font-medium uppercase tracking-[0.14em] border border-l-0 transition-colors duration-200"
+           style={{
+             borderColor: "hsl(0 0% 20%)",
+             backgroundColor: "hsl(0 0% 12%)",
+diff --git a/src/hooks/useLiveJewellery.ts b/src/hooks/useLiveJewellery.ts
+index b5bec47..8f7b88d 100644
+--- a/src/hooks/useLiveJewellery.ts
++++ b/src/hooks/useLiveJewellery.ts
+@@ -1,5 +1,6 @@
+ import { useQuery } from "@tanstack/react-query";
+-import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
++import type { ShopifyProductNode } from "@/lib/shopify";
++import { CATALOGUE_KEY, fetchCatalogue } from "@/lib/catalogue";
+ import { variantFields } from "@/lib/variants";
+ import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
+ import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+@@ -244,8 +245,8 @@ export const EXPLICIT_COVERS = new Set(Object.keys(COVER_PICKS));
+ 
+ export const useLiveJewellery = (enabled = true): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
+   const { data, isLoading } = useQuery({
+-    queryKey: ["shopify-products", "jewellery-catalogue"],
+-    queryFn: () => fetchShopifyProducts(250),
++    queryKey: CATALOGUE_KEY,
++    queryFn: fetchCatalogue,
+     enabled,
+     // Stock state must read live: refresh often and whenever the tab regains
+     // focus so a piece that sells out in Shopify shows Sold Out here quickly.
+diff --git a/src/index.css b/src/index.css
+index 449851a..44d1df4 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -320,10 +320,20 @@ a, button, [role="button"], input, select, textarea {
+ }
+ 
+ /* 3. Prevent iOS Safari from auto-zooming on input focus
+-      (triggered when input font-size < 16px) */
++      (triggered when input font-size < 16px). The plain element rule lost to
++      every text-[13px]-style class on a field, so the sort menu, the size
++      menu, search and the newsletter box all zoomed the page when tapped.
++      On touch screens the floor now wins over those classes. */
+ input, select, textarea {
+   font-size: max(16px, 1em);
+ }
++@media (pointer: coarse) {
++  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
++  select,
++  textarea {
++    font-size: max(16px, 1em) !important;
++  }
++}
+ 
+ /* 4. Minimum 44×44px tap targets for interactive elements
+       Applied via class to avoid inflating tiny decorative elements like
+diff --git a/src/lib/catalogue.ts b/src/lib/catalogue.ts
+new file mode 100644
+index 0000000..666bd5c
+--- /dev/null
++++ b/src/lib/catalogue.ts
+@@ -0,0 +1,20 @@
++import { fetchShopifyProducts } from "@/lib/shopify";
++import { routeKeyFor } from "@/lib/routeCode";
++
++/* The live jewellery catalogue query, shared by useLiveJewellery and main.tsx. */
++export const CATALOGUE_KEY = ["shopify-products", "jewellery-catalogue"] as const;
++export const fetchCatalogue = () => fetchShopifyProducts(250);
++
++/*
++  Pages whose first screen is drawn from the catalogue. Their pre-built HTML
++  shows the live pieces, but React's first render used the bundled list (21
++  pieces, no Prism Rivière), so on a slower phone the grid was swapped twice
++  as the page came alive: the card under the shopper's thumb moved and taps
++  landed on the wrong piece. On these pages React waits, a little, for the
++  catalogue so its first render is the page already on screen.
++*/
++const CATALOGUE_PAGES = new Set(["Jewellery", "JewelleryCategory", "JewelDetailNext"]);
++export const pageNeedsCatalogue = (pathname: string) => {
++  const key = routeKeyFor(pathname);
++  return key !== null && CATALOGUE_PAGES.has(key);
++};
+diff --git a/src/lib/queryClient.ts b/src/lib/queryClient.ts
+new file mode 100644
+index 0000000..bafdf3d
+--- /dev/null
++++ b/src/lib/queryClient.ts
+@@ -0,0 +1,5 @@
++import { QueryClient } from "@tanstack/react-query";
++
++/* One client for the whole app, shared with main.tsx so the catalogue can be
++   fetched while the page's code is still downloading (see catalogue.ts). */
++export const queryClient = new QueryClient();
+diff --git a/src/lib/search.test.ts b/src/lib/search.test.ts
+new file mode 100644
+index 0000000..ee722a2
+--- /dev/null
++++ b/src/lib/search.test.ts
+@@ -0,0 +1,88 @@
++import { describe, expect, it } from "vitest";
++import type { JewelPiece } from "@/data/jewellery";
++import { parseQuery, searchPieces, shopPageFor } from "./search";
++
++const piece = (p: Partial<JewelPiece> & Pick<JewelPiece, "handle" | "name" | "category" | "price">): JewelPiece => ({
++  sku: "",
++  number: "",
++  priceLabel: `₹${p.price}`,
++  variantId: "gid://shopify/ProductVariant/1",
++  availableForSale: true,
++  image: "",
++  blurb: "",
++  materials: "",
++  ...p,
++});
++
++/* In catalogue order, earrings first, as the shop lists them. */
++const catalogue = [
++  piece({ handle: "molten-bloom-hoops", name: "Molten Bloom Hoops", category: "Earrings", price: 1300, tags: ["18k Gold Tone Plated", "Demi Fine"] }),
++  piece({ handle: "ribbon-bow-earrings", name: "Ribbon Bow Earrings", category: "Earrings", price: 1599, tags: ["Cubic Zirconia"] }),
++  piece({ handle: "solitaire-whisper-studs", name: "Solitaire Whisper Studs", category: "Earrings", price: 1099, tags: ["Rhodium Silver Tone Plated", "Cubic Zirconia"] }),
++  piece({ handle: "prism-riviere-bracelet", name: "Prism Rivière Bracelet", category: "Bracelets", price: 2399, tags: ["Cubic Zirconia"] }),
++  piece({ handle: "star-point-band", name: "Star Point Band", category: "Rings", price: 799, options: [{ name: "Metal", values: ["Gold", "Silver"] }] }),
++  piece({ handle: "cushion-halo-ring", name: "Cushion Halo Ring", category: "Rings", price: 1199, tags: ["18k Gold Tone Plated"] }),
++  piece({ handle: "golden-duet-ring", name: "Golden Duet Ring", category: "Rings", price: 1399 }),
++  piece({ handle: "pearl-legacy-necklace", name: "Pearl Legacy Necklace", category: "Necklaces", price: 1799, tags: ["Pearl"] }),
++  piece({ handle: "bold-nocturne-chain", name: "Bold Nocturne Chain", category: "Necklaces", price: 1799 }),
++];
++const handles = (q: string) => searchPieces(catalogue, q).map((p) => p.handle);
++
++describe("searchPieces", () => {
++  it("finds rings for 'ring', not the earrings that contain the letters", () => {
++    expect(handles("ring")).toEqual(["cushion-halo-ring", "golden-duet-ring", "star-point-band"]);
++    expect(handles("Rings")).toEqual(["cushion-halo-ring", "golden-duet-ring", "star-point-band"]);
++  });
++
++  it("puts a name match ahead of a category match", () => {
++    expect(handles("ring")[0]).toBe("cushion-halo-ring");
++  });
++
++  it("ignores accents", () => {
++    expect(handles("riviere")).toEqual(["prism-riviere-bracelet"]);
++  });
++
++  it("needs every word, wherever it appears", () => {
++    // Star Point Band is sold in gold as well as silver.
++    expect(handles("gold ring")).toEqual(["golden-duet-ring", "cushion-halo-ring", "star-point-band"]);
++    expect(handles("silver studs")).toEqual(["solitaire-whisper-studs"]);
++    expect(handles("silver ring")).toEqual(["star-point-band"]);
++  });
++
++  it("understands the stone and the misspellings shoppers type", () => {
++    expect(handles("zircone")).toEqual(["ribbon-bow-earrings", "solitaire-whisper-studs", "prism-riviere-bracelet"]);
++    expect(handles("earing")).toEqual(["ribbon-bow-earrings", "molten-bloom-hoops", "solitaire-whisper-studs"]);
++  });
++
++  it("filters by price", () => {
++    expect(handles("Under 1500")).toEqual(["molten-bloom-hoops", "solitaire-whisper-studs", "star-point-band", "cushion-halo-ring", "golden-duet-ring"]);
++    expect(handles("rings under ₹1,200")).toEqual(["cushion-halo-ring", "star-point-band"]);
++    expect(handles("necklace above 1500")).toEqual(["pearl-legacy-necklace", "bold-nocturne-chain"]);
++  });
++
++  it("returns nothing for a query that matches nothing, and for an empty one", () => {
++    expect(handles("xyzzy")).toEqual([]);
++    expect(handles("  ")).toEqual([]);
++  });
++});
++
++describe("parseQuery", () => {
++  it("reads price bounds and the category", () => {
++    expect(parseQuery("rings under 1,500")).toMatchObject({ terms: ["ring"], max: 1500, min: null, category: "Rings" });
++    expect(parseQuery("2000+")).toMatchObject({ terms: [], max: null, min: 2000, category: null });
++    expect(parseQuery("gold earrings and rings").category).toBeNull();
++  });
++});
++
++describe("shopPageFor", () => {
++  it("sends category and price searches to the shop page, filtered", () => {
++    expect(shopPageFor("rings")).toBe("/jewellery?category=Rings");
++    expect(shopPageFor("under 1500")).toBe("/jewellery?under=1500");
++    expect(shopPageFor("earrings under 1000")).toBe("/jewellery?category=Earrings&under=1000");
++  });
++
++  it("leaves other searches to the results list", () => {
++    expect(shopPageFor("gold ring")).toBeNull();
++    expect(shopPageFor("pearl")).toBeNull();
++  });
++});
+diff --git a/src/lib/search.ts b/src/lib/search.ts
+new file mode 100644
+index 0000000..ab10118
+--- /dev/null
++++ b/src/lib/search.ts
+@@ -0,0 +1,139 @@
++import type { JewelCategory, JewelPiece } from "@/data/jewellery";
++
++/*
++  Shop search over the jewellery catalogue.
++
++  It used to keep any piece whose "title category tags" text contained the
++  query, in catalogue order, so "ring" listed six earrings (EarRINGS) before
++  the first ring, "riviere" missed Prism Rivière, "gold ring" and
++  "silver studs" found nothing, and three of the five Popular chips
++  ("Zircone", "Gifting", "Under 1500") always said "Nothing matches".
++
++  Now every word of the query must start a word of the piece (name first,
++  then category, then tags, metals and stones), accents and plurals are
++  ignored, the stone and price words shoppers use are understood, and the
++  best match comes first.
++*/
++
++export const normalise = (text: string) =>
++  text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
++
++const words = (text: string) => normalise(text).split(/[^a-z0-9]+/).filter(Boolean);
++
++/* "rings" → "ring", "earrings" → "earring", but "glass" stays "glass". */
++const stem = (word: string) =>
++  word.length > 3 && word.endsWith("s") && !word.endsWith("ss") ? word.slice(0, -1) : word;
++
++const STOP = new Set(["a", "an", "and", "the", "for", "with", "in", "of", "my", "jewellery", "jewelry", "jewel", "piece", "rs", "inr"]);
++
++/* Words shoppers type for what the catalogue calls something else, and the
++   usual misspellings. Words that also appear in piece names (chain, band,
++   cuff, bangle) are left alone so they still find those pieces by name. */
++const SYNONYMS: Record<string, string> = {
++  zircone: "zirconia",
++  zircon: "zirconia",
++  cz: "zirconia",
++  diamond: "zirconia",
++  ad: "zirconia",
++  pendant: "necklace",
++  earing: "earring",
++  eraring: "earring",
++  neckles: "necklace",
++  neckle: "necklace",
++  necklac: "necklace",
++  braclet: "bracelet",
++  bracelate: "bracelet",
++  bracelat: "bracelet",
++};
++
++export const CATEGORY_WORDS: Record<string, JewelCategory> = {
++  ring: "Rings",
++  earring: "Earrings",
++  necklace: "Necklaces",
++  bracelet: "Bracelets",
++};
++
++export interface ParsedQuery {
++  terms: string[];
++  max: number | null;
++  min: number | null;
++  /** Set when the query names exactly one category ("rings", "gold earrings"). */
++  category: JewelCategory | null;
++}
++
++/** "under 1500", "below ₹1,500", "< 1500", "1500 below", "over 2000", "2000+" */
++export const parseQuery = (query: string): ParsedQuery => {
++  let text = normalise(query).replace(/₹/g, " ").replace(/(\d),(?=\d{3}\b)/g, "$1");
++  const price: { max: number | null; min: number | null } = { max: null, min: null };
++  const take = (re: RegExp, bound: "max" | "min") => {
++    text = text.replace(re, (_m, n: string) => {
++      price[bound] = Number(n);
++      return " ";
++    });
++  };
++  take(/(?:under|below|less than|upto|up to|within|<=?)\s*(\d{2,6})/g, "max");
++  take(/(\d{2,6})\s*(?:and\s+)?(?:under|below|or less|&\s*below)/g, "max");
++  take(/(?:over|above|more than|from|>=?)\s*(\d{2,6})/g, "min");
++  take(/(\d{2,6})\s*(?:\+|and above|& above|or more|plus)/g, "min");
++  const { max, min } = price;
++
++  const terms = words(text)
++    .filter((w) => !STOP.has(w))
++    .map(stem)
++    .map((w) => SYNONYMS[w] ?? w);
++  const named = [...new Set(terms.map((t) => CATEGORY_WORDS[t]).filter(Boolean))];
++  return { terms, max, min, category: named.length === 1 ? named[0] : null };
++};
++
++const matchWord = (fieldWords: string[], term: string) => {
++  let best = 0;
++  for (const w of fieldWords) {
++    if (w === term || stem(w) === term) return 2;
++    if (w.startsWith(term)) best = 1;
++  }
++  return best;
++};
++
++/** Pieces matching the query, best first; ties keep the catalogue's order. */
++export const searchPieces = (pieces: JewelPiece[], query: string): JewelPiece[] => {
++  const { terms, max, min } = parseQuery(query);
++  if (!terms.length && max === null && min === null) return [];
++  const scored: Array<[number, number, JewelPiece]> = [];
++  pieces.forEach((piece, index) => {
++    if (max !== null && piece.price > max) return;
++    if (min !== null && piece.price < min) return;
++    const name = words(piece.name);
++    const category = words(piece.category);
++    const extra = words(
++      [
++        ...(piece.tags ?? []),
++        piece.colour?.value ?? "",
++        ...(piece.options ?? []).flatMap((o) => o.values),
++        piece.materials ?? "",
++      ].join(" ")
++    );
++    let score = 0;
++    for (const term of terms) {
++      const inName = matchWord(name, term);
++      const inCategory = matchWord(category, term);
++      const s = inName ? 4 + inName : inCategory ? 3 + inCategory : matchWord(extra, term);
++      if (!s) return; // every word has to match somewhere
++      score += s;
++    }
++    scored.push([score, index, piece]);
++  });
++  return scored.sort((a, b) => b[0] - a[0] || a[1] - b[1]).map(([, , piece]) => piece);
++};
++
++/** Where "see all" and the keyboard's Go/Enter take the shopper, if the query maps onto the shop page. */
++export const shopPageFor = (query: string): string | null => {
++  const { terms, max, min, category } = parseQuery(query);
++  const onlyCategory = terms.every((t) => CATEGORY_WORDS[t]);
++  if (!category && max === null && min === null) return null;
++  if (!onlyCategory) return null;
++  const params = new URLSearchParams();
++  if (category) params.set("category", category);
++  if (max !== null) params.set("under", String(max));
++  if (min !== null) params.set("over", String(min));
++  return `/jewellery?${params.toString()}`;
++};
+diff --git a/src/main.tsx b/src/main.tsx
+index 3086fab..1607f8d 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -1,6 +1,8 @@
+ import { createRoot } from "react-dom/client";
+ import App from "./App.tsx";
+ import { preloadRouteFor } from "./pageCode";
++import { queryClient } from "./lib/queryClient";
++import { CATALOGUE_KEY, fetchCatalogue, pageNeedsCatalogue } from "./lib/catalogue";
+ import "./index.css";
+ import { isOptionalChunkFailure } from "./lib/optionalChunk";
+ import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
+@@ -33,9 +35,24 @@ window.addEventListener("load", () => {
+    fails must never keep the app from starting: after 8 s it starts anyway,
+    and a real failure is handled by the stale-chunk reload above. */
+ const APP_START_TIMEOUT_MS = 8_000;
++const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
++
++/* On the shop, collection and product pages the first screen is drawn from
++   the live catalogue, so fetch it now, alongside the page's code, and let
++   React wait for it — but never more than CATALOGUE_WAIT_MS from the start,
++   so a slow Shopify answer cannot hold the page back (see lib/catalogue.ts). */
++const CATALOGUE_WAIT_MS = 2_500;
++const needsCatalogue = pageNeedsCatalogue(window.location.pathname);
++const catalogue = needsCatalogue
++  ? Promise.race([
++      queryClient.prefetchQuery({ queryKey: CATALOGUE_KEY, queryFn: fetchCatalogue, staleTime: 30_000 }),
++      wait(CATALOGUE_WAIT_MS),
++    ])
++  : undefined;
++
+ Promise.race([
+-  preloadRouteFor(window.location.pathname).catch(() => undefined),
+-  new Promise((resolve) => window.setTimeout(resolve, APP_START_TIMEOUT_MS)),
++  Promise.all([preloadRouteFor(window.location.pathname).catch(() => undefined), catalogue]),
++  wait(APP_START_TIMEOUT_MS),
+ ]).then(() => {
+   createRoot(document.getElementById("root")!).render(<App />);
+   // The editorial fonts wait for the page's own code (see index.html).
+diff --git a/src/pages/Auth.tsx b/src/pages/Auth.tsx
+index 8f0a050..eca58a3 100644
+--- a/src/pages/Auth.tsx
++++ b/src/pages/Auth.tsx
+@@ -236,13 +236,13 @@ const Auth = () => {
+               setError(null);
+               setNotice(null);
+             }}
+-            className="mt-8 border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
++            className="relative mt-8 border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F] after:absolute after:-inset-x-2 after:-inset-y-3 after:content-['']"
+             style={jost}
+           >
+             {mode === "signin" ? "REGISTER NOW" : "I ALREADY HAVE AN ACCOUNT"}
+           </button>
+ 
+-          <Link to="/innercircle" className="mt-6 text-[10px] tracking-[0.3em] text-[#1A1614]/45" style={jost}>
++          <Link to="/innercircle" className="mt-3 inline-flex min-h-[44px] items-center text-[10px] tracking-[0.3em] text-[#1A1614]/45" style={jost}>
+             ABOUT THE INNER CIRCLE
+           </Link>
+         </section>
+diff --git a/src/pages/ComingSoon.tsx b/src/pages/ComingSoon.tsx
+index 74cf60c..925f322 100644
+--- a/src/pages/ComingSoon.tsx
++++ b/src/pages/ComingSoon.tsx
+@@ -81,7 +81,7 @@ const ComingSoon = ({
+ 
+           <Link
+             to="/"
+-            className="mt-7 inline-flex items-center gap-1.5 text-[13px] italic text-[#1A1614]/55 underline underline-offset-4 transition-opacity duration-200 hover:opacity-70"
++            className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-[13px] italic text-[#1A1614]/55 underline underline-offset-4 transition-opacity duration-200 hover:opacity-70"
+             style={editorial}
+           >
+             <Home size={13} />
+diff --git a/src/pages/ExchangeReturnPolicy.tsx b/src/pages/ExchangeReturnPolicy.tsx
+index 67b05dd..83cf0f5 100644
+--- a/src/pages/ExchangeReturnPolicy.tsx
++++ b/src/pages/ExchangeReturnPolicy.tsx
+@@ -92,14 +92,14 @@ const ExchangeReturnPolicy = () => {
+ 
+       {/* Anchor navigation */}
+       <nav
+-        className="w-full flex justify-center gap-6 md:gap-10 py-5"
++        className="w-full flex justify-center gap-6 md:gap-10 py-2"
+         style={{ borderBottom: "1px solid hsl(0 0% 88%)" }}
+       >
+         {sections.map((s) => (
+           <a
+             key={s.id}
+             href={`#${s.id}`}
+-            className="font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
++            className="inline-flex min-h-[44px] items-center font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
+             style={{ color: "hsl(0 0% 40%)" }}
+             onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(0 0% 12%)")}
+             onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 40%)")}
+diff --git a/src/pages/FAQs.tsx b/src/pages/FAQs.tsx
+index f226745..1358798 100644
+--- a/src/pages/FAQs.tsx
++++ b/src/pages/FAQs.tsx
+@@ -126,14 +126,14 @@ const FAQs = () => {
+ 
+       {/* Anchor navigation */}
+       <nav
+-        className="w-full flex flex-wrap justify-center gap-4 md:gap-8 py-5 px-4"
++        className="w-full flex flex-wrap justify-center gap-x-4 md:gap-x-8 py-2 px-4"
+         style={{ borderBottom: "1px solid hsl(0 0% 88%)" }}
+       >
+         {faqSections.map((s) => (
+           <a
+             key={s.id}
+             href={`#${s.id}`}
+-            className="font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
++            className="inline-flex min-h-[44px] items-center font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
+             style={{ color: "hsl(0 0% 40%)" }}
+             onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(0 0% 12%)")}
+             onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 40%)")}
+diff --git a/src/pages/InnerCircle.tsx b/src/pages/InnerCircle.tsx
+index 445173a..141e7f1 100644
+--- a/src/pages/InnerCircle.tsx
++++ b/src/pages/InnerCircle.tsx
+@@ -47,7 +47,7 @@ const InnerCircle = () => (
+           <JoinInnerCircleForm source="inner-circle" cta="Join the Inner Circle" />
+           <Link
+             to="/auth"
+-            className="border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
++            className="relative border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F] after:absolute after:-inset-x-2 after:-inset-y-3 after:content-['']"
+             style={jost}
+           >
+             REGISTER NOW / SIGN IN →
+@@ -56,7 +56,7 @@ const InnerCircle = () => (
+             href={WHATSAPP}
+             target="_blank"
+             rel="noopener noreferrer"
+-            className="text-[10px] tracking-[0.3em] text-[#1A1614]/45"
++            className="inline-flex min-h-[44px] items-center text-center text-[10px] tracking-[0.3em] text-[#1A1614]/45"
+             style={jost}
+           >
+             OR REQUEST AN INVITATION ON WHATSAPP
+diff --git a/src/pages/Jewellery.tsx b/src/pages/Jewellery.tsx
+index d9cbf2e..e1c0077 100644
+--- a/src/pages/Jewellery.tsx
++++ b/src/pages/Jewellery.tsx
+@@ -265,7 +265,13 @@ const Jewellery = () => {
+         {bestSellers.length > 0 && (
+           <section aria-label="Most loved pieces" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
+             <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
+-            <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
++            {/* Keyed by its pieces: when the list changed under a snapping row
++                (two pieces, then three), the browser kept the old first tile
++                in place and the new first one opened half off screen. */}
++            <div
++              key={bestSellers.map((p) => p.handle).join("|")}
++              className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1"
++            >
+               {bestSellers.map((p, i) => {
+                 const cover = MOST_LOVED_COVERS[p.handle] ?? cardCover(p);
+                 return (

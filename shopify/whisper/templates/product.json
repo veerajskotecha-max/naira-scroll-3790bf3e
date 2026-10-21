@@ -271,12 +271,23 @@
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               }
+            },
+            "swatches": {
+              "type": "swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_padding_top": 4,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              }
             }
           },
           "block_order": [
             "card-gallery",
             "card-title",
-            "card-price"
+            "card-price",
+            "swatches"
           ]
         }
       },
@@ -308,10 +319,77 @@
         "padding-block-start": 32,
         "padding-block-end": 8
       }
+    },
+    "reels": {
+      "type": "nf-reels",
+      "blocks": {
+        "reel-riya": {
+          "type": "reel",
+          "settings": {
+            "video_url": "https://cdn.shopify.com/videos/c/vp/f82cf6a85f5a4f678910439371c50133/f82cf6a85f5a4f678910439371c50133.HD-720p-1.6Mbps-98199042.mp4",
+            "poster": "shopify://shop_images/nf-reel-riya.jpg",
+            "caption": "Worn together",
+            "products": [
+              "cushion-halo-ring",
+              "woven-gold-hoops",
+              "prism-riviere-bracelet"
+            ]
+          }
+        },
+        "reel-pankti": {
+          "type": "reel",
+          "settings": {
+            "video_url": "https://cdn.shopify.com/videos/c/vp/38ccebf962824d929d956105688809f8/38ccebf962824d929d956105688809f8.HD-720p-1.6Mbps-98199043.mp4",
+            "poster": "shopify://shop_images/nf-reel-pankti.jpg",
+            "caption": "The Naira edit, in motion",
+            "products": [
+              "toggle-link-chain",
+              "brushed-gold-huggies"
+            ]
+          }
+        },
+        "reel-ananya": {
+          "type": "reel",
+          "settings": {
+            "video_url": "https://cdn.shopify.com/videos/c/vp/4fac266bdda243deab280479b3ea5afe/4fac266bdda243deab280479b3ea5afe.HD-720p-1.6Mbps-98199044.mp4",
+            "poster": "shopify://shop_images/nf-reel-ananya.jpg",
+            "caption": "Where is this from?",
+            "products": [
+              "halo-curve-ring",
+              "baroque-pearl-lariat"
+            ]
+          }
+        },
+        "reel-sonal": {
+          "type": "reel",
+          "settings": {
+            "video_url": "https://cdn.shopify.com/videos/c/vp/764033e286294efaa1b62d7e9f46c85c/764033e286294efaa1b62d7e9f46c85c.HD-720p-1.6Mbps-98199045.mp4",
+            "poster": "shopify://shop_images/nf-reel-sonal.jpg",
+            "caption": "These hoops are doing all the work",
+            "products": [
+              "woven-gold-hoops"
+            ]
+          }
+        }
+      },
+      "block_order": [
+        "reel-riya",
+        "reel-pankti",
+        "reel-ananya",
+        "reel-sonal"
+      ],
+      "settings": {
+        "heading": "See it worn",
+        "only_this_product": true,
+        "color_scheme": "scheme-1",
+        "padding-block-start": 32,
+        "padding-block-end": 8
+      }
     }
   },
   "order": [
     "main",
+    "reels",
     "reviews",
     "recommendations"
   ]

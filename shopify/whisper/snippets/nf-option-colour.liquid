@@ -1,0 +1,65 @@
+{%- doc -%}
+  Naira: the colour a swatch is painted when the option value has no swatch
+  set in Shopify. Prints a CSS background (a colour or gradient) for a metal,
+  stone or colour name, or nothing when the name is not one it knows.
+
+  Metals are gradients so gold and silver read as metal rather than flat
+  yellow and grey. More specific names are tested first: "rose gold" before
+  "gold", "light amethyst" before "amethyst", "blue zircon" before "blue".
+
+  @param {string} value - The option value name, e.g. "Gold" or "May · Emerald"
+
+  @example
+  {% capture colour %}{% render 'nf-option-colour', value: product_option_value.name %}{% endcapture %}
+{%- enddoc -%}
+
+{%- liquid
+  assign name = value | downcase
+  if name contains 'rose gold'
+    echo 'linear-gradient(135deg, #f4d3c3 0%, #d19a80 55%, #a96f57 100%)'
+  elsif name contains 'two tone' or name contains 'mixed'
+    echo 'linear-gradient(90deg, #d8ad52 0 50%, #c4c4c4 50% 100%)'
+  elsif name contains 'gold'
+    echo 'linear-gradient(135deg, #f5e2a4 0%, #d4a84b 55%, #a8792a 100%)'
+  elsif name contains 'silver' or name contains 'rhodium' or name contains 'platinum'
+    echo 'linear-gradient(135deg, #fafafa 0%, #cdcdcd 55%, #979797 100%)'
+  elsif name contains 'light amethyst'
+    echo '#c9a9e2'
+  elsif name contains 'amethyst'
+    echo '#8a5fb0'
+  elsif name contains 'blue zircon'
+    echo '#3ea8cc'
+  elsif name contains 'aquamarine' or name contains 'aqua'
+    echo '#8fd2de'
+  elsif name contains 'ruby'
+    echo '#a3182f'
+  elsif name contains 'emerald'
+    echo '#1d7a4c'
+  elsif name contains 'sapphire'
+    echo '#1f4f9e'
+  elsif name contains 'garnet'
+    echo '#7a1d2c'
+  elsif name contains 'peridot'
+    echo '#a5c63b'
+  elsif name contains 'topaz' or name contains 'citrine'
+    echo '#e5a23a'
+  elsif name contains 'rose' or name contains 'pink'
+    echo '#f1a9bb'
+  elsif name contains 'crystal' or name contains 'clear' or name contains 'diamond' or name contains 'white'
+    echo 'radial-gradient(circle at 32% 30%, #ffffff 0%, #eef2f5 45%, #cfd8df 100%)'
+  elsif name contains 'pearl'
+    echo 'radial-gradient(circle at 32% 30%, #ffffff 0%, #f6efe6 50%, #ddd0bf 100%)'
+  elsif name contains 'black' or name contains 'onyx'
+    echo '#1a1614'
+  elsif name contains 'green'
+    echo '#3b8a5a'
+  elsif name contains 'blue'
+    echo '#3a6db5'
+  elsif name contains 'red'
+    echo '#b2263a'
+  elsif name contains 'purple' or name contains 'lilac' or name contains 'violet'
+    echo '#9a74c4'
+  elsif name contains 'pastel' or name contains 'multi' or name contains 'rainbow'
+    echo 'conic-gradient(#8fd2de, #f1a9bb, #f3e19b, #8fd2de)'
+  endif
+-%}

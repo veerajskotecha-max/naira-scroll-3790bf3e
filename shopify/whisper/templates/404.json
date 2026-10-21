@@ -172,12 +172,23 @@
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               }
+            },
+            "swatches": {
+              "type": "swatches",
+              "settings": {
+                "product_swatches_alignment": "flex-start",
+                "product_swatches_padding_top": 4,
+                "product_swatches_padding_bottom": 0,
+                "product_swatches_padding_left": 0,
+                "product_swatches_padding_right": 0
+              }
             }
           },
           "block_order": [
             "card-gallery",
             "card-title",
-            "card-price"
+            "card-price",
+            "swatches"
           ]
         }
       },

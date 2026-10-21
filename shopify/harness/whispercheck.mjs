@@ -45,11 +45,12 @@ const checkSettings = (where, schema, settings = {}) => {
   }
 };
 
-const walkBlocks = (where, blocks = {}, order = []) => {
+const walkBlocks = (where, blocks = {}, order = [], local = []) => {
   for (const id of order) if (!blocks[id]) problems.push(`${where}: block_order names "${id}", which is not defined`);
   for (const [id, block] of Object.entries(blocks)) {
     if (block.type.startsWith('shopify://')) continue;
-    const schema = schemaOf('blocks', block.type);
+    // A section may define its own blocks in its schema instead of theme blocks.
+    const schema = local.find((b) => b.type === block.type && b.settings) || schemaOf('blocks', block.type);
     const here = `${where} > ${id} (${block.type})`;
     if (!schema) {
       problems.push(`${here}: no such block`);
@@ -79,7 +80,7 @@ const checkFile = (file) => {
       continue;
     }
     checkSettings(here, schema, section.settings);
-    walkBlocks(here, section.blocks, section.block_order || []);
+    walkBlocks(here, section.blocks, section.block_order || [], schema.blocks || []);
   }
 };
 

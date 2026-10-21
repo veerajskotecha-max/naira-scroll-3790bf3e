@@ -8,6 +8,7 @@ import PincodeChecker from "@/components/product/PincodeChecker";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
@@ -1009,7 +1010,7 @@ const JewelDetailNext = () => {
                   : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
               </p>
             )}
-            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} />
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} />
 
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
             <div id="product-actions" className="mt-2 grid grid-cols-2 gap-2">
@@ -1071,6 +1072,7 @@ const JewelDetailNext = () => {
                   )}
                   {/* The spec list names plating and metal; the summary line is for pieces without one. */}
                   {specs.length === 0 && <p className="mt-4 text-[12px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
+                  {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} />}
                   {/* The size guide photo again, right where the sizes are read. */}
                   {piece.sizeGuide && (
                     <img

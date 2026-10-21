@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { Link, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Gem, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
@@ -25,7 +25,8 @@ import { productParams, trackPixel } from "@/lib/pixel";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
-import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, initialChoice, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
+import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
+import { colourFromParam, colourOption, openingChoice } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -338,21 +339,40 @@ const JewelDetailNext = () => {
 
   /* The metal, stone, size or month chosen, for a piece Shopify sells more than
      one way. It opens on the first variant that can be bought; once the shopper
-     picks, that variant's own photo leads the gallery. */
-  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? initialChoice(piece) : {}));
-  const [picked, setPicked] = useState(false);
+     picks, that variant's own photo leads the gallery. A colour card in the
+     shop grid links here on its colour (?colour=silver): the page opens on that
+     colour, its photo first. */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const colourParam = searchParams.get("colour");
+  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? openingChoice(piece, colourParam) : {}));
+  const [picked, setPicked] = useState(() => Boolean(piece && colourFromParam(piece, colourParam)));
   const variantKey = piece?.variants?.map((v) => v.id).join(",") ?? "";
   useEffect(() => {
-    setChosen(piece ? initialChoice(piece) : {});
-    setPicked(false);
+    const colour = piece ? colourFromParam(piece, colourParam) : undefined;
+    /* A colour picked here writes the link; that must not undo a size the
+       shopper has already chosen. */
+    setChosen((current) =>
+      !piece
+        ? {}
+        : colour && current[colour.option] === colour.value && findVariant(piece, current)
+          ? current
+          : openingChoice(piece, colourParam),
+    );
+    setPicked(Boolean(colour));
     // A refetch of the same variants must not undo the shopper's choice.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [piece?.handle, variantKey]);
+  }, [piece?.handle, variantKey, colourParam]);
   const variant = piece ? findVariant(piece, chosen) : undefined;
   const pick = (option: string, value: string) => {
     if (!piece) return;
     setChosen((current) => choose(piece, current, option, value));
     setPicked(true);
+    /* The colour stays in the link, so the page can be shared as seen. */
+    if (colourOption(piece)?.name === option) {
+      const next = new URLSearchParams(searchParams);
+      next.set("colour", value.toLowerCase());
+      setSearchParams(next, { replace: true });
+    }
   };
 
   const [selectedImage, setSelectedImage] = useState(0);

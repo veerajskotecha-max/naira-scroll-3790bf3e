@@ -48,6 +48,9 @@ export interface JewelPiece {
   options?: Array<{ name: string; values: string[] }>;
   /** Every way the piece is sold, when there is more than one. */
   variants?: JewelVariant[];
+  /** On a shop-grid card that shows one colour of the piece ("Metal" → "Silver");
+      see colourCards. */
+  colour?: { option: string; value: string };
 }
 
 /** One way a piece is sold: a Shopify variant, a metal, a stone, a size or a month. */

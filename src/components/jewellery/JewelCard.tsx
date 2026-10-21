@@ -19,6 +19,7 @@ import { Heart } from "lucide-react";
 import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { isAdjustableRing } from "@/data/ringFit";
 import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
+import { pieceHref } from "@/lib/colourCards";
 
 import JewelQuickView from "@/components/jewellery/JewelQuickView";
 
@@ -51,6 +52,9 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
      only when a piece has no clean packshot (necklaces/bracelets shot on
      model), so scale is still communicated. */
   const frontImg = cardCover(piece);
+  /* A card for one colour of a piece opens its page on that colour. */
+  const href = pieceHref(piece);
+  const shown = piece.colour ? `${piece.name} in ${piece.colour.value}` : piece.name;
 
 
   const zircone = piece.handle.startsWith("zircone");
@@ -96,7 +100,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
   const handleAdd = async () => {
     setAdding(true);
     try {
-      const added = await addItem(cartLineFor(piece, oneTapVariant(piece)));
+      const added = await addItem(cartLineFor(piece, oneTapVariant(piece, piece.colour ? { [piece.colour.option]: piece.colour.value } : {})));
       /* Opening the drawer on a failed add showed the shopper an empty cart. */
       if (added) setDrawerOpen(true);
     } finally {
@@ -151,8 +155,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           two behaviours for a control you are trying to hit. */}
       <div className="relative">
       <Link
-        to={`/jewellery/${piece.handle}`}
-        aria-label={`View ${piece.name}`}
+        to={href}
+        aria-label={`View ${shown}`}
         className="block w-full text-left transition-transform duration-200 active:scale-[0.97]"
       >
         <div
@@ -167,7 +171,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
                for a thumbnail — the single biggest weight saving on mobile. */
             srcSet={`${cdn(frontImg, 300)} 300w, ${cdn(frontImg, 400)} 400w, ${cdn(frontImg, 500)} 500w, ${cdn(frontImg, 700)} 700w, ${cdn(frontImg, 900)} 900w`}
             sizes="(max-width: 640px) 46vw, (max-width: 1024px) 32vw, 300px"
-            alt={piece.name}
+            alt={shown}
             /* Only the first screen of tiles loads eagerly. */
             loading={index < 4 ? "eager" : "lazy"}
             fetchPriority={index < 2 ? "high" : "auto"}
@@ -241,6 +245,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
       <div className="flex flex-1 flex-col items-center px-1 pt-4 text-center sm:pt-5">
         <p className="text-[9px] tracking-nf-32 text-nf-gold-deep sm:text-[10px] sm:tracking-nf-34" style={jost}>
           {piece.category.toUpperCase()}
+          {piece.colour && ` · ${piece.colour.value.toUpperCase()}`}
         </p>
         {/* Two-line clamp keeps every card in a row the same height, so the
             price and CTAs line up across the grid instead of staggering. */}
@@ -248,7 +253,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
           className="mt-1.5 line-clamp-2 h-[2.4em] overflow-hidden text-[18px] leading-[1.2] text-nf-ink sm:mt-2 sm:text-[24px] md:text-[26px]"
           style={velista}
         >
-          <Link to={`/jewellery/${piece.handle}`} className="hover:underline underline-offset-4">{piece.name}</Link>
+          <Link to={href} className="hover:underline underline-offset-4">{piece.name}</Link>
         </h3>
         {/* Price: the single most-scanned element on a grid card, so it reads
             at title weight in ink, with the MRP struck through beside it. */}
@@ -263,8 +268,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
           {need && !soldOut ? (
             <Link
-              to={`/jewellery/${piece.handle}`}
-              aria-label={`Choose a ${need} for ${piece.name}`}
+              to={href}
+              aria-label={`Choose a ${need} for ${shown}`}
               className="press-scale inline-flex min-h-[44px] w-full items-center justify-center border border-nf-ink bg-nf-ink px-5 text-[9.5px] tracking-nf-25 text-nf-ivory transition-opacity hover:opacity-90 sm:text-[10.5px] sm:tracking-nf-30"
               style={jost}
             >

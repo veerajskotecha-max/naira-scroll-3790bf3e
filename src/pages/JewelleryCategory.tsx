@@ -7,6 +7,7 @@ import JewelCard from "@/components/jewellery/JewelCard";
 import Reveal from "@/components/wow/Reveal";
 import RingAtelierBackdrop from "@/components/jewellery/RingAtelierBackdrop";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { cardKey, colourCards } from "@/lib/colourCards";
 import { categoryBySlug, allLandings, categoryLandings as coreCategories, SITE_URL } from "@/data/seoContent";
 import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
 
@@ -53,7 +54,10 @@ const JewelleryCategory = () => {
     () => (landing?.category ? jewellery.filter((p) => p.category === landing.category) : jewellery),
     [jewellery, landing?.category]
   );
-  const pieces = useMemo(() => orderForLanding(inCategory), [inCategory]);
+  /* Each metal or stone of a piece is its own card (see colourCards). */
+  const pieces = useMemo(() => orderForLanding(colourCards(inCategory)), [inCategory]);
+  /* The count and the structured data name each product once, whatever its colours. */
+  const products = useMemo(() => pieces.filter((p, i) => pieces.findIndex((q) => q.handle === p.handle) === i), [pieces]);
   const fromPrice = useMemo(
     () => (pieces.length ? Math.min(...pieces.map((p) => p.price)) : 0),
     [pieces]
@@ -88,8 +92,8 @@ const JewelleryCategory = () => {
             url,
             mainEntity: {
               "@type": "ItemList",
-              numberOfItems: pieces.length,
-              itemListElement: pieces.map((p, i) => ({
+              numberOfItems: products.length,
+              itemListElement: products.map((p, i) => ({
                 "@type": "ListItem",
                 position: i + 1,
                 name: p.name,
@@ -127,7 +131,7 @@ const JewelleryCategory = () => {
 
               {pieces.length > 0 && (
                 <p className="mt-3 text-[10px] tracking-[0.24em] text-[#1A1614]/50" style={jost}>
-                  {pieces.length} {pieces.length === 1 ? "PIECE" : "PIECES"}
+                  {products.length} {products.length === 1 ? "PIECE" : "PIECES"}
                   {fromPrice ? ` · FROM ₹${fromPrice.toLocaleString("en-IN")}` : ""}
                 </p>
               )}
@@ -195,7 +199,7 @@ const JewelleryCategory = () => {
             className="grid grid-cols-2 gap-4 pt-6 sm:gap-6 sm:pt-8 lg:grid-cols-3 lg:gap-8"
           >
             {pieces.map((piece, i) => (
-              <Reveal key={piece.handle} delay={Math.min(i, 5) * 60}>
+              <Reveal key={cardKey(piece)} delay={Math.min(i, 5) * 60}>
                 <JewelCard piece={piece} index={i} />
               </Reveal>
             ))}

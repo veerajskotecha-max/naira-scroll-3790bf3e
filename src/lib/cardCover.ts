@@ -4,7 +4,8 @@ import { EXPLICIT_COVERS } from "@/hooks/useLiveJewellery";
 /**
  * The single photo a piece shows on any card, anywhere on the site.
  *
- * Two rules, in order:
+ * A card showing one colour of a piece (see colourCards) leads with that
+ * colour's photo. Otherwise two rules, in order:
  *  1. A deliberate cover pick (see COVER_PICKS) always wins.
  *  2. Otherwise prefer a clean packshot over an on-model / packaging frame, so
  *     no card ever leads with a gift box or a cropped model shot.
@@ -15,6 +16,8 @@ import { EXPLICIT_COVERS } from "@/hooks/useLiveJewellery";
  */
 export const cardCover = (piece: JewelPiece): string => {
   const gallery = piece.gallery ?? [];
+  /* A card for one colour of a piece leads with that colour's own photo. */
+  if (piece.colour) return piece.image;
   if (EXPLICIT_COVERS.has(piece.handle)) return piece.image;
 
   const named = (g: string) => /worn|model|onmodel|_2_/i.test(g);

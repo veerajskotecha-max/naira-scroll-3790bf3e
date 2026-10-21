@@ -16,6 +16,7 @@ import { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import { Link, useLocation, useNavigationType, useSearchParams } from "react-router-dom";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { cardCover } from "@/lib/cardCover";
+import { cardKey, colourCards } from "@/lib/colourCards";
 
 
 const hubFaqs = [
@@ -148,16 +149,15 @@ const Jewellery = () => {
     });
   };
 
+  /* Each metal or stone of a piece is its own card (see colourCards). */
   const inCategory = useMemo(
-    () => (active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
+    () => colourCards(active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
   const pieces = useMemo(() => {
     const filtered = applyJewelFilters(inCategory, activeFilters);
     if (activeFilters.sort !== "featured") return filtered;
-    const leads = FEATURED_LEADS
-      .map((handle) => filtered.find((p) => p.handle === handle))
-      .filter((p): p is (typeof filtered)[number] => Boolean(p));
+    const leads = FEATURED_LEADS.flatMap((handle) => filtered.filter((p) => p.handle === handle));
     return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
   }, [inCategory, activeFilters]);
 
@@ -376,7 +376,7 @@ const Jewellery = () => {
           <>
             <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-4 pt-10 sm:gap-6 sm:px-6 lg:grid-cols-3 lg:gap-8">
               {visiblePieces.map((piece, i) => (
-                <JewelCard key={piece.handle} piece={piece} index={i} />
+                <JewelCard key={cardKey(piece)} piece={piece} index={i} />
               ))}
             </div>
             {visibleCount < pieces.length && (

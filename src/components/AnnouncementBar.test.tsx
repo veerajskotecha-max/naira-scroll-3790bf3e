@@ -15,11 +15,12 @@ const bar = () =>
 describe("AnnouncementBar", () => {
   /* The owner asked for the code to come off the header, but wanted the
      small-run scarcity line kept alongside the shipping promise — the strip
-     carries exactly those two messages and nothing here may name a code. */
-  it("carries the shipping promise and the limited-pieces line, no promo code", () => {
+     carries exactly those three messages and nothing here may name a code. */
+  it("carries the shipping promise, the limited-pieces line and the sitewide sale, no promo code", () => {
     bar();
     expect(screen.getAllByText(/FREE INSURED SHIPPING/)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/LIMITED PIECES IN STOCK/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/SITEWIDE SALE/)[0]).toBeInTheDocument();
     expect(screen.queryByText(/NAIRA10/)).toBeNull();
   });
 

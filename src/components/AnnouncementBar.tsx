@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 const MESSAGES = [
   "FREE INSURED SHIPPING ON ALL ORDERS",
   "LIMITED PIECES IN STOCK ✦ EACH STYLE MADE IN A SMALL RUN",
+  "SITEWIDE SALE ✦ UP TO 20% OFF",
 ];
 
 const AnnouncementBar = () => (

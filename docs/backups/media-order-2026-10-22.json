@@ -1,5 +1,5 @@
 {
- "note": "Shopify photo order of the 23 listings whose card photo is not their first photo, before the chosen product shot was moved to the front (22 Oct 2026). To undo, run productReorderMedia with \"before\" as the order.",
+ "note": "Shopify photo order of the 24 listings (23, then Dewdrop Pendant Necklace) whose card photo is not their first photo, before the chosen product shot was moved to the front (22 Oct 2026). To undo, run productReorderMedia with \"before\" as the order.",
  "listings": {
   "bold-nocturne-chain": {
    "product": "gid://shopify/Product/9294915371170",
@@ -1319,6 +1319,61 @@
     {
      "media": "gid://shopify/MediaImage/46509718929570",
      "file": "emerald-deco-hoops-size-guide.jpg"
+    }
+   ]
+  },
+  "dewdrop-bezel-necklace": {
+   "product": "gid://shopify/Product/9294915502242",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/46514184552610",
+     "file": "dewdrop-pendant-necklace-flat-lay.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514184585378",
+     "file": "dewdrop-pendant-necklace-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514184618146",
+     "file": "dewdrop-pendant-necklace-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514184650914",
+     "file": "dewdrop-pendant-necklace-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465395362",
+     "file": "naira-packaging-b11.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509587234978",
+     "file": "dewdrop-bezel-necklace-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46514184585378",
+     "file": "dewdrop-pendant-necklace-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514184552610",
+     "file": "dewdrop-pendant-necklace-flat-lay.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514184618146",
+     "file": "dewdrop-pendant-necklace-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514184650914",
+     "file": "dewdrop-pendant-necklace-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465395362",
+     "file": "naira-packaging-b11.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509587234978",
+     "file": "dewdrop-bezel-necklace-size-guide.jpg"
     }
    ]
   }

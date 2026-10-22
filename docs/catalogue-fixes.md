@@ -124,3 +124,52 @@ than one SKU prefix, and it is a different issue:
 So: 1 listing confirmed mixed by filename, 1 confirmed mixed by eye. The
 remaining 68 have consistent prefixes but have **not** been visually verified,
 and this defect class would not show up if present.
+
+## 22 Oct 2026: 23 listings lead with their card photo in Shopify
+
+The site's cards show a chosen product shot for every piece (`src/data/cardCovers.ts`
+on main). For 23 listings that photo was not the listing's first photo in Shopify,
+so Shopify and the Meta catalogue showed a different one. Each of those
+photos was moved to the front in Shopify. Nothing else moved, except on the five
+listings named below.
+
+- **17 listings** now lead with the product shot in Shopify, so the Meta catalogue
+  picks it up.
+- **6 listings** keep their square catalogue crop first (it exists for the Meta
+  feed and is hidden on the site). The product shot comes right after it:
+  Marquise Layering Set, Baroque Pearl Lariat, Petite Pearl Chain, Ribbon Bow
+  Earrings, Solitaire Whisper Studs, Triple Dawn Cuff.
+- **Product pages on the site open on the same photo as before.** A product page
+  opens on a listing's second photo (`wornFirst`).
+  - On five listings the photo the page opened on was moved to second place in
+    Shopify, so the page keeps opening on it: Charm Box Chain, Petite Pearl
+    Chain, Prism Rivière Bracelet, Verdant Cushion Studs, Prism Cluster Studs
+    (Silver).
+  - On those five and on Bold Nocturne Chain, the product shot is now the page's
+    second photo. The rest of each page's order is unchanged.
+  - For 15 listings the product shot was already the page's opening photo. Those
+    15 got a product-page pick (`COVER_PICKS` in `useLiveJewellery.ts`, commit
+    3ff60be on main) so the page keeps opening on it.
+  - That commit is published: the picks were in the live site's code by about
+    five minutes after the reorder. In that gap, those 15 pages opened on the
+    listing's previous first photo.
+
+- **Dewdrop Pendant Necklace** went live after the card photos were chosen.
+  Its first photo was the whole necklace laid flat, with the pendant a dot on a
+  phone card. The pendant close-up was moved to the front in Shopify, and main
+  got its card photo and product-page pick (commit cf88a2f). Its product page
+  opened on the close-up before; once cf88a2f is published it does again (until
+  then it opens on the laid-flat photo).
+- The other 79 listings already led with their card photo. After the change,
+  all 102 listings with a chosen card photo lead with it in Shopify, plus
+  Dewdrop. On a phone check of all 103 live product pages, each opened on the
+  same photo as before.
+
+- Found while checking: the site fetched at most 12 photos per listing, which cut
+  the gift box and size guide off Baguette Tennis Bracelet and Birthstone Heart
+  Necklace (14 photos each). Fixed on main (commit d80ebeb, 20 photos); live after
+  publishing.
+
+Backup of the order before and after, by media id:
+`docs/backups/media-order-2026-10-22.json`. To undo, run `productReorderMedia`
+with the "before" order.

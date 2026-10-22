@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, Minus, Plus, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
+import { cardCover } from "@/lib/cardCover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
@@ -81,7 +82,7 @@ const PieceCard = ({
   <div data-piece-card={piece.handle} data-variant={variant ? variantLabel(variant) : undefined} className="flex items-center gap-2.5 border border-nf-gold/20 bg-[var(--nf-surface)] px-2 py-1.5">
     <Link to={`/jewellery/${piece.handle}`} onClick={follow} tabIndex={-1} aria-hidden="true" className="shrink-0">
       <img
-        src={shopifyImage(variant?.image ?? piece.image, 120) || variant?.image || piece.image}
+        src={shopifyImage(variant?.image ?? cardCover(piece), 120) || variant?.image || cardCover(piece)}
         alt=""
         className="h-[45px] w-[36px] bg-nf-ivory-deep object-cover"
         width={36}

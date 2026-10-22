@@ -1,6 +1,7 @@
 import type { JewelPiece, JewelVariant } from "@/data/jewellery";
 import type { ShopifyProductNode } from "@/lib/shopify";
 import { isAdjustableRing } from "@/data/ringFit";
+import { cardCover } from "@/lib/cardCover";
 
 /*
   A piece's variants: the metals, stones, sizes and months Shopify sells it in.
@@ -136,7 +137,7 @@ export const cartLineFor = (piece: JewelPiece, variant?: JewelVariant) => {
     price,
     priceLabel: `₹${price.toLocaleString("en-IN")}`,
     currencyCode: "INR",
-    image: variant?.image ?? piece.image,
+    image: variant?.image ?? cardCover(piece),
     ...(selectedOptions.length ? { selectedOptions, variantTitle: variant?.title } : {}),
   };
 };

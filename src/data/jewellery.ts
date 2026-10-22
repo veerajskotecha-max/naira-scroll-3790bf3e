@@ -29,6 +29,8 @@ export interface JewelPiece {
   variantId: string;
   availableForSale: boolean;
   image: string;
+  /** The listing's lead product photo in Shopify, for cards (see cardCover). */
+  cover?: string;
   gallery?: string[];
   /** The listing's size guide photo (also the last gallery photo), shown in Details. */
   sizeGuide?: string;

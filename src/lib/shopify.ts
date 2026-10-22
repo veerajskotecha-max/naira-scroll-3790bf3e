@@ -47,6 +47,10 @@ export interface ShopifyProductNode {
       };
     }>;
   };
+  /** The first product photo in the listing's own Shopify order (gift box and
+      size guide skipped), kept before the gallery is reordered for the product
+      page. Cards lead with it (see cardCover). Set by withLeadImage. */
+  leadImage?: string;
   variants: {
     edges: Array<{
       node: ShopifyProductVariant;
@@ -343,6 +347,17 @@ export const dropCatalogSquare = (product: ShopifyProductNode | null): ShopifyPr
   return { ...product, images: { ...product.images, edges: kept } };
 };
 
+/**
+ * Notes the photo that leads the listing in Shopify — the clean product shot
+ * the galleries are curated to open with — before wornFirst moves the worn
+ * shot to the front for the product page.
+ */
+const NOT_A_COVER = /size[-_ ]?guide|naira[-_ ]?packaging|gift\s*box|shipping\s*carton/i;
+export const withLeadImage = (product: ShopifyProductNode | null): ShopifyProductNode | null => {
+  const lead = product?.images?.edges.find((e) => !NOT_A_COVER.test(`${e.node.url} ${e.node.altText ?? ""}`));
+  return product && lead ? { ...product, leadImage: lead.node.url } : product;
+};
+
 export const wornFirst = (product: ShopifyProductNode | null): ShopifyProductNode | null => {
   const edges = product?.images?.edges;
   if (!edges || edges.length < 2) return product;
@@ -388,13 +403,13 @@ export async function fetchShopifyProducts(first = 20, query?: string): Promise<
     first,
     query,
   });
-  return data.data.products.edges.map((edge) => wornFirst(dropCatalogSquare(edge.node)) as ShopifyProductNode);
+  return data.data.products.edges.map((edge) => wornFirst(withLeadImage(dropCatalogSquare(edge.node))) as ShopifyProductNode);
 }
 
 export async function fetchShopifyProductByHandle(handle: string): Promise<ShopifyProductNode | null> {
   if (!handle) return null;
   const data = await storefrontApiRequest<{ data: { product: ShopifyProductNode | null } }>(PRODUCT_BY_HANDLE_QUERY, { handle });
-  return wornFirst(dropCatalogSquare(data.data.product));
+  return wornFirst(withLeadImage(dropCatalogSquare(data.data.product)));
 }
 
 

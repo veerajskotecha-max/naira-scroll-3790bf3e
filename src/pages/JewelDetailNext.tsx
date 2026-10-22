@@ -5,6 +5,7 @@ import { ArrowLeft, Gem, Gift, Heart, Leaf, MessageSquare, Plus, Sparkles } from
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
+import { cardCover } from "@/lib/cardCover";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
@@ -191,7 +192,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   const [adding, setAdding] = useState(false);
   const need = choiceNeeded(piece);
   const variant = compact ? oneTapVariant(piece, prefer) : undefined;
-  const image = variant?.image ?? piece.image;
+  const image = variant?.image ?? cardCover(piece);
   const add = async () => {
     setAdding(true);
     try {
@@ -580,7 +581,7 @@ const JewelDetailNext = () => {
           price: piece.price,
           priceLabel: piece.priceLabel,
           currencyCode: "INR",
-          image: piece.image,
+          image: cardCover(piece),
           size: noteSize,
         };
 
@@ -608,7 +609,7 @@ const JewelDetailNext = () => {
 
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece) });
   };
 
   /* Tarnish and skin, answered from the piece's own materials, in Care. */

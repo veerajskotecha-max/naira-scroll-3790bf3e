@@ -70,7 +70,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
        is no navigation to suppress. stopPropagation stays as cheap insurance
        against a handler being added to the card wrapper later. */
     e.stopPropagation();
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: frontImg });
   };
 
   const cartItem = () => ({
@@ -80,7 +80,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
     price: piece.price,
     priceLabel: piece.priceLabel,
     currencyCode: "INR" as const,
-    image: piece.image,
+    image: frontImg,
   });
 
   /* Straight to Shopify's secure checkout with this piece in the cart. */

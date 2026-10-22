@@ -6,6 +6,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts } from "@/lib/shopify";
 import { parseQuery, searchPieces, shopPageFor } from "@/lib/search";
+import { cardCover } from "@/lib/cardCover";
 
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
@@ -108,7 +109,7 @@ const SearchOverlay = ({
       title: p.name,
       caption: `${p.category} · ${(p.tags ?? []).slice(0, 2).join(", ")}`,
       price: p.priceLabel,
-      image: p.image,
+      image: cardCover(p),
       to: `/jewellery/${p.handle}`,
     }));
     const lower = term.toLowerCase();

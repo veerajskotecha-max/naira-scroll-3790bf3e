@@ -26,7 +26,9 @@ const NairaBoxShowcase = () => (
       </p>
       {/* Velista sets in capitals only, so the display line stays short and
           the thought finishes in the editorial italic. */}
-      <h2 className="mt-4 whitespace-nowrap font-nf-display text-[26px] leading-none text-[var(--nf-text)] min-[400px]:text-[29px] md:text-[40px]">
+      {/* 22px below 330px: at 26px the one-line title ran 20px past a 280px
+          screen (a folded phone, or a large system text setting). */}
+      <h2 className="mt-4 whitespace-nowrap font-nf-display text-[22px] leading-none text-[var(--nf-text)] min-[330px]:text-[26px] min-[400px]:text-[29px] md:text-[40px]">
         Luxury chic jewellery
       </h2>
       <p className="mt-2 font-nf-editorial text-[19px] italic leading-snug text-[color:rgb(var(--nf-ink-rgb)/0.7)] md:text-[22px]">

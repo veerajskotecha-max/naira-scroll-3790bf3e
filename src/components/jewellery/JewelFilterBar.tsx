@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import type { JewelPiece } from "@/data/jewellery";
 
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
@@ -116,13 +116,22 @@ const JewelFilterBar = ({
           FILTER{activeCount ? ` (${activeCount})` : ""}
         </button>
 
-        <label className="inline-flex items-center gap-2">
+        {/* The sort menu shows its choice in the bar's small type, while the
+            real <select> sits on top of it, invisible, at 16px. A phone-sized
+            select (10px) made iPhones zoom the whole shop in on every tap. */}
+        <label
+          className="relative inline-flex min-h-[44px] items-center gap-2 border border-nf-ink/25 px-3 text-[10px] tracking-nf-14 text-nf-ink/80 focus-within:border-nf-ink has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[color:var(--nf-focus-ring)] sm:text-[10.5px]"
+          style={jost}
+        >
           <span className="sr-only">Sort pieces</span>
+          <span aria-hidden="true" className="pointer-events-none whitespace-nowrap">
+            {SORT_OPTIONS.find((o) => o.key === value.sort)?.label ?? SORT_OPTIONS[0].label}
+          </span>
+          <ChevronDown aria-hidden="true" size={12} strokeWidth={1.6} className="pointer-events-none shrink-0" />
           <select
             value={value.sort}
             onChange={(e) => set({ sort: e.target.value as SortKey })}
-            className="min-h-[44px] border border-nf-ink/25 bg-transparent px-3 text-[10px] tracking-nf-14 text-nf-ink/80 focus:border-nf-ink focus:outline-none sm:text-[10.5px]"
-            style={jost}
+            className="absolute -inset-px cursor-pointer appearance-none bg-transparent text-base opacity-0"
           >
             {SORT_OPTIONS.map((o) => (
               <option key={o.key} value={o.key}>

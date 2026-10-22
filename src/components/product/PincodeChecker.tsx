@@ -65,12 +65,14 @@ const PincodeChecker = () => {
           value={pincode}
           onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
           placeholder="Enter pincode"
-          className="flex-1 h-11 px-3 text-[16px] md:text-[13px] tracking-[0.02em] border outline-none bg-transparent"
+          /* min-w-0: a text field will not shrink below its default 20-character
+             width, which pushed Check past the edge of every phone screen. */
+          className="min-w-0 flex-1 h-11 px-3 text-[16px] md:text-[13px] tracking-[0.02em] border outline-none bg-transparent"
           style={{ borderColor: "hsl(0 0% 80%)", color: "hsl(0 0% 20%)" }}
         />
         <button
           onClick={() => check(pincode)}
-          className="h-11 px-5 text-[11px] font-medium uppercase tracking-[0.14em] border border-l-0 transition-colors duration-200"
+          className="h-11 shrink-0 px-5 text-[11px] font-medium uppercase tracking-[0.14em] border border-l-0 transition-colors duration-200"
           style={{
             borderColor: "hsl(0 0% 20%)",
             backgroundColor: "hsl(0 0% 12%)",

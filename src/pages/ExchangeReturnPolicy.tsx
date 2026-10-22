@@ -92,14 +92,14 @@ const ExchangeReturnPolicy = () => {
 
       {/* Anchor navigation */}
       <nav
-        className="w-full flex justify-center gap-6 md:gap-10 py-5"
+        className="w-full flex justify-center gap-6 md:gap-10 py-2"
         style={{ borderBottom: "1px solid hsl(0 0% 88%)" }}
       >
         {sections.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className="font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
+            className="inline-flex min-h-[44px] items-center font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
             style={{ color: "hsl(0 0% 40%)" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(0 0% 12%)")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 40%)")}

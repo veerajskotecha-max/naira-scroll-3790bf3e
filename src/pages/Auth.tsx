@@ -236,13 +236,13 @@ const Auth = () => {
               setError(null);
               setNotice(null);
             }}
-            className="mt-8 border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
+            className="relative mt-8 border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F] after:absolute after:-inset-x-2 after:-inset-y-3 after:content-['']"
             style={jost}
           >
             {mode === "signin" ? "REGISTER NOW" : "I ALREADY HAVE AN ACCOUNT"}
           </button>
 
-          <Link to="/innercircle" className="mt-6 text-[10px] tracking-[0.3em] text-[#1A1614]/45" style={jost}>
+          <Link to="/innercircle" className="mt-3 inline-flex min-h-[44px] items-center text-[10px] tracking-[0.3em] text-[#1A1614]/45" style={jost}>
             ABOUT THE INNER CIRCLE
           </Link>
         </section>

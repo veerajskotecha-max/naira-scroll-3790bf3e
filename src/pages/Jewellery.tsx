@@ -265,7 +265,13 @@ const Jewellery = () => {
         {bestSellers.length > 0 && (
           <section aria-label="Most loved pieces" className="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
             <p className="text-[10px] tracking-nf-32 text-nf-gold-deep" style={jost}>MOST LOVED</p>
-            <div className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1">
+            {/* Keyed by its pieces: when the list changed under a snapping row
+                (two pieces, then three), the browser kept the old first tile
+                in place and the new first one opened half off screen. */}
+            <div
+              key={bestSellers.map((p) => p.handle).join("|")}
+              className="mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-hide pb-1"
+            >
               {bestSellers.map((p, i) => {
                 const cover = MOST_LOVED_COVERS[p.handle] ?? cardCover(p);
                 return (

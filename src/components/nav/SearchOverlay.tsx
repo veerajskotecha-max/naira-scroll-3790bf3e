@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { trackPixel } from "@/lib/pixel";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts } from "@/lib/shopify";
+import { parseQuery, searchPieces, shopPageFor } from "@/lib/search";
 
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
@@ -27,7 +28,9 @@ interface Hit {
   to: string;
 }
 
-const POPULAR = ["Rings", "Zircone", "Necklace", "Gifting", "Under 1500"];
+/* Each of these returns pieces; "Gifting" never matched anything. */
+const POPULAR = ["Rings", "Zircone", "Necklace", "Pearl", "Under 1500"];
+const MAX_RESULTS = 10;
 
 /**
  * Instant search over the live catalogue — jewellery pieces and apparel
@@ -48,6 +51,7 @@ const SearchOverlay = ({
   const [q, setQ] = useState("");
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const { jewellery } = useLiveJewellery();
   const { data: apparel } = useQuery({
     queryKey: ["shopify-products", "search-index"],
@@ -79,17 +83,9 @@ const SearchOverlay = ({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  const index: Hit[] = useMemo(() => {
-    const jewels: Hit[] = jewellery.map((p) => ({
-      key: `j-${p.handle}`,
-      title: p.name,
-      caption: `${p.category} · ${(p.tags ?? []).slice(0, 2).join(", ")}`,
-      price: p.priceLabel,
-      image: p.image,
-      to: `/jewellery/${p.handle}`,
-    }));
+  const clothes: Hit[] = useMemo(() => {
     const jewelHandles = new Set(jewellery.map((p) => p.handle));
-    const clothes: Hit[] = (apparel ?? [])
+    return (apparel ?? [])
       .filter((n) => !jewelHandles.has(n.handle))
       .map((n) => ({
         key: `p-${n.handle}`,
@@ -99,16 +95,40 @@ const SearchOverlay = ({
         image: n.images.edges[0]?.node.url ?? "",
         to: `/product/${n.handle}`,
       }));
-    return [...jewels, ...clothes];
   }, [jewellery, apparel]);
 
-  const results = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    if (term.length < 2) return [];
-    return index
-      .filter((h) => `${h.title} ${h.caption}`.toLowerCase().includes(term))
-      .slice(0, 8);
-  }, [q, index]);
+  /* Jewellery is ranked by lib/search; apparel keeps its plain text match and
+     only fills the list after the pieces. */
+  const { results, total, seeAll } = useMemo(() => {
+    const term = q.trim();
+    if (term.length < 2) return { results: [] as Hit[], total: 0, seeAll: null as null | { to: string; label: string } };
+    const pieces = searchPieces(jewellery, term);
+    const jewels: Hit[] = pieces.map((p) => ({
+      key: `j-${p.handle}`,
+      title: p.name,
+      caption: `${p.category} · ${(p.tags ?? []).slice(0, 2).join(", ")}`,
+      price: p.priceLabel,
+      image: p.image,
+      to: `/jewellery/${p.handle}`,
+    }));
+    const lower = term.toLowerCase();
+    const matches = [...jewels, ...clothes.filter((h) => `${h.title} ${h.caption}`.toLowerCase().includes(lower))];
+    const to = shopPageFor(term);
+    const { category } = parseQuery(term);
+    return {
+      results: matches.slice(0, MAX_RESULTS),
+      total: matches.length,
+      seeAll: to ? { to, label: `See all ${category ? category.toLowerCase() : "pieces"}${pieces.length ? ` (${pieces.length})` : ""}` } : null,
+    };
+  }, [q, jewellery, clothes]);
+
+  /* The keyboard's Go / Enter: the filtered shop page when the search is a
+     category or a price, otherwise the best match. It clicks the same link a
+     tap would, so closing and history work the same way. */
+  const go = (e: FormEvent) => {
+    e.preventDefault();
+    listRef.current?.querySelector<HTMLAnchorElement>("a[data-search-go]")?.click();
+  };
 
   const remember = (term: string) => {
     const clean = term.trim();
@@ -125,28 +145,31 @@ const SearchOverlay = ({
     <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Search">
       <button className="absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close search" tabIndex={-1} />
       <div className="relative mx-auto w-full max-w-3xl animate-fade-in bg-[#F4F1ED] p-5 shadow-xl sm:p-7">
-        <div className="flex items-center gap-3 border-b border-nf-ink/15 pb-3">
+        <form role="search" onSubmit={go} className="flex items-center gap-3 border-b border-nf-ink/15 pb-3">
           <Search size={18} strokeWidth={1.5} className="opacity-50" />
           <input
             ref={inputRef}
+            type="search"
+            enterKeyHint="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search rings, necklaces, outfits…"
-            className="w-full bg-transparent text-[15px] text-nf-ink placeholder:text-nf-ink/35 focus:outline-none"
+            className="w-full bg-transparent text-base text-nf-ink placeholder:text-nf-ink/35 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
             aria-label="Search products"
           />
-          <button onClick={onClose} aria-label="Close search" className="p-1 opacity-60 hover:opacity-100">
+          <button type="button" onClick={onClose} aria-label="Close search" className="-my-2 -mr-3 flex h-11 w-11 shrink-0 items-center justify-center opacity-60 hover:opacity-100">
             <X size={18} strokeWidth={1.5} />
           </button>
-        </div>
+        </form>
 
-        <div className="max-h-[60vh] overflow-y-auto">
+        <div ref={listRef} className="max-h-[60vh] overflow-y-auto">
           {results.length > 0 ? (
             <ul className="mt-4 space-y-1">
-              {results.map((h) => (
+              {results.map((h, i) => (
                 <li key={h.key}>
                   <Link
                     to={h.to}
+                    data-search-go={!seeAll && i === 0 ? "" : undefined}
                     onClick={(e) => {
                       remember(q);
                       if (onFollow) onFollow(e);
@@ -169,6 +192,28 @@ const SearchOverlay = ({
                   </Link>
                 </li>
               ))}
+              {seeAll && (
+                <li>
+                  <Link
+                    to={seeAll.to}
+                    data-search-go=""
+                    onClick={(e) => {
+                      remember(q);
+                      if (onFollow) onFollow(e);
+                      else onClose();
+                    }}
+                    className="flex min-h-[44px] items-center justify-between p-2 text-[12px] tracking-nf-14 text-nf-ink underline decoration-nf-gold underline-offset-4"
+                    style={jost}
+                  >
+                    {seeAll.label.toUpperCase()} <span aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              )}
+              {!seeAll && total > results.length && (
+                <li className="p-2 text-[12px] text-nf-ink/55">
+                  Showing {results.length} of {total}. Add a word to narrow it down.
+                </li>
+              )}
             </ul>
           ) : q.trim().length >= 2 ? (
             <p className="mt-6 text-[13px] text-nf-ink/55">
@@ -186,7 +231,7 @@ const SearchOverlay = ({
                       <button
                         key={r}
                         onClick={() => setQ(r)}
-                        className="min-h-[34px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
+                        className="min-h-[44px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
                         style={jost}
                       >
                         {r}
@@ -204,7 +249,7 @@ const SearchOverlay = ({
                     <button
                       key={p}
                       onClick={() => setQ(p)}
-                      className="min-h-[34px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
+                      className="min-h-[44px] border border-nf-ink/20 px-3 text-[10px] tracking-nf-14 text-nf-ink/65 hover:border-nf-ink"
                       style={jost}
                     >
                       {p.toUpperCase()}

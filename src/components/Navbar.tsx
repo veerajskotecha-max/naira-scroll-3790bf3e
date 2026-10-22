@@ -54,7 +54,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           height: "var(--navbar-h)",
         }}
       >
-        <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-5 lg:px-10">
+        <div className="h-full max-w-[1400px] mx-auto grid grid-cols-[1fr_auto_1fr] items-center px-3 min-[300px]:px-4 min-[360px]:px-5 lg:px-10">
           {/* Left: hamburger (mobile) / nav links (desktop) */}
           <div className="flex items-center">
             {/* Icon buttons carry a 44px hit area through padding and pull it
@@ -116,13 +116,16 @@ const Navbar = ({ scrolled }: NavbarProps) => {
             </div>
           </div>
 
-          {/* Center logo: the vector wordmark, whose flower-I turns in 3D. */}
+          {/* Center logo: the vector wordmark, whose flower-I turns in 3D.
+              Below 360px (iPhone SE, small Androids, large system text) the
+              full-size mark ran into the account icon, so it steps down, and
+              again below 300px (a folded phone). */}
           <Link to="/" className="flex items-center justify-center h-full">
-            <NairaWordmark className="w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
+            <NairaWordmark className="w-[72px] min-[300px]:w-[84px] min-[360px]:w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
           </Link>
 
           {/* Right section */}
-          <div className="flex items-center justify-end gap-[16px] lg:gap-[22px]">
+          <div className="flex items-center justify-end gap-[12px] min-[300px]:gap-[16px] lg:gap-[22px]">
             <Link
               to="/contact"
               className="hidden lg:inline nav-link font-cormorant text-[13px] lg:text-[14px] font-medium uppercase tracking-[0.12em] whitespace-nowrap transition-opacity duration-200 hover:opacity-80"

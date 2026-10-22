@@ -47,7 +47,7 @@ const InnerCircle = () => (
           <JoinInnerCircleForm source="inner-circle" cta="Join the Inner Circle" />
           <Link
             to="/auth"
-            className="border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
+            className="relative border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F] after:absolute after:-inset-x-2 after:-inset-y-3 after:content-['']"
             style={jost}
           >
             REGISTER NOW / SIGN IN →
@@ -56,7 +56,7 @@ const InnerCircle = () => (
             href={WHATSAPP}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] tracking-[0.3em] text-[#1A1614]/45"
+            className="inline-flex min-h-[44px] items-center text-center text-[10px] tracking-[0.3em] text-[#1A1614]/45"
             style={jost}
           >
             OR REQUEST AN INVITATION ON WHATSAPP

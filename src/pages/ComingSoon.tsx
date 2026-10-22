@@ -81,7 +81,7 @@ const ComingSoon = ({
 
           <Link
             to="/"
-            className="mt-7 inline-flex items-center gap-1.5 text-[13px] italic text-[#1A1614]/55 underline underline-offset-4 transition-opacity duration-200 hover:opacity-70"
+            className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-[13px] italic text-[#1A1614]/55 underline underline-offset-4 transition-opacity duration-200 hover:opacity-70"
             style={editorial}
           >
             <Home size={13} />

@@ -182,12 +182,12 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
                 className="w-[88px] h-auto brightness-0 invert"
               />
             </Link>
-            <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
-              <Link to="/contact" className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
+            <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5">
+              <Link to="/contact" className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
                 Contact Us
               </Link>
               {compactPolicyLinks.map((link) => (
-                <Link key={link.label} to={link.to} className="font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
+                <Link key={link.label} to={link.to} className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
                   {link.label}
                 </Link>
               ))}

@@ -126,14 +126,14 @@ const FAQs = () => {
 
       {/* Anchor navigation */}
       <nav
-        className="w-full flex flex-wrap justify-center gap-4 md:gap-8 py-5 px-4"
+        className="w-full flex flex-wrap justify-center gap-x-4 md:gap-x-8 py-2 px-4"
         style={{ borderBottom: "1px solid hsl(0 0% 88%)" }}
       >
         {faqSections.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className="font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
+            className="inline-flex min-h-[44px] items-center font-cormorant text-[13px] md:text-[14px] tracking-[0.04em] transition-colors duration-200"
             style={{ color: "hsl(0 0% 40%)" }}
             onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(0 0% 12%)")}
             onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 40%)")}

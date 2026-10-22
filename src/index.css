@@ -313,9 +313,19 @@ a, button, [role="button"], input, select, textarea {
 }
 
 /* 3. Prevent iOS Safari from auto-zooming on input focus
-      (triggered when input font-size < 16px) */
+      (triggered when input font-size < 16px). The plain element rule lost to
+      every text-[13px]-style class on a field, so the sort menu, the size
+      menu, search and the newsletter box all zoomed the page when tapped.
+      On touch screens the floor now wins over those classes. */
 input, select, textarea {
   font-size: max(16px, 1em);
+}
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em) !important;
+  }
 }
 
 /* 4. Minimum 44×44px tap targets for interactive elements

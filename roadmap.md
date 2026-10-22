@@ -53,4 +53,4 @@
 - [x] Restore the full mobile Shop the Reel section below the PDP press strip and remove its floating popup
 - [x] Recover from a page whose code never arrives: one-shot stale-build reload and a branded panel instead of a blank screen
 
-- Keep the bag offer explanation on TOP of the track: "Up to 200ff today · limited pieces" — saving named, live today, limited-stock urgency.
+- Keep the bag offer explanation on TOP of the track: "Up to 20% off today · limited pieces" — saving named, live today, limited-stock urgency.

@@ -136,11 +136,12 @@ const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
         ))}
       </div>
       {/* The nudge under the rungs, in the brand's own words rather than a
-          coupon's: one line, small, centred, so it reads as an aside from the
-          house and not as a third offer. It must not wrap at 360px — a second
-          line of capitals crowds the item row straight below it. */}
+          coupon's: one small centred line, so it reads as an aside from the
+          house and not as a third offer. Kept to eight words on purpose — the
+          bag is full-width and this must stay one line on a 320px phone, where
+          a wrapped line of capitals crowds the item row straight below it. */}
       <p className="mt-3.5 text-center font-nf-label text-[9px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
-        <span aria-hidden="true">&#10022;</span> Bundle them — a fuller box, a kinder price
+        <span aria-hidden="true">&#10022;</span> Bundle them — a kinder price
       </p>
     </div>
   );

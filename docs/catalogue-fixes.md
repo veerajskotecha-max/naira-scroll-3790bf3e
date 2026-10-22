@@ -214,3 +214,7 @@ with the "before" order.
   rest: about 50 other Nano Banana Pro images were made on the account in the
   half hour before. The spec and prompts are in the session scratchpad
   (`shots/spec.py`).
+  - The owner approved the Pearl Drop Studs pod shot. It is live as
+    `pearl-drop-studs-scale.jpg`, after the close-up and before the gift box
+    and size guide. The Verdant Circlet ear shot was skipped.
+  - Triple Dawn Cuff stays as it is until the owner has checked the piece.

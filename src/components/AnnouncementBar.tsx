@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
  * identical halves or it visibly jumps on loop.
  */
 const MESSAGES = [
-  "SITEWIDE SALE!",
+  "SITEWIDE SALE LIVE TODAY!",
   "FREE INSURED SHIPPING",
   "MADE IN LIMITED BATCHES",
 ];
@@ -27,7 +27,7 @@ const AnnouncementBar = () => (
   >
     <Link
       to="/jewellery"
-      aria-label="Shop the jewellery — sitewide sale, free insured shipping, made in limited batches"
+      aria-label="Shop the jewellery — sitewide sale live today, free insured shipping, made in limited batches"
       className="flex items-center h-full"
     >
       <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">

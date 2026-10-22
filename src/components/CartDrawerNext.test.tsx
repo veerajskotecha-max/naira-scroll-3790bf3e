@@ -8,8 +8,8 @@ describe("SimpleLadder: the bag's offer track", () => {
   it("leads with the up-to-20% explanation on top of the track", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
-    expect(ladder.firstElementChild?.textContent).toContain("Up to 20% off today");
-    expect(ladder.firstElementChild?.textContent).toContain("limited pieces");
+    expect(ladder.firstElementChild?.textContent).toContain("Sitewide sale live today");
+    expect(ladder.firstElementChild?.textContent).toContain("up to 20% off");
   });
 
   it("still states both rungs under the track", () => {

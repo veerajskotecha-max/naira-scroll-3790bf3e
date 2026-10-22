@@ -21,7 +21,7 @@ describe("AnnouncementBar", () => {
      messages and nothing here may name a code or a percentage. */
   it("carries the sale, the shipping promise and the limited-batch line, nothing longer", () => {
     bar();
-    expect(screen.getAllByText(/SITEWIDE SALE!/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/SITEWIDE SALE LIVE TODAY!/)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/FREE INSURED SHIPPING/)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/MADE IN LIMITED BATCHES/)[0]).toBeInTheDocument();
     expect(screen.queryByText(/NAIRA10/)).toBeNull();

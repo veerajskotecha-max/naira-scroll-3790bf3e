@@ -113,14 +113,15 @@ const PieceCard = ({
 
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
    once reached, and the offer spelt out under it. */
-const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
+export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
   const fill = Math.min(totalItems, top) / top;
   return (
     <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-5">
-      {/* The explanation rides on top, where the eye lands first. */}
+      {/* The explanation rides on top, where the eye lands first: the saving,
+          that it runs today, and the urgency of the small-run stock. */}
       <p className="whitespace-nowrap pb-2.5 text-center font-nf-label text-[10px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
-        ✦ Offer live today — bundle & pay less
+        ✦ Up to 20% off today · limited pieces
       </p>
       <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />

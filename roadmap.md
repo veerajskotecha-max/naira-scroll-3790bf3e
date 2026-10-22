@@ -1,6 +1,9 @@
 # Roadmap
 
-- [x] Run the top strip on product pages too: the sale, shipping and small-run lines all move there, not just on the rest of the site
+- [x] Drop the percentage from the top strip's sale line so it reads "SITEWIDE SALE" alone
+- [x] Add a small bundling nudge under the bag's offer rungs and keep it one line on a 320px phone
+
+
 
 
 - [x] Re-apply the menu change the repository overwrite removed: one Customised Apparel entry in the desktop and phone menus

@@ -93,7 +93,8 @@ export const PRODUCTS_QUERY = `
               currencyCode
             }
           }
-          images(first: 12) {
+          # Colour pieces carry up to 14 photos; 12 cut off the gift box and size guide.
+          images(first: 20) {
             edges {
               node {
                 url
@@ -152,7 +153,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
           currencyCode
         }
       }
-      images(first: 12) {
+      images(first: 20) {
         edges {
           node {
             url

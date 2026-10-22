@@ -1,0 +1,1326 @@
+{
+ "note": "Shopify photo order of the 23 listings whose card photo is not their first photo, before the chosen product shot was moved to the front (22 Oct 2026). To undo, run productReorderMedia with \"before\" as the order.",
+ "listings": {
+  "bold-nocturne-chain": {
+   "product": "gid://shopify/Product/9294915371170",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36786066391202",
+     "file": "YF5144_2_worn.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37043007946914",
+     "file": "hf_20260829_202820_d8c5c163-56ee-43d5-9271-645333345fb2.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37043007881378",
+     "file": "hf_20260829_202820_ced0ce1b-4902-4f44-96ba-51ad4982a154.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259474305186",
+     "file": "hf_20260809_164607_184572e5-2099-46dc-a93b-410f3d094f95.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36786066423970",
+     "file": "YF5144_3_alt.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245582147746",
+     "file": "naira-packaging-b8.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509147947170",
+     "file": "bold-nocturne-chain-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36786066423970",
+     "file": "YF5144_3_alt.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36786066391202",
+     "file": "YF5144_2_worn.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37043007946914",
+     "file": "hf_20260829_202820_d8c5c163-56ee-43d5-9271-645333345fb2.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37043007881378",
+     "file": "hf_20260829_202820_ced0ce1b-4902-4f44-96ba-51ad4982a154.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259474305186",
+     "file": "hf_20260809_164607_184572e5-2099-46dc-a93b-410f3d094f95.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245582147746",
+     "file": "naira-packaging-b8.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509147947170",
+     "file": "bold-nocturne-chain-size-guide.jpg"
+    }
+   ]
+  },
+  "marquise-layering-set": {
+   "product": "gid://shopify/Product/9294915469474",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942820278434",
+     "file": "marquise-layering-set.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820343970",
+     "file": "marquise-layering-set-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820376738",
+     "file": "marquise-layering-set-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46511465267362",
+     "file": "hf_20261021_080921_745509e2-2c90-4129-8162-4360d0e7ce75.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025070754",
+     "file": "hf_20261021_080921_264aad93-f221-4bc0-8a25-ba9834a8c12c.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245760700578",
+     "file": "naira-packaging-b8_9f3eba87-3d71-45eb-9239-ee310e8dd73e.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509171900578",
+     "file": "marquise-layering-set-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942820278434",
+     "file": "marquise-layering-set.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820376738",
+     "file": "marquise-layering-set-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820343970",
+     "file": "marquise-layering-set-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46511465267362",
+     "file": "hf_20261021_080921_745509e2-2c90-4129-8162-4360d0e7ce75.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025070754",
+     "file": "hf_20261021_080921_264aad93-f221-4bc0-8a25-ba9834a8c12c.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245760700578",
+     "file": "naira-packaging-b8_9f3eba87-3d71-45eb-9239-ee310e8dd73e.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509171900578",
+     "file": "marquise-layering-set-size-guide.jpg"
+    }
+   ]
+  },
+  "charm-box-chain": {
+   "product": "gid://shopify/Product/9294915535010",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36971600969890",
+     "file": "charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820671650",
+     "file": "charm-box-chain-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820704418",
+     "file": "charm-box-chain-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025169058",
+     "file": "hf_20261021_081237_8246c610-28ad-4532-a4b0-e758fca00f81.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025201826",
+     "file": "hf_20261021_081640_6e839bf1-ddef-4a0a-8c34-1df3be9b4bf9.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245747691682",
+     "file": "naira-packaging-b15_e796aad4-30f4-4e68-850d-0147e53faa30.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509585924258",
+     "file": "charm-box-chain-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46514025169058",
+     "file": "hf_20261021_081237_8246c610-28ad-4532-a4b0-e758fca00f81.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820671650",
+     "file": "charm-box-chain-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36971600969890",
+     "file": "charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942820704418",
+     "file": "charm-box-chain-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025201826",
+     "file": "hf_20261021_081640_6e839bf1-ddef-4a0a-8c34-1df3be9b4bf9.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245747691682",
+     "file": "naira-packaging-b15_e796aad4-30f4-4e68-850d-0147e53faa30.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509585924258",
+     "file": "charm-box-chain-size-guide.jpg"
+    }
+   ]
+  },
+  "toggle-link-chain": {
+   "product": "gid://shopify/Product/9294915567778",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36971615846562",
+     "file": "toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821130402",
+     "file": "toggle-link-chain-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025103522",
+     "file": "hf_20261021_081238_f2a14070-5eda-4cb2-8f9a-e138ac9ff54f.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821163170",
+     "file": "toggle-link-chain-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245774856354",
+     "file": "naira-packaging-b3_6254fb2d-0604-41e9-8300-e144ba6e2461.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509585957026",
+     "file": "toggle-link-chain-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942821130402",
+     "file": "toggle-link-chain-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36971615846562",
+     "file": "toggle-link-chain-0_76a74b42-6390-48d6-83cc-5676227b5e81.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514025103522",
+     "file": "hf_20261021_081238_f2a14070-5eda-4cb2-8f9a-e138ac9ff54f.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821163170",
+     "file": "toggle-link-chain-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245774856354",
+     "file": "naira-packaging-b3_6254fb2d-0604-41e9-8300-e144ba6e2461.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509585957026",
+     "file": "toggle-link-chain-size-guide.jpg"
+    }
+   ]
+  },
+  "baroque-pearl-lariat": {
+   "product": "gid://shopify/Product/9294915600546",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942821261474",
+     "file": "baroque-pearl-lariat.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821327010",
+     "file": "baroque-pearl-lariat-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821359778",
+     "file": "baroque-pearl-lariat-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37175729520802",
+     "file": "2483C5F2-0731-47C6-8A45-369076AFD93A.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37175729488034",
+     "file": "1DAA5604-FA4D-4B9E-A3D8-4E16DA8C9A78.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245582934178",
+     "file": "naira-packaging-b10.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942821261474",
+     "file": "baroque-pearl-lariat.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821359778",
+     "file": "baroque-pearl-lariat-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821327010",
+     "file": "baroque-pearl-lariat-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37175729520802",
+     "file": "2483C5F2-0731-47C6-8A45-369076AFD93A.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37175729488034",
+     "file": "1DAA5604-FA4D-4B9E-A3D8-4E16DA8C9A78.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245582934178",
+     "file": "naira-packaging-b10.jpg"
+    }
+   ]
+  },
+  "petite-pearl-chain": {
+   "product": "gid://shopify/Product/9294915633314",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942821425314",
+     "file": "petite-pearl-chain.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821458082",
+     "file": "petite-pearl-chain-0.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821490850",
+     "file": "petite-pearl-chain-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821523618",
+     "file": "petite-pearl-chain-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821556386",
+     "file": "petite-pearl-chain-3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245770662050",
+     "file": "naira-packaging-b2_8432f2b1-bd17-40a1-a3aa-c1227cbc09ae.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509586284706",
+     "file": "petite-pearl-chain-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942821425314",
+     "file": "petite-pearl-chain.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821523618",
+     "file": "petite-pearl-chain-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821490850",
+     "file": "petite-pearl-chain-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821458082",
+     "file": "petite-pearl-chain-0.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942821556386",
+     "file": "petite-pearl-chain-3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245770662050",
+     "file": "naira-packaging-b2_8432f2b1-bd17-40a1-a3aa-c1227cbc09ae.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509586284706",
+     "file": "petite-pearl-chain-size-guide.jpg"
+    }
+   ]
+  },
+  "verdant-drop-earrings": {
+   "product": "gid://shopify/Product/9294915797154",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36971615912098",
+     "file": "verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259475189922",
+     "file": "hf_20260807_193030_5a9252be-61ad-41d8-b412-31422860c3b5.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259475222690",
+     "file": "hf_20260807_140815_63e7598f-00f5-4712-a811-327f408a4541.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942822801570",
+     "file": "verdant-drop-earrings-4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465493666",
+     "file": "naira-packaging-b14.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509274136738",
+     "file": "verdant-drop-earrings-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37259475189922",
+     "file": "hf_20260807_193030_5a9252be-61ad-41d8-b412-31422860c3b5.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36971615912098",
+     "file": "verdant-drop-earrings-0_2bb7d173-2148-463b-9ada-2ab9a25d3383.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259475222690",
+     "file": "hf_20260807_140815_63e7598f-00f5-4712-a811-327f408a4541.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942822801570",
+     "file": "verdant-drop-earrings-4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465493666",
+     "file": "naira-packaging-b14.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509274136738",
+     "file": "verdant-drop-earrings-size-guide.jpg"
+    }
+   ]
+  },
+  "ribbon-bow-earrings": {
+   "product": "gid://shopify/Product/9294915862690",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942822834338",
+     "file": "ribbon-bow-earrings.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942822965410",
+     "file": "ribbon-bow-earrings-3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935702178",
+     "file": "ribbon-bow-earrings-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935734946",
+     "file": "ribbon-bow-earrings-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259475026082",
+     "file": "hf_20260809_171450_157d70b8-90d2-478a-83c8-5d5b7a5462bc.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37270150643874",
+     "file": "naira-u18-ribbon-bow-earrings.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245770727586",
+     "file": "naira-packaging-b1_2af9b1d3-6cff-4b51-ab53-dc5cd136d54b.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173964962",
+     "file": "ribbon-bow-earrings-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942822834338",
+     "file": "ribbon-bow-earrings.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935702178",
+     "file": "ribbon-bow-earrings-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942822965410",
+     "file": "ribbon-bow-earrings-3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935734946",
+     "file": "ribbon-bow-earrings-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259475026082",
+     "file": "hf_20260809_171450_157d70b8-90d2-478a-83c8-5d5b7a5462bc.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37270150643874",
+     "file": "naira-u18-ribbon-bow-earrings.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245770727586",
+     "file": "naira-packaging-b1_2af9b1d3-6cff-4b51-ab53-dc5cd136d54b.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173964962",
+     "file": "ribbon-bow-earrings-size-guide.jpg"
+    }
+   ]
+  },
+  "solitaire-whisper-studs": {
+   "product": "gid://shopify/Product/9294916092066",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942824079522",
+     "file": "solitaire-whisper-studs.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942824145058",
+     "file": "solitaire-whisper-studs-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942824210594",
+     "file": "solitaire-whisper-studs-3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259496292514",
+     "file": "naira-u07-solitaire-whisper-studs.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245774823586",
+     "file": "naira-packaging-b1_264a714c-92f0-4cd8-9ffe-aa1b6bde8579.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509273940130",
+     "file": "solitaire-whisper-studs-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942824079522",
+     "file": "solitaire-whisper-studs.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942824210594",
+     "file": "solitaire-whisper-studs-3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942824145058",
+     "file": "solitaire-whisper-studs-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37259496292514",
+     "file": "naira-u07-solitaire-whisper-studs.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245774823586",
+     "file": "naira-packaging-b1_264a714c-92f0-4cd8-9ffe-aa1b6bde8579.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509273940130",
+     "file": "solitaire-whisper-studs-size-guide.jpg"
+    }
+   ]
+  },
+  "riviere-eternal-bracelet": {
+   "product": "gid://shopify/Product/9294916386978",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36786053054626",
+     "file": "YF7085_2_worn.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36786053120162",
+     "file": "YF7085_4_alt.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173997730",
+     "file": "riviere-eternal-bracelet-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36786053120162",
+     "file": "YF7085_4_alt.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36786053054626",
+     "file": "YF7085_2_worn.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173997730",
+     "file": "riviere-eternal-bracelet-size-guide.jpg"
+    }
+   ]
+  },
+  "triple-dawn-cuff": {
+   "product": "gid://shopify/Product/9294916485282",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942825455778",
+     "file": "triple-dawn-cuff.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942825521314",
+     "file": "triple-dawn-cuff-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942825554082",
+     "file": "triple-dawn-cuff-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245581918370",
+     "file": "naira-packaging-b9.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36942825455778",
+     "file": "triple-dawn-cuff.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942825554082",
+     "file": "triple-dawn-cuff-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942825521314",
+     "file": "triple-dawn-cuff-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245581918370",
+     "file": "naira-packaging-b9.jpg"
+    }
+   ]
+  },
+  "prism-riviere-bracelet": {
+   "product": "gid://shopify/Product/9294916812962",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36942826373282",
+     "file": "prism-riviere-bracelet-5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37270150512802",
+     "file": "naira-u11-prism-riviere-bracelet.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37270150480034",
+     "file": "naira-u09-prism-riviere-bracelet.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826274978",
+     "file": "prism-riviere-bracelet-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36971608735906",
+     "file": "prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826242210",
+     "file": "prism-riviere-bracelet-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466345634",
+     "file": "naira-packaging-b13.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826340514",
+     "file": "prism-riviere-bracelet-4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173833890",
+     "file": "prism-riviere-bracelet-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/36971608735906",
+     "file": "prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37270150512802",
+     "file": "naira-u11-prism-riviere-bracelet.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826373282",
+     "file": "prism-riviere-bracelet-5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37270150480034",
+     "file": "naira-u09-prism-riviere-bracelet.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826274978",
+     "file": "prism-riviere-bracelet-2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826242210",
+     "file": "prism-riviere-bracelet-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466345634",
+     "file": "naira-packaging-b13.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942826340514",
+     "file": "prism-riviere-bracelet-4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173833890",
+     "file": "prism-riviere-bracelet-size-guide.jpg"
+    }
+   ]
+  },
+  "vintage-halo-ring": {
+   "product": "gid://shopify/Product/9294917533858",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36971616010402",
+     "file": "vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245459366050",
+     "file": "naira-packaging-b3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770898082",
+     "file": "vintage-halo-ring-angle.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770930850",
+     "file": "vintage-halo-ring-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770963618",
+     "file": "vintage-halo-ring-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509274202274",
+     "file": "vintage-halo-ring-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46516770898082",
+     "file": "vintage-halo-ring-angle.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36971616010402",
+     "file": "vintage-halo-ring-0_388cc36f-c489-49b8-9150-dfbb20286647.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245459366050",
+     "file": "naira-packaging-b3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770930850",
+     "file": "vintage-halo-ring-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770963618",
+     "file": "vintage-halo-ring-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509274202274",
+     "file": "vintage-halo-ring-size-guide.jpg"
+    }
+   ]
+  },
+  "petite-pave-band": {
+   "product": "gid://shopify/Product/9294917632162",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/36971608670370",
+     "file": "petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770799778",
+     "file": "petite-pave-band-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770832546",
+     "file": "petite-pave-band-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770865314",
+     "file": "petite-pave-band-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942830436514",
+     "file": "petite-pave-band-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245770629282",
+     "file": "naira-packaging-b14_4f4203e9-c909-4f02-943d-26a63d84874d.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173801122",
+     "file": "petite-pave-band-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46516770799778",
+     "file": "petite-pave-band-macro.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36971608670370",
+     "file": "petite-pave-band-0_3a593ff2-aa2e-4a98-a5ef-19d405ad646a.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770832546",
+     "file": "petite-pave-band-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516770865314",
+     "file": "petite-pave-band-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/36942830436514",
+     "file": "petite-pave-band-1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245770629282",
+     "file": "naira-packaging-b14_4f4203e9-c909-4f02-943d-26a63d84874d.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509173801122",
+     "file": "petite-pave-band-size-guide.jpg"
+    }
+   ]
+  },
+  "bold-dome-huggies": {
+   "product": "gid://shopify/Product/9337645858978",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/37277023404194",
+     "file": "E200570_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023535266",
+     "file": "E200570_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466149026",
+     "file": "naira-packaging-b6.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516771094690",
+     "file": "bold-dome-huggies-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516771127458",
+     "file": "bold-dome-huggies-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509147521186",
+     "file": "bold-dome-huggies-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37277023535266",
+     "file": "E200570_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023404194",
+     "file": "E200570_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466149026",
+     "file": "naira-packaging-b6.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516771094690",
+     "file": "bold-dome-huggies-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46516771127458",
+     "file": "bold-dome-huggies-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509147521186",
+     "file": "bold-dome-huggies-size-guide.jpg"
+    }
+   ]
+  },
+  "verdant-cushion-studs": {
+   "product": "gid://shopify/Product/9337645957282",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/37277023928482",
+     "file": "E19712C_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023961250",
+     "file": "E19712C_2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023994018",
+     "file": "E19712C_3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277024026786",
+     "file": "E19712C_4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277024059554",
+     "file": "E19712C_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466149026",
+     "file": "naira-packaging-b6.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37277024059554",
+     "file": "E19712C_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023961250",
+     "file": "E19712C_2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023928482",
+     "file": "E19712C_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277023994018",
+     "file": "E19712C_3.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277024026786",
+     "file": "E19712C_4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466149026",
+     "file": "naira-packaging-b6.jpg"
+    }
+   ]
+  },
+  "torsade-huggies": {
+   "product": "gid://shopify/Product/9337646743714",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/46510833369250",
+     "file": "torsade-huggies-hero.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37277028057250",
+     "file": "E156970_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510833402018",
+     "file": "torsade-huggies-on-model.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465723042",
+     "file": "naira-packaging-b4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509274038434",
+     "file": "torsade-huggies-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37277028057250",
+     "file": "E156970_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510833369250",
+     "file": "torsade-huggies-hero.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510833402018",
+     "file": "torsade-huggies-on-model.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465723042",
+     "file": "naira-packaging-b4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509274038434",
+     "file": "torsade-huggies-size-guide.jpg"
+    }
+   ]
+  },
+  "petite-square-huggies": {
+   "product": "gid://shopify/Product/9338085408930",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/37280277692578",
+     "file": "WE25284B1_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280277823650",
+     "file": "WE25284B1_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280277790882",
+     "file": "WE25284B1_4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465723042",
+     "file": "naira-packaging-b4.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37280277823650",
+     "file": "WE25284B1_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280277692578",
+     "file": "WE25284B1_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280277790882",
+     "file": "WE25284B1_4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465723042",
+     "file": "naira-packaging-b4.jpg"
+    }
+   ]
+  },
+  "prism-cluster-studs-silver": {
+   "product": "gid://shopify/Product/9338087375010",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/37280289489058",
+     "file": "E15838C1_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280289521826",
+     "file": "E15838C1_2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280289587362",
+     "file": "E15838C1_4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280289620130",
+     "file": "E15838C1_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466149026",
+     "file": "naira-packaging-b6.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37280289620130",
+     "file": "E15838C1_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280289521826",
+     "file": "E15838C1_2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280289489058",
+     "file": "E15838C1_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280289587362",
+     "file": "E15838C1_4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245466149026",
+     "file": "naira-packaging-b6.jpg"
+    }
+   ]
+  },
+  "lilac-papillon-ring": {
+   "product": "gid://shopify/Product/9338256392354",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/37280494059682",
+     "file": "WR11674B2_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280494190754",
+     "file": "WR11674B2_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935177890",
+     "file": "lilac-papillon-ring-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935210658",
+     "file": "lilac-papillon-ring-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465493666",
+     "file": "naira-packaging-b14.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/37280494190754",
+     "file": "WR11674B2_5.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37280494059682",
+     "file": "WR11674B2_1.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935177890",
+     "file": "lilac-papillon-ring-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935210658",
+     "file": "lilac-papillon-ring-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465493666",
+     "file": "naira-packaging-b14.jpg"
+    }
+   ]
+  },
+  "duo-link-bracelet": {
+   "product": "gid://shopify/Product/10344380825762",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/46518891643042",
+     "file": "duo-link-bracelet-hero_ab362b7d-2d86-40ce-9ee9-3a8ccb44fec7.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458290471074",
+     "file": "ad28df0a-ae8a-4ff1-aee1-d4fb29d1529f.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510500741282",
+     "file": "duo-link-bracelet-on-model.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458290503842",
+     "file": "386698d3-f311-44cb-a67c-72595f10beb6.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510500708514",
+     "file": "hf_20261021_075229_160cef79-c46f-4b3e-b665-f2eb46881f86.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891675810",
+     "file": "duo-link-bracelet-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465395362",
+     "file": "naira-packaging-b11.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509171474594",
+     "file": "duo-link-bracelet-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46458290471074",
+     "file": "ad28df0a-ae8a-4ff1-aee1-d4fb29d1529f.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891643042",
+     "file": "duo-link-bracelet-hero_ab362b7d-2d86-40ce-9ee9-3a8ccb44fec7.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510500741282",
+     "file": "duo-link-bracelet-on-model.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458290503842",
+     "file": "386698d3-f311-44cb-a67c-72595f10beb6.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46510500708514",
+     "file": "hf_20261021_075229_160cef79-c46f-4b3e-b665-f2eb46881f86.png"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891675810",
+     "file": "duo-link-bracelet-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465395362",
+     "file": "naira-packaging-b11.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509171474594",
+     "file": "duo-link-bracelet-size-guide.jpg"
+    }
+   ]
+  },
+  "baguette-tennis-necklace": {
+   "product": "gid://shopify/Product/10344380956834",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/46458291126434",
+     "file": "a69ad59d-37b1-443f-a03a-df9fd5fbab70.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458291224738",
+     "file": "42fb467f-1368-4074-b8b5-fcb0594f8d98.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458291257506",
+     "file": "e454d2ab-3207-4cc7-a0ba-03d4b5a57ccc.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891708578",
+     "file": "baguette-tennis-necklace-worn-ruby.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518936436898",
+     "file": "baguette-tennis-necklace-worn-crystal.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891741346",
+     "file": "baguette-tennis-necklace-worn-emerald.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514514362530",
+     "file": "baguette-tennis-worn-crystal.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514514395298",
+     "file": "baguette-tennis-worn-ruby.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514514428066",
+     "file": "baguette-tennis-worn-emerald.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465493666",
+     "file": "naira-packaging-b14.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509145915554",
+     "file": "baguette-tennis-necklace-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46458291224738",
+     "file": "42fb467f-1368-4074-b8b5-fcb0594f8d98.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458291126434",
+     "file": "a69ad59d-37b1-443f-a03a-df9fd5fbab70.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458291257506",
+     "file": "e454d2ab-3207-4cc7-a0ba-03d4b5a57ccc.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891708578",
+     "file": "baguette-tennis-necklace-worn-ruby.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518936436898",
+     "file": "baguette-tennis-necklace-worn-crystal.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46518891741346",
+     "file": "baguette-tennis-necklace-worn-emerald.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514514362530",
+     "file": "baguette-tennis-worn-crystal.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514514395298",
+     "file": "baguette-tennis-worn-ruby.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46514514428066",
+     "file": "baguette-tennis-worn-emerald.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465493666",
+     "file": "naira-packaging-b14.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509145915554",
+     "file": "baguette-tennis-necklace-size-guide.jpg"
+    }
+   ]
+  },
+  "emerald-deco-hoops": {
+   "product": "gid://shopify/Product/10344381284514",
+   "before": [
+    {
+     "media": "gid://shopify/MediaImage/46458293616802",
+     "file": "53383841-4e22-4839-b1d3-e270f930ebba.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458293715106",
+     "file": "67a9a867-ec89-4288-ae31-abae55c188b2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935112354",
+     "file": "emerald-deco-hoops-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935145122",
+     "file": "emerald-deco-hoops-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465723042",
+     "file": "naira-packaging-b4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509718929570",
+     "file": "emerald-deco-hoops-size-guide.jpg"
+    }
+   ],
+   "after": [
+    {
+     "media": "gid://shopify/MediaImage/46458293715106",
+     "file": "67a9a867-ec89-4288-ae31-abae55c188b2.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46458293616802",
+     "file": "53383841-4e22-4839-b1d3-e270f930ebba.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935112354",
+     "file": "emerald-deco-hoops-worn.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46517935145122",
+     "file": "emerald-deco-hoops-scale.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/37245465723042",
+     "file": "naira-packaging-b4.jpg"
+    },
+    {
+     "media": "gid://shopify/MediaImage/46509718929570",
+     "file": "emerald-deco-hoops-size-guide.jpg"
+    }
+   ]
+  }
+ }
+}

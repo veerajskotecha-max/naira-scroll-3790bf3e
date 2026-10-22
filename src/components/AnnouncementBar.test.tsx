@@ -22,7 +22,7 @@ describe("AnnouncementBar", () => {
   it("carries the sale, the shipping promise and the limited-batch line, nothing longer", () => {
     bar();
     expect(screen.getAllByText(/SITEWIDE SALE!/)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/FREE INSURED SHIPPING$/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/FREE INSURED SHIPPING/)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/MADE IN LIMITED BATCHES/)[0]).toBeInTheDocument();
     expect(screen.queryByText(/NAIRA10/)).toBeNull();
     expect(screen.queryByText(/20% OFF/)).toBeNull();

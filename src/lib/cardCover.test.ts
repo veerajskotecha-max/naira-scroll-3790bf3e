@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { JewelPiece } from "@/data/jewellery";
+import { fromShopify } from "@/hooks/useLiveJewellery";
 import { cardCover } from "./cardCover";
-import { withLeadImage, wornFirst, type ShopifyProductNode } from "./shopify";
+import { dropCatalogSquare, withLeadImage, wornFirst, type ShopifyProductNode } from "./shopify";
 
 const cdn = (file: string) => `https://cdn.shopify.com/s/files/1/0680/9606/5698/files/${file}?v=1`;
 const piece = (p: Partial<JewelPiece> & Pick<JewelPiece, "handle">): JewelPiece => ({
@@ -61,5 +62,59 @@ describe("withLeadImage", () => {
     const out = wornFirst(withLeadImage(node([["x_1_main.png"], ["x_2_worn.png"]])));
     expect(out?.images.edges[0].node.url).toBe(cdn("x_2_worn.png"));
     expect(out?.leadImage).toBe(cdn("x_1_main.png"));
+  });
+});
+
+describe("a listing that leads with its card photo in Shopify", () => {
+  const listing = (handle: string, files: Array<[string, string?]>) =>
+    wornFirst(
+      withLeadImage(
+        dropCatalogSquare({
+          id: `gid://shopify/Product/${handle}`,
+          title: handle,
+          description: "",
+          handle,
+          productType: "Earrings",
+          vendor: "Naira Petite",
+          tags: [],
+          availableForSale: true,
+          priceRange: { minVariantPrice: { amount: "1299.0", currencyCode: "INR" } },
+          images: { edges: files.map(([f, alt]) => ({ node: { url: cdn(f), altText: alt ?? null } })) },
+          variants: {
+            edges: [{ node: { id: "gid://shopify/ProductVariant/1", title: "Default Title", availableForSale: true, price: { amount: "1299.0", currencyCode: "INR" }, selectedOptions: [] } }],
+          },
+          options: [],
+        })
+      )
+    ) as ShopifyProductNode;
+
+  it("opens its product page on that photo, not on the listing's second photo", () => {
+    const piece = fromShopify(
+      listing("bold-dome-huggies", [
+        ["E200570_5.jpg"],
+        ["E200570_1.jpg"],
+        ["naira-packaging-b6.jpg"],
+        ["bold-dome-huggies-worn.jpg"],
+        ["bold-dome-huggies-size-guide.jpg", "Size guide — Bold Dome Huggies"],
+      ]),
+      0
+    );
+    expect(piece.gallery?.map((url) => url.split("?")[0].split("/").pop())).toEqual([
+      "E200570_5.jpg",
+      "E200570_1.jpg",
+      "bold-dome-huggies-worn.jpg",
+      "naira-packaging-b6.jpg",
+      "bold-dome-huggies-size-guide.jpg",
+    ]);
+    expect(cardCover(piece)).toBe(cdn("E200570_5.jpg"));
+  });
+
+  it("does the same behind the catalogue's square crop", () => {
+    const piece = fromShopify(
+      listing("ribbon-bow-earrings", [["ribbon-bow-earrings.jpg", "catalog-square"], ["ribbon-bow-earrings-macro.jpg"], ["ribbon-bow-earrings-3.jpg"]]),
+      0
+    );
+    expect(piece.image).toBe(cdn("ribbon-bow-earrings-macro.jpg"));
+    expect(cardCover(piece)).toBe(cdn("ribbon-bow-earrings-macro.jpg"));
   });
 });

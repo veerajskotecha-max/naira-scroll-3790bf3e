@@ -4,9 +4,10 @@
   suggestions and search. Just the piece, large: never a model, a hand, the
   gift box or the size guide.
 
-  Chosen by eye on 22 Oct 2026 from every listing's photos. Most are the
-  product shot that already leads the listing in Shopify; the ones with a note
-  differ from it, and the note says why.
+  Chosen by eye on 22 Oct 2026 from every listing's photos. Each is also the
+  first photo of its Shopify listing (after the catalogue's square crop, where
+  there is one). The ones with a note were moved to the front in Shopify that
+  day, and the note says why.
 
   Matched by file name. A piece missing here, or whose photo has since been
   replaced in Shopify, falls back to the first product shot of its Shopify
@@ -22,14 +23,14 @@ export const CARD_COVER_FILES: Record<string, string> = {
   "baguette-tennis-bracelet": "d0f971cc-451f-4aac-a786-a130a4d22e1c.jpg",
   "baguette-tennis-necklace": "42fb467f-1368-4074-b8b5-fcb0594f8d98.jpg",  // the crystal necklace on the block
   "baroque-bloom-cuff": "baroque-bloom-cuff-2.jpg",
-  "baroque-pearl-lariat": "baroque-pearl-lariat-2.jpg",  // the listing opens on the model
+  "baroque-pearl-lariat": "baroque-pearl-lariat-2.jpg",  // the listing opened on the model
   "baroque-shell-bracelet": "hf_20260829_210929_c89ac146-44c5-415f-9cbd-fd6af6093299.png",
   "birthstone-heart-necklace": "3741041e-7c59-4bf7-97d6-f7724ce59844.jpg",
   "blush-cluster-ring": "hf_20261021_081012_6a56d25a-965c-4e50-9351-8e791ee043a8.png",
   "blush-station-bracelet": "blush-station-bracelet-0_980b07cd-a586-4075-bb0f-a2658ca4a97f.jpg",
   "bold-dome-huggies": "E200570_5.jpg",  // the huggie close on the block
   "bold-nocturne-bracelet": "hf_20260829_202820_4655468e-3f43-44d3-a072-b82f1349fc13.png",
-  "bold-nocturne-chain": "YF5144_3_alt.png",  // the chain on the block; the listing opens on the model
+  "bold-nocturne-chain": "YF5144_3_alt.png",  // the chain on the block; the listing opened on the model
   "bold-nocturne-drops": "2ceb34a3-b476-49ae-8c5d-2dde451ded7e.jpg",
   "brushed-gold-huggies": "brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg",
   "chain-drop-dome-ring": "9c16b3d6-21af-41ed-8618-86c425893d23.jpg",
@@ -61,7 +62,7 @@ export const CARD_COVER_FILES: Record<string, string> = {
   "lumiere-oval-bracelet": "hf_20260829_211041_19e84071-ec11-4410-a655-b97d8ba0d656.png",
   "lumiere-oval-necklace": "hf_20260829_211042_8828b64e-a588-46c4-96c3-5cdd2eeff282.png",
   "marquise-drop-choker": "dbe1bcdc-c7cf-442c-9251-c2bb08b382d5.jpg",
-  "marquise-layering-set": "marquise-layering-set-2.jpg",  // both necklaces on the block; the listing opens on the model
+  "marquise-layering-set": "marquise-layering-set-2.jpg",  // both necklaces on the block; the listing opened on the model
   "mesh-band-ring": "d09d09ef-1fee-4149-9b0c-4faa7092ae35.jpg",
   "mint-pear-drop-earrings": "cd17d6d9-9942-4cc4-8723-9908bdfac3bd.jpg",
   "molten-bloom-hoops": "molten-bloom-hoops-0_26771e6d-f11a-4437-901d-45929c48331e.jpg",
@@ -86,7 +87,7 @@ export const CARD_COVER_FILES: Record<string, string> = {
   "quatrefoil-eclat-studs": "FE03783B_1.jpg",
   "ribbon-bead-bracelet": "ribbon-bead-bracelet-0_2a52afd2-edcb-4827-8600-e95779d977b8.jpg",
   "ribbon-bow-earrings": "ribbon-bow-earrings-macro.jpg",  // the bow close; the pair on the block was tiny
-  "riviere-eternal-bracelet": "YF7085_4_alt.png",  // the listing opens on the model
+  "riviere-eternal-bracelet": "YF7085_4_alt.png",  // the listing opened on the model
   "riviere-eternal-necklace": "riviere-eternal-necklace-0_47d234c3-abc4-4cfe-a9ab-caa3ae2e1fb5.jpg",
   "riviere-of-light-bracelet": "riviere-of-light-bracelet-0_1bfa22be-ba1d-4967-bccd-018bd98c3148.jpg",
   "roman-numeral-trio-ring": "83675981-d19c-44bb-9ac2-8450be634ec7.jpg",
@@ -96,16 +97,16 @@ export const CARD_COVER_FILES: Record<string, string> = {
   "silk-mesh-cuff": "ce20c7ee-80cb-4f9a-a2f6-8615ac42b863.jpg",
   "silver-dome-ring": "silver-dome-ring-0_08859528-2db2-47cf-80ba-4f6cd68f34ba.jpg",
   "silver-drop-earrings": "silver-drop-earrings-1.jpg",
-  "solitaire-whisper-studs": "solitaire-whisper-studs-3.jpg",  // the stud close; the listing opens on the model
+  "solitaire-whisper-studs": "solitaire-whisper-studs-3.jpg",  // the stud close; the listing opened on the model
   "star-point-band": "star-point-band-4.jpg",
   "teardrop-lariat": "YF8396_3_alt.png",
   "textured-gold-hoops": "textured-gold-hoops-0_039c8b77-a5ed-4539-8e2a-97a3fa43b662.jpg",
   "tile-stone-bangle": "6ee838bc-b864-45cf-9472-955407a53caf.jpg",
-  "toggle-link-chain": "toggle-link-chain-1.jpg",  // the listing opens on the model
+  "toggle-link-chain": "toggle-link-chain-1.jpg",  // the listing opened on the model
   "torsade-huggies": "E156970_5.jpg",  // the huggie close on the block
   "torsade-pearl-cuff": "BSS00066_1.jpg",
   "triple-coil-wrap-bangle": "triple-coil-wrap-bangle-gold-hero.jpg",
-  "triple-dawn-cuff": "triple-dawn-cuff-2.jpg",  // the listing opens on a wrist
+  "triple-dawn-cuff": "triple-dawn-cuff-2.jpg",  // the listing opened on a wrist
   "tubogas-dome-ring": "ddc5a7ce-0164-486c-b60a-ac2f4f43ae5b.jpg",
   "verdant-circlet-studs": "verdant-circlet-studs-0_45d95fdc-6489-4cc0-b2ee-a407149df50e.jpg",
   "verdant-cushion-studs": "E19712C_5.jpg",  // the stud close; the pair on the block was tiny

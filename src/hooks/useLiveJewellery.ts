@@ -35,9 +35,24 @@ const sizeGuideOf = (node: ShopifyProductNode): string | undefined => node.image
 const COVER_PICKS: Record<string, RegExp> = {
   // Bold Nocturne Chain — the on-model shot shows the chain's true weight.
   "bold-nocturne-chain": /YF5144_2_worn/i,
-  // Solitaire Whisper Studs — the zoomed stud close-up reads far clearer
-  // than the on-model crop the listing currently opens with.
-  "solitaire-whisper-studs": /solitaire-whisper-studs-2\./i,
+  // These listings lead with their card photo in Shopify, and the product page
+  // opens on that same product shot. Without a pick it would open on the
+  // listing's second photo (see wornFirst).
+  "baguette-tennis-necklace": /42fb467f-1368-4074-b8b5-fcb0594f8d98\./i,
+  "baroque-pearl-lariat": /baroque-pearl-lariat-2\./i,
+  "bold-dome-huggies": /E200570_5\./i,
+  "duo-link-bracelet": /ad28df0a-ae8a-4ff1-aee1-d4fb29d1529f\./i,
+  "emerald-deco-hoops": /67a9a867-ec89-4288-ae31-abae55c188b2\./i,
+  "lilac-papillon-ring": /WR11674B2_5\./i,
+  "marquise-layering-set": /marquise-layering-set-2\./i,
+  "petite-pave-band": /petite-pave-band-macro\./i,
+  "petite-square-huggies": /WE25284B1_5\./i,
+  "ribbon-bow-earrings": /ribbon-bow-earrings-macro\./i,
+  "solitaire-whisper-studs": /solitaire-whisper-studs-3\./i,
+  "toggle-link-chain": /toggle-link-chain-1\./i,
+  "torsade-huggies": /E156970_5\./i,
+  "triple-dawn-cuff": /triple-dawn-cuff-2\./i,
+  "verdant-drop-earrings": /hf_20260807_193030_5a9252be-61ad-41d8-b412-31422860c3b5\./i,
 };
 
 const coverFirst = (handle: string, urls: string[]): string[] => {

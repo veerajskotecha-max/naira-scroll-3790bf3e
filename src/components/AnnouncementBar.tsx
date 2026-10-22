@@ -43,7 +43,7 @@ const AnnouncementBar = () => (
         className="animate-marquee flex shrink-0 items-center whitespace-nowrap"
         style={{ animationDuration: `${SHARED_MARQUEE_S * CYCLES}s` }}
       >
-        {Array.from({ length: CYCLES * 2 }, (_, i) => MESSAGES[i % MESSAGES.length]).map((text, i) => (
+        {Array.from({ length: CYCLES * MESSAGES.length * 2 }, (_, i) => MESSAGES[i % MESSAGES.length]).map((text, i) => (
           <span
             key={i}
             className="font-sans text-[11px] md:text-[12px] lg:text-[13px] font-medium uppercase tracking-[0.18em] px-8"

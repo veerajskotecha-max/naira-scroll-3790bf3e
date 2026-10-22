@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Run the top strip on product pages too: the sale, shipping and small-run lines all move there, not just on the rest of the site
+
+
 - [x] Re-apply the menu change the repository overwrite removed: one Customised Apparel entry in the desktop and phone menus
 
 - [x] Re-apply the product-page fix the repository overwrite removed: the buy-bar check waits a frame and skips no-change writes, so the size guide cannot blank the page

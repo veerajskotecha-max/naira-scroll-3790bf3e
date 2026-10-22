@@ -54,3 +54,5 @@
 - [x] Recover from a page whose code never arrives: one-shot stale-build reload and a branded panel instead of a blank screen
 
 - Keep the bag offer explanation on TOP of the track: "Up to 20% off today · limited pieces" — saving named, live today, limited-stock urgency.
+- Header strip runs three short lines: "SITEWIDE SALE!" (with the exclamation, no percentage — the bag's offer line names it), "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
+- Bag offer line stays small and quiet on top of the track: "✦ Up to 20% off today · limited pieces" at 8.5px — do not let it clutter the bag.

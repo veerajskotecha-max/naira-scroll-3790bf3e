@@ -15,15 +15,17 @@ const bar = () =>
   );
 
 describe("AnnouncementBar", () => {
-  /* The owner asked for the code to come off the header, but wanted the
-     small-run scarcity line kept alongside the shipping promise — the strip
-     carries exactly those three messages and nothing here may name a code. */
-  it("carries the shipping promise, the limited-pieces line and the sitewide sale, no promo code", () => {
+  /* The owner asked for the code to come off the header, the percentage off
+     the strip (the bag's ladder names it), an exclamation mark on the sale,
+     and the other lines kept short — the strip carries exactly these three
+     messages and nothing here may name a code or a percentage. */
+  it("carries the sale, the shipping promise and the limited-batch line, nothing longer", () => {
     bar();
+    expect(screen.getAllByText(/SITEWIDE SALE!/)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/FREE INSURED SHIPPING/)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/LIMITED PIECES IN STOCK/)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/SITEWIDE SALE/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/MADE IN LIMITED BATCHES/)[0]).toBeInTheDocument();
     expect(screen.queryByText(/NAIRA10/)).toBeNull();
+    expect(screen.queryByText(/20% OFF/)).toBeNull();
   });
 
   /* The marquee animates to translateX(-50%): the run must be exactly two

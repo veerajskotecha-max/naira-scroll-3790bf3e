@@ -49,7 +49,9 @@ const AnnouncementBar = () => (
             className="font-sans text-[11px] md:text-[12px] lg:text-[13px] font-medium uppercase tracking-[0.18em] px-8"
             style={{ color: "#FFFFFF" }}
           >
-            <span aria-hidden="true">&#10022;</span>
+            {/* mr-8 mirrors the span's own px-8 on the other side of the
+                flower, so the gap reads the same coming in and going out. */}
+            <span aria-hidden="true" className="mr-8">&#10022;</span>
             {text}
           </span>
         ))}

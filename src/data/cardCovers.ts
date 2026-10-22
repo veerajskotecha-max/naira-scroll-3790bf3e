@@ -41,6 +41,7 @@ export const CARD_COVER_FILES: Record<string, string> = {
   "crystal-baguette-eternity-ring": "3bedf26d-84de-4497-bda9-bfd45d44afa3.jpg",
   "crystal-pear-ear-cuff": "crystal-pear-ear-cuff-hero.jpg",
   "cushion-halo-ring": "hf_20261021_080442_3e62cb3f-26c5-4ea9-825d-0fc8b545e0b7.png",
+  "dewdrop-bezel-necklace": "dewdrop-pendant-necklace-macro.jpg",  // the pendant close; laid flat it was tiny
   "droplet-open-cuff": "droplet-open-cuff-hero.jpg",
   "droplet-open-ring": "858efaeb-dfc2-45da-a2fd-f71d07cdc82a.jpg",
   "duo-link-bracelet": "ad28df0a-ae8a-4ff1-aee1-d4fb29d1529f.jpg",  // the bracelet laid on the block

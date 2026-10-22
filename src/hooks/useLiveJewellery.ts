@@ -41,6 +41,7 @@ const COVER_PICKS: Record<string, RegExp> = {
   "baguette-tennis-necklace": /42fb467f-1368-4074-b8b5-fcb0594f8d98\./i,
   "baroque-pearl-lariat": /baroque-pearl-lariat-2\./i,
   "bold-dome-huggies": /E200570_5\./i,
+  "dewdrop-bezel-necklace": /dewdrop-pendant-necklace-macro\./i,
   "duo-link-bracelet": /ad28df0a-ae8a-4ff1-aee1-d4fb29d1529f\./i,
   "emerald-deco-hoops": /67a9a867-ec89-4288-ae31-abae55c188b2\./i,
   "lilac-papillon-ring": /WR11674B2_5\./i,

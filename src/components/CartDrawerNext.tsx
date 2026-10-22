@@ -113,7 +113,7 @@ const PieceCard = ({
 
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
    once reached, and the offer spelt out under it. */
-const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
+export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
   const fill = Math.min(totalItems, top) / top;
   return (

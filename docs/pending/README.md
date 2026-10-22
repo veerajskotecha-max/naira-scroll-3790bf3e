@@ -1,29 +1,29 @@
-# Site fixes waiting for the owner's review
+# Site fixes from the phone audit (21–22 Oct 2026)
 
-`phone-fixes-for-review.patch` applies to the site's `main` at 45a63f3
-("Hide Shiprocket's session code on the checkout loading screen"):
+Shipped to the site's `main` (live after Lovable Publish → Update):
+- 45a63f3: Shiprocket's session code hidden on the "Initiating Checkout" screen.
+- b2f5dc8: pincode Check button, iPhone zoom on fields, header logo below
+  360 px and at 280 px, Most loved row, 44 px tap areas, gift-box title,
+  and search (ranking, prices, stone and spelling, Go key, Pearl chip).
 
-    git apply docs/pending/phone-fixes-for-review.patch
+Held back, not shipped: the Shop grid "no-jump" change
+(`src/main.tsx`, `src/lib/catalogue.ts`, `src/lib/queryClient.ts` in
+`phone-fixes-for-review.patch`). It made React wait for the live catalogue
+before taking over the grid pages. Measured on pre-built pages, throttled
+Android (4x CPU, 4G):
 
-Nothing here is live. Each part ships only after the owner approves it.
+| Page | Buttons work, before | With the wait | Layout shift before → with |
+|---|---|---|---|
+| Shop All | 1.49 s | 3.04 s | 0.076 → 0 |
+| Earrings collection | 1.38 s | 2.80 s | 0.002 → 0 |
+| Product pages | 1.1–1.2 s | unchanged (excluded) | 0 → 0 |
 
-Small phone fixes
-- Pincode "Check" button pushed off screen on phones up to 390 px wide.
-- iPhones zoom into the page when the size menu, sort menu, search,
-  newsletter or contact fields are tapped (fields under 16 px). Fields are
-  16 px on touch screens; the sort menu keeps its look (a 16 px native menu
-  sits invisibly on top).
-- Header logo touching the account icon below 360 px.
-- "Most loved" row opening with its first piece cut off on small phones.
-- 44 px tap areas for the FAQ/returns jump links, product-page footer links,
-  sign-in page links and the unknown-page "Back to home" link.
-- Gift-box title running past a 280 px screen.
+The jump goes, but Add to cart on the grids works about 1.5 s later, so it
+was not shipped. The better route, for the owner's review: save the live
+catalogue into the pre-built grid pages at build time and hand it to React
+on load, so the first render matches the page on screen with no wait.
 
-Bigger changes (behaviour)
-- Shop, collection and product pages fetch the live catalogue alongside the
-  page's code and wait for it (at most 2.5 s from start), so the grid no
-  longer rebuilds itself under the shopper's thumb after it appears.
-- Search ranks real matches (ring -> rings, not earrings), understands
-  "under 1500", "zircone", accents and common misspellings, and the phone
-  keyboard's Go key works. The "Gifting" chip, which always found nothing,
-  becomes "Pearl".
+Note for local testing: `vite preview` serves `/jewellery` as the app shell
+and only `/jewellery/` as the pre-built page; the live host serves the
+pre-built page for both. The pre-renderer uses port 4180 — keep it free
+while building.

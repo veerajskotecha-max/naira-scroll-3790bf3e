@@ -173,3 +173,28 @@ listings named below.
 Backup of the order before and after, by media id:
 `docs/backups/media-order-2026-10-22.json`. To undo, run `productReorderMedia`
 with the "before" order.
+
+## 22 Oct 2026 (evening): last size guides with known sizes, and a full check
+
+- **Size guides added** to Woven Gold Hoops (hoop 25 mm across), Pearl Drop
+  Studs (30 mm drop, pearl to sphere) and Emerald Halo C-Hoops (22 mm tall).
+  Each is drawn on the listing's own photo with a 10 mm scale bar, is the
+  last photo, and also appears after the Details list in the description,
+  like the other listings. Cards and the render spec are in
+  `shopify/sizing/cards-2026-10-22/`. The descriptions before and after are
+  in `shopify/sizing/backup/descriptions-size-image-2026-10-22.json`.
+- **88 of 103 live listings now end with a size guide.** The other 15 state
+  no size anywhere and need measuring: Heartline Paperclip, Pearl Legacy,
+  Lumière Oval necklace and bracelet, Baroque Pearl Lariat, Heartbead, Tile
+  Stone Bangle, Triple Dawn Cuff, Verdant Cushion Studs, Baguette Halo Drops,
+  Petite Square Huggies, Pearl Circlet Studs, Petite Bow Studs, Prism Cluster
+  Studs and Lilac Papillon Ring.
+- **Checked, nothing to fix:**
+  - No size guide is out of place.
+  - The six photo pairs that look alike are colour versions, not duplicates.
+  - All 103 descriptions are free of typos, garbled text, duplicated detail
+    lines and gold/silver mix-ups.
+  - Verdant Circlet (16.8 mm) and Verdant Drop (20 × 8 mm) were already
+    corrected, and Golden Duet's card matches its US 6, 7 and 8.
+- **Not touched:** drafts (Pearl Halo Studs and the rest), and the gold
+  Verdant Cushion photos, which wait for the owner's word.

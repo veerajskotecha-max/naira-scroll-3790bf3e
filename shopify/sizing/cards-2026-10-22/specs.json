@@ -1,0 +1,89 @@
+[
+ {
+  "id": "woven-gold-hoops",
+  "type": "B",
+  "title": "Woven Gold Hoops",
+  "caption": "Hoop 25 mm across",
+  "img": "new3/woven-gold-hoops-02.jpg",
+  "srcW": 896,
+  "srcH": 1200,
+  "crop": {
+   "x0": 0,
+   "y0": 250,
+   "size": 896
+  },
+  "marks": [
+   {
+    "x1": 520,
+    "y1": 505,
+    "x2": 520,
+    "y2": 937,
+    "label": "25 mm",
+    "side": "right"
+   }
+  ],
+  "scale": {
+   "x": 575,
+   "y": 945,
+   "pxPerMm": 17.28
+  }
+ },
+ {
+  "id": "pearl-drop-studs",
+  "type": "B",
+  "title": "Pearl Drop Studs",
+  "caption": "Drop 30 mm, pearl to sphere",
+  "img": "new3/pearl-drop-studs-00.jpg",
+  "srcW": 1600,
+  "srcH": 1600,
+  "crop": {
+   "x0": 0,
+   "y0": 0,
+   "size": 1600
+  },
+  "marks": [
+   {
+    "x1": 512,
+    "y1": 1062,
+    "x2": 1110,
+    "y2": 1062,
+    "label": "30 mm",
+    "side": "below"
+   }
+  ],
+  "scale": {
+   "x": 512,
+   "y": 1210,
+   "pxPerMm": 19.93
+  }
+ },
+ {
+  "id": "emerald-halo-c-hoops",
+  "type": "B",
+  "title": "Emerald Halo C-Hoops",
+  "caption": "22 mm tall",
+  "img": "new3/emerald-halo-c-hoops-00.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 0,
+   "y0": 150,
+   "size": 1288
+  },
+  "marks": [
+   {
+    "x1": 272,
+    "y1": 435,
+    "x2": 272,
+    "y2": 938,
+    "label": "22 mm",
+    "side": "left"
+   }
+  ],
+  "scale": {
+   "x": 300,
+   "y": 1065,
+   "pxPerMm": 22.86
+  }
+ }
+]

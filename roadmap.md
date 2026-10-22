@@ -1,6 +1,8 @@
 # Roadmap
 
-- [x] Drop the percentage from the top strip's sale line so it reads "SITEWIDE SALE" alone
+- [x] Run the top strip as sale · shipping · limited batches, three cycles per half, at the same readable pace
+
+
 - [x] Add a small bundling nudge under the bag's offer rungs and keep it one line on a 320px phone
 
 

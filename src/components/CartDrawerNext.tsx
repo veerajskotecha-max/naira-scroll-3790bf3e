@@ -119,8 +119,9 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   return (
     <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-5">
       {/* The explanation rides on top, where the eye lands first: the saving,
-          that it runs today, and the urgency of the small-run stock. */}
-      <p className="whitespace-nowrap pb-2.5 text-center font-nf-label text-[10px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
+          that it runs today, and the urgency of the small-run stock — kept
+          small so it never crowds the bag. */}
+      <p className="whitespace-nowrap pb-2 text-center font-nf-label text-[8.5px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
         ✦ Up to 20% off today · limited pieces
       </p>
       <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>

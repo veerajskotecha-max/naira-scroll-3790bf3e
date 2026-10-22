@@ -198,3 +198,19 @@ with the "before" order.
     corrected, and Golden Duet's card matches its US 6, 7 and 8.
 - **Not touched:** drafts (Pearl Halo Studs and the rest), and the gold
   Verdant Cushion photos, which wait for the owner's word.
+- **Verdant Cushion Studs:** the three gold shots (hero, close-up, on the ear) are back
+  on the listing, as the owner chose. They sit after the five silver photos and
+  before the gift box. The same Shopify files were reattached, not uploaded again.
+- **Petite Square Huggies:** the copy now mentions the four tiny white pearls on
+  each hoop, two on each side. They show in the supplier photo (KAVNAR E15284B1)
+  and in our photos, but the copy left them out. The before and after are in
+  `shopify/sizing/backup/descriptions-size-image-2026-10-22.json`.
+- **Triple Dawn Cuff:** the copy says "three graduated bands joined as one cuff",
+  but every photo shows one wide hammered band. There is no supplier record, so
+  this waits for the owner.
+- **New shots:** 29 were planned for the 27 listings with only 2–3 photos. Two
+  were made and checked (Verdant Circlet on the ear, Pearl Drop Studs beside a
+  cardamom pod) and wait for approval. The Higgsfield credits ran out before the
+  rest: about 50 other Nano Banana Pro images were made on the account in the
+  half hour before. The spec and prompts are in the session scratchpad
+  (`shots/spec.py`).

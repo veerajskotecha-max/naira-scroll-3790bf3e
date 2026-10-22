@@ -1,5 +1,7 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 import { afterEach, describe, expect, it } from "vitest";
 import AnnouncementBar from "./AnnouncementBar";
 

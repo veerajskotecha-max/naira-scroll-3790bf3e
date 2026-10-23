@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchShopifyProducts } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { productFromShopify, type Product } from "@/components/ProductCard";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
@@ -14,12 +15,12 @@ const CampaignFilm = () => {
   const [visible, setVisible] = useState(false);
 
   // Pull from the same Shopify query as New Arrivals so cards stay in sync.
-  const { data: shopifyProducts = [] } = useQuery({
-    queryKey: ["shopify-products", "new-arrivals"],
-    queryFn: () => fetchShopifyProducts(8),
+  const { data: shopifyProducts = [], isLoading } = useQuery({
+    queryKey: ["shopify-products", "jewellery-catalogue"],
+    queryFn: () => fetchShopifyProducts(250),
     staleTime: 1000 * 60 * 5,
   });
-  const featuredProducts: Product[] = shopifyProducts.slice(0, 3).map(productFromShopify);
+  const featuredProducts: Product[] = shopifyProducts.filter(isJewelleryProduct).slice(0, 3).map(productFromShopify);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -63,6 +64,7 @@ const CampaignFilm = () => {
               }}
             >
               <iframe
+                loading="lazy"
                 src="https://www.instagram.com/reel/DWJxV5CsWSt/embed/"
                 className="absolute inset-0 w-full h-full border-0"
                 allowFullScreen
@@ -185,7 +187,7 @@ const CampaignFilm = () => {
                       visible={visible}
                     />
                   ))
-                ) : (
+                ) : isLoading ? (
                   // Skeletons while products load — keeps the layout from jumping.
                   [0, 1, 2].map((i) => (
                     <div key={i} className="animate-pulse">
@@ -194,7 +196,7 @@ const CampaignFilm = () => {
                       <div className="h-3 bg-muted mt-1.5 w-1/2" />
                     </div>
                   ))
-                )}
+                ) : <Link to="/jewellery" className="col-span-3 text-nf-ink underline underline-offset-4">Explore the jewellery</Link>}
               </div>
             </div>
           </div>
@@ -216,7 +218,7 @@ const FeaturedCard = ({
   const slug = product.handle ?? product.id ?? "";
   return (
     <Link
-      to={`/product/${slug}`}
+      to={`/jewellery/${slug}`}
       className={`group block cursor-pointer transition-all ease-out ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
       }`}

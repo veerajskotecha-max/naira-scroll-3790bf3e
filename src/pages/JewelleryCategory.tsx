@@ -10,6 +10,9 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { cardKey, colourCards } from "@/lib/colourCards";
 import { categoryBySlug, allLandings, categoryLandings as coreCategories, SITE_URL } from "@/data/seoContent";
 import { WHATSAPP_NUMBER, type JewelPiece } from "@/data/jewellery";
+import { collectionPieces } from "@/lib/jewelleryCollections";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
@@ -45,17 +48,19 @@ const JewelleryCategory = () => {
   const { slug } = useParams();
   const landing = categoryBySlug(slug);
   const { jewellery } = useLiveJewellery();
+  const [visibleCount, setVisibleCount] = useState(30);
+  useEffect(() => setVisibleCount(30), [slug]);
   useEffect(() => {
     if (!landing) reportShopperPerformance("unknown_page");
   }, [landing, slug]);
 
   const label = landing?.crumb ?? landing?.category ?? "Collection";
   const inCategory = useMemo(
-    () => (landing?.category ? jewellery.filter((p) => p.category === landing.category) : jewellery),
-    [jewellery, landing?.category]
+    () => landing ? collectionPieces(colourCards(jewellery), landing) : [],
+    [jewellery, landing]
   );
   /* Each metal or stone of a piece is its own card (see colourCards). */
-  const pieces = useMemo(() => orderForLanding(colourCards(inCategory)), [inCategory]);
+  const pieces = useMemo(() => orderForLanding(inCategory), [inCategory]);
   /* The count and the structured data name each product once, whatever its colours. */
   const products = useMemo(() => pieces.filter((p, i) => pieces.findIndex((q) => q.handle === p.handle) === i), [pieces]);
   const fromPrice = useMemo(
@@ -198,12 +203,23 @@ const JewelleryCategory = () => {
             aria-label={`${label} collection`}
             className="grid grid-cols-2 gap-4 pt-6 sm:gap-6 sm:pt-8 lg:grid-cols-3 lg:gap-8"
           >
-            {pieces.map((piece, i) => (
+            {pieces.slice(0, visibleCount).map((piece, i) => (
               <Reveal key={cardKey(piece)} delay={Math.min(i, 5) * 60}>
                 <JewelCard piece={piece} index={i} />
               </Reveal>
             ))}
           </section>
+          {pieces.length === 0 && (
+            <div className="py-12 text-center">
+              <p className="text-nf-ink/65">No pieces in this collection right now.</p>
+              <Button asChild variant="outline" className="mt-5"><Link to="/jewellery">View all jewellery</Link></Button>
+            </div>
+          )}
+          {visibleCount < pieces.length && (
+            <div className="flex justify-center pt-8">
+              <Button variant="outline" onClick={() => setVisibleCount((count) => count + 30)}>Show more ({pieces.length - visibleCount})</Button>
+            </div>
+          )}
 
           {/* sizing help, right under the grid where the doubt appears */}
           <Reveal as="section" className="mt-12 border border-[#C99A4C]/30 bg-white/50 px-6 py-8 text-center md:mt-16">

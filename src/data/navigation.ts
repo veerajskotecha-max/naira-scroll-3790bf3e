@@ -12,7 +12,7 @@ export const menuCategories: Array<{ label: string; category: JewelCategory; to:
 export const menuEdits: Array<{ label: string; to: string }> = [
   { label: "New Arrivals", to: "/jewellery?sort=newest" },
   { label: "Bestsellers", to: "/jewellery?sort=best" },
-  { label: "Under ₹1,500", to: "/jewellery?under=1500" },
+  { label: "Under ₹1,500", to: "/jewellery?under=1499.99" },
   { label: "Naira Petite", to: "/jewellery" },
   
 ];

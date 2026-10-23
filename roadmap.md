@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Audit price-filter boundaries and variant prices against Shopify; correct mismatches and verify browsing/back flow.
+- [x] Audit collection membership and homepage/navigation sections; fix concrete mismatches and check jewellery-only scope.
+
 - [x] Run the top strip on product pages too: the sale, shipping and small-run lines all move there, not just on the rest of the site
 
 

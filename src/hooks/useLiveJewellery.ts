@@ -82,6 +82,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
 
   return {
     ...piece,
+    category: guessCategory(node),
     name: node.title || piece.name,
     price,
     priceLabel: `₹${price.toLocaleString("en-IN")}`,
@@ -94,7 +95,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     gallery,
     sizeGuide: sizeGuideOf(node),
     description: normalizeMetalCopy(node.description) || piece.description,
-    tags: node.tags?.length ? node.tags : piece.tags,
+    tags: node.tags ?? [],
     ...choice,
   };
 };
@@ -278,7 +279,10 @@ export const liveCatalogue = (data: ShopifyProductNode[]): JewelPiece[] => {
   const byHandle = new Map(data.map((node) => [node.handle, node]));
   // Only keep pieces that are still live listings in Shopify.
   const merged = staticJewellery
-    .filter((piece) => byHandle.has(piece.handle))
+    .filter((piece) => {
+      const node = byHandle.get(piece.handle);
+      return node ? isJewelleryProduct(node) : false;
+    })
     .map((piece) => mergeLive(piece, byHandle.get(piece.handle)));
 
   // Every other live Naira Petite listing (added in Shopify after the bundled
@@ -289,7 +293,7 @@ export const liveCatalogue = (data: ShopifyProductNode[]): JewelPiece[] => {
     .map((node, i) => fromShopify(node, merged.length + i));
 
   const all = [...merged, ...extras];
-  return all.length ? all : staticJewellery;
+  return all;
 };
 
 

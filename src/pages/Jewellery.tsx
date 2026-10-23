@@ -7,6 +7,9 @@ import JewelleryCategories from "@/components/jewellery/JewelleryCategories";
 import JewelFilterBar, {
   applyJewelFilters,
   SORT_OPTIONS,
+  PRICE_BANDS,
+  parsePriceBound,
+  type PriceBand,
   type JewelFilters,
 } from "@/components/jewellery/JewelFilterBar";
 import { jewellery as staticJewellery, type JewelCategory } from "@/data/jewellery";
@@ -61,12 +64,6 @@ const FEATURED_LEADS = ["prism-riviere-bracelet", "woven-gold-hoops"];
 const MOST_LOVED_HANDLES = ["prism-riviere-bracelet", "woven-gold-hoops", "bold-nocturne-chain"];
 
 /* One-tap budget chips beside the category tabs. */
-type PriceBand = { key: string; label: string; min: number | null; max: number | null };
-const PRICE_BANDS: PriceBand[] = [
-  { key: "under-999", label: "UNDER ₹999", min: null, max: 999 },
-  { key: "999-1499", label: "₹999–1,499", min: 999, max: 1499 },
-  { key: "1500-plus", label: "₹1,500+", min: 1500, max: null },
-];
 const bandKey = (f: JewelFilters) =>
   PRICE_BANDS.find((b) => (b.min ?? null) === (f.minPrice ?? null) && (b.max ?? null) === (f.maxPrice ?? null))?.key ?? null;
 
@@ -120,8 +117,8 @@ const Jewellery = () => {
     const min = searchParams.get("over");
     return {
       sort: (SORT_OPTIONS.find((o) => o.key === sortParam)?.key ?? "featured") as JewelFilters["sort"],
-      maxPrice: max ? Number(max) : null,
-      minPrice: min ? Number(min) : null,
+      maxPrice: parsePriceBound(max),
+      minPrice: parsePriceBound(min),
       inStockOnly: searchParams.get("stock") === "in",
       tag: searchParams.get("tag"),
     };
@@ -176,7 +173,8 @@ const Jewellery = () => {
   const { key: entryKey } = useLocation();
   const storeKey = `nf-jewel-shown:${entryKey}`;
   const [visibleCount, setVisibleCount] = useState(() => {
-    const saved = Number(sessionStorage.getItem(storeKey));
+    let saved = 0;
+    try { saved = Number(sessionStorage.getItem(storeKey)); } catch { /* private mode */ }
     return navigationType === "POP" && saved > PAGE_SIZE ? saved : PAGE_SIZE;
   });
   const filterSig = `${active}|${JSON.stringify(activeFilters)}`;

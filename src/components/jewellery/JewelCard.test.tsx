@@ -3,8 +3,9 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const toggleItem = vi.fn();
+const addItem = vi.fn();
 vi.mock("@/contexts/CartContext", () => ({
-  useCart: () => ({ addItem: vi.fn(), isLoading: false }),
+  useCart: () => ({ addItem, isLoading: false }),
 }));
 vi.mock("@/contexts/WishlistContext", () => ({
   useWishlist: () => ({ toggleItem, isWishlisted: () => false }),
@@ -35,6 +36,13 @@ const card = () =>
   );
 
 describe("JewelCard", () => {
+  it("never adds a sold-out adjustable ring to the bag", () => {
+    addItem.mockClear();
+    render(<MemoryRouter><JewelCard piece={{ ...piece, handle: "droplet-open-ring", availableForSale: false }} /></MemoryRouter>);
+    const action = screen.getByRole("button", { name: "SOLD OUT" });
+    fireEvent.click(action);
+    expect(addItem).not.toHaveBeenCalled();
+  });
   /*
     The wishlist heart used to be rendered INSIDE the card's <a>. An anchor may
     not contain interactive content, and on a phone the tap landed in the

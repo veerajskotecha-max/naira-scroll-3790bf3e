@@ -17,7 +17,6 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Heart } from "lucide-react";
 import JewelPriceTag, { discountPercent } from "@/components/jewellery/JewelPriceTag";
-import { isAdjustableRing } from "@/data/ringFit";
 import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 import { pieceHref } from "@/lib/colourCards";
 
@@ -58,11 +57,8 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
 
 
   const zircone = piece.handle.startsWith("zircone");
-  /* Live Shopify stock state. Adjustable open-back rings flex to fit, so they
-     never read as sold out. Collection cards show a calm, final SOLD OUT state;
-     any pre-order option belongs on the product page only. */
-  const adjustable = isAdjustableRing(piece.handle);
-  const soldOut = piece.availableForSale === false && !adjustable;
+  /* Adjustability is fit, not inventory: Shopify remains the stock authority. */
+  const soldOut = piece.availableForSale === false;
 
 
   const toggleWishlist = (e: React.MouseEvent) => {

@@ -1,10 +1,26 @@
 import { describe, it, expect } from "vitest";
-import { applyJewelFilters, emptyFilters } from "./JewelFilterBar";
+import { applyJewelFilters, emptyFilters, PRICE_BANDS, parsePriceBound } from "./JewelFilterBar";
 import { SHIPPING_CHARGE } from "@/lib/serviceability";
 import type { JewelPiece } from "@/data/jewellery";
 
 const piece = (handle: string, price: number, availableForSale: boolean): JewelPiece =>
   ({ handle, name: handle, price, availableForSale, category: "Rings", tags: [] }) as unknown as JewelPiece;
+
+describe("budget boundaries", () => {
+  it("puts every price into exactly one budget band", () => {
+    for (const price of [699, 998, 999, 1000, 1499, 1500, 2399]) {
+      const p = piece(String(price), price, true);
+      expect(PRICE_BANDS.filter((band) => applyJewelFilters([p], { ...emptyFilters, minPrice: band.min, maxPrice: band.max }).length)).toHaveLength(1);
+    }
+    expect(applyJewelFilters([piece("999", 999, true)], { ...emptyFilters, maxPrice: PRICE_BANDS[0].max })).toEqual([]);
+  });
+  it("ignores malformed and negative URL price limits", () => {
+    expect(parsePriceBound("not-a-price")).toBeNull();
+    expect(parsePriceBound("-1")).toBeNull();
+    expect(parsePriceBound("Infinity")).toBeNull();
+    expect(parsePriceBound("1499.99")).toBe(1499.99);
+  });
+});
 
 /* A zero-inventory necklace used to sit first on /jewellery, so the first thing
    a shopper could click was something they could not buy. */

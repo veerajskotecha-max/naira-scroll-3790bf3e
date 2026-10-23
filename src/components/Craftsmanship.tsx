@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import craftsmanshipMain from "@/assets/about-crafting.webp";
 import craftsmanshipOverlay from "@/assets/about-uniquely-yours.webp";
 import { armRevealFallback, isInViewport } from "@/lib/revealFallback";

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import founderImg from "@/assets/about-founder.webp";
 
 /* Founder story teaser.

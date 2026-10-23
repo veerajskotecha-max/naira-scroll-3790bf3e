@@ -22,7 +22,6 @@ const leftLinks: { label: string; to: string; mega?: boolean }[] = [
   { label: "HOME", to: "/" },
   { label: "SHOP", to: "/jewellery", mega: true },
   { label: "GIFTING", to: "/gifting" },
-  { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },
 ];
 

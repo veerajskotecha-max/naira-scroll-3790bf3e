@@ -32,7 +32,7 @@ const Craftsmanship = () => {
       style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
       <div className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-10 lg:gap-16 xl:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-10 lg:gap-16 xl:gap-20 items-center">
           {/* Left – Images */}
           <div
             className={`relative transition-all ease-out ${

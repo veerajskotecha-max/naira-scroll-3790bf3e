@@ -3,8 +3,6 @@ import { trackPixel } from "@/lib/pixel";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { useQuery } from "@tanstack/react-query";
-import { fetchShopifyProducts } from "@/lib/shopify";
 import { parseQuery, searchPieces, shopPageFor } from "@/lib/search";
 import { cardCover } from "@/lib/cardCover";
 
@@ -134,7 +132,7 @@ const SearchOverlay = ({
             enterKeyHint="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search rings, necklaces, outfits…"
+    placeholder="Search rings, necklaces, earrings…"
             className="w-full bg-transparent text-base text-nf-ink placeholder:text-nf-ink/35 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
             aria-label="Search products"
           />

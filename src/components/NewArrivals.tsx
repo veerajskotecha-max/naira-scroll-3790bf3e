@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import floralBottomRight from "@/assets/floral-bottom-right.webp";
 import ProductCard, { productFromShopify } from "@/components/ProductCard";
 import { fetchShopifyProducts } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 
 const NewArrivals = ({
   contentRef,
@@ -15,10 +16,10 @@ const NewArrivals = ({
   const sectionRef = useRef<HTMLElement>(null);
   const { data: shopifyProducts = [], isLoading, isError } = useQuery({
     queryKey: ["shopify-products", "new-arrivals"],
-    queryFn: () => fetchShopifyProducts(8),
+    queryFn: () => fetchShopifyProducts(250),
     staleTime: 1000 * 60 * 5,
   });
-  const products = shopifyProducts.slice(0, 4).map(productFromShopify);
+  const products = shopifyProducts.filter(isJewelleryProduct).slice(0, 4).map(productFromShopify);
 
   useEffect(() => {
     onProductsReady?.(!isLoading);

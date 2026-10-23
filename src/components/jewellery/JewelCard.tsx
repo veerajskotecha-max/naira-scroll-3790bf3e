@@ -62,7 +62,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
      never read as sold out. Collection cards show a calm, final SOLD OUT state;
      any pre-order option belongs on the product page only. */
   const adjustable = isAdjustableRing(piece.handle);
-  const soldOut = piece.availableForSale === false && !adjustable;
+  const soldOut = piece.availableForSale === false;
 
 
   const toggleWishlist = (e: React.MouseEvent) => {

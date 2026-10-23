@@ -1,10 +1,8 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import floralBottomRight from "@/assets/floral-bottom-right.webp";
-import ProductCard, { productFromShopify } from "@/components/ProductCard";
-import { fetchShopifyProducts } from "@/lib/shopify";
-import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import JewelCard from "@/components/jewellery/JewelCard";
+import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 
 const NewArrivals = ({
   contentRef,
@@ -14,12 +12,8 @@ const NewArrivals = ({
   onProductsReady?: (ready: boolean) => void;
 }) => {
   const sectionRef = useRef<HTMLElement>(null);
-  const { data: shopifyProducts = [], isLoading, isError } = useQuery({
-    queryKey: ["shopify-products", "new-arrivals"],
-    queryFn: () => fetchShopifyProducts(250),
-    staleTime: 1000 * 60 * 5,
-  });
-  const products = shopifyProducts.filter(isJewelleryProduct).slice(0, 4).map(productFromShopify);
+  const { jewellery, isLoading } = useLiveJewellery();
+  const products = jewellery.slice(0, 4);
 
   useEffect(() => {
     onProductsReady?.(!isLoading);
@@ -74,7 +68,7 @@ const NewArrivals = ({
               </div>
             ))}
           </div>
-        ) : isError || products.length === 0 ? (
+        ) : products.length === 0 ? (
           <div className="relative z-20 py-14 text-center">
             <p className="font-cormorant text-[20px] font-semibold" style={{ color: "hsl(0 0% 25%)" }}>
               No products found
@@ -83,7 +77,7 @@ const NewArrivals = ({
         ) : (
           <div data-arrivals-products className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 relative z-20">
             {products.map((product, i) => (
-              <ProductCard key={product.handle ?? product.name} product={product} index={i} visible={true} />
+              <JewelCard key={product.handle} piece={product} index={i} />
             ))}
           </div>
         )}

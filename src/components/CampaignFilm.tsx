@@ -16,7 +16,7 @@ const CampaignFilm = () => {
 
   // Pull from the same Shopify query as New Arrivals so cards stay in sync.
   const { data: shopifyProducts = [], isLoading } = useQuery({
-    queryKey: ["shopify-products", "new-arrivals"],
+    queryKey: ["shopify-products", "jewellery-catalogue"],
     queryFn: () => fetchShopifyProducts(250),
     staleTime: 1000 * 60 * 5,
   });

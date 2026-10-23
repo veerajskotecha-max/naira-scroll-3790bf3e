@@ -2,6 +2,7 @@
 
 - Resolve specialist collection membership and occasion filters through jewelleryCollections; broad category matching alone must not put unrelated styles in named collections.
 - Keep budget bands in the shared filter module and filter colour cards by their own variant prices; disjoint boundaries prevent overlapping budget edits.
+- Homepage jewellery cards share the live catalogue cache and JewelCard purchase guards; a second apparel-card path must not bypass ring choices or stale stock protection.
 
 - Keep ring measurement data and instructions shared between ring PDP Details and the size-guide modal; one reference prevents conflicting measurements and guidance.
 - Keep the bag gift-box preview in a dedicated CSS-only component; it must not import three.js, so opening the bag stays lightweight.

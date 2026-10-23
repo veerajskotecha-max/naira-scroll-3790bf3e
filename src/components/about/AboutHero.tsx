@@ -98,7 +98,7 @@ const AboutHero = () => {
                 transitionDelay: visible ? "0.3s" : "0s",
               }}
             >
-              Shop the Collection
+              Design Your Own
             </Link>
           </div>
 

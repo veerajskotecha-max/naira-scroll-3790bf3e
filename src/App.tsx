@@ -23,7 +23,6 @@ import ScrollBloom from "./components/wow/ScrollBloom";
 import PageCurtain from "./components/wow/PageCurtain";
 import {
   Index,
-  ShopAll,
   ProductDetail,
   CatchAll,
   MadeForYou,

@@ -112,8 +112,8 @@ const SearchOverlay = ({
       image: cardCover(p),
       to: `/jewellery/${p.handle}`,
     }));
-    const lower = term.toLowerCase();
-    const matches = [...jewels, ...clothes.filter((h) => `${h.title} ${h.caption}`.toLowerCase().includes(lower))];
+    // Search is jewellery only: ready-wear apparel is no longer sold on the site.
+    const matches = jewels;
     const to = shopPageFor(term);
     const { category } = parseQuery(term);
     return {

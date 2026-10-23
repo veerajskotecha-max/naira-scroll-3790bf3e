@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import craftsmanshipMain from "@/assets/about-crafting.webp";
 import craftsmanshipOverlay from "@/assets/about-uniquely-yours.webp";
 import { armRevealFallback, isInViewport } from "@/lib/revealFallback";
@@ -130,6 +131,40 @@ const Craftsmanship = () => {
                 and custom designs that the contemporary woman can move through
                 in, effortlessly.
               </p>
+            </div>
+
+            {/* The About button is gone; this one keeps the column's weight
+                balanced and goes to the made-to-measure section. */}
+            <div
+              className={`mt-8 transition-all ease-out ${
+                visible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4"
+              }`}
+              style={{
+                transitionDuration: "0.6s",
+                transitionDelay: visible ? "0.45s" : "0s",
+              }}
+            >
+              <Link
+                to="/customize"
+                className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-8 py-3 rounded-md border transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  borderColor: "hsl(0 0% 25%)",
+                  color: "hsl(0 0% 20%)",
+                  backgroundColor: "transparent",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "hsl(0 0% 15%)";
+                  e.currentTarget.style.color = "hsl(0 0% 100%)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "hsl(0 0% 20%)";
+                }}
+              >
+                DESIGN YOUR OWN
+              </Link>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 import type { JewelPiece } from "@/data/jewellery";
+import { matchesOccasion } from "@/lib/jewelleryCollections";
 
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
@@ -24,6 +25,19 @@ export interface JewelFilters {
 }
 
 export const emptyFilters: JewelFilters = { sort: "featured", maxPrice: null, minPrice: null, inStockOnly: false, tag: null };
+
+export const PRICE_BANDS = [
+  { key: "under-999", label: "UNDER ₹999", min: null, max: 998.99 },
+  { key: "999-1499", label: "₹999–1,499", min: 999, max: 1499.99 },
+  { key: "1500-plus", label: "₹1,500+", min: 1500, max: null },
+] as const;
+export type PriceBand = (typeof PRICE_BANDS)[number];
+
+export const parsePriceBound = (value: string | null): number | null => {
+  if (!value?.trim()) return null;
+  const amount = Number(value);
+  return Number.isFinite(amount) && amount >= 0 ? amount : null;
+};
 
 /** Style/occasion chips built from whatever Shopify tags the catalogue carries. */
 export const collectTags = (pieces: JewelPiece[]) => {
@@ -49,9 +63,10 @@ export const applyJewelFilters = (
 ) => {
   let out = pieces.slice();
   if (f.inStockOnly) out = out.filter((p) => p.availableForSale);
-  if (f.maxPrice != null) out = out.filter((p) => p.price <= f.maxPrice!);
-  if (f.minPrice != null) out = out.filter((p) => p.price >= f.minPrice!);
-  if (f.tag) out = out.filter((p) => (p.tags ?? []).includes(f.tag!));
+  const { maxPrice, minPrice, tag } = f;
+  if (maxPrice != null) out = out.filter((p) => p.price <= maxPrice);
+  if (minPrice != null) out = out.filter((p) => p.price >= minPrice);
+  if (tag) out = out.filter((p) => matchesOccasion(p, tag));
 
   switch (f.sort) {
     case "price-asc":
@@ -96,7 +111,7 @@ const JewelFilterBar = ({
   const ceiling = prices.length ? Math.max(...prices) : 0;
   const floor = prices.length ? Math.min(...prices) : 0;
   const activeCount =
-    (value.maxPrice != null ? 1 : 0) + (value.inStockOnly ? 1 : 0) + (value.tag ? 1 : 0);
+    (value.maxPrice != null || value.minPrice != null ? 1 : 0) + (value.inStockOnly ? 1 : 0) + (value.tag ? 1 : 0);
 
   const set = (patch: Partial<JewelFilters>) => onChange({ ...value, ...patch });
 
@@ -154,11 +169,11 @@ const JewelFilterBar = ({
                   type="range"
                   min={floor}
                   max={ceiling}
-                  step={100}
-                  value={value.maxPrice ?? ceiling}
+                  step={1}
+                  value={Math.max(floor, Math.min(value.maxPrice ?? ceiling, ceiling))}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    set({ maxPrice: v >= ceiling ? null : v });
+                    set({ minPrice: null, maxPrice: v >= ceiling ? null : v });
                   }}
                   className="mt-3 w-full accent-[var(--nf-accent)]"
                   aria-label="Maximum price"

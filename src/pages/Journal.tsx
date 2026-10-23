@@ -12,7 +12,7 @@ const Journal = () => (
   <>
     <PageSEO
       title="The Journal, Jewellery Care, Sizing & Styling Guides"
-      description="Practical guides from the Naira Flore atelier: ring sizing for India, caring for gold plated jewellery, zirconia versus diamond, and styling everyday jewellery outfits."
+      description="Practical guides from the Naira Flore atelier: ring sizing for India, caring for gold plated jewellery, zirconia versus diamond, and styling jewellery every day."
       canonical={`${SITE_URL}/journal`}
       jsonLd={[
         breadcrumbLd([

@@ -165,7 +165,7 @@ const LookbookGallery = () => {
           style={jost}
         >
           <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-500 ease-out group-hover:scale-x-100" />
-          <span className="relative">SHOP THE COLLECTION</span>
+          <span className="relative">DESIGN YOUR OWN OUTFIT</span>
           <span className="relative transition-transform duration-500 group-hover:translate-x-1">→</span>
         </Link>
       </div>

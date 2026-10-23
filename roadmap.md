@@ -60,3 +60,4 @@
 - Header strip runs three short lines: "SITEWIDE SALE LIVE TODAY!" (exclamation, no percentage — the bag's line names it), "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
 - Bag offer line stays small and quiet on top of the track at 8.5px — do not let it clutter the bag.
 - [x] Jewellery-only site: apparel removed from menu, footer, search and home/about wording; only the made-to-measure custom outfits section (/customize) remains; /shop/indo-western now opens /customize.
+- [x] Take "About us" off the site for now: out of the header, the phone menu, the homepage links, the sitemap and llms.txt; the page itself stays mounted at /about so a link already in circulation does not land on "Coming Soon".

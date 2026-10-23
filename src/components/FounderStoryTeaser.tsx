@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import founderImg from "@/assets/about-founder.webp";
 
 /* Founder story teaser.
@@ -93,18 +92,6 @@ const FounderStoryTeaser = () => (
             Today, every piece carries that original promise: handmade, personal, and made to be
             worn for a lifetime.
           </p>
-
-          <Link
-            to="/about"
-            className="inline-flex min-h-[44px] items-center gap-2 font-cormorant text-[12px] md:text-[13px] uppercase tracking-[0.16em] font-medium pb-1 transition-opacity hover:opacity-70"
-            style={{
-              color: "hsl(0 0% 18%)",
-              borderBottom: "1px solid hsl(0 0% 18%)",
-            }}
-          >
-            Read the full story
-            <span className="text-[16px]">›</span>
-          </Link>
         </div>
       </div>
     </div>

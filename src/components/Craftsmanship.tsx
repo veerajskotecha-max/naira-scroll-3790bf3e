@@ -32,7 +32,7 @@ const Craftsmanship = () => {
       style={{ backgroundColor: "hsl(0 0% 100%)" }}
     >
       <div className="max-w-[1280px] mx-auto px-5 md:px-8 lg:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-10 lg:gap-16 xl:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-10 lg:gap-16 xl:gap-20 items-center">
           {/* Left – Images */}
           <div
             className={`relative transition-all ease-out ${
@@ -133,6 +133,8 @@ const Craftsmanship = () => {
               </p>
             </div>
 
+            {/* The About button is gone; this one keeps the column's weight
+                balanced and goes to the made-to-measure section. */}
             <div
               className={`mt-8 transition-all ease-out ${
                 visible
@@ -145,7 +147,7 @@ const Craftsmanship = () => {
               }}
             >
               <Link
-                to="/about"
+                to="/customize"
                 className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-8 py-3 rounded-md border transition-all duration-300 hover:-translate-y-0.5"
                 style={{
                   borderColor: "hsl(0 0% 25%)",
@@ -161,7 +163,7 @@ const Craftsmanship = () => {
                   e.currentTarget.style.color = "hsl(0 0% 20%)";
                 }}
               >
-                OUR STORY
+                DESIGN YOUR OWN
               </Link>
             </div>
           </div>

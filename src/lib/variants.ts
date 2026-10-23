@@ -59,9 +59,20 @@ export const findVariant = (piece: JewelPiece, chosen: Record<string, string>) =
 /** The variant behind a cart line. */
 export const variantById = (piece: JewelPiece | undefined, variantId: string) => piece?.variants?.find((v) => v.id === variantId);
 
-/** The choices a page opens on: its first buyable variant's. */
+/** The variant a page opens on: the first buyable one, but a ring on US 6 when
+    that size can be bought with the same other choices, as a ring sold one way
+    opens on US 6 (Star Point Band lists US 5 first). */
+export const openingVariant = (piece: JewelPiece, variants: JewelVariant[] = piece.variants ?? []) => {
+  const lead = firstBuyable(variants);
+  const size = piece.category === "Rings" ? sizeOption(piece) : undefined;
+  if (!lead || !size) return lead;
+  const sameOtherwise = (v: JewelVariant) => Object.entries(lead.options).every(([name, value]) => name === size || v.options[name] === value);
+  return variants.find((v) => v.availableForSale && v.options[size] === "6" && sameOtherwise(v)) ?? lead;
+};
+
+/** The choices a page opens on: its opening variant's. */
 export const initialChoice = (piece: JewelPiece): Record<string, string> =>
-  piece.variants?.length ? { ...firstBuyable(piece.variants).options } : {};
+  piece.variants?.length ? { ...openingVariant(piece).options } : {};
 
 /** For one option, whether each value can be bought with the other choices as they are. */
 export const buyableValues = (piece: JewelPiece, option: string, chosen: Record<string, string>): Record<string, boolean> => {

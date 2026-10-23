@@ -1,5 +1,5 @@
 import type { JewelPiece } from "@/data/jewellery";
-import { choices, firstBuyable, initialChoice } from "@/lib/variants";
+import { choices, firstBuyable, initialChoice, openingVariant } from "@/lib/variants";
 
 /*
   A piece sold in more than one metal or stone shows each colour as its own
@@ -21,12 +21,12 @@ export const colourFromParam = (piece: JewelPiece, param?: string | null) => {
   return option && value ? { option: option.name, value } : undefined;
 };
 
-/** The choices a page opens on: the first buyable variant in the colour its link
-    names, else the first buyable variant. */
+/** The choices a page opens on: its opening variant in the colour its link
+    names, else the piece's own (see openingVariant). */
 export const openingChoice = (piece: JewelPiece, param?: string | null): Record<string, string> => {
   const colour = colourFromParam(piece, param);
   const ways = colour ? (piece.variants ?? []).filter((v) => v.options[colour.option] === colour.value) : [];
-  return ways.length ? { ...firstBuyable(ways).options } : initialChoice(piece);
+  return ways.length ? { ...openingVariant(piece, ways).options } : initialChoice(piece);
 };
 
 /** A card's product page: on the colour the card shows, when it shows one. */

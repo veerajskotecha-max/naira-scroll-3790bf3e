@@ -18,7 +18,7 @@ import { reelForPiece, useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
-import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
+import { isAdjustableRing, adjustableFitNote, ownFit } from "@/data/ringFit";
 import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
@@ -111,9 +111,13 @@ const ringSizes: { value: string; status: "available" | "preorder" }[] = [
   { value: "6", status: "available" },
   { value: "7", status: "preorder" },
 ];
-/* Open-back rings adjust to fit, so every size reads as available. */
-const ringSizesFor = (handle?: string) =>
-  isAdjustableRing(handle) ? ringSizes.map((s) => ({ ...s, status: "available" as const })) : ringSizes;
+/* Adjustable rings fit every size they offer, so each reads as available: an
+   open-back ring the sizes above, a ring with its own fit its own sizes. */
+const ringSizesFor = (handle?: string) => {
+  if (!isAdjustableRing(handle)) return ringSizes;
+  const sizes = ownFit(handle)?.sizes ?? ringSizes.map((s) => s.value);
+  return sizes.map((value) => ({ value, status: "available" as const }));
+};
 
 const JewelDetailSkeleton = () => (
   <div className="min-h-screen bg-nf-ivory">
@@ -198,7 +202,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
     try {
       await addItem({
         ...cartLineFor(piece, variant),
-        // an open-back ring sold one way fits US 6 to 8
+        // an adjustable ring sold one way goes in as US 6, the size its page opens on
         ...(piece.category === "Rings" && !variant ? { size: "US 6" } : {}),
       });
       setDrawerOpen(true);
@@ -553,7 +557,7 @@ const JewelDetailNext = () => {
   const isPreorder = soldOut || sizePreorder || variantSoldOut;
   /* A ring Shopify does not sell in sizes is sized from the US list
      (`ringSizes`), and the size rides on the line as a note, a metal chosen or
-     not (Star Point Band is sold in gold and silver, not in sizes). */
+     not (Droplet Open Ring is sold in gold and silver, not in sizes). */
   const noteSize = isRing && !sizeName ? `US ${selectedSize}` : undefined;
   /* "Silver, size 7" or "size US 6": what a WhatsApp message names. */
   const choiceLine = variant
@@ -1042,7 +1046,7 @@ const JewelDetailNext = () => {
                 {!soldOut && !variantSoldOut && (
                   <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
                     {adjustable
-                      ? `US ${selectedSize} ships now. ${ADJUSTABLE_FIT_NOTE}`
+                      ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
@@ -1057,7 +1061,7 @@ const JewelDetailNext = () => {
                   : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
               </p>
             )}
-            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} />
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={ownFit(piece.handle)?.sizes} />
 
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
             <div id="product-actions" className="mt-2 grid grid-cols-2 gap-2">
@@ -1119,7 +1123,7 @@ const JewelDetailNext = () => {
                   )}
                   {/* The spec list names plating and metal; the summary line is for pieces without one. */}
                   {specs.length === 0 && <p className="mt-4 text-[12px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
-                  {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} />}
+                  {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={ownFit(piece.handle)?.sizes} />}
                   {/* The size guide photo again, right where the sizes are read. */}
                   {piece.sizeGuide && (
                     <img

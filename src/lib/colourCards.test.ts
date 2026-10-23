@@ -57,6 +57,15 @@ const sized = piece("roman-numeral-trio-ring", {
   variants: ["6", "7", "8"].map((size) => variant(size, { Size: size }, 1499)),
 });
 
+const starPoint = piece("star-point-band", {
+  category: "Rings",
+  options: [
+    { name: "Metal", values: ["Gold", "Silver"] },
+    { name: "Size", values: ["5", "6", "7", "8"] },
+  ],
+  variants: ["Gold", "Silver"].flatMap((metal) => ["5", "6", "7", "8"].map((size) => variant(`${metal}-${size}`, { Metal: metal, Size: size }, 799))),
+});
+
 const birthstone = piece("birthstone-heart-necklace", {
   category: "Necklaces",
   options: [{ name: "Month", values: ["January · Garnet", "February · Amethyst"] }],
@@ -107,5 +116,10 @@ describe("opening a product page on a colour", () => {
     expect(openingChoice(bangle, "silver")).toEqual({ Metal: "Silver" });
     expect(openingChoice(bangle, null)).toEqual({ Metal: "Gold" });
     expect(openingChoice(ring, "silver")).toEqual({ Metal: "Silver", Size: "7" });
+  });
+
+  it("opens a ring's colour on US 6 when Shopify lists US 5 first", () => {
+    expect(openingChoice(starPoint, "silver")).toEqual({ Metal: "Silver", Size: "6" });
+    expect(openingChoice(starPoint, null)).toEqual({ Metal: "Gold", Size: "6" });
   });
 });

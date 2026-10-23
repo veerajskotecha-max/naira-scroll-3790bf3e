@@ -80,6 +80,17 @@ const birthstone = piece(
 );
 const droplet = piece("droplet-open-ring", "Rings", [v("drop-gold", { Metal: "Gold" }), v("drop-silver", { Metal: "Silver" })], [{ name: "Metal", values: ["Gold", "Silver"] }]);
 const cushion = piece("cushion-halo-ring", "Rings", [], undefined, { variants: undefined, variantId: "gid://shopify/ProductVariant/cushion" });
+const vintage = piece("vintage-halo-ring", "Rings", [], undefined, { variants: undefined, variantId: "gid://shopify/ProductVariant/vintage" });
+/* Star Point Band from 23 October: US 5 to 8 in each metal, US 5 listed first. */
+const starPoint = piece(
+  "star-point-band",
+  "Rings",
+  ["Gold", "Silver"].flatMap((metal) => ["5", "6", "7", "8"].map((size) => v(`star-${metal}-${size}`, { Metal: metal, Size: size }, { price: 799 }))),
+  [
+    { name: "Metal", values: ["Gold", "Silver"] },
+    { name: "Size", values: ["5", "6", "7", "8"] },
+  ],
+);
 
 describe("reading Shopify's variants", () => {
   const node = {
@@ -126,6 +137,12 @@ describe("choosing a variant on the product page", () => {
     expect(initialChoice(cushion)).toEqual({});
   });
 
+  it("opens a ring on US 6 when Shopify lists a smaller size first, else on the first it can sell", () => {
+    expect(initialChoice(starPoint)).toEqual({ Metal: "Gold", Size: "6" });
+    const goldSixGone = { ...starPoint, variants: starPoint.variants!.map((x) => (x.id.endsWith("Gold-6") ? { ...x, availableForSale: false } : x)) };
+    expect(initialChoice(goldSixGone)).toEqual({ Metal: "Gold", Size: "5" });
+  });
+
   it("finds the variant for a full choice, and none for a partial one", () => {
     expect(findVariant(band, { Stone: "Emerald", Size: "7" })?.id).toBe("gid://shopify/ProductVariant/band-Emerald-7");
     expect(findVariant(band, { Stone: "Emerald" })).toBeUndefined();
@@ -148,7 +165,8 @@ describe("what a one-tap Add needs, and takes", () => {
   it("asks for a size (a piece sold in sizes, a ring sized to the finger) or a month; adds a metal or stone", () => {
     expect(choiceNeeded(band)).toBe("size");
     expect(choiceNeeded(duet)).toBe("size");
-    expect(choiceNeeded(cushion)).toBe("size");
+    expect(choiceNeeded(vintage)).toBe("size");
+    expect(choiceNeeded(cushion)).toBeNull(); // adjusts to fit US 5 to 8
     expect(choiceNeeded(birthstone)).toBe("month");
     expect(choiceNeeded(huggies)).toBeNull();
     expect(choiceNeeded(bangle)).toBeNull();

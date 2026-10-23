@@ -26,7 +26,7 @@ const sections: Section[] = [
   },
   { label: "THE EDITS", links: menuEdits },
   { label: "OCCASION", links: menuOccasions },
-  { label: "APPAREL", links: menuApparel },
+  { label: "CUSTOM APPAREL", links: menuApparel },
   { label: "GIFTING", to: "/gifting" },
   { label: "ABOUT", to: "/about" },
   { label: "CUSTOMISE", to: "/customize" },

@@ -12,7 +12,7 @@ const Journal = () => (
   <>
     <PageSEO
       title="The Journal, Jewellery Care, Sizing & Styling Guides"
-      description="Practical guides from the Naira Flore atelier: ring sizing for India, caring for gold plated jewellery, zirconia versus diamond, and styling Indo-Western outfits."
+      description="Practical guides from the Naira Flore atelier: ring sizing for India, caring for gold plated jewellery, zirconia versus diamond, and styling everyday jewellery outfits."
       canonical={`${SITE_URL}/journal`}
       jsonLd={[
         breadcrumbLd([
@@ -50,7 +50,7 @@ const Journal = () => (
           </h1>
           <p className="relative mt-5 max-w-2xl text-[15px] leading-[1.85] text-[#1A1614]/70 md:text-[17px]" style={editorial}>
             How to size a ring at home, how to keep a gold finish from failing, what zirconia actually
-            is, and how to put an Indo-Western look together. Written by the people who make the pieces.
+            is, and how to style it every day. Written by the people who make the pieces.
           </p>
           <span aria-hidden className="journal-rule relative mt-8 block h-px w-full origin-left bg-gradient-to-r from-[#C99A4C] via-[#C99A4C]/40 to-transparent" />
           <style>{`

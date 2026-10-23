@@ -116,7 +116,7 @@ const AppShell = () => {
               the main jewellery collection instead. */}
           <Route path="/shop" element={<KeepQuery to="/jewellery" />} />
           <Route path="/shop/jewellery" element={<KeepQuery to="/jewellery" />} />
-          <Route path="/shop/indo-western" element={<ShopAll />} />
+          <Route path="/shop/indo-western" element={<KeepQuery to="/customize" />} />
           <Route path="/product/:id" element={<ProductRoute />} />
           {/* Meta and Google product feeds emit Shopify's canonical
               /products/<handle> URLs. ProductDetail resolves its :id param by

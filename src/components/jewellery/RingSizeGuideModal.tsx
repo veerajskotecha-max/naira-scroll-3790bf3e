@@ -7,10 +7,9 @@ interface Props {
   onClose: () => void;
   highlightSize?: string;
   adjustable?: boolean;
-  fitSizes?: string[];
 }
 
-const RingSizeGuideModal = ({ isOpen, onClose, highlightSize, adjustable, fitSizes }: Props) => {
+const RingSizeGuideModal = ({ isOpen, onClose, highlightSize, adjustable }: Props) => {
   if (!isOpen) return null;
 
   return (
@@ -29,7 +28,7 @@ const RingSizeGuideModal = ({ isOpen, onClose, highlightSize, adjustable, fitSiz
           </Button>
         </div>
         <div className="px-5 pb-6">
-          <RingSizeGuide highlightSize={highlightSize} adjustable={adjustable} fitSizes={fitSizes} />
+          <RingSizeGuide highlightSize={highlightSize} adjustable={adjustable} />
         </div>
       </div>
     </>

@@ -1,20 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { ADJUSTABLE_FIT_NOTE, adjustableFitNote, isAdjustableRing, ownFit } from "./ringFit";
+import { ADJUSTABLE_FIT_NOTE, ADJUSTABLE_SIZES, isAdjustableRing } from "./ringFit";
 
 describe("adjustable rings", () => {
-  /* The owner, 23 Oct 2026: it adjusts to fit US 5 to 8, all 60 pieces. */
-  it("offers Cushion Halo Ring in US 5 to 8, every size available", () => {
+  /* The owner, 23 Oct 2026: the open-back rings, Cushion Halo among them, fit US 5 to 8. */
+  it("offers every adjustable ring in US 5 to 8", () => {
     expect(isAdjustableRing("cushion-halo-ring")).toBe(true);
-    expect(ownFit("cushion-halo-ring")?.sizes).toEqual(["5", "6", "7", "8"]);
-    expect(adjustableFitNote("cushion-halo-ring")).toBe("Adjustable — fits US 5 to 8 comfortably.");
+    expect(isAdjustableRing("halo-curve-ring")).toBe(true);
+    expect(ADJUSTABLE_SIZES).toEqual(["5", "6", "7", "8"]);
+    expect(ADJUSTABLE_FIT_NOTE).toBe("Open-back design — adjustable to fit US 5 to 8 comfortably.");
   });
 
-  it("keeps the open-back US 6 to 8 line for the other adjustable rings", () => {
-    expect(ownFit("halo-curve-ring")).toBeUndefined();
-    expect(adjustableFitNote("halo-curve-ring")).toBe(ADJUSTABLE_FIT_NOTE);
-  });
-
-  it("leaves a ring sold in sizes out", () => {
+  it("leaves rings sold in sizes, and closed bands, out", () => {
     expect(isAdjustableRing("star-point-band")).toBe(false);
+    expect(isAdjustableRing("vintage-halo-ring")).toBe(false);
   });
 });

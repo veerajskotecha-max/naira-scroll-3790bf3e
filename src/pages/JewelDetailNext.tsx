@@ -18,7 +18,7 @@ import { reelForPiece, useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
-import { isAdjustableRing, adjustableFitNote, ownFit } from "@/data/ringFit";
+import { isAdjustableRing, ADJUSTABLE_FIT_NOTE, ADJUSTABLE_SIZES } from "@/data/ringFit";
 import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
@@ -111,13 +111,9 @@ const ringSizes: { value: string; status: "available" | "preorder" }[] = [
   { value: "6", status: "available" },
   { value: "7", status: "preorder" },
 ];
-/* Adjustable rings fit every size they offer, so each reads as available: an
-   open-back ring the sizes above, a ring with its own fit its own sizes. */
-const ringSizesFor = (handle?: string) => {
-  if (!isAdjustableRing(handle)) return ringSizes;
-  const sizes = ownFit(handle)?.sizes ?? ringSizes.map((s) => s.value);
-  return sizes.map((value) => ({ value, status: "available" as const }));
-};
+/* An open-back ring adjusts to fit every size it offers, so each reads as available. */
+const ringSizesFor = (handle?: string) =>
+  isAdjustableRing(handle) ? ADJUSTABLE_SIZES.map((value) => ({ value, status: "available" as const })) : ringSizes;
 
 const JewelDetailSkeleton = () => (
   <div className="min-h-screen bg-nf-ivory">
@@ -1046,7 +1042,7 @@ const JewelDetailNext = () => {
                 {!soldOut && !variantSoldOut && (
                   <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
                     {adjustable
-                      ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
+                      ? `US ${selectedSize} ships now. ${ADJUSTABLE_FIT_NOTE}`
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
@@ -1061,7 +1057,7 @@ const JewelDetailNext = () => {
                   : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
               </p>
             )}
-            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={ownFit(piece.handle)?.sizes} />
+            <RingSizeGuideModal isOpen={sizeGuideOpen} onClose={guide.requestClose} highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} />
 
             {/* Quantity stays in the bag; both actions use the same chosen variant. */}
             <div id="product-actions" className="mt-2 grid grid-cols-2 gap-2">
@@ -1123,7 +1119,7 @@ const JewelDetailNext = () => {
                   )}
                   {/* The spec list names plating and metal; the summary line is for pieces without one. */}
                   {specs.length === 0 && <p className="mt-4 text-[12px] leading-[1.6] text-nf-ink/75">{piece.materials}</p>}
-                  {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} fitSizes={ownFit(piece.handle)?.sizes} />}
+                  {isRing && <RingSizeGuide highlightSize={sizeName ? chosen[sizeName] ?? selectedSize : selectedSize} adjustable={adjustable} />}
                   {/* The size guide photo again, right where the sizes are read. */}
                   {piece.sizeGuide && (
                     <img

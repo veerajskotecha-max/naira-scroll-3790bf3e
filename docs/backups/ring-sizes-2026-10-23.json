@@ -1,0 +1,24 @@
+{
+  "taken": "2026-10-23, before the owner's ring-size changes (Cushion Halo adjustable US 5-8; Star Point Band US 5-8, 2 per size)",
+  "cushion-halo-ring": {
+    "id": "gid://shopify/Product/9294916976802",
+    "tags": ["Cubic Zirconia", "Demi Fine", "Hypoallergenic", "Naira Petite", "Rhodium Plated", "Ring", "Tarnish Free", "Waterproof"],
+    "options": [{ "name": "Title", "values": ["Default Title"] }],
+    "variants": [
+      { "id": "gid://shopify/ProductVariant/47501788577954", "title": "Default Title", "sku": "WR20902K8", "price": "1199.00", "compareAtPrice": "2200.00", "inventoryItemId": "gid://shopify/InventoryItem/49654293069986", "available": 60, "on_hand": 63, "committed": 3 }
+    ],
+    "sizeGuideFile": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-size-guide.jpg?v=1792568334 (MediaImage 46509171310754): 17 mm inside, about US 6 1/2",
+    "descriptionHtml": "<p>Cool and bright, built around one clear centre. An 8mm round brilliant clear cubic zirconia sits in four claws at the heart of a cushion shaped pave halo of about 12mm, with pave running down both shoulders and a plain polished shank behind. The metal is rhodium plated over surgical stainless steel, so the setting reads cool rather than warm. Made in a fixed size of about 17mm inside, between US 6 and 7, it works as an everyday statement or a proposal style ring.</p><p><strong>STYLING TIP:</strong> Wear it with cool toned studs and a bare second hand for a balanced look.</p><p><strong>Details</strong></p><ul>\n<li>Size: Inner diameter approximately 17mm, between US 6 and 7</li>\n<li>Stone: Round brilliant clear cubic zirconia, approximately 8mm, four claw set</li>\n<li>Halo: Cushion shaped pave halo, approximately 12mm across</li>\n<li>Band: Pave set down both shoulders, plain polished shank behind</li>\n<li>Plating: Rhodium plated</li>\n<li>Material: Surgical stainless steel</li>\n</ul><p><img src=\"https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-size-guide.jpg\" alt=\"Size guide — Cushion Halo Ring\" width=\"420\"></p><p><strong>Care</strong></p><p>Waterproof and tarnish free, so daily wear and water are fine. Keep it away from perfume and harsh chemicals, wipe with a soft dry cloth and store it flat in its pouch.</p><p>You will receive your piece in a Naira Petite box.</p>"
+  },
+  "star-point-band": {
+    "id": "gid://shopify/Product/9294917173410",
+    "tags": ["18k Gold Tone Plated", "Cubic Zirconia", "Demi Fine", "Hypoallergenic", "Naira Petite", "Ring", "Tarnish Free", "Waterproof"],
+    "options": [{ "id": "gid://shopify/ProductOption/13289706422434", "name": "Metal", "values": ["Gold", "Silver"] }],
+    "variants": [
+      { "id": "gid://shopify/ProductVariant/47501788774562", "title": "Gold", "sku": "YF5214", "price": "799.00", "compareAtPrice": "1500.00", "inventoryPolicy": "DENY", "taxable": true, "weight": "3 GRAMS", "inventoryItemId": "gid://shopify/InventoryItem/49654293266594", "available": 10, "on_hand": 10, "committed": 0 },
+      { "id": "gid://shopify/ProductVariant/50652105605282", "title": "Silver", "sku": "YF5214-S", "price": "799.00", "compareAtPrice": "1500.00", "inventoryPolicy": "DENY", "taxable": true, "weight": "0 KILOGRAMS", "inventoryItemId": "gid://shopify/InventoryItem/52773608718498", "available": 9, "on_hand": 9, "committed": 0 }
+    ],
+    "location": "gid://shopify/Location/76267389090 (Forest Colony Parijat Nagar)",
+    "descriptionHtml": "<p>A wide band, marked with small points of light. The surface carries repeating four pointed star motifs in low relief, each one centred on a small clear cubic zirconia, so the pattern runs the whole way around the finger. The style is made in gold tone and silver tone plated finishes, and in several sizes, both confirmed at the time of order. Wear it as an everyday band that still has detail.</p><p><strong>STYLING TIP:</strong> Wear it with a slim stacking ring on the same finger for a soft everyday pair.</p><p><strong>Details</strong></p><ul>\n<li>Width: Approximately 6mm</li>\n<li>Weight: Approximately 5.2g</li>\n<li>Profile: Wide flat band</li>\n<li>Pattern: Repeating engraved four pointed star motifs in low relief</li>\n<li>Stone: Small clear cubic zirconia at the centre of each star</li>\n<li>Size: Multiple sizes available, confirmed at order</li>\n<li>Plating: 18k gold tone plated or rhodium plated silver tone, confirmed at order</li>\n<li>Material: Surgical stainless steel</li>\n</ul><p><img src=\"https://cdn.shopify.com/s/files/1/0680/9606/5698/files/star-point-band-size-guide.jpg\" alt=\"Size guide — Star Point Band\" width=\"420\"></p><p><strong>Care</strong></p><p>Waterproof and tarnish free, so daily wear and water are fine. Keep it away from perfume and harsh chemicals, wipe with a soft dry cloth and store it flat in its pouch.</p><p>You will receive your piece in a Naira Petite box.</p>"
+  }
+}

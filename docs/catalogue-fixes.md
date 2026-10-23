@@ -218,3 +218,36 @@ with the "before" order.
     `pearl-drop-studs-scale.jpg`, after the close-up and before the gift box
     and size guide. The Verdant Circlet ear shot was skipped.
   - Triple Dawn Cuff stays as it is until the owner has checked the piece.
+
+## 23 October — ring sizes and stock
+
+The owner: Cushion Halo Ring and Star Point Band should show US 5, 6, 7 and 8
+as available on the site and in Shopify. Cushion Halo adjusts to fit US 5–8,
+so all 60 stay one adjustable ring. Star Point gets 2 pieces in each size. The
+before state of both is in `docs/backups/ring-sizes-2026-10-23.json`.
+
+- **Star Point Band (Shopify):** a Size option (5, 6, 7, 8) added to both
+  metals, 2 pieces in each, 16 in all (it was Gold 10, Silver 9). The old Gold
+  and Silver variants became US 6 and kept their IDs and SKUs (YF5214,
+  YF5214-S); the new ones are YF5214-G-5/7/8 and YF5214-S-5/7/8 at ₹799
+  (MRP ₹1,500). The copy now says "in US sizes 5 to 8" and lists
+  "Sizes: US 5, 6, 7 and 8" instead of "confirmed at order".
+  - Shopify ties the size order to the variant order, so with sizes listed
+    5, 6, 7, 8 its first variant is US 5. The site now opens a sized ring on
+    US 6 when US 6 can be bought (main 137eabd), as rings sold one way do.
+- **Cushion Halo Ring (Shopify):** stock unchanged (60, one variant). The copy
+  said "a fixed size of about 17mm inside, between US 6 and 7"; it now says
+  "It adjusts to fit US 5 to 8" and "Size: Adjustable, fits US 5 to 8". The
+  photos show a closed band, so nothing says open back.
+  - The size guide (17 mm, about US 6½) was replaced in place by one with
+    US 5–8 marked, "Adjustable · fits US 5 to 8"
+    (`shopify/sizing/cards-2026-10-23/`). Same file and gallery position; the
+    description links the new version (`?v=1792788054`) because the plain
+    link stayed cached on the old image.
+- **Site (main 137eabd):** Cushion Halo is adjustable with its own fit: US 5,
+  6, 7 and 8, all "ships now", with "Adjustable — fits US 5 to 8 comfortably."
+  The size guide says "This ring adjusts to fit US 5–8." Checked at phone
+  width against live Shopify: both pages right, Halo Curve and Vintage Halo
+  unchanged. Needs Publish → Update in Lovable.
+- **Waiting on the owner:** the other rings' sizes and stock (see the
+  question of 23 October).

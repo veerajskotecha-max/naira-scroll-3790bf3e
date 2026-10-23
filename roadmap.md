@@ -56,3 +56,4 @@
 - Keep the bag offer explanation on TOP of the track: "✦ Sitewide sale live today · up to 20% off" — the owner's own wording, saving named.
 - Header strip runs three short lines: "SITEWIDE SALE LIVE TODAY!" (exclamation, no percentage — the bag's line names it), "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
 - Bag offer line stays small and quiet on top of the track at 8.5px — do not let it clutter the bag.
+- [x] Jewellery-only site: apparel removed from menu, footer, search and home/about wording; only the made-to-measure custom outfits section (/customize) remains; /shop/indo-western now opens /customize.

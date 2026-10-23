@@ -186,6 +186,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/dewdrop-bezel-necklace</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/charm-box-chain</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -660,6 +665,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/riviere-huggies-silver</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/torsade-pearl-cuff</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -696,6 +706,11 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/triple-coil-wrap-bangle</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/marquise-wheat-cuff</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -796,6 +811,11 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/roman-numeral-trio-ring</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/linked-trio-ring</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

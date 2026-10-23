@@ -159,13 +159,13 @@ const LookbookGallery = () => {
       {/* CTA */}
       <div className="relative mt-20 flex justify-center">
         <Link
-          to="/shop/indo-western"
+          to="/customize"
           data-magnetic="strong"
           className="group relative inline-flex items-center gap-3 border border-[#1A1614]/40 px-10 py-4 text-[12px] tracking-[0.35em] text-[#1A1614] transition-colors duration-500 hover:text-[#FFF8F5]"
           style={jost}
         >
           <span className="absolute inset-0 origin-left scale-x-0 bg-[#1A1614] transition-transform duration-500 ease-out group-hover:scale-x-100" />
-          <span className="relative">SHOP THE COLLECTION</span>
+          <span className="relative">DESIGN YOUR OWN OUTFIT</span>
           <span className="relative transition-transform duration-500 group-hover:translate-x-1">→</span>
         </Link>
       </div>

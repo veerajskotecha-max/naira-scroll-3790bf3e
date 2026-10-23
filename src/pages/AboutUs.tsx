@@ -12,7 +12,7 @@ const AboutUs = () => (
   <>
     <PageSEO
       title="About Naira Flore | A Nashik Atelier for Handmade Fashion"
-      description="From B2B roots to a made-to-measure label: the story of Naira Flore, the Nashik atelier behind our Indo-Western wear and demi-fine zircone jewellery."
+      description="From B2B roots to a made-to-measure label: the story of Naira Flore, the Nashik atelier behind our demi-fine zircone jewellery and made-to-measure outfits."
       canonical="https://nairaflore.com/about"
     />
   <div className="pt-[111px] md:pt-[122px] lg:pt-[136px]">

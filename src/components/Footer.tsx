@@ -5,9 +5,6 @@ import nairaLogo from "@/assets/naira-logo-footer.svg";
 import NairaBoxShowcase from "@/components/NairaBoxShowcase";
 
 const shopLinks = [
-  { label: "Dresses", to: "/shop/indo-western?category=dresses" },
-  { label: "Co-ord Sets", to: "/shop/indo-western?category=co-ord-sets" },
-  { label: "Fusion Sarees", to: "/shop/indo-western?category=fusion-sarees" },
   { label: "New Arrivals", to: "/jewellery?sort=newest" },
   { label: "Zircone Rings", to: "/jewellery/collections/rings" },
   { label: "Earrings", to: "/jewellery/collections/earrings" },
@@ -229,9 +226,9 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"
               style={{ color: CREAM_MUTED }}
             >
-              Where tradition meets the contemporary. Handcrafted Indo-Western
-              wear and 18K gold finished demi-fine jewellery, crafted in
-              Nashik for the woman who carries her heritage with ease.
+              Demi-fine jewellery, 18K gold coated and crafted in Nashik for
+              the woman who carries her heritage with ease. Made-to-measure
+              handmade outfits on request.
             </p>
             <div className="flex gap-3">
               <SocialIcon href="https://www.instagram.com/nairaflore/" label="Instagram">
@@ -341,30 +338,21 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
             style={{ color: CREAM_FAINT }}
           >
             {[
-              "Handcrafted Kurtas",
-              "Chikankari Suits",
-              "Cotton Anarkali",
-              "Bridal Lehenga",
-              "Zardosi Embroidery",
-              "Silk Saree",
+              "Zircone Rings",
+              "Gold Plated Earrings",
+              "Huggie Hoops",
+              "Tennis Bracelet",
+              "Layered Necklace",
+              "Anti-Tarnish Jewellery",
+              "Demi-Fine Jewellery",
+              "Gifts for Her",
               "Made to Measure",
-              "Custom Bridalwear",
-              "Wedding Sets",
-              "Festive Kurtas",
-              "Sustainable Fashion",
-              "Indian Occasion Wear",
-              "Nashik Designer",
-              "Slow Fashion India",
-              "Hand Embroidered",
-              "Luxury Prêt",
+              "Handmade Custom Outfits",
             ].map((term, i, arr) => {
-              const customTerms = ["Made to Measure", "Custom Bridalwear"];
-              const jewelTerms = ["Wedding Sets"];
-              const to = customTerms.includes(term)
+              const customTerms = ["Made to Measure", "Handmade Custom Outfits"];
+                            const to = customTerms.includes(term)
                 ? "/customize"
-                : jewelTerms.includes(term)
-                ? "/jewellery"
-                : `/shop/indo-western?search=${encodeURIComponent(term)}`;
+                : `/jewellery?search=${encodeURIComponent(term)}`;
               return (
               <span key={term}>
                 <Link

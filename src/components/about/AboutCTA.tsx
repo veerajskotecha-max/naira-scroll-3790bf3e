@@ -36,18 +36,18 @@ const AboutCTA = () => (
         className="font-cormorant text-[15px] md:text-[16px] leading-[1.8] max-w-[480px] mx-auto mb-10"
         style={{ color: "hsl(0 0% 48%)" }}
       >
-        From bridal ensembles to modern fusion wear, each piece is crafted
-        with care, heritage, and your story in mind.
+        Demi-fine jewellery made in small runs, and handmade outfits made
+        to your measure, each crafted with care and your story in mind.
       </p>
       <Link
-        to="/shop/indo-western"
+        to="/customize"
         className="inline-flex items-center font-cormorant text-[13px] md:text-[14px] font-medium uppercase tracking-[0.1em] px-12 py-4 rounded-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
         style={{
           backgroundColor: "hsl(143 14% 63%)",
           color: "hsl(0 0% 100%)",
         }}
       >
-        View the Collection
+        Design Your Own
       </Link>
     </div>
   </section>

@@ -54,12 +54,6 @@ const SearchOverlay = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const { jewellery } = useLiveJewellery();
-  const { data: apparel } = useQuery({
-    queryKey: ["shopify-products", "search-index"],
-    queryFn: () => fetchShopifyProducts(100),
-    staleTime: 1000 * 60 * 5,
-    enabled: open,
-  });
 
   useEffect(() => {
     if (!open) return;
@@ -84,20 +78,6 @@ const SearchOverlay = ({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  const clothes: Hit[] = useMemo(() => {
-    const jewelHandles = new Set(jewellery.map((p) => p.handle));
-    return (apparel ?? [])
-      .filter((n) => !jewelHandles.has(n.handle))
-      .map((n) => ({
-        key: `p-${n.handle}`,
-        title: n.title,
-        caption: n.productType || "Indo-Western",
-        price: `₹${Math.round(Number(n.priceRange.minVariantPrice.amount)).toLocaleString("en-IN")}`,
-        image: n.images.edges[0]?.node.url ?? "",
-        to: `/product/${n.handle}`,
-      }));
-  }, [jewellery, apparel]);
-
   /* Jewellery is ranked by lib/search; apparel keeps its plain text match and
      only fills the list after the pieces. */
   const { results, total, seeAll } = useMemo(() => {
@@ -112,8 +92,8 @@ const SearchOverlay = ({
       image: cardCover(p),
       to: `/jewellery/${p.handle}`,
     }));
-    const lower = term.toLowerCase();
-    const matches = [...jewels, ...clothes.filter((h) => `${h.title} ${h.caption}`.toLowerCase().includes(lower))];
+    // Search is jewellery only: ready-wear apparel is no longer sold on the site.
+    const matches = jewels;
     const to = shopPageFor(term);
     const { category } = parseQuery(term);
     return {
@@ -121,7 +101,7 @@ const SearchOverlay = ({
       total: matches.length,
       seeAll: to ? { to, label: `See all ${category ? category.toLowerCase() : "pieces"}${pieces.length ? ` (${pieces.length})` : ""}` } : null,
     };
-  }, [q, jewellery, clothes]);
+  }, [q, jewellery]);
 
   /* The keyboard's Go / Enter: the filtered shop page when the search is a
      category or a price, otherwise the best match. It clicks the same link a

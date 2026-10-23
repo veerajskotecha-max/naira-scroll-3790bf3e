@@ -22,3 +22,18 @@ describe("header search and the phone's back", () => {
     expect(overlay).toMatch(/if \(onFollow\) onFollow\(e\);\s*else onClose\(\);/);
   });
 });
+
+/* "About us" is off the site for now: the header, the phone menu and the
+   homepage sections must not point at it. The page itself stays mounted so a
+   link someone already has does not land on "Coming Soon". */
+const mobileMenu = readFileSync(resolve(__dirname, "MobileMenu.tsx"), "utf8");
+const homepage = ["Craftsmanship.tsx", "FounderStoryTeaser.tsx"].map((f) =>
+  readFileSync(resolve(__dirname, f), "utf8"),
+);
+
+describe("about us is off the site", () => {
+  it("keeps /about out of the header, the phone menu and the homepage", () => {
+    for (const src of [navbar, mobileMenu, ...homepage])
+      expect(src).not.toMatch(/to(?:=|:)\s*"\/about"/);
+  });
+});

@@ -1,12 +1,17 @@
 import { Circle, Ruler } from "lucide-react";
+import { ADJUSTABLE_SIZES } from "@/data/ringFit";
 import { RING_SIZE_CHART } from "@/data/ringSizing";
 
 interface Props {
   highlightSize?: string;
   adjustable?: boolean;
+  /** The US sizes an adjustable ring fits. */
+  fitSizes?: string[];
 }
 
-export default function RingSizeGuide({ highlightSize, adjustable = false }: Props) {
+export default function RingSizeGuide({ highlightSize, adjustable = false, fitSizes = ADJUSTABLE_SIZES }: Props) {
+  /* The chart's sizes outside the ring's fit: "US 8 and US 9". */
+  const outside = RING_SIZE_CHART.map((size) => size.us).filter((us) => !fitSizes.includes(us)).map((us) => `US ${us}`);
   return (
     <section aria-label="Ring size guide" className="mt-5 border-t border-nf-gold/20 pt-5 text-nf-ink">
       <h3 className="font-cormorant text-[22px]">Find your US ring size</h3>
@@ -54,7 +59,12 @@ export default function RingSizeGuide({ highlightSize, adjustable = false }: Pro
         <div className="border-l border-nf-gold/40 pl-3 text-nf-ink/75">
           <h4 className="font-medium text-nf-ink">Before choosing</h4>
           <p className="mt-1">Measure 2–3 times with warm hands, preferably towards the end of the day. Check the ring can pass your knuckle. If between sizes or choosing a wide band, try the larger size and confirm the fit with a jeweller.</p>
-          {adjustable && <p className="mt-2">This open-back ring adjusts to fit US 5–8. US 9 is a chart reference, not its adjustable fit range.</p>}
+          {adjustable && (
+            <p className="mt-2">
+              {`This open-back ring adjusts to fit US ${fitSizes[0]}–${fitSizes[fitSizes.length - 1]}.`}
+              {outside.length > 0 && ` ${outside.join(" and ")} ${outside.length > 1 ? "are chart references" : "is a chart reference"}, not its adjustable fit range.`}
+            </p>
+          )}
         </div>
       </div>
     </section>

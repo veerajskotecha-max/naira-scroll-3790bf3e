@@ -1,13 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { ADJUSTABLE_FIT_NOTE, ADJUSTABLE_SIZES, isAdjustableRing } from "./ringFit";
+import { ADJUSTABLE_FIT_NOTE, adjustableFitNote, adjustableSizes, isAdjustableRing } from "./ringFit";
 
 describe("adjustable rings", () => {
-  /* The owner, 23 Oct 2026: the open-back rings, Cushion Halo among them, fit US 5 to 8. */
-  it("offers every adjustable ring in US 5 to 8", () => {
-    expect(isAdjustableRing("cushion-halo-ring")).toBe(true);
+  /* The owner, 23 Oct 2026: the open-back rings fit US 5 to 8. */
+  it("offers an open-back ring in US 5 to 8", () => {
     expect(isAdjustableRing("halo-curve-ring")).toBe(true);
-    expect(ADJUSTABLE_SIZES).toEqual(["5", "6", "7", "8"]);
+    expect(adjustableSizes("halo-curve-ring")).toEqual(["5", "6", "7", "8"]);
+    expect(adjustableFitNote("halo-curve-ring")).toBe(ADJUSTABLE_FIT_NOTE);
     expect(ADJUSTABLE_FIT_NOTE).toBe("Open-back design — adjustable to fit US 5 to 8 comfortably.");
+  });
+
+  /* The owner, 24 Oct 2026: the new 60 Cushion Halo Rings fit US 5 to 7. */
+  it("offers Cushion Halo Ring in US 5 to 7", () => {
+    expect(isAdjustableRing("cushion-halo-ring")).toBe(true);
+    expect(adjustableSizes("cushion-halo-ring")).toEqual(["5", "6", "7"]);
+    expect(adjustableFitNote("cushion-halo-ring")).toBe("Open-back design — adjustable to fit US 5 to 7 comfortably.");
+  });
+
+  it("counts Blush Cluster Ring as open, as the supplier's sample is", () => {
+    expect(isAdjustableRing("blush-cluster-ring")).toBe(true);
   });
 
   it("leaves rings sold in sizes, and closed bands, out", () => {

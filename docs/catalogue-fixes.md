@@ -251,3 +251,44 @@ before state of both is in `docs/backups/ring-sizes-2026-10-23.json`.
   unchanged. Needs Publish → Update in Lovable.
 - **Waiting on the owner:** the other rings' sizes and stock (see the
   question of 23 October).
+
+## 24 October — every ring's sizes and stock, after the owner's answers
+
+Asked on 23 October; the owner answered:
+
+- **Adjustable rings fit US 5 to 8** (Rose Verdant, Granule Dome, Verdant
+  Eternity, Halo Curve, Pavé Dome, Petite Pavé, Droplet Open, Cushion Halo).
+  - The site offers US 5, 6, 7 and 8 on each, all "ships now", under
+    "Open-back design — adjustable to fit US 5 to 8 comfortably." (main 2ef18f8).
+  - Each description says it adjusts to fit US 5 to 8, replacing "US 6 to 8",
+    "about US 7", "US 7" and "about US 6½".
+- **Cushion Halo has a small gap between the band ends.** Its three product
+  photos were edited (Nano Banana Pro, 2 credits each; two first tries had too
+  wide a gap and were redone) to show a hairline split at the back.
+  - Each was swapped in place, so filenames and gallery order are unchanged.
+  - Its copy now says "a small opening at the back of the band".
+- **Rings with no sizes in Shopify:** the owner said to keep the ones whose
+  photos show an open band as adjustable. None of the six does (Chevron
+  Whisper, Pearl Ribbon, Blush Cluster, Vintage Halo, Whisper Pavé, Lilac
+  Papillon), so they are unchanged: US 6 in stock, US 5 and 7 as pre-orders.
+- **Sold-out sizes stocked, 2 each:** Golden Duet US 7 and US 8, Roman Numeral
+  Trio US 8.
+- **US 5 added, 2 each, in every colour,** to Baguette Eternity (Ruby, Emerald,
+  Amethyst), Tubogas Dome, Linked Pair, Crystal Baguette, Chain Drop Dome,
+  Watch Link and Mesh Band.
+  - SKUs follow the siblings (YF3143-RU-5, YF3608-G-5, YF2604-5 and so on),
+    with the same price and each colour's own photo.
+  - Sizes are listed 5, 6, 7, 8, and the site opens these pages on US 6.
+  - Descriptions say "Sizes: US 5, 6, 7 and 8".
+- **Size guides:** 14 re-rendered (`shopify/sizing/cards-2026-10-24/`) and
+  swapped in place:
+  - the adjustable rings show US 5–8 marked and "Open back · fits US 5 to 8";
+  - five sized rings' captions say "US 5, 6, 7, 8";
+  - Linked Pair's card had the old name "Linked Trio Ring".
+  - Descriptions link the new versions (`?v=1792809375/6`) so the CDN does not
+    serve the old images.
+- Before-state of all 15 descriptions:
+  `shopify/sizing/backup/descriptions-ring-sizes-2026-10-24.json`.
+- Checked at phone width against live Shopify: Cushion Halo, Halo Curve,
+  Star Point, Tubogas, Golden Duet, Roman Numeral and Vintage Halo all show
+  the right sizes and lines.

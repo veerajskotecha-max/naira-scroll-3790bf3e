@@ -292,3 +292,24 @@ Asked on 23 October; the owner answered:
 - Checked at phone width against live Shopify: Cushion Halo, Halo Curve,
   Star Point, Tubogas, Golden Duet, Roman Numeral and Vintage Halo all show
   the right sizes and lines.
+
+### 24 October, later — which rings really adjust
+
+- **Cushion Halo fits US 5 to 7.** The owner: the new 60 are adjustable,
+  US 5 to 7, not 5 to 8. Its page offers 5, 6 and 7 (main f1eaf4f). Its copy
+  says "adjusts to fit US 5 to 7", and its size guide marks US 5 to 7. Other
+  open-back rings keep US 5 to 8.
+- **Every ring checked against the supplier's photos** (KAVNAR sample and
+  catalogue shots, the Drive folder), not only our own:
+  - **Blush Cluster is open.** KAVNAR's sample (WR10914B2) has a clear gap
+    between the cluster and the small stone, though our copy said "fixed size,
+    between US 6 and 7". It is now adjustable on the site (US 5–8) and in its
+    copy, and its size guide shows an open band.
+  - **Closed bands, still sized:** Vintage Halo, Whisper Pavé, Pearl Ribbon and
+    Chevron Whisper (supplier photos), and the ten rings sold in sizes, except
+    Golden Duet.
+  - **Golden Duet is an open toi-et-moi ring**, but it is sold in US 6, 7 and 8
+    with stock in each. Making it adjustable would merge those sizes into one,
+    so it waits for the owner.
+  - **Lilac Papillon** has no supplier photo, and ours look closed. It waits for
+    the owner.

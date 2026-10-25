@@ -328,3 +328,46 @@ Asked on 23 October; the owner answered:
   - Before-state: `docs/backups/golden-duet-variants-2026-10-24.json`.
 - **Lilac Papillon:** closed, unchanged (owner).
 - **Open-back rings:** stay at US 5–8 (owner). Only Cushion Halo is US 5–7.
+
+## 25 October — About Us removed; the site leads with jewellery and custom outfits
+
+The owner asked for the site to be about two things only, demi-fine jewellery
+and custom-made outfits, with no apparel menu (main 0979370).
+
+- **Header:** HOME · JEWELLERY · CUSTOM OUTFITS · GIFTING. SHOP is renamed
+  JEWELLERY, and ABOUT and the duplicate CUSTOMISE are gone. The link gap is
+  14px at 1024px, which leaves 24px between GIFTING and the wordmark (it was
+  7px).
+- **Mega-menu:** jewellery only. The "Customised" apparel column is gone.
+- **Phone menu:**
+  - Order: HOME, JEWELLERY, CUSTOM OUTFITS, THE EDITS, OCCASION, GIFTING,
+    TRACK ORDER, CONTACT. Custom Outfits sits straight after the open
+    Jewellery list, so it is visible without scrolling.
+  - The Custom Apparel accordion and About are gone.
+- **Footer:** the Shop column links Custom Outfits.
+- **About page deleted,** along with its seven sections and three images
+  nothing else used. `/about` and `/pages/about` redirect home and keep the
+  query string, so old links and UTM tags still land.
+- **Homepage:**
+  - The story section ("From our Nashik studio") was rewritten. It introduces
+    made-to-measure outfits and Naira Petite, and links to the jewellery and to
+    custom outfits.
+  - The Craftsmanship button now reads CUSTOM OUTFITS and links to `/customize`.
+  - **This copy is new, so the owner should read it before publishing.**
+- **Title, meta, llms.txt, sitemap:**
+  - The title is "Naira Flore | Demi-Fine Jewellery & Custom Outfits".
+  - `/about` is out of the sitemap.
+  - llms.txt describes both offerings. It does not claim clothing is no longer
+    sold, because those product pages are still live.
+- **Untouched:**
+  - Clothing product pages (`/product/:id`) still work for ads but are in no
+    menu.
+  - `/customize` itself is unchanged.
+- **Checked:**
+  - 423 tests pass. Types and lint are clean, and the production build passes.
+  - In a browser at 390px, 1024px, 1120px, 1280px and 1440px: no sideways
+    scroll and no page errors, and `/about?utm_source=test` lands on
+    `/?utm_source=test`.
+  - The only test that went away was the automatic per-page header check for
+    the deleted About page.
+- **Live after Publish → Update in Lovable.**

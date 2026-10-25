@@ -79,6 +79,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
   const price = lead ? lead.price : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
   const compareAtPrice = lead?.compareAtPrice;
+  const description = normalizeMetalCopy(node.description);
 
   return {
     ...piece,
@@ -94,7 +95,11 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     cover: node.leadImage,
     gallery,
     sizeGuide: sizeGuideOf(node),
-    description: normalizeMetalCopy(node.description) || piece.description,
+    description: description || piece.description,
+    /* The Details panel reads the listing too: a bundled piece kept its own
+       copy here, so Shopify corrections (sizes, stones, the PVD lines) never
+       reached its product page. */
+    ...(description ? listingCopy(description) : {}),
     tags: node.tags ?? [],
     ...choice,
   };
@@ -156,6 +161,22 @@ const normalizeMetalCopy = (raw: string): string => {
 
 const isRhodium = (text: string) => /rhodium/i.test(text || "") && !/gold/i.test(text || "");
 
+/* The one-line summary claims PVD, a steel base and waterproofing only when the
+   listing does: a copper alloy piece was being called waterproof surgical
+   stainless steel in its Care answers. */
+const materialsOf = (description: string): string => {
+  const pvd = /\bPVD\b/.test(platingLine(description));
+  // Hallmarked copy keeps "silver tone" (see normalizeMetalCopy), so read that as cool too.
+  const cool = isRhodium(description) || (/silver tone/i.test(description) && !/gold/i.test(description));
+  const coating = cool
+    ? pvd ? "PVD rhodium coated" : "Rhodium coated"
+    : pvd ? "PVD 18K gold coated" : "18K gold tone plated";
+  // Only the Material line counts: Verdant Drop's care text names steel to say it is not steel.
+  const steel = /Material:[^.]*?stainless steel/i.test(description) ? " · surgical stainless steel" : "";
+  const wear = /waterproof/i.test(description) ? "waterproof, anti-tarnish" : "anti-tarnish";
+  return `${coating} · brilliant-cut zircone${steel} · ${wear}`;
+};
+
 
 /** Shopify productType → the four listing categories used on /jewellery. */
 const CATEGORY_BY_TYPE: Record<string, JewelPiece["category"]> = {
@@ -216,6 +237,18 @@ const parseDescription = (raw: string) => {
   };
 };
 
+/** The blurb, tip, specs and care a listing gives, leaving out any it does not. */
+const listingCopy = (description: string): Partial<JewelPiece> => {
+  const parsed = parseDescription(description);
+  const copy: Partial<JewelPiece> = {
+    blurb: parsed.blurb,
+    stylingTip: parsed.stylingTip,
+    details: splitSpecs(parsed.details),
+    care: parsed.care,
+  };
+  return Object.fromEntries(Object.entries(copy).filter(([, value]) => value)) as Partial<JewelPiece>;
+};
+
 /** Builds a full piece for a live Shopify listing that isn't in the bundled file.
  * Exported so scripts/generate-jewellery-snapshot.ts can run the SAME mapping
  * ahead of time — the PDP's first paint must be what live would have drawn. */
@@ -248,9 +281,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     stylingTip: parsed.stylingTip,
     details: splitSpecs(parsed.details),
     care: parsed.care,
-    materials: isRhodium(description)
-      ? "Rhodium coated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish"
-      : "18K gold tone plated · brilliant-cut zircone · surgical stainless steel · waterproof, anti-tarnish",
+    materials: materialsOf(description),
     tags: node.tags,
     ...choice,
   };

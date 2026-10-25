@@ -612,11 +612,13 @@ const JewelDetailNext = () => {
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece) });
   };
 
-  /* Tarnish and skin, answered from the piece's own materials, in Care. */
+  /* Tarnish and skin, answered from the piece's own materials, in Care.
+     "PVD 18K gold coated" keeps its capitals mid-sentence; "Rhodium coated" does not. */
+  const finishInSentence = /^[A-Z]{2}/.test(finish) ? finish : finish.charAt(0).toLowerCase() + finish.slice(1);
   const care = [
     {
       q: "Will it tarnish?",
-      a: `It is ${finish.toLowerCase()}${steel ? " on surgical stainless steel" : ""}${
+      a: `It is ${finishInSentence}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
       }, and the finish is covered by our 2-year plating assurance.`,
     },

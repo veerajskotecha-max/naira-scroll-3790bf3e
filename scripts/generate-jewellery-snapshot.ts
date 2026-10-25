@@ -12,8 +12,9 @@
  *
  * Each entry is produced by the app's own fromShopify(), so first paint is the
  * same object live would build — nothing is hand-copied, nothing can drift in
- * shape. Pieces already hand-authored in jewellery.ts are skipped; their copy is
- * curated and must stay the authority.
+ * shape. Pieces already hand-authored in jewellery.ts are skipped: they have their
+ * own first-paint entry there. Once live data loads, their Details copy comes
+ * from Shopify like every other piece's (since 25 Oct 2026; see mergeLive).
  *
  * It also rewrites the handle list in src/data/jewelleryHandles.ts from the same
  * query. The two drifted apart once already — a piece switched to DRAFT stayed in

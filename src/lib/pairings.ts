@@ -82,6 +82,12 @@ const LINES: Array<[line: string, strength: Strength, pattern: RegExp]> = [
   ["baroque", "set", /baroque/i],
   ["molten", "set", /molten/i],
   ["mesh", "set", /mesh/i],
+  // Aditya, 25 Oct 2026: the clover drops, chain and station bracelet (with the Clover Charm
+  // Necklace and Clover Trio Edit); the twin heart necklace and studs; the watch link bracelet
+  // beside the Watch Link Ring.
+  ["clover", "set", /clover/i],
+  ["twin heart", "set", /twin heart/i],
+  ["watch link", "set", /watch link/i],
   ["halo", "motif", /halo/i],
   ["heart", "motif", /heart/i],
   ["star", "motif", /\bstar\b/i],

@@ -27,6 +27,14 @@ describe("adjustable rings", () => {
     expect(adjustableSizes("golden-duet-ring")).toEqual(["5", "6", "7", "8"]);
   });
 
+  /* Aditya, 25 Oct 2026: the supplier marked the three solitaires and the zigzag ring "Adjustable". */
+  it("counts the Aditya rings as adjustable, in US 5 to 8", () => {
+    for (const handle of ["asscher-solitaire-ring", "cushion-solitaire-ring", "pave-zigzag-ring", "lumiere-oval-solitaire-ring"]) {
+      expect(isAdjustableRing(handle)).toBe(true);
+      expect(adjustableSizes(handle)).toEqual(["5", "6", "7", "8"]);
+    }
+  });
+
   it("leaves rings sold in sizes, and closed bands, out", () => {
     expect(isAdjustableRing("star-point-band")).toBe(false);
     expect(isAdjustableRing("vintage-halo-ring")).toBe(false);

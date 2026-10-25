@@ -107,6 +107,18 @@ describe("the lines that join pieces", () => {
     expect(linesOf(byHandle("serpentine-whisper-chain-silver")).map(([line]) => line)).toEqual(["whisper"]);
   });
 
+  it("joins the Aditya sets: the clovers, the twin hearts and the watch links", () => {
+    const named = (handle: string, category: JewelPiece["category"], name: string) => piece(handle, category, 875, gold, { name });
+    const cloverStation = named("clover-station-bracelet", "Bracelets", "Clover Station Bracelet");
+    expect(sharedLine(named("clover-drop-earrings", "Earrings", "Clover Drop Earrings"), cloverStation)).toBe("set");
+    expect(sharedLine(named("clover-charm-necklace", "Necklaces", "Clover Charm Necklace"), cloverStation)).toBe("set");
+    expect(sharedLine(named("twin-heart-necklace", "Necklaces", "Twin Heart Necklace"), named("twin-heart-studs", "Earrings", "Twin Heart Studs"))).toBe("set");
+    expect(sharedLine(named("watch-link-bracelet", "Bracelets", "Watch Link Bracelet"), named("watch-link-ring", "Rings", "Watch Link Ring"))).toBe("set");
+    // A lone heart, or a flower that is not a clover, still shares only the motif.
+    expect(sharedLine(named("twin-heart-studs", "Earrings", "Twin Heart Studs"), byHandle("heartline-paperclip-necklace"))).toBe("motif");
+    expect(sharedLine(named("petite-blossom-bracelet", "Bracelets", "Petite Blossom Bracelet"), cloverStation)).toBe("motif");
+  });
+
   it("names each piece's style within its category", () => {
     expect(["baguette-tennis-bracelet", "north-star-bangle", "baguette-huggies", "pearl-drop-studs", "star-point-band", "cushion-halo-ring", "heartline-paperclip-necklace", "toggle-link-chain"].map((h) => styleOf(byHandle(h)))).toEqual([
       "tennis",

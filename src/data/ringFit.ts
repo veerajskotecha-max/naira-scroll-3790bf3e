@@ -21,6 +21,11 @@ export const ADJUSTABLE_RING_HANDLES = new Set<string>([
   "blush-cluster-ring",
   // An open toi et moi ring; the owner, 24 Oct 2026: one adjustable stock, not US 6, 7 and 8.
   "golden-duet-ring",
+  // Aditya, 25 Oct 2026: each marked "Adjustable" on the supplier's photos.
+  "asscher-solitaire-ring",
+  "cushion-solitaire-ring",
+  "pave-zigzag-ring",
+  "lumiere-oval-solitaire-ring",
 ]);
 
 export const isAdjustableRing = (handle?: string): boolean =>

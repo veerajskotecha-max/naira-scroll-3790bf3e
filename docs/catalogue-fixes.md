@@ -371,3 +371,78 @@ and custom-made outfits, with no apparel menu (main 0979370).
   - The only test that went away was the automatic per-page header check for
     the deleted About page.
 - **Live after Publish → Update in Lovable.**
+
+## 25 October — PVD coating in every steel piece's Details
+
+The owner asked for this in the product page's Details dropdown: PVD 18K gold
+coating on the gold pieces, PVD coating on the white pieces, a very short
+note on how PVD differs from regular plating, and anti-tarnish.
+
+- **Shopify: 94 listings changed (84 live, 10 drafts), nothing else.**
+  These are every listing with a Plating line and a stainless steel
+  Material line. Each was checked afterwards against the intended text,
+  character for character.
+  - **Plating line:**
+    - Gold pieces: "PVD 18K gold coating, anti-tarnish".
+    - White pieces: "PVD rhodium coating, anti-tarnish".
+    - Pieces sold in both metals: "PVD 18K gold or PVD rhodium coating
+      (choose above), anti-tarnish".
+    - Duo Link and Roman Numeral Trio name each of their metals.
+    - Rose Verdant Band: "PVD rose gold coating".
+    - Heartbead Bracelet: "Polished steel strand with a PVD 18K gold coated
+      clasp and charm". Its strand is bare polished steel, so it is not
+      called coated.
+  - **New line, after Material:** "PVD vs plating: Regular plating is a
+    soft layer that wears off over time. PVD is bonded to the metal in a
+    vacuum, so it is far harder, stands up to sweat and keeps its colour
+    much longer."
+  - **Blurbs and other lines:** where they named the method, they now say
+    "PVD … coated". For example, "rhodium plated over surgical stainless
+    steel" became "PVD rhodium coated over surgical stainless steel".
+  - **Tooling and backups:**
+    - Script: `shopify/pvd/make_pvd_copy.py`.
+    - Before: `docs/backups/descriptions-before-pvd-2026-10-25.jsonl`.
+    - After: `docs/backups/descriptions-after-pvd-2026-10-25.jsonl`.
+  - **Method:** the Shopify connector refuses bulk mutations, so the
+    updates went out as ten batches of `productUpdate`.
+- **Held for the owner: 54 listings (33 live, 21 drafts).**
+  - Which ones:
+    - 41 have only a "Finish: … gold tone" line.
+    - 13 have a Plating line but name no base metal.
+  - Why: their care says "keep it dry" where the steel pieces say
+    "waterproof", and Verdant Drop is copper alloy with 925 posts. They may
+    not be PVD on steel.
+  - The live ones:
+    - **Earrings:** Verdant Drop Earrings, Bold Dome Huggies, Quatrefoil
+      Éclat Studs, Verdant Cushion Studs, Baguette Halo Drops, Torsade
+      Huggies, Petite Square Huggies, Pearl Circlet Studs, Petite Bow
+      Studs, Rivière Hoops — Silver, Prism Cluster Studs, Aqua Heart Drops,
+      Pearl Nugget Hoops, Emerald Halo C-Hoops, Emerald Deco Hoops, Clover
+      Drop Earrings, Twin Heart Studs, Molten Wave Ear Cuff.
+    - **Bracelets and bangles:** Torsade Pearl Cuff, Molten Panel Bracelet,
+      Garnet Cable Cuff, Tile Stone Bangle, Clover Chain Bracelet, Petite
+      Blossom Bracelet.
+    - **Necklaces:** Birthstone Heart Necklace, Clover Drop Pendant
+      Necklace, Twin Heart Necklace, Bow Pear Drop Necklace, Pearl Heart
+      Layered Necklace.
+    - **Rings:** Lilac Papillon Ring, Asscher Solitaire Ring, Lumière Oval
+      Solitaire Ring, Pavé Zigzag Ring.
+- **Site (main fe06bb1, live after Publish → Update):**
+  - **Finish label:** the trust strip and the Care answer name PVD when the
+    listing does, e.g. "It is PVD 18K gold coated on surgical stainless
+    steel, waterproof and made not to tarnish …".
+  - **The 21 pieces bundled in `jewellery.ts`:** once live data loads, their
+    Details now come from Shopify, like the other 96. Their bundled copy had
+    gone stale; Cushion Halo still said "US 7, fixed size, not adjustable".
+    The bundled text is also refreshed from Shopify for first paint.
+  - **Summary line:** it claims steel and waterproofing only when the
+    listing does. Verdant Drop's Care answer had said "18k gold coated on
+    surgical stainless steel, waterproof". It now says "rhodium coated,
+    made to resist tarnish".
+  - **Snapshot:** regenerated with 117 live pieces. Sixteen newer pieces
+    now draw without the loading skeleton.
+  - **Checks:**
+    - 424 tests pass, types are clean, and the build passes.
+    - On a phone: Rivière Eternal, Cushion Halo, Kiss Knot, Heartbead,
+      Verdant Drop and Clover Drop read correctly. No sideways scroll, no
+      page errors.

@@ -121,10 +121,12 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
       {/* The explanation rides on top, where the eye lands first: the sale is
           on right now, and what it is worth — kept small so it never crowds
           the bag. */}
-      <p className="whitespace-nowrap pb-2 text-center font-nf-label text-[8.5px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
+      <p className="whitespace-nowrap text-center font-nf-label text-[8.5px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
         ✦ Sitewide sale live today · up to 20% off
       </p>
-      <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
+      {/* The rung markers reach 12px above the track, so the track needs
+          more than that in top margin or they overlap the line above. */}
+      <div className="relative mx-3 mt-4 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
         {QUANTITY_OFFERS.map((o) => (
           <span

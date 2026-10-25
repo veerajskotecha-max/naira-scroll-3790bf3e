@@ -180,6 +180,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
   await page.route(/(facebook\.net|facebook\.com|fbcdn\.net)/i, (r) => r.abort());
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
+  let delisted = 0;
 
   /* A single slow Shopify response is enough to leave one route short of its
      <h1> at capture time, which failed the whole build for a page that renders

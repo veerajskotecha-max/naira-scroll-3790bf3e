@@ -3,13 +3,11 @@ import HeroSection from "./HeroSection";
 import TrustStrip from "./TrustStrip";
 import NewArrivals from "./NewArrivals";
 import handcraftedFloralPattern from "@/assets/background_image_flora.webp";
-import nairaLogo from "@/assets/naira-logo.webp";
 
 const HeroScrollyWrapper = ({ beforeArrivals }: { beforeArrivals?: React.ReactNode }) => {
   const containerRef       = useRef<HTMLDivElement>(null);
   const arrivalsWrapperRef = useRef<HTMLDivElement>(null);
   const arrivalsContentRef = useRef<HTMLDivElement>(null);
-  const logoRevealRef      = useRef<HTMLDivElement>(null);
 
   const [, setProductsReady] = useState(false);
 
@@ -44,31 +42,8 @@ const HeroScrollyWrapper = ({ beforeArrivals }: { beforeArrivals?: React.ReactNo
             zIndex: 0,
           }}
         />
-        <div
-          ref={logoRevealRef}
-          aria-hidden="true"
-          className="absolute inset-x-0 top-[38vh] md:top-[34vh] lg:top-[30vh] pointer-events-none select-none flex justify-center"
-          style={{ opacity: 0.95, zIndex: 2 }}
-        >
-          <div
-            className="relative w-[82vw] max-w-[520px] md:max-w-[760px] lg:max-w-[980px] overflow-hidden"
-            style={{ aspectRatio: "788 / 178" }}
-          >
-            <img
-              src={nairaLogo}
-              alt=""
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-none"
-              style={{
-                width: "243.7%",
-                height: "auto",
-                objectFit: "contain",
-                filter: "sepia(0.15) saturate(0.85)",
-              }}
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-        </div>
+        {/* The big NAIRA logo that sat behind the cards is gone (owner, 25 Oct
+            2026): it showed through between the product names. */}
         <NewArrivals contentRef={arrivalsContentRef} onProductsReady={handleProductsReady} />
       </div>
     </div>

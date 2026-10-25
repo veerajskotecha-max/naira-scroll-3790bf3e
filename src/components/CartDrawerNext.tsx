@@ -17,6 +17,7 @@ import {
   TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
+import UpiBadges from "@/components/checkout/UpiBadges";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
 import { shopifyNumericId, trackPixel } from "@/lib/pixel";
@@ -481,6 +482,7 @@ const CartDrawerNext = () => {
               >
                 {busy || opening ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
                 {opening ? "Opening checkout…" : "Checkout"}
+                {!opening && <UpiBadges size={18} className="ml-1" />}
               </button>
             </div>
           </>

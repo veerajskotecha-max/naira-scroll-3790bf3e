@@ -33,6 +33,7 @@ import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
+import UpiBadges from "@/components/checkout/UpiBadges";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -1073,7 +1074,7 @@ const JewelDetailNext = () => {
               </Button>
               {!isPreorder && (
                 <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[50px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
-                  {buying ? "Opening checkout…" : "Buy Now"}
+                  {buying ? "Opening checkout…" : <>Buy Now<UpiBadges size={16} /></>}
                 </Button>
               )}
               {false && (
@@ -1268,9 +1269,11 @@ const JewelDetailNext = () => {
         >
           {heart}
         </Button>
+        {/* Under 300px (a fold's cover screen) the badge sits under the
+            label: side by side they need 105px and the button has 97. */}
         {!isPreorder && (
-          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
-            {buying ? "Opening…" : "Buy Now"}
+          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5 max-[299px]:flex-col max-[299px]:gap-1">
+            {buying ? "Opening…" : <>Buy Now<UpiBadges size={15} /></>}
           </Button>
         )}
         <Button

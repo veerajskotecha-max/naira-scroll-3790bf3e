@@ -117,11 +117,14 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
   const fill = Math.min(totalItems, top) / top;
   return (
-    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-5">
+    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-4">
       {/* The explanation rides on top, where the eye lands first: the sale is
           on right now, and what it is worth — kept small so it never crowds
-          the bag. */}
-      <p className="whitespace-nowrap pb-2 text-center font-nf-label text-[8.5px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
+          the bag. The 24px rungs stand 10.5px above the track, so the line
+          keeps 20px clear of it: the rungs had been touching its letters on
+          every phone. On a cover screen narrower than the line it wraps,
+          balanced, instead of running off the edge. */}
+      <p className="mb-5 text-balance text-center font-nf-label text-[8.5px] font-medium uppercase leading-[1.5] tracking-nf-16 text-nf-ink/60">
         ✦ Sitewide sale live today · up to 20% off
       </p>
       <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>

@@ -1,0 +1,30 @@
+{
+  "note": "BUY2 and BUY3 before and after the owner raised them to 15% and 25% on 25 Oct 2026. Only the percentage and title changed. To undo, run discountCodeBasicUpdate on each id with the 'before' percentage and title, and revert main b6bf686.",
+  "unchanged": {
+    "items": "gid://shopify/Collection/333512638626 (discount-scope-all)",
+    "combinesWith": { "orderDiscounts": true, "productDiscounts": false, "shippingDiscounts": true },
+    "status": "ACTIVE",
+    "startsAt": "2026-09-17T13:57:00Z",
+    "endsAt": null,
+    "usageLimit": null,
+    "appliesOncePerCustomer": false
+  },
+  "codes": [
+    {
+      "code": "BUY2",
+      "id": "gid://shopify/DiscountCodeNode/1831564935330",
+      "minimumQuantity": 2,
+      "before": { "title": "BUY2 — extra 10% off 2 or more items", "percentage": 0.1 },
+      "after": { "title": "BUY2 — extra 15% off 2 or more items", "percentage": 0.15, "updatedAt": "2026-10-25T22:53:15Z" },
+      "usesSoFar": 13
+    },
+    {
+      "code": "BUY3",
+      "id": "gid://shopify/DiscountCodeNode/1831570571426",
+      "minimumQuantity": 3,
+      "before": { "title": "BUY3 — extra 20% off 3 or more items", "percentage": 0.2 },
+      "after": { "title": "BUY3 — extra 25% off 3 or more items", "percentage": 0.25, "updatedAt": "2026-10-25T22:53:15Z" },
+      "usesSoFar": 10
+    }
+  ]
+}

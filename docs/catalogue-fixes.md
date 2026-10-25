@@ -506,3 +506,42 @@ note on how PVD differs from regular plating, and anti-tarnish.
 - **Asked the owner, not changed:** the "Buy 2 get 10% off" and "Buy 3 get
   20% off" labels sit under the left and right halves of the bar, not under
   their own boxes. So "Buy 3" sits under the 2-piece box.
+
+## 25 October — buy 2 = 15% off, buy 3 = 25% off (was 10% and 20%)
+
+- **Shopify (live now):**
+  - `BUY2` is 15% on 2 or more items; `BUY3` is 25% on 3 or more.
+  - Only the percentage and title changed. The `discount-scope-all`
+    scope, the minimum quantities, the combining rules and ACTIVE status
+    are as before.
+  - Before and after, with ids: `docs/backups/buy-more-codes-2026-10-25.json`.
+- **Fastrr (live now, no code change needed):** the bag hands Fastrr the code
+  `BUY2` or `BUY3`, and Fastrr takes the rate from Shopify. Checked on the
+  real checkout (no phone number entered, no order placed, ad trackers
+  blocked):
+  - 2 pieces (₹3,598): ₹3,058.30, "BUY2 Saved ₹539.7" — 15%.
+  - 3 pieces (₹4,897): ₹3,672.75, "BUY3 Saved ₹1224.25" — 25%.
+- **Site (main b6bf686; live after Publish → Update in Lovable):**
+  - The rates in `promo.ts` changed. The bag's ladder, savings line,
+    add-on "Adds ₹… · saves ₹…", and the product page's "Buy 2, save …"
+    all follow from them.
+  - Two lines were hard-coded and now read the rates too:
+    - the bag's "Sitewide sale live today · up to 25% off";
+    - the product page's "Complete the look · 2 pieces · 15% off".
+  - The new bag matches Fastrr to the rupee: ₹3,058 and ₹3,673.
+  - Tests (426 passing), comments and CLAUDE.md are on the new rates.
+- **Until it is published:** the live bag still says 10%/20% (₹3,238 and
+  ₹3,918 for those bags) while Fastrr charges 15%/25%. Shoppers pay less
+  than the bag shows, never more.
+- **Other codes, unchanged:**
+  - `NAIRA10` (10%) is now below both rungs. A 2-piece bag gets BUY2 instead.
+  - `FRIENDSANDFAMILY` (20%) beats the 2-piece rung but not the 3-piece one.
+- **Layout:** checked on 8 phone sizes from 280 to 430px with 1, 2 and
+  3 pieces: same spacing as before, no overlaps, nothing off the edge.
+- **Screenshots:** `docs/images/offer-2026-10-25/`; `bag-vs-fastrr.png` sets
+  the bag beside the checkout.
+- **Checks:**
+  - `shopify/harness/fastrr-live-discount.mjs <site> <out> <pieces>` opens
+    the real checkout and records its discount.
+  - `shopify/harness/pdp-offer-label.mjs` reads the product page's offer
+    text.

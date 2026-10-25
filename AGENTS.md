@@ -1,5 +1,7 @@
 # Project rules
 
+- Change discoverable page membership in scripts/routes.ts and the page-list generator rather than only generated output; regeneration must preserve deliberate page removals.
+
 - Resolve specialist collection membership and occasion filters through jewelleryCollections; broad category matching alone must not put unrelated styles in named collections.
 - Keep budget bands in the shared filter module and filter colour cards by their own variant prices; disjoint boundaries prevent overlapping budget edits.
 - Homepage jewellery cards share the live catalogue cache and JewelCard purchase guards; a second apparel-card path must not bypass ring choices or stale stock protection.

@@ -180,6 +180,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
   await page.route(/(facebook\.net|facebook\.com|fbcdn\.net)/i, (r) => r.abort());
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
+  let delisted = 0;
 
   /* A single slow Shopify response is enough to leave one route short of its
      <h1> at capture time, which failed the whole build for a page that renders
@@ -224,6 +225,17 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
       // Advertising it in the sitemap while it bounces is the exact defect this
       // pipeline is meant to make impossible, so fail loudly instead.
       const landed = new URL(page.url()).pathname;
+      // Exception: a product page bouncing to the listing means Shopify stopped
+      // returning that piece between the route list and this capture (a piece
+      // unlisted mid-build). The live site already sends it to /jewellery, so
+      // it gets the shell and a warning — failing the publish blocked every
+      // other change over one delisted ring (tubogas-dome-ring, 25 Oct).
+      if (landed === "/jewellery" && /^\/jewellery\/[^/]+$/.test(route.path)) {
+        console.warn(`prerender: ${route.path} is no longer listed in Shopify — given the SPA shell`);
+        delisted += 1;
+        lastError = undefined;
+        break;
+      }
       if (landed !== route.path) {
         throw new Error(`redirected to ${landed} — route does not resolve`);
       }

@@ -545,3 +545,44 @@ note on how PVD differs from regular plating, and anti-tarnish.
     the real checkout and records its discount.
   - `shopify/harness/pdp-offer-label.mjs` reads the product page's offer
     text.
+
+## 25 October — why the bag fix never went live: Lovable had split from main
+
+- **What the owner saw:** a screenshot of the bag with the 2-piece box
+  touching "UP TO 20% OFF", after asking for the fix twice.
+- **The cause:** after 18:53 (812fb37) Lovable stopped taking commits from
+  GitHub `main`.
+  - Its own edits that evening went to `lovable-sync-1792961346` and
+    `lovable-sync-1792962545` instead of `main`. They were a sitemap
+    refresh at 20:48 and, at 21:08, its own bag fix: `mt-4` on the track.
+  - Lovable's docs call this "Lovable and GitHub have diverged".
+  - Publish deploys Lovable's copy. So the live site never received the bag
+    spacing fix (31de012, 20:19) or buy 2 = 15% / buy 3 = 25% (b6bf686).
+- **The screenshot was older still:** text-to-bar is 12px in it, the layout
+  from before Lovable's 21:08 edit. It was most likely an old tab.
+- **What is live (checked 23:15):**
+  - Lovable's 21:08 build: 6.3px clear and no collision, but it still says
+    20% / 10%.
+  - The 18:53 homepage-logo change and the morning's About Us removal are
+    live too.
+- **The fix (main 18e4993):** merged `lovable-sync-1792962545` into `main`
+  with a merge commit, as Lovable's docs say; Lovable then pulls `main`.
+  - Taken from Lovable: the sitemap with the newly live product pages, and
+    its regenerated `supabase/functions/mcp/index.ts`.
+  - Left out: Lovable's `mt-4`, because with main's fix it would double the
+    gap.
+  - Tests (426) and the build pass.
+  - CLAUDE.md on main (833febc) now says how to spot and fix this.
+- **For the owner:**
+  - In Lovable, Project settings → Git should no longer say "diverged".
+    Click Re-check if it does.
+  - If it offers "A repository push replaced your Lovable work", choose
+    "Keep repository version": that work is already merged.
+  - Then Publish → Update and reopen the site in a fresh tab.
+- **Measured at iPhone widths** (393, 402, 430 and 440px):
+  - live now: 6.3px clear;
+  - after publishing: 10.3px clear.
+  - Close-ups are in `docs/images/offer-2026-10-25/bag-band-three-builds.png`;
+    the check is `shopify/harness/bag-band-iphones.mjs`.
+- **Older sync branches** (`lovable-sync`, 21 Oct; `lovable-sync-1792906336`,
+  05:31 today, a first About Us attempt) were superseded and left alone.

@@ -61,7 +61,6 @@ function generateLlmsTxt() {
     line("/jewellery", "Naira Petite", "The demi-fine jewellery line: rings, earrings, bracelets and necklaces."),
     line("/journal", "The Journal", "Guides on sizing, materials, care and choosing demi-fine jewellery."),
     line("/customize", "Customise", "Made-to-measure process — share a brief and co-create a piece."),
-    line("/about", "About", "The atelier story, craft philosophy and values."),
     line("/contact", "Contact", "WhatsApp, email and the Nashik studio."),
     line("/faqs", "FAQs", "Sizing, customisation timelines, delivery and care."),
     "",

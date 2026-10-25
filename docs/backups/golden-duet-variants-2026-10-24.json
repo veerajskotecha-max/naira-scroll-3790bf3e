@@ -1,0 +1,44 @@
+{
+ "taken": "2026-10-24, before Golden Duet's US 6/7/8 variants were merged into one adjustable ring (owner's answer)",
+ "product": "gid://shopify/Product/9294917042338",
+ "option": {
+  "id": "gid://shopify/ProductOption/13288876966050",
+  "name": "Ring size",
+  "values": [
+   "6",
+   "7",
+   "8"
+  ]
+ },
+ "variants": [
+  {
+   "id": "gid://shopify/ProductVariant/50646802137250",
+   "title": "6",
+   "sku": "JDR0104342",
+   "inventoryItemId": "gid://shopify/InventoryItem/52768282345634",
+   "available": 5,
+   "price": "1399.00",
+   "compareAtPrice": "2799.00"
+  },
+  {
+   "id": "gid://shopify/ProductVariant/50646802170018",
+   "title": "7",
+   "sku": "JDR0104343",
+   "inventoryItemId": "gid://shopify/InventoryItem/52768282378402",
+   "available": 2,
+   "price": "1399.00",
+   "compareAtPrice": "2799.00"
+  },
+  {
+   "id": "gid://shopify/ProductVariant/50646802202786",
+   "title": "8",
+   "sku": "JDR0104344",
+   "inventoryItemId": "gid://shopify/InventoryItem/52768282411170",
+   "available": 2,
+   "price": "1399.00",
+   "compareAtPrice": "2799.00"
+  }
+ ],
+ "location": "gid://shopify/Location/76267389090",
+ "sizeGuide": "MediaImage 46509597360290, golden-duet-ring-size-guide.jpg?v=1792569016: US 7 shown, also in US 6 and 8"
+}

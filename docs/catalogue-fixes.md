@@ -313,3 +313,18 @@ Asked on 23 October; the owner answered:
     so it waits for the owner.
   - **Lilac Papillon** has no supplier photo, and ours look closed. It waits for
     the owner.
+
+### 25 October — the owner's answers on the last three rings
+
+- **Golden Duet is one adjustable ring.**
+  - Its US 7 and US 8 variants were deleted and the "Ring size" option removed.
+  - The US 6 variant stays, keeping its ID and SKU (JDR0104342), with all 9
+    pieces as one stock. That is 5 + 2 + 2; the 9 are physically base sizes
+    6, 7 and 8. The size a shopper picks still rides on the order line, so
+    packing can send the closest one.
+  - Site: adjustable, US 5–8 (main 6b96954). The copy says "The open back
+    adjusts to fit US 5 to 8", and the size guide shows an open band with
+    US 5–8 marked.
+  - Before-state: `docs/backups/golden-duet-variants-2026-10-24.json`.
+- **Lilac Papillon:** closed, unchanged (owner).
+- **Open-back rings:** stay at US 5–8 (owner). Only Cushion Halo is US 5–7.

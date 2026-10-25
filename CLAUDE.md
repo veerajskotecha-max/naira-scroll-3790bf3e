@@ -15,6 +15,15 @@ since you last looked — **always `git fetch` and rebase/merge before starting*
 Committing to GitHub is NOT deploying: the live site only updates when someone
 presses **Publish** in Lovable.
 
+**If the live site lacks commits that are on `main`, Lovable has probably
+diverged.** When Lovable and `main` each have commits the other lacks, Lovable
+stops pulling `main` and pushes its own edits to a `lovable-sync-<timestamp>`
+branch, and Publish deploys Lovable's copy. Look for one whose commits `main`
+lacks (`git log origin/main..origin/lovable-sync-…`), then merge it into
+`main` with a real merge commit, never a squash, rebase or force-push.
+Lovable then pulls `main` (Lovable docs, "Git sync"). On 25 Oct 2026 Lovable
+was stuck at 812fb37 for four hours; merge 18e4993 fixed it.
+
 ## Hard constraints — do not re-litigate these
 
 - **The Shopify store is on the Basic plan.** The Checkout Branding API

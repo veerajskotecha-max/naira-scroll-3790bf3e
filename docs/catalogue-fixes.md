@@ -473,3 +473,15 @@ note on how PVD differs from regular plating, and anti-tarnish.
   pieces. Every piece's summary line now reads PVD.
 - **"Cell":** the owner meant selling points. The PVD line already covers
   them: far harder, stands up to sweat, keeps its colour much longer.
+
+## 25 October — homepage: big NAIRA logo behind New Arrivals removed
+
+- The owner asked for the large sage NAIRA logo to come out of the New
+  Arrivals background. It showed through between the product names on
+  phones.
+- Removed in `HeroScrollyWrapper` (main 812fb37). The floral pattern stays.
+  `naira-logo.webp` is kept because the checkout redirect page still uses
+  it.
+- Checked on a phone and at 1440px: no sideways scroll, no page errors.
+  The only logo left on the homepage is the small one in the footer.
+- Live after Publish → Update in Lovable.

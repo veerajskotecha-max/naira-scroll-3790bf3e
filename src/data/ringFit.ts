@@ -19,6 +19,8 @@ export const ADJUSTABLE_RING_HANDLES = new Set<string>([
   "cushion-halo-ring",
   // KAVNAR's sample (WR10914B2) is open between the cluster and the small stone.
   "blush-cluster-ring",
+  // An open toi et moi ring; the owner, 24 Oct 2026: one adjustable stock, not US 6, 7 and 8.
+  "golden-duet-ring",
 ]);
 
 export const isAdjustableRing = (handle?: string): boolean =>

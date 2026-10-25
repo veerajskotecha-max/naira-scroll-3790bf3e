@@ -21,6 +21,12 @@ describe("adjustable rings", () => {
     expect(isAdjustableRing("blush-cluster-ring")).toBe(true);
   });
 
+  /* The owner, 24 Oct 2026: Golden Duet's US 6, 7 and 8 merged into one adjustable ring. */
+  it("counts Golden Duet Ring as adjustable, in US 5 to 8", () => {
+    expect(isAdjustableRing("golden-duet-ring")).toBe(true);
+    expect(adjustableSizes("golden-duet-ring")).toEqual(["5", "6", "7", "8"]);
+  });
+
   it("leaves rings sold in sizes, and closed bands, out", () => {
     expect(isAdjustableRing("star-point-band")).toBe(false);
     expect(isAdjustableRing("vintage-halo-ring")).toBe(false);

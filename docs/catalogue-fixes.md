@@ -446,3 +446,30 @@ note on how PVD differs from regular plating, and anti-tarnish.
     - On a phone: Rivière Eternal, Cushion Halo, Kiss Knot, Heartbead,
       Verdant Drop and Clover Drop read correctly. No sideways scroll, no
       page errors.
+
+### 25 October, later — the owner: "Yes, all are PVD"
+
+- **53 more listings changed (33 live, 20 drafts).** The script ran with
+  `--held` (`shopify/pvd/make_pvd_copy.py`).
+  - **Pieces with a Finish line:** a Plating line was added after it.
+    - "Polished gold tone" and "Gold tone" became PVD 18K gold.
+    - "Bright silver tone" and "Rhodium silver tone" became PVD rhodium.
+    - The Garnet Cable Cuff is two-tone.
+  - **Verdant Drop:** PVD rhodium, placed after its copper alloy Body line.
+    Its care text still says to keep it dry.
+  - **Four older drafts** ("The making."): the line now reads "PVD 18K gold
+    coated 316L stainless steel, anti-tarnish".
+  - **Two one-line stubs** that name yellow gold got a Details block.
+  - **Every one of them** got the "PVD vs plating" line.
+- **Not changed:** Deco Ribbon Hoops (draft). Its one-line stub names no
+  metal.
+- **Result:** 147 of 148 listings carry the PVD lines. A final export
+  matched all 147 character for character. After-state:
+  `docs/backups/descriptions-after-pvd-2026-10-25.jsonl`.
+- **Status:** Clover Station Bracelet went from draft to live at 18:44 UTC
+  (`publishedAt`). That was not from these updates: they set only the
+  description, and the other 29 drafts stayed drafts.
+- **Site (main 5286bc3):** the snapshot was regenerated with 118 live
+  pieces. Every piece's summary line now reads PVD.
+- **"Cell":** the owner meant selling points. The PVD line already covers
+  them: far harder, stands up to sweat, keeps its colour much longer.

@@ -6,7 +6,11 @@ plating. Only listings with a Plating line and a steel Material line change:
 the "Finish:" ones and those naming no base metal (some on a copper alloy body,
 their care says "keep it dry") wait until the owner confirms they are PVD too.
 
-    python3 make_pvd_copy.py <admin-export.jsonl> <out-dir>
+    python3 make_pvd_copy.py <admin-export.jsonl> <out-dir> [--held]
+
+--held covers the rest (owner, 25 Oct 2026: "Yes, all are PVD"): listings with
+no steel Material line, the "Finish:" ones, the older "The making." drafts and
+the one-line draft stubs. Deco Ribbon Hoops is skipped: its stub names no metal.
 
 Writes <out-dir>/after.jsonl (handle, id, before, after), <out-dir>/vars.jsonl
 (bulk productUpdate variables) and prints a review of every change.
@@ -73,15 +77,62 @@ def rewrite(desc: str) -> str:
     return out
 
 
-def main(src: str, out_dir: str) -> None:
+GOLD = "PVD 18K gold coating, anti-tarnish"
+WHITE = "PVD rhodium coating, anti-tarnish"
+FINISH = {
+    "Polished gold tone": GOLD,
+    "Gold tone": GOLD,
+    "Bright silver tone": WHITE,
+    "Rhodium silver tone": WHITE,
+    "Silver tone cable with 18k gold tone ends": "PVD rhodium coated cable with PVD 18K gold coated ends, anti-tarnish",
+}
+# One-line draft stubs: the metal their sentence names.
+STUBS = {"riviere-eternal-bracelet-1": GOLD, "pearl-crossover-ring": GOLD}
+
+
+def with_pvd_line(out: str) -> str:
+    anchor = re.search(r"<li>Material:.*?</li>", out, re.S) or re.search(r"<li>Plating:.*?</li>", out, re.S)
+    return out[: anchor.end()] + f"\n<li>{PVD_LINE}</li>" + out[anchor.end():]
+
+
+def rewrite_held(handle: str, desc: str):
+    """The listings the first pass left alone, or None to keep one as it is."""
+    if "<li>Plating:" in desc:
+        return rewrite(desc)
+    for old, new in PHRASES:
+        desc = re.sub(re.escape(old), new, desc, flags=re.I)
+    finish = re.search(r"<li>Finish:\s*(.*?)</li>", desc, re.S)
+    if finish and html.unescape(finish.group(1)).strip() in FINISH:
+        plating = FINISH[html.unescape(finish.group(1)).strip()]
+        out = desc[: finish.end()] + f"\n<li>Plating: {plating}</li>" + desc[finish.end():]
+        return with_pvd_line(out)
+    body = re.search(r"<li>Body:[^<]*silver tone</li>", desc)
+    if body:  # Verdant Drop: copper alloy body, finished in silver tone
+        out = desc[: body.end()] + f"\n<li>Plating: {WHITE}</li>" + desc[body.end():]
+        return with_pvd_line(out)
+    making = re.search(r"<li>18k gold-plated 316L stainless steel</li>", desc)
+    if making:  # the older "The making." drafts
+        out = desc.replace(making.group(0), "<li>PVD 18K gold coated 316L stainless steel, anti-tarnish</li>")
+        end = out.index("<li>PVD 18K gold coated 316L") + len("<li>PVD 18K gold coated 316L stainless steel, anti-tarnish</li>")
+        return out[:end] + f"\n<li>{PVD_LINE}</li>" + out[end:]
+    if handle in STUBS:
+        return desc + f"<p><strong>Details</strong></p><ul>\n<li>Plating: {STUBS[handle]}</li>\n<li>{PVD_LINE}</li>\n</ul>"
+    return None
+
+
+def main(src: str, out_dir: str, held: bool = False) -> None:
     rows = [json.loads(line) for line in open(src)]
     after, skipped = [], []
     for row in rows:
         desc = row["descriptionHtml"] or ""
-        if "<li>Plating:" not in desc or not re.search(r"<li>Material:[^<]*steel", desc, re.I):
+        steel = "<li>Plating:" in desc and re.search(r"<li>Material:[^<]*steel", desc, re.I)
+        if "PVD vs plating:" in desc or (not held and not steel):
             skipped.append(row["handle"])
             continue
-        new = rewrite(desc)
+        new = rewrite(desc) if steel else rewrite_held(row["handle"], desc)
+        if new is None:
+            skipped.append(row["handle"])
+            continue
         if new != desc:
             after.append({"id": row["id"], "handle": row["handle"], "status": row["status"], "before": desc, "after": new})
     with open(f"{out_dir}/after.jsonl", "w") as f:
@@ -94,4 +145,5 @@ def main(src: str, out_dir: str) -> None:
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    args = [a for a in sys.argv[1:] if a != "--held"]
+    main(*args, held="--held" in sys.argv)

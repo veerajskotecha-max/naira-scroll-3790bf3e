@@ -14,6 +14,7 @@ import {
   PROMO_EVENT,
   QUANTITY_OFFERS,
   resolveCartDiscount,
+  TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,9 +30,9 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    A second piece takes 10% off your bag      the ladder, rungs labelled
+    A second piece takes 15% off your bag      the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
+    Wears well with your bracelet · one piece, "Adds ₹914 · saves ₹585", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
     Total · incl. taxes, one savings line, arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
@@ -123,9 +124,10 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
           the bag. The 24px rungs stand 10.5px above the track, so the line
           keeps 20px clear of it: the rungs had been touching its letters on
           every phone. On a cover screen narrower than the line it wraps,
-          balanced, instead of running off the edge. */}
+          balanced, instead of running off the edge. "Up to" is the top rung,
+          so the line moves when the ladder does. */}
       <p className="mb-5 text-balance text-center font-nf-label text-[8.5px] font-medium uppercase leading-[1.5] tracking-nf-16 text-nf-ink/60">
-        ✦ Sitewide sale live today · up to 20% off
+        ✦ Sitewide sale live today · up to {pct(TOP_QUANTITY_OFFER.rate)} off
       </p>
       <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />

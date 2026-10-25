@@ -14,27 +14,28 @@ afterEach(cleanup);
   rates cannot be moved without this file failing, which is the prompt to go
   and change BUY2/BUY3 in Shopify at the same time.
 
-  Live at the time of writing: BUY2 = 10% at 2+ pieces, BUY3 = 20% at 3+.
+  Live at the time of writing: BUY2 = 15% at 2+ pieces, BUY3 = 25% at 3+
+  (raised from 10% and 20% on 25 Oct 2026).
 */
 describe("OfferProgress", () => {
   it("pushes the shopper towards the first rung before they reach it", () => {
     render(<OfferProgress totalItems={1} />);
-    expect(screen.getByText("Add 1 piece, save 10%")).toBeInTheDocument();
+    expect(screen.getByText("Add 1 piece, save 15%")).toBeInTheDocument();
   });
 
   it("confirms the earned rung and names the next one", () => {
     render(<OfferProgress totalItems={2} />);
-    expect(screen.getByText("10% off — add 1 piece for 20%")).toBeInTheDocument();
+    expect(screen.getByText("15% off — add 1 piece for 25%")).toBeInTheDocument();
   });
 
   it("stops asking for more once the ladder is topped out", () => {
     render(<OfferProgress totalItems={3} />);
-    expect(screen.getByText("20% off — your best price")).toBeInTheDocument();
+    expect(screen.getByText("25% off — your best price")).toBeInTheDocument();
   });
 
   it("keeps the top rung's copy beyond its threshold", () => {
     render(<OfferProgress totalItems={7} />);
-    expect(screen.getByText(/^20% off —/)).toBeInTheDocument();
+    expect(screen.getByText(/^25% off —/)).toBeInTheDocument();
   });
 
   /* Both rungs stay on show at every state: the second one is the reason to
@@ -43,26 +44,33 @@ describe("OfferProgress", () => {
     render(<OfferProgress totalItems={n} />);
     expect(screen.getByText("2 pieces")).toBeInTheDocument();
     expect(screen.getByText("3 pieces")).toBeInTheDocument();
-    expect(screen.getByText("10% off")).toBeInTheDocument();
-    expect(screen.getByText("20% off")).toBeInTheDocument();
+    expect(screen.getByText("15% off")).toBeInTheDocument();
+    expect(screen.getByText("25% off")).toBeInTheDocument();
   });
 
-  /* A typed 10% code (NAIRA10) already gives what the first rung gives: the
-     band must not offer that 10% again, only the rung that beats it. */
+  /* A typed 10% code (NAIRA10) is already in hand: the band must not offer
+     that 10% again, only a rung that beats it, here the first one. */
   it("never offers a saving the bag already has from a code", () => {
     render(<OfferProgress totalItems={1} appliedRate={0.1} quiet />);
-    expect(screen.getByText("10% off — add 2 pieces for 20%")).toBeInTheDocument();
+    expect(screen.getByText("10% off — add 1 piece for 15%")).toBeInTheDocument();
     expect(screen.queryByText(/save 10%/)).not.toBeInTheDocument();
   });
 
-  it("stops at a code that beats every rung", () => {
-    render(<OfferProgress totalItems={2} appliedRate={0.2} quiet />);
-    expect(screen.getByText("20% off — your best price")).toBeInTheDocument();
+  /* A 20% code (FRIENDSANDFAMILY) beats the 15% rung, so the band skips it and
+     points at the only rung worth more. */
+  it("skips a rung the code already beats", () => {
+    render(<OfferProgress totalItems={1} appliedRate={0.2} quiet />);
+    expect(screen.getByText("20% off — add 2 pieces for 25%")).toBeInTheDocument();
+  });
+
+  it("stops at a code that matches every rung", () => {
+    render(<OfferProgress totalItems={2} appliedRate={0.25} quiet />);
+    expect(screen.getByText("25% off — your best price")).toBeInTheDocument();
   });
 
   it("shows no rung labels in the quiet bag", () => {
     render(<OfferProgress totalItems={1} quiet />);
-    expect(screen.getByText("Add 1 piece, save 10%")).toBeInTheDocument();
+    expect(screen.getByText("Add 1 piece, save 15%")).toBeInTheDocument();
     expect(screen.queryByText("2 pieces")).not.toBeInTheDocument();
   });
 

@@ -32,6 +32,7 @@ import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
+import { QUANTITY_OFFERS } from "@/lib/promo";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -1190,15 +1191,16 @@ const JewelDetailNext = () => {
               </details>
             </div>
 
-            {/* A second piece, one tap from the bag: the bag's ladder takes 10%
-                off two pieces and 20% off three. */}
+            {/* A second piece, one tap from the bag. The label is the ladder's
+                first rung, read from promo.ts, so it always quotes what the bag
+                takes off two pieces. */}
             {pairings.length > 0 && (
               <section className="mt-10" aria-labelledby="complete-the-look">
                 <div className="flex items-end justify-between gap-3">
                   <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
                     {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
                   </h2>
-                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">2 pieces · 10% off</p>
+                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">{QUANTITY_OFFERS[0].minQuantity} pieces · {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off</p>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   {pairings.map((p) => (

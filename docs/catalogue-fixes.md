@@ -586,3 +586,35 @@ note on how PVD differs from regular plating, and anti-tarnish.
     the check is `shopify/harness/bag-band-iphones.mjs`.
 - **Older sync branches** (`lovable-sync`, 21 Oct; `lovable-sync-1792906336`,
   05:31 today, a first About Us attempt) were superseded and left alone.
+
+## 25 October — GPay / PhonePe / Paytm badge on the buy buttons
+
+- **Asked:** the badge Shiprocket's own "Buy It Now" shows: three
+  overlapping white discs with dark rims holding Google's four-colour G,
+  PhonePe's purple disc and Paytm's navy and sky wordmark. The owner wanted
+  it on our Buy Now, in the apps' own colours, the same on every phone. The
+  old bag (`CartDrawer.tsx`) had a version of it.
+- **Built (main 9e8a44a; live after Publish → Update):**
+  - New `src/components/checkout/UpiBadges.tsx`.
+  - It is on the product page's Buy Now (main button and the phone sticky
+    bar) and on the bag's Checkout.
+  - It hides while a button reads "Opening checkout…".
+  - Catalogue links (`/products/<handle>`) redirect to that product page,
+    so ads land on the badge too.
+- **Drawn as shapes, not text:**
+  - The G is from `assets/google-pay-mark.svg`; PhonePe and Paytm are the
+    Simple Icons marks in brand colours, Paytm's split into "pay" and "tm".
+  - The old bag spelt PhonePe's "पे" in the phone's own Devanagari font.
+- **Two theme traps, both covered by `UpiBadges.test.tsx`:**
+  - The theme sets every radius, `full` included, to 0px, so the discs use
+    `rounded-[50%]`. The old bag's "round" badges were drawn square.
+  - The shared Button forces every svg inside it to 16px
+    (`[&_svg]:size-4`), so the marks are sized inline.
+- **Checked on ten phone sizes** (280, 320, 360, 375, 390, 390×664 in-app,
+  393, 412, 430 and 440px):
+  - The badge fits inside every button and is centred on the label to
+    within 0.6px.
+  - On a 280px fold cover screen the sticky bar's Buy Now is 97px wide, so
+    the badge sits under the label there.
+  - Screenshots: `docs/images/upi-badge-2026-10-25/`; the check is
+    `shopify/harness/upi-badge-phones.mjs`.

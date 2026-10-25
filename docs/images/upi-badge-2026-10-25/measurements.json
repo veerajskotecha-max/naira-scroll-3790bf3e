@@ -1,0 +1,502 @@
+{
+ "Fold cover (280)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 120,
+   "btnH": 50,
+   "fits": true,
+   "padL": 5.6,
+   "padR": 5.5,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 97,
+   "btnH": 48,
+   "fits": true,
+   "padL": 19.4,
+   "padR": 29,
+   "textToBadge": -48.6,
+   "badgeMidVsText": 20,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 239,
+   "btnH": 52,
+   "fits": true,
+   "padL": 58.4,
+   "padR": 58.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "Galaxy S9+ (320)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 140,
+   "btnH": 50,
+   "fits": true,
+   "padL": 15.5,
+   "padR": 15.6,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 117,
+   "btnH": 48,
+   "fits": true,
+   "padL": 5.9,
+   "padR": 5.9,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 279,
+   "btnH": 52,
+   "fits": true,
+   "padL": 78.4,
+   "padR": 78.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "Galaxy S8 (360)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 160,
+   "btnH": 50,
+   "fits": true,
+   "padL": 25.5,
+   "padR": 25.6,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 137,
+   "btnH": 48,
+   "fits": true,
+   "padL": 15.9,
+   "padR": 15.9,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 319,
+   "btnH": 52,
+   "fits": true,
+   "padL": 98.4,
+   "padR": 98.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "iPhone SE (375)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 140,
+   "btnH": 50,
+   "fits": true,
+   "padL": 15.5,
+   "padR": 15.6,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 117,
+   "btnH": 48,
+   "fits": true,
+   "padL": 5.9,
+   "padR": 5.9,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 279,
+   "btnH": 52,
+   "fits": true,
+   "padL": 78.4,
+   "padR": 78.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "iPhone 13 (390)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 175,
+   "btnH": 50,
+   "fits": true,
+   "padL": 33,
+   "padR": 33.1,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 152,
+   "btnH": 48,
+   "fits": true,
+   "padL": 23.4,
+   "padR": 23.4,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 349,
+   "btnH": 52,
+   "fits": true,
+   "padL": 113.4,
+   "padR": 113.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "In-app browser (390x664)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 175,
+   "btnH": 50,
+   "fits": true,
+   "padL": 33,
+   "padR": 33.1,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 152,
+   "btnH": 48,
+   "fits": true,
+   "padL": 23.4,
+   "padR": 23.4,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 349,
+   "btnH": 52,
+   "fits": true,
+   "padL": 113.4,
+   "padR": 113.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "iPhone 15 (393)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 177,
+   "btnH": 50,
+   "fits": true,
+   "padL": 33.8,
+   "padR": 33.8,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 154,
+   "btnH": 48,
+   "fits": true,
+   "padL": 24.1,
+   "padR": 24.1,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 352,
+   "btnH": 52,
+   "fits": true,
+   "padL": 114.9,
+   "padR": 114.9,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "Pixel 7 (412)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 186,
+   "btnH": 50,
+   "fits": true,
+   "padL": 38.5,
+   "padR": 38.6,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 163,
+   "btnH": 48,
+   "fits": true,
+   "padL": 28.9,
+   "padR": 28.9,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 371,
+   "btnH": 52,
+   "fits": true,
+   "padL": 124.4,
+   "padR": 124.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "iPhone 15 Pro Max (430)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 195,
+   "btnH": 50,
+   "fits": true,
+   "padL": 43,
+   "padR": 43.1,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 172,
+   "btnH": 48,
+   "fits": true,
+   "padL": 33.4,
+   "padR": 33.4,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 389,
+   "btnH": 52,
+   "fits": true,
+   "padL": 133.4,
+   "padR": 133.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ },
+ "iPhone 16 Pro Max (440)": {
+  "main": {
+   "label": "Buy Now",
+   "btnW": 200,
+   "btnH": 50,
+   "fits": true,
+   "padL": 45.5,
+   "padR": 45.6,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.6,
+   "discs": [
+    "16/9x9",
+    "16/12x12",
+    "16/13x4.2"
+   ],
+   "badgeVisible": true
+  },
+  "sticky": {
+   "label": "Buy Now",
+   "btnW": 177,
+   "btnH": 48,
+   "fits": true,
+   "padL": 35.9,
+   "padR": 35.9,
+   "textToBadge": 8,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "15/9x9",
+    "15/11x11",
+    "15/12x3.9"
+   ],
+   "badgeVisible": true
+  },
+  "bag": {
+   "label": "Checkout",
+   "btnW": 399,
+   "btnH": 52,
+   "fits": true,
+   "padL": 138.4,
+   "padR": 138.4,
+   "textToBadge": 12,
+   "badgeMidVsText": 0.3,
+   "discs": [
+    "18/10x10",
+    "18/13x13",
+    "18/14x4.5"
+   ],
+   "badgeVisible": true
+  }
+ }
+}

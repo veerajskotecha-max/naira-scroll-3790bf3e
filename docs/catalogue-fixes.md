@@ -485,3 +485,24 @@ note on how PVD differs from regular plating, and anti-tarnish.
 - Checked on a phone and at 1440px: no sideways scroll, no page errors.
   The only logo left on the homepage is the small one in the footer.
 - Live after Publish → Update in Lovable.
+
+## 25 October — bag: sale line touching the offer bar
+
+- **The problem.** At the top of the bag, the line "✦ Sitewide sale live
+  today · up to 20% off" sat 8px above the offer bar. The bar's 24px rung
+  boxes stand 10.5px above it, so they ran 1.7px into the letters. This
+  happened on every phone measured: 280, 320, 360, 375, 390, 412 and 430px
+  wide, plus a 390×664 in-app browser.
+- **The fix** (main 31de012; live after Publish → Update):
+  - The line keeps 20px clear: 10.3px to the rung tops, matching the 9.5px
+    below.
+  - The band loses 4px of top padding, so it grows by only 8px.
+  - On a 280px fold cover screen the line wraps onto two balanced lines.
+- **Checked:** with one piece and with three, there is no other overlap and
+  nothing spills sideways at any of those widths. The check
+  (`shopify/harness/bag-phones.mjs`) ignores what the scrolling list hides
+  under the footer.
+- **Screenshots:** `docs/images/bag-2026-10-25/`.
+- **Asked the owner, not changed:** the "Buy 2 get 10% off" and "Buy 3 get
+  20% off" labels sit under the left and right halves of the bar, not under
+  their own boxes. So "Buy 3" sits under the 2-piece box.

@@ -1,0 +1,33 @@
+{
+  "_comment": "Staging plates — generated once with nano_banana_pro (4:5, 2k) and reused as IMAGE 2 for every SKU. `job_id` is passed straight into generate_image medias[].value; no re-import needed.",
+  "ecom": {
+    "name": "Cream plaster block",
+    "use": "Shot 1 (compulsory, every SKU) and Shot 3 (different angle)",
+    "job_id": "8cf120d5-4319-4aee-a284-5f0edc11a513",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_121411_8cf120d5-4319-4aee-a284-5f0edc11a513.png"
+  },
+  "hand": {
+    "name": "Bare hand on ivory silk",
+    "use": "Shot 2 — Rings",
+    "job_id": "333a0621-9e91-426c-bcf3-ad26c1647124",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_121411_333a0621-9e91-426c-bcf3-ad26c1647124.png"
+  },
+  "wrist": {
+    "name": "Bare wrist from ivory cuff",
+    "use": "Shot 2 — Bracelets",
+    "job_id": "8b0144e7-3f83-48f5-a7ae-6fcd485cc5b0",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_121411_8b0144e7-3f83-48f5-a7ae-6fcd485cc5b0.png"
+  },
+  "ear": {
+    "name": "Bare earlobe, hair tucked back",
+    "use": "Shot 2 — Earrings",
+    "job_id": "ab2e1e49-dcb0-45c0-bef7-b14e1954b85a",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_121411_ab2e1e49-dcb0-45c0-bef7-b14e1954b85a.png"
+  },
+  "neck": {
+    "name": "Bare neck and collarbones",
+    "use": "Shot 2 — Necklaces",
+    "job_id": "1ce7c6a2-41dd-47a3-adf7-c72eca778efd",
+    "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3AEDqJMErZwqraYM5k7B7luVWcH/hf_20260806_121411_1ce7c6a2-41dd-47a3-adf7-c72eca778efd.png"
+  }
+}

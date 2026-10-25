@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Recheck recent changes and restore the overwritten About Us removal, including generated page lists.
+- [x] Recheck recent changes and restore the overwritten About Us removal, including generated page lists; 423 tests pass and desktop/phone links verified.
 
 - [x] Audit price-filter boundaries and variant prices against Shopify; correct mismatches and verify browsing/back flow.
 - [x] Audit collection membership and homepage/navigation sections; fix concrete mismatches and check jewellery-only scope.

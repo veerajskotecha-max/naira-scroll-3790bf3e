@@ -54,7 +54,6 @@ export const siteRoutes: SiteRoute[] = [
   { path: "/track-order", changefreq: "monthly", priority: "0.4" },
   { path: "/innercircle", changefreq: "monthly", priority: "0.5" },
 
-  { path: "/about", changefreq: "monthly", priority: "0.6" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/faqs", changefreq: "monthly", priority: "0.6" },
   { path: "/exchange-return-policy", changefreq: "yearly", priority: "0.3" },

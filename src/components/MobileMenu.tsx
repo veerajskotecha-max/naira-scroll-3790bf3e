@@ -3,7 +3,7 @@ import { X, Heart, ShoppingBag, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { menuCategories, menuEdits, menuOccasions, menuApparel } from "@/data/navigation";
+import { menuCategories, menuEdits, menuOccasions, customOutfitsLink } from "@/data/navigation";
 import { followOut } from "@/hooks/useBackToClose";
 
 interface MobileMenuProps {
@@ -24,12 +24,12 @@ const sections: Section[] = [
       ...menuCategories.map((c) => ({ label: c.label, to: c.to })),
     ],
   },
+  /* Straight after Jewellery, which opens expanded: on a phone this keeps the
+     site's two offerings together and Custom Outfits above the fold. */
+  { label: customOutfitsLink.label.toUpperCase(), to: customOutfitsLink.to },
   { label: "THE EDITS", links: menuEdits },
   { label: "OCCASION", links: menuOccasions },
-  { label: "CUSTOM APPAREL", links: menuApparel },
   { label: "GIFTING", to: "/gifting" },
-  { label: "ABOUT", to: "/about" },
-  { label: "CUSTOMISE", to: "/customize" },
   { label: "TRACK ORDER", to: "/track-order" },
   { label: "CONTACT", to: "/contact" },
 ];

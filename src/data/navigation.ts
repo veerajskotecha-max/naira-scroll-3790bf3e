@@ -24,9 +24,7 @@ export const menuOccasions: Array<{ label: string; to: string }> = [
   { label: "Gifting", to: "/gifting" },
 ];
 
-/* Apparel is one entry now: the made-to-measure service. The Indo-Western
-   listing and the shop-all tile are reachable from the jewellery pages and the
-   footer, but the menu only offers the custom service. */
-export const menuApparel: Array<{ label: string; to: string }> = [
-  { label: "Customised Apparel", to: "/customize" },
-];
+/* The site sells two things: demi-fine jewellery, and outfits made to measure.
+   Ready-to-wear apparel is not sold, so outfits have one entry in every menu,
+   the made-to-measure service, beside Jewellery rather than inside it. */
+export const customOutfitsLink = { label: "Custom Outfits", to: "/customize" };

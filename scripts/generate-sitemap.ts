@@ -12,10 +12,13 @@ import { allLandings, allArticles } from "../src/data/seoContent";
   in the Organization schema. It was previously three different sentences:
   llms.txt called it a bridal couture house, the footer tagline said
   Indo-Western fashion and led with clothing, and the schema said demi-fine
-  jewellery — while 71 of the ~100 indexed URLs are jewellery.
+  jewellery — while 71 of the ~100 indexed URLs are jewellery. Since 25 Oct 2026
+  the site leads with two things, demi-fine jewellery and outfits made to
+  measure, and the sentence says so in that order. Ready-to-wear clothing is out
+  of the menus, but its product pages stay live, so nothing here says it is gone.
 */
 export const BRAND_SENTENCE =
-  "Handcrafted Indo-Western wear and 18K gold finished demi-fine jewellery, made to order in Nashik, India.";
+  "18K gold finished demi-fine jewellery, and outfits made to measure in Nashik, India.";
 
 function generateSitemap(list: SiteRoute[]) {
   const urls = list.map((e) =>
@@ -47,21 +50,19 @@ function generateLlmsTxt() {
     "",
     `> ${BRAND_SENTENCE}`,
     "",
-    "Naira Flore is a Nashik-based atelier. The catalogue is led by Naira Petite,",
-    "a demi-fine jewellery line of hand-set brilliant-cut zircone and shell pearl",
-    "in an 18K gold or rhodium finish, sealed anti-tarnish and waterproof. It also",
-    "makes made-to-measure Indo-Western wear. Jewellery ships ready-to-wear in 3-7",
-    "working days; made-to-measure pieces take 4-8 weeks. Enquiries and",
-    "customisation run through WhatsApp on +91 9561557935.",
+    "Naira Flore is a Nashik-based studio for two things. Naira Petite is its",
+    "demi-fine jewellery line of hand-set brilliant-cut zircone and shell pearl in",
+    "an 18K gold or rhodium finish, sealed anti-tarnish and waterproof. The studio",
+    "also makes outfits to measure, designed with each client over WhatsApp.",
+    "Jewellery ships in 3-7 working days; made-to-measure pieces take 4-8 weeks.",
+    "Enquiries and customisation run through WhatsApp on +91 9561557935.",
     "",
     "## Core pages",
     "",
-    line("/", "Home", "New arrivals, the jewellery line, and the customisation journey."),
-    line("/customize", "Made to Measure", "Handmade custom outfits, made to your measurements."),
+    line("/", "Home", "The jewellery line and the custom outfit journey."),
     line("/jewellery", "Naira Petite", "The demi-fine jewellery line: rings, earrings, bracelets and necklaces."),
+    line("/customize", "Custom Outfits", "Outfits made to your measurements: share a brief, choose fabric and silhouette, and it is stitched for you."),
     line("/journal", "The Journal", "Guides on sizing, materials, care and choosing demi-fine jewellery."),
-    line("/customize", "Customise", "Made-to-measure process — share a brief and co-create a piece."),
-    line("/about", "About", "The atelier story, craft philosophy and values."),
     line("/contact", "Contact", "WhatsApp, email and the Nashik studio."),
     line("/faqs", "FAQs", "Sizing, customisation timelines, delivery and care."),
     "",

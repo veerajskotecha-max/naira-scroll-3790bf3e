@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
 import founderImg from "@/assets/about-founder.webp";
 
-/* Founder story teaser.
+/* The founder, and the two things the studio offers: outfits made to measure
+   and demi-fine jewellery. It used to end on a link to the About page, which
+   the owner removed on 25 Oct 2026; it now leads to the two offerings.
    Portrait is deliberately small and framed like an editorial inset —
    a face shot at full column width overwhelmed the copy on every
    breakpoint. Text column is capped at a comfortable measure so line
    length stays readable on wide desktops. */
+
+const linkStyle = { color: "hsl(0 0% 18%)", borderBottom: "1px solid hsl(0 0% 18%)" };
+const linkClass =
+  "inline-flex min-h-[44px] items-center gap-2 font-cormorant text-[12px] md:text-[13px] uppercase tracking-[0.16em] font-medium pb-1 transition-opacity hover:opacity-70";
 
 const FounderStoryTeaser = () => (
   <section
@@ -59,7 +65,7 @@ const FounderStoryTeaser = () => (
             className="font-cormorant text-[11px] uppercase tracking-[0.22em] mb-3 md:mb-4"
             style={{ color: "hsl(186 35% 32%)" }}
           >
-            Our Story
+            From our Nashik studio
           </p>
 
           <h2
@@ -81,30 +87,29 @@ const FounderStoryTeaser = () => (
             className="font-cormorant text-[15px] md:text-[16.5px] leading-[1.8] mb-4"
             style={{ color: "hsl(0 0% 38%)" }}
           >
-            Naira Flore started in a small studio in Nashik, where every stitch was placed by hand
-            and every silhouette was imagined fresh. Beautiful clothing shouldn't compromise: it can
-            be rooted in tradition and alive to the moment.
+            Naira Flore began in a small studio in Nashik, and the studio still makes outfits to
+            measure: you share the look you want on WhatsApp, choose the fabric and silhouette, and
+            it is stitched by hand to your measurements.
           </p>
 
           <p
             className="font-cormorant text-[15px] md:text-[16.5px] leading-[1.8] mb-7 md:mb-8"
             style={{ color: "hsl(0 0% 38%)" }}
           >
-            Today, every piece carries that original promise: handmade, personal, and made to be
-            worn for a lifetime.
+            Beside them sits Naira Petite, our demi-fine jewellery: 18K gold coated, anti-tarnish,
+            and made to be worn every day.
           </p>
 
-          <Link
-            to="/about"
-            className="inline-flex min-h-[44px] items-center gap-2 font-cormorant text-[12px] md:text-[13px] uppercase tracking-[0.16em] font-medium pb-1 transition-opacity hover:opacity-70"
-            style={{
-              color: "hsl(0 0% 18%)",
-              borderBottom: "1px solid hsl(0 0% 18%)",
-            }}
-          >
-            Read the full story
-            <span className="text-[16px]">›</span>
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 md:justify-start">
+            <Link to="/jewellery" className={linkClass} style={linkStyle}>
+              Shop jewellery
+              <span className="text-[16px]">›</span>
+            </Link>
+            <Link to="/customize" className={linkClass} style={linkStyle}>
+              Start a custom outfit
+              <span className="text-[16px]">›</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

@@ -19,7 +19,6 @@ export const JewelDetailNext = lazyRoute(() => import("./pages/JewelDetailNext.t
 export const Concepts = lazyRoute(() => import("./pages/Concepts.tsx"));
 export const RingLab = lazyRoute(() => import("./pages/RingLab.tsx"));
 export const RingExample = lazyRoute(() => import("./pages/RingExample.tsx"));
-export const AboutUs = lazyRoute(() => import("./pages/AboutUs.tsx"));
 export const ContactUs = lazyRoute(() => import("./pages/ContactUs.tsx"));
 export const PrivacyPolicy = lazyRoute(() => import("./pages/PrivacyPolicy.tsx"));
 export const TermsOfService = lazyRoute(() => import("./pages/TermsOfService.tsx"));
@@ -42,7 +41,7 @@ export const AdminReels = lazyRoute(() => import("./pages/admin/Reels.tsx"));
 const PAGES: Record<RouteKey, LazyRoute> = {
   Index, ShopAll, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetailNext,
   Journal, JournalArticle, Gifting, GoldenHourEdit, TrackOrder, InnerCircle, Auth, Account,
-  AboutUs, ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs,
+  ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs,
 };
 
 /** Loads the code of the page at `pathname`; resolves at once for a URL with no page of its own. */

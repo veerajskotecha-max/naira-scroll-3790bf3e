@@ -46,8 +46,8 @@ const Index = () => {
   return (
     <>
       <PageSEO
-        title="Naira Flore | Demi-Fine Gold Coated Jewellery"
-        description="Demi-fine, anti-tarnish zircone jewellery by Naira Flore, 18K gold coated and crafted in Nashik. Free insured shipping across India."
+        title="Naira Flore | Demi-Fine Jewellery & Custom Outfits"
+        description="Demi-fine, anti-tarnish zircone jewellery, 18K gold coated, and outfits made to measure in our Nashik studio. Free insured shipping across India."
         canonical="https://nairaflore.com/"
         jsonLd={organizationLd as unknown as Record<string, unknown>}
       />

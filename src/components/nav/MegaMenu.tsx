@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { menuCategories, menuEdits, menuOccasions, menuApparel } from "@/data/navigation";
+import { menuCategories, menuEdits, menuOccasions } from "@/data/navigation";
 
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
@@ -42,8 +42,9 @@ const Column = ({
 );
 
 /**
- * Desktop mega-menu for the SHOP entry: category image tiles pulled from the
- * live Shopify catalogue, plus edit / occasion / apparel columns.
+ * Desktop mega-menu for the JEWELLERY entry: category image tiles pulled from
+ * the live Shopify catalogue, plus edit and occasion columns. Custom outfits
+ * have their own entry in the bar, so this panel is jewellery only.
  */
 const MegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { jewellery } = useLiveJewellery();
@@ -58,7 +59,7 @@ const MegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
       className="w-[min(1100px,92vw)] px-8 py-8"
       style={{ backgroundColor: "#F4F1ED", border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 14px 40px rgba(0,0,0,0.10)" }}
     >
-      <div className="grid grid-cols-[1.35fr_repeat(3,0.65fr)] gap-8">
+      <div className="grid grid-cols-[1.35fr_repeat(2,0.65fr)] gap-8">
         <div>
           <p className="text-[9px] tracking-[0.28em] text-nf-ink/40" style={jost}>
             SHOP BY CATEGORY
@@ -87,7 +88,6 @@ const MegaMenu = ({ onNavigate }: { onNavigate?: () => void }) => {
 
         <Column title="The Edits" links={menuEdits} onNavigate={onNavigate} />
         <Column title="By Occasion" links={menuOccasions} onNavigate={onNavigate} />
-        <Column title="Customised" links={menuApparel} onNavigate={onNavigate} />
       </div>
     </div>
   );

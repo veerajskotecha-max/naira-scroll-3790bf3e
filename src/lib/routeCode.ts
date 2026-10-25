@@ -29,7 +29,6 @@ export const ROUTE_CODE = [
   ["/inner-circle", "InnerCircle"],
   ["/auth", "Auth"],
   ["/account", "Account"],
-  ["/about", "AboutUs"],
   ["/contact", "ContactUs"],
   ["/privacy", "PrivacyPolicy"],
   ["/terms", "TermsOfService"],

@@ -15,6 +15,7 @@ const shopLinks = [
   { label: "American Diamond", to: "/jewellery/collections/american-diamond-jewellery" },
   { label: "18K Gold Plated", to: "/jewellery/collections/18k-gold-plated-jewellery" },
   { label: "Office Wear Jewellery", to: "/jewellery/collections/office-wear-jewellery" },
+  { label: "Custom Outfits", to: "/customize" },
 ];
 
 const careLinks = [

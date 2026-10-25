@@ -145,7 +145,7 @@ const Craftsmanship = () => {
               }}
             >
               <Link
-                to="/about"
+                to="/customize"
                 className="inline-flex items-center font-cormorant text-[14px] font-medium uppercase tracking-[0.08em] px-8 py-3 rounded-md border transition-all duration-300 hover:-translate-y-0.5"
                 style={{
                   borderColor: "hsl(0 0% 25%)",
@@ -161,7 +161,7 @@ const Craftsmanship = () => {
                   e.currentTarget.style.color = "hsl(0 0% 20%)";
                 }}
               >
-                OUR STORY
+                CUSTOM OUTFITS
               </Link>
             </div>
           </div>

@@ -1,22 +1,20 @@
 # Naira Flore
 
-> Handcrafted Indo-Western wear and 18K gold finished demi-fine jewellery, made to order in Nashik, India.
+> 18K gold finished demi-fine jewellery, and outfits made to measure in Nashik, India.
 
-Naira Flore is a Nashik-based atelier. The catalogue is led by Naira Petite,
-a demi-fine jewellery line of hand-set brilliant-cut zircone and shell pearl
-in an 18K gold or rhodium finish, sealed anti-tarnish and waterproof. It also
-makes made-to-measure Indo-Western wear. Jewellery ships ready-to-wear in 3-7
-working days; made-to-measure pieces take 4-8 weeks. Enquiries and
-customisation run through WhatsApp on +91 9561557935.
+Naira Flore is a Nashik-based studio for two things. Naira Petite is its
+demi-fine jewellery line of hand-set brilliant-cut zircone and shell pearl in
+an 18K gold or rhodium finish, sealed anti-tarnish and waterproof. The studio
+also makes outfits to measure, designed with each client over WhatsApp.
+Jewellery ships in 3-7 working days; made-to-measure pieces take 4-8 weeks.
+Enquiries and customisation run through WhatsApp on +91 9561557935.
 
 ## Core pages
 
-- [Home](/): New arrivals, the jewellery line, and the customisation journey.
-- [Made to Measure](/customize): Handmade custom outfits, made to your measurements.
+- [Home](/): The jewellery line and the custom outfit journey.
 - [Naira Petite](/jewellery): The demi-fine jewellery line: rings, earrings, bracelets and necklaces.
+- [Custom Outfits](/customize): Outfits made to your measurements: share a brief, choose fabric and silhouette, and it is stitched for you.
 - [The Journal](/journal): Guides on sizing, materials, care and choosing demi-fine jewellery.
-- [Customise](/customize): Made-to-measure process — share a brief and co-create a piece.
-- [About](/about): The atelier story, craft philosophy and values.
 - [Contact](/contact): WhatsApp, email and the Nashik studio.
 - [FAQs](/faqs): Sizing, customisation timelines, delivery and care.
 

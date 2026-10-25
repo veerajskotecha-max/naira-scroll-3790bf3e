@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
+import { customOutfitsLink } from "@/data/navigation";
 
 interface NavbarProps {
   scrolled: boolean;
@@ -18,12 +19,12 @@ interface NavbarProps {
 const CLOTHING = /^\/(product|products)\/|^\/shop\/indo-western/;
 const leaveAsIs = () => {};
 
+/* The two things the site sells, side by side: jewellery and custom outfits. */
 const leftLinks: { label: string; to: string; mega?: boolean }[] = [
   { label: "HOME", to: "/" },
-  { label: "SHOP", to: "/jewellery", mega: true },
+  { label: "JEWELLERY", to: "/jewellery", mega: true },
+  { label: customOutfitsLink.label.toUpperCase(), to: customOutfitsLink.to },
   { label: "GIFTING", to: "/gifting" },
-  { label: "ABOUT", to: "/about" },
-  { label: "CUSTOMISE", to: "/customize" },
 ];
 
 const Navbar = ({ scrolled }: NavbarProps) => {
@@ -79,7 +80,9 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               />
             </button>
 
-            <div className="hidden lg:flex items-center gap-[20px] xl:gap-[34px]">
+            {/* At 1024px the four links fill the left column; a 14px gap keeps
+                GIFTING clear of the wordmark, and it opens out as the column grows. */}
+            <div className="hidden lg:flex items-center gap-[14px] min-[1120px]:gap-[24px] xl:gap-[34px]">
               {leftLinks.map((link) =>
                 link.mega ? (
                   <div key={link.label} className="relative group">

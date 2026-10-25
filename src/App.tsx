@@ -31,7 +31,6 @@ import {
   Concepts,
   RingLab,
   RingExample,
-  AboutUs,
   ContactUs,
   PrivacyPolicy,
   TermsOfService,
@@ -148,7 +147,9 @@ const AppShell = () => {
 
           <Route path="/ring-lab" element={<RingLab />} />
           <Route path="/ring/:variant" element={<RingExample />} />
-          <Route path="/about" element={<AboutUs />} />
+          {/* The About page is gone (owner, 25 Oct 2026): the site is about the
+              jewellery and the custom outfits. Old links land on the homepage. */}
+          <Route path="/about" element={<KeepQuery to="/" />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
@@ -168,7 +169,7 @@ const AppShell = () => {
           <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
           <Route path="/jewelry" element={<KeepQuery to="/jewellery" />} />
           <Route path="/jewelry/:handle" element={<PieceRoute />} />
-          <Route path="/pages/about" element={<KeepQuery to="/about" />} />
+          <Route path="/pages/about" element={<KeepQuery to="/" />} />
           <Route path="/pages/contact" element={<KeepQuery to="/contact" />} />
           <Route path="/pages/faqs" element={<KeepQuery to="/faqs" />} />
           <Route path="/policies/privacy-policy" element={<KeepQuery to="/privacy" />} />

@@ -12,3 +12,18 @@
   scaled about the point where the two chain strands meet (597, 1065), so the
   chain still runs straight into both hearts; a feathered ellipse blends it.
   No AI: the rest of the photo is untouched. `pendant-before-after.jpg`.
+
+## Twin Heart Studs, later: the stud bigger, against her fingernail
+
+- The owner: the restored photo's stud was still small. Measured in it: her
+  fingernail is about 55 px wide (about 11 mm) and the stud 40 px.
+- Higgsfield (Nano Banana Pro, 2k, 2 credits each), asked for 1.5 times: both
+  tries came out about 2.5 fingernails wide and put the small heart in front
+  (`twin-heart-studs-first-tries-too-big.jpg`). Not used.
+- Then the size was locked by hand at 1.5 times (62 px) and Higgsfield asked to
+  redraw the stud sharp at that size: it still grew it, to 93 and 109 px. Its
+  first redraw had the design right (heart-cut stones in gold claws, the big
+  heart in front), so that stud was taken, shrunk 0.68 times to 62 px, and set
+  over the old stud on the listed photo with a soft edge. Nothing else in the
+  photo changed. `twin-heart-studs-stud-vs-fingernail.jpg`.
+- 8 credits in all.

@@ -814,3 +814,17 @@ note on how PVD differs from regular plating, and anti-tarnish.
 - **Lovable pushed straight to main this evening** ("Added exchange note to
   cart", 8 commits). It was merged with a merge commit, with no conflicts;
   all 458 tests pass. Main is at 304df25.
+- **Twin Heart Studs, redone (19:47):** the owner said the stud in the
+  restored photo was still small.
+  - Measured in it: her fingernail is about 55 px wide (about 11 mm) and the
+    stud 40 px.
+  - Two Higgsfield tries asked for 1.5 times came out about 2.5 fingernails
+    wide, with the small heart in front. A redraw of a hand-sized version
+    still grew the stud, to 93 and 109 px.
+  - So the first redraw's stud, right in design (heart-cut stones in gold
+    claws, the big heart in front), was shrunk to 62 px, about one
+    fingernail, and set on the listed photo. 8 credits.
+  - The on-model photo had again come off the listing (18:57), so it was
+    re-attached in second place.
+  - Site first paint follows (main b259346).
+  - Files: `shopify/photos/twin-heart-2026-10-26/`.

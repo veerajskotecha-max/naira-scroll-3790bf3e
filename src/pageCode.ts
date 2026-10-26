@@ -47,5 +47,9 @@ const PAGES: Record<RouteKey, LazyRoute> = {
 /** Loads the code of the page at `pathname`; resolves at once for a URL with no page of its own. */
 export const preloadRouteFor = (pathname: string): Promise<void> => {
   const key = routeKeyFor(pathname);
+  /* A catalogue ad's /products/<handle> hops to the jewellery page once the
+     piece is found; fetch that page's code alongside, so the hop does not
+     land on a blank while it downloads. Not waited for. */
+  if (key === "ProductDetail") JewelDetailNext.preload().catch(() => undefined);
   return key ? PAGES[key].preload() : Promise.resolve();
 };

@@ -219,3 +219,53 @@ describe("bagAddOns: the one piece the bag offers", () => {
     expect(completeTheLook(byHandle("prism-riviere-bracelet"), live)).toEqual(completeTheLook(byHandle("prism-riviere-bracelet"), [...live].reverse()));
   });
 });
+
+/* Pieces made as a pair or a family, at their prices on 26 October, beside the
+   pieces that used to take their place. */
+const families = [
+  piece("twin-heart-studs", "Earrings", 999, gold, { name: "Twin Heart Studs" }),
+  piece("twin-heart-necklace", "Necklaces", 999, gold, { name: "Twin Heart Necklace" }),
+  piece("birthstone-heart-necklace", "Necklaces", 699, gold, { name: "Birthstone Heart Necklace" }),
+  piece("clover-drop-earrings", "Earrings", 1015, gold, { name: "Clover Drop Earrings" }),
+  piece("clover-drop-pendant-necklace", "Necklaces", 875, gold, { name: "Clover Drop Pendant Necklace" }),
+  piece("clover-chain-bracelet", "Bracelets", 800, gold, { name: "Clover Chain Bracelet" }),
+  piece("molten-bloom-hoops", "Earrings", 2949, gold, { name: "Molten Bloom Hoops" }),
+  piece("watch-link-bracelet", "Bracelets", 1199, gold, { name: "Watch Link Bangle" }),
+  piece("watch-link-ring", "Rings", 1199, gold, { name: "Watch Link Ring" }),
+  piece("woven-gold-hoops", "Earrings", 2349, gold, { name: "Woven Gold Hoops" }),
+  piece("heartbead-bracelet", "Bracelets", 1299, gold, { name: "Heartbead Bracelet" }),
+  piece("amethyst-carre-bracelet", "Bracelets", 1299, gold, { name: "Amethyst Carré Bracelet" }),
+  piece("sapphire-carre-bracelet", "Bracelets", 1299, gold, { name: "Sapphire Carré Bracelet" }),
+];
+const family = (handle: string) => families.find((p) => p.handle === handle)!;
+
+describe("pieces made as a pair or a family", () => {
+  it("are a set, not just a shared motif", () => {
+    expect(sharedLine(family("twin-heart-studs"), family("twin-heart-necklace"))).toBe("set");
+    expect(sharedLine(family("clover-drop-earrings"), family("clover-chain-bracelet"))).toBe("set");
+    expect(sharedLine(family("watch-link-bracelet"), family("watch-link-ring"))).toBe("set");
+    expect(sharedLine(family("twin-heart-studs"), family("birthstone-heart-necklace"))).toBe("motif");
+    expect(sharedLine(family("clover-drop-earrings"), family("molten-bloom-hoops"))).toBe("motif");
+  });
+
+  /* The studs offered the Birthstone Heart Necklace, and the necklace the
+     hoops, never each other. */
+  it("offer each other first on the product page", () => {
+    expect(handles(completeTheLook(family("twin-heart-studs"), families))[0]).toBe("twin-heart-necklace");
+    expect(handles(completeTheLook(family("twin-heart-necklace"), families))[0]).toBe("twin-heart-studs");
+    expect(handles(completeTheLook(family("watch-link-bracelet"), families))[0]).toBe("watch-link-ring");
+  });
+
+  /* One design in four colours: the deep-stock Heartbead Bracelet came first. */
+  it("show the other colours of a design first under More", () => {
+    expect(styleOf(family("amethyst-carre-bracelet"))).toBe("tennis");
+    expect(handles(moreLikeThis(family("amethyst-carre-bracelet"), families))[0]).toBe("sapphire-carre-bracelet");
+  });
+
+  /* The pendant's row led with Molten Bloom Hoops, which share only a flower motif. */
+  it("complete a clover set with clovers", () => {
+    const look = completeTheLook(family("clover-drop-pendant-necklace"), families);
+    expect(handles(look).slice(0, 2).sort()).toEqual(["clover-chain-bracelet", "clover-drop-earrings"]);
+    expect(isSetRow(family("clover-drop-pendant-necklace"), look)).toBe(true);
+  });
+});

@@ -52,7 +52,7 @@ export const isHoops = (piece: JewelPiece) => kindOf(piece) === "hoops";
 const STYLES: Record<JewelPiece["category"], Array<[string, RegExp]>> = {
   Earrings: [["huggies", /huggie/i], ["hoops", /hoop/i], ["ear cuff", /ear cuff/i], ["studs", /stud/i], ["drops", /./]],
   Necklaces: [["lariat", /lariat/i], ["choker", /choker/i], ["set", /\bset\b|layering/i], ["pendant", /heart|bezel|charm|pendant/i], ["chain", /./]],
-  Bracelets: [["tennis", /tennis|rivi[eè]re|baguette|lumi[eè]re/i], ["cuff", /cuff/i], ["bangle", /bangle/i], ["chain", /./]],
+  Bracelets: [["tennis", /tennis|rivi[eè]re|baguette|lumi[eè]re|carr[eé]/i], ["cuff", /cuff/i], ["bangle", /bangle/i], ["chain", /./]],
   Rings: [["band", /band|eternity/i], ["dome", /dome/i], ["open", /\bopen\b/i], ["statement", /./]],
 };
 export const styleOf = (piece: JewelPiece): string =>
@@ -82,13 +82,18 @@ const LINES: Array<[line: string, strength: Strength, pattern: RegExp]> = [
   ["baroque", "set", /baroque/i],
   ["molten", "set", /molten/i],
   ["mesh", "set", /mesh/i],
+  // Pieces made as a pair or a family, each page naming the others.
+  ["twin heart", "set", /twin heart/i],
+  ["clover", "set", /clover/i],
+  ["watch link", "set", /watch link/i],
+  ["carré", "set", /carr[eé]/i],
   ["halo", "motif", /halo/i],
   ["heart", "motif", /heart/i],
   ["star", "motif", /\bstar\b/i],
   ["dome", "motif", /dome/i],
   ["pear drop", "motif", /\bpear\b|dewdrop|teardrop/i],
   ["bow", "motif", /\bbow\b|ribbon/i],
-  ["bloom", "motif", /bloom|petal|flower|blossom|clover|quatrefoil/i],
+  ["bloom", "motif", /bloom|petal|flower|blossom|clover|quatrefoil|bougainvillea/i],
   ["trio", "motif", /\btrio\b/i],
   ["link", "motif", /\blinks?\b|linked|cable|toggle/i],
   ["coil", "motif", /coil|tubogas/i],

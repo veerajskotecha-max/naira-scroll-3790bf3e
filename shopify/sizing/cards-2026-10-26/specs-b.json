@@ -1,0 +1,126 @@
+[
+ {
+  "id": "riviere-huggies-silver",
+  "type": "B",
+  "title": "Rivière Hoops — Silver",
+  "img": "file:///tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizecharts/hi/riviere-huggies-silver-2.jpg",
+  "srcW": 2048,
+  "srcH": 2048,
+  "crop": {
+   "x0": 9.6,
+   "y0": 224.3,
+   "size": 1818.2
+  },
+  "marks": [
+   {
+    "x1": 567.2,
+    "y1": 520,
+    "x2": 567.2,
+    "y2": 1540,
+    "label": "35 mm",
+    "side": "left"
+   }
+  ],
+  "scale": {
+   "x": 1205,
+   "y": 1540,
+   "pxPerMm": 29.143
+  },
+  "caption": "35 mm across · oval stones 5 mm"
+ },
+ {
+  "id": "clover-drop-pendant-necklace",
+  "type": "B",
+  "title": "Clover Drop Pendant Necklace",
+  "img": "file:///tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizecharts/hi/clover-drop-pendant-necklace-0.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 283.4,
+   "y0": 545.2,
+   "size": 864.9
+  },
+  "marks": [
+   {
+    "x1": 779.0,
+    "y1": 697,
+    "x2": 779.0,
+    "y2": 1122,
+    "label": "17 mm",
+    "side": "right"
+   }
+  ],
+  "scale": {
+   "x": 545.0,
+   "y": 1159.8,
+   "pxPerMm": 25.0
+  },
+  "caption": "Pendant 17 mm long · clovers 8.5 and 6.5 mm"
+ },
+ {
+  "id": "bow-pear-drop-necklace",
+  "type": "B",
+  "title": "Bow Pear Drop Necklace",
+  "img": "file:///tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizecharts/hi/bow-pear-drop-necklace-0.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 77.3,
+   "y0": 413.3,
+   "size": 1066.7
+  },
+  "marks": [
+   {
+    "x1": 884,
+    "y1": 730,
+    "x2": 884,
+    "y2": 1225,
+    "label": "15 mm",
+    "side": "right"
+   },
+   {
+    "x1": 468,
+    "y1": 655,
+    "x2": 824,
+    "y2": 655,
+    "label": "10 mm",
+    "side": "above"
+   }
+  ],
+  "scale": {
+   "x": 204.6,
+   "y": 1030,
+   "pxPerMm": 34.04
+  },
+  "caption": "Pendant 15 mm tall · bow 10 mm wide"
+ },
+ {
+  "id": "twin-heart-necklace",
+  "type": "B",
+  "title": "Twin Heart Necklace",
+  "img": "file:///tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizecharts/hi/twin-heart-necklace-2.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 0.0,
+   "y0": 212.9,
+   "size": 1288.0
+  },
+  "marks": [
+   {
+    "x1": 314,
+    "y1": 551.8,
+    "x2": 980,
+    "y2": 551.8,
+    "label": "8.5 mm",
+    "side": "above"
+   }
+  ],
+  "scale": {
+   "x": 255.2,
+   "y": 1102.3,
+   "pxPerMm": 78.353
+  },
+  "caption": "Pendant 8.5 mm across · hearts 5 and 3.5 mm"
+ }
+]

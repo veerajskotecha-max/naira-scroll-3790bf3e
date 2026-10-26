@@ -60,3 +60,4 @@
 - Header strip runs three short lines: "SITEWIDE SALE LIVE TODAY!" (exclamation, no percentage — the bag's line names it), "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
 - Bag offer line stays small and quiet on top of the track at 8.5px — do not let it clutter the bag.
 - [x] Jewellery-only site: apparel removed from menu, footer, search and home/about wording; only the made-to-measure custom outfits section (/customize) remains; /shop/indo-western now opens /customize.
+- [x] State "Easy 7-day exchange & returns" in the bag, one quiet line under the checkout button linking to the policy; verified on phone and tablet.

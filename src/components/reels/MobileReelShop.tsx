@@ -24,7 +24,7 @@ const parsePrice = (label?: string | null) =>
 const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: JewelPiece }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
-  const soldOut = live?.availableForSale === false && !isAdjustableRing(product.handle);
+  const soldOut = live?.availableForSale === false && !isAdjustableRing(live ?? product.handle);
   const image = live?.image ?? product.image_url ?? "";
   const price = live?.priceLabel ?? product.price_label ?? "";
 

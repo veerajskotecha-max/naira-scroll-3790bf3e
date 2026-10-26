@@ -11,7 +11,7 @@ const gold = (piece: JewelPiece) => piece.colour
 
 // Specialist landings must not silently become the whole parent category.
 const selectors: Record<string, (piece: JewelPiece) => boolean> = {
-  "adjustable-rings": (p) => isAdjustableRing(p.handle) || matches(p, /\badjustable\b/i),
+  "adjustable-rings": (p) => isAdjustableRing(p) || matches(p, /\badjustable\b/i),
   "hoop-earrings": (p) => matches(p, /hoops?|huggies?/i),
   "stud-earrings": (p) => matches(p, /\bstuds?\b/i),
   "zirconia-earrings": hasZirconeStone,

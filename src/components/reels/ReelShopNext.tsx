@@ -45,7 +45,7 @@ const productHref: HrefFor = (handle) => `/jewellery/${handle}`;
 const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: JewelPiece; hrefFor: HrefFor }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
-  const soldOut = live?.availableForSale === false && !isAdjustableRing(product.handle);
+  const soldOut = live?.availableForSale === false && !isAdjustableRing(live ?? product.handle);
   const image = live?.image ?? product.image_url ?? "";
   const price = live?.priceLabel ?? product.price_label ?? "";
   const name = live?.name ?? product.title;

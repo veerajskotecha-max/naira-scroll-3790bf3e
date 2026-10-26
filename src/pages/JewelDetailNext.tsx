@@ -114,8 +114,8 @@ const ringSizes: { value: string; status: "available" | "preorder" }[] = [
   { value: "7", status: "preorder" },
 ];
 /* An open-back ring adjusts to fit every size it offers, so each reads as available. */
-const ringSizesFor = (handle?: string) =>
-  isAdjustableRing(handle) ? adjustableSizes(handle).map((value) => ({ value, status: "available" as const })) : ringSizes;
+const ringSizesFor = (piece: JewelPiece) =>
+  isAdjustableRing(piece) ? adjustableSizes(piece.handle).map((value) => ({ value, status: "available" as const })) : ringSizes;
 
 const JewelDetailSkeleton = () => (
   <div className="min-h-screen bg-nf-ivory">
@@ -525,7 +525,7 @@ const JewelDetailNext = () => {
   }
 
   const wishlisted = isWishlisted(piece.handle);
-  const adjustable = isAdjustableRing(piece.handle);
+  const adjustable = isAdjustableRing(piece);
   const soldOut = piece.availableForSale === false && !adjustable;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
@@ -1018,7 +1018,7 @@ const JewelDetailNext = () => {
                   </button>
                 </div>
                 <div role="radiogroup" aria-label="Ring size, US" className="mt-1 flex flex-wrap gap-2">
-                  {ringSizesFor(piece.handle).map((s) => {
+                  {ringSizesFor(piece).map((s) => {
                     const active = selectedSize === s.value;
                     return (
                       <button

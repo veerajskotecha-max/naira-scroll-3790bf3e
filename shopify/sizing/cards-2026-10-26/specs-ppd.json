@@ -1,0 +1,32 @@
+[
+ {
+  "id": "prism-pear-drop-necklace",
+  "type": "B",
+  "title": "Prism Pear Drop Necklace",
+  "img": "file:///tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/sizecharts/ppd/src.jpg",
+  "srcW": 1288,
+  "srcH": 1600,
+  "crop": {
+   "x0": 290.2,
+   "y0": 584.1,
+   "size": 727.3
+  },
+  "marks": [
+   {
+    "x1": 701.7,
+    "y1": 734,
+    "x2": 701.7,
+    "y2": 1047,
+    "label": "12 mm",
+    "side": "right"
+   }
+  ],
+  "scale": {
+   "x": 515.6,
+   "y": 1078.8,
+   "pxPerMm": 26.083
+  },
+  "caption": "Pendant 12 mm long · stones 3.5 mm",
+  "_edges": "Read off a 2x gridded zoom of the listing photo: top claw tip of the pink pear (y 734) to the bottom of the yellow pear cup (y 1047); 313 px for the listed 12 mm, so 26.1 px/mm, and each pear reads 3.5 mm as listed."
+ }
+]

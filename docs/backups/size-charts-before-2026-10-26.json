@@ -26,6 +26,16 @@
    "id": "gid://shopify/MediaImage/46555947991202",
    "alt": "Size guide — Molten Wave Ear Cuff",
    "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/molten-wave-ear-cuff-size-guide.jpg?v=1792905086"
+  },
+  {
+   "id": "gid://shopify/MediaImage/46553570508962",
+   "alt": "Size guide — Sorbet Rivière Bracelet",
+   "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/sorbet-riviere-bracelet-size-guide.jpg?v=1792873866"
+  },
+  {
+   "id": "gid://shopify/MediaImage/46555948056738",
+   "alt": "Size guide — Prism Pear Drop Hoops",
+   "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-pear-drop-hoops-size-guide.jpg?v=1792929696"
   }
  ],
  "products": [
@@ -288,6 +298,50 @@
      "id": "gid://shopify/MediaImage/46561650376866",
      "alt": "Bow Pear Drop Necklace — macro detail: the heart bow, its gold knot and the pear drop",
      "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/3fc8e7f8-c5e7-4309-a1f3-69b99a3f6a2a.jpg?v=1792922027"
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10353404936354",
+   "handle": "sorbet-riviere-bracelet",
+   "title": "Sorbet Rivière Bracelet",
+   "note": "published 26 Oct 12:41; description unchanged",
+   "media": [
+    {
+     "alt": "Sorbet Rivière Bracelet — on a cream plaster block, the full piece",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/1cd8a502-782f-417e-a36f-31f747d2964a.jpg?v=1792873976"
+    },
+    {
+     "alt": "Sorbet Rivière Bracelet — worn on the model",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/90fd0ae5-9e36-4f6b-bd00-0f95c8336b66.jpg?v=1792873976"
+    },
+    {
+     "alt": "Sorbet Rivière Bracelet — worn on the wrist, close",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/896b9201-3289-42c5-8d80-5ab1fe25ce36.jpg?v=1792873975"
+    },
+    {
+     "alt": "Sorbet Rivière Bracelet — macro detail: pastel pink, lime and lilac stones in gold claw cups",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cc3ebef7-c025-45a9-b761-3e5838fbf04b.jpg?v=1792873975"
+    }
+   ]
+  },
+  {
+   "id": "gid://shopify/Product/10353729470626",
+   "handle": "prism-pear-drop-hoops",
+   "title": "Prism Pear Drop Hoops",
+   "note": "published 26 Oct 11:50; description unchanged",
+   "media": [
+    {
+     "alt": "Prism Pear Drop Hoops — on a cream plaster block, the full piece",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2a5d80ee-0564-40bf-9f82-042c6318472b.jpg?v=1792930336"
+    },
+    {
+     "alt": "Prism Pear Drop Hoops — worn on the model",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/f48a3745-7b11-47f6-b988-6175813aff40.jpg?v=1792940053"
+    },
+    {
+     "alt": "Prism Pear Drop Hoops — macro detail: one hoop and its three pears",
+     "url": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/fcab3621-9f3b-47a0-9f59-893307d7883a.jpg?v=1792930335"
     }
    ]
   }

@@ -855,6 +855,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/sorbet-riviere-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/bougainvillea-vine-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/clover-drop-pendant-necklace</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -890,12 +900,27 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/open-heart-layered-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/watch-link-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/molten-wave-ear-cuff</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/asscher-solitaire-ring</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/cushion-solitaire-ring</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -911,6 +936,16 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/pave-zigzag-ring</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/prism-pear-drop-necklace</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/prism-pear-drop-hoops</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

@@ -20,7 +20,7 @@
 
    keeping vendor "Naira Petite" and status ACTIVE.
 
-   Last regenerated 2026-10-25 against the live store: 118 pieces. */
+   Last regenerated 2026-10-26 against the live store: 124 pieces. */
 export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "aqua-heart-drops-silver",
   "asscher-solitaire-ring",
@@ -41,6 +41,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "bold-nocturne-bracelet",
   "bold-nocturne-chain",
   "bold-nocturne-drops",
+  "bougainvillea-vine-bracelet",
   "bow-pear-drop-necklace",
   "brushed-gold-huggies",
   "chain-drop-dome-ring",
@@ -55,6 +56,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "crystal-baguette-eternity-ring",
   "crystal-pear-ear-cuff",
   "cushion-halo-ring",
+  "cushion-solitaire-ring",
   "dewdrop-bezel-necklace",
   "droplet-open-cuff",
   "droplet-open-ring",
@@ -87,6 +89,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "molten-panel-bracelet",
   "molten-wave-ear-cuff",
   "north-star-bangle",
+  "open-heart-layered-bracelet",
   "pave-zigzag-ring",
   "pear-point-open-cuff",
   "pearl-blossom-earrings",
@@ -99,12 +102,13 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "pearl-reverie-bracelet",
   "pearl-ribbon-ring",
   "petal-flower-studs",
-  "petite-blossom-bracelet",
   "petite-bow-studs",
   "petite-pave-band",
   "petite-pearl-chain",
   "petite-square-huggies",
   "prism-cluster-studs-silver",
+  "prism-pear-drop-hoops",
+  "prism-pear-drop-necklace",
   "prism-riviere-bracelet",
   "quatrefoil-eclat-studs",
   "ribbon-bead-bracelet",
@@ -121,6 +125,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "silver-dome-ring",
   "silver-drop-earrings",
   "solitaire-whisper-studs",
+  "sorbet-riviere-bracelet",
   "star-point-band",
   "teardrop-lariat",
   "textured-gold-hoops",
@@ -137,6 +142,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "verdant-drop-earrings",
   "verdant-eternity-band",
   "vintage-halo-ring",
+  "watch-link-bracelet",
   "watch-link-ring",
   "whisper-pave-band",
   "woven-gold-hoops",

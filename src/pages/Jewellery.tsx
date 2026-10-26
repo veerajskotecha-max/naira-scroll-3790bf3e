@@ -37,7 +37,7 @@ const hubFaqs = [
   },
   {
     q: "What ring sizes do you make?",
-    a: "We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.",
+    a: "Our adjustable rings have an open back that fits US 5 to US 9, and every size ships now. Rings sold in sizes show each size's stock on their page. A closed ring ships now in the size it is made in, shown on its page; other sizes are a pre-order, delivered in 45 days. Message the atelier on WhatsApp if you are between sizes.",
   },
 ];
 

@@ -199,11 +199,11 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · COUPLE RINGS",
     metaTitle: "Couple Rings & Promise Rings Online | Naira Flore",
     metaDescription:
-      "Couple rings and promise rings in an 18K gold finish with hand-set zircone. US sizes 5–8, anti-tarnish sealed, finished at our atelier.",
+      "Couple rings and promise rings in an 18K gold finish with hand-set zircone. US sizes 5–9, anti-tarnish sealed, finished at our atelier.",
     intro: [
       "A couple ring is worn every day by someone who did not choose it, which is why comfort matters more than drama. Slim bands, flush settings, and a finish that does not dull against a keyboard or a steering wheel.",
       "Our rings work as pairs because the finish is consistent: the same 18K gold or rhodium across the collection, so two rings ordered together match, and a replacement ordered a year later still does.",
-      "Sizes run US 5 to US 8. If the two of you sit at different ends of that range, message the atelier and we will confirm both before anything is made.",
+      "Sizes run US 5 to US 8, and our open-back rings adjust up to US 9. If the two of you sit at different ends of that range, message the atelier and we will confirm both before anything is made.",
     ],
     bullets: [
       {
@@ -246,11 +246,11 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · ADJUSTABLE",
     metaTitle: "Adjustable Rings for Women, Gold Finished | Naira Flore",
     metaDescription:
-      "Adjustable rings that hold their shape: 18K gold finished, anti-tarnish sealed, hand-set zircone. Available in US 5 to US 8.",
+      "Adjustable rings that hold their shape: 18K gold finished, anti-tarnish sealed, hand-set zircone. Each one fits US 5 to US 9.",
     intro: [
       "Adjustable rings solve a real problem, fingers change size between morning and evening, summer and winter, and create a new one when the band is soft enough to lose its shape after a week.",
       "Ours are made from a firm alloy that opens and closes at a designed point rather than flexing along the whole shank. Adjust it twice and it stays where you put it.",
-      "If you already know your size, the same designs are available in fixed US 5 to US 8, which always sits more securely than an adjustable band.",
+      "If you already know your size, our closed bands come in fixed US 5 to US 8, which always sits more securely than an adjustable band.",
     ],
     bullets: [
       {
@@ -263,7 +263,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         title: "Fixed sizes available",
-        body: "US 5 to US 8 in the same designs, for anyone who wants the more secure fit of a sized band.",
+        body: "Closed bands in US 5 to US 8, for anyone who wants the more secure fit of a sized band.",
       },
     ],
     faqs: [
@@ -434,7 +434,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · SOLITAIRE",
     metaTitle: "Solitaire Rings for Women, Zircone Solitaires | Naira Flore",
     metaDescription:
-      "Single-stone solitaire rings with hand-set brilliant-cut zircone in an 18K gold or rhodium finish. Available in US sizes 5 to 8.",
+      "Single-stone solitaire rings with hand-set brilliant-cut zircone in an 18K gold or rhodium finish. Available in US sizes 5 to 9.",
     intro: [
       "A solitaire has nowhere to hide. One stone, four to six prongs, and a band, every proportion is visible, which is why it is the hardest ring to make well and the easiest to make badly.",
       "Ours are set by hand with the stone checked level under light before the ring leaves the bench. The prongs are filed down to the minimum that will hold, so the stone reads larger than its measurement.",
@@ -481,7 +481,7 @@ export const extraLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · COCKTAIL",
     metaTitle: "Cocktail Rings for Women, Statement Zircone | Naira Flore",
     metaDescription:
-      "Statement cocktail rings with clustered brilliant-cut zircone in a sealed 18K gold finish. Available in US sizes 5 to 8 from our atelier.",
+      "Statement cocktail rings with clustered brilliant-cut zircone in a sealed 18K gold finish. Available in US sizes 5 to 9 from our atelier.",
     intro: [
       "A cocktail ring exists to be looked at. That gives it licence on scale and none at all on weight, a statement ring that turns on the finger by the second hour has failed at its only job.",
       "Ours are built with hollowed galleries and a balanced shank, so a wide clustered face sits upright without a counterweight or a ring adjuster.",

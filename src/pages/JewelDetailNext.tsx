@@ -18,7 +18,7 @@ import { reelForPiece, useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
-import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
+import { isAdjustableRing, adjustableFitNote, adjustableSizes, CLOSED_RING_SIZES, stockedSize } from "@/data/ringFit";
 import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
@@ -108,14 +108,13 @@ const specsOf = (piece: JewelPiece) => {
   return { specs, care };
 };
 
-const ringSizes: { value: string; status: "available" | "preorder" }[] = [
-  { value: "5", status: "preorder" },
-  { value: "6", status: "available" },
-  { value: "7", status: "preorder" },
-];
-/* An open-back ring adjusts to fit every size it offers, so each reads as available. */
-const ringSizesFor = (piece: JewelPiece) =>
-  isAdjustableRing(piece) ? adjustableSizes(piece.handle).map((value) => ({ value, status: "available" as const })) : ringSizes;
+/* An open-back ring adjusts to fit every size it offers, so each reads as
+   available. A closed ring ships now in the size it is stocked in (US 6, or
+   US 7 for Chevron Whisper and Pearl Ribbon); its other sizes are a pre-order. */
+const ringSizesFor = (piece: JewelPiece): { value: string; status: "available" | "preorder" }[] =>
+  isAdjustableRing(piece)
+    ? adjustableSizes(piece.handle).map((value) => ({ value, status: "available" }))
+    : CLOSED_RING_SIZES.map((value) => ({ value, status: value === stockedSize(piece.handle) ? "available" : "preorder" }));
 
 const JewelDetailSkeleton = () => (
   <div className="min-h-screen bg-nf-ivory">
@@ -336,7 +335,7 @@ const JewelDetailNext = () => {
     return embedded?.piece.name === pieceName ? embedded.rating : null;
   }, [pieceName, reviewWall, embedded]);
   useEffect(() => {
-    setSelectedSize(sizedCategory ? "6" : "One Size");
+    setSelectedSize(sizedCategory ? stockedSize(piece?.handle) : "One Size");
   }, [sizedCategory, piece?.handle]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
@@ -549,12 +548,12 @@ const JewelDetailNext = () => {
   const steel = /stainless steel/i.test(piece.materials);
   const waterproof = /waterproof/i.test(piece.materials) || /waterproof/i.test(listedCare ?? "");
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
-  /* A pre-order is a sold-out piece, or a ring size we do not stock (US 5 / 7). */
-  const sizePreorder = isRing && !sizeName && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
+  /* A pre-order is a sold-out piece, or a closed ring's size we do not stock. */
+  const sizePreorder = isRing && !sizeName && ringSizesFor(piece).find((r) => r.value === selectedSize)?.status === "preorder";
   /* ...or a variant Shopify has sold out of. */
   const isPreorder = soldOut || sizePreorder || variantSoldOut;
   /* A ring Shopify does not sell in sizes is sized from the US list
-     (`ringSizes`), and the size rides on the line as a note, a metal chosen or
+     (`ringSizesFor`), and the size rides on the line as a note, a metal chosen or
      not (Droplet Open Ring is sold in gold and silver, not in sizes). */
   const noteSize = isRing && !sizeName ? `US ${selectedSize}` : undefined;
   /* "Silver, size 7" or "size US 6": what a WhatsApp message names. */
@@ -1017,6 +1016,7 @@ const JewelDetailNext = () => {
                     Size guide
                   </button>
                 </div>
+                {/* 56px chips keep an adjustable ring's five sizes (US 5–9) on one row on a 360px phone. */}
                 <div role="radiogroup" aria-label="Ring size, US" className="mt-1 flex flex-wrap gap-2">
                   {ringSizesFor(piece).map((s) => {
                     const active = selectedSize === s.value;
@@ -1027,7 +1027,7 @@ const JewelDetailNext = () => {
                         role="radio"
                         aria-checked={active}
                         onClick={() => setSelectedSize(s.value)}
-                        className={`min-h-[44px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
+                        className={`min-h-[44px] min-w-[56px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
                           active
                             ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
                             : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
@@ -1047,8 +1047,8 @@ const JewelDetailNext = () => {
                   <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
                     {adjustable
                       ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
-                      : selectedSize === "6"
-                        ? "US 6 is in stock and ships now."
+                      : selectedSize === stockedSize(piece.handle)
+                        ? `US ${selectedSize} is in stock and ships now.`
                         : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
                   </p>
                 )}

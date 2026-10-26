@@ -166,7 +166,7 @@ describe("what a one-tap Add needs, and takes", () => {
     expect(choiceNeeded(band)).toBe("size");
     expect(choiceNeeded(duet)).toBe("size");
     expect(choiceNeeded(vintage)).toBe("size");
-    expect(choiceNeeded(cushion)).toBeNull(); // adjusts to fit US 5 to 8
+    expect(choiceNeeded(cushion)).toBeNull(); // adjusts to fit US 5 to 9
     expect(choiceNeeded(birthstone)).toBe("month");
     expect(choiceNeeded(huggies)).toBeNull();
     expect(choiceNeeded(bangle)).toBeNull();

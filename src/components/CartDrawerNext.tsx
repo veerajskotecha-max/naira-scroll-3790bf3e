@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus, X } from "lucide-react";
+import { ChevronLeft, Loader2, Minus, Plus, Undo2, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
 import { cardCover } from "@/lib/cardCover";
@@ -111,6 +111,25 @@ const PieceCard = ({
       {busy ? <Loader2 size={12} className="animate-spin" aria-hidden="true" /> : "Add"}
     </button>
   </div>
+);
+
+/* The bag's one reassurance, and the only one it keeps: the way back is as
+   easy as the way in. It sits under the button — after the decision, so it
+   reads as the reason to press it rather than as another term to get through. */
+export const BagReturns = ({
+  onLeave,
+}: {
+  onLeave?: (e: MouseEvent<HTMLAnchorElement>) => void;
+}) => (
+  <Link
+    to="/exchange-return-policy"
+    onClick={onLeave}
+    data-returns
+    className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
+  >
+    <Undo2 size={12} strokeWidth={1.6} className="text-nf-gold-text" aria-hidden="true" />
+    Easy 7-day exchange &amp; returns
+  </Link>
 );
 
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
@@ -484,6 +503,7 @@ const CartDrawerNext = () => {
                 {opening ? "Opening checkout…" : "Checkout"}
                 {!opening && <UpiBadges size={18} className="ml-1" />}
               </button>
+              <BagReturns onLeave={leave} />
             </div>
           </>
         )}

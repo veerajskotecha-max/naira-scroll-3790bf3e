@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus, X } from "lucide-react";
+import { ChevronLeft, Loader2, Minus, Plus, Undo2, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
 import { cardCover } from "@/lib/cardCover";

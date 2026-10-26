@@ -828,3 +828,12 @@ note on how PVD differs from regular plating, and anti-tarnish.
     re-attached in second place.
   - Site first paint follows (main b259346).
   - Files: `shopify/photos/twin-heart-2026-10-26/`.
+- **Photos coming off listings this evening (not from this session):**
+  - Twin Heart Necklace on-model photo at 18:41, Twin Heart Studs on-model at
+    18:57 and again at 19:50, three minutes after it was attached, and Cushion
+    Solitaire Ring's plaster-block photo at 18:27.
+  - Cushion Solitaire's first two photos were also replaced around 12:44.
+  - Another Claude session was active then ("Naira feed curation and content
+    strategy").
+  - The studs' on-model photo was re-attached in second place at 20:02 at the
+    owner's request. Cushion Solitaire's is left off until the owner says.

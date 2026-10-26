@@ -774,3 +774,43 @@ note on how PVD differs from regular plating, and anti-tarnish.
   paint carries the Adjustable tag and the US 5 to 9 copy.
 - **For the owner:** Lovable → Publish → Update. That pre-builds pages for
   the new pieces and puts the fix live for every piece listed after it.
+
+## 26 October — Twin Heart photos, and matching pieces that point to each other
+
+- **Twin Heart Studs:** the owner chose the earlier on-model photo, where the
+  larger heart reads clearly (25 Oct 12:12). It is back in second place. The
+  later one (14:34) is off the listing but still in Files.
+- **Twin Heart Necklace:** the owner said the pendant should look bigger on
+  the model.
+  - On the listed photo, measured against the lips and the neck, it was about
+    8 to 9 mm, as the listing's 8.5 mm says.
+  - The chain links in the other photos point to a larger piece, but those
+    photos look AI-made, so the true size is the owner's to confirm.
+  - The pendant alone was enlarged 1.5 times (about 13 mm) in the same photo,
+    scaled about the point where the two chain strands meet, so the chain
+    still runs into both hearts. No AI; Higgsfield had 1.32 credits, less than
+    one 2-credit image.
+  - The on-model photo had come off the listing at 18:41, before this change
+    (the studs, changed by the same batch, read 18:49). It is back in second
+    place.
+  - Files: `shopify/photos/twin-heart-2026-10-26/`.
+  - Open: the listing and size guide still say 8.5 mm. If the real pendant is
+    larger, both need the owner's measurement.
+- **Matching links (main 3322567):** pieces made as a pair or a family only
+  shared a motif, so other pieces took first place on their pages.
+  - Twin Heart Studs offered the Birthstone Heart Necklace, and the necklace
+    offered the hoops. Now each offers the other first.
+  - Clover Drop Pendant Necklace led with Molten Bloom Hoops. All four clover
+    pages now show "Complete the set" with clovers.
+  - Watch Link Bangle and Watch Link Ring now point to each other first.
+  - The four Carré bracelets, published this evening, listed the Heartbead
+    Bracelet before their own other colours. Now the other colours come
+    first, and Carré counts as a tennis bracelet.
+  - Bougainvillea Vine Bracelet joins the flower motif.
+  - Four tests cover this (456 then, 458 after the merge below).
+  - No built-in piece points to a listing that is not live.
+- **First-paint data (main 78edc0a):** 128 live pieces, with the Twin Heart
+  photos as above.
+- **Lovable pushed straight to main this evening** ("Added exchange note to
+  cart", 8 commits). It was merged with a merge commit, with no conflicts;
+  all 458 tests pass. Main is at 304df25.

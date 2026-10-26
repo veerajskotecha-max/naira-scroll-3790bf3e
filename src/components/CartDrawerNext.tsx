@@ -484,19 +484,7 @@ const CartDrawerNext = () => {
                 {opening ? "Opening checkout…" : "Checkout"}
                 {!opening && <UpiBadges size={18} className="ml-1" />}
               </button>
-              {/* One quiet line under the button: the way back is as easy as the
-                  way in. It sits after the decision rather than before it, so
-                  the checkout keeps its place and the promise reads as the
-                  reason to press it. */}
-              <Link
-                to="/exchange-return-policy"
-                onClick={leave}
-                data-returns
-                className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
-              >
-                <Undo2 size={12} strokeWidth={1.6} className="text-nf-gold-text" aria-hidden="true" />
-                Easy 7-day exchange &amp; returns
-              </Link>
+              <BagReturns onLeave={leave} />
             </div>
           </>
         )}

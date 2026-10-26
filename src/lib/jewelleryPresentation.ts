@@ -8,16 +8,22 @@ export const hasZirconeStone = (piece: JewelPiece): boolean =>
   /\b(?:zircone|zirconia|cubic zirconia|cz)\b/i.test(evidenceOf(piece));
 
 export const coatingOf = (piece: JewelPiece): string => {
-  const details = (piece.details ?? []).find((line) => /^Plating:/i.test(line));
-  const plating = details ?? piece.description?.match(/Plating:\s*([\s\S]*?)(?=Material:|Care|$)/i)?.[1] ?? piece.materials;
+  const listed = (piece.details ?? []).find((line) => /^Plating:/i.test(line))
+    ?? piece.description?.match(/Plating:\s*([\s\S]*?)(?=Material:|Care|$)/i)?.[1];
+  const plating = listed ?? piece.materials;
   const gold = /\bgold\b/i.test(plating);
   const rhodium = /\brhodium\b/i.test(plating);
   const silver = /\bsilver\b/i.test(plating);
-  if (gold && (rhodium || silver)) return "Gold & rhodium coated";
-  if (rhodium) return "Rhodium coated";
-  if (silver) return "Silver coated";
-  if (gold) return /18\s*k/i.test(plating) ? "18K gold coated" : "Gold coated";
-  return "Coated finish";
+  const goldName = /18\s*k/i.test(plating) ? "18K gold" : "gold";
+  /* The owner, 25 Oct 2026: the steel pieces are PVD coated, and their
+     listings say so. PVD leads the name wherever the Plating line has it. */
+  const pvd = /\bPVD\b/.test(plating) ? "PVD " : "";
+  // Heartbead: a bare polished steel strand with a gold clasp and charm.
+  if (listed && gold && !rhodium && !silver && /\bsteel\b/i.test(listed)) return `${pvd}${goldName} & steel`;
+  const finish = gold && (rhodium || silver) ? "gold & rhodium" : rhodium ? "rhodium" : silver ? "silver" : gold ? goldName : "";
+  if (!finish) return pvd ? "PVD coated" : "Coated finish";
+  const named = `${pvd}${finish} coated`;
+  return named.charAt(0).toUpperCase() + named.slice(1);
 };
 
 export const stoneOf = (piece: JewelPiece): string | null => {

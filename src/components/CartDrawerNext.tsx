@@ -14,8 +14,10 @@ import {
   PROMO_EVENT,
   QUANTITY_OFFERS,
   resolveCartDiscount,
+  TOP_QUANTITY_OFFER,
 } from "@/lib/promo";
 import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
+import UpiBadges from "@/components/checkout/UpiBadges";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
 import { shopifyNumericId, trackPixel } from "@/lib/pixel";
@@ -29,9 +31,9 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    A second piece takes 10% off your bag      the ladder, rungs labelled
+    A second piece takes 15% off your bag      the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
+    Wears well with your bracelet · one piece, "Adds ₹914 · saves ₹585", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
     Total · incl. taxes, one savings line, arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
@@ -117,12 +119,16 @@ export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
   const top = QUANTITY_OFFERS[QUANTITY_OFFERS.length - 1].minQuantity;
   const fill = Math.min(totalItems, top) / top;
   return (
-    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-5">
+    <div data-ladder className="shrink-0 bg-[var(--nf-surface)] px-5 pb-4 pt-4">
       {/* The explanation rides on top, where the eye lands first: the sale is
           on right now, and what it is worth — kept small so it never crowds
-          the bag. */}
-      <p className="whitespace-nowrap pb-2 text-center font-nf-label text-[8.5px] font-medium uppercase tracking-nf-16 text-nf-ink/60">
-        ✦ Sitewide sale live today · up to 20% off
+          the bag. The 24px rungs stand 10.5px above the track, so the line
+          keeps 20px clear of it: the rungs had been touching its letters on
+          every phone. On a cover screen narrower than the line it wraps,
+          balanced, instead of running off the edge. "Up to" is the top rung,
+          so the line moves when the ladder does. */}
+      <p className="mb-5 text-balance text-center font-nf-label text-[8.5px] font-medium uppercase leading-[1.5] tracking-nf-16 text-nf-ink/60">
+        ✦ Sitewide sale live today · up to {pct(TOP_QUANTITY_OFFER.rate)} off
       </p>
       <div className="relative mx-3 h-[3px] bg-nf-ink/25" role="progressbar" aria-valuemin={0} aria-valuemax={top} aria-valuenow={Math.min(totalItems, top)} aria-label={`${totalItems} of ${top} pieces`}>
         <span className="block h-full bg-nf-ink transition-[width] duration-500 motion-reduce:transition-none" style={{ width: `${fill * 100}%` }} />
@@ -476,6 +482,7 @@ const CartDrawerNext = () => {
               >
                 {busy || opening ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
                 {opening ? "Opening checkout…" : "Checkout"}
+                {!opening && <UpiBadges size={18} className="ml-1" />}
               </button>
             </div>
           </>

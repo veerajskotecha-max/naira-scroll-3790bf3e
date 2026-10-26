@@ -101,7 +101,7 @@ const OfferProgress = ({ totalItems, quiet = false, appliedRate }: { totalItems:
           ladder reads as a distance rather than as two unrelated coupons.
 
           Stacked over two short lines rather than one long one: side by side,
-          "2 · 20% off" and "3 · 30% off" ran into each other at 390px, which
+          "2 · 15% off" and "3 · 25% off" run into each other at 390px, which
           is most of the traffic. The last label right-aligns — centred on its
           marker it would hang off the end of the bar. */}
       {!quiet && (

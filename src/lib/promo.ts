@@ -17,8 +17,8 @@
    the most common order carries no discount at all. */
 export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
-  BUY2: 0.1,
-  BUY3: 0.2,
+  BUY2: 0.15,
+  BUY3: 0.25,
   NAIRA10: 0.1,
 } as const;
 
@@ -38,7 +38,9 @@ export const getPromoDiscountRate = (code: string | null): number => {
 };
 
 /*
-  The buy-more ladder: two pieces take 10% off, three take 20%.
+  The buy-more ladder: two pieces take 15% off, three take 25% (the owner,
+  25 Oct 2026; it was 10% and 20%). BUY2 and BUY3 in Shopify carry the same
+  rates, so the bag quotes what Fastrr charges.
 
   Both rungs are CODES in Shopify, not automatic discounts, and that is
   deliberate — Fastrr, which owns the payment page, ignores Shopify automatic
@@ -48,8 +50,8 @@ export const getPromoDiscountRate = (code: string | null): number => {
   bag applies whichever rung it has reached.
 */
 export const QUANTITY_OFFERS = [
-  { code: "BUY2", minQuantity: 2, rate: 0.1 },
-  { code: "BUY3", minQuantity: 3, rate: 0.2 },
+  { code: "BUY2", minQuantity: 2, rate: 0.15 },
+  { code: "BUY3", minQuantity: 3, rate: 0.25 },
 ] as const;
 
 export type QuantityOffer = (typeof QUANTITY_OFFERS)[number];
@@ -118,7 +120,7 @@ export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount)
 /**
  * What one more piece does to the bag: what it adds to the total and what the
  * bag then saves on it, by the same resolver and rounding as the checkout.
- * A ₹1,499 piece beside a ₹2,399 one adds ₹1,109 and saves ₹390.
+ * A ₹1,499 piece beside a ₹2,399 one adds ₹914 and saves ₹585.
  */
 export const addOnEffect = (bag: { subtotal: number; totalItems: number; promoCode?: string | null }, price: number) => {
   const now = discountedSubtotal(bag.subtotal, resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode }));

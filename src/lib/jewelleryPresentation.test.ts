@@ -40,7 +40,13 @@ describe("product-specific coating and stones", () => {
   it("uses the explicit plating rather than a generic gold summary", () => {
     expect(coatingOf({ ...piece, details: ["Plating: Rhodium coated"] })).toBe("Rhodium coated");
     expect(coatingOf({ ...piece, details: ["Plating: Silver coated"] })).toBe("Silver coated");
-    expect(coatingOf(piece)).toBe("18K gold coated");
+    expect(coatingOf({ ...piece, details: ["Plating: 18k gold tone plated"] })).toBe("18K gold coated");
+  });
+  it("names PVD when the Plating line does", () => {
+    expect(coatingOf(piece)).toBe("PVD 18K gold coated");
+    expect(coatingOf({ ...piece, details: ["Plating: PVD rhodium coating, anti-tarnish"] })).toBe("PVD rhodium coated");
+    expect(coatingOf({ ...piece, details: ["Plating: PVD 18K gold or PVD rhodium coating (choose above), anti-tarnish"] })).toBe("PVD gold & rhodium coated");
+    expect(coatingOf({ ...piece, details: ["Plating: Polished steel strand with a PVD 18K gold coated clasp and charm, anti-tarnish"] })).toBe("PVD 18K gold & steel");
   });
   it("changes coating wording without changing hallmark, name, price or inventory", () => {
     const source = { ...piece, description: "18K gold tone plated, with 925 sterling silver posts" };

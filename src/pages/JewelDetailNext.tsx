@@ -32,6 +32,8 @@ import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
+import { QUANTITY_OFFERS } from "@/lib/promo";
+import UpiBadges from "@/components/checkout/UpiBadges";
 
 /*
   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
@@ -612,11 +614,13 @@ const JewelDetailNext = () => {
     toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece) });
   };
 
-  /* Tarnish and skin, answered from the piece's own materials, in Care. */
+  /* Tarnish and skin, answered from the piece's own materials, in Care.
+     "PVD 18K gold coated" keeps its capitals mid-sentence; "Rhodium coated" does not. */
+  const finishInSentence = /^[A-Z]{2}/.test(finish) ? finish : finish.charAt(0).toLowerCase() + finish.slice(1);
   const care = [
     {
       q: "Will it tarnish?",
-      a: `It is ${finish.toLowerCase()}${steel ? " on surgical stainless steel" : ""}${
+      a: `It is ${finishInSentence}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
       }, and the finish is covered by our 2-year plating assurance.`,
     },
@@ -1070,7 +1074,7 @@ const JewelDetailNext = () => {
               </Button>
               {!isPreorder && (
                 <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale col-start-1 row-start-1 h-[50px] w-full border-nf-ink bg-transparent px-2 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
-                  {buying ? "Opening checkout…" : "Buy Now"}
+                  {buying ? "Opening checkout…" : <>Buy Now<UpiBadges size={16} /></>}
                 </Button>
               )}
               {false && (
@@ -1188,15 +1192,16 @@ const JewelDetailNext = () => {
               </details>
             </div>
 
-            {/* A second piece, one tap from the bag: the bag's ladder takes 10%
-                off two pieces and 20% off three. */}
+            {/* A second piece, one tap from the bag. The label is the ladder's
+                first rung, read from promo.ts, so it always quotes what the bag
+                takes off two pieces. */}
             {pairings.length > 0 && (
               <section className="mt-10" aria-labelledby="complete-the-look">
                 <div className="flex items-end justify-between gap-3">
                   <h2 id="complete-the-look" className="font-cormorant text-[18px] leading-none text-nf-ink">
                     {isSetRow(piece, pairings) ? "Complete the set" : "Complete the look"}
                   </h2>
-                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">2 pieces · 10% off</p>
+                  <p className="font-nf-label text-[9.5px] uppercase tracking-nf-16 text-nf-gold-text">{QUANTITY_OFFERS[0].minQuantity} pieces · {Math.round(QUANTITY_OFFERS[0].rate * 100)}% off</p>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   {pairings.map((p) => (
@@ -1264,9 +1269,11 @@ const JewelDetailNext = () => {
         >
           {heart}
         </Button>
+        {/* Under 300px (a fold's cover screen) the badge sits under the
+            label: side by side they need 105px and the button has 97. */}
         {!isPreorder && (
-          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5">
-            {buying ? "Opening…" : "Buy Now"}
+          <Button variant="outline" onClick={handleBuyNow} disabled={cartLoading || buying} className="press-scale h-[48px] min-w-0 flex-1 border-nf-ink/40 bg-transparent px-2 font-nf-label text-[11px] uppercase tracking-nf-8 text-nf-ink hover:bg-nf-ink/5 max-[299px]:flex-col max-[299px]:gap-1">
+            {buying ? "Opening…" : <>Buy Now<UpiBadges size={15} /></>}
           </Button>
         )}
         <Button

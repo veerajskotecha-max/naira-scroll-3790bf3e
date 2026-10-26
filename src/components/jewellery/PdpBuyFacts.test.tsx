@@ -10,8 +10,8 @@ describe("PdpBuyFacts", () => {
      OfferProgress.test.tsx if promo.ts moves without the Shopify codes. */
   it("states both rungs of the multi-buy ladder", () => {
     render(<PdpBuyFacts arrivesBy="Thu, 1 Oct" />);
-    expect(screen.getByText("Buy 2, save 10%")).toBeTruthy();
-    expect(screen.getByText("Buy 3, save 20%")).toBeTruthy();
+    expect(screen.getByText("Buy 2, save 15%")).toBeTruthy();
+    expect(screen.getByText("Buy 3, save 25%")).toBeTruthy();
   });
 
   /* The owner keeps the COD fee off the product page; the bag states it in

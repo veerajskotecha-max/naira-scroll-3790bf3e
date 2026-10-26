@@ -113,6 +113,25 @@ const PieceCard = ({
   </div>
 );
 
+/* The bag's one reassurance, and the only one it keeps: the way back is as
+   easy as the way in. It sits under the button — after the decision, so it
+   reads as the reason to press it rather than as another term to get through. */
+export const BagReturns = ({
+  onLeave,
+}: {
+  onLeave?: (e: MouseEvent<HTMLAnchorElement>) => void;
+}) => (
+  <Link
+    to="/exchange-return-policy"
+    onClick={onLeave}
+    data-returns
+    className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
+  >
+    <Undo2 size={12} strokeWidth={1.6} className="text-nf-gold-text" aria-hidden="true" />
+    Easy 7-day exchange &amp; returns
+  </Link>
+);
+
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
    once reached, and the offer spelt out under it. */
 export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {

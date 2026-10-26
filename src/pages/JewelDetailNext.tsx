@@ -13,7 +13,11 @@ import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
-import { useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { useQuery } from "@tanstack/react-query";
+import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
+import { fetchShopifyProductByHandle } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import { reelForPiece, useReels } from "@/hooks/useReels";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -261,8 +265,29 @@ const JewelDetailNext = () => {
   const hrefFor = useCallback((h: string) => (inPreview ? previewProductPath(h) : `/jewellery/${h}`), [inPreview]);
   const { jewellery, isLive, isLoading: catalogueLoading } = useLiveJewellery();
   const embedded = useMemo(() => readEmbeddedPiece(handle), [handle]);
+  /* Known to this build: pre-built into the page, bundled, or in the snapshot. */
+  const builtIn =
+    Boolean(embedded) || JEWELLERY_HANDLES.has(handle ?? "") || jewellery.some((j) => j.handle === handle);
+  /* A piece listed after the last Publish is in none of those, and its link
+     used to wait for the whole catalogue (430 KB) to find it. Ask Shopify for
+     that one piece (about 1 KB) at once instead. The key is ProductDetail's,
+     so a catalogue ad's hop from /products/<handle> reuses the answer. */
+  const lookup = useQuery({
+    queryKey: ["shopify-product", handle],
+    queryFn: () => fetchShopifyProductByHandle(handle ?? ""),
+    enabled: Boolean(handle) && !isLive && !builtIn,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  });
+  const lookedUp = useMemo(
+    () => (lookup.data && isJewelleryProduct(lookup.data) ? fromShopify(lookup.data, 0) : undefined),
+    [lookup.data],
+  );
+  /* Shopify has answered: there is no such jewellery piece. */
+  const lookupMissing = lookup.isSuccess && !lookedUp;
   const [snapshot, setSnapshot] = useState<JewelPiece[] | null>(null);
-  const needSnapshot = !isLive && !embedded && !jewellery.some((j) => j.handle === handle);
+  /* The snapshot only helps a piece it holds. */
+  const needSnapshot = !isLive && !embedded && JEWELLERY_HANDLES.has(handle ?? "") && !jewellery.some((j) => j.handle === handle);
   useEffect(() => {
     if (!needSnapshot || snapshot) return;
     let cancelled = false;
@@ -277,15 +302,17 @@ const JewelDetailNext = () => {
     () =>
       presentJewellery(isLive
         ? jewellery.find((j) => j.handle === handle)
-        : embedded?.piece ?? jewellery.find((j) => j.handle === handle) ?? snapshot?.find((j) => j.handle === handle)),
-    [handle, jewellery, isLive, embedded, snapshot],
+        : embedded?.piece ?? jewellery.find((j) => j.handle === handle) ?? snapshot?.find((j) => j.handle === handle) ?? lookedUp),
+    [handle, jewellery, isLive, embedded, snapshot, lookedUp],
   );
   const snapshotPending = needSnapshot && snapshot === null;
   useEffect(() => {
-    if (!piece && !catalogueLoading && !snapshotPending) {
+    if (piece) return;
+    if (lookupMissing) reportShopperPerformance("missing_product");
+    else if (!catalogueLoading && !snapshotPending && !lookup.isLoading) {
       reportShopperPerformance(isLive ? "missing_product" : "product_load_error");
     }
-  }, [piece, catalogueLoading, snapshotPending, isLive, handle]);
+  }, [piece, lookupMissing, catalogueLoading, snapshotPending, lookup.isLoading, isLive, handle]);
   const isMobile = useIsMobile();
   const { toggleItem, isWishlisted } = useWishlist();
   const { addItem, buyNow, setDrawerOpen, isDrawerOpen, isLoading: cartLoading } = useCart();
@@ -517,9 +544,10 @@ const JewelDetailNext = () => {
   const pairings = useMemo(() => (piece ? completeTheLook(piece, jewellery, 3) : []), [piece, jewellery]);
   const similar = useMemo(() => (piece ? moreLikeThis(piece, jewellery, 8) : []), [piece, jewellery]);
 
-  /* Wait for the catalogue before calling a handle missing (see JewelDetail.tsx). */
+  /* Wait for the catalogue before calling a handle missing (see JewelDetail.tsx),
+     unless Shopify has already said this one piece does not exist. */
   if (!piece) {
-    if (catalogueLoading || snapshotPending) return <JewelDetailSkeleton />;
+    if (!lookupMissing && (catalogueLoading || snapshotPending || lookup.isLoading)) return <JewelDetailSkeleton />;
     return <Navigate to="/jewellery" replace />;
   }
 

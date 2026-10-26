@@ -22,6 +22,7 @@ import { resolve, join } from "path";
 import { chromium, type Browser } from "playwright";
 import { resolveSiteRoutes, type SiteRoute } from "./routes";
 import { productAliasFor, withAliasRedirect } from "../src/lib/productAlias";
+import { withFallbackGuard } from "../src/lib/fallbackGuard";
 import { dropUnusedImagePreloads } from "../src/lib/unusedPreloads";
 import { keepOnlyRoutePreloads, staticClosure, type ViteManifest } from "../src/lib/routePreloads";
 import { routeKeyFor } from "../src/lib/routeCode";
@@ -420,7 +421,11 @@ async function main() {
       previews += 1;
     }
     if (previews) console.log(`prerender: ${previews} preview page(s) given the SPA shell`);
-    if (capturedHome) writeFileSync(SHELL_FILE, capturedHome, "utf8");
+    /* The homepage file also answers every address with no file of its own,
+       above all a piece listed after this Publish: the guard keeps the
+       homepage off screen there until the app draws the right page (see
+       src/lib/fallbackGuard.ts). */
+    if (capturedHome) writeFileSync(SHELL_FILE, withFallbackGuard(capturedHome), "utf8");
 
     /* Catalogue ads link to /products/<handle>, which had no page of its own:
        the host answered with the homepage and the phone rebuilt the product in

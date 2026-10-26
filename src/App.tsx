@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -16,6 +16,7 @@ import ShopperPerformance from "./components/ShopperPerformance";
 // A route whose code fails to arrive is thrown while rendering; without this the
 // whole tree unmounts and the shopper sits on a blank page. See the component.
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
+import { clearFallbackMark } from "./lib/fallbackGuard";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
 // a flash on first paint (film grain, page curtain, scroll bloom).
 import FilmGrain from "./components/wow/FilmGrain";
@@ -92,6 +93,10 @@ const Bag = () => (
 
 const AppShell = () => {
   useCartSync();
+  /* The app's first render replaced whatever the host sent: if that was the
+     homepage standing in for a page it had no file for, it was hidden, and
+     the page is on screen now (lib/fallbackGuard.ts). */
+  useLayoutEffect(clearFallbackMark, []);
 
   return (
     <>

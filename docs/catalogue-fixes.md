@@ -650,9 +650,21 @@ note on how PVD differs from regular plating, and anti-tarnish.
   - Drafts Duet of Dawn, Trio Bloom and Pearl Crossover may be open rings.
     Confirm before they go live.
   - Closed rings with one stock show US 6 in stock and US 5 and 7 as
-    pre-orders. But the size guides for Chevron Whisper and Pearl Ribbon say
-    US 7 (17.3 mm inside), and Whisper Pavé's says 17 mm (about US 6½).
-    Vintage Halo's (16.5 mm, US 6) agrees. Which size are those three?
+    pre-orders. The size guides for Chevron Whisper and Pearl Ribbon said
+    US 7 (17.3 mm inside), and Whisper Pavé's 17 mm (about US 6½).
+- **The owner, 26 Oct: those three are US 6; other sizes on pre-order.**
+  - New size guides at 16.5 mm with US 6 marked: "US 6 · 16.5 mm inside ·
+    US 5 and 7 on pre-order" (`render10.mjs`). Each replaced the old file
+    in place, so it stays the last photo. Vintage Halo, already US 6, got
+    the same card.
+  - Descriptions: "Made in US size 6, about 16.5mm inside", and the Details
+    line "Size: US 6, inner diameter approximately 16.5mm. US 5 and 7 on
+    pre-order" on all four.
+  - All eight changes went out in one call and read back as written.
+    Before-state: `docs/backups/closed-rings-before-us6-2026-10-26.json`.
+  - Site (main 7fa32e5): the bundled copy of Chevron Whisper and Pearl
+    Ribbon and the snapshot match. The page already sold US 6 in stock with
+    US 5 and 7 on pre-order.
 
 ## 26 October — size guides for the listings that had none
 

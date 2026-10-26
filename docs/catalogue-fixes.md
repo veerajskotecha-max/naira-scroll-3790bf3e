@@ -676,17 +676,27 @@ note on how PVD differs from regular plating, and anti-tarnish.
   - Checked by export: each has exactly one size guide, and it is last; the
     five edited descriptions match exactly.
   - Before-state: `docs/backups/size-charts-before-2026-10-26.json`.
+- **Pieces published later today (11:40 to 12:41 UTC):**
+  - Sorbet Rivière Bracelet (17 cm, fits about 14.5–15.5 cm) and Prism Pear
+    Drop Hoops (21 mm long, 8.5 mm huggie): right cards already in Files and
+    in the Details; now attached as the last photo.
+  - Prism Pear Drop Necklace: new card, pendant 12 mm long, stones 3.5 mm
+    (`specs-ppd.json`, `render-ppd.mjs`); attached last and added to the
+    Details.
+  - Cushion Solitaire Ring already had its guide.
+- **Checked by export at 13:40:** 102 of the 124 live jewellery listings end
+  on their size guide; none is out of place and none has two.
 - **Not attached: Molten Panel Bangle.** Its card in Files shows a 17 cm
   flexible bracelet. The listing now says it is a rigid bangle and gives no
   length.
-- **Waiting on the owner's measurements (21):**
+- **Waiting on the owner's measurements (22):**
   - **Necklaces** (chain length, plus extender if any): Heartline Paperclip,
     Pearl Legacy, Baroque Pearl Lariat, Lumière Oval, Pearl Heart Layered
     (both strands).
   - **Bracelets** (length, or inside width for a cuff or bangle): Clover
     Chain, Clover Station, Heartbead, Lumière Oval, Marquise Coil Cuff,
-    Molten Panel Bangle, Tile Stone Bangle, Triple Dawn Cuff, Watch Link
-    Bangle.
+    Molten Panel Bangle, Open Heart Layered, Tile Stone Bangle, Triple Dawn
+    Cuff, Watch Link Bangle.
   - **Earrings** (height and width): Baguette Halo Drops, Pearl Circlet
     Studs, Petite Bow Studs, Petite Square Huggies, Prism Cluster Studs,
     Verdant Cushion Studs.
@@ -729,12 +739,26 @@ note on how PVD differs from regular plating, and anti-tarnish.
   | `/jewellery/<no such piece>` | homepage 1.2–2.1 s; shop at 4.40 s | outline; shop at 3.53 s |
   | A pre-built piece, and the homepage | unchanged | unchanged |
 
-  - The direct link takes about as long as before: the wait is the app's
-    start-up and one Shopify round trip. What changed is that the homepage
-    no longer shows.
+  - On the slow phone the direct link takes about as long as before: the
+    wait is the app's start-up and one Shopify round trip. What changed is
+    that the homepage no longer shows.
+  - On a fast connection with no throttling the direct link drew the piece
+    at 0.87 s instead of 1.70 s, and the catalogue-ad link at 1.00 s
+    instead of 1.63 s. There the whole catalogue had been the wait.
   - Frames: `docs/images/new-listing-2026-10-26/before-after-phone4g.jpg`.
     Tools: `shopify/harness/new-listing-serve.mjs`,
     `new-listing-timing.mjs` and `new-listing-sheet.py`.
 - **Checks:** 452 unit tests pass (20 new for the guard), the type check is
   clean, and the build pre-renders every route. The one lint error and one
   warning in `JewelDetailNext.tsx` were there before.
+- **Seen live, 13:00:** five pieces published between 11:40 and 12:41
+  (Cushion Solitaire Ring, Open Heart Layered Bracelet, Prism Pear Drop
+  Hoops and Necklace, Sorbet Rivière Bracelet) got the homepage from
+  nairaflore.com. The live site was then at 9e8a44a, without this fix.
+- **First-paint data (main 5ca6a90):** snapshot, handle list, sitemap and
+  `llms.txt` regenerated from Shopify: 124 live pieces. Seven came in (the
+  five above, Bougainvillea Vine Bracelet and Watch Link Bangle). Petite
+  Blossom Bracelet, now a draft, went out. The adjustable rings' first
+  paint carries the Adjustable tag and the US 5 to 9 copy.
+- **For the owner:** Lovable → Publish → Update. That pre-builds pages for
+  the new pieces and puts the fix live for every piece listed after it.

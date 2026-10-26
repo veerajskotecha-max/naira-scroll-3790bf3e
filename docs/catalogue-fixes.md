@@ -692,3 +692,49 @@ note on how PVD differs from regular plating, and anti-tarnish.
     Verdant Cushion Studs.
   - **Ring:** Lilac Papillon (inside diameter or US size). The supplier sheet
     has no size for it.
+
+## 26 October — links to new listings opened on the homepage first
+
+- **Asked:** a newly listed piece's link used to show the homepage before
+  the piece. Make sure it is fixed for every product and for future
+  listings.
+- **Today:** all 119 live jewellery listings have their own pre-built page
+  on nairaflore.com (checked one by one). So no current link shows the
+  homepage first; the gap is a piece listed between two Publishes.
+- **Why it happened:** a Publish pre-builds a page for each piece live at
+  that moment. A later piece has no page, so the host sends `index.html`,
+  which is the pre-built homepage. The app replaces it only once its code
+  has loaded and started.
+- **Fix (main 1ab4651; live after Publish → Update):**
+  - `index.html` now opens with a small script and style
+    (`src/lib/fallbackGuard.ts`, added by `scripts/prerender.ts`). On any
+    address but the homepage it hides the homepage and draws the product
+    page's outline until the app's first render (`App.tsx` takes it off).
+    It removes itself after 10 s whatever happens.
+  - When the build does not know a piece, the product page asks Shopify for
+    that one piece instead of waiting for the whole catalogue. A handle
+    Shopify does not have goes straight to the shop.
+  - A `/products/<handle>` link (catalogue ads) fetches the product page's
+    code at once, so the hop to `/jewellery/<handle>` does not wait for it.
+  - Nothing to do per listing. A Publish still pre-builds a new piece's
+    page, which stays the fastest way in.
+- **Measured:** a local build of each version, served the way the live host
+  serves it, with Watch Link standing in for a new listing. iPhone 13 on 4G
+  with a 4× slower CPU; median of 3 cold loads each.
+
+  | Link | Before | After |
+  |---|---|---|
+  | `/jewellery/<new piece>` | homepage 1.1–2.0 s; piece at 3.01 s | outline from first paint (0.7 s); piece at 3.05 s |
+  | `/products/<new piece>` (catalogue ad) | homepage 1.1–1.8 s; piece at 3.50 s | outline; piece at 2.76 s |
+  | `/jewellery/<no such piece>` | homepage 1.2–2.1 s; shop at 4.40 s | outline; shop at 3.53 s |
+  | A pre-built piece, and the homepage | unchanged | unchanged |
+
+  - The direct link takes about as long as before: the wait is the app's
+    start-up and one Shopify round trip. What changed is that the homepage
+    no longer shows.
+  - Frames: `docs/images/new-listing-2026-10-26/before-after-phone4g.jpg`.
+    Tools: `shopify/harness/new-listing-serve.mjs`,
+    `new-listing-timing.mjs` and `new-listing-sheet.py`.
+- **Checks:** 452 unit tests pass (20 new for the guard), the type check is
+  clean, and the build pre-renders every route. The one lint error and one
+  warning in `JewelDetailNext.tsx` were there before.

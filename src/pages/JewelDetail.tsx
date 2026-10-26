@@ -17,7 +17,7 @@ import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { isAdjustableRing, adjustableFitNote, adjustableSizes, CLOSED_RING_SIZES, stockedSize } from "@/data/ringFit";
+import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import PressMarquee from "@/components/jewellery/PressMarquee";
@@ -58,13 +58,17 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
 };
 
 
+/* A closed ring is stocked in US 6; US 5 and 7 are a pre-order. */
+const closedRingSizes: { value: string; status: "available" | "preorder" }[] = [
+  { value: "5", status: "preorder" },
+  { value: "6", status: "available" },
+  { value: "7", status: "preorder" },
+];
+
 /** Size list for a specific ring: open-back styles adjust to fit, so every
-    size button reads as available — never pre-order, never out of stock. A
-    closed ring ships now in the size it is stocked in; its others are a pre-order. */
+    size button reads as available — never pre-order, never out of stock. */
 const ringSizesFor = (handle?: string): { value: string; status: "available" | "preorder" }[] =>
-  isAdjustableRing(handle)
-    ? adjustableSizes(handle).map((value) => ({ value, status: "available" }))
-    : CLOSED_RING_SIZES.map((value) => ({ value, status: value === stockedSize(handle) ? "available" : "preorder" }));
+  isAdjustableRing(handle) ? adjustableSizes(handle).map((value) => ({ value, status: "available" })) : closedRingSizes;
 
 
 /* Shown only while the Shopify catalogue is still in flight and the handle
@@ -201,7 +205,7 @@ const JewelDetail = () => {
     return embedded?.piece.name === pieceName ? embedded.rating : null;
   }, [pieceName, reviewWall, embedded]);
   useEffect(() => {
-    setSelectedSize(sizedCategory ? stockedSize(piece?.handle) : "One Size");
+    setSelectedSize(sizedCategory ? "6" : "One Size");
   }, [sizedCategory, piece?.handle]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
 
@@ -841,8 +845,8 @@ const JewelDetail = () => {
                   <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
                     {adjustable
                       ? `US ${selectedSize} is in stock and ships now. ${adjustableFitNote(piece.handle)}`
-                      : selectedSize === stockedSize(piece.handle)
-                        ? `US ${selectedSize} is in stock and ships now.`
+                      : selectedSize === "6"
+                        ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order — 45 days delivery.`}
                     {" "}
                     <button

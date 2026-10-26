@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ADJUSTABLE_FIT_NOTE, adjustableFitNote, adjustableSizes, isAdjustableRing, stockedSize } from "./ringFit";
+import { ADJUSTABLE_FIT_NOTE, adjustableFitNote, adjustableSizes, isAdjustableRing } from "./ringFit";
 
 describe("adjustable rings", () => {
   /* The owner, 25 Oct 2026: every adjustable ring fits US 5 to 9. */
@@ -55,18 +55,5 @@ describe("adjustable rings", () => {
     expect(isAdjustableRing("star-point-band")).toBe(false);
     expect(isAdjustableRing("vintage-halo-ring")).toBe(false);
     expect(isAdjustableRing({ handle: "pearl-ribbon-ring", tags: ["Ring", "Pearl"] })).toBe(false);
-  });
-});
-
-describe("closed rings", () => {
-  /* Their Shopify copy: "Made in a fixed US size 7". */
-  it("stocks Chevron Whisper and Pearl Ribbon in US 7", () => {
-    expect(stockedSize("chevron-whisper-ring")).toBe("7");
-    expect(stockedSize("pearl-ribbon-ring")).toBe("7");
-  });
-
-  it("stocks the other closed rings in US 6", () => {
-    expect(stockedSize("vintage-halo-ring")).toBe("6");
-    expect(stockedSize()).toBe("6");
   });
 });

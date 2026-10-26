@@ -61,17 +61,3 @@ export const adjustableFitNote = (handle?: string) => {
 };
 
 export const ADJUSTABLE_FIT_NOTE = adjustableFitNote();
-
-/** The US sizes a closed ring sold as one Shopify variant is listed in: the
-    size in stock ships now, and the others are a pre-order. */
-export const CLOSED_RING_SIZES = ["5", "6", "7"];
-
-/** Closed rings stocked in a size other than US 6. Their Shopify copy:
-    "Made in a fixed US size 7". */
-const STOCKED_SIZE: Record<string, string> = {
-  "chevron-whisper-ring": "7",
-  "pearl-ribbon-ring": "7",
-};
-
-/** The US size a closed ring is in stock in. */
-export const stockedSize = (handle?: string): string => (handle && STOCKED_SIZE[handle]) || "6";

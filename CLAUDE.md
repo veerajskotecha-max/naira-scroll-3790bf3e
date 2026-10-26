@@ -292,10 +292,9 @@ A new piece named "… Nocturne …" joins its set with no code change. A one-ta
 Add never takes a pre-order piece, and a ring sized to the finger gets "Choose
 size" (its own page) instead of a silent US 6; open-back rings
 (`isAdjustableRing`: the list, or Shopify's "Adjustable" tag) fit US 5–9 and
-are added. A closed ring's page opens on the size it is stocked in
-(`stockedSize`: US 7 for Chevron Whisper and Pearl Ribbon, else US 6), and its
-other sizes are pre-orders. `shopify/harness/pdplinks.mjs` on the harness
-branch opens every product page and checks each link.
+are added. A closed ring's page opens on US 6, the size every closed ring is
+stocked in, and US 5 and 7 are pre-orders. `shopify/harness/pdplinks.mjs` on
+the harness branch opens every product page and checks each link.
 - Clarity events, via `clarityEvent()`: bag_opened, bag_closed, bag_pair_shown,
   bag_pair_added, bag_gift_opened, bag_promo_opened, bag_empty_added,
   bag_checkout_tapped. Count Checkout taps per bag opened, not per bag-add: an

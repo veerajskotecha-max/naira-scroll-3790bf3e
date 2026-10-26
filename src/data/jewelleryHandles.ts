@@ -20,7 +20,7 @@
 
    keeping vendor "Naira Petite" and status ACTIVE.
 
-   Last regenerated 2026-10-26 against the live store: 119 pieces. */
+   Last regenerated 2026-10-26 against the live store: 123 pieces. */
 export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "aqua-heart-drops-silver",
   "asscher-solitaire-ring",
@@ -56,6 +56,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "crystal-baguette-eternity-ring",
   "crystal-pear-ear-cuff",
   "cushion-halo-ring",
+  "cushion-solitaire-ring",
   "dewdrop-bezel-necklace",
   "droplet-open-cuff",
   "droplet-open-ring",
@@ -88,6 +89,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "molten-panel-bracelet",
   "molten-wave-ear-cuff",
   "north-star-bangle",
+  "open-heart-layered-bracelet",
   "pave-zigzag-ring",
   "pear-point-open-cuff",
   "pearl-blossom-earrings",
@@ -105,6 +107,8 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "petite-pearl-chain",
   "petite-square-huggies",
   "prism-cluster-studs-silver",
+  "prism-pear-drop-hoops",
+  "prism-pear-drop-necklace",
   "prism-riviere-bracelet",
   "quatrefoil-eclat-studs",
   "ribbon-bead-bracelet",

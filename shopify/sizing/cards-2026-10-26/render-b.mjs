@@ -1,4 +1,4 @@
-// Renders specs.json (type B, explicit marks) with the shared card template to <id>-size-guide.jpg,
+// Renders specs-b.json (type B, explicit marks) with the shared card template to <id>-size-guide.jpg,
 // as shopify/sizing/cards-2026-10-22/render3.mjs. Usage: node render.mjs [id ...]
 import { chromium } from '/home/user/naira-scroll-3790bf3e/node_modules/playwright/index.mjs';
 import { readFileSync } from 'node:fs';

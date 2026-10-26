@@ -181,5 +181,5 @@ for c in CARDS:
     s, i = build(c)
     specs.append(s)
     infos[s['id']] = i
-json.dump(specs, open(f'{OUT}/specs.json', 'w'), indent=1, ensure_ascii=False)
+json.dump(specs, open(f'{OUT}/specs-b.json', 'w'), indent=1, ensure_ascii=False)
 print(json.dumps(infos, indent=1))

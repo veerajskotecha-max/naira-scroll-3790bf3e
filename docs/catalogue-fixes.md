@@ -618,3 +618,77 @@ note on how PVD differs from regular plating, and anti-tarnish.
     the badge sits under the label there.
   - Screenshots: `docs/images/upi-badge-2026-10-25/`; the check is
     `shopify/harness/upi-badge-phones.mjs`.
+
+## 26 October — every adjustable ring fits US 5 to 9
+
+- **Asked:** some adjustable rings showed only pre-order on the site; every
+  adjustable ring fits US 5 to 9; stock to show properly on the site and in
+  Shopify.
+- **Why three showed pre-order:** the site decided "adjustable" from a list of
+  handles kept in the code. Asscher Solitaire, Lumière Oval Solitaire and Pavé
+  Zigzag were tagged Adjustable in Shopify but missing from it, so their pages
+  sold US 6 with US 5 and 7 as pre-orders.
+- **Site (main 4426bfd; live after Publish → Update):**
+  - Shopify's "Adjustable" tag now decides, so a new adjustable listing needs
+    no code change. The list stays only so first paint agrees.
+  - Every adjustable ring offers US 5, 6, 7, 8 and 9, all ready to ship.
+  - The rings collection, its FAQ and the search copy say US 5 to 9.
+- **Shopify, all 14 adjustable rings:**
+  - Tagged Adjustable; copy says the open back adjusts to fit US 5 to 9.
+  - Size guides re-rendered with US 5–9 marked
+    (`shopify/sizing/cards-2026-10-26/render8.mjs`). The four Aditya rings
+    had none in their gallery; theirs went in as the last photo.
+  - Stock unchanged, one stock per ring; the size picked rides on the order
+    line: Cushion Halo 60, Verdant Eternity 60, Halo Curve 45, Droplet Open
+    20 (10 Gold, 10 Silver), Golden Duet 9, Granule Dome 4, Pavé Dome 4,
+    Petite Pavé 4, Pavé Zigzag 4, Blush Cluster 3, Asscher Solitaire 3,
+    Lumière Oval Solitaire 3, Rose Verdant 1, and Cushion Solitaire 5 (draft).
+  - Cushion Halo was US 5 to 7; it is now 5 to 9 like the rest.
+  - Checked by export: all 14 exact. Before-state:
+    `docs/backups/adjustable-rings-before-us5to9-2026-10-26.jsonl`.
+- **For the owner:**
+  - Drafts Duet of Dawn, Trio Bloom and Pearl Crossover may be open rings.
+    Confirm before they go live.
+  - Closed rings with one stock show US 6 in stock and US 5 and 7 as
+    pre-orders. But the size guides for Chevron Whisper and Pearl Ribbon say
+    US 7 (17.3 mm inside), and Whisper Pavé's says 17 mm (about US 6½).
+    Vintage Halo's (16.5 mm, US 6) agrees. Which size are those three?
+
+## 26 October — size guides for the listings that had none
+
+- **Found:** 30 live listings had no size guide in their photos.
+- **Done, nine listings, each with its guide as the last photo:**
+  - **Prism Rivière Bracelet:** 18 cm, fits wrists 15 to 19 cm (the owner).
+    - The card in Files said 15.5–16.5 cm and was never attached. It was
+      replaced in place and attached.
+    - Details gained "Fit: Wrists of 15 to 19cm". Its Details image link now
+      carries the new version.
+  - **Bougainvillea Vine Bracelet, Clover Drop Earrings, Twin Heart Studs,
+    Molten Wave Ear Cuff:** right cards already in Files and in the Details,
+    never added as a photo. Now attached.
+  - **New cards** for Rivière Hoops — Silver, Clover Drop Pendant Necklace,
+    Bow Pear Drop Necklace and Twin Heart Necklace:
+    - the listing's own photo with its listed sizes marked and a 10 mm bar;
+    - every figure as in the listing's Details;
+    - attached last, and added to the Details.
+    - Files: `shopify/sizing/cards-2026-10-26/` (`bspec.py`,
+      `specs-b.json`, `render-b.mjs`).
+  - Checked by export: each has exactly one size guide, and it is last; the
+    five edited descriptions match exactly.
+  - Before-state: `docs/backups/size-charts-before-2026-10-26.json`.
+- **Not attached: Molten Panel Bangle.** Its card in Files shows a 17 cm
+  flexible bracelet. The listing now says it is a rigid bangle and gives no
+  length.
+- **Waiting on the owner's measurements (21):**
+  - **Necklaces** (chain length, plus extender if any): Heartline Paperclip,
+    Pearl Legacy, Baroque Pearl Lariat, Lumière Oval, Pearl Heart Layered
+    (both strands).
+  - **Bracelets** (length, or inside width for a cuff or bangle): Clover
+    Chain, Clover Station, Heartbead, Lumière Oval, Marquise Coil Cuff,
+    Molten Panel Bangle, Tile Stone Bangle, Triple Dawn Cuff, Watch Link
+    Bangle.
+  - **Earrings** (height and width): Baguette Halo Drops, Pearl Circlet
+    Studs, Petite Bow Studs, Petite Square Huggies, Prism Cluster Studs,
+    Verdant Cushion Studs.
+  - **Ring:** Lilac Papillon (inside diameter or US size). The supplier sheet
+    has no size for it.

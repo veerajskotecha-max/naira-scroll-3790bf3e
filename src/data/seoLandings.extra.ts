@@ -512,7 +512,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         q: "Do statement rings come in larger sizes?",
-        a: "We make US 5 to 8. Wide faces run slightly snug, so if you are between sizes on a cocktail ring, size up.",
+        a: "Our open-back rings adjust to fit US 5 to 9, and sized rings come in US 5 to 8. Wide faces run slightly snug, so if you are between sizes on a sized cocktail ring, size up.",
       },
       {
         q: "Are these rings heavy?",

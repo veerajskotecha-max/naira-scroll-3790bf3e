@@ -42,12 +42,12 @@ export const categoryLandings: CategoryLanding[] = [
     kicker: "NAIRA PETITE · RINGS",
     metaTitle: "Zircone Rings for Women, 18K Gold Finished | Naira Flore",
     metaDescription:
-      "Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–8. Anti-tarnish, waterproof-sealed.",
-    lead: "Hand-set brilliant-cut zircone in a sealed 18K gold finish. US 5 to 8, hand-set at our atelier.",
+      "Hand-set brilliant-cut zircone rings in 18K gold and rhodium finish. Solitaire, halo, eternity and toi-et-moi styles in US sizes 5–9. Anti-tarnish, waterproof-sealed.",
+    lead: "Hand-set brilliant-cut zircone in a sealed 18K gold finish. US 5 to 9, hand-set at our atelier.",
     intro: [
       "A ring is the piece people see first. Ours are cut and set the way fine jewellery is, a brilliant-cut zircone held in real prongs, a band filed thin enough to sit flush against the finger, and an 18K gold or rhodium finish sealed against water and daily wear.",
       "Naira Petite rings run from a single-stone solitaire to a full pavé eternity. Every piece is hand-set at our atelier and finished to the same tolerances we use on our couture embroidery, nothing leaves until the stones sit level under light.",
-      "Sizes run US 5 (4.9 cm inner circumference) through US 8 (5.7 cm). If you are between sizes, message the atelier and we will guide you before the piece is made.",
+      "Sizes run US 5 (4.9 cm inner circumference) through US 8 (5.7 cm), and our open-back rings adjust up to US 9 (6.0 cm). If you are between sizes, message the atelier and we will guide you before the piece is made.",
     ],
     bullets: [
       {

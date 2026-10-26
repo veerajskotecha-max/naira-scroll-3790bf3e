@@ -1,10 +1,17 @@
 /**
  * Rings that adjust to fit, so one piece covers a range of US sizes: each has
  * an open back, a small gap between the two ends of the band that can be
- * gently squeezed or eased open. Verified against the live Shopify photography,
- * the supplier's photos and listing copy for every ring in the catalogue —
- * closed bands are omitted here and stay strictly sized. The owner set the
- * range at US 5–8 on 23 Oct 2026; a ring with its own range is in OWN_FIT.
+ * gently squeezed or eased open. Closed bands stay strictly sized.
+ *
+ * Shopify decides: a ring tagged "Adjustable" is adjustable, so a new listing
+ * needs no code change (Asscher Solitaire, Lumière Oval Solitaire and Pavé
+ * Zigzag were tagged but missing from this list, and their pages sold US 5
+ * and 7 as pre-orders). The list below keeps the first paint, drawn from the
+ * bundled snapshot, in agreement before live data arrives.
+ *
+ * Every adjustable ring fits US 5 to 9 (the owner, 25 Oct 2026; it was 5 to
+ * 8, and Cushion Halo 5 to 7). One stock per ring: the size rides on the
+ * order as a note, not as a variant.
  */
 export const ADJUSTABLE_RING_HANDLES = new Set<string>([
   "rose-verdant-band",
@@ -21,19 +28,28 @@ export const ADJUSTABLE_RING_HANDLES = new Set<string>([
   "blush-cluster-ring",
   // An open toi et moi ring; the owner, 24 Oct 2026: one adjustable stock, not US 6, 7 and 8.
   "golden-duet-ring",
+  // Aditya's open rings, tagged Adjustable in Shopify.
+  "asscher-solitaire-ring",
+  "lumiere-oval-solitaire-ring",
+  "pave-zigzag-ring",
+  "cushion-solitaire-ring",
 ]);
 
-export const isAdjustableRing = (handle?: string): boolean =>
-  !!handle && ADJUSTABLE_RING_HANDLES.has(handle);
+/** A handle, or a piece whose Shopify tags can say it adjusts. */
+type Ring = string | { handle: string; tags?: string[] };
+
+export const isAdjustableRing = (ring?: Ring): boolean => {
+  if (!ring) return false;
+  if (typeof ring === "string") return ADJUSTABLE_RING_HANDLES.has(ring);
+  return ADJUSTABLE_RING_HANDLES.has(ring.handle) || (ring.tags ?? []).some((tag) => tag.trim().toLowerCase() === "adjustable");
+};
 
 /** The US sizes an adjustable ring is offered in, every one ready to ship. */
-export const ADJUSTABLE_SIZES = ["5", "6", "7", "8"];
+export const ADJUSTABLE_SIZES = ["5", "6", "7", "8", "9"];
 
-/** Adjustable rings with a narrower fit. The owner, 24 Oct 2026: the new 60
-    Cushion Halo Rings fit US 5 to 7. */
-const OWN_FIT: Record<string, string[]> = {
-  "cushion-halo-ring": ["5", "6", "7"],
-};
+/** Adjustable rings with a narrower fit, by handle. None at present: the
+    owner set every adjustable ring to US 5 to 9 on 25 Oct 2026. */
+const OWN_FIT: Record<string, string[]> = {};
 
 /** The US sizes an adjustable ring fits. */
 export const adjustableSizes = (handle?: string): string[] => (handle && OWN_FIT[handle]) || ADJUSTABLE_SIZES;

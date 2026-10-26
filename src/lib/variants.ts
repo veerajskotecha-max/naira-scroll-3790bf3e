@@ -108,7 +108,7 @@ export const sizeOption = (piece: JewelPiece) => choices(piece).find((o) => /siz
  */
 export const choiceNeeded = (piece: JewelPiece): "size" | "month" | null => {
   if (sizeOption(piece)) return "size";
-  if (piece.category === "Rings" && !isAdjustableRing(piece.handle)) return "size";
+  if (piece.category === "Rings" && !isAdjustableRing(piece)) return "size";
   if (choices(piece).some((o) => /month|birthstone/i.test(o.name))) return "month";
   return null;
 };

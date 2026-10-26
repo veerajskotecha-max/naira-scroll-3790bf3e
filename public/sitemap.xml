@@ -950,6 +950,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/blush-carre-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/sapphire-carre-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/champagne-carre-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/amethyst-carre-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/product/blush-of-dawn</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Jost'; font-weight: 300; src: url('../../fonts/Jost-Light.ttf'); }
+  @font-face { font-family: 'Jost'; font-weight: 400; src: url('../../fonts/Jost-Regular.ttf'); }
+  @font-face { font-family: 'Jost'; font-weight: 500; src: url('../../fonts/Jost-Medium.ttf'); }
+  @font-face { font-family: 'Velista'; src: url('../../fonts/Velista.ttf'); }
+  :root { --ivory: #F4EBE2; --ink: #1A1614; --gold: #9A7634; --muted: #6E655E; --sage: #99B4AF; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 1600px; background: var(--ivory); }
+  #card { position: relative; width: 1600px; height: 1600px; overflow: hidden; background: var(--ivory); font-family: 'Jost', sans-serif; color: var(--ink); }
+  .eyebrow { font-weight: 500; font-size: 26px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
+  .title { font-family: 'Velista', serif; font-size: 66px; line-height: 1.05; margin-top: 18px; color: var(--ink); }
+  .head { position: absolute; left: 260px; right: 260px; top: 84px; text-align: center; }
+  .foot { position: absolute; left: 160px; right: 160px; bottom: 150px; }
+  .caption { font-size: 52px; font-weight: 400; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .note { margin-top: 14px; font-size: 27px; font-weight: 300; color: var(--muted); }
+  .brand { position: absolute; right: 160px; bottom: 96px; font-weight: 500; font-size: 21px; letter-spacing: .32em; color: var(--gold); white-space: nowrap; }
+  .panel { position: absolute; left: 160px; right: 160px; top: 290px; height: 930px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .panel img { max-width: 100%; max-height: 100%; display: block; }
+  .bleed { position: absolute; inset: 0; }
+  .bleed img { position: absolute; }
+  .chip { position: absolute; left: 50%; transform: translateX(-50%); top: 84px; background: rgba(244, 235, 226, .9); padding: 18px 34px 16px; text-align: center; white-space: nowrap; }
+  .chip .title { font-size: 48px; margin-top: 10px; }
+  .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 360px; background: linear-gradient(to bottom, rgba(244,235,226,0), rgba(244,235,226,.92) 38%, rgba(244,235,226,1)); }
+  svg text { font-family: 'Jost', sans-serif; }
+</style>
+</head>
+<body>
+<div id="card"></div>
+<script>
+const SVGNS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs = {}, parent) => {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+const html = (s) => { const d = document.createElement('div'); d.innerHTML = s; return d.firstElementChild; };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function header(c, card) {
+  card.appendChild(html(`<div class="head"><div class="eyebrow">Size guide</div><div class="title">${esc(c.title)}</div></div>`));
+}
+function footer(c, card) {
+  card.appendChild(html(`<div class="foot"><div class="caption">${esc(c.caption)}</div><div class="note">${esc(c.note || 'Measurements are approximate, give or take 1 mm.')}</div></div>`));
+  card.appendChild(html('<div class="brand">NAIRA PETITE</div>'));
+}
+
+// A: the maker's measurement photo, cleaned, on a white panel.
+function cardA(c, card) {
+  header(c, card);
+  card.appendChild(html(`<div class="panel"><img src="${c.img}"></div>`));
+  footer(c, card);
+}
+
+// B: our own photo, full bleed, with the dimension marked and a 10 mm scale bar.
+function cardB(c, card) {
+  const k = 1600 / c.crop.size; // source px -> card px
+  const wrap = html(`<div class="bleed"><img src="${c.img}" style="left:${-c.crop.x0 * k}px; top:${-c.crop.y0 * k}px; width:${c.srcW * k}px; height:${c.srcH * k}px"></div>`);
+  card.appendChild(wrap);
+  const svg = el('svg', { width: 1600, height: 1600, viewBox: '0 0 1600 1600', style: 'position:absolute;inset:0' }, card);
+  const P = (x, y) => [(x - c.crop.x0) * k, (y - c.crop.y0) * k];
+  for (const m of c.marks) {
+    const [x1, y1] = P(m.x1, m.y1), [x2, y2] = P(m.x2, m.y2);
+    const vertical = Math.abs(x2 - x1) < Math.abs(y2 - y1);
+    const t = 22;
+    const g = el('g', { stroke: '#1A1614', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: .9 }, svg);
+    el('line', { x1, y1, x2, y2 }, g);
+    if (vertical) { el('line', { x1: x1 - t, y1, x2: x1 + t, y2: y1 }, g); el('line', { x1: x2 - t, y1: y2, x2: x2 + t, y2 }, g); }
+    else { el('line', { x1, y1: y1 - t, x2: x1, y2: y1 + t }, g); el('line', { x1: x2, y1: y2 - t, x2, y2: y2 + t }, g); }
+    // label pill beside the middle of the line
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    const w = 40 + m.label.length * 25, h = 74;
+    let lx, ly;
+    if (vertical && m.side === 'top') { lx = mx - w / 2; ly = Math.min(y1, y2) - 34 - h; }
+    else if (vertical) { lx = m.side === 'right' ? mx + 34 : mx - 34 - w; ly = my - h / 2; }
+    else { lx = mx - w / 2; ly = m.side === 'below' ? my + 34 : my - 34 - h; }
+    el('rect', { x: lx, y: ly, width: w, height: h, rx: h / 2, fill: '#F4EBE2', opacity: .94 }, svg);
+    const tx = el('text', { x: lx + w / 2, y: ly + h / 2 + 15, 'text-anchor': 'middle', 'font-size': 44, 'font-weight': 500, fill: '#1A1614' }, svg);
+    tx.textContent = m.label;
+  }
+  if (c.scale) {
+    const [sx, sy] = P(c.scale.x, c.scale.y);
+    const len = c.scale.pxPerMm * 10 * k;
+    const g = el('g', { stroke: '#9A7634', 'stroke-width': 4, 'stroke-linecap': 'square' }, svg);
+    el('line', { x1: sx, y1: sy, x2: sx + len, y2: sy }, g);
+    for (let i = 0; i <= 10; i++) el('line', { x1: sx + len * i / 10, y1: sy, x2: sx + len * i / 10, y2: sy - (i % 5 === 0 ? 26 : 14), 'stroke-width': i % 5 === 0 ? 4 : 2.5 }, g);
+    const tx = el('text', { x: sx + len / 2, y: sy + 46, 'text-anchor': 'middle', 'font-size': 32, 'font-weight': 500, fill: '#9A7634' }, svg);
+    tx.textContent = '10 mm';
+  }
+  card.appendChild(html('<div class="fade"></div>'));
+  card.appendChild(html(`<div class="chip"><div class="eyebrow">Size guide</div><div class="title">${esc(c.title)}</div></div>`));
+  footer(c, card);
+}
+
+// N: where a chain of this length sits on the body. A neck-and-shoulder outline;
+// each reference length drapes from the base of the neck, wider and lower as it
+// gets longer, the way a real chain falls. This piece's length is the gold line.
+function cardN(c, card) {
+  header(c, card);
+  const svg = el('svg', { width: 1600, height: 1600, viewBox: '0 0 1600 1600', style: 'position:absolute;inset:0' }, card);
+  const cx = 590, ny = 430, nh = 76;          // centre line, base of the neck, half neck width
+  const body = el('g', { fill: 'none', stroke: '#1A1614', 'stroke-width': 3, opacity: .45, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, svg);
+  // neck, trapezius slope, shoulder caps and the outside of the arms
+  for (const k of [-1, 1]) {
+    el('path', { d: `M ${cx + k * 68} 250 C ${cx + k * 70} 320, ${cx + k * 72} 380, ${cx + k * nh} ${ny}`
+      + ` C ${cx + k * 140} ${ny + 38}, ${cx + k * 300} ${ny + 56}, ${cx + k * 400} ${ny + 86}`
+      + ` C ${cx + k * 462} ${ny + 104}, ${cx + k * 486} ${ny + 160}, ${cx + k * 490} ${ny + 250}`
+      + ` L ${cx + k * 494} ${ny + 700}` }, body);
+    // collarbone
+    el('path', { d: `M ${cx + k * 34} ${ny + 70} C ${cx + k * 120} ${ny + 58}, ${cx + k * 220} ${ny + 66}, ${cx + k * 320} ${ny + 82}`, opacity: .7 }, body);
+  }
+  const cm = 22;                                // px per cm of chain below the neck
+  const drop = (L) => Math.max(0, L - 34) * cm;
+  const half = (L) => nh + 18 + Math.min((L - 34) * 8.5, 290);
+  const curve = (L) => {
+    const d = drop(L), w = half(L), y0 = ny - 6;
+    return `M ${cx - nh + 4} ${y0} C ${cx - w} ${y0 + d * .55}, ${cx - w * .5} ${y0 + d + 26}, ${cx} ${y0 + d + 26}`
+      + ` C ${cx + w * .5} ${y0 + d + 26}, ${cx + w} ${y0 + d * .55}, ${cx + nh - 4} ${y0}`;
+  };
+  const bottom = (L) => ny - 6 + drop(L) + 26;
+  const refs = [[36, 'choker'], [40, 'collarbone'], [45, 'princess'], [50, 'mid-chest'], [60, 'matinee']];
+  const lx = 1150;                              // label column, clear of the body
+  for (const [L, name] of refs) {
+    // the piece's own line, and its extender, carry these labels
+    if (Math.abs(L - c.length) < 1.5 || (c.ext && Math.abs(L - c.length - c.ext) < 1.5)) continue;
+    el('path', { d: curve(L), fill: 'none', stroke: '#1A1614', 'stroke-width': 2, opacity: .18 }, svg);
+    const t = el('text', { x: lx, y: bottom(L) + 10, 'font-size': 28, fill: '#8A7F77' }, svg);
+    t.textContent = `${L} cm · ${name}`;
+  }
+  if (c.ext) {
+    el('path', { d: curve(c.length + c.ext), fill: 'none', stroke: '#9A7634', 'stroke-width': 5, 'stroke-dasharray': '3 13', 'stroke-linecap': 'round' }, svg);
+    const e = el('text', { x: lx, y: bottom(c.length + c.ext) + 10, 'font-size': 30, fill: '#9A7634' }, svg);
+    e.textContent = `${c.length + c.ext} cm with extender`;
+  }
+  el('path', { d: curve(c.length), fill: 'none', stroke: '#9A7634', 'stroke-width': 10, 'stroke-linecap': 'round' }, svg);
+  const lab = el('text', { x: lx, y: bottom(c.length) + 14, 'font-size': 46, 'font-weight': 500, fill: '#9A7634' }, svg);
+  lab.textContent = `${c.length} cm`;
+  // leader from the gold line to its label
+  el('line', { x1: cx + 14, y1: bottom(c.length), x2: lx - 24, y2: bottom(c.length), stroke: '#9A7634', 'stroke-width': 2, 'stroke-dasharray': '2 8', opacity: .8 }, svg);
+  footer({note: 'Chain length is approximate, give or take 1 cm.', ...c}, card);
+}
+
+// W: bracelet length on a ruler, with the wrist sizes it suits.
+function cardW(c, card) {
+  header(c, card);
+  const svg = el('svg', { width: 1600, height: 1600, viewBox: '0 0 1600 1600', style: 'position:absolute;inset:0' }, card);
+  const x0 = 200, pxcm = 50, y = 820;
+  const R = el('g', { stroke: '#1A1614', 'stroke-linecap': 'square' }, svg);
+  el('line', { x1: x0, y1: y, x2: x0 + 24 * pxcm, y2: y, 'stroke-width': 3 }, R);
+  for (let i = 0; i <= 48; i++) {
+    const x = x0 + i * pxcm / 2;
+    el('line', { x1: x, y1: y, x2: x, y2: y + (i % 2 === 0 ? (i % 10 === 0 ? 36 : 24) : 12), 'stroke-width': i % 2 === 0 ? 3 : 2 }, R);
+    if (i % 4 === 0) { const t = el('text', { x, y: y + 78, 'text-anchor': 'middle', 'font-size': 30, fill: '#6E655E', stroke: 'none' }, svg); t.textContent = `${i / 2}`; }
+  }
+  const cm = el('text', { x: x0 + 24 * pxcm + 20, y: y + 78, 'font-size': 30, fill: '#6E655E' }, svg); cm.textContent = 'cm';
+  // the bracelet
+  el('line', { x1: x0, y1: y - 70, x2: x0 + c.length * pxcm, y2: y - 70, stroke: '#9A7634', 'stroke-width': 18, 'stroke-linecap': 'round' }, svg);
+  if (c.ext) el('line', { x1: x0 + c.length * pxcm, y1: y - 70, x2: x0 + (c.length + c.ext) * pxcm, y2: y - 70, stroke: '#9A7634', 'stroke-width': 8, 'stroke-dasharray': '6 14', 'stroke-linecap': 'round' }, svg);
+  const lt = el('text', { x: x0 + c.length * pxcm, y: y - 112, 'text-anchor': 'middle', 'font-size': 44, 'font-weight': 500, fill: '#9A7634' }, svg);
+  lt.textContent = `${c.length} cm`;
+  // the wrists it suits
+  const a = x0 + c.fitLo * pxcm, b = x0 + c.fitHi * pxcm, yy = y + 190;
+  el('rect', { x: a, y: yy - 16, width: b - a, height: 32, fill: '#99B4AF' }, svg);
+  const ft = el('text', { x: (a + b) / 2, y: yy + 76, 'text-anchor': 'middle', 'font-size': 32, fill: '#1A1614' }, svg);
+  ft.textContent = `fits wrists ${c.fitLo}–${c.fitHi} cm`;
+  const how = el('text', { x: x0, y: 1110 + 120, 'font-size': 28, fill: '#6E655E' }, svg);
+  how.textContent = 'Measure around your wrist bone; allow 1.5–2.5 cm for an easy fit.';
+  footer(c, card);
+}
+
+// R: the inside of the ring, drawn as a circle, with US sizes for reference.
+function cardR(c, card) {
+  header(c, card);
+  const svg = el('svg', { width: 1600, height: 1600, viewBox: '0 0 1600 1600', style: 'position:absolute;inset:0' }, card);
+  const cx = 800, cy = 770, s = 30; // px per mm
+  const r = c.inner * s / 2;
+  el('circle', { cx, cy, r: r + 9, fill: 'none', stroke: '#9A7634', 'stroke-width': 18, opacity: .9 }, svg);
+  if (c.open) el('rect', { x: cx - 26, y: cy + r - 8, width: 52, height: 36, fill: '#F4EBE2' }, svg);
+  const g = el('g', { stroke: '#1A1614', 'stroke-width': 3 }, svg);
+  el('line', { x1: cx - r, y1: cy, x2: cx + r, y2: cy }, g);
+  el('line', { x1: cx - r, y1: cy - 18, x2: cx - r, y2: cy + 18 }, g);
+  el('line', { x1: cx + r, y1: cy - 18, x2: cx + r, y2: cy + 18 }, g);
+  // `label` overrides the centre text, e.g. an adjustable ring's range "15.7–18.9 mm".
+  const label = c.label || `${c.inner} mm`;
+  const pw = Math.max(240, label.length * 27 + 40);
+  el('rect', { x: cx - pw / 2, y: cy - 44, width: pw, height: 88, rx: 44, fill: '#F4EBE2' }, svg);
+  const t = el('text', { x: cx, y: cy + 17, 'text-anchor': 'middle', 'font-size': 50, 'font-weight': 500, fill: '#1A1614' }, svg);
+  t.textContent = label;
+  const sub = el('text', { x: cx, y: cy - r - 46, 'text-anchor': 'middle', 'font-size': 30, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+  sub.textContent = c.sub || (c.open ? 'INNER DIAMETER · OPEN BACK' : 'INNER DIAMETER');
+  // US size strip
+  const sizes = [['5', 15.7], ['6', 16.5], ['6½', 16.9], ['7', 17.3], ['8', 18.1], ['9', 18.9]];
+  const near = sizes.reduce((a, b) => Math.abs(b[1] - c.inner) < Math.abs(a[1] - c.inner) ? b : a);
+  const bw = 190, gap = 18, total = sizes.length * bw + (sizes.length - 1) * gap, sx = cx - total / 2, sy = 1150;
+  sizes.forEach(([us, mm], i) => {
+    const on = c.sizes ? c.sizes.includes(us) : us === near[0];
+    const x = sx + i * (bw + gap);
+    el('rect', { x, y: sy, width: bw, height: 104, fill: on ? '#1A1614' : 'none', stroke: '#1A1614', 'stroke-width': 2, opacity: on ? 1 : .35 }, svg);
+    const a = el('text', { x: x + bw / 2, y: sy + 46, 'text-anchor': 'middle', 'font-size': 32, 'font-weight': 500, fill: on ? '#F4EBE2' : '#1A1614' }, svg); a.textContent = `US ${us}`;
+    const b = el('text', { x: x + bw / 2, y: sy + 84, 'text-anchor': 'middle', 'font-size': 24, fill: on ? '#F4EBE2' : '#6E655E' }, svg); b.textContent = `${mm} mm`;
+  });
+  footer(c, card);
+}
+
+
+// C: an open cuff seen from above, with the inner width (and depth, when known) marked.
+function cardC(c, card) {
+  header(c, card);
+  const svg = el('svg', { width: 1600, height: 1600, viewBox: '0 0 1600 1600', style: 'position:absolute;inset:0' }, card);
+  const cx = 800, cy = 760, s = 110; // px per cm
+  const rx = c.width * s / 2, ry = (c.depth || c.width * 0.86) * s / 2;
+  const gap = 0.3; // radians either side of the open back
+  const a0 = Math.PI / 2 + gap, a1 = Math.PI / 2 - gap + 2 * Math.PI;
+  const pt = (a, k = 0) => [cx + (rx + k) * Math.cos(a), cy + (ry + k) * Math.sin(a)];
+  const [x0, y0] = pt(a0, 12), [x1, y1] = pt(a1, 12);
+  el('path', { d: `M ${x0} ${y0} A ${rx + 12} ${ry + 12} 0 1 1 ${x1} ${y1}`, fill: 'none', stroke: '#9A7634', 'stroke-width': 22, 'stroke-linecap': 'round', opacity: .9 }, svg);
+  const g = el('g', { stroke: '#1A1614', 'stroke-width': 3 }, svg);
+  if (c.around) {
+    // only the length of the cuff itself is known: say so, without inventing a width
+    const t = el('text', { x: cx, y: cy + 17, 'text-anchor': 'middle', 'font-size': 56, 'font-weight': 500, fill: '#1A1614' }, svg);
+    t.textContent = `${c.around} cm`;
+    const u = el('text', { x: cx, y: cy + 72, 'text-anchor': 'middle', 'font-size': 28, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+    u.textContent = 'END TO END, ALONG THE CUFF';
+  } else {
+  el('line', { x1: cx - rx, y1: cy, x2: cx + rx, y2: cy }, g);
+  el('line', { x1: cx - rx, y1: cy - 18, x2: cx - rx, y2: cy + 18 }, g);
+  el('line', { x1: cx + rx, y1: cy - 18, x2: cx + rx, y2: cy + 18 }, g);
+  el('rect', { x: cx - 110, y: cy - 44, width: 220, height: 88, rx: 44, fill: '#F4EBE2' }, svg);
+  const t = el('text', { x: cx, y: cy + 17, 'text-anchor': 'middle', 'font-size': 50, 'font-weight': 500, fill: '#1A1614' }, svg);
+  t.textContent = `${c.width} cm`;
+  }
+  if (c.depth) {
+    // depth runs front to back, drawn just outside the cuff so nothing crosses the metal
+    const dx = cx + rx + 110;
+    el('line', { x1: dx, y1: cy - ry, x2: dx, y2: cy + ry }, g);
+    el('line', { x1: dx - 18, y1: cy - ry, x2: dx + 18, y2: cy - ry }, g);
+    el('line', { x1: dx - 18, y1: cy + ry, x2: dx + 18, y2: cy + ry }, g);
+    const d = el('text', { x: dx + 34, y: cy + 16, 'font-size': 44, 'font-weight': 500, fill: '#1A1614' }, svg);
+    d.textContent = `${c.depth} cm`;
+  }
+  const sub = el('text', { x: cx, y: cy - ry - 60, 'text-anchor': 'middle', 'font-size': 30, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+  sub.textContent = c.around ? 'OPEN CUFF · SEEN FROM ABOVE' : 'INSIDE THE CUFF · SEEN FROM ABOVE';
+  const back = el('text', { x: cx, y: cy + ry + 92, 'text-anchor': 'middle', 'font-size': 28, fill: '#6E655E', 'letter-spacing': '0.08em' }, svg);
+  back.textContent = 'OPEN BACK';
+  const how = el('text', { x: cx, y: 1235, 'text-anchor': 'middle', 'font-size': 28, fill: '#6E655E' }, svg);
+  how.textContent = c.how || 'Slip it on sideways at the narrowest part of your wrist.';
+  footer(c, card);
+}
+
+window.renderCard = async (c) => {
+  const card = document.getElementById('card');
+  card.innerHTML = '';
+  ({ A: cardA, B: cardB, N: cardN, W: cardW, R: cardR, C: cardC })[c.type](c, card);
+  await document.fonts.ready;
+  await Promise.all([...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })));
+  return true;
+};
+</script>
+</body>
+</html>

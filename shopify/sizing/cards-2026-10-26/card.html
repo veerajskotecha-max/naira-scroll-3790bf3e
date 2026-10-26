@@ -168,7 +168,8 @@ function cardW(c, card) {
   const ft = el('text', { x: (a + b) / 2, y: yy + 76, 'text-anchor': 'middle', 'font-size': 32, fill: '#1A1614' }, svg);
   ft.textContent = `fits wrists ${c.fitLo}–${c.fitHi} cm`;
   const how = el('text', { x: x0, y: 1110 + 120, 'font-size': 28, fill: '#6E655E' }, svg);
-  how.textContent = 'Measure around your wrist bone; allow 1.5–2.5 cm for an easy fit.';
+  // `how` replaces the tip when the owner states the fit range outright.
+  how.textContent = c.how || 'Measure around your wrist bone; allow 1.5–2.5 cm for an easy fit.';
   footer(c, card);
 }
 

@@ -20,10 +20,11 @@
 
    keeping vendor "Naira Petite" and status ACTIVE.
 
-   Last regenerated 2026-10-26 against the live store: 128 pieces. */
+   Last regenerated 2026-10-27 against the live store: 135 pieces. */
 export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "amethyst-carre-bracelet",
   "aqua-heart-drops-silver",
+  "aquarelle-riviere-bracelet",
   "asscher-solitaire-ring",
   "baguette-arc-hoops",
   "baguette-eclat-bracelet",
@@ -65,6 +66,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "droplet-open-ring",
   "duo-link-bracelet",
   "duo-link-necklace",
+  "emerald-carre-bracelet",
   "emerald-deco-hoops",
   "emerald-halo-c-hoops",
   "emerald-square-ear-cuff",
@@ -80,9 +82,11 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "kiss-knot-bangle",
   "lilac-papillon-ring",
   "linked-trio-ring",
+  "lotus-pear-drop-studs",
   "lumiere-oval-bracelet",
   "lumiere-oval-necklace",
   "lumiere-oval-solitaire-ring",
+  "lumiere-solitaire-bracelet",
   "marquise-drop-choker",
   "marquise-layering-set",
   "marquise-wheat-cuff",
@@ -128,6 +132,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "silk-mesh-cuff",
   "silver-dome-ring",
   "silver-drop-earrings",
+  "solitaire-drop-huggies",
   "solitaire-whisper-studs",
   "sorbet-riviere-bracelet",
   "star-point-band",
@@ -139,6 +144,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "torsade-pearl-cuff",
   "triple-coil-wrap-bangle",
   "triple-dawn-cuff",
+  "tubogas-dome-ring",
   "twin-heart-necklace",
   "twin-heart-studs",
   "verdant-circlet-studs",
@@ -148,6 +154,7 @@ export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "vintage-halo-ring",
   "watch-link-bracelet",
   "watch-link-ring",
+  "watch-link-strap-bracelet",
   "whisper-pave-band",
   "woven-gold-hoops",
 ]);

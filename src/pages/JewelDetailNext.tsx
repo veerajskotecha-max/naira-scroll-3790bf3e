@@ -31,7 +31,7 @@ import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
-import { colourFromParam, colourOption, openingChoice } from "@/lib/colourCards";
+import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -72,6 +72,8 @@ const FomoPopup = lazy(() => import("@/components/FomoPopup"));
 /* Square: 15 of the 16 hero photos are 1:1, and it keeps the name and price
    above the fold on a 390px phone (see JewelDetail.tsx). */
 const MOBILE_FRAME = "1/1";
+/* A transparent 1×1 GIF: what a screen gets from a <picture> whose source is not for it. */
+const BLANK_PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
@@ -198,7 +200,10 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   const [adding, setAdding] = useState(false);
   const need = choiceNeeded(piece);
   const variant = compact ? oneTapVariant(piece, prefer) : undefined;
-  const image = variant?.image ?? cardCover(piece);
+  const image = variantPhoto(piece, variant) ?? cardCover(piece);
+  /* The page opens on the colour the card shows, not the piece's first. */
+  const colour = variant ? variant.options[colourOption(piece)?.name ?? ""] : undefined;
+  const to = colour ? `${href}${href.includes("?") ? "&" : "?"}colour=${encodeURIComponent(colour.toLowerCase())}` : href;
   const add = async () => {
     setAdding(true);
     try {
@@ -214,7 +219,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   };
   return (
     <article className="flex min-w-0 flex-col" data-variant={variant ? variantLabel(variant) : undefined}>
-      <Link to={href} className="block aspect-square overflow-hidden bg-nf-ivory-deep">
+      <Link to={to} className="block aspect-square overflow-hidden bg-nf-ivory-deep">
         <img
           src={shopifyImage(image, 360)}
           srcSet={shopifySrcSet(image, [240, 360, 480]) || undefined}
@@ -227,7 +232,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           height={360}
         />
       </Link>
-      <Link to={href} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
+      <Link to={to} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
         {piece.name}
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">
@@ -237,7 +242,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
       {compact &&
         (need ? (
           <Link
-            to={href}
+            to={to}
             aria-label={`Choose a ${need} for ${piece.name}`}
             className="press-scale mt-2 flex h-11 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
           >
@@ -371,9 +376,11 @@ const JewelDetailNext = () => {
      one way. It opens on the first variant that can be bought; once the shopper
      picks, that variant's own photo leads the gallery. A colour card in the
      shop grid links here on its colour (?colour=silver): the page opens on that
-     colour, its photo first. */
+     colour, its photo first. A catalogue ad names its colour by Shopify's
+     variant number instead (?variant=…), and opens the same way. */
   const [searchParams, setSearchParams] = useSearchParams();
-  const colourParam = searchParams.get("colour");
+  const colourParam =
+    searchParams.get("colour") ?? (piece ? colourOfVariant(piece, searchParams.get("variant"))?.toLowerCase() : undefined) ?? null;
   const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? openingChoice(piece, colourParam) : {}));
   const [picked, setPicked] = useState(() => Boolean(piece && colourFromParam(piece, colourParam)));
   const variantKey = piece?.variants?.map((v) => v.id).join(",") ?? "";
@@ -505,7 +512,7 @@ const JewelDetailNext = () => {
     };
   }, [handle]);
 
-  const leadImage = picked ? variant?.image : undefined;
+  const leadImage = picked && piece ? variantPhoto(piece, variant) : undefined;
   const images = useMemo(() => {
     if (!piece) return [];
     const base = piece.gallery && piece.gallery.length > 0 ? piece.gallery : [piece.image];
@@ -790,18 +797,37 @@ const JewelDetailNext = () => {
               style={{ height: "100%" }}
               aria-label={`Open ${piece.name} image ${i + 1} full screen`}
             >
-              <img
-                src={shopifyImage(img, i === 0 ? 900 : 1000)}
-                srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [600, 800, 1000, 1400]) || undefined}
-                sizes={HERO_SIZES}
-                alt={`${piece.name} view ${i + 1}`}
-                className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
-                width={1000}
-                height={1000}
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : "auto"}
-                decoding={i === 0 ? "sync" : "async"}
-              />
+              {i === 0 ? (
+                <img
+                  src={shopifyImage(img, 900)}
+                  srcSet={shopifySrcSet(img, HERO_WIDTHS) || undefined}
+                  sizes={HERO_SIZES}
+                  alt={`${piece.name} view ${i + 1}`}
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+                  width={1000}
+                  height={1000}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
+                />
+              ) : (
+                /* Photos two to four are on this grid only, which a phone never
+                   shows, yet phones downloaded them, lazy or not: about 300 KB
+                   on Prism Rivière (27 Oct 2026). Only a desktop-width screen
+                   picks their source; a phone gets a one-pixel blank. */
+                <picture className="contents">
+                  <source media="(min-width: 768px)" srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || shopifyImage(img, 1000)} sizes={HERO_SIZES} />
+                  <img
+                    src={BLANK_PIXEL}
+                    alt={`${piece.name} view ${i + 1}`}
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+                    width={1000}
+                    height={1000}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+              )}
               {more > 0 && i === count - 1 && (
                 <span className="absolute bottom-3 right-3 bg-nf-ivory/90 px-2.5 py-1.5 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink">
                   +{more} {more === 1 ? "photo" : "photos"}

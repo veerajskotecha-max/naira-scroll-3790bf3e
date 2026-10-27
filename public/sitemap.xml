@@ -785,6 +785,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/tubogas-dome-ring</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/fine-tennis-bracelet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -860,7 +865,27 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://nairaflore.com/jewellery/emerald-carre-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/midnight-riviere-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/aquarelle-riviere-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://nairaflore.com/jewellery/bougainvillea-vine-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/lumiere-solitaire-bracelet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -966,6 +991,21 @@
   </url>
   <url>
     <loc>https://nairaflore.com/jewellery/amethyst-carre-bracelet</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/solitaire-drop-huggies</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/lotus-pear-drop-studs</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://nairaflore.com/jewellery/watch-link-strap-bracelet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

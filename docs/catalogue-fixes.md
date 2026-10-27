@@ -837,3 +837,79 @@ note on how PVD differs from regular plating, and anti-tarnish.
     strategy").
   - The studs' on-model photo was re-attached in second place at 20:02 at the
     owner's request. Cushion Solitaire's is left off until the owner says.
+
+## 27 Oct 2026: links, colours, catalogue ads, product page weight
+
+- **Shop All showed three pieces twice in gold.** Droplet Open Cuff, Tubogas
+  Dome Ring and Star Point Band.
+  - Cause: Shopify gives a variant with no photo of its own the listing's
+    first photo, so their silver cards wore the gold one. Star Point had its
+    own photo on US 6 only, so Silver US 5, 7 and 8 fell back to gold too.
+  - Shopify (one approval): each colour's variants now carry that colour's
+    photo.
+    - Droplet: Gold on `_1_main`, Silver on `_3_silver`.
+    - Star Point: Gold 5, 7, 8 on the gold plaster shot, Silver 5, 7, 8 on
+      the silver one.
+    - Tubogas: Gold 5–8 on the on-hand photo, which the catalogue ads
+      already showed, so gold ads are unchanged. Silver 5–8 on the silver
+      plaster photo.
+  - Tubogas silver photo (`46458295517346`) re-attached third, before the
+    gift box and size guide. It and the gold plaster photo were taken off the
+    listing at 06:58 this morning, when the ring went live (not this session).
+    The gold plaster photo is still off.
+  - Before: no variant media on Droplet or Tubogas; Star Point only on Gold 6
+    and Silver 6.
+  - Live data now gives 160 cards with no photo twice. The site reads Shopify
+    live, so this was fixed on nairaflore.com at once.
+  - Site (main 37a664b): a colour's photo is one only its own variants carry,
+    else a gallery file named for it, else the shared photo for the first
+    colour only. A colour with none gets no card of its own. A snapshot test
+    fails if any colour of any piece has no photo of its own.
+- **Recommendation links:** every Complete the look and More like this link
+  on all 135 pieces checked against live data.
+  - None link to a piece that is not live, to the page itself, or to the same
+    piece twice. Every piece has both rows.
+  - No category of a set's pieces is missing from its row.
+  - Fixed: a suggestion card showing a silver piece opened its page on gold.
+    It now opens on the colour it shows.
+- **Catalogue ad links:** the Meta catalogue sends each colour and size to
+  `nairaflore.com/products/<handle>?utm_…&variant=<id>`, and the site ignored
+  `variant`, so a silver ad opened on gold.
+  - The page now opens on the ad's colour, its photo first. The size stays at
+    the page's default (US 6), since the ad does not show a size.
+  - Checked on the build: every one of the 135 pieces has its own page at
+    both `/products/` and `/jewellery/` (270/270 addresses). All 8 ad cases
+    open right.
+  - Eight pieces that went live after the last publish (Tubogas, Midnight
+    Rivière, Aquarelle, Emerald Carré, Lumière Solitaire Bracelet, Solitaire
+    Drop Huggies, Lotus Pear Drop Studs, Watch Link Strap) currently get the
+    homepage file until the next publish. Shoppers still land on the product
+    (26 Oct fix), but a link preview shows the homepage. The build makes a
+    page for every live piece, so Publish fixes it.
+- **Product page weight (phone, 4G, 4x slower CPU):** phones downloaded
+  photos two to four of the desktop-only grid, about 300 KB on Prism Rivière.
+  - Chromium fetched them despite `loading="lazy"`.
+  - They now come from a `<picture>` source only a desktop-width screen
+    picks. Desktop and tablet still show all four (checked).
+  - Photos before scrolling on Prism: 674 KB → 400 KB. Whole page in the
+    first 8 s: about 1.47 MB → 1.1–1.2 MB.
+  - Tubogas silver ad: largest paint 2.1–2.4 s → 0.8 s.
+  - No layout shift.
+- **Measured, not changed (owner to decide):**
+  - The bag opens only after two Shopify cart calls: 1.5–3 s from the tap
+    here through the container's proxy, likely about 1–1.5 s on a real phone.
+    Opening it at the tap would make it instant.
+  - The 3D flower in the header logo loads three.js (130 KB) about 6 s
+    after landing, on every page. It adds about 0.3 s of main-thread work
+    on a mid-range phone and a little scroll jank.
+  - Checkout tap: answers in about 0.1 s, hands off to Shiprocket in
+    0.4–0.95 s.
+- **Meta catalogue diagnostics:**
+  - 38 items out of stock.
+  - 97 with fewer than two images.
+  - 6 events without a product ID.
+  - None of these are about links.
+- **Another session or the owner was editing the store this morning:**
+  Midnight Rivière went live at 08:16, and the Clover pieces, Aquarelle and
+  Watch Link Strap were edited 08:11–08:15.
+- Scripts: `shopify/harness/links-2026-10-27/`.

@@ -895,15 +895,25 @@ note on how PVD differs from regular plating, and anti-tarnish.
     first 8 s: about 1.47 MB → 1.1–1.2 MB.
   - Tubogas silver ad: largest paint 2.1–2.4 s → 0.8 s.
   - No layout shift.
-- **Measured, not changed (owner to decide):**
-  - The bag opens only after two Shopify cart calls: 1.5–3 s from the tap
-    here through the container's proxy, likely about 1–1.5 s on a real phone.
-    Opening it at the tap would make it instant.
-  - The 3D flower in the header logo loads three.js (130 KB) about 6 s
-    after landing, on every page. It adds about 0.3 s of main-thread work
-    on a mid-range phone and a little scroll jank.
-  - Checkout tap: answers in about 0.1 s, hands off to Shiprocket in
-    0.4–0.95 s.
+- **Owner approved both, shipped (main 6a4593e):**
+  - **The bag opens at the Add tap.** The piece is listed at once as "Adding
+    to your bag…" and counted in the total and the Buy 2 / Buy 3 bar.
+    Checkout waits for Shopify.
+    - 4G phone: bag shown 0.5 s after the tap; confirmed, with Checkout
+      ready, at 1.3 s. Before, 2–3 s.
+    - A sold-out piece is said in the bag ("… has just sold out."), and no
+      row is left for a line Shopify did not add.
+    - The sync the bag runs as it opens can no longer run over an add, so it
+      cannot delete the new line as a stale one. Checked: closing and
+      reopening the bag keeps the piece and its quantity.
+    - Screenshots: `docs/images/bag-2026-10-27/`.
+  - **Product pages keep the logo flower still:** no three.js there. Its
+    JavaScript drops 414 KB → 282 KB. The homepage still turns it.
+  - Final phone figures for a product page:
+    - about 1.0–1.1 MB in all (was about 1.5 MB);
+    - largest paint 0.76–0.88 s, no layout shift;
+    - Checkout tap answers in about 0.1 s and hands off to Shiprocket in
+      0.4–0.7 s.
 - **Meta catalogue diagnostics:**
   - 38 items out of stock.
   - 97 with fewer than two images.

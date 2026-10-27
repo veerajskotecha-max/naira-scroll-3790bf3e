@@ -56,6 +56,7 @@ const ProductTag = ({
       return;
     }
     setAdding(true);
+    setDrawerOpen(true);
     try {
       await addItem(
         live
@@ -70,7 +71,6 @@ const ProductTag = ({
               image: product.image_url ?? "",
             },
       );
-      setDrawerOpen(true);
     } finally {
       setAdding(false);
     }

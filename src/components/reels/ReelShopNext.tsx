@@ -62,13 +62,13 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
       return;
     }
     setAdding(true);
+    setDrawerOpen(true);
     try {
       await addItem(
         live
           ? cartLineFor(live, oneTapVariant(live))
           : { id: product.handle, variantId, name, price: parsePrice(product.price_label), priceLabel: price, currencyCode: "INR", image },
       );
-      setDrawerOpen(true);
     } finally {
       setAdding(false);
     }

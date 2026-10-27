@@ -206,13 +206,13 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   const to = colour ? `${href}${href.includes("?") ? "&" : "?"}colour=${encodeURIComponent(colour.toLowerCase())}` : href;
   const add = async () => {
     setAdding(true);
+    setDrawerOpen(true);
     try {
       await addItem({
         ...cartLineFor(piece, variant),
         // an adjustable ring sold one way goes in as US 6, the size its page opens on
         ...(piece.category === "Rings" && !variant ? { size: "US 6" } : {}),
       });
-      setDrawerOpen(true);
     } finally {
       setAdding(false);
     }
@@ -622,10 +622,13 @@ const JewelDetailNext = () => {
           size: noteSize,
         };
 
+  /* The bag opens at the tap with the piece on its way in, and says so there
+     if Shopify cannot add it. It used to open only once Shopify answered,
+     one to three seconds on 4G. */
   const handleAddToCart = async () => {
     if (isPreorder) return handlePreOrder();
-    const added = await addItem(cartItem());
-    if (added) setDrawerOpen(true);
+    setDrawerOpen(true);
+    await addItem(cartItem());
   };
 
   const handleBuyNow = async () => {

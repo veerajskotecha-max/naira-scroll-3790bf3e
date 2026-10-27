@@ -6,6 +6,7 @@ import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
 import { cardCover } from "@/lib/cardCover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
+import { cartKeyOf } from "@/lib/cartLines";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import {
@@ -186,6 +187,8 @@ const CartDrawerNext = () => {
     isLoading,
     isSyncing,
     syncCart,
+    pending,
+    addError,
   } = useCart();
   const { jewellery } = useLiveJewellery(isDrawerOpen);
   const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
@@ -227,11 +230,23 @@ const CartDrawerNext = () => {
   }, [isDrawerOpen]);
 
   const arrivesBy = deliveryRangeFromNow();
+  /* The bag as it will be once Shopify answers: the piece on its way in is
+     listed and counted from the tap, as a line of its own or one more of a
+     line already here. Checkout waits for Shopify (busy, below). */
+  const pendingKey = pending ? cartKeyOf(pending) : null;
+  const lines = useMemo(() => {
+    if (!pending) return items;
+    return items.some((item) => cartKeyOf(item) === pendingKey)
+      ? items.map((item) => (cartKeyOf(item) === pendingKey ? { ...item, quantity: item.quantity + pending.quantity } : item))
+      : [...items, pending];
+  }, [items, pending, pendingKey]);
+  const lineCount = totalItems + (pending?.quantity ?? 0);
+  const lineSubtotal = subtotal + (pending ? pending.price * pending.quantity : 0);
   /* One resolver for the bag and the checkout hand-off: the total shown is the total charged. */
-  const discount = resolveCartDiscount({ totalItems, promoCode });
+  const discount = resolveCartDiscount({ totalItems: lineCount, promoCode });
   const rung = discount.automatic ? QUANTITY_OFFERS.find((offer) => offer.code === discount.code) : undefined;
-  const goodsTotal = discountedSubtotal(subtotal, discount);
-  const discountAmount = subtotal - goodsTotal;
+  const goodsTotal = discountedSubtotal(lineSubtotal, discount);
+  const discountAmount = lineSubtotal - goodsTotal;
   const orderTotal = goodsTotal + SHIPPING_CHARGE;
   const busy = isLoading || isSyncing;
 
@@ -242,7 +257,7 @@ const CartDrawerNext = () => {
     const mrp = (variantById(piece, item.variantId) ?? piece)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
-  const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
+  const mrpTotal = lines.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
 
   const [adding, setAdding] = useState<string | null>(null);
@@ -372,19 +387,24 @@ const CartDrawerNext = () => {
             </button>
             <SheetTitle className="flex items-baseline gap-2.5 font-nf-editorial text-[20px] font-medium leading-none text-nf-ink">
               Your bag
-              {totalItems > 0 && (
+              {lineCount > 0 && (
                 <span className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
-                  {totalItems === 1 ? "1 piece" : `${totalItems} pieces`}
+                  {lineCount === 1 ? "1 piece" : `${lineCount} pieces`}
                 </span>
               )}
             </SheetTitle>
           </div>
         </SheetHeader>
 
-        {items.length > 0 && <SimpleLadder totalItems={totalItems} />}
+        {lines.length > 0 && <SimpleLadder totalItems={lineCount} />}
         {undoNotice}
+        {addError && (
+          <p data-add-error role="alert" className="shrink-0 border-b border-nf-gold/15 bg-nf-ivory-deep px-4 py-2.5 text-[12.5px] leading-snug text-nf-ink sm:px-5">
+            {addError}
+          </p>
+        )}
 
-        {items.length === 0 ? (
+        {lines.length === 0 ? (
           <div className="flex flex-1 flex-col overflow-y-auto">
             <div className="flex flex-1 flex-col justify-center px-6 py-8">
               <p className="text-center font-nf-editorial text-[20px] font-medium text-nf-ink">Your bag is empty</p>
@@ -411,8 +431,14 @@ const CartDrawerNext = () => {
           <>
             <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain bg-[var(--nf-surface)]">
               <ul className="flex flex-col">
-                {items.map((item, index) => (
-                  <li key={`${item.id}-${item.size}-${item.variantId}`} data-line={item.id} data-variant={item.variantId} className="flex gap-4 px-5 py-5">
+                {lines.map((item, index) => (
+                  <li
+                    key={`${item.id}-${item.size}-${item.variantId}`}
+                    data-line={item.id}
+                    data-variant={item.variantId}
+                    data-adding={cartKeyOf(item) === pendingKey ? "" : undefined}
+                    className="flex gap-4 px-5 py-5"
+                  >
                     <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
                       <img
                         src={shopifyImage(item.image, 200) || item.image}
@@ -437,6 +463,11 @@ const CartDrawerNext = () => {
                         <span className="shrink-0 text-[14px] text-nf-ink">{formatPrice(item.price * item.quantity)}</span>
                       </div>
                       {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-nf-ink/60">{lineOptions(item)}</p> : null}
+                      {cartKeyOf(item) === pendingKey && (
+                        <p role="status" className="mt-1 flex items-center gap-1.5 text-[12.5px] text-nf-gold-text">
+                          <Loader2 size={12} className="animate-spin" aria-hidden="true" /> Adding to your bag…
+                        </p>
+                      )}
                       <p data-line-price className="mt-1 text-[13.5px] text-nf-ink/80">{item.priceLabel}</p>
                       <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/40">
                         <button

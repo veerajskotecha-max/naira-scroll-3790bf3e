@@ -93,12 +93,13 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
      or stones goes in as pictured; one that needs a size or a month is chosen
      on its own page (the button says so), never added in a choice nobody made. */
   const need = choiceNeeded(piece);
+  /* The bag opens at the tap, the piece shown on its way in; a failed add is
+     said there, so it no longer opens on an unexplained empty bag. */
   const handleAdd = async () => {
     setAdding(true);
+    setDrawerOpen(true);
     try {
-      const added = await addItem(cartLineFor(piece, oneTapVariant(piece, piece.colour ? { [piece.colour.option]: piece.colour.value } : {})));
-      /* Opening the drawer on a failed add showed the shopper an empty cart. */
-      if (added) setDrawerOpen(true);
+      await addItem(cartLineFor(piece, oneTapVariant(piece, piece.colour ? { [piece.colour.option]: piece.colour.value } : {})));
     } finally {
       setAdding(false);
     }

@@ -47,6 +47,10 @@ interface CartContextType {
   isLoading: boolean;
   isSyncing: boolean;
   checkoutUrl: string | null;
+  /** The piece on its way into the bag while Shopify adds it, else null. */
+  pending: CartItem | null;
+  /** Why the last add failed, for the bag to say; null once the bag closes. */
+  addError: string | null;
 }
 
 
@@ -75,15 +79,37 @@ const findLine = findCartLine;
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [storedCart, setStoredCart] = useState<StoredCart>(loadCart);
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isDrawerOpen, setDrawerOpenState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  /* The bag opens at the Add tap and shows the piece on its way in while
+     Shopify adds it, a second or two on 4G; the real line then takes its
+     place. If Shopify cannot add it, the open bag says why. */
+  const [pending, setPending] = useState<CartItem | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
+  const drawerOpenRef = useRef(false);
+  /* Adds under way, and how many have started: a sync must not run over one
+     (see syncCart). */
+  const addsInFlight = useRef(0);
+  const addsStarted = useRef(0);
 
   const { items, cartId, checkoutUrl } = storedCart;
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCart));
   }, [storedCart]);
+
+  /* The ref is set with the state, not after the render: an Add opens the bag
+     and starts adding in the same tap, and an add that fails at once must
+     know the bag is open (or the shopper gets the message twice). */
+  const setDrawerOpen = useCallback((open: boolean) => {
+    drawerOpenRef.current = open;
+    setDrawerOpenState(open);
+  }, []);
+  useEffect(() => {
+    drawerOpenRef.current = isDrawerOpen;
+    if (!isDrawerOpen) setAddError(null);
+  }, [isDrawerOpen]);
 
   /* Fetch the Fastrr script only once a shopper actually opens the bag, so the
      third-party file never lands on first paint of a browsing session. */
@@ -111,12 +137,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [commitCart]);
 
   const addItemToCart = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1): Promise<string | null> => {
-    if (!item.variantId) {
-      toast.error("This product is not available for checkout yet.");
+    /* Said in the bag when it is open, as it now is for every Add on a
+       product page; a toast otherwise. */
+    const fail = (message: string) => {
+      setAddError(message);
+      if (!drawerOpenRef.current) toast.error(message);
       return null;
-    }
+    };
+    if (!item.variantId) return fail("This product is not available for checkout yet.");
 
     setIsLoading(true);
+    setAddError(null);
+    setPending({ ...item, quantity, lineId: null });
+    addsInFlight.current += 1;
+    addsStarted.current += 1;
+    const unavailable = `${item.name} couldn't be added. It may have just sold out.`;
     try {
       const latest = loadCart();
       const key = keyOf(item);
@@ -124,7 +159,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (!latest.cartId) {
         const result = await createShopifyCart(item.variantId, quantity, item.size);
-        if (!result) throw new Error("Could not create Shopify cart.");
+        /* Shopify leaves a piece it cannot sell out of the cart, without an error. */
+        if (!result) return fail(unavailable);
         commitCart({
           cartId: result.cartId,
           checkoutUrl: result.checkoutUrl,
@@ -138,10 +174,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const result = await updateShopifyCartLine(latest.cartId, existing.lineId, nextQuantity);
         if (result.cartNotFound) {
           clearCart();
-          toast.error("Your cart timed out. Please add the piece again.");
-          return null;
+          return fail("Your cart timed out. Please add the piece again.");
         }
         const syncedQuantity = result.quantity ?? nextQuantity;
+        if (syncedQuantity < nextQuantity) fail(`Only ${syncedQuantity} of ${item.name} left, all in your bag.`);
         const committed = commitCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
@@ -155,9 +191,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity, item.size);
       if (result.cartNotFound) {
         clearCart();
-        toast.error("Your cart timed out. Please add the piece again.");
-        return null;
+        return fail("Your cart timed out. Please add the piece again.");
       }
+      /* No line back means Shopify did not add it. Committing it anyway left a
+         row in the bag that the next sync silently dropped. */
+      if (!result.lineId) return fail(unavailable);
       const committed = commitCart((current) => ({
         ...current,
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
@@ -170,10 +208,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return committed.checkoutUrl;
     } catch (error) {
       console.error("Failed to add Shopify item", error);
-      toast.error("Could not add this item to cart.");
-      return null;
+      const said = error instanceof Error ? error.message : "";
+      return fail(/sold out|out of stock|not enough|not available|isn't available/i.test(said) ? `${item.name} has just sold out.` : `${item.name} couldn't be added. Please try again.`);
     } finally {
+      addsInFlight.current -= 1;
       setIsLoading(false);
+      setPending(null);
     }
   }, [clearCart, commitCart]);
 
@@ -275,12 +315,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
    */
   const syncCart = useCallback(async () => {
     const latest = loadCart();
-    if (!latest.cartId || isSyncingRef.current) return;
+    /* An add under way gets the cart back from Shopify itself. A sync beside it
+       (the bag now opens at the tap, and syncs as it opens) would take the new
+       line for a stale one and delete it, or commit the bag from before it. */
+    if (!latest.cartId || isSyncingRef.current || addsInFlight.current > 0) return;
+    const adds = addsStarted.current;
+    const addBegan = () => addsStarted.current !== adds;
 
     isSyncingRef.current = true;
     setIsSyncing(true);
     try {
       const cart = await fetchShopifyCart(latest.cartId);
+      if (addBegan()) return;
       if (!cart) {
         clearCart();
         return;
@@ -292,6 +338,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       let checkoutUrlValue = cart.checkoutUrl;
       for (const orphan of orphanLines) {
+        if (addBegan()) return;
         const removal = await removeLineFromShopifyCart(latest.cartId, orphan.id);
         if (removal.checkoutUrl) checkoutUrlValue = removal.checkoutUrl;
       }
@@ -301,6 +348,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         .filter((item) => item.lineId && serverById.has(item.lineId))
         .map((item) => ({ ...item, quantity: serverById.get(item.lineId!)!.quantity }));
 
+      if (addBegan()) return;
       if (reconciled.length === 0) {
         clearCart();
         return;
@@ -423,7 +471,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     window.location.assign(target);
     setDrawerOpen(false);
-  }, []);
+  }, [setDrawerOpen]);
 
   const checkout = useCallback(() => {
     const latestUrl = loadCart().checkoutUrl ?? checkoutUrl;
@@ -467,8 +515,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       isLoading,
       isSyncing,
       checkoutUrl,
+      pending,
+      addError,
     }),
-    [items, addItem, buyNow, removeItem, updateQuantity, clearCart, syncCart, checkout, totalItems, subtotal, isDrawerOpen, isLoading, isSyncing, checkoutUrl]
+    [items, addItem, buyNow, removeItem, updateQuantity, clearCart, syncCart, checkout, totalItems, subtotal, isDrawerOpen, setDrawerOpen, isLoading, isSyncing, checkoutUrl, pending, addError]
   );
 
 

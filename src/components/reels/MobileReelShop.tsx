@@ -37,13 +37,13 @@ const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: Jew
       return;
     }
     setAdding(true);
+    setDrawerOpen(true);
     try {
       await addItem(
         live
           ? cartLineFor(live, oneTapVariant(live))
           : { id: product.handle, variantId, name: product.title, price: parsePrice(product.price_label), priceLabel: price, currencyCode: "INR", image },
       );
-      setDrawerOpen(true);
     } finally {
       setAdding(false);
     }

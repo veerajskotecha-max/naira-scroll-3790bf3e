@@ -1,0 +1,488 @@
+[
+ {
+  "n": 8,
+  "handle": "aqua-heart-drops-silver",
+  "file": "aqua-heart-drops-worn-close",
+  "alt": "Aqua Heart Drops — worn, close on the ear in soft daylight",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 607232
+ },
+ {
+  "n": 31,
+  "handle": "aqua-heart-drops-silver",
+  "file": "aqua-heart-drops-worn-profile",
+  "alt": "Aqua Heart Drops — worn, seen in profile with the hair tucked back",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 618706
+ },
+ {
+  "n": 25,
+  "handle": "aqua-heart-drops-silver",
+  "file": "aqua-heart-drops-sea-glass",
+  "alt": "Aqua Heart Drops — the pair among sea-glass marbles on ivory plaster",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 356050
+ },
+ {
+  "n": 32,
+  "handle": "aqua-heart-drops-silver",
+  "file": "aqua-heart-drops-pigments",
+  "alt": "Aqua Heart Drops — the pair below a row of blue pigment cones",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 363266
+ },
+ {
+  "n": 9,
+  "handle": "dewdrop-bezel-necklace",
+  "file": "dewdrop-pendant-necklace-cube",
+  "alt": "Dewdrop Pendant Necklace — draped over a plaster cube, the pear stone catching the light",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 398595
+ },
+ {
+  "n": 14,
+  "handle": "silk-mesh-cuff",
+  "file": "silk-mesh-cuff-worn-linen",
+  "alt": "Silk Mesh Cuff, Gold — worn on the wrist against ivory linen",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 635320
+ },
+ {
+  "n": 70,
+  "handle": "silk-mesh-cuff",
+  "file": "silk-mesh-cuff-worn-seated",
+  "alt": "Silk Mesh Cuff, Gold — worn, the arm resting across the knee",
+  "w": 1520,
+  "h": 2736,
+  "bytes": 272181
+ },
+ {
+  "n": 21,
+  "handle": "torsade-pearl-cuff",
+  "file": "torsade-pearl-cuff-worn-cushion",
+  "alt": "Torsade Pearl Cuff — worn, the wrist resting on an ivory cushion",
+  "crop": [
+   0,
+   214,
+   1536,
+   2538
+  ],
+  "w": 1536,
+  "h": 2324,
+  "bytes": 656213
+ },
+ {
+  "n": 22,
+  "handle": "ribbon-bead-bracelet",
+  "file": "ribbon-bead-bracelet-worn-linen",
+  "alt": "Ribbon Bead Bracelet — worn, the hand resting on ivory linen",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 739560
+ },
+ {
+  "n": 26,
+  "handle": "ribbon-bead-bracelet",
+  "file": "ribbon-bead-bracelet-gift",
+  "alt": "Ribbon Bead Bracelet — the crystal bow across a blush paper-wrapped gift",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 405883
+ },
+ {
+  "n": 23,
+  "handle": "prism-cluster-studs-silver",
+  "file": "prism-cluster-studs-watercolour",
+  "alt": "Prism Cluster Studs — the pair beside watercolour swatches in their lilac, pink and yellow",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 395525
+ },
+ {
+  "n": 24,
+  "handle": "prism-cluster-studs-silver",
+  "file": "prism-cluster-studs-almonds",
+  "alt": "Prism Cluster Studs — the pair among sugared almonds and a brass bowl",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 354320
+ },
+ {
+  "n": 27,
+  "handle": "marquise-layering-set",
+  "file": "marquise-layering-set-satin",
+  "alt": "Marquise Layering Set — both necklaces laid on blush satin",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 994258
+ },
+ {
+  "n": 28,
+  "handle": "lilac-papillon-ring",
+  "file": "lilac-papillon-ring-worn-linen",
+  "alt": "Lilac Papillon Ring — worn, the hand resting on ivory linen",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 523387
+ },
+ {
+  "n": 29,
+  "handle": "lilac-papillon-ring",
+  "file": "lilac-papillon-ring-rose",
+  "alt": "Lilac Papillon Ring — set in the heart of a lilac rose",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 524105
+ },
+ {
+  "n": 30,
+  "handle": "lilac-papillon-ring",
+  "file": "lilac-papillon-ring-mirror",
+  "alt": "Lilac Papillon Ring — on a brass-rimmed mirror, its reflection below",
+  "w": 1536,
+  "h": 2752,
+  "bytes": 434498
+ },
+ {
+  "n": 34,
+  "handle": "marquise-drop-choker",
+  "file": "marquise-drop-choker-laid",
+  "alt": "Marquise Drop Choker — the ribbed collar, the marquise and the drop laid on ivory",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 305159
+ },
+ {
+  "n": 36,
+  "handle": "lotus-pear-drop-studs",
+  "file": "lotus-pear-drop-studs-pair-front",
+  "alt": "Lotus Pear Drop Studs — the pair on a plaster block, straight on",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 226822
+ },
+ {
+  "n": 37,
+  "handle": "lotus-pear-drop-studs",
+  "file": "lotus-pear-drop-studs-pair-side",
+  "alt": "Lotus Pear Drop Studs — the pair on the edge of a plaster block, from the side",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 212122
+ },
+ {
+  "n": 41,
+  "handle": "lotus-pear-drop-studs",
+  "file": "lotus-pear-drop-studs-worn-profile",
+  "alt": "Lotus Pear Drop Studs — worn, seen in profile",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 459431
+ },
+ {
+  "n": 51,
+  "handle": "twin-heart-necklace",
+  "file": "twin-heart-necklace-block",
+  "alt": "Twin Heart Necklace — draped over a plaster block",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 159797
+ },
+ {
+  "n": 38,
+  "handle": "twin-heart-necklace",
+  "file": "twin-heart-necklace-worn-side",
+  "alt": "Twin Heart Necklace — worn, seen from the side",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 343983
+ },
+ {
+  "n": 39,
+  "handle": "prism-pear-drop-necklace",
+  "file": "prism-pear-drop-necklace-worn-turned",
+  "alt": "Prism Pear Drop Necklace — worn, the head turned to one side",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 425930
+ },
+ {
+  "n": 40,
+  "handle": "prism-pear-drop-necklace",
+  "file": "prism-pear-drop-necklace-worn-front",
+  "alt": "Prism Pear Drop Necklace — worn, the pendant at the breastbone",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 406669
+ },
+ {
+  "n": 42,
+  "handle": "watch-link-strap-bracelet",
+  "file": "watch-link-strap-bracelet-block",
+  "alt": "Watch Link Strap Bracelet — close on a plaster block, the rows of links",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 255238
+ },
+ {
+  "n": 43,
+  "handle": "twin-heart-studs",
+  "file": "twin-heart-studs-pair-above",
+  "alt": "Twin Heart Studs — the pair on a plaster block, from above",
+  "crop": [
+   150,
+   0,
+   1677,
+   1908
+  ],
+  "w": 1527,
+  "h": 1908,
+  "bytes": 193108
+ },
+ {
+  "n": 44,
+  "handle": "twin-heart-studs",
+  "file": "twin-heart-studs-side",
+  "alt": "Twin Heart Studs — side view, the posts and the claw settings",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 193256
+ },
+ {
+  "n": 45,
+  "handle": "twin-heart-studs",
+  "file": "twin-heart-studs-edge",
+  "alt": "Twin Heart Studs — on the edge of a plaster block, the larger and smaller hearts",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 187506
+ },
+ {
+  "n": 46,
+  "handle": "prism-pear-drop-hoops",
+  "file": "prism-pear-drop-hoops-worn-profile",
+  "alt": "Prism Pear Drop Hoops — worn, seen in profile",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 474927
+ },
+ {
+  "n": 47,
+  "handle": "clover-station-bracelet",
+  "file": "clover-station-bracelet-block",
+  "alt": "Clover Station Bracelet — laid on a plaster block, all three clovers",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 177327
+ },
+ {
+  "n": 48,
+  "handle": "clover-station-bracelet",
+  "file": "clover-station-bracelet-plinth",
+  "alt": "Clover Station Bracelet — on a tall plaster block, the clasp at the back",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 181679
+ },
+ {
+  "n": 49,
+  "handle": "clover-drop-pendant-necklace",
+  "file": "clover-drop-pendant-necklace-block",
+  "alt": "Clover Drop Pendant Necklace — laid on a plaster block, the two clovers",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 216903
+ },
+ {
+  "n": 50,
+  "handle": "open-heart-layered-bracelet",
+  "file": "open-heart-layered-bracelet-block",
+  "alt": "Open Heart Layered Bracelet — both strands over a plaster block, the open hearts and the beads",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 209330
+ },
+ {
+  "n": 52,
+  "handle": "clover-chain-bracelet",
+  "file": "clover-chain-bracelet-block",
+  "alt": "Clover Chain Bracelet — laid on a plaster block",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 190335
+ },
+ {
+  "n": 53,
+  "handle": "clover-chain-bracelet",
+  "file": "clover-chain-bracelet-low",
+  "alt": "Clover Chain Bracelet — on a plaster block, from a low angle",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 159710
+ },
+ {
+  "n": 54,
+  "handle": "bow-pear-drop-necklace",
+  "file": "bow-pear-drop-necklace-block",
+  "alt": "Bow Pear Drop Necklace — close on a plaster block, the heart bow and the pear drop",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 244936
+ },
+ {
+  "n": 58,
+  "handle": "droplet-open-cuff",
+  "file": "droplet-open-cuff-worn-relaxed",
+  "alt": "Droplet Open Cuff, Gold — worn, the arm relaxed at the side",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 250300
+ },
+ {
+  "n": 56,
+  "handle": "droplet-open-cuff",
+  "file": "droplet-open-cuff-worn-wrist",
+  "alt": "Droplet Open Cuff, Silver — worn on the wrist, the ball and the teardrop on top",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 326296
+ },
+ {
+  "n": 57,
+  "handle": "droplet-open-cuff",
+  "file": "droplet-open-cuff-worn-turned",
+  "alt": "Droplet Open Cuff, Silver — worn, the wrist turned",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 235813
+ },
+ {
+  "n": 59,
+  "handle": "emerald-square-ear-cuff",
+  "file": "emerald-square-ear-cuff-worn-profile",
+  "alt": "Emerald Square Ear Cuff — worn, seen in profile with the hair up",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 552266
+ },
+ {
+  "n": 60,
+  "handle": "linked-trio-ring",
+  "file": "linked-pair-ring-chain-close",
+  "alt": "Linked Pair Ring, Gold — the two rings on their box chain, close",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 280197
+ },
+ {
+  "n": 62,
+  "handle": "linked-trio-ring",
+  "file": "linked-pair-ring-standing",
+  "alt": "Linked Pair Ring, Gold — the two rings standing side by side",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 249269
+ },
+ {
+  "n": 61,
+  "handle": "linked-trio-ring",
+  "file": "linked-pair-ring-light",
+  "alt": "Linked Pair Ring, Gold — the two rings in a beam of light",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 170413
+ },
+ {
+  "n": 63,
+  "handle": "linked-trio-ring",
+  "file": "linked-pair-ring-chain-close-2",
+  "alt": "Linked Pair Ring, Silver — the two rings on their box chain, close",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 240971
+ },
+ {
+  "n": 64,
+  "handle": "linked-trio-ring",
+  "file": "linked-pair-ring-standing-2",
+  "alt": "Linked Pair Ring, Silver — the two rings standing side by side",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 281374
+ },
+ {
+  "n": 66,
+  "handle": "droplet-open-ring",
+  "file": "droplet-open-ring-worn-hand",
+  "alt": "Droplet Open Ring, Silver — worn, the hand open",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 333607
+ },
+ {
+  "n": 65,
+  "handle": "droplet-open-ring",
+  "file": "droplet-open-ring-worn-face",
+  "alt": "Droplet Open Ring, Silver — worn, the hand raised to the face",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 576023
+ },
+ {
+  "n": 67,
+  "handle": "marquise-wheat-cuff",
+  "file": "marquise-coil-cuff-worn-sleeve",
+  "alt": "Marquise Coil Cuff — worn on the wrist against an ivory sleeve",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 348866
+ },
+ {
+  "n": 68,
+  "handle": "marquise-wheat-cuff",
+  "file": "marquise-coil-cuff-worn-waist",
+  "alt": "Marquise Coil Cuff — worn, the hand resting at the waist",
+  "w": 2048,
+  "h": 2048,
+  "bytes": 365839
+ },
+ {
+  "n": 71,
+  "handle": "triple-coil-wrap-bangle",
+  "file": "triple-coil-wrap-bangle-worn-dress",
+  "alt": "Triple Coil Wrap Bangle, Gold — worn with a mustard slip dress",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 335884
+ },
+ {
+  "n": 74,
+  "handle": "roman-numeral-trio-ring",
+  "file": "roman-numeral-trio-ring-close",
+  "alt": "Roman Numeral Trio Ring — close on a plaster block, the three bands and the bar that joins them",
+  "w": 1824,
+  "h": 2272,
+  "bytes": 289724
+ },
+ {
+  "n": 75,
+  "handle": "watch-link-ring",
+  "file": "watch-link-ring-worn-collarbone",
+  "alt": "Watch Link Ring, Gold — worn, the hand at the collarbone",
+  "crop": [
+   49,
+   0,
+   1775,
+   2158
+  ],
+  "w": 1726,
+  "h": 2158,
+  "bytes": 311401
+ }
+]

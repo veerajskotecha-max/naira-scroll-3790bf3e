@@ -923,3 +923,60 @@ note on how PVD differs from regular plating, and anti-tarnish.
   Midnight Rivière went live at 08:16, and the Clover pieces, Aquarelle and
   Watch Link Strap were edited 08:11–08:15.
 - Scripts: `shopify/harness/links-2026-10-27/`.
+
+## 28 Oct 2026: the owner's Drive "listing photos"
+
+- **The folder held 76 files.** 52 are now on 28 listings and 24 were left
+  out. The photos and the reasons are in `shopify/photos/drive-2026-10-28/`.
+  - Each file was matched to its listing. Each was then compared, full size,
+    with the listing's own photos: setting and claws, stone count, metal
+    colour, and hands and ears for AI errors.
+  - Left out:
+    - 15 already on their listings, found by fingerprint and checked side by
+      side.
+    - #76, a smaller copy of #43.
+    - 3 blank black frames.
+    - 5 held for the owner:
+      - #18 and #69: an all-gold cable cuff with ball ends that matches no
+        listing. It looks like the Torsade Pearl Cuff without its pearls.
+      - #7, #72 and #73: the silver tubogas ring standing on a black disc.
+  - Cropped:
+    - #21: cream bars above and below.
+    - #43: two sparkle watermarks.
+    - #75: a "ks" mark.
+  - The rest are the originals saved as JPEG at full size.
+- **Where they go.** After each listing's own product and on-model photos,
+  before the gift box and size guide.
+  - On Silk Mesh Cuff, Droplet Open Cuff, Triple Coil Wrap Bangle and Watch
+    Link Ring, each new photo sits with its own colour's photos.
+  - Linked Pair Ring's photos were already mixed by colour, so its five new
+    ones follow them: gold, then silver.
+  - Aqua Heart Drops' macro and scale photos had sat behind its gift box.
+    They now come before it.
+- **Shopify: two approvals.**
+  - Add: one `productUpdate` per listing, with the files fetched from this
+    branch at d5b6e66. All 52 were READY on first read.
+    - The first try was refused before anything was sent: the document went
+      over Shopify's 16 KB limit. The inputs now travel as variables.
+    - `media(last:)` cannot be read back without `before:`, so the galleries
+      were read with a separate query.
+  - Order: one `productReorderMedia` per listing, 45 moves in 23 listings.
+    Five listings only needed the photos added at the end.
+- **Nothing else moved.**
+  - No first photo changed, and no photo was attached to a variant. The
+    catalogue ad images and the Shop All colour cards are therefore as they
+    were.
+  - The site's own logic was run on this morning's live data and on today's:
+    `shopify/harness/drive-2026-10-28/cards-compare.ts`. Every card photo and
+    every product page's opening photo is unchanged.
+  - The new files are named with hyphens. The site's `_worn` rule for
+    choosing an opening photo never matches them.
+  - On nairaflore.com, Aqua Heart Drops shows 10 photos and the first new
+    one at 5 of 10. Droplet Open Cuff and Silk Mesh Cuff show theirs in
+    colour order.
+- **Changed elsewhere today, not by this session.**
+  - Clarté Baguette Bracelet — Silver went to Draft at 09:44 and is off the
+    site.
+  - Size guides were added to 11 listings, among them Lotus Pear Drop Studs
+    and Watch Link Strap Bracelet, which also got photos here. They sit last,
+    after these photos.

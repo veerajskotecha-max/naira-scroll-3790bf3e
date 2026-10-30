@@ -42,13 +42,19 @@ const knownJewelleryHandles = new Set([
   ...staticJewellery.map((p) => p.handle),
 ]);
 
+/* An outfit's place on the site: the made-to-measure service, the one outfit
+   entry in every menu. The visible trail and the structured data both read
+   it, so they agree and name the page itself; they pointed at /shop/indo-western
+   and /shop, which only redirect (to /customize and to /jewellery). */
+const OUTFITS = { name: "Custom Outfits", path: "/customize" };
+
 const ProductDetail = () => {
   const [selection, setSelection] = useState<ProductSelection | null>(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const goBack = () => {
     if (((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0) navigate(-1);
-    else navigate("/shop/indo-western");
+    else navigate(OUTFITS.path);
   };
 
   const earlyJewellery = Boolean(id && knownJewelleryHandles.has(id));
@@ -221,7 +227,7 @@ const ProductDetail = () => {
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
-            { "@type": "ListItem", position: 2, name: "Shop", item: "https://nairaflore.com/shop" },
+            { "@type": "ListItem", position: 2, name: OUTFITS.name, item: `https://nairaflore.com${OUTFITS.path}` },
             { "@type": "ListItem", position: 3, name: title, item: `https://nairaflore.com/product/${id}` },
           ],
         }}
@@ -231,7 +237,7 @@ const ProductDetail = () => {
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
-          <Link to="/shop/indo-western" className="transition-colors hover:text-foreground">Shop</Link>
+          <Link to={OUTFITS.path} className="transition-colors hover:text-foreground">{OUTFITS.name}</Link>
           <span>/</span>
           <span style={{ color: "hsl(0 0% 30%)" }}>{title}</span>
         </nav>

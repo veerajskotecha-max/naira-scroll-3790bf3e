@@ -112,3 +112,22 @@ describe("/products dead ends", () => {
     expect(app).toMatch(/path="\/product" element=\{<KeepQuery to="\/jewellery" \/>\}/);
   });
 });
+
+/* The clothing pages' visible crumb went to /shop/indo-western and their
+   BreadcrumbList to /shop: two different pages, both only redirects, and the
+   second ended on the jewellery listing. One crumb now feeds both. */
+describe("clothing page breadcrumbs", () => {
+  // Block comments only: the crumb's URL holds a "//".
+  const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
+  const detail = strip(readFileSync(resolve(__dirname, "ProductDetail.tsx"), "utf8"));
+  const app = strip(readFileSync(resolve(__dirname, "../App.tsx"), "utf8"));
+
+  it("points the trail and the structured data at the same page, which does not redirect", () => {
+    const path = detail.match(/const OUTFITS = \{ name: "[^"]+", path: "([^"]+)" \}/)?.[1];
+    expect(path).toBe("/customize");
+    expect(app).toMatch(new RegExp(`path="${path}" element=\\{<(?!KeepQuery|Navigate)`));
+    expect(detail).toMatch(/name: OUTFITS\.name, item: `https:\/\/nairaflore\.com\$\{OUTFITS\.path\}`/);
+    expect(detail).toMatch(/<Link to=\{OUTFITS\.path\}[^>]*>\{OUTFITS\.name\}<\/Link>/);
+    expect(detail).not.toMatch(/"\/shop(?:\/indo-western)?"|nairaflore\.com\/shop"/);
+  });
+});

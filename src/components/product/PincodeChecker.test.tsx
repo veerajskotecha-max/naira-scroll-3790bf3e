@@ -25,4 +25,19 @@ describe("PincodeChecker", () => {
     expect(line).toMatch(/400001 in 3 working days once it ships/);
     expect(line).not.toMatch(/ by /);
   });
+
+  // 999999 was promised a date and Cash on Delivery.
+  it("leaves a pincode it cannot vouch for to checkout, with no date or COD", () => {
+    render(<PincodeChecker />);
+    check("999999");
+    expect(screen.queryByText(/Delivery to/)).toBeNull();
+    expect(screen.queryByText(/Cash on Delivery available/)).toBeNull();
+    expect(screen.getByText(/checked with your full address at checkout/)).toBeTruthy();
+  });
+
+  it("still asks again for a pincode that is not six digits", () => {
+    render(<PincodeChecker />);
+    check("12345");
+    expect(screen.getByText("Enter a valid 6-digit pincode.")).toBeTruthy();
+  });
 });

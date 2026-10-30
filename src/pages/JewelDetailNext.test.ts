@@ -145,17 +145,14 @@ describe("redesigned product page", () => {
   });
 });
 
-/* Held for the owner: the product structured data's "sku" stays as it was at
-   6a4593e. The Meta Pixel runs with automatic configuration, so its Microdata
-   event reads this JSON-LD; filling the key from Shopify's variant SKU (Audit
-   C65, d01e444) changes what Meta receives on every product page, and waits
-   for sign-off. */
+/* "sku": "" is invalid structured data, and 115 product pages served it. A
+   piece without a code leaves the key out. */
 describe("product structured data", () => {
   for (const file of ["JewelDetailNext.tsx", "JewelDetail.tsx"]) {
-    it(`${file} emits the piece's sku as before`, () => {
+    it(`${file} never emits an empty sku`, () => {
       const page = readFileSync(resolve(__dirname, file), "utf8").replace(/\/\/.*$/gm, "");
-      expect(page).toMatch(/^\s*sku: piece\.sku,/m);
-      expect(page).not.toMatch(/\.\.\.\(piece\.sku \?/);
+      expect(page).not.toMatch(/^\s*sku: piece\.sku,/m);
+      expect(page).toMatch(/\.\.\.\(piece\.sku \? \{ sku: piece\.sku \} : \{\}\)/);
     });
   }
 });

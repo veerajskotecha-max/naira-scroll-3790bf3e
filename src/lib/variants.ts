@@ -42,8 +42,12 @@ export const firstBuyable = (variants: JewelVariant[]) => variants.find((v) => v
     choice carries the list, so the first-paint snapshot stays lean. */
 export const variantFields = (node: ShopifyProductNode) => {
   const variants = variantsFromNode(node);
+  const lead = variants.length ? firstBuyable(variants) : undefined;
   return {
-    lead: variants.length ? firstBuyable(variants) : undefined,
+    lead,
+    /* The lead variant's code names the piece in its structured data, beside
+       the lead's price. Not carried per variant: the snapshot stays lean. */
+    sku: node.variants.edges.find(({ node: v }) => v.id === lead?.id)?.node.sku?.trim() || undefined,
     availableForSale: node.availableForSale && (variants.length ? variants.some((v) => v.availableForSale) : true),
     choice: variants.length > 1 ? { variants, options: optionsFromNode(node) } : {},
   };

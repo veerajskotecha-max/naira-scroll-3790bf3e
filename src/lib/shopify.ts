@@ -24,6 +24,8 @@ export interface ShopifyProductVariant {
   /** Shopify "compare at" price — the MRP struck through on cards and PDPs. */
   compareAtPrice?: ShopifyMoney | null;
   selectedOptions: ShopifySelectedOption[];
+  /** The supplier code, when the listing has one (the clothing has none). */
+  sku?: string | null;
   /** The variant's own photo (a metal or stone), when Shopify has one. */
   image?: { url: string } | null;
 }
@@ -136,6 +138,7 @@ export const PRODUCTS_QUERY = `
                   name
                   value
                 }
+                sku
                 image {
                   url
                 }
@@ -199,6 +202,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
               name
               value
             }
+            sku
             image {
               url
             }
@@ -239,6 +243,7 @@ const PRODUCT_VARIANTS_QUERY = `
               name
               value
             }
+            sku
             image {
               url
             }

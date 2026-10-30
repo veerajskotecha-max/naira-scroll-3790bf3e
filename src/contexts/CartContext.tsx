@@ -387,16 +387,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart, commitCart]);
 
-  const openCheckout = useCallback(async (url: string) => {
+  /* What goes to checkout: the whole bag, or (Buy Now beside other pieces)
+     only the given lines, on a Shopify cart of their own. */
+  const openCheckout = useCallback(async (url: string, only?: { items: CartItem[]; cartId: string }) => {
     const latest = loadCart();
-    const value = Number(latest.items.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
+    const lines = only?.items ?? latest.items;
+    const value = Number(lines.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
     trackPixel("InitiateCheckout", {
-      currency: latest.items[0]?.currencyCode || "INR",
+      currency: lines[0]?.currencyCode || "INR",
       // Meta requires a positive numeric value.
       ...(value > 0 ? { value } : {}),
-      num_items: latest.items.reduce((sum, i) => sum + i.quantity, 0),
-      content_ids: latest.items.map((i) => shopifyNumericId(i.variantId) ?? i.id),
-      contents: latest.items.map((i) => ({
+      num_items: lines.reduce((sum, i) => sum + i.quantity, 0),
+      content_ids: lines.map((i) => shopifyNumericId(i.variantId) ?? i.id),
+      contents: lines.map((i) => ({
         id: shopifyNumericId(i.variantId) ?? i.id,
         quantity: i.quantity,
         item_price: Number(i.price.toFixed(2)),
@@ -411,8 +414,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setClarityTag("checkout_value", String(Math.round(value)));
     /* Carry the anonymous visitor id and click id onto the cart so Shopify's
        server-side Purchase event can be matched back to this session. Never
-       block checkout on it. */
-    if (latest.cartId) {
+       block checkout on it. A cart of Buy Now's own got them a moment ago. */
+    if (!only && latest.cartId) {
       try {
         await updateCartTrackingAttributes(latest.cartId);
       } catch (error) {
@@ -425,7 +428,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
        put on the cart, the code handed to Fastrr and the total shown in the
        drawer are all the same discount. */
     const resolved = resolveCartDiscount({
-      totalItems: latest.items.reduce((sum, i) => sum + i.quantity, 0),
+      totalItems: lines.reduce((sum, i) => sum + i.quantity, 0),
       promoCode: getPromoCode(),
     });
 
@@ -439,7 +442,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
        cart makes it travel with the cart. The URL parameter stays as a
        harmless belt-and-braces. */
     const code = resolved.code;
-    const cartId = loadCart().cartId;
+    const cartId = only ? only.cartId : loadCart().cartId;
     if (code && cartId) {
       /* That call runs 437ms at the median and up to 1.2s, so the button has to
          say something. Without this the shopper taps Secure Checkout and nothing
@@ -489,7 +492,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (isFastrrEnabled()) {
       setIsLoading(true);
       try {
-        const started = await startFastrrCheckout(loadCart().items, { couponCode: resolved.code, fallbackUrl: target });
+        const started = await startFastrrCheckout(only ? only.items : loadCart().items, { couponCode: resolved.code, fallbackUrl: target });
         if (started) {
           /* Fastrr takes over the screen itself — no navigation from us. */
           setDrawerOpen(false);
@@ -520,7 +523,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
      A line already in the bag goes as it is: adding again sent a shopper who
      tapped Add and then Buy Now to pay for two (and earned BUY2 on the way).
      A shopper who picked more than the bag holds (the outfit page's quantity
-     stepper) gets the line raised to that many first, not that many more. */
+     stepper) gets the line raised to that many first, not that many more.
+     With other pieces in the bag, only this one goes to checkout and the rest
+     stay in the bag for later: Shopify's checkout (Fastrr's fallback) gets a
+     cart of its own holding just this line. */
   const buyNow = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
     const latest = loadCart();
     const inBag = latest.items.find((line) => line.lineId && keyOf(line) === keyOf(item));
@@ -531,6 +537,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         : latest.checkoutUrl;
     if (!url) {
       toast.error("Could not open checkout. Please try again.");
+      return;
+    }
+    const bag = loadCart();
+    const line = bag.items.find((l) => l.lineId && keyOf(l) === keyOf(item));
+    if (line && bag.items.length > 1) {
+      let own: Awaited<ReturnType<typeof createShopifyCart>> = null;
+      try {
+        own = await createShopifyCart(line.variantId, line.quantity, line.size);
+      } catch (error) {
+        console.error("Could not start a cart for this piece", error);
+      }
+      if (!own) {
+        toast.error("Could not open checkout. Please try again.");
+        return;
+      }
+      await openCheckout(own.checkoutUrl, { items: [{ ...line, quantity: own.quantity, lineId: own.lineId }], cartId: own.cartId });
       return;
     }
     await openCheckout(url);

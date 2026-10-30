@@ -1,0 +1,1753 @@
+{
+ "summary": "Fix the safe confirmed audit findings in 4 parallel worktrees, integrate on ship-main, adversarially review, repair",
+ "agentCount": 7,
+ "logs": [
+  "4 fix groups: s3a (16), s3b (7), s1 (12), s2 (21)",
+  "s3a: 14 commits, 14 fixed / 2 partial / 0 not fixed",
+  "s3b: 7 commits, 5 fixed / 1 partial / 1 not fixed",
+  "s1: 10 commits, 8 fixed / 3 partial / 0 not fixed",
+  "s2: 19 commits, 20 fixed / 1 partial / 0 not fixed",
+  "2 blocker/major issues to repair; 9 out-of-bounds changes to revert or justify"
+ ],
+ "result": {
+  "fixes": [
+   {
+    "group": "s3a",
+    "worktree": "/tmp/fix-s3a",
+    "branch": "fix-s3a",
+    "commits": [
+     {
+      "sha": "b7572bd",
+      "subject": "Prerender's capture browser no longer reaches the Meta relay or other trackers",
+      "findings": [
+       "C01"
+      ]
+     },
+     {
+      "sha": "812bb46",
+      "subject": "robots.txt rules reach Google, Bing and Twitter; hidden pages say noindex",
+      "findings": [
+       "C22",
+       "C39"
+      ]
+     },
+     {
+      "sha": "b105e6d",
+      "subject": "Old Shopify addresses land on their real pages, query kept",
+      "findings": [
+       "C09",
+       "C38"
+      ]
+     },
+     {
+      "sha": "6cf093f",
+      "subject": "/shop/indo-western preloads the outfits page it redirects to",
+      "findings": [
+       "C49"
+      ]
+     },
+     {
+      "sha": "43f0470",
+      "subject": "Error panel's \"Browse the collection\" link and Back work again",
+      "findings": [
+       "C17"
+      ]
+     },
+     {
+      "sha": "72a4ae0",
+      "subject": "A missing page file reaches the error panel as itself, not as a TypeError",
+      "findings": [
+       "C80"
+      ]
+     },
+     {
+      "sha": "c2de1a2",
+      "subject": "Shopper telemetry no longer crashes the shop on browsers without randomUUID",
+      "findings": [
+       "C18"
+      ]
+     },
+     {
+      "sha": "1bd3b87",
+      "subject": "Blocked browser storage no longer blanks the whole site",
+      "findings": [
+       "C46"
+      ]
+     },
+     {
+      "sha": "25dadec",
+      "subject": "A crafted /auth?next= no longer crashes a signed-in member's page",
+      "findings": [
+       "C51"
+      ]
+     },
+     {
+      "sha": "e0e59ad",
+      "subject": "Outfit product page loads its reviews after the page, not before it",
+      "findings": [
+       "C50"
+      ]
+     },
+     {
+      "sha": "a590383",
+      "subject": "Every not-a-page state replaces the homepage's canonical and index tags",
+      "findings": [
+       "C23"
+      ]
+     },
+     {
+      "sha": "b7fe20a",
+      "subject": "CLAUDE.md: the announcement strip no longer carries NAIRA10",
+      "findings": [
+       "C90"
+      ]
+     },
+     {
+      "sha": "7cc5c21",
+      "subject": "Lockfiles pin react-router-dom 6.30.6 / @remix-run/router 1.23.4",
+      "findings": [
+       "C54"
+      ]
+     },
+     {
+      "sha": "3ac34ed",
+      "subject": "A product page whose code stalls past 8 s stays on screen",
+      "findings": [
+       "C78"
+      ]
+     }
+    ],
+    "findings": [
+     {
+      "id": "C09",
+      "status": "fixed",
+      "summary": "Every page the Shopify store publishes now has a redirect that keeps the query: contact and faqs as before, about-naira to /, made-for-you and custom to /customize, privacy-policy to /privacy, terms to /terms, exchange-return-policy, concepts and gifting to their pages, shop to /jewellery. /collections/:slug/products/:id now opens the product page. The pre-boot /products hop in vite.config.ts also matches that nested address, so a jewellery piece is moved to /jewellery/<handle> before the pixel reads the URL, exactly as /products/<handle> already is. routeCode preloads the product page's code for the nested address.",
+      "files": [
+       "src/App.tsx",
+       "vite.config.ts",
+       "src/lib/routeCode.ts",
+       "src/test/legacy-routes.test.ts",
+       "src/lib/routeCode.test.ts",
+       "src/pages/productRedirect.test.ts"
+      ],
+      "tests": [
+       "src/test/legacy-routes.test.ts (parses App.tsx and resolves URLs with React Router's matchRoutes, following each redirect; 33 assertions failed on the old code)",
+       "src/pages/productRedirect.test.ts: pre-boot pattern extracted from vite.config.ts",
+       "src/lib/routeCode.test.ts"
+      ],
+      "verify": "Browser, Pixel 7 and 1440x900, build served on 127.0.0.1:4430 behind a shell carrying the homepage's head tags. /collections/bracelets/products/prism-riviere-bracelet?fbclid=S3A&utm_source=t ends on /jewellery/prism-riviere-bracelet with the query kept and h1 'Prism Rivi\u00e8re Bracelet'. The hop happens before React: replaceState with a null state while the document is still loading. The same URL on the baseline build showed 'Coming soon'. /collections/all/products/cushion-halo-ring reaches the piece. All 11 /pages/<handle> URLs reach their targets with the query kept. /pages/concepts has no h1, as on the baseline. Script: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3a/heads.mjs (output in c09-phone.json, c09-desktop.json) and hop.mjs.",
+      "ownerNote": "about-naira goes to / because About was removed (the existing /about decision). Unknown /pages/<x> handles still show Coming Soon, per CLAUDE.md. The PixelEvents behaviour of firing a PageView on a client redirect is unchanged; a nested jewellery URL now hops before boot, so it produces one PageView, like /products."
+     },
+     {
+      "id": "C38",
+      "status": "fixed",
+      "summary": "Added KeepQuery redirects for /cart, /cart/add, /checkout and /search to /jewellery (nothing in the app opens the bag from a URL); /account/* to /auth (/account itself is unchanged); /pages/about-us, contact-us, faq, size-guide (to the ring size guide), track-order and /apps/track; /policies/shipping-policy to /faqs, contact-information to /contact and legal-notice to /terms. The outfit collections /collections/dusk and /collections/frontpage now go to /customize, and are preloaded as MadeForYou rather than the jewellery grid. An unknown collection (sets, shop-all) now keeps ?fbclid=/utm_* on its way to /jewellery (JewelleryCategory.tsx).",
+      "files": [
+       "src/App.tsx",
+       "src/pages/JewelleryCategory.tsx",
+       "src/lib/routeCode.ts",
+       "src/test/legacy-routes.test.ts"
+      ],
+      "tests": [
+       "src/test/legacy-routes.test.ts (also pins /account, /cart/c/:token and the /<shop id>/orders forward as unchanged)"
+      ],
+      "verify": "Browser, Pixel 7 and 1440x900. /cart?fbclid=S3A goes to /jewellery?fbclid=S3A. /search?q=ring goes to /jewellery?q=ring. /account/login?fbclid=S3A goes to /auth?fbclid=S3A. /collections/dusk?fbclid=S3A&utm_source=t goes to /customize with the query kept (h1 'Design Your Dream Outfit With Naira'). /collections/sets and /collections/shop-all keep the query on /jewellery. Every /policies/* and /pages/* URL in the finding lands on its real page. /pages/no-such-page still shows Coming Soon with noindex. Output: c38-phone.json and c09-desktop.json in the scratch folder.",
+      "ownerNote": "/cart lands on the collection, not an open bag, because no URL opens the bag today. Opening it would be a new behaviour, and opening the bag primes Fastrr and fires bag events."
+     },
+     {
+      "id": "C39",
+      "status": "fixed",
+      "summary": "OAuthConsent.tsx now renders a noindex PageSEO in every state, the error state included. admin/Reels.tsx renders its noindex head in the checking-access and not-admin branches too, not only the admin one. robots.txt replaces the dead 'Disallow: /oauth' with '/.lovable/' and adds '/admin/'.",
+      "files": [
+       "src/pages/OAuthConsent.tsx",
+       "src/pages/admin/Reels.tsx",
+       "public/robots.txt",
+       "src/test/robots.test.ts"
+      ],
+      "tests": [
+       "src/test/robots.test.ts"
+      ],
+      "verify": "Browser, Pixel 7. The shell was given the live fallback's head tags: canonical '/', 'index, follow' and og:url. Baseline: /.lovable/oauth/consent and /admin/reels kept the homepage title, canonical https://nairaflore.com/ and 'index, follow'. Fixed: 'Authorize access | Naira Flore' and 'Reel Studio | Naira Flore', robots 'noindex, follow', no canonical, no og:url. Output: c39-heads-phone.json."
+     },
+     {
+      "id": "C22",
+      "status": "fixed",
+      "summary": "Removed the Googlebot, Bingbot and Twitterbot groups. Each held only 'Allow: /', and because a crawler obeys only its most specific group, they made those bots skip every Disallow. Also removed the blanket 'Allow: /' that led the '*' group, and the blank line that split it, which ended the group early for first-match parsers. The facebookexternalhit group is byte-for-byte unchanged.",
+      "files": [
+       "public/robots.txt",
+       "src/test/robots.test.ts"
+      ],
+      "tests": [
+       "src/test/robots.test.ts: RFC 9309 group selection and longest-match evaluation; Googlebot, Bingbot, Twitterbot and a generic bot are blocked on /account, /auth, /cart/c/, /checkouts/, /.lovable/ and /admin/ and allowed on public pages; the facebookexternalhit group is pinned; no URL in the 216-entry sitemap is blocked. Five tests failed on the old file."
+      ],
+      "verify": "Unit test, plus two independent evaluators on the new file: the auditor's verify-26/rfc9309.py and Python's urllib.robotparser. Both report Googlebot, Bingbot and Twitterbot blocked on every private path, facebookexternalhit allowed everywhere, and / and /products/x allowed for all.",
+      "ownerNote": "The facebookexternalhit group ('User-agent: facebookexternalhit / Allow: /') was left exactly as it was, because ad and link previews depend on it; it therefore still ignores the Disallow lines. Trade-off for you to decide: the audit's skeptic argued that disallowing /auth and /account stops Google from seeing their in-page noindex and could leave the bare /auth URL (linked from /innercircle) listed as 'Indexed, though blocked'. I kept your original Disallow list, as the task asked; drop those two lines if you prefer the noindex-only setup."
+     },
+     {
+      "id": "C23",
+      "status": "partial",
+      "summary": "Client side only. Coming Soon already replaced the shell's homepage canonical and 'index' with noindex and no canonical. The catch-all's other state, 'Opening your order\u2026', rendered no head and kept them; it now renders noindex too. A test pins both states against a head that starts as the homepage's. The raw HTML the host serves for any address without its own file is unchanged.",
+      "files": [
+       "src/pages/CatchAll.tsx",
+       "src/pages/CatchAll.test.tsx",
+       "src/pages/OAuthConsent.tsx",
+       "src/pages/admin/Reels.tsx"
+      ],
+      "tests": [
+       "src/pages/CatchAll.test.tsx (the order-link test failed on the old code)"
+      ],
+      "verify": "Browser, Pixel 7, shell carrying the homepage's head tags: /zz-unknown-page and /pages/unknown-handle render 'Coming Soon | Naira Flore', robots 'noindex, follow', no canonical, no og:url. The order-link state was checked by unit test only, because it forwards to Shopify's order page, which is off-limits.",
+      "ownerNote": "Still open, needs your review: the raw HTML for unknown, alias and newly listed addresses names canonical '/' with 'index, follow', because dist/index.html is the homepage capture and the host cannot return 404. The fix that removes the raw conflict is to stop scripts/prerender.ts writing the canonical, og:url and robots tags into that file (around line 428). That changes the homepage's own raw head; Helmet adds the tags back at runtime. Republishing whenever pieces go live (already in CLAUDE.md) keeps the window short for new products."
+     },
+     {
+      "id": "C17",
+      "status": "fixed",
+      "summary": "ChunkErrorBoundary now clears its failure when the location's key changes, but only once the panel is already showing, so the update that caught the error cannot swallow it. A small wrapper feeds it useLocation().key as a prop rather than a React key, so ordinary navigations do not remount the header or bag. The panel's link and browser Back now leave the panel, and the link also works from a panel already on /jewellery.",
+      "files": [
+       "src/components/ChunkErrorBoundary.tsx",
+       "src/components/ChunkErrorBoundary.test.tsx"
+      ],
+      "tests": [
+       "src/components/ChunkErrorBoundary.test.tsx: link, Back, link from a panel already on /jewellery, and no loop while the page keeps failing. Three of the four failed on the old code."
+      ],
+      "verify": "Browser, Pixel 7 and 1440x900. The JewelDetailNext chunk answered 404 on every request, then /jewellery/prism-riviere-bracelet was opened. Baseline: after the one reload the panel shows; tapping 'Browse the collection' changes the URL to /jewellery but the panel stays (0 product links). Fixed: the tap opens the /jewellery grid in the same document (h1 'Demi-Fine Jewellery', 107 product links). Back returns to the product URL, whose chunk is still 404, so the panel correctly shows again. Script: c17.mjs; output c17-base.json, c17-phone.json, c17-desktop.json plus screenshots."
+     },
+     {
+      "id": "C18",
+      "status": "fixed",
+      "summary": "shopperPerformance.ts now has an eventId() fallback that builds a real v4 UUID from crypto.getRandomValues when crypto.randomUUID is missing, so the function's z.string().uuid() still accepts it. The body of reportShopperPerformance is wrapped in try/catch, so telemetry can never throw into a page effect. No caller changed.",
+      "files": [
+       "src/lib/shopperPerformance.ts",
+       "src/lib/shopperPerformance.test.ts"
+      ],
+      "tests": [
+       "src/lib/shopperPerformance.test.ts: no randomUUID gives a valid v4 id and one post; a fetch that throws synchronously does not throw. Both failed on the old code; fetch was stubbed, so nothing was sent."
+      ],
+      "verify": "Browser, iPhone 13 and 1440x900. The local build was served under https://nairaflore.com by route fulfilment, with Crypto.prototype.randomUUID deleted; every NO_REPORT request, including shopper-performance and meta-capi, was aborted and only its body read. Baseline: tapping a piece 1.5 s after landing on /jewellery shows 'This page didn't load', and an unknown URL shows the panel instead of Coming Soon. Fixed: the piece opens (h1 'Prism Rivi\u00e8re Bracelet') and the unknown URL shows 'Coming soon'; the aborted telemetry bodies carry valid v4 ids. Script: c18.mjs."
+     },
+     {
+      "id": "C46",
+      "status": "fixed",
+      "summary": "The persist effects in CartContext and WishlistContext are wrapped in try/catch, as commitCart already was. useReels' readCache and writeCache now do their typeof sessionStorage check inside the try, because reading a blocked storage global throws even under typeof. The search overlay's and useRecentlyViewed's writes are guarded too. The search overlay's tracking call is untouched.",
+      "files": [
+       "src/contexts/CartContext.tsx",
+       "src/contexts/WishlistContext.tsx",
+       "src/hooks/useReels.ts",
+       "src/hooks/useRecentlyViewed.ts",
+       "src/components/nav/SearchOverlay.tsx",
+       "src/contexts/storageBlocked.test.tsx"
+      ],
+      "tests": [
+       "src/contexts/storageBlocked.test.tsx: storage getters throw SecurityError; the providers still render, the wishlist works for the visit, and the reels cache reads as empty. All three failed on the old code."
+      ],
+      "verify": "Browser, iPhone 13 and 1440x900, with the localStorage and sessionStorage getters throwing SecurityError. Chromium's own 'Block all cookies' preference did not take effect in this harness (storage read OK), so that run was discarded. Baseline: /, /jewellery and /jewellery/woven-gold-hoops end with #root holding 0 children and 0 text. Fixed: all three render (h1 present, 2,446\u20134,804 characters) with no page errors. Script: c46.mjs."
+     },
+     {
+      "id": "C51",
+      "status": "fixed",
+      "summary": "The next= value is now checked by a new safeNextPath() in src/lib/nextPath.ts, used by Auth.tsx. It resolves next against our own origin and keeps pathname+search+hash only if the origin is unchanged; otherwise it returns /account. That refuses '/\\host', '/<tab>/host' and '//host' and keeps '/account?x#h' and the /.lovable/oauth/consent?authorization_id=\u2026 target.",
+      "files": [
+       "src/lib/nextPath.ts",
+       "src/lib/nextPath.test.ts",
+       "src/pages/Auth.tsx"
+      ],
+      "tests": [
+       "src/lib/nextPath.test.ts"
+      ],
+      "verify": "Browser, Pixel 7 and 1440x900, with a fake member session in localStorage and every Supabase request aborted, so nothing signed in for real. Baseline: next=/\\evil.example, /\\evil.example/x?y=1 and /<tab>/evil.example each show 'This page didn't load' with a replaceState SecurityError. Fixed: all three land on /account ('Hello, s3a.'), with no error and no request to evil.example. Script: c51.mjs."
+     },
+     {
+      "id": "C78",
+      "status": "fixed",
+      "summary": "New src/lib/prebuiltPage.ts. When main.tsx's 8 s timer wins while the landing page's code is still downloading, keepPrebuiltPage() takes the pre-built nodes under the top-level <header> before createRoot runs. AppShell's routes Suspense fallback, PrebuiltPage, puts those same nodes back in the same commit, once, so they never leave the screen and a loaded photo stays loaded. It never keeps the homepage file standing in for another address (the data-nf-fallback mark). The app still starts at 8 s as main.tsx requires, and later fallbacks are empty, as before.",
+      "files": [
+       "src/lib/prebuiltPage.ts",
+       "src/lib/prebuiltPage.test.tsx",
+       "src/main.tsx",
+       "src/App.tsx"
+      ],
+      "tests": [
+       "src/lib/prebuiltPage.test.tsx: same DOM nodes kept under the live header, used once, never taken from the homepage stand-in."
+      ],
+      "verify": "Browser, iPhone 13 and 1440x900. I could not run the prerender, so I captured a pre-built /jewellery/prism-riviere-bracelet from each build myself (Playwright with NO_REPORT aborted, DOM saved as that route's index.html in a scratch copy), then held JewelDetailNext-*.js for 20 s and sampled #root every second. Baseline: 2,741 characters with h1 and Add to cart from 1 to 8 s, then 149 characters (announcement bar only) from 9 to 20 s. Fixed: 2,741 characters with h1 and Add to cart at every sample from 1 to 25 s (2,569 on desktop). The live header worked during the hold: the bag opened at 11.5 s. With no hold, the page renders normally. Scripts: capture.mjs, c78.mjs, c78b.mjs; screenshots c78-base-11s.png and c78-phone-11s.png."
+     },
+     {
+      "id": "C80",
+      "status": "fixed",
+      "summary": "The vite:preloadError listener moved into chunkFailure.ts as handlePreloadError(). It now calls preventDefault only when reloadForStaleChunk() really reloads. Once the one reload is spent, the import rejects with its real error, so ChunkErrorBoundary can recognise it and lazyRoute's onRejected clears the failed download for a retry. Optional 3D chunks are still never reloaded or held back.",
+      "files": [
+       "src/lib/chunkFailure.ts",
+       "src/lib/chunkFailure.test.ts",
+       "src/main.tsx"
+      ],
+      "tests": [
+       "src/lib/chunkFailure.test.ts: handlePreloadError holds the error back only while the page reloads, lets the real error through once the reload is spent, and never acts on a three.js chunk."
+      ],
+      "verify": "Same browser drill as C17. Baseline boundary error: 'TypeError: Cannot read properties of undefined (reading 'default')'. Fixed: 'TypeError: Failed to fetch dynamically imported module: \u2026/JewelDetailNext-\u2026.js'. Both runs make the same number of navigations, so there is no reload loop.",
+      "ownerNote": "CLAUDE.md, in 'A page whose code never arrives', says Vite's preload event never sees a failure React throws while rendering. That is wrong for built output, which is where this listener runs. I did not edit it, because my CLAUDE.md change was limited to the C90 drift."
+     },
+     {
+      "id": "C49",
+      "status": "fixed",
+      "summary": "routeCode now maps /shop/indo-western to MadeForYou, the page its redirect lands on. ShopAll left pageCode's exports and its PAGES table, since no route renders it, and the stale comment in scripts/routes.ts was corrected. A new test checks every routeCode entry against the page App.tsx really renders at that URL, following redirects, so this kind of drift fails the suite.",
+      "files": [
+       "src/lib/routeCode.ts",
+       "src/pageCode.ts",
+       "scripts/routes.ts",
+       "src/lib/routeCode.test.ts",
+       "src/test/legacy-routes.test.ts"
+      ],
+      "tests": [
+       "src/test/legacy-routes.test.ts 'the landing preload table' (failed on the old ShopAll entry)",
+       "src/lib/routeCode.test.ts"
+      ],
+      "verify": "Browser, Pixel 7, landing on /shop/indo-western?utm_source=t. Baseline downloaded ShopAll, select and dialog, then MadeForYou at 273 ms. Fixed downloads only MadeForYou, at 111 ms, and ends on /customize?utm_source=t. The fixed build emits no ShopAll chunk. Script: chunks.mjs.",
+      "ownerNote": "src/pages/ShopAll.tsx is now unreferenced. I left it in place (smallest change, easy to restore); delete it if it will not come back."
+     },
+     {
+      "id": "C50",
+      "status": "fixed",
+      "summary": "ProductDetail.tsx (the outfit product page) now lazy-loads CustomerReviews behind a Suspense placeholder, as JewelDetailNext already does. The reviews sit below the gallery and details. Measured from the Vite manifest's static imports at gzip -9, the apparel route's first JS download falls from 265.8 KiB (272.2 kB) to 237.8 KiB (243.5 kB). Every other route is unchanged: Index 236.3, Jewellery 220.6, JewelleryCategory 217.3 and JewelDetailNext 194.9 KiB.",
+      "files": [
+       "src/pages/ProductDetail.tsx",
+       "src/pages/ProductDetail.test.ts"
+      ],
+      "tests": [
+       "src/pages/ProductDetail.test.ts (source pin: no static import of CustomerReviews)"
+      ],
+      "verify": "Measured with /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3a/closure.py on the baseline and fixed builds. Browser, iPhone 13 and 1440x900: /products/blush-of-dawn renders h1 'Blush of Dawn' and the 'Customer Reviews' section with no errors (screenshot c50-phone.png)."
+     },
+     {
+      "id": "C01",
+      "status": "partial",
+      "summary": "Build side only, as scoped. New src/lib/reportingRequests.ts exports REPORTING_REQUEST, the harness NO_REPORT list minus /__l5e/ (on 127.0.0.1 that is the app's own image path). scripts/prerender.ts's capture browser now routes that pattern to abort, covering /functions/v1/meta-capi, /functions/v1/shopper-performance, Clarity, Google, Hotjar, monorail, pickrr events, Cloudflare insights and Lovable's analytics, not just the Meta domains. pixel.ts and the meta-capi function are untouched.",
+      "files": [
+       "src/lib/reportingRequests.ts",
+       "src/lib/reportingRequests.test.ts",
+       "scripts/prerender.ts"
+      ],
+      "tests": [
+       "src/lib/reportingRequests.test.ts: 12 reporting URLs blocked, 8 needed URLs (app assets, Shopify API and CDN, reels storage, REST, fonts) allowed, and a source pin that prerender.ts imports the pattern and routes it to abort."
+      ],
+      "verify": "The prerender was not run (hard rule). A standalone script, /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3a/c01-route.mjs, loads the same REPORTING_REQUEST from the source file and applies it with page.route exactly as prerender.ts does, under an outer context route that aborts every NO_REPORT URL. It fires POSTs to the meta-capi and shopper-performance URLs plus fbevents and Clarity. Result: 4 of 4 caught by the prerender rule, 0 reached the outer guard (c01-route.out).",
+      "ownerNote": "Still open, needs your review: the app itself still mirrors ViewContent and the other server events to meta-capi from localhost and Lovable previews, because sendServerEvent in src/lib/pixel.ts never checks window.__nairaProd. The fix is a production gate there (and optionally a host check on event_source_url in supabase/functions/meta-capi). Both change what CAPI receives, so I left them for your decision."
+     },
+     {
+      "id": "C54",
+      "status": "fixed",
+      "summary": "react-router-dom, react-router and @remix-run/router now pin 6.30.6 / 6.30.6 / 1.23.4, the newest 6.x, in package.json (^6.30.6), package-lock.json and bun.lock; no major bump. bun.lock is the lockfile Lovable maintains (its entries resolve through Lovable's npm cache). I regenerated it with 'bun install --lockfile-only' in an isolated scratch copy holding only package.json and bun.lock, so the shared node_modules could not be touched; exactly the 4 router lines changed. For package-lock.json, the prescribed 'npm install --package-lock-only react-router-dom@6.30.6' rewrote about 6,000 lines, because that file was already out of sync with package.json (three, @types/three, drizzle-kit, drizzle-orm and postgres are missing from it). I reverted that and hand-edited only the three router entries, using the version, resolved URL and integrity npm had produced, which match bun's.",
+      "files": [
+       "package.json",
+       "package-lock.json",
+       "bun.lock"
+      ],
+      "tests": [],
+      "verify": "npm audit --omit=dev --package-lock-only: 26 vulnerabilities before (1 critical, 18 high, 7 moderate), 25 after (1 critical, 15 high, 9 moderate). @remix-run/router no longer appears; react-router drops from high to moderate. npm ls --package-lock-only shows react-router-dom 6.30.6 with @remix-run/router 1.23.4. node_modules already held 6.30.6 and 1.23.4, so tsc, vitest and vite build resolve unchanged and pass.",
+      "ownerNote": "Two moderate react-router advisories remain on every 6.x release: GHSA-wrjc (backslash paths in Link/useNavigate; C51 closes the one place a URL feeds navigate) and GHSA-337j (server rendering only, which this app does not do). Clearing them needs react-router 7.18 or later. The binary bun.lockb (stale since 21 Sep) was left untouched. package-lock.json still lacks three, drizzle and postgres; that is pre-existing drift, not part of this change."
+     },
+     {
+      "id": "C90",
+      "status": "fixed",
+      "summary": "CLAUDE.md in the worktree no longer says the announcement strip carries NAIRA10. It now says the owner had the code taken off the header, that AnnouncementBar.tsx runs only the sale, free-shipping and limited-batch lines, that AnnouncementBar.test.tsx fails if NAIRA10 returns, and that putting it back or showing it elsewhere is the owner's call. No other CLAUDE.md text changed.",
+      "files": [
+       "CLAUDE.md"
+      ],
+      "tests": [],
+      "verify": "Compared against src/components/AnnouncementBar.tsx (MESSAGES lists three lines; its comment records the removal) and AnnouncementBar.test.tsx:27 (asserts NAIRA10 is absent)."
+     }
+    ],
+    "verification": {
+     "vitest": "npx vitest run on 3ac34ed: 75 files, 603 of 603 tests pass (474 at base 6a4593e)",
+     "tsc": "npx tsc --noEmit -p tsconfig.app.json: exit 0, no errors",
+     "build": "npx vite build: built in 21.5 s, exit 0 (only the existing chunk-size warning); supabase/functions/mcp/index.ts checked out after every build; git status clean apart from the ignored dist/",
+     "browser": "Global Playwright 1.56 chromium.launch() with no options; NO_REPORT aborted and webdriver hidden in every context; no checkout, forms or Shopify writes. Builds were served by distserve.mjs on 127.0.0.1:4430 (fixed) and 4431 (baseline); both servers were stopped by PID. Each UI fix was checked at Pixel 7 or iPhone 13 and at 1440x900, with before and after runs for C09, C38, C39, C17, C80, C18, C46, C51, C49, C50 and C78. Final regression pass on the last build: /, /jewellery, a piece, a collection, the /products hop with fbclid, the apparel page, /customize, /journal, the nested product URL, /pages/privacy-policy and an unknown URL all render with the right head; tapping from the grid to a piece and pressing Back works at both sizes with no page errors. Scripts and outputs are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3a/"
+    },
+    "notes": "C01 and C23 are partial. In both cases the remaining part needs an owner decision: the production gate for the server-side Meta mirror in pixel.ts and meta-capi (C01), and stripping the homepage's canonical and robots tags from the prerendered fallback file (C23). One deviation from the prescribed command for C54: npm install --package-lock-only rewrote about 6,000 lines of pre-existing package-lock drift, so I hand-edited only the three router entries instead; bun.lock was regenerated with bun's own --lockfile-only in an isolated copy and changed exactly four lines. C78 was checked against a pre-built page I captured myself with Playwright, because the prerender may not be run. Also worth knowing: the CLAUDE.md sentence about Vite's preload event (see C80) is inaccurate and was left alone; src/pages/ShopAll.tsx is now unreferenced; /cart lands on /jewellery rather than opening the bag. While checking my own test I accidentally discarded an uncommitted test edit with git checkout; I re-applied it in full before committing c2de1a2, and the committed tests were verified."
+   },
+   {
+    "group": "s3b",
+    "worktree": "/tmp/fix-s3b",
+    "branch": "fix-s3b",
+    "commits": [
+     {
+      "sha": "b1148ae",
+      "subject": "Minimal and Office Wear stop listing the whole line; duplicate landings name the broader one",
+      "findings": [
+       "C24"
+      ]
+     },
+     {
+      "sha": "1133ecc",
+      "subject": "Empty collections drop out of links, the sitemap and the index",
+      "findings": [
+       "C07"
+      ]
+     },
+     {
+      "sha": "8a4f155",
+      "subject": "Product structured data carries Shopify's SKU, and never an empty one",
+      "findings": [
+       "C65"
+      ]
+     },
+     {
+      "sha": "9a4bc6a",
+      "subject": "Product descriptions in search and link previews end on a whole word",
+      "findings": [
+       "C67"
+      ]
+     },
+     {
+      "sha": "d77a6e0",
+      "subject": "Clothing pages' breadcrumbs name Custom Outfits, the page itself",
+      "findings": [
+       "C68"
+      ]
+     },
+     {
+      "sha": "57719da",
+      "subject": "Titles fit search results; product URLs carry lastmod in the sitemap",
+      "findings": [
+       "C72"
+      ]
+     },
+     {
+      "sha": "27fc038",
+      "subject": "Regenerate sitemap.xml and llms.txt",
+      "findings": [
+       "C07",
+       "C24",
+       "C72"
+      ]
+     }
+    ],
+    "findings": [
+     {
+      "id": "C07",
+      "status": "fixed",
+      "summary": "Any landing with no piece to show is now handled generally, not by slug. A new helper, stockedLandings, in src/lib/jewelleryCollections.ts judges each landing on the colour cards the page draws. scripts/routes.ts leaves empty landings out of the prerender and sitemap list. It judges them first on the bundled first-paint catalogue (jewellery.ts plus jewellerySnapshot.ts), then again against Shopify's live handles. generate-sitemap.ts builds llms.txt from the same list. Once live data arrives, empty landings also drop out of the Shop All SHOP BY COLLECTION chips and out of each landing's category bar and sibling links. Opened directly, an empty landing shows 'Nothing in this collection right now. New pieces join Naira Petite regularly.' with the existing 'View all jewellery' button to /jewellery. It renders robots 'noindex, follow', swaps its meta description, and drops its lead, sizing block, intro, bullets, FAQ, FAQ JSON-LD and CollectionPage JSON-LD (the copy that described evil-eye stock). Nothing is judged before Shopify answers, so Charm Bracelets, Solitaire Rings and Rose Gold, which have none of the 21 bundled pieces, no longer flash 'No pieces' on first paint. prerender.ts now gives a collection that empties mid-build the SPA shell with a warning instead of failing the publish, the same way it handles an unlisted piece. The jewellery-gifts FAQ now suggests 'a charm bracelet' instead of 'an evil eye bracelet'. Result: the sitemap goes from 216 to 213 entries (this also counts C24's two landings), llms.txt lists 28 collections, and Shop All shows 30 chips (was 31).",
+      "files": [
+       "src/lib/jewelleryCollections.ts",
+       "scripts/routes.ts",
+       "scripts/generate-sitemap.ts",
+       "scripts/prerender.ts",
+       "src/pages/JewelleryCategory.tsx",
+       "src/pages/Jewellery.tsx",
+       "src/data/seoLandings.extra.ts",
+       "public/sitemap.xml",
+       "public/llms.txt"
+      ],
+      "tests": [
+       "src/lib/jewelleryCollections.test.ts (landings with nothing to show: drop and keep; counts a piece by its colour card)",
+       "src/data/siteRoutes.test.ts (route list equals stocked landings; footer never links an empty collection)",
+       "src/pages/JewelleryCategory.test.tsx (new: empty landing is noindex, shows the message and /jewellery link, drops its copy and FAQ; siblings omit empty landings; no judgement while loading; stocked landing stays indexed). 2 of its 4 tests fail on the old page."
+      ],
+      "verify": "Built and served from dist on port 4440, iPhone 13 (390x844) and 1440x900, trackers aborted, live Storefront data loaded. /jewellery/collections/evil-eye-bracelets: robots 'noindex, follow', message and /jewellery link present, no 'set the motif in metal' copy, no FAQ, JSON-LD only WebSite and BreadcrumbList, no evil-eye chip in the category bar. /jewellery: 30 collection chips, none for evil-eye. charm-bracelets: '6 PIECES', indexed, no empty message, 30 sibling links without evil-eye. No page errors. Screenshots are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3b/shots/c07-evil-*.png. Generator run with both npx tsx and bunx tsx: 213 entries, no evil-eye in sitemap.xml or llms.txt.",
+      "ownerNote": "Rose Gold (1 piece) and Solitaire Rings (3) are thin but not empty, so they stay; whether to keep them is your call. The footer's collection links are a fixed list: it is on every page and must not subscribe to the catalogue. A unit test now fails if any landing it links has no piece in the bundled catalogue. A landing stocked only by pieces newer than the snapshot stays out of the sitemap until scripts/generate-jewellery-snapshot.ts is run again."
+     },
+     {
+      "id": "C24",
+      "status": "partial",
+      "summary": "Root cause fixed. identity() in src/lib/jewelleryCollections.ts no longer reads the line-wide tags 'Demi Fine' and 'Naira Petite' as style words. Live membership before -> after: minimal-jewellery 131 -> 28 (Bold Nocturne Chain and Cushion Halo Ring are out), office-wear-jewellery 131 -> 33, and the header's /jewellery?tag=Everyday filter 157 -> 38 of 162 cards. Every other landing's count is unchanged. After the fix, three groups still share an identical grid: pendant-sets = necklaces (25); gold-plated-jewellery = 18k-gold-plated-jewellery (98, same selector); and 8 topic landings = /jewellery (136). For the first two I added CategoryLanding.canonicalSlug. pendant-sets now points its canonical at necklaces. gold-plated-jewellery points at 18k-gold-plated-jewellery: the grids are identical, so neither is broader by membership, and I took the core landing, which the footer and category bar already link, so every internal link stays on a canonical URL. Both pages stay prerendered with that canonical: SiteRoute.canonical was added, and prerender.ts now checks the declared canonical. Both are left out of sitemap.xml and llms.txt through sitemapRoutes().",
+      "files": [
+       "src/lib/jewelleryCollections.ts",
+       "src/data/seoContent.ts",
+       "src/data/seoLandings.extra.ts",
+       "src/pages/JewelleryCategory.tsx",
+       "scripts/routes.ts",
+       "scripts/generate-sitemap.ts",
+       "scripts/prerender.ts",
+       "public/sitemap.xml",
+       "public/llms.txt"
+      ],
+      "tests": [
+       "src/lib/jewelleryCollections.test.ts: 'does not read the line's own tags as a style' (fails on the old selector code); canonical pairs and their subset invariant on the bundled catalogue",
+       "src/data/siteRoutes.test.ts (new): canonicalised landings are left out of the sitemap but still prerendered"
+      ],
+      "verify": "Browser at 390x844 and 1440x900. minimal-jewellery shows '28 PIECES \u00b7 FROM \u20b9649' with no bold-nocturne-chain or cushion-halo-ring card. office-wear shows '33 PIECES'. /jewellery?tag=Everyday shows 30 cards plus 'SHOW MORE (8)'. pendant-sets has canonical and og:url pointing at /jewellery/collections/necklaces. gold-plated-jewellery points at /jewellery/collections/18k-gold-plated-jewellery. necklaces and 18k keep self canonicals. Counts come from a read-only Storefront query through the app's own liveCatalogue (script: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3b/membership.ts; before and after JSON saved next to it).",
+      "ownerNote": "Not done, and needs your decision: 8 topic landings still list the same 136 pieces as /jewellery: demi-fine, anti-tarnish, artificial, imitation, bridal, jewellery-for-saree, jewellery-for-lehenga and jewellery-gifts. I did not give them a canonical. The CategoryLanding type says topic landings 'show the full collection' by design, and each one targets a different search with its own ~600 words. Pointing 8 of the 31 landings at /jewellery would probably drop them from search. Your options: keep them as they are, point them at /jewellery, or give bridal, saree and lehenga the existing Festive/Wedding rule from matchesOccasion. If you prefer the other direction for the gold pair, change the canonical target to gold-plated-jewellery; it is one field."
+     },
+     {
+      "id": "C65",
+      "status": "fixed",
+      "summary": "The Storefront product queries in src/lib/shopify.ts now read the variant sku. variantFields in src/lib/variants.ts returns the lead variant's code, beside the lead's price; it is not stored per variant, so the snapshot stays lean. fromShopify uses it instead of the hard-coded '', and mergeLive lets Shopify's code replace the hand-authored one. Product JSON-LD in JewelDetailNext.tsx and JewelDetail.tsx now leaves the sku key out when it is empty. The clothing products have null SKUs in Shopify, so ProductDetail still omits the key. The two swapped hand-authored SKUs in src/data/jewellery.ts are corrected against the Storefront API: riviere-of-light-bracelet is JDB201083 and baguette-eclat-bracelet is JDB201210. Nothing sent to Meta reads sku. adsEdit.ts matches on SKU only when a handle is missing, and all 6 Golden Hour handles are live, so the ad edit is unchanged.",
+      "files": [
+       "src/lib/shopify.ts",
+       "src/lib/variants.ts",
+       "src/hooks/useLiveJewellery.ts",
+       "src/pages/JewelDetailNext.tsx",
+       "src/pages/JewelDetail.tsx",
+       "src/data/jewellery.ts"
+      ],
+      "tests": [
+       "src/lib/variants.test.ts: takes the lead variant's code, and none where Shopify has none",
+       "src/pages/JewelDetailNext.test.ts: neither PDP emits an unguarded sku"
+      ],
+      "verify": "Browser at both sizes after live load: prism-riviere-bracelet B00681C, mesh-band-ring YF3558-G-5, riviere-of-light-bracelet JDB201083, baguette-eclat-bracelet JDB201210, molten-bloom-hoops JDE0110042, /product/blush-of-dawn has no sku key. With Shopify blocked, first paint of prism-riviere-bracelet (a snapshot piece) has no sku key rather than an empty one.",
+      "ownerNote": "I did not regenerate src/data/jewellerySnapshot.ts. A full run also pulls in 3 days of unrelated store changes (new size-guide and gallery photos on most of the 115 pieces), which do not belong in this commit and could collide with other groups. Until it is next run (npx vite-node scripts/generate-jewellery-snapshot.ts), those 115 pages omit sku at first paint and fill it once Shopify answers. A prerender capture taken before live data arrives would also omit it."
+     },
+     {
+      "id": "C67",
+      "status": "fixed",
+      "summary": "A new helper, clipText(text, max) in src/lib/clipText.ts, collapses whitespace and returns text that already fits unchanged. Otherwise it cuts between words inside the limit, trims trailing punctuation and adds '\u2026'. It is used at all 9 call sites with the same limits as before: meta 130 for the blurb after 'Name, ', og and twitter 150 (JewelDetailNext.tsx, JewelDetail.tsx), and clothing 110 (ProductDetail.tsx).",
+      "files": [
+       "src/lib/clipText.ts",
+       "src/pages/JewelDetailNext.tsx",
+       "src/pages/JewelDetail.tsx",
+       "src/pages/ProductDetail.tsx"
+      ],
+      "tests": [
+       "src/lib/clipText.test.ts (new): pins the prism-riviere-bracelet blurb at 110, 130 and 150 (inside the limit, ends with '\u2026', never mid-word or on a space), plus fit and edge cases",
+       "src/pages/JewelDetailNext.test.ts: none of the three PDP files slices a blurb or description at a fixed count"
+      ],
+      "verify": "Browser at both sizes. prism-riviere-bracelet: meta (154) ends '\u2026pastel cubic zirconia\u2026', og and twitter (149) end '\u2026of about 5mm, each\u2026' (was '\u2026each s'). crystal-baguette-eternity-ring meta ends '\u2026each stone held by\u2026'. /product/blush-of-dawn ends '\u2026embroidered by hand with pearls\u2026' (was '\u2026glas').",
+      "ownerNote": "Limits are kept as instructed. They apply to the blurb after the piece name, as before, so long-named pieces can still exceed 160 characters in the meta description (serpentine-whisper-chain-silver is now 162, was 165). The 'Name, Colour,\u2026' capital after the comma is unchanged; that is a copy choice."
+     },
+     {
+      "id": "C68",
+      "status": "fixed",
+      "summary": "ProductDetail.tsx now has one constant, OUTFITS = { name: 'Custom Outfits', path: '/customize' }. Both crumbs read it: the BreadcrumbList item 2, which was https://nairaflore.com/shop and redirected to /jewellery, and the visible desktop crumb, which was /shop/indo-western and redirected to /customize. The no-history Back fallback now goes there too. The /shop routes in App.tsx stay for saved links. All other pages' breadcrumbs already point at final URLs.",
+      "files": [
+       "src/pages/ProductDetail.tsx"
+      ],
+      "tests": [
+       "src/pages/productRedirect.test.ts: clothing page breadcrumbs share one crumb, and its path is a real route, not KeepQuery or Navigate (fails on the old code)"
+      ],
+      "verify": "Browser on /product/blush-of-dawn. JSON-LD: 1 Home /, 2 Custom Outfits https://nairaflore.com/customize, 3 Blush of Dawn. The desktop trail reads 'Home / Custom Outfits / Blush of Dawn' with href /customize, and clicking it lands on /customize without a redirect. On the phone the trail stays hidden (md:flex), as before. Screenshot: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3b/shots/c68-blush-desktop-crumb.png"
+     },
+     {
+      "id": "C69",
+      "status": "skipped",
+      "summary": "No clean fix within the scope's constraints. Shop All's prerendered HTML holds 30 cards because the grid itself renders 30 (PAGE_SIZE) and the page is not built to render every card. The ways to get all 136 piece anchors into that HTML are: render every card in the capture, which shows 136 cards before React replaces them and changes the visible SHOW MORE behaviour; a visually hidden list, which is ruled out; or a noscript or footer 'All pieces' list, also ruled out. The least visible alternative is turning SHOW MORE into an <a href='/jewellery?show=all'> that keeps its tap behaviour. It still does not put the links in /jewellery's HTML. The host ignores query strings, so ?show=all is served the same 30-card prerender: it would help only JS-rendering crawlers, behind a URL whose canonical is /jewellery. Per the scope, I skipped it rather than ship a partial or visible change.",
+      "verify": "No code change. The audit's own link graph (verify-77) shows the button is not the real discovery gap: 106 of the 107 pieces not linked from /jewellery are linked from collection pages or other product pages, with click depth 2 to 3. The true orphans are triple-dawn-cuff and riviere-of-light-bracelet (both sold out), /innercircle, and the 18 unbuyable clothing pages. Keeping those in the sitemap is a sitemap-policy question for the owner.",
+      "ownerNote": "If you want it anyway, the progressive-enhancement link to /jewellery?show=all is a small change. Deciding whether sold-out pieces and the 18 clothing pages belong in the sitemap (scripts/routes.ts) would close the real orphan gap."
+     },
+     {
+      "id": "C72",
+      "status": "fixed",
+      "summary": "Titles: a new helper, fitTitle(page) in src/lib/clipText.ts, keeps ' | Naira Flore' and fits the whole title in 65 characters. It drops trailing ', ' and ' \u00b7 ' qualifiers whole first, then cuts between words, never mid-word. A title that already fits is untouched, so a hand-written shorter title always wins. It is applied in PageSEO (landings, journal, /jewellery, /faqs, /journal and every other page using it) and in the three PDP templates. All 26 titles over 65 now fit: /jewellery 76 -> 'Demi-Fine Jewellery Online India | Naira Flore' (46); american-diamond 75 -> 'American Diamond Jewellery, Brilliant-Cut Zircone | Naira Flore' (63); serpentine-whisper-chain-silver -> 'Serpentine Whisper Chain \u2014 Silver | Naira Flore'. lastmod: scripts/routes.ts now reads updatedAt with the live handle list, and every /jewellery/<h> and /product/<h> sitemap entry carries that date. 154 product URLs now have lastmod (173 entries in all, with the 19 journal URLs). Journal images are left as they are: no article has a photo of its own (coverImage is unset everywhere). The 11 descriptions over 165 characters and the home h1 were outside this scope and are untouched.",
+      "files": [
+       "src/lib/clipText.ts",
+       "src/components/PageSEO.tsx",
+       "src/pages/JewelDetailNext.tsx",
+       "src/pages/JewelDetail.tsx",
+       "src/pages/ProductDetail.tsx",
+       "scripts/routes.ts",
+       "public/sitemap.xml"
+      ],
+      "tests": [
+       "src/lib/clipText.test.ts: fitTitle cases; every landing and journal title is at most 65 characters and unique after fitting",
+       "src/data/siteRoutes.test.ts: with a stubbed Storefront response, kept, live-added and clothing product routes carry lastmod from updatedAt"
+      ],
+      "verify": "Browser at both sizes: document.title equals og:title, and every page checked is 65 characters or fewer: /jewellery 46, /faqs 50, /journal 41, capsule-wardrobe article 40, american-diamond 63, rings 56 (unchanged), serpentine PDP 47, prism PDP 58 (unchanged), blush-of-dawn 27, home 50 (unchanged). Generator run: 213 entries, 173 with lastmod, all 154 product URLs dated (e.g. /product/blush-of-dawn 2026-09-16).",
+      "ownerNote": "Some trimmed titles lose a qualifier: 'Office Wear Jewellery', 'Anti-Tarnish Jewellery' (the journal guide), 'Zirconia vs Diamond, Sparkle', 'Jewellery Capsule Wardrobe', 'The Journal, Jewellery Care'. Writing a shorter title by hand for any of these takes precedence automatically. The full before and after list is in the C72 commit's test data, or rerun fitTitle over seoContent."
+     }
+    ],
+    "verification": {
+     "vitest": "69 test files, 505 tests passed on final commit 27fc038 (baseline at 6a4593e: 66 files, 474 tests)",
+     "tsc": "npx tsc --noEmit -p tsconfig.app.json: exit 0. The build scripts (prerender.ts, generate-sitemap.ts, routes.ts) also type-check clean with a scratch tsconfig, and esbuild parses them.",
+     "build": "npx vite build: exit 0, 2055 modules, built in 18.25s (usual chunk-size warning only). supabase/functions/mcp/index.ts restored after each build and vite-node run. git status is clean.",
+     "browser": "dist served with distserve.mjs on port 4440 (PID 23808, now stopped). Global Playwright Chromium, iPhone 13 (390x844) and 1440x900. Every context aborted NO_REPORT requests, stubbed the Fastrr/Shiprocket script and masked webdriver. No checkout was opened, nothing was posted to Meta, no forms were submitted. Checks: C07 empty landing, chips and siblings; C24 counts and canonicals; C65 sku live and at first paint; C67 descriptions; C68 breadcrumbs and click-through; C72 titles. No page errors. Scripts and screenshots are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s3b/. Not runnable here: scripts/prerender.ts (forbidden). Its three small changes (declared canonical, empty-collection shell, expectedCanonical) are reviewed and type-checked only."
+    },
+    "notes": "I never pushed and never ran prerender. The two Shopify reads were Storefront only: the products query and one SKU and updatedAt probe. Things to know when merging. (1) scripts/routes.ts now imports src/data/jewellery.ts, jewellerySnapshot.ts and src/lib/jewelleryCollections.ts. I checked that they load under both npx tsx and bunx tsx (the prebuild path); the old comment saying jewellery.ts could not be imported was out of date, since the file has no imports. (2) public/sitemap.xml and llms.txt were regenerated (commit 27fc038), and differ only by these fixes. If another group regenerates them, just run the generator again after merging. (3) If several groups touch src/pages/JewelleryCategory.tsx, the C07 commit wraps the copy sections in {!empty && (...)}, which re-indents them; git diff -w shows the real change is small. (4) C70 was not touched."
+   },
+   {
+    "group": "s1",
+    "worktree": "/tmp/fix-s1",
+    "branch": "fix-s1",
+    "commits": [
+     {
+      "sha": "5f20b89b23ece905ca5afc95cd3fbeb202946323",
+      "subject": "Buy Now hands off a piece already in the bag instead of adding a second",
+      "findings": [
+       "C00"
+      ]
+     },
+     {
+      "sha": "52a842d4f8b74cd4d794b52ac30b13f765169a87",
+      "subject": "Bag Undo waits for the removal instead of racing it",
+      "findings": [
+       "C47"
+      ]
+     },
+     {
+      "sha": "73817f38674c8c79418788d026715d412c64a9ad",
+      "subject": "Bag lines take Shopify's current price on every cart answer",
+      "findings": [
+       "C02"
+      ]
+     },
+     {
+      "sha": "6a8bc209ceb0b60494ae6b56d3cea91473f6045f",
+      "subject": "Catalogue pages through every product and variant instead of capping",
+      "findings": [
+       "C77"
+      ]
+     },
+     {
+      "sha": "3bf72a9dca171e54ec133884733f00a55cf3bb1b",
+      "subject": "Map the live catalogue once per Shopify answer, not on every render",
+      "findings": [
+       "C16",
+       "C30"
+      ]
+     },
+     {
+      "sha": "03ae08e903f8b6eb8afd2ade3ff8e179e2b4e883",
+      "subject": "Stop re-downloading the whole catalogue every minute on an open page",
+      "findings": [
+       "C48"
+      ]
+     },
+     {
+      "sha": "bcb62a2279c65e2e0a893852ce922812dc3290b1",
+      "subject": "First paint shows Shopify's prices and sold-out state before the catalogue",
+      "findings": [
+       "C25"
+      ]
+     },
+     {
+      "sha": "cde926a834fdb94d1745e78a794b1cf2faaa4e7f",
+      "subject": "Product page follows Shopify's stock for open-back rings, one lead time per state",
+      "findings": [
+       "C27",
+       "C28"
+      ]
+     },
+     {
+      "sha": "5ef5ab3ce6889fa59e6b133bed2896dd66f1f860",
+      "subject": "Phone toasts sit above the product page's buy bar",
+      "findings": [
+       "C40"
+      ]
+     },
+     {
+      "sha": "dd3b1c5ebf799d3a3c34be3e92940d9182bcb0ec",
+      "subject": "Pincode check stops promising delivery to Army Postal Service pincodes",
+      "findings": [
+       "C73"
+      ]
+     }
+    ],
+    "findings": [
+     {
+      "id": "C00",
+      "status": "fixed",
+      "summary": "CartContext.buyNow is still the single Buy Now path. When the bag already holds the exact line (same piece, size and variant, with a Shopify lineId), it now hands off with the stored checkoutUrl and does not call addItem. That means no updateShopifyCartLine, no addLineToShopifyCart and no AddToCart pixel, and the line goes to checkout at its current quantity. A piece in a size or variant the bag does not hold still goes through addItem. The whole-bag hand-off and the coupon logic are untouched.",
+      "files": [
+       "src/contexts/CartContext.tsx",
+       "src/contexts/buyNow.test.tsx"
+      ],
+      "tests": [
+       "src/contexts/buyNow.test.tsx: 'hands off the line as it is, without adding a second unit' (no update or add call, no AddToCart, startFastrrCheckout gets [new-variant, qty 1]); fails on the old code",
+       "src/contexts/buyNow.test.tsx: 'still adds the piece in a size the bag does not hold'"
+      ],
+      "verify": "Built site served on port 4410, Fastrr shopify.js stubbed to record buyDirect, reporting requests aborted, checkout navigations intercepted (none happened). Prism Rivi\u00e8re Bracelet: on an empty bag, Buy Now sends buyDirect [{47501788348578, qty 1}] with no coupon. After Add to cart, closing the bag, then Buy Now: buyDirect [{47501788348578, qty 1}] with no coupon, and the Storefront calls are only CartCreate and CartAttributesUpdate, with no CartLinesUpdate. Same result on Pixel 7, iPhone 13 and 1440x900. The audit had seen qty 2 with BUY2 at this step.",
+      "ownerNote": "The whole-bag hand-off (Buy Now also sends other pieces already in the bag, plus the ladder coupon) is unchanged and remains the owner's question. One edge: if the saved Shopify cart has expired, Buy Now on a piece already in the bag no longer finds that out through the update call. Fastrr still builds its checkout from variant ids, but the Shopify fallback URL would be the expired cart's."
+     },
+     {
+      "id": "C02",
+      "status": "fixed",
+      "summary": "The cart query and the CartCreate, CartLinesAdd and CartLinesUpdate mutations now select merchandise { ... on ProductVariant { price { amount } } }. That is the variant's own current price, which a discount code on the cart does not change. Each bag line is re-priced from it, with its priceLabel, on create, add, quantity change and every sync, via withShopifyPrice and linePrice in src/lib/cartLines.ts. So the bag subtotal, ladder saving and Total come from Shopify's prices. No new pricing rules were added. Compare-at already came from the live catalogue in the bag (mrpOf).",
+      "files": [
+       "src/lib/shopify.ts",
+       "src/lib/cartLines.ts",
+       "src/contexts/CartContext.tsx",
+       "src/contexts/bagPrices.test.tsx",
+       "src/lib/cartLines.test.ts"
+      ],
+      "tests": [
+       "src/contexts/bagPrices.test.tsx: a saved line at 699 syncs to Shopify's 799 (subtotal 799); an add from a stale 2,449 card takes Shopify's 1,899; a quantity change re-prices. All 3 fail on the old code",
+       "src/lib/cartLines.test.ts: withShopifyPrice / linePrice"
+      ],
+      "verify": "A read-only Storefront check confirmed the new field (Mesh Band Ring variant price 799.0). In the browser, a real test cart for Mesh Band Ring was seeded in localStorage at a stale \u20b9699. After the bag synced, the line showed \u20b9799, data-total showed \u20b9799, the stored price was 799, and Shopify's subtotal was 799.0 (Pixel 7).",
+      "ownerNote": "No tracking code was changed, but a side effect of correct prices is that InitiateCheckout's value and item_price, and the bag's AddPaymentInfo value, now carry Shopify's price instead of a stale one. The AddToCart value still uses the card's price at the tap; changing that is out of bounds."
+     },
+     {
+      "id": "C25",
+      "status": "partial",
+      "summary": "scripts/generate-jewellery-snapshot.ts now also rewrites the price, priceLabel, compareAtPrice/compareAtLabel and availableForSale lines of the 21 hand-authored pieces in src/data/jewellery.ts, taking the values from the same live answer through liveCatalogue. variantId is deliberately left as written. The generator was run against the live Storefront API (read-only), regenerating jewellery.ts, jewellerySnapshot.ts and jewelleryHandles.ts. Results: 19 of 21 stale prices corrected, MRPs added, and the five pieces Shopify has sold out (riviere-eternal-necklace, molten-bloom-hoops, solitaire-whisper-studs, riviere-of-light-bracelet, first-light-set) are now availableForSale false. In the snapshot, mesh-band-ring went from 699 to 799 and two pieces were marked sold out. Separately, createShopifyCart and addLineToShopifyCart now treat a line of quantity 0 (Shopify's answer for a sold-out piece) as not added, so the bag no longer shows a \u20b90, qty-0 line.",
+      "files": [
+       "scripts/generate-jewellery-snapshot.ts",
+       "src/data/jewellery.ts",
+       "src/data/jewellerySnapshot.ts",
+       "src/data/jewelleryHandles.ts",
+       "src/lib/shopify.ts",
+       "src/lib/soldOutLine.test.ts"
+      ],
+      "tests": [
+       "src/lib/soldOutLine.test.ts: a line of 0 from cartCreate/cartLinesAdd is not a line; a real line keeps its price",
+       "existing src/data/jewellerySnapshot.test.ts passes on the regenerated data"
+      ],
+      "verify": "/jewellery with the GetProducts request held for 10 s (Pixel 7, iPhone 13, 1440x900). All five sold-out pieces show SOLD OUT, not ADD TO CART, and the cards show Shopify's prices with MRP: Heartline \u20b91,899 / \u20b93,499, Molten Bloom \u20b91,300 / \u20b92,359, Rivi\u00e8re of Light \u20b91,249 / \u20b92,269.",
+      "ownerNote": "Partial for four reasons. (1) The bundled data is only as fresh as the last generator run. A piece that sells out after a run shows ADD TO CART in the pre-catalogue window again until the generator is rerun; the cart then refuses the add. The structural fix, embedding the live catalogue in the prerendered page or waiting for it, is the owner-pending 'grid no-jump' item. (2) The swap from 30 prerendered cards to 21 bundled cards at hydration is unchanged. (3) The reel rows' price_label from Supabase (ReelViewer) is not touched. (4) Shopify data issue: all 8 Tubogas Dome Ring variants, Silver included, have pointed at the Gold on-hand photo since 28 Oct. The existing snapshot test rightly rejects that, so Tubogas keeps its previous snapshot entry, which has identical prices and stock and differs only in variant photos. The owner should give the Silver variants their own photo in Shopify, then rerun the generator. Other groups regenerating src/data/* will conflict with this commit."
+     },
+     {
+      "id": "C27",
+      "status": "fixed",
+      "summary": "The product page (JewelDetailNext) and both reel cards (ReelShopNext, MobileReelShop) now use Shopify's availableForSale alone, as JewelCard already does. The '&& !adjustable' exemption is gone, so a sold-out open-back ring goes to Reserve now / WhatsApp, its 'US 6 ships now' and dated delivery lines are hidden, and its JSON-LD says OutOfStock. The adjustable flag still drives the size list and the fit note.",
+      "files": [
+       "src/pages/JewelDetailNext.tsx",
+       "src/components/reels/ReelShopNext.tsx",
+       "src/components/reels/MobileReelShop.tsx",
+       "src/pages/JewelDetailNext.test.ts"
+      ],
+      "tests": [
+       "src/pages/JewelDetailNext.test.ts: 'takes Shopify's sold-out for every piece, adjustable rings included' and 'does the same on both reel cards' (source-pattern, the file's existing style); fail on the old code"
+      ],
+      "verify": "Rose Verdant Band with its Storefront answer rewritten to sold out in the browser only: RESERVE NOW, no 'ships now', gift line 'Hand-finished for you and shipped within 2 weeks', JSON-LD OutOfStock. The in-stock control is unchanged (ADD TO CART / BUY NOW, 'US 6 ships now', InStock). Checked on Pixel 7 and 1440x900. Reel card on /jewellery/toggle-link-chain with Cushion Halo Ring rewritten to sold out: 'Pre-order / RESERVE' and no Add button; control shows '\u20b91,199 ADD'.",
+      "ownerNote": "For a sold-out adjustable ring, the schema.org availability changes from InStock to OutOfStock. That is correct data, but it is page microdata that crawlers and Meta's pixel can read. The unrouted src/pages/JewelDetail.tsx keeps the old rule."
+     },
+     {
+      "id": "C28",
+      "status": "fixed",
+      "summary": "Each state now has one lead time, taken from copy already on the page and moved into src/data/jewellery.ts next to PREORDER_NOTE: SOLD_OUT_LEAD (shipped within 2 weeks), VARIANT_SOLD_OUT_LEAD (date confirmed on WhatsApp) and SIZE_PREORDER_LEAD (45 days). A pure preorderLead(state) picks one, in the order sold out, then sold-out variant, then size pre-order. The Delivery & returns panel now shows that lead instead of 'Order today and it arrives by' or PREORDER_NOTE. The variant status line is hidden when the whole piece is sold out, because the gift line already says when it ships. PincodeChecker takes a preorder prop and, for a reserved piece, shows the courier days 'once it ships' without a dated 'by <date>'.",
+      "files": [
+       "src/data/jewellery.ts",
+       "src/pages/JewelDetailNext.tsx",
+       "src/components/product/PincodeChecker.tsx",
+       "src/data/preorderLead.test.ts",
+       "src/components/product/PincodeChecker.test.tsx",
+       "src/pages/JewelDetailNext.test.ts"
+      ],
+      "tests": [
+       "src/data/preorderLead.test.ts (5 tests: one lead per state, precedence, never an in-stock time)",
+       "src/components/product/PincodeChecker.test.tsx: a reserved piece gets 'in 3 working days once it ships' with no date (fails on the old code)",
+       "src/pages/JewelDetailNext.test.ts: 'says one lead time for a piece it cannot ship now'"
+      ],
+      "verify": "On Pixel 7 and 1440x900, after opening Delivery & returns and checking pincode 400001, every state shows a single lead time. baroque-pearl-lariat (sold out): gift line and panel both say 'shipped within 2 weeks', pincode says '3 working days once it ships'. aquarelle Lavender: status line and panel both say 'Reserve it and we will confirm the date on WhatsApp.', pincode undated. chevron-whisper-ring US 5: status and panel both say 'US 5 is a pre-order, delivered in 45 days.', pincode undated. In-stock control: 'Order today and it arrives by 4\u20136 Nov', pincode 'by Wed, 4 Nov'.",
+      "ownerNote": "The three lead times (2 weeks, WhatsApp date, 45 days) are kept as the code had them; only their mixing on one page is fixed. Whether to unify them is the owner's call."
+     },
+     {
+      "id": "C16",
+      "status": "fixed",
+      "summary": "useLiveJewellery now maps the catalogue once per Shopify answer through a module-level WeakMap keyed on React Query's data array, shared by every consumer. Structural sharing keeps that array the same object until Shopify's answer changes, so every consumer gets one array identity and the downstream memos hold (the PDP's piece, pairings and similar; the bag's catalogueByHandle). The fallback line pinned by JewelDetail.test.ts is unchanged, and the shared query key, enabled flag and AGENTS.md cache contract are untouched.",
+      "files": [
+       "src/hooks/useLiveJewellery.ts",
+       "src/hooks/liveCatalogue.test.ts"
+      ],
+      "tests": [
+       "src/hooks/liveCatalogue.test.ts: 'hands every user the same catalogue until Shopify's answer changes' (two consumers and a rerender share one array; new data gives a new one); fails on the old code"
+      ],
+      "verify": "CPU profile of a PDP Add on the branch (Pixel 7, 4x CPU, unminified build): useLiveJewellery takes 11 ms in total, where the audit measured 343 to 465 ms of mapping on the tap. See C30 for the before/after bag-open numbers this produced."
+     },
+     {
+      "id": "C48",
+      "status": "fixed",
+      "summary": "The catalogue's open-page poll goes from every 60 s to every 5 minutes, and refetchIntervalInBackground: false is now set explicitly (hidden tabs never polled). The existing 30 s staleness rule still refreshes stock when the shopper returns to the tab, when a newly mounted consumer appears on navigation, and when the bag opens. For a visible idle tab that is about 0.85 MB an hour instead of 4.2 MB.",
+      "files": [
+       "src/hooks/useLiveJewellery.ts",
+       "src/hooks/catalogueRefresh.test.ts"
+      ],
+      "tests": [
+       "src/hooks/catalogueRefresh.test.ts: no refetch within 4 minutes on an open page, one at 5 minutes (the old code fetched 5 times); a hidden tab never polls and refetches on return"
+      ],
+      "verify": "Unit tests with fake timers and React Query's focusManager; the old code fails with 5 downloads in 4 minutes.",
+      "ownerNote": "The fuller fix in the audit, a small availability-only poll, was not built. Stock still reads fresh on focus, navigation and bag open once the data is 30 s old, and Shopify's cart refuses sold-out adds."
+     },
+     {
+      "id": "C77",
+      "status": "fixed",
+      "summary": "fetchShopifyProducts now follows the products pageInfo/endCursor to the end; with no limit it returns the whole catalogue, and its old unused default of 20 was dropped. The four 'all' callers (useLiveJewellery, CampaignFilm, ShopAll and the snapshot generator) use it. Any product whose variants(first: 20) page reports hasNextPage gets the rest fetched by id (ProductVariants, 250 a page), and the PDP's by-handle query does the same. scripts/routes.ts (sitemap and prerender routes) pages the same way.",
+      "files": [
+       "src/lib/shopify.ts",
+       "src/hooks/useLiveJewellery.ts",
+       "src/components/CampaignFilm.tsx",
+       "src/pages/ShopAll.tsx",
+       "scripts/generate-jewellery-snapshot.ts",
+       "scripts/routes.ts",
+       "src/lib/catalogueQuery.test.ts"
+      ],
+      "tests": [
+       "src/lib/catalogueQuery.test.ts: follows two product pages and fetches a held-back 21st variant by id (fails on the old code); a short row (limit 2) makes one request"
+      ],
+      "verify": "Read-only live run of the new fetcher through vite-node: 154 products, 136 jewellery pieces, at most 12 variants, no product held back, one page; fetchShopifyProducts(3) returns 3.",
+      "ownerNote": "src/lib/mcp/storefront.ts, and the generated supabase/functions/mcp/index.ts, still request variants(first: 20). It is generated output outside this group's catalogue path, so it was left alone."
+     },
+     {
+      "id": "C30",
+      "status": "partial",
+      "summary": "Measured first, as asked: Pixel 7 profile, CPU 4x from page load, fresh context per run, timed from the tap's pointerdown. The base build (6a4593e) and the branch were served side by side and run alternately, 6 runs each. Profiling the branch on an unminified build, the catalogue mapping the audit blamed is gone (fixed by the C16 commit 3bf72a9). What remains on the tap is Radix FocusScope's focusFirst forcing a whole-document style recalculation (421 ms on the header-icon open, 234 ms on PDP Add), plus native style, layout and paint for the inserted sheet. That cost comes from the modal's body pointer-events and scroll lock, and the skeptic's A/B showed that deferring the focus only moves it to the next frame. JewelCard re-renders cost 16 ms. No further code change was justified, and the drawer's look is untouched.",
+      "files": [
+       "src/hooks/useLiveJewellery.ts"
+      ],
+      "tests": [
+       "covered by the C16 test (src/hooks/liveCatalogue.test.ts)"
+      ],
+      "verify": "Medians, base 6a4593e \u2192 branch, n=6 each, Pixel 7, CPU 4x. PDP Add (prism-riviere-bracelet): bag in DOM 821 \u2192 539 ms; sheet starts sliding 1129 \u2192 768 ms; fully slid in 1515 \u2192 1028 ms; tap response (longest event duration) 876 \u2192 600 ms. Header bag icon on /jewellery: in DOM 1029 \u2192 714 ms; slide starts 1268 \u2192 939 ms; fully in 1533 \u2192 1197 ms; tap response 1112 \u2192 824 ms. 'Fully in' includes the sheet's 400 ms slide, which is design. The host was shared (load average 2 to 4.6 on 4 cores) and the header flower is drawn in software in headless Chromium, so absolute numbers are inflated, but the runs alternated builds.",
+      "ownerNote": "Partial because a tap at 4x CPU still takes about 0.6 to 0.8 s to respond, and that remaining cost is Radix's modal open (forced style recalculation from body pointer-events none and the scroll lock). Removing it would mean changing the drawer's modal or focus behaviour, which needs a decision; it was not attempted."
+     },
+     {
+      "id": "C40",
+      "status": "fixed",
+      "summary": "The Sonner Toaster now passes mobileOffset bottom: calc(var(--pdp-sticky-bar-h) + env(safe-area-inset-bottom, 0px) + 12px), the same variable FomoPopup uses, so phone toasts sit above the sticky buy bar. Desktop keeps Sonner's 32 px offset. No colours or tokens changed.",
+      "files": [
+       "src/components/ui/sonner.tsx",
+       "src/components/ui/sonner.test.tsx"
+      ],
+      "tests": [
+       "src/components/ui/sonner.test.tsx: the toaster list carries the raised --mobile-offset-bottom (fails on the old code)"
+      ],
+      "verify": "Two error toasts triggered as in the audit: sticky-bar Buy Now on /jewellery/birthstone-heart-necklace with CartCreate aborted in the browser only, so nothing reached Shopify. Pixel 7: toasts at y 615 to 756, bar top at 774. iPhone 13: toasts at y 440 to 581, bar top at 599. On both, elementFromPoint at the centre and top of Wishlist, Buy Now and Add to cart reaches the button, and Playwright's trial click on the heart succeeds. 1440x900: toasts stay bottom-right with a 32 px gap."
+     },
+     {
+      "id": "C73",
+      "status": "partial",
+      "summary": "Before promising a date, the checker now requires a valid 6-digit pincode with first digit 1 to 9, and that the pincode is in a civil postal zone (isCourierZone). India Post's first digit 9 is the Army Postal Service, which no courier route reaches. A well-formed pincode the page cannot vouch for gets no green tick, no date and no COD line; instead it says 'We can't confirm delivery to <pin> here. It is checked with your full address at checkout, before you pay.' A malformed pincode still says 'Enter a valid 6-digit pincode.' The COD-blocked ranges and the 3/5-day rules are unchanged.",
+      "files": [
+       "src/lib/serviceability.ts",
+       "src/components/product/PincodeChecker.tsx",
+       "src/lib/serviceability.test.ts",
+       "src/components/product/PincodeChecker.test.tsx"
+      ],
+      "tests": [
+       "src/lib/serviceability.test.ts (format, APS zone rejected, 400001 = 3 days, 560001 = 5 days, 845401 and 781001 COD-blocked)",
+       "src/components/product/PincodeChecker.test.tsx: 999999 gets the checkout note with no date and no COD (fails on the old code); 12345 still asks again"
+      ],
+      "verify": "PDP Delivery & returns on Pixel 7 and 1440x900. 999999 gives the checkout note. 400001 gives '3 working days \u00b7 by Wed, 4 Nov', COD available. 845401 gives 5 days with COD unavailable. 12345 gives 'Enter a valid 6-digit pincode.' 100000 still gets '5 working days \u00b7 by Fri, 6 Nov'.",
+      "ownerNote": "Partial: the code has no table of allocated two-digit prefixes, and the scope said to use one only if it already existed. So unallocated civil prefixes (10xxxx, and possibly 29, 35, 54-55, 65-66, 86-89) are still given an estimate. Closing that needs a real India Post pincode list or Shiprocket's serviceability API (an owner decision); a list written from memory risks rejecting real addresses."
+     }
+    ],
+    "verification": {
+     "vitest": "npx vitest run on final commit dd3b1c5: 75 test files, 509 tests, all passed (baseline at 6a4593e: 66 files, 474 tests).",
+     "tsc": "npx tsc --noEmit -p tsconfig.app.json: 0 errors.",
+     "build": "npx vite build: built in 16.9 s, no errors (only the existing >500 kB chunk warning). supabase/functions/mcp/index.ts restored after every build and vite-node run; git status clean apart from the ignored dist/.",
+     "browser": "Chromium via the global Playwright 1.56.1 (/opt/node22/lib/node_modules); the worktree's Playwright 1.64.1 and the main checkout's 1.59.1 expect browsers that aren't installed, and none were installed. Every context aborted NO_REPORT URLs, hid navigator.webdriver, stubbed Fastrr's shopify.js to record buyDirect, aborted other pickrr/shiprocket requests and intercepted checkout navigations (none occurred). Built dist served with distserve.mjs on 4410, the base build on 4411 and an unminified profiling build on 4412; all killed by PID. Checks ran on Pixel 7, iPhone 13 and 1440x900 as listed per finding. Test carts were created with the Storefront API only: no orders, no checkout pages, no forms, nothing sent to Meta. Scripts and outputs (screenshots, cpuprofiles, timing JSON) are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s1/ and its out/ folder."
+    },
+    "notes": "Ten commits on local branch fix-s1 in /tmp/fix-s1, based on 6a4593e; nothing was pushed. Points for the owner and for merging:\n(1) C25 regenerated src/data/jewellery.ts, jewellerySnapshot.ts and jewelleryHandles.ts from live Shopify on 30 Oct. Other groups that regenerate these files will conflict; rerun the generator after merging rather than hand-merging.\n(2) Shopify data issue, out of bounds for me: all 8 Tubogas Dome Ring variants, Silver included, use the Gold on-hand photo (product updated 28 Oct). The live Shop All already shows this. The snapshot keeps Tubogas's previous entry until Silver gets its own photo in Shopify and the generator is rerun.\n(3) Side effect of C02: InitiateCheckout and AddPaymentInfo values now reflect Shopify's real prices. No pixel code was changed, and AddToCart still sends the card price.\n(4) Side effect of C27: a sold-out adjustable ring's JSON-LD now says OutOfStock.\n(5) C00 leaves the whole-bag hand-off and coupon as they were, pending the owner's decision.\n(6) C30 needed no change beyond the C16 memo; before/after numbers are in its entry.\n(7) C73 and C25 are partial for the reasons given in their entries."
+   },
+   {
+    "group": "s2",
+    "worktree": "/tmp/fix-s2",
+    "branch": "fix-s2",
+    "commits": [
+     {
+      "sha": "52520e2",
+      "subject": "Product card hover zoom runs at its intended 600 ms",
+      "findings": [
+       "C52"
+      ]
+     },
+     {
+      "sha": "60b1f0d",
+      "subject": "Reviews: collapsed panel leaves the Tab order; photo dialog has a name",
+      "findings": [
+       "C34",
+       "C42"
+      ]
+     },
+     {
+      "sha": "575bc49",
+      "subject": "Search finds earrings for \"ear ring\", \"ear-rings\" and \"earring(s)\"",
+      "findings": [
+       "C44"
+      ]
+     },
+     {
+      "sha": "e6c2104",
+      "subject": "Category menus, tiles and Popular Searches open the category landings",
+      "findings": [
+       "C08",
+       "C71"
+      ]
+     },
+     {
+      "sha": "7a43ccf",
+      "subject": "Wishlist: Remove is no longer inside the piece's link; pieces open /jewellery",
+      "findings": [
+       "C43"
+      ]
+     },
+     {
+      "sha": "cead551",
+      "subject": "Admin reels: Delete asks first and keeps the files if the row survives",
+      "findings": [
+       "C56"
+      ]
+     },
+     {
+      "sha": "582ced2",
+      "subject": "Reels re-download the video only for a MIME refusal, once per source",
+      "findings": [
+       "C81"
+      ]
+     },
+     {
+      "sha": "39dfb12",
+      "subject": "Home outfit and testimonial photos wait for the scroll before loading",
+      "findings": [
+       "C31"
+      ]
+     },
+     {
+      "sha": "a22ddce",
+      "subject": "Keep the ambiguous duration class out of the guard test's comment",
+      "findings": [
+       "C52"
+      ]
+     },
+     {
+      "sha": "9b092b0",
+      "subject": "Footer logo is the vector wordmark instead of a 103 KB wrapped bitmap",
+      "findings": [
+       "C79"
+      ]
+     },
+     {
+      "sha": "4d6ce54",
+      "subject": "Footer and secondary links get 44px tap targets without moving",
+      "findings": [
+       "C41"
+      ]
+     },
+     {
+      "sha": "5fc50d6",
+      "subject": "Menu, search, size chart, bag, wishlist and photo viewer behave as dialogs",
+      "findings": [
+       "C03",
+       "C04",
+       "C32",
+       "C33",
+       "C41"
+      ]
+     },
+     {
+      "sha": "b787f1a",
+      "subject": "Phone photo viewer moves between photos on a sideways swipe",
+      "findings": [
+       "C12"
+      ]
+     },
+     {
+      "sha": "2404250",
+      "subject": "Product photos carry Shopify's own descriptions as alt text",
+      "findings": [
+       "C36"
+      ]
+     },
+     {
+      "sha": "ce09420",
+      "subject": "Product page metal, stone and size pickers work as radio groups",
+      "findings": [
+       "C85"
+      ]
+     },
+     {
+      "sha": "1515f90",
+      "subject": "Home, Shop All and product pages get one main landmark and ordered headings",
+      "findings": [
+       "C86"
+      ]
+     },
+     {
+      "sha": "e575256",
+      "subject": "Track Order offers what really works instead of ignoring its fields",
+      "findings": [
+       "C13"
+      ]
+     },
+     {
+      "sha": "352aa24",
+      "subject": "Admin reel delete reads the deleted rows, not a count header",
+      "findings": [
+       "C56"
+      ]
+     },
+     {
+      "sha": "6ced95c",
+      "subject": "Working notes: the footers draw the vector wordmark now",
+      "findings": [
+       "C79"
+      ]
+     }
+    ],
+    "findings": [
+     {
+      "id": "C03",
+      "status": "fixed",
+      "summary": "The mobile menu now behaves as a dialog. A new shared hook, src/hooks/useModalFocus.ts, moves focus to the Close button (it retries across frames while the panel's visibility transition starts), keeps Tab and Shift+Tab inside the menu, closes on Escape through the existing history step (menu.requestClose), and returns focus to the 'Open menu' button. The trigger gains aria-expanded, aria-controls=\"nav-menu\" and aria-haspopup. The panel's look and slide animation are unchanged; a screenshot of the open menu at 390 differs only in the scrolling announcement bar.",
+      "files": [
+       "src/hooks/useModalFocus.ts",
+       "src/components/MobileMenu.tsx",
+       "src/components/Navbar.tsx"
+      ],
+      "tests": [
+       "src/components/MobileMenu.test.tsx"
+      ],
+      "verify": "Unit tests: 3 of 4 fail on 6a4593e and all pass now. Browser check at 390 with scratchpad/fix-oct30/s2/b/dialogs.mjs. Base: focus stayed on 'Open menu', 8 of 25 Tab stops landed outside the menu, Escape left it open. Fix: focus moves to 'Close menu', 0 of 25 Tab stops and 0 of 5 Shift+Tab stops leave the menu, Escape closes it with aria-hidden=true and focus back on 'Open menu', and a backdrop tap still closes it."
+     },
+     {
+      "id": "C04",
+      "status": "fixed",
+      "summary": "RingSizeGuideModal now uses Radix Dialog primitives with the same classes and markup. The title stays an h2, there is no animation, and the props are unchanged, so onClose is still guide.requestClose. Radix provides focus-in, the Tab trap, Escape, outside-tap close and hiding the background from assistive tech. useReturnFocus returns focus to 'Size guide'. The X button grew from 40px to 44px; negative margins keep the header bar the same height.",
+      "files": [
+       "src/components/jewellery/RingSizeGuideModal.tsx",
+       "src/hooks/useReturnFocus.ts"
+      ],
+      "tests": [
+       "src/components/jewellery/RingSizeGuideModal.test.tsx"
+      ],
+      "verify": "Unit tests fail on base and pass now. Browser check on /jewellery/star-point-band at 390 and 1440. Base: focus stayed on 'Size guide', 24 of 25 Tab stops landed outside the dialog, Escape left it open, and focus went to BODY after the X. Fix: focus moves to Close, 0 of 25 Tab stops leave the dialog, Escape closes it with the URL unchanged, focus returns to 'Size guide' after both Escape and the X, and a backdrop tap closes it. Screenshots of the open chart at 390 and 1440 look the same as base; the only pixel differences are in the blurred page behind it."
+     },
+     {
+      "id": "C32",
+      "status": "fixed",
+      "summary": "New src/hooks/useReturnFocus.ts records the focused element in onOpenAutoFocus. In onCloseAutoFocus it focuses that element again (preventScroll), and calls preventDefault so Radix skips focusing its null trigger. It is wired into SheetContent (bag, wishlist and every other Sheet), the shadcn DialogContent, ImageLightbox and the size chart, so no per-page change was needed. SearchOverlay gets the same return through useModalFocus.",
+      "files": [
+       "src/hooks/useReturnFocus.ts",
+       "src/components/ui/sheet.tsx",
+       "src/components/ui/dialog.tsx",
+       "src/components/ui/image-lightbox.tsx",
+       "src/components/nav/SearchOverlay.tsx"
+      ],
+      "tests": [
+       "src/hooks/useReturnFocus.test.tsx"
+      ],
+      "verify": "Unit tests fail on base and pass now. Browser check at 390 and 1440. On base, focus fell to BODY after Escape for the bag, the wishlist and the lightbox, and to 'Sign in' for search. With the fix it returns to 'Open cart', 'Open wishlist', 'Search', and 'Open Star Point Band image 1 full screen\u2026' respectively. Focus still moves into each dialog when it opens."
+     },
+     {
+      "id": "C33",
+      "status": "fixed",
+      "summary": "The search overlay uses useModalFocus with moveFocus:false, because its existing 60ms timer still focuses the input. Tab and Shift+Tab now wrap inside the overlay, Escape closes it (replacing its old window listener), and focus returns to the Search button. Its look is unchanged.",
+      "files": [
+       "src/components/nav/SearchOverlay.tsx",
+       "src/hooks/useModalFocus.ts"
+      ],
+      "tests": [
+       "src/components/nav/SearchOverlay.test.tsx"
+      ],
+      "verify": "Unit test fails on base and passes now. Browser check on / at 390 and 1440. Base: 9 of 15 Tab stops and 3 of 3 Shift+Tab stops landed behind the overlay. Fix: 0 of 15 and 0 of 3 leave it, Tab wraps from UNDER 1500 back to the input, and Escape closes it with focus on the Search button."
+     },
+     {
+      "id": "C34",
+      "status": "fixed",
+      "summary": "When the reviews panel is collapsed it now carries an inert attribute (set through a spread, because React 18 has no typed inert prop), and 'View more' gets tabIndex -1 as a fallback for browsers older than inert.",
+      "files": [
+       "src/components/CustomerReviews.tsx"
+      ],
+      "tests": [
+       "src/components/CustomerReviews.test.tsx"
+      ],
+      "verify": "Unit test fails on base and passes now. axe aria-hidden-focus was flagged on the base product page at 390 and 1440 and is gone in the fix. In the browser, the Tab stops after 'Write a Review' are visible controls only."
+     },
+     {
+      "id": "C85",
+      "status": "fixed",
+      "summary": "New src/lib/radioGroup.ts gives the product page's option radiogroups and the 'Ring size, US' radiogroup a roving tabindex (one Tab stop, on the chosen value or on the first value before a choice). ArrowRight/Down, ArrowLeft/Up, Home and End click the target radio, so a key press does exactly what a tap does, and then move focus to it. Look and click behaviour are unchanged. Picking a value fires no pixel event; ViewContent depends only on the handle.",
+      "files": [
+       "src/lib/radioGroup.ts",
+       "src/pages/JewelDetailNext.tsx"
+      ],
+      "tests": [
+       "src/lib/radioGroup.test.tsx"
+      ],
+      "verify": "Unit tests cover roving and arrow keys. Browser check on star-point-band at 390 and 1440: the Metal and Size groups each have one Tab stop (Gold, 6). ArrowRight from Gold selects and focuses Silver, which then becomes the only stop, and the next Tab goes to 'Size guide'."
+     },
+     {
+      "id": "C86",
+      "status": "fixed",
+      "summary": "Index, Jewellery (Shop All) and JewelDetailNext each wrap their content, but not the footer, in one <main>. The Shop All hero <header> is now a div. On the home page, 'The edit.' h3 becomes an h2, and the footer column and newsletter h4s become h2s; Tailwind preflight resets heading sizes, so the existing classes keep the look. Shop All gets a screen-reader-only h2 ('All pieces' or the category name) above the card grid. The product page breadcrumb nav gets aria-label=\"Breadcrumb\"; this fixes landmark-unique at 1440. Not changed: on the product page, the shared RingSizeGuide inside the collapsed Details fold goes h1 \u2192 h3/h4. axe does not flag it, and changing it would break the size-chart modal's own outline.",
+      "files": [
+       "src/pages/Index.tsx",
+       "src/pages/Jewellery.tsx",
+       "src/pages/JewelDetailNext.tsx",
+       "src/components/jewellery/JewelleryCategories.tsx",
+       "src/components/Footer.tsx"
+      ],
+      "tests": [
+       "src/pages/landmarks.test.ts"
+      ],
+      "verify": "Source test fails on base (5 of 5) and passes now. axe 4.10.2 (the verifier's cached copy) on /, /jewellery and /jewellery/star-point-band at 390 and 1440. Base: landmark-one-main on all three, heading-order on home and Shop All, landmark-no-duplicate-banner and landmark-unique on Shop All, landmark-unique on the product page at 1440. Fix: 0 violations on all six runs and exactly 1 <main> on each page."
+     },
+     {
+      "id": "C12",
+      "status": "fixed",
+      "summary": "In image-lightbox.tsx, a one-finger touch swipe on the stage of 40px or more, at least 1.2\u00d7 more sideways than vertical, while not zoomed, now calls step(\u00b11). The arrow buttons and arrow keys stay. A click that a browser may send right after a swipe cannot toggle zoom. The stage gets touch-pan-y and touch-pinch-zoom. Desktop click-to-zoom is unchanged.",
+      "files": [
+       "src/components/ui/image-lightbox.tsx"
+      ],
+      "tests": [
+       "src/components/ui/image-lightbox.test.tsx"
+      ],
+      "verify": "Unit test fails on base and passes now. Browser check on a 390 phone profile with CDP Input.dispatchTouchEvent on star-point-band: a left swipe moves to the next photo, a right swipe moves back, and zoom stays off (aria-pressed=false)."
+     },
+     {
+      "id": "C36",
+      "status": "fixed",
+      "summary": "New src/lib/galleryAlt.ts. descriptiveAlts keeps Shopify's altText per photo URL (keyed without the query string) when it says more than the product name and is not 'catalog-square'; mergeLive and fromShopify now carry it as JewelPiece.galleryAlt. galleryAlt() falls back to 'Size guide \u2014 <name>' and 'The Naira gift box <name> arrives in' for those photos, and to '<name> view N' for the rest. The phone and desktop galleries and the lightbox (new alts prop) use it, and the gallery buttons' labels append the description. scripts/generate-jewellery-snapshot.ts strips galleryAlt, so a future snapshot does not add about 65 KB of text to the product page chunk; the snapshot file itself is unchanged.",
+      "files": [
+       "src/lib/galleryAlt.ts",
+       "src/hooks/useLiveJewellery.ts",
+       "src/data/jewellery.ts",
+       "src/pages/JewelDetailNext.tsx",
+       "src/components/ui/image-lightbox.tsx",
+       "scripts/generate-jewellery-snapshot.ts"
+      ],
+      "tests": [
+       "src/lib/galleryAlt.test.ts"
+      ],
+      "verify": "Unit tests check fromShopify plus the gallery reorder, the fallbacks and query-string matching. Browser check on star-point-band with live Storefront data, 390 and 1440: alts now read for example 'Star Point Band, Gold \u2014 macro of one four-point star set with four stones', Shopify's gift-box description, and 'Size guide \u2014 Star Point Band'; the button labels carry the same text."
+     },
+     {
+      "id": "C41",
+      "status": "partial",
+      "summary": "Changed: footer column links use inline padding (py-[15px] -mx-2 px-2) and are now at least 44px both ways. The compact footer links gain -mx-1 px-1, so 'Terms' (43.4px wide) is now over 44px. Product page pairing names go from 34px to 44px through padding taken back from the margins. The bag's returns link is 44px with asymmetric padding (11px up into the 12px gap, so it never covers Checkout; 16px down). The size chart X is 44px (in commit 5fc50d6). Partial: the Popular Searches links sit on 23px lines. A 44px target there would cover the next line's words, so they get the full 23px line height plus the separator gaps. Not changed: the shop card title links, which sit under a same-href image link, and the announcement bar, which would need a height change.",
+      "files": [
+       "src/components/Footer.tsx",
+       "src/pages/JewelDetailNext.tsx",
+       "src/components/CartDrawerNext.tsx",
+       "src/components/jewellery/RingSizeGuideModal.tsx"
+      ],
+      "tests": [],
+      "verify": "Not unit-testable (layout). Browser measurement with scratchpad/fix-oct30/s2/b/footer.mjs, pairing.mjs and misc.mjs. Links under 44px in the home footer: 32 on base, only the Popular Searches (23px tall) on the fix. Footer heights are unchanged: 1867, 260, 830 and 212px. Pairing names are 44px with text and price at the same y (1392/1427). The bag returns link is 44px with its text at the same y, and elementFromPoint at Checkout's bottom edge still returns Checkout. Screenshots of the bag foot and the wishlist panel at 390 and 1440 are pixel-identical to base. The footer link columns show only a 0.2px vertical shift, from the logo change."
+     },
+     {
+      "id": "C42",
+      "status": "fixed",
+      "summary": "The review photo dialog gets a visually hidden <DialogTitle>Customer photo</DialogTitle> and aria-describedby={undefined}.",
+      "files": [
+       "src/components/CustomerReviews.tsx"
+      ],
+      "tests": [
+       "src/components/CustomerReviews.test.tsx"
+      ],
+      "verify": "Unit test: the dialog's accessible name is 'Customer photo' and it has no aria-describedby; this fails on base. Browser check at 390 and 1440: the open dialog is named 'Customer photo' with no Dialog or Description console messages. The local Radix is 1.3.1, which never logs these; the lockfile's 1.1.14 does, and the title plus aria-describedby={undefined} is the documented fix for it."
+     },
+     {
+      "id": "C43",
+      "status": "fixed",
+      "summary": "Each wishlist row is now a relative div. The piece name's Link is stretched over the row with after:absolute after:inset-0, so tapping the photo or price still opens the piece. Remove is a sibling button with relative z-10, and the preventDefault/stopPropagation workaround is gone. Handles in JEWELLERY_HANDLES link straight to /jewellery/<handle>; unknown handles (apparel) keep /product/<id>. The image alt is now empty because the link carries the name.",
+      "files": [
+       "src/components/WishlistDrawer.tsx"
+      ],
+      "tests": [
+       "src/components/WishlistDrawer.test.tsx"
+      ],
+      "verify": "Unit tests fail on base and pass now. Browser check at 390 and 1440: querySelectorAll('a button') goes from 1 to 0, and the link href goes from /product/prism-riviere-bracelet to /jewellery/prism-riviere-bracelet. Tapping the row photo opens the piece and Remove empties the list. The drawer panel screenshot is pixel-identical to base."
+     },
+     {
+      "id": "C44",
+      "status": "fixed",
+      "summary": "parseQuery now joins split forms before splitting the query into words: '(s)' becomes 's', 'ear[ -]ring' becomes 'earring', and 'neck[ -]lace' becomes 'necklace'. 'ear ring(s)' therefore finds earrings and is read as the Earrings category, not Rings. 'pear ring' is unaffected because of the word boundary.",
+      "files": [
+       "src/lib/search.ts"
+      ],
+      "tests": [
+       "src/lib/search.test.ts"
+      ],
+      "verify": "New tests cover 'ear ring', 'ear rings', 'Ear Rings', 'ear-ring', 'ear - rings', 'earring', 'earring(s)', 'ear ring(s)' and 'neck lace', plus the category and shopPageFor results; 'ring' still returns only rings."
+     },
+     {
+      "id": "C08",
+      "status": "fixed",
+      "summary": "The footer Popular Searches now come from a popularSearches list in src/data/navigation.ts that points at the existing landings: rings, earrings, hoop-earrings, bracelets, layered-necklaces, anti-tarnish-jewellery, demi-fine-jewellery and jewellery-gifts, with the two custom terms still going to /customize. Labels are unchanged and no ?search= URLs remain.",
+      "files": [
+       "src/data/navigation.ts",
+       "src/components/Footer.tsx"
+      ],
+      "tests": [
+       "src/data/navigation.test.ts"
+      ],
+      "verify": "A unit test asserts that every link resolves through categoryBySlug and has no query string. Browser check on the home page at 390 and 1440: ?search= links go from 8 to 0. All 12 linked landings render their own h1 and a grid of pieces, for example 'Gold Hoop Earrings for Women'."
+     },
+     {
+      "id": "C71",
+      "status": "fixed",
+      "summary": "menuCategories (header, mega menu and mobile menu on every page, product pages included), the home 'The edit.' tiles and the gifting tiles now link to /jewellery/collections/<slug> instead of ?category=. PageCurtain also plays its category bloom for those four landings, so menu and tile taps keep the same transition. The ?sort=, ?tag= and ?under= menu links stay as they are, since they have no landing. Trade-off: the four landings do not auto-scroll to the grid the way ?category= did.",
+      "files": [
+       "src/data/navigation.ts",
+       "src/components/jewellery/JewelleryCategories.tsx",
+       "src/pages/Gifting.tsx",
+       "src/components/wow/PageCurtain.tsx"
+      ],
+      "tests": [
+       "src/data/navigation.test.ts"
+      ],
+      "verify": "A unit test asserts that each menu category resolves to a landing of the same category. Browser check on the home page: ?category= links go from 12 to 0. The Rings tile lands on /jewellery/collections/rings, 'Zircone Rings for Women'."
+     },
+     {
+      "id": "C13",
+      "status": "fixed",
+      "summary": "What the shop supports was checked. Shopify has no public lookup by order number and email (its customer account signs in with an emailed code; the verifier traced /account/login to shopify.com/68096065698 sign-in). Shiprocket's public tracking needs the AWB, which the dispatch email already links. No lookup is possible without a secret, so the form is gone. The page now has one 'FIND MY ORDER' link that opens Shopify's sign-in in a new tab, with honest copy above it. The order-number field moves into the WhatsApp card, the one place it is used, and the email field is removed. Prefilling the email on Shopify's login was not attempted because it is unverified.",
+      "files": [
+       "src/pages/TrackOrder.tsx"
+      ],
+      "tests": [
+       "src/pages/TrackOrder.test.tsx"
+      ],
+      "verify": "Tests render the page without submitting anything: no form and no email input, the link's href and target, and the WhatsApp text containing #1001. Browser check at 390 and 1440 renders correctly; the only <form> on the page is the footer newsletter, which was not submitted."
+     },
+     {
+      "id": "C56",
+      "status": "fixed",
+      "summary": "New src/lib/reelDelete.ts deletes the row with .delete().eq().select('id'). If there is an error, or no rows come back (an RLS refusal), it throws and the files are kept; only after the row is gone does it remove the video and poster, and it reports any storage error. Admins can read all reels per the migration, so the deleted row is returned. Reels.tsx now asks window.confirm first (with the reel named), shows a toast with the outcome, and disables Delete while busy. The first version used a count header; follow-up commit 352aa24 switched to the returned rows after a browser run showed the Content-Range header could be hidden cross-origin. The live database was not touched.",
+      "files": [
+       "src/lib/reelDelete.ts",
+       "src/pages/admin/Reels.tsx"
+      ],
+      "tests": [
+       "src/lib/reelDelete.test.ts"
+      ],
+      "verify": "Unit tests with a mocked client cover: a 500 keeps the files, an empty return keeps the files, files are removed only after the row, and a storage error is reported. A browser check (scratchpad/fix-oct30/s2/b/admin.mjs) had every Supabase request mocked locally. Cancel: no requests. Accept with a 500: row DELETE only, a 'Could not delete' toast, and the row still listed. Accept with RLS returning []: the same. Accept with success: row DELETE, then storage DELETE of both paths, a 'Reel deleted' toast, and the row gone."
+     },
+     {
+      "id": "C52",
+      "status": "fixed",
+      "summary": "In JewelCard, duration-[600ms] becomes duration-600 (configured in tailwind.config.ts and already used elsewhere). A new source-scan test fails on any arbitrary duration-, delay- or ease-[] value. Follow-up commit a22ddce rewords that test's comment so Tailwind's content scan does not see the bare class name.",
+      "files": [
+       "src/components/jewellery/JewelCard.tsx",
+       "src/test/tailwind-classes.test.ts"
+      ],
+      "tests": [
+       "src/test/tailwind-classes.test.ts"
+      ],
+      "verify": "The test fails on base. The built CSS contains .duration-600{transition-duration:.6s}, and the built card class reads 'transition-transform duration-600'. The 'duration-[600ms] is ambiguous' build warning appears on base and is absent from the final build."
+     },
+     {
+      "id": "C31",
+      "status": "fixed",
+      "summary": "loading=\"lazy\" now comes before src on the Testimonials CollageTile, both Craftsmanship images and FounderStoryTeaser. This matches the existing CustomerReviews idiom: React 18 sets attributes in prop order, so with src first a pre-built URL was fetched eagerly. Not changed: the 7 KB NairaBox3D poster has the same pattern; 41 other img tags across the site also put src first and were left alone to limit churn.",
+      "files": [
+       "src/components/Testimonials.tsx",
+       "src/components/Craftsmanship.tsx",
+       "src/components/FounderStoryTeaser.tsx"
+      ],
+      "tests": [
+       "src/components/lazyImages.test.tsx"
+      ],
+      "verify": "The render test fails on base and passes now. The build has no prerender, so a pre-built home page was simulated by capturing the rendered DOM into a copy of each dist (capture.mjs, NO_REPORT routed). On a 390x844 load with scrollY 0, two runs each: base fetched 11 below-fold lazy images and 2,654 KB of first-party images; the fix fetched 1 lazy image (the 7 KB box poster) and 1,012\u20131,061 KB. Total image bytes went from 3,120 to about 1,500 KB. This includes C79's 101 KB footer logo. All 9 visible outfit and testimonial images still load on scroll."
+     },
+     {
+      "id": "C79",
+      "status": "fixed",
+      "summary": "Both footers now draw the existing vector NairaWordmark with still (so no three.js) and the same brightness-0 invert filter. src/assets/naira-logo-footer.svg (103 KB, one 4000x2250 PNG) is deleted. The decoded PNG crop was compared with the wordmark: same NAIRA-with-flower artwork. src/assets/naira-logo.svg was not used because it is also a bitmap. The stale CLAUDE.md line is updated.",
+      "files": [
+       "src/components/Footer.tsx",
+       "src/assets/naira-logo-footer.svg",
+       "CLAUDE.md"
+      ],
+      "tests": [],
+      "verify": "Footer screenshots at 390 and 1440, home and product page, base vs fix: the same mark, sharper. The logo box is 100x22.2 \u2192 100x22.4 and 150x33.3 \u2192 150x33.6, and all footer heights are unchanged. The asset is no longer in dist/assets, and the home page no longer fetches the 101 KB logo."
+     },
+     {
+      "id": "C81",
+      "status": "fixed",
+      "summary": "New src/lib/videoRecovery.ts, used by both ReelShopNext and MobileReelShop. It runs only for MEDIA_ERR_SRC_NOT_SUPPORTED. It reads Content-Type from the response headers and aborts when storage already says video/*. Results are shared once per source per visit (a cleared entry after a network failure allows a retry). The per-player revokeObjectURL was removed because the shared URL lives for the visit.",
+      "files": [
+       "src/lib/videoRecovery.ts",
+       "src/components/reels/ReelShopNext.tsx",
+       "src/components/reels/MobileReelShop.tsx"
+      ],
+      "tests": [
+       "src/lib/videoRecovery.test.ts"
+      ],
+      "verify": "Unit tests cover: no fetch for network or decode errors, stopping at headers for video/*, relabelling octet-stream, a single fetch shared across players, and a retry after offline. Browser check on a phone /jewellery/prism-riviere-bracelet (this sandbox's Chromium has no H.264, so the reel errors), measured with CDP Network: the base recovery fetch downloaded 3,361 KB of reel-1.mp4; the fix aborts it at the headers (0 KB) because storage serves video/mp4."
+     }
+    ],
+    "verification": {
+     "vitest": "npx vitest run on final commit 6ced95c: 82 files, 522 tests passed. The baseline at 6a4593e was 66 files, 474 tests.",
+     "tsc": "npx tsc --noEmit -p tsconfig.app.json: exit 0 on 6ced95c",
+     "build": "npx vite build: exit 0 on 6ced95c with no 'ambiguous class' warning. supabase/functions/mcp/index.ts was restored after each build and git status is clean; dist/ is ignored. Main chunk gzip went from 92.6 KB to 94.9 KB (+2.3 KB; about 1.1 KB of that is JEWELLERY_HANDLES, now reached through WishlistDrawer). The JewelDetailNext chunk went from 19.7 KB to 20.1 KB gzip.",
+     "browser": "Global playwright 1.56 with chromium.launch(). Builds were served with distserve: fix on 4420, base 6a4593e on 4423, pseudo-pre-built copies on 4422 and 4425; all servers were killed by PID afterwards. Every context aborted NO_REPORT URLs, stubbed the Fastrr/Shiprocket script and patched webdriver. Profiles were Pixel 7 at 390x844 and desktop at 1440x900. No checkout was opened, no form was submitted, and nothing was sent to Meta. One Storefront test cart was created through Add to cart to open the bag, and Supabase was fully mocked for the admin check. Scripts and outputs are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/s2/b/: dialogs.mjs, axe.mjs, pdpcheck.mjs, misc.mjs, footer.mjs, pairing.mjs, lazybytes.mjs, reelbytes.mjs, admin.mjs, and the out-*.json and shot/cmp-*.png files."
+    },
+    "notes": "Choices the owner may want to review:\n(1) C71: the four category landings replace the ?category= deep link, so the menu and tiles no longer auto-scroll to the grid. The bloom curtain was extended to those landings to keep the transition. Search's 'See all' still uses ?category= because it combines category with price filters.\n(2) C43: importing JEWELLERY_HANDLES into WishlistDrawer adds about 1.1 KB gzip to the main chunk. The alternative was to record a link on each wishlist item, which would leave existing saved items hopping through /product/.\n(3) C41 is partial. The Popular Searches lines are 23px apart, so 44px targets there are impossible without changing the layout. Shop card titles (same-href image above) and the announcement bar were left alone.\n(4) C86: the product page keeps h1 \u2192 h3/h4 inside the collapsed Details fold (the shared RingSizeGuide). axe passes, and changing it would break the size modal's heading outline.\n(5) C31: the 7 KB NairaBox3D poster and about 40 other src-before-loading img tags on other pages were not reordered, to limit churn and avoid conflicts with other groups.\n(6) CLAUDE.md still says the seeded reels are stored as application/octet-stream. reel-1.mp4 was observed served as video/mp4; reel-2 was not checked, so that line was left as it is.\n(7) Lint: JewelDetailNext.tsx already has a no-constant-binary-expression error and an exhaustive-deps warning on base; no new lint issues were added.\nNothing was pushed, and no out-of-bounds area was touched: pixel/CAPI calls, checkout payload, prices, variants landing and design tokens are all unchanged."
+   }
+  ],
+  "integrate": {
+   "head": "3418c136f490df3a290be74914f1cf4d28a57601",
+   "baseMerged": "No merge needed. After git fetch origin main, origin/main was still at 6a4593e, so no Lovable commits were pending. ship-main is now 51 commits ahead of 6a4593e: 50 cherry-picks plus 1 lint commit. Nothing was pushed.",
+   "picked": [
+    {
+     "group": "s3a",
+     "commits": 14,
+     "conflicts": "none; all 14 applied cleanly. Afterwards tsc was clean and vitest passed 75 files / 603 tests."
+    },
+    {
+     "group": "s3b",
+     "commits": 7,
+     "conflicts": "none (auto-merged ProductDetail.tsx, productRedirect.test.ts and scripts/routes.ts). Afterwards tsc was clean and vitest passed 78 files / 634 tests."
+    },
+    {
+     "group": "s1",
+     "commits": 10,
+     "conflicts": "2 conflicts, both resolved keeping both intents. (1) 6a8bc20 (C77) scripts/routes.ts: kept s1's paging loop over products and kept s3b's 'updatedAt' field in that query (C72 lastmod). I also added 'sku' to s1's new by-id ProductVariants query, so variants fetched there carry the same fields as the main query (C65). (2) cde926a (C27/C28) src/pages/JewelDetailNext.test.ts: kept s3b's two describe blocks (sku and clipText) and s1's stock and lead-time block. I checked that C25's regeneration of src/data/jewellery.ts kept C65's corrected SKUs (riviere-of-light JDB201083, baguette-eclat JDB201210). Afterwards tsc was clean and vitest passed 87 files / 669 tests."
+    },
+    {
+     "group": "s2",
+     "commits": 19,
+     "conflicts": "none; all 19 applied cleanly. I hand-checked the overlaps that auto-merged: SearchOverlay (C46 storage guard and C33 focus hook), admin/Reels.tsx (C39 noindex and C56 delete), CLAUDE.md (C90 and C79), and the snapshot generator (C25, C77 and C36 galleryAlt strip). Afterwards tsc was clean and vitest passed 103 files / 717 tests."
+    },
+    {
+     "group": "C53 lint (new commit 3418c13)",
+     "commits": 1,
+     "conflicts": "n/a"
+    }
+   ],
+   "verification": {
+    "vitest": "103 files, 717 tests, all pass (base 6a4593e had 349 per CLAUDE.md)",
+    "tsc": "npx tsc --noEmit -p tsconfig.app.json: 0 errors",
+    "build": "npx vite build succeeds (16.8 s). supabase/functions/mcp/index.ts restored after each build. /tmp/auditwt was rebuilt fresh at 6a4593e with npx vite build because its old dist was a stale prerender output; its tree is clean.",
+    "bundle": "Gzip -9 sizes from the Vite manifest, base 6a4593e -> HEAD. Main entry chunk: 91.0 -> 94.6 KiB (+3.6). Entry with its static imports: 160.4 -> 163.7 KiB. JewelDetailNext chunk: 19.3 -> 19.7 KiB; its first load 195.9 -> 199.1 KiB. Shop All (/jewellery, the Jewellery chunk): 4.2 -> 4.3 KiB; first load 221.2 -> 225.1 KiB. The ShopAll chunk no longer exists: C49 took ShopAll out of pageCode because no route renders it (base: 10.6 KiB). Other first loads: Index 237.2 -> 240.9; JewelleryCategory 217.8 -> 221.8; ProductDetail 266.2 -> 241.4 (C50 lazy-loads reviews); CartDrawerNext 168.3 -> 171.6. Entry CSS 26.4 -> 26.5 KiB. CLAUDE.md sets no numeric KB budget for main. The budgets it does state hold: three.js (144 KiB) is reached only through the dynamic scene chunks, never statically from the entry, the PDP, the bag or the footer, and jewellerySnapshot stays out of main. The PDP first screen at 360x640 has exactly the same h1 and #product-actions positions on both builds for all 4 PDPs."
+   },
+   "lint": "Audit C53 fixed in commit 3418c13 'Lint is back to its one documented warning'. npx eslint . went from 34 errors / 26 warnings (the same 60 on the integrated tree as at base) to 0 errors / 1 warning. The remaining warning is the CartContext.tsx react-refresh one that CLAUDE.md names as the baseline, so CLAUDE.md needed no edit.\nNone of these changes alter behaviour:\n- eslint.config.js ignores supabase/functions/mcp/**, the bundle Lovable's plugin regenerates on every build (12 errors).\n- Ternaries used as statements in the Jewellery.tsx and GoldenHourEdit.tsx filter writers became if/else with the same calls (10 errors).\n- PincodeChecker's two empty storage catches now carry a comment, and its unused exhaustive-deps directive is gone.\n- storefrontApiRequest's type parameter now defaults to unknown, and OAuthConsent has a small AuthorizationData type in place of any. Both are type-only.\n- Test regexes use {4} and {2} instead of runs of literal spaces.\n- Scoped disables, each with a reason:\n  - react-refresh is off for src/components/ui/** (shadcn primitives) through a config override.\n  - The helpers in PageSEO, ProductCard, ScrollToTop, JewelFilterBar, JewelPriceTag, AuthContext and WishlistContext have per-line disables.\n  - exhaustive-deps: the three ViewContent effects keyed on the handle (deps left unchanged so the pixel is untouched), the vendor/productType memo, and Auth's next= hop.\n  - no-constant-binary-expression on the Reserve on WhatsApp block. It was switched off in Lovable on 30 Sep (commit 4c43ecd changed soldOut && to false &&), so I kept it in place rather than deleting it.",
+   "smoke": [
+    {
+     "check": "Pages (Pixel 7, iPhone 13, 1440x900): home, /jewellery, the 4 PDPs, /track-order",
+     "result": "pass",
+     "detail": "Every page rendered an h1 and none showed Coming Soon. No console or page errors on load or while scrolling through. No navigation left the site. /track-order rendered and was not submitted."
+    },
+    {
+     "check": "Unknown URL robots",
+     "result": "pass",
+     "detail": "/this-page-does-not-exist-xyz: robots 'noindex, follow', no canonical, on all 3 profiles."
+    },
+    {
+     "check": "Horizontal overflow at 360 and 390",
+     "result": "pass",
+     "detail": "All 8 pages, scrolled to the bottom: scrollWidth equals clientWidth (360/360 and 390/390). The base build also passed."
+    },
+    {
+     "check": "/jewellery expand, filter, sort (Pixel 7, desktop)",
+     "result": "pass",
+     "detail": "SHOW MORE took the grid from 30 to 60 cards. The in-stock filter wrote ?stock=in. Sorting by price-asc wrote sort=price-asc and the grid prices ascend (599, 599, 599, 649, 699...). No console errors."
+    },
+    {
+     "check": "Bag: Add, bag opens, quantity +/-, Remove, Undo (Pixel 7, iPhone 13, desktop)",
+     "result": "pass",
+     "detail": "Add opened the bag with the line. The quantity went 1 -> 2 -> 1. Remove emptied the bag and showed Undo. Undo brought the line back and it was still there 4 s later (C47). No errors and no off-site navigation. Real Storefront test carts only; no order placed."
+    },
+    {
+     "check": "Buy Now hand-off (Fastrr script stubbed, buyDirect payloads recorded)",
+     "result": "pass",
+     "detail": "On an empty bag and again after Add, on all 3 profiles: one buyDirect call with products=[{variantId 47501788348578, quantity 1}] and no couponCode. That matches the base build's empty-bag behaviour exactly. On the base build, Buy Now after Add sent quantity 2 with couponCode BUY2 on every profile (the C00 bug), so the fix is confirmed. No checkout page was opened and no navigation left the site."
+    },
+    {
+     "check": "Ring size guide (cushion-halo-ring)",
+     "result": "pass",
+     "detail": "On all 3 profiles: the guide opens with focus inside the dialog, Escape closes it, and focus returns to 'Size guide'. On base, focus did not move in and Escape did not close it."
+    },
+    {
+     "check": "Mobile menu (Pixel 7, iPhone 13)",
+     "result": "pass",
+     "detail": "Focus moves in when the menu opens. 30 Tabs and 5 Shift+Tabs all stay inside. Escape closes it and focus returns to 'Open menu'. On base, focus did not move in, the first Tab left the menu, and Escape did not close it."
+    },
+    {
+     "check": "Search 'ear ring' (Pixel 7, desktop)",
+     "result": "pass",
+     "detail": "The top 6 results are all earrings (Ribbon Bow, Verdant Drop, Trio Oval Drop, Pearl Blossom, Mint Pear Drop, Clover Drop). Base returned nothing."
+    },
+    {
+     "check": "Footer links (25 internal)",
+     "result": "pass",
+     "detail": "Every internal footer link reaches a page with an h1, no Coming Soon and no console errors. Popular Searches now open the collection landings (C08)."
+    },
+    {
+     "check": "Legacy URLs, query kept",
+     "result": "pass",
+     "detail": "/collections/rings/products/cushion-halo-ring?utm_source=x -> /jewellery/cushion-halo-ring?utm_source=x\n/pages/contact -> /contact\n/cart -> /jewellery\n/search -> /jewellery\n/account/login -> /auth\n/policies/refund-policy -> /exchange-return-policy\nEvery one kept ?utm_source=x, showed an h1 and logged no errors. On base, the nested product URL, /cart, /search and /account/login all ended on Coming Soon."
+    },
+    {
+     "check": "PDP first-screen tap targets under 44px (Pixel 7, iPhone 13, 360x640; prism and cushion-halo)",
+     "result": "warn",
+     "detail": "One target remains: the announcement-bar link 'Shop the jewellery \u2014 sitewide...', full width but 34 px tall. Base has the same target. The C41 commit explicitly left it, because fixing it means changing the bar's height. Every other first-screen control is 44 px or more."
+    },
+    {
+     "check": "Console errors overall",
+     "result": "pass",
+     "detail": "None on any page or flow above, on either build. Payment-manifest and WebSocket proxy noise was filtered out."
+    }
+   ],
+   "visualDiffs": [
+    {
+     "page": "home",
+     "viewport": "390x844",
+     "diff": "No difference (0.00% of pixels).",
+     "intended": true
+    },
+    {
+     "page": "home",
+     "viewport": "1440x900",
+     "diff": "No visible difference: 0.00% on the final capture and 0.02% of anti-aliasing noise in the hero headline on the first capture.",
+     "intended": true
+    },
+    {
+     "page": "/jewellery",
+     "viewport": "390x844",
+     "diff": "No difference (0.00%).",
+     "intended": true
+    },
+    {
+     "page": "/jewellery",
+     "viewport": "1440x900",
+     "diff": "No difference (0.00%).",
+     "intended": true
+    },
+    {
+     "page": "prism PDP first screen",
+     "viewport": "390x844",
+     "diff": "No difference from the code. The only changed region is the 'X, City \u00b7 N min ago bought the \u2026' popup: the base screenshot caught it mid-display, the new one did not. Price and button rows differ only by sub-pixel anti-aliasing. FomoPopup.tsx is not touched by any commit; its display timing varies run to run on both builds (see notes).",
+     "intended": true
+    },
+    {
+     "page": "prism PDP first screen",
+     "viewport": "1440x900",
+     "diff": "Same as at 390: the only difference is the FOMO popup caught by one capture and not the other. Nothing else differs.",
+     "intended": true
+    },
+    {
+     "page": "open bag",
+     "viewport": "390x844",
+     "diff": "No visible difference (0.03% sub-pixel). Same line, \u20b92,399 price, ladder, total and Checkout.",
+     "intended": true
+    },
+    {
+     "page": "open bag",
+     "viewport": "1440x900",
+     "diff": "Only the dimmed announcement marquee behind the sheet is at a different scroll position (a time-based animation). The bag itself is identical.",
+     "intended": true
+    },
+    {
+     "page": "footer",
+     "viewport": "390x844",
+     "diff": "The NAIRA logo is now the vector wordmark instead of the 103 KB bitmap. The artwork is near-identical, the strokes slightly crisper, the flower marginally different (C79, intended). Everything from the brand paragraph's second line down to the newsletter block sits 1 px lower. The third line of Popular Searches sits about 1 px lower (C79 wordmark box, C41 tap-target padding and line height, C86 h4 to h2). 1.59% of pixels, all 1 px shifts; nothing changes colour, size or wording. C41 claimed 'without moving', so this 1 px is a small deviation from that claim, invisible at normal viewing.",
+     "intended": true
+    },
+    {
+     "page": "footer",
+     "viewport": "1440x900",
+     "diff": "Same as at 390: vector wordmark in place of the bitmap (C79), and the brand paragraph's first line about 1 px lower. 0.13% of pixels. No other change.",
+     "intended": true
+    }
+   ],
+   "screenshots": "All saved under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/integrate/shots/\n- Smoke screenshots: new-p-*.png, new-*.png, base-*.png. Per profile: pages, filtered listing, bag open, size guide, menu open, search.\n- shots/visual/ (40 files): base-*.png and new-*.png for home, jewellery, pdp, bag and footer at m390 and d1440.\n  - cmp-*.png show base | new | diff overlay side by side.\n  - zoom-*.png are close-ups of the footer, PDP and home diffs.\n- Raw results: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/integrate/smoke-*.json and *.log.\n- Scripts in the same folder: smoke.mjs, visual.mjs, sizes.mjs, diff.py.",
+   "notes": "- ship-main is checked out at 3418c13 and the tree is clean (dist/ is gitignored). /tmp/auditwt is clean and was not committed to. Both distserve processes (PIDs 15856 on port 4470 and 15858 on port 4471) were stopped by PID. Nothing was pushed.\n- No order was placed. The Fastrr script was stubbed and no checkout page was opened. Meta and analytics requests were blocked with NO_REPORT. Only Storefront test carts were created or updated.\n- The rule's chromium.launch() worked only with the global playwright at /opt/node-tools (1.56.1), whose browsers are installed. The repo's node_modules has playwright 1.64.1, whose browser is not installed. No browsers were installed.\n- Pre-existing issue, not fixed (out of scope): on PDPs the 'X, City \u00b7 N min ago bought \u2026' popup sometimes never appears.\n  - The effect in FomoPopup.tsx depends on jewellery.length. If the live catalogue changes that length after the 5 s timer is scheduled, the effect's cleanup clears the timer, and the started guard stops it re-arming.\n  - Measured: base showed the popup in 4/4 runs, then 0/2. New showed it in 1/4, then 1/2. The code is identical in both builds, so this is timing, not a regression from these commits. Worth a separate small fix.\n- C24 and C07 change which collection landings exist and the sitemap; they were not re-checked live beyond the footer landings, which all render.\n- CLAUDE.md still says 'currently 349 tests'. It is 717 now; I left that line alone."
+  },
+  "review": {
+   "issues": [
+    {
+     "id": "pairing-name-third-line",
+     "severity": "major",
+     "file": "src/pages/JewelDetailNext.tsx",
+     "line": 240,
+     "summary": "The C41 tap-target change (b58b6e7) breaks how product names look in the product page's pairing rows. The PairingCard name link is now `-mb-[5px] mt-[3px] line-clamp-2 min-h-[44px] py-[5px]`. A line-clamp box hides lines 3 and later with overflow:hidden, and that clips at the padding edge. With padding added, the top of the third line now shows under the '\u2026' line and runs into the price below it.",
+     "repro": "Built HEAD and served it on :4480. Opened /jewellery/cushion-halo-ring on Pixel 7 and iPhone 13 profiles. On the 'Serpentine Whisper Chain \u2014 Silver' card, 7px of the clamped third line ('SILVER') is visible and overlaps '\u20b91,299'. With the base commit's box styles applied in the same page (no padding, mt 8px, min-height 34px), only 2px shows. Screenshots: scratchpad/fix-oct30/review/shots/pairing-head-pixel7-cushion-halo-ring.png, pairing-iphone13-head.png and pairing-pixel7-baseclasses.png. Scripts: pairing-clamp.mjs and pairing-ab.mjs. pairing-count.mjs measured how many of the 136 catalogue names wrap to 3 or more lines in this card: 14 at 360px, 7 at iPhone 13 and 2 at Pixel 7.",
+     "reproduced": true,
+     "fix": "Move the clamp onto an inner element so the padding sits outside the clipped box: `<Link className=\"-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink\"><span className=\"line-clamp-2\">{piece.name}</span></Link>`. Alternatively, restore `mt-2 line-clamp-2 min-h-[34px]` and enlarge the hit area with an absolutely positioned ::after."
+    },
+    {
+     "id": "c00-handoff-needs-owner",
+     "severity": "major",
+     "file": "src/contexts/CartContext.tsx",
+     "line": 510,
+     "summary": "The C00 commit (cb0e434) changes the checkout hand-off and Meta events, which the rules put out of bounds until the owner reviews them. When the piece is already in the bag, Buy Now now skips addItem. Fastrr's buyDirect then receives quantity 1 with no coupon, where the base commit sent quantity 2 with BUY2 (BUY3 at three). No AddToCart pixel or CAPI event fires on this path, and InitiateCheckout's num_items and value change to match.",
+     "repro": "The integrator's own smoke run shows it. On the base commit, Buy Now after Add sent buyDirect [{47501788348578, qty 2}] with couponCode BUY2. On HEAD it sends [{\u2026, qty 1}] with no couponCode. buyNow.test.tsx at HEAD also asserts that AddToCart is not tracked on this path.",
+     "reproduced": true,
+     "fix": "Hold cb0e434 until the owner signs off on the new Buy Now behaviour: no second unit, no ladder coupon, no AddToCart. Alternatively, ship it with that sign-off recorded."
+    },
+    {
+     "id": "buynow-ignores-apparel-quantity",
+     "severity": "minor",
+     "file": "src/contexts/CartContext.tsx",
+     "line": 513,
+     "summary": "The outfit product page has its own quantity stepper and passes that quantity to buyNow (ProductDetails.tsx:169). If the line is already in the bag, buyNow now ignores the requested quantity and hands off the bag's quantity. A shopper who sets 3 and taps Buy Now is sent to checkout with 1.",
+     "repro": "Unit test scratchpad/fix-oct30/review/repro-tests/buyNowQty.test.tsx (run from inside the worktree). The bag holds the outfit at quantity 1 on line l1, and the test calls buyNow(outfit, 3). Fastrr's buyDirect receives [[\"v-lehenga\",1]] and updateShopifyCartLine is never called, so the test fails with 'expected 1 to be >= 3'.",
+     "reproduced": true,
+     "fix": "Skip addItem only when quantity is 1 and the line already holds at least 1. Otherwise, set the line to the requested quantity (updateQuantity) before handing off. This also falls under the owner's review of the C00 hand-off."
+    },
+    {
+     "id": "prebuilt-page-stale-fallback",
+     "severity": "minor",
+     "file": "src/lib/prebuiltPage.ts",
+     "line": 18,
+     "summary": "The pre-built page kept for C78 can reappear later on a different page. keepPrebuiltPage stores the nodes in a module-level `kept` array, and only PrebuiltPage, as the routes' Suspense fallback, ever empties it. Two cases skip that fallback on the first commit: the route code arrives between the 8 s timer and React's first render (lazyRoute then renders the page directly), or the first render throws to the error panel. In both, `kept` keeps the old pre-built page, and the next navigation that suspends shows it under the live header while the next page's code loads.",
+     "repro": "Unit test scratchpad/fix-oct30/review/repro-tests/prebuiltRace.test.tsx. It keeps the pre-built PDP, resolves the PDP chunk before root.render, then navigates to a /jewellery route whose code is still downloading. While /jewellery loads, the screen shows [\"Live PDP\",\"Prism Rivi\u00e8re Bracelet\"]: the stale pre-built h1 sits in the fallback and the live PDP is hidden. The timing window is small in practice.",
+     "reproduced": true,
+     "fix": "Drop `kept` once the app's first commit has happened, whether or not the fallback mounted. For example, export a dropPrebuiltPage() that sets kept = [] and call it from AppShell's existing useLayoutEffect next to clearFallbackMark, scheduled after the commit that could have used it."
+    },
+    {
+     "id": "fittitle-fragment-titles",
+     "severity": "minor",
+     "file": "src/lib/clipText.ts",
+     "line": 27,
+     "summary": "fitTitle (C72) drops text after the last ', ' or ' \u00b7 ' as if it were a trailing qualifier. On titles where the comma is part of a list, it leaves a broken fragment in <title> and og:title. For example, 'Zirconia vs Diamond, Sparkle, Hardness and Cost Compared' becomes 'Zirconia vs Diamond, Sparkle', and 'How to Layer Necklaces, Lengths, Spacing, No Tangles' becomes 'How to Layer Necklaces, Lengths, Spacing'.",
+     "repro": "Rendered HEAD at 1440. /journal/zirconia-vs-diamond has document.title and og:title equal to \"Zirconia vs Diamond, Sparkle | Naira Flore\" (script: titles-browser.mjs). titles.ts lists all 27 titles that fitTitle changed.",
+     "reproduced": true,
+     "fix": "Hand-write shorter metaTitles for the pages over 65 characters (about 27). Alternatively, cut only at the first qualifier boundary (keep text up to the first ', ' when the rest is too long) instead of peeling list items off one at a time."
+    },
+    {
+     "id": "account-route-to-member-signin",
+     "severity": "minor",
+     "file": "src/App.tsx",
+     "line": 221,
+     "summary": "The C38 commit sends every Shopify customer-account address under /account/* (/account/login, /account/orders/<id>, /account/reset/<id>/<token>) to /auth, the Supabase Inner Circle sign-in. That sign-in cannot show a Shopify order, and the path tokens are dropped. The same branch's Track Order page (a1bc05c) says orders live behind Shopify's sign-in (ORDER_LOOKUP_URL), so the two pages contradict each other.",
+     "repro": "The route table check in src/test/legacy-routes.test.ts asserts land('/account/orders/123') and land('/account/login') both end on '/auth', and TrackOrder.tsx sends shoppers to https://nc5eti-gp.myshopify.com/account/login for the same purpose.",
+     "reproduced": true,
+     "fix": "Send /account/* (except /account itself) to Shopify's customer sign-in or to /track-order, or ask the owner which one. Keep /account for members."
+    },
+    {
+     "id": "panel-recovery-skips-pageview",
+     "severity": "minor",
+     "file": "src/components/ChunkErrorBoundary.tsx",
+     "line": 34,
+     "summary": "After the C17 reset, the shopper can leave the error panel, but AppShell remounts as they do. PixelEvents' firstRender ref then skips the PageView for the page reached from the panel. Base never left the panel at all, so this is not a regression, but the recovery is only partly tracked, and fixing it means touching PixelEvents, which is out of bounds.",
+     "repro": "Unit test scratchpad/fix-oct30/review/repro-tests/panelPageView.test.tsx. It mounts the real PixelEvents with the pixel mocked inside ChunkErrorBoundary, starts on a route that throws, then clicks 'Browse the collection'. trackPageView is called 0 times.",
+     "reproduced": true,
+     "fix": "Owner-reviewed change: guard the first PageView with a module-level flag instead of a per-mount ref, or render PixelEvents outside ChunkErrorBoundary."
+    },
+    {
+     "id": "wishlist-handles-in-main-chunk",
+     "severity": "minor",
+     "file": "src/components/WishlistDrawer.tsx",
+     "line": 15,
+     "summary": "WishlistDrawer is imported eagerly by App.tsx and now imports JEWELLERY_HANDLES. That puts the 136-handle Set into the main entry chunk on every page, about 1 KiB gzip, for a drawer most visitors never open. At base only the lazy JewelDetailNext and ProductDetail chunks imported it. This is part of main's growth from 91.0 to 94.6 KiB.",
+     "repro": "Ran npx vite build at HEAD. dist/assets/index-Dh5S5gSI.js (the entry) contains `new Set([\"amethyst-carre-bracelet\",\u2026])`. git grep shows WishlistDrawer as the only new importer. The Set alone gzips to 0.99 KiB.",
+     "reproduced": true,
+     "fix": "Store the item's kind (jewellery or apparel) on WishlistItem when it is saved and link from that. Alternatively, keep /product/<id>, which ProductDetail's first-render hop already redirects."
+    }
+   ],
+   "outOfBounds": [
+    "cb0e434 (C00): changes the checkout hand-off payload. When the piece is already in the bag, Buy Now sends Fastrr buyDirect quantity 1 with no couponCode; base sent quantity 2 with BUY2, or BUY3 at three. It also skips addItem, so no AddToCart pixel or CAPI event fires, and InitiateCheckout num_items and value change. The owner must review this first.",
+    "ca1322e (C02): bag lines now take Shopify's variant price, and that price feeds InitiateCheckout value and contents.item_price. What Meta receives therefore changes whenever the card price and Shopify's price differ. The bag subtotal, ladder saving and Total displays now show Shopify's own current price, which is allowed.",
+    "a010c55 (C25): createShopifyCart and addLineToShopifyCart now treat a quantity-0 (sold-out) line as not added. Before, the add returned a URL and the AddToCart pixel and CAPI mirror fired. This overlaps the out-of-bounds tracking finding C57, without owner review.",
+    "a010c55 (C25): regenerated the first-paint data. jewellery.ts has 19 new prices, MRPs added and 5 pieces marked sold out. The snapshot has mesh-band-ring at 799 (was 699) and solitaire-drop-huggies at 649 (was 648). The value sent with ViewContent or AddToCart before the live catalogue arrives therefore changes. The snapshot's variant lists changed too: aquarelle-riviere-bracelet gains 2 variants and new options, and roman-numeral-trio-ring variants 2 and 4 are now unavailable. That is first-paint variant data for ?variant= catalogue and ad landings. The default opening variant is unchanged (the first buyable is still variant 1), and every value now matches live Shopify.",
+    "381c6e6 (C09/C38): the pre-boot /products hop now also rewrites /collections/<c>/products/<h> to /jewellery/<h> before fbevents reads the URL, so those landings record a PageView on /jewellery/<h> plus a ViewContent, where they used to show Coming Soon. About 30 new KeepQuery redirects (/cart, /cart/add, /checkout, /search, /account/*, /pages/*, /policies/*, /apps/track, /collections/dusk and frontpage) also change the page URL the Pixel records. utm and fbclid are kept.",
+    "e78c72b (C01): the prerender capture browser now aborts /functions/v1/meta-capi and shopper-performance, so publish builds stop sending fake 127.0.0.1 ViewContent events to CAPI. This is build-side only and intended; it still changes what CAPI receives.",
+    "85ba7a2 (C17): after the error panel the app recovers and remounts PixelEvents, which skips the PageView for the page reached from the panel (see issue panel-recovery-skips-pageview).",
+    "d01e444, 041a873, 3c0437b (C65/C67/C72) and e36a55c (C27): Product JSON-LD sku and availability, <title>, and og:title and og:description values change. fbevents' automatic Microdata event scrapes the title, OG tags and JSON-LD, so these fields reaching Meta change. This is harmless.",
+    "Checked and found none of these changed: src/lib/pixel.ts, PixelEvents.tsx, any trackPixel or trackEvent call site, event ids, match keys, supabase/functions/*, promo.ts and fastrr.ts, coupon codes or the discount ladder, design tokens in index.css and tailwind.config.ts, or index.html. No Shopify store data was written."
+   ],
+   "verdict": "ship-after-repair",
+   "notes": "Verified on ship-main 3418c13 in my own worktree, /tmp/review-fix, which I have since removed. The dist server on :4480 was stopped by its PID. I made no commits.\n\nVerify commands at HEAD:\n- npx vitest run: 103 files and 717 tests, all passing.\n- npx tsc --noEmit -p tsconfig.app.json: exit 0.\n- npx vite build: success in 14.07 s. The main entry is 94.6 KiB gzip. supabase/functions/mcp/index.ts was restored after the build.\n\nChecked and found OK:\n- With localStorage and sessionStorage throwing, /, /jewellery, a product page and a collection landing all render with no panel and no page errors.\n- On Pixel 7 by touch, the menu, the size guide and the photo viewer work. The size guide's overlay tap closes it without double history steps. A swipe moves the viewer from 1/5 to 2/5. Focus returns to the opener, no focus ring appears after a tap, and there are no console errors.\n- Footer column links: their 44px targets overlap only in the gaps between links, never over link text.\n- C80 cannot misfire on a CSS preload, because the build has one CSS file.\n- scripts/routes.ts now imports src data, and it still loads under both `npx tsx` and `bunx tsx`, so the prebuild sitemap step survives.\n- sonner 1.7.4 supports mobileOffset, and --pdp-sticky-bar-h is defined in :root.\n- jewelleryHandles.ts is unchanged (136 handles), so the pre-boot redirect map is the same.\n- No new .at(), structuredClone or similar APIs that Safari 14 or Chrome 87 lack. inert does nothing before Safari 15.5, where only 'View more' gets the tabIndex fallback.\n- Every new redirect keeps the query.\n- No raw colour values appear beyond PincodeChecker's existing inline hsl pattern.\n\nWeak tests: many new tests are source-text regex checks (landmarks.test.ts, ProductDetail.test.ts, the JewelDetailNext stock and lead-time tests, the prerender pattern check). They pin wording rather than behaviour, which matches the repo's existing style.\n\nSmall doc drift: CLAUDE.md still says 'currently 349 tests', and still says the seeded reels are stored as octet-stream. The C81 repro note said that line is now stale.\n\nReproduction files are under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/review/:\n- repro-tests/buyNowQty.test.tsx, prebuiltRace.test.tsx and panelPageView.test.tsx. Copy them into src/ of a worktree to run them.\n- pairing-clamp.mjs, pairing-ab.mjs, pairing-count.mjs, titles-browser.mjs, touch-flows.mjs, storage-blocked.mjs and footer-taps.mjs.\n- shots/ holds the screenshots.\n\nThe browser scripts use the global Playwright at /opt/node22/lib/node_modules, because the worktree's copy has no installed browser."
+  },
+  "repair": {
+   "head": "63ed5766ce7c211843da2ef75de0a39b0bce525e",
+   "resolved": [
+    {
+     "id": "pairing-name-third-line",
+     "action": "fixed",
+     "detail": "Commit 76da087, file src/pages/JewelDetailNext.tsx. The root cause was padding on the line-clamp box itself. A clamp clips at its padding edge, so the hidden third line showed through. The fix moves the clamp onto an inner span: <Link className=\"-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] ...\"><span className=\"line-clamp-2\">{piece.name}</span></Link>. A test in JewelDetailNext.test.ts ('pairing card names') checks that the clamp sits on a span with no padding, min-h or h, and that the link keeps min-h-[44px]. The test fails on the old markup. Browser check on the served build (port 4470), on /jewellery/cushion-halo-ring and /jewellery/prism-riviere-bracelet, at Pixel 7, iPhone 13, 360x640 and 1440x900. 'Serpentine Whisper Chain \u2014 Silver' wraps to 3 lines on the phones, and 0px of its third line now shows. With an over-long name forced into all 11 cards, still 0px shows. The link is 44px tall, the name starts 8px below the photo and the price 44px below it, which matches the base commit's mt-2 + min-h-34 + mt-0.5. Screenshots are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/repair/shots/. The script prints 'FAIL 2', but that is its own over-strict check: at 1440 the forced long name fits in 2 lines on wider cards, so the 'every card has 3+ lines' count cannot be met. It is not a defect. Audit C41 stays fixed."
+    },
+    {
+     "id": "c00-handoff-needs-owner",
+     "action": "reverted",
+     "detail": "Commit 8d85e6d reverts cb0e434. Audit C00 is NOT fixed and is held for the owner. buyNow calls addItem again, as on the base commit. Smoke run on Pixel 7, iPhone 13 and 1440, with Fastrr stubbed and NO_REPORT on: Buy Now after Add sends buyDirect [{47501788348578, qty 2}] with couponCode BUY2, the same as base. Buy Now with an empty bag still sends qty 1 with no coupon. No checkout page was opened. To re-apply after sign-off, run git revert 8d85e6d."
+    },
+    {
+     "id": "oob-cb0e434-C00",
+     "action": "reverted",
+     "detail": "Out of bounds: it changes the checkout hand-off and the AddToCart/InitiateCheckout events. Reverted in 8d85e6d, the same commit as the item above. C00 is not fixed."
+    },
+    {
+     "id": "oob-ca1322e-C02",
+     "action": "reverted",
+     "detail": "Reverted in 0cdea53. Bag line prices feed InitiateCheckout value and contents.item_price (CartContext.tsx, trackPixel('InitiateCheckout') reads i.price). Re-pricing lines from Shopify therefore changes what Meta receives. The allowed display-only half cannot be split off without carrying a second price on every line. The test file bagPrices.test.tsx and the linePrice/withShopifyPrice helpers are removed with the revert. Audit C02 is NOT fixed."
+    },
+    {
+     "id": "oob-a010c55-C25",
+     "action": "reverted",
+     "detail": "Reverted in 0e0ed4b. Both parts are out of bounds. (1) The quantity-0 line rule in createShopifyCart and addLineToShopifyCart suppresses the AddToCart pixel and its CAPI mirror, which overlaps C57. (2) The regenerated jewellery.ts, jewellerySnapshot.ts and jewelleryHandles.ts (handle set unchanged, comment date only) change first-paint ViewContent and AddToCart values, and the variant data for ?variant= landings. The generator's new jewellery.ts rewrite is reverted too, because running it would bring the same change back. The data is back to the base snapshot, which still has sku \"\" for 115 pieces, as d01e444's message already says. Audit C25 is NOT fixed."
+    },
+    {
+     "id": "oob-381c6e6-C09-C38",
+     "action": "reverted",
+     "detail": "Reverted in 55857e9. The pre-boot hop for /collections/<c>/products/<h> and the roughly 30 KeepQuery aliases change the page URL the Pixel records and change ad landings. There were conflicts with the later C49 commit (3e45fd9). I kept C49's /shop/indo-western -> MadeForYou preload and its 'landing preload table' test. src/test/legacy-routes.test.ts now holds only the route-table helpers and that test, and routeCode.test.ts keeps the /shop/indo-western case. Smoke run: /products/<h>, /pages/contact, /policies/refund-policy and /collections/rings still land with utm kept. /collections/rings/products/cushion-halo-ring, /cart, /search, /account/login and /pages/privacy-policy show Coming Soon, as on base. Audit C09 and C38 are NOT fixed."
+    },
+    {
+     "id": "oob-e78c72b-C01",
+     "action": "reverted",
+     "detail": "Reverted in 63ed576. It is build-side only and the effect is wanted: publish builds stop sending 127.0.0.1 ViewContent to meta-capi. But it still changes what CAPI receives, so it is not purely internal. This is the simplest held change for the owner to approve (git revert 63ed576). Audit C01 is NOT fixed, on either the build side or the pixel.ts side."
+    },
+    {
+     "id": "oob-85ba7a2-C17",
+     "action": "reverted",
+     "detail": "Reverted in 258ff12. Recovering from the panel remounts PixelEvents, which skips the PageView for the page the shopper reaches (the reviewer's panelPageView repro). Tracking that resumes after the panel also changes what the Pixel receives. The audit's alternative is a plain <a href=\"/jewellery\"> full page load, which loads and reports the page normally; I left that choice to the owner. Audit C17 is NOT fixed."
+    },
+    {
+     "id": "oob-d01e444-041a873-3c0437b-e36a55c-C65-C67-C72-C27-C28",
+     "action": "disputed",
+     "detail": "Kept, not reverted. These change only page metadata: JSON-LD sku and availability, the <title>, and the meta/og/twitter descriptions. Pixel autoConfig is on in index.html, so fbevents' automatic Microdata scrape does pick these values up. Strictly they are not 'purely internal', and they also change link-preview text. I kept them because: (a) they touch no event, value, event id, match key, URL, checkout payload or price the shop sends; (b) the reviewer called them harmless; (c) other in-bounds commits already on the branch and not flagged (8d97261 BreadcrumbList, 5389abd canonical/robots, 3bb86a2, b088e60, 9098534 alt text) change the same scraped metadata, so reverting only these four would be inconsistent. e36a55c also routes a sold-out open-back ring's PDP to Reserve, the way JewelCard already treats sold-out pieces, which also removes a failing Add. If the owner wants them held too, revert d01e444, 041a873, 3c0437b and e36a55c; that may conflict with the later 9098534 and b088e60."
+    }
+   ],
+   "verification": "All results below are on the final commit 63ed576 in /tmp/mainwt (branch ship-main).\n\n- npx vitest run: 99 files, 636 tests passed.\n- npx tsc --noEmit -p tsconfig.app.json: exit 0.\n- npx vite build: built in 17.7s, exit 0. Afterwards I ran git checkout -- supabase/functions/mcp/index.ts.\n- npx eslint .: 0 errors, 1 warning. The warning is the CartContext react-refresh warning CLAUDE.md lists as the baseline.\n- git status: clean apart from dist/ (ignored).\n\nSmoke run against the served build (distserve on 4470, PID-killed afterwards). Every context had NO_REPORT routing and the webdriver override. The Fastrr script was stubbed to record buyDirect, there were no off-site navigations, no checkout, and no forms were submitted. The harness was copied from integrate/ and adapted to the held behaviour. It lives at /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/repair/smoke.mjs, with results in smoke-repair-{a,b,c}.json in the same folder.\n- legacy + buynow: 28/28 pass. Buy Now on an empty bag hands off qty 1. After Add, it hands off qty 2 with BUY2, as on base.\n- pages + footer: 76/76 pass. That covers h1, Coming Soon, noindex on an unknown page, console errors and every footer link, on Pixel 7, iPhone 13 and 1440.\n- bag + listing: all pass (add, qty +/-, remove, Undo, SHOW MORE, filter, sort).\n- taps: 6 fails, all from the announcement-bar link at 34px tall. The integrator's base and pre-repair runs (smoke-base-p.json and smoke-new-p.json) fail exactly the same way, and this repair does not touch it.\n\npairing-check.mjs: 0px of a third line visible at any of the four sizes. Its 'FAIL 2' is its own over-strict forced-name count at 1440, explained above.",
+   "notes": "I pushed nothing. Seven new commits sit on top of 3418c13: 76da087 is the fix, and 0e0ed4b, 0cdea53, 8d85e6d, 258ff12, 55857e9 and 63ed576 are reverts. Every commit ends with the two trailer lines.\n\nEach revert is its own commit, so once the owner signs off, `git revert <that sha>` re-applies the original fix. The held changes are:\n- 8d85e6d = C00\n- 0cdea53 = C02\n- 0e0ed4b = C25\n- 55857e9 = C09/C38\n- 63ed576 = C01\n- 258ff12 = C17\n\nSo the audit findings not fixed on this branch are C00, C01, C02, C09, C17, C25 and C38. They belong in the owner-review set (task #91).\n\nStill on the branch:\n- C41, with the pairing-name repair.\n- C65, C67, C72, C27 and C28, which I kept with the reasoning given above.\n- C49's preload fix, kept through the revert conflict.\n\nPre-existing and untouched: the announcement-bar link is 34px tall, which C41's audit listed but b58b6e7 never changed.\n\nThe scratch files are under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/repair/."
+  }
+ },
+ "workflowProgress": [
+  {
+   "type": "workflow_phase",
+   "index": 1,
+   "title": "Fix"
+  },
+  {
+   "type": "workflow_phase",
+   "index": 2,
+   "title": "Integrate"
+  },
+  {
+   "type": "workflow_phase",
+   "index": 3,
+   "title": "Review"
+  },
+  {
+   "type": "workflow_phase",
+   "index": 4,
+   "title": "Repair"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 1,
+   "label": "fix:s3a",
+   "phaseIndex": 1,
+   "phaseTitle": "Fix",
+   "agentId": "ab8524a82446dd39b",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793369232066,
+   "queuedAt": 1793369232010,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "s3a",
+   "promptPreview": "You are fixing one group of confirmed problems on the Naira shop site: routing, legacy URLs, resilience and build hygiene.\nYour findings: C09, C38, C39, C22, C23, C17, C18, C46, C51, C78, C80, C49, C50, C01, C54, C90.\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com) is origin/main of the git repo whose main checkout is /home/user/naira-scroll-3790bf3e (that checkout \u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793372710857,
+   "tokens": 465228,
+   "toolCalls": 151,
+   "durationMs": 3478789,
+   "resultPreview": "{\"group\":\"s3a\",\"worktree\":\"/tmp/fix-s3a\",\"branch\":\"fix-s3a\",\"commits\":[{\"sha\":\"b7572bd\",\"subject\":\"Prerender's capture browser no longer reaches the Meta relay or other trackers\",\"findings\":[\"C01\"]},{\"sha\":\"812bb46\",\"subject\":\"robots.txt rules reach Google, Bing and Twitter; hidden pages say noindex\",\"findings\":[\"C22\",\"C39\"]},{\"sha\":\"b105e6d\",\"subject\":\"Old Shopify addresses land on their real pag\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 2,
+   "label": "fix:s3b",
+   "phaseIndex": 1,
+   "phaseTitle": "Fix",
+   "agentId": "a5862c848cda24a9a",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793369232067,
+   "queuedAt": 1793369232011,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "s3b",
+   "promptPreview": "You are fixing one group of confirmed problems on the Naira shop site: SEO metadata, structured data and collection landings.\nYour findings: C07, C24, C65, C67, C68, C69, C72.\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com) is origin/main of the git repo whose main checkout is /home/user/naira-scroll-3790bf3e (that checkout is on an unrelated notes branch; do not ed\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793371744643,
+   "tokens": 435448,
+   "toolCalls": 148,
+   "durationMs": 2511864,
+   "resultPreview": "{\"group\":\"s3b\",\"worktree\":\"/tmp/fix-s3b\",\"branch\":\"fix-s3b\",\"commits\":[{\"sha\":\"b1148ae\",\"subject\":\"Minimal and Office Wear stop listing the whole line; duplicate landings name the broader one\",\"findings\":[\"C24\"]},{\"sha\":\"1133ecc\",\"subject\":\"Empty collections drop out of links, the sitemap and the index\",\"findings\":[\"C07\"]},{\"sha\":\"8a4f155\",\"subject\":\"Product structured data carries Shopify's SKU, \u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 3,
+   "label": "fix:s1",
+   "phaseIndex": 1,
+   "phaseTitle": "Fix",
+   "agentId": "a5887b8444bf1342c",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793371747553,
+   "queuedAt": 1793369232011,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "s1",
+   "promptPreview": "You are fixing one group of confirmed problems on the Naira shop site: bag, product page and catalogue correctness and speed.\nYour findings: C00, C02, C25, C27, C28, C47, C40, C16, C48, C77, C30, C73.\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com) is origin/main of the git repo whose main checkout is /home/user/naira-scroll-3790bf3e (that checkout is on an unrelate\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793374991030,
+   "tokens": 482764,
+   "toolCalls": 187,
+   "durationMs": 3243475,
+   "resultPreview": "{\"group\":\"s1\",\"worktree\":\"/tmp/fix-s1\",\"branch\":\"fix-s1\",\"commits\":[{\"sha\":\"5f20b89b23ece905ca5afc95cd3fbeb202946323\",\"subject\":\"Buy Now hands off a piece already in the bag instead of adding a second\",\"findings\":[\"C00\"]},{\"sha\":\"52a842d4f8b74cd4d794b52ac30b13f765169a87\",\"subject\":\"Bag Undo waits for the removal instead of racing it\",\"findings\":[\"C47\"]},{\"sha\":\"73817f38674c8c79418788d026715d412c64\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 4,
+   "label": "fix:s2",
+   "phaseIndex": 1,
+   "phaseTitle": "Fix",
+   "agentId": "a7da8ec0df53c8b3d",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793372713262,
+   "queuedAt": 1793369232012,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "s2",
+   "promptPreview": "You are fixing one group of confirmed problems on the Naira shop site: menus, dialogs, search, footer, accessibility and media.\nYour findings: C03, C04, C32, C33, C34, C85, C86, C12, C36, C41, C42, C43, C44, C08, C71, C13, C56, C52, C31, C79, C81.\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com) is origin/main of the git repo whose main checkout is /home/user/naira-s\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793376966531,
+   "tokens": 562429,
+   "toolCalls": 201,
+   "durationMs": 4253268,
+   "resultPreview": "{\"group\":\"s2\",\"worktree\":\"/tmp/fix-s2\",\"branch\":\"fix-s2\",\"commits\":[{\"sha\":\"52520e2\",\"subject\":\"Product card hover zoom runs at its intended 600 ms\",\"findings\":[\"C52\"]},{\"sha\":\"60b1f0d\",\"subject\":\"Reviews: collapsed panel leaves the Tab order; photo dialog has a name\",\"findings\":[\"C34\",\"C42\"]},{\"sha\":\"575bc49\",\"subject\":\"Search finds earrings for \\\"ear ring\\\", \\\"ear-rings\\\" and \\\"earring(s)\\\"\",\"fi\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 5,
+   "label": "integrate",
+   "phaseIndex": 2,
+   "phaseTitle": "Integrate",
+   "agentId": "a12b4e6ffa1cdd465",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793376969256,
+   "queuedAt": 1793376969210,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "3418c136f490df3a290be74914f1cf4d28a57601",
+   "promptPreview": "You integrate four fix branches onto the shop's ship branch and prove the result.\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com) is origin/main of the git repo whose main checkout is /home/user/naira-scroll-3790bf3e (that checkout is on an unrelated notes branch; do not edit it except where told). Shop code base commit: 6a4593e. Read /tmp/mainwt/CLAUDE.md and /tmp/\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793379983756,
+   "tokens": 299625,
+   "toolCalls": 131,
+   "durationMs": 3014498,
+   "resultPreview": "{\"head\":\"3418c136f490df3a290be74914f1cf4d28a57601\",\"baseMerged\":\"No merge needed. After git fetch origin main, origin/main was still at 6a4593e, so no Lovable commits were pending. ship-main is now 51 commits ahead of 6a4593e: 50 cherry-picks plus 1 lint commit. Nothing was pushed.\",\"picked\":[{\"group\":\"s3a\",\"commits\":14,\"conflicts\":\"none; all 14 applied cleanly. Afterwards tsc was clean and vitest\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 6,
+   "label": "review",
+   "phaseIndex": 3,
+   "phaseTitle": "Review",
+   "agentId": "ac36846bd6e2437cd",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793379985883,
+   "queuedAt": 1793379985819,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "ship-after-repair",
+   "promptPreview": "Adversarial review. Another engineer has integrated fixes for a site audit onto branch ship-main in /tmp/mainwt (head 3418c136f490df3a290be74914f1cf4d28a57601). Base is 6a4593e (current origin/main). Your job is to find what they broke or got wrong, before it reaches shoppers. Assume there ARE problems; prove each one.\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com)\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793381917873,
+   "tokens": 492418,
+   "toolCalls": 145,
+   "durationMs": 1931989,
+   "resultPreview": "{\"issues\":[{\"id\":\"pairing-name-third-line\",\"severity\":\"major\",\"file\":\"src/pages/JewelDetailNext.tsx\",\"line\":240,\"summary\":\"The C41 tap-target change (b58b6e7) breaks how product names look in the product page's pairing rows. The PairingCard name link is now `-mb-[5px] mt-[3px] line-clamp-2 min-h-[44px] py-[5px]`. A line-clamp box hides lines 3 and later with overflow:hidden, and that clips at the \u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 7,
+   "label": "repair",
+   "phaseIndex": 4,
+   "phaseTitle": "Repair",
+   "agentId": "a400b97146f5b50ac",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793381920456,
+   "queuedAt": 1793381920400,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "63ed5766ce7c211843da2ef75de0a39b0bce525e",
+   "promptPreview": "Repair the integrated fix branch ship-main in /tmp/mainwt (you may work there; port range 4470-4479).\n\nCONTEXT. Naira's shop site (React 18 + Vite, Lovable-hosted at nairaflore.com) is origin/main of the git repo whose main checkout is /home/user/naira-scroll-3790bf3e (that checkout is on an unrelated notes branch; do not edit it except where told). Shop code base commit: 6a4593e. Read /tmp/mainwt\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793383288186,
+   "tokens": 239341,
+   "toolCalls": 71,
+   "durationMs": 1367727,
+   "resultPreview": "{\"head\":\"63ed5766ce7c211843da2ef75de0a39b0bce525e\",\"resolved\":[{\"id\":\"pairing-name-third-line\",\"action\":\"fixed\",\"detail\":\"Commit 76da087, file src/pages/JewelDetailNext.tsx. The root cause was padding on the line-clamp box itself. A clamp clips at its padding edge, so the hidden third line showed through. The fix moves the clamp onto an inner span: <Link className=\\\"-mb-[5px] mt-[3px] block min-h-\u2026"
+  }
+ ],
+ "totalTokens": 2977253,
+ "totalToolCalls": 1034
+}

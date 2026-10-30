@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { trackPixel } from "@/lib/pixel";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
@@ -31,6 +31,8 @@ interface Hit {
 /* Each of these returns pieces; "Gifting" never matched anything. */
 const POPULAR = ["Rings", "Zircone", "Necklace", "Pearl", "Under 1500"];
 const MAX_RESULTS = 10;
+/* How long a query has to stand still to count as a search. */
+export const SEARCH_SETTLE_MS = 1000;
 
 /**
  * Instant search over the live catalogue — jewellery pieces and apparel
@@ -55,8 +57,31 @@ const SearchOverlay = ({
   const dialogRef = useRef<HTMLDivElement>(null);
   const { jewellery } = useLiveJewellery();
 
+  /* Meta's Search event, once per query a shopper settles on. It used to fire
+     only when a result or "See all" was tapped, so a search that found nothing
+     (the clearest sign of demand we do not meet) or was typed and left never
+     reached Meta. Now a query counts once it stands still for a second, when
+     Enter is pressed, when a result is followed, or when the search is closed
+     with it typed; whichever comes first sends it, the rest do not repeat it. */
+  const reported = useRef(new Set<string>());
+  const latest = useRef("");
+  latest.current = q;
+  const report = useCallback((term: string) => {
+    const clean = term.trim();
+    const key = clean.toLowerCase();
+    if (clean.length < 2 || reported.current.has(key)) return;
+    reported.current.add(key);
+    trackPixel("Search", { search_string: clean, content_type: "product" });
+  }, []);
   useEffect(() => {
     if (!open) return;
+    const timer = window.setTimeout(() => report(q), SEARCH_SETTLE_MS);
+    return () => window.clearTimeout(timer);
+  }, [open, q, report]);
+
+  useEffect(() => {
+    if (!open) return;
+    reported.current = new Set();
     setQ("");
     try {
       setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]"));
@@ -68,8 +93,10 @@ const SearchOverlay = ({
     return () => {
       window.clearTimeout(t);
       document.body.style.overflow = "";
+      // Closed with a query typed and not yet counted: it still counts.
+      report(latest.current);
     };
-  }, [open]);
+  }, [open, report]);
 
   // Escape closes, Tab stays inside, and focus goes back to the Search button
   // on close. The field takes focus itself, above, once the overlay is up.
@@ -105,13 +132,16 @@ const SearchOverlay = ({
      tap would, so closing and history work the same way. */
   const go = (e: FormEvent) => {
     e.preventDefault();
-    listRef.current?.querySelector<HTMLAnchorElement>("a[data-search-go]")?.click();
+    const best = listRef.current?.querySelector<HTMLAnchorElement>("a[data-search-go]");
+    // Nothing to follow (no match): the search itself still counts.
+    if (best) best.click();
+    else report(q);
   };
 
   const remember = (term: string) => {
     const clean = term.trim();
     if (clean.length < 2) return;
-    trackPixel("Search", { search_string: clean, content_type: "product" });
+    report(clean);
     const next = [clean, ...recent.filter((r) => r.toLowerCase() !== clean.toLowerCase())].slice(0, 5);
     setRecent(next);
     try {

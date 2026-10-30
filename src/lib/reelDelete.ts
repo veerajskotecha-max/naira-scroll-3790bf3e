@@ -10,7 +10,8 @@ import type { Reel } from "@/hooks/useReels";
    already destroyed, and we hold no other copy of either.
 
    A delete that row-level security refuses is not an error either: it simply
-   matches no rows. So the row count is checked as well. */
+   matches no rows. So the delete returns the rows it removed (admins can read
+   every reel), and no row back means nothing was deleted. */
 
 type Client = Pick<typeof supabase, "from" | "storage">;
 
@@ -23,9 +24,9 @@ export const deleteReel = async (
   client: Client,
   reel: Pick<Reel, "id" | "video_path" | "poster_path">,
 ): Promise<ReelDeleteResult> => {
-  const { error, count } = await client.from("reels").delete({ count: "exact" }).eq("id", reel.id);
+  const { data, error } = await client.from("reels").delete().eq("id", reel.id).select("id");
   if (error) throw new Error(error.message);
-  if (!count) throw new Error("Nothing was deleted. Is this account still an admin?");
+  if (!data?.length) throw new Error("Nothing was deleted. Is this account still an admin?");
 
   const paths = [reel.video_path, reel.poster_path].filter(Boolean) as string[];
   const { error: filesError } = await client.storage.from("reels").remove(paths);

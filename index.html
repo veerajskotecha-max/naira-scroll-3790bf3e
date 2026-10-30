@@ -125,6 +125,17 @@
                 (location.protocol === 'https:' ? '; Secure' : '');
             }
           }
+
+          /* Meta's browser id. fbevents.js writes _fbp only once it loads,
+             after idle or the first tap, so the server copy of a cold
+             landing's first ViewContent went without one (11 of 12 cold
+             landings measured). Minted here on the shop only, as fbevents
+             writes it: fb.1.<ms>.<random>, 90 days, on .nairaflore.com.
+             fbevents.js keeps an _fbp that already exists. */
+          if (window.__nairaProd && !/(?:^|; )_fbp=/.test(document.cookie)) {
+            document.cookie = '_fbp=fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 2147483647) +
+              '; path=/; max-age=7776000; domain=.nairaflore.com; SameSite=Lax; Secure';
+          }
         } catch (e) { /* cookies blocked — events simply carry no external_id */ }
       })();
     </script>

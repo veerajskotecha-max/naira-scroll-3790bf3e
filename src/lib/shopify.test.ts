@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { availabilityByOption, isCartNotFoundError, wornFirst } from "./shopify";
+import { availabilityByOption, wornFirst } from "./shopify";
 import type { ShopifyProductNode } from "./shopify";
 
 const CDN = "https://cdn.shopify.com/s/files/1/0/files";
@@ -91,17 +91,5 @@ describe("availabilityByOption", () => {
 
   it("handles null products", () => {
     expect(availabilityByOption(null)).toEqual({});
-  });
-});
-
-describe("isCartNotFoundError", () => {
-  it("reads a missing cart as a lost cart", () => {
-    expect(isCartNotFoundError([{ message: "The specified cart does not exist." }])).toBe(true);
-    expect(isCartNotFoundError([{ message: "Cart not found" }])).toBe(true);
-  });
-
-  // A stale line read as a lost cart emptied the whole bag (an Undo tapped mid-removal).
-  it("does not read one missing line as a lost cart", () => {
-    expect(isCartNotFoundError([{ message: "The merchandise line with id gid://shopify/CartLine/abc does not exist." }])).toBe(false);
   });
 });

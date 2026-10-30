@@ -177,7 +177,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
             height={800}
             /* Every tile uses the exact same square frame and centre crop so a
                scrolling grid never staggers or shows differently sized pieces. */
-            className="jc-front absolute inset-0 h-full w-full object-cover object-center transition-transform duration-[600ms] ease-out group-hover:scale-[1.04]"
+            className="jc-front absolute inset-0 h-full w-full object-cover object-center transition-transform duration-600 ease-out group-hover:scale-[1.04]"
           />
 
 

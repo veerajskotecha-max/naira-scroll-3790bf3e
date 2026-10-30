@@ -26,7 +26,6 @@ import { withFallbackGuard } from "../src/lib/fallbackGuard";
 import { dropUnusedImagePreloads } from "../src/lib/unusedPreloads";
 import { keepOnlyRoutePreloads, staticClosure, type ViteManifest } from "../src/lib/routePreloads";
 import { routeKeyFor } from "../src/lib/routeCode";
-import { REPORTING_REQUEST } from "../src/lib/reportingRequests";
 
 const PORT = Number(process.env.PRERENDER_PORT ?? 4180);
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -178,10 +177,8 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
 
   /* Never let the capture browser talk to Meta: its events would be attributed
      to 127.0.0.1 and its injected config tags would be captured into the HTML.
-     Belt and braces with the strip in clean(). The site's own Meta relay and
-     the other reporting endpoints count a fake visit just the same; see
-     src/lib/reportingRequests.ts. */
-  await page.route(REPORTING_REQUEST, (r) => r.abort());
+     Belt and braces with the strip in clean(). */
+  await page.route(/(facebook\.net|facebook\.com|fbcdn\.net)/i, (r) => r.abort());
   const failures: { path: string; reason: string }[] = [];
   let written = 0;
   let delisted = 0;

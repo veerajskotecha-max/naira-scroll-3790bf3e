@@ -1,0 +1,566 @@
+{
+ "summary": "Fix the 3 leftover review issues on ship-main, then independently re-review the whole diff and smoke-test on phones, repair until clean",
+ "agentCount": 10,
+ "logs": [
+  "Fix: 1. C78 stale pre-b=fixed, 2. C72 fitTitle fr=fixed, 3. Wishlist handle=fixed, 4. CLAUDE.md test =fixed",
+  "Round 1: 2 reproduced issues, 2 actionable (OOB-1, OOB-2)",
+  "Round 2: 4 reproduced issues, 2 actionable (A2-1, B2-1)",
+  "Round 3: 2 reproduced issues, 2 actionable (B3-1, B3-2)"
+ ],
+ "result": {
+  "fix": {
+   "head": "ebbbc3990a0aa65ca0e3ce656d7e9e925dedc334",
+   "items": [
+    {
+     "issue": "1. C78 stale pre-built page (src/lib/prebuiltPage.ts)",
+     "status": "fixed",
+     "commit": "01b940f",
+     "detail": "Root cause: the module-level `kept` array was only emptied by PrebuiltPage's ref, i.e. only if the routes' Suspense fallback mounted. If the route code landed between main.tsx's 8 s start and React's first render (lazyRoute rendered the page directly), or the first render failed to the error panel, `kept` survived and the next suspending navigation showed the old pre-built page under the live header. Fix: new `dropPrebuiltPage()` in src/lib/prebuiltPage.ts, called from `useLayoutEffect(dropPrebuiltPage, [])` in App itself (src/App.tsx). I put it in App, outside ChunkErrorBoundary, not in AppShell next to clearFallbackMark: a layout effect in AppShell never runs when the first render throws to the panel, and App's runs after the first commit whatever that commit rendered. Children commit first, so the fallback's ref still takes the page when it does mount. The existing 'stays on screen' test now runs with the drop in place, which proves that ordering. App's JSX was re-indented into a block body. No pixel/tracking code touched.",
+     "test": "src/lib/prebuiltPage.test.tsx. The reviewer repro was made permanent, plus an error-panel case and a check that App.tsx's outermost component calls useLayoutEffect(dropPrebuiltPage) before <ChunkErrorBoundary>. The shared test App now mirrors the real one. BEFORE on HEAD code: 6/6 fail ('create is not a function' because the export is missing, and the wiring regex fails). With HEAD code plus a no-op dropPrebuiltPage export: 3 fail with the real symptoms ('expected [Array(2)] to not include Prism Rivi\u00e8re Bracelet'; error-panel case 'expected <h1> to be null'; wiring check) and 3 pass. AFTER: 6/6 pass. The reviewer's original repro also failed on HEAD with the same assertion."
+    },
+    {
+     "issue": "2. C72 fitTitle fragment titles (src/lib/clipText.ts)",
+     "status": "fixed",
+     "commit": "4152f92",
+     "detail": "Root cause: fitTitle peeled text after the LAST ', ' or ' \u00b7 ' until the title fit, so list-like titles kept part of their list. Fix: when the title is too long, keep only what comes before its FIRST ', ' or ' \u00b7 '. If that is still too long, fall back to the unchanged word cut. ' | Naira Flore' and the 65-char limit are kept. I enumerated every title that reaches fitTitle: 25 PageSEO page titles (incl. the RingExample variants), 31 landings, 19 journal posts, 136 jewellery pieces as '<name> \u00b7 Demi-Gold Jewellery' (jewellery.ts + jewellerySnapshot.ts + harness catalogue.json), and 18 apparel titles from catalogue.json. 27 are shortened and 10 of those come out differently. All 27 end on a whole phrase: none reaches the word cut, none ends mid-list or with and/vs/for, the max length is 65, and there are no duplicates. None needed a hand-written metaTitle, so no data files changed. Flagged for the owner, not changed: 'FAQs | Naira Flore', 'The Journal | Naira Flore' and 'Shop All | Naira Flore' are complete but lose their keyword tails. ShopAll.tsx is not routed. The anti-tarnish guide reads 'Anti-Tarnish Jewellery | Naira Flore' (same as before), close to the landing's 'Anti-Tarnish Jewellery Online | Naira Flore'. The existing expectation for 'American Diamond Jewellery, Brilliant-Cut Zircone, 18K Finish' was updated to the new rule. Enumeration output: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/titles/after1.json (old) and before.json.",
+     "test": "src/lib/clipText.test.ts. New 'never leaves half a list' test with the two reviewer examples. New site-wide test: every shortened landing or journal title equals the text before its first ', '/' \u00b7 ' and does not end in a comma or a dangling and/or/&/vs/for/with/of/to/the/a. The first-qualifier expectation was updated. BEFORE (HEAD clipText.ts): 3 fail ('Zirconia vs Diamond, Sparkle | Naira \u2026' vs 'Zirconia vs Diamond | Naira Flore'; American Diamond; site-wide check flags 'Demi-Fine Jewellery India, 18K Gold F\u2026'). AFTER: 12/12 pass."
+    },
+    {
+     "issue": "3. Wishlist handles in the main chunk (src/components/WishlistDrawer.tsx)",
+     "status": "fixed",
+     "commit": "3892fbd",
+     "detail": "Root cause: WishlistDrawer is imported eagerly by App.tsx and statically imported JEWELLERY_HANDLES to choose each link. Fix: WishlistItem gets an optional kind ('jewellery' | 'apparel'), set where each item is saved: JewelCard, JewelDetail and JewelDetailNext save 'jewellery'. ProductGallery saves 'apparel' (it only renders on the outfit page; ProductDetail redirects jewellery first). ProductCard uses isJewelleryProduct(shopifyProduct), because 'You May Also Like' draws from the whole store. The drawer links from kind. For items saved before this change (no kind), it dynamic-imports @/data/jewelleryHandles only when it opens holding such an item, so links match the previous build: /jewellery/<h> for jewellery, /product/<h> otherwise. Which fallback is correct: /product/<id> alone does reach the right page, because ProductDetail's first-render hop covers JEWELLERY_HANDLES plus the bundled pieces and a Shopify lookup covers the rest. But it changes the href, downloads the ProductDetail chunk, and PixelEvents fires an extra PageView for the /product/ hop, so it is only the stand-in while the lookup is in flight or if it fails. jewelleryHandles was added to optionalChunk.ts, so a failed lookup never reloads the page. Pixel calls and values are unchanged; toggleItem's AddToWishlist payload is the same fields. npx vite build: the entry (index-*.js) no longer contains 'amethyst-carre-bracelet'. Baseline 63ed576: index-BAK7qpxN.js amethyst=1, 95,915 B gzip. Final: index-DyDNz_Ed.js amethyst=0, 94,931 B gzip. The list is now its own chunk, jewelleryHandles-Yy5OagZw.js. index.html still carries the handles in the pre-boot redirect map, by design. Browser run (served build, 360px, NO_REPORT aborted, webdriver=false, Shiprocket stubbed): the chunk was not requested on page load and was requested when the wishlist opened with a legacy item. The 4 saved items linked to /jewellery/prism-riviere-bracelet, /product/blush-of-dawn, /jewellery/amethyst-carre-bracelet (legacy) and /product/ivory-whisper-co-ord-set (legacy). No page errors.",
+     "test": "src/components/WishlistDrawer.test.tsx: items with kind plus legacy items (jewellery and outfit) link as before, the legacy ones after the lookup. New 'the first download' test walks static imports from src/main.tsx (not import type, not import()) and asserts WishlistDrawer is reachable but data/jewelleryHandles.ts is not. JewelCard.test.tsx now asserts the save carries kind 'jewellery'. optionalChunk.test.ts covers the new optional chunk. BEFORE (HEAD source, new tests): the link test passes (links are unchanged, by design) and the entry guard fails ('expected [main.tsx, \u2026(61)] to not include \u2026/data/jewelleryHandles.ts'). AFTER: 3/3 drawer, 5/5 JewelCard, and optionalChunk/chunkFailure 10/10 pass."
+    },
+    {
+     "issue": "4. CLAUDE.md test count and the octet-stream sentence",
+     "status": "fixed",
+     "commit": "ebbbc39",
+     "detail": "'currently 349 tests' becomes 'currently 643 tests' (npx vitest run: 99 files, 643 tests). Reel sentence: I confirmed the fact before changing it. The code already says the objects were corrected: useReels.ts cache v4 note ('corrected from application/octet-stream to video/mp4 \u2026 storage now has the right metadata'). The C81 commit 9cd5b0d says 'now that storage labels the reels video/mp4', and videoRecovery.ts says 'were stored \u2026 even after storage was corrected'. A read-only check of live storage agreed: signed URLs from the publishable key, with a 1-byte Range GET on each. seed/reel-1.mp4 and seed/reel-2.mp4 both answer content-type video/mp4, last-modified 17 Sep 2026, 3,441,055 and 4,505,929 bytes. Only that sentence changed: 'were stored as application/octet-stream \u2026 rewritten on 17 Sep 2026 and now serve video/mp4 (read back 30 Oct 2026; useReels.ts cache v4, Audit C81)'. Still stale: the comment in src/pages/admin/Reels.tsx:155 says 'are stored as application/octet-stream'. I left it, because the task limited this item to CLAUDE.md.",
+     "test": "Docs-only change, so there is no failing test. The count comes from the final npx vitest run (643 passed)."
+    }
+   ],
+   "titleChanges": [
+    {
+     "page": "/shop (src/pages/ShopAll.tsx, not routed) input 'Shop All, Indo-Western Dresses, Co-ord Sets & Fusion Sarees'",
+     "before": "Shop All, Indo-Western Dresses | Naira Flore",
+     "after": "Shop All | Naira Flore"
+    },
+    {
+     "page": "/journal (Journal.tsx) input 'The Journal, Jewellery Care, Sizing & Styling Guides'",
+     "before": "The Journal, Jewellery Care | Naira Flore",
+     "after": "The Journal | Naira Flore"
+    },
+    {
+     "page": "/faqs (FAQs.tsx) input 'FAQs, Made-to-Measure Pieces, Sizing, Shipping & Returns'",
+     "before": "FAQs, Made-to-Measure Pieces, Sizing | Naira Flore",
+     "after": "FAQs | Naira Flore"
+    },
+    {
+     "page": "landing demi-fine-jewellery input 'Demi-Fine Jewellery India, 18K Gold Finished, Anti-Tarnish'",
+     "before": "Demi-Fine Jewellery India, 18K Gold Finished | Naira Flore",
+     "after": "Demi-Fine Jewellery India | Naira Flore"
+    },
+    {
+     "page": "landing anti-tarnish-jewellery input 'Anti-Tarnish Jewellery Online, Waterproof, Sealed 18K Finish'",
+     "before": "Anti-Tarnish Jewellery Online, Waterproof | Naira Flore",
+     "after": "Anti-Tarnish Jewellery Online | Naira Flore"
+    },
+    {
+     "page": "landing american-diamond-jewellery input 'American Diamond Jewellery, Brilliant-Cut Zircone, 18K Finish'",
+     "before": "American Diamond Jewellery, Brilliant-Cut Zircone | Naira Flore",
+     "after": "American Diamond Jewellery | Naira Flore"
+    },
+    {
+     "page": "landing 18k-gold-plated-jewellery input '18K Gold Plated Jewellery Online, Sealed, Nickel-Free Finish'",
+     "before": "18K Gold Plated Jewellery Online, Sealed | Naira Flore",
+     "after": "18K Gold Plated Jewellery Online | Naira Flore"
+    },
+    {
+     "page": "landing artificial-jewellery input 'Artificial Jewellery for Women, Anti-Tarnish, 18K Finished'",
+     "before": "Artificial Jewellery for Women, Anti-Tarnish | Naira Flore",
+     "after": "Artificial Jewellery for Women | Naira Flore"
+    },
+    {
+     "page": "journal zirconia-vs-diamond input 'Zirconia vs Diamond, Sparkle, Hardness and Cost Compared'",
+     "before": "Zirconia vs Diamond, Sparkle | Naira Flore",
+     "after": "Zirconia vs Diamond | Naira Flore"
+    },
+    {
+     "page": "journal how-to-layer-necklaces input 'How to Layer Necklaces, Lengths, Spacing, No Tangles'",
+     "before": "How to Layer Necklaces, Lengths, Spacing | Naira Flore",
+     "after": "How to Layer Necklaces | Naira Flore"
+    },
+    {
+     "page": "/jewellery (Jewellery.tsx) input 'Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish' [shortened, same as before]",
+     "before": "Demi-Fine Jewellery Online India | Naira Flore",
+     "after": "Demi-Fine Jewellery Online India | Naira Flore"
+    },
+    {
+     "page": "landing office-wear-jewellery input 'Office Wear Jewellery, Dainty Gold Pieces for Every Day' [same as before]",
+     "before": "Office Wear Jewellery | Naira Flore",
+     "after": "Office Wear Jewellery | Naira Flore"
+    },
+    {
+     "page": "journal ring-size-guide-india input 'Ring Size Guide India, Measure Your Ring Size at Home' [same as before]",
+     "before": "Ring Size Guide India | Naira Flore",
+     "after": "Ring Size Guide India | Naira Flore"
+    },
+    {
+     "page": "journal how-to-care-for-gold-plated-jewellery input 'How to Care for Gold Plated Jewellery, Keep the Finish' [same as before]",
+     "before": "How to Care for Gold Plated Jewellery | Naira Flore",
+     "after": "How to Care for Gold Plated Jewellery | Naira Flore"
+    },
+    {
+     "page": "journal how-to-style-indo-western-outfits input 'How to Style Indo-Western Outfits, A Practical Guide' [same as before]",
+     "before": "How to Style Indo-Western Outfits | Naira Flore",
+     "after": "How to Style Indo-Western Outfits | Naira Flore"
+    },
+    {
+     "page": "journal anti-tarnish-jewellery-guide input 'Anti-Tarnish Jewellery, What It Means and How to Check' [same as before]",
+     "before": "Anti-Tarnish Jewellery | Naira Flore",
+     "after": "Anti-Tarnish Jewellery | Naira Flore"
+    },
+    {
+     "page": "journal american-diamond-vs-cubic-zirconia-vs-moissanite input 'American Diamond vs Cubic Zirconia vs Moissanite, Compared' [same as before]",
+     "before": "American Diamond vs Cubic Zirconia vs Moissanite | Naira Flore",
+     "after": "American Diamond vs Cubic Zirconia vs Moissanite | Naira Flore"
+    },
+    {
+     "page": "journal everyday-dainty-jewellery-styling input 'Dainty Jewellery Styling, Everyday & Office Wear Guide' [same as before]",
+     "before": "Dainty Jewellery Styling | Naira Flore",
+     "after": "Dainty Jewellery Styling | Naira Flore"
+    },
+    {
+     "page": "journal how-to-clean-artificial-jewellery-at-home input 'How to Clean Artificial Jewellery at Home, Safe Method' [same as before]",
+     "before": "How to Clean Artificial Jewellery at Home | Naira Flore",
+     "after": "How to Clean Artificial Jewellery at Home | Naira Flore"
+    },
+    {
+     "page": "journal gold-plated-vs-gold-filled-vs-solid-gold input 'Gold Plated vs Gold Filled vs Solid Gold, Full Comparison' [same as before]",
+     "before": "Gold Plated vs Gold Filled vs Solid Gold | Naira Flore",
+     "after": "Gold Plated vs Gold Filled vs Solid Gold | Naira Flore"
+    },
+    {
+     "page": "journal how-to-choose-earrings-for-face-shape input 'How to Choose Earrings for Your Face Shape, Simple Guide' [same as before]",
+     "before": "How to Choose Earrings for Your Face Shape | Naira Flore",
+     "after": "How to Choose Earrings for Your Face Shape | Naira Flore"
+    },
+    {
+     "page": "journal bridal-jewellery-checklist-india input 'Bridal Jewellery Checklist India, Function by Function' [same as before]",
+     "before": "Bridal Jewellery Checklist India | Naira Flore",
+     "after": "Bridal Jewellery Checklist India | Naira Flore"
+    },
+    {
+     "page": "journal how-to-store-jewellery-to-prevent-tarnish input 'How to Store Jewellery to Prevent Tarnish, Practical Guide' [same as before]",
+     "before": "How to Store Jewellery to Prevent Tarnish | Naira Flore",
+     "after": "How to Store Jewellery to Prevent Tarnish | Naira Flore"
+    },
+    {
+     "page": "journal rose-gold-vs-yellow-gold-vs-white-gold input 'Rose Gold vs Yellow Gold vs White Gold, How to Choose' [same as before]",
+     "before": "Rose Gold vs Yellow Gold vs White Gold | Naira Flore",
+     "after": "Rose Gold vs Yellow Gold vs White Gold | Naira Flore"
+    },
+    {
+     "page": "journal how-to-build-a-jewellery-capsule-wardrobe input 'Jewellery Capsule Wardrobe, The 7 Pieces That Cover Everything' [same as before]",
+     "before": "Jewellery Capsule Wardrobe | Naira Flore",
+     "after": "Jewellery Capsule Wardrobe | Naira Flore"
+    },
+    {
+     "page": "product serpentine-whisper-chain-silver input 'Serpentine Whisper Chain \u2014 Silver \u00b7 Demi-Gold Jewellery' [same as before]",
+     "before": "Serpentine Whisper Chain \u2014 Silver | Naira Flore",
+     "after": "Serpentine Whisper Chain \u2014 Silver | Naira Flore"
+    },
+    {
+     "page": "product crystal-baguette-eternity-ring input 'Crystal Baguette Eternity Ring \u00b7 Demi-Gold Jewellery' [same as before]",
+     "before": "Crystal Baguette Eternity Ring | Naira Flore",
+     "after": "Crystal Baguette Eternity Ring | Naira Flore"
+    }
+   ],
+   "verification": "Final checks on HEAD ebbbc39 in /tmp/mainwt (branch ship-main, 4 commits on 63ed576; nothing pushed, origin not touched).\n\n- npx vitest run: 99 files, 643/643 tests passed, exit 0.\n- npx tsc --noEmit -p tsconfig.app.json: exit 0, no output.\n- npx eslint .: exit 0, 0 errors and 1 warning, the documented CartContext.tsx:550 react-refresh/only-export-components baseline.\n- npx vite build: exit 0, built in 14.34s. supabase/functions/mcp/index.ts restored with git checkout after this build and after both scratch builds.\n- Entry chunk: dist/assets/index-DyDNz_Ed.js has 0 matches for \"amethyst-carre-bracelet\" (94,931 B gzip). The baseline build of 63ed576 had index-BAK7qpxN.js with 1 match (95,915 B gzip). The handle list is now dist/assets/jewelleryHandles-Yy5OagZw.js.\n- git status --short: clean. `--ignored` shows only dist/.\n\nBrowser smoke run of the final dist, using the global Playwright with /opt/pw-browsers/chromium at 360x640. The context aborted NO_REPORT matches, set navigator.webdriver to false and stubbed Shiprocket buyDirect. ss is not installed, so free ports were read from /proc/net/tcp; 4491 and 4492 were used.\n- /: title \"Naira Flore | Demi-Fine Jewellery & Custom Outfits\".\n- /jewellery/prism-riviere-bracelet: title \"Prism Rivi\u00e8re Bracelet \u00b7 Demi-Gold Jewellery | Naira Flore\", h1 \"Prism Rivi\u00e8re Bracelet\".\n- /jewellery: title \"Demi-Fine Jewellery Online India | Naira Flore\".\n- In-app move to /journal: title \"The Journal | Naira Flore\".\n- 0 page errors and no checkout hand-off. The only aborted request was the meta-capi relay. No checkout page was opened, nothing was bought and nothing reached Meta.\n- Both servers I started were stopped by their own PIDs (6898 and 29598). An earlier PID guess pointed at the wrapper shell, so I re-checked by command line before killing. The other server, PID 12256 on port 4421 (scratchpad s2/dist-base-pre), is not from this session and was left running.\n\nLogs, builds and scripts are under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/: logs/vitest-final.log, logs/tsc-final.log, logs/eslint-final.log, logs/build-final.log, logs/build-before.log, logs/browser-smoke.json, logs/browser-wishlist.json, builds/before, builds/after-item3, titles/before.json, titles/after1.json, browser/*.mjs."
+  },
+  "rounds": [
+   {
+    "round": 1,
+    "head": "ebbbc3990a0aa65ca0e3ce656d7e9e925dedc334",
+    "reviews": [
+     {
+      "verdict": "repair-needed",
+      "issues": [
+       {
+        "id": "OOB-1",
+        "severity": "minor",
+        "outOfBounds": true,
+        "file": "src/lib/shopify.ts",
+        "summary": "A bag change that was not put on hold still alters how cart updates behave. Commit 2128022 (bag Undo) changed isCartNotFoundError so Shopify's 'line ... does not exist' no longer counts as a lost cart, and made addItemToCart (which buyNow calls through addItem) wait on any removal of the same line that is still in flight. So `git diff 6a4593e..ebbbc39` on the cart updates in src/lib/shopify.ts is not empty, and the Add and Buy Now failure paths behave differently. The held commit ca1322e/0cdea53 does undo itself exactly; this change comes from a commit nobody held.",
+        "repro": "Test file kept at /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/a1/repro/zzReviewStaleLine.test.tsx. It uses the real src/lib/shopify.ts with only fetch stubbed: cartLinesRemove returns userErrors 'The merchandise line with id gid://shopify/CartLine/stale does not exist.' and the bag holds lines a(stale) and b. Copied into src/ and run with npx vitest run: at ebbbc39 the test fails; the bag stays [\"a\",\"b\"] and the shopper sees the toast 'Could not remove this item.' (the line can't be removed until a later syncCart, and it still counts in openCheckout's InitiateCheckout totals). At 6a4593e (temporary worktree) the same test passes; the bag goes to [] with no toast. Also: git diff 6a4593e ebbbc39 -- src/lib/shopify.ts shows the isCartNotFoundError hunk.",
+        "reproduced": true,
+        "fix": "Either get the owner's sign-off, or hold it like the other bag changes. To hold: revert 2128022 (CartContext removals map, isCartNotFoundError and their tests) in a 'Hold bag Undo / missing-line handling for the owner' commit, so the cart updates and the path addItem/buyNow uses are unchanged from 6a4593e."
+       },
+       {
+        "id": "OOB-2",
+        "severity": "minor",
+        "outOfBounds": true,
+        "file": "src/pages/JewelDetailNext.tsx",
+        "summary": "Commit e36a55c drops the adjustable-ring exemption from soldOut on the product page and on both reel cards. That exemption had been in place since ceaf2d9/4426bfd, after the owner's 25 Oct ring decision ('all ready to ship from one stock'). Now an adjustable ring that Shopify marks unavailable loses Add to cart and Buy Now: handleBuyNow goes to handlePreOrder (WhatsApp), the reel cards show sold out, and the product structured data switches to OutOfStock. This changes whether checkout is offered at all, and nobody put it on hold.",
+        "repro": "git diff 6a4593e ebbbc39 -- src/pages/JewelDetailNext.tsx src/components/reels/ReelShopNext.tsx src/components/reels/MobileReelShop.tsx | grep 'const soldOut' shows that `&& !adjustable` / `&& !isAdjustableRing(...)` were removed. In HEAD:src/pages/JewelDetailNext.tsx, lines 641/647 read `if (isPreorder) return handlePreOrder();` and line 701 reads `availability: soldOut ? OutOfStock : InStock`. It's latent today: a live Storefront read through vite-node + liveCatalogue found 14 adjustable rings and 0 unavailable. It takes effect as soon as Shopify reports one sold out.",
+        "reproduced": true,
+        "fix": "Get the owner's sign-off, or keep the e36a55c lead-time and pincode copy and put back the three `&& !adjustable` / `&& !isAdjustableRing(live ?? product.handle)` conditions (also update the matching assertions in JewelDetailNext.test.ts) in a 'Hold adjustable-ring stock rule for the owner' commit."
+       }
+      ],
+      "checked": "Worktree /tmp/final-rev-a1 at ebbbc39 is now removed. I also used a temporary base worktree at 6a4593e for one repro; it is removed too. Nothing was committed.\n\nGates: npx vitest run gives 99 files and 643 passed (matches CLAUDE.md). npx tsc --noEmit -p tsconfig.app.json is clean. npx eslint . shows 0 errors and 1 warning (the documented CartContext fast-refresh warning).\n\nHeld reverts. Each 'Hold' commit's +/- line set is the exact inverse of the commit it holds: a010c55/0e0ed4b, ca1322e/0cdea53, cb0e434/8d85e6d, 85ba7a2/258ff12, e78c72b/63ed576, and 381c6e6/55857e9. For 381c6e6 the only differences are in legacy-routes.test.ts, where 3e45fd9 had built on its land() helper.\n- Net diff is empty for vite.config.ts (pre-boot hop), ChunkErrorBoundary.tsx, jewellerySnapshot.ts, jewelleryHandles.ts, fastrr.ts, pixel.ts, promo.ts, index.html, index.css, tailwind.config.ts and supabase/.\n- App.tsx: the only net change is the PrebuiltPage fallback and dropPrebuiltPage. No redirect changes.\n- CartContext: buyNow and openCheckout are byte-identical. The remaining diffs are the storage try/catch (fe75a4f) and the Undo removals (2128022, see OOB-1).\n- shopify.ts: the remaining diffs are product/variant pagination, sku, the `T = unknown` default type change, and isCartNotFoundError (OOB-1).\n- scripts/prerender.ts: the remaining diffs come from dd863e1 (canonical routes) and 3bb86a2 (shell for emptied collections). The tracker block is back to base.\n- jewellery.ts: the remaining diffs are the SKU swap (d01e444), preorderLead (e36a55c) and the galleryAlt type (9098534).\n- I found no leftovers from the reverts: no reportingRequests, soldOutLine or bagPrices references, and CLAUDE.md does not mention held work.\n\nTests are not empty. I ran 35 targeted mutations against the new code (prebuiltPage drop, Undo wait, storage guard, useModalFocus Escape/Tab/return, useReturnFocus, handlePreloadError, radio keys, wishlist path, lightbox swipe, empty collection, eventId, sonner offset, CatchAll head, isCartNotFoundError, reviews inert, pincode preorder/APS, search join, nextPath, variant/product paging, video MIME gate, reel delete check, TrackOrder, clipText, galleryAlt, store-wide tags, preorderLead, catalogue memo, 5-min and background refetch, sku, preload table). The new tests caught all 35.\n\nBrowser checks used npx vite build into the scratchpad (afterwards I ran git checkout of supabase/functions/mcp/index.ts), distserve on 127.0.0.1:4492 (PID 24816, now killed), and the global Playwright with NO_REPORT aborts, webdriver=false and a Fastrr stub. No checkout was opened.\n- With localStorage and sessionStorage throwing SecurityError, /, /jewellery, a product page and /jewellery/collections/rings all render with an h1, no error panel and no page errors.\n- Prebuilt page: I saved a captured product-page DOM as a stand-in pre-built file and held JewelDetailNext/Jewellery chunks for 16 s. The pre-built product page stays visible after the 8 s start (one main, one footer, no duplicates), the live page replaces it once the code lands, and a later client navigation whose code is held shows a blank body under the header, not the stale product page.\n- The build emits jewelleryHandles-*.js, so the wishlist's lazy handle list matches the optionalChunk OPTIONAL pattern.\n\nLive Storefront reads only, no writes: the SKU swap matches Shopify (riviere-of-light JDB201083, baguette-eclat JDB201210). The Golden Hour SKU fallback is unaffected (all six handles exist; the Nocturne SKUs are unchanged). /account/login on myshopify redirects to Shopify's customer account (Track Order works). The largest variant count is 12, so the variant paging never fires today.\n\nChecked and not reported:\n- handlePreloadError no longer suppresses an unrecovered CSS-preload failure, but no route imports CSS, so this can't happen.\n- `inset` used in the wishlist stretched link and `focus({preventScroll})` aren't supported on Safari 14.0, but the rest of the site already relies on them.\n- inert only guards 'View more'. On Chrome <102 and Safari <15.5 the collapsed reviews filter buttons are still Tab stops; this was already the case before, so it is not a regression.\n- The lazy CustomerReviews on outfit product pages swaps the pre-built reviews for a 240px placeholder when the page takes over (below the fold).\n- In robots.txt, /cart/c/ and /checkouts/ now apply to Googlebot; AdsBot ignores `*` and the real checkout is on a separate domain.\n- src/pages/ShopAll.tsx has been unreferenced since 3e45fd9, yet 12f0526 still edited it; it is dead code but not left over from a revert.\n- JewelDetail.tsx was already dead at base.\n- WriteReviewModal still calls crypto.randomUUID without a guard; this was already there and outside the diff.\n- The catalogue refresh moved from 1 to 5 minutes, so a sell-out shows up later on an open page.\n- The fitTitle output for every landing and article title reads sensibly and is at most 65 characters.\n- The sitemap's collection routes match stockedLandings; only evil-eye is dropped, and pendant-sets and gold-plated stay prerendered with a canonical pointing elsewhere.\n\nScratch output is in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/a1/ (vitest.txt, tsc.txt, eslint.txt, mut/out.txt, browser/*.mjs, repro/)."
+     },
+     {
+      "verdict": "ship",
+      "issues": [],
+      "checked": "I found no defects in new ebbbc39 compared with base 6a4593e.\n\nSetup: both builds were made with `npx vite build` in detached worktrees /tmp/final-rev-b1 and /tmp/final-base-b1, and supabase/functions/mcp/index.ts was restored after each build. They were served with distserve on 4490 (new, PID 689) and 4491 (base, PID 690). Every browser context aborted NO_REPORT, set navigator.webdriver to false, stubbed the Fastrr script so buyDirect was only recorded, and blocked any off-site page load. Nothing left the site and nothing reached Meta. When done, I stopped both servers by PID (ports 4490/4491 free) and force-removed both worktrees. /tmp/mainwt is still at ebbbc39 and clean. No commits. No WebKit build is installed, so \"iPhone 13\" means Chromium with the iPhone 13 descriptor. Scripts, JSON logs and screenshots are under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/ (scripts/, logs/, shots/).\n\nWhat passed in new (Pixel 7, iPhone 13, 1440x900, plus 360 and 390 wide):\n- **Page sweep:** home, /jewellery, cushion-halo-ring, prism-riviere-bracelet, triple-coil-wrap-bangle, baguette-huggies, 6 journal pages, an unknown URL and /track-order. No horizontal scroll, no console errors, no page errors, no 4xx, on either build. Logs: logs/sweep-*.json.\n- **/jewellery:** SHOW MORE goes from 30 to 60 cards. The RINGS chip, the low-to-high price sort (prices ascending) and In stock only all work, are written to the URL and survive a reload. Same as base.\n- **Product pages:**\n  - The phone gallery moves to the next photo on a swipe.\n  - The photo viewer moves between photos on a swipe (base does not: it stays at 1/N) and with arrow keys on desktop. Escape closes it and focus returns to the photo that opened it; phone Back also closes it.\n  - The size guide opens with focus inside, closes on Escape, and focus returns to \"Size guide\". Base does not close on Escape.\n  - Variant picks work: Silver (and `?colour=silver`), Crystal, and US 5. Arrow keys move within each choice group.\n  - Pairing cards show no clipped third line at 360/390/412/1440. Base shows 2.8px of a third line at 360 on baguette-huggies (logs/pdp-base-w360.json).\n- **Bag:** Add, +, \u2212, Remove, Undo all work on all three devices. An immediate Undo (before Shopify answers the removal) keeps the line at qty 1 or 2, and Shopify's cart still has it after a reload. Base loses the bag in that case.\n- **Buy Now payloads are identical to base.** I compared them after masking only the cart token and key in fallbackUrl. This held for the empty bag, after Add (qty 2 with BUY2), and for the bag's own Checkout, on prism (3 devices), cushion-halo-ring and triple-coil.\n- **Mobile menu:** focus moves into the menu, 40 Tab and 15 Shift+Tab presses never leave it, and Escape closes it with focus back on \"Open menu\". Base has neither a focus trap nor Escape.\n- **Search:** \"ear ring\" and \"neck lace\" each return 11 results (earrings and necklaces). Base returns 0. Tapping a result opens the piece; Enter on \"neck lace\" opens the Necklaces filter. Tab stays inside the overlay.\n- **Wishlist:**\n  - Saving from a product page or a card and tapping the row (photo or price area) opens /jewellery/<handle>. Remove works without navigating.\n  - Pre-seeded entries copied from what base writes (no kind field), for prism (not in the bundled list) and cushion-halo, land on the right page.\n  - With the handle-list download held 5 s, the row goes via /product/<handle> and on to /jewellery/<handle>. Back returns to /jewellery.\n- **Footer:** all 33 internal links (full and compact footers, Pixel 7 and desktop) land on real pages; none shows Coming Soon.\n- **Journal titles:** all 19 article titles and og:titles are complete phrases ending \" | Naira Flore\".\n- **Unknown URLs:** robots is \"noindex, follow\" with no canonical, both on a cold load and after an in-app move from a product page. Moving on to a journal page brings back index and its canonical.\n- **/track-order** renders; nothing was submitted.\n- **CPU 4x throttle on Pixel 7, cold product page:** no stale pre-built page appears on the next in-app move. I tested the plain build and a pre-built copy of the page with its code held to 7.95\u20139.5 s and 11 s. The checker watched for the old heading or photos after the move to /contact and found none. I could not force the narrow race the fix targets on demand; the delay sweep never hit it in either build. New keeps the pre-built page on screen from the 8 s start until the code lands; base goes blank from 8.8 to 11.3 s.\n- **At 360/390:** every overlay (viewer, size guide, bag, menu, search, wishlist), the 20 footer-linked pages and all product page actions show no overflow and no errors.\n- Every image loads once scrolled to. /jewellery makes 1 catalogue request over 75 s (base: 2). Focus returns to the header button after the bag or wishlist closes (base drops it to the page body).\n\nSame in both builds, not reported as defects:\n- /journal at 360 has a decorative element that makes the body 393px wide, but the page is clipped (overflow-x hidden on html and body) and does not move sideways under a finger drag. Real iOS Safari was not available to confirm.\n- A bag left open re-opens after a reload; the code says this is on purpose.\n- The footer's Popular Searches links are 23px tall; the commit notes this was deliberate.\n\nCopy note only: /track-order says \"To see an order's status here\" while the button opens a new tab."
+     }
+    ],
+    "repair": {
+     "head": "a550bd9fa0d216dc75e8a732a1df6b7e0ace78b4",
+     "items": [
+      {
+       "issue": "OOB-1",
+       "status": "fixed",
+       "commit": "bc8b6fd",
+       "detail": "Held for the owner by fully reverting 2128022 (Audit C47), not by fixing it. I confirmed this is a real change made by this branch. With the reviewer's repro (real src/lib/shopify.ts, only fetch stubbed) at ebbbc39, removing a line Shopify says 'does not exist' left the bag at [a,b] and showed the toast 'Could not remove this item.' Any fix for C47 changes which lines stay in the bag. That feeds openCheckout's InitiateCheckout value, num_items and contents, and the items startFastrrCheckout receives. The removals wait also changes the path buyNow uses through addItem. That is tracking and the checkout hand-off, so it is out of bounds. `git revert --no-commit 2128022` applied cleanly. It removes the removals map in CartContext, the isCartNotFoundError change, undoRemove.test.tsx and the shopify.test.ts case. After it, `git diff 6a4593e HEAD -- src/lib/shopify.ts` has no isCartNotFoundError hunk. CartContext differs from 6a4593e only by the storage-blocked guard from another commit. Nothing else references `removals`. The bag's Undo button was already on 6a4593e (CartDrawerNext). C47 itself (Undo tapped mid-removal empties the bag as 'timed out') was already there on 6a4593e and is not made worse. The commit message says how to re-apply it with `git revert`.",
+       "test": "Reviewer repro /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/a1/repro/zzReviewStaleLine.test.tsx, copied into src/ only while it ran and then deleted. At ebbbc39 it fails: the bag stays [a,b]. After the revert it passes: bag [] and no toast. Logs: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/oob/logs/repro-oob1-before.txt and repro-oob1-after.txt. No permanent test was added: like the earlier hold commits, this is a plain revert, and a test pinning the 6a4593e 'clear the whole bag' behaviour would lock in the C47 bug."
+      },
+      {
+       "issue": "OOB-2",
+       "status": "fixed",
+       "commit": "a550bd9",
+       "detail": "Held for the owner by reverting only the stock-rule half of e36a55c (Audit C27). I put back `const soldOut = piece.availableForSale === false && !adjustable;` in src/pages/JewelDetailNext.tsx. In src/components/reels/ReelShopNext.tsx and src/components/reels/MobileReelShop.tsx I put back `const soldOut = live?.availableForSale === false && !isAdjustableRing(live ?? product.handle);` and its ringFit import. Those lines now match 6a4593e: `git diff 6a4593e HEAD -- <3 files> | grep 'const soldOut'` is empty. Dropping the exemption decides whether checkout is offered for an adjustable ring: Buy Now goes to the WhatsApp pre-order, the reel cards show sold out, and the JSON-LD says OutOfStock. It also overrode the owner's 25 Oct rule (4426bfd). That makes it the owner's decision. Kept from e36a55c (C28, copy only): preorderLead and the shared lead copy, the single lead time per state, and PincodeChecker preorder={isPreorder}. variantSoldOut logic was not touched by e36a55c, so for an adjustable ring that Shopify marks unavailable, checkout is offered exactly as on 6a4593e. The 'latent today' point in the commit message (14 adjustable rings, none unavailable) comes from the reviewer's live read. I did not re-query Shopify.",
+       "test": "src/pages/JewelDetailNext.test.ts: the 'stock on the product page and reel cards' assertions now check that the exemption is there on the product page and both reel cards. Before the source change: 2 failed, 24 passed (oob2-test-before.txt). After: JewelDetailNext.test.ts, the reels tests and the data tests pass, 54/54 (oob2-test-after.txt)."
+      }
+     ],
+     "verification": "All run in /tmp/mainwt on ship-main at a550bd9 (two commits on top of ebbbc39). Nothing pushed, origin not touched, no npm/bun install.\n- npx vitest run: 98 files, 639 tests passed. That is 4 fewer than before: the 3 undoRemove tests and 1 isCartNotFoundError case left with the 2128022 revert.\n- npx tsc --noEmit -p tsconfig.app.json: exit 0.\n- npx eslint .: exit 0, 0 errors and 1 warning (react-refresh/only-export-components in CartContext.tsx), the one documented warning.\n- npx vite build: built. Afterwards I ran git checkout -q -- supabase/functions/mcp/index.ts.\n- git status --porcelain: empty.\nLogs are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/oob/logs/ (vitest.txt, tsc.txt, eslint.txt, vite-build.txt, repro-oob1-before/after.txt, oob2-test-before/after.txt). I ran no browser test: both changes are pure reverts to 6a4593e lines.\nOne thing is now out of date: CLAUDE.md line 341 still says 'currently 643 tests' (99 files), and the suite is now 639 tests in 98 files. I left it because this task cannot authorise CLAUDE.md edits; the owner or orchestrator should update it."
+    }
+   },
+   {
+    "round": 2,
+    "head": "a550bd9fa0d216dc75e8a732a1df6b7e0ace78b4",
+    "reviews": [
+     {
+      "verdict": "ship",
+      "issues": [
+       {
+        "id": "A2-1",
+        "severity": "minor",
+        "outOfBounds": true,
+        "file": "src/hooks/useLiveJewellery.ts",
+        "summary": "d01e444 changes the Product JSON-LD `sku` that every jewellery page emits. Pages that sent `\"sku\": \"\"` (snapshot and live-only pieces) now send the lead variant's Shopify SKU (for example YF5214-G-5). The site's Meta pixel is initialised with no `fbq('set','autoConfig',false)`, so its automatic Microdata event reads this JSON-LD. Nothing in the trackPixel calls changes, but this identifier now reaches Meta (and Google structured data) on every product page. Because it touches tracking and catalogue matching, it needs the owner's sign-off, the same as the other tracking-adjacent changes.",
+        "repro": "At base: `git show 6a4593e:src/hooks/useLiveJewellery.ts | grep -n 'sku: \"\"'` gives line 267 (fromShopify hard-coded \"\"). At head: build with `npx vite build`, serve it with distserve on :4494 and run the Playwright check (NO_REPORT aborted, webdriver=false) in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/a2/browser/jsonld.mjs. Product JSON-LD: star-point-band sku=\"YF5214-G-5\", riviere-of-light-bracelet sku=\"JDB201083\", baguette-eclat-bracelet sku=\"JDB201210\". `grep -n autoConfig src/lib/pixel.ts index.html` finds nothing, so autoConfig is on by default. I did not observe Meta receiving the value, because every Meta request was blocked.",
+        "reproduced": true,
+        "fix": "Either confirm with the owner that the Meta catalogue/pixel microdata is not keyed on JSON-LD sku and keep it, or hold d01e444 (variants.ts sku, useLiveJewellery sku mapping, JSON-LD spread) until the owner signs off. The two swapped hand-authored SKUs in jewellery.ts match what Shopify returns live, so the data itself is correct."
+       },
+       {
+        "id": "A2-2",
+        "severity": "minor",
+        "outOfBounds": false,
+        "file": "CLAUDE.md",
+        "summary": "CLAUDE.md's verification section says `npx vitest run  # currently 643 tests`. ebbbc39 set that count before bc8b6fd removed undoRemove.test.tsx and part of shopify.test.ts, so the suite now has 639 tests. The documented baseline is stale.",
+        "repro": "In a worktree at a550bd9: `npx vitest run` prints 'Test Files 98 passed (98) / Tests 639 passed (639)'. `grep -n 'currently 643 tests' CLAUDE.md` prints line 341.",
+        "reproduced": true,
+        "fix": "Change CLAUDE.md line 341 to 'currently 639 tests'."
+       },
+       {
+        "id": "A2-3",
+        "severity": "minor",
+        "outOfBounds": false,
+        "file": "src/pages/ShopAll.tsx",
+        "summary": "Dead code: 3e45fd9 removed the last reference to ShopAll (the pageCode lazyRoute and its PAGES entry). The 799-line ShopAll.tsx page is now imported by nothing and is not in the build, yet 12f0526 still edited it (fetchShopifyProducts()).",
+        "repro": "`grep -rn \"pages/ShopAll\\|ShopAll\\.tsx\\|from \\\"./ShopAll\" src` finds no importer (the only hit is a comment in src/test/legacy-routes.test.ts). After `npx vite build`, `ls dist/assets | grep -i shopall` is empty.",
+        "reproduced": true,
+        "fix": "Delete src/pages/ShopAll.tsx, or record why it is kept. Nothing renders it, and App.tsx sends /shop/indo-western to /customize."
+       }
+      ],
+      "checked": "Setup: worktree /tmp/final-rev-a2 at a550bd9 with node_modules symlinked; removed with --force at the end. Nothing was committed. The servers I started (PIDs 31105 and 633) were killed by PID.\n\nChecks: `npx vitest run` passes 98 files and 639 tests. `npx tsc --noEmit -p tsconfig.app.json` is clean. `npx eslint .` gives 0 errors and 1 warning, the documented CartContext baseline. `npx vite build` succeeds; supabase/functions/mcp/index.ts was restored afterwards and git status is clean.\n\nHolds: I compared each held commit's patch with the reverse of its Hold commit.\n- These pairs match exactly: e78c72b/63ed576, 85ba7a2/258ff12, cb0e434/8d85e6d, 2128022/bc8b6fd, ca1322e/0cdea53, a010c55/0e0ed4b.\n- 381c6e6/55857e9 differs only by test lines that came from 3e45fd9.\n- a550bd9 reverts only the adjustable-ring soldOut lines. JewelDetailNext, ReelShopNext and MobileReelShop are identical to 6a4593e on those lines.\n\nNet diff against 6a4593e:\n- vite.config.ts, ChunkErrorBoundary.tsx and jewellerySnapshot.ts: no change.\n- CartContext: only the try/catch around the localStorage effect; buyNow and openCheckout are unchanged.\n- src/lib/shopify.ts: cart mutations unchanged; only product queries change (paging, sku, variant follow-up) and storefrontApiRequest's default generic.\n- App.tsx: only the PrebuiltPage fallback and dropPrebuiltPage; the KeepQuery redirects are as at base.\n- jewellery.ts data: only the SKU swap (d01e444, confirmed against Shopify's live SKUs), the lead-time constants (e36a55c, kept) and the galleryAlt type. No prices.\n- scripts/prerender.ts: only dd863e1 (canonical) and 3bb86a2 (shell for an emptied collection), neither held.\n\nOut-of-bounds files: pixel.ts, PixelEvents, fastrr.ts, promo.ts, index.html, index.css, tailwind.config.ts and supabase/ have no diff. No trackPixel call or its values changed; the only changes near ViewContent are eslint comments. AddToWishlist's payload ignores the new `kind` field.\n\nBehaviour checked in Chromium at iPhone 13 size against the built dist on :4494, with the NO_REPORT abort, webdriver set to false and the Fastrr script stubbed (nothing reached Meta, no checkout opened, nothing added to a cart):\n- Mobile menu: focus moves in, 0 of 40 Tab presses leave it, Escape closes it, focus returns to the menu button and aria-expanded updates.\n- Search: \"ear ring\" finds earrings, and Escape returns focus to Search.\n- Collections: evil-eye shows the empty state with noindex. pendant-sets has the necklaces canonical. Hub chips leave out evil-eye. Each page has one `<main>`.\n- PDP radiogroups: roving tabindex works, ArrowRight selects Silver and the ?colour= link updates.\n- Ring size chart: on Radix it opens, and Escape or the X closes it with focus back on Size guide and the scroll lock released.\n- Lightbox: a CDP swipe moves between photos and focus returns to the opener.\n- Wishlist drawer: a legacy entry without `kind` resolves to /jewellery/ through the lazy handle list, and Remove does not navigate.\n- With localStorage and sessionStorage throwing: home, /jewellery, the PDP, a collection, /customize and /track-order all render, and search still submits.\n- Stalled-code test: a copy of the PDP captured to stand in for the pre-built page, with its JewelDetailNext chunk held 20 s. The page stayed readable before the 8 s start, kept the same nodes in the display:contents fallback after React started, and the live PDP replaced it at 24 s. There was one header, main and #nf-piece throughout, and no page errors.\n\nUnproven suspicions, not filed:\n- handlePreloadError no longer prevents the event once the reload is spent. This only matters for CSS preload failures, and the build has a single CSS file, so it is moot.\n- focus({preventScroll}) is ignored on Safari < 15, but Safari does not focus buttons on tap, so the opener is null there.\n- inert is unsupported on Safari 14 and Chrome 87. Only the existing tabIndex guards cover the filters and View more.\n- PageCurtain now also plays on category-bar navigation between landings, because those paths match menuCategories.\n- og:url follows the new canonical on pendant-sets and gold-plated. Organic shares then point at the broader landing; ad destinations are unaffected.\n- resolveEdit's sku fallback on the Golden Hour page now sees Shopify SKUs, but every handle in the edit resolves first.\n- withAllVariants adds failure points only for products with more than 20 variants; none exist today.\n- The useLiveJewellery WeakMap now shares one array across all consumers. I found no in-place sort or mutation: applyJewelFilters, pairings and JewelleryCategory all copy first.\n- legacy-routes, landmarks and source-regex tests assert real things; no new test lacks an expect.\n- scripts/routes.ts' new runtime imports through @/ aliases resolve under tsx (siteRoutes 82, sitemap 80, evil-eye excluded).\n- The jewelleryHandles chunk name matches the optional-chunk pattern in the build.\n- The duration-600 and after:inset-0 utilities appear in the built CSS, and inset-0 compiles to top/right/bottom/left for Safari 14.\n\nScratch output is in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/a2/: vitest.txt, tsc.txt, eslint.txt, build.txt, log.patch, browser/*.mjs and dist-pre."
+     },
+     {
+      "verdict": "repair-needed",
+      "issues": [
+       {
+        "id": "B2-1",
+        "severity": "major",
+        "file": "src/lib/prebuiltPage.ts",
+        "outOfBounds": false,
+        "summary": "This is a new regression in the release; base does not have it. On a slow load of a product page that has no pre-built file, the release keeps the homepage stand-in (the outfits hero 'Softly, slowly, worn.' and 'SHOP THE COLLECTION') on screen under the live header until the product code arrives. Base shows a blank body instead. keepPrebuiltPage() only skips the stand-in while <html data-nf-fallback> is set. The guard script removes that mark itself after 10 s. The app starts at main.tsx start + 8 s, so whenever main.tsx starts more than about 2 s after the guard script, the homepage is kept as the product route's Suspense fallback. This hits exactly the case the guard was built for: an ad for a piece listed after the last publish.",
+        "repro": "The vite build has no pre-built pages and prerender.ts must not run, so production was emulated. Rev dist was copied, and its index.html was replaced with the rev homepage captured by our own Playwright (NO_REPORT aborted, reduced motion, prerender's clean() regexes) and passed through the repo's own withFallbackGuard() from src/lib/fallbackGuard.ts via node_modules/.bin/tsx. That is what scripts/prerender.ts writes to dist/index.html. There is no file for /jewellery/star-point-band. Base was emulated the same way from its own code. Both were served with distserve (4498 rev, 4499 base). Steps: (1) Chromium, Pixel 7 descriptor, CPU 4x (Emulation.setCPUThrottlingRate 4), network 1.6 Mb/s down, 300 ms latency (Network.emulateNetworkConditions). (2) Hold the JewelDetailNext-*.js response for 15 s: this is the stalled-download case that main.tsx's 8 s limit exists for. (3) Open /jewellery/star-point-band cold. Frame log (rAF sampler), REV: 0\u201310.1 s ivory product outline from the guard; at 10.1 s the guard's timer lifts the mark and the homepage shows (base does the same); at 14.96 s the app starts and the homepage body (non-React h1 'Softly, slowly, worn.') STAYS under the live header until the product renders at 22.9 s, about 8 s on the wrong page. BASE: app starts at 15.37 s, then a blank body until 23.0 s. Also reproduced with no network throttle by holding index-*.js 3 s: rev keeps the homepage from 11.6 s to 18.8 s; base is blank from 11.4 s. The next client navigation (footer Contact Us) shows no stale page in either build. Evidence: shots/guardnet-rev-M0-D15000-18000ms.png (homepage on the product URL) vs shots/guardnet-base-M0-D15000-18000ms.png (blank); shots/guard-rev-M3000-D15000-14500ms.png vs shots/guard-base-M3000-D15000-14500ms.png; logs/guardtest-both-M0-D15000.json and logs/guardtest-both-M3000-D15000.json (all under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b2/). Scripts: scripts/capturehome.mjs, scripts/guard.mts, scripts/guardtest-net.mjs (NET=1 AT=12000,18000,21000 node guardtest-net.mjs both 0:15000).",
+        "reproduced": true,
+        "fix": "In keepPrebuiltPage(), do not rely only on the attribute, because the guard's own 10 s timer removes it. Also bail out when the document is the homepage file standing in for another address. For example: `const path = location.pathname.replace(/\\/+$/, '') || '/'; const standIn = path !== '/' && path !== '/index' && path !== '/index.html' && [...document.scripts].some((s) => !s.src && s.textContent?.includes(FALLBACK_ATTR)); if (document.documentElement.hasAttribute(FALLBACK_ATTR) || standIn) return;`. The guard script is only ever injected into dist/index.html, so its presence on a non-home path means a stand-in, and this needs no re-publish. Another option: have the guard set a flag that is never cleared, or compare the served canonical with location.pathname before Helmet runs. Add a case to src/lib/prebuiltPage.test.tsx: guard script present, attribute already removed, path /jewellery/x, so nothing is kept. Not out of bounds: it does not touch index.html, pixel or checkout code."
+       }
+      ],
+      "checked": "Setup: release a550bd9 and base 6a4593e, each in its own detached worktree (/tmp/final-rev-b2, /tmp/final-base-b2), built with npx vite build. supabase/functions/mcp/index.ts was restored after each build. Served with distserve on 4496/4497, plus 4498/4499 for emulated pre-built copies. All 4 servers were stopped by PID (27188, 27189, 2231, 2232), both worktrees were removed, and /tmp/mainwt is untouched at a550bd9 with no commits. No WebKit is installed, so iPhone 13 ran on Chromium with the iPhone 13 descriptor. Every context route-aborted NO_REPORT and Fastrr/pickrr requests, set navigator.webdriver to false, stubbed buyDirect to record only, and aborted any off-site or checkout navigation. Nothing left the site: log.left was empty in every run.\n\nPASS, release equal to or better than base:\n- /jewellery (Pixel 7, iPhone 13, 1440): SHOW MORE goes 30 to 60 with no duplicate cards; the RINGS filter shows rings only (?category=Rings); 'Price: low to high' is ascending and the sort survives switching back to ALL. Identical to base.\n- 4 product pages (cushion-halo-ring, prism-riviere-bracelet, star-point-band, dewdrop-bezel-necklace) on Pixel 7, iPhone 13, 360 and 1440. Gallery touch-swipe moves the counter from 1/N to 2/N. The photo viewer opens with focus inside, Escape closes it and focus returns to the photo button (base drops focus to BODY). The size guide opens with focus on Close, Tab stays inside 8/8, Escape and the X both close it with focus back on 'Size guide', the URL is unchanged and history length stays put; on base Escape does nothing. Variant pick works: Metal Silver sets ?colour=silver, size 7 is aria-checked, one checked per group. Pairing and rail names are clamped to exactly 2 lines (height/line-height 2.0), the Serpentine/Birthstone names show an ellipsis, there is no partial third line, and no overlap with the price.\n- Bag (Pixel 7, iPhone 13, 1440) on both builds: Add, + to Quantity 2, - to 1, Remove, then Undo shows '\u2026 removed / Undo' and restores 1 line.\n- Buy Now payloads are IDENTICAL to base on all 3 devices (empty bag; after Add: quantity 2 with couponCode BUY2; and Star Point Band Silver/7). The only difference is the per-cart token/key inside fallbackUrl. cartAttributes was naira_visitor_id plus currency.\n- Mobile menu (Pixel 7, iPhone 13): focus moves in, Tab stays inside 35/35, Escape closes, focus returns to 'Open menu', the URL is kept; base has no trap or Escape.\n- Search: 'ear ring', 'neck lace' and 'ear-rings' each return 10 results, and Enter goes to /jewellery?category=Earrings (base returns 0 for all three). Tab is trapped and Escape returns focus to Search.\n- Wishlist: saving, then tapping the row image opens the piece, and Remove does not navigate. With base's OLD-format entries seeded (no 'kind'; prism is not in the bundled list), rev goes straight to /jewellery/prism-riviere-bracelet. With the handles chunk held back, the /product/ hop still lands correctly.\n- Footer: all 32 links, clicked on both builds, land on real pages with an h1 and no 'Coming Soon'. Popular Searches now open collection landings; base opened an unfiltered /jewellery?search=.\n- Journal: zirconia-vs-diamond, american-diamond-vs-\u2026-moissanite, how-to-layer-necklaces, capsule-wardrobe, and 5 more. document.title equals og:title and every one is a complete phrase ending ' | Naira Flore'.\n- Unknown URL: noindex, follow and no canonical on both builds. /track-order renders, no submit.\n- CPU 4x on Pixel 7, cold product page from an emulated pre-built page, product code held 0, 8050\u20138350 or 10000 ms: no stale pre-built nodes on the next client navigations (/contact, /privacy). With the 10 s hold, rev keeps the product page on screen where base went blank.\n\nOverflow and console errors: at 360 and 390, all 38 pages (home, listing, 4 product pages, 4 journal pages, unknown URL, track-order, every footer target) show scrollWidth equal to the viewport and no horizontal scroll, on both builds. The same holds at 360 with the sticky buy bar, bag, wishlist, filter panel, search and menu open. No console errors or page errors at 360 or 390 on either build. The only console error seen anywhere was on the 1440 home page: \"Refused to display 'https://www.instagram.com/' in a frame (X-Frame-Options deny)\". It shows up on both builds, sometimes yes and sometimes no, and comes from Instagram answering this sandbox with a redirect to its login page and a 429. I treat it as environmental, not a defect.\n\nExpected changes, not defects: Office Wear now lists 33 pieces (base 131) by design in commit dd863e1. /track-order now shows a 'Find my order' link instead of the form.\n\nEvidence is under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b2/ (logs/*.json, shots/*.png, scripts/*.mjs)."
+     }
+    ],
+    "repair": {
+     "head": "ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342",
+     "items": [
+      {
+       "issue": "A2-1",
+       "status": "not-fixed",
+       "commit": "de55688",
+       "detail": "This is out of bounds, so I held it rather than fixed it. index.html initialises the Meta Pixel with no fbq('set','autoConfig',false) (grep finds no autoConfig in index.html or src/lib/pixel.ts). That means the pixel's automatic Microdata event reads each product page's JSON-LD. d01e444 (Audit C65) changed that JSON-LD on every product page in three ways: 'sku' filled from the lead variant's Shopify code where it used to be \"\", the key dropped where there is no code, and the bundled Rivi\u00e8re of Light and Baguette \u00c9clat codes swapped. The same field also feeds the title match fallback in data/adsEdit.ts, which drives the ads-only Golden Hour landing. Commit de55688 'Hold Shopify SKUs in product structured data for the owner' reverts d01e444 and also takes 'sku' out of the per-product variants query that 12f0526 copied later. Every sku line now matches 6a4593e: no sku in the queries, none from variantFields, fromShopify sku \"\", mergeLive keeps the bundled code, the bundled pair as before, and both pages emit sku: piece.sku. One merge conflict in JewelDetailNext.test.ts was resolved by turning the 'never emits an empty sku' test into a held assertion of the base form. The Shopify codes are correct data, so the owner can re-apply with a git revert of de55688 once they agree. Audit C65 stays open on this branch.",
+       "test": "src/pages/JewelDetailNext.test.ts 'product structured data' asserts `sku: piece.sku,` and no conditional spread in both JewelDetail.tsx and JewelDetailNext.tsx; the d01e444 sku test in variants.test.ts went with the revert."
+      },
+      {
+       "issue": "B2-1",
+       "status": "fixed",
+       "commit": "ddb72b7",
+       "detail": "This is a real regression from this branch (6c04e30 added keepPrebuiltPage; base has no prebuiltPage.ts). The root cause: the stand-in check relied only on <html data-nf-fallback>, and the guard removes that mark itself after 10 s, so a slow app start found it already gone. The fix adds isStandInPage() in src/lib/fallbackGuard.ts. It returns true if the mark is set, or if the guard's own inline script is in the document on any address other than the homepage. Only dist/index.html carries that script (prerender writes it into the shell alone), and scripts stay in the DOM, so the check never expires. The homepage addresses are now one HOME_PATHS list shared with the guard script, and the generated guard output is byte-for-byte unchanged (compared before and after with tsx). keepPrebuiltPage() now calls isStandInPage(). No index.html, pixel or checkout code was touched, and nothing needs re-publishing beyond the normal build.",
+       "test": "src/lib/prebuiltPage.test.tsx: 'never keeps the homepage standing in for another address after the guard's mark is gone'. It puts the real withFallbackGuard head in via innerHTML, so the script does not run and the mark stays absent, and sets the path to /jewellery/star-point-band. It failed before the fix (the homepage h1 was kept) and passes after. 'keeps the homepage on its own address, guard and all' covers / and /index.html. src/lib/fallbackGuard.test.ts adds isStandInPage tests: it agrees with the guard script's own decision for 7 addresses after the mark is gone, it is true while the mark is on, and it is false for a page's own file."
+      }
+     ],
+     "verification": "Unit checks:\n- Full suite: npx vitest run gives 98 files and 643 tests passed.\n- npx tsc --noEmit -p tsconfig.app.json is clean.\n- npx eslint . shows 0 errors and the 1 documented react-refresh warning in CartContext.tsx.\n- npx vite build passes. supabase/functions/mcp/index.ts was restored after both builds.\n- git status is clean on ship-main at ddb72b7. Nothing was pushed.\n\nBrowser check for B2-1, run in a production emulation:\n- Setup: fix build from `npx vite build`, homepage captured by my own Playwright with prerender's clean() and passed through withFallbackGuard via tsx into dist/index.html, plus a captured /jewellery/prism-riviere-bracelet page file. It was served with distserve on :4494; the reviewer's pre-fix emulated build was served on :4495.\n- Every context aborted NO_REPORT (the meta-capi relay was blocked), set navigator.webdriver to false, blocked the Fastrr/Shiprocket script and stubbed buyDirect. No checkout pages were opened and nothing left the site.\n- Conditions: Pixel 7, CPU 4x, 1.6 Mb/s with 300 ms latency, JewelDetailNext chunk held 15 s, page /jewellery/star-point-band.\n  - Before the fix: the homepage stayed under the live header from 14.96 s to 22.95 s.\n  - After the fix: the app started at 15.15 s with a blank body (as on base) until the product rendered at 22.9 s.\n- Same page with no network throttle and index-*.js held 3 s: before, the homepage showed from 11.17 s to 18.49 s; after, the body was blank from 11.37 s.\n- No regression in the other cases: the pre-built Prism page stayed on screen across the app start (15.0 s) until the live render (16.0 s), and the homepage at / stayed across the start with its chunk held.\n- Between 10.1 s and the app start the homepage shows in both builds. That is pre-existing on base and I left it alone.\n\nTeardown: both servers were stopped by their own PIDs.\n\nEvidence is under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/fix-b2/:\n- logs/guardtest-*.json\n- shots/fix-_jewellery_star_point_band-M0-D15000-net-18000ms.png (blank) vs shots/rev-_jewellery_star_point_band-M0-D15000-net-18000ms.png (homepage)\n- scripts/"
+    }
+   },
+   {
+    "round": 3,
+    "head": "ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342",
+    "reviews": [
+     {
+      "verdict": "ship",
+      "issues": [],
+      "checked": "Worktree /tmp/final-rev-a3 at ddb72b7, plus a second throwaway worktree /tmp/final-rev-a3-base at 6a4593e used only to build the base. Both are removed. Nothing was committed, pushed or installed. Every build was a plain `npx vite build`, followed each time by `git checkout -q -- supabase/functions/mcp/index.ts`. The prerender script was never run. Scratch output is in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/a3/.\n\nGATES at ddb72b7:\n- `npx vitest run`: 98 files, 643 tests, all passed.\n- `npx tsc --noEmit -p tsconfig.app.json`: exit 0.\n- `npx eslint .`: exit 0 with 0 errors and 1 warning, the documented react-refresh warning in CartContext.tsx:539.\n- CLAUDE.md says \"currently 643 tests\", which matches the vitest count.\n\nde55688 (sku held for the owner):\n- `git diff 6a4593e ddb72b7` shows no sku-related line in any of these files: src/lib/shopify.ts, src/lib/variants.ts, src/lib/variants.test.ts, src/hooks/useLiveJewellery.ts, src/data/jewellery.ts, src/data/jewellerySnapshot.ts, src/data/adsEdit.ts, JewelDetail.tsx, JewelDetailNext.tsx. variants.test.ts, adsEdit.ts and jewellerySnapshot.ts are identical to base.\n- The variant fields requested are now the same in all three queries (PRODUCTS_QUERY, PRODUCT_BY_HANDLE_QUERY and the new PRODUCT_VARIANTS_QUERY), and the same as base: id, title, availableForSale, price, compareAtPrice, selectedOptions, image. I extracted and normalised each query to compare them.\n- I ran PRODUCT_VARIANTS_QUERY once against the Storefront API for star-point-band. This was a read-only call: no errors, 8 variants came back, and the node has exactly those seven keys.\n- The 12f0526 paging logic (withAllVariants and the fetchShopifyProducts loop) was not touched. catalogueQuery.test.ts passes.\n- Product JSON-LD in the browser: I built base and HEAD and served each with distserve (ports 4498 and 4499). I opened five product pages with live Shopify data loaded: star-point-band, riviere-of-light-bracelet, baguette-eclat-bracelet, prism-riviere-bracelet and watch-link-bracelet. The extracted Product JSON-LD was byte-identical between base and HEAD (cmp, 6361 bytes each). The sku values were YF5214, JDB201210, JDB201083, \"\" and \"\", exactly as at base.\n- The browser contexts followed the harness rules: NO_REPORT requests aborted, navigator.webdriver overridden to false, and the Fastrr script stubbed so buyDirect was never called. No checkout was opened.\n- No dead code is left from d01e444. The new JewelDetailNext.test.ts check (`sku: piece.sku`, no conditional spread) does assert something.\n\nddb72b7 (isStandInPage and HOME_PATHS):\n- The guard text is byte-identical to base. I ran withFallbackGuard from the base and HEAD copies of fallbackGuard.ts through tsx on three inputs and compared the output with cmp: 5685 bytes each, identical. The emitted script still reads `if(p===\"/\"||p===\"/index\"||p===\"/index.html\")return;`.\n- scripts/prerender.ts calls withFallbackGuard in exactly one place (line 441) and writes only SHELL_FILE (dist/index.html). It does this after every capture and after the untouched-shell copies are read (line 411).\n- Pages are captured while dist/index.html is still the plain Vite shell, because capturedHome is held in memory until the end. The /products/ twin pages are copies of route files. `npm run build` is `vite build && prerender`, so every run starts from a fresh dist. A real pre-built page therefore never carries the guard script, and no inline script in index.html contains the \"data-nf-fallback\" string.\n- HOME_PATHS treats the same paths as home as the guard script. A fuzz test I wrote and then deleted compared isStandInPage with the guard script's own decision on 25 paths, including '', //, /index/, /index.html//, /INDEX.HTML, /index.htm, /%69ndex, /index.html/x and /products/x/. Every result matched.\n- The new prebuiltPage test does fail without the fix: with de55688's prebuiltPage.ts put back, 1 of 8 tests fails.\n- Browser check on the HEAD build, using a hand-built test copy of dist (a guarded homepage file plus a real pre-built product page with no guard), Pixel-size viewport, entry script delayed 4 s, page chunk held:\n  - New piece (served the homepage file): mark on and #root hidden through 9 s. At 11 s the mark is gone and the homepage shows, which is base behaviour. At 14 s, once the app has started, the homepage is gone (blank under the live header), as at base.\n  - Real pre-built product page: stays on screen under the live header at 14 s and 17 s.\n  - Homepage at /: kept the same way.\n  - buyDirect was called 0 times.\n- The guard's 'piece' mark covers the /products/<handle> pre-boot hop, which never rewrites to or from a home path, so the address cannot move between the guard and main.tsx.\n- isStandInPage uses only Array.from, includes and ??. That is fine on Safari 14 and Chrome 87. It is only called in the browser, so prerender importing the module is unaffected.\n\nNot reported as an issue: the dead template expression that rollup leaves in the main entry chunk was already there at the parent (it contains JSON.stringify(PIECE_PATH)). HOME_PATHS.map(...).join adds about 100 gzip bytes of never-used code. It does nothing.\n\nSpot-checked again outside the two commits:\n- No net diff vs base in ChunkErrorBoundary, fastrr.ts, pixel.ts, promo.ts, index.html, index.css, tailwind.config.ts or supabase.\n- App.tsx changes only for PrebuiltPage and dropPrebuiltPage; the redirects are unchanged.\n- CartContext changes only the localStorage try/catch; buyNow and openCheckout are unchanged.\n- shopify.ts has no changes to cart mutations.\n- vite.config.ts is unchanged."
+     },
+     {
+      "verdict": "ship",
+      "issues": [
+       {
+        "id": "B3-1",
+        "severity": "minor",
+        "summary": "PRE-EXISTING (base 6a4593e has the same timings): when a new piece has no pre-built page (/jewellery/star-point-band), the homepage shows for about 5 s before the app starts. The guard's own 10 s timer takes the mark off first. main.tsx's 8 s start limit only begins once the entry chunk has run, about 7 s into the load, so the app starts at about 15 s. This is the 'ad for a new piece shows the wrong page first' case the guard exists for. The header on screen is still the static one, so ddb72b7's rule ('after the app starts') is met, and nothing here is a regression.",
+        "repro": "Production-emulated dist: rev/base dist with dist/index.html replaced by the homepage captured with our own Playwright (1280x900, reduced motion), then prerender's clean() regexes, then the repo's dropUnusedImagePreloads, keepOnlyRoutePreloads and withFallbackGuard via node_modules/.bin/tsx (scripts/capture.mjs and post.mts). Served with distserve; no file for star-point-band. Steps: Chromium with the Pixel 7 descriptor, CPU 4x, 1.6 Mb/s down, 300 ms latency; hold the JewelDetailNext-*.js chunk 9000 or 15000 ms; open /jewellery/star-point-band. Frames for rev, D9000: #root hidden by the guard until 10090 ms; from 10090 ms to 15444 ms the static homepage hero 'Softly, slowly, worn.' is visible on the product address; the app's first commit at 15444 ms leaves a blank body; the product appears at 18281 ms. Base, D9000: homepage visible 10123 to 15241 ms. Base, D15000: homepage 10090 to 15593 ms. iPhone 13: rev 10095 to about 15164 ms, base 10103 to 15062 ms. With the entry also held 3000 ms: homepage 10205 to 17064 ms (rev) and 10153 to 16984 ms (base). Screenshots: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/shots/slow-rev-pixel7-star-point-band-E0-JewelDetailNext9000-12000ms.png and /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/shots/slow-base-pixel7-star-point-band-E0-JewelDetailNext9000-12000ms.png (both show the homepage hero at 12 s). Logs: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/logs/m-{rev,base}-{pixel7,iphone13}-star-point-band-E*-D*.txt",
+        "reproduced": true,
+        "file": "src/lib/fallbackGuard.ts",
+        "fix": "Make the guard's fallback outlast the real worst-case app start. Option 1: in main.tsx, keep the mark (or re-arm the guard's timeout) while it waits its 8 s, so the mark comes off only at the first commit (App.tsx clearFallbackMark) or when the app gives up. Option 2: measure the 8 s from navigation start (performance.now()) and not from main.tsx's own run, and raise the guard's 10 s to more than the entry download plus 8 s. The comment 'after the app's own 8 s start-up limit' assumes main.tsx runs at t=0, and it runs at about 7 s on a slow phone.",
+        "outOfBounds": false
+       },
+       {
+        "id": "B3-2",
+        "severity": "minor",
+        "summary": "PRE-EXISTING (base has it too): /index.html opens the 'Coming soon' not-found page once the app starts. The router has '/' and '/index' but no '/index.html', while the guard and the new isStandInPage (HOME_PATHS) treat /index.html as the homepage. ddb72b7's new unit test (homepage kept at /index.html) therefore covers something the real router never shows: the route code settles at once, nothing is kept, and CatchAll renders.",
+        "repro": "Same production-emulated dist, Pixel 7, CPU 4x, 1.6 Mb/s down, 300 ms latency, Index-*.js held 15000 ms. Open /index.html. Rev: static homepage until 8133 ms, then 'R:Coming soon' (CatchAll) from 8682 ms. Base: static homepage until 7892 ms, then 'Coming soon' from 8514 ms. Screenshots: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/shots/slow-rev-pixel7-index_html-E0-Index15000-9000ms.png and /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/shots/slow-base-pixel7-index_html-E0-Index15000-9000ms.png. Logs: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/logs/e-{rev,base}-indexhtml.txt",
+        "reproduced": true,
+        "file": "src/App.tsx",
+        "fix": "Add <Route path=\"/index.html\" element={<Index />} /> beside '/index', or redirect it to '/' with the query kept (the same KeepQuery pattern as '/products'). That way the app agrees with HOME_PATHS in fallbackGuard.ts.",
+        "outOfBounds": false
+       }
+      ],
+      "checked": "Round 3 on ddb72b7 (rev) against 6a4593e (base). I built both with npx vite build in my own detached worktrees /tmp/final-rev-b3 and /tmp/final-base-b3, with node_modules symlinked and supabase/functions/mcp/index.ts restored after each build. I served them with distserve: plain dists on 4490/4491, production-emulated dists on 4492/4493. All four servers were killed by their own PIDs (16113, 16114, 16588, 16589); the other distserve processes on 4497-4499 belong to the a3 run and were left alone. Both worktrees are removed. Nothing was committed and nothing was pushed. Every browser context route-aborted NO_REPORT, set navigator.webdriver to false, blocked the Fastrr/Shiprocket script and only recorded buyDirect; no page left the site. There is no WebKit, so iPhone 13 is Chromium with the iPhone 13 descriptor.\n\n(1) Slow-load matrix on the production emulation (scripts/capture.mjs and post.mts). dist/index.html is the homepage captured with our own Playwright, then clean(), the repo's dropUnusedImagePreloads and keepOnlyRoutePreloads, and withFallbackGuard through tsx. There is one pre-built product file, /jewellery/prism-riviere-bracelet. Pixel 7 and iPhone 13, CPU 4x, 1.6 Mb/s, 300 ms, rev and base in parallel per case, 28 runs in all. Cases on /jewellery/star-point-band (no file): product chunk held 0, 9000 and 15000 ms; entry index-*.js (the manifest entry only) held 3000 ms with the chunk at 0 and at 15000; prism's pre-built page with its chunk held 15000; / with Index-*.js held 15000. After each load I made two client navigations through the footer (Contact, then Privacy, each chunk held 2.5 s). A rAF sampler tracked visible h1s (React-owned or static), static blocks, the guard mark and the first commit, keyed on the header becoming React's.\n\nRev results: the homepage never showed under the live header on a non-home address (0 frames in every case). On star-point-band the body is blank from the first commit (about 15.2-17.3 s) until the product (18.3-24.9 s), the same as base. The pre-built prism page stays on screen through the start: Pixel 7 13.57 s to live at 16.37 s, iPhone 13 the same, while base goes blank at 13.2 s. The homepage stays on / through the start, while base goes blank at 15.7 s. No stale pre-built page appeared on either navigation in any case.\n\nExtra edge addresses in both builds: /jewellery/star-point-band/ with a trailing slash, /products/star-point-band (alias), /journal/qa-new-post and /qa-unknown-page-xyz all behaved the same as base and correctly; /index.html gives B3-2. Logs: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/logs/m-*.txt and e-*.txt, with JSON beside them. Screenshots are under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/shots/.\n\n(2) Product JSON-LD after the live render on 6 pages: cushion-halo-ring, prism-riviere-bracelet, star-point-band, riviere-of-light-bracelet, baguette-eclat-bracelet and dewdrop-bezel-necklace. Rev and base are byte-identical and stable over 3 s. The sku values are WR20902K8, \"\", YF5214, JDB201210, JDB201083 and YF6403 in both. The pre-built prism file's Product JSON-LD is also identical (sku \"\"). Log: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/logs/jsonld.json.\n\n(3) Smoke on the plain dists. Pages: /, /jewellery, cushion-halo-ring, prism-riviere-bracelet, star-point-band and riviere-of-light-bracelet, on Pixel 7, 1440x900, 360 and 390 wide, rev and base. No horizontal overflow (scrollWidth equals the viewport, no overflowing elements), no console errors, no page errors, nothing left the site. Bag on Pixel 7 and 1440: Add, +, -, Remove, Undo all work and leave the same line and storage as base. Buy Now payloads for the empty bag, after Add and for a variant (star-point-band silver US 7) match base field for field. The only difference is the per-cart Shopify checkout token and key inside fallbackUrl, which is unique to each new cart. After Add: products [{variantId 47501788348578, quantity 2}], couponCode BUY2, fallbackUrl with &discount=BUY2. Logs: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/logs/bag-{pixel7,desk}.json and sweep-*.json.\n\nConsole noise, not counted as a defect: in the throttled runs only, the homepage on Pixel 7 logged \"Refused to display 'https://www.instagram.com/' in a frame (X-Frame-Options deny)\" (rev twice, base once). It comes from the CampaignFilm Instagram embed iframe passing through the harness's server-side fetch, which gets sent to instagram.com's own page; the unthrottled smoke sweeps logged 0 console errors on /.\n\nBoth minor issues are pre-existing and not caused by de55688 or ddb72b7."
+     }
+    ],
+    "repair": {
+     "head": "ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342",
+     "items": [
+      {
+       "issue": "B3-1",
+       "status": "not-fixed",
+       "detail": "Left as is. Base 6a4593e already has this, and this branch does not make it worse. Two settings cause it, and both are the same on base and on ship-main. The guard script's own timer takes the mark off after 10 s: `setTimeout(...removeAttribute...,10000)` is at line 27 of fallbackGuard.ts on base. main.tsx has `APP_START_TIMEOUT_MS = 8_000`, at line 35 on base, and that limit starts counting only once the entry chunk has run. The branch's diff to fallbackGuard.ts only moves the homepage address list into a shared `HOME_PATHS` (the script's output is byte-for-byte the same) and adds `isStandInPage()`. Its diff to main.tsx only adds `keepPrebuiltPage` while route code is still downloading. Neither changes either timer. The reviewer logs give the same frame sequence on rev and base. Pixel 7, D9000: homepage from 10090 to 15444 ms on rev, 10123 to 15241 ms on base. On both, the app's first commit leaves a blank body (blankAfterApp) and the product appears at 18281 ms (rev) and 18072 ms (base). The gap is about 200 ms either way, which is within noise. The `static=2` versus `static=1` count describes the same visible homepage hero in two slightly different pre-built layouts; it does not mean more of the wrong page is shown. The fix would be in bounds: keep or re-arm the guard's mark until App.tsx's first commit or until main.tsx gives up, or measure the 8 s from navigation start. That is follow-up work, not a branch regression.",
+       "test": "None added, because no change was made. The existing test prebuiltPage.test.tsx ('never keeps the homepage standing in for another address after the guard's mark is gone') already covers the part this branch introduced and fixed in ddb72b7."
+      },
+      {
+       "issue": "B3-2",
+       "status": "not-fixed",
+       "detail": "Left as is. Base 6a4593e already has this, and this branch does not make it worse. The router has never had a '/index.html' route: `git show 6a4593e:src/App.tsx | grep -c 'path=\"/index.html\"'` gives 0, and HEAD also gives 0. Both have only '/' and '/index'. The guard script treated /index.html as the homepage on base too (`p===\"/index.html\"` in the base SCRIPT). The new `HOME_PATHS`/`isStandInPage` only keeps that existing decision; it does not invent it. The reviewer logs (e-rev-indexhtml.txt and e-base-indexhtml.txt) show the same behaviour on both: static homepage until 8133 ms then CatchAll at 8682 ms on rev, and until 7892 ms then CatchAll at 8514 ms on base. On the test the reviewer flagged: ddb72b7's tests (fallbackGuard.test.ts, and the '/' and '/index.html' case in prebuiltPage.test.tsx) check that `isStandInPage` agrees with the guard script's own homepage decision. That is the contract they claim, and it holds. It is true that the real router then draws CatchAll at /index.html, but the code before this branch did the same. Also, adding an '/index.html' route or a KeepQuery redirect would change which page an address lands on. That comes close to the out-of-bounds 'redirects/ad landing URLs' list, so the owner should decide it even apart from the pre-existing rule.",
+       "test": "None added, because no change was made."
+      }
+     ],
+     "verification": "I made no commits; HEAD is still ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342 on ship-main in /tmp/mainwt. I confirmed against base 6a4593e with git show and git diff: the guard's 10 s timer, main.tsx's 8 s APP_START_TIMEOUT_MS, and the absence of an /index.html route are all unchanged. The reviewer timing logs under /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/b3/logs/ show matching frame sequences for rev and base on both issues. Final checks: npx vitest run passed 98 files and 643 tests. npx tsc --noEmit -p tsconfig.app.json exited 0. npx eslint . exited 0 with 0 errors and 1 warning (react-refresh/only-export-components in src/contexts/CartContext.tsx:539). npx vite build exited 0, and supabase/functions/mcp/index.ts was restored afterwards with git checkout. git status --short is clean. Logs are /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/build-b3fix.log and /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/fix-oct30/final/eslint-b3fix.log."
+    }
+   }
+  ],
+  "finalHead": "ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342"
+ },
+ "workflowProgress": [
+  {
+   "type": "workflow_phase",
+   "index": 1,
+   "title": "Fix"
+  },
+  {
+   "type": "workflow_phase",
+   "index": 2,
+   "title": "Review"
+  },
+  {
+   "type": "workflow_phase",
+   "index": 3,
+   "title": "Repair"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 1,
+   "label": "fix-leftovers",
+   "phaseIndex": 1,
+   "phaseTitle": "Fix",
+   "agentId": "a32471475214bf5fa",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962923,
+   "lastProgressAt": 1793397962923,
+   "cached": true,
+   "resultPreview": "{\"head\":\"ebbbc3990a0aa65ca0e3ce656d7e9e925dedc334\",\"items\":[{\"issue\":\"1. C78 stale pre-built page (src/lib/prebuiltPage.ts)\",\"status\":\"fixed\",\"commit\":\"01b940f\",\"detail\":\"Root cause: the module-level `kept` array was only emptied by PrebuiltPage's ref, i.e. only if the routes' Suspense fallback mounted. If the route code landed between main.tsx's 8 s start and React's first render (lazyRoute rende\u2026",
+   "promptPreview": "You are a senior React/TypeScript engineer finishing a release branch for a phone-first jewellery shop (Vite + React 18 + React Router 6, vitest).\nWork in /tmp/mainwt on branch ship-main (HEAD 63ed576). The base the owner last published is 6a4593e. An independent reviewer reproduced these issues on this branch; fix each one, root cause first, smallest correct change, one commit per issue, each wit\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 2,
+   "label": "review-code-r1",
+   "phaseIndex": 2,
+   "phaseTitle": "Review",
+   "agentId": "acefd2a59bc690615",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962956,
+   "lastProgressAt": 1793397962956,
+   "cached": true,
+   "resultPreview": "{\"verdict\":\"repair-needed\",\"issues\":[{\"id\":\"OOB-1\",\"severity\":\"minor\",\"outOfBounds\":true,\"file\":\"src/lib/shopify.ts\",\"summary\":\"A bag change that was not put on hold still alters how cart updates behave. Commit 2128022 (bag Undo) changed isCartNotFoundError so Shopify's 'line ... does not exist' no longer counts as a lost cart, and made addItemToCart (which buyNow calls through addItem) wait on an\u2026",
+   "promptPreview": "You are a skeptical staff engineer doing the final pre-merge code review of a release branch for a phone-first jewellery shop. Default to suspicion: your job is to find real defects, not to approve.\nCreate your own detached worktree: git -C /tmp/mainwt worktree add --detach /tmp/final-rev-a1 ebbbc3990a0aa65ca0e3ce656d7e9e925dedc334 ; then ln -s /tmp/mainwt/node_modules /tmp/final-rev-a1/node_modul\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 3,
+   "label": "review-browser-r1",
+   "phaseIndex": 2,
+   "phaseTitle": "Review",
+   "agentId": "a0b1da966f10f032b",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962957,
+   "lastProgressAt": 1793397962957,
+   "cached": true,
+   "resultPreview": "{\"verdict\":\"ship\",\"issues\":[],\"checked\":\"I found no defects in new ebbbc39 compared with base 6a4593e.\\n\\nSetup: both builds were made with `npx vite build` in detached worktrees /tmp/final-rev-b1 and /tmp/final-base-b1, and supabase/functions/mcp/index.ts was restored after each build. They were served with distserve on 4490 (new, PID 689) and 4491 (base, PID 690). Every browser context aborted N\u2026",
+   "promptPreview": "You are a QA lead testing a release build of a phone-first jewellery shop in a real browser before it merges. Default to suspicion.\nCreate your own detached worktree: git -C /tmp/mainwt worktree add --detach /tmp/final-rev-b1 ebbbc3990a0aa65ca0e3ce656d7e9e925dedc334 ; ln -s /tmp/mainwt/node_modules /tmp/final-rev-b1/node_modules ; build there with npx vite build (then git -C /tmp/final-rev-b1 chec\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 4,
+   "label": "repair-r1",
+   "phaseIndex": 3,
+   "phaseTitle": "Repair",
+   "agentId": "abbfd68ca8fbe5702",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962957,
+   "lastProgressAt": 1793397962957,
+   "cached": true,
+   "resultPreview": "{\"head\":\"a550bd9fa0d216dc75e8a732a1df6b7e0ace78b4\",\"items\":[{\"issue\":\"OOB-1\",\"status\":\"fixed\",\"commit\":\"bc8b6fd\",\"detail\":\"Held for the owner by fully reverting 2128022 (Audit C47), not by fixing it. I confirmed this is a real change made by this branch. With the reviewer's repro (real src/lib/shopify.ts, only fetch stubbed) at ebbbc39, removing a line Shopify says 'does not exist' left the bag at\u2026",
+   "promptPreview": "You are a senior engineer repairing a release branch after review. Work in /tmp/mainwt on ship-main (HEAD ebbbc3990a0aa65ca0e3ce656d7e9e925dedc334).\nReviewers reproduced these issues (JSON):\n[\n {\n  \"id\": \"OOB-1\",\n  \"severity\": \"minor\",\n  \"outOfBounds\": true,\n  \"file\": \"src/lib/shopify.ts\",\n  \"summary\": \"A bag change that was not put on hold still alters how cart updates behave. Commit 2128022 (bag\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 5,
+   "label": "review-code-r2",
+   "phaseIndex": 2,
+   "phaseTitle": "Review",
+   "agentId": "a717c96eff3b58cad",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962962,
+   "lastProgressAt": 1793397962962,
+   "cached": true,
+   "resultPreview": "{\"verdict\":\"ship\",\"issues\":[{\"id\":\"A2-1\",\"severity\":\"minor\",\"outOfBounds\":true,\"file\":\"src/hooks/useLiveJewellery.ts\",\"summary\":\"d01e444 changes the Product JSON-LD `sku` that every jewellery page emits. Pages that sent `\\\"sku\\\": \\\"\\\"` (snapshot and live-only pieces) now send the lead variant's Shopify SKU (for example YF5214-G-5). The site's Meta pixel is initialised with no `fbq('set','autoConfi\u2026",
+   "promptPreview": "You are a skeptical staff engineer doing the final pre-merge code review of a release branch for a phone-first jewellery shop. Default to suspicion: your job is to find real defects, not to approve.\nCreate your own detached worktree: git -C /tmp/mainwt worktree add --detach /tmp/final-rev-a2 a550bd9fa0d216dc75e8a732a1df6b7e0ace78b4 ; then ln -s /tmp/mainwt/node_modules /tmp/final-rev-a2/node_modul\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 6,
+   "label": "review-browser-r2",
+   "phaseIndex": 2,
+   "phaseTitle": "Review",
+   "agentId": "a103c24b69a28dcdd",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962962,
+   "lastProgressAt": 1793397962962,
+   "cached": true,
+   "resultPreview": "{\"verdict\":\"repair-needed\",\"issues\":[{\"id\":\"B2-1\",\"severity\":\"major\",\"file\":\"src/lib/prebuiltPage.ts\",\"outOfBounds\":false,\"summary\":\"This is a new regression in the release; base does not have it. On a slow load of a product page that has no pre-built file, the release keeps the homepage stand-in (the outfits hero 'Softly, slowly, worn.' and 'SHOP THE COLLECTION') on screen under the live header u\u2026",
+   "promptPreview": "You are a QA lead testing a release build of a phone-first jewellery shop in a real browser before it merges. Default to suspicion.\nCreate your own detached worktree: git -C /tmp/mainwt worktree add --detach /tmp/final-rev-b2 a550bd9fa0d216dc75e8a732a1df6b7e0ace78b4 ; ln -s /tmp/mainwt/node_modules /tmp/final-rev-b2/node_modules ; build there with npx vite build (then git -C /tmp/final-rev-b2 chec\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 7,
+   "label": "repair-r2",
+   "phaseIndex": 3,
+   "phaseTitle": "Repair",
+   "agentId": "a42b28dcdf674f4d6",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397962963,
+   "lastProgressAt": 1793397962963,
+   "cached": true,
+   "resultPreview": "{\"head\":\"ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342\",\"items\":[{\"issue\":\"A2-1\",\"status\":\"not-fixed\",\"commit\":\"de55688\",\"detail\":\"This is out of bounds, so I held it rather than fixed it. index.html initialises the Meta Pixel with no fbq('set','autoConfig',false) (grep finds no autoConfig in index.html or src/lib/pixel.ts). That means the pixel's automatic Microdata event reads each product page's JSO\u2026",
+   "promptPreview": "You are a senior engineer repairing a release branch after review. Work in /tmp/mainwt on ship-main (HEAD a550bd9fa0d216dc75e8a732a1df6b7e0ace78b4).\nReviewers reproduced these issues (JSON):\n[\n {\n  \"id\": \"A2-1\",\n  \"severity\": \"minor\",\n  \"outOfBounds\": true,\n  \"file\": \"src/hooks/useLiveJewellery.ts\",\n  \"summary\": \"d01e444 changes the Product JSON-LD `sku` that every jewellery page emits. Pages that\u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 8,
+   "label": "review-code-r3",
+   "phaseIndex": 2,
+   "phaseTitle": "Review",
+   "agentId": "ab183f39571cca944",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397963011,
+   "queuedAt": 1793397962964,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "ship",
+   "promptPreview": "You are a skeptical staff engineer doing the final pre-merge code review of a release branch for a phone-first jewellery shop. Default to suspicion: your job is to find real defects, not to approve.\nCreate your own detached worktree: git -C /tmp/mainwt worktree add --detach /tmp/final-rev-a3 ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342 ; then ln -s /tmp/mainwt/node_modules /tmp/final-rev-a3/node_modul\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793398721647,
+   "tokens": 196148,
+   "toolCalls": 58,
+   "durationMs": 758635,
+   "resultPreview": "{\"verdict\":\"ship\",\"issues\":[],\"checked\":\"Worktree /tmp/final-rev-a3 at ddb72b7, plus a second throwaway worktree /tmp/final-rev-a3-base at 6a4593e used only to build the base. Both are removed. Nothing was committed, pushed or installed. Every build was a plain `npx vite build`, followed each time by `git checkout -q -- supabase/functions/mcp/index.ts`. The prerender script was never run. Scratch \u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 9,
+   "label": "review-browser-r3",
+   "phaseIndex": 2,
+   "phaseTitle": "Review",
+   "agentId": "aedaeced445a4d3b0",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793397963011,
+   "queuedAt": 1793397962965,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "ship",
+   "promptPreview": "You are a QA lead testing a release build of a phone-first jewellery shop in a real browser before it merges. Default to suspicion.\nCreate your own detached worktree: git -C /tmp/mainwt worktree add --detach /tmp/final-rev-b3 ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342 ; ln -s /tmp/mainwt/node_modules /tmp/final-rev-b3/node_modules ; build there with npx vite build (then git -C /tmp/final-rev-b3 chec\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793399609197,
+   "tokens": 245055,
+   "toolCalls": 61,
+   "durationMs": 1645699,
+   "resultPreview": "{\"verdict\":\"ship\",\"issues\":[{\"id\":\"B3-1\",\"severity\":\"minor\",\"summary\":\"PRE-EXISTING (base 6a4593e has the same timings): when a new piece has no pre-built page (/jewellery/star-point-band), the homepage shows for about 5 s before the app starts. The guard's own 10 s timer takes the mark off first. main.tsx's 8 s start limit only begins once the entry chunk has run, about 7 s into the load, so the \u2026"
+  },
+  {
+   "type": "workflow_agent",
+   "index": 10,
+   "label": "repair-r3",
+   "phaseIndex": 3,
+   "phaseTitle": "Repair",
+   "agentId": "a0f437f822a13bf9b",
+   "model": "claude-opus-5-5",
+   "state": "done",
+   "startedAt": 1793399611497,
+   "queuedAt": 1793399611467,
+   "attempt": 1,
+   "lastToolName": "StructuredOutput",
+   "lastToolSummary": "ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342",
+   "promptPreview": "You are a senior engineer repairing a release branch after review. Work in /tmp/mainwt on ship-main (HEAD ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342).\nReviewers reproduced these issues (JSON):\n[\n {\n  \"id\": \"B3-1\",\n  \"severity\": \"minor\",\n  \"summary\": \"PRE-EXISTING (base 6a4593e has the same timings): when a new piece has no pre-built page (/jewellery/star-point-band), the homepage shows for about 5 s\u2026",
+   "promptFramed": true,
+   "lastProgressAt": 1793399760689,
+   "tokens": 99869,
+   "toolCalls": 14,
+   "durationMs": 149191,
+   "resultPreview": "{\"head\":\"ddb72b7f585faa9e9eb6da0e2f57e8fe4ff6b342\",\"items\":[{\"issue\":\"B3-1\",\"status\":\"not-fixed\",\"detail\":\"Left as is. Base 6a4593e already has this, and this branch does not make it worse. Two settings cause it, and both are the same on base and on ship-main. The guard script's own timer takes the mark off after 10 s: `setTimeout(...removeAttribute...,10000)` is at line 27 of fallbackGuard.ts on \u2026"
+  }
+ ],
+ "totalTokens": 541072,
+ "totalToolCalls": 133
+}

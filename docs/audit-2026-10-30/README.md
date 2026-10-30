@@ -2,6 +2,41 @@
 
 Eight auditors (pages, buttons, code, tracking, SEO, commerce, speed, content) checked nairaflore.com and origin/main 6a4593e. Every finding was reproduced by an independent verifier and challenged by a skeptic: 101 distinct findings, 91 confirmed, 10 rejected. Full evidence: audit-result.json in this folder.
 
+## Status after the 30 Oct ship (main ddb72b7)
+
+The safe fixes went to main on 30 Oct as 6a4593e..ddb72b7. Before shipping, three rounds of independent review ran: a code review plus a phone browser test against the old build on Pixel 7, iPhone 13 and 1440. Results: 643 tests pass, the type check is clean, and lint shows its one documented warning. Buy Now payloads are identical to the old build. pixel.ts, PixelEvents, fastrr.ts, promo.ts, index.html, the theme files and supabase/ are unchanged. **Nothing is live until the owner presses Publish in Lovable.**
+
+- **Fixed (41):** C03 C04 C07 C08 C12 C13 C16 C18 C22 C28 C31 C32 C33 C34 C36 C39 C40 C42 C43 C44 C46 C48 C49 C50 C51 C52 C53 C54 C56 C67 C68 C71 C72 C77 C78 C79 C80 C81 C85 C86 C90.
+- **Partly fixed (5):**
+  - C23: pages that are not real pages now say noindex in the browser. A true 404 status needs the host.
+  - C24: Minimal and Office Wear list only their own pieces. The 8 duplicate topic landings now name the broader page as canonical.
+  - C30: the bag was measured but is still slow to open, because of the dialog library's cost.
+  - C41: the footer and secondary links are now 44px. The announcement-bar link is still 34px.
+  - C73: invalid and Army Postal Service pincodes are now refused. There is still no per-region delivery table.
+- **Skipped (1):** C69. Shop All's pre-built HTML shows 30 cards, because the grid renders 30.
+- **Built, tested, then held for the owner (reverted on main; each one can come back with `git revert <hold commit>`):**
+
+| Finding | What the fix does | Why it waits | Hold commit |
+|---|---|---|---|
+| C00 | Buy Now on a piece already in the bag checks out that line instead of adding a second unit | Changes the Fastrr hand-off (quantity and coupon) and skips an AddToCart event | 8d85e6d |
+| C01 (build side) | The publish-time capture browser stops sending fake ViewContent to Meta | Changes what CAPI receives | 63ed576 |
+| C02 | Bag lines take Shopify's current price | Changes InitiateCheckout value | 0cdea53 |
+| C09, C38 | Old Shopify addresses land on their real pages, with the query kept | Changes ad and landing URLs and the PageView URL | 55857e9 |
+| C17 | The error panel's "Browse the collection" link recovers the app | The page reached from the panel loses its PageView | 258ff12 |
+| C25 | First paint shows Shopify's prices and sold-out state; sold-out adds count as not added | Changes the AddToCart and ViewContent values (overlaps C57) | 0e0ed4b |
+| C27 | Adjustable rings follow Shopify's sold-out flag | Decides whether checkout is offered; contradicts the 25 Oct ring rule | a550bd9 (the C28 lead-time copy stays) |
+| C47 | Bag Undo waits for an in-flight removal | Changes which lines reach InitiateCheckout and the Buy Now path | bc8b6fd |
+| C65 | Product structured data carries Shopify's SKU | The Pixel's automatic Microdata event reads it | de55688 |
+
+Already on the old build too, found by the final review, not changed:
+- A piece listed after the last Publish, opened on a slow phone, shows the homepage for about 5 s. The cause is that the guard's 10 s timer and main.tsx's 8 s start limit don't line up. This can be fixed in code; it is a follow-up.
+- /index.html shows "Coming soon".
+- src/pages/ShopAll.tsx is dead code.
+
+Evidence: fixes/fix-workflow-result.json (the fix round), fixes/final-review-result.json and fixes/final-review-result-r3.json (the three review rounds), and fixes/ship-main.bundle.
+
+## Original findings
+
 C01 is split: the build-side part (the prerender capture browser posting to meta-capi) is in the fix-now batch; the in-browser gate and the server host check wait for owner review. C00 is split the same way: the duplicate unit is fixed now; whether Buy Now should hand off only the viewed piece is an owner question.
 
 ## Fixing now (safe code fix, shipping to main after tests)

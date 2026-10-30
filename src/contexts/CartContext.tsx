@@ -14,7 +14,7 @@ import { applyPromoToCheckoutUrl, discountedSubtotal, getPromoCode, resolveCartD
 import { SHIPPING_CHARGE } from "@/lib/serviceability";
 import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
-import { cartKeyOf, findCartLine } from "@/lib/cartLines";
+import { cartKeyOf, findCartLine, linePrice, withShopifyPrice } from "@/lib/cartLines";
 import { setClarityTag } from "@/lib/clarity";
 import { withSessionUtm } from "@/lib/landingUtm";
 
@@ -178,7 +178,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         commitCart({
           cartId: result.cartId,
           checkoutUrl: result.checkoutUrl,
-          items: [{ ...item, quantity: result.quantity, lineId: result.lineId }],
+          items: [withShopifyPrice({ ...item, quantity: result.quantity, lineId: result.lineId }, result.price)],
         });
         return result.checkoutUrl;
       }
@@ -197,7 +197,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             ...current,
             checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
             items: current.items.map((cartItem) =>
-              keyOf(cartItem) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
+              keyOf(cartItem) === key ? withShopifyPrice({ ...cartItem, quantity: syncedQuantity }, result.price) : cartItem
             ),
           }));
           return committed.checkoutUrl;
@@ -222,7 +222,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         // An orphaned local row (no lineId) for the same piece would double-count.
         items: [
           ...current.items.filter((cartItem) => keyOf(cartItem) !== key),
-          { ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null },
+          withShopifyPrice({ ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null }, result.price),
         ],
       }));
       return committed.checkoutUrl;
@@ -327,7 +327,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         commitCart((current) => ({
           ...current,
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-          items: current.items.map((cartItem) => (keyOf(cartItem) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem)),
+          items: current.items.map((cartItem) => (keyOf(cartItem) === key ? withShopifyPrice({ ...cartItem, quantity: syncedQuantity }, result.price) : cartItem)),
         }));
       }
     } catch (error) {
@@ -346,8 +346,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
    * drift: lines added in an older session (or on another device) stayed on the
    * Shopify cart and reappeared at checkout even though the drawer looked empty.
    * We now make Shopify match exactly what the drawer shows — stale server lines
-   * are deleted, quantities are pulled from Shopify, and local rows whose line no
-   * longer exists are dropped.
+   * are deleted, quantities and prices are pulled from Shopify, and local rows
+   * whose line no longer exists are dropped.
    */
   const syncCart = useCallback(async () => {
     const latest = loadCart();
@@ -382,7 +382,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const serverById = new Map(serverLines.map((line) => [line.id, line]));
       const reconciled = latest.items
         .filter((item) => item.lineId && serverById.has(item.lineId))
-        .map((item) => ({ ...item, quantity: serverById.get(item.lineId!)!.quantity }));
+        .map((item) => {
+          const line = serverById.get(item.lineId!)!;
+          return withShopifyPrice({ ...item, quantity: line.quantity }, linePrice(line));
+        });
 
       if (addBegan()) return;
       if (reconciled.length === 0) {
@@ -582,7 +585,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const committed = commitCart((current) => ({
         ...current,
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-        items: current.items.map((cartItem) => (keyOf(cartItem) === key ? { ...cartItem, quantity: result.quantity ?? cartItem.quantity } : cartItem)),
+        items: current.items.map((cartItem) => (keyOf(cartItem) === key ? withShopifyPrice({ ...cartItem, quantity: result.quantity ?? cartItem.quantity }, result.price) : cartItem)),
       }));
       sayIfFewer(line.quantity);
       return committed.checkoutUrl;
@@ -629,7 +632,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         toast.error("Could not open checkout. Please try again.");
         return;
       }
-      await openCheckout(own.checkoutUrl, { items: [{ ...line, quantity: own.quantity, lineId: own.lineId }], cartId: own.cartId });
+      await openCheckout(own.checkoutUrl, { items: [withShopifyPrice({ ...line, quantity: own.quantity, lineId: own.lineId }, own.price)], cartId: own.cartId });
       return;
     }
     await openCheckout(url);

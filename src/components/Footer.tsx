@@ -125,9 +125,12 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.label}>
+            {/* 44px to the thumb, 14px to the eye: padding on an inline link
+                widens what it catches without moving a line (the column's
+                37px pitch is unchanged; neighbours' padding meets in the gaps). */}
             <Link
               to={link.to}
-              className="font-cormorant text-[14px] transition-colors duration-200"
+              className="-mx-2 px-2 py-[15px] font-cormorant text-[14px] transition-colors duration-200"
               style={{ color: CREAM_MUTED }}
               onMouseEnter={(e) => (e.currentTarget.style.color = CREAM)}
               onMouseLeave={(e) => (e.currentTarget.style.color = CREAM_MUTED)}
@@ -176,11 +179,11 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
               <NairaWordmark still className="w-[88px] brightness-0 invert" />
             </Link>
             <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5">
-              <Link to="/contact" className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
+              <Link to="/contact" className="-mx-1 inline-flex min-h-[44px] items-center px-1 font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
                 Contact Us
               </Link>
               {compactPolicyLinks.map((link) => (
-                <Link key={link.label} to={link.to} className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
+                <Link key={link.label} to={link.to} className="-mx-1 inline-flex min-h-[44px] items-center px-1 font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
                   {link.label}
                 </Link>
               ))}
@@ -332,9 +335,11 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
           >
             {popularSearches.map(({ label, to }, i, arr) => (
               <span key={label}>
+                {/* The same inline padding, as far as these 23px lines allow
+                    without one line's link covering the next line's words. */}
                 <Link
                   to={to}
-                  className="transition-colors duration-200 hover:opacity-100"
+                  className="-mx-2 px-2 py-1 transition-colors duration-200 hover:opacity-100"
                   style={{ color: CREAM_FAINT }}
                 >
                   {label}

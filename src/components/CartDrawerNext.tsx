@@ -126,7 +126,10 @@ export const BagReturns = ({
     to="/exchange-return-policy"
     onClick={onLeave}
     data-returns
-    className="mt-3 flex items-center justify-center gap-1.5 text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
+    /* A 44px target round a 17px line: 11px of padding up (the 12px gap under
+       Checkout, so it never takes that button's taps) and 16px down, each
+       taken back from the margin so nothing moves. */
+    className="-mb-4 mt-px flex items-center justify-center gap-1.5 pb-4 pt-[11px] text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
   >
     <Undo2 size={12} strokeWidth={1.6} className="text-nf-gold-text" aria-hidden="true" />
     Easy 7-day exchange &amp; returns

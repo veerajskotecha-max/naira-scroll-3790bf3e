@@ -233,7 +233,9 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           height={360}
         />
       </Link>
-      <Link to={to} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
+      {/* A 44px target over the same two-line box: 5px of padding each side,
+          taken back from the margins, so nothing below moves. */}
+      <Link to={to} className="-mb-[5px] mt-[3px] line-clamp-2 min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
         {piece.name}
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">

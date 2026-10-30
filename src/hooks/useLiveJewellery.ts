@@ -3,9 +3,8 @@ import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
 import { variantFields } from "@/lib/variants";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { descriptiveAlts, PACKAGING, SIZE_GUIDE } from "@/lib/galleryAlt";
 
-/** A listing's size guide photo: alt text or file name says "size guide". */
-const SIZE_GUIDE = /size[-_ ]?guide/i;
 const isSizeGuide = (edge: { node: { url: string; altText: string | null } }) =>
   SIZE_GUIDE.test(`${edge.node.url} ${edge.node.altText ?? ""}`);
 
@@ -19,7 +18,7 @@ const productImagesFirst = (node: ShopifyProductNode): string[] =>
       index,
       rank: isSizeGuide(edge)
         ? 2
-        : /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton)/i.test(`${edge.node.url} ${edge.node.altText ?? ""}`)
+        : PACKAGING.test(`${edge.node.url} ${edge.node.altText ?? ""}`)
           ? 1
           : 0,
     }))
@@ -96,6 +95,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     image: gallery[0] ?? piece.image,
     cover: node.leadImage,
     gallery,
+    galleryAlt: descriptiveAlts(node.title || piece.name, node.images.edges),
     sizeGuide: sizeGuideOf(node),
     description: description || piece.description,
     /* The Details panel reads the listing too: a bundled piece kept its own
@@ -277,6 +277,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     image: images[0] ?? "",
     cover: node.leadImage,
     gallery: images,
+    galleryAlt: descriptiveAlts(node.title, node.images.edges),
     sizeGuide: sizeGuideOf(node),
     blurb: parsed.blurb,
     description,

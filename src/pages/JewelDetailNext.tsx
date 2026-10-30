@@ -6,6 +6,7 @@ import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { cardCover } from "@/lib/cardCover";
+import { galleryAlt } from "@/lib/galleryAlt";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
@@ -723,6 +724,13 @@ const JewelDetailNext = () => {
   const HERO_WIDTHS = [480, 600, 720, 800, 900, 1000, 1200, 1400];
   const HERO_SIZES = "(max-width: 1024px) 100vw, 50vw";
   const prerendering = typeof navigator !== "undefined" && navigator.webdriver;
+  /* A photo's button names it the way its alt does (lib/galleryAlt): a phone
+     screen reader reads the button, not the photo inside it. */
+  const openLabel = (img: string, i: number) => {
+    const alt = galleryAlt(piece, img, i);
+    const label = `Open ${piece.name} image ${i + 1} full screen`;
+    return alt === `${piece.name} view ${i + 1}` ? label : `${label}: ${alt}`;
+  };
 
   const MobileGallery = (
     <div className="relative">
@@ -738,14 +746,14 @@ const JewelDetailNext = () => {
             onClick={() => openLightbox(i)}
             className="block w-full shrink-0 cursor-zoom-in snap-center bg-nf-ivory-deep p-0"
             style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
-            aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+            aria-label={openLabel(img, i)}
           >
             {(i === 0 || !prerendering) && (
               <img
                 src={shopifyImage(img, 900)}
                 srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [480, 720, 900, 1200]) || undefined}
                 sizes={i === 0 ? HERO_SIZES : "100vw"}
-                alt={`${piece.name} view ${i + 1}`}
+                alt={galleryAlt(piece, img, i)}
                 className="h-full w-full object-cover"
                 width={900}
                 height={1200}
@@ -806,14 +814,14 @@ const JewelDetailNext = () => {
               onClick={() => openLightbox(i)}
               className={`relative block min-h-0 w-full cursor-zoom-in overflow-hidden bg-nf-ivory-deep p-0 ${count === 3 && i === 0 ? "col-span-2" : ""}`}
               style={{ height: "100%" }}
-              aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+              aria-label={openLabel(img, i)}
             >
               {i === 0 ? (
                 <img
                   src={shopifyImage(img, 900)}
                   srcSet={shopifySrcSet(img, HERO_WIDTHS) || undefined}
                   sizes={HERO_SIZES}
-                  alt={`${piece.name} view ${i + 1}`}
+                  alt={galleryAlt(piece, img, i)}
                   className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
                   width={1000}
                   height={1000}
@@ -830,7 +838,7 @@ const JewelDetailNext = () => {
                   <source media="(min-width: 768px)" srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || shopifyImage(img, 1000)} sizes={HERO_SIZES} />
                   <img
                     src={BLANK_PIXEL}
-                    alt={`${piece.name} view ${i + 1}`}
+                    alt={galleryAlt(piece, img, i)}
                     className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
                     width={1000}
                     height={1000}
@@ -1353,6 +1361,7 @@ const JewelDetailNext = () => {
 
       <ImageLightbox
         images={images}
+        alts={images.map((img, i) => galleryAlt(piece, img, i))}
         name={piece.name}
         open={lightboxOpen}
         initialIndex={lightboxIndex}

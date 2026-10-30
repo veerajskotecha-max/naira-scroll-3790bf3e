@@ -7,6 +7,8 @@ const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 interface ImageLightboxProps {
   images: string[];
+  /** Alt text per image; without it, "<name>, view N of M". */
+  alts?: string[];
   /** Piece or product name, used for labels and alt text. */
   name?: string;
   open: boolean;
@@ -26,7 +28,7 @@ const controlClasses =
  * Focus trap, Escape and backdrop close are handled by Radix Dialog; closing
  * gives focus back to the gallery photo that opened it (useReturnFocus).
  */
-const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpenChange }: ImageLightboxProps) => {
+const ImageLightbox = ({ images, alts, name = "Product", open, initialIndex = 0, onOpenChange }: ImageLightboxProps) => {
   const count = images.length;
   const [index, setIndex] = React.useState(initialIndex);
   const [zoomed, setZoomed] = React.useState(false);
@@ -152,7 +154,7 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
             <img
               key={index}
               src={images[index]}
-              alt={`${name}, view ${index + 1} of ${count}`}
+              alt={alts?.[index] ?? `${name}, view ${index + 1} of ${count}`}
               draggable={false}
               onClick={toggleZoomAtPoint}
               className={`max-h-full max-w-full select-none object-contain transition-transform duration-500 ${

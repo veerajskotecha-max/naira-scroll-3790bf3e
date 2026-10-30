@@ -50,6 +50,9 @@ export interface JewelPiece {
   /** The listing's lead product photo in Shopify, for cards (see cardCover). */
   cover?: string;
   gallery?: string[];
+  /** Shopify's alt text for gallery photos that have a real description,
+      keyed by URL without its query (see lib/galleryAlt). */
+  galleryAlt?: Record<string, string>;
   /** The listing's size guide photo (also the last gallery photo), shown in Details. */
   sizeGuide?: string;
   blurb: string;

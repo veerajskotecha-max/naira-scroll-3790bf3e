@@ -28,7 +28,8 @@ import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/rin
 import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
-import { productParams, trackPixel } from "@/lib/pixel";
+import { trackPixel } from "@/lib/pixel";
+import { viewContentParams } from "@/lib/viewContent";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
@@ -463,16 +464,9 @@ const JewelDetailNext = () => {
 
   useEffect(() => {
     if (!piece) return;
-    trackPixel(
-      "ViewContent",
-      productParams({
-        id: piece.handle,
-        variantId: piece.variantId,
-        name: piece.name,
-        price: piece.price,
-        category: piece.category,
-      }),
-    );
+    /* The variant the page opens on, worked out here rather than read from
+       `variant`, which a sibling effect may still be resetting on this render. */
+    trackPixel("ViewContent", viewContentParams(piece, colourParam));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- once per piece: live data replacing it must not fire ViewContent again
   }, [piece?.handle]);
 

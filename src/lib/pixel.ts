@@ -19,6 +19,8 @@ type Fbq = (...args: unknown[]) => void;
 declare global {
   interface Window {
     fbq?: Fbq;
+    /** Set by index.html: true only on nairaflore.com and www.nairaflore.com. */
+    __nairaProd?: boolean;
   }
 }
 
@@ -156,8 +158,14 @@ const newEventId = (): string => {
 const CAPI_URL = `${import.meta.env.VITE_SUPABASE_URL ?? ""}/functions/v1/meta-capi`;
 const CAPI_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 
-/** Mirrors one event to Meta's Conversions API through our own function. */
+/** Mirrors one event to Meta's Conversions API through our own function.
+
+    Only from the real shop, the same gate index.html puts on fbevents.js. The
+    browser copy was gated but this one was not, so every localhost run, every
+    Lovable preview and the publish build's capture browser (127.0.0.1) sent
+    ViewContent to Meta through our relay, where it reads as a shopper. */
 const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<string, unknown>) => {
+  if (typeof window === "undefined" || window.__nairaProd !== true) return;
   if (!CAPI_URL.startsWith("http") || !SERVER_EVENTS.has(event)) return;
   try {
     void fetch(CAPI_URL, {

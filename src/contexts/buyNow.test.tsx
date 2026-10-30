@@ -68,3 +68,47 @@ describe("Buy Now on a piece already in the bag", () => {
     expect(result.current.items.map((item) => [item.size ?? "", item.quantity])).toEqual([["", 1], ["US 7", 1]]);
   });
 });
+
+/* The outfit page has its own quantity stepper and passes it to Buy Now. With
+   the outfit already in the bag, Buy Now handed off the bag's 1 and ignored
+   the 3 the shopper picked. */
+describe("Buy Now with a quantity, on a piece already in the bag", () => {
+  const outfit = { ...piece, id: "lehenga", variantId: "v-lehenga", name: "Lehenga", size: "M" };
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "c1", checkoutUrl: "https://example.com/checkout", items: [{ ...outfit, quantity: 1, lineId: "l1" }] }));
+  });
+  const sent = () => mocks.start.mock.calls[0]?.[0]?.map((line: { variantId: string; quantity: number }) => [line.variantId, line.quantity]);
+
+  it("raises the line to the quantity picked, then hands it off", async () => {
+    mocks.update.mockResolvedValueOnce({ success: true, quantity: 3, checkoutUrl: "https://example.com/checkout" });
+    mocks.start.mockResolvedValueOnce(true);
+    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
+    await act(async () => { await result.current.buyNow(outfit, 3); });
+    expect(mocks.update).toHaveBeenCalledWith("c1", "l1", 3);
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(sent()).toEqual([["v-lehenga", 3]]);
+    expect(result.current.items.map((item) => item.quantity)).toEqual([3]);
+    // Only the two pieces really added are reported as added.
+    expect(mocks.track).toHaveBeenCalledWith("AddToCart", expect.objectContaining({ quantity: 2 }));
+  });
+
+  it("hands off the bag as it is when it already holds that many", async () => {
+    localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "c1", checkoutUrl: "https://example.com/checkout", items: [{ ...outfit, quantity: 3, lineId: "l1" }] }));
+    mocks.start.mockResolvedValueOnce(true);
+    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
+    await act(async () => { await result.current.buyNow(outfit, 2); });
+    expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.track).not.toHaveBeenCalledWith("AddToCart", expect.anything());
+    expect(sent()).toEqual([["v-lehenga", 3]]);
+  });
+
+  it("does not hand off when the bag cannot be raised", async () => {
+    mocks.update.mockRejectedValueOnce(new Error("Network"));
+    const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
+    await act(async () => { await result.current.buyNow(outfit, 3); });
+    expect(mocks.start).not.toHaveBeenCalled();
+    expect(result.current.items.map((item) => item.quantity)).toEqual([1]);
+  });
+});

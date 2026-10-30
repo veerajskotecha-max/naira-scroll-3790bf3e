@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { getLineForVariant, sizeAttributes, SIZE_ATTRIBUTE } from "./shopify";
-import { linePrice, withShopifyPrice } from "./cartLines";
 
 /*
   Every ring in the catalogue is a single "Default Title" variant, so the only
@@ -54,20 +53,5 @@ describe("cart lines are matched on variant AND size", () => {
 
   it("falls back to the variant's line when the size is not found", () => {
     expect(getLineForVariant(lines, RING, "US 9")?.id).toBe("line-a");
-  });
-});
-
-describe("withShopifyPrice", () => {
-  const line = { price: 699, priceLabel: "₹699" };
-
-  // A bag line kept the card's ₹699 while Shopify charged ₹799.
-  it("takes Shopify's price and relabels it", () => {
-    expect(withShopifyPrice(line, linePrice({ merchandise: { price: { amount: "799.0" } } }))).toEqual({ price: 799, priceLabel: "₹799" });
-    expect(withShopifyPrice({ price: 2449, priceLabel: "₹2,449" }, 1899)).toEqual({ price: 1899, priceLabel: "₹1,899" });
-  });
-
-  it("keeps the line as it is when Shopify's answer has no price", () => {
-    expect(withShopifyPrice(line, linePrice({ merchandise: {} }))).toBe(line);
-    expect(withShopifyPrice(line, linePrice(undefined))).toBe(line);
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -9,7 +9,6 @@ import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { Helmet } from "react-helmet-async";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
-import CustomerReviews from "@/components/CustomerReviews";
 import JudgeMeReviews, { judgeMeEnabled } from "@/components/JudgeMeReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
@@ -23,6 +22,11 @@ import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { jewellery as staticJewellery } from "@/data/jewellery";
 import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import ReelPeek from "@/components/reels/ReelPeek";
+
+/* Below the gallery and details, so it waits for its own download, as on the
+   jewellery page: imported with the page it put the reviews, their data and
+   their dialog (~26 KB gzip) ahead of the first render of every outfit page. */
+const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 
 /* Ad clicks land on /products/<handle>. For a handle we already know is
    jewellery we hop to the real page on the first render, before the Shopify
@@ -274,7 +278,9 @@ const ProductDetail = () => {
       {judgeMeEnabled ? (
         <JudgeMeReviews productId={product.id} productTitle={product.title} />
       ) : (
-        <CustomerReviews productName={product.title} variant={isJewellery ? "jewellery" : "apparel"} />
+        <Suspense fallback={<div className="min-h-[240px]" aria-hidden="true" />}>
+          <CustomerReviews productName={product.title} variant={isJewellery ? "jewellery" : "apparel"} />
+        </Suspense>
       )}
       <MaterialsCraft />
       <YouMayAlsoLike currentHandle={product.handle} />

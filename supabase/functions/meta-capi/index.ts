@@ -12,6 +12,7 @@
  */
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3";
+import { isShopPage } from "./guard.ts";
 
 const PIXEL_ID = "1232524215695667";
 const GRAPH = `https://graph.facebook.com/v21.0/${PIXEL_ID}/events`;
@@ -63,6 +64,17 @@ Deno.serve(async (req) => {
     });
   }
   const body = parsed.data;
+
+  /* Only events from the shop's own pages. The browser gate (window.__nairaProd)
+     keeps previews, localhost and the publish build's capture browser from
+     sending; this also covers an old cached bundle and any other caller.
+     A 200, not an error: a skipped measurement must never trouble a page. */
+  if (!isShopPage(body.event_source_url)) {
+    return new Response(JSON.stringify({ skipped: "not_shop" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
+  }
 
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

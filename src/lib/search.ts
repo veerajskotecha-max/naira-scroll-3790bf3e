@@ -53,6 +53,16 @@ export const CATEGORY_WORDS: Record<string, JewelCategory> = {
   bracelet: "Bracelets",
 };
 
+/* Words shoppers split in two or write with a plural marker: "ear ring",
+   "ear-rings", "earring(s)", "neck lace". Joined before the query is cut into
+   words: "ear ring" used to be read as "ear" + "ring", which no piece has
+   both of, and taken for the Rings category. */
+const joinSplitWords = (text: string) =>
+  text
+    .replace(/\(s\)/g, "s")
+    .replace(/\bear[\s-]+ring/g, "earring")
+    .replace(/\bneck[\s-]+lace/g, "necklace");
+
 export interface ParsedQuery {
   terms: string[];
   max: number | null;
@@ -63,7 +73,7 @@ export interface ParsedQuery {
 
 /** "under 1500", "below ₹1,500", "< 1500", "1500 below", "over 2000", "2000+" */
 export const parseQuery = (query: string): ParsedQuery => {
-  let text = normalise(query).replace(/₹/g, " ").replace(/(\d),(?=\d{3}\b)/g, "$1");
+  let text = joinSplitWords(normalise(query)).replace(/₹/g, " ").replace(/(\d),(?=\d{3}\b)/g, "$1");
   const price: { max: number | null; min: number | null } = { max: null, min: null };
   const take = (re: RegExp, bound: "max" | "min") => {
     text = text.replace(re, (_m, n: string) => {

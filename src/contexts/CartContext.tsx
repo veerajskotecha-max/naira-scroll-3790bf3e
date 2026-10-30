@@ -79,6 +79,10 @@ const loadCart = (): StoredCart => {
 const keyOf = cartKeyOf;
 const findLine = findCartLine;
 
+/** What one add did: the checkout it leaves, and how many pieces Shopify
+    really put in the bag (it caps a line at its stock without an error). */
+type AddResult = { checkoutUrl: string | null; added: number };
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [storedCart, setStoredCart] = useState<StoredCart>(loadCart);
   const [isDrawerOpen, setDrawerOpenState] = useState(false);
@@ -149,7 +153,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     commitCart(emptyCart);
   }, [commitCart]);
 
-  const addItemToCart = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1): Promise<string | null> => {
+  const addItemToCart = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1): Promise<AddResult | null> => {
     /* Said in the bag when it is open, as it now is for every Add on a
        product page; a toast otherwise. */
     const fail = (message: string) => {
@@ -180,7 +184,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           checkoutUrl: result.checkoutUrl,
           items: [withShopifyPrice({ ...item, quantity: result.quantity, lineId: result.lineId }, result.price)],
         });
-        return result.checkoutUrl;
+        return { checkoutUrl: result.checkoutUrl, added: result.quantity };
       }
 
       if (existing?.lineId) {
@@ -200,7 +204,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
               keyOf(cartItem) === key ? withShopifyPrice({ ...cartItem, quantity: syncedQuantity }, result.price) : cartItem
             ),
           }));
-          return committed.checkoutUrl;
+          return { checkoutUrl: committed.checkoutUrl, added: syncedQuantity - existing.quantity };
         }
         /* Shopify no longer has the bag's line for this piece, so its row is
            stale (the next sync would drop it). Drop it now and add the piece
@@ -225,7 +229,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           withShopifyPrice({ ...item, quantity: result.quantity ?? quantity, lineId: result.lineId ?? null }, result.price),
         ],
       }));
-      return committed.checkoutUrl;
+      return { checkoutUrl: committed.checkoutUrl, added: result.quantity ?? quantity };
     } catch (error) {
       console.error("Failed to add Shopify item", error);
       const said = error instanceof Error ? error.message : "";
@@ -237,20 +241,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [clearCart, commitCart]);
 
-  /* Meta Pixel AddToCart — only on a successful add (a checkout URL came back). */
+  /* Meta Pixel AddToCart — only for what Shopify really added. A second tap on
+     the last piece in stock comes back capped, with no error: the bag keeps
+     what it had, and Meta used to hear of a ₹1,899 add all the same. The
+     caller still gets the checkout (Buy Now hands off the bag as it is). */
   const addItem = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
-    const url = await addItemToCart(item, quantity);
-    if (url) {
+    const result = await addItemToCart(item, quantity);
+    const added = Math.min(quantity, result?.added ?? 0);
+    if (result?.checkoutUrl && added > 0) {
       trackPixel("AddToCart", productParams({
         id: item.id,
         variantId: item.variantId,
         name: item.name,
         price: item.price,
         currencyCode: item.currencyCode,
-        quantity,
+        quantity: added,
       }));
     }
-    return url;
+    return result?.checkoutUrl ?? null;
   }, [addItemToCart]);
 
   const removeItem = useCallback(async (id: string, size?: string, variantId?: string) => {

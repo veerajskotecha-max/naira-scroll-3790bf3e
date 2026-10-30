@@ -74,7 +74,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
   const images = productImagesFirst(node);
   const gallery = coverFirst(piece.handle, images.length ? images : piece.gallery);
   // The first buyable variant leads: its price is one the shopper can pay.
-  const { lead, sku, availableForSale, choice } = variantFields(node);
+  const { lead, availableForSale, choice } = variantFields(node);
   const price = lead ? lead.price : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
   const compareAtPrice = lead?.compareAtPrice;
@@ -89,8 +89,6 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     compareAtPrice,
     compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
     variantId: lead?.id ?? piece.variantId,
-    // Shopify's code wins: two hand-authored pieces carried each other's.
-    sku: sku ?? piece.sku,
     availableForSale,
     image: gallery[0] ?? piece.image,
     cover: node.leadImage,
@@ -255,7 +253,7 @@ const listingCopy = (description: string): Partial<JewelPiece> => {
  * Exported so scripts/generate-jewellery-snapshot.ts can run the SAME mapping
  * ahead of time — the PDP's first paint must be what live would have drawn. */
 export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
-  const { lead, sku, availableForSale, choice } = variantFields(node);
+  const { lead, availableForSale, choice } = variantFields(node);
   const price = lead ? lead.price : Math.round(Number(node.priceRange.minVariantPrice.amount));
   const compareAtPrice = lead?.compareAtPrice;
   const images = coverFirst(node.handle, productImagesFirst(node));
@@ -266,7 +264,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     handle: node.handle,
     name: node.title,
     category: guessCategory(node),
-    sku: sku ?? "",
+    sku: "",
     number: String(index + 1).padStart(2, "0"),
     price,
     priceLabel: `₹${price.toLocaleString("en-IN")}`,

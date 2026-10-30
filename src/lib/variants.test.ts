@@ -129,20 +129,6 @@ describe("reading Shopify's variants", () => {
     expect(variantsFromNode(single)[0].options).toEqual({});
     expect(variantFields(single).choice).toEqual({});
   });
-
-  /* fromShopify hard-coded sku "", so 115 product pages served "sku": "" in
-     their structured data although Shopify had every code (prism-riviere-bracelet
-     is B00681C). The code is the lead variant's, beside the lead's price. */
-  it("takes the lead variant's code, and none where Shopify has none", () => {
-    const coded = {
-      ...node,
-      variants: { edges: node.variants.edges.map((e, i) => ({ node: { ...e.node, sku: i ? " YF3558-S " : "YF3558-G" } })) },
-    } as unknown as ShopifyProductNode;
-    expect(variantFields(coded).sku).toBe("YF3558-S");
-    expect(variantFields(node).sku).toBeUndefined();
-    const blank = { ...coded, variants: { edges: coded.variants.edges.map((e) => ({ node: { ...e.node, sku: null } })) } } as unknown as ShopifyProductNode;
-    expect(variantFields(blank).sku).toBeUndefined();
-  });
 });
 
 describe("choosing a variant on the product page", () => {

@@ -689,8 +689,7 @@ const JewelDetailNext = () => {
     image: [piece.image],
     material: piece.materials,
     url: canonical,
-    // An empty "sku" is invalid structured data; a piece without one leaves it out.
-    ...(piece.sku ? { sku: piece.sku } : {}),
+    sku: piece.sku,
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",

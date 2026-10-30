@@ -26,6 +26,17 @@ export const keepPrebuiltPage = (root: Element): void => {
   for (let el = header?.nextElementSibling; el; el = el.nextElementSibling) kept.push(el);
 };
 
+/**
+ * Forgets the kept page once the app's first commit is done. Only that commit
+ * may show it: when the route's code landed between the 8 s start and React's
+ * first render, the page rendered itself and the fallback never mounted (or
+ * the first render failed to the error panel), and the next route that waited
+ * for its code showed the old pre-built page under the live header.
+ */
+export const dropPrebuiltPage = (): void => {
+  kept = [];
+};
+
 /** The routes' Suspense fallback: the kept page the first time, nothing after. */
 export const PrebuiltPage = () => {
   const ref = useCallback((el: HTMLDivElement | null) => {

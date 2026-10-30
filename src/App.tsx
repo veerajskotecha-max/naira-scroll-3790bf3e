@@ -17,7 +17,7 @@ import ShopperPerformance from "./components/ShopperPerformance";
 // whole tree unmounts and the shopper sits on a blank page. See the component.
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { clearFallbackMark } from "./lib/fallbackGuard";
-import { PrebuiltPage } from "./lib/prebuiltPage";
+import { dropPrebuiltPage, PrebuiltPage } from "./lib/prebuiltPage";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
 // a flash on first paint (film grain, page curtain, scroll bloom).
 import FilmGrain from "./components/wow/FilmGrain";
@@ -191,27 +191,34 @@ const AppShell = () => {
   );
 };
 
-const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      {/* No TooltipProvider: nothing uses a tooltip, and the provider alone
-          put Radix Tooltip and Floating UI — about 25 KB gzipped — into the
-          first download of every page. Add it back with the first tooltip. */}
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <ChunkErrorBoundary>
-                <AppShell />
-              </ChunkErrorBoundary>
-            </BrowserRouter>
-          </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
-);
+const App = () => {
+  /* After the first commit, whatever it did with the pre-built page: up here,
+     outside the error boundary, this runs whether the routes' fallback took
+     it, the page rendered at once or the first render failed to the panel.
+     Children commit first, so the fallback has already taken it if it could. */
+  useLayoutEffect(dropPrebuiltPage, []);
+  return (
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        {/* No TooltipProvider: nothing uses a tooltip, and the provider alone
+            put Radix Tooltip and Floating UI — about 25 KB gzipped — into the
+            first download of every page. Add it back with the first tooltip. */}
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ChunkErrorBoundary>
+                  <AppShell />
+                </ChunkErrorBoundary>
+              </BrowserRouter>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  );
+};
 
 export default App;

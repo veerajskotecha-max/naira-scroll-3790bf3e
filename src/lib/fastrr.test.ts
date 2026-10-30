@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { FASTRR_DOMAIN, currentUtmParams, toFastrrProducts } from "./fastrr";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { FASTRR_DOMAIN, currentUtmParams, startFastrrCheckout, toFastrrProducts } from "./fastrr";
 import type { CartItem } from "@/contexts/CartContext";
 
 const item = (over: Partial<CartItem> = {}): CartItem =>
@@ -74,5 +74,45 @@ describe("currentUtmParams", () => {
   it("returns an empty string when there is no campaign", () => {
     expect(currentUtmParams("?x=1")).toBe("");
     expect(currentUtmParams("")).toBe("");
+  });
+});
+
+/**
+ * A ring Shopify does not sell in sizes (an adjustable ring, Droplet Open
+ * Ring) carries the size the shopper picked as the line's Size attribute on
+ * the Shopify cart. Fastrr builds the order from the products it is handed,
+ * so the size never reached a Fastrr order, and two sizes of one ring came
+ * out as two identical lines.
+ */
+describe("the size picked reaches a Fastrr order", () => {
+  const handoff = vi.fn();
+  afterEach(() => {
+    handoff.mockReset();
+    delete window.shiprocketCheckoutEvents;
+  });
+  const bag = [
+    item({ id: "verdant-eternity-band", variantId: "gid://shopify/ProductVariant/47501788938402", name: "Verdant Eternity Band", size: "US 8" }),
+    item({ id: "verdant-eternity-band", variantId: "gid://shopify/ProductVariant/47501788938402", name: "Verdant Eternity Band", size: "US 6", quantity: 2 }),
+    item({ id: "woven-gold-hoops", variantId: "gid://shopify/ProductVariant/47501786906786", name: "Woven Gold Hoops" }),
+  ];
+
+  it("hands each sized line its Size, and the order a note of every size", async () => {
+    window.shiprocketCheckoutEvents = { buyDirect: handoff };
+    expect(await startFastrrCheckout(bag, { couponCode: "BUY3" })).toBe(true);
+    const payload = handoff.mock.calls[0][0];
+    expect(payload.products).toEqual([
+      { variantId: "47501788938402", quantity: 1, customAttributes: { Size: "US 8" } },
+      { variantId: "47501788938402", quantity: 2, customAttributes: { Size: "US 6" } },
+      { variantId: "47501786906786", quantity: 1 },
+    ]);
+    expect(payload.cartAttributes.sizes).toBe("Verdant Eternity Band: US 8; Verdant Eternity Band: US 6 x2");
+  });
+
+  it("adds nothing to a bag with no size", async () => {
+    window.shiprocketCheckoutEvents = { buyDirect: handoff };
+    await startFastrrCheckout([bag[2]]);
+    const payload = handoff.mock.calls[0][0];
+    expect(payload.products).toEqual([{ variantId: "47501786906786", quantity: 1 }]);
+    expect(payload.cartAttributes).not.toHaveProperty("sizes");
   });
 });

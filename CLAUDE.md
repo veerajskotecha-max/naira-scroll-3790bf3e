@@ -230,10 +230,13 @@ rungs, so the second piece out-earns it and the bag names BUY2. (At the old
 rates it tied the 10% rung and the bag named NAIRA10; the charge was the same.)
 Do not flip the tie rule without checking `FRIENDSANDFAMILY` too. Verified in
 the browser at the old 10%/20% rates: 2 pieces = BUY2 -₹430 on ₹4,298;
-3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it, which is why the
-announcement strip carries it (`AnnouncementBar.tsx` alternates scarcity with
-the code). Deciding to auto-apply it is a margin call for the owner, not a
-code change to make unprompted.
+3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it. The announcement
+strip used to carry it, but the owner asked for the code to come off the
+header: `AnnouncementBar.tsx` now runs only the sale, free-shipping and
+limited-batch lines, and `AnnouncementBar.test.tsx` fails if NAIRA10 comes
+back. Do not put it back on the strip unprompted. Deciding to auto-apply it,
+or to show it somewhere else, is a margin call for the owner, not a code
+change to make unprompted.
 
 `FRIENDSANDFAMILY` (20%) BEATS the two-piece rung (15%) and sits under the
 top one (25%). So a one- or two-piece bag holding it is charged 20%, and the

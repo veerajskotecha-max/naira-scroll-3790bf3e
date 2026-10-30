@@ -16,7 +16,7 @@ export type MemberProfile = {
   phone: string | null;
   birthday: string | null;
   city: string | null;
-  /** Member accepted having their email used (scrambled) for ad matching. */
+  /** Member accepted having their email and phone used (scrambled) for ad matching. */
   ad_matching_consent?: boolean | null;
 };
 

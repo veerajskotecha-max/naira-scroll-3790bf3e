@@ -183,9 +183,9 @@ const Auth = () => {
                   className="mt-[3px] h-[14px] w-[14px] accent-[#B0843A]"
                 />
                 <span className="text-[11px] leading-[1.6] text-[#1A1614]/60">
-                  Show me Naira Flore pieces on social media. Your email is scrambled before it leaves
-                  this site and shared with Meta only to match you. You can turn this off any time in
-                  your account.
+                  Show me Naira Flore pieces on social media. Your email, and your phone number if you
+                  add one, are scrambled before they leave this site and shared with Meta only to match
+                  you. You can turn this off any time in your account.
                 </span>
               </label>
             )}

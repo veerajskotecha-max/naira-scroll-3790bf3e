@@ -34,8 +34,7 @@ const jewelleryRedirect = () => ({
     const map = JSON.stringify(Object.fromEntries(handles.map((h) => [h, 1])));
     const script =
       "<script>(function(){try{" +
-      // Also a theme's /collections/<c>/products/<handle>, which old shares carry.
-      "var m=location.pathname.match(/^\\/(?:collections\\/[^\\/]+\\/)?products?\\/([^\\/]+)\\/?$/);if(!m)return;" +
+      "var m=location.pathname.match(/^\\/products?\\/([^\\/]+)\\/?$/);if(!m)return;" +
       `var J=${map};` +
       "if(!Object.prototype.hasOwnProperty.call(J,decodeURIComponent(m[1])))return;" +
       // replaceState, not pushState: Back must return to the ad, not to a URL

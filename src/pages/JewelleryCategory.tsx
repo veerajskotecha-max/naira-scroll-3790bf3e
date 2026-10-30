@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
-import { Link, useParams, Navigate, useLocation } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import PageSEO, { breadcrumbLd, faqLd } from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
@@ -46,7 +46,6 @@ const PROOF = ["Anti-tarnish 18K finish", "7-day returns", "Insured delivery in 
 
 const JewelleryCategory = () => {
   const { slug } = useParams();
-  const { search } = useLocation();
   const landing = categoryBySlug(slug);
   const { jewellery, isLive, isLoading } = useLiveJewellery();
   const [visibleCount, setVisibleCount] = useState(30);
@@ -77,9 +76,7 @@ const JewelleryCategory = () => {
   const linked = useMemo(() => (isLive ? stockedLandings(jewellery, allLandings) : allLandings), [isLive, jewellery]);
   const linkedSlugs = useMemo(() => new Set(linked.map((c) => c.slug)), [linked]);
 
-  /* Any other Shopify collection (sets, shop-all…) lands on the listing; the
-     ad's ?fbclid=/utm_* go with it, or the pixel never sees the click. */
-  if (!landing) return <Navigate to={{ pathname: "/jewellery", search }} replace />;
+  if (!landing) return <Navigate to="/jewellery" replace />;
 
   const url = `${SITE_URL}/jewellery/collections/${landing.slug}`;
   /* A landing that repeats a broader landing's grid names that one, so

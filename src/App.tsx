@@ -168,18 +168,54 @@ const AppShell = () => {
               map onto the real pages instead of dead-ending. */}
           <Route path="/collections" element={<KeepQuery to="/jewellery" />} />
           <Route path="/collections/all" element={<KeepQuery to="/jewellery" />} />
+          {/* Shopify's outfit collections (vendor Naira Flore): they opened the
+              jewellery grid. */}
+          <Route path="/collections/dusk" element={<KeepQuery to="/customize" />} />
+          <Route path="/collections/frontpage" element={<KeepQuery to="/customize" />} />
           <Route path="/collections/:slug" element={<CollectionRoute />} />
+          {/* A Shopify theme opens a piece from a collection at this address, so
+              old shares carry it; it showed Coming Soon even for pieces in stock. */}
+          <Route path="/collections/:slug/products/:id" element={<ProductRoute />} />
           <Route path="/blogs" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog" element={<KeepQuery to="/journal" />} />
           <Route path="/blogs/:blog/:slug" element={<JournalArticle />} />
           <Route path="/jewelry" element={<KeepQuery to="/jewellery" />} />
           <Route path="/jewelry/:handle" element={<PieceRoute />} />
-          <Route path="/pages/about" element={<KeepQuery to="/" />} />
+          {/* Every page the Shopify store publishes (Admin, 30 Oct 2026), then a
+              theme's usual handles. Only contact and faqs used to land. */}
           <Route path="/pages/contact" element={<KeepQuery to="/contact" />} />
+          <Route path="/pages/about-naira" element={<KeepQuery to="/" />} />
+          <Route path="/pages/made-for-you" element={<KeepQuery to="/customize" />} />
+          <Route path="/pages/custom" element={<KeepQuery to="/customize" />} />
+          <Route path="/pages/privacy-policy" element={<KeepQuery to="/privacy" />} />
+          <Route path="/pages/terms" element={<KeepQuery to="/terms" />} />
           <Route path="/pages/faqs" element={<KeepQuery to="/faqs" />} />
+          <Route path="/pages/exchange-return-policy" element={<KeepQuery to="/exchange-return-policy" />} />
+          <Route path="/pages/concepts" element={<KeepQuery to="/concepts" />} />
+          <Route path="/pages/gifting" element={<KeepQuery to="/gifting" />} />
+          <Route path="/pages/shop" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/pages/about" element={<KeepQuery to="/" />} />
+          <Route path="/pages/about-us" element={<KeepQuery to="/" />} />
+          <Route path="/pages/contact-us" element={<KeepQuery to="/contact" />} />
+          <Route path="/pages/faq" element={<KeepQuery to="/faqs" />} />
+          <Route path="/pages/size-guide" element={<KeepQuery to="/journal/ring-size-guide-india" />} />
+          <Route path="/pages/track-order" element={<KeepQuery to="/track-order" />} />
+          <Route path="/apps/track" element={<KeepQuery to="/track-order" />} />
           <Route path="/policies/privacy-policy" element={<KeepQuery to="/privacy" />} />
           <Route path="/policies/terms-of-service" element={<KeepQuery to="/terms" />} />
           <Route path="/policies/refund-policy" element={<KeepQuery to="/exchange-return-policy" />} />
+          <Route path="/policies/shipping-policy" element={<KeepQuery to="/faqs" />} />
+          <Route path="/policies/contact-information" element={<KeepQuery to="/contact" />} />
+          <Route path="/policies/legal-notice" element={<KeepQuery to="/terms" />} />
+          {/* Shopify's own cart, search and customer-account addresses: its
+              checkout links back to /cart, and classic account emails to
+              /account/login. There is no address that opens the bag, so the
+              cart lands on the collection. */}
+          <Route path="/cart" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/cart/add" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/checkout" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/search" element={<KeepQuery to="/jewellery" />} />
+          <Route path="/account/*" element={<KeepQuery to="/auth" />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<CatchAll />} />
         </Routes>

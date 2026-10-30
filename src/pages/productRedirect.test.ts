@@ -68,6 +68,31 @@ describe("the /products -> /jewellery hop", () => {
   });
 });
 
+/* The pre-boot rewrite moves a jewellery address to its page before the pixel
+   and Clarity read the URL. A Shopify theme's /collections/<c>/products/<h>
+   form missed it and showed Coming Soon. */
+describe("the pre-boot rewrite's address pattern", () => {
+  const config = readFileSync(resolve(__dirname, "../../vite.config.ts"), "utf8");
+  const literal = /location\.pathname\.match\(\/(.+?)\/\);if\(!m\)return;/.exec(config)?.[1] ?? "";
+  const pattern = new RegExp(literal.replace(/\\\\/g, "\\"));
+
+  it.each([
+    ["/products/prism-riviere-bracelet", "prism-riviere-bracelet"],
+    ["/product/prism-riviere-bracelet/", "prism-riviere-bracelet"],
+    ["/collections/bracelets/products/prism-riviere-bracelet", "prism-riviere-bracelet"],
+    ["/collections/all/products/cushion-halo-ring", "cushion-halo-ring"],
+  ])("hops %s", (path, handle) => {
+    expect(pattern.exec(path)?.[1]).toBe(handle);
+  });
+
+  it.each(["/jewellery/prism-riviere-bracelet", "/collections/bracelets", "/collections/products/x", "/products"])(
+    "leaves %s alone",
+    (path) => {
+      expect(pattern.test(path)).toBe(false);
+    },
+  );
+});
+
 /* A catalogue or ad link to a piece since unlisted, and the bare /products
    prefix, used to end on "Coming soon" — the one button there went to the
    apparel line. Both must reach the jewellery listing with the ad's query. */

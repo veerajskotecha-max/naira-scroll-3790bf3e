@@ -14,6 +14,14 @@ describe("routeKeyFor", () => {
     expect(routeKeyFor("/journal/how-to-layer")).toBe("JournalArticle");
   });
 
+  /* Load the page a URL really opens: /collections/dusk redirects to the
+     outfits, and preloading the jewellery grid for it would be wasted. */
+  it("finds the page behind Shopify-shaped URLs", () => {
+    expect(routeKeyFor("/collections/bracelets/products/prism-riviere-bracelet")).toBe("ProductDetail");
+    expect(routeKeyFor("/collections/dusk")).toBe("MadeForYou");
+    expect(routeKeyFor("/collections/frontpage")).toBe("MadeForYou");
+  });
+
   it("leaves unknown URLs to render the ordinary way", () => {
     expect(routeKeyFor("/no-such-page")).toBeNull();
     expect(routeKeyFor("/jewellery/a/b/c")).toBeNull();

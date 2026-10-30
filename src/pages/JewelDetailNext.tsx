@@ -23,7 +23,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
-import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { productParams, trackPixel } from "@/lib/pixel";
@@ -562,7 +562,9 @@ const JewelDetailNext = () => {
 
   const wishlisted = isWishlisted(piece.handle);
   const adjustable = isAdjustableRing(piece);
-  const soldOut = piece.availableForSale === false && !adjustable;
+  /* Adjustability is fit, not inventory: an open-back ring Shopify has sold
+     out is reserved like any other piece, not promised as shipping now. */
+  const soldOut = piece.availableForSale === false;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
   const soldCount = recentSoldCount(piece.handle);
@@ -589,6 +591,8 @@ const JewelDetailNext = () => {
   const sizePreorder = isRing && !sizeName && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
   /* ...or a variant Shopify has sold out of. */
   const isPreorder = soldOut || sizePreorder || variantSoldOut;
+  /* ...and has the one lead time its state carries, wherever delivery is said. */
+  const leadTime = preorderLead({ soldOut, variantSoldOut, sizePreorder, size: selectedSize });
   /* A ring Shopify does not sell in sizes is sized from the US list
      (`ringSizes`), and the size rides on the line as a note, a metal chosen or
      not (Droplet Open Ring is sold in gold and silver, not in sizes). */
@@ -1108,15 +1112,16 @@ const JewelDetailNext = () => {
                       ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
-                        : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
+                        : `US ${selectedSize} is a pre-order, ${SIZE_PREORDER_LEAD}.`}
                   </p>
                 )}
               </div>
             )}
-            {variant && (sizeName || variantSoldOut) && (
+            {/* A sold-out piece says its lead time once, under the button. */}
+            {variant && !soldOut && (sizeName || variantSoldOut) && (
               <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
                 {variantSoldOut
-                  ? `${sentence(choiceText(variant.options))} is sold out for now. Reserve it and we will confirm the date on WhatsApp.`
+                  ? `${sentence(choiceText(variant.options))} is sold out for now. ${VARIANT_SOLD_OUT_LEAD}`
                   : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
               </p>
             )}
@@ -1148,7 +1153,7 @@ const JewelDetailNext = () => {
               )}
               <p className="col-span-2 mt-1 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
                 <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                {soldOut ? "Hand-finished for you and shipped within 2 weeks, gift-boxed" : "Gift-ready: every piece arrives in the Naira gift box"}
+                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Gift-ready: every piece arrives in the Naira gift box"}
               </p>
             </div>
 
@@ -1227,7 +1232,7 @@ const JewelDetailNext = () => {
                 <div id="pdp-panel-delivery" className="pb-6">
                   <div className="space-y-2.5 text-[13px] leading-[1.7] text-nf-ink/85">
                     <p>
-                      {arrivesBy && !soldOut ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
+                      {leadTime ? `${leadTime} ` : arrivesBy ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
                       Free insured shipping across India, dispatched from our Mumbai atelier.
                     </p>
                     <p>
@@ -1238,7 +1243,7 @@ const JewelDetailNext = () => {
                       .
                     </p>
                   </div>
-                  <PincodeChecker />
+                  <PincodeChecker preorder={isPreorder} />
                   <a
                     href={isRing ? sizedEnquiryHref : enquiryHref}
                     target="_blank"

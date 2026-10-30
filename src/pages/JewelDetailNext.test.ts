@@ -168,3 +168,29 @@ describe("meta and social descriptions", () => {
     });
   }
 });
+
+/* The page sold an open-back ring Shopify had sold out: Add to cart, "US 6
+   ships now" and a delivery date, while its card on the listing said SOLD
+   OUT. Adjustability is fit, not inventory. */
+describe("stock on the product page and reel cards", () => {
+  it("takes Shopify's sold-out for every piece, adjustable rings included", () => {
+    expect(code).toMatch(/const soldOut = piece\.availableForSale === false;/);
+  });
+
+  it("does the same on both reel cards", () => {
+    for (const file of ["../components/reels/ReelShopNext.tsx", "../components/reels/MobileReelShop.tsx"]) {
+      const reel = readFileSync(resolve(__dirname, file), "utf8");
+      expect(reel).toMatch(/const soldOut = live\?\.availableForSale === false;/);
+      expect(reel).not.toMatch(/isAdjustableRing/);
+    }
+  });
+
+  /* Three lead times sat on one page: 2 weeks under the button, 3–5 working
+     days in Delivery & returns and a dated pincode promise. */
+  it("says one lead time for a piece it cannot ship now", () => {
+    expect(code).toMatch(/const leadTime = preorderLead\(\{ soldOut, variantSoldOut, sizePreorder, size: selectedSize \}\);/);
+    expect(code).toMatch(/\{leadTime \? `\$\{leadTime\} ` : arrivesBy \? `Order today and it arrives by \$\{arrivesBy\}\. `/);
+    expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} \/>/);
+    expect(code).not.toMatch(/45 days|within 2 weeks/);
+  });
+});

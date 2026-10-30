@@ -4,7 +4,6 @@ import { ChevronRight, Pause, Play, ShoppingBag, Volume2, VolumeX } from "lucide
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { isAdjustableRing } from "@/data/ringFit";
 import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
@@ -24,7 +23,8 @@ const parsePrice = (label?: string | null) =>
 const MobileProductCard = ({ product, live }: { product: ReelProduct; live?: JewelPiece }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
-  const soldOut = live?.availableForSale === false && !isAdjustableRing(live ?? product.handle);
+  // Adjustability is fit, not inventory: Shopify is the stock authority (as on JewelCard).
+  const soldOut = live?.availableForSale === false;
   const image = live?.image ?? product.image_url ?? "";
   const price = live?.priceLabel ?? product.price_label ?? "";
 

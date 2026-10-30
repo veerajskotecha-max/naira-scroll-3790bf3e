@@ -14,6 +14,24 @@ export const PREORDER_NOTE =
   "Delivery in 3–5 working days.";
 export const PREORDER_NOTE_SHORT = "Delivery in 3–5 working days";
 
+/* A piece that cannot ship now has ONE lead time, said wherever the product
+   page speaks of delivery. A sold-out piece used to read "shipped within 2
+   weeks" under the button, "Delivery in 3–5 working days" in Delivery &
+   returns and a dated pincode promise, all at once. */
+export const SOLD_OUT_LEAD = "Hand-finished for you and shipped within 2 weeks";
+export const SIZE_PREORDER_LEAD = "delivered in 45 days";
+export const VARIANT_SOLD_OUT_LEAD = "Reserve it and we will confirm the date on WhatsApp.";
+
+/** The product page's delivery line for a piece it cannot ship now, or null when it can. */
+export const preorderLead = (state: { soldOut: boolean; variantSoldOut: boolean; sizePreorder: boolean; size?: string }): string | null =>
+  state.soldOut
+    ? `${SOLD_OUT_LEAD}.`
+    : state.variantSoldOut
+      ? VARIANT_SOLD_OUT_LEAD
+      : state.sizePreorder
+        ? `US ${state.size} is a pre-order, ${SIZE_PREORDER_LEAD}.`
+        : null;
+
 export interface JewelPiece {
   handle: string;
   name: string;

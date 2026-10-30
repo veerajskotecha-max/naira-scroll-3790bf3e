@@ -12,7 +12,10 @@ interface Result extends Serviceability {
   eta: string;
 }
 
-const PincodeChecker = () => {
+/* A piece that is reserved rather than in stock (sold out, a sold-out colour,
+   a size made to order) ships when it is ready: the courier's days still hold,
+   but a dated "by Wed, 4 Nov" would be a promise the page does not make. */
+const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
   const [pincode, setPincode] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -98,8 +101,14 @@ const PincodeChecker = () => {
             <CheckCircle2 size={13} className="mt-[2px] shrink-0" style={{ color: "hsl(142 50% 38%)" }} />
             <span className="text-[12px]" style={{ color: "hsl(0 0% 25%)" }}>
               Delivery to <strong className="font-medium">{result.pincode}</strong> in{" "}
-              <strong className="font-medium">{result.days} working days</strong> · by{" "}
-              <strong className="font-medium">{result.eta}</strong>
+              <strong className="font-medium">{result.days} working days</strong>
+              {preorder ? (
+                " once it ships"
+              ) : (
+                <>
+                  {" "}· by <strong className="font-medium">{result.eta}</strong>
+                </>
+              )}
             </span>
           </div>
           {result.cod === "blocked" ? (

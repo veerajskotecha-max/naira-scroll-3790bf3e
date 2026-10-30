@@ -501,13 +501,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [checkoutUrl, openCheckout]);
 
   /* One-tap "Pre-order now / Shop now": add to the Shopify cart, then go straight
-     to Shopify checkout using the URL that add returned (no stale-state race).
-     A line already in the bag goes as it is: adding again sent a shopper who
-     tapped Add and then Buy Now to pay for two (and earned BUY2 on the way). */
+     to Shopify checkout using the URL that add returned (no stale-state race). */
   const buyNow = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, quantity = 1) => {
-    const latest = loadCart();
-    const inBag = latest.items.some((line) => line.lineId && keyOf(line) === keyOf(item));
-    const url = inBag ? latest.checkoutUrl : await addItem(item, quantity);
+    const url = await addItem(item, quantity);
     if (!url) {
       toast.error("Could not open checkout. Please try again.");
       return;

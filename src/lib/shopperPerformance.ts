@@ -24,20 +24,34 @@ export const initPerformanceLanding = () => {
   const path = safePerformancePath(window.location.pathname);
   if (!landing && path) landing = { landing_path: path, ...campaignLabels(window.location.search) };
 };
+/* crypto.randomUUID arrived in Safari 15.4 and Chrome 92; the build still runs
+   on Safari 14 and Chrome 87, where it threw inside a page's effect and the
+   error panel replaced the shop. The fallback is a real v4 UUID, because the
+   function's z.string().uuid() rejects anything else. */
+export const eventId = () => {
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+};
 export const reportShopperPerformance = (kind: PerformanceKind, timing: Record<string, unknown> = {}) => {
-  if (!productionShop(window.location.hostname)) return;
-  initPerformanceLanding();
-  const path = safePerformancePath(typeof timing.path === "string" ? timing.path : window.location.pathname);
-  if (!path || !landing) return;
-  const payload = {
-    id: crypto.randomUUID(), path, ...landing, kind,
-    device: window.innerWidth < 768 ? "mobile" : "desktop",
-    navigation: "client", ...timing,
-  };
-  // A single small, best-effort request; telemetry must never block shopping.
-  void fetch(endpoint(), {
-    method: "POST", keepalive: true,
-    headers: { "Content-Type": "application/json", apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
-    body: JSON.stringify(payload),
-  }).catch(() => undefined);
+  // Called from page effects: whatever goes wrong here must never take the page down.
+  try {
+    if (!productionShop(window.location.hostname)) return;
+    initPerformanceLanding();
+    const path = safePerformancePath(typeof timing.path === "string" ? timing.path : window.location.pathname);
+    if (!path || !landing) return;
+    const payload = {
+      id: eventId(), path, ...landing, kind,
+      device: window.innerWidth < 768 ? "mobile" : "desktop",
+      navigation: "client", ...timing,
+    };
+    // A single small, best-effort request; telemetry must never block shopping.
+    void fetch(endpoint(), {
+      method: "POST", keepalive: true,
+      headers: { "Content-Type": "application/json", apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+      body: JSON.stringify(payload),
+    }).catch(() => undefined);
+  } catch { /* telemetry is optional */ }
 };

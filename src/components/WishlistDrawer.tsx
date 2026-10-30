@@ -5,11 +5,14 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Separator } from "@/components/ui/separator";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { jewellery, PREORDER_LABEL } from "@/data/jewellery";
+import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 
-/* Jewellery is wishlisted by handle; route those to the jewellery PDP. */
-const jewelHandles = new Set(jewellery.map((j) => j.handle));
+/* Jewellery is wishlisted by handle; route those to the jewellery PDP. The
+   bundled catalogue alone knows 21 of the ~136 pieces, so the rest went to
+   /product/<handle> and hopped through the apparel page. */
+const jewelHandles = new Set([...JEWELLERY_HANDLES, ...jewellery.map((j) => j.handle)]);
 
 const WishlistDrawer = () => {
   const { items, removeItem, isDrawerOpen, setDrawerOpen } = useWishlist();
@@ -77,21 +80,26 @@ const WishlistDrawer = () => {
         ) : (
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {items.map((item) => (
-              <Link
-                key={item.id}
-                to={jewelHandles.has(item.id) ? `/jewellery/${item.id}` : `/product/${item.id}`}
-                onClick={leave}
-                className="flex gap-3 group"
-              >
+              /* The link and Remove are siblings, as on JewelCard: Remove used
+                 to sit inside the link (invalid HTML; its word joined the
+                 link's name). The name's link is stretched over the row, so a
+                 tap on the photo or price still opens the piece. */
+              <div key={item.id} className="relative flex gap-3 group">
                 <img
                   src={item.image}
-                  alt={item.name}
+                  alt=""
                   className="w-[80px] h-[100px] object-cover shrink-0"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div>
                     <p className="font-cormorant text-[15px] font-semibold truncate group-hover:underline" style={{ color: "hsl(0 0% 15%)" }}>
-                      {item.name}
+                      <Link
+                        to={jewelHandles.has(item.id) ? `/jewellery/${item.id}` : `/product/${item.id}`}
+                        onClick={leave}
+                        className="after:absolute after:inset-0"
+                      >
+                        {item.name}
+                      </Link>
                     </p>
                     {item.price === PREORDER_LABEL ? (
                       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
@@ -108,14 +116,14 @@ const WishlistDrawer = () => {
                       left on a phone would otherwise be this one. */}
                   <button
                     type="button"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeItem(item.id); }}
-                    className="self-start inline-flex min-h-[44px] items-center px-1 text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline decoration-[color:rgb(var(--nf-ink-rgb)/0.25)] underline-offset-4 transition-colors duration-150 hover:text-[var(--nf-text)]"
+                    onClick={() => removeItem(item.id)}
+                    className="relative z-10 self-start inline-flex min-h-[44px] items-center px-1 text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline decoration-[color:rgb(var(--nf-ink-rgb)/0.25)] underline-offset-4 transition-colors duration-150 hover:text-[var(--nf-text)]"
                     aria-label={`Remove ${item.name} from wishlist`}
                   >
                     Remove
                   </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}

@@ -9,6 +9,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
 import { trackPixel } from "@/lib/pixel";
 import { joinInnerCircle } from "@/lib/innerCircle";
+import { safeNextPath } from "@/lib/nextPath";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
@@ -25,8 +26,7 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   // A consent flow (MCP / OAuth clients) sends the member here with ?next=,
   // and must land back on that exact URL after every sign-in method.
-  const rawNext = searchParams.get("next") ?? "";
-  const nextPath = /^\/(?!\/)/.test(rawNext) ? rawNext : "/account";
+  const nextPath = safeNextPath(searchParams.get("next") ?? "");
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");

@@ -21,7 +21,6 @@ import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import UpiBadges from "@/components/checkout/UpiBadges";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
-import { shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { clarityEvent } from "@/lib/clarity";
 import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewellery";
@@ -319,13 +318,10 @@ const CartDrawerNext = () => {
     setOpening(true);
     clarityEvent("bag_checkout_tapped");
     await releaseEntry();
-    trackPixel("AddPaymentInfo", {
-      currency: items[0]?.currencyCode || "INR",
-      value: orderTotal,
-      num_items: totalItems,
-      content_ids: items.map((item) => shopifyNumericId(item.variantId) ?? item.id),
-      content_type: "product",
-    });
+    /* No AddPaymentInfo here. It fired on this tap, beside InitiateCheckout,
+       before any payment detail exists; Shiprocket's checkout reports its own
+       when the shopper actually reaches payment. InitiateCheckout is sent by
+       the hand-off itself (CartContext openCheckout). */
     try {
       if (user) {
         const supabase = await getSupabase();

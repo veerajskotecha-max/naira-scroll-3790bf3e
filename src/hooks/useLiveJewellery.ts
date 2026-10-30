@@ -304,7 +304,23 @@ export const useLiveJewellery = (enabled = true): { jewellery: JewelPiece[]; isL
   });
 
   if (!data?.length) return { jewellery: staticJewellery, isLive: false, isLoading };
-  return { jewellery: liveCatalogue(data), isLive: true, isLoading: false };
+  return { jewellery: catalogueFor(data), isLive: true, isLoading: false };
+};
+
+/* The catalogue is mapped once per answer from Shopify, for every user of the
+   hook. Mapped on each render instead, ~15 components rebuilt all 136 pieces
+   on every gallery swipe and Add (16 runs while a product page loaded, long
+   tasks of 120–250 ms per swipe on a 4x-slowed phone), and a new array each
+   time undid every memo downstream. React Query keeps `data` the same object
+   until Shopify's answer actually changes. */
+const mapped = new WeakMap<ShopifyProductNode[], JewelPiece[]>();
+const catalogueFor = (data: ShopifyProductNode[]): JewelPiece[] => {
+  let pieces = mapped.get(data);
+  if (!pieces) {
+    pieces = liveCatalogue(data);
+    mapped.set(data, pieces);
+  }
+  return pieces;
 };
 
 /** The catalogue the site shows, from Shopify's products: the hook's work, for scripts and tests too. */

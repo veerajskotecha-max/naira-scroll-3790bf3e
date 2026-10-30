@@ -92,6 +92,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
      (see syncCart). */
   const addsInFlight = useRef(0);
   const addsStarted = useRef(0);
+  /* Removals under way, by line. An add of the same line (the bag's Undo)
+     waits for its removal: run beside it, the add updated the line Shopify
+     was deleting, Shopify refused, and the bag was lost. */
+  const removals = useRef(new Map<string, Promise<void>>());
 
   const { items, cartId, checkoutUrl } = storedCart;
 
@@ -159,9 +163,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     addsInFlight.current += 1;
     addsStarted.current += 1;
     const unavailable = `${item.name} couldn't be added. It may have just sold out.`;
+    const key = keyOf(item);
     try {
+      await removals.current.get(key);
       const latest = loadCart();
-      const key = keyOf(item);
       const existing = latest.items.find((cartItem) => keyOf(cartItem) === key);
 
       if (!latest.cartId) {
@@ -247,31 +252,37 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const key = keyOf(item);
 
     setIsLoading(true);
-    try {
-      if (latest.cartId && item.lineId) {
-        const result = await removeLineFromShopifyCart(latest.cartId, item.lineId);
-        if (result.cartNotFound) {
-          clearCart();
-          return;
+    const removal = (async () => {
+      try {
+        if (latest.cartId && item.lineId) {
+          const result = await removeLineFromShopifyCart(latest.cartId, item.lineId);
+          if (result.cartNotFound) {
+            clearCart();
+            return;
+          }
+          commitCart((current) => {
+            const nextItems = current.items.filter((cartItem) => keyOf(cartItem) !== key);
+            return nextItems.length === 0
+              ? emptyCart
+              : { ...current, checkoutUrl: result.checkoutUrl ?? current.checkoutUrl, items: nextItems };
+          });
+        } else {
+          commitCart((current) => ({
+            ...current,
+            items: current.items.filter((cartItem) => keyOf(cartItem) !== key),
+          }));
         }
-        commitCart((current) => {
-          const nextItems = current.items.filter((cartItem) => keyOf(cartItem) !== key);
-          return nextItems.length === 0
-            ? emptyCart
-            : { ...current, checkoutUrl: result.checkoutUrl ?? current.checkoutUrl, items: nextItems };
-        });
-      } else {
-        commitCart((current) => ({
-          ...current,
-          items: current.items.filter((cartItem) => keyOf(cartItem) !== key),
-        }));
+      } catch (error) {
+        console.error("Failed to remove Shopify item", error);
+        toast.error("Could not remove this item.");
+      } finally {
+        // An Undo waiting on this removal keeps the bag busy until it lands.
+        if (!addsInFlight.current) setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to remove Shopify item", error);
-      toast.error("Could not remove this item.");
-    } finally {
-      setIsLoading(false);
-    }
+    })();
+    removals.current.set(key, removal);
+    await removal;
+    if (removals.current.get(key) === removal) removals.current.delete(key);
   }, [clearCart, commitCart]);
 
   const updateQuantity = useCallback(async (id: string, size: string | undefined, quantity: number, variantId?: string) => {

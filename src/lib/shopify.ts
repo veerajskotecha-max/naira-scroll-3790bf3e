@@ -470,10 +470,12 @@ export function formatCheckoutUrl(checkoutUrl: string): string {
   }
 }
 
+/* "The merchandise line with id … does not exist" is one stale line, not a lost
+   cart: read as the cart, it emptied the whole bag and orphaned the rest. */
 export function isCartNotFoundError(userErrors: Array<{ message: string }>): boolean {
   return userErrors.some((error) => {
     const message = error.message.toLowerCase();
-    return message.includes("cart not found") || message.includes("does not exist");
+    return message.includes("cart not found") || (message.includes("does not exist") && !message.includes("line"));
   });
 }
 

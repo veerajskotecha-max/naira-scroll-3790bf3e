@@ -10,7 +10,8 @@ import {
   updateShopifyCartLine,
   updateCartTrackingAttributes,
 } from "@/lib/shopify";
-import { applyPromoToCheckoutUrl, getPromoCode, resolveCartDiscount } from "@/lib/promo";
+import { applyPromoToCheckoutUrl, discountedSubtotal, getPromoCode, resolveCartDiscount } from "@/lib/promo";
+import { SHIPPING_CHARGE } from "@/lib/serviceability";
 import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr";
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { cartKeyOf, findCartLine } from "@/lib/cartLines";
@@ -409,10 +410,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const latest = loadCart();
     const lines = only?.items ?? latest.items;
     const value = Number(lines.reduce((sum, i) => sum + i.price * i.quantity, 0).toFixed(2));
+
+    /* The one discount the order actually gets. The bag earns BUY2 on two or
+       more pieces; a typed code can beat it. Resolved once here so the code
+       put on the cart, the code handed to Fastrr, the total shown in the
+       drawer and the value Meta is told are all the same discount. */
+    const resolved = resolveCartDiscount({
+      totalItems: lines.reduce((sum, i) => sum + i.quantity, 0),
+      promoCode: getPromoCode(),
+    });
+    /* What the shopper is about to be charged: the bag's Total. It was the
+       sum before the discount (3398 for a two-piece BUY2 bag charged 2888). */
+    const charged = discountedSubtotal(value, resolved) + SHIPPING_CHARGE;
     trackPixel("InitiateCheckout", {
       currency: lines[0]?.currencyCode || "INR",
       // Meta requires a positive numeric value.
-      ...(value > 0 ? { value } : {}),
+      ...(charged > 0 ? { value: charged } : {}),
       num_items: lines.reduce((sum, i) => sum + i.quantity, 0),
       content_ids: lines.map((i) => shopifyNumericId(i.variantId) ?? i.id),
       contents: lines.map((i) => ({
@@ -438,15 +451,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         console.error("Could not attach tracking attributes to cart", error);
       }
     }
-
-    /* The one discount the order actually gets. The bag earns BUY2 on two or
-       more pieces; a typed code can beat it. Resolved once here so the code
-       put on the cart, the code handed to Fastrr and the total shown in the
-       drawer are all the same discount. */
-    const resolved = resolveCartDiscount({
-      totalItems: lines.reduce((sum, i) => sum + i.quantity, 0),
-      promoCode: getPromoCode(),
-    });
 
     let target = applyPromoToCheckoutUrl(formatCheckoutUrl(url), resolved.code);
 

@@ -1,5 +1,5 @@
 import { createElement, useCallback } from "react";
-import { FALLBACK_ATTR } from "./fallbackGuard";
+import { isStandInPage } from "./fallbackGuard";
 
 /*
   main.tsx starts the app after 8 s even when the page's own code is still on
@@ -21,7 +21,9 @@ let kept: Element[] = [];
 export const keepPrebuiltPage = (root: Element): void => {
   // The homepage file standing in for an address it has no page for: that is
   // not this page, and the guard hides it on purpose (lib/fallbackGuard.ts).
-  if (document.documentElement.hasAttribute(FALLBACK_ATTR)) return;
+  // Asked of the guard's script, not only its mark: the mark comes off after
+  // 10 s, and a slow start reaches here later than that.
+  if (isStandInPage()) return;
   const header = root.querySelector(":scope > header");
   for (let el = header?.nextElementSibling; el; el = el.nextElementSibling) kept.push(el);
 };

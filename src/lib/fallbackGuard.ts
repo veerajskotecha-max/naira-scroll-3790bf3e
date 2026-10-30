@@ -18,10 +18,14 @@ export const FALLBACK_ATTR = "data-nf-fallback";
 /* Product addresses: /jewellery/<handle> and its aliases, not the listings. */
 const PIECE_PATH = "^/(?:jewellery|jewelry|products?|preview/jewellery)/(?!collections$)[^/]+$";
 
+/* The homepage's own addresses, the one page this file really is (after any
+   trailing slash is taken off). */
+const HOME_PATHS = ["/", "/index", "/index.html"];
+
 const SCRIPT =
   "<script>(function(){try{" +
   'var p=location.pathname.replace(/\\/+$/,"")||"/";' +
-  'if(p==="/"||p==="/index"||p==="/index.html")return;' +
+  `if(${HOME_PATHS.map((home) => `p===${JSON.stringify(home)}`).join("||")})return;` +
   "var d=document.documentElement;" +
   `d.setAttribute("${FALLBACK_ATTR}",new RegExp(${JSON.stringify(PIECE_PATH)}).test(p)?"piece":"page");` +
   `setTimeout(function(){d.removeAttribute("${FALLBACK_ATTR}")},10000)` +
@@ -66,3 +70,18 @@ export const withFallbackGuard = (html: string): string => {
 
 /** The app's first render is on screen: show it. */
 export const clearFallbackMark = () => document.documentElement.removeAttribute(FALLBACK_ATTR);
+
+/**
+ * This document is the homepage file answering an address that has no file of
+ * its own. The mark alone cannot say so for long: the guard takes it off after
+ * 10 s, and main.tsx, which only runs once its own download is done, may wait
+ * 8 s more before the app starts, so on a slow phone the mark is gone before
+ * the app looks. The guard's script stays in the document, and only
+ * dist/index.html has it (scripts/prerender.ts), so the script on any address
+ * but the homepage's means the same thing, for good.
+ */
+export const isStandInPage = (doc: Document = document, pathname = location.pathname): boolean => {
+  if (doc.documentElement.hasAttribute(FALLBACK_ATTR)) return true;
+  if (HOME_PATHS.includes(pathname.replace(/\/+$/, "") || "/")) return false;
+  return Array.from(doc.scripts).some((script) => !script.src && (script.textContent ?? "").includes(`"${FALLBACK_ATTR}"`));
+};

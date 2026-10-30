@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { FALLBACK_ATTR } from "./fallbackGuard";
+import { FALLBACK_ATTR, withFallbackGuard } from "./fallbackGuard";
 import { lazyRoute } from "./lazyRoute";
 import { dropPrebuiltPage, keepPrebuiltPage, PrebuiltPage } from "./prebuiltPage";
 
@@ -46,6 +46,8 @@ afterEach(() => {
   act(() => root?.unmount());
   root = null;
   document.documentElement.removeAttribute(FALLBACK_ATTR);
+  document.head.innerHTML = "";
+  window.history.replaceState(null, "", "/");
 });
 
 describe("the pre-built page while its code is still on the way", () => {
@@ -85,6 +87,44 @@ describe("the pre-built page while its code is still on the way", () => {
       root.render(<App />);
     });
     expect(container.querySelector("h1")).toBeNull();
+  });
+
+  /* The guard takes its own mark off after 10 s, and main.tsx starts the app
+     8 s after it began, so on a slow phone the mark was already gone: the
+     homepage ("Softly, slowly, worn.") stayed under the live header of a new
+     piece's address until its code arrived, 8 s of the wrong page (reproduced
+     by review; base showed a blank body). The guard's script stays in the
+     file, and only the homepage file has it. */
+  it("never keeps the homepage standing in for another address after the guard's mark is gone", () => {
+    // dist/index.html's head as prerender writes it; innerHTML does not run the script.
+    document.head.innerHTML = withFallbackGuard('<head><meta charset="UTF-8"><title>Naira Flore</title></head>')
+      .replace(/^<head>|<\/head>$/g, "");
+    window.history.replaceState(null, "", "/jewellery/star-point-band");
+    const container = prebuilt();
+    expect(document.documentElement.hasAttribute(FALLBACK_ATTR)).toBe(false); // the 10 s timer has run
+    keepPrebuiltPage(container);
+    act(() => {
+      root = createRoot(container);
+      root.render(<App />);
+    });
+    expect(container.querySelector("h1")).toBeNull();
+  });
+
+  it("keeps the homepage on its own address, guard and all", () => {
+    document.head.innerHTML = withFallbackGuard('<head><meta charset="UTF-8"><title>Naira Flore</title></head>')
+      .replace(/^<head>|<\/head>$/g, "");
+    for (const home of ["/", "/index.html"]) {
+      window.history.replaceState(null, "", home);
+      const container = prebuilt();
+      keepPrebuiltPage(container);
+      act(() => {
+        root = createRoot(container);
+        root.render(<App />);
+      });
+      expect(container.querySelector("h1")?.textContent).toBe("Prism Rivière Bracelet");
+      act(() => root?.unmount());
+      root = null;
+    }
   });
 });
 

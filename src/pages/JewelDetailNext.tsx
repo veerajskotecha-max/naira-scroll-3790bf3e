@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { cardCover } from "@/lib/cardCover";
 import { galleryAlt } from "@/lib/galleryAlt";
+import { onRadioGroupKeyDown, rovingTabIndex } from "@/lib/radioGroup";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
@@ -1045,8 +1046,8 @@ const JewelDetailNext = () => {
                       ))}
                     </select>
                   ) : (
-                    <div role="radiogroup" aria-label={option.name} className="mt-1 flex flex-wrap gap-2">
-                      {option.values.map((value) => {
+                    <div role="radiogroup" aria-label={option.name} onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                      {option.values.map((value, i) => {
                         const active = chosen[option.name] === value;
                         const swatch = isSize ? undefined : swatchOf(value);
                         return (
@@ -1055,6 +1056,7 @@ const JewelDetailNext = () => {
                             type="button"
                             role="radio"
                             aria-checked={active}
+                            tabIndex={rovingTabIndex(option.values.indexOf(chosen[option.name] ?? ""), i)}
                             onClick={() => pick(option.name, value)}
                             className={`flex min-h-[44px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
                               active
@@ -1090,8 +1092,8 @@ const JewelDetailNext = () => {
                     Size guide
                   </button>
                 </div>
-                <div role="radiogroup" aria-label="Ring size, US" className="mt-1 flex flex-wrap gap-2">
-                  {ringSizesFor(piece).map((s) => {
+                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                  {ringSizesFor(piece).map((s, i, sizes) => {
                     const active = selectedSize === s.value;
                     return (
                       <button
@@ -1099,6 +1101,7 @@ const JewelDetailNext = () => {
                         type="button"
                         role="radio"
                         aria-checked={active}
+                        tabIndex={rovingTabIndex(sizes.findIndex((size) => size.value === selectedSize), i)}
                         onClick={() => setSelectedSize(s.value)}
                         className={`min-h-[44px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
                           active

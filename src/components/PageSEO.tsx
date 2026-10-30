@@ -74,6 +74,7 @@ export default PageSEO;
 
 /* ── shared JSON-LD builders ─────────────────────────────────── */
 
+// eslint-disable-next-line react-refresh/only-export-components -- JSON-LD builders shared by the pages that render PageSEO
 export const breadcrumbLd = (crumbs: { name: string; url: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -85,6 +86,7 @@ export const breadcrumbLd = (crumbs: { name: string; url: string }[]) => ({
   })),
 });
 
+// eslint-disable-next-line react-refresh/only-export-components -- JSON-LD builders shared by the pages that render PageSEO
 export const faqLd = (faqs: { q: string; a: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",

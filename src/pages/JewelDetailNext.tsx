@@ -471,6 +471,7 @@ const JewelDetailNext = () => {
         category: piece.category,
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per piece: live data replacing it must not fire ViewContent again
   }, [piece?.handle]);
 
   /* The phone's buy bar shows whenever Add to cart is not fully on screen —
@@ -1156,6 +1157,7 @@ const JewelDetailNext = () => {
                   {buying ? "Opening checkout…" : <>Buy Now<UpiBadges size={16} /></>}
                 </Button>
               )}
+              {/* eslint-disable-next-line no-constant-binary-expression -- switched off in Lovable on 30 Sep (it was soldOut &&); kept so it can be switched back */}
               {false && (
                 <a
                   href={sizedEnquiryHref}

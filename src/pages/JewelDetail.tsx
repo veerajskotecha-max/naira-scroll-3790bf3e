@@ -261,6 +261,7 @@ const JewelDetail = () => {
       price: piece.price,
       category: piece.category,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per piece: live data replacing it must not fire ViewContent again
   }, [piece?.handle]);
 
   /* The mobile buy bar shows whenever the inline CTA block is off screen —

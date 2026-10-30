@@ -96,7 +96,7 @@ describe("redesigned product page", () => {
   });
 
   it("routes Buy Now through checkout with the chosen variant, but reserves pre-orders on WhatsApp", () => {
-    const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n  \};/)?.[0] ?? "";
+    const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
     expect(handler).toContain("if (isPreorder) return handlePreOrder();");
     expect(handler).toContain("await buyNow(cartItem());");
     expect(handler).toContain("if (buying || cartLoading) return;");
@@ -115,7 +115,7 @@ describe("redesigned product page", () => {
   });
 
   it("steps back only inside Naira: a shopper from Google, WhatsApp, an ad or a new tab goes to the jewellery", () => {
-    const back = code.match(/const goBack = \(\) => \{[\s\S]*?\n  \};/)![0];
+    const back = code.match(/const goBack = \(\) => \{[\s\S]*?\n {2}\};/)![0];
     expect(back).not.toMatch(/history\.length > 1\) navigate\(-1\)/); // every page the tab showed, other sites included
     expect(back).toMatch(/history\.state[\s\S]*?\.idx/);
     expect(back).toMatch(/document\.referrer/);

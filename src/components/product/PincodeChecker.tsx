@@ -29,8 +29,9 @@ const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
         setPincode(saved);
         check(saved, false);
       }
-    } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } catch {
+      /* storage blocked: the shopper types the pincode instead */
+    }
   }, []);
 
   const check = (value: string, save = true) => {
@@ -52,7 +53,9 @@ const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
     if (save) {
       try {
         localStorage.setItem("naira-pincode", value);
-      } catch {}
+      } catch {
+        /* storage blocked: the check still shows, it is just not remembered */
+      }
     }
   };
 

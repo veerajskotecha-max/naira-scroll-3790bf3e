@@ -7,10 +7,17 @@ import { supabase } from "@/integrations/supabase/client";
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
+/* The fields this page reads from the authorization server's answers. */
+type AuthorizationData = {
+  redirect_url?: string;
+  redirect_to?: string;
+  client?: { name?: string };
+} | null;
+
 type OAuthNamespace = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: any; error: { message: string } | null }>;
-  approveAuthorization: (id: string) => Promise<{ data: any; error: { message: string } | null }>;
-  denyAuthorization: (id: string) => Promise<{ data: any; error: { message: string } | null }>;
+  getAuthorizationDetails: (id: string) => Promise<{ data: AuthorizationData; error: { message: string } | null }>;
+  approveAuthorization: (id: string) => Promise<{ data: AuthorizationData; error: { message: string } | null }>;
+  denyAuthorization: (id: string) => Promise<{ data: AuthorizationData; error: { message: string } | null }>;
 };
 
 const oauth = () => (supabase.auth as unknown as { oauth: OAuthNamespace }).oauth;
@@ -18,7 +25,7 @@ const oauth = () => (supabase.auth as unknown as { oauth: OAuthNamespace }).oaut
 const OAuthConsent = () => {
   const [params] = useSearchParams();
   const authorizationId = params.get("authorization_id") ?? "";
-  const [details, setDetails] = useState<any>(null);
+  const [details, setDetails] = useState<AuthorizationData>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 

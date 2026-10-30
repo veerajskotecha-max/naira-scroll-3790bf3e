@@ -74,7 +74,8 @@ const GoldenHourEdit = () => {
 
   const setView = (next: "edit" | "all") => {
     const params = new URLSearchParams(searchParams);
-    next === "all" ? params.set("view", "all") : params.delete("view");
+    if (next === "all") params.set("view", "all");
+    else params.delete("view");
     setSearchParams(params, { replace: true });
   };
 
@@ -91,10 +92,14 @@ const GoldenHourEdit = () => {
 
   const setFilters = (next: JewelFilters) => {
     const params = new URLSearchParams(searchParams);
-    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
-    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
-    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
-    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    if (next.sort === "featured") params.delete("sort");
+    else params.set("sort", next.sort);
+    if (next.maxPrice == null) params.delete("under");
+    else params.set("under", String(next.maxPrice));
+    if (next.inStockOnly) params.set("stock", "in");
+    else params.delete("stock");
+    if (next.tag) params.set("tag", next.tag);
+    else params.delete("tag");
     setSearchParams(params, { replace: true });
   };
 

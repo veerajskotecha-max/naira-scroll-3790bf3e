@@ -35,6 +35,7 @@ interface ProductCardProps {
 const toSlug = (name: string) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+// eslint-disable-next-line react-refresh/only-export-components -- the mapper belongs with the card it feeds
 export const productFromShopify = (product: ShopifyProductNode): Product => {
   const images = product.images.edges.map((edge) => edge.node.url);
   const firstAvailableVariant = product.variants.edges.find((edge) => edge.node.availableForSale)?.node;

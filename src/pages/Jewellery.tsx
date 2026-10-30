@@ -133,11 +133,16 @@ const Jewellery = () => {
 
   const setFilters = (next: JewelFilters) => {
     const params = new URLSearchParams(searchParams);
-    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
-    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
-    next.minPrice == null ? params.delete("over") : params.set("over", String(next.minPrice));
-    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
-    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    if (next.sort === "featured") params.delete("sort");
+    else params.set("sort", next.sort);
+    if (next.maxPrice == null) params.delete("under");
+    else params.set("under", String(next.maxPrice));
+    if (next.minPrice == null) params.delete("over");
+    else params.set("over", String(next.minPrice));
+    if (next.inStockOnly) params.set("stock", "in");
+    else params.delete("stock");
+    if (next.tag) params.set("tag", next.tag);
+    else params.delete("tag");
     setSearchParams(params, { replace: true });
   };
 

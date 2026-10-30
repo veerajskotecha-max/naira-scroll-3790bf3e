@@ -39,6 +39,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (!loading && session) navigate(nextPath, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the hop runs when the session resolves, to the next= the page opened with
   }, [loading, session, navigate]);
 
   const submit = async (e: FormEvent) => {

@@ -80,6 +80,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components -- the hook lives beside its provider
 export const useWishlist = () => {
   const ctx = useContext(WishlistContext);
   if (!ctx) throw new Error("useWishlist must be used within WishlistProvider");

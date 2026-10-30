@@ -369,7 +369,7 @@ const CART_LINES_REMOVE_MUTATION = `
   }
 `;
 
-export async function storefrontApiRequest<T = any>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+export async function storefrontApiRequest<T = unknown>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
   const response = await fetch(SHOPIFY_STOREFRONT_URL, {
     method: "POST",
     headers: {

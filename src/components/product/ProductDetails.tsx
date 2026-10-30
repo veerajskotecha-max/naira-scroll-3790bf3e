@@ -70,6 +70,7 @@ const ProductDetails = ({
       category: product.productType || undefined,
       currencyCode: product.priceRange.minVariantPrice.currencyCode,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per product: a refetch of it must not fire ViewContent again
   }, [product?.handle]);
 
   const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
@@ -91,6 +92,7 @@ const ProductDetails = ({
 
   /* Jewellery is sized by the piece, not by garment size: no XS–XL picker,
      no stitching copy. Vendor is the source of truth, productType a backup. */
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the two fields isJewelleryProduct reads
   const isJewellery = useMemo(() => isJewelleryProduct(product), [product?.vendor, product?.productType]);
 
 

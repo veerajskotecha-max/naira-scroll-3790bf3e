@@ -1,0 +1,81 @@
+NOTE  [setup] photos: {"face":"stand-in given with --photo (local only)","hand":"synthetic drawing"}
+PASS  [flows/iphone13/woven-gold-hoops] crop: 'Use this photo' on screen at 390x664 without a swipe  ({"use":[600,650],"h":664,"w":390,"scrollY":211})
+PASS  [flows/iphone13/woven-gold-hoops] crop: the photo is masked, no data: image  ({"dataImgs":0,"dataImgSeen":0,"shopper":1,"unmasked":0,"overflow":0})
+PASS  [flows/iphone13/woven-gold-hoops] crop: tap targets 44px or more  (0 inline text links exempt)
+PASS  [flows/iphone13/woven-gold-hoops] consent sheet: tap targets 44px or more  (0 inline text links exempt)
+PASS  [flows/iphone13/woven-gold-hoops] consent: box unticked, Create disabled until ticked  ({"tickedAtFirst":false,"disabledUnticked":true,"disabledTicked":false,"renderRequestsBeforeCreate":0})
+PASS  [flows/iphone13/woven-gold-hoops] consent: no render request before Create
+PASS  [flows/iphone13/woven-gold-hoops] result: on screen when it arrives, focus on its heading  ({"frame":[119,597],"h":664,"scrollY":211,"focus":"H2#tryon-step","focusText":"AI preview · Woven Gold Hoops"})
+PASS  [flows/iphone13/woven-gold-hoops] result: a blob: image with the 'AI preview' chip  (blob:http://127.0.0.1:4540/b7e1814d-9c42-40e5-9a8c-ef4633c77417)
+PASS  [flows/iphone13/woven-gold-hoops] result: listed size line and today's remaining count  (Shown at its listed size: 25 mm across | 999 try-ons left today)
+PASS  [flows/iphone13/woven-gold-hoops] result: the AI preview note
+PASS  [flows/iphone13/woven-gold-hoops] result: every photo and preview masked, no data: image ever  ({"dataImgs":0,"dataImgSeen":0,"shopper":2,"unmasked":0,"overflow":0})
+PASS  [flows/iphone13/woven-gold-hoops] result: no horizontal scroll  (0px)
+PASS  [flows/iphone13/woven-gold-hoops] result: tap targets 44px or more  (0 inline text links exempt)
+PASS  [flows/iphone13/woven-gold-hoops] compare: 'Show my photo' and press-and-hold show her photo, release shows the preview  ({"shown":"1","hidden":"0","held":"1"})
+PASS  [flows/iphone13/woven-gold-hoops] Add names what it adds: 'Add to bag'  (Add to bag)
+PASS  [flows/iphone13/woven-gold-hoops] the bag opens at the tap, before Shopify confirms the line  ({"open":true,"items":0})
+PASS  [flows/iphone13/woven-gold-hoops] Shopify's cart holds Default Title (47501786906786)  ({"handle":"woven-gold-hoops","variant":"gid://shopify/ProductVariant/47501786906786","title":"Default Title","qty":1,"attrs":{}})
+PASS  [flows/iphone13/woven-gold-hoops] the bag line's image is the product photo, never the preview  (https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-47)
+PASS  [flows/iphone13/woven-gold-hoops] AddToCart fired exactly once for the add (from CartContext)  ({"fbq":1,"capi":1})
+PASS  [flows/iphone13/woven-gold-hoops] Buy now hands Shiprocket's buyDirect the bag with this variant (CartContext.buyNow)  ([{"variantId":"47501786906786","quantity":2}])
+PASS  [flows/iphone13/woven-gold-hoops] Buy now opened no checkout and left the page where it was  ([])
+NOTE  [flows/iphone13/woven-gold-hoops] Meta events after Add and Buy now (fbq queue): ["PageView","AddToCart","AddToCart","InitiateCheckout"]
+PASS  [flows/iphone13/woven-gold-hoops] share fallback: a wa.me link to the piece, tagged utm_source=tryon  (https://wa.me/?text=AI%20try-on%20preview%20%C2%B7%20Woven%20Gold%20Hoops%20%C2%B7%20nairaflore.com%20https%3A%2F%2Fnair)
+PASS  [flows/iphone13/woven-gold-hoops] Save photo: a download or the press-and-hold view  (naira-try-on.jpg)
+PASS  [flows/iphone13/woven-gold-hoops] 'Try another piece' (toggle-link-chain) renders at once with no second consent  ({"sheetSeen":0,"renders":1})
+PASS  [flows/iphone13/woven-gold-hoops] Back shows the cached preview with no second request
+NOTE  [flows/iphone13/woven-gold-hoops] storage keys added by this visit: ["naira_tryon_device","naira_tryon","naira_tryon_consent"]
+PASS  [flows/iphone13/woven-gold-hoops] storage: try-on keys only naira_tryon_device, naira_tryon, naira_tryon_consent, naira_tryon_tips  (naira_tryon_device, naira_tryon, naira_tryon_consent)
+PASS  [flows/iphone13/woven-gold-hoops] storage: no image bytes in localStorage or sessionStorage  ([])
+PASS  [flows/iphone13/woven-gold-hoops] cart attribute source: naira_tryon holds handles only  (woven-gold-hoops,toggle-link-chain)
+PASS  [flows/iphone13/woven-gold-hoops] request audit: no image bytes before consent; after it, only to /functions/v1/tryon/render  ({"pre":[],"post":[]})
+PASS  [flows/iphone13/woven-gold-hoops] no request body to any other host carries FF D8 FF or data:image  ([])
+PASS  [flows/iphone13/woven-gold-hoops] Delete photo: the deleted copy, no blob: image left, created = revoked  ({"created":12,"revoked":12,"live":0,"imgs":0})
+PASS  [flows/iphone13/woven-gold-hoops] Delete photo: the deleted line is on screen, not scrolled away
+PASS  [flows/iphone13/woven-gold-hoops] no console errors  ([])
+PASS  [flows/iphone13/woven-gold-hoops] no checkout or WhatsApp page was opened  ([])
+PASS  [flows/iphone13/baguette-eternity-band] crop: 'Use this photo' on screen at 390x664 without a swipe  ({"use":[600,650],"h":664,"w":390,"scrollY":289})
+PASS  [flows/iphone13/baguette-eternity-band] crop: the photo is masked, no data: image  ({"dataImgs":0,"dataImgSeen":0,"shopper":1,"unmasked":0,"overflow":0})
+PASS  [flows/iphone13/baguette-eternity-band] crop: tap targets 44px or more  (0 inline text links exempt)
+PASS  [flows/iphone13/baguette-eternity-band] consent sheet: tap targets 44px or more  (0 inline text links exempt)
+PASS  [flows/iphone13/baguette-eternity-band] consent: box unticked, Create disabled until ticked  ({"tickedAtFirst":false,"disabledUnticked":true,"disabledTicked":false,"renderRequestsBeforeCreate":0})
+PASS  [flows/iphone13/baguette-eternity-band] consent: no render request before Create
+PASS  [flows/iphone13/baguette-eternity-band] result: on screen when it arrives, focus on its heading  ({"frame":[118,595],"h":664,"scrollY":289,"focus":"H2#tryon-step","focusText":"AI preview · Baguette Eternity Band"})
+PASS  [flows/iphone13/baguette-eternity-band] result: a blob: image with the 'AI preview' chip  (blob:http://127.0.0.1:4540/4a407dc8-3054-45c3-8b77-27a5c34d4ebb)
+PASS  [flows/iphone13/baguette-eternity-band] result: listed size line and today's remaining count  (Shown at its listed size: 6.8 mm wide | 999 try-ons left today)
+PASS  [flows/iphone13/baguette-eternity-band] result: the AI preview note
+PASS  [flows/iphone13/baguette-eternity-band] result: 'The real piece' is the Ruby piece  ({"inset":"2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg","stone":"2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg"})
+PASS  [flows/iphone13/baguette-eternity-band] result: every photo and preview masked, no data: image ever  ({"dataImgs":0,"dataImgSeen":0,"shopper":2,"unmasked":0,"overflow":0})
+PASS  [flows/iphone13/baguette-eternity-band] result: no horizontal scroll  (0px)
+PASS  [flows/iphone13/baguette-eternity-band] result: tap targets 44px or more  (0 inline text links exempt)
+PASS  [flows/iphone13/baguette-eternity-band] compare: 'Show my photo' and press-and-hold show her photo, release shows the preview  ({"shown":"1","hidden":"0","held":"1"})
+PASS  [flows/iphone13/baguette-eternity-band] Eternity Band: 'Choose a size' and disabled until a size is picked
+NOTE  [flows/iphone13/baguette-eternity-band] Eternity Band Ruby chips (live): ["US 5Pre-order","US 6","US 7","US 8"]
+PASS  [flows/iphone13/baguette-eternity-band] Eternity Band: Ruby US 5 (sold out live) is marked Pre-order  (US 5Pre-order | US 6 | US 7 | US 8)
+PASS  [flows/iphone13/baguette-eternity-band] Eternity Band: Ruby US 5 turns Add into 'Reserve on WhatsApp'  (https://wa.me/919561557935?text=Hello%20Naira%20Flore%2C%20I%20would%20like%20to%20pre-order%20the%20%22Baguette%20Eternity%20Band%22%20in%20Ruby%2C%20size%205%20(%E2%82%B91%2C149).%20Please%20book%20this%20piece%20for%20me%2C%20and%20let%20me%20know%20what%20further%20details%20you%20need%20to%20reserve%20it.%0A%0Ahttps%3A%2F%2Fnairaflore.com%2Fjewellery%2Fbaguette-eternity-band)
+PASS  [flows/iphone13/baguette-eternity-band] Add names what it adds: 'Add to bag · Ruby · US 7'  (Add to bag · Ruby · US 7)
+PASS  [flows/iphone13/baguette-eternity-band] the bag opens at the tap, before Shopify confirms the line  ({"open":true,"items":0})
+PASS  [flows/iphone13/baguette-eternity-band] Shopify's cart holds Ruby / 7 (50651962081442)  ({"handle":"baguette-eternity-band","variant":"gid://shopify/ProductVariant/50651962081442","title":"Ruby / 7","qty":1,"attrs":{}})
+PASS  [flows/iphone13/baguette-eternity-band] the bag line's image is the product photo, never the preview  (https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2507ca8a-c3d5-4e1f-9184-3ea46ce1631)
+PASS  [flows/iphone13/baguette-eternity-band] AddToCart fired exactly once for the add (from CartContext)  ({"fbq":1,"capi":1})
+NOTE  [flows/iphone13/baguette-eternity-band] storage keys added by this visit: ["naira_tryon_device","naira_tryon","naira_tryon_consent"]
+PASS  [flows/iphone13/baguette-eternity-band] storage: try-on keys only naira_tryon_device, naira_tryon, naira_tryon_consent, naira_tryon_tips  (naira_tryon_device, naira_tryon, naira_tryon_consent)
+PASS  [flows/iphone13/baguette-eternity-band] storage: no image bytes in localStorage or sessionStorage  ([])
+PASS  [flows/iphone13/baguette-eternity-band] cart attribute source: naira_tryon holds handles only  (baguette-eternity-band)
+PASS  [flows/iphone13/baguette-eternity-band] request audit: no image bytes before consent; after it, only to /functions/v1/tryon/render  ({"pre":[],"post":[]})
+PASS  [flows/iphone13/baguette-eternity-band] no request body to any other host carries FF D8 FF or data:image  ([])
+PASS  [flows/iphone13/baguette-eternity-band] Delete photo: the deleted copy, no blob: image left, created = revoked  ({"created":6,"revoked":6,"live":0,"imgs":0})
+PASS  [flows/iphone13/baguette-eternity-band] Delete photo: the deleted line is on screen, not scrolled away
+PASS  [flows/iphone13/baguette-eternity-band] no console errors  ([])
+PASS  [flows/iphone13/baguette-eternity-band] no checkout or WhatsApp page was opened  ([])
+PASS  [fold] android360: crop 'Use this photo' on screen without a swipe  ({"use":[576,626],"h":640,"w":360,"scrollY":212})
+PASS  [fold] android360: the first preview lands on screen, focus on its heading  ({"frame":[118,556],"h":640,"scrollY":212,"focus":"H2#tryon-step","focusText":"AI preview · Woven Gold Hoops"})
+PASS  [fold] android360: no console errors  ([])
+PASS  [fold] iphone13: crop 'Use this photo' on screen without a swipe  ({"use":[600,650],"h":664,"w":390,"scrollY":212})
+PASS  [fold] iphone13: the first preview lands on screen, focus on its heading  ({"frame":[118,596],"h":664,"scrollY":212,"focus":"H2#tryon-step","focusText":"AI preview · Woven Gold Hoops"})
+PASS  [fold] iphone13: no console errors  ([])
+NOTE  [weight] chunk gzip bytes: {"TryOn":24338,"TryOnResult":4419}
+PASS  [weight] TryOn chunk 24 KB gzip or less  (24338 B)
+
+73 of 73 checks passed

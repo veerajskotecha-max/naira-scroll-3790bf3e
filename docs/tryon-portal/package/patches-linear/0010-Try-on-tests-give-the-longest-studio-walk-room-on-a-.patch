@@ -1,0 +1,32 @@
+From cfc91459041b94b6b49c9b8265ea5a09450ee8bb Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 19:14:19 +0000
+Subject: [PATCH 10/10] Try-on tests: give the longest studio walk room on a
+ busy machine
+
+The wait-to-preview-to-stone-change test runs in about 0.6 s, but ran past
+vitest's 5 s default once with the machine's load near 20.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ src/test/tryon/TryOnPage.test.tsx | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/test/tryon/TryOnPage.test.tsx b/src/test/tryon/TryOnPage.test.tsx
+index a89acdd..9a3636f 100644
+--- a/src/test/tryon/TryOnPage.test.tsx
++++ b/src/test/tryon/TryOnPage.test.tsx
+@@ -459,7 +459,8 @@ describe("buying from the try-on", () => {
+     await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(1));
+     const amethyst7 = firstPaint("baguette-eternity-band").variants!.find((v) => v.options.Stone === "Amethyst" && v.options.Size === "7")!;
+     expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ variantId: amethyst7.id });
+-  });
++    // The longest walk in this file (wait, preview, stone change): it once ran past 5 s on a loaded machine.
++  }, 15_000);
+ 
+   /* Review SHOP-11: under an error's own button, Add is the second action (outline), not a second ink button. */
+   it("puts Add in outline under an error's own button", async () => {
+-- 
+2.43.0
+

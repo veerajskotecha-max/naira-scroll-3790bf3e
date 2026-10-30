@@ -1,0 +1,114 @@
+From 40d9285b572a76f3b27f96c4fefa67c82ba953d6 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 19:04:46 +0000
+Subject: [PATCH 09/10] Try-on e2e: read the crop and the preview where the
+ scroll comes to rest
+
+The shop sets smooth scrolling, so a step's scroll into view animates; the
+new 360x640 checks read the crop at 150 ms and once caught it mid-way on the
+iPhone 13. They now wait until the page stops moving (2 s at most).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ scripts/tryon/e2e.mjs | 63 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 39 insertions(+), 24 deletions(-)
+
+diff --git a/scripts/tryon/e2e.mjs b/scripts/tryon/e2e.mjs
+index 48adf4e..930800c 100644
+--- a/scripts/tryon/e2e.mjs
++++ b/scripts/tryon/e2e.mjs
+@@ -860,35 +860,52 @@ const PIECES = [
+   },
+ ];
+ 
++/* The shop sets html { scroll-behavior: smooth }, so a step's scroll into view
++   animates: measure where it comes to rest (scrollY unchanged for 3 frames, 2 s at most). */
++const scrollSettled = (page) =>
++  page.evaluate(
++    () =>
++      new Promise((resolve) => {
++        const start = performance.now();
++        let last = -1;
++        let still = 0;
++        const tick = () => {
++          still = window.scrollY === last ? still + 1 : 0;
++          last = window.scrollY;
++          if (still >= 3 || performance.now() - start > 2000) resolve(last);
++          else requestAnimationFrame(tick);
++        };
++        requestAnimationFrame(tick);
++      }),
++  );
++
+ /* Where the crop's "Use this photo" sits: on a phone it must be on screen without a swipe, since a swipe on the frame moves the photo (review SHOP-4). */
+-const cropFold = (page) =>
+-  page.evaluate(() => {
++const cropFold = async (page) => {
++  await scrollSettled(page);
++  return page.evaluate(() => {
+     const use = [...document.querySelectorAll("button")].find((b) => /Use this photo/.test(b.textContent));
+     const r = use?.getBoundingClientRect();
+     return { use: r ? [Math.round(r.top), Math.round(r.bottom)] : null, h: window.innerHeight, w: window.innerWidth, scrollY: Math.round(window.scrollY) };
+   });
++};
+ const useOnScreen = (f) => Boolean(f.use) && f.use[0] >= 0 && f.use[1] <= f.h;
+ 
+-/* The preview the moment it arrives: on screen under the header, with focus on its heading (review SHOP-1, SHOP-2). */
+-const resultArrival = (page) =>
+-  page.evaluate(
+-    () =>
+-      new Promise((resolve) =>
+-        requestAnimationFrame(() =>
+-          requestAnimationFrame(() => {
+-            const r = document.querySelector("[data-tryon-result]")?.getBoundingClientRect();
+-            const a = document.activeElement;
+-            resolve({
+-              frame: r ? [Math.round(r.top), Math.round(r.bottom)] : null,
+-              h: window.innerHeight,
+-              scrollY: Math.round(window.scrollY),
+-              focus: a ? `${a.tagName}#${a.id}` : null,
+-              focusText: a?.textContent?.trim().slice(0, 60) ?? null,
+-            });
+-          }),
+-        ),
+-      ),
+-  );
++/* The preview as it arrives: where its scroll comes to rest (the review saw it
++   640 px above the screen), and focus on its heading (review SHOP-1, SHOP-2). */
++const resultArrival = async (page) => {
++  await scrollSettled(page);
++  return page.evaluate(() => {
++    const r = document.querySelector("[data-tryon-result]")?.getBoundingClientRect();
++    const a = document.activeElement;
++    return {
++      frame: r ? [Math.round(r.top), Math.round(r.bottom)] : null,
++      h: window.innerHeight,
++      scrollY: Math.round(window.scrollY),
++      focus: a ? `${a.tagName}#${a.id}` : null,
++      focusText: a?.textContent?.trim().slice(0, 60) ?? null,
++    };
++  });
++};
+ const resultOnScreen = (r) => Boolean(r.frame) && r.frame[0] >= 60 && r.frame[0] < r.h * 0.6 && r.focus === "H2#tryon-step";
+ 
+ const imageViolations = (log) => {
+@@ -914,7 +931,6 @@ async function flow(profile, piece) {
+   await waitLive(page);
+   await choosePhoto(page, piece.photo());
+   if (profile !== "desktop") {
+-    await page.waitForTimeout(150);
+     const fold = await cropFold(page);
+     check(`crop: 'Use this photo' on screen at ${fold.w}x${fold.h} without a swipe`, useOnScreen(fold), fold);
+   }
+@@ -1223,7 +1239,6 @@ async function fold() {
+       await gotoStudio(page, BASE, "woven-gold-hoops");
+       await waitLive(page);
+       await choosePhoto(page, FACE);
+-      await page.waitForTimeout(300);
+       const crop = await cropFold(page);
+       check(`${profile}: crop 'Use this photo' on screen without a swipe`, useOnScreen(crop), crop);
+       await shot(page, `fold-${profile}-crop`);
+-- 
+2.43.0
+

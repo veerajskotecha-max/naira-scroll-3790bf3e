@@ -1,0 +1,107 @@
+From e616d564aeeabd7b5c5d6ca287e075fbc035842c Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 17:05:56 +0000
+Subject: [PATCH 05/10] Try-on: Delete photo shows its confirmation instead of
+ the footer
+
+On a phone, Delete sits at the foot of the preview. After it the studio
+went back to its first screen, which had no step heading for focus to move
+to, so the page stayed at the footer with "Your photo is deleted from this
+page" scrolled away above it. The deleted line (or, without one, the photo
+buttons) is now the step's focus target, and Delete pressed on the first
+screen moves to it too. A test pins focus and scroll.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ src/components/tryon/TryOnStudio.tsx | 31 +++++++++++++++++-----------
+ src/test/tryon/TryOnPage.test.tsx    | 13 ++++++++++++
+ 2 files changed, 32 insertions(+), 12 deletions(-)
+
+diff --git a/src/components/tryon/TryOnStudio.tsx b/src/components/tryon/TryOnStudio.tsx
+index f83af1c..c4822aa 100644
+--- a/src/components/tryon/TryOnStudio.tsx
++++ b/src/components/tryon/TryOnStudio.tsx
+@@ -381,6 +381,8 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+ 
+   /* ---- focus follows the step ---- */
+   const firstStep = useRef(true);
++  /* Delete pressed on the first screen keeps the step but adds the deleted line, which must be seen too. */
++  const introNotice = state.step === "intro" ? state.notice : undefined;
+   useLayoutEffect(() => {
+     if (firstStep.current) {
+       firstStep.current = false;
+@@ -401,7 +403,7 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+     if (!target) return;
+     const top = target.getBoundingClientRect().top;
+     if (top < 100 || top > window.innerHeight * 0.55) window.scrollTo({ top: Math.max(0, window.scrollY + top - 118), behavior: "auto" });
+-  }, [state.step]);
++  }, [state.step, introNotice]);
+ 
+   const result = useMemo(
+     () => (state.step === "result" && photo ? getTryOnResult(piece.handle, state.stone) : undefined),
+@@ -453,21 +455,26 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+       const frame = <EmptyFrame hand={hand} />;
+       const controls = (
+         <div className="space-y-4">
++          {/* The step's focus target (see "focus follows the step"): the deleted line when there is one, else
++              the photo buttons. Without one, Delete at the foot of a preview left a phone at the footer, the
++              confirmation scrolled away above it. */}
+           {state.notice === "deleted" && (
+-            <p role="status" className="border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3 py-2.5 text-[13px] text-nf-ink">
++            <p id="tryon-step" tabIndex={-1} role="status" className="border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3 py-2.5 text-[13px] text-nf-ink outline-none">
+               {TRYON_COPY.deleted}
+             </p>
+           )}
+-          <PhotoPicker
+-            kind={kind}
+-            held={photo}
+-            changing={Boolean(state.changing)}
+-            block={state.block}
+-            disabled={soldOut}
+-            onFile={onFile}
+-            onReuse={reuse}
+-            onChange={() => dispatch({ type: "reset", changing: true })}
+-          />
++          <div id={state.notice === "deleted" ? undefined : "tryon-step"} tabIndex={-1} className="outline-none">
++            <PhotoPicker
++              kind={kind}
++              held={photo}
++              changing={Boolean(state.changing)}
++              block={state.block}
++              disabled={soldOut}
++              onFile={onFile}
++              onReuse={reuse}
++              onChange={() => dispatch({ type: "reset", changing: true })}
++            />
++          </div>
+           {soldOut && <TryOnBuy piece={piece} live={live} stone={stone} />}
+           <p className="text-[12px] leading-[1.65] text-nf-ink/75">
+             {TRYON_COPY.trust.line}{" "}
+diff --git a/src/test/tryon/TryOnPage.test.tsx b/src/test/tryon/TryOnPage.test.tsx
+index 5f6e218..eecbd78 100644
+--- a/src/test/tryon/TryOnPage.test.tsx
++++ b/src/test/tryon/TryOnPage.test.tsx
+@@ -270,6 +270,19 @@ describe("the preview", () => {
+     expect(document.querySelectorAll('img[src^="blob:"]')).toHaveLength(0);
+   });
+ 
++  // The phone run found Delete (at the foot of a long preview) leaving the page at the footer
++  // with the deleted line scrolled away above: the first screen had no step heading to move to.
++  it("moves focus and the view to the deleted line", async () => {
++    await toResult();
++    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
++    fireEvent.click(screen.getByRole("button", { name: "Delete photo" }));
++    const line = await screen.findByText("Your photo is deleted from this page. We never kept a copy.");
++    expect(line.id).toBe("tryon-step");
++    expect(document.activeElement).toBe(line);
++    expect(scrollTo).toHaveBeenCalled();
++    scrollTo.mockRestore();
++  });
++
+   /* Back to a piece already tried shows its preview again, with no second request. */
+   it("is kept for the tab: returning to the piece shows it without another try-on", async () => {
+     const view = await toResult();
+-- 
+2.43.0
+

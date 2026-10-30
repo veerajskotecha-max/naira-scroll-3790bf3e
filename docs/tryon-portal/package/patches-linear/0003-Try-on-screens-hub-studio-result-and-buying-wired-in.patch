@@ -1,0 +1,3645 @@
+From 7ea63000bf0917f05a756d7cf2e16d5c11ceb341 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 16:07:16 +0000
+Subject: [PATCH 03/10] Try-on screens: hub, studio, result and buying, wired
+ into the shop
+
+/try-on lists the pieces that can be tried on; /try-on/<handle> takes one
+photo, frames it at 3:4, asks for consent once per tab, waits honestly and
+shows the AI preview beside the real piece, with Add to bag and Buy now
+live throughout. Routes, still logo, noindex, the PDP chip (off), the
+privacy section, the naira_tryon order attribute and a CLAUDE.md section.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ CLAUDE.md                               |  71 +++
+ src/App.tsx                             |   9 +
+ src/components/Navbar.tsx               |   5 +-
+ src/components/tryon/ConsentSheet.tsx   | 100 ++++
+ src/components/tryon/DemoCompare.tsx    |  50 ++
+ src/components/tryon/PhotoGuide.tsx     | 107 ++++
+ src/components/tryon/PhotoStep.tsx      | 234 ++++++++
+ src/components/tryon/PieceStrip.tsx     |  98 ++++
+ src/components/tryon/RenderingState.tsx |  83 +++
+ src/components/tryon/TryAnotherRail.tsx |  86 +++
+ src/components/tryon/TryOnBuy.tsx       | 188 +++++++
+ src/components/tryon/TryOnEntry.tsx     |  44 ++
+ src/components/tryon/TryOnHub.tsx       | 101 ++++
+ src/components/tryon/TryOnResult.tsx    | 346 ++++++++++++
+ src/components/tryon/TryOnStudio.tsx    | 674 ++++++++++++++++++++++++
+ src/components/tryon/live.ts            |  67 +++
+ src/components/tryon/motion.ts          |  27 +
+ src/components/tryon/studioState.ts     |  68 +++
+ src/components/tryon/styles.ts          |  43 ++
+ src/lib/optionalChunk.ts                |   7 +-
+ src/lib/routeCode.ts                    |   2 +
+ src/lib/shopify.ts                      |  12 +
+ src/lib/tryon/analytics.ts              |   4 +-
+ src/lib/tryon/client.ts                 |   7 +-
+ src/lib/tryon/copy.ts                   |   9 +
+ src/pageCode.ts                         |   4 +-
+ src/pages/JewelDetailNext.tsx           |  19 +-
+ src/pages/PrivacyPolicy.tsx             |  25 +-
+ src/pages/TryOn.tsx                     |  54 ++
+ src/test/tryon/TryOnPage.test.tsx       | 407 ++++++++++++++
+ src/test/tryon/routesAndWeight.test.tsx | 169 ++++++
+ src/test/tryon/shopifyAttribute.test.ts |  42 ++
+ tests/edge/tryon/contract.test.ts       |  60 +++
+ 33 files changed, 3208 insertions(+), 14 deletions(-)
+ create mode 100644 src/components/tryon/ConsentSheet.tsx
+ create mode 100644 src/components/tryon/DemoCompare.tsx
+ create mode 100644 src/components/tryon/PhotoGuide.tsx
+ create mode 100644 src/components/tryon/PhotoStep.tsx
+ create mode 100644 src/components/tryon/PieceStrip.tsx
+ create mode 100644 src/components/tryon/RenderingState.tsx
+ create mode 100644 src/components/tryon/TryAnotherRail.tsx
+ create mode 100644 src/components/tryon/TryOnBuy.tsx
+ create mode 100644 src/components/tryon/TryOnEntry.tsx
+ create mode 100644 src/components/tryon/TryOnHub.tsx
+ create mode 100644 src/components/tryon/TryOnResult.tsx
+ create mode 100644 src/components/tryon/TryOnStudio.tsx
+ create mode 100644 src/components/tryon/live.ts
+ create mode 100644 src/components/tryon/motion.ts
+ create mode 100644 src/components/tryon/studioState.ts
+ create mode 100644 src/components/tryon/styles.ts
+ create mode 100644 src/pages/TryOn.tsx
+ create mode 100644 src/test/tryon/TryOnPage.test.tsx
+ create mode 100644 src/test/tryon/routesAndWeight.test.tsx
+ create mode 100644 src/test/tryon/shopifyAttribute.test.ts
+ create mode 100644 tests/edge/tryon/contract.test.ts
+
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 415fe62..7c906eb 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -482,6 +482,77 @@ output — neither listener sees it. `ChunkErrorBoundary`, wrapped around
+ rather than a blank page. Keep it outside `AppShell`: a failure in the header
+ or the bag has to land on it too.
+ 
++## Try-on (`/try-on`, built on branch `tryon-portal`, not live)
++
++A shopper adds one photo and sees one of 20 pieces on herself: a photoreal
++"AI preview" from Nano Banana Pro through the Lovable AI gateway, with the
++real listing photo and the millimetre size beside it, then adds the exact
++variant shown. Unlisted and noindex: `/try-on` (hub), `/try-on/<handle>`
++(studio), `/tryon` (alias, query kept). Never in `scripts/routes.ts` (the
++prerenderer refuses noindex pages). The spec is the judge's design of 30 Oct
++2026 (scratchpad `portal-oct30/spec/SPEC.md`).
++
++Where it lives: `supabase/functions/tryon/` (the edge function: every prompt,
++the 20 references, quota, the gateway calls), `supabase/migrations/
++20261101000000_tryon.sql`, `src/lib/tryon/` (photo prep, session store,
++client, copy, analytics), `src/components/tryon/` and `src/pages/TryOn.tsx`
++(the screens), `src/data/tryOnPieces.ts` (browser manifest) and
++`src/data/tryOnHandles.ts` (the only try-on file the product page may import).
++
++Two flags keep a publish inert, and both must be flipped on purpose:
++- `TRYON_ENABLED` (function secret): anything but `on` answers 503 "resting".
++- `TRY_ON_ENTRY_LIVE` (`src/data/tryOnHandles.ts`): the product page's "Try on"
++  chip under the heart. False through the pilot; `TryOnEntry` renders nothing.
++
++Function secrets: `LOVABLE_API_KEY` (exists only once Lovable AI is enabled),
++`TRYON_SALT` (32+ random characters, else 503), `TRYON_DEVICE_DAILY` (5),
++`TRYON_IP_DAILY` (30, loose for carrier NAT), `TRYON_DAILY_CAP` (100),
++`TRYON_VERIFY` (strict | log | off), `TRYON_RENDER_ID` (allow-list only),
++`TRYON_EXTRA_ORIGINS` (a preview origin, never in production),
++`TRYON_ALLOW_UNCERTIFIED` (serve-local only), `TRYON_GATEWAY_URL` (loopback
++only, tests), optional `TURNSTILE_SECRET`. Until Lovable applies the migration
++the function fails closed (503, not_configured).
++
++Rules that are the point, not details:
++- The model is pinned in `gateway.ts`: `google/gemini-3-pro-image` (Nano Banana
++  Pro; the `-preview` id is the only alternative), checks on
++  `google/gemini-3.8-flash`. Every prompt is built server-side from
++  `pieces.ts`; the browser sends only enums. `npx vite-node
++  scripts/tryon/print-prompts.ts` prints them byte for byte.
++- A piece is offered only once the owner has certified it. To certify: render
++  it with the printed prompts on synthetic subjects (never a real person's
++  photo), the owner approves, then set `certified: 'YYYY-MM-DD'` in BOTH
++  `src/data/tryOnPieces.ts` and `supabase/functions/tryon/pieces.ts` and add
++  the handle to `TRY_ON_LIVE_HANDLES` (tests keep all three equal). Approved
++  demo renders go in `public/tryon/demo/` with `demo: true`. Off the real shop
++  (`window.__nairaProd` false) uncertified pieces show, labelled, for testing.
++- The photo is never stored: not in Storage, the database, logs or browser
++  storage. It is re-encoded on the phone (EXIF and GPS gone), shown only as a
++  `blob:` URL (never `data:`), inside `data-clarity-mask` containers, and every
++  URL is revoked on Delete photo, pagehide and 30 minutes idle. Browser storage
++  holds only `naira_tryon_device` (a random uuid, never `naira_vid`),
++  `naira_tryon` (handles tried, also the order's cart attribute),
++  `naira_tryon_consent` and `naira_tryon_tips`.
++- Nothing goes to Meta: no new pixel or CAPI event. AddToCart still fires only
++  from CartContext. Clarity gets allow-listed event names only
++  (`src/lib/tryon/analytics.ts`).
++- Add opens the bag at the tap; the line comes from `src/lib/oneTapLine.ts`,
++  shared with the product page's "Complete the look", so the two never
++  disagree. Nothing is added from first-paint data.
++- The result screen's code is fetched during the wait; its chunk is in
++  `optionalChunk.ts` so a failed fetch never triggers the stale-build reload
++  (which would lose the photo and a paid preview).
++
++Owner launch blockers (cannot be done from a session): enable Lovable AI;
++turn OFF "AI app context" (on by default, keeps full requests, the selfie
++included, for 90 days); ask Lovable how long request images are kept; set a
++Lovable AI usage limit with blocking; have Lovable apply the migration;
++publish the privacy section (`/privacy#try-on`) before `TRYON_ENABLED=on`;
++certify each piece. Then a smoke in the Lovable preview with
++`TRYON_EXTRA_ORIGINS` set to the preview origin, one real render per
++category. Run `npx vite-node scripts/tryon/check-refs.ts` before every
++publish (every reference must answer 200 image).
++
+ ## Conventions
+ 
+ - Comments explain *why*, never *what*. Match the density already in the file.
+diff --git a/src/App.tsx b/src/App.tsx
+index 326cca9..63301c5 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -49,6 +49,7 @@ import {
+   Account,
+   OAuthConsent,
+   AdminReels,
++  TryOn,
+ } from "./pageCode";
+ 
+ 
+@@ -80,6 +81,10 @@ const ProductRoute = () => {
+   const { id } = useParams();
+   return <ProductDetail key={id} />;
+ };
++const TryOnRoute = () => {
++  const { handle } = useParams();
++  return <TryOn key={handle} />;
++};
+ 
+ /* The bag (the Naira box hovering under the pieces), on every page. Its code
+    arrives after the page's own, so it never slows a landing. */
+@@ -180,6 +185,10 @@ const AppShell = () => {
+           <Route path="/policies/privacy-policy" element={<KeepQuery to="/privacy" />} />
+           <Route path="/policies/terms-of-service" element={<KeepQuery to="/terms" />} />
+           <Route path="/policies/refund-policy" element={<KeepQuery to="/exchange-return-policy" />} />
++          {/* The try-on pilot: unlisted and noindex (pages/TryOn.tsx). */}
++          <Route path="/try-on" element={<TryOn />} />
++          <Route path="/try-on/:handle" element={<TryOnRoute />} />
++          <Route path="/tryon" element={<KeepQuery to="/try-on" />} />
+           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+           <Route path="*" element={<CatchAll />} />
+         </Routes>
+diff --git a/src/components/Navbar.tsx b/src/components/Navbar.tsx
+index bded07a..f611a9c 100644
+--- a/src/components/Navbar.tsx
++++ b/src/components/Navbar.tsx
+@@ -37,8 +37,9 @@ const Navbar = ({ scrolled }: NavbarProps) => {
+   const navigate = useNavigate();
+   /* Product pages, where catalogue ads land, keep the flower in the logo
+      still: the turning one costs a phone three.js (130 KB) and its frames
+-     (owner's choice, 27 Oct 2026). */
+-  const productPage = ["JewelDetailNext", "ProductDetail"].includes(routeKeyFor(location.pathname) ?? "");
++     (owner's choice, 27 Oct 2026). The try-on too: a phone there is busy
++     preparing a photo and waiting on a preview. */
++  const productPage = ["JewelDetailNext", "ProductDetail", "TryOn"].includes(routeKeyFor(location.pathname) ?? "");
+   // Search closes on back as well, off the clothing pages.
+   const clothing = CLOTHING.test(location.pathname);
+   const search = useBackToClose("nfSearch", searchOpen && !clothing, clothing ? leaveAsIs : setSearchOpen);
+diff --git a/src/components/tryon/ConsentSheet.tsx b/src/components/tryon/ConsentSheet.tsx
+new file mode 100644
+index 0000000..c05d17f
+--- /dev/null
++++ b/src/components/tryon/ConsentSheet.tsx
+@@ -0,0 +1,100 @@
++import { useEffect, useRef, useState, type KeyboardEvent } from "react";
++import { Check } from "lucide-react";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { outlineButton, primaryButton, textLink } from "./styles";
++
++/*
++  Nothing leaves the phone until this box is ticked and "Create my try-on" is
++  tapped. The box always opens unticked; the version agreed to is kept for the
++  tab (session.ts) so a second piece does not ask again. The phone's back
++  closes the sheet (the studio gives it its own history entry), as it does
++  the bag. Focus goes to the title and stays inside the sheet while it is open.
++*/
++
++interface Props {
++  open: boolean;
++  onCreate: () => void;
++  onClose: () => void;
++}
++
++const ConsentSheet = ({ open, onCreate, onClose }: Props) => {
++  const [ticked, setTicked] = useState(false);
++  const titleRef = useRef<HTMLHeadingElement>(null);
++  const sheetRef = useRef<HTMLDivElement>(null);
++  const copy = TRYON_COPY.consent;
++
++  useEffect(() => {
++    if (!open) return;
++    setTicked(false);
++    titleRef.current?.focus();
++  }, [open]);
++
++  if (!open) return null;
++
++  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
++    if (event.key === "Escape") {
++      event.preventDefault();
++      onClose();
++      return;
++    }
++    if (event.key !== "Tab" || !sheetRef.current) return;
++    const items = Array.from(sheetRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input:not([disabled])"));
++    if (!items.length) return;
++    const first = items[0];
++    const last = items[items.length - 1];
++    if (event.shiftKey && (document.activeElement === first || document.activeElement === titleRef.current)) {
++      event.preventDefault();
++      last.focus();
++    } else if (!event.shiftKey && document.activeElement === last) {
++      event.preventDefault();
++      first.focus();
++    }
++  };
++
++  return (
++    <>
++      <div className="fixed inset-0 z-[60] bg-nf-ink/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
++      <div
++        ref={sheetRef}
++        role="dialog"
++        aria-modal="true"
++        aria-labelledby="tryon-consent-title"
++        onKeyDown={onKeyDown}
++        className="fixed inset-x-0 bottom-0 z-[61] max-h-[92dvh] overflow-y-auto border-t border-nf-gold/40 bg-nf-ivory px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] pt-5 text-nf-ink md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:w-[520px] md:-translate-x-1/2 md:-translate-y-1/2 md:border md:px-8 md:pb-8 md:pt-7"
++      >
++        <span aria-hidden="true" className="mx-auto mb-4 block h-px w-10 bg-nf-gold md:hidden" />
++        <h2 id="tryon-consent-title" ref={titleRef} tabIndex={-1} className="font-cormorant text-[24px] font-semibold leading-tight outline-none">
++          {copy.title}
++        </h2>
++        <p className="mt-3 text-[13px] leading-[1.7] text-nf-ink/85">{copy.body}</p>
++        <a href={copy.href} target="_blank" rel="noopener" className={`mt-2 inline-flex min-h-[44px] items-center text-[12.5px] ${textLink}`}>
++          {copy.link}
++        </a>
++
++        <label className="mt-2 flex cursor-pointer items-start gap-3 border border-nf-gold/40 bg-nf-ivory-deep/60 p-3.5">
++          <span className="relative mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
++            <input
++              type="checkbox"
++              checked={ticked}
++              onChange={(event) => setTicked(event.target.checked)}
++              className="peer h-5 w-5 cursor-pointer appearance-none border border-nf-ink/60 bg-nf-ivory transition-colors checked:border-[var(--nf-cta)] checked:bg-[var(--nf-cta)]"
++            />
++            <Check size={14} strokeWidth={2.2} className="pointer-events-none absolute hidden text-nf-ivory peer-checked:block" aria-hidden="true" />
++          </span>
++          <span className="text-[13px] leading-[1.6] text-nf-ink">{copy.checkbox}</span>
++        </label>
++
++        <div className="mt-5 grid gap-2.5">
++          <button type="button" onClick={onCreate} disabled={!ticked} className={primaryButton}>
++            {copy.create}
++          </button>
++          <button type="button" onClick={onClose} className={outlineButton}>
++            {copy.notNow}
++          </button>
++        </div>
++      </div>
++    </>
++  );
++};
++
++export default ConsentSheet;
+diff --git a/src/components/tryon/DemoCompare.tsx b/src/components/tryon/DemoCompare.tsx
+new file mode 100644
+index 0000000..a960397
+--- /dev/null
++++ b/src/components/tryon/DemoCompare.tsx
+@@ -0,0 +1,50 @@
++import { useState } from "react";
++import type { TryOnPiece } from "@/data/tryOnPieces";
++import { tryonEvent } from "@/lib/tryon/analytics";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { overlayChip } from "./styles";
++
++/*
++  "See it on a model first": the owner-approved proof render of the piece on
++  a synthetic model, beside the model's own photo, as a press-and-hold
++  before and after. Static WebPs from public/tryon/demo, lazy. Nothing at all
++  until the owner has approved the piece's demo (manifest `demo: true`), so
++  no request is made for a file that does not exist yet.
++*/
++
++const DemoCompare = ({ piece }: { piece: TryOnPiece }) => {
++  const [before, setBefore] = useState(false);
++  const [seen, setSeen] = useState(false);
++  if (!piece.demo || !piece.certified) return null;
++  const hold = (down: boolean) => {
++    setBefore(down);
++    if (down && !seen) {
++      setSeen(true);
++      tryonEvent("tryon_demo_viewed");
++    }
++  };
++  const model = piece.kind === "hand" ? "/tryon/demo/model-hand.webp" : "/tryon/demo/model-face.webp";
++  return (
++    <section aria-labelledby="tryon-demo" className="mt-6">
++      <h2 id="tryon-demo" className="font-cormorant text-[19px] leading-none text-nf-ink">
++        {TRYON_COPY.studio.demo}
++      </h2>
++      <div
++        className="relative mt-3 aspect-[3/4] w-full max-w-[300px] select-none overflow-hidden bg-nf-ivory-deep"
++        style={{ WebkitTouchCallout: "none" }}
++        onPointerDown={() => hold(true)}
++        onPointerUp={() => hold(false)}
++        onPointerLeave={() => hold(false)}
++        onPointerCancel={() => hold(false)}
++        onContextMenu={(event) => event.preventDefault()}
++      >
++        <img src={`/tryon/demo/${piece.handle}.webp`} alt={TRYON_COPY.ui.previewAlt(piece.name)} width={900} height={1200} loading="lazy" decoding="async" className="h-full w-full object-cover" />
++        <img src={model} alt="" width={900} height={1200} loading="lazy" decoding="async" className={`absolute inset-0 h-full w-full object-cover ${before ? "opacity-100" : "opacity-0"}`} />
++        <span className={`${overlayChip} absolute left-3 top-3`}>{TRYON_COPY.result.chip}</span>
++      </div>
++      <p className="mt-2 text-[11.5px] text-nf-ink/60">{TRYON_COPY.result.hold}</p>
++    </section>
++  );
++};
++
++export default DemoCompare;
+diff --git a/src/components/tryon/PhotoGuide.tsx b/src/components/tryon/PhotoGuide.tsx
+new file mode 100644
+index 0000000..5e787b7
+--- /dev/null
++++ b/src/components/tryon/PhotoGuide.tsx
+@@ -0,0 +1,107 @@
++import { useState, type SyntheticEvent } from "react";
++import { Plus } from "lucide-react";
++import type { TryOnGuide } from "@/data/tryOnPieces";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++
++/*
++  How to take the photo, before the shopper takes it: a face or hand pose in
++  gold hairline with the words beside it. Open on a first visit; once closed,
++  it stays closed (localStorage naira_tryon_tips), because a shopper trying a
++  second piece has read it already. Storage can throw (private mode, blocked
++  site data), so every read and write is guarded and the tips simply open.
++*/
++
++const TIPS_KEY = "naira_tryon_tips";
++
++const readClosed = () => {
++  try {
++    return window.localStorage.getItem(TIPS_KEY) === "closed";
++  } catch {
++    return false;
++  }
++};
++const writeClosed = (closed: boolean) => {
++  try {
++    if (closed) window.localStorage.setItem(TIPS_KEY, "closed");
++    else window.localStorage.removeItem(TIPS_KEY);
++  } catch {
++    /* only the remembering is lost */
++  }
++};
++
++/* Head and shoulders, hair tucked behind the ears: the dotted marks show where
++   earrings sit and where a chain falls. Shapes are filled with the ground so
++   the lines they cover stay hidden. */
++export const FacePose = ({ className }: { className?: string }) => (
++  <svg viewBox="0 0 120 150" className={className} fill="none" stroke="currentColor" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
++    <path d="M50 84v16M70 84v16" />
++    <path d="M50 99c-9 5-25 6-33 14-5 5-8 14-8 30M70 99c9 5 25 6 33 14 5 5 8 14 8 30" />
++    <path d="M38 115c6 2.5 13 2.5 19 0M63 115c6 2.5 13 2.5 19 0" />
++    <path d="M60 18c-15 0-24 12-24 30 0 21 10 38 24 38s24-17 24-38c0-18-9-30-24-30z" fill="var(--nf-ivory-deep)" />
++    <path d="M36.5 46c-1-17 9-28 23.5-28s24.5 11 23.5 28c-4-9-12-13-23.5-13S40.5 37 36.5 46z" />
++    <path d="M36 50c-4.5-1.5-7 2-6 7.5.8 4.5 3 8 6.5 8.5M84 50c4.5-1.5 7 2 6 7.5-.8 4.5-3 8-6.5 8.5" />
++    <path d="M52 54c2-1 4-1 6 0M62 54c2-1 4-1 6 0M56 72c2.5 1.5 5.5 1.5 8 0" />
++    <circle cx="31.5" cy="69" r="2.2" strokeDasharray="1.2 1.6" />
++    <circle cx="88.5" cy="69" r="2.2" strokeDasharray="1.2 1.6" />
++    <path d="M48 103c4 14 20 14 24 0" strokeDasharray="1.5 2.5" />
++  </svg>
++);
++
++/* The back of a hand flat on a table, fingers a little apart, wrist in view:
++   dotted marks at the ring finger's base and across the wrist. */
++export const HandPose = ({ className }: { className?: string }) => (
++  <svg viewBox="0 0 120 150" className={className} fill="none" stroke="currentColor" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
++    <rect x="35.5" y="26" width="10" height="52" rx="5" transform="rotate(-8 40.5 52)" fill="var(--nf-ivory-deep)" />
++    <rect x="48.5" y="16" width="10.5" height="60" rx="5.25" fill="var(--nf-ivory-deep)" />
++    <rect x="62" y="20" width="10" height="56" rx="5" transform="rotate(6 67 48)" fill="var(--nf-ivory-deep)" />
++    <rect x="75" y="34" width="9" height="44" rx="4.5" transform="rotate(14 79.5 56)" fill="var(--nf-ivory-deep)" />
++    <rect x="17" y="70" width="10.5" height="38" rx="5.25" transform="rotate(-48 22 89)" fill="var(--nf-ivory-deep)" />
++    <path d="M36 72c-1 14-1 26 4 38h40c5-12 6-24 4-38z" fill="var(--nf-ivory-deep)" />
++    <path d="M41 110l2 36M79 110l-2 36" />
++    <path d="M63.5 76.5c2.5 1.4 6 1.6 8.8.6" strokeDasharray="1.2 1.6" />
++    <path d="M42 124c11 4 25 4 36 0" strokeDasharray="1.5 2.5" />
++  </svg>
++);
++
++const PhotoGuide = ({ guide }: { guide: TryOnGuide }) => {
++  const [open, setOpen] = useState(() => !readClosed());
++  const onToggle = (event: SyntheticEvent<HTMLDetailsElement>) => {
++    const next = event.currentTarget.open;
++    setOpen(next);
++    writeClosed(!next);
++  };
++  const hand = guide === "hand";
++  const tips: readonly string[] = hand
++    ? TRYON_COPY.tips.hand
++    : guide === "ear-cuff"
++      ? [...TRYON_COPY.tips.face.slice(0, 2), TRYON_COPY.tips.earCuff, ...TRYON_COPY.tips.face.slice(2)]
++      : TRYON_COPY.tips.face;
++  const Pose = hand ? HandPose : FacePose;
++
++  return (
++    <details open={open} onToggle={onToggle} className="group border-y border-nf-gold/25">
++      <summary className="flex min-h-[48px] cursor-pointer list-none items-center justify-between font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink [&::-webkit-details-marker]:hidden">
++        {TRYON_COPY.studio.tipsToggle}
++        <Plus size={14} strokeWidth={1.4} className="shrink-0 text-nf-ink/70 transition-transform duration-200 group-open:rotate-45" aria-hidden="true" />
++      </summary>
++      <div className="flex gap-4 pb-5">
++        <div className="w-[84px] shrink-0 self-start bg-nf-ivory-deep p-1.5 text-nf-gold" role="img" aria-label={TRYON_COPY.ui.tipsPose(hand ? "hand" : "face")}>
++          <Pose className="h-auto w-full" />
++        </div>
++        <div className="min-w-0 text-[12.5px] leading-[1.6] text-nf-ink/85">
++          <ul className="space-y-1.5">
++            {tips.map((tip) => (
++              <li key={tip} className="flex gap-2">
++                <span aria-hidden="true" className="mt-[9px] h-px w-2 shrink-0 bg-nf-gold" />
++                {tip}
++              </li>
++            ))}
++          </ul>
++          <p className="mt-2.5 text-nf-ink/65">{hand ? TRYON_COPY.tips.handAvoid : TRYON_COPY.tips.faceAvoid}</p>
++        </div>
++      </div>
++    </details>
++  );
++};
++
++export default PhotoGuide;
+diff --git a/src/components/tryon/PhotoStep.tsx b/src/components/tryon/PhotoStep.tsx
+new file mode 100644
+index 0000000..6ba76d0
+--- /dev/null
++++ b/src/components/tryon/PhotoStep.tsx
+@@ -0,0 +1,234 @@
++import { useEffect, useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type PointerEvent } from "react";
++import { Camera, ImageIcon } from "lucide-react";
++import type { TryOnKind } from "@/data/tryOnPieces";
++import { panCrop, zoomCrop, type CropRect } from "@/lib/tryon/cropMaths";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { drawCrop, type DecodedPhoto, type PhotoBlock } from "@/lib/tryon/preparePhoto";
++import type { PhotoWarning } from "@/lib/tryon/photoChecks";
++import type { SessionPhoto } from "@/lib/tryon/session";
++import { outlineButton, primaryButton, quietButton } from "./styles";
++
++/*
++  The photo: take one or choose one, or reuse the one this tab already holds
++  (one face photo serves every face piece, one hand photo every hand piece),
++  then frame it at 3:4.
++
++  "Take a photo" opens the camera, the front one for a face and the back one
++  for a hand laid on a table; "Choose from gallery" has no capture attribute,
++  so the phone offers its library. The inputs are off screen and opened from
++  real buttons, which keeps them keyboard-reachable on every phone.
++
++  The crop is drawn on a canvas straight from the decoded photo, so the
++  framing step needs no URL at all; the frame is masked from session
++  recordings like every other picture of the shopper.
++*/
++
++export type PhotoSource = "camera" | "library";
++
++interface PickerProps {
++  kind: TryOnKind;
++  held: SessionPhoto | undefined;
++  /** The shopper asked to change the photo the tab holds. */
++  changing: boolean;
++  block?: PhotoBlock;
++  disabled?: boolean;
++  onFile: (file: File, source: PhotoSource) => void;
++  onReuse: () => void;
++  onChange: () => void;
++}
++
++export const PhotoPicker = ({ kind, held, changing, block, disabled = false, onFile, onReuse, onChange }: PickerProps) => {
++  const camera = useRef<HTMLInputElement>(null);
++  const library = useRef<HTMLInputElement>(null);
++  const picked = (source: PhotoSource) => (event: ChangeEvent<HTMLInputElement>) => {
++    const file = event.target.files?.[0];
++    // Cleared so choosing the same photo again still counts as a choice.
++    event.target.value = "";
++    if (file) onFile(file, source);
++  };
++  const reuse = held && !changing;
++
++  return (
++    <div className="space-y-3">
++      {block && (
++        <p role="alert" className="border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3 py-2.5 text-[13px] leading-[1.6] text-nf-ink">
++          {TRYON_COPY.blocked[block]}
++        </p>
++      )}
++      {reuse ? (
++        <div className="flex items-stretch gap-3">
++          <div className="w-[60px] shrink-0 overflow-hidden bg-nf-ivory-deep" data-clarity-mask="True">
++            <img src={held.url} alt={TRYON_COPY.ui.yourPhoto} width={60} height={80} className="h-full w-full object-cover" />
++          </div>
++          <div className="grid min-w-0 flex-1 gap-2">
++            <button type="button" onClick={onReuse} disabled={disabled} className={primaryButton}>
++              {TRYON_COPY.reuse.use}
++            </button>
++            <button type="button" onClick={onChange} disabled={disabled} className={outlineButton}>
++              {TRYON_COPY.reuse.change}
++            </button>
++          </div>
++        </div>
++      ) : (
++        <div className="grid gap-2.5">
++          <button type="button" onClick={() => camera.current?.click()} disabled={disabled} className={primaryButton}>
++            <Camera size={16} strokeWidth={1.5} aria-hidden="true" />
++            {TRYON_COPY.studio.takePhoto}
++          </button>
++          <button type="button" onClick={() => library.current?.click()} disabled={disabled} className={outlineButton}>
++            <ImageIcon size={16} strokeWidth={1.5} aria-hidden="true" />
++            {TRYON_COPY.studio.chooseGallery}
++          </button>
++          {held && (
++            <button type="button" onClick={onReuse} disabled={disabled} className={quietButton}>
++              {TRYON_COPY.reuse.use}
++            </button>
++          )}
++        </div>
++      )}
++      <input
++        ref={camera}
++        type="file"
++        accept="image/*"
++        capture={kind === "hand" ? "environment" : "user"}
++        onChange={picked("camera")}
++        className="sr-only"
++        tabIndex={-1}
++        aria-hidden="true"
++        data-tryon-input="camera"
++      />
++      <input ref={library} type="file" accept="image/*" onChange={picked("library")} className="sr-only" tabIndex={-1} aria-hidden="true" data-tryon-input="library" />
++    </div>
++  );
++};
++
++/* The 3:4 frame the shopper drags (and pinches) her photo under. */
++export const CropFrame = ({ decoded, initial, onCrop }: { decoded: DecodedPhoto; initial: CropRect; onCrop: (crop: CropRect) => void }) => {
++  const box = useRef<HTMLDivElement>(null);
++  const canvas = useRef<HTMLCanvasElement>(null);
++  const [crop, setCrop] = useState(initial);
++  const current = useRef(initial);
++  const pointers = useRef(new Map<number, { x: number; y: number }>());
++
++  const update = (next: CropRect) => {
++    current.current = next;
++    setCrop(next);
++    onCrop(next);
++  };
++
++  /* The canvas matches the frame's size on screen (at up to 2x for sharpness). */
++  useLayoutEffect(() => {
++    const el = box.current;
++    const c = canvas.current;
++    if (!el || !c) return;
++    const fit = () => {
++      const scale = Math.min(2, window.devicePixelRatio || 1);
++      const width = Math.max(1, Math.round(el.clientWidth * scale));
++      c.width = width;
++      c.height = Math.round((width * 4) / 3);
++      drawCrop(decoded, current.current, c);
++    };
++    fit();
++    if (typeof ResizeObserver === "undefined") return;
++    const ro = new ResizeObserver(fit);
++    ro.observe(el);
++    return () => ro.disconnect();
++  }, [decoded]);
++
++  useEffect(() => {
++    const c = canvas.current;
++    if (!c) return;
++    const frame = requestAnimationFrame(() => drawCrop(decoded, crop, c));
++    return () => cancelAnimationFrame(frame);
++  }, [crop, decoded]);
++
++  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
++    try {
++      event.currentTarget.setPointerCapture(event.pointerId);
++    } catch {
++      /* capture is a nicety */
++    }
++    pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
++  };
++  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
++    const map = pointers.current;
++    const last = map.get(event.pointerId);
++    if (!last || !box.current) return;
++    const next = { x: event.clientX, y: event.clientY };
++    if (map.size === 1) {
++      update(panCrop(current.current, next.x - last.x, next.y - last.y, box.current.clientWidth, decoded));
++    } else if (map.size === 2) {
++      const other = Array.from(map.entries()).find(([id]) => id !== event.pointerId)?.[1];
++      if (other) {
++        const before = Math.hypot(last.x - other.x, last.y - other.y);
++        const after = Math.hypot(next.x - other.x, next.y - other.y);
++        if (before > 0 && after > 0) update(zoomCrop(current.current, after / before, decoded));
++      }
++    }
++    map.set(event.pointerId, next);
++  };
++  const onPointerEnd = (event: PointerEvent<HTMLDivElement>) => {
++    pointers.current.delete(event.pointerId);
++  };
++  /* Keyboard: arrows move the photo, + and - zoom. */
++  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
++    const width = box.current?.clientWidth ?? 300;
++    const step = 12;
++    const moves: Record<string, [number, number]> = { ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] };
++    if (moves[event.key]) {
++      event.preventDefault();
++      update(panCrop(current.current, moves[event.key][0], moves[event.key][1], width, decoded));
++    } else if (event.key === "+" || event.key === "=" || event.key === "-") {
++      event.preventDefault();
++      update(zoomCrop(current.current, event.key === "-" ? 1 / 1.1 : 1.1, decoded));
++    }
++  };
++
++  return (
++    <div
++      ref={box}
++      data-clarity-mask="True"
++      data-tryon-crop
++      role="img"
++      aria-label={`${TRYON_COPY.ui.yourPhoto}. ${TRYON_COPY.crop.hint}`}
++      tabIndex={0}
++      onPointerDown={onPointerDown}
++      onPointerMove={onPointerMove}
++      onPointerUp={onPointerEnd}
++      onPointerCancel={onPointerEnd}
++      onKeyDown={onKeyDown}
++      className="relative aspect-[3/4] w-full cursor-grab select-none overflow-hidden bg-nf-ink active:cursor-grabbing"
++      style={{ touchAction: "none" }}
++    >
++      <canvas ref={canvas} className="block h-full w-full" />
++      {/* Hairline guides at the thirds, as a camera's grid. */}
++      <span aria-hidden="true" className="pointer-events-none absolute inset-0 border border-nf-gold/70" />
++      <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-1/3 w-px bg-nf-ivory/25" />
++      <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-2/3 w-px bg-nf-ivory/25" />
++      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/3 h-px bg-nf-ivory/25" />
++      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-2/3 h-px bg-nf-ivory/25" />
++      <span className="pointer-events-none absolute inset-x-0 bottom-3 mx-auto w-fit bg-nf-ivory/85 px-3 py-1.5 font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm">
++        {TRYON_COPY.crop.hint}
++      </span>
++    </div>
++  );
++};
++
++/* Non-blocking hints: the photo can still be used as it is. */
++export const PhotoWarnings = ({ warnings, onRetake, onUseAnyway }: { warnings: PhotoWarning[]; onRetake: () => void; onUseAnyway: () => void }) => (
++  <div className="space-y-3">
++    <div className="space-y-1.5 border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3 py-2.5 text-[13px] leading-[1.6] text-nf-ink">
++      {warnings.map((w) => (
++        <p key={w}>{TRYON_COPY.warnings[w]}</p>
++      ))}
++    </div>
++    <div className="grid grid-cols-2 gap-2.5">
++      <button type="button" onClick={onRetake} className={outlineButton}>
++        {TRYON_COPY.warnings.retake}
++      </button>
++      <button type="button" onClick={onUseAnyway} className={primaryButton}>
++        {TRYON_COPY.warnings.useAnyway}
++      </button>
++    </div>
++  </div>
++);
+diff --git a/src/components/tryon/PieceStrip.tsx b/src/components/tryon/PieceStrip.tsx
+new file mode 100644
+index 0000000..9e37f77
+--- /dev/null
++++ b/src/components/tryon/PieceStrip.tsx
+@@ -0,0 +1,98 @@
++import type { JewelPiece } from "@/data/jewellery";
++import type { TryOnPiece, TryOnStone } from "@/data/tryOnPieces";
++import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { pieceInStone } from "./live";
++import { choiceButton, eyebrow, stoneSwatch, textLink } from "./styles";
++
++/*
++  The real piece, always in view above the photo: its studio thumbnail, name,
++  live price and true size, and the stones it is sold in. The thumbnail and
++  "The real piece" open the listing's own photos and size guide, so the AI
++  preview is never the only picture of what arrives.
++*/
++
++interface Props {
++  piece: TryOnPiece;
++  live: JewelPiece | undefined;
++  stone: TryOnStone | null;
++  onStone: (stone: TryOnStone) => void;
++  /** While a preview is being made, the stone it is for stays put. */
++  stonesLocked?: boolean;
++  onRealPiece: () => void;
++}
++
++const PieceStrip = ({ piece, live, stone, onStone, stonesLocked = false, onRealPiece }: Props) => {
++  const view = pieceInStone(live, stone);
++  const image = view?.image ?? piece.image;
++  return (
++    <section aria-label={piece.name} className="border-y border-nf-gold/25 py-3">
++      <div className="flex items-start gap-3">
++        <button
++          type="button"
++          onClick={onRealPiece}
++          className="block h-[72px] w-[72px] shrink-0 overflow-hidden bg-nf-ivory-deep"
++          aria-label={TRYON_COPY.ui.realPieceAlt(piece.name)}
++        >
++          <img
++            src={shopifyImage(image, 144)}
++            srcSet={shopifySrcSet(image, [144, 216]) || undefined}
++            sizes="72px"
++            alt=""
++            width={72}
++            height={72}
++            className="h-full w-full object-cover"
++          />
++        </button>
++        <div className="min-w-0 flex-1">
++          <h2 className="font-cormorant text-[19px] font-semibold leading-[1.15] text-nf-ink md:text-[21px]">{piece.name}</h2>
++          <div className="mt-1 flex min-h-[18px] items-center text-[13px] text-nf-ink">
++            {view ? view.priceLabel : <span className="atelier-shimmer block h-3 w-16" aria-hidden="true" />}
++          </div>
++          <p className="mt-1 text-[11.5px] leading-[1.4] text-nf-ink/75">{TRYON_COPY.studio.actualSize(piece.sizeLine)}</p>
++        </div>
++        <button type="button" onClick={onRealPiece} className={`-mr-1 shrink-0 self-start px-1 py-2 text-[11.5px] ${textLink}`}>
++          {TRYON_COPY.studio.realPiece}
++        </button>
++      </div>
++
++      {piece.stones && (
++        <div className="mt-3" data-option="Stone">
++          <p className={eyebrow}>
++            {TRYON_COPY.studio.stoneLabel}
++            {stone && <span className="ml-2 normal-case tracking-normal text-nf-ink/80">{stone}</span>}
++          </p>
++          {/* One row whatever the count, so the photo buttons stay on a 360px first screen. */}
++          <div
++            role="radiogroup"
++            aria-label={TRYON_COPY.studio.stoneLabel}
++            className="mt-1.5 grid gap-1.5"
++            style={{ gridTemplateColumns: `repeat(${piece.stones.length}, minmax(0, 1fr))` }}
++          >
++            {piece.stones.map((value) => {
++              const active = stone === value;
++              return (
++                <button
++                  key={value}
++                  type="button"
++                  role="radio"
++                  aria-checked={active}
++                  disabled={stonesLocked && !active}
++                  onClick={() => onStone(value)}
++                  className={choiceButton(active, true)}
++                >
++                  <span className="inline-flex min-w-0 items-center gap-1">
++                    <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 border border-nf-ink/15" style={{ background: stoneSwatch(value) }} />
++                    <span className="truncate">{value}</span>
++                  </span>
++                </button>
++              );
++            })}
++          </div>
++        </div>
++      )}
++    </section>
++  );
++};
++
++export default PieceStrip;
+diff --git a/src/components/tryon/RenderingState.tsx b/src/components/tryon/RenderingState.tsx
+new file mode 100644
+index 0000000..5abb6da
+--- /dev/null
++++ b/src/components/tryon/RenderingState.tsx
+@@ -0,0 +1,83 @@
++import { useEffect, useRef, useState, type ReactNode } from "react";
++import type { TryOnPiece } from "@/data/tryOnPieces";
++import { renderStage, renderStageCopy, TRYON_COPY } from "@/lib/tryon/copy";
++import { useSweep } from "./motion";
++import { smallButton } from "./styles";
++
++/*
++  The wait, told honestly: the upload's real percentage, then what is under
++  way by elapsed time (never a made-up percentage), over the shopper's own
++  photo dimmed, with one gold hairline sweeping it. The piece stays buyable
++  underneath the whole time (the studio passes TryOnBuy in as `buy`).
++
++  Screen readers hear each stage once, through a polite live region; the
++  upload is announced in quarters rather than at every progress event.
++*/
++
++interface Props {
++  piece: TryOnPiece;
++  photoUrl: string | undefined;
++  phase: "uploading" | "rendering";
++  /** Upload progress, 0 to 1. */
++  progress: number;
++  /** When the photo finished uploading, for the stages. */
++  startedAt: number | null;
++  onCancel: () => void;
++  buy: ReactNode;
++  quiet: ReactNode;
++  layout: (frame: ReactNode, controls: ReactNode) => ReactNode;
++}
++
++const RenderingState = ({ piece, photoUrl, phase, progress, startedAt, onCancel, buy, quiet, layout }: Props) => {
++  const [now, setNow] = useState(() => Date.now());
++  const sweep = useRef<HTMLSpanElement>(null);
++  useSweep(sweep, [{ top: "6%" }, { top: "94%" }], 2600);
++
++  useEffect(() => {
++    if (phase !== "rendering") return;
++    setNow(Date.now());
++    const timer = window.setInterval(() => setNow(Date.now()), 1000);
++    return () => window.clearInterval(timer);
++  }, [phase]);
++
++  const stage = phase === "rendering" ? renderStage(startedAt ? now - startedAt : 0) : null;
++  const text = stage ? renderStageCopy(stage, piece.name, piece.sizeLine) : TRYON_COPY.uploading(progress * 100);
++  const announcement = stage ? text : TRYON_COPY.uploading(Math.floor(progress * 4) * 25);
++
++  const frame = (
++    <div className="relative aspect-[3/4] w-full overflow-hidden bg-nf-ink" data-clarity-mask="True">
++      {photoUrl && <img src={photoUrl} alt="" width={900} height={1200} className="h-full w-full object-cover opacity-40" draggable={false} />}
++      <span ref={sweep} aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/2 block h-px bg-nf-gold shadow-[0_0_14px_2px_rgb(var(--nf-gold-rgb)/0.55)]" />
++      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-nf-ink/80 via-nf-ink/40 to-transparent px-5 pb-6 pt-16 text-center">
++        <h2 id="tryon-step" tabIndex={-1} className="mx-auto max-w-[320px] font-nf-editorial text-[22px] italic leading-snug text-nf-ivory outline-none md:text-[25px]">
++          {text}
++        </h2>
++        {phase === "uploading" && (
++          <span className="mx-auto mt-3 block h-px w-40 bg-nf-ivory/25" aria-hidden="true">
++            <span className="block h-px bg-nf-gold transition-[width] duration-200" style={{ width: `${Math.round(progress * 100)}%` }} />
++          </span>
++        )}
++      </div>
++    </div>
++  );
++
++  const controls = (
++    <div className="space-y-4">
++      <p role="status" aria-live="polite" className="sr-only">
++        {announcement}
++      </p>
++      <div className="flex items-center justify-between gap-3 border-y border-nf-gold/25 py-2">
++        <p className="text-[12.5px] text-nf-ink/80">{TRYON_COPY.keepOpen}</p>
++        <button type="button" onClick={onCancel} className={smallButton}>
++          {TRYON_COPY.cancel}
++        </button>
++      </div>
++      {buy}
++      {quiet}
++    </div>
++  );
++
++  return <>{layout(frame, controls)}</>;
++};
++
++export default RenderingState;
+diff --git a/src/components/tryon/TryAnotherRail.tsx b/src/components/tryon/TryAnotherRail.tsx
+new file mode 100644
+index 0000000..db37315
+--- /dev/null
++++ b/src/components/tryon/TryAnotherRail.tsx
+@@ -0,0 +1,86 @@
++import { useNavigate } from "react-router-dom";
++import type { JewelPiece } from "@/data/jewellery";
++import { TRY_ON_PIECES, type TryOnPiece } from "@/data/tryOnPieces";
++import { matchScore } from "@/lib/pairings";
++import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
++import { tryonEvent } from "@/lib/tryon/analytics";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { tryOnResults } from "@/lib/tryon/session";
++import { listed, livePiece } from "./live";
++import { overlayChip } from "./styles";
++
++/*
++  "Try another piece": the pieces the same photo can wear, best match first
++  by the shop's own pairing score (pairings.ts, which decides every "goes
++  with" on the site). One tap opens the piece and starts its preview with the
++  photo and consent already given; one already made this tab is shown at
++  once, so going back and forth never spends another try-on.
++*/
++
++export const AUTOSTART = "tryOnAutostart";
++
++interface Props {
++  current: TryOnPiece;
++  stone: string | null;
++  jewellery: JewelPiece[];
++  isLive: boolean;
++}
++
++const TryAnotherRail = ({ current, stone, jewellery, isLive }: Props) => {
++  const navigate = useNavigate();
++  const anchor = livePiece(jewellery, isLive, current.handle);
++  const made = new Set(tryOnResults().map((r) => r.handle));
++  const score = (p: TryOnPiece) => {
++    const candidate = livePiece(jewellery, isLive, p.handle);
++    return anchor && candidate ? matchScore(anchor, candidate) : 0;
++  };
++  const pieces = TRY_ON_PIECES.filter((p) => p.kind === current.kind && p.handle !== current.handle && listed(p, jewellery, isLive))
++    .map((p, i) => ({ p, i, s: score(p) }))
++    .sort((a, b) => b.s - a.s || a.i - b.i)
++    .map(({ p }) => p);
++  if (!pieces.length) return null;
++
++  const open = (p: TryOnPiece) => {
++    tryonEvent("tryon_another");
++    /* The stone carries over where the next piece is sold in it. */
++    const carry = stone && p.stones?.includes(stone as never) ? `?colour=${encodeURIComponent(stone.toLowerCase())}` : "";
++    navigate(`/try-on/${p.handle}${carry}`, { state: { [AUTOSTART]: true } });
++  };
++
++  return (
++    <section id="tryon-another" aria-labelledby="tryon-another-title" className="mt-12 scroll-mt-[140px] border-t border-nf-gold/25 pt-6">
++      <h2 id="tryon-another-title" className="px-4 font-cormorant text-[21px] leading-none text-nf-ink sm:px-0">
++        {TRYON_COPY.result.another}
++      </h2>
++      <div className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 sm:px-0 lg:grid lg:grid-cols-6 lg:overflow-visible" style={{ overscrollBehaviorX: "contain" }}>
++        {pieces.map((p) => (
++          <button
++            key={p.handle}
++            type="button"
++            onClick={() => open(p)}
++            className="w-[36vw] max-w-[170px] shrink-0 snap-start text-left lg:w-auto lg:max-w-none"
++            data-tryon-another={p.handle}
++          >
++            <span className="relative block aspect-square overflow-hidden bg-nf-ivory-deep">
++              <img
++                src={shopifyImage(p.image, 240)}
++                srcSet={shopifySrcSet(p.image, [240, 360]) || undefined}
++                sizes="(min-width: 1024px) 180px, 36vw"
++                alt=""
++                width={240}
++                height={240}
++                loading="lazy"
++                decoding="async"
++                className="h-full w-full object-cover"
++              />
++              {made.has(p.handle) && <span className={`${overlayChip} absolute left-2 top-2 px-2 text-[9px]`}>{TRYON_COPY.result.chip}</span>}
++            </span>
++            <span className="mt-2 line-clamp-2 block font-cormorant text-[14px] font-semibold leading-[1.2] text-nf-ink">{p.name}</span>
++          </button>
++        ))}
++      </div>
++    </section>
++  );
++};
++
++export default TryAnotherRail;
+diff --git a/src/components/tryon/TryOnBuy.tsx b/src/components/tryon/TryOnBuy.tsx
+new file mode 100644
+index 0000000..04eb51e
+--- /dev/null
++++ b/src/components/tryon/TryOnBuy.tsx
+@@ -0,0 +1,188 @@
++import { useState } from "react";
++import { Link } from "react-router-dom";
++import { Gift } from "lucide-react";
++import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
++import UpiBadges from "@/components/checkout/UpiBadges";
++import { useCart } from "@/contexts/CartContext";
++import type { JewelPiece } from "@/data/jewellery";
++import { adjustableSizes, isAdjustableRing } from "@/data/ringFit";
++import type { TryOnPiece } from "@/data/tryOnPieces";
++import { useBackToClose } from "@/hooks/useBackToClose";
++import { oneTapLine, sizeChoices } from "@/lib/oneTapLine";
++import { tryonEvent } from "@/lib/tryon/analytics";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { liveSoldOut, pieceInStone } from "./live";
++import { choiceButton, eyebrow, outlineButton, primaryButton, textLink } from "./styles";
++
++/*
++  Add to bag and Buy now, live from the first second of a try-on to the
++  result, so the wait is never dead time.
++
++  The line is the one the product page's one-tap Add takes (oneTapLine): the
++  stone shown, a size for the Eternity Band, US 6 for the open-back Cushion
++  Halo. The button always names the stone it adds. The bag opens AT the tap
++  and the piece goes in after (the product page's pattern); a refusal is said
++  inside the bag by CartContext. Buy now goes through CartContext.buyNow, so
++  the checkout handoff, discount and tracking stay the bag's.
++
++  Nothing is added from first-paint data: until the live catalogue has
++  answered the buttons wait, so a piece sold out since the snapshot is never
++  put in the bag.
++*/
++
++interface Props {
++  piece: TryOnPiece;
++  live: JewelPiece | undefined;
++  stone: string | null;
++  /** The add names the stone outright ("Add Emerald to bag") when it differs from the preview's. */
++  stoneDiffers?: boolean;
++  /** A thumbnail, name and price above the buttons, for the wait screens. */
++  withCard?: boolean;
++}
++
++const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false }: Props) => {
++  const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
++  const [size, setSize] = useState<string | null>(null);
++  const [adding, setAdding] = useState(false);
++  const [buying, setBuying] = useState(false);
++  const [guideOpen, setGuideOpen] = useState(false);
++  const guide = useBackToClose("nfSizeGuide", guideOpen, setGuideOpen);
++
++  const sizes = live ? sizeChoices(live, stone ? { Stone: stone } : {}) : null;
++  const chosen: Record<string, string> = {
++    ...(stone ? { Stone: stone } : {}),
++    ...(sizes && size ? { [sizes.option]: size } : {}),
++  };
++  const one = live ? oneTapLine(live, chosen) : null;
++  const soldOut = liveSoldOut(live);
++  const view = pieceInStone(live, stone);
++  const pieceHref = `/jewellery/${piece.handle}${stone ? `?colour=${encodeURIComponent(stone.toLowerCase())}` : ""}`;
++
++  const add = async () => {
++    if (!one || !("line" in one) || adding) return;
++    setAdding(true);
++    /* The bag opens first, then the piece goes in (JewelDetailNext's Add). */
++    setDrawerOpen(true);
++    tryonEvent("tryon_added");
++    try {
++      await addItem(one.line);
++    } finally {
++      setAdding(false);
++    }
++  };
++
++  const buy = async () => {
++    if (!one || !("line" in one) || buying || cartLoading) return;
++    setBuying(true);
++    tryonEvent("tryon_buynow");
++    try {
++      await buyNow(one.line);
++    } finally {
++      setBuying(false);
++    }
++  };
++
++  const addLabel = adding
++    ? TRYON_COPY.buy.adding
++    : stoneDiffers && stone
++      ? TRYON_COPY.stoneChange.add(stone)
++      : TRYON_COPY.buy.add(stone, sizes ? size : null);
++
++  return (
++    <div className="space-y-3" data-tryon-buy>
++      {withCard && (
++        <div className="flex items-center gap-3">
++          <img src={view?.image ?? piece.image} alt="" width={56} height={56} className="h-14 w-14 shrink-0 bg-nf-ivory-deep object-cover" loading="lazy" decoding="async" />
++          <div className="min-w-0">
++            <p className="truncate font-cormorant text-[16px] font-semibold leading-tight text-nf-ink">{piece.name}</p>
++            <div className="mt-0.5 flex min-h-[18px] items-center text-[12.5px] text-nf-ink/80">
++              {view ? [view.priceLabel, stone].filter(Boolean).join(" · ") : <span className="atelier-shimmer block h-3 w-16" aria-hidden="true" />}
++            </div>
++          </div>
++        </div>
++      )}
++
++      {soldOut ? (
++        <div>
++          <p className="text-[13px] text-nf-ink">{TRYON_COPY.soldOut.line}</p>
++          <div className="mt-3 grid gap-2.5">
++            {one && "soldOut" in one && (
++              <a href={one.reserveUrl} target="_blank" rel="noopener noreferrer" onClick={() => tryonEvent("tryon_reserve")} className={primaryButton}>
++                {TRYON_COPY.soldOut.reserve}
++              </a>
++            )}
++            <Link to={pieceHref} className={outlineButton}>
++              {TRYON_COPY.soldOut.view}
++            </Link>
++          </div>
++        </div>
++      ) : (
++        <>
++          {sizes && (
++            <div data-option={sizes.option}>
++              <div className="flex items-center justify-between">
++                <p className={eyebrow}>{TRYON_COPY.buy.chooseSize}</p>
++                <button type="button" onClick={() => setGuideOpen(true)} className={`-mr-2 inline-flex min-h-[44px] items-center px-2 text-[11.5px] ${textLink}`}>
++                  {TRYON_COPY.buy.sizeGuide}
++                </button>
++              </div>
++              <div role="radiogroup" aria-label={TRYON_COPY.buy.chooseSize} className="flex flex-wrap gap-2">
++                {sizes.values.map(({ value, buyable }) => (
++                  <button
++                    key={value}
++                    type="button"
++                    role="radio"
++                    aria-checked={size === value}
++                    onClick={() => {
++                      setSize(value);
++                      tryonEvent("tryon_choose_size");
++                    }}
++                    className={choiceButton(size === value)}
++                  >
++                    {TRYON_COPY.buy.sizeChip(value)}
++                    {!buyable && <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">{TRYON_COPY.buy.preorder}</span>}
++                  </button>
++                ))}
++              </div>
++              <RingSizeGuideModal
++                isOpen={guideOpen}
++                onClose={guide.requestClose}
++                highlightSize={size ?? undefined}
++                adjustable={isAdjustableRing(live)}
++                fitSizes={adjustableSizes(piece.handle)}
++              />
++            </div>
++          )}
++
++          <div className="grid gap-2.5">
++            {one && "soldOut" in one ? (
++              <a href={one.reserveUrl} target="_blank" rel="noopener noreferrer" onClick={() => tryonEvent("tryon_reserve")} className={primaryButton}>
++                {TRYON_COPY.buy.reserve}
++              </a>
++            ) : one && "need" in one ? (
++              <button type="button" disabled className={primaryButton}>
++                {TRYON_COPY.buy.chooseSizeButton}
++              </button>
++            ) : (
++              <>
++                <button type="button" onClick={add} disabled={!one || adding || buying} className={primaryButton}>
++                  {addLabel}
++                </button>
++                <button type="button" onClick={buy} disabled={!one || adding || buying || cartLoading} className={outlineButton}>
++                  {TRYON_COPY.buy.buyNow}
++                  <UpiBadges size={16} />
++                </button>
++              </>
++            )}
++          </div>
++          <p className="flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
++            <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
++            {TRYON_COPY.buy.ladder}
++          </p>
++        </>
++      )}
++    </div>
++  );
++};
++
++export default TryOnBuy;
+diff --git a/src/components/tryon/TryOnEntry.tsx b/src/components/tryon/TryOnEntry.tsx
+new file mode 100644
+index 0000000..24d76f0
+--- /dev/null
++++ b/src/components/tryon/TryOnEntry.tsx
+@@ -0,0 +1,44 @@
++import { Link } from "react-router-dom";
++import { TRY_ON_ENTRY_LIVE, TRY_ON_LIVE_HANDLES } from "@/data/tryOnHandles";
++
++/*
++  The product page's "Try on" chip: a square ivory button under the wishlist
++  heart, a sibling of the gallery's slide buttons (never inside one). It
++  adds nothing to the first screen and imports only tryOnHandles.ts, so the
++  product page carries no try-on code. Nothing renders through the unlisted
++  pilot (TRY_ON_ENTRY_LIVE) or for a piece the owner has not certified.
++
++  The label is TRYON_COPY.pdpChip, written out here so the copy module stays
++  off the product page (routesAndWeight.test.ts keeps the two equal).
++*/
++
++export const TRY_ON_CHIP_LABEL = "Try on";
++
++/* JewelDetailNext's overlay button: square, like every corner on the site. */
++const overlayButton = "press-scale z-10 flex h-11 w-11 items-center justify-center bg-nf-ivory/75 backdrop-blur-sm";
++
++interface Props {
++  handle: string;
++  /** The stone or metal on screen, so the try-on opens on it. */
++  colour?: string;
++  /** Under the phone gallery's heart (top-3) or the desktop grid's (top-4). */
++  place: "mobile" | "desktop";
++}
++
++const TryOnEntry = ({ handle, colour, place }: Props) => {
++  if (!TRY_ON_ENTRY_LIVE || !TRY_ON_LIVE_HANDLES.has(handle)) return null;
++  const query = colour ? `?colour=${encodeURIComponent(colour.toLowerCase())}` : "";
++  return (
++    <Link
++      to={`/try-on/${handle}${query}`}
++      state={{ tryOnFrom: "pdp" }}
++      className={`${overlayButton} absolute right-4 ${place === "mobile" ? "top-[64px]" : "top-[68px]"}`}
++      aria-label={TRY_ON_CHIP_LABEL}
++      data-tryon-entry
++    >
++      <span className="text-center font-nf-label text-[8.5px] font-medium uppercase leading-[1.15] tracking-nf-8 text-nf-ink">{TRY_ON_CHIP_LABEL}</span>
++    </Link>
++  );
++};
++
++export default TryOnEntry;
+diff --git a/src/components/tryon/TryOnHub.tsx b/src/components/tryon/TryOnHub.tsx
+new file mode 100644
+index 0000000..55fdc57
+--- /dev/null
++++ b/src/components/tryon/TryOnHub.tsx
+@@ -0,0 +1,101 @@
++import { Link } from "react-router-dom";
++import { useLiveJewellery } from "@/hooks/useLiveJewellery";
++import { TRY_ON_PIECES, type TryOnPiece } from "@/data/tryOnPieces";
++import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { listed, livePiece } from "./live";
++import { eyebrow, primaryButton, textLink } from "./styles";
++
++/*
++  /try-on: every piece that can be tried on, in two groups by the photo it
++  needs. Names and photos paint at once from the manifest; the price waits
++  for the live catalogue (a one-line shimmer until then), and a piece that
++  has sold out disappears as soon as Shopify says so.
++*/
++
++const Card = ({ piece, eager, price, certified }: { piece: TryOnPiece; eager: boolean; price: string | null; certified: boolean }) => (
++  <Link to={`/try-on/${piece.handle}`} className="group block min-w-0" data-tryon-card={piece.handle}>
++    <div className="relative aspect-square overflow-hidden bg-nf-ivory-deep">
++      <img
++        src={shopifyImage(piece.image, 360)}
++        srcSet={shopifySrcSet(piece.image, [240, 360, 480]) || undefined}
++        sizes="(min-width: 1024px) 230px, (min-width: 640px) 30vw, 46vw"
++        alt={piece.name}
++        width={360}
++        height={360}
++        loading={eager ? "eager" : "lazy"}
++        decoding="async"
++        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
++      />
++      {!certified && (
++        <span className="absolute left-2 top-2 bg-nf-ivory/85 px-2 py-0.5 font-nf-label text-[9px] uppercase tracking-nf-16 text-nf-gold-text">
++          {TRYON_COPY.hub.uncertified}
++        </span>
++      )}
++    </div>
++    <p className="mt-2.5 line-clamp-2 font-cormorant text-[15px] font-semibold leading-[1.2] text-nf-ink">{piece.name}</p>
++    <div className="mt-1 flex min-h-[18px] items-center text-[12px] text-nf-ink/75">
++      {price ?? <span className="atelier-shimmer block h-3 w-14" aria-hidden="true" />}
++    </div>
++  </Link>
++);
++
++const Group = ({ id, title, sub, pieces, priceOf, eagerCount }: { id: string; title: string; sub: string; pieces: TryOnPiece[]; priceOf: (p: TryOnPiece) => string | null; eagerCount: number }) =>
++  pieces.length ? (
++    <section aria-labelledby={id} className="mt-10 first:mt-0">
++      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-nf-gold/25 pb-3">
++        <h2 id={id} className="font-cormorant text-[22px] leading-none text-nf-ink md:text-[26px]">
++          {title}
++        </h2>
++        <p className={eyebrow}>{sub}</p>
++      </div>
++      <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-5">
++        {pieces.map((piece, i) => (
++          <Card key={piece.handle} piece={piece} eager={i < eagerCount} price={priceOf(piece)} certified={Boolean(piece.certified)} />
++        ))}
++      </div>
++    </section>
++  ) : null;
++
++const TryOnHub = () => {
++  const { jewellery, isLive } = useLiveJewellery();
++  const shown = TRY_ON_PIECES.filter((p) => listed(p, jewellery, isLive));
++  const face = shown.filter((p) => p.kind === "face");
++  const hand = shown.filter((p) => p.kind === "hand");
++  const priceOf = (p: TryOnPiece) => livePiece(jewellery, isLive, p.handle)?.priceLabel ?? null;
++  const copy = TRYON_COPY.hub;
++
++  return (
++    <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 md:pt-12">
++      <header className="max-w-xl">
++        <h1 className="font-cormorant text-[34px] font-semibold leading-[1.05] text-nf-ink md:text-[48px]">{copy.title}</h1>
++        <p className="mt-3 font-nf-editorial text-[16px] leading-[1.6] text-nf-ink/75 md:text-[18px]">{copy.sub}</p>
++      </header>
++
++      <div className="mt-9 md:mt-12">
++        {shown.length === 0 ? (
++          <div className="border border-nf-gold/30 bg-nf-ivory-deep/60 px-6 py-10 text-center">
++            <p className="mx-auto max-w-sm font-nf-editorial text-[17px] leading-[1.6] text-nf-ink/85">{copy.empty}</p>
++            <Link to={copy.emptyHref} className={`${primaryButton} mt-6 max-w-[280px]`}>
++              {copy.emptyButton}
++            </Link>
++          </div>
++        ) : (
++          <>
++            <Group id="tryon-face" title={copy.faceGroup} sub={copy.faceGroupSub} pieces={face} priceOf={priceOf} eagerCount={2} />
++            <Group id="tryon-hand" title={copy.handGroup} sub={copy.handGroupSub} pieces={hand} priceOf={priceOf} eagerCount={0} />
++          </>
++        )}
++      </div>
++
++      <p className="mt-12 max-w-xl border-t border-nf-gold/25 pt-5 text-[12.5px] leading-[1.7] text-nf-ink/75">
++        {TRYON_COPY.trust.line}{" "}
++        <Link to={TRYON_COPY.trust.href} className={textLink}>
++          {TRYON_COPY.trust.link}
++        </Link>
++      </p>
++    </div>
++  );
++};
++
++export default TryOnHub;
+diff --git a/src/components/tryon/TryOnResult.tsx b/src/components/tryon/TryOnResult.tsx
+new file mode 100644
+index 0000000..09b3a26
+--- /dev/null
++++ b/src/components/tryon/TryOnResult.tsx
+@@ -0,0 +1,346 @@
++import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
++import { X } from "lucide-react";
++import type { TryOnPiece } from "@/data/tryOnPieces";
++import { useBackToClose } from "@/hooks/useBackToClose";
++import { shopifyImage } from "@/lib/shopifyImage";
++import { tryonEvent } from "@/lib/tryon/analytics";
++import { sendFeedback } from "@/lib/tryon/client";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { SCENE_GUARD_MODE, sceneGuard, type SceneBucket, type SceneVerdict } from "@/lib/tryon/sceneGuard";
++import { onTryOnSessionCleared, releaseObjectUrl, type SessionPhoto, type SessionResult } from "@/lib/tryon/session";
++import { prepareShare, pressHoldUrl, saveMode, saveTryOnPhoto, shareTryOn, whatsappUrlFor, type SharePlan } from "@/lib/tryon/share";
++import { outlineButton, overlayChip, primaryButton, quietButton, smallButton } from "./styles";
++
++/*
++  The preview, labelled for what it is: an "AI preview" chip, the piece's
++  listed size, and the real piece one tap away. Pressing and holding (or
++  "Show my photo") shows the shopper's own photo in its place, so she can see
++  that only the piece was added.
++
++  The image is the reply's Blob behind a blob: URL (session.ts), inside a
++  container session recordings mask. Once on screen, the scene check runs in
++  idle time; in 'log' mode it only reports, and its bucket travels with the
++  "Does this look like the piece?" answer. A preview never answered still
++  reports its bucket when the session clears (Delete, leaving, 30 minutes):
++  the server keeps only the first answer for a render, so it is sent once.
++*/
++
++/* Per render, across visits to the same preview this tab. */
++const scenes = new Map<string, SceneVerdict | null>();
++const answers = new Map<string, boolean>();
++const unsent = new Map<string, SceneBucket>();
++let flushing = false;
++const flushOnClear = () => {
++  if (flushing) return;
++  flushing = true;
++  onTryOnSessionCleared(() => {
++    for (const [renderId, scene] of unsent) sendFeedback(renderId, { looksRight: null, scene });
++    unsent.clear();
++  });
++};
++
++const answer = (renderId: string | null, looksRight: boolean, scene: SceneBucket | null) => {
++  if (!renderId || answers.has(renderId)) return;
++  answers.set(renderId, looksRight);
++  unsent.delete(renderId);
++  sendFeedback(renderId, { looksRight, scene });
++};
++
++interface Props {
++  piece: TryOnPiece;
++  result: SessionResult;
++  photo: SessionPhoto | undefined;
++  remaining: number | null;
++  /** The stone picked in the strip, when it differs from the one in the preview. */
++  otherStone: string | null;
++  onTryStone: (stone: string) => void;
++  onTryAgain: () => void;
++  onDelete: () => void;
++  onRealPiece: () => void;
++  /** Strict scene guard only: the preview must not be shown. */
++  onBlocked: () => void;
++  buy: ReactNode;
++  layout: (frame: ReactNode, controls: ReactNode) => ReactNode;
++}
++
++const TryOnResult = ({ piece, result, photo, remaining, otherStone, onTryStone, onTryAgain, onDelete, onRealPiece, onBlocked, buy, layout }: Props) => {
++  const [holding, setHolding] = useState(false);
++  const [showMine, setShowMine] = useState(false);
++  const [compared, setCompared] = useState(false);
++  const [scene, setScene] = useState<SceneVerdict | null>(() => scenes.get(result.url) ?? null);
++  const [answered, setAnswered] = useState<boolean | undefined>(() => (result.renderId ? answers.get(result.renderId) : undefined));
++  const [plan, setPlan] = useState<SharePlan | null>(null);
++  const [shareFallback, setShareFallback] = useState(false);
++  const [holdUrl, setHoldUrl] = useState<string | null>(null);
++  const held = useRef<string | null>(null);
++  const openHold = (url: string) => {
++    held.current = url;
++    setHoldUrl(url);
++  };
++  const closeHold = useCallback(() => {
++    if (held.current) releaseObjectUrl(held.current);
++    held.current = null;
++    setHoldUrl(null);
++  }, []);
++  const holdView = useBackToClose(
++    "nfTryonSave",
++    Boolean(holdUrl),
++    useCallback((open: boolean) => (open ? undefined : closeHold()), [closeHold]),
++  );
++  /* A quick tap or the start of a scroll must not flash the original. */
++  const holdTimer = useRef<number | undefined>(undefined);
++
++  /* The scene check, once per preview, after it is on screen. */
++  useEffect(() => {
++    if (!photo) return;
++    if (scenes.has(result.url)) {
++      setScene(scenes.get(result.url) ?? null);
++      return;
++    }
++    let cancelled = false;
++    const run = () => {
++      void sceneGuard(photo.blob, result.blob, SCENE_GUARD_MODE).then((verdict) => {
++        scenes.set(result.url, verdict);
++        if (verdict?.bucket === "high") tryonEvent("tryon_scene_high");
++        if (verdict && result.renderId && !answers.has(result.renderId)) {
++          unsent.set(result.renderId, verdict.bucket);
++          flushOnClear();
++        }
++        if (cancelled) return;
++        setScene(verdict);
++        if (verdict?.blocked) onBlocked();
++      });
++    };
++    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
++    const handle = idle ? idle(run, { timeout: 2000 }) : window.setTimeout(run, 400);
++    return () => {
++      cancelled = true;
++      const cancelIdle = (window as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
++      if (idle && cancelIdle) cancelIdle(handle);
++      else window.clearTimeout(handle);
++    };
++    // onBlocked is the studio's and stable for this preview.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [result.url, photo]);
++
++  /* The branded share image is drawn ahead, so the share sheet can open from the tap itself. */
++  useEffect(() => {
++    let cancelled = false;
++    setPlan(null);
++    setShareFallback(false);
++    void prepareShare({ result: result.blob, name: piece.name, handle: piece.handle }).then((next) => {
++      if (!cancelled) setPlan(next);
++    });
++    return () => {
++      cancelled = true;
++    };
++  }, [result.blob, piece.name, piece.handle]);
++
++  /* A full-screen save view still open when the preview goes away gives back its URL. */
++  useEffect(
++    () => () => {
++      window.clearTimeout(holdTimer.current);
++      if (held.current) releaseObjectUrl(held.current);
++    },
++    [],
++  );
++
++  const original = holding || showMine;
++  const markCompared = () => {
++    if (compared) return;
++    setCompared(true);
++    tryonEvent("tryon_compare_used");
++  };
++  const press = (down: boolean) => {
++    window.clearTimeout(holdTimer.current);
++    if (!down) {
++      setHolding(false);
++      return;
++    }
++    holdTimer.current = window.setTimeout(() => {
++      setHolding(true);
++      markCompared();
++    }, 140);
++  };
++
++  const onAnswer = (looksRight: boolean) => {
++    answer(result.renderId, looksRight, scene?.bucket ?? null);
++    setAnswered(looksRight);
++    tryonEvent(looksRight ? "tryon_feedback_yes" : "tryon_feedback_no");
++    if (!looksRight) onRealPiece();
++  };
++
++  const onShare = async () => {
++    if (!plan) return;
++    const outcome = await shareTryOn(plan);
++    if (outcome === "shared") tryonEvent("tryon_shared");
++    else if (outcome === "fallback") setShareFallback(true);
++  };
++
++  const onSave = () => {
++    const image = plan?.jpeg ?? result.blob;
++    tryonEvent("tryon_saved");
++    if (saveMode() === "press-hold") openHold(pressHoldUrl(image));
++    else saveTryOnPhoto(image);
++  };
++
++  const copy = TRYON_COPY.result;
++  const frame = (
++    <div>
++      <div className="relative" data-clarity-mask="True">
++        <div
++          className="relative aspect-[3/4] w-full cursor-pointer select-none overflow-hidden bg-nf-ivory-deep"
++          style={{ WebkitTouchCallout: "none", touchAction: "pan-y" }}
++          onPointerDown={() => press(true)}
++          onPointerUp={() => press(false)}
++          onPointerLeave={() => press(false)}
++          onPointerCancel={() => press(false)}
++          onContextMenu={(event) => event.preventDefault()}
++          data-tryon-result
++        >
++          <img src={result.url} alt={TRYON_COPY.ui.previewAlt(piece.name)} width={900} height={1200} className="h-full w-full object-cover" draggable={false} />
++          {photo && (
++            <img
++              src={photo.url}
++              alt={TRYON_COPY.ui.yourPhoto}
++              aria-hidden={!original}
++              width={900}
++              height={1200}
++              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-150 ${original ? "opacity-100" : "opacity-0"}`}
++              draggable={false}
++            />
++          )}
++          <span className={`${overlayChip} absolute left-3 top-3`}>{original ? TRYON_COPY.ui.yourPhoto : copy.chip}</span>
++        </div>
++        <button
++          type="button"
++          onClick={onRealPiece}
++          className="absolute bottom-3 right-3 flex w-[76px] flex-col items-stretch border border-nf-gold/50 bg-nf-ivory/90 p-1 text-center backdrop-blur-sm"
++        >
++          <img src={shopifyImage(piece.image, 144)} alt="" width={68} height={68} className="aspect-square w-full bg-nf-ivory-deep object-cover" />
++          <span className="mt-1 font-nf-label text-[8.5px] uppercase leading-tight tracking-nf-8 text-nf-ink">{TRYON_COPY.studio.realPiece}</span>
++        </button>
++      </div>
++      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
++        <p className="text-[12px] text-nf-ink/80">{copy.shownAt(piece.sizeLine)}</p>
++        <button
++          type="button"
++          aria-pressed={showMine}
++          onClick={() => {
++            setShowMine((v) => !v);
++            markCompared();
++          }}
++          className={quietButton}
++        >
++          {copy.showMine}
++        </button>
++      </div>
++      <p className="text-[11.5px] text-nf-ink/60">{copy.hold}</p>
++    </div>
++  );
++
++  const whatsappHref = plan?.whatsappUrl ?? whatsappUrlFor(piece.name, piece.handle);
++  const controls = (
++    <div className="space-y-5">
++      <h2 id="tryon-step" tabIndex={-1} className="sr-only">
++        {`${copy.chip} · ${piece.name}`}
++      </h2>
++
++      {otherStone && result.stone && (
++        <div className="space-y-2.5 border border-nf-gold/40 bg-nf-ivory-deep/60 p-3.5">
++          <p className="text-[13px] text-nf-ink">{TRYON_COPY.stoneChange.banner(result.stone)}</p>
++          <button
++            type="button"
++            onClick={() => {
++              tryonEvent("tryon_stone_rerender");
++              onTryStone(otherStone);
++            }}
++            className={primaryButton}
++          >
++            {TRYON_COPY.stoneChange.tryIn(otherStone)}
++          </button>
++        </div>
++      )}
++
++      {buy}
++
++      <div className="border-y border-nf-gold/25 py-3">
++        {answered === undefined ? (
++          <div className="flex flex-wrap items-center justify-between gap-2">
++            <p className="font-cormorant text-[17px] text-nf-ink">{copy.question}</p>
++            <div className="flex gap-2">
++              <button type="button" onClick={() => onAnswer(true)} className={smallButton}>
++                {copy.yes}
++              </button>
++              <button type="button" onClick={() => onAnswer(false)} className={smallButton}>
++                {copy.notQuite}
++              </button>
++            </div>
++          </div>
++        ) : answered ? null : (
++          <div className="space-y-2.5">
++            <p className="text-[13px] leading-[1.6] text-nf-ink">{TRYON_COPY.notQuite.thanks}</p>
++            <button type="button" onClick={onTryAgain} className={smallButton}>
++              {TRYON_COPY.notQuite.again}
++            </button>
++          </div>
++        )}
++        {remaining !== null && <p className={`text-[12px] text-nf-ink/75 ${answered === true ? "" : "mt-2"}`}>{copy.remaining(remaining)}</p>}
++      </div>
++
++      <div className="grid grid-cols-2 gap-2.5">
++        {plan?.canShareFiles && !shareFallback ? (
++          <button type="button" onClick={onShare} className={`${outlineButton} px-2`}>
++            {copy.sendWhatsApp}
++          </button>
++        ) : (
++          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => tryonEvent("tryon_shared")} className={`${outlineButton} px-2`}>
++            {copy.sendWhatsApp}
++          </a>
++        )}
++        <button type="button" onClick={onSave} className={`${outlineButton} px-2`}>
++          {copy.save}
++        </button>
++      </div>
++
++      <div className="flex flex-wrap items-center justify-between gap-x-4">
++        <button
++          type="button"
++          onClick={() => document.getElementById("tryon-another")?.scrollIntoView({ behavior: "smooth", block: "start" })}
++          className={quietButton}
++        >
++          {copy.another}
++        </button>
++        <button type="button" onClick={onTryAgain} className={quietButton}>
++          {copy.again}
++        </button>
++        <button type="button" onClick={onDelete} className={quietButton}>
++          {copy.delete}
++        </button>
++      </div>
++
++      <p className="font-nf-editorial text-[14px] italic leading-[1.55] text-nf-ink/70">{copy.note}</p>
++    </div>
++  );
++
++  return (
++    <>
++      {layout(frame, controls)}
++      {holdUrl && (
++        <div className="fixed inset-0 z-[70] flex flex-col bg-nf-ivory" role="dialog" aria-modal="true" aria-label={TRYON_COPY.share.pressHold}>
++          <div className="flex items-center justify-between gap-3 border-b border-nf-gold/25 px-4 py-2">
++            <p className="font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink">{TRYON_COPY.share.pressHold}</p>
++            <button type="button" onClick={holdView.requestClose} aria-label={TRYON_COPY.ui.close} className="-mr-2 flex h-11 w-11 items-center justify-center text-nf-ink">
++              <X size={18} strokeWidth={1.6} />
++            </button>
++          </div>
++          <div className="flex min-h-0 flex-1 items-center justify-center p-4" data-clarity-mask="True">
++            <img src={holdUrl} alt={TRYON_COPY.ui.previewAlt(piece.name)} className="max-h-full max-w-full object-contain" />
++          </div>
++        </div>
++      )}
++    </>
++  );
++};
++
++export default TryOnResult;
+diff --git a/src/components/tryon/TryOnStudio.tsx b/src/components/tryon/TryOnStudio.tsx
+new file mode 100644
+index 0000000..f83af1c
+--- /dev/null
++++ b/src/components/tryon/TryOnStudio.tsx
+@@ -0,0 +1,674 @@
++import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
++import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
++import { ArrowLeft } from "lucide-react";
++import { ImageLightbox } from "@/components/ui/image-lightbox";
++import { useLiveJewellery } from "@/hooks/useLiveJewellery";
++import { useBackToClose } from "@/hooks/useBackToClose";
++import { tryOnStone, type TryOnPiece, type TryOnStone } from "@/data/tryOnPieces";
++import { renderFailedEvent, tagTryOn, tryonEvent } from "@/lib/tryon/analytics";
++import { requestTryOn } from "@/lib/tryon/client";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { initialCrop, type CropRect } from "@/lib/tryon/cropMaths";
++import { actionLabel, TryOnError, type ErrorAction } from "@/lib/tryon/errors";
++import { decodePhoto, encodePhoto, PhotoPrepError, type DecodedPhoto } from "@/lib/tryon/preparePhoto";
++import {
++  clearTryOnSession,
++  getTryOnPhoto,
++  getTryOnResult,
++  hasTryOnConsent,
++  markTried,
++  onTryOnSessionCleared,
++  recordTryOnConsent,
++  setTryOnPhoto,
++  setTryOnResult,
++  trackRender,
++} from "@/lib/tryon/session";
++import ConsentSheet from "./ConsentSheet";
++import DemoCompare from "./DemoCompare";
++import { liveSoldOut, livePiece, realPiecePhotos } from "./live";
++import { prefersReducedMotion, useSweep } from "./motion";
++import PhotoGuide, { FacePose, HandPose } from "./PhotoGuide";
++import { CropFrame, PhotoPicker, PhotoWarnings, type PhotoSource } from "./PhotoStep";
++import PieceStrip from "./PieceStrip";
++import RenderingState from "./RenderingState";
++import TryAnotherRail, { AUTOSTART } from "./TryAnotherRail";
++import TryOnBuy from "./TryOnBuy";
++import { studioReducer, type StudioState } from "./studioState";
++import { outlineButton, overlayChip, primaryButton, quietButton } from "./styles";
++
++/*
++  /try-on/<handle>: one piece, one photo, one preview.
++
++  A reducer walks the steps the spec names: intro → preparing → crop → ready
++  → consent → uploading → rendering → result, or failed(code, reason). The
++  photo and every preview live in session.ts for the tab, so Back, a second
++  piece or a second stone never asks for the photo again, and a preview
++  already made is shown at once instead of being paid for twice.
++
++  The render itself is a job held at module level, not by this component:
++  a shopper who steps back to the hub and returns mid-wait finds the same
++  wait, not a second request, and the finished preview lands in the session
++  whichever screen she is on. Starting another render aborts the last one
++  (one render per tab, session.ts).
++
++  Focus moves to each step's heading (#tryon-step) as the step changes, and
++  the waiting screen announces its stages through a polite live region.
++*/
++
++/* The result screen (with the share image and the scene check) is fetched
++   while the preview is being made, 20 seconds or more, so a shopper who only
++   looks at the pieces never downloads it. */
++const loadResult = () => import("./TryOnResult");
++const TryOnResult = lazy(loadResult);
++const prefetchResult = () => {
++  loadResult().catch(() => undefined);
++};
++
++/* If that code cannot be fetched, the preview still shows, in a plainer frame:
++   never the stale-build reload (lib/optionalChunk.ts), which would lose it. */
++class ResultBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
++  state = { failed: false };
++  static getDerivedStateFromError() {
++    return { failed: true };
++  }
++  render() {
++    return this.state.failed ? this.props.fallback : this.props.children;
++  }
++}
++
++/* ---------- the render job, one per tab ---------- */
++
++/* error null: the preview is in the session. */
++type Outcome = { error: TryOnError | null };
++
++interface Job {
++  handle: string;
++  stone: TryOnStone | null;
++  controller: AbortController;
++  progress: number;
++  startedAt: number | null;
++  outcome: Outcome | null;
++  listeners: Set<(job: Job) => void>;
++}
++
++let job: Job | null = null;
++/* X-Tryon-Remaining from the last reply: shown again with a preview revisited this tab. */
++let lastRemaining: number | null = null;
++
++const emit = (j: Job) => {
++  for (const listener of Array.from(j.listeners)) listener(j);
++};
++
++const runJob = (piece: TryOnPiece, stone: TryOnStone | null, photo: Blob): Job => {
++  const controller = new AbortController();
++  const release = trackRender(controller);
++  const j: Job = { handle: piece.handle, stone, controller, progress: 0, startedAt: null, outcome: null, listeners: new Set() };
++  job = j;
++  prefetchResult();
++  tryonEvent("tryon_render_started");
++  tagTryOn(piece.handle);
++  requestTryOn({
++    handle: piece.handle,
++    stone,
++    kind: piece.kind,
++    photo,
++    signal: controller.signal,
++    onUpload: (fraction) => {
++      j.progress = fraction;
++      // Every byte sent is the upload done, even where the browser skips its load event.
++      if (fraction >= 1 && j.startedAt === null) j.startedAt = Date.now();
++      emit(j);
++    },
++    onUploaded: () => {
++      if (j.startedAt === null) j.startedAt = Date.now();
++      emit(j);
++    },
++  })
++    .then((reply): Outcome => {
++      setTryOnResult(piece.handle, stone, piece.kind, reply);
++      lastRemaining = reply.remaining;
++      markTried(piece.handle);
++      tryonEvent("tryon_render_ok");
++      return { error: null };
++    })
++    .catch((error: unknown): Outcome => {
++      const err = error instanceof TryOnError ? error : new TryOnError("failed");
++      tryonEvent(renderFailedEvent(err));
++      return { error: err };
++    })
++    .then((outcome) => {
++      release();
++      if (job === j) job = null;
++      j.outcome = outcome;
++      emit(j);
++    });
++  return j;
++};
++
++/* ---------- layout ---------- */
++
++const StudioLayout = ({ strip, frame, controls, frameOnPhone = true }: { strip: ReactNode; frame: ReactNode; controls: ReactNode; frameOnPhone?: boolean }) => (
++  /* Phone: piece, picture, actions, top to bottom. Laptop: the picture on the
++     left, held in view, sized so all of it fits under the header at 900px. */
++  <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] lg:grid-rows-[auto_auto_1fr] lg:gap-x-14">
++    <div className="lg:col-start-2 lg:row-start-1">{strip}</div>
++    <div id="tryon-stage" className={`${frameOnPhone ? "mt-4" : "hidden"} scroll-mt-[118px] lg:col-start-1 lg:row-span-3 lg:row-start-1 lg:mt-0 lg:block`}>
++      <div className="lg:sticky lg:top-[150px] lg:mx-auto lg:max-w-[440px]">{frame}</div>
++    </div>
++    <div className="mt-5 lg:col-start-2 lg:row-start-2">{controls}</div>
++  </div>
++);
++
++/* The ivory frame where the photo will be, while there is none: the pose to copy. */
++const EmptyFrame = ({ hand, children }: { hand: boolean; children?: ReactNode }) => (
++  <div className="relative flex aspect-[3/4] w-full items-center justify-center border border-nf-gold/40 bg-nf-ivory-deep text-nf-gold">
++    {hand ? <HandPose className="w-[58%]" /> : <FacePose className="w-[58%]" />}
++    {children}
++  </div>
++);
++
++const PreparingFrame = ({ hand }: { hand: boolean }) => {
++  const line = useRef<HTMLSpanElement>(null);
++  useSweep(line, [{ transform: "translateX(-100%)" }, { transform: "translateX(250%)" }], 1400);
++  return (
++    <EmptyFrame hand={hand}>
++      <div className="absolute inset-x-0 bottom-0 px-6 pb-8 text-center">
++        <h2 id="tryon-step" tabIndex={-1} className="font-nf-editorial text-[20px] italic text-nf-ink outline-none">
++          {TRYON_COPY.preparing}
++        </h2>
++        <span className="mx-auto mt-3 block h-px w-40 overflow-hidden bg-nf-gold/25" aria-hidden="true">
++          <span ref={line} className={`block h-px w-2/5 bg-nf-gold ${prefersReducedMotion() ? "mx-auto" : ""}`} />
++        </span>
++      </div>
++    </EmptyFrame>
++  );
++};
++
++/* ---------- the studio ---------- */
++
++const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
++  const { jewellery, isLive } = useLiveJewellery();
++  const live = livePiece(jewellery, isLive, piece.handle);
++  const soldOut = liveSoldOut(live);
++  const kind = piece.kind;
++  const hand = kind === "hand";
++  const location = useLocation();
++  const navigate = useNavigate();
++
++  /* The stone lives in the link (?colour=emerald), as on the product page. */
++  const [searchParams, setSearchParams] = useSearchParams();
++  const stone: TryOnStone | null = piece.stones ? tryOnStone(piece, searchParams.get("colour")) ?? piece.stones[0] : null;
++
++  /* Read from the session when it changes, never on every render: a read
++     restarts the 30-minute idle clock, and the catalogue refetches each minute. */
++  const [photo, setPhoto] = useState(() => getTryOnPhoto(kind));
++
++  const [state, dispatch] = useReducer(studioReducer, undefined, (): StudioState => {
++    if (job && job.handle === piece.handle && !job.outcome) {
++      return job.startedAt ? { step: "rendering", stone: job.stone, startedAt: job.startedAt } : { step: "uploading", stone: job.stone, progress: job.progress };
++    }
++    return getTryOnPhoto(kind) && getTryOnResult(piece.handle, stone) ? { step: "result", stone } : { step: "intro" };
++  });
++  const stepRef = useRef(state.step);
++  stepRef.current = state.step;
++
++  /* ---- following the render job ---- */
++  const [watched, setWatched] = useState<Job | null>(() => (job && job.handle === piece.handle && !job.outcome ? job : null));
++  useEffect(() => {
++    if (!watched) return;
++    const onJob = (j: Job) => {
++      if (j.outcome) {
++        // A Delete during the wait has already reset the screen.
++        if (!getTryOnPhoto(kind)) return;
++        dispatch(j.outcome.error ? { type: "failed", error: j.outcome.error } : { type: "result", stone: j.stone });
++        setWatched((w) => (w === j ? null : w));
++      } else if (j.startedAt) {
++        dispatch({ type: "uploaded", at: j.startedAt });
++      } else {
++        dispatch({ type: "progress", fraction: j.progress });
++      }
++    };
++    watched.listeners.add(onJob);
++    // An outcome that landed before this screen listened.
++    if (watched.outcome) onJob(watched);
++    return () => {
++      watched.listeners.delete(onJob);
++    };
++  }, [watched, kind]);
++
++  const startRender = useCallback(
++    (renderStone: TryOnStone | null) => {
++      const held = getTryOnPhoto(kind);
++      if (!held) {
++        dispatch({ type: "reset", changing: true });
++        return;
++      }
++      if (!hasTryOnConsent()) {
++        dispatch({ type: "consent" });
++        return;
++      }
++      dispatch({ type: "upload", stone: renderStone });
++      setWatched(runJob(piece, renderStone, held.blob));
++    },
++    [kind, piece],
++  );
++
++  /* Past the photo: ask for consent once per tab, then send. */
++  const proceed = useCallback(() => {
++    if (soldOut) {
++      dispatch({ type: "ready" });
++      return;
++    }
++    if (!hasTryOnConsent()) dispatch({ type: "consent" });
++    else startRender(stone);
++  }, [soldOut, startRender, stone]);
++
++  /* ---- the session clearing under us (Delete, leaving the page, 30 minutes idle) ---- */
++  const deleting = useRef(false);
++  useEffect(
++    () =>
++      onTryOnSessionCleared(() => {
++        setPhoto(undefined);
++        setWatched(null);
++        dispatch({ type: "reset", notice: deleting.current ? "deleted" : undefined });
++        deleting.current = false;
++      }),
++    [],
++  );
++  const deletePhoto = () => {
++    deleting.current = true;
++    tryonEvent("tryon_photo_deleted");
++    clearTryOnSession();
++  };
++
++  /* ---- entry events, and "Try another piece" starting at once ---- */
++  useEffect(() => {
++    tryonEvent("tryon_piece_opened");
++    tagTryOn(piece.handle);
++    const from = location.state as Record<string, unknown> | null;
++    if (from?.tryOnFrom === "pdp") tryonEvent("tryon_entry_pdp");
++    if (from?.[AUTOSTART]) {
++      // Spent: a reload or a return to this entry must not start another.
++      navigate({ pathname: location.pathname, search: location.search }, { replace: true, state: null });
++      if (state.step === "intro" && getTryOnPhoto(kind) && hasTryOnConsent() && !job) startRender(stone);
++    }
++    // Once per piece opened.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
++
++  /* ---- the photo ---- */
++  const decoded = useRef<DecodedPhoto | null>(null);
++  const crop = useRef<CropRect | null>(null);
++  const dropDecoded = () => {
++    decoded.current?.close();
++    decoded.current = null;
++  };
++  useEffect(() => dropDecoded, []);
++
++  const onFile = async (file: File, source: PhotoSource) => {
++    tryonEvent(source === "camera" ? "tryon_photo_camera" : "tryon_photo_library");
++    dropDecoded();
++    dispatch({ type: "preparing" });
++    try {
++      const next = await decodePhoto(file);
++      decoded.current = next;
++      crop.current = initialCrop(next);
++      dispatch({ type: "crop" });
++    } catch (error) {
++      const block = error instanceof PhotoPrepError ? error.code : "format";
++      if (block === "format") tryonEvent("tryon_photo_blocked_format");
++      if (block === "too_small") tryonEvent("tryon_photo_blocked_small");
++      dispatch({ type: "blocked", block });
++    }
++  };
++
++  const acceptPhoto = async () => {
++    const source = decoded.current;
++    if (!source) {
++      dispatch({ type: "reset", changing: true });
++      return;
++    }
++    dispatch({ type: "preparing" });
++    try {
++      const prepared = await encodePhoto(source, crop.current ?? initialCrop(source));
++      dropDecoded();
++      setPhoto(setTryOnPhoto(kind, prepared.blob, prepared));
++      for (const w of prepared.warnings) tryonEvent(w === "dark" ? "tryon_photo_warn_dark" : "tryon_photo_warn_soft");
++      if (prepared.warnings.length) dispatch({ type: "ready", warnings: prepared.warnings });
++      else proceed();
++    } catch (error) {
++      dropDecoded();
++      const block = error instanceof PhotoPrepError ? error.code : "unsupported";
++      if (block === "too_small") tryonEvent("tryon_photo_blocked_small");
++      dispatch({ type: "blocked", block });
++    }
++  };
++
++  const reuse = () => {
++    tryonEvent("tryon_photo_reused");
++    proceed();
++  };
++
++  /* ---- consent sheet: its own history entry, closed by the phone's back ---- */
++  const consentOpen = state.step === "consent";
++  const onConsentOpenChange = useCallback((open: boolean) => {
++    // Only the sheet's own close returns to the photo; a render already under way stays.
++    if (!open && stepRef.current === "consent") dispatch({ type: "ready" });
++  }, []);
++  const consent = useBackToClose("nfTryonConsent", consentOpen, onConsentOpenChange);
++  const createTryOn = () => {
++    recordTryOnConsent();
++    tryonEvent("tryon_consent_given");
++    consent.closeThen(() => startRender(stone));
++  };
++
++  /* ---- the real piece: the listing's own photos and size guide ---- */
++  const [realOpen, setRealOpen] = useState(false);
++  const real = useBackToClose("nfTryonZoom", realOpen, setRealOpen);
++  const openReal = () => {
++    setRealOpen(true);
++    tryonEvent("tryon_real_piece_opened");
++  };
++
++  /* ---- stone ---- */
++  const setStone = (value: TryOnStone) => {
++    const next = new URLSearchParams(searchParams);
++    next.set("colour", value.toLowerCase());
++    setSearchParams(next, { replace: true });
++    // A preview already made in that stone is shown at once.
++    if (state.step === "result" && getTryOnResult(piece.handle, value)) dispatch({ type: "result", stone: value });
++  };
++
++  /* ---- focus follows the step ---- */
++  const firstStep = useRef(true);
++  useLayoutEffect(() => {
++    if (firstStep.current) {
++      firstStep.current = false;
++      return;
++    }
++    const heading = document.getElementById("tryon-step");
++    if (heading) {
++      try {
++        heading.focus({ preventScroll: true });
++      } catch {
++        heading.focus();
++      }
++    }
++    /* Bring the step into view under the fixed header: its picture where the
++       phone shows one, else its heading. */
++    const stage = document.getElementById("tryon-stage");
++    const target = stage && stage.getClientRects().length ? stage : heading;
++    if (!target) return;
++    const top = target.getBoundingClientRect().top;
++    if (top < 100 || top > window.innerHeight * 0.55) window.scrollTo({ top: Math.max(0, window.scrollY + top - 118), behavior: "auto" });
++  }, [state.step]);
++
++  const result = useMemo(
++    () => (state.step === "result" && photo ? getTryOnResult(piece.handle, state.stone) : undefined),
++    [state, photo, piece.handle],
++  );
++
++  /* ---- what each step shows ---- */
++  const strip = (
++    <PieceStrip
++      piece={piece}
++      live={live}
++      stone={stone}
++      onStone={setStone}
++      stonesLocked={state.step === "uploading" || state.step === "rendering"}
++      onRealPiece={openReal}
++    />
++  );
++  const layout = (frame: ReactNode, controls: ReactNode, frameOnPhone = true) => (
++    <StudioLayout strip={strip} frame={frame} controls={controls} frameOnPhone={frameOnPhone} />
++  );
++  const deleteButton = photo ? (
++    <button type="button" onClick={deletePhoto} className={quietButton}>
++      {TRYON_COPY.result.delete}
++    </button>
++  ) : null;
++  const pieceHref = `/jewellery/${piece.handle}${stone ? `?colour=${stone.toLowerCase()}` : ""}`;
++
++  const act = (action: ErrorAction | null | undefined, primary: boolean) => {
++    if (!action) return null;
++    const className = primary ? primaryButton : outlineButton;
++    if (action === "view_piece") {
++      return (
++        <Link key={action} to={pieceHref} className={className}>
++          {actionLabel(action)}
++        </Link>
++      );
++    }
++    const onClick = action === "choose_photo" ? () => dispatch({ type: "reset", changing: true }) : () => startRender(stone);
++    return (
++      <button key={action} type="button" onClick={onClick} className={className}>
++        {actionLabel(action)}
++      </button>
++    );
++  };
++
++  let body: ReactNode;
++  switch (state.step) {
++    case "intro": {
++      const frame = <EmptyFrame hand={hand} />;
++      const controls = (
++        <div className="space-y-4">
++          {state.notice === "deleted" && (
++            <p role="status" className="border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3 py-2.5 text-[13px] text-nf-ink">
++              {TRYON_COPY.deleted}
++            </p>
++          )}
++          <PhotoPicker
++            kind={kind}
++            held={photo}
++            changing={Boolean(state.changing)}
++            block={state.block}
++            disabled={soldOut}
++            onFile={onFile}
++            onReuse={reuse}
++            onChange={() => dispatch({ type: "reset", changing: true })}
++          />
++          {soldOut && <TryOnBuy piece={piece} live={live} stone={stone} />}
++          <p className="text-[12px] leading-[1.65] text-nf-ink/75">
++            {TRYON_COPY.trust.line}{" "}
++            <a href={TRYON_COPY.trust.href} target="_blank" rel="noopener" className="text-nf-ink underline decoration-nf-gold underline-offset-4">
++              {TRYON_COPY.trust.link}
++            </a>
++          </p>
++          <PhotoGuide guide={piece.guide} />
++          <DemoCompare piece={piece} />
++          {photo && <div className="flex justify-end">{deleteButton}</div>}
++        </div>
++      );
++      body = layout(frame, controls, false);
++      break;
++    }
++    case "preparing":
++      body = layout(<PreparingFrame hand={hand} />, null);
++      break;
++    case "crop": {
++      const source = decoded.current;
++      body = source
++        ? layout(
++            <CropFrame decoded={source} initial={crop.current ?? initialCrop(source)} onCrop={(next) => (crop.current = next)} />,
++            <div className="space-y-3">
++              {/* The frame shows the hint; screen readers get it as the step's heading. */}
++              <h2 id="tryon-step" tabIndex={-1} className="sr-only">
++                {TRYON_COPY.crop.hint}
++              </h2>
++              <button type="button" onClick={acceptPhoto} className={primaryButton}>
++                {TRYON_COPY.crop.use}
++              </button>
++              <button
++                type="button"
++                onClick={() => {
++                  dropDecoded();
++                  dispatch({ type: "reset", changing: true });
++                }}
++                className={outlineButton}
++              >
++                {TRYON_COPY.crop.another}
++              </button>
++            </div>,
++          )
++        : null;
++      break;
++    }
++    case "ready":
++    case "consent": {
++      const warnings = state.warnings;
++      const notice = state.step === "ready" ? state.notice : undefined;
++      const frame = photo ? (
++        <div className="relative aspect-[3/4] w-full overflow-hidden bg-nf-ivory-deep" data-clarity-mask="True">
++          <img src={photo.url} alt={TRYON_COPY.ui.yourPhoto} width={900} height={1200} className="h-full w-full object-cover" />
++        </div>
++      ) : (
++        <EmptyFrame hand={hand} />
++      );
++      const controls = (
++        <div className="space-y-3">
++          <h2 id="tryon-step" tabIndex={-1} className="sr-only">
++            {TRYON_COPY.ui.yourPhoto}
++          </h2>
++          {notice === "cancelled" && (
++            <p role="status" className="border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3 py-2.5 text-[13px] text-nf-ink">
++              {TRYON_COPY.cancelled}
++            </p>
++          )}
++          {warnings.length ? (
++            <PhotoWarnings warnings={warnings} onRetake={() => dispatch({ type: "reset", changing: true })} onUseAnyway={proceed} />
++          ) : (
++            <>
++              <button type="button" onClick={proceed} disabled={soldOut} className={primaryButton}>
++                {TRYON_COPY.consent.create}
++              </button>
++              <button type="button" onClick={() => dispatch({ type: "reset", changing: true })} className={outlineButton}>
++                {TRYON_COPY.reuse.change}
++              </button>
++            </>
++          )}
++          {soldOut && <TryOnBuy piece={piece} live={live} stone={stone} />}
++          <div className="flex justify-end">{deleteButton}</div>
++        </div>
++      );
++      body = layout(frame, controls);
++      break;
++    }
++    case "uploading":
++    case "rendering":
++      body = (
++        <RenderingState
++          piece={piece}
++          photoUrl={photo?.url}
++          phase={state.step}
++          progress={state.step === "uploading" ? state.progress : 1}
++          startedAt={state.step === "rendering" ? state.startedAt : null}
++          onCancel={() => watched?.controller.abort()}
++          buy={
++            <div className="border border-nf-gold/30 bg-nf-ivory-deep/40 p-4">
++              <TryOnBuy piece={piece} live={live} stone={state.stone} withCard />
++            </div>
++          }
++          quiet={<div className="flex justify-end">{deleteButton}</div>}
++          layout={layout}
++        />
++      );
++      break;
++    case "result": {
++      if (!result) {
++        body = null;
++        break;
++      }
++      const otherStone = piece.stones && stone && stone !== state.stone ? stone : null;
++      body = (
++        <ResultBoundary
++          fallback={layout(
++            <div className="relative aspect-[3/4] w-full overflow-hidden bg-nf-ivory-deep" data-clarity-mask="True">
++              <img src={result.url} alt={TRYON_COPY.ui.previewAlt(piece.name)} width={900} height={1200} className="h-full w-full object-cover" />
++              <span className={`${overlayChip} absolute left-3 top-3`}>{TRYON_COPY.result.chip}</span>
++            </div>,
++            <div className="space-y-4">
++              <h2 id="tryon-step" tabIndex={-1} className="sr-only">
++                {`${TRYON_COPY.result.chip} · ${piece.name}`}
++              </h2>
++              <p className="text-[12px] text-nf-ink/80">{TRYON_COPY.result.shownAt(piece.sizeLine)}</p>
++              <TryOnBuy piece={piece} live={live} stone={state.stone} />
++              <p className="font-nf-editorial text-[14px] italic leading-[1.55] text-nf-ink/70">{TRYON_COPY.result.note}</p>
++              <div className="flex justify-end">{deleteButton}</div>
++            </div>,
++          )}
++        >
++          <Suspense fallback={layout(<div className="aspect-[3/4] w-full bg-nf-ivory-deep" />, null)}>
++            <TryOnResult
++              key={result.url}
++              piece={piece}
++              result={result}
++              photo={photo}
++              remaining={lastRemaining}
++              otherStone={otherStone}
++              onTryStone={(value) => startRender(value as TryOnStone)}
++              onTryAgain={() => startRender(stone)}
++              onDelete={deletePhoto}
++              onRealPiece={openReal}
++              onBlocked={() => dispatch({ type: "failed", error: new TryOnError("fidelity_failed") })}
++              buy={<TryOnBuy piece={piece} live={live} stone={stone} stoneDiffers={Boolean(otherStone)} />}
++              layout={layout}
++            />
++          </Suspense>
++        </ResultBoundary>
++      );
++      break;
++    }
++    case "failed": {
++      const frame = photo ? (
++        <div className="relative aspect-[3/4] w-full overflow-hidden bg-nf-ivory-deep" data-clarity-mask="True">
++          <img src={photo.url} alt={TRYON_COPY.ui.yourPhoto} width={900} height={1200} className="h-full w-full object-cover opacity-60" />
++        </div>
++      ) : (
++        <EmptyFrame hand={hand} />
++      );
++      const controls = (
++        <div className="space-y-3" data-tryon-error={state.code}>
++          <h2 id="tryon-step" tabIndex={-1} role="alert" className="border-l-2 border-nf-gold bg-nf-ivory-deep/70 px-3.5 py-3 font-nf-editorial text-[18px] leading-snug text-nf-ink outline-none">
++            {state.copy.message}
++          </h2>
++          {act(state.copy.action, true)}
++          {act(state.copy.secondary, false)}
++          <div className="mt-2 border-t border-nf-gold/25 pt-5">
++            <TryOnBuy piece={piece} live={live} stone={stone} />
++          </div>
++          <div className="flex justify-end">{deleteButton}</div>
++        </div>
++      );
++      // On a phone the message comes straight after the piece; the photo is not the news.
++      body = layout(frame, controls, false);
++      break;
++    }
++  }
++
++  return (
++    <div className="mx-auto max-w-[1180px] px-4 pb-16 pt-3 sm:px-6 md:pt-6">
++      <div className="flex items-center justify-between gap-3">
++        <Link to="/try-on" className="-ml-1 inline-flex min-h-[44px] items-center gap-1.5 px-1 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink/75 transition-colors hover:text-nf-ink">
++          <ArrowLeft size={14} strokeWidth={1.6} aria-hidden="true" />
++          {TRYON_COPY.studio.back}
++        </Link>
++      </div>
++      <h1 className="mb-3 font-cormorant text-[26px] font-semibold leading-none text-nf-ink md:mb-5 md:text-[34px]">{TRYON_COPY.hub.title}</h1>
++
++      {body}
++
++      {state.step === "result" && <TryAnotherRail current={piece} stone={stone} jewellery={jewellery} isLive={isLive} />}
++
++      <ConsentSheet open={consentOpen} onCreate={createTryOn} onClose={consent.requestClose} />
++      <ImageLightbox
++        images={realPiecePhotos(piece, live, stone)}
++        name={piece.name}
++        open={realOpen}
++        onOpenChange={(open) => (open ? setRealOpen(true) : real.requestClose())}
++      />
++    </div>
++  );
++};
++
++export default TryOnStudio;
+diff --git a/src/components/tryon/live.ts b/src/components/tryon/live.ts
+new file mode 100644
+index 0000000..bd00790
+--- /dev/null
++++ b/src/components/tryon/live.ts
+@@ -0,0 +1,67 @@
++import type { JewelPiece } from "@/data/jewellery";
++import { isAdjustableRing } from "@/data/ringFit";
++import type { TryOnPiece } from "@/data/tryOnPieces";
++import { firstBuyable } from "@/lib/variants";
++
++/*
++  What the try-on reads from the live catalogue (useLiveJewellery), and the
++  one rule for which pieces a shopper is shown.
++
++  Prices and stock come only from the live catalogue: the bundled first-paint
++  data is a snapshot and can be out of date, so nothing is added to the bag
++  until Shopify has answered (TryOnBuy), and a piece that has sold out since
++  the snapshot is hidden as soon as it has.
++*/
++
++/** The live listing for a piece, once Shopify has answered; never the bundled snapshot. */
++export const livePiece = (jewellery: JewelPiece[], isLive: boolean, handle: string): JewelPiece | undefined =>
++  isLive ? jewellery.find((j) => j.handle === handle) : undefined;
++
++/** Sold out on the live listing. An open-back ring adjusts to every size it offers, so it never reads as sold out here (as on its product page). */
++export const liveSoldOut = (piece: JewelPiece | undefined) => Boolean(piece && piece.availableForSale === false && !isAdjustableRing(piece));
++
++/** The real shop, by index.html's hostname allowlist; previews and localhost are not. */
++export const onRealShop = () => typeof window !== "undefined" && (window as unknown as { __nairaProd?: unknown }).__nairaProd === true;
++
++/**
++ * Whether a piece may be tried on: certified by the owner, or any piece off the
++ * real shop (labelled Uncertified there, for testing).
++ */
++export const tryable = (piece: TryOnPiece) => Boolean(piece.certified) || !onRealShop();
++
++/**
++ * Whether a piece is listed: tryable, and not sold out or unlisted on the live
++ * catalogue. Before Shopify answers, every tryable piece shows.
++ */
++export const listed = (piece: TryOnPiece, jewellery: JewelPiece[], isLive: boolean) => {
++  if (!tryable(piece)) return false;
++  if (!isLive) return true;
++  const live = livePiece(jewellery, isLive, piece.handle);
++  return Boolean(live) && !liveSoldOut(live);
++};
++
++/**
++ * A piece as the shopper has it chosen: in a stone, the stone's own photo
++ * (Shopify's photo for that variant) and the price of its first buyable
++ * variant; otherwise the listing's price. Undefined until Shopify has answered.
++ *
++ * Read straight from the variants rather than through colourCards: a second
++ * importer would split that module out of the chunk the shop grid shares, and
++ * every listing page would fetch one more file.
++ */
++export const pieceInStone = (live: JewelPiece | undefined, stone: string | null) => {
++  if (!live) return undefined;
++  const ways = stone ? (live.variants ?? []).filter((v) => v.options.Stone === stone) : [];
++  if (!ways.length) return { image: undefined, priceLabel: live.priceLabel };
++  const lead = firstBuyable(ways);
++  return { image: ways.find((v) => v.image)?.image, priceLabel: `₹${lead.price.toLocaleString("en-IN")}` };
++};
++
++/** The real piece's photos for the lightbox: the chosen stone's first, then the listing's gallery, size guide last. */
++export const realPiecePhotos = (piece: TryOnPiece, live: JewelPiece | undefined, stone: string | null): string[] => {
++  const lead = pieceInStone(live, stone)?.image;
++  const base = live?.gallery?.length ? live.gallery : [live?.image ?? piece.image];
++  const path = (url: string) => url.split("?")[0];
++  const all = lead ? [lead, ...base.filter((url) => path(url) !== path(lead))] : base;
++  return live?.sizeGuide && !all.some((url) => path(url) === path(live.sizeGuide as string)) ? [...all, live.sizeGuide] : all;
++};
+diff --git a/src/components/tryon/motion.ts b/src/components/tryon/motion.ts
+new file mode 100644
+index 0000000..8867dc1
+--- /dev/null
++++ b/src/components/tryon/motion.ts
+@@ -0,0 +1,27 @@
++import { useEffect, type RefObject } from "react";
++
++/*
++  The one moving thing on a waiting screen: a gold hairline gliding across.
++  Run with the Web Animations API (Safari 13.1+, Chrome 84+), so no keyframes
++  join the site's stylesheet for every page. Under reduced motion, or where
++  element.animate is missing, the line simply stays where its styles put it.
++*/
++
++export const prefersReducedMotion = () => {
++  try {
++    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
++  } catch {
++    return false;
++  }
++};
++
++export const useSweep = (ref: RefObject<HTMLElement>, keyframes: Keyframe[], duration: number, active = true) => {
++  useEffect(() => {
++    const el = ref.current;
++    if (!active || !el || typeof el.animate !== "function" || prefersReducedMotion()) return;
++    const animation = el.animate(keyframes, { duration, iterations: Infinity, direction: "alternate", easing: "ease-in-out" });
++    return () => animation.cancel();
++    // The keyframes are literals at each call site.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [ref, duration, active]);
++};
+diff --git a/src/components/tryon/studioState.ts b/src/components/tryon/studioState.ts
+new file mode 100644
+index 0000000..c3e76ae
+--- /dev/null
++++ b/src/components/tryon/studioState.ts
+@@ -0,0 +1,68 @@
++import type { TryOnStone } from "@/data/tryOnPieces";
++import type { ErrorCopy, TryOnError, TryOnErrorCode } from "@/lib/tryon/errors";
++import type { PhotoWarning } from "@/lib/tryon/photoChecks";
++import type { PhotoBlock } from "@/lib/tryon/preparePhoto";
++
++/*
++  The studio's steps, as the spec names them: intro → preparing → crop →
++  ready → consent → uploading → rendering → result, or failed(code). Pure, so
++  every transition is tested without a screen (TryOnPage.test.tsx).
++*/
++
++export type Notice = "cancelled" | "deleted";
++
++export type StudioState =
++  | { step: "intro"; notice?: Notice; block?: PhotoBlock; changing?: boolean }
++  | { step: "preparing" }
++  | { step: "crop" }
++  | { step: "ready"; warnings: PhotoWarning[]; notice?: Notice }
++  | { step: "consent"; warnings: PhotoWarning[] }
++  | { step: "uploading"; stone: TryOnStone | null; progress: number }
++  | { step: "rendering"; stone: TryOnStone | null; startedAt: number }
++  | { step: "result"; stone: TryOnStone | null }
++  | { step: "failed"; stone: TryOnStone | null; code: TryOnErrorCode; copy: ErrorCopy };
++
++export type StudioEvent =
++  | { type: "reset"; notice?: Notice; changing?: boolean }
++  | { type: "blocked"; block: PhotoBlock }
++  | { type: "preparing" }
++  | { type: "crop" }
++  | { type: "ready"; warnings?: PhotoWarning[]; notice?: Notice }
++  | { type: "consent" }
++  | { type: "upload"; stone: TryOnStone | null }
++  | { type: "progress"; fraction: number }
++  | { type: "uploaded"; at: number }
++  | { type: "result"; stone: TryOnStone | null }
++  | { type: "failed"; error: TryOnError };
++
++const stoneOf = (state: StudioState): TryOnStone | null =>
++  state.step === "uploading" || state.step === "rendering" || state.step === "result" || state.step === "failed" ? state.stone : null;
++
++export const studioReducer = (state: StudioState, event: StudioEvent): StudioState => {
++  switch (event.type) {
++    case "reset":
++      return { step: "intro", notice: event.notice, changing: event.changing };
++    case "blocked":
++      return { step: "intro", block: event.block, changing: true };
++    case "preparing":
++      return { step: "preparing" };
++    case "crop":
++      return { step: "crop" };
++    case "ready":
++      return { step: "ready", warnings: event.warnings ?? [], notice: event.notice };
++    case "consent":
++      return { step: "consent", warnings: state.step === "ready" ? state.warnings : [] };
++    case "upload":
++      return { step: "uploading", stone: event.stone, progress: 0 };
++    case "progress":
++      return state.step === "uploading" ? { ...state, progress: Math.max(state.progress, Math.min(1, event.fraction)) } : state;
++    case "uploaded":
++      return state.step === "uploading" ? { step: "rendering", stone: state.stone, startedAt: event.at } : state;
++    case "result":
++      return { step: "result", stone: event.stone };
++    case "failed":
++      /* Cancel goes back to the photo, which is still here. */
++      if (event.error.code === "cancelled") return { step: "ready", warnings: [], notice: "cancelled" };
++      return { step: "failed", stone: stoneOf(state), code: event.error.code, copy: event.error.copy };
++  }
++};
+diff --git a/src/components/tryon/styles.ts b/src/components/tryon/styles.ts
+new file mode 100644
+index 0000000..9ba914e
+--- /dev/null
++++ b/src/components/tryon/styles.ts
+@@ -0,0 +1,43 @@
++/*
++  The try-on's buttons and type, taken from the product page so the two read
++  as one shop: the ink Add to cart (h-[50px], label face, uppercase, 0.08em),
++  its outline twin, the gold-underlined text link and the small gold eyebrow.
++  Square corners throughout (the global radius is 0).
++*/
++
++export const primaryButton =
++  "press-scale inline-flex h-[50px] w-full items-center justify-center gap-2 bg-nf-ink px-4 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ivory transition-colors duration-200 hover:bg-nf-ink/90 disabled:pointer-events-none disabled:opacity-60";
++
++export const outlineButton =
++  "press-scale inline-flex h-[50px] w-full items-center justify-center gap-2 border border-nf-ink bg-transparent px-4 font-nf-label text-[11.5px] font-medium uppercase tracking-nf-8 text-nf-ink transition-colors duration-200 hover:bg-nf-ink/5 disabled:pointer-events-none disabled:opacity-60";
++
++/* A small outline button beside text (Cancel, Yes, Not quite). */
++export const smallButton =
++  "press-scale inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap border border-nf-ink bg-transparent px-5 font-nf-label text-[11px] font-medium uppercase tracking-nf-8 text-nf-ink transition-colors duration-200 hover:bg-nf-ink/5";
++
++/* A quieter action under the main ones (Delete photo, Try again). */
++export const quietButton =
++  "inline-flex min-h-[44px] items-center justify-center px-1 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink/75 underline decoration-nf-gold/70 underline-offset-[6px] transition-colors hover:text-nf-ink disabled:opacity-50";
++
++export const textLink = "text-nf-ink underline decoration-nf-gold underline-offset-4 transition-colors hover:text-nf-gold-text";
++
++export const eyebrow = "font-nf-label text-[9.5px] uppercase tracking-nf-24 text-nf-gold-text";
++
++/* The chips laid over a photo: the PDP's image counter. */
++export const overlayChip =
++  "pointer-events-none bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10px] uppercase tracking-nf-16 text-nf-ink backdrop-blur-sm";
++
++/* Stone and size choices: the PDP's option buttons. */
++export const choiceButton = (active: boolean, inRow = false) =>
++  `flex min-h-[44px] flex-col items-center justify-center border text-[12px] font-medium transition-colors duration-150 disabled:opacity-50 ${inRow ? "min-w-0 px-1" : "min-w-[64px] px-3"} ${
++    active ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory" : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
++  }`;
++
++/* The swatch beside a stone's name: the stones themselves, as the PDP draws them. */
++const STONE_SWATCH: Record<string, string> = {
++  Ruby: "#9b1b30",
++  Crystal: "#eef3f6",
++  Emerald: "#1f7a4d",
++  Amethyst: "#7b4fa0",
++};
++export const stoneSwatch = (stone: string) => STONE_SWATCH[stone];
+diff --git a/src/lib/optionalChunk.ts b/src/lib/optionalChunk.ts
+index 57d3435..9ca3f1b 100644
+--- a/src/lib/optionalChunk.ts
++++ b/src/lib/optionalChunk.ts
+@@ -5,8 +5,13 @@
+   for these it used to as well — a flaky mobile connection or an ad blocker
+   reloaded the page the shopper was reading, for a decoration. vite.config.ts
+   names the three.js chunk "three" so this pattern stays true.
++
++  The try-on's result screen is fetched ahead, while a preview is being made
++  (TryOnStudio). A reload there would wipe the shopper's photo and a preview
++  she has already spent a try-on on, so its failure is caught by the studio,
++  which shows the preview in a plainer frame instead.
+ */
+-const OPTIONAL = /\/assets\/(?:three|scene)-[\w-]+\.js/;
++const OPTIONAL = /\/assets\/(?:three|scene|TryOnResult)-[\w-]+\.js/;
+ 
+ export const isOptionalChunkFailure = (reason: unknown): boolean =>
+   OPTIONAL.test(String((reason as Error | undefined)?.message ?? reason ?? ""));
+diff --git a/src/lib/routeCode.ts b/src/lib/routeCode.ts
+index b856dc7..50c7f9d 100644
+--- a/src/lib/routeCode.ts
++++ b/src/lib/routeCode.ts
+@@ -34,6 +34,8 @@ export const ROUTE_CODE = [
+   ["/terms", "TermsOfService"],
+   ["/exchange-return-policy", "ExchangeReturnPolicy"],
+   ["/faqs", "FAQs"],
++  ["/try-on", "TryOn"],
++  ["/try-on/:handle", "TryOn"],
+ ] as const;
+ 
+ export type RouteKey = (typeof ROUTE_CODE)[number][1];
+diff --git a/src/lib/shopify.ts b/src/lib/shopify.ts
+index 13ff48b..37f6e46 100644
+--- a/src/lib/shopify.ts
++++ b/src/lib/shopify.ts
+@@ -479,6 +479,9 @@ export const SIZE_ATTRIBUTE = "Size";
+ export const sizeAttributes = (size?: string) =>
+   size && size.trim() ? [{ key: SIZE_ATTRIBUTE, value: size.trim() }] : [];
+ 
++/* naira_tryon: comma-separated handles, as Shopify keeps cart attributes short. */
++const TRIED_HANDLES = /^[a-z0-9,-]{1,200}$/;
++
+ /**
+  * Cart-level attributes that travel with the order into Shopify, so the
+  * server-side Purchase event can be joined to the same anonymous browsing
+@@ -493,6 +496,15 @@ export const trackingCartAttributes = (): Array<{ key: string; value: string }>
+   if (fbc) attrs.push({ key: "fbc", value: fbc });
+   const fbp = getFbBrowserId();
+   if (fbp) attrs.push({ key: "fbp", value: fbp });
++  /* The pieces tried on in this tab (try-on session.ts writes them), so an
++     order can be counted as one the try-on led to. Handles only. It rides in
++     this one list because cartAttributesUpdate replaces the whole set. */
++  try {
++    const tried = window.sessionStorage.getItem("naira_tryon") ?? "";
++    if (TRIED_HANDLES.test(tried)) attrs.push({ key: "naira_tryon", value: tried });
++  } catch {
++    /* storage blocked: no attribute */
++  }
+   return attrs;
+ };
+ 
+diff --git a/src/lib/tryon/analytics.ts b/src/lib/tryon/analytics.ts
+index e2a6713..1f7311b 100644
+--- a/src/lib/tryon/analytics.ts
++++ b/src/lib/tryon/analytics.ts
+@@ -1,5 +1,5 @@
+ import { clarityEvent, setClarityTag } from "@/lib/clarity";
+-import { TRY_ON_HANDLES } from "@/data/tryOnHandles";
++import { tryOnPiece } from "@/data/tryOnPieces";
+ import { CLIENT_ERROR_CODES, SERVER_ERROR_CODES, type TryOnError, type TryOnErrorCode } from "./errors";
+ 
+ /*
+@@ -77,7 +77,7 @@ export const renderFailedEvent = (error: Pick<TryOnError, "code">): TryOnEventNa
+ 
+ /** Tags the Clarity session as one that used the try-on, and with the piece. */
+ export const tagTryOn = (handle: string) => {
+-  if (!TRY_ON_HANDLES.has(handle) || !production()) return;
++  if (!tryOnPiece(handle) || !production()) return;
+   setClarityTag("tryon", "used");
+   setClarityTag("tryon_piece", handle);
+ };
+diff --git a/src/lib/tryon/client.ts b/src/lib/tryon/client.ts
+index 4248275..3a9a816 100644
+--- a/src/lib/tryon/client.ts
++++ b/src/lib/tryon/client.ts
+@@ -1,4 +1,4 @@
+-import { TRY_ON_HANDLES } from "@/data/tryOnHandles";
++import { tryOnPiece } from "@/data/tryOnPieces";
+ import { blobText } from "./canvas";
+ import { getTryOnDevice } from "./device";
+ import { errorFromResponse, TryOnError } from "./errors";
+@@ -50,7 +50,10 @@ const isStone = (value: unknown): value is TryOnStone => TRYON_STONES.includes(v
+ 
+ /** The meta for a render; throws bad_request for a handle, stone or kind the server would refuse. */
+ export const buildTryOnMeta = (input: { handle: string; stone: string | null; kind: PhotoKind; device?: string }): TryOnMeta => {
+-  if (!TRY_ON_HANDLES.has(input.handle)) throw new TryOnError("bad_request");
++  /* The manifest, not tryOnHandles.ts: that file belongs to the product page,
++     and a second importer here would split it into a chunk of its own that
++     every product page then fetches separately. */
++  if (!tryOnPiece(input.handle)) throw new TryOnError("bad_request");
+   if (input.stone !== null && !isStone(input.stone)) throw new TryOnError("bad_request");
+   if (input.kind !== "face" && input.kind !== "hand") throw new TryOnError("bad_request");
+   return {
+diff --git a/src/lib/tryon/copy.ts b/src/lib/tryon/copy.ts
+index 1cb1264..f7f94ea 100644
+--- a/src/lib/tryon/copy.ts
++++ b/src/lib/tryon/copy.ts
+@@ -168,6 +168,15 @@ export const TRYON_COPY = {
+ 
+   deleted: "Your photo is deleted from this page. We never kept a copy.",
+ 
++  /* What a screen reader hears where the screen shows a picture or an icon. */
++  ui: {
++    close: "Close",
++    yourPhoto: "Your photo",
++    previewAlt: (name: string) => `AI preview of the ${name} on your photo`,
++    realPieceAlt: (name: string) => `The ${name}, photographed in our studio`,
++    tipsPose: (kind: string) => (kind === "hand" ? "How to hold your hand for the photo" : "How to stand for the photo"),
++  },
++
+   errors: {
+     photo_unusable: {
+       ear_not_visible: "We could not see your ear clearly. Tuck your hair back and turn a little toward the light.",
+diff --git a/src/pageCode.ts b/src/pageCode.ts
+index 741edce..f258aaf 100644
+--- a/src/pageCode.ts
++++ b/src/pageCode.ts
+@@ -36,12 +36,14 @@ export const Auth = lazyRoute(() => import("./pages/Auth.tsx"));
+ export const Account = lazyRoute(() => import("./pages/Account.tsx"));
+ export const OAuthConsent = lazyRoute(() => import("./pages/OAuthConsent.tsx"));
+ export const AdminReels = lazyRoute(() => import("./pages/admin/Reels.tsx"));
++// The try-on pilot, /try-on and /try-on/:handle (unlisted, noindex).
++export const TryOn = lazyRoute(() => import("./pages/TryOn.tsx"));
+ 
+ 
+ const PAGES: Record<RouteKey, LazyRoute> = {
+   Index, ShopAll, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetailNext,
+   Journal, JournalArticle, Gifting, GoldenHourEdit, TrackOrder, InnerCircle, Auth, Account,
+-  ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs,
++  ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs, TryOn,
+ };
+ 
+ /** Loads the code of the page at `pathname`; resolves at once for a URL with no page of its own. */
+diff --git a/src/pages/JewelDetailNext.tsx b/src/pages/JewelDetailNext.tsx
+index 2b15625..1283926 100644
+--- a/src/pages/JewelDetailNext.tsx
++++ b/src/pages/JewelDetailNext.tsx
+@@ -38,6 +38,9 @@ import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jew
+ import { reportShopperPerformance } from "@/lib/shopperPerformance";
+ import { QUANTITY_OFFERS } from "@/lib/promo";
+ import UpiBadges from "@/components/checkout/UpiBadges";
++import { oneTapLine } from "@/lib/oneTapLine";
++/* The only try-on code a product page carries: the chip and the handle list it reads. */
++import TryOnEntry from "@/components/tryon/TryOnEntry";
+ 
+ /*
+   The product page, at /jewellery/<handle> (and at /preview/jewellery/<handle>,
+@@ -204,15 +207,17 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
+   /* The page opens on the colour the card shows, not the piece's first. */
+   const colour = variant ? variant.options[colourOption(piece)?.name ?? ""] : undefined;
+   const to = colour ? `${href}${href.includes("?") ? "&" : "?"}colour=${encodeURIComponent(colour.toLowerCase())}` : href;
++  /* The line is oneTapLine's, the one the try-on's Add takes too: the variant
++     shown, and an adjustable ring sold one way as US 6, the size its page
++     opens on. Only pieces a one-tap Add can take reach this card
++     (completeTheLook), so it always has a line. */
+   const add = async () => {
++    const one = oneTapLine(piece, variant?.options ?? {});
++    if (!("line" in one)) return;
+     setAdding(true);
+     setDrawerOpen(true);
+     try {
+-      await addItem({
+-        ...cartLineFor(piece, variant),
+-        // an adjustable ring sold one way goes in as US 6, the size its page opens on
+-        ...(piece.category === "Rings" && !variant ? { size: "US 6" } : {}),
+-      });
++      await addItem(one.line);
+     } finally {
+       setAdding(false);
+     }
+@@ -706,6 +711,8 @@ const JewelDetailNext = () => {
+       }}
+     />
+   );
++  /* The try-on chip opens on the stone or metal on screen. */
++  const tryOnColour = chosen[colourOption(piece)?.name ?? ""];
+   /* Square, like every corner on the site (tailwind.config.ts sets all radii to 0). */
+   const overlayButton =
+     "press-scale z-10 flex h-11 w-11 items-center justify-center bg-nf-ivory/75 backdrop-blur-sm";
+@@ -763,6 +770,7 @@ const JewelDetailNext = () => {
+       <button type="button" onClick={handleWishlist} className={`${overlayButton} absolute right-4 top-3`} aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}>
+         {heart}
+       </button>
++      <TryOnEntry handle={piece.handle} colour={tryOnColour} place="mobile" />
+       {slideCount > 1 && (
+         <span
+           className="pointer-events-none absolute bottom-3 left-3 z-10 bg-nf-ivory/85 px-2.5 py-1 font-nf-label text-[10.5px] tabular-nums tracking-nf-8 text-nf-ink backdrop-blur-sm"
+@@ -842,6 +850,7 @@ const JewelDetailNext = () => {
+         <button type="button" onClick={handleWishlist} className={`${overlayButton} absolute right-4 top-4`} aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}>
+           {heart}
+         </button>
++        <TryOnEntry handle={piece.handle} colour={tryOnColour} place="desktop" />
+       </div>
+     );
+   })();
+diff --git a/src/pages/PrivacyPolicy.tsx b/src/pages/PrivacyPolicy.tsx
+index 64d68f2..37ccbe7 100644
+--- a/src/pages/PrivacyPolicy.tsx
++++ b/src/pages/PrivacyPolicy.tsx
+@@ -1,7 +1,15 @@
++import { useEffect } from "react";
++import { useLocation } from "react-router-dom";
+ import PageSEO from "@/components/PageSEO";
+ import Footer from "@/components/Footer";
+ 
+-const sections = [
++/* The try-on's notice, word for word as its consent sheet links to it
++   (/privacy#try-on). src/test/tryon/privacyTryOn.test.ts keeps it equal to
++   the try-on copy deck. Published before the try-on is switched on. */
++export const TRY_ON_PRIVACY =
++  "When you use Try it on, the photo you choose is resized on your phone, its location data is removed, and it is sent over an encrypted connection to our server, which passes it to Google's Gemini image model through Lovable AI to make one preview image. We do not save your photo or the preview, we do not link them to your account, and we never share them with advertising or analytics services; our session recordings hide them. To prevent misuse we keep, for two days, one-way codes made from a random number stored on your device and from your network address, which cannot be turned back into either, and an anonymous count of try-ons (the piece, whether it worked, and how long it took). Our AI partners process the image only to return your preview, under their own terms. You must be 18 or over and use a photo of yourself. Questions or requests: shopatnaira@gmail.com.";
++
++const sections: Array<{ title: string; id?: string; content: JSX.Element }> = [
+   {
+     title: "Introduction",
+     content: (
+@@ -162,6 +170,11 @@ const sections = [
+       </>
+     ),
+   },
++  {
++    title: "Virtual try-on",
++    id: "try-on",
++    content: <p>{TRY_ON_PRIVACY}</p>,
++  },
+   {
+     title: "Contact Information",
+     content: (
+@@ -182,6 +195,14 @@ const sections = [
+ ];
+ 
+ const PrivacyPolicy = () => {
++  const { hash } = useLocation();
++  /* A link to one section (/privacy#try-on) lands on it: the router's own
++     scroll goes to the top of a new page. */
++  useEffect(() => {
++    if (!hash) return;
++    const frame = requestAnimationFrame(() => document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ block: "start" }));
++    return () => cancelAnimationFrame(frame);
++  }, [hash]);
+   return (
+     <>
+       <PageSEO
+@@ -224,8 +245,10 @@ const PrivacyPolicy = () => {
+           {sections.map((section, i) => (
+             <div
+               key={section.title}
++              id={section.id}
+               className="privacy-section"
+               style={{
++                scrollMarginTop: 140,
+                 paddingBottom: i < sections.length - 1 ? "clamp(32px, 4vw, 48px)" : 0,
+                 marginBottom: i < sections.length - 1 ? "clamp(32px, 4vw, 48px)" : 0,
+                 borderBottom: i < sections.length - 1 ? "1px solid hsl(0 0% 88%)" : "none",
+diff --git a/src/pages/TryOn.tsx b/src/pages/TryOn.tsx
+new file mode 100644
+index 0000000..a2791e1
+--- /dev/null
++++ b/src/pages/TryOn.tsx
+@@ -0,0 +1,54 @@
++import { useEffect } from "react";
++import { Navigate, useLocation, useParams } from "react-router-dom";
++import { Helmet } from "react-helmet-async";
++import Footer from "@/components/Footer";
++import TryOnHub from "@/components/tryon/TryOnHub";
++import TryOnStudio from "@/components/tryon/TryOnStudio";
++import { tryable } from "@/components/tryon/live";
++import { tryOnPiece } from "@/data/tryOnPieces";
++import { tryonEvent } from "@/lib/tryon/analytics";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++
++/*
++  /try-on (the hub) and /try-on/<handle> (one piece's studio), unlisted and
++  kept out of search through the pilot: shared from Instagram and ads, never
++  in the navigation or scripts/routes.ts (the prerenderer refuses noindex
++  pages). App.tsx keys the studio by handle, so each piece opens fresh.
++
++  An unknown handle, or one the owner has not certified on the real shop,
++  goes to the hub with its query kept (utm tags included), never to Coming
++  Soon. The header's flower stays still here (Navbar's productPage list), so
++  no three.js is fetched, and the slim footer leaves out the 3D box.
++*/
++const TryOn = () => {
++  const { handle } = useParams();
++  const { search } = useLocation();
++  const piece = handle ? tryOnPiece(handle) : undefined;
++  const allowed = piece ? tryable(piece) : false;
++
++  /* Naira's palette for the page and the dialogs it opens, as on the product page. */
++  useEffect(() => {
++    const root = document.documentElement;
++    root.classList.add("nf-next");
++    return () => root.classList.remove("nf-next");
++  }, []);
++
++  useEffect(() => {
++    if (!handle) tryonEvent("tryon_hub_opened");
++  }, [handle]);
++
++  if (handle && (!piece || !allowed)) return <Navigate to={{ pathname: "/try-on", search }} replace />;
++
++  return (
++    <div className="min-h-screen bg-nf-ivory pt-[107px] text-nf-ink md:pt-[114px] lg:pt-[132px]">
++      <Helmet>
++        <title>{TRYON_COPY.pageTitle}</title>
++        <meta name="robots" content="noindex,nofollow" />
++      </Helmet>
++      {piece ? <TryOnStudio piece={piece} /> : <TryOnHub />}
++      <Footer compact slim />
++    </div>
++  );
++};
++
++export default TryOn;
+diff --git a/src/test/tryon/TryOnPage.test.tsx b/src/test/tryon/TryOnPage.test.tsx
+new file mode 100644
+index 0000000..415b460
+--- /dev/null
++++ b/src/test/tryon/TryOnPage.test.tsx
+@@ -0,0 +1,407 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
++import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
++import { HelmetProvider } from "react-helmet-async";
++import { jewellery, type JewelPiece } from "@/data/jewellery";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++import { TryOnError } from "@/lib/tryon/errors";
++import { clearTryOnSession, liveObjectUrlCount, resetTryOnConsentForTest } from "@/lib/tryon/session";
++import { studioReducer, type StudioState } from "@/components/tryon/studioState";
++
++/*
++  The try-on's screens, driven as a shopper would, with the network, the
++  canvas and the bag stood in for (as bagOpensAtTap.test.tsx stands in for
++  Shopify). What they hold: nothing is sent before the unticked box is
++  ticked, consent is asked once per tab, Add opens the bag at the tap with
++  the variant shown, Buy now goes through CartContext.buyNow, the preview
++  is a blob: URL inside a masked container, and Delete leaves no URL alive.
++*/
++
++const mocks = vi.hoisted(() => ({
++  calls: [] as string[],
++  addItem: vi.fn(),
++  buyNow: vi.fn(),
++  setDrawerOpen: vi.fn(),
++  request: vi.fn(),
++  live: [] as unknown[],
++}));
++
++vi.mock("@/contexts/CartContext", () => ({
++  useCart: () => ({ addItem: mocks.addItem, buyNow: mocks.buyNow, setDrawerOpen: mocks.setDrawerOpen, isLoading: false }),
++}));
++vi.mock("@/hooks/useLiveJewellery", () => ({
++  useLiveJewellery: () => ({ jewellery: mocks.live, isLive: mocks.live.length > 0, isLoading: false }),
++}));
++vi.mock("@/components/Footer", () => ({ default: () => null }));
++vi.mock("@/lib/tryon/client", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("@/lib/tryon/client")>()),
++  requestTryOn: mocks.request,
++  sendFeedback: vi.fn(),
++}));
++vi.mock("@/lib/tryon/preparePhoto", async (importOriginal) => {
++  const real = await importOriginal<typeof import("@/lib/tryon/preparePhoto")>();
++  return {
++    ...real,
++    decodePhoto: vi.fn(async () => ({ image: {}, width: 1200, height: 1600, via: "img", close: vi.fn() })),
++    encodePhoto: vi.fn(async () => ({
++      blob: new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xe0])], { type: "image/jpeg" }),
++      width: 1152,
++      height: 1536,
++      warnings: [],
++      crop: { x: 0, y: 0, width: 1200, height: 1600 },
++      source: { width: 1200, height: 1600 },
++    })),
++    drawCrop: vi.fn(),
++  };
++});
++vi.mock("@/lib/tryon/sceneGuard", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("@/lib/tryon/sceneGuard")>()),
++  sceneGuard: vi.fn(async () => null),
++}));
++vi.mock("@/lib/tryon/share", async (importOriginal) => ({
++  ...(await importOriginal<typeof import("@/lib/tryon/share")>()),
++  prepareShare: vi.fn(async () => ({ jpeg: null, file: null, canShareFiles: false, text: "", url: "", whatsappUrl: "https://wa.me/?text=x" })),
++}));
++
++import TryOn from "@/pages/TryOn";
++
++const firstPaint = (handle: string): JewelPiece => {
++  const found = jewellery.find((p) => p.handle === handle) ?? jewellerySnapshot.find((p) => p.handle === handle);
++  if (!found) throw new Error(handle);
++  return JSON.parse(JSON.stringify(found));
++};
++/* The live catalogue, with every variant in stock but the Eternity Band's Ruby US 5 (sold out today). */
++const liveCatalogue = () =>
++  ["woven-gold-hoops", "baguette-huggies", "baguette-eternity-band", "cushion-halo-ring", "brushed-gold-huggies"].map((handle) => {
++    const piece = firstPaint(handle);
++    piece.availableForSale = true;
++    for (const v of piece.variants ?? []) v.availableForSale = !(handle === "baguette-eternity-band" && v.options.Stone === "Ruby" && v.options.Size === "5");
++    return piece;
++  });
++
++const Where = () => {
++  const { pathname, search } = useLocation();
++  return <output data-testid="where">{pathname + search}</output>;
++};
++const open = (path: string) =>
++  render(
++    <HelmetProvider>
++      <MemoryRouter initialEntries={[path]}>
++        <Routes>
++          <Route path="/try-on" element={<TryOn />} />
++          <Route path="/try-on/:handle" element={<TryOn />} />
++        </Routes>
++        <Where />
++      </MemoryRouter>
++    </HelmetProvider>,
++  );
++
++const preview = () => new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], { type: "image/png" });
++const reply = () => ({ blob: preview(), remaining: 4, verified: "pass" as const, renderId: "0f8fad5b-d9cb-469f-a165-70867728950e" });
++
++/* Pick a photo, frame it, and arrive at the consent sheet (or straight at the render once consent is given). */
++const addPhoto = async () => {
++  const input = document.querySelector('[data-tryon-input="library"]') as HTMLInputElement;
++  fireEvent.change(input, { target: { files: [new File([new Uint8Array([0xff, 0xd8, 0xff])], "me.jpg", { type: "image/jpeg" })] } });
++  await screen.findByRole("button", { name: "Use this photo" });
++  fireEvent.click(screen.getByRole("button", { name: "Use this photo" }));
++};
++const consent = () => screen.findByRole("dialog", { name: "Before we begin" });
++/* Tick the box and tap Create, inside the sheet (the photo screen behind it has its own Create). */
++const agree = async () => {
++  const sheet = await consent();
++  fireEvent.click(within(sheet).getByRole("checkbox"));
++  fireEvent.click(within(sheet).getByRole("button", { name: "Create my try-on" }));
++};
++
++let made = 0;
++beforeEach(() => {
++  made = 0;
++  mocks.calls.length = 0;
++  mocks.live = liveCatalogue();
++  mocks.addItem.mockReset().mockImplementation(async () => {
++    mocks.calls.push("addItem");
++    return "line-1";
++  });
++  mocks.setDrawerOpen.mockReset().mockImplementation(() => mocks.calls.push("setDrawerOpen"));
++  mocks.buyNow.mockReset().mockResolvedValue(undefined);
++  mocks.request.mockReset().mockImplementation(async (req: { onUpload?: (f: number) => void; onUploaded?: () => void }) => {
++    req.onUpload?.(0.63);
++    req.onUploaded?.();
++    return reply();
++  });
++  sessionStorage.clear();
++  resetTryOnConsentForTest();
++  window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
++  Object.assign(URL, {
++    createObjectURL: vi.fn(() => `blob:http://localhost/${++made}`),
++    revokeObjectURL: vi.fn(),
++  });
++});
++afterEach(() => {
++  clearTryOnSession();
++});
++
++describe("the hub", () => {
++  it("paints its heading and both groups at once", () => {
++    open("/try-on");
++    expect(screen.getByRole("heading", { level: 1, name: "Try it on" })).toBeInTheDocument();
++    expect(screen.getByRole("heading", { name: "With a face photo" })).toBeInTheDocument();
++    expect(screen.getByRole("heading", { name: "With a hand photo" })).toBeInTheDocument();
++    // Off the real shop, uncertified pieces show for testing, labelled.
++    expect(screen.getAllByText("Uncertified").length).toBeGreaterThan(0);
++  });
++
++  /* A sold-out or unlisted piece is hidden once Shopify has answered. */
++  it("hides a piece the live catalogue no longer sells", () => {
++    mocks.live = liveCatalogue().map((p) => (p.handle === "brushed-gold-huggies" ? { ...p, availableForSale: false } : p));
++    open("/try-on");
++    expect(document.querySelector('[data-tryon-card="woven-gold-hoops"]')).not.toBeNull();
++    expect(document.querySelector('[data-tryon-card="brushed-gold-huggies"]')).toBeNull();
++  });
++
++  it("shows only certified pieces on the real shop, and says so when there are none", () => {
++    (window as unknown as { __nairaProd?: boolean }).__nairaProd = true;
++    try {
++      open("/try-on");
++      expect(screen.getByText("Try-on opens soon. See our pieces on models in the meantime.")).toBeInTheDocument();
++      expect(screen.getByRole("link", { name: "Shop jewellery" }).getAttribute("href")).toBe("/jewellery");
++    } finally {
++      delete (window as unknown as { __nairaProd?: boolean }).__nairaProd;
++    }
++  });
++});
++
++describe("the studio", () => {
++  it("paints the heading, the piece and both photo buttons on first paint", () => {
++    open("/try-on/woven-gold-hoops");
++    expect(screen.getByRole("heading", { level: 1, name: "Try it on" })).toBeInTheDocument();
++    expect(screen.getByRole("heading", { name: "Woven Gold Hoops" })).toBeInTheDocument();
++    expect(screen.getByText("Actual size 25 mm across")).toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "Take a photo" })).toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "Choose from gallery" })).toBeInTheDocument();
++  });
++
++  it("opens the camera the piece needs: the front one for a face, the back one for a hand", () => {
++    open("/try-on/woven-gold-hoops");
++    expect(document.querySelector('[data-tryon-input="camera"]')?.getAttribute("capture")).toBe("user");
++    expect(document.querySelector('[data-tryon-input="library"]')?.hasAttribute("capture")).toBe(false);
++  });
++
++  it("sends an unknown piece to the hub with its query kept", async () => {
++    open("/try-on/not-a-piece?utm_source=ig&colour=ruby");
++    await waitFor(() => expect(screen.getByTestId("where").textContent).toBe("/try-on?utm_source=ig&colour=ruby"));
++  });
++
++  it("opens on the stone the link names", () => {
++    open("/try-on/baguette-huggies?colour=emerald");
++    expect(screen.getByRole("radio", { name: "Emerald" })).toHaveAttribute("aria-checked", "true");
++  });
++});
++
++describe("consent", () => {
++  it("is unticked, and Create stays disabled until it is ticked; nothing is sent before", async () => {
++    open("/try-on/woven-gold-hoops");
++    await addPhoto();
++    const sheet = await consent();
++    const box = within(sheet).getByRole("checkbox");
++    const create = within(sheet).getByRole("button", { name: "Create my try-on" });
++    expect(box).not.toBeChecked();
++    expect(create).toBeDisabled();
++    expect(mocks.request).not.toHaveBeenCalled();
++    fireEvent.click(box);
++    expect(create).toBeEnabled();
++    fireEvent.click(create);
++    await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(1), { timeout: 3000 });
++    expect(mocks.request.mock.calls[0][0]).toMatchObject({ handle: "woven-gold-hoops", stone: null, kind: "face" });
++  });
++
++  it("is asked once per tab: a second piece goes straight to its preview", async () => {
++    const first = open("/try-on/woven-gold-hoops");
++    await addPhoto();
++    await agree();
++    await screen.findByText("Does this look like the piece?", undefined, { timeout: 3000 });
++    first.unmount();
++
++    open("/try-on/brushed-gold-huggies");
++    fireEvent.click(screen.getByRole("button", { name: "Use the photo you added" }));
++    await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2));
++    expect(screen.queryByRole("dialog", { name: "Before we begin" })).toBeNull();
++  });
++});
++
++describe("the preview", () => {
++  const toResult = async (path = "/try-on/woven-gold-hoops") => {
++    const view = open(path);
++    await addPhoto();
++    await agree();
++    await screen.findByText("Does this look like the piece?", undefined, { timeout: 3000 });
++    return view;
++  };
++
++  it("is a blob: URL inside a masked container, beside the shopper's own photo, and never a data: URL", async () => {
++    await toResult();
++    const result = screen.getByRole("img", { name: "AI preview of the Woven Gold Hoops on your photo" });
++    expect(result.getAttribute("src")).toMatch(/^blob:/);
++    expect(result.closest("[data-clarity-mask]")).not.toBeNull();
++    const mine = document.querySelector('[data-tryon-result] img[alt="Your photo"]') as HTMLImageElement;
++    expect(mine.getAttribute("src")).toMatch(/^blob:/);
++    expect(mine.closest("[data-clarity-mask]")).not.toBeNull();
++    expect(document.querySelectorAll('img[src^="data:"]')).toHaveLength(0);
++    expect(screen.getByText("AI preview")).toBeInTheDocument();
++    expect(screen.getByText("Shown at its listed size: 25 mm across")).toBeInTheDocument();
++    expect(screen.getByText("4 try-ons left today")).toBeInTheDocument();
++  });
++
++  it("Delete revokes every URL and says so", async () => {
++    await toResult();
++    expect(liveObjectUrlCount()).toBeGreaterThan(0);
++    fireEvent.click(screen.getByRole("button", { name: "Delete photo" }));
++    expect(await screen.findByText("Your photo is deleted from this page. We never kept a copy.")).toBeInTheDocument();
++    expect(liveObjectUrlCount()).toBe(0);
++    expect(vi.mocked(URL.revokeObjectURL).mock.calls.length).toBe(made);
++    expect(document.querySelectorAll('img[src^="blob:"]')).toHaveLength(0);
++  });
++
++  /* Back to a piece already tried shows its preview again, with no second request. */
++  it("is kept for the tab: returning to the piece shows it without another try-on", async () => {
++    const view = await toResult();
++    view.unmount();
++    open("/try-on/woven-gold-hoops");
++    expect(await screen.findByText("Does this look like the piece?")).toBeInTheDocument();
++    expect(mocks.request).toHaveBeenCalledTimes(1);
++  });
++
++  it("offers the next stone after a preview, and Add names the stone it adds", async () => {
++    await toResult("/try-on/baguette-huggies?colour=ruby");
++    fireEvent.click(screen.getByRole("radio", { name: "Emerald" }));
++    expect(screen.getByText("Your preview shows Ruby.")).toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "Add Emerald to bag" })).toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "Try in Emerald" }));
++    await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2));
++    expect(mocks.request.mock.calls[1][0]).toMatchObject({ handle: "baguette-huggies", stone: "Emerald" });
++  });
++
++  it("shows each error's own words and button, and Cancel keeps the photo", async () => {
++    mocks.request.mockRejectedValueOnce(new TryOnError("photo_unusable", { status: 422, reason: "ear_not_visible" }));
++    open("/try-on/woven-gold-hoops");
++    await addPhoto();
++    await agree();
++    expect(await screen.findByText("We could not see your ear clearly. Tuck your hair back and turn a little toward the light.", undefined, { timeout: 3000 })).toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "Choose another photo" })).toBeInTheDocument();
++
++    fireEvent.click(screen.getByRole("button", { name: "Choose another photo" }));
++    mocks.request.mockImplementationOnce(
++      (req: { signal: AbortSignal }) => new Promise((_, reject) => req.signal.addEventListener("abort", () => reject(new TryOnError("cancelled")))),
++    );
++    fireEvent.click(await screen.findByRole("button", { name: "Use the photo you added" }));
++    fireEvent.click(await screen.findByRole("button", { name: "Cancel" }));
++    expect(await screen.findByText("Cancelled. Your photo is still here.")).toBeInTheDocument();
++    expect(screen.getByRole("button", { name: "Create my try-on" })).toBeInTheDocument();
++  });
++});
++
++describe("buying from the try-on", () => {
++  const atWait = async (path: string) => {
++    let release!: () => void;
++    mocks.request.mockImplementation(
++      (req: { onUploaded?: () => void; signal: AbortSignal }) =>
++        new Promise((resolve, reject) => {
++          req.onUploaded?.();
++          release = () => resolve(reply());
++          // As the real client does: a cleared session or a newer render aborts this one.
++          req.signal.addEventListener("abort", () => reject(new TryOnError("cancelled")));
++        }),
++    );
++    open(path);
++    await addPhoto();
++    await agree();
++    await screen.findByText("Keep this page open.", undefined, { timeout: 3000 });
++    return () => act(() => release());
++  };
++
++  it("opens the bag at the tap, then adds the stone shown: Baguette Huggies in Ruby", async () => {
++    await atWait("/try-on/baguette-huggies?colour=ruby");
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag · Ruby" }));
++    await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(1));
++    expect(mocks.calls).toEqual(["setDrawerOpen", "addItem"]);
++    expect(mocks.setDrawerOpen).toHaveBeenCalledWith(true);
++    const ruby = firstPaint("baguette-huggies").variants!.find((v) => v.options.Stone === "Ruby")!;
++    expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ id: "baguette-huggies", variantId: ruby.id });
++  });
++
++  it("buys now through CartContext.buyNow with the same line", async () => {
++    await atWait("/try-on/baguette-huggies?colour=emerald");
++    fireEvent.click(screen.getByRole("button", { name: /Buy now/ }));
++    await waitFor(() => expect(mocks.buyNow).toHaveBeenCalledTimes(1));
++    const emerald = firstPaint("baguette-huggies").variants!.find((v) => v.options.Stone === "Emerald")!;
++    expect(mocks.buyNow.mock.calls[0][0]).toMatchObject({ variantId: emerald.id });
++    expect(mocks.addItem).not.toHaveBeenCalled();
++  });
++
++  it("asks the Eternity Band's size first, and reserves a sold-out pair on WhatsApp", async () => {
++    await atWait("/try-on/baguette-eternity-band?colour=ruby");
++    expect(screen.getByRole("button", { name: "Choose a size" })).toBeDisabled();
++    const five = screen.getByRole("radio", { name: /US 5/ });
++    expect(five).toHaveTextContent("Pre-order");
++    fireEvent.click(five);
++    const reserve = screen.getByRole("link", { name: "Reserve on WhatsApp" });
++    expect(reserve.getAttribute("href")).toMatch(/^https:\/\/wa\.me\//);
++    fireEvent.click(screen.getByRole("radio", { name: "US 7" }));
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag · Ruby · US 7" }));
++    await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(1));
++    const ruby7 = firstPaint("baguette-eternity-band").variants!.find((v) => v.options.Stone === "Ruby" && v.options.Size === "7")!;
++    expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ variantId: ruby7.id });
++  });
++
++  it("adds the open-back Cushion Halo as US 6, as the product page does", async () => {
++    mocks.live = liveCatalogue();
++    open("/try-on/cushion-halo-ring");
++    // A hand piece opens the back camera.
++    expect(document.querySelector('[data-tryon-input="camera"]')?.getAttribute("capture")).toBe("environment");
++    await addPhoto();
++    await agree();
++    await screen.findByText("Does this look like the piece?", undefined, { timeout: 3000 });
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
++    await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(1));
++    expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ id: "cushion-halo-ring", size: "US 6" });
++  });
++
++  /* Never from the bundled snapshot: a piece sold out since it was taken must not reach the bag. */
++  it("waits for the live catalogue before it can add", async () => {
++    mocks.live = [];
++    await atWait("/try-on/woven-gold-hoops");
++    expect(screen.getByRole("button", { name: "Add to bag" })).toBeDisabled();
++  });
++});
++
++describe("the studio's steps", () => {
++  const intro: StudioState = { step: "intro" };
++  it("walks intro, preparing, crop, ready, consent, uploading, rendering and result", () => {
++    let s = studioReducer(intro, { type: "preparing" });
++    expect(s.step).toBe("preparing");
++    s = studioReducer(s, { type: "crop" });
++    s = studioReducer(s, { type: "ready", warnings: ["dark"] });
++    expect(s).toEqual({ step: "ready", warnings: ["dark"], notice: undefined });
++    s = studioReducer(s, { type: "consent" });
++    expect(s).toEqual({ step: "consent", warnings: ["dark"] });
++    s = studioReducer(s, { type: "upload", stone: "Ruby" });
++    s = studioReducer(s, { type: "progress", fraction: 0.63 });
++    expect(s).toEqual({ step: "uploading", stone: "Ruby", progress: 0.63 });
++    s = studioReducer(s, { type: "uploaded", at: 5 });
++    expect(s).toEqual({ step: "rendering", stone: "Ruby", startedAt: 5 });
++    expect(studioReducer(s, { type: "result", stone: "Ruby" })).toEqual({ step: "result", stone: "Ruby" });
++  });
++
++  it("goes back to the photo on Cancel, and to failed(code) on any other error", () => {
++    const waiting: StudioState = { step: "rendering", stone: null, startedAt: 1 };
++    expect(studioReducer(waiting, { type: "failed", error: new TryOnError("cancelled") })).toEqual({ step: "ready", warnings: [], notice: "cancelled" });
++    const failed = studioReducer(waiting, { type: "failed", error: new TryOnError("device_limit", { status: 429 }) });
++    expect(failed).toMatchObject({ step: "failed", code: "device_limit", copy: { message: "You have used today's 5 try-ons. They refresh at midnight.", action: "view_piece" } });
++  });
++
++  it("ignores progress that arrives after the upload", () => {
++    const waiting: StudioState = { step: "rendering", stone: null, startedAt: 1 };
++    expect(studioReducer(waiting, { type: "progress", fraction: 0.5 })).toBe(waiting);
++  });
++});
+diff --git a/src/test/tryon/routesAndWeight.test.tsx b/src/test/tryon/routesAndWeight.test.tsx
+new file mode 100644
+index 0000000..9ccf4e3
+--- /dev/null
++++ b/src/test/tryon/routesAndWeight.test.tsx
+@@ -0,0 +1,169 @@
++import { describe, expect, it, vi } from "vitest";
++import { readFileSync, readdirSync } from "node:fs";
++import { join, resolve } from "node:path";
++import { render } from "@testing-library/react";
++import { MemoryRouter } from "react-router-dom";
++import { routeKeyFor } from "@/lib/routeCode";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { TRIED_KEY } from "@/lib/tryon/session";
++import TryOnEntry, { TRY_ON_CHIP_LABEL } from "@/components/tryon/TryOnEntry";
++import { TRY_ON_PRIVACY } from "@/pages/PrivacyPolicy";
++
++/*
++  The try-on rides on the shop without weighing on it: its route is wired
++  like every other page (code preloaded, still logo, header offsets), the
++  product page carries nothing of it but a chip that renders nothing until
++  the owner switches it on, and no try-on file reaches for three.js, GSAP or
++  MediaPipe.
++*/
++
++const src = resolve(__dirname, "../..");
++const read = (path: string) => readFileSync(join(src, path), "utf8");
++const filesIn = (dir: string): string[] =>
++  readdirSync(join(src, dir), { withFileTypes: true }).flatMap((e) =>
++    e.isDirectory() ? filesIn(join(dir, e.name)) : /\.tsx?$/.test(e.name) ? [join(dir, e.name)] : [],
++  );
++const tryOnFiles = [...filesIn("components/tryon"), ...filesIn("lib/tryon"), "pages/TryOn.tsx"];
++const importsOf = (text: string) => [...text.matchAll(/(?:from|import)\s*\(?\s*["']([^"']+)["']/g)].map((m) => m[1]);
++
++describe("the try-on's routes", () => {
++  it("loads its page's code before the first render, on the hub and on a piece", () => {
++    expect(routeKeyFor("/try-on")).toBe("TryOn");
++    expect(routeKeyFor("/try-on/woven-gold-hoops")).toBe("TryOn");
++    expect(read("pageCode.ts")).toMatch(/TryOn = lazyRoute\(\(\) => import\("\.\/pages\/TryOn\.tsx"\)\)/);
++  });
++
++  /* Below the catch-all they would land on Coming Soon. */
++  it("sits above the catch-all, with /tryon kept as an alias that keeps the query", () => {
++    const app = read("App.tsx");
++    const star = app.indexOf('path="*"');
++    for (const route of ['path="/try-on"', 'path="/try-on/:handle"', 'path="/tryon" element={<KeepQuery to="/try-on" />}']) {
++      expect([route, app.indexOf(route) > 0 && app.indexOf(route) < star]).toEqual([route, true]);
++    }
++    expect(app).toMatch(/<TryOn key=\{handle\} \/>/);
++  });
++
++  /* The turning flower costs a phone three.js; the try-on keeps it still, as product pages do. */
++  it("keeps the logo flower still", () => {
++    expect(read("components/Navbar.tsx")).toMatch(/\["JewelDetailNext", "ProductDetail", "TryOn"\]/);
++  });
++
++  it("stays out of search and out of the pre-built pages", () => {
++    const page = read("pages/TryOn.tsx");
++    expect(page).toMatch(/<meta name="robots" content="noindex,nofollow" \/>/);
++    expect(readFileSync(resolve(src, "../scripts/routes.ts"), "utf8")).not.toMatch(/try-?on/i);
++  });
++
++  /* Header.test.ts holds every page's offsets to the bar; this page must be one it finds. */
++  it("clears the fixed header with the shop's offsets", () => {
++    expect(read("pages/TryOn.tsx")).toMatch(/pt-\[107px\][^"]*md:pt-\[114px\][^"]*lg:pt-\[132px\]/);
++  });
++
++  it("uses the slim footer, without the 3D gift box", () => {
++    expect(read("pages/TryOn.tsx")).toMatch(/<Footer compact slim \/>/);
++  });
++});
++
++describe("the try-on's weight", () => {
++  it("never imports three, gsap or MediaPipe, statically or on demand", () => {
++    for (const file of tryOnFiles) {
++      expect([file, importsOf(read(file)).filter((m) => /^(three|gsap|@mediapipe)/.test(m))]).toEqual([file, []]);
++    }
++  });
++
++  /* tryOnHandles.ts is the product page's. A second importer would split it into a chunk of its own, one more file for every product page. */
++  it("leaves tryOnHandles.ts to the product page's chip", () => {
++    const importers = [...tryOnFiles, ...filesIn("pages")].filter((f) => importsOf(read(f)).some((m) => /tryOnHandles$/.test(m)));
++    expect(importers).toEqual([join("components/tryon", "TryOnEntry.tsx")]);
++  });
++
++  it("puts nothing of the try-on on the product page but the chip", () => {
++    const pdp = importsOf(read("pages/JewelDetailNext.tsx")).filter((m) => /try-?on/i.test(m));
++    expect(pdp).toEqual(["@/components/tryon/TryOnEntry"]);
++    const chip = importsOf(read("components/tryon/TryOnEntry.tsx"));
++    expect(chip).toEqual(["react-router-dom", "@/data/tryOnHandles"]);
++  });
++
++  /* Privacy: a picture of the shopper as a data: URL would sit in the DOM as text, readable by a session recording. */
++  it("never turns a photo or preview into a data: URL", () => {
++    for (const file of tryOnFiles) expect([file, /toDataURL|readAsDataURL|data:image/.test(read(file))]).toEqual([file, false]);
++  });
++
++  /* Every word on screen comes from the copy deck (copy.test.ts checks its punctuation). */
++  it("writes no words of its own in the screens", () => {
++    const jsxWords = (source: string) =>
++      [...source.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/>\s*([A-Za-z][^<>{}]*?)\s*</g)].map((m) => m[1]).filter((t) => !/[;=(]/.test(t));
++    expect(jsxWords('<p className="x">Sold out</p>')).toEqual(["Sold out"]);
++    for (const file of filesIn("components/tryon").filter((f) => f.endsWith(".tsx"))) {
++      expect([file, jsxWords(read(file))]).toEqual([file, []]);
++    }
++  });
++});
++
++describe("the product page chip", () => {
++  it("renders nothing while TRY_ON_ENTRY_LIVE is off", () => {
++    const { container } = render(
++      <MemoryRouter>
++        <TryOnEntry handle="woven-gold-hoops" place="mobile" />
++      </MemoryRouter>,
++    );
++    expect(container.innerHTML).toBe("");
++  });
++
++  it("reads the deck's label", () => {
++    expect(TRY_ON_CHIP_LABEL).toBe(TRYON_COPY.pdpChip);
++  });
++
++  /* The chip is a sibling of the gallery's slide buttons, under the heart, never inside a button. */
++  it("sits beside the heart in both galleries", () => {
++    const pdp = read("pages/JewelDetailNext.tsx");
++    expect(pdp.match(/<TryOnEntry handle=\{piece\.handle\} colour=\{tryOnColour\} place="(mobile|desktop)" \/>/g)).toHaveLength(2);
++    expect(pdp).toMatch(/absolute right-4 top-3`\} aria-label=[^\n]*\n\s*\{heart\}\n\s*<\/button>\n\s*<TryOnEntry[^\n]*place="mobile"/);
++    expect(pdp).toMatch(/absolute right-4 top-4`\} aria-label=[^\n]*\n\s*\{heart\}\n\s*<\/button>\n\s*<TryOnEntry[^\n]*place="desktop"/);
++  });
++});
++
++describe("the chip switched on (a test build)", () => {
++  it("links to the piece's try-on in the stone on screen, under the heart", async () => {
++    vi.resetModules();
++    vi.doMock("@/data/tryOnHandles", () => ({
++      TRY_ON_ENTRY_LIVE: true,
++      TRY_ON_LIVE_HANDLES: new Set(["baguette-huggies"]),
++      TRY_ON_HANDLES: new Set(["baguette-huggies"]),
++    }));
++    const { default: LiveEntry } = await import("@/components/tryon/TryOnEntry");
++    const { container, getByRole } = render(
++      <MemoryRouter>
++        <LiveEntry handle="baguette-huggies" colour="Emerald" place="mobile" />
++        <LiveEntry handle="woven-gold-hoops" place="desktop" />
++      </MemoryRouter>,
++    );
++    const link = getByRole("link", { name: "Try on" });
++    expect(link.getAttribute("href")).toBe("/try-on/baguette-huggies?colour=emerald");
++    expect(link.className).toMatch(/absolute right-4 top-\[64px\]/);
++    // Only certified pieces get a chip.
++    expect(container.querySelectorAll("a")).toHaveLength(1);
++    vi.doUnmock("@/data/tryOnHandles");
++  });
++});
++
++describe("the privacy notice", () => {
++  /* The consent sheet links to /privacy#try-on; the page must say what the deck says. */
++  it("publishes the deck's try-on section under id try-on", () => {
++    expect(TRY_ON_PRIVACY).toBe(TRYON_COPY.privacy.body);
++    const page = read("pages/PrivacyPolicy.tsx");
++    expect(page).toMatch(/title: "Virtual try-on",\s*id: "try-on"/);
++    expect(TRYON_COPY.consent.href).toBe("/privacy#try-on");
++    expect(TRYON_COPY.trust.href).toBe("/privacy#try-on");
++  });
++
++  it("says no exclamation and no em dash", () => {
++    expect(TRY_ON_PRIVACY).not.toMatch(/[!—]/);
++  });
++});
++
++describe("the order attribute key", () => {
++  it("is the one session.ts writes", () => {
++    expect(read("lib/shopify.ts")).toContain(`getItem("${TRIED_KEY}")`);
++  });
++});
+diff --git a/src/test/tryon/shopifyAttribute.test.ts b/src/test/tryon/shopifyAttribute.test.ts
+new file mode 100644
+index 0000000..119d9c0
+--- /dev/null
++++ b/src/test/tryon/shopifyAttribute.test.ts
+@@ -0,0 +1,42 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { trackingCartAttributes } from "@/lib/shopify";
++import { markTried } from "@/lib/tryon/session";
++
++/*
++  An order carries naira_tryon (the pieces tried on in that tab) the way it
++  carries naira_visitor_id, so the owner can count orders the try-on led to.
++  cartAttributesUpdate replaces the whole set, so it must ride in the one list
++  with the others and never push them out.
++*/
++describe("the naira_tryon cart attribute", () => {
++  beforeEach(() => sessionStorage.clear());
++  afterEach(() => vi.restoreAllMocks());
++
++  it("is added only once a piece has been tried, beside the existing attributes", () => {
++    const before = trackingCartAttributes();
++    expect(before.some((a) => a.key === "naira_tryon")).toBe(false);
++    markTried("woven-gold-hoops");
++    markTried("baguette-huggies");
++    const after = trackingCartAttributes();
++    expect(after.find((a) => a.key === "naira_tryon")).toEqual({ key: "naira_tryon", value: "woven-gold-hoops,baguette-huggies" });
++    expect(after.filter((a) => a.key !== "naira_tryon")).toEqual(before);
++  });
++
++  it("carries handles only, 200 characters at most", () => {
++    for (const bad of ["<b>x</b>", "Woven Gold Hoops", "a".repeat(201), ""]) {
++      sessionStorage.setItem("naira_tryon", bad);
++      expect([bad, trackingCartAttributes().some((a) => a.key === "naira_tryon")]).toEqual([bad, false]);
++    }
++    sessionStorage.setItem("naira_tryon", "cushion-halo-ring");
++    const value = trackingCartAttributes().find((a) => a.key === "naira_tryon")?.value ?? "";
++    expect(value).toMatch(/^[a-z0-9,-]{1,200}$/);
++  });
++
++  it("never breaks the cart when storage is blocked", () => {
++    vi.spyOn(window, "sessionStorage", "get").mockImplementation(() => {
++      throw new Error("SecurityError");
++    });
++    expect(() => trackingCartAttributes()).not.toThrow();
++    expect(trackingCartAttributes().some((a) => a.key === "naira_tryon")).toBe(false);
++  });
++});
+diff --git a/tests/edge/tryon/contract.test.ts b/tests/edge/tryon/contract.test.ts
+new file mode 100644
+index 0000000..d8e1ffc
+--- /dev/null
++++ b/tests/edge/tryon/contract.test.ts
+@@ -0,0 +1,60 @@
++// @vitest-environment node
++import { describe, expect, it } from "vitest";
++import { ERROR_STATUS, PAUSED_REASONS, PHOTO_REASONS, RETRYABLE } from "../../../supabase/functions/tryon/errors";
++import { EXPOSED_HEADERS, TIMEOUTS } from "../../../supabase/functions/tryon/handler";
++import { CONSENT_VERSION as SERVER_CONSENT } from "../../../supabase/functions/tryon/prompt";
++import {
++  PAUSED_REASONS as CLIENT_PAUSED,
++  PHOTO_UNUSABLE_REASONS as CLIENT_PHOTO,
++  SERVER_ERROR_CODES,
++  TryOnError,
++  errorCopy,
++  errorFromResponse,
++} from "@/lib/tryon/errors";
++import { CONSENT_VERSION as SESSION_CONSENT } from "@/lib/tryon/session";
++import { TRYON_TIMEOUT_MS } from "@/lib/tryon/client";
++import { TRY_ON_CONSENT_VERSION } from "@/data/tryOnPieces";
++
++/*
++  The two halves of the try-on were written apart (the edge function, the
++  browser libraries) and meet only over HTTP. These hold them to one
++  contract, so a code, reason or version added on one side cannot leave the
++  other showing "Something went wrong" for it, or refusing every request.
++*/
++describe("browser and function agree", () => {
++  it("on every error code, and on each code's status", () => {
++    expect([...SERVER_ERROR_CODES].sort()).toEqual(Object.keys(ERROR_STATUS).sort());
++    for (const [code, status] of Object.entries(ERROR_STATUS)) {
++      // The browser reads the body's code first; the status alone maps to the same code or, for shared statuses, a sibling.
++      expect(errorFromResponse(status, { code }).code).toBe(code);
++    }
++  });
++
++  it("on every photo and pause reason, and each has its own words", () => {
++    expect([...CLIENT_PHOTO]).toEqual([...PHOTO_REASONS]);
++    expect([...CLIENT_PAUSED]).toEqual([...PAUSED_REASONS]);
++    for (const reason of PHOTO_REASONS) expect(errorCopy("photo_unusable", reason).message.length).toBeGreaterThan(10);
++  });
++
++  it("on which errors may simply be tried again", () => {
++    for (const [code, retryable] of Object.entries(RETRYABLE)) {
++      expect([code, new TryOnError(code as never, { retryable }).retryable]).toEqual([code, retryable]);
++      if (retryable) expect([code, errorCopy(code as never).action]).toEqual([code, "try_again"]);
++    }
++  });
++
++  it("on the consent notice version", () => {
++    expect(SESSION_CONSENT).toBe(SERVER_CONSENT);
++    expect(TRY_ON_CONSENT_VERSION).toBe(SERVER_CONSENT);
++  });
++
++  /* The browser must outwait the function, or a slow success reads as a timeout and is paid for twice. */
++  it("on time: the browser gives up after the function's own deadline", () => {
++    expect(TRYON_TIMEOUT_MS).toBeGreaterThan(TIMEOUTS.deadline);
++    expect(TRYON_TIMEOUT_MS - TIMEOUTS.deadline).toBeLessThanOrEqual(10_000);
++  });
++
++  it("on the headers the browser reads from a preview", () => {
++    expect(EXPOSED_HEADERS.split(/,\s*/).sort()).toEqual(["X-Tryon-Remaining", "X-Tryon-Render", "X-Tryon-Verified"]);
++  });
++});
+-- 
+2.43.0
+

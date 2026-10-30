@@ -1,0 +1,1086 @@
+From e13a140f88409952b3eae16a627241bf22b38213 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 18:25:56 +0000
+Subject: [PATCH 08/10] Try-on screens: fix what the shopper review found on
+ phones
+
+The preview now arrives in one commit with its screen (no empty Suspense
+frame), so on a 360x640 Android it lands on screen with focus on its
+heading. The crop frame leaves "Use this photo" on short screens, the real
+piece beside a preview is the stone in it, and the open-back Cushion Halo
+shows its sizes and names the one it adds. A size picked during the wait
+stays, and the stone-change button names it. Sold-out pieces lead with the
+reason, error screens keep one ink button, Save uses press and hold in every
+in-app browser, and the hub fetches its first photos first. The e2e gains a
+360x640 slow-render walk that fails on the previous build.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ CLAUDE.md                               |  33 ++++-
+ scripts/tryon/e2e.mjs                   | 108 +++++++++++++-
+ src/components/tryon/PhotoStep.tsx      |  21 ++-
+ src/components/tryon/TryAnotherRail.tsx |   6 +-
+ src/components/tryon/TryOnBuy.tsx       |  57 +++++---
+ src/components/tryon/TryOnHub.tsx       |   2 +
+ src/components/tryon/TryOnResult.tsx    |  14 +-
+ src/components/tryon/TryOnStudio.tsx    | 186 +++++++++++++++---------
+ src/lib/tryon/copy.ts                   |   5 +-
+ src/lib/tryon/share.ts                  |  19 ++-
+ src/test/tryon/TryOnPage.test.tsx       |  92 +++++++++++-
+ src/test/tryon/copy.test.ts             |   2 +
+ src/test/tryon/share.test.ts            |  16 +-
+ 13 files changed, 438 insertions(+), 123 deletions(-)
+
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 7ae0a7d..a4692cc 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -551,9 +551,36 @@ Rules that are the point, not details:
+ - Add opens the bag at the tap; the line comes from `src/lib/oneTapLine.ts`,
+   shared with the product page's "Complete the look", so the two never
+   disagree. Nothing is added from first-paint data.
+-- The result screen's code is fetched during the wait; its chunk is in
+-  `optionalChunk.ts` so a failed fetch never triggers the stale-build reload
+-  (which would lose the photo and a paid preview).
++- The result screen's code is fetched during the wait, and a finished preview
++  waits for it (at most 8 s) before the step changes, so the result is drawn
++  in one commit with its focus and scroll. Never put it back behind a
++  Suspense fallback: on a 360x640 Android, Chrome's scroll anchoring moved
++  the first preview 640 px above the screen and focus fell to <body>. Its
++  chunk is in `optionalChunk.ts` so a failed fetch never triggers the
++  stale-build reload (which would lose the photo and a paid preview); the
++  preview then shows in a plainer frame.
++- Photo prep draws the decoded <img> straight into the crop preview and the
++  1152x1536 frame; Chrome reuses its first decode for both. A reduced working
++  copy drawn once (the shopper review's SHOP-6 idea) measured SLOWER in an
++  interleaved A/B at 4x CPU in headless Chromium (median 2.15 s against
++  1.66 s from pick to consent), so it was not kept. The spec's 800 ms is
++  still unproven: time it on a real mid-range Android in the preview smoke.
++
++Where the build differs from the spec, on purpose:
++- `src/lib/tryon/share.ts` is the spec's `shareImage.ts` (share and save in
++  one file). "Save photo" opens the press-and-hold view in EVERY in-app
++  browser or Android WebView, not only iOS ones (uxStates SHARE FALLBACK
++  over userFlow 10: Android's Instagram and Facebook drop a blob: download).
++- PieceStrip resolves stones with its own `tryOnStone` / `pieceInStone`, not
++  `colourCards.ts`, which would pull the colour-card code into the TryOn chunk.
++- The open-back Cushion Halo shows the product page's US 5 to 9 chips (US 6
++  picked) and its fit line, and the button names the size it adds; the spec
++  had it go in as a silent US 6. The chosen size rides in the link (`&size=7`).
++- The device-limit message takes its number from the server's 429 (the
++  `TRYON_DEVICE_DAILY` secret), not from a constant in the page.
++- The e2e lives in this repo (`scripts/tryon/e2e.mjs` and its synthetic
++  fixtures), not on the harness branch as `tryonflow.mjs`; serve-local uses
++  ports 4541/4542. Whether it stays here is the owner's call.
+ 
+ Owner launch blockers (cannot be done from a session): enable Lovable AI;
+ turn OFF "AI app context" (on by default, keeps full requests, the selfie
+diff --git a/scripts/tryon/e2e.mjs b/scripts/tryon/e2e.mjs
+index 0c19302..48adf4e 100644
+--- a/scripts/tryon/e2e.mjs
++++ b/scripts/tryon/e2e.mjs
+@@ -14,7 +14,7 @@
+  *   node scripts/tryon/e2e.mjs --out /tmp/x/e2e
+  *
+  * Options: --base <url> (4540) --local <url> (4541) --out <dir>
+- *   --only routes,prep,flows,errors,pdp,prodsim,journey   --profiles pixel7,iphone13,desktop
++ *   --only routes,prep,flows,fold,errors,pdp,prodsim,journey   --profiles pixel7,iphone13,desktop
+  *   --photo <face photo> (the shopper stand-in; default a synthetic drawing)
+  *   --flag-on <url>  a build with TRY_ON_ENTRY_LIVE true and every piece certified (pdp, prodsim)
+  *   --main <url>     a build of origin/main (pdp)          --dist <dir>  this branch's dist (chunk sizes)
+@@ -52,7 +52,7 @@ const opt = (name, fallback) => {
+ const BASE = opt("base", "http://127.0.0.1:4540");
+ const LOCAL = opt("local", "http://127.0.0.1:4541");
+ const OUT = path.resolve(opt("out", path.join(process.cwd(), "tryon-e2e")));
+-const ONLY = new Set(opt("only", "routes,prep,flows,errors,pdp,prodsim,journey").split(","));
++const ONLY = new Set(opt("only", "routes,prep,flows,fold,errors,pdp,prodsim,journey").split(","));
+ const PROFILE_LIST = opt("profiles", "pixel7,iphone13,desktop").split(",");
+ const FLAG_ON = opt("flag-on", null);
+ const MAIN = opt("main", null);
+@@ -514,7 +514,7 @@ const storefront = async (query, variables) => {
+ const variantsOf = async (handle) =>
+   (
+     await storefront(
+-      "query($h: String!) { product(handle: $h) { variants(first: 60) { nodes { id title availableForSale selectedOptions { name value } } } } }",
++      "query($h: String!) { product(handle: $h) { variants(first: 60) { nodes { id title availableForSale image { url } selectedOptions { name value } } } } }",
+       { h: handle },
+     )
+   ).product.variants.nodes;
+@@ -846,7 +846,9 @@ const PIECES = [
+     photo: () => HAND,
+     options: {},
+     attrs: { Size: "US 6" },
+-    label: "Add to bag",
++    // Review SHOP-5: the open-back ring shows the product page's sizes, US 6 picked, and the button names it.
++    fits: ["US 5", "US 6", "US 7", "US 8", "US 9"],
++    label: "Add to bag · US 6",
+   },
+   {
+     handle: "baguette-eternity-band",
+@@ -858,6 +860,37 @@ const PIECES = [
+   },
+ ];
+ 
++/* Where the crop's "Use this photo" sits: on a phone it must be on screen without a swipe, since a swipe on the frame moves the photo (review SHOP-4). */
++const cropFold = (page) =>
++  page.evaluate(() => {
++    const use = [...document.querySelectorAll("button")].find((b) => /Use this photo/.test(b.textContent));
++    const r = use?.getBoundingClientRect();
++    return { use: r ? [Math.round(r.top), Math.round(r.bottom)] : null, h: window.innerHeight, w: window.innerWidth, scrollY: Math.round(window.scrollY) };
++  });
++const useOnScreen = (f) => Boolean(f.use) && f.use[0] >= 0 && f.use[1] <= f.h;
++
++/* The preview the moment it arrives: on screen under the header, with focus on its heading (review SHOP-1, SHOP-2). */
++const resultArrival = (page) =>
++  page.evaluate(
++    () =>
++      new Promise((resolve) =>
++        requestAnimationFrame(() =>
++          requestAnimationFrame(() => {
++            const r = document.querySelector("[data-tryon-result]")?.getBoundingClientRect();
++            const a = document.activeElement;
++            resolve({
++              frame: r ? [Math.round(r.top), Math.round(r.bottom)] : null,
++              h: window.innerHeight,
++              scrollY: Math.round(window.scrollY),
++              focus: a ? `${a.tagName}#${a.id}` : null,
++              focusText: a?.textContent?.trim().slice(0, 60) ?? null,
++            });
++          }),
++        ),
++      ),
++  );
++const resultOnScreen = (r) => Boolean(r.frame) && r.frame[0] >= 60 && r.frame[0] < r.h * 0.6 && r.focus === "H2#tryon-step";
++
+ const imageViolations = (log) => {
+   const pre = log.requests.filter(
+     (r) => r.phase === "pre-consent" && (carriesImage(r.body) || /data:image/.test(r.url) || /\/functions\/v1\/tryon\/render/.test(r.url)),
+@@ -880,6 +913,11 @@ async function flow(profile, piece) {
+   await gotoStudio(page, BASE, piece.handle, piece.query);
+   await waitLive(page);
+   await choosePhoto(page, piece.photo());
++  if (profile !== "desktop") {
++    await page.waitForTimeout(150);
++    const fold = await cropFold(page);
++    check(`crop: 'Use this photo' on screen at ${fold.w}x${fold.h} without a swipe`, useOnScreen(fold), fold);
++  }
+   let p = await privacyDom(page);
+   check("crop: the photo is masked, no data: image", p.unmasked === 0 && p.dataImgs === 0 && p.shopper >= 1, p);
+   if (profile !== "desktop") await auditSmallTargets(page, "crop");
+@@ -895,6 +933,12 @@ async function flow(profile, piece) {
+   );
+   check("consent: no render request before Create", gate.renderRequestsBeforeCreate === 0, gate.renderRequestsBeforeCreate);
+   await waitResult(page);
++  const arrival = await resultArrival(page);
++  check(
++    profile === "desktop" ? "result: focus moves to the preview's heading" : "result: on screen when it arrives, focus on its heading",
++    profile === "desktop" ? arrival.focus === "H2#tryon-step" : resultOnScreen(arrival),
++    arrival,
++  );
+   await page.waitForTimeout(600);
+ 
+   const res = await page.evaluate(() => {
+@@ -912,6 +956,13 @@ async function flow(profile, piece) {
+   check("result: a blob: image with the 'AI preview' chip", res.src?.startsWith("blob:") && res.chip, res.src);
+   check("result: listed size line and today's remaining count", Boolean(res.shownAt) && Boolean(res.remaining), `${res.shownAt} | ${res.remaining}`);
+   check("result: the AI preview note", res.note);
++  if (piece.options.Stone) {
++    // Review SHOP-3: 'The real piece' beside the preview is the stone in the preview.
++    const real = await page.evaluate(() => document.querySelector("[data-tryon-real]")?.getAttribute("data-tryon-real") ?? "");
++    const stoneImg = (await variantsOf(piece.handle)).find((v) => v.selectedOptions.some((o) => o.name === "Stone" && o.value === piece.options.Stone))?.image?.url ?? "";
++    const file = (u) => u.split("?")[0].split("/").pop();
++    check(`result: 'The real piece' is the ${piece.options.Stone} piece`, Boolean(real) && file(real) === file(stoneImg), { inset: file(real), stone: file(stoneImg) });
++  }
+   p = await privacyDom(page);
+   check("result: every photo and preview masked, no data: image ever", p.unmasked === 0 && p.dataImgs === 0 && p.dataImgSeen === 0, p);
+   check("result: no horizontal scroll", p.overflow <= 0, `${p.overflow}px`);
+@@ -973,6 +1024,16 @@ async function flow(profile, piece) {
+     } else note("Eternity Band Ruby US 5", us5 ? "in stock live, so no Pre-order to check" : "no such variant");
+     await buy.locator('[role="radio"]', { hasText: `US ${piece.size}` }).click();
+   }
++  if (piece.fits) {
++    const chips = await buy.locator('[role="radio"]').evaluateAll((els) => els.map((e) => [e.textContent.trim(), e.getAttribute("aria-checked")]));
++    check(
++      `${piece.handle}: the product page's sizes, US 6 picked, with its fit line`,
++      JSON.stringify(chips.map((c) => c[0])) === JSON.stringify(piece.fits) &&
++        chips.find((c) => c[0] === "US 6")?.[1] === "true" &&
++        (await buy.getByText("US 6 ships now. Open-back design, adjustable to fit US 5 to 9 comfortably.").count()) === 1,
++      chips,
++    );
++  }
+   const add = buy.getByRole("button", { name: /^Add/ }).first();
+   await page.waitForFunction((el) => !el.disabled, await add.elementHandle(), {
+     timeout: 30000,
+@@ -1144,6 +1205,44 @@ async function flow(profile, piece) {
+   await context.close();
+ }
+ 
++/* ================================================================== */
++/* fold: a 360x640 Android, the first preview of a visit, slow render  */
++/* ================================================================== */
++
++/* The review's walk (SHOP-1, SHOP-2, SHOP-4): at 360x640 the crop's "Use this
++   photo" sat below the fold under a frame that takes no swipe, and the first
++   preview of a visit (its screen's code not yet fetched) landed 525 px above
++   the screen with focus on <body>. A fresh context, so that code is fetched
++   during this very render, and a 4 s render, so the wait is a real one. */
++async function fold() {
++  group = "fold";
++  for (const profile of ["android360", "iphone13"]) {
++    const { context, page, log } = await openContext(profile);
++    await scenario({ name: "slow", delayMs: 4000 });
++    try {
++      await gotoStudio(page, BASE, "woven-gold-hoops");
++      await waitLive(page);
++      await choosePhoto(page, FACE);
++      await page.waitForTimeout(300);
++      const crop = await cropFold(page);
++      check(`${profile}: crop 'Use this photo' on screen without a swipe`, useOnScreen(crop), crop);
++      await shot(page, `fold-${profile}-crop`);
++      await usePhoto(page);
++      await giveConsent(page, log);
++      await waitResult(page);
++      const arrival = await resultArrival(page);
++      check(`${profile}: the first preview lands on screen, focus on its heading`, resultOnScreen(arrival), arrival);
++      await shot(page, `fold-${profile}-result`);
++      check(`${profile}: no console errors`, realConsoleErrors(log).length === 0 && log.pageErrors.length === 0, [...realConsoleErrors(log), ...log.pageErrors].slice(0, 3));
++    } catch (e) {
++      check(`${profile}: fold walk ran to the end`, false, String(e).split("\n")[0]);
++    } finally {
++      await scenario({ name: "ok" });
++      await context.close();
++    }
++  }
++}
++
+ /* ================================================================== */
+ /* errors: every scenario through the real handler, copy and quota     */
+ /* ================================================================== */
+@@ -2000,6 +2099,7 @@ try {
+       }
+     }
+   }
++  if (ONLY.has("fold")) await fold();
+   if (ONLY.has("errors")) await errors("phone390");
+   if (ONLY.has("pdp")) await pdp();
+   if (ONLY.has("prodsim")) await prodsim();
+diff --git a/src/components/tryon/PhotoStep.tsx b/src/components/tryon/PhotoStep.tsx
+index 6ba76d0..86f4ae0 100644
+--- a/src/components/tryon/PhotoStep.tsx
++++ b/src/components/tryon/PhotoStep.tsx
+@@ -31,13 +31,12 @@ interface PickerProps {
+   /** The shopper asked to change the photo the tab holds. */
+   changing: boolean;
+   block?: PhotoBlock;
+-  disabled?: boolean;
+   onFile: (file: File, source: PhotoSource) => void;
+   onReuse: () => void;
+   onChange: () => void;
+ }
+ 
+-export const PhotoPicker = ({ kind, held, changing, block, disabled = false, onFile, onReuse, onChange }: PickerProps) => {
++export const PhotoPicker = ({ kind, held, changing, block, onFile, onReuse, onChange }: PickerProps) => {
+   const camera = useRef<HTMLInputElement>(null);
+   const library = useRef<HTMLInputElement>(null);
+   const picked = (source: PhotoSource) => (event: ChangeEvent<HTMLInputElement>) => {
+@@ -61,26 +60,26 @@ export const PhotoPicker = ({ kind, held, changing, block, disabled = false, onF
+             <img src={held.url} alt={TRYON_COPY.ui.yourPhoto} width={60} height={80} className="h-full w-full object-cover" />
+           </div>
+           <div className="grid min-w-0 flex-1 gap-2">
+-            <button type="button" onClick={onReuse} disabled={disabled} className={primaryButton}>
++            <button type="button" onClick={onReuse} className={primaryButton}>
+               {TRYON_COPY.reuse.use}
+             </button>
+-            <button type="button" onClick={onChange} disabled={disabled} className={outlineButton}>
++            <button type="button" onClick={onChange} className={outlineButton}>
+               {TRYON_COPY.reuse.change}
+             </button>
+           </div>
+         </div>
+       ) : (
+         <div className="grid gap-2.5">
+-          <button type="button" onClick={() => camera.current?.click()} disabled={disabled} className={primaryButton}>
++          <button type="button" onClick={() => camera.current?.click()} className={primaryButton}>
+             <Camera size={16} strokeWidth={1.5} aria-hidden="true" />
+             {TRYON_COPY.studio.takePhoto}
+           </button>
+-          <button type="button" onClick={() => library.current?.click()} disabled={disabled} className={outlineButton}>
++          <button type="button" onClick={() => library.current?.click()} className={outlineButton}>
+             <ImageIcon size={16} strokeWidth={1.5} aria-hidden="true" />
+             {TRYON_COPY.studio.chooseGallery}
+           </button>
+           {held && (
+-            <button type="button" onClick={onReuse} disabled={disabled} className={quietButton}>
++            <button type="button" onClick={onReuse} className={quietButton}>
+               {TRYON_COPY.reuse.use}
+             </button>
+           )}
+@@ -184,6 +183,12 @@ export const CropFrame = ({ decoded, initial, onCrop }: { decoded: DecodedPhoto;
+     }
+   };
+ 
++  /* On a phone the frame is never taller than the screen leaves room for: the
++     studio brings it up under the 77 px header (at 118 px), and under it go
++     the 20 px and 12 px gaps, the 50 px "Use this photo" and a little air
++     (214 px in all). At 360x640 it is 320 px wide, at 390x664 338 px. svh
++     where the browser has it, so a phone's own toolbars are allowed for;
++     never under 240 px wide, for a phone held sideways (review SHOP-4). */
+   return (
+     <div
+       ref={box}
+@@ -197,7 +202,7 @@ export const CropFrame = ({ decoded, initial, onCrop }: { decoded: DecodedPhoto;
+       onPointerUp={onPointerEnd}
+       onPointerCancel={onPointerEnd}
+       onKeyDown={onKeyDown}
+-      className="relative aspect-[3/4] w-full cursor-grab select-none overflow-hidden bg-nf-ink active:cursor-grabbing"
++      className="relative mx-auto aspect-[3/4] w-full cursor-grab select-none overflow-hidden bg-nf-ink active:cursor-grabbing max-lg:max-w-[max(240px,calc((100vh_-_214px)*3/4))] max-lg:supports-[height:100svh]:max-w-[max(240px,calc((100svh_-_214px)*3/4))]"
+       style={{ touchAction: "none" }}
+     >
+       <canvas ref={canvas} className="block h-full w-full" />
+diff --git a/src/components/tryon/TryAnotherRail.tsx b/src/components/tryon/TryAnotherRail.tsx
+index db37315..4d6a19c 100644
+--- a/src/components/tryon/TryAnotherRail.tsx
++++ b/src/components/tryon/TryAnotherRail.tsx
+@@ -49,10 +49,12 @@ const TryAnotherRail = ({ current, stone, jewellery, isLive }: Props) => {
+ 
+   return (
+     <section id="tryon-another" aria-labelledby="tryon-another-title" className="mt-12 scroll-mt-[140px] border-t border-nf-gold/25 pt-6">
+-      <h2 id="tryon-another-title" className="px-4 font-cormorant text-[21px] leading-none text-nf-ink sm:px-0">
++      <h2 id="tryon-another-title" className="font-cormorant text-[21px] leading-none text-nf-ink">
+         {TRYON_COPY.result.another}
+       </h2>
+-      <div className="scrollbar-hide mt-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 sm:px-0 lg:grid lg:grid-cols-6 lg:overflow-visible" style={{ overscrollBehaviorX: "contain" }}>
++      {/* Edge to edge on a phone, with the first card on the page's 16 px line like the heading above it
++          (the snap honours the padding); the heading used to sit 16 px past the cards (review SHOP-11). */}
++      <div className="scrollbar-hide -mx-4 mt-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:scroll-px-0 sm:px-0 lg:grid lg:grid-cols-6 lg:overflow-visible" style={{ overscrollBehaviorX: "contain" }}>
+         {pieces.map((p) => (
+           <button
+             key={p.handle}
+diff --git a/src/components/tryon/TryOnBuy.tsx b/src/components/tryon/TryOnBuy.tsx
+index 04eb51e..4a246ec 100644
+--- a/src/components/tryon/TryOnBuy.tsx
++++ b/src/components/tryon/TryOnBuy.tsx
+@@ -1,5 +1,5 @@
+ import { useState } from "react";
+-import { Link } from "react-router-dom";
++import { Link, useSearchParams } from "react-router-dom";
+ import { Gift } from "lucide-react";
+ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
+ import UpiBadges from "@/components/checkout/UpiBadges";
+@@ -19,8 +19,14 @@ import { choiceButton, eyebrow, outlineButton, primaryButton, textLink } from ".
+   result, so the wait is never dead time.
+ 
+   The line is the one the product page's one-tap Add takes (oneTapLine): the
+-  stone shown, a size for the Eternity Band, US 6 for the open-back Cushion
+-  Halo. The button always names the stone it adds. The bag opens AT the tap
++  stone shown, a size for the Eternity Band, and for the open-back Cushion
++  Halo the size picked from the product page's own chips (US 6 until another
++  is picked; it used to go in as US 6 with no size on screen). The button
++  always names the stone and size it adds.
++
++  The size lives in the link (&size=7), as the stone does: each step mounts
++  its own TryOnBuy, and a size picked during the wait used to be forgotten
++  when the preview arrived (review SHOP-5, SHOP-7, SHOP-8). The bag opens AT the tap
+   and the piece goes in after (the product page's pattern); a refusal is said
+   inside the bag by CartContext. Buy now goes through CartContext.buyNow, so
+   the checkout handoff, discount and tracking stay the bag's.
+@@ -38,20 +44,34 @@ interface Props {
+   stoneDiffers?: boolean;
+   /** A thumbnail, name and price above the buttons, for the wait screens. */
+   withCard?: boolean;
++  /** Under another primary action (an error's own button): Add in outline. */
++  secondary?: boolean;
+ }
+ 
+-const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false }: Props) => {
++const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false, secondary = false }: Props) => {
+   const { addItem, buyNow, setDrawerOpen, isLoading: cartLoading } = useCart();
+-  const [size, setSize] = useState<string | null>(null);
++  const [params, setParams] = useSearchParams();
+   const [adding, setAdding] = useState(false);
+   const [buying, setBuying] = useState(false);
+   const [guideOpen, setGuideOpen] = useState(false);
+   const guide = useBackToClose("nfSizeGuide", guideOpen, setGuideOpen);
+ 
+   const sizes = live ? sizeChoices(live, stone ? { Stone: stone } : {}) : null;
++  /* An open-back ring sold one way: the PDP's chips, every one ready to ship. */
++  const fits = !sizes && piece.slot === "ring" && isAdjustableRing(live ?? piece.handle) ? adjustableSizes(piece.handle) : null;
++  const offered = sizes ? sizes.values.map((v) => v.value) : fits ?? [];
++  const asked = params.get("size");
++  const size = asked && offered.includes(asked) ? asked : fits?.includes("6") ? "6" : null;
++  const pickSize = (value: string) => {
++    const next = new URLSearchParams(params);
++    next.set("size", value);
++    setParams(next, { replace: true });
++    tryonEvent("tryon_choose_size");
++  };
+   const chosen: Record<string, string> = {
+     ...(stone ? { Stone: stone } : {}),
+     ...(sizes && size ? { [sizes.option]: size } : {}),
++    ...(fits && size ? { Size: size } : {}),
+   };
+   const one = live ? oneTapLine(live, chosen) : null;
+   const soldOut = liveSoldOut(live);
+@@ -82,11 +102,13 @@ const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false }
+     }
+   };
+ 
++  const sizeShown = sizes || fits ? size : null;
+   const addLabel = adding
+     ? TRYON_COPY.buy.adding
+     : stoneDiffers && stone
+-      ? TRYON_COPY.stoneChange.add(stone)
+-      : TRYON_COPY.buy.add(stone, sizes ? size : null);
++      ? TRYON_COPY.stoneChange.add(stone, sizeShown)
++      : TRYON_COPY.buy.add(stone, sizeShown);
++  const chips = sizes ? sizes.values : fits ? fits.map((value) => ({ value, buyable: true })) : null;
+ 
+   return (
+     <div className="space-y-3" data-tryon-buy>
+@@ -118,8 +140,8 @@ const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false }
+         </div>
+       ) : (
+         <>
+-          {sizes && (
+-            <div data-option={sizes.option}>
++          {chips && (
++            <div data-option={sizes?.option ?? "Size"}>
+               <div className="flex items-center justify-between">
+                 <p className={eyebrow}>{TRYON_COPY.buy.chooseSize}</p>
+                 <button type="button" onClick={() => setGuideOpen(true)} className={`-mr-2 inline-flex min-h-[44px] items-center px-2 text-[11.5px] ${textLink}`}>
+@@ -127,23 +149,14 @@ const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false }
+                 </button>
+               </div>
+               <div role="radiogroup" aria-label={TRYON_COPY.buy.chooseSize} className="flex flex-wrap gap-2">
+-                {sizes.values.map(({ value, buyable }) => (
+-                  <button
+-                    key={value}
+-                    type="button"
+-                    role="radio"
+-                    aria-checked={size === value}
+-                    onClick={() => {
+-                      setSize(value);
+-                      tryonEvent("tryon_choose_size");
+-                    }}
+-                    className={choiceButton(size === value)}
+-                  >
++                {chips.map(({ value, buyable }) => (
++                  <button key={value} type="button" role="radio" aria-checked={size === value} onClick={() => pickSize(value)} className={choiceButton(size === value)}>
+                     {TRYON_COPY.buy.sizeChip(value)}
+                     {!buyable && <span className="block text-[9px] font-normal uppercase tracking-nf-8 opacity-80">{TRYON_COPY.buy.preorder}</span>}
+                   </button>
+                 ))}
+               </div>
++              {fits && size && <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">{TRYON_COPY.buy.adjustableNote(size, fits[0], fits[fits.length - 1])}</p>}
+               <RingSizeGuideModal
+                 isOpen={guideOpen}
+                 onClose={guide.requestClose}
+@@ -165,7 +178,7 @@ const TryOnBuy = ({ piece, live, stone, stoneDiffers = false, withCard = false }
+               </button>
+             ) : (
+               <>
+-                <button type="button" onClick={add} disabled={!one || adding || buying} className={primaryButton}>
++                <button type="button" onClick={add} disabled={!one || adding || buying} className={secondary ? outlineButton : primaryButton}>
+                   {addLabel}
+                 </button>
+                 <button type="button" onClick={buy} disabled={!one || adding || buying || cartLoading} className={outlineButton}>
+diff --git a/src/components/tryon/TryOnHub.tsx b/src/components/tryon/TryOnHub.tsx
+index 55fdc57..6b585df 100644
+--- a/src/components/tryon/TryOnHub.tsx
++++ b/src/components/tryon/TryOnHub.tsx
+@@ -24,6 +24,8 @@ const Card = ({ piece, eager, price, certified }: { piece: TryOnPiece; eager: bo
+         width={360}
+         height={360}
+         loading={eager ? "eager" : "lazy"}
++        /* The first row is the page's largest paint: fetched ahead of fonts and code (review SHOP-12). */
++        fetchPriority={eager ? "high" : "auto"}
+         decoding="async"
+         className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+       />
+diff --git a/src/components/tryon/TryOnResult.tsx b/src/components/tryon/TryOnResult.tsx
+index 09b3a26..9fb651d 100644
+--- a/src/components/tryon/TryOnResult.tsx
++++ b/src/components/tryon/TryOnResult.tsx
+@@ -50,6 +50,8 @@ interface Props {
+   piece: TryOnPiece;
+   result: SessionResult;
+   photo: SessionPhoto | undefined;
++  /** The listing photo of the stone the preview shows, for "The real piece". */
++  realImage: string;
+   remaining: number | null;
+   /** The stone picked in the strip, when it differs from the one in the preview. */
+   otherStone: string | null;
+@@ -63,7 +65,7 @@ interface Props {
+   layout: (frame: ReactNode, controls: ReactNode) => ReactNode;
+ }
+ 
+-const TryOnResult = ({ piece, result, photo, remaining, otherStone, onTryStone, onTryAgain, onDelete, onRealPiece, onBlocked, buy, layout }: Props) => {
++const TryOnResult = ({ piece, result, photo, realImage, remaining, otherStone, onTryStone, onTryAgain, onDelete, onRealPiece, onBlocked, buy, layout }: Props) => {
+   const [holding, setHolding] = useState(false);
+   const [showMine, setShowMine] = useState(false);
+   const [compared, setCompared] = useState(false);
+@@ -217,8 +219,8 @@ const TryOnResult = ({ piece, result, photo, remaining, otherStone, onTryStone,
+           onClick={onRealPiece}
+           className="absolute bottom-3 right-3 flex w-[76px] flex-col items-stretch border border-nf-gold/50 bg-nf-ivory/90 p-1 text-center backdrop-blur-sm"
+         >
+-          <img src={shopifyImage(piece.image, 144)} alt="" width={68} height={68} className="aspect-square w-full bg-nf-ivory-deep object-cover" />
+-          <span className="mt-1 font-nf-label text-[8.5px] uppercase leading-tight tracking-nf-8 text-nf-ink">{TRYON_COPY.studio.realPiece}</span>
++          <img src={shopifyImage(realImage, 144)} alt="" width={68} height={68} className="aspect-square w-full bg-nf-ivory-deep object-cover" data-tryon-real={realImage} />
++          <span className="mt-1 font-nf-label text-[9.5px] uppercase leading-tight tracking-nf-8 text-nf-ink">{TRYON_COPY.studio.realPiece}</span>
+         </button>
+       </div>
+       <div className="mt-2.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+@@ -290,15 +292,15 @@ const TryOnResult = ({ piece, result, photo, remaining, otherStone, onTryStone,
+ 
+       <div className="grid grid-cols-2 gap-2.5">
+         {plan?.canShareFiles && !shareFallback ? (
+-          <button type="button" onClick={onShare} className={`${outlineButton} px-2`}>
++          <button type="button" onClick={onShare} className={`${outlineButton} px-2 text-center`}>
+             {copy.sendWhatsApp}
+           </button>
+         ) : (
+-          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => tryonEvent("tryon_shared")} className={`${outlineButton} px-2`}>
++          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => tryonEvent("tryon_shared")} className={`${outlineButton} px-2 text-center`}>
+             {copy.sendWhatsApp}
+           </a>
+         )}
+-        <button type="button" onClick={onSave} className={`${outlineButton} px-2`}>
++        <button type="button" onClick={onSave} className={`${outlineButton} px-2 text-center`}>
+           {copy.save}
+         </button>
+       </div>
+diff --git a/src/components/tryon/TryOnStudio.tsx b/src/components/tryon/TryOnStudio.tsx
+index c4822aa..5378f54 100644
+--- a/src/components/tryon/TryOnStudio.tsx
++++ b/src/components/tryon/TryOnStudio.tsx
+@@ -1,4 +1,4 @@
+-import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
++import { Component, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, type ReactNode } from "react";
+ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+ import { ArrowLeft } from "lucide-react";
+ import { ImageLightbox } from "@/components/ui/image-lightbox";
+@@ -25,7 +25,7 @@ import {
+ } from "@/lib/tryon/session";
+ import ConsentSheet from "./ConsentSheet";
+ import DemoCompare from "./DemoCompare";
+-import { liveSoldOut, livePiece, realPiecePhotos } from "./live";
++import { liveSoldOut, livePiece, pieceInStone, realPiecePhotos } from "./live";
+ import { prefersReducedMotion, useSweep } from "./motion";
+ import PhotoGuide, { FacePose, HandPose } from "./PhotoGuide";
+ import { CropFrame, PhotoPicker, PhotoWarnings, type PhotoSource } from "./PhotoStep";
+@@ -57,11 +57,37 @@ import { outlineButton, overlayChip, primaryButton, quietButton } from "./styles
+ 
+ /* The result screen (with the share image and the scene check) is fetched
+    while the preview is being made, 20 seconds or more, so a shopper who only
+-   looks at the pieces never downloads it. */
+-const loadResult = () => import("./TryOnResult");
+-const TryOnResult = lazy(loadResult);
+-const prefetchResult = () => {
+-  loadResult().catch(() => undefined);
++   looks at the pieces never downloads it.
++
++   It is held here once loaded, and a finished render waits for it before the
++   step changes, so the result is drawn in the same commit as the step. As a
++   React.lazy component it first committed an empty Suspense frame: the step's
++   focus and scroll ran against that, and when the real screen arrived focus
++   had fallen to <body> and, on a 360x640 Android, Chrome's scroll anchoring
++   had moved the preview 640 px above the screen (review SHOP-1 and SHOP-2). */
++type ResultModule = typeof import("./TryOnResult");
++let resultModule: ResultModule | null = null;
++const loadResult = (): Promise<ResultModule | null> =>
++  resultModule
++    ? Promise.resolve(resultModule)
++    : import("./TryOnResult").then(
++        (m) => (resultModule = m),
++        () => null,
++      );
++/* How long a finished preview waits for that code (fetched since the render
++   began, so normally already here) before it shows in the plain frame. */
++const RESULT_CODE_WAIT_MS = 8000;
++/* The code, or nothing once the wait is up or the session is cleared (Delete,
++   leaving the page): the preview is never held back by it. */
++const resultCodeReady = (signal: AbortSignal): Promise<unknown> => {
++  return Promise.race([
++    loadResult(),
++    new Promise((resolve) => {
++      setTimeout(resolve, RESULT_CODE_WAIT_MS);
++      if (signal.aborted) resolve(null);
++      signal.addEventListener("abort", resolve);
++    }),
++  ]);
+ };
+ 
+ /* If that code cannot be fetched, the preview still shows, in a plainer frame:
+@@ -104,7 +130,7 @@ const runJob = (piece: TryOnPiece, stone: TryOnStone | null, photo: Blob): Job =
+   const release = trackRender(controller);
+   const j: Job = { handle: piece.handle, stone, controller, progress: 0, startedAt: null, outcome: null, listeners: new Set() };
+   job = j;
+-  prefetchResult();
++  void loadResult();
+   tryonEvent("tryon_render_started");
+   tagTryOn(piece.handle);
+   requestTryOn({
+@@ -124,11 +150,13 @@ const runJob = (piece: TryOnPiece, stone: TryOnStone | null, photo: Blob): Job =
+       emit(j);
+     },
+   })
+-    .then((reply): Outcome => {
++    .then(async (reply): Promise<Outcome> => {
+       setTryOnResult(piece.handle, stone, piece.kind, reply);
+       lastRemaining = reply.remaining;
+       markTried(piece.handle);
+       tryonEvent("tryon_render_ok");
++      // Its screen is ready before the step turns to it (or the plain frame shows it).
++      await resultCodeReady(controller.signal);
+       return { error: null };
+     })
+     .catch((error: unknown): Outcome => {
+@@ -397,12 +425,16 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+       }
+     }
+     /* Bring the step into view under the fixed header: its picture where the
+-       phone shows one, else its heading. */
++       phone shows one, else its heading. The crop always comes up under the
++       header: its frame is sized to leave "Use this photo" on a 640 px screen
++       from there (CropFrame), and a swipe on the frame moves the photo, not
++       the page, so the button must not start below the fold (review SHOP-4). */
+     const stage = document.getElementById("tryon-stage");
+     const target = stage && stage.getClientRects().length ? stage : heading;
+     if (!target) return;
+     const top = target.getBoundingClientRect().top;
+-    if (top < 100 || top > window.innerHeight * 0.55) window.scrollTo({ top: Math.max(0, window.scrollY + top - 118), behavior: "auto" });
++    const always = state.step === "crop" && target === stage && window.innerWidth < 1024;
++    if (always || top < 100 || top > window.innerHeight * 0.55) window.scrollTo({ top: Math.max(0, window.scrollY + top - 118), behavior: "auto" });
+   }, [state.step, introNotice]);
+ 
+   const result = useMemo(
+@@ -464,25 +496,33 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+             </p>
+           )}
+           <div id={state.notice === "deleted" ? undefined : "tryon-step"} tabIndex={-1} className="outline-none">
+-            <PhotoPicker
+-              kind={kind}
+-              held={photo}
+-              changing={Boolean(state.changing)}
+-              block={state.block}
+-              disabled={soldOut}
+-              onFile={onFile}
+-              onReuse={reuse}
+-              onChange={() => dispatch({ type: "reset", changing: true })}
+-            />
++            {/* Sold out: the reason and what to do instead lead, and the photo
++                buttons, which could only be greyed out, are not shown (review SHOP-10). */}
++            {soldOut ? (
++              <TryOnBuy piece={piece} live={live} stone={stone} />
++            ) : (
++              <PhotoPicker
++                kind={kind}
++                held={photo}
++                changing={Boolean(state.changing)}
++                block={state.block}
++                onFile={onFile}
++                onReuse={reuse}
++                onChange={() => dispatch({ type: "reset", changing: true })}
++              />
++            )}
+           </div>
+-          {soldOut && <TryOnBuy piece={piece} live={live} stone={stone} />}
+-          <p className="text-[12px] leading-[1.65] text-nf-ink/75">
+-            {TRYON_COPY.trust.line}{" "}
+-            <a href={TRYON_COPY.trust.href} target="_blank" rel="noopener" className="text-nf-ink underline decoration-nf-gold underline-offset-4">
+-              {TRYON_COPY.trust.link}
+-            </a>
+-          </p>
+-          <PhotoGuide guide={piece.guide} />
++          {!soldOut && (
++            <>
++              <p className="text-[12px] leading-[1.65] text-nf-ink/75">
++                {TRYON_COPY.trust.line}{" "}
++                <a href={TRYON_COPY.trust.href} target="_blank" rel="noopener" className="text-nf-ink underline decoration-nf-gold underline-offset-4">
++                  {TRYON_COPY.trust.link}
++                </a>
++              </p>
++              <PhotoGuide guide={piece.guide} />
++            </>
++          )}
+           <DemoCompare piece={piece} />
+           {photo && <div className="flex justify-end">{deleteButton}</div>}
+         </div>
+@@ -542,11 +582,13 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+               {TRYON_COPY.cancelled}
+             </p>
+           )}
+-          {warnings.length ? (
++          {soldOut ? (
++            <TryOnBuy piece={piece} live={live} stone={stone} />
++          ) : warnings.length ? (
+             <PhotoWarnings warnings={warnings} onRetake={() => dispatch({ type: "reset", changing: true })} onUseAnyway={proceed} />
+           ) : (
+             <>
+-              <button type="button" onClick={proceed} disabled={soldOut} className={primaryButton}>
++              <button type="button" onClick={proceed} className={primaryButton}>
+                 {TRYON_COPY.consent.create}
+               </button>
+               <button type="button" onClick={() => dispatch({ type: "reset", changing: true })} className={outlineButton}>
+@@ -554,7 +596,6 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+               </button>
+             </>
+           )}
+-          {soldOut && <TryOnBuy piece={piece} live={live} stone={stone} />}
+           <div className="flex justify-end">{deleteButton}</div>
+         </div>
+       );
+@@ -587,42 +628,45 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+         break;
+       }
+       const otherStone = piece.stones && stone && stone !== state.stone ? stone : null;
+-      body = (
+-        <ResultBoundary
+-          fallback={layout(
+-            <div className="relative aspect-[3/4] w-full overflow-hidden bg-nf-ivory-deep" data-clarity-mask="True">
+-              <img src={result.url} alt={TRYON_COPY.ui.previewAlt(piece.name)} width={900} height={1200} className="h-full w-full object-cover" />
+-              <span className={`${overlayChip} absolute left-3 top-3`}>{TRYON_COPY.result.chip}</span>
+-            </div>,
+-            <div className="space-y-4">
+-              <h2 id="tryon-step" tabIndex={-1} className="sr-only">
+-                {`${TRYON_COPY.result.chip} · ${piece.name}`}
+-              </h2>
+-              <p className="text-[12px] text-nf-ink/80">{TRYON_COPY.result.shownAt(piece.sizeLine)}</p>
+-              <TryOnBuy piece={piece} live={live} stone={state.stone} />
+-              <p className="font-nf-editorial text-[14px] italic leading-[1.55] text-nf-ink/70">{TRYON_COPY.result.note}</p>
+-              <div className="flex justify-end">{deleteButton}</div>
+-            </div>,
+-          )}
+-        >
+-          <Suspense fallback={layout(<div className="aspect-[3/4] w-full bg-nf-ivory-deep" />, null)}>
+-            <TryOnResult
+-              key={result.url}
+-              piece={piece}
+-              result={result}
+-              photo={photo}
+-              remaining={lastRemaining}
+-              otherStone={otherStone}
+-              onTryStone={(value) => startRender(value as TryOnStone)}
+-              onTryAgain={() => startRender(stone)}
+-              onDelete={deletePhoto}
+-              onRealPiece={openReal}
+-              onBlocked={() => dispatch({ type: "failed", error: new TryOnError("fidelity_failed") })}
+-              buy={<TryOnBuy piece={piece} live={live} stone={stone} stoneDiffers={Boolean(otherStone)} />}
+-              layout={layout}
+-            />
+-          </Suspense>
++      /* The preview's code could not be fetched: the preview still shows, in a plainer frame. */
++      const plain = layout(
++        <div className="relative aspect-[3/4] w-full overflow-hidden bg-nf-ivory-deep" data-clarity-mask="True">
++          <img src={result.url} alt={TRYON_COPY.ui.previewAlt(piece.name)} width={900} height={1200} className="h-full w-full object-cover" />
++          <span className={`${overlayChip} absolute left-3 top-3`}>{TRYON_COPY.result.chip}</span>
++        </div>,
++        <div className="space-y-4">
++          <h2 id="tryon-step" tabIndex={-1} className="sr-only">
++            {`${TRYON_COPY.result.chip} · ${piece.name}`}
++          </h2>
++          <p className="text-[12px] text-nf-ink/80">{TRYON_COPY.result.shownAt(piece.sizeLine)}</p>
++          <TryOnBuy piece={piece} live={live} stone={state.stone} />
++          <p className="font-nf-editorial text-[14px] italic leading-[1.55] text-nf-ink/70">{TRYON_COPY.result.note}</p>
++          <div className="flex justify-end">{deleteButton}</div>
++        </div>,
++      );
++      const TryOnResult = resultModule?.default;
++      body = TryOnResult ? (
++        <ResultBoundary fallback={plain}>
++          <TryOnResult
++            key={result.url}
++            piece={piece}
++            result={result}
++            photo={photo}
++            /* The real piece beside the preview is the stone IN the preview, not the manifest's default photo (review SHOP-3). */
++            realImage={pieceInStone(live, result.stone)?.image ?? piece.image}
++            remaining={lastRemaining}
++            otherStone={otherStone}
++            onTryStone={(value) => startRender(value as TryOnStone)}
++            onTryAgain={() => startRender(stone)}
++            onDelete={deletePhoto}
++            onRealPiece={openReal}
++            onBlocked={() => dispatch({ type: "failed", error: new TryOnError("fidelity_failed") })}
++            buy={<TryOnBuy piece={piece} live={live} stone={stone} stoneDiffers={Boolean(otherStone)} />}
++            layout={layout}
++          />
+         </ResultBoundary>
++      ) : (
++        plain
+       );
+       break;
+     }
+@@ -642,7 +686,8 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+           {act(state.copy.action, true)}
+           {act(state.copy.secondary, false)}
+           <div className="mt-2 border-t border-nf-gold/25 pt-5">
+-            <TryOnBuy piece={piece} live={live} stone={stone} />
++            {/* Under the error's own button, Add is the second action, not a second ink button (review SHOP-11). */}
++            <TryOnBuy piece={piece} live={live} stone={stone} secondary />
+           </div>
+           <div className="flex justify-end">{deleteButton}</div>
+         </div>
+@@ -654,7 +699,10 @@ const TryOnStudio = ({ piece }: { piece: TryOnPiece }) => {
+   }
+ 
+   return (
+-    <div className="mx-auto max-w-[1180px] px-4 pb-16 pt-3 sm:px-6 md:pt-6">
++    /* No scroll anchoring here: each step scrolls itself into view, and Chrome
++       anchoring on a frame that a step then replaced moved the page under the
++       shopper (iOS Safari has no anchoring, so both now behave alike). */
++    <div className="mx-auto max-w-[1180px] px-4 pb-16 pt-3 [overflow-anchor:none] sm:px-6 md:pt-6">
+       <div className="flex items-center justify-between gap-3">
+         <Link to="/try-on" className="-ml-1 inline-flex min-h-[44px] items-center gap-1.5 px-1 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink/75 transition-colors hover:text-nf-ink">
+           <ArrowLeft size={14} strokeWidth={1.6} aria-hidden="true" />
+diff --git a/src/lib/tryon/copy.ts b/src/lib/tryon/copy.ts
+index 1898aee..55118c1 100644
+--- a/src/lib/tryon/copy.ts
++++ b/src/lib/tryon/copy.ts
+@@ -135,7 +135,8 @@ export const TRYON_COPY = {
+   stoneChange: {
+     banner: (stone: string) => `Your preview shows ${stone}.`,
+     tryIn: (stone: string) => `Try in ${stone}`,
+-    add: (stone: string) => `Add ${stone} to bag`,
++    /* Names everything the Add puts in the bag, the size too (review SHOP-8). */
++    add: (stone: string, size?: string | null) => `Add ${stone}${size ? ` · US ${size}` : ""} to bag`,
+   },
+ 
+   buy: {
+@@ -148,6 +149,8 @@ export const TRYON_COPY = {
+     sizeChip: (value: string) => `US ${value}`,
+     preorder: "Pre-order",
+     sizeGuide: "Size guide",
++    /** Under an open-back ring's sizes (the product page's line, in the try-on's punctuation). */
++    adjustableNote: (size: string, from: string, to: string) => `US ${size} ships now. Open-back design, adjustable to fit US ${from} to ${to} comfortably.`,
+     reserve: "Reserve on WhatsApp",
+     ladder: `Add a second piece and save ${rate}%`,
+   },
+diff --git a/src/lib/tryon/share.ts b/src/lib/tryon/share.ts
+index 0e4cbce..9f031ed 100644
+--- a/src/lib/tryon/share.ts
++++ b/src/lib/tryon/share.ts
+@@ -138,14 +138,25 @@ export const shareTryOn = async (plan: SharePlan): Promise<ShareOutcome> => {
+   }
+ };
+ 
++const IN_APP = /FBAN|FBAV|FBIOS|Instagram|LinkedInApp|Snapchat|Line\/|GSA\/|Twitter/;
++const currentUa = () => (typeof navigator !== "undefined" ? navigator.userAgent : "");
++
+ /** iOS in-app browsers (Instagram, Facebook and the like) ignore <a download>. */
+-export const isIosInAppBrowser = (ua: string = typeof navigator !== "undefined" ? navigator.userAgent : "") =>
+-  /iPhone|iPad|iPod/.test(ua) && /FBAN|FBAV|FBIOS|Instagram|LinkedInApp|Snapchat|Line\/|GSA\/|Twitter/.test(ua);
++export const isIosInAppBrowser = (ua: string = currentUa()) => /iPhone|iPad|iPod/.test(ua) && IN_APP.test(ua);
++
++/** Any in-app browser, on iOS or Android, or any Android WebView ("; wv)"): all
++    commonly ignore <a download> of a blob: URL, so Save would do nothing. */
++export const isInAppBrowser = (ua: string = currentUa()) => IN_APP.test(ua) || /;\s?wv\)/.test(ua);
+ 
+ export type SaveMode = "download" | "press-hold";
+ 
+-/** How "Save photo" works here: a download, or a full-screen photo to press and hold. */
+-export const saveMode = (ua?: string): SaveMode => (isIosInAppBrowser(ua) ? "press-hold" : "download");
++/**
++ * How "Save photo" works here: a download, or a full-screen photo to press and
++ * hold. Every in-app browser gets the press-and-hold view, Android's too: the
++ * Instagram and Facebook WebViews (about half the traffic) dropped the
++ * download silently (review SHOP-15; the spec's uxStates SHARE FALLBACK).
++ */
++export const saveMode = (ua?: string): SaveMode => (isInAppBrowser(ua) ? "press-hold" : "download");
+ 
+ /**
+  * Saves the image through <a download>. The blob: URL is the session's, so it
+diff --git a/src/test/tryon/TryOnPage.test.tsx b/src/test/tryon/TryOnPage.test.tsx
+index a9166c2..a89acdd 100644
+--- a/src/test/tryon/TryOnPage.test.tsx
++++ b/src/test/tryon/TryOnPage.test.tsx
+@@ -160,6 +160,16 @@ describe("the hub", () => {
+     expect(document.querySelector('[data-tryon-card="brushed-gold-huggies"]')).toBeNull();
+   });
+ 
++  /* The first row is the hub's largest paint (LCP 2.7 s at 4G and 4x CPU in the review): fetched first. */
++  it("fetches the first row's photos ahead of the rest", () => {
++    open("/try-on");
++    const imgs = Array.from(document.querySelectorAll("[data-tryon-card] img"));
++    expect(imgs[0].getAttribute("fetchpriority")).toBe("high");
++    expect(imgs[0].getAttribute("loading")).toBe("eager");
++    expect(imgs[imgs.length - 1].getAttribute("fetchpriority")).toBe("auto");
++    expect(imgs[imgs.length - 1].getAttribute("loading")).toBe("lazy");
++  });
++
+   it("shows only certified pieces on the real shop, and says so when there are none", () => {
+     (window as unknown as { __nairaProd?: boolean }).__nairaProd = true;
+     try {
+@@ -198,6 +208,16 @@ describe("the studio", () => {
+     expect(screen.getByRole("radio", { name: "Emerald" })).toHaveAttribute("aria-checked", "true");
+   });
+ 
++  /* Review SHOP-10: the reason leads, and photo buttons that could only be greyed out are not shown. */
++  it("leads with 'Sold out for now.' and offers no photo buttons for a sold-out piece", () => {
++    mocks.live = liveCatalogue().map((p) => (p.handle === "woven-gold-hoops" ? { ...p, availableForSale: false } : p));
++    open("/try-on/woven-gold-hoops");
++    expect(screen.getByText("Sold out for now.").closest("#tryon-step")).not.toBeNull();
++    expect(screen.queryByRole("button", { name: "Take a photo" })).toBeNull();
++    expect(screen.queryByRole("button", { name: "Choose from gallery" })).toBeNull();
++    expect(screen.getByRole("link", { name: "View the piece" })).toBeInTheDocument();
++  });
++
+   // The phone run (scripts/tryon/e2e.mjs) measured 'The real piece' at 85x33 px on every
+   // studio screen: a tap target under the 44 px every other control keeps.
+   it("keeps 'The real piece' at least 44px tall", () => {
+@@ -260,6 +280,30 @@ describe("the preview", () => {
+     expect(screen.getByText("4 try-ons left today")).toBeInTheDocument();
+   });
+ 
++  /* Review SHOP-1/SHOP-2: the result used to arrive through a Suspense fallback, so the
++     step's focus ran against an empty frame and fell to <body> when the real screen came. */
++  it("moves focus to the preview's own heading when it arrives", async () => {
++    await toResult();
++    const heading = document.getElementById("tryon-step");
++    expect(heading?.tagName).toBe("H2");
++    expect(heading?.textContent).toBe("AI preview · Woven Gold Hoops");
++    expect(document.activeElement).toBe(heading);
++    // drawn in one commit with its controls: no empty frame ever stood in for it
++    expect(document.querySelector("[data-tryon-result]")).not.toBeNull();
++  });
++
++  /* Review SHOP-3: 'The real piece' beside an Emerald preview is the Emerald piece, not the listing's default (Ruby) photo. */
++  it("shows the real piece in the preview's own stone", async () => {
++    await toResult("/try-on/baguette-huggies?colour=emerald");
++    const emerald = firstPaint("baguette-huggies").variants!.find((v) => v.options.Stone === "Emerald" && v.image)!.image!;
++    const inset = document.querySelector("[data-tryon-real]") as HTMLImageElement;
++    expect(inset.getAttribute("data-tryon-real")).toBe(emerald);
++    expect(inset.getAttribute("src")).toContain(emerald.split("?")[0]);
++    // a stone picked afterwards does not change what the preview shows, nor the inset beside it
++    fireEvent.click(screen.getByRole("radio", { name: "Ruby" }));
++    expect((document.querySelector("[data-tryon-real]") as HTMLImageElement).getAttribute("data-tryon-real")).toBe(emerald);
++  });
++
+   it("Delete revokes every URL and says so", async () => {
+     await toResult();
+     expect(liveObjectUrlCount()).toBeGreaterThan(0);
+@@ -374,7 +418,10 @@ describe("buying from the try-on", () => {
+     expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ variantId: ruby7.id });
+   });
+ 
+-  it("adds the open-back Cushion Halo as US 6, as the product page does", async () => {
++  /* Review SHOP-5: the bag got 'Size: US 6' from a button that named no size. The open-back
++     ring now shows the product page's own chips (US 6 until another is picked) and its fit
++     line, and the button names the size it adds. */
++  it("shows the open-back Cushion Halo's sizes, US 6 first, and adds the one the button names", async () => {
+     mocks.live = liveCatalogue();
+     open("/try-on/cushion-halo-ring");
+     // A hand piece opens the back camera.
+@@ -382,9 +429,50 @@ describe("buying from the try-on", () => {
+     await addPhoto();
+     await agree();
+     await screen.findByText("Does this look like the piece?", undefined, { timeout: 3000 });
+-    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
++    const chips = screen.getAllByRole("radio").filter((r) => /^US \d$/.test(r.textContent ?? ""));
++    expect(chips.map((c) => c.textContent)).toEqual(["US 5", "US 6", "US 7", "US 8", "US 9"]);
++    expect(screen.getByRole("radio", { name: "US 6" })).toHaveAttribute("aria-checked", "true");
++    expect(screen.getByText("US 6 ships now. Open-back design, adjustable to fit US 5 to 9 comfortably.")).toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag · US 6" }));
+     await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(1));
+     expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ id: "cushion-halo-ring", size: "US 6" });
++
++    fireEvent.click(screen.getByRole("radio", { name: "US 7" }));
++    expect(screen.getByTestId("where").textContent).toContain("size=7");
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag · US 7" }));
++    await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(2));
++    expect(mocks.addItem.mock.calls[1][0]).toMatchObject({ id: "cushion-halo-ring", size: "US 7" });
++  });
++
++  /* Review SHOP-7 and SHOP-8: a size picked during the wait is still picked on the preview,
++     and after a stone change the button still names the size it adds. */
++  it("keeps the Eternity Band's size from the wait to the preview, and names it after a stone change", async () => {
++    const release = await atWait("/try-on/baguette-eternity-band?colour=ruby");
++    fireEvent.click(screen.getByRole("radio", { name: "US 7" }));
++    expect(screen.getByRole("button", { name: "Add to bag · Ruby · US 7" })).toBeEnabled();
++    release();
++    await screen.findByText("Does this look like the piece?", undefined, { timeout: 3000 });
++    expect(screen.getByRole("radio", { name: "US 7" })).toHaveAttribute("aria-checked", "true");
++    expect(screen.getByRole("button", { name: "Add to bag · Ruby · US 7" })).toBeEnabled();
++    fireEvent.click(screen.getByRole("radio", { name: "Amethyst" }));
++    fireEvent.click(screen.getByRole("button", { name: "Add Amethyst · US 7 to bag" }));
++    await waitFor(() => expect(mocks.addItem).toHaveBeenCalledTimes(1));
++    const amethyst7 = firstPaint("baguette-eternity-band").variants!.find((v) => v.options.Stone === "Amethyst" && v.options.Size === "7")!;
++    expect(mocks.addItem.mock.calls[0][0]).toMatchObject({ variantId: amethyst7.id });
++  });
++
++  /* Review SHOP-11: under an error's own button, Add is the second action (outline), not a second ink button. */
++  it("puts Add in outline under an error's own button", async () => {
++    mocks.request.mockRejectedValueOnce(new TryOnError("busy", { status: 429, retryable: true }));
++    open("/try-on/baguette-huggies?colour=ruby");
++    await addPhoto();
++    await agree();
++    const again = await screen.findByRole("button", { name: "Try again" }, { timeout: 3000 });
++    const ink = /(^|\s)bg-nf-ink(\s|$)/;
++    expect(again.className).toMatch(ink);
++    const add = screen.getByRole("button", { name: "Add to bag · Ruby" });
++    expect(add.className).not.toMatch(ink);
++    expect(add.className).toMatch(/(^|\s)border-nf-ink(\s|$)/);
+   });
+ 
+   /* Never from the bundled snapshot: a piece sold out since it was taken must not reach the bag. */
+diff --git a/src/test/tryon/copy.test.ts b/src/test/tryon/copy.test.ts
+index ed6e9f6..02704b8 100644
+--- a/src/test/tryon/copy.test.ts
++++ b/src/test/tryon/copy.test.ts
+@@ -48,6 +48,8 @@ describe("try-on copy", () => {
+     expect(TRYON_COPY.buy.ladder).toBe("Add a second piece and save 15%");
+     expect(TRYON_COPY.stoneChange.tryIn("Emerald")).toBe("Try in Emerald");
+     expect(TRYON_COPY.stoneChange.add("Emerald")).toBe("Add Emerald to bag");
++    expect(TRYON_COPY.stoneChange.add("Amethyst", "7")).toBe("Add Amethyst · US 7 to bag");
++    expect(TRYON_COPY.buy.adjustableNote("6", "5", "9")).toBe("US 6 ships now. Open-back design, adjustable to fit US 5 to 9 comfortably.");
+     expect(TRYON_COPY.share.band("Woven Gold Hoops")).toBe("AI try-on preview · Woven Gold Hoops · nairaflore.com");
+     expect(TRYON_COPY.errors.device_limit(5)).toBe("You have used today's 5 try-ons. They refresh at midnight.");
+     // Review SHOP-14: the number is the server's; without one the line states none.
+diff --git a/src/test/tryon/share.test.ts b/src/test/tryon/share.test.ts
+index f412c98..0375faf 100644
+--- a/src/test/tryon/share.test.ts
++++ b/src/test/tryon/share.test.ts
+@@ -1,5 +1,6 @@
+ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+ import {
++  isInAppBrowser,
+   isIosInAppBrowser,
+   prepareShare,
+   saveMode,
+@@ -18,6 +19,10 @@ const SAFARI_IPHONE =
+ const CHROME_ANDROID =
+   "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36";
+ const IG_ANDROID = `${CHROME_ANDROID} Instagram 337.0.0.0.77 Android`;
++const FB_ANDROID =
++  "Mozilla/5.0 (Linux; Android 13; SM-A146B Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/129.0.6668.81 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/484.0.0.66.84;]";
++const WEBVIEW_ANDROID =
++  "Mozilla/5.0 (Linux; Android 12; Redmi Note 11 Build/SKQ1.211103.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.0.0 Mobile Safari/537.36";
+ 
+ const plan = (overrides: Partial<SharePlan> = {}): SharePlan => ({
+   jpeg: new Blob([new Uint8Array([0xff, 0xd8])], { type: "image/jpeg" }),
+@@ -90,12 +95,19 @@ describe("try-on share", () => {
+     expect(result.whatsappUrl).toBe(whatsappUrlFor("Woven Gold Hoops", "woven-gold-hoops"));
+   });
+ 
+-  it("saves by download, except in iOS in-app browsers, which get press and hold", () => {
++  /* Review SHOP-15: Android's Instagram and Facebook WebViews ignore <a download> of a blob:
++     URL as iOS in-app browsers do, so every in-app browser and WebView gets press and hold
++     (the spec's uxStates SHARE FALLBACK), not only iOS ones. */
++  it("saves by download in a real browser, and by press and hold in any in-app browser or WebView", () => {
+     expect(isIosInAppBrowser(IG_IPHONE)).toBe(true);
++    expect(isIosInAppBrowser(IG_ANDROID)).toBe(false);
+     expect(saveMode(IG_IPHONE)).toBe("press-hold");
++    expect(saveMode(IG_ANDROID)).toBe("press-hold");
++    expect(saveMode(FB_ANDROID)).toBe("press-hold");
++    expect(saveMode(WEBVIEW_ANDROID)).toBe("press-hold");
++    expect(isInAppBrowser(CHROME_ANDROID)).toBe(false);
+     expect(saveMode(SAFARI_IPHONE)).toBe("download");
+     expect(saveMode(CHROME_ANDROID)).toBe("download");
+-    expect(saveMode(IG_ANDROID)).toBe("download");
+   });
+ 
+   it("downloads through a session URL that is revoked soon after", () => {
+-- 
+2.43.0
+

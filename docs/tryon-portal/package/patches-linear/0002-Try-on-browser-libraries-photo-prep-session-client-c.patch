@@ -1,0 +1,3854 @@
+From bdc4a839eeb2b61fb7558ca4b8b1ff17014ca6d2 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 15:01:35 +0000
+Subject: [PATCH 02/10] Try-on browser libraries: photo prep, session, client,
+ copy and one-tap line
+
+The phone side of the try-on, with no screens yet. Photo prep decodes upright
+(EXIF 1, 3, 6 and 8 proven in Chromium on both decode paths), cuts the 3:4
+frame and writes a fresh 1152x1536 JPEG with no EXIF or GPS: 168 ms at 1x and
+727 ms median at 4x CPU for a 4000x3000 photo. The tab session keeps one photo
+per kind and each preview by piece and stone, and revokes every blob URL on
+Delete, pagehide and 30 minutes idle. The XHR client sends only meta and photo
+and maps every server code to the spec's words. Also: device id (never
+naira_vid), sceneGuard in log mode, an allow-listed Clarity wrapper, the copy
+deck, share and save, and oneTapLine for the Add button. 143 tests (617).
+
+src/data/tryOnHandles.ts is a placeholder for the manifest engineer's file.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ src/lib/oneTapLine.ts               |  86 +++++++
+ src/lib/tryon/analytics.ts          |  83 +++++++
+ src/lib/tryon/canvas.ts             | 105 +++++++++
+ src/lib/tryon/client.ts             | 234 +++++++++++++++++++
+ src/lib/tryon/copy.ts               | 225 ++++++++++++++++++
+ src/lib/tryon/cropMaths.ts          | 108 +++++++++
+ src/lib/tryon/device.ts             |  63 +++++
+ src/lib/tryon/errors.ts             | 173 ++++++++++++++
+ src/lib/tryon/photoChecks.ts        |  71 ++++++
+ src/lib/tryon/preparePhoto.ts       | 238 +++++++++++++++++++
+ src/lib/tryon/sceneGuard.ts         | 114 ++++++++++
+ src/lib/tryon/session.ts            | 275 ++++++++++++++++++++++
+ src/lib/tryon/share.ts              | 168 ++++++++++++++
+ src/test/tryon/analytics.test.ts    | 138 +++++++++++
+ src/test/tryon/client.test.ts       | 317 ++++++++++++++++++++++++++
+ src/test/tryon/copy.test.ts         |  67 ++++++
+ src/test/tryon/cropMaths.test.ts    |  95 ++++++++
+ src/test/tryon/device.test.ts       |  57 +++++
+ src/test/tryon/errors.test.ts       |  67 ++++++
+ src/test/tryon/oneTapLine.test.ts   | 138 +++++++++++
+ src/test/tryon/photoChecks.test.ts  |  48 ++++
+ src/test/tryon/preparePhoto.test.ts | 341 ++++++++++++++++++++++++++++
+ src/test/tryon/sceneGuard.test.ts   |  88 +++++++
+ src/test/tryon/session.test.ts      | 212 +++++++++++++++++
+ src/test/tryon/share.test.ts        | 117 ++++++++++
+ 25 files changed, 3628 insertions(+)
+ create mode 100644 src/lib/oneTapLine.ts
+ create mode 100644 src/lib/tryon/analytics.ts
+ create mode 100644 src/lib/tryon/canvas.ts
+ create mode 100644 src/lib/tryon/client.ts
+ create mode 100644 src/lib/tryon/copy.ts
+ create mode 100644 src/lib/tryon/cropMaths.ts
+ create mode 100644 src/lib/tryon/device.ts
+ create mode 100644 src/lib/tryon/errors.ts
+ create mode 100644 src/lib/tryon/photoChecks.ts
+ create mode 100644 src/lib/tryon/preparePhoto.ts
+ create mode 100644 src/lib/tryon/sceneGuard.ts
+ create mode 100644 src/lib/tryon/session.ts
+ create mode 100644 src/lib/tryon/share.ts
+ create mode 100644 src/test/tryon/analytics.test.ts
+ create mode 100644 src/test/tryon/client.test.ts
+ create mode 100644 src/test/tryon/copy.test.ts
+ create mode 100644 src/test/tryon/cropMaths.test.ts
+ create mode 100644 src/test/tryon/device.test.ts
+ create mode 100644 src/test/tryon/errors.test.ts
+ create mode 100644 src/test/tryon/oneTapLine.test.ts
+ create mode 100644 src/test/tryon/photoChecks.test.ts
+ create mode 100644 src/test/tryon/preparePhoto.test.ts
+ create mode 100644 src/test/tryon/sceneGuard.test.ts
+ create mode 100644 src/test/tryon/session.test.ts
+ create mode 100644 src/test/tryon/share.test.ts
+
+diff --git a/src/lib/oneTapLine.ts b/src/lib/oneTapLine.ts
+new file mode 100644
+index 0000000..882e2f4
+--- /dev/null
++++ b/src/lib/oneTapLine.ts
+@@ -0,0 +1,86 @@
++import { preorderWhatsAppUrl, type JewelPiece, type JewelVariant } from "@/data/jewellery";
++import { isAdjustableRing } from "@/data/ringFit";
++import { buyableValues, cartLineFor, choices, findVariant, oneTapVariant, sizeOption } from "@/lib/variants";
++
++/*
++  The bag line a one-tap Add takes, in one place, so the product page's
++  "Complete the look" cards and the try-on's Add can never disagree about
++  what goes in the bag (extracted from PairingCard in JewelDetailNext).
++
++  - A piece sold in stones or metals: the variant chosen (findVariant), else
++    the one pictured or the first buyable (oneTapVariant). The result carries
++    the variant, so a button can name exactly what it adds.
++  - A piece sold in sizes (Baguette Eternity Band: Stone and Size): nothing
++    until a size is chosen; a sold-out pair (Ruby US 5) is reserved on
++    WhatsApp instead.
++  - A ring sold one way: an adjustable one (Cushion Halo) goes in as US 6,
++    the size its page opens on, as PairingCard always added it; a fixed one
++    needs a size, which rides on the line as a note.
++  - Anything else: as it is.
++*/
++
++export type OneTapCartLine = ReturnType<typeof cartLineFor> & { size?: string };
++
++export type OneTapResult =
++  | { line: OneTapCartLine; variant?: JewelVariant }
++  | { need: "size" | "month" }
++  | { soldOut: true; reserveUrl: string; variant?: JewelVariant };
++
++/* "Ruby, size 5": the choice a WhatsApp reservation names, as the product page writes it. */
++const choiceText = (options: Record<string, string>) =>
++  Object.entries(options)
++    .map(([name, value]) => (/size/i.test(name) ? `size ${value}` : value))
++    .join(", ");
++
++const soldOut = (piece: JewelPiece, variant?: JewelVariant): OneTapResult => ({
++  soldOut: true,
++  variant,
++  reserveUrl: preorderWhatsAppUrl({
++    name: piece.name,
++    handle: piece.handle,
++    priceLabel: variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel,
++    choice: variant ? choiceText(variant.options) || undefined : undefined,
++  }),
++});
++
++/** The line to add for `piece` with the shopper's choices ("Stone" → "Ruby", "Size" → "7"). */
++export const oneTapLine = (piece: JewelPiece, chosen: Record<string, string> = {}): OneTapResult => {
++  const variants = piece.variants ?? [];
++  const sizeName = sizeOption(piece);
++  const month = choices(piece).find((o) => /month|birthstone/i.test(o.name));
++  if (sizeName && !chosen[sizeName]) return { need: "size" };
++  if (month && !chosen[month.name]) return { need: "month" };
++
++  let variant: JewelVariant | undefined;
++  if (variants.length) {
++    variant = findVariant(piece, chosen);
++    if (!variant) {
++      // A size or month that does not exist with the other choices is still a choice to make.
++      if (sizeName || month) return { need: sizeName ? "size" : "month" };
++      variant = oneTapVariant(piece, chosen) ?? variants[0];
++    }
++    if (!variant.availableForSale) return soldOut(piece, variant);
++  } else if (piece.availableForSale === false && !isAdjustableRing(piece)) {
++    return soldOut(piece);
++  }
++
++  let size: string | undefined;
++  if (piece.category === "Rings" && !sizeName) {
++    const picked = chosen.Size ?? chosen.size;
++    if (picked) size = `US ${picked.replace(/^US\s*/i, "")}`;
++    else if (!isAdjustableRing(piece)) return { need: "size" };
++    // An adjustable ring sold one way goes in as US 6, the size its page opens on.
++    else if (!variant) size = "US 6";
++  }
++
++  return { line: { ...cartLineFor(piece, variant), ...(size ? { size } : {}) }, ...(variant ? { variant } : {}) };
++};
++
++/** The size chips for a piece sold in sizes, each marked buyable or not with the other choices. */
++export const sizeChoices = (piece: JewelPiece, chosen: Record<string, string>) => {
++  const option = sizeOption(piece);
++  if (!option) return null;
++  const buyable = buyableValues(piece, option, chosen);
++  const values = piece.options?.find((o) => o.name === option)?.values ?? [];
++  return { option, values: values.map((value) => ({ value, buyable: Boolean(buyable[value]) })) };
++};
+diff --git a/src/lib/tryon/analytics.ts b/src/lib/tryon/analytics.ts
+new file mode 100644
+index 0000000..e2a6713
+--- /dev/null
++++ b/src/lib/tryon/analytics.ts
+@@ -0,0 +1,83 @@
++import { clarityEvent, setClarityTag } from "@/lib/clarity";
++import { TRY_ON_HANDLES } from "@/data/tryOnHandles";
++import { CLIENT_ERROR_CODES, SERVER_ERROR_CODES, type TryOnError, type TryOnErrorCode } from "./errors";
++
++/*
++  What the try-on tells Clarity: event names from this list and two session
++  tags, nothing else. No reason beyond the error code, no verdict, no size,
++  no image, and never anything to Meta: AddToCart and InitiateCheckout keep
++  coming only from CartContext when a piece is added or bought.
++
++  Production only (window.__nairaProd, the hostname allowlist in index.html),
++  like the Clarity tag itself, so a preview or localhost run never reaches
++  the live project.
++*/
++
++const BASE_EVENTS = [
++  // Entry
++  "tryon_hub_opened",
++  "tryon_entry_pdp",
++  "tryon_piece_opened",
++  "tryon_demo_viewed",
++  // Photo
++  "tryon_photo_camera",
++  "tryon_photo_library",
++  "tryon_photo_reused",
++  "tryon_photo_warn_dark",
++  "tryon_photo_warn_soft",
++  "tryon_photo_blocked_format",
++  "tryon_photo_blocked_small",
++  // Render
++  "tryon_consent_given",
++  "tryon_render_started",
++  "tryon_render_ok",
++  "tryon_cancelled",
++  "tryon_interrupted",
++  // Result
++  "tryon_compare_used",
++  "tryon_real_piece_opened",
++  "tryon_feedback_yes",
++  "tryon_feedback_no",
++  "tryon_scene_high",
++  // Commerce
++  "tryon_added",
++  "tryon_buynow",
++  "tryon_choose_size",
++  "tryon_reserve",
++  "tryon_stone_rerender",
++  "tryon_another",
++  // Share
++  "tryon_shared",
++  "tryon_saved",
++  // Delete
++  "tryon_photo_deleted",
++] as const;
++
++/** A render that failed, by code; Cancel and a backgrounded tab have their own names. */
++const FAILED_CODES = [...SERVER_ERROR_CODES, ...CLIENT_ERROR_CODES].filter((code) => code !== "cancelled" && code !== "interrupted");
++
++export type TryOnBaseEvent = (typeof BASE_EVENTS)[number];
++export type TryOnFailedEvent = `tryon_render_failed_${Exclude<TryOnErrorCode, "cancelled" | "interrupted">}`;
++export type TryOnEventName = TryOnBaseEvent | TryOnFailedEvent;
++
++/** Every name the try-on may send, and the only ones that reach clarityEvent. */
++export const TRYON_EVENTS: ReadonlySet<string> = new Set<string>([...BASE_EVENTS, ...FAILED_CODES.map((code) => `tryon_render_failed_${code}`)]);
++
++const production = () => typeof window !== "undefined" && (window as unknown as { __nairaProd?: unknown }).__nairaProd === true;
++
++/** Sends one allow-listed event name to Clarity, on the live shop only. */
++export const tryonEvent = (name: TryOnEventName) => {
++  if (!TRYON_EVENTS.has(name) || !production()) return;
++  clarityEvent(name);
++};
++
++/** The event for a render that ended in an error. */
++export const renderFailedEvent = (error: Pick<TryOnError, "code">): TryOnEventName =>
++  error.code === "cancelled" ? "tryon_cancelled" : error.code === "interrupted" ? "tryon_interrupted" : (`tryon_render_failed_${error.code}` as TryOnFailedEvent);
++
++/** Tags the Clarity session as one that used the try-on, and with the piece. */
++export const tagTryOn = (handle: string) => {
++  if (!TRY_ON_HANDLES.has(handle) || !production()) return;
++  setClarityTag("tryon", "used");
++  setClarityTag("tryon_piece", handle);
++};
+diff --git a/src/lib/tryon/canvas.ts b/src/lib/tryon/canvas.ts
+new file mode 100644
+index 0000000..c61ef39
+--- /dev/null
++++ b/src/lib/tryon/canvas.ts
+@@ -0,0 +1,105 @@
++/*
++  An off-DOM drawing surface that works on the phones the shop targets
++  (Safari 14, Chrome 87). OffscreenCanvas is used when it can draw in 2D and
++  encode (Chrome 69+, Safari 16.4+); Safari 14 has none, so it falls back to a
++  canvas element that is never attached to the page.
++*/
++
++export interface Surface {
++  width: number;
++  height: number;
++  ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
++  /** The surface itself, to draw onto another surface. */
++  source: CanvasImageSource;
++  /** JPEG or PNG bytes, or null when this browser cannot encode. */
++  encode: (type: string, quality?: number) => Promise<Blob | null>;
++  /** Frees the bitmap memory now; iOS counts canvas memory per tab. */
++  release: () => void;
++}
++
++const offscreen = (width: number, height: number): Surface | null => {
++  if (typeof OffscreenCanvas === "undefined") return null;
++  try {
++    const canvas = new OffscreenCanvas(width, height);
++    const ctx = canvas.getContext("2d");
++    if (!ctx) return null;
++    const canEncode = typeof canvas.convertToBlob === "function";
++    return {
++      width,
++      height,
++      ctx,
++      source: canvas,
++      encode: (type, quality) => (canEncode ? canvas.convertToBlob({ type, quality }).catch(() => null) : Promise.resolve(null)),
++      release: () => {
++        canvas.width = 0;
++        canvas.height = 0;
++      },
++    };
++  } catch {
++    return null;
++  }
++};
++
++const element = (width: number, height: number): Surface | null => {
++  if (typeof document === "undefined") return null;
++  try {
++    const canvas = document.createElement("canvas");
++    canvas.width = width;
++    canvas.height = height;
++    const ctx = canvas.getContext("2d");
++    if (!ctx) return null;
++    return {
++      width,
++      height,
++      ctx,
++      source: canvas,
++      encode: (type, quality) =>
++        typeof canvas.toBlob === "function"
++          ? new Promise<Blob | null>((resolve) => {
++              try {
++                canvas.toBlob((blob) => resolve(blob), type, quality);
++              } catch {
++                resolve(null);
++              }
++            })
++          : Promise.resolve(null),
++      release: () => {
++        canvas.width = 0;
++        canvas.height = 0;
++      },
++    };
++  } catch {
++    return null;
++  }
++};
++
++/** A surface to draw on, or null when this browser has no 2D canvas. */
++export const createSurface = (width: number, height: number): Surface | null => offscreen(width, height) ?? element(width, height);
++
++/** Whether this browser can turn a canvas into a JPEG at all. */
++export const canEncodeImages = (): boolean => {
++  if (typeof OffscreenCanvas !== "undefined" && typeof OffscreenCanvas.prototype?.convertToBlob === "function") return true;
++  return typeof HTMLCanvasElement !== "undefined" && typeof HTMLCanvasElement.prototype?.toBlob === "function";
++};
++
++/** A blob's bytes, through FileReader where Blob.arrayBuffer is missing. */
++export const blobBytes = (blob: Blob): Promise<Uint8Array> => {
++  if (typeof blob.arrayBuffer === "function") return blob.arrayBuffer().then((b) => new Uint8Array(b));
++  return new Promise((resolve, reject) => {
++    const reader = new FileReader();
++    reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
++    reader.onerror = () => reject(reader.error);
++    reader.readAsArrayBuffer(blob);
++  });
++};
++
++/** A blob's text, through FileReader where Blob.text is missing. */
++export const blobText = (blob: Blob): Promise<string> => {
++  if (typeof blob.text === "function") return blob.text();
++  return new Promise((resolve, reject) => {
++    const reader = new FileReader();
++    reader.onload = () => resolve(String(reader.result ?? ""));
++    reader.onerror = () => reject(reader.error);
++    reader.readAsText(blob);
++  });
++};
+diff --git a/src/lib/tryon/client.ts b/src/lib/tryon/client.ts
+new file mode 100644
+index 0000000..4248275
+--- /dev/null
++++ b/src/lib/tryon/client.ts
+@@ -0,0 +1,234 @@
++import { TRY_ON_HANDLES } from "@/data/tryOnHandles";
++import { blobText } from "./canvas";
++import { getTryOnDevice } from "./device";
++import { errorFromResponse, TryOnError } from "./errors";
++import { CONSENT_VERSION, type PhotoKind, type TryOnVerified } from "./session";
++
++/*
++  The browser's half of POST {VITE_SUPABASE_URL}/functions/v1/tryon/render.
++
++  XHR rather than fetch, for one reason: fetch cannot report upload progress,
++  and "Sending securely 63%" is what a shopper on 4G watches for the first
++  seconds. The body is multipart with exactly two parts, "meta" (the JSON the
++  server parses strictly: any extra key is refused) and "photo" (the prepared
++  JPEG). The headers are the publishable key, as pixel.ts sends it to
++  meta-capi; there is no custom header, so the stock CORS preflight covers it.
++
++  The reply is the image itself, kept as a Blob: it is shown through a blob:
++  URL (session.ts), never as a data: URL, so it never sits in the DOM as text
++  where a session recording could read it.
++
++  The client stops waiting at 125 s, just past the server's own 118 s
++  deadline, with its own timer (so a test clock can move it).
++*/
++
++export const TRYON_TIMEOUT_MS = 125_000;
++
++export const TRYON_STONES = ["Ruby", "Crystal", "Emerald", "Amethyst"] as const;
++export type TryOnStone = (typeof TRYON_STONES)[number];
++
++/** The "meta" part, field for field the server's strict schema. */
++export interface TryOnMeta {
++  v: 1;
++  handle: string;
++  stone: TryOnStone | null;
++  kind: PhotoKind;
++  device: string;
++  consent: { version: typeof CONSENT_VERSION; accepted: true; adult: true; ownPhoto: true };
++}
++
++const BASE = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/+$/, "");
++const KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
++
++/** The function's URL for one of its two operations. */
++export const tryOnEndpoint = (op: "render" | "feedback") => `${BASE}/functions/v1/tryon/${op}`;
++
++/** The headers every call carries: the publishable key on both, as pixel.ts does. */
++export const tryOnHeaders = (): Record<string, string> => ({ apikey: KEY, Authorization: `Bearer ${KEY}` });
++
++const isStone = (value: unknown): value is TryOnStone => TRYON_STONES.includes(value as TryOnStone);
++
++/** The meta for a render; throws bad_request for a handle, stone or kind the server would refuse. */
++export const buildTryOnMeta = (input: { handle: string; stone: string | null; kind: PhotoKind; device?: string }): TryOnMeta => {
++  if (!TRY_ON_HANDLES.has(input.handle)) throw new TryOnError("bad_request");
++  if (input.stone !== null && !isStone(input.stone)) throw new TryOnError("bad_request");
++  if (input.kind !== "face" && input.kind !== "hand") throw new TryOnError("bad_request");
++  return {
++    v: 1,
++    handle: input.handle,
++    stone: input.stone as TryOnStone | null,
++    kind: input.kind,
++    device: input.device ?? getTryOnDevice(),
++    consent: { version: CONSENT_VERSION, accepted: true, adult: true, ownPhoto: true },
++  };
++};
++
++export interface TryOnRequest {
++  handle: string;
++  stone: string | null;
++  kind: PhotoKind;
++  /** The prepared 1152x1536 JPEG. */
++  photo: Blob;
++  /** Upload progress, 0 to 1. */
++  onUpload?: (fraction: number) => void;
++  /** The photo is up; the server is now working on it. */
++  onUploaded?: () => void;
++  signal?: AbortSignal;
++  /** Only tests change this. */
++  timeoutMs?: number;
++}
++
++export interface TryOnReply {
++  /** The preview image (PNG expected). */
++  blob: Blob;
++  /** Try-ons left today for this device, from X-Tryon-Remaining. */
++  remaining: number | null;
++  /** How the server's fidelity check ran, from X-Tryon-Verified. */
++  verified: TryOnVerified | null;
++  /** The anonymous render row, from X-Tryon-Render, for feedback. */
++  renderId: string | null;
++}
++
++const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
++
++const readHeaders = (xhr: XMLHttpRequest) => {
++  const remainingRaw = xhr.getResponseHeader("X-Tryon-Remaining");
++  const remaining = remainingRaw !== null && /^\d+$/.test(remainingRaw.trim()) ? Number(remainingRaw.trim()) : null;
++  const verifiedRaw = (xhr.getResponseHeader("X-Tryon-Verified") ?? "").trim();
++  const verified = verifiedRaw === "pass" || verifiedRaw === "log" || verifiedRaw === "off" ? verifiedRaw : null;
++  const renderRaw = (xhr.getResponseHeader("X-Tryon-Render") ?? "").trim();
++  return { remaining, verified, renderId: UUID.test(renderRaw) ? renderRaw : null } as const;
++};
++
++const offline = () => typeof navigator !== "undefined" && navigator.onLine === false;
++
++/**
++ * Sends the photo and waits for the preview. Resolves with the image as a
++ * Blob, or rejects with a TryOnError whose `copy` is what to show.
++ */
++export const requestTryOn = (req: TryOnRequest): Promise<TryOnReply> =>
++  new Promise<TryOnReply>((resolve, reject) => {
++    let meta: TryOnMeta;
++    try {
++      meta = buildTryOnMeta(req);
++    } catch (error) {
++      reject(error);
++      return;
++    }
++    if (req.signal?.aborted) {
++      reject(new TryOnError("cancelled"));
++      return;
++    }
++    if (offline()) {
++      reject(new TryOnError("offline"));
++      return;
++    }
++
++    const xhr = new XMLHttpRequest();
++    let settled = false;
++    let uploaded = 0;
++    let wentHidden = false;
++    let timer: ReturnType<typeof setTimeout> | undefined;
++
++    const onVisibility = () => {
++      if (typeof document !== "undefined" && document.visibilityState === "hidden") wentHidden = true;
++    };
++    const onAbort = () => fail(new TryOnError("cancelled"), true);
++
++    const cleanup = () => {
++      if (timer !== undefined) clearTimeout(timer);
++      req.signal?.removeEventListener("abort", onAbort);
++      if (typeof document !== "undefined") document.removeEventListener("visibilitychange", onVisibility);
++    };
++    function fail(error: TryOnError, abort = false) {
++      if (settled) return;
++      settled = true;
++      cleanup();
++      if (abort) {
++        try {
++          xhr.abort();
++        } catch {
++          /* already closed */
++        }
++      }
++      reject(error);
++    }
++    /* A connection lost while the tab was in the background reads as the
++       background's doing, which is what the shopper can act on. */
++    const lost = (code: "network" | "timeout") => {
++      if (wentHidden) return new TryOnError("interrupted");
++      if (code === "network" && (offline() || uploaded === 0)) return new TryOnError("offline");
++      return new TryOnError(code);
++    };
++
++    xhr.open("POST", tryOnEndpoint("render"));
++    xhr.responseType = "blob";
++    xhr.timeout = req.timeoutMs ?? TRYON_TIMEOUT_MS;
++    for (const [name, value] of Object.entries(tryOnHeaders())) xhr.setRequestHeader(name, value);
++
++    xhr.upload.onprogress = (event) => {
++      if (!event.lengthComputable || !event.total) return;
++      uploaded = event.loaded;
++      req.onUpload?.(Math.min(1, event.loaded / event.total));
++    };
++    xhr.upload.onload = () => {
++      uploaded = Math.max(uploaded, 1);
++      req.onUpload?.(1);
++      req.onUploaded?.();
++    };
++    xhr.onerror = () => fail(lost("network"));
++    xhr.ontimeout = () => fail(lost("timeout"));
++    xhr.onabort = () => fail(new TryOnError("cancelled"));
++    xhr.onload = () => {
++      if (settled) return;
++      const body = xhr.response as Blob | null;
++      if (xhr.status === 200) {
++        const type = (xhr.getResponseHeader("Content-Type") ?? body?.type ?? "").split(";")[0].trim().toLowerCase();
++        if (!body || !body.size || !type.startsWith("image/")) {
++          fail(new TryOnError("failed", { status: 200 }));
++          return;
++        }
++        settled = true;
++        cleanup();
++        resolve({ blob: body.type ? body : new Blob([body], { type }), ...readHeaders(xhr) });
++        return;
++      }
++      const status = xhr.status;
++      const parse = body ? blobText(body).then((text) => JSON.parse(text) as unknown) : Promise.resolve(null);
++      parse
++        .catch(() => null)
++        .then((json) => fail(errorFromResponse(status, json)));
++    };
++
++    req.signal?.addEventListener("abort", onAbort);
++    if (typeof document !== "undefined") document.addEventListener("visibilitychange", onVisibility);
++    timer = setTimeout(() => fail(lost("timeout"), true), req.timeoutMs ?? TRYON_TIMEOUT_MS);
++
++    const form = new FormData();
++    form.append("meta", JSON.stringify(meta));
++    form.append("photo", req.photo, "photo.jpg");
++    xhr.send(form);
++  });
++
++export type SceneBucketValue = "low" | "mid" | "high";
++
++/**
++ * "Does this look like the piece?" and the scene check's bucket, sent to the
++ * function's /feedback (always 204). Fire and forget: keepalive lets it
++ * finish if the shopper leaves at once, and it never throws.
++ */
++export const sendFeedback = (renderId: string, feedback: { looksRight: boolean | null; scene: SceneBucketValue | null }) => {
++  if (!UUID.test(renderId) || typeof fetch !== "function" || !BASE.startsWith("http")) return;
++  try {
++    void fetch(tryOnEndpoint("feedback"), {
++      method: "POST",
++      keepalive: true,
++      headers: { "Content-Type": "application/json", ...tryOnHeaders() },
++      body: JSON.stringify({ v: 1, render: renderId, looksRight: feedback.looksRight, scene: feedback.scene }),
++    }).catch(() => {
++      /* feedback must never break the page */
++    });
++  } catch {
++    /* ignore */
++  }
++};
+diff --git a/src/lib/tryon/copy.ts b/src/lib/tryon/copy.ts
+new file mode 100644
+index 0000000..1cb1264
+--- /dev/null
++++ b/src/lib/tryon/copy.ts
+@@ -0,0 +1,225 @@
++import { QUANTITY_OFFERS } from "@/lib/promo";
++
++/*
++  Every word the try-on shows a shopper, in one place, from the spec's
++  uxStates and privacy sections. Indian English, no exclamation marks and no
++  em dashes (copy.test.ts reads every string here and fails on either).
++  Components and errors.ts take their text from here; none writes its own.
++*/
++
++/** The device's daily allowance the server enforces (TRYON_DEVICE_DAILY). */
++export const TRYON_DAILY_ALLOWANCE = 5;
++
++const rate = Math.round(QUANTITY_OFFERS[0].rate * 100);
++
++export const TRYON_COPY = {
++  pageTitle: "Try it on | Naira Flore",
++
++  hub: {
++    title: "Try it on",
++    sub: "Choose a piece, add one photo, and see it on you.",
++    faceGroup: "With a face photo",
++    faceGroupSub: "Earrings, ear cuffs and necklaces",
++    handGroup: "With a hand photo",
++    handGroupSub: "Rings and bracelets",
++    uncertified: "Uncertified",
++    empty: "Try-on opens soon. See our pieces on models in the meantime.",
++    emptyButton: "Shop jewellery",
++    emptyHref: "/jewellery",
++  },
++
++  pdpChip: "Try on",
++
++  trust: {
++    line: "Your photo is used only to make this preview. We do not keep it, and it never goes to advertisers.",
++    link: "How we handle it",
++    href: "/privacy#try-on",
++  },
++
++  studio: {
++    back: "All pieces",
++    stoneLabel: "Stone",
++    takePhoto: "Take a photo",
++    chooseGallery: "Choose from gallery",
++    tipsToggle: "Photo tips",
++    demo: "See it on a model first",
++    realPiece: "The real piece",
++    actualSize: (sizeLine: string) => `Actual size ${sizeLine}`,
++  },
++
++  tips: {
++    face: [
++      "Face the camera with your phone at eye level.",
++      "Tuck your hair behind your ears and take off any earrings.",
++      "Stand facing a window in daylight.",
++      "For necklaces, keep your neck and shoulders in the photo.",
++    ],
++    faceAvoid: "Avoid hats, filters and group photos.",
++    earCuff: "Turn a little so one ear is fully in view.",
++    hand: [
++      "Rest your hand flat on a plain table, back of the hand up.",
++      "Keep your fingers slightly apart and your wrist in the photo.",
++      "Pull your sleeve back and use daylight.",
++    ],
++    handAvoid: "Avoid fists, gloves and busy backgrounds.",
++  },
++
++  reuse: {
++    use: "Use the photo you added",
++    change: "Change photo",
++  },
++
++  preparing: "Getting your photo ready",
++
++  crop: {
++    hint: "Drag to centre yourself",
++    use: "Use this photo",
++    another: "Choose another",
++  },
++
++  warnings: {
++    dark: "This photo looks a little dark. A brighter photo gives a truer preview.",
++    soft: "This photo looks a little soft. A sharper photo gives a truer preview.",
++    retake: "Retake",
++    useAnyway: "Use anyway",
++  },
++
++  blocked: {
++    format: "This photo could not be opened here. Take a new photo or choose a JPG.",
++    too_small: "This photo is too small to show the piece clearly. Take a new photo or choose a larger one.",
++    unsupported: "Try-on needs a newer browser. Open this page in Chrome or Safari.",
++  },
++
++  consent: {
++    title: "Before we begin",
++    body:
++      "To make your preview, your phone resizes your photo and removes its location data, then sends it securely to our AI image partner, Google's Gemini model through Lovable. We do not save your photo or your preview, we never add them to an account, and we never use them for advertising. They stay only in this browser tab and are cleared when you close it, after 30 minutes, or when you tap Delete photo.",
++    checkbox: "I am 18 or older, this is a photo of me, and I agree to it being used only to make this preview.",
++    link: "How we handle try-on photos",
++    href: "/privacy#try-on",
++    create: "Create my try-on",
++    notNow: "Not now",
++  },
++
++  uploading: (percent: number) => `Sending securely ${Math.max(0, Math.min(100, Math.round(percent)))}%`,
++
++  stages: {
++    checking: "Checking your photo",
++    placing: (name: string, sizeLine: string) => `Placing the ${name} at ${sizeLine}`,
++    light: "Matching the light on the metal",
++    final: "Almost there, a final check on the piece",
++  },
++  keepOpen: "Keep this page open.",
++  cancel: "Cancel",
++  cancelled: "Cancelled. Your photo is still here.",
++
++  result: {
++    chip: "AI preview",
++    shownAt: (sizeLine: string) => `Shown at its listed size: ${sizeLine}`,
++    hold: "Hold to see your photo",
++    showMine: "Show my photo",
++    question: "Does this look like the piece?",
++    yes: "Yes",
++    notQuite: "Not quite",
++    remaining: (n: number) => (n === 1 ? "1 try-on left today" : `${Math.max(0, n)} try-ons left today`),
++    note: "AI preview. Light and fit can differ a little; the piece you receive is the one in our product photos.",
++    sendWhatsApp: "Send on WhatsApp",
++    save: "Save photo",
++    another: "Try another piece",
++    again: "Try again",
++    delete: "Delete photo",
++  },
++
++  notQuite: {
++    thanks: "Thank you for telling us. Here is the real piece, photographed in our studio.",
++    again: "Try again",
++  },
++
++  stoneChange: {
++    banner: (stone: string) => `Your preview shows ${stone}.`,
++    tryIn: (stone: string) => `Try in ${stone}`,
++    add: (stone: string) => `Add ${stone} to bag`,
++  },
++
++  buy: {
++    /** "Add to bag · Ruby · US 7": the button always names what it adds. */
++    add: (stone?: string | null, size?: string | null) => ["Add to bag", stone, size ? `US ${size}` : null].filter(Boolean).join(" · "),
++    adding: "Adding…",
++    buyNow: "Buy now",
++    chooseSize: "Choose your size",
++    chooseSizeButton: "Choose a size",
++    sizeChip: (value: string) => `US ${value}`,
++    preorder: "Pre-order",
++    sizeGuide: "Size guide",
++    reserve: "Reserve on WhatsApp",
++    ladder: `Add a second piece and save ${rate}%`,
++  },
++
++  soldOut: {
++    line: "Sold out for now.",
++    reserve: "Reserve on WhatsApp",
++    view: "View the piece",
++  },
++
++  share: {
++    band: (name: string) => `AI try-on preview · ${name} · nairaflore.com`,
++    pressHold: "Press and hold the photo to save",
++  },
++
++  deleted: "Your photo is deleted from this page. We never kept a copy.",
++
++  errors: {
++    photo_unusable: {
++      ear_not_visible: "We could not see your ear clearly. Tuck your hair back and turn a little toward the light.",
++      neck_not_visible: "For necklaces, use a photo that shows your neck and both shoulders.",
++      hand_not_visible: "We could not see your hand clearly. Lay it flat, back of the hand up, fingers slightly apart.",
++      wrist_not_visible: "Please include your wrist, with your sleeve pulled back.",
++      multiple_people: "Please use a photo with just you in it.",
++      no_person: "We could not find a person in this photo. Please use a clear photo of yourself.",
++      under_18: "Try-on is for customers aged 18 and over.",
++      not_a_photo: "We could not use this photo. Please use a clear camera photo of yourself.",
++      blocked: "We could not use this photo. Please use a clear camera photo of yourself.",
++      too_dark: "This photo is too dark to place the piece well. Try again in daylight.",
++      too_blurry: "This photo is too soft to place the piece well. Hold the phone steady and try again.",
++      model_declined: "We could not make a preview from this photo. A clear, front-facing photo works best.",
++    },
++    fidelity_failed:
++      "We could not make a preview that matches the piece exactly, so we have not shown it. Try a clearer photo, or see the piece on our models.",
++    device_limit: (allowance: number) => `You have used today's ${allowance} try-ons. They refresh at midnight.`,
++    ip_limit: "Many people on your network have tried pieces on today. Please try again tomorrow.",
++    busy: "Lots of people are trying pieces on right now. Please try again in a minute.",
++    paused: "Try-on is resting for now. See the piece on our models instead.",
++    timeout: "This is taking longer than it should. Please try again; it usually works the second time.",
++    failed: "Something went wrong on our side. Your photo is still here; please try again.",
++    offline: "You seem to be offline. Your photo is still here; try again when you are connected.",
++    interrupted: "The preview stopped while this page was in the background. Please try again and keep the page open.",
++  },
++
++  actions: {
++    choose_photo: "Choose another photo",
++    view_piece: "View the piece",
++    try_again: "Try again",
++  },
++
++  privacy: {
++    id: "try-on",
++    title: "Virtual try-on",
++    body:
++      "When you use Try it on, the photo you choose is resized on your phone, its location data is removed, and it is sent over an encrypted connection to our server, which passes it to Google's Gemini image model through Lovable AI to make one preview image. We do not save your photo or the preview, we do not link them to your account, and we never share them with advertising or analytics services; our session recordings hide them. To prevent misuse we keep, for two days, one-way codes made from a random number stored on your device and from your network address, which cannot be turned back into either, and an anonymous count of try-ons (the piece, whether it worked, and how long it took). Our AI partners process the image only to return your preview, under their own terms. You must be 18 or over and use a photo of yourself. Questions or requests: shopatnaira@gmail.com.",
++  },
++} as const;
++
++export type RenderStage = "checking" | "placing" | "light" | "final";
++
++/** The honest stage for the time a render has taken: no percentages, only what is under way. */
++export const renderStage = (elapsedMs: number): RenderStage => {
++  const s = elapsedMs / 1000;
++  if (s < 4) return "checking";
++  if (s < 20) return "placing";
++  if (s < 40) return "light";
++  return "final";
++};
++
++/** The words for a stage, naming the piece and its size where the stage does. */
++export const renderStageCopy = (stage: RenderStage, name: string, sizeLine: string) =>
++  stage === "placing" ? TRYON_COPY.stages.placing(name, sizeLine) : TRYON_COPY.stages[stage];
+diff --git a/src/lib/tryon/cropMaths.ts b/src/lib/tryon/cropMaths.ts
+new file mode 100644
+index 0000000..071915d
+--- /dev/null
++++ b/src/lib/tryon/cropMaths.ts
+@@ -0,0 +1,108 @@
++/*
++  The 3:4 portrait frame a try-on photo is cut to, in the decoded photo's own
++  pixels (EXIF orientation already applied). Pure, so the crop step and the
++  encoder agree to the pixel and the maths is tested without a canvas.
++
++  Every photo leaves the phone at exactly 1152x1536: the server refuses any
++  other shape (long side 1024 to 1600, 3:4 within 2%), and one size keeps the
++  render cost and the upload predictable. A frame narrower than 768 source
++  pixels would be stretched more than 1.5 times to fill it, too soft to place
++  a 12 mm piece on, so it is refused as "too small" instead.
++*/
++
++export const OUTPUT_WIDTH = 1152;
++export const OUTPUT_HEIGHT = 1536;
++/** Width over height of the frame. */
++export const FRAME_ASPECT = 3 / 4;
++/** The narrowest frame, in source pixels, worth sending. */
++export const MIN_CROP_SHORT = 768;
++
++export interface CropRect {
++  x: number;
++  y: number;
++  width: number;
++  height: number;
++}
++
++export interface Size {
++  width: number;
++  height: number;
++}
++
++const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
++
++/** The largest 3:4 frame that fits the photo. */
++export const maxCrop = (src: Size): Size => {
++  if (src.width / src.height > FRAME_ASPECT) {
++    const height = Math.floor(src.height);
++    return { width: Math.min(Math.floor(src.width), Math.round(height * FRAME_ASPECT)), height };
++  }
++  const width = Math.floor(src.width);
++  return { width, height: Math.min(Math.floor(src.height), Math.round(width / FRAME_ASPECT)) };
++};
++
++/** Keeps a frame inside the photo, its size untouched when it fits. */
++export const clampCrop = (rect: CropRect, src: Size): CropRect => {
++  const limit = maxCrop(src);
++  const width = Math.min(Math.round(rect.width), limit.width);
++  const height = Math.min(Math.round(rect.height), limit.height);
++  return {
++    x: Math.round(clamp(rect.x, 0, src.width - width)),
++    y: Math.round(clamp(rect.y, 0, src.height - height)),
++    width,
++    height,
++  };
++};
++
++/**
++ * The frame a photo opens on: centred, as large as fits (`zoom` 1), or
++ * `zoom` times smaller around the centre. Portrait phone photos are already
++ * 3:4, so most open uncut.
++ */
++export const initialCrop = (src: Size, zoom = 1): CropRect => {
++  const limit = maxCrop(src);
++  const z = Math.max(1, zoom);
++  const width = Math.round(limit.width / z);
++  const height = Math.round(width / FRAME_ASPECT);
++  return clampCrop({ x: (src.width - width) / 2, y: (src.height - height) / 2, width, height }, src);
++};
++
++/**
++ * Drag to reposition: the photo follows the finger under a fixed frame, so the
++ * frame moves the other way. `frameWidthPx` is the frame's width on screen;
++ * the drag is converted to source pixels at the frame's own scale.
++ */
++export const panCrop = (rect: CropRect, dxPx: number, dyPx: number, frameWidthPx: number, src: Size): CropRect => {
++  const perPx = frameWidthPx > 0 ? rect.width / frameWidthPx : 0;
++  return clampCrop({ ...rect, x: rect.x - dxPx * perPx, y: rect.y - dyPx * perPx }, src);
++};
++
++/**
++ * Zoom about the frame's centre: `factor` above 1 zooms in (a smaller frame).
++ * It stops at the largest frame that fits and, when the photo allows, at the
++ * smallest frame still worth sending, so zooming can never make it too small.
++ */
++export const zoomCrop = (rect: CropRect, factor: number, src: Size): CropRect => {
++  const limit = maxCrop(src);
++  const floor = Math.min(MIN_CROP_SHORT, limit.width);
++  const width = Math.round(clamp(rect.width / (factor > 0 ? factor : 1), floor, limit.width));
++  const height = Math.round(width / FRAME_ASPECT);
++  const cx = rect.x + rect.width / 2;
++  const cy = rect.y + rect.height / 2;
++  return clampCrop({ x: cx - width / 2, y: cy - height / 2, width, height }, src);
++};
++
++/** Too small to send: the frame's short side (its width) is under 768 source pixels. */
++export const isTooSmall = (rect: Pick<CropRect, "width" | "height">) => Math.min(rect.width, rect.height) < MIN_CROP_SHORT;
++
++/** Whatever the frame, the photo is drawn at 1152x1536. */
++export const outputSize = (): Size => ({ width: OUTPUT_WIDTH, height: OUTPUT_HEIGHT });
++
++/**
++ * How to show the photo under a frame `frameWidthPx` wide with CSS: scale the
++ * whole decoded photo by `scale` and shift it by (`x`, `y`) screen pixels.
++ */
++export const imageTransform = (rect: CropRect, frameWidthPx: number) => {
++  const scale = rect.width > 0 ? frameWidthPx / rect.width : 0;
++  return { scale, x: -rect.x * scale, y: -rect.y * scale };
++};
+diff --git a/src/lib/tryon/device.ts b/src/lib/tryon/device.ts
+new file mode 100644
+index 0000000..aadd394
+--- /dev/null
++++ b/src/lib/tryon/device.ts
+@@ -0,0 +1,63 @@
++/*
++  The try-on's own device id: a random uuid v4 in localStorage
++  naira_tryon_device, sent with each render so the server can hold a phone to
++  its daily allowance. It is deliberately NOT naira_vid, the visitor id Meta
++  receives as external_id: the server hashes this one with a daily salt and
++  keeps it two days, and no code joins the two, so a try-on can never be
++  matched to an ad profile. This module must not import visitorId.
++
++  crypto.randomUUID arrived in Chrome 92 and Safari 15.4, after the phones the
++  shop supports, so getRandomValues builds the uuid where it is missing. When
++  storage throws (Safari private mode of old, blocked storage) the id lives in
++  memory for the page, which still caps a tab.
++*/
++
++export const DEVICE_KEY = "naira_tryon_device";
++
++const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
++
++let memory: string | undefined;
++
++const hex = (bytes: ArrayLike<number>) => Array.prototype.map.call(bytes, (b: number) => (b + 0x100).toString(16).slice(1)).join("");
++
++/** A random uuid v4, by the best means this browser has. */
++export const newUuid = (): string => {
++  const c = typeof crypto !== "undefined" ? crypto : undefined;
++  try {
++    if (c && typeof c.randomUUID === "function") return c.randomUUID();
++  } catch {
++    /* fall through */
++  }
++  const bytes = new Uint8Array(16);
++  if (c && typeof c.getRandomValues === "function") c.getRandomValues(bytes);
++  else for (let i = 0; i < 16; i += 1) bytes[i] = Math.floor(Math.random() * 256);
++  bytes[6] = (bytes[6] & 0x0f) | 0x40;
++  bytes[8] = (bytes[8] & 0x3f) | 0x80;
++  const h = hex(bytes);
++  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
++};
++
++export const isTryOnDeviceId = (value: unknown): value is string => typeof value === "string" && UUID_V4.test(value);
++
++/** This browser's try-on id, made and stored on first use. */
++export const getTryOnDevice = (): string => {
++  if (memory) return memory;
++  try {
++    const stored = window.localStorage.getItem(DEVICE_KEY);
++    if (isTryOnDeviceId(stored)) return (memory = stored);
++  } catch {
++    /* storage blocked: an id for this page only */
++  }
++  const id = newUuid();
++  try {
++    window.localStorage.setItem(DEVICE_KEY, id);
++  } catch {
++    /* kept in memory */
++  }
++  return (memory = id);
++};
++
++/** Test seam: forgets the id held in memory. */
++export const resetTryOnDeviceForTest = () => {
++  memory = undefined;
++};
+diff --git a/src/lib/tryon/errors.ts b/src/lib/tryon/errors.ts
+new file mode 100644
+index 0000000..d87cbcf
+--- /dev/null
++++ b/src/lib/tryon/errors.ts
+@@ -0,0 +1,173 @@
++import { TRYON_COPY, TRYON_DAILY_ALLOWANCE } from "./copy";
++
++/*
++  Every way a try-on can stop, as one typed error with its words and its next
++  step. The server's codes and reasons are the contract in the spec's api
++  section; anything the server did not name (a proxy's HTML page, an unknown
++  code) is mapped by HTTP status instead, and nothing the server or the model
++  wrote is ever shown: a shopper only ever reads TRYON_COPY.
++*/
++
++export const SERVER_ERROR_CODES = [
++  "bad_request",
++  "origin",
++  "challenge",
++  "too_large",
++  "not_jpeg",
++  "photo_unusable",
++  "fidelity_failed",
++  "device_limit",
++  "ip_limit",
++  "busy",
++  "paused",
++  "timeout",
++  "failed",
++] as const;
++
++/** Raised in the browser: no connection, a failed upload, the shopper's Cancel, a tab left in the background. */
++export const CLIENT_ERROR_CODES = ["offline", "network", "cancelled", "interrupted"] as const;
++
++export const PHOTO_UNUSABLE_REASONS = [
++  "ear_not_visible",
++  "neck_not_visible",
++  "hand_not_visible",
++  "wrist_not_visible",
++  "multiple_people",
++  "no_person",
++  "under_18",
++  "not_a_photo",
++  "blocked",
++  "too_dark",
++  "too_blurry",
++  "model_declined",
++] as const;
++
++export const PAUSED_REASONS = ["off", "not_configured", "daily_cap", "credits", "piece_unavailable"] as const;
++
++export type ServerErrorCode = (typeof SERVER_ERROR_CODES)[number];
++export type ClientErrorCode = (typeof CLIENT_ERROR_CODES)[number];
++export type TryOnErrorCode = ServerErrorCode | ClientErrorCode;
++export type PhotoUnusableReason = (typeof PHOTO_UNUSABLE_REASONS)[number];
++export type PausedReason = (typeof PAUSED_REASONS)[number];
++export type TryOnErrorReason = PhotoUnusableReason | PausedReason;
++
++/** What the error's button does. */
++export type ErrorAction = "choose_photo" | "view_piece" | "try_again";
++
++export interface ErrorCopy {
++  message: string;
++  /** The main button, or null when the screen simply returns to the photo (Cancel). */
++  action: ErrorAction | null;
++  secondary?: ErrorAction;
++}
++
++export const actionLabel = (action: ErrorAction) => TRYON_COPY.actions[action];
++
++const STATUS_CODE: Record<number, ServerErrorCode> = {
++  400: "bad_request",
++  403: "origin",
++  413: "too_large",
++  415: "not_jpeg",
++  422: "photo_unusable",
++  429: "busy",
++  503: "paused",
++  504: "timeout",
++};
++
++const isServerCode = (code: unknown): code is ServerErrorCode => SERVER_ERROR_CODES.includes(code as ServerErrorCode);
++
++/** The server refunds these, so they do not use one of today's try-ons. */
++const REFUNDED = new Set<TryOnErrorCode>(["photo_unusable", "fidelity_failed", "busy", "paused", "timeout"]);
++
++/** The words and buttons for a code and reason. */
++export const errorCopy = (code: TryOnErrorCode, reason?: string | null): ErrorCopy => {
++  const e = TRYON_COPY.errors;
++  switch (code) {
++    case "photo_unusable": {
++      const known = PHOTO_UNUSABLE_REASONS.includes(reason as PhotoUnusableReason) ? (reason as PhotoUnusableReason) : "model_declined";
++      return { message: e.photo_unusable[known], action: "choose_photo" };
++    }
++    case "fidelity_failed":
++      return { message: e.fidelity_failed, action: "choose_photo", secondary: "view_piece" };
++    case "device_limit":
++      return { message: e.device_limit(TRYON_DAILY_ALLOWANCE), action: "view_piece" };
++    case "ip_limit":
++      return { message: e.ip_limit, action: "view_piece" };
++    case "busy":
++      return { message: e.busy, action: "try_again" };
++    case "paused":
++      return { message: e.paused, action: "view_piece" };
++    case "timeout":
++      return { message: e.timeout, action: "try_again" };
++    case "offline":
++      return { message: e.offline, action: "try_again" };
++    case "interrupted":
++      return { message: e.interrupted, action: "try_again" };
++    case "cancelled":
++      return { message: TRYON_COPY.cancelled, action: null };
++    // bad_request, origin, challenge, too_large, not_jpeg, failed and network: nothing the shopper did.
++    default:
++      return { message: e.failed, action: "try_again" };
++  }
++};
++
++/** A reason the contract defines for the code; an unknown photo_unusable reason reads as model_declined. */
++const knownReason = (code: TryOnErrorCode, reason?: string | null): TryOnErrorReason | undefined => {
++  const reasons: readonly string[] = code === "photo_unusable" ? PHOTO_UNUSABLE_REASONS : code === "paused" ? PAUSED_REASONS : [];
++  if (reason && reasons.includes(reason)) return reason as TryOnErrorReason;
++  return code === "photo_unusable" ? "model_declined" : undefined;
++};
++
++export interface TryOnErrorInit {
++  status?: number;
++  reason?: string | null;
++  resetAt?: string;
++  retryAfter?: number;
++  retryable?: boolean;
++}
++
++/** A try-on that did not return a preview: code, reason, the words to show and what the button does. */
++export class TryOnError extends Error {
++  readonly code: TryOnErrorCode;
++  readonly reason?: TryOnErrorReason;
++  /** HTTP status, 0 when the request never got an answer. */
++  readonly status: number;
++  /** Next midnight in India (ISO), for the daily limits. */
++  readonly resetAt?: string;
++  readonly retryAfter?: number;
++  readonly retryable: boolean;
++  /** Whether the server gave the try-on back (it does not count against today's). */
++  readonly refunded: boolean;
++  readonly copy: ErrorCopy;
++  constructor(code: TryOnErrorCode, init: TryOnErrorInit = {}) {
++    const reason = knownReason(code, init.reason);
++    // Only the contract's own words reach the message: a reason the server did not define is dropped.
++    super(`tryon: ${code}${reason ? ` (${reason})` : ""}`);
++    this.name = "TryOnError";
++    this.code = code;
++    this.reason = reason;
++    this.status = init.status ?? 0;
++    this.resetAt = typeof init.resetAt === "string" && !Number.isNaN(Date.parse(init.resetAt)) ? init.resetAt : undefined;
++    this.retryAfter = typeof init.retryAfter === "number" && Number.isFinite(init.retryAfter) ? init.retryAfter : undefined;
++    this.retryable = init.retryable ?? ["busy", "timeout", "failed", "network", "offline", "interrupted", "cancelled"].includes(code);
++    this.refunded = REFUNDED.has(code);
++    this.copy = errorCopy(code, this.reason);
++  }
++}
++
++/**
++ * The error for a non-200 reply: its JSON code when it names one the contract
++ * knows, else the code its HTTP status implies (500 and anything unlisted:
++ * failed). Only fields the contract defines are read.
++ */
++export const errorFromResponse = (status: number, body: unknown): TryOnError => {
++  const b = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
++  const code = isServerCode(b.code) ? b.code : STATUS_CODE[status] ?? "failed";
++  return new TryOnError(code, {
++    status,
++    reason: typeof b.reason === "string" ? b.reason : undefined,
++    resetAt: typeof b.resetAt === "string" ? b.resetAt : undefined,
++    retryAfter: typeof b.retryAfter === "number" ? b.retryAfter : undefined,
++    retryable: typeof b.retryable === "boolean" ? b.retryable : undefined,
++  });
++};
+diff --git a/src/lib/tryon/photoChecks.ts b/src/lib/tryon/photoChecks.ts
+new file mode 100644
+index 0000000..8f9079d
+--- /dev/null
++++ b/src/lib/tryon/photoChecks.ts
+@@ -0,0 +1,71 @@
++/*
++  Two quick, non-blocking hints about a prepared photo, measured on the phone
++  on a 288x384 greyscale copy: too dark (mean luminance) and too soft (how
++  much a 3x3 Laplacian, an edge detector, varies; a blurred photo has few
++  edges, so little variance). Either can still be sent ("Use anyway"); they
++  only warn, because a dark or soft photo gives a less true preview.
++
++  The thresholds are exported so they can be tuned on the synthetic test
++  subjects without touching the maths.
++*/
++
++/** Mean luminance (0 to 255) under which a photo is called dark. */
++export const DARK_MEAN = 60;
++/** Laplacian variance under which a photo is called soft. */
++export const SOFT_VAR = 40;
++/** The size of the copy the checks run on. */
++export const CHECK_WIDTH = 288;
++export const CHECK_HEIGHT = 384;
++
++export type PhotoWarning = "dark" | "soft";
++
++/** RGBA pixels, as a canvas ImageData has them; tests build their own. */
++export interface PixelData {
++  data: ArrayLike<number>;
++  width: number;
++  height: number;
++}
++
++/** Rec. 601 luma of each pixel, 0 to 255. */
++export const toGrey = (img: PixelData): Float32Array => {
++  const out = new Float32Array(img.width * img.height);
++  const d = img.data;
++  for (let i = 0, p = 0; i < out.length; i += 1, p += 4) out[i] = 0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2];
++  return out;
++};
++
++/** Mean luminance and Laplacian variance from one greyscale pass (the phone does this once per photo). */
++export const photoStats = (img: PixelData) => {
++  const { width: w, height: h } = img;
++  const g = toGrey(img);
++  let total = 0;
++  for (let i = 0; i < g.length; i += 1) total += g[i];
++  let sum = 0;
++  let sumSq = 0;
++  let n = 0;
++  for (let y = 1; y < h - 1; y += 1) {
++    for (let x = 1; x < w - 1; x += 1) {
++      const i = y * w + x;
++      const lap = g[i - w] + g[i + w] + g[i - 1] + g[i + 1] - 4 * g[i];
++      sum += lap;
++      sumSq += lap * lap;
++      n += 1;
++    }
++  }
++  const mean = n ? sum / n : 0;
++  return { mean: g.length ? total / g.length : 0, laplacianVariance: n ? sumSq / n - mean * mean : 0 };
++};
++
++export const meanLuminance = (img: PixelData): number => photoStats(img).mean;
++
++/** Variance of the 4-neighbour Laplacian over the inner pixels. */
++export const laplacianVariance = (img: PixelData): number => photoStats(img).laplacianVariance;
++
++/** The hints for one photo, dark first. */
++export const photoWarnings = (img: PixelData): PhotoWarning[] => {
++  const stats = photoStats(img);
++  const out: PhotoWarning[] = [];
++  if (stats.mean < DARK_MEAN) out.push("dark");
++  if (stats.laplacianVariance < SOFT_VAR) out.push("soft");
++  return out;
++};
+diff --git a/src/lib/tryon/preparePhoto.ts b/src/lib/tryon/preparePhoto.ts
+new file mode 100644
+index 0000000..26464c4
+--- /dev/null
++++ b/src/lib/tryon/preparePhoto.ts
+@@ -0,0 +1,238 @@
++import { createSurface, blobBytes, type Surface } from "./canvas";
++import { initialCrop, isTooSmall, maxCrop, OUTPUT_HEIGHT, OUTPUT_WIDTH, type CropRect, type Size } from "./cropMaths";
++import { CHECK_HEIGHT, CHECK_WIDTH, photoWarnings, type PhotoWarning } from "./photoChecks";
++
++/*
++  Getting a shopper's photo ready, all on the phone, before anything is sent.
++
++  Decode with the camera's EXIF orientation applied, cut the 3:4 frame, draw
++  it at 1152x1536 and encode a fresh JPEG at quality 0.85. The new file is
++  pixels only: re-encoding through a canvas leaves the EXIF block (camera,
++  time, GPS location) behind, which is why the photo is never sent as picked.
++
++  Orientation, two paths, both proven upright in Chromium for EXIF 1, 3, 6
++  and 8. An <img> applies EXIF orientation itself wherever the browser
++  supports CSS image-orientation (Chrome 81+, Safari 13.1+), and is used
++  first there because it is the fast one: drawn smaller than it is, Chrome
++  decodes a JPEG at reduced scale, so a 4000x3000 photo is ready in a median
++  647 ms at 4x CPU throttle against 1125 ms through createImageBitmap, which
++  decodes all 12 MP before the draw (the 800 ms budget). createImageBitmap
++  with imageOrientation 'from-image' is the other path: first where the
++  browser cannot say it orients <img>, and the fallback when an <img> fails.
++  The <img> is never put on the page and its blob URL is revoked as soon as
++  it loads.
++*/
++
++export type PhotoBlock = "format" | "too_small" | "unsupported";
++
++/** A photo that cannot be used: undecodable, too small, or a browser that cannot encode. */
++export class PhotoPrepError extends Error {
++  readonly code: PhotoBlock;
++  /** The file was HEIC/HEIF, which Chrome on Android cannot open. */
++  readonly heic: boolean;
++  constructor(code: PhotoBlock, heic = false) {
++    super(`tryon photo: ${code}`);
++    this.name = "PhotoPrepError";
++    this.code = code;
++    this.heic = heic;
++  }
++}
++
++export type SniffedType = "jpeg" | "png" | "gif" | "webp" | "heic" | "avif" | "unknown";
++
++const HEIC_BRANDS = new Set(["heic", "heix", "hevc", "hevx", "heim", "heis", "hevm", "hevs", "mif1", "msf1"]);
++
++/** What a file really is, from its first bytes (its name and type can lie). */
++export const sniffImageType = (b: ArrayLike<number>): SniffedType => {
++  if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "jpeg";
++  if (b.length >= 8 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return "png";
++  if (b.length >= 4 && b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38) return "gif";
++  const ascii = (from: number, to: number) => String.fromCharCode(...Array.prototype.slice.call(b, from, to));
++  if (b.length >= 12 && ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") return "webp";
++  if (b.length >= 12 && ascii(4, 8) === "ftyp") {
++    const major = ascii(8, 12);
++    if (major === "avif" || major === "avis") return "avif";
++    if (HEIC_BRANDS.has(major)) return "heic";
++  }
++  return "unknown";
++};
++
++/** A photo decoded upright, ready to crop and draw. Call close() when done. */
++export interface DecodedPhoto {
++  image: CanvasImageSource;
++  width: number;
++  height: number;
++  via: "bitmap" | "img";
++  close: () => void;
++}
++
++const viaBitmap = async (file: Blob): Promise<DecodedPhoto | null> => {
++  if (typeof createImageBitmap !== "function") return null;
++  try {
++    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
++    return { image: bitmap, width: bitmap.width, height: bitmap.height, via: "bitmap", close: () => bitmap.close() };
++  } catch {
++    // An option this browser does not know, or bytes it cannot read: the <img> path decides.
++    return null;
++  }
++};
++
++/* A browser that neither loads nor fails the image must not leave "Getting your photo ready" up for good. */
++export const DECODE_TIMEOUT_MS = 20_000;
++
++const viaImg = (file: Blob): Promise<DecodedPhoto> =>
++  new Promise((resolve, reject) => {
++    if (typeof Image === "undefined" || typeof URL?.createObjectURL !== "function") {
++      reject(new PhotoPrepError("unsupported"));
++      return;
++    }
++    const url = URL.createObjectURL(file);
++    const img = new Image();
++    const timer = setTimeout(() => {
++      img.onload = img.onerror = null;
++      URL.revokeObjectURL(url);
++      reject(new PhotoPrepError("format"));
++    }, DECODE_TIMEOUT_MS);
++    img.decoding = "async";
++    img.onload = () => {
++      clearTimeout(timer);
++      URL.revokeObjectURL(url);
++      const width = img.naturalWidth;
++      const height = img.naturalHeight;
++      if (!width || !height) {
++        reject(new PhotoPrepError("format"));
++        return;
++      }
++      resolve({
++        image: img,
++        width,
++        height,
++        via: "img",
++        close: () => {
++          img.removeAttribute("src");
++        },
++      });
++    };
++    img.onerror = () => {
++      clearTimeout(timer);
++      URL.revokeObjectURL(url);
++      reject(new PhotoPrepError("format"));
++    };
++    img.src = url;
++  });
++
++/** Whether an <img> drawn to a canvas comes out upright: browsers that know CSS image-orientation apply EXIF to it. */
++export const imgAppliesOrientation = (): boolean => {
++  try {
++    return typeof CSS !== "undefined" && typeof CSS.supports === "function" && CSS.supports("image-orientation", "from-image");
++  } catch {
++    return false;
++  }
++};
++
++const viaImgOrNull = (file: Blob) => viaImg(file).catch(() => null);
++
++/** Decodes any image the browser can read, upright, at its own size. */
++export const decodeImage = async (file: Blob): Promise<DecodedPhoto> => {
++  if (!file || !file.size) throw new PhotoPrepError("format");
++  const decoded = imgAppliesOrientation()
++    ? (await viaImgOrNull(file)) ?? (await viaBitmap(file))
++    : (await viaBitmap(file)) ?? (await viaImgOrNull(file));
++  if (decoded) return decoded;
++  if (typeof createImageBitmap !== "function" && (typeof Image === "undefined" || typeof URL?.createObjectURL !== "function")) {
++    throw new PhotoPrepError("unsupported");
++  }
++  const head = await blobBytes(file.slice(0, 32)).catch(() => new Uint8Array());
++  throw new PhotoPrepError("format", sniffImageType(head) === "heic");
++};
++
++/** Decodes a shopper's photo, refusing one whose largest 3:4 frame is under 768 pixels wide. */
++export const decodePhoto = async (file: Blob): Promise<DecodedPhoto> => {
++  const decoded = await decodeImage(file);
++  if (isTooSmall(maxCrop(decoded))) {
++    decoded.close();
++    throw new PhotoPrepError("too_small");
++  }
++  return decoded;
++};
++
++const smooth = (ctx: Surface["ctx"]) => {
++  ctx.imageSmoothingEnabled = true;
++  if ("imageSmoothingQuality" in ctx) ctx.imageSmoothingQuality = "high";
++};
++
++/** Draws the framed part of the photo to fill `canvas`, for the crop step's preview. */
++export const drawCrop = (decoded: DecodedPhoto, crop: CropRect, canvas: HTMLCanvasElement) => {
++  const ctx = canvas.getContext("2d");
++  if (!ctx) return;
++  smooth(ctx);
++  ctx.drawImage(decoded.image, crop.x, crop.y, crop.width, crop.height, 0, 0, canvas.width, canvas.height);
++};
++
++/*
++  The 288x384 copy the hints are measured on: two exact halvings of the
++  1152x1536 frame with bilinear filtering. At exactly half size bilinear is a
++  true 2x2 average, so the copy is a 4x4 box average with no aliasing to fake
++  sharpness, in about 10 ms at 4x CPU against 30 to 45 ms for one 'high' draw.
++*/
++const checkPixels = (frame: CanvasImageSource) => {
++  const half = createSurface(CHECK_WIDTH * 2, CHECK_HEIGHT * 2);
++  const check = createSurface(CHECK_WIDTH, CHECK_HEIGHT);
++  try {
++    if (!half || !check) return null;
++    for (const s of [half, check]) {
++      s.ctx.imageSmoothingEnabled = true;
++      if ("imageSmoothingQuality" in s.ctx) s.ctx.imageSmoothingQuality = "low";
++    }
++    half.ctx.drawImage(frame, 0, 0, CHECK_WIDTH * 2, CHECK_HEIGHT * 2);
++    check.ctx.drawImage(half.source, 0, 0, CHECK_WIDTH, CHECK_HEIGHT);
++    return check.ctx.getImageData(0, 0, CHECK_WIDTH, CHECK_HEIGHT);
++  } finally {
++    half?.release();
++    check?.release();
++  }
++};
++
++export interface PreparedPhoto {
++  /** A fresh JPEG with no EXIF, exactly 1152x1536. */
++  blob: Blob;
++  width: number;
++  height: number;
++  warnings: PhotoWarning[];
++  crop: CropRect;
++  source: Size;
++}
++
++/** Draws the frame at 1152x1536, encodes JPEG q0.85 and runs the dark and soft checks. */
++export const encodePhoto = async (decoded: DecodedPhoto, crop: CropRect = initialCrop(decoded)): Promise<PreparedPhoto> => {
++  if (isTooSmall(crop)) throw new PhotoPrepError("too_small");
++  const out = createSurface(OUTPUT_WIDTH, OUTPUT_HEIGHT);
++  if (!out) throw new PhotoPrepError("unsupported");
++  try {
++    smooth(out.ctx);
++    out.ctx.drawImage(decoded.image, crop.x, crop.y, crop.width, crop.height, 0, 0, OUTPUT_WIDTH, OUTPUT_HEIGHT);
++    const blob = await out.encode("image/jpeg", 0.85);
++    // A browser that cannot write JPEG hands back PNG; the server would refuse it.
++    if (!blob || blob.type !== "image/jpeg") throw new PhotoPrepError("unsupported");
++    let warnings: PhotoWarning[] = [];
++    try {
++      const pixels = checkPixels(out.source);
++      if (pixels) warnings = photoWarnings(pixels);
++    } catch {
++      // The hints are advice; a photo is never held back for want of them.
++    }
++    return { blob, width: OUTPUT_WIDTH, height: OUTPUT_HEIGHT, warnings, crop, source: { width: decoded.width, height: decoded.height } };
++  } finally {
++    out.release();
++  }
++};
++
++/** Decode, frame (centred unless `crop` is given), encode: the whole preparation in one call. */
++export const preparePhoto = async (file: Blob, crop?: CropRect): Promise<PreparedPhoto> => {
++  const decoded = await decodePhoto(file);
++  try {
++    return await encodePhoto(decoded, crop ?? initialCrop(decoded));
++  } finally {
++    decoded.close();
++  }
++};
+diff --git a/src/lib/tryon/sceneGuard.ts b/src/lib/tryon/sceneGuard.ts
+new file mode 100644
+index 0000000..6aee281
+--- /dev/null
++++ b/src/lib/tryon/sceneGuard.ts
+@@ -0,0 +1,114 @@
++import { createSurface } from "./canvas";
++import type { PixelData } from "./photoChecks";
++import { toGrey } from "./photoChecks";
++import { decodeImage } from "./preparePhoto";
++
++/*
++  A check on the preview that does not trust a model: did the photo around the
++  piece stay the shopper's own? Both images are shrunk to 96x128 greyscale and
++  softened by a 1 px box blur (so a sub-pixel shift is not "change"), then we
++  count the share of pixels whose grey moved by more than 24 of 255. Adding an
++  earring changes a few dozen of those 12,288 pixels; a regenerated face, a
++  lighter skin tone or a new background changes most of them.
++
++  Buckets: low under 0.15, mid under 0.35, high otherwise. In 'log' mode (the
++  launch setting until it is calibrated on the proof renders) it only
++  reports; in 'strict' a high preview is not shown (fidelity_failed).
++*/
++
++export type SceneGuardMode = "log" | "strict";
++export type SceneBucket = "low" | "mid" | "high";
++
++/** Client constant: report only, until the thresholds are calibrated. */
++export const SCENE_GUARD_MODE: SceneGuardMode = "log";
++
++export const GUARD_WIDTH = 96;
++export const GUARD_HEIGHT = 128;
++/** A pixel counts as changed past this grey difference (0 to 255). */
++export const CHANGE_THRESHOLD = 24;
++export const LOW_BELOW = 0.15;
++export const MID_BELOW = 0.35;
++
++/** A 3x3 mean (a 1 px box blur), edges clamped. */
++export const boxBlur = (grey: Float32Array, w: number, h: number): Float32Array => {
++  const out = new Float32Array(w * h);
++  for (let y = 0; y < h; y += 1) {
++    for (let x = 0; x < w; x += 1) {
++      let sum = 0;
++      let n = 0;
++      for (let dy = -1; dy <= 1; dy += 1) {
++        const yy = y + dy;
++        if (yy < 0 || yy >= h) continue;
++        for (let dx = -1; dx <= 1; dx += 1) {
++          const xx = x + dx;
++          if (xx < 0 || xx >= w) continue;
++          sum += grey[yy * w + xx];
++          n += 1;
++        }
++      }
++      out[y * w + x] = sum / n;
++    }
++  }
++  return out;
++};
++
++/** The share of pixels that changed between two same-sized RGBA images. */
++export const changedFraction = (original: PixelData, result: PixelData): number => {
++  if (original.width !== result.width || original.height !== result.height) return 1;
++  const { width: w, height: h } = original;
++  if (!w || !h) return 1;
++  const a = boxBlur(toGrey(original), w, h);
++  const b = boxBlur(toGrey(result), w, h);
++  let changed = 0;
++  for (let i = 0; i < a.length; i += 1) if (Math.abs(a[i] - b[i]) > CHANGE_THRESHOLD) changed += 1;
++  return changed / a.length;
++};
++
++export const sceneBucket = (fraction: number): SceneBucket => (fraction < LOW_BELOW ? "low" : fraction < MID_BELOW ? "mid" : "high");
++
++export interface SceneVerdict {
++  fraction: number;
++  bucket: SceneBucket;
++  /** Only in strict mode and only for high: the preview must not be shown. */
++  blocked: boolean;
++  /** How long the check took on this phone. */
++  ms: number;
++}
++
++export const sceneVerdict = (fraction: number, mode: SceneGuardMode = SCENE_GUARD_MODE, ms = 0): SceneVerdict => {
++  const bucket = sceneBucket(fraction);
++  return { fraction, bucket, blocked: mode === "strict" && bucket === "high", ms };
++};
++
++const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
++
++const guardPixels = async (blob: Blob): Promise<PixelData | null> => {
++  const decoded = await decodeImage(blob);
++  const surface = createSurface(GUARD_WIDTH, GUARD_HEIGHT);
++  try {
++    if (!surface) return null;
++    surface.ctx.imageSmoothingEnabled = true;
++    if ("imageSmoothingQuality" in surface.ctx) surface.ctx.imageSmoothingQuality = "high";
++    surface.ctx.drawImage(decoded.image, 0, 0, GUARD_WIDTH, GUARD_HEIGHT);
++    return surface.ctx.getImageData(0, 0, GUARD_WIDTH, GUARD_HEIGHT);
++  } finally {
++    decoded.close();
++    surface?.release();
++  }
++};
++
++/**
++ * Compares the shopper's photo with the preview. Null when this browser
++ * cannot run it; it never throws, because a missing check must not cost the
++ * shopper her preview in 'log' mode.
++ */
++export const sceneGuard = async (original: Blob, result: Blob, mode: SceneGuardMode = SCENE_GUARD_MODE): Promise<SceneVerdict | null> => {
++  const started = now();
++  try {
++    const [a, b] = await Promise.all([guardPixels(original), guardPixels(result)]);
++    if (!a || !b) return null;
++    return sceneVerdict(changedFraction(a, b), mode, Math.round(now() - started));
++  } catch {
++    return null;
++  }
++};
+diff --git a/src/lib/tryon/session.ts b/src/lib/tryon/session.ts
+new file mode 100644
+index 0000000..ddc6dbe
+--- /dev/null
++++ b/src/lib/tryon/session.ts
+@@ -0,0 +1,275 @@
++/*
++  The try-on's memory for one browser tab: the shopper's prepared photo (one
++  face photo for every face piece, one hand photo for every hand piece) and
++  each preview made from it, keyed "handle:stone", so going back or trying a
++  piece again never spends another of today's try-ons.
++
++  Held in this module only, never in storage: a photo or a preview is a blob
++  shown through a blob: URL, and every URL made here is revoked when the
++  session clears, which it does on Delete photo, when the page is hidden for
++  good (pagehide), and after 30 minutes without use. What does reach storage
++  is small and never an image: the handles tried this tab (for the order's
++  naira_tryon attribute) and the consent notice version (sessionStorage).
++*/
++
++export type PhotoKind = "face" | "hand";
++export type TryOnVerified = "pass" | "log" | "off";
++
++export const IDLE_MS = 30 * 60 * 1000;
++export const TRIED_KEY = "naira_tryon";
++export const CONSENT_KEY = "naira_tryon_consent";
++/** The notice version the shopper agreed to; the server accepts only this one. */
++export const CONSENT_VERSION = "tryon-2026-11";
++/** The longest naira_tryon value: Shopify keeps cart attributes short. */
++export const TRIED_MAX = 200;
++
++export interface SessionPhoto {
++  kind: PhotoKind;
++  blob: Blob;
++  url: string;
++  width: number;
++  height: number;
++}
++
++export interface SessionResult {
++  handle: string;
++  stone: string | null;
++  kind: PhotoKind;
++  blob: Blob;
++  url: string;
++  renderId: string | null;
++  verified: TryOnVerified | null;
++}
++
++const urls = new Set<string>();
++const photos = new Map<PhotoKind, SessionPhoto>();
++const results = new Map<string, SessionResult>();
++const listeners = new Set<() => void>();
++let lastUsed = 0;
++let idleTimer: ReturnType<typeof setTimeout> | undefined;
++let listening = false;
++let inFlight: AbortController | null = null;
++
++const mint = (blob: Blob) => {
++  const url = URL.createObjectURL(blob);
++  urls.add(url);
++  return url;
++};
++
++const revoke = (url: string) => {
++  if (!urls.delete(url)) return;
++  try {
++    URL.revokeObjectURL(url);
++  } catch {
++    /* already gone */
++  }
++};
++
++const expired = () => lastUsed > 0 && Date.now() - lastUsed >= IDLE_MS;
++
++const onVisible = () => {
++  // Timers in a background tab can run late; a return after 30 minutes clears at once.
++  if (document.visibilityState === "visible" && expired()) clearTryOnSession();
++};
++
++const listen = () => {
++  if (listening || typeof window === "undefined") return;
++  listening = true;
++  window.addEventListener("pagehide", clearTryOnSession);
++  document.addEventListener("visibilitychange", onVisible);
++};
++
++/** Marks the session as in use, restarting the 30-minute idle clock. */
++export const touchTryOnSession = () => {
++  if (!photos.size && !results.size && !urls.size) return;
++  lastUsed = Date.now();
++  if (idleTimer !== undefined) clearTimeout(idleTimer);
++  idleTimer = setTimeout(clearTryOnSession, IDLE_MS);
++};
++
++const fresh = () => {
++  if (expired()) clearTryOnSession();
++};
++
++export const resultKey = (handle: string, stone?: string | null) => `${handle}:${stone ?? "default"}`;
++
++/** Keeps the prepared photo for its kind, replacing (and revoking) the last one and the previews made from it. */
++export const setTryOnPhoto = (kind: PhotoKind, blob: Blob, size: { width: number; height: number }): SessionPhoto => {
++  fresh();
++  listen();
++  const prior = photos.get(kind);
++  if (prior) revoke(prior.url);
++  for (const [key, result] of results) {
++    if (result.kind === kind) {
++      revoke(result.url);
++      results.delete(key);
++    }
++  }
++  const photo: SessionPhoto = { kind, blob, url: mint(blob), width: size.width, height: size.height };
++  photos.set(kind, photo);
++  touchTryOnSession();
++  return photo;
++};
++
++/** The photo this tab holds for a kind, if any. */
++export const getTryOnPhoto = (kind: PhotoKind): SessionPhoto | undefined => {
++  fresh();
++  const photo = photos.get(kind);
++  if (photo) touchTryOnSession();
++  return photo;
++};
++
++/** Keeps a preview for a piece and stone, replacing any earlier one. */
++export const setTryOnResult = (
++  handle: string,
++  stone: string | null,
++  kind: PhotoKind,
++  reply: { blob: Blob; renderId: string | null; verified: TryOnVerified | null },
++): SessionResult => {
++  fresh();
++  listen();
++  const key = resultKey(handle, stone);
++  const prior = results.get(key);
++  if (prior) revoke(prior.url);
++  const result: SessionResult = { handle, stone, kind, blob: reply.blob, url: mint(reply.blob), renderId: reply.renderId, verified: reply.verified };
++  results.set(key, result);
++  touchTryOnSession();
++  return result;
++};
++
++/** A preview already made this tab for a piece and stone. */
++export const getTryOnResult = (handle: string, stone?: string | null): SessionResult | undefined => {
++  fresh();
++  const result = results.get(resultKey(handle, stone));
++  if (result) touchTryOnSession();
++  return result;
++};
++
++/** Every preview held, for the "Try another piece" rail's badges. */
++export const tryOnResults = (): SessionResult[] => {
++  fresh();
++  return Array.from(results.values());
++};
++
++/**
++ * A blob: URL for something made from the photo or a preview (the share
++ * image, the press-and-hold save view). It is revoked with everything else
++ * when the session clears, or earlier through releaseObjectUrl.
++ */
++export const adoptObjectUrl = (blob: Blob): string => {
++  listen();
++  const url = mint(blob);
++  touchTryOnSession();
++  return url;
++};
++
++export const releaseObjectUrl = (url: string) => revoke(url);
++
++/** How many blob: URLs this session has made and not yet revoked. */
++export const liveObjectUrlCount = () => urls.size;
++
++/**
++ * One render per tab: registers a render's AbortController, aborting any
++ * render still running. Returns the call that releases it when it ends.
++ */
++export const trackRender = (controller: AbortController): (() => void) => {
++  if (inFlight && inFlight !== controller) inFlight.abort();
++  inFlight = controller;
++  return () => {
++    if (inFlight === controller) inFlight = null;
++  };
++};
++
++export const renderInFlight = () => inFlight !== null && !inFlight.signal.aborted;
++
++/** Called whenever the session clears (Delete, pagehide, idle), so a screen can reset. */
++export const onTryOnSessionCleared = (listener: () => void): (() => void) => {
++  listeners.add(listener);
++  return () => {
++    listeners.delete(listener);
++  };
++};
++
++/** Forgets the photos and previews, aborts a running render and revokes every URL. */
++export function clearTryOnSession() {
++  if (inFlight) {
++    inFlight.abort();
++    inFlight = null;
++  }
++  for (const url of Array.from(urls)) revoke(url);
++  photos.clear();
++  results.clear();
++  lastUsed = 0;
++  if (idleTimer !== undefined) {
++    clearTimeout(idleTimer);
++    idleTimer = undefined;
++  }
++  for (const listener of Array.from(listeners)) {
++    try {
++      listener();
++    } catch {
++      /* a screen's reset must not stop the others */
++    }
++  }
++}
++
++const session = (): Storage | null => {
++  try {
++    return window.sessionStorage;
++  } catch {
++    return null;
++  }
++};
++
++const HANDLE = /^[a-z0-9-]+$/;
++
++/** The handles tried this tab, oldest first. */
++export const triedHandles = (): string[] => {
++  try {
++    return (session()?.getItem(TRIED_KEY) ?? "").split(",").filter((h) => HANDLE.test(h));
++  } catch {
++    return [];
++  }
++};
++
++/** Records a handle as tried this tab, for the order's naira_tryon attribute (200 characters at most). */
++export const markTried = (handle: string) => {
++  if (!HANDLE.test(handle)) return;
++  const tried = triedHandles();
++  if (tried.includes(handle)) return;
++  const value = [...tried, handle].join(",");
++  if (value.length > TRIED_MAX) return;
++  try {
++    session()?.setItem(TRIED_KEY, value);
++  } catch {
++    /* storage full or blocked: only the attribute is lost */
++  }
++};
++
++/* Where sessionStorage is blocked, consent holds for the page instead. */
++let consentInMemory = false;
++
++/** Whether the shopper agreed to the current notice in this tab. */
++export const hasTryOnConsent = () => {
++  if (consentInMemory) return true;
++  try {
++    return session()?.getItem(CONSENT_KEY) === CONSENT_VERSION;
++  } catch {
++    return false;
++  }
++};
++
++/** Records consent for this tab, so a second piece does not ask again. */
++export const recordTryOnConsent = () => {
++  consentInMemory = true;
++  try {
++    session()?.setItem(CONSENT_KEY, CONSENT_VERSION);
++  } catch {
++    /* held in memory for this page */
++  }
++};
++
++/** Test seam: forgets consent held in memory. */
++export const resetTryOnConsentForTest = () => {
++  consentInMemory = false;
++};
+diff --git a/src/lib/tryon/share.ts b/src/lib/tryon/share.ts
+new file mode 100644
+index 0000000..0e4cbce
+--- /dev/null
++++ b/src/lib/tryon/share.ts
+@@ -0,0 +1,168 @@
++import { createSurface } from "./canvas";
++import { TRYON_COPY } from "./copy";
++import { decodeImage } from "./preparePhoto";
++import { adoptObjectUrl, releaseObjectUrl } from "./session";
++
++/*
++  "Send on WhatsApp" and "Save photo" for a preview.
++
++  The shared image is the preview with a 64 px ivory band under it reading
++  "AI try-on preview · <name> · nairaflore.com", so wherever it travels it says
++  what it is. Where the browser can share files (navigator.canShare with
++  files: Android Chrome, iOS Safari 15+) the phone's own share sheet opens
++  with the JPEG; elsewhere, notably Instagram's in-app browser, "Send on
++  WhatsApp" is a wa.me text link to the piece and the photo is saved instead.
++
++  navigator.share needs the tap that asked for it, so the image is composed
++  ahead (prepareShare, when the preview appears) and shareTryOn calls share
++  first thing in the click handler. The page link goes in the text rather
++  than as `url`: with a file attached, some share targets keep only the url.
++*/
++
++export const SHARE_BAND_PX = 64;
++/** The width a shared preview is drawn at: the preview's display size. */
++export const SHARE_WIDTH = 900;
++export const SHARE_FILE_NAME = "naira-try-on.jpg";
++
++/** The piece's page, tagged so a shared link's visits can be counted. */
++export const shareUrlFor = (handle: string) =>
++  `https://nairaflore.com/jewellery/${encodeURIComponent(handle)}?utm_source=tryon&utm_medium=share`;
++
++/** The text a share carries: the band's words, then the link. */
++export const shareTextFor = (name: string, handle: string) => `${TRYON_COPY.share.band(name)} ${shareUrlFor(handle)}`;
++
++export const whatsappUrlFor = (name: string, handle: string) => `https://wa.me/?text=${encodeURIComponent(shareTextFor(name, handle))}`;
++
++const token = (name: string, fallback: string) => {
++  try {
++    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
++    return value || fallback;
++  } catch {
++    return fallback;
++  }
++};
++
++/** The preview with its ivory band, as a JPEG at quality 0.9. Null when this browser cannot draw it. */
++export const composeShareImage = async (result: Blob, name: string): Promise<Blob | null> => {
++  const decoded = await decodeImage(result);
++  const width = SHARE_WIDTH;
++  const imageHeight = Math.round((width * decoded.height) / decoded.width);
++  const surface = createSurface(width, imageHeight + SHARE_BAND_PX);
++  try {
++    if (!surface) return null;
++    const { ctx } = surface;
++    ctx.imageSmoothingEnabled = true;
++    if ("imageSmoothingQuality" in ctx) ctx.imageSmoothingQuality = "high";
++    ctx.drawImage(decoded.image, 0, 0, width, imageHeight);
++    ctx.fillStyle = token("--nf-ivory", "white");
++    ctx.fillRect(0, imageHeight, width, SHARE_BAND_PX);
++    ctx.fillStyle = token("--nf-gold", "black");
++    ctx.fillRect(0, imageHeight, width, 1);
++    const family = token("--nf-font-label", "sans-serif");
++    try {
++      await document.fonts?.load(`400 20px ${family}`);
++    } catch {
++      /* drawn in the fallback face */
++    }
++    const text = TRYON_COPY.share.band(name);
++    let size = 20;
++    ctx.font = `400 ${size}px ${family}`;
++    while (size > 12 && ctx.measureText(text).width > width - 48) {
++      size -= 1;
++      ctx.font = `400 ${size}px ${family}`;
++    }
++    ctx.fillStyle = token("--nf-ink", "black");
++    ctx.textAlign = "center";
++    ctx.textBaseline = "middle";
++    ctx.fillText(text, width / 2, imageHeight + SHARE_BAND_PX / 2);
++    const jpeg = await surface.encode("image/jpeg", 0.9);
++    return jpeg && jpeg.type === "image/jpeg" ? jpeg : null;
++  } finally {
++    decoded.close();
++    surface?.release();
++  }
++};
++
++export interface SharePlan {
++  /** The branded JPEG, or null when it could not be drawn (then Save keeps the plain preview). */
++  jpeg: Blob | null;
++  /** The JPEG as a file, when this browser can share files. */
++  file: File | null;
++  canShareFiles: boolean;
++  text: string;
++  url: string;
++  /** For the fallback "Send on WhatsApp" link (an <a>, so in-app browsers open it). */
++  whatsappUrl: string;
++}
++
++const fileShareable = (file: File): boolean => {
++  try {
++    return typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
++  } catch {
++    return false;
++  }
++};
++
++/** Composes the share image and works out how it can travel. Never throws. */
++export const prepareShare = async (input: { result: Blob; name: string; handle: string }): Promise<SharePlan> => {
++  const text = shareTextFor(input.name, input.handle);
++  const url = shareUrlFor(input.handle);
++  const whatsappUrl = whatsappUrlFor(input.name, input.handle);
++  const jpeg = await composeShareImage(input.result, input.name).catch(() => null);
++  let file: File | null = null;
++  if (jpeg && typeof File === "function") {
++    try {
++      file = new File([jpeg], SHARE_FILE_NAME, { type: "image/jpeg" });
++    } catch {
++      file = null;
++    }
++  }
++  const canShareFiles = Boolean(file && fileShareable(file));
++  return { jpeg, file: canShareFiles ? file : null, canShareFiles, text, url, whatsappUrl };
++};
++
++export type ShareOutcome = "shared" | "cancelled" | "fallback";
++
++/**
++ * Opens the phone's share sheet with the image. Call it straight from the tap.
++ * "fallback" means the sheet is not available or failed: show the wa.me link
++ * and Save instead.
++ */
++export const shareTryOn = async (plan: SharePlan): Promise<ShareOutcome> => {
++  if (!plan.canShareFiles || !plan.file) return "fallback";
++  try {
++    await navigator.share({ files: [plan.file], text: plan.text });
++    return "shared";
++  } catch (error) {
++    return (error as { name?: string })?.name === "AbortError" ? "cancelled" : "fallback";
++  }
++};
++
++/** iOS in-app browsers (Instagram, Facebook and the like) ignore <a download>. */
++export const isIosInAppBrowser = (ua: string = typeof navigator !== "undefined" ? navigator.userAgent : "") =>
++  /iPhone|iPad|iPod/.test(ua) && /FBAN|FBAV|FBIOS|Instagram|LinkedInApp|Snapchat|Line\/|GSA\/|Twitter/.test(ua);
++
++export type SaveMode = "download" | "press-hold";
++
++/** How "Save photo" works here: a download, or a full-screen photo to press and hold. */
++export const saveMode = (ua?: string): SaveMode => (isIosInAppBrowser(ua) ? "press-hold" : "download");
++
++/**
++ * Saves the image through <a download>. The blob: URL is the session's, so it
++ * is revoked a moment after the click or when the session clears.
++ */
++export const saveTryOnPhoto = (image: Blob, fileName: string = SHARE_FILE_NAME) => {
++  const url = adoptObjectUrl(image);
++  const a = document.createElement("a");
++  a.href = url;
++  a.download = fileName;
++  a.rel = "noopener";
++  a.style.display = "none";
++  document.body.appendChild(a);
++  a.click();
++  a.remove();
++  setTimeout(() => releaseObjectUrl(url), 1500);
++};
++
++/** A blob: URL for the press-and-hold view; release it with releaseObjectUrl when the view closes. */
++export const pressHoldUrl = (image: Blob) => adoptObjectUrl(image);
+diff --git a/src/test/tryon/analytics.test.ts b/src/test/tryon/analytics.test.ts
+new file mode 100644
+index 0000000..5eaf3dc
+--- /dev/null
++++ b/src/test/tryon/analytics.test.ts
+@@ -0,0 +1,138 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { readdirSync, readFileSync } from "node:fs";
++import { join, resolve } from "node:path";
++
++vi.mock("@/lib/clarity", () => ({ clarityEvent: vi.fn(), setClarityTag: vi.fn() }));
++vi.mock("@/lib/pixel", () => ({ trackPixel: vi.fn(), trackPageView: vi.fn() }));
++
++import { clarityEvent, setClarityTag } from "@/lib/clarity";
++import { trackPixel } from "@/lib/pixel";
++import { renderFailedEvent, tagTryOn, tryonEvent, TRYON_EVENTS, type TryOnEventName } from "@/lib/tryon/analytics";
++import { CLIENT_ERROR_CODES, SERVER_ERROR_CODES, TryOnError } from "@/lib/tryon/errors";
++import { buildTryOnMeta } from "@/lib/tryon/client";
++import { markTried, recordTryOnConsent, setTryOnPhoto, clearTryOnSession } from "@/lib/tryon/session";
++import { getTryOnDevice } from "@/lib/tryon/device";
++import { oneTapLine } from "@/lib/oneTapLine";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++
++const prod = (on: boolean) => {
++  (window as unknown as { __nairaProd?: boolean }).__nairaProd = on;
++};
++
++beforeEach(() => {
++  vi.mocked(clarityEvent).mockClear();
++  vi.mocked(setClarityTag).mockClear();
++  vi.mocked(trackPixel).mockClear();
++});
++
++afterEach(() => {
++  delete (window as unknown as { __nairaProd?: boolean }).__nairaProd;
++});
++
++/* The analytics section of the spec, name for name. */
++const SPEC_EVENTS = [
++  "tryon_hub_opened", "tryon_entry_pdp", "tryon_piece_opened", "tryon_demo_viewed",
++  "tryon_photo_camera", "tryon_photo_library", "tryon_photo_reused", "tryon_photo_warn_dark", "tryon_photo_warn_soft",
++  "tryon_photo_blocked_format", "tryon_photo_blocked_small",
++  "tryon_consent_given", "tryon_render_started", "tryon_render_ok", "tryon_cancelled", "tryon_interrupted",
++  "tryon_compare_used", "tryon_real_piece_opened", "tryon_feedback_yes", "tryon_feedback_no", "tryon_scene_high",
++  "tryon_added", "tryon_buynow", "tryon_choose_size", "tryon_reserve", "tryon_stone_rerender", "tryon_another",
++  "tryon_shared", "tryon_saved", "tryon_photo_deleted",
++];
++
++describe("try-on analytics", () => {
++  it("allows exactly the spec's events plus one failure event per error code", () => {
++    const failed = [...SERVER_ERROR_CODES, ...CLIENT_ERROR_CODES]
++      .filter((c) => c !== "cancelled" && c !== "interrupted")
++      .map((c) => `tryon_render_failed_${c}`);
++    expect([...TRYON_EVENTS].sort()).toEqual([...SPEC_EVENTS, ...failed].sort());
++    for (const name of TRYON_EVENTS) expect(name.length).toBeLessThanOrEqual(64);
++  });
++
++  it("sends allow-listed names to Clarity on the live shop", () => {
++    prod(true);
++    tryonEvent("tryon_render_ok");
++    tryonEvent(renderFailedEvent(new TryOnError("photo_unusable", { reason: "ear_not_visible" })));
++    expect(vi.mocked(clarityEvent).mock.calls).toEqual([["tryon_render_ok"], ["tryon_render_failed_photo_unusable"]]);
++  });
++
++  /* Only names reach Clarity: a reason, a verdict or a handle in an event name would leak into recordings' search. */
++  it("drops any name off the list", () => {
++    prod(true);
++    tryonEvent("tryon_render_failed_photo_unusable_ear_not_visible" as TryOnEventName);
++    tryonEvent("tryon_scene_0.83" as TryOnEventName);
++    tryonEvent("bag_opened" as TryOnEventName);
++    expect(clarityEvent).not.toHaveBeenCalled();
++  });
++
++  it("sends nothing off the live shop", () => {
++    tryonEvent("tryon_hub_opened");
++    tagTryOn("woven-gold-hoops");
++    prod(false);
++    tryonEvent("tryon_hub_opened");
++    expect(clarityEvent).not.toHaveBeenCalled();
++    expect(setClarityTag).not.toHaveBeenCalled();
++  });
++
++  it("names Cancel and a backgrounded tab by their own events", () => {
++    expect(renderFailedEvent(new TryOnError("cancelled"))).toBe("tryon_cancelled");
++    expect(renderFailedEvent(new TryOnError("interrupted"))).toBe("tryon_interrupted");
++    expect(renderFailedEvent(new TryOnError("offline"))).toBe("tryon_render_failed_offline");
++  });
++
++  it("tags the session with the piece, and only with a try-on handle", () => {
++    prod(true);
++    tagTryOn("woven-gold-hoops");
++    tagTryOn("someone@example.com");
++    expect(vi.mocked(setClarityTag).mock.calls).toEqual([
++      ["tryon", "used"],
++      ["tryon_piece", "woven-gold-hoops"],
++    ]);
++  });
++
++  /* Meta gets nothing new: AddToCart and InitiateCheckout come only from CartContext. */
++  it("never calls trackPixel from a try-on code path", () => {
++    prod(true);
++    Object.assign(URL, { createObjectURL: () => "blob:x", revokeObjectURL: () => {} });
++    getTryOnDevice();
++    buildTryOnMeta({ handle: "woven-gold-hoops", stone: null, kind: "face" });
++    recordTryOnConsent();
++    markTried("woven-gold-hoops");
++    setTryOnPhoto("face", new Blob([new Uint8Array([0xff, 0xd8])], { type: "image/jpeg" }), { width: 1152, height: 1536 });
++    clearTryOnSession();
++    for (const name of TRYON_EVENTS) tryonEvent(name as TryOnEventName);
++    oneTapLine(jewellerySnapshot.find((p) => p.handle === "baguette-huggies")!, { Stone: "Ruby" });
++    expect(trackPixel).not.toHaveBeenCalled();
++  });
++});
++
++describe("try-on modules' imports", () => {
++  const root = resolve(__dirname, "../..");
++  const dir = join(root, "lib/tryon");
++  const sources = [
++    ...readdirSync(dir)
++      .filter((f) => /\.tsx?$/.test(f))
++      .map((f) => [`lib/tryon/${f}`, readFileSync(join(dir, f), "utf8")] as const),
++    ["lib/oneTapLine.ts", readFileSync(join(root, "lib/oneTapLine.ts"), "utf8")] as const,
++  ];
++
++  it("never import three, gsap, MediaPipe, the pixel or the visitor id", () => {
++    for (const [file, text] of sources) {
++      expect([file, text.match(/from\s+["'](three|gsap|@mediapipe[^"']*|@\/lib\/pixel|@\/lib\/visitorId)["']/g)]).toEqual([file, null]);
++      expect([file, text.match(/import\(\s*["'](three|gsap|@mediapipe)/g)]).toEqual([file, null]);
++    }
++  });
++
++  /* Privacy: a photo or preview as a data: URL would sit in the DOM as text. */
++  it("never turn an image into a data: URL", () => {
++    for (const [file, text] of sources) {
++      expect([file, /toDataURL|readAsDataURL|data:image/.test(text)]).toEqual([file, false]);
++    }
++  });
++
++  /* The quota key is a random device id, never the visitor id Meta receives (comments may name it). */
++  it("never touch naira_vid", () => {
++    const code = (text: string) => text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
++    for (const [file, text] of sources) expect([file, /naira_vid|getVisitorId|__nairaVid/.test(code(text))]).toEqual([file, false]);
++  });
++});
+diff --git a/src/test/tryon/client.test.ts b/src/test/tryon/client.test.ts
+new file mode 100644
+index 0000000..d424f45
+--- /dev/null
++++ b/src/test/tryon/client.test.ts
+@@ -0,0 +1,317 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { z } from "zod";
++import { TRY_ON_HANDLES } from "@/data/tryOnHandles";
++import { buildTryOnMeta, requestTryOn, sendFeedback, TRYON_TIMEOUT_MS, tryOnEndpoint, tryOnHeaders } from "@/lib/tryon/client";
++import { TryOnError } from "@/lib/tryon/errors";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++import { resetTryOnDeviceForTest } from "@/lib/tryon/device";
++
++/* The server's strict meta schema, as the spec's api section writes it: any
++   other key (prompt, model, reference, image_url) is a 400. */
++const Meta = z
++  .object({
++    v: z.literal(1),
++    handle: z.enum([...TRY_ON_HANDLES] as [string, ...string[]]),
++    stone: z.enum(["Ruby", "Crystal", "Emerald", "Amethyst"]).nullable(),
++    kind: z.enum(["face", "hand"]),
++    device: z.string().uuid(),
++    consent: z
++      .object({ version: z.literal("tryon-2026-11"), accepted: z.literal(true), adult: z.literal(true), ownPhoto: z.literal(true) })
++      .strict(),
++    turnstile: z.string().max(2048).optional(),
++  })
++  .strict();
++
++class MockXHR {
++  static all: MockXHR[] = [];
++  method = "";
++  url = "";
++  headers: Record<string, string> = {};
++  responseType = "";
++  timeout = 0;
++  status = 0;
++  response: Blob | null = null;
++  responseHeaders: Record<string, string> = {};
++  body: FormData | null = null;
++  aborted = false;
++  upload: { onprogress: ((e: ProgressEvent) => void) | null; onload: (() => void) | null } = { onprogress: null, onload: null };
++  onload: (() => void) | null = null;
++  onerror: (() => void) | null = null;
++  ontimeout: (() => void) | null = null;
++  onabort: (() => void) | null = null;
++  constructor() {
++    MockXHR.all.push(this);
++  }
++  open(method: string, url: string) {
++    this.method = method;
++    this.url = url;
++  }
++  setRequestHeader(name: string, value: string) {
++    this.headers[name] = value;
++  }
++  getResponseHeader(name: string) {
++    const hit = Object.entries(this.responseHeaders).find(([k]) => k.toLowerCase() === name.toLowerCase());
++    return hit ? hit[1] : null;
++  }
++  send(body: FormData) {
++    this.body = body;
++  }
++  abort() {
++    this.aborted = true;
++    this.onabort?.();
++  }
++  progress(loaded: number, total: number) {
++    this.upload.onprogress?.({ lengthComputable: true, loaded, total } as ProgressEvent);
++  }
++  uploaded() {
++    this.upload.onload?.();
++  }
++  respond(status: number, body: Blob | null, headers: Record<string, string> = {}) {
++    this.status = status;
++    this.response = body;
++    this.responseHeaders = headers;
++    this.onload?.();
++  }
++}
++
++const last = () => MockXHR.all[MockXHR.all.length - 1];
++const photo = () => new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0xff, 0xd9])], { type: "image/jpeg" });
++const json = (body: unknown) => new Blob([JSON.stringify(body)], { type: "application/json" });
++const PNG = new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3])], { type: "image/png" });
++const RENDER_ID = "6f1c2b8e-3a4d-4e5f-9a6b-7c8d9e0f1a2b";
++const request = (extra: Partial<Parameters<typeof requestTryOn>[0]> = {}) =>
++  requestTryOn({ handle: "baguette-huggies", stone: "Ruby", kind: "face", photo: photo(), ...extra });
++
++const formEntries = (form: FormData) => {
++  const out: Array<[string, FormDataEntryValue]> = [];
++  form.forEach((value, key) => out.push([key, value]));
++  return out;
++};
++
++beforeEach(() => {
++  MockXHR.all = [];
++  vi.stubGlobal("XMLHttpRequest", MockXHR);
++  window.localStorage.clear();
++  resetTryOnDeviceForTest();
++});
++
++afterEach(() => {
++  vi.unstubAllGlobals();
++  vi.restoreAllMocks();
++  vi.useRealTimers();
++});
++
++describe("try-on request", () => {
++  it("posts multipart with only 'meta' and 'photo', and the meta passes the server's strict schema", async () => {
++    const pending = request();
++    const xhr = last();
++    expect(xhr.method).toBe("POST");
++    expect(xhr.url).toBe(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tryon/render`);
++    expect(xhr.url).toBe(tryOnEndpoint("render"));
++    expect(xhr.responseType).toBe("blob");
++    const entries = formEntries(xhr.body as FormData);
++    expect(entries.map(([k]) => k)).toEqual(["meta", "photo"]);
++    const metaText = entries[0][1] as string;
++    expect(typeof metaText).toBe("string");
++    expect(metaText.length).toBeLessThanOrEqual(1024);
++    const meta = Meta.parse(JSON.parse(metaText));
++    expect(meta).toMatchObject({ v: 1, handle: "baguette-huggies", stone: "Ruby", kind: "face" });
++    expect(meta.device).toBe(window.localStorage.getItem("naira_tryon_device"));
++    const part = entries[1][1] as File;
++    expect(part.type).toBe("image/jpeg");
++    xhr.respond(200, PNG, { "Content-Type": "image/png" });
++    await pending;
++  });
++
++  it("builds a valid meta for every handle, with a null stone for single-stone pieces", () => {
++    for (const handle of TRY_ON_HANDLES) {
++      expect(() => Meta.parse(buildTryOnMeta({ handle, stone: null, kind: "face" }))).not.toThrow();
++    }
++    expect(() => buildTryOnMeta({ handle: "not-a-piece", stone: null, kind: "face" })).toThrow(TryOnError);
++    expect(() => buildTryOnMeta({ handle: "baguette-huggies", stone: "Sapphire", kind: "face" })).toThrow(TryOnError);
++  });
++
++  /* The same headers pixel.ts sends to meta-capi: the publishable key on apikey and as Bearer. */
++  it("sends the publishable key as pixel.ts does, and no custom header", async () => {
++    const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
++    const pending = request();
++    expect(last().headers).toEqual({ apikey: key, Authorization: `Bearer ${key}` });
++    expect(tryOnHeaders()).toEqual({ apikey: key, Authorization: `Bearer ${key}` });
++    const pixel = readFileSync(resolve(__dirname, "../../lib/pixel.ts"), "utf8");
++    expect(pixel).toContain("apikey: CAPI_KEY, Authorization: `Bearer ${CAPI_KEY}`");
++    expect(pixel).toContain("const CAPI_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY");
++    last().respond(200, PNG, { "Content-Type": "image/png" });
++    await pending;
++  });
++
++  it("reports upload progress, then that the photo is up", async () => {
++    const onUpload = vi.fn();
++    const onUploaded = vi.fn();
++    const pending = request({ onUpload, onUploaded });
++    last().progress(0, 400_000);
++    last().progress(252_000, 400_000);
++    last().uploaded();
++    expect(onUpload).toHaveBeenCalledWith(0.63);
++    expect(onUpload).toHaveBeenLastCalledWith(1);
++    expect(onUploaded).toHaveBeenCalledTimes(1);
++    last().respond(200, PNG, { "Content-Type": "image/png" });
++    await pending;
++  });
++
++  it("returns the image as a Blob and reads X-Tryon-Remaining, X-Tryon-Verified and X-Tryon-Render", async () => {
++    const pending = request();
++    last().respond(200, PNG, { "Content-Type": "image/png", "X-Tryon-Remaining": "3", "X-Tryon-Verified": "pass", "X-Tryon-Render": RENDER_ID });
++    const reply = await pending;
++    expect(reply.blob).toBeInstanceOf(Blob);
++    expect(reply.blob.type).toBe("image/png");
++    expect(reply).toMatchObject({ remaining: 3, verified: "pass", renderId: RENDER_ID });
++    // No data: URL anywhere the UI could put in the DOM.
++    expect(JSON.stringify(reply)).not.toContain("data:");
++  });
++
++  it("ignores malformed headers rather than showing them", async () => {
++    const pending = request();
++    last().respond(200, PNG, { "Content-Type": "image/png", "X-Tryon-Remaining": "lots", "X-Tryon-Verified": "maybe", "X-Tryon-Render": "<script>" });
++    expect(await pending).toMatchObject({ remaining: null, verified: null, renderId: null });
++  });
++
++  it("treats a 200 that is not an image as a failure", async () => {
++    const pending = request();
++    last().respond(200, new Blob(["<html>"], { type: "text/html" }), { "Content-Type": "text/html" });
++    await expect(pending).rejects.toMatchObject({ code: "failed" });
++  });
++
++  /* Every status and code in the contract becomes a TryOnError with the spec's words. */
++  it.each([
++    [400, { code: "bad_request", retryable: false }, "bad_request", undefined, TRYON_COPY.errors.failed, "try_again"],
++    [403, { code: "origin", retryable: false }, "origin", undefined, TRYON_COPY.errors.failed, "try_again"],
++    [403, { code: "challenge", retryable: false }, "challenge", undefined, TRYON_COPY.errors.failed, "try_again"],
++    [413, { code: "too_large", retryable: false }, "too_large", undefined, TRYON_COPY.errors.failed, "try_again"],
++    [415, { code: "not_jpeg", retryable: false }, "not_jpeg", undefined, TRYON_COPY.errors.failed, "try_again"],
++    [422, { code: "photo_unusable", reason: "ear_not_visible", retryable: false }, "photo_unusable", "ear_not_visible", TRYON_COPY.errors.photo_unusable.ear_not_visible, "choose_photo"],
++    [422, { code: "photo_unusable", reason: "wrist_not_visible", retryable: false }, "photo_unusable", "wrist_not_visible", TRYON_COPY.errors.photo_unusable.wrist_not_visible, "choose_photo"],
++    [422, { code: "photo_unusable", reason: "something_new", retryable: false }, "photo_unusable", "model_declined", TRYON_COPY.errors.photo_unusable.model_declined, "choose_photo"],
++    [422, { code: "fidelity_failed", retryable: false }, "fidelity_failed", undefined, TRYON_COPY.errors.fidelity_failed, "choose_photo"],
++    [429, { code: "device_limit", resetAt: "2026-10-30T18:30:00.000Z", retryable: false }, "device_limit", undefined, TRYON_COPY.errors.device_limit(5), "view_piece"],
++    [429, { code: "ip_limit", resetAt: "2026-10-30T18:30:00.000Z", retryable: false }, "ip_limit", undefined, TRYON_COPY.errors.ip_limit, "view_piece"],
++    [429, { code: "busy", retryAfter: 60, retryable: true }, "busy", undefined, TRYON_COPY.errors.busy, "try_again"],
++    [503, { code: "paused", reason: "off", retryable: false }, "paused", "off", TRYON_COPY.errors.paused, "view_piece"],
++    [503, { code: "paused", reason: "credits", retryable: false }, "paused", "credits", TRYON_COPY.errors.paused, "view_piece"],
++    [503, { code: "paused", reason: "piece_unavailable", retryable: false }, "paused", "piece_unavailable", TRYON_COPY.errors.paused, "view_piece"],
++    [504, { code: "timeout", retryable: true }, "timeout", undefined, TRYON_COPY.errors.timeout, "try_again"],
++    [500, { code: "failed", retryable: true }, "failed", undefined, TRYON_COPY.errors.failed, "try_again"],
++  ])("maps %i %j to %s", async (status, body, code, reason, message, action) => {
++    const pending = request();
++    last().respond(status, json(body), { "Content-Type": "application/json" });
++    const error = await pending.catch((e) => e);
++    expect(error).toBeInstanceOf(TryOnError);
++    expect(error.code).toBe(code);
++    expect(error.status).toBe(status);
++    expect(error.reason).toBe(reason);
++    expect(error.copy.message).toBe(message);
++    expect(error.copy.action).toBe(action);
++    if ("resetAt" in body) expect(error.resetAt).toBe(body.resetAt);
++    if ("retryAfter" in body) expect(error.retryAfter).toBe(60);
++  });
++
++  it.each([
++    [413, "too_large"],
++    [415, "not_jpeg"],
++    [429, "busy"],
++    [502, "failed"],
++    [503, "paused"],
++    [504, "timeout"],
++  ])("maps a %i with no JSON body (a proxy's page) by its status to %s", async (status, code) => {
++    const pending = request();
++    last().respond(status, new Blob(["<html>Bad gateway</html>"], { type: "text/html" }));
++    await expect(pending).rejects.toMatchObject({ code });
++  });
++
++  it("never shows text the server or the model wrote", async () => {
++    const pending = request();
++    last().respond(422, json({ code: "photo_unusable", reason: "I cannot help with this image of a person", message: "MODEL SAID THIS", retryable: false }));
++    const error: TryOnError = await pending.catch((e) => e);
++    expect(JSON.stringify({ ...error, copy: error.copy, message: error.message })).not.toMatch(/MODEL SAID|cannot help/);
++  });
++
++  /* The server gives up at 118 s; the phone stops waiting at 125 s whatever the network does. */
++  it("aborts after 125 seconds", async () => {
++    vi.useFakeTimers();
++    const pending = request();
++    const xhr = last();
++    expect(xhr.timeout).toBe(TRYON_TIMEOUT_MS);
++    vi.advanceTimersByTime(TRYON_TIMEOUT_MS - 1);
++    expect(xhr.aborted).toBe(false);
++    vi.advanceTimersByTime(1);
++    const error = await pending.catch((e) => e);
++    expect(error.code).toBe("timeout");
++    expect(error.copy.message).toBe(TRYON_COPY.errors.timeout);
++    expect(xhr.aborted).toBe(true);
++  });
++
++  it("cancels on the shopper's Cancel", async () => {
++    const controller = new AbortController();
++    const pending = request({ signal: controller.signal });
++    controller.abort();
++    const error = await pending.catch((e) => e);
++    expect(error.code).toBe("cancelled");
++    expect(error.copy.message).toBe(TRYON_COPY.cancelled);
++    expect(last().aborted).toBe(true);
++  });
++
++  it("says offline without sending when the phone is offline", async () => {
++    vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
++    const error = await request().catch((e) => e);
++    expect(error.code).toBe("offline");
++    expect(MockXHR.all).toHaveLength(0);
++  });
++
++  it("calls a network error before any upload 'offline', and after it 'network'", async () => {
++    let pending = request();
++    last().onerror?.();
++    expect((await pending.catch((e) => e)).code).toBe("offline");
++    pending = request();
++    last().progress(100_000, 400_000);
++    last().onerror?.();
++    const error = await pending.catch((e) => e);
++    expect(error.code).toBe("network");
++    expect(error.copy.message).toBe(TRYON_COPY.errors.failed);
++  });
++
++  it("calls a failure after the tab went to the background 'interrupted'", async () => {
++    const pending = request();
++    last().progress(400_000, 400_000);
++    const state = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
++    document.dispatchEvent(new Event("visibilitychange"));
++    state.mockReturnValue("visible");
++    last().onerror?.();
++    const error = await pending.catch((e) => e);
++    expect(error.code).toBe("interrupted");
++    expect(error.copy.message).toBe(TRYON_COPY.errors.interrupted);
++  });
++});
++
++describe("try-on feedback", () => {
++  it("posts the strict feedback body with keepalive, and never throws", () => {
++    const fetch = vi.fn(() => Promise.reject(new Error("offline")));
++    vi.stubGlobal("fetch", fetch);
++    sendFeedback(RENDER_ID, { looksRight: false, scene: "low" });
++    expect(fetch).toHaveBeenCalledTimes(1);
++    const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
++    expect(url).toBe(tryOnEndpoint("feedback"));
++    expect(init.keepalive).toBe(true);
++    expect(init.headers).toMatchObject({ "Content-Type": "application/json", ...tryOnHeaders() });
++    expect(JSON.parse(init.body as string)).toEqual({ v: 1, render: RENDER_ID, looksRight: false, scene: "low" });
++    expect((init.body as string).length).toBeLessThanOrEqual(512);
++  });
++
++  it("sends nothing without a real render id", () => {
++    const fetch = vi.fn();
++    vi.stubGlobal("fetch", fetch);
++    sendFeedback("", { looksRight: true, scene: null });
++    sendFeedback("not-a-uuid", { looksRight: true, scene: null });
++    expect(fetch).not.toHaveBeenCalled();
++  });
++});
+diff --git a/src/test/tryon/copy.test.ts b/src/test/tryon/copy.test.ts
+new file mode 100644
+index 0000000..7f0780b
+--- /dev/null
++++ b/src/test/tryon/copy.test.ts
+@@ -0,0 +1,67 @@
++import { describe, expect, it } from "vitest";
++import { renderStage, renderStageCopy, TRYON_COPY } from "@/lib/tryon/copy";
++
++/* Every string the copy deck can produce: plain strings, lists, and each
++   template filled with a sample. */
++const strings = (value: unknown, path = "TRYON_COPY"): Array<[string, string]> => {
++  if (typeof value === "string") return [[path, value]];
++  if (typeof value === "function") {
++    const args = Array.from({ length: Math.max(value.length, 2) }, (_, i) => (i === 0 ? "Ruby" : "7"));
++    const numeric = (value as (...a: unknown[]) => unknown)(63);
++    return [
++      [`${path}(…)`, String((value as (...a: unknown[]) => unknown)(...args))],
++      [`${path}(63)`, String(numeric)],
++    ];
++  }
++  if (Array.isArray(value)) return value.flatMap((v, i) => strings(v, `${path}[${i}]`));
++  if (value && typeof value === "object") return Object.entries(value).flatMap(([k, v]) => strings(v, `${path}.${k}`));
++  return [];
++};
++
++describe("try-on copy", () => {
++  const all = strings(TRYON_COPY);
++
++  it("has the whole deck", () => {
++    expect(all.length).toBeGreaterThan(100);
++  });
++
++  /* The house style: Indian English, no exclamation marks, no em dashes. */
++  it("has no exclamation mark and no em dash anywhere", () => {
++    expect(all.filter(([, text]) => text.includes("!"))).toEqual([]);
++    expect(all.filter(([, text]) => text.includes("—"))).toEqual([]);
++    expect(all.filter(([, text]) => / - /.test(text))).toEqual([]);
++  });
++
++  it("writes Indian English", () => {
++    expect(all.filter(([, text]) => /\b(color|center|favorite|jewelry)\b/i.test(text))).toEqual([]);
++  });
++
++  it("fills its templates as the spec writes them", () => {
++    expect(TRYON_COPY.uploading(63)).toBe("Sending securely 63%");
++    expect(TRYON_COPY.studio.actualSize("25 mm across")).toBe("Actual size 25 mm across");
++    expect(TRYON_COPY.result.shownAt("25 mm across")).toBe("Shown at its listed size: 25 mm across");
++    expect(TRYON_COPY.result.remaining(3)).toBe("3 try-ons left today");
++    expect(TRYON_COPY.result.remaining(1)).toBe("1 try-on left today");
++    expect(TRYON_COPY.buy.add("Ruby")).toBe("Add to bag · Ruby");
++    expect(TRYON_COPY.buy.add("Ruby", "7")).toBe("Add to bag · Ruby · US 7");
++    expect(TRYON_COPY.buy.add(null)).toBe("Add to bag");
++    expect(TRYON_COPY.buy.ladder).toBe("Add a second piece and save 15%");
++    expect(TRYON_COPY.stoneChange.tryIn("Emerald")).toBe("Try in Emerald");
++    expect(TRYON_COPY.stoneChange.add("Emerald")).toBe("Add Emerald to bag");
++    expect(TRYON_COPY.share.band("Woven Gold Hoops")).toBe("AI try-on preview · Woven Gold Hoops · nairaflore.com");
++    expect(TRYON_COPY.errors.device_limit(5)).toBe("You have used today's 5 try-ons. They refresh at midnight.");
++  });
++
++  it("names honest stages by elapsed time, never a percentage", () => {
++    expect([0, 3999, 4000, 19_999, 20_000, 39_999, 40_000, 120_000].map(renderStage)).toEqual([
++      "checking", "checking", "placing", "placing", "light", "light", "final", "final",
++    ]);
++    expect(renderStageCopy("placing", "Woven Gold Hoops", "25 mm across")).toBe("Placing the Woven Gold Hoops at 25 mm across");
++    expect(renderStageCopy("final", "x", "y")).toBe("Almost there, a final check on the piece");
++  });
++
++  /* Returns are not promised until the owner settles the PDP and policy pages. */
++  it("never mentions returns", () => {
++    expect(all.filter(([, text]) => /\breturns\b|\breturn (it|them|the piece|within)\b|\bexchange|\brefund/i.test(text))).toEqual([]);
++  });
++});
+diff --git a/src/test/tryon/cropMaths.test.ts b/src/test/tryon/cropMaths.test.ts
+new file mode 100644
+index 0000000..6518837
+--- /dev/null
++++ b/src/test/tryon/cropMaths.test.ts
+@@ -0,0 +1,95 @@
++import { describe, expect, it } from "vitest";
++import {
++  clampCrop,
++  FRAME_ASPECT,
++  imageTransform,
++  initialCrop,
++  isTooSmall,
++  maxCrop,
++  MIN_CROP_SHORT,
++  outputSize,
++  panCrop,
++  zoomCrop,
++} from "@/lib/tryon/cropMaths";
++
++const ratio = (r: { width: number; height: number }) => r.width / r.height;
++
++describe("try-on crop frame", () => {
++  /* The server refuses anything but 3:4 within 2%: a frame off by a pixel or
++     two of rounding must still be inside that, for every photo shape. */
++  it.each([
++    ["landscape 4000x3000", 4000, 3000, { x: 875, y: 0, width: 2250, height: 3000 }],
++    ["portrait 3000x4000", 3000, 4000, { x: 0, y: 0, width: 3000, height: 4000 }],
++    ["square 2000x2000", 2000, 2000, { x: 250, y: 0, width: 1500, height: 2000 }],
++    ["tall 1080x2400", 1080, 2400, { x: 0, y: 480, width: 1080, height: 1440 }],
++  ])("opens a centred 3:4 frame on a %s photo", (_, width, height, expected) => {
++    const crop = initialCrop({ width, height });
++    expect(crop).toEqual(expected);
++    expect(Math.abs(ratio(crop) - FRAME_ASPECT)).toBeLessThan(0.0075);
++  });
++
++  it("keeps every frame 3:4 within the server's 2% for odd sizes", () => {
++    for (const [w, h] of [
++      [1001, 1000],
++      [1000, 1337],
++      [3024, 4032],
++      [4032, 3024],
++      [769, 4000],
++      [12345, 777],
++    ]) {
++      const crop = initialCrop({ width: w, height: h });
++      expect(Math.abs(ratio(crop) / FRAME_ASPECT - 1)).toBeLessThan(0.02);
++      expect(crop.x + crop.width).toBeLessThanOrEqual(w);
++      expect(crop.y + crop.height).toBeLessThanOrEqual(h);
++    }
++  });
++
++  it("zooms about the centre and never below the smallest frame worth sending", () => {
++    const src = { width: 3000, height: 4000 };
++    const zoomed = zoomCrop(initialCrop(src), 2, src);
++    expect(zoomed.width).toBe(1500);
++    expect(zoomed.x).toBe(750);
++    expect(zoomed.y).toBe(1000);
++    const far = zoomCrop(zoomed, 10, src);
++    expect(far.width).toBe(MIN_CROP_SHORT);
++    expect(isTooSmall(far)).toBe(false);
++    expect(zoomCrop(far, 0.01, src)).toEqual(initialCrop(src));
++  });
++
++  it("moves the frame against the drag, at the frame's own scale, and stops at the edges", () => {
++    const src = { width: 4000, height: 3000 };
++    const crop = initialCrop(src); // 2250 wide on a 300 px frame: 7.5 source px per screen px
++    expect(panCrop(crop, 20, 0, 300, src).x).toBe(875 - 150);
++    expect(panCrop(crop, -20, 0, 300, src).x).toBe(875 + 150);
++    // dragged far right: the frame stops at the photo's left edge
++    expect(panCrop(crop, 10_000, 0, 300, src).x).toBe(0);
++    expect(panCrop(crop, -10_000, 0, 300, src).x).toBe(4000 - 2250);
++    // a full-height frame cannot move up or down
++    expect(panCrop(crop, 0, 500, 300, src).y).toBe(0);
++  });
++
++  it("clamps a frame pushed outside the photo back inside", () => {
++    const src = { width: 3000, height: 4000 };
++    expect(clampCrop({ x: -50, y: 3900, width: 1500, height: 2000 }, src)).toEqual({ x: 0, y: 2000, width: 1500, height: 2000 });
++    expect(maxCrop(src)).toEqual({ width: 3000, height: 4000 });
++  });
++
++  /* A frame under 768 px wide is stretched past 1.5x to fill 1152: too soft to place a 12 mm piece on. */
++  it("calls a frame with a short side under 768 too small", () => {
++    expect(isTooSmall({ width: 767, height: 1023 })).toBe(true);
++    expect(isTooSmall({ width: 768, height: 1024 })).toBe(false);
++    expect(isTooSmall(initialCrop({ width: 600, height: 800 }))).toBe(true);
++    expect(isTooSmall(initialCrop({ width: 1024, height: 768 }))).toBe(true); // a 576 px wide frame
++  });
++
++  it("always draws the photo at 1152x1536", () => {
++    expect(outputSize()).toEqual({ width: 1152, height: 1536 });
++  });
++
++  it("places the photo under the frame with CSS", () => {
++    const t = imageTransform({ x: 875, y: 0, width: 2250, height: 3000 }, 300);
++    expect(t.scale).toBeCloseTo(300 / 2250);
++    expect(t.x).toBeCloseTo(-875 * (300 / 2250));
++    expect(t.y).toBeCloseTo(0);
++  });
++});
+diff --git a/src/test/tryon/device.test.ts b/src/test/tryon/device.test.ts
+new file mode 100644
+index 0000000..071080f
+--- /dev/null
++++ b/src/test/tryon/device.test.ts
+@@ -0,0 +1,57 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { DEVICE_KEY, getTryOnDevice, isTryOnDeviceId, newUuid, resetTryOnDeviceForTest } from "@/lib/tryon/device";
++
++const V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
++
++beforeEach(() => {
++  window.localStorage.clear();
++  resetTryOnDeviceForTest();
++});
++
++afterEach(() => {
++  vi.restoreAllMocks();
++  vi.unstubAllGlobals();
++});
++
++describe("try-on device id", () => {
++  it("makes a uuid v4, stores it under naira_tryon_device and keeps it", () => {
++    const id = getTryOnDevice();
++    expect(id).toMatch(V4);
++    expect(window.localStorage.getItem(DEVICE_KEY)).toBe(id);
++    resetTryOnDeviceForTest();
++    expect(getTryOnDevice()).toBe(id);
++  });
++
++  /* Chrome 87 and Safari 14 have no crypto.randomUUID. */
++  it("builds a v4 uuid from getRandomValues where randomUUID is missing", () => {
++    vi.stubGlobal("crypto", { getRandomValues: (b: Uint8Array) => b.fill(0xab) });
++    expect(newUuid()).toBe("abababab-abab-4bab-abab-abababababab");
++    vi.stubGlobal("crypto", undefined);
++    expect(newUuid()).toMatch(V4);
++  });
++
++  it("replaces a stored value that is not a uuid", () => {
++    window.localStorage.setItem(DEVICE_KEY, "abc");
++    expect(getTryOnDevice()).toMatch(V4);
++  });
++
++  it("keeps one id in memory for the page when storage throws", () => {
++    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
++      throw new Error("blocked");
++    });
++    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
++      throw new Error("blocked");
++    });
++    const id = getTryOnDevice();
++    expect(isTryOnDeviceId(id)).toBe(true);
++    expect(getTryOnDevice()).toBe(id);
++  });
++
++  /* The quota key must never be linkable to the id Meta receives as external_id. */
++  it("is never the naira_vid visitor id", () => {
++    document.cookie = "naira_vid=11111111-1111-4111-8111-111111111111; path=/";
++    (window as unknown as { __nairaVid?: string }).__nairaVid = "11111111-1111-4111-8111-111111111111";
++    expect(getTryOnDevice()).not.toBe("11111111-1111-4111-8111-111111111111");
++    delete (window as unknown as { __nairaVid?: string }).__nairaVid;
++  });
++});
+diff --git a/src/test/tryon/errors.test.ts b/src/test/tryon/errors.test.ts
+new file mode 100644
+index 0000000..ef4bf29
+--- /dev/null
++++ b/src/test/tryon/errors.test.ts
+@@ -0,0 +1,67 @@
++import { describe, expect, it } from "vitest";
++import {
++  actionLabel,
++  CLIENT_ERROR_CODES,
++  errorCopy,
++  errorFromResponse,
++  PAUSED_REASONS,
++  PHOTO_UNUSABLE_REASONS,
++  SERVER_ERROR_CODES,
++  TryOnError,
++} from "@/lib/tryon/errors";
++import { TRYON_COPY } from "@/lib/tryon/copy";
++
++const clean = (text: string) => !text.includes("!") && !text.includes("—");
++
++describe("try-on errors", () => {
++  it("has words and a next step for every server code, reason and client error", () => {
++    const cases: Array<[string, string | undefined]> = [
++      ...SERVER_ERROR_CODES.map((c) => [c, undefined] as [string, undefined]),
++      ...CLIENT_ERROR_CODES.map((c) => [c, undefined] as [string, undefined]),
++      ...PHOTO_UNUSABLE_REASONS.map((r) => ["photo_unusable", r] as [string, string]),
++      ...PAUSED_REASONS.map((r) => ["paused", r] as [string, string]),
++    ];
++    for (const [code, reason] of cases) {
++      const copy = errorCopy(code as never, reason);
++      expect([code, reason, copy.message.length > 10]).toEqual([code, reason, true]);
++      expect([code, reason, clean(copy.message)]).toEqual([code, reason, true]);
++      if (copy.action) expect(clean(actionLabel(copy.action))).toBe(true);
++      if (copy.secondary) expect(actionLabel(copy.secondary).length).toBeGreaterThan(0);
++    }
++  });
++
++  it("gives each photo reason its own words and 'Choose another photo'", () => {
++    for (const reason of PHOTO_UNUSABLE_REASONS) {
++      const copy = errorCopy("photo_unusable", reason);
++      expect(copy.message).toBe(TRYON_COPY.errors.photo_unusable[reason]);
++      expect(actionLabel(copy.action!)).toBe("Choose another photo");
++    }
++  });
++
++  it("offers the spec's buttons", () => {
++    expect(errorCopy("fidelity_failed")).toEqual({ message: TRYON_COPY.errors.fidelity_failed, action: "choose_photo", secondary: "view_piece" });
++    expect(errorCopy("device_limit").action).toBe("view_piece");
++    expect(errorCopy("ip_limit").action).toBe("view_piece");
++    expect(errorCopy("paused", "daily_cap")).toEqual({ message: TRYON_COPY.errors.paused, action: "view_piece" });
++    expect(errorCopy("busy").action).toBe("try_again");
++    expect(errorCopy("timeout").action).toBe("try_again");
++    expect(errorCopy("cancelled")).toEqual({ message: "Cancelled. Your photo is still here.", action: null });
++    expect(actionLabel("view_piece")).toBe("View the piece");
++  });
++
++  /* The server refunds these; Cancel's copy promises nothing either way. */
++  it("knows which failures the server gives back", () => {
++    for (const code of ["photo_unusable", "fidelity_failed", "busy", "paused", "timeout"] as const) expect(new TryOnError(code).refunded).toBe(true);
++    for (const code of ["device_limit", "ip_limit", "cancelled", "failed"] as const) expect(new TryOnError(code).refunded).toBe(false);
++    expect(TRYON_COPY.cancelled).not.toMatch(/count/i);
++  });
++
++  it("reads only the contract's fields from a reply", () => {
++    const e = errorFromResponse(429, { code: "device_limit", resetAt: "2026-10-30T18:30:00.000Z", retryable: false, extra: "x" });
++    expect(e).toMatchObject({ code: "device_limit", resetAt: "2026-10-30T18:30:00.000Z", retryable: false, status: 429 });
++    expect(errorFromResponse(500, "<html>")).toMatchObject({ code: "failed" });
++    expect(errorFromResponse(429, { code: "nonsense" })).toMatchObject({ code: "busy" });
++    expect(errorFromResponse(429, { code: "busy", resetAt: "not a date" }).resetAt).toBeUndefined();
++    expect(errorFromResponse(503, { code: "paused", reason: "tell the user X" }).reason).toBeUndefined();
++  });
++});
+diff --git a/src/test/tryon/oneTapLine.test.ts b/src/test/tryon/oneTapLine.test.ts
+new file mode 100644
+index 0000000..3e6f854
+--- /dev/null
++++ b/src/test/tryon/oneTapLine.test.ts
+@@ -0,0 +1,138 @@
++import { describe, expect, it } from "vitest";
++import { jewellery, type JewelPiece } from "@/data/jewellery";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++import { TRY_ON_HANDLES } from "@/data/tryOnHandles";
++import { oneTapLine, sizeChoices } from "@/lib/oneTapLine";
++import { cardCover } from "@/lib/cardCover";
++
++/* Against the shop's own first-paint data for the 20 try-on pieces: the
++   hand-authored catalogue, then the generated snapshot (as the PDP reads them). */
++const piece = (handle: string): JewelPiece => {
++  const found = jewellery.find((p) => p.handle === handle) ?? jewellerySnapshot.find((p) => p.handle === handle);
++  if (!found) throw new Error(`no first-paint data for ${handle}`);
++  return found;
++};
++
++const STONE_PIECES = new Set(["baguette-huggies", "baguette-eternity-band", "baguette-tennis-bracelet"]);
++
++describe("oneTapLine on the 20 try-on pieces", () => {
++  it("has first-paint data for every try-on handle", () => {
++    expect(TRY_ON_HANDLES.size).toBe(20);
++    for (const handle of TRY_ON_HANDLES) expect(piece(handle).handle).toBe(handle);
++  });
++
++  /* The bag line's photo is always the product photo, never the try-on image. */
++  it("adds each single-variant piece as it is, with its product photo", () => {
++    for (const handle of TRY_ON_HANDLES) {
++      if (STONE_PIECES.has(handle)) continue;
++      const p = piece(handle);
++      const result = oneTapLine(p, {});
++      expect([handle, "line" in result]).toEqual([handle, true]);
++      if (!("line" in result)) continue;
++      expect(result.line.variantId).toBe(p.variantId);
++      expect(result.line.image).toBe(cardCover(p));
++      expect(result.line.image).toMatch(/^https:\/\/cdn\.shopify\.com\//);
++      expect(result.line.id).toBe(handle);
++    }
++  });
++
++  it("adds the chosen Stone of a colour piece, and names it", () => {
++    const huggies = piece("baguette-huggies");
++    for (const stone of ["Ruby", "Crystal", "Emerald", "Amethyst"]) {
++      const result = oneTapLine(huggies, { Stone: stone });
++      const variant = huggies.variants!.find((v) => v.options.Stone === stone)!;
++      expect(result).toMatchObject({ line: { variantId: variant.id, selectedOptions: [{ name: "Stone", value: stone }] }, variant: { id: variant.id } });
++    }
++    const bracelet = piece("baguette-tennis-bracelet");
++    const ruby = bracelet.variants!.find((v) => v.options.Stone === "Ruby")!;
++    expect(oneTapLine(bracelet, { Stone: "Ruby" })).toMatchObject({ line: { variantId: ruby.id } });
++  });
++
++  it("names the variant it falls back to when the stone asked for is not sold", () => {
++    const huggies = piece("baguette-huggies");
++    const result = oneTapLine(huggies, { Stone: "Sapphire" });
++    if (!("line" in result)) throw new Error("expected a line");
++    expect(result.line.variantId).toBe(result.variant!.id);
++    expect(huggies.options![0].values).toContain(result.variant!.options.Stone);
++  });
++
++  it("asks for a size before the Eternity Band can be added", () => {
++    const band = piece("baguette-eternity-band");
++    expect(oneTapLine(band, {})).toEqual({ need: "size" });
++    expect(oneTapLine(band, { Stone: "Ruby" })).toEqual({ need: "size" });
++  });
++
++  it("adds the Eternity Band in the stone and size chosen (Ruby US 7)", () => {
++    const band = piece("baguette-eternity-band");
++    const ruby7 = band.variants!.find((v) => v.options.Stone === "Ruby" && v.options.Size === "7")!;
++    expect(ruby7.availableForSale).toBe(true);
++    const result = oneTapLine(band, { Stone: "Ruby", Size: "7" });
++    expect(result).toMatchObject({
++      line: { variantId: ruby7.id, selectedOptions: [{ name: "Stone", value: "Ruby" }, { name: "Size", value: "7" }] },
++    });
++    if ("line" in result) expect(result.line.size).toBeUndefined(); // the size is the variant, not a note
++  });
++
++  /* A sold-out pair is reserved on WhatsApp by name, never added (Ruby US 5 in the snapshot). */
++  it("turns every sold-out pair into a WhatsApp reservation, and every buyable one into a line", () => {
++    const band = piece("baguette-eternity-band");
++    let soldOut = 0;
++    for (const v of band.variants!) {
++      const result = oneTapLine(band, v.options);
++      if (v.availableForSale) {
++        expect(result).toMatchObject({ line: { variantId: v.id } });
++      } else {
++        soldOut += 1;
++        expect(result).toMatchObject({ soldOut: true, variant: { id: v.id } });
++        if (!("soldOut" in result)) continue;
++        expect(result.reserveUrl).toMatch(/^https:\/\/wa\.me\/919561557935\?text=/);
++        const text = decodeURIComponent(result.reserveUrl.split("text=")[1]);
++        expect(text).toContain(`"Baguette Eternity Band" in ${v.options.Stone}, size ${v.options.Size}`);
++        expect(text).toContain("https://nairaflore.com/jewellery/baguette-eternity-band");
++      }
++    }
++    // Pinned to today's snapshot: Ruby US 5 is the one sold-out pair.
++    expect(soldOut).toBeGreaterThanOrEqual(1);
++  });
++
++  it("reserves a sold-out pair even when the snapshot changes", () => {
++    const band = piece("baguette-eternity-band");
++    const forced = { ...band, variants: band.variants!.map((v) => ({ ...v, availableForSale: !(v.options.Stone === "Emerald" && v.options.Size === "8") })) };
++    expect(oneTapLine(forced, { Stone: "Emerald", Size: "8" })).toMatchObject({ soldOut: true });
++  });
++
++  it("marks which Eternity Band sizes can be bought in the chosen stone", () => {
++    const band = piece("baguette-eternity-band");
++    const chips = sizeChoices(band, { Stone: "Ruby" })!;
++    expect(chips.option).toBe("Size");
++    expect(chips.values.map((c) => c.value)).toEqual(["5", "6", "7", "8"]);
++    for (const chip of chips.values) {
++      const v = band.variants!.find((x) => x.options.Stone === "Ruby" && x.options.Size === chip.value)!;
++      expect(chip.buyable).toBe(v.availableForSale);
++    }
++    expect(sizeChoices(piece("baguette-huggies"), {})).toBeNull();
++  });
++
++  /* As PairingCard has always added it: an adjustable ring sold one way goes in as US 6. */
++  it("adds Cushion Halo, adjustable and sold one way, as US 6", () => {
++    const halo = piece("cushion-halo-ring");
++    expect(halo.variants ?? []).toHaveLength(0);
++    const result = oneTapLine(halo, {});
++    expect(result).toMatchObject({ line: { variantId: halo.variantId, size: "US 6" } });
++    expect(oneTapLine(halo, { Size: "8" })).toMatchObject({ line: { size: "US 8" } });
++  });
++
++  it("asks a fixed-size ring sold one way for its size, and carries the size as a note", () => {
++    const fixed = { ...piece("cushion-halo-ring"), handle: "a-fixed-ring", tags: [] };
++    expect(oneTapLine(fixed, {})).toEqual({ need: "size" });
++    expect(oneTapLine(fixed, { Size: "7" })).toMatchObject({ line: { size: "US 7" } });
++  });
++
++  it("reserves a sold-out piece instead of adding it", () => {
++    const hoops = { ...piece("woven-gold-hoops"), availableForSale: false };
++    const result = oneTapLine(hoops, {});
++    expect(result).toMatchObject({ soldOut: true });
++    // An adjustable ring is never sold out (one stock covers every size), as on its page.
++    expect(oneTapLine({ ...piece("cushion-halo-ring"), availableForSale: false }, {})).toMatchObject({ line: { size: "US 6" } });
++  });
++});
+diff --git a/src/test/tryon/photoChecks.test.ts b/src/test/tryon/photoChecks.test.ts
+new file mode 100644
+index 0000000..9319ff4
+--- /dev/null
++++ b/src/test/tryon/photoChecks.test.ts
+@@ -0,0 +1,48 @@
++import { describe, expect, it } from "vitest";
++import { CHECK_HEIGHT, CHECK_WIDTH, DARK_MEAN, laplacianVariance, meanLuminance, photoWarnings, SOFT_VAR } from "@/lib/tryon/photoChecks";
++
++/* Synthetic 288x384 RGBA images, drawn in code: never a person's photo. */
++const image = (pixel: (x: number, y: number) => number, w = CHECK_WIDTH, h = CHECK_HEIGHT) => {
++  const data = new Uint8ClampedArray(w * h * 4);
++  for (let y = 0; y < h; y += 1)
++    for (let x = 0; x < w; x += 1) {
++      const v = pixel(x, y);
++      const i = (y * w + x) * 4;
++      data[i] = data[i + 1] = data[i + 2] = v;
++      data[i + 3] = 255;
++    }
++  return { data, width: w, height: h };
++};
++
++// A sharp pattern: 8 px squares, the kind of edge detail a sharp face photo has.
++const checker = (lo: number, hi: number) => image((x, y) => ((Math.floor(x / 8) + Math.floor(y / 8)) % 2 ? hi : lo));
++// The same contrast as a smooth ramp: no edges, like a badly blurred photo.
++const ramp = (lo: number, hi: number) => image((x) => lo + ((hi - lo) * x) / (CHECK_WIDTH - 1));
++
++describe("try-on photo hints", () => {
++  it("exports the thresholds the spec tunes", () => {
++    expect(DARK_MEAN).toBe(60);
++    expect(SOFT_VAR).toBe(40);
++  });
++
++  it("measures mean luminance", () => {
++    expect(meanLuminance(image(() => 100))).toBeCloseTo(100, 3);
++    expect(meanLuminance(checker(0, 200))).toBeCloseTo(100, 0);
++  });
++
++  it("warns 'dark' under a mean of 60, and only then", () => {
++    expect(photoWarnings(checker(20, 80))).toEqual(["dark"]); // mean 50
++    expect(photoWarnings(checker(40, 100))).toEqual([]); // mean 70
++  });
++
++  it("warns 'soft' when the Laplacian varies under 40", () => {
++    expect(laplacianVariance(ramp(80, 200))).toBeLessThan(SOFT_VAR);
++    expect(photoWarnings(ramp(80, 200))).toEqual(["soft"]);
++    expect(laplacianVariance(checker(80, 200))).toBeGreaterThan(SOFT_VAR);
++    expect(photoWarnings(checker(80, 200))).toEqual([]);
++  });
++
++  it("can warn both at once, dark first", () => {
++    expect(photoWarnings(image(() => 30))).toEqual(["dark", "soft"]);
++  });
++});
+diff --git a/src/test/tryon/preparePhoto.test.ts b/src/test/tryon/preparePhoto.test.ts
+new file mode 100644
+index 0000000..8e028c8
+--- /dev/null
++++ b/src/test/tryon/preparePhoto.test.ts
+@@ -0,0 +1,341 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { blobBytes } from "@/lib/tryon/canvas";
++import { decodePhoto, encodePhoto, PhotoPrepError, preparePhoto, sniffImageType } from "@/lib/tryon/preparePhoto";
++
++/*
++  jsdom has no canvas and no image decoder, so both are stood in for here and
++  the test pins the pipeline: which decoder is asked, with which options, what
++  is drawn where, and how it is encoded. That the real browser applies the
++  EXIF orientation and drops the EXIF block is proven in Chromium
++  (scratchpad build/p2 prep proof, and tryonflow).
++*/
++
++/* A synthetic JPEG header carrying EXIF orientation 6 and a GPS position, built byte by byte. */
++const exifJpeg = () => {
++  const tiff = [
++    0x4d, 0x4d, 0x00, 0x2a, 0x00, 0x00, 0x00, 0x08, // big-endian TIFF, IFD0 at 8
++    0x00, 0x02, // two entries
++    0x01, 0x12, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x06, 0x00, 0x00, // Orientation = 6
++    0x88, 0x25, 0x00, 0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x26, // GPS IFD at 38
++    0x00, 0x00, 0x00, 0x00, // no next IFD
++    0x00, 0x01, // GPS IFD: one entry
++    0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x4e, 0x00, 0x00, 0x00, // GPSLatitudeRef "N"
++    0x00, 0x00, 0x00, 0x00,
++  ];
++  const payload = [0x45, 0x78, 0x69, 0x66, 0x00, 0x00, ...tiff]; // "Exif\0\0"
++  const len = payload.length + 2;
++  return new Uint8Array([0xff, 0xd8, 0xff, 0xe1, len >> 8, len & 0xff, ...payload, 0xff, 0xd9]);
++};
++
++const hasApp1 = (bytes: Uint8Array) => {
++  for (let i = 2; i + 1 < bytes.length; i += 1) if (bytes[i] === 0xff && bytes[i + 1] === 0xe1) return true;
++  return false;
++};
++
++// What the stand-in encoder writes: a bare JFIF header, as a canvas would.
++const ENCODED = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0xff, 0xd9]);
++
++interface FakeCtx {
++  drawImage: ReturnType<typeof vi.fn>;
++  getImageData: ReturnType<typeof vi.fn>;
++  imageSmoothingEnabled: boolean;
++  imageSmoothingQuality: string;
++  canvas: HTMLCanvasElement;
++}
++
++let contexts: FakeCtx[];
++let toBlob: ReturnType<typeof vi.fn>;
++let pixel = 128;
++
++beforeEach(() => {
++  contexts = [];
++  pixel = 128;
++  vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(function (this: HTMLCanvasElement) {
++    const canvas = this;
++    const ctx: FakeCtx = {
++      canvas,
++      imageSmoothingEnabled: false,
++      imageSmoothingQuality: "low",
++      drawImage: vi.fn(),
++      getImageData: vi.fn((_x: number, _y: number, w: number, h: number) => {
++        const data = new Uint8ClampedArray(w * h * 4);
++        // An 8 px checker around `pixel`: sharp, as bright as the test asks.
++        for (let i = 0; i < w * h; i += 1) {
++          const x = i % w;
++          const y = Math.floor(i / w);
++          const v = (Math.floor(x / 8) + Math.floor(y / 8)) % 2 ? pixel + 40 : pixel - 40;
++          data.set([v, v, v, 255], i * 4);
++        }
++        return { data, width: w, height: h };
++      }),
++    };
++    contexts.push(ctx);
++    return ctx as unknown as CanvasRenderingContext2D;
++  } as never);
++  toBlob = vi.fn(function (this: HTMLCanvasElement, cb: BlobCallback, type?: string) {
++    cb(new Blob([ENCODED], { type: type ?? "image/png" }));
++  });
++  HTMLCanvasElement.prototype.toBlob = toBlob as never;
++});
++
++const realToBlob = HTMLCanvasElement.prototype.toBlob;
++
++afterEach(() => {
++  vi.restoreAllMocks();
++  vi.unstubAllGlobals();
++  HTMLCanvasElement.prototype.toBlob = realToBlob;
++  // jsdom has no object URLs of its own; drop the stand-ins a test put on URL.
++  delete (URL as unknown as Record<string, unknown>).createObjectURL;
++  delete (URL as unknown as Record<string, unknown>).revokeObjectURL;
++});
++
++const bitmap = (width: number, height: number) => ({ width, height, close: vi.fn() });
++
++describe("preparePhoto", () => {
++  /* The 4000x3000 camera file with orientation 6 decodes upright as 3000x4000;
++     the whole frame is drawn to 1152x1536 and a fresh JPEG at q0.85 replaces
++     the original, so its EXIF (and GPS) never leave the phone. */
++  it("decodes with EXIF orientation, draws 1152x1536 and re-encodes JPEG q0.85 without the original's EXIF", async () => {
++    const decoded = bitmap(3000, 4000);
++    const createImageBitmap = vi.fn(async () => decoded);
++    vi.stubGlobal("createImageBitmap", createImageBitmap);
++    const file = new File([exifJpeg()], "IMG_0001.jpg", { type: "image/jpeg" });
++    expect(hasApp1(await blobBytes(file))).toBe(true);
++
++    const out = await preparePhoto(file);
++
++    expect(createImageBitmap).toHaveBeenCalledWith(file, { imageOrientation: "from-image" });
++    const draw = contexts[0].drawImage.mock.calls[0];
++    expect(draw).toEqual([decoded, 0, 0, 3000, 4000, 0, 0, 1152, 1536]);
++    expect(contexts[0].imageSmoothingQuality).toBe("high");
++    expect(toBlob).toHaveBeenCalledWith(expect.any(Function), "image/jpeg", 0.85);
++    expect(out.width).toBe(1152);
++    expect(out.height).toBe(1536);
++    expect(out.blob.type).toBe("image/jpeg");
++    expect(out.blob).not.toBe(file);
++    expect(hasApp1(await blobBytes(out.blob))).toBe(false);
++    expect(out.warnings).toEqual([]);
++    expect(decoded.close).toHaveBeenCalled();
++  });
++
++  it("crops a landscape photo to its centred 3:4 frame", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => bitmap(4000, 3000)));
++    const out = await preparePhoto(new File([exifJpeg()], "a.jpg", { type: "image/jpeg" }));
++    expect(contexts[0].drawImage.mock.calls[0].slice(1)).toEqual([875, 0, 2250, 3000, 0, 0, 1152, 1536]);
++    expect(out.crop).toEqual({ x: 875, y: 0, width: 2250, height: 3000 });
++  });
++
++  it("draws the frame the shopper chose", async () => {
++    const decoded = await (async () => {
++      vi.stubGlobal("createImageBitmap", vi.fn(async () => bitmap(3000, 4000)));
++      return decodePhoto(new File([exifJpeg()], "a.jpg"));
++    })();
++    await encodePhoto(decoded, { x: 600, y: 900, width: 1200, height: 1600 });
++    expect(contexts[0].drawImage.mock.calls[0].slice(1)).toEqual([600, 900, 1200, 1600, 0, 0, 1152, 1536]);
++  });
++
++  /* Safari 14 has no createImageBitmap: an off-page <img> decodes (and orients)
++     the photo, and its blob: URL is revoked the moment it has loaded. */
++  it("falls back to an <img> never put on the page when createImageBitmap is absent", async () => {
++    vi.stubGlobal("createImageBitmap", undefined);
++    const created: string[] = [];
++    const revoked: string[] = [];
++    vi.stubGlobal("URL", Object.assign(URL, {
++      createObjectURL: vi.fn(() => {
++        created.push(`blob:fake/${created.length}`);
++        return created[created.length - 1];
++      }),
++      revokeObjectURL: vi.fn((u: string) => revoked.push(u)),
++    }));
++    const images: FakeImage[] = [];
++    class FakeImage {
++      naturalWidth = 0;
++      naturalHeight = 0;
++      decoding = "";
++      onload: (() => void) | null = null;
++      onerror: (() => void) | null = null;
++      removeAttribute = vi.fn();
++      constructor() {
++        images.push(this);
++      }
++      set src(_: string) {
++        this.naturalWidth = 3000;
++        this.naturalHeight = 4000;
++        setTimeout(() => this.onload?.(), 0);
++      }
++    }
++    vi.stubGlobal("Image", FakeImage);
++
++    const out = await preparePhoto(new File([exifJpeg()], "a.jpg", { type: "image/jpeg" }));
++
++    expect(images).toHaveLength(1);
++    expect(created).toHaveLength(1);
++    expect(revoked).toEqual(created);
++    expect(document.querySelector("img")).toBeNull();
++    expect(contexts[0].drawImage.mock.calls[0][0]).toBe(images[0]);
++    expect(out.width).toBe(1152);
++    expect(images[0].removeAttribute).toHaveBeenCalledWith("src");
++  });
++
++  /* Where <img> applies EXIF itself it goes first: Chrome decodes a JPEG drawn
++     smaller at reduced scale, 647 ms against 1125 ms at 4x CPU for 12 MP. */
++  it("decodes through the <img> first where the browser orients <img> itself", async () => {
++    const createImageBitmap = vi.fn(async () => bitmap(3000, 4000));
++    vi.stubGlobal("createImageBitmap", createImageBitmap);
++    vi.stubGlobal("CSS", { supports: (prop: string, value: string) => prop === "image-orientation" && value === "from-image" });
++    vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: vi.fn(() => "blob:x"), revokeObjectURL: vi.fn() }));
++    class FakeImage {
++      naturalWidth = 3000;
++      naturalHeight = 4000;
++      onload: (() => void) | null = null;
++      onerror: (() => void) | null = null;
++      removeAttribute() {}
++      set src(_: string) {
++        setTimeout(() => this.onload?.(), 0);
++      }
++    }
++    vi.stubGlobal("Image", FakeImage);
++    await preparePhoto(new File([exifJpeg()], "a.jpg"));
++    expect(createImageBitmap).not.toHaveBeenCalled();
++    expect(contexts[0].drawImage.mock.calls[0][0]).toBeInstanceOf(FakeImage);
++    expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:x");
++  });
++
++  it("falls back to createImageBitmap when that <img> fails", async () => {
++    const decoded = bitmap(3000, 4000);
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => decoded));
++    vi.stubGlobal("CSS", { supports: () => true });
++    vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: vi.fn(() => "blob:x"), revokeObjectURL: vi.fn() }));
++    class BrokenImage {
++      onload: (() => void) | null = null;
++      onerror: (() => void) | null = null;
++      set src(_: string) {
++        setTimeout(() => this.onerror?.(), 0);
++      }
++    }
++    vi.stubGlobal("Image", BrokenImage);
++    await preparePhoto(new File([exifJpeg()], "a.jpg"));
++    expect(contexts[0].drawImage.mock.calls[0][0]).toBe(decoded);
++  });
++
++  /* Chrome 87 knows only 'none' and 'flipY' and throws a TypeError on 'from-image'. */
++  it("falls back to the <img> path when createImageBitmap refuses the orientation option", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => {
++      throw new TypeError("The provided value 'from-image' is not a valid enum value");
++    }));
++    vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: vi.fn(() => "blob:x"), revokeObjectURL: vi.fn() }));
++    class FakeImage {
++      naturalWidth = 1536;
++      naturalHeight = 2048;
++      onload: (() => void) | null = null;
++      onerror: (() => void) | null = null;
++      removeAttribute() {}
++      set src(_: string) {
++        setTimeout(() => this.onload?.(), 0);
++      }
++    }
++    vi.stubGlobal("Image", FakeImage);
++    const out = await preparePhoto(new File([exifJpeg()], "a.jpg"));
++    expect(out.source).toEqual({ width: 1536, height: 2048 });
++  });
++
++  it("blocks a photo nothing can decode as 'format', and flags HEIC", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => {
++      throw new DOMException("The source image could not be decoded.", "InvalidStateError");
++    }));
++    vi.stubGlobal("URL", Object.assign(URL, { createObjectURL: vi.fn(() => "blob:x"), revokeObjectURL: vi.fn() }));
++    class BrokenImage {
++      onload: (() => void) | null = null;
++      onerror: (() => void) | null = null;
++      set src(_: string) {
++        setTimeout(() => this.onerror?.(), 0);
++      }
++    }
++    vi.stubGlobal("Image", BrokenImage);
++    const heic = new Uint8Array([0, 0, 0, 0x18, ...Array.from("ftypheic").map((c) => c.charCodeAt(0)), 0, 0, 0, 0]);
++    const error = await preparePhoto(new File([heic], "IMG_0002.HEIC", { type: "image/heic" })).catch((e) => e);
++    expect(error).toBeInstanceOf(PhotoPrepError);
++    expect(error.code).toBe("format");
++    expect(error.heic).toBe(true);
++    const empty = await preparePhoto(new File([], "empty.jpg")).catch((e) => e);
++    expect(empty.code).toBe("format");
++  });
++
++  it("blocks a photo whose largest 3:4 frame is under 768 px wide as 'too small'", async () => {
++    const small = bitmap(600, 800);
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => small));
++    const error = await preparePhoto(new File([exifJpeg()], "small.jpg")).catch((e) => e);
++    expect(error.code).toBe("too_small");
++    expect(small.close).toHaveBeenCalled();
++    expect(toBlob).not.toHaveBeenCalled();
++  });
++
++  it("refuses to encode a frame the shopper zoomed under 768 px", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => bitmap(3000, 4000)));
++    const decoded = await decodePhoto(new File([exifJpeg()], "a.jpg"));
++    const error = await encodePhoto(decoded, { x: 0, y: 0, width: 700, height: 933 }).catch((e) => e);
++    expect(error.code).toBe("too_small");
++  });
++
++  it("says 'unsupported' when this browser can only write PNG", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => bitmap(3000, 4000)));
++    HTMLCanvasElement.prototype.toBlob = vi.fn((cb: BlobCallback) => cb(new Blob([ENCODED], { type: "image/png" }))) as never;
++    const error = await preparePhoto(new File([exifJpeg()], "a.jpg")).catch((e) => e);
++    expect(error.code).toBe("unsupported");
++  });
++
++  it("uses OffscreenCanvas.convertToBlob where the browser has it", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => bitmap(3000, 4000)));
++    const convert = vi.fn(async (o: { type: string; quality: number }) => new Blob([ENCODED], { type: o.type }));
++    const draws: unknown[][] = [];
++    class FakeOffscreen {
++      constructor(
++        public width: number,
++        public height: number,
++      ) {}
++      getContext() {
++        return {
++          drawImage: (...args: unknown[]) => draws.push([this.width, this.height, ...args]),
++          getImageData: (_x: number, _y: number, w: number, h: number) => ({ data: new Uint8ClampedArray(w * h * 4).fill(200), width: w, height: h }),
++        };
++      }
++      convertToBlob = convert;
++    }
++    vi.stubGlobal("OffscreenCanvas", FakeOffscreen);
++    const out = await preparePhoto(new File([exifJpeg()], "a.jpg"));
++    expect(convert).toHaveBeenCalledWith({ type: "image/jpeg", quality: 0.85 });
++    expect(draws[0].slice(0, 2)).toEqual([1152, 1536]);
++    // the check copy: two exact halvings
++    expect(draws[1].slice(0, 2)).toEqual([576, 768]);
++    expect(draws[2].slice(0, 2)).toEqual([288, 384]);
++    expect(toBlob).not.toHaveBeenCalled();
++    expect(out.warnings).toEqual(["soft"]); // a flat bright frame: no edges
++  });
++
++  it("returns the dark and soft hints measured on the 288x384 copy", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => bitmap(3000, 4000)));
++    pixel = 45;
++    const out = await preparePhoto(new File([exifJpeg()], "a.jpg"));
++    expect(contexts[1].drawImage.mock.calls[0].slice(1)).toEqual([0, 0, 576, 768]);
++    expect(contexts[2].getImageData).toHaveBeenCalledWith(0, 0, 288, 384);
++    expect(contexts[2].imageSmoothingQuality).toBe("low");
++    expect(out.warnings).toEqual(["dark"]);
++  });
++});
++
++describe("sniffImageType", () => {
++  const bytes = (...parts: Array<number[] | string>) =>
++    new Uint8Array(parts.flatMap((p) => (typeof p === "string" ? Array.from(p).map((c) => c.charCodeAt(0)) : p)));
++  it.each([
++    ["jpeg", bytes([0xff, 0xd8, 0xff, 0xe0])],
++    ["png", bytes([0x89], "PNG", [0x0d, 0x0a, 0x1a, 0x0a])],
++    ["gif", bytes("GIF89a")],
++    ["webp", bytes("RIFF", [0, 0, 0, 0], "WEBP")],
++    ["heic", bytes([0, 0, 0, 0x18], "ftypheic")],
++    ["heic", bytes([0, 0, 0, 0x18], "ftypmif1")],
++    ["avif", bytes([0, 0, 0, 0x18], "ftypavif")],
++    ["unknown", bytes("%PDF-1.7")],
++  ])("reads %s from its first bytes", (type, b) => {
++    expect(sniffImageType(b)).toBe(type);
++  });
++});
+diff --git a/src/test/tryon/sceneGuard.test.ts b/src/test/tryon/sceneGuard.test.ts
+new file mode 100644
+index 0000000..00ca735
+--- /dev/null
++++ b/src/test/tryon/sceneGuard.test.ts
+@@ -0,0 +1,88 @@
++import { describe, expect, it } from "vitest";
++import {
++  CHANGE_THRESHOLD,
++  changedFraction,
++  GUARD_HEIGHT,
++  GUARD_WIDTH,
++  SCENE_GUARD_MODE,
++  sceneBucket,
++  sceneGuard,
++  sceneVerdict,
++} from "@/lib/tryon/sceneGuard";
++
++/* Synthetic 96x128 scenes drawn in code: a "face" of soft gradients and features. */
++const scene = (shift = 0, patch?: { x: number; y: number; size: number; value: number }) => {
++  const w = GUARD_WIDTH;
++  const h = GUARD_HEIGHT;
++  const data = new Uint8ClampedArray(w * h * 4);
++  for (let y = 0; y < h; y += 1)
++    for (let x = 0; x < w; x += 1) {
++      let v = 60 + Math.round((120 * y) / h) + ((x - 48) ** 2 + (y - 50) ** 2 < 900 ? 50 : 0) + ((x * 7 + y * 3) % 11);
++      if (patch && x >= patch.x && x < patch.x + patch.size && y >= patch.y && y < patch.y + patch.size) v = patch.value;
++      v = Math.max(0, Math.min(255, v + shift));
++      data.set([v, v, v, 255], (y * w + x) * 4);
++    }
++  return { data, width: w, height: h };
++};
++
++describe("sceneGuard", () => {
++  it("launches in 'log' mode", () => {
++    expect(SCENE_GUARD_MODE).toBe("log");
++    expect(CHANGE_THRESHOLD).toBe(24);
++  });
++
++  it("calls identical images low", () => {
++    expect(changedFraction(scene(), scene())).toBe(0);
++    expect(sceneBucket(changedFraction(scene(), scene()))).toBe("low");
++  });
++
++  /* A lighter skin tone or a re-lit photo moves every pixel: the model judge can
++     miss it, this cannot. */
++  it("calls a uniform brightness shift high", () => {
++    const f = changedFraction(scene(), scene(40));
++    expect(f).toBeGreaterThan(0.9);
++    expect(sceneBucket(f)).toBe("high");
++  });
++
++  it("calls a small local patch (the earring) low", () => {
++    const f = changedFraction(scene(), scene(0, { x: 20, y: 60, size: 6, value: 250 }));
++    expect(f).toBeGreaterThan(0);
++    expect(f).toBeLessThan(0.02);
++    expect(sceneBucket(f)).toBe("low");
++  });
++
++  it("calls a regenerated lower half mid or high", () => {
++    const changed = scene(0, { x: 0, y: 64, size: 200, value: 10 });
++    expect(["mid", "high"]).toContain(sceneBucket(changedFraction(scene(), changed)));
++  });
++
++  it("uses the spec's buckets", () => {
++    expect(sceneBucket(0.149)).toBe("low");
++    expect(sceneBucket(0.15)).toBe("mid");
++    expect(sceneBucket(0.349)).toBe("mid");
++    expect(sceneBucket(0.35)).toBe("high");
++  });
++
++  it("blocks only a high result, and only in strict mode", () => {
++    expect(sceneVerdict(0.9, "log").blocked).toBe(false);
++    expect(sceneVerdict(0.9, "strict")).toMatchObject({ bucket: "high", blocked: true });
++    expect(sceneVerdict(0.2, "strict").blocked).toBe(false);
++  });
++
++  it("calls images of different shapes changed", () => {
++    expect(changedFraction(scene(), { data: new Uint8ClampedArray(4 * 4), width: 2, height: 2 })).toBe(1);
++  });
++
++  it("runs well under its 50 ms budget", () => {
++    const a = scene();
++    const b = scene(0, { x: 20, y: 60, size: 6, value: 250 });
++    const t0 = performance.now();
++    for (let i = 0; i < 10; i += 1) changedFraction(a, b);
++    expect((performance.now() - t0) / 10).toBeLessThan(50);
++  });
++
++  it("returns null instead of throwing where it cannot run", async () => {
++    const blob = new Blob([new Uint8Array([1, 2, 3])], { type: "image/png" });
++    await expect(sceneGuard(blob, blob)).resolves.toBeNull();
++  });
++});
+diff --git a/src/test/tryon/session.test.ts b/src/test/tryon/session.test.ts
+new file mode 100644
+index 0000000..df9df5c
+--- /dev/null
++++ b/src/test/tryon/session.test.ts
+@@ -0,0 +1,212 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import {
++  adoptObjectUrl,
++  clearTryOnSession,
++  CONSENT_KEY,
++  getTryOnPhoto,
++  getTryOnResult,
++  hasTryOnConsent,
++  IDLE_MS,
++  liveObjectUrlCount,
++  markTried,
++  onTryOnSessionCleared,
++  recordTryOnConsent,
++  releaseObjectUrl,
++  renderInFlight,
++  resetTryOnConsentForTest,
++  resultKey,
++  setTryOnPhoto,
++  setTryOnResult,
++  touchTryOnSession,
++  trackRender,
++  TRIED_KEY,
++  triedHandles,
++  tryOnResults,
++} from "@/lib/tryon/session";
++import { getTryOnDevice, resetTryOnDeviceForTest } from "@/lib/tryon/device";
++
++let created: string[];
++let revoked: string[];
++const SIZE = { width: 1152, height: 1536 };
++const jpeg = () => new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 0xff, 0xd9])], { type: "image/jpeg" });
++const png = () => new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3])], { type: "image/png" });
++
++beforeEach(() => {
++  created = [];
++  revoked = [];
++  Object.assign(URL, {
++    createObjectURL: vi.fn(() => {
++      const url = `blob:http://localhost/${created.length + 1}`;
++      created.push(url);
++      return url;
++    }),
++    revokeObjectURL: vi.fn((url: string) => revoked.push(url)),
++  });
++  clearTryOnSession();
++  created.length = 0;
++  revoked.length = 0;
++  window.sessionStorage.clear();
++  window.localStorage.clear();
++  resetTryOnConsentForTest();
++});
++
++afterEach(() => {
++  clearTryOnSession();
++  vi.useRealTimers();
++});
++
++describe("try-on session", () => {
++  it("keeps one photo per kind and a preview per handle and stone", () => {
++    const face = setTryOnPhoto("face", jpeg(), SIZE);
++    const hand = setTryOnPhoto("hand", jpeg(), SIZE);
++    expect(face.url).toMatch(/^blob:/);
++    expect(getTryOnPhoto("face")).toBe(face);
++    expect(getTryOnPhoto("hand")).toBe(hand);
++    const ruby = setTryOnResult("baguette-huggies", "Ruby", "face", { blob: png(), renderId: "r1", verified: "pass" });
++    expect(resultKey("baguette-huggies", "Ruby")).toBe("baguette-huggies:Ruby");
++    expect(getTryOnResult("baguette-huggies", "Ruby")).toBe(ruby);
++    expect(getTryOnResult("baguette-huggies", "Emerald")).toBeUndefined();
++    setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: null, verified: "log" });
++    expect(getTryOnResult("woven-gold-hoops", null)?.verified).toBe("log");
++    expect(tryOnResults()).toHaveLength(2);
++  });
++
++  /* A new face photo makes every face preview stale: they were made from the old one. */
++  it("a new photo replaces the old one and drops only the previews of its kind", () => {
++    const old = setTryOnPhoto("face", jpeg(), SIZE);
++    const facePreview = setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: null, verified: null });
++    const handPreview = setTryOnResult("cushion-halo-ring", null, "hand", { blob: png(), renderId: null, verified: null });
++    setTryOnPhoto("face", jpeg(), SIZE);
++    expect(revoked).toEqual(expect.arrayContaining([old.url, facePreview.url]));
++    expect(revoked).not.toContain(handPreview.url);
++    expect(getTryOnResult("woven-gold-hoops")).toBeUndefined();
++    expect(getTryOnResult("cushion-halo-ring")).toBe(handPreview);
++  });
++
++  it("a second preview for the same piece and stone revokes the first", () => {
++    const first = setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: null, verified: null });
++    setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: null, verified: null });
++    expect(revoked).toEqual([first.url]);
++  });
++
++  it("clearTryOnSession revokes every URL it made, aborts a running render and tells the screens", () => {
++    const listener = vi.fn();
++    const off = onTryOnSessionCleared(listener);
++    setTryOnPhoto("face", jpeg(), SIZE);
++    setTryOnPhoto("hand", jpeg(), SIZE);
++    setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: null, verified: null });
++    adoptObjectUrl(jpeg());
++    const render = new AbortController();
++    trackRender(render);
++    expect(renderInFlight()).toBe(true);
++    expect(liveObjectUrlCount()).toBe(4);
++
++    clearTryOnSession();
++
++    expect(URL.revokeObjectURL).toHaveBeenCalledTimes(created.length);
++    expect(new Set(revoked)).toEqual(new Set(created));
++    expect(liveObjectUrlCount()).toBe(0);
++    expect(render.signal.aborted).toBe(true);
++    expect(renderInFlight()).toBe(false);
++    expect(getTryOnPhoto("face")).toBeUndefined();
++    expect(tryOnResults()).toEqual([]);
++    expect(listener).toHaveBeenCalledTimes(1);
++    off();
++  });
++
++  it("releases a share or save URL on its own, and never revokes one twice", () => {
++    const url = adoptObjectUrl(jpeg());
++    releaseObjectUrl(url);
++    releaseObjectUrl(url);
++    clearTryOnSession();
++    expect(revoked).toEqual([url]);
++  });
++
++  /* "They are cleared ... after 30 minutes": an idle tab must not keep a selfie in memory. */
++  it("clears after 30 minutes without use", () => {
++    vi.useFakeTimers();
++    setTryOnPhoto("face", jpeg(), SIZE);
++    vi.advanceTimersByTime(IDLE_MS - 1000);
++    expect(getTryOnPhoto("face")).toBeDefined(); // a use restarts the clock
++    vi.advanceTimersByTime(IDLE_MS - 1000);
++    expect(liveObjectUrlCount()).toBe(1);
++    vi.advanceTimersByTime(1000);
++    expect(liveObjectUrlCount()).toBe(0);
++    expect(revoked).toEqual(created);
++  });
++
++  it("clears at once on return when a background tab's timer ran late", () => {
++    vi.useFakeTimers();
++    setTryOnPhoto("face", jpeg(), SIZE);
++    vi.setSystemTime(Date.now() + IDLE_MS + 1);
++    expect(getTryOnPhoto("face")).toBeUndefined();
++    expect(revoked).toEqual(created);
++  });
++
++  it("clears when the visible tab comes back after the idle time", () => {
++    vi.useFakeTimers();
++    setTryOnPhoto("face", jpeg(), SIZE);
++    touchTryOnSession();
++    vi.setSystemTime(Date.now() + IDLE_MS + 1);
++    document.dispatchEvent(new Event("visibilitychange"));
++    expect(liveObjectUrlCount()).toBe(0);
++  });
++
++  it("clears on pagehide", () => {
++    setTryOnPhoto("face", jpeg(), SIZE);
++    setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: null, verified: null });
++    window.dispatchEvent(new Event("pagehide"));
++    expect(liveObjectUrlCount()).toBe(0);
++    expect(revoked).toHaveLength(2);
++  });
++
++  it("runs one render per tab: a new one aborts the last", () => {
++    const first = new AbortController();
++    const second = new AbortController();
++    const releaseFirst = trackRender(first);
++    trackRender(second);
++    expect(first.signal.aborted).toBe(true);
++    releaseFirst(); // the old render ending must not release the new one
++    expect(renderInFlight()).toBe(true);
++  });
++
++  it("records the handles tried this tab for the order, 200 characters at most", () => {
++    markTried("woven-gold-hoops");
++    markTried("baguette-huggies");
++    markTried("woven-gold-hoops");
++    markTried("Bad Handle!");
++    expect(window.sessionStorage.getItem(TRIED_KEY)).toBe("woven-gold-hoops,baguette-huggies");
++    for (let i = 0; i < 40; i += 1) markTried(`piece-number-${i}`);
++    const value = window.sessionStorage.getItem(TRIED_KEY) ?? "";
++    expect(value.length).toBeLessThanOrEqual(200);
++    expect(value).toMatch(/^[a-z0-9,-]{1,200}$/);
++    expect(triedHandles()[0]).toBe("woven-gold-hoops");
++  });
++
++  it("asks for consent once per tab, recording the notice version", () => {
++    expect(hasTryOnConsent()).toBe(false);
++    recordTryOnConsent();
++    expect(hasTryOnConsent()).toBe(true);
++    expect(window.sessionStorage.getItem(CONSENT_KEY)).toBe("tryon-2026-11");
++    window.sessionStorage.setItem(CONSENT_KEY, "tryon-2026-01");
++    resetTryOnConsentForTest();
++    expect(hasTryOnConsent()).toBe(false); // an older notice does not count
++  });
++
++  /* Privacy: the photo and the preview live only in memory; storage holds three small keys. */
++  it("never writes anything image-like to localStorage or sessionStorage", () => {
++    resetTryOnDeviceForTest();
++    getTryOnDevice();
++    setTryOnPhoto("face", jpeg(), SIZE);
++    setTryOnResult("woven-gold-hoops", null, "face", { blob: png(), renderId: "x", verified: "pass" });
++    markTried("woven-gold-hoops");
++    recordTryOnConsent();
++    const dump = (s: Storage) => Array.from({ length: s.length }, (_, i) => [s.key(i) ?? "", s.getItem(s.key(i) ?? "") ?? ""]);
++    const all = [...dump(window.localStorage), ...dump(window.sessionStorage)];
++    expect(all.map(([k]) => k).sort()).toEqual(["naira_tryon", "naira_tryon_consent", "naira_tryon_device"]);
++    for (const [, value] of all) {
++      expect(value.length).toBeLessThanOrEqual(200);
++      expect(value).not.toMatch(/data:|blob:|base64|\xff\xd8/i);
++    }
++  });
++});
+diff --git a/src/test/tryon/share.test.ts b/src/test/tryon/share.test.ts
+new file mode 100644
+index 0000000..f412c98
+--- /dev/null
++++ b/src/test/tryon/share.test.ts
+@@ -0,0 +1,117 @@
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import {
++  isIosInAppBrowser,
++  prepareShare,
++  saveMode,
++  saveTryOnPhoto,
++  shareTryOn,
++  shareUrlFor,
++  whatsappUrlFor,
++  type SharePlan,
++} from "@/lib/tryon/share";
++import { clearTryOnSession, liveObjectUrlCount } from "@/lib/tryon/session";
++
++const IG_IPHONE =
++  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 337.0.3.23.54 (iPhone14,5; iOS 17_5; en_IN; en)";
++const SAFARI_IPHONE =
++  "Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1";
++const CHROME_ANDROID =
++  "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36";
++const IG_ANDROID = `${CHROME_ANDROID} Instagram 337.0.0.0.77 Android`;
++
++const plan = (overrides: Partial<SharePlan> = {}): SharePlan => ({
++  jpeg: new Blob([new Uint8Array([0xff, 0xd8])], { type: "image/jpeg" }),
++  file: new File([new Uint8Array([0xff, 0xd8])], "naira-try-on.jpg", { type: "image/jpeg" }),
++  canShareFiles: true,
++  text: "AI try-on preview · Woven Gold Hoops · nairaflore.com https://nairaflore.com/jewellery/woven-gold-hoops?utm_source=tryon&utm_medium=share",
++  url: shareUrlFor("woven-gold-hoops"),
++  whatsappUrl: whatsappUrlFor("Woven Gold Hoops", "woven-gold-hoops"),
++  ...overrides,
++});
++
++let created = 0;
++let revoked = 0;
++beforeEach(() => {
++  created = 0;
++  revoked = 0;
++  Object.assign(URL, {
++    createObjectURL: vi.fn(() => `blob:http://localhost/${++created}`),
++    revokeObjectURL: vi.fn(() => {
++      revoked += 1;
++    }),
++  });
++});
++
++afterEach(() => {
++  clearTryOnSession();
++  vi.unstubAllGlobals();
++  vi.restoreAllMocks();
++  vi.useRealTimers();
++});
++
++describe("try-on share", () => {
++  it("links the piece's page, tagged as a try-on share", () => {
++    expect(shareUrlFor("woven-gold-hoops")).toBe("https://nairaflore.com/jewellery/woven-gold-hoops?utm_source=tryon&utm_medium=share");
++    const wa = whatsappUrlFor("Woven Gold Hoops", "woven-gold-hoops");
++    expect(wa.startsWith("https://wa.me/?text=")).toBe(true);
++    expect(decodeURIComponent(wa.split("text=")[1])).toBe(
++      "AI try-on preview · Woven Gold Hoops · nairaflore.com https://nairaflore.com/jewellery/woven-gold-hoops?utm_source=tryon&utm_medium=share",
++    );
++  });
++
++  it("shares the image file through the phone's sheet where it can", async () => {
++    const share = vi.fn(async () => undefined);
++    vi.stubGlobal("navigator", { ...navigator, share });
++    const p = plan();
++    await expect(shareTryOn(p)).resolves.toBe("shared");
++    expect(share).toHaveBeenCalledWith({ files: [p.file], text: p.text });
++  });
++
++  it("treats a dismissed sheet as cancelled and any other failure as the fallback", async () => {
++    vi.stubGlobal("navigator", { ...navigator, share: vi.fn(async () => Promise.reject(new DOMException("x", "AbortError"))) });
++    await expect(shareTryOn(plan())).resolves.toBe("cancelled");
++    vi.stubGlobal("navigator", { ...navigator, share: vi.fn(async () => Promise.reject(new DOMException("x", "NotAllowedError"))) });
++    await expect(shareTryOn(plan())).resolves.toBe("fallback");
++  });
++
++  it("falls back to the wa.me link where files cannot be shared", async () => {
++    const share = vi.fn();
++    vi.stubGlobal("navigator", { ...navigator, share });
++    await expect(shareTryOn(plan({ canShareFiles: false, file: null }))).resolves.toBe("fallback");
++    expect(share).not.toHaveBeenCalled();
++  });
++
++  /* jsdom cannot draw, like a browser without canvas: the plan still offers WhatsApp and Save. */
++  it("still plans the fallback when the share image cannot be drawn", async () => {
++    vi.stubGlobal("createImageBitmap", vi.fn(async () => ({ width: 900, height: 1200, close: vi.fn() })));
++    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
++    const result = await prepareShare({ result: new Blob([new Uint8Array([1])], { type: "image/png" }), name: "Woven Gold Hoops", handle: "woven-gold-hoops" });
++    expect(result).toMatchObject({ jpeg: null, file: null, canShareFiles: false, url: shareUrlFor("woven-gold-hoops") });
++    expect(result.whatsappUrl).toBe(whatsappUrlFor("Woven Gold Hoops", "woven-gold-hoops"));
++  });
++
++  it("saves by download, except in iOS in-app browsers, which get press and hold", () => {
++    expect(isIosInAppBrowser(IG_IPHONE)).toBe(true);
++    expect(saveMode(IG_IPHONE)).toBe("press-hold");
++    expect(saveMode(SAFARI_IPHONE)).toBe("download");
++    expect(saveMode(CHROME_ANDROID)).toBe("download");
++    expect(saveMode(IG_ANDROID)).toBe("download");
++  });
++
++  it("downloads through a session URL that is revoked soon after", () => {
++    vi.useFakeTimers();
++    const clicks: HTMLAnchorElement[] = [];
++    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
++      clicks.push(this);
++    });
++    saveTryOnPhoto(new Blob([new Uint8Array([0xff, 0xd8])], { type: "image/jpeg" }));
++    expect(clicks).toHaveLength(1);
++    expect(clicks[0].download).toBe("naira-try-on.jpg");
++    expect(clicks[0].href).toMatch(/^blob:/);
++    expect(document.querySelector("a[download]")).toBeNull();
++    expect(liveObjectUrlCount()).toBe(1);
++    vi.advanceTimersByTime(1500);
++    expect(liveObjectUrlCount()).toBe(0);
++    expect(revoked).toBe(created);
++  });
++});
+-- 
+2.43.0
+

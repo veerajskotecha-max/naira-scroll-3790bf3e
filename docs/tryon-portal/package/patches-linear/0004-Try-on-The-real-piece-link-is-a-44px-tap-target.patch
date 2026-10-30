@@ -1,0 +1,51 @@
+From 216a9ac5f64a8ae213a9556efd12a5b1f99cacdc Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 16:44:04 +0000
+Subject: [PATCH 04/10] Try-on: 'The real piece' link is a 44px tap target
+
+The phone run measured it at 85x33 px on every studio screen, under the
+44px every other try-on control keeps. It now has min-h-[44px] with its
+words where they were; a test pins the class.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ src/components/tryon/PieceStrip.tsx | 3 ++-
+ src/test/tryon/TryOnPage.test.tsx   | 7 +++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/components/tryon/PieceStrip.tsx b/src/components/tryon/PieceStrip.tsx
+index 9e37f77..a92a945 100644
+--- a/src/components/tryon/PieceStrip.tsx
++++ b/src/components/tryon/PieceStrip.tsx
+@@ -51,7 +51,8 @@ const PieceStrip = ({ piece, live, stone, onStone, stonesLocked = false, onRealP
+           </div>
+           <p className="mt-1 text-[11.5px] leading-[1.4] text-nf-ink/75">{TRYON_COPY.studio.actualSize(piece.sizeLine)}</p>
+         </div>
+-        <button type="button" onClick={onRealPiece} className={`-mr-1 shrink-0 self-start px-1 py-2 text-[11.5px] ${textLink}`}>
++        {/* 44px tall like every other control (it measured 33); the words stay where py-2 put them. */}
++        <button type="button" onClick={onRealPiece} className={`-mr-1 inline-flex min-h-[44px] shrink-0 items-start self-start px-1 pt-2 text-[11.5px] ${textLink}`}>
+           {TRYON_COPY.studio.realPiece}
+         </button>
+       </div>
+diff --git a/src/test/tryon/TryOnPage.test.tsx b/src/test/tryon/TryOnPage.test.tsx
+index 415b460..5f6e218 100644
+--- a/src/test/tryon/TryOnPage.test.tsx
++++ b/src/test/tryon/TryOnPage.test.tsx
+@@ -197,6 +197,13 @@ describe("the studio", () => {
+     open("/try-on/baguette-huggies?colour=emerald");
+     expect(screen.getByRole("radio", { name: "Emerald" })).toHaveAttribute("aria-checked", "true");
+   });
++
++  // The phone run (scripts/tryon/e2e.mjs) measured 'The real piece' at 85x33 px on every
++  // studio screen: a tap target under the 44 px every other control keeps.
++  it("keeps 'The real piece' at least 44px tall", () => {
++    open("/try-on/woven-gold-hoops");
++    expect(screen.getByRole("button", { name: "The real piece" }).className).toMatch(/\bmin-h-\[44px\]/);
++  });
+ });
+ 
+ describe("consent", () => {
+-- 
+2.43.0
+

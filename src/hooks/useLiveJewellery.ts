@@ -296,10 +296,14 @@ export const useLiveJewellery = (enabled = true): { jewellery: JewelPiece[]; isL
     queryKey: ["shopify-products", "jewellery-catalogue"],
     queryFn: () => fetchShopifyProducts(),
     enabled,
-    // Stock state must read live: refresh often and whenever the tab regains
-    // focus so a piece that sells out in Shopify shows Sold Out here quickly.
+    // Stock state must read live, so a piece that sells out in Shopify shows
+    // Sold Out here quickly: once the catalogue is 30 s old, coming back to
+    // the tab, opening another page or opening the bag reads it again. A page
+    // left open re-reads it every 5 minutes, a hidden tab never. Every minute
+    // cost a shopper ~70 KB of mobile data (4 MB an hour) per open tab.
     staleTime: 1000 * 30,
-    refetchInterval: enabled ? 1000 * 60 : false,
+    refetchInterval: enabled ? 1000 * 60 * 5 : false,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
   });
 

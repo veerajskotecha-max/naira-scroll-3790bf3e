@@ -207,13 +207,23 @@ const AdminReels = () => {
     await refresh();
   };
 
+  /* Every state carries it: a signed-out visitor (and a crawler) only ever
+     sees the first two, which kept the homepage's head, "index" included. */
+  const seo = <PageSEO title="Reel Studio | Naira Flore" description="Upload and manage shoppable reels." noindex />;
+
   if (isAdmin === null) {
-    return <div className="pt-[140px] pb-20 text-center text-sm">Checking access…</div>;
+    return (
+      <>
+        {seo}
+        <div className="pt-[140px] pb-20 text-center text-sm">Checking access…</div>
+      </>
+    );
   }
 
   if (!isAdmin) {
     return (
       <div className="pt-[140px] pb-24 text-center">
+        {seo}
         <h1 className="font-cormorant text-3xl">Reel studio</h1>
         <p className="mt-3 text-sm" style={{ color: "hsl(0 0% 40%)" }}>
           This page is for Naira Flore admins.{" "}
@@ -228,7 +238,7 @@ const AdminReels = () => {
 
   return (
     <>
-      <PageSEO title="Reel Studio | Naira Flore" description="Upload and manage shoppable reels." noindex />
+      {seo}
       <div className="mx-auto max-w-[880px] px-6 pt-[143px] pb-20">
         <h1 className="font-cormorant text-[34px]">Reel studio</h1>
         <p className="mb-8 text-sm" style={{ color: "hsl(0 0% 42%)" }}>

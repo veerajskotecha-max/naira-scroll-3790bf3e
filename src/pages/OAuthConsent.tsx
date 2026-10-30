@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import PageSEO from "@/components/PageSEO";
 import { supabase } from "@/integrations/supabase/client";
 
 const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
@@ -75,6 +76,13 @@ const OAuthConsent = () => {
 
   return (
     <main className="flex min-h-[100svh] items-center justify-center bg-[#FBF3EC] px-6 py-16 text-[#1A1614]">
+      {/* Without a head of its own the page kept the homepage's, canonical and
+          "index" included, in every state: the error one is what a crawler gets. */}
+      <PageSEO
+        title="Authorize access"
+        description="Approve or deny an app's access to your Naira Flore account."
+        noindex
+      />
       <section className="w-full max-w-md text-center">
         <p className="text-[10px] tracking-[0.45em] text-[#B0843A]" style={jost}>
           NAIRA FLORE

@@ -195,6 +195,8 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
                 image: product.image,
                 // "You May Also Like" draws from the whole store, jewellery included.
                 kind: !product.shopifyProduct ? undefined : isJewelleryProduct(product.shopifyProduct) ? "jewellery" : "apparel",
+                variantId: product.variantId,
+                amount: product.numericPrice,
               });
             }}
             aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}

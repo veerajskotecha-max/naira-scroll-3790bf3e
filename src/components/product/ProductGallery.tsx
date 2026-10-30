@@ -56,7 +56,9 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Only the outfit page has this gallery: ProductDetail sends jewellery on first.
-    toggleItem({ id: productId, name: productName, price: "", image: firstImage, kind: "apparel" });
+    // The variant and price ViewContent names on this page (ProductDetails).
+    const lead = product?.variants.edges.find((e) => e.node.availableForSale) ?? product?.variants.edges[0];
+    toggleItem({ id: productId, name: productName, price: "", image: firstImage, kind: "apparel", variantId: lead?.node.id, amount: product ? Number(product.priceRange.minVariantPrice.amount) : undefined });
   };
 
   const WishlistBtn = (

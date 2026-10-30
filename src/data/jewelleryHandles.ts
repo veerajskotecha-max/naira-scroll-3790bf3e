@@ -20,7 +20,7 @@
 
    keeping vendor "Naira Petite" and status ACTIVE.
 
-   Last regenerated 2026-10-27 against the live store: 136 pieces. */
+   Last regenerated 2026-10-30 against the live store: 136 pieces. */
 export const JEWELLERY_HANDLES: ReadonlySet<string> = new Set([
   "amethyst-carre-bracelet",
   "aqua-heart-drops-silver",

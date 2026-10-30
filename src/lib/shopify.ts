@@ -631,7 +631,10 @@ export const getLineForVariant = (
 ) => {
   const want = (size ?? "").trim();
   const forVariant = lines.filter((line) => line.node.merchandise.id === variantId);
-  return (forVariant.find((line) => lineSize(line.node) === want) ?? forVariant[0])?.node;
+  const found = (forVariant.find((line) => lineSize(line.node) === want) ?? forVariant[0])?.node;
+  /* Shopify answers an Add of a sold-out piece with a line of 0 and no error;
+     taken as added, the bag showed it at ₹0. A line of 0 is no line. */
+  return found?.quantity === 0 ? undefined : found;
 };
 
 export async function createShopifyCart(variantId: string, quantity: number, size?: string): Promise<{ cartId: string; checkoutUrl: string; lineId: string; quantity: number; price?: number } | null> {

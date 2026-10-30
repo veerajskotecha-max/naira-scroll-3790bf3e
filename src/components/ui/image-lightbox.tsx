@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowLeft, ArrowRight, X, ZoomIn, ZoomOut } from "lucide-react";
+import { useReturnFocus } from "@/hooks/useReturnFocus";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
@@ -19,13 +20,15 @@ const controlClasses =
 /**
  * Full-screen product image viewer for the atelier.
  * Ivory backdrop, ink controls, 2x zoom toggle, arrow-key navigation.
- * Focus trap, Escape and backdrop close are handled by Radix Dialog.
+ * Focus trap, Escape and backdrop close are handled by Radix Dialog; closing
+ * gives focus back to the gallery photo that opened it (useReturnFocus).
  */
 const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpenChange }: ImageLightboxProps) => {
   const count = images.length;
   const [index, setIndex] = React.useState(initialIndex);
   const [zoomed, setZoomed] = React.useState(false);
   const [origin, setOrigin] = React.useState("50% 50%");
+  const returnFocus = useReturnFocus();
 
   React.useEffect(() => {
     if (open) {
@@ -77,6 +80,7 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
           className="fixed inset-0 z-[70] bg-[#FBF3EC] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"
         />
         <DialogPrimitive.Content
+          {...returnFocus}
           onKeyDown={handleKeyDown}
           aria-describedby={undefined}
           className="fixed inset-0 z-[70] flex flex-col outline-none duration-200 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"

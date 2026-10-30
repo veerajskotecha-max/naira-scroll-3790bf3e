@@ -70,6 +70,9 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               className="lg:hidden -m-3 p-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
+              aria-haspopup="dialog"
+              aria-expanded={mobileOpen}
+              aria-controls="nav-menu"
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>

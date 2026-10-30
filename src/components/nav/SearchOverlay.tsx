@@ -5,6 +5,7 @@ import { Search, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { parseQuery, searchPieces, shopPageFor } from "@/lib/search";
 import { cardCover } from "@/lib/cardCover";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
@@ -51,6 +52,7 @@ const SearchOverlay = ({
   const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const { jewellery } = useLiveJewellery();
 
   useEffect(() => {
@@ -69,12 +71,9 @@ const SearchOverlay = ({
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  // Escape closes, Tab stays inside, and focus goes back to the Search button
+  // on close. The field takes focus itself, above, once the overlay is up.
+  useModalFocus(dialogRef, open, onClose, { moveFocus: false });
 
   /* Jewellery is ranked by lib/search; apparel keeps its plain text match and
      only fills the list after the pieces. */
@@ -125,7 +124,7 @@ const SearchOverlay = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Search">
+    <div ref={dialogRef} className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Search">
       <button className="absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close search" tabIndex={-1} />
       <div className="relative mx-auto w-full max-w-3xl animate-fade-in bg-[#F4F1ED] p-5 shadow-xl sm:p-7">
         <form role="search" onSubmit={go} className="flex items-center gap-3 border-b border-nf-ink/15 pb-3">

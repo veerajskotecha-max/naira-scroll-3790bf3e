@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, Heart, ShoppingBag, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { menuCategories, menuEdits, menuOccasions, customOutfitsLink } from "@/data/navigation";
 import { followOut } from "@/hooks/useBackToClose";
+import { useModalFocus } from "@/hooks/useModalFocus";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -40,6 +41,10 @@ const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
   const [openSection, setOpenSection] = useState<string | null>("JEWELLERY");
   const { totalItems, setDrawerOpen: openCart }       = useCart();
   const { totalItems: wishlistCount, setDrawerOpen: openWishlist } = useWishlist();
+  const panelRef = useRef<HTMLDivElement>(null);
+  // Focus in, Tab kept inside, Escape closes (through history, like back),
+  // focus back to the menu button.
+  useModalFocus(panelRef, isOpen, onClose);
 
   /* Lock body scroll while menu is open */
   useEffect(() => {
@@ -72,6 +77,8 @@ const MobileMenu = ({ isOpen, onClose, closeThen }: MobileMenuProps) => {
           were still reachable by keyboard and screen readers, and announced as
           an open dialog on every page. */}
       <div
+        ref={panelRef}
+        id="nav-menu"
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"

@@ -236,9 +236,11 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
         />
       </Link>
       {/* A 44px target over the same two-line box: 5px of padding each side,
-          taken back from the margins, so nothing below moves. */}
-      <Link to={to} className="-mb-[5px] mt-[3px] line-clamp-2 min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
-        {piece.name}
+          taken back from the margins, so nothing below moves. The clamp sits
+          inside: a clamped box clips at its padding edge, so padding on it
+          showed the top of a third line over the price. */}
+      <Link to={to} className="-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
+        <span className="line-clamp-2">{piece.name}</span>
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">
         {variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel}

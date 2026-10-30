@@ -194,3 +194,20 @@ describe("stock on the product page and reel cards", () => {
     expect(code).not.toMatch(/45 days|within 2 weeks/);
   });
 });
+
+/* The pairing name's 44px target was padding on the clamped box itself. A
+   clamp clips at the padding edge, so a three-line name ("Serpentine Whisper
+   Chain — Silver") showed the top of its hidden third line over the price.
+   The padding stays on the link and the clamp goes inside it. */
+describe("pairing card names", () => {
+  it("clamp the name inside its 44px link, not on it", () => {
+    const card = code.match(/const PairingCard = [\s\S]*?\n};\n/)![0];
+    const name = card.match(/<Link to=\{to\} className="([^"]*)">\s*<span className="([^"]*)">\{piece\.name\}<\/span>/);
+    expect(name).not.toBeNull();
+    const [, link, clamp] = name!;
+    expect(link).toMatch(/min-h-\[44px\]/);
+    expect(link).not.toMatch(/line-clamp/);
+    expect(clamp).toMatch(/\bline-clamp-2\b/);
+    expect(clamp).not.toMatch(/(?:^|\s)-?(?:p|py|pt|pb)-|min-h-|\bh-/);
+  });
+});

@@ -1,0 +1,400 @@
+[
+ {
+  "handle": "woven-gold-hoops",
+  "title": "Woven Gold Hoops",
+  "productId": "gid://shopify/Product/9294915764386",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-0_6c9f6b30-a09f-479d-bbfa-ab40df3853a4.jpg?v=1787524536",
+  "refSize": [
+   896,
+   896
+  ],
+  "refAlt": "Woven Gold Hoops",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/woven-gold-hoops-size-guide.jpg?v=1792711429",
+  "variants": []
+ },
+ {
+  "handle": "brushed-gold-huggies",
+  "title": "Brushed Gold Huggies",
+  "productId": "gid://shopify/Product/9294916190370",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-0_d9e5187c-0e22-4997-988b-81e1533a5ebd.jpg?v=1787524089",
+  "refSize": [
+   896,
+   896
+  ],
+  "refAlt": "Brushed Gold Huggies",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/brushed-gold-huggies-size-guide.jpg?v=1792568303",
+  "variants": []
+ },
+ {
+  "handle": "baguette-huggies",
+  "title": "Baguette Huggies",
+  "productId": "gid://shopify/Product/10344381251746",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/5b1db5cf-e98e-41c3-b411-f3d165cbf67c.jpg?v=1792193135",
+  "refSize": [
+   1288,
+   1600
+  ],
+  "refAlt": "Baguette Huggies, Ruby \u2014 on a cream plaster block, the full piece straight on",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-huggies-size-guide.jpg?v=1792568301",
+  "variants": [
+   {
+    "title": "Ruby",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/5b1db5cf-e98e-41c3-b411-f3d165cbf67c.jpg?v=1792193135",
+    "available": true
+   },
+   {
+    "title": "Crystal",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/151d0f0a-6c0b-4873-abb8-598755e393d1.jpg?v=1792193136",
+    "available": true
+   },
+   {
+    "title": "Emerald",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/bff78c83-b184-47e8-a791-5454d010026b.jpg?v=1792193136",
+    "available": true
+   },
+   {
+    "title": "Amethyst",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/1d6e2afc-d943-4530-a5c9-c044ee6b187d.jpg?v=1792193135",
+    "available": true
+   }
+  ]
+ },
+ {
+  "handle": "bold-nocturne-drops",
+  "title": "Bold Nocturne Drops",
+  "productId": "gid://shopify/Product/10344383021218",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2ceb34a3-b476-49ae-8c5d-2dde451ded7e.jpg?v=1792193519",
+  "refSize": [
+   1288,
+   1600
+  ],
+  "refAlt": "Bold Nocturne Drops \u2014 on a cream plaster block, the full piece straight on",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/bold-nocturne-drops-size-guide.jpg?v=1792568303",
+  "variants": []
+ },
+ {
+  "handle": "silver-drop-earrings",
+  "title": "Trio Oval Drop Earrings",
+  "productId": "gid://shopify/Product/9294916255906",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-1.jpg?v=1787277503",
+  "refSize": [
+   1600,
+   1986
+  ],
+  "refAlt": null,
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/silver-drop-earrings-size-guide.jpg?v=1792569271",
+  "variants": []
+ },
+ {
+  "handle": "emerald-halo-c-hoops",
+  "title": "Emerald Halo C-Hoops",
+  "productId": "gid://shopify/Product/10344380924066",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/23919771-9988-4795-a4ae-b9ccc71d502f.jpg?v=1792193007",
+  "refSize": [
+   1288,
+   1600
+  ],
+  "refAlt": "Emerald Halo C-Hoops \u2014 on a cream plaster block, the full piece straight on",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/emerald-halo-c-hoops-size-guide.jpg?v=1792711430",
+  "variants": []
+ },
+ {
+  "handle": "pearl-drop-studs",
+  "title": "Pearl Drop Studs",
+  "productId": "gid://shopify/Product/9294916157602",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-hero.jpg?v=1792570153",
+  "refSize": [
+   1650,
+   1650
+  ],
+  "refAlt": "Pearl Drop Studs \u2014 pearl studs with polished gold sphere drops on an ivory plaster block",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/pearl-drop-studs-size-guide.jpg?v=1792711429",
+  "variants": []
+ },
+ {
+  "handle": "filigree-bloom-studs",
+  "title": "Filigree Bloom Studs",
+  "productId": "gid://shopify/Product/9294916059298",
+  "category": "earrings",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-0_f3857d31-3b5a-4271-9e05-b80ffaa77693.jpg?v=1787524294",
+  "refSize": [
+   1649,
+   1649
+  ],
+  "refAlt": "Filigree Bloom Studs",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/filigree-bloom-studs-size-guide.jpg?v=1792569270",
+  "variants": []
+ },
+ {
+  "handle": "crystal-pear-ear-cuff",
+  "title": "Crystal Pear Ear Cuff",
+  "productId": "gid://shopify/Product/10344383119522",
+  "category": "ear-cuff",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/crystal-pear-ear-cuff-hero.jpg?v=1792570153",
+  "refSize": [
+   2048,
+   2048
+  ],
+  "refAlt": "Crystal Pear Ear Cuff \u2014 the chunky gold cuff with its clear pear stone",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/crystal-pear-ear-cuff-size-guide.jpg?v=1792568333",
+  "variants": []
+ },
+ {
+  "handle": "emerald-square-ear-cuff",
+  "title": "Emerald Square Ear Cuff",
+  "productId": "gid://shopify/Product/10344383086754",
+  "category": "ear-cuff",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/emerald-square-ear-cuff_1_main.jpg?v=1792711286",
+  "refSize": [
+   2048,
+   2048
+  ],
+  "refAlt": "Emerald Square Ear Cuff \u2014 the pair on ivory plaster, square green stones in four claws on the thick gold tube",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/emerald-square-ear-cuff-size-guide.jpg?v=1792568334",
+  "variants": []
+ },
+ {
+  "handle": "toggle-link-chain",
+  "title": "Toggle Link Chain",
+  "productId": "gid://shopify/Product/9294915567778",
+  "category": "necklace",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-1.jpg?v=1787277342",
+  "refSize": [
+   1649,
+   2048
+  ],
+  "refAlt": null,
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/toggle-link-chain-size-guide.jpg?v=1792582860",
+  "variants": []
+ },
+ {
+  "handle": "bold-nocturne-chain",
+  "title": "Bold Nocturne Chain",
+  "productId": "gid://shopify/Product/9294915371170",
+  "category": "necklace",
+  "refIndex": 3,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20260829_202820_ced0ce1b-4902-4f44-96ba-51ad4982a154.png?v=1788035828",
+  "refSize": [
+   2048,
+   2048
+  ],
+  "refAlt": "Bold Nocturne Chain laid flat, bold elongated rounded rectangle gold links with a single pave set link at the front centre and a lobster clasp with extension chain",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/bold-nocturne-chain-size-guide.jpg?v=1792568303",
+  "variants": []
+ },
+ {
+  "handle": "serpentine-whisper-chain",
+  "title": "Serpentine Whisper Chain",
+  "productId": "gid://shopify/Product/9294915436706",
+  "category": "necklace",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/serpentine-whisper-chain-0_51e2b606-e02d-4389-a9ab-79e1a02faccd.jpg?v=1787524333",
+  "refSize": [
+   1649,
+   1649
+  ],
+  "refAlt": "Serpentine Whisper Chain",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/serpentine-whisper-chain-size-guide.jpg?v=1792582860",
+  "variants": []
+ },
+ {
+  "handle": "charm-box-chain",
+  "title": "Charm Box Chain",
+  "productId": "gid://shopify/Product/9294915535010",
+  "category": "necklace",
+  "refIndex": 2,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-0_829299c5-a731-48ba-96fd-cbfcd3491b7b.jpg?v=1787524089",
+  "refSize": [
+   1649,
+   1649
+  ],
+  "refAlt": "Charm Box Chain",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/charm-box-chain-size-guide.jpg?v=1792582860",
+  "variants": []
+ },
+ {
+  "handle": "marquise-layering-set",
+  "title": "Marquise Layering Set",
+  "productId": "gid://shopify/Product/9294915469474",
+  "category": "necklace",
+  "refIndex": 3,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20261021_080921_745509e2-2c90-4129-8162-4360d0e7ce75.png?v=1792570563",
+  "refSize": [
+   2048,
+   2048
+  ],
+  "refAlt": "Marquise Layering Set \u2014 both necklaces on a cream plaster block",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/marquise-layering-set-size-guide.jpg?v=1792568335",
+  "variants": []
+ },
+ {
+  "handle": "cushion-halo-ring",
+  "title": "Cushion Halo Ring",
+  "productId": "gid://shopify/Product/9294916976802",
+  "category": "ring",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/hf_20261021_080442_3e62cb3f-26c5-4ea9-825d-0fc8b545e0b7.png?v=1792809378",
+  "refSize": [
+   2048,
+   2048
+  ],
+  "refAlt": "Cushion Halo Ring \u2014 on a plaster cube, a small gap at the back of the adjustable band",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cushion-halo-ring-size-guide.jpg?v=1793001915",
+  "variants": []
+ },
+ {
+  "handle": "baguette-eternity-band",
+  "title": "Baguette Eternity Band",
+  "productId": "gid://shopify/Product/10344380858530",
+  "category": "ring",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg?v=1792193005",
+  "refSize": [
+   1288,
+   1600
+  ],
+  "refAlt": "Baguette Eternity Band, Ruby \u2014 on a cream plaster block, the full piece straight on",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-eternity-band-size-guide.jpg?v=1792809376",
+  "variants": [
+   {
+    "title": "Ruby / 5",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg?v=1792193005",
+    "available": false
+   },
+   {
+    "title": "Ruby / 6",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Ruby / 7",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Ruby / 8",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2507ca8a-c3d5-4e1f-9184-3ea46ce1631d.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Emerald / 5",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/af259fb9-85af-427c-b280-ceccc26fc85f.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Emerald / 6",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/af259fb9-85af-427c-b280-ceccc26fc85f.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Emerald / 7",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/af259fb9-85af-427c-b280-ceccc26fc85f.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Emerald / 8",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/af259fb9-85af-427c-b280-ceccc26fc85f.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Amethyst / 5",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2cfe7170-1667-4f9c-b0fb-bdfc941528ab.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Amethyst / 6",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2cfe7170-1667-4f9c-b0fb-bdfc941528ab.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Amethyst / 7",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2cfe7170-1667-4f9c-b0fb-bdfc941528ab.jpg?v=1792193005",
+    "available": true
+   },
+   {
+    "title": "Amethyst / 8",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/2cfe7170-1667-4f9c-b0fb-bdfc941528ab.jpg?v=1792193005",
+    "available": true
+   }
+  ]
+ },
+ {
+  "handle": "baguette-tennis-bracelet",
+  "title": "Baguette Tennis Bracelet",
+  "productId": "gid://shopify/Product/10344377483426",
+  "category": "bracelet",
+  "refIndex": 3,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/608b5c38-74e0-4aeb-99d9-35f4b34c07e4.jpg?v=1792192357",
+  "refSize": [
+   1288,
+   1600
+  ],
+  "refAlt": "Baguette Tennis Bracelet, Ruby \u2014 on a cream plaster block, the full piece straight on",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/baguette-tennis-bracelet-size-guide.jpg?v=1792568302",
+  "variants": [
+   {
+    "title": "Crystal",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/d0f971cc-451f-4aac-a786-a130a4d22e1c.jpg?v=1792192358",
+    "available": true
+   },
+   {
+    "title": "Ruby",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/608b5c38-74e0-4aeb-99d9-35f4b34c07e4.jpg?v=1792192357",
+    "available": true
+   },
+   {
+    "title": "Emerald",
+    "image": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/c7f34dc2-d7c5-4aac-aad8-1c87ff3f2925.jpg?v=1792192357",
+    "available": true
+   }
+  ]
+ },
+ {
+  "handle": "prism-riviere-bracelet",
+  "title": "Prism Rivi\u00e8re Bracelet",
+  "productId": "gid://shopify/Product/9294916812962",
+  "category": "bracelet",
+  "refIndex": 0,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-0_caf6459a-db93-4679-a68c-a74aeafa2a52.jpg?v=1787524332",
+  "refSize": [
+   1649,
+   1649
+  ],
+  "refAlt": "Prism Riviere Bracelet",
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/prism-riviere-bracelet-size-guide.jpg?v=1793015677",
+  "variants": []
+ },
+ {
+  "handle": "heartbead-bracelet",
+  "title": "Heartbead Bracelet",
+  "productId": "gid://shopify/Product/9294916878498",
+  "category": "bracelet",
+  "refIndex": 5,
+  "referenceImage": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/heartbead-bracelet-2.jpg?v=1787277609",
+  "refSize": [
+   1649,
+   2048
+  ],
+  "refAlt": null,
+  "sizeGuide": "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/569cc4ed-6b79-4021-958c-31513a3b1afe.jpg?v=1793183492",
+  "variants": []
+ }
+]

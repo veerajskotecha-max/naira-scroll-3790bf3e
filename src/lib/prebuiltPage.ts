@@ -1,0 +1,37 @@
+import { createElement, useCallback } from "react";
+import { FALLBACK_ATTR } from "./fallbackGuard";
+
+/*
+  main.tsx starts the app after 8 s even when the page's own code is still on
+  its way, so a stalled download never keeps the header and bag from working.
+  But createRoot empties #root on its first commit, and the page's route then
+  suspended to an empty fallback: a product page that had been readable for
+  8 s became the header over a blank body until the code arrived (20 s held,
+  measured on the live site).
+
+  So in that one case the pre-built page is kept: its nodes are taken before
+  createRoot runs and put back as the route's Suspense fallback, in the same
+  commit that removed them, so they never leave the screen. Everything under
+  the header is the page (see the live HTML: overlays, header, page). Its links
+  are plain links and still work; its buttons wait for the code like the rest.
+*/
+let kept: Element[] = [];
+
+/** Takes the pre-built page under the header, to be shown until its code arrives. */
+export const keepPrebuiltPage = (root: Element): void => {
+  // The homepage file standing in for an address it has no page for: that is
+  // not this page, and the guard hides it on purpose (lib/fallbackGuard.ts).
+  if (document.documentElement.hasAttribute(FALLBACK_ATTR)) return;
+  const header = root.querySelector(":scope > header");
+  for (let el = header?.nextElementSibling; el; el = el.nextElementSibling) kept.push(el);
+};
+
+/** The routes' Suspense fallback: the kept page the first time, nothing after. */
+export const PrebuiltPage = () => {
+  const ref = useCallback((el: HTMLDivElement | null) => {
+    if (!el || !kept.length) return;
+    el.append(...kept);
+    kept = [];
+  }, []);
+  return createElement("div", { ref, style: { display: "contents" } });
+};

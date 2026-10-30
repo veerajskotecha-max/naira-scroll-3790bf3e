@@ -17,6 +17,7 @@ import ShopperPerformance from "./components/ShopperPerformance";
 // whole tree unmounts and the shopper sits on a blank page. See the component.
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { clearFallbackMark } from "./lib/fallbackGuard";
+import { PrebuiltPage } from "./lib/prebuiltPage";
 // Global "wow" animation layer — always mounted, so imported eagerly to avoid
 // a flash on first paint (film grain, page curtain, scroll bloom).
 import FilmGrain from "./components/wow/FilmGrain";
@@ -110,7 +111,9 @@ const AppShell = () => {
       <Header />
       <Bag />
       <WishlistDrawer />
-      <Suspense fallback={null}>
+      {/* Empty, except when the app had to start before the landing page's
+          code arrived: then it is that pre-built page (lib/prebuiltPage.ts). */}
+      <Suspense fallback={<PrebuiltPage />}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/index" element={<Index />} />

@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { preloadRouteFor } from "./pageCode";
+import { keepPrebuiltPage } from "./lib/prebuiltPage";
 import "./index.css";
 import { isOptionalChunkFailure } from "./lib/optionalChunk";
 import { clearChunkReloadFlag, handlePreloadError, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
@@ -28,11 +29,19 @@ window.addEventListener("load", () => {
    fails must never keep the app from starting: after 8 s it starts anyway,
    and a real failure is handled by the stale-chunk reload above. */
 const APP_START_TIMEOUT_MS = 8_000;
+let routeCodeSettled = false;
 Promise.race([
-  preloadRouteFor(window.location.pathname).catch(() => undefined),
+  preloadRouteFor(window.location.pathname)
+    .catch(() => undefined)
+    .then(() => {
+      routeCodeSettled = true;
+    }),
   new Promise((resolve) => window.setTimeout(resolve, APP_START_TIMEOUT_MS)),
 ]).then(() => {
-  createRoot(document.getElementById("root")!).render(<App />);
+  const root = document.getElementById("root")!;
+  // Still downloading: keep the pre-built page on screen meanwhile (lib/prebuiltPage.ts).
+  if (!routeCodeSettled) keepPrebuiltPage(root);
+  createRoot(root).render(<App />);
   // The editorial fonts wait for the page's own code (see index.html).
   document.getElementById("nf-fonts")?.setAttribute("media", "all");
 });

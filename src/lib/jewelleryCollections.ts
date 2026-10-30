@@ -3,7 +3,13 @@ import type { CategoryLanding } from "@/data/seoContent";
 import { isAdjustableRing } from "@/data/ringFit";
 import { hasZirconeStone } from "@/lib/jewelleryPresentation";
 
-const identity = (piece: JewelPiece) => `${piece.name} ${piece.handle.replace(/-/g, " ")} ${(piece.tags ?? []).join(" ")}`;
+/* Tags every piece in the line carries say nothing about its style: "Demi Fine"
+   and "Naira Petite" matched /fine/ and /petite/, so Minimal and Office Wear
+   listed 131 of 136 pieces, Bold Nocturne Chain and Cushion Halo Ring among
+   them, and the menu's Everyday filter hid almost nothing. */
+const STORE_WIDE_TAG = /^(?:demi fine|naira petite)$/i;
+const identity = (piece: JewelPiece) =>
+  `${piece.name} ${piece.handle.replace(/-/g, " ")} ${(piece.tags ?? []).filter((t) => !STORE_WIDE_TAG.test(t.trim())).join(" ")}`;
 const matches = (piece: JewelPiece, pattern: RegExp) => pattern.test(identity(piece));
 const gold = (piece: JewelPiece) => piece.colour
   ? /gold/i.test(piece.colour.value)

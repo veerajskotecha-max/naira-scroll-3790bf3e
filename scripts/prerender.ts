@@ -263,7 +263,9 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
       /* The <h1> can land before Helmet has written the page's <head>, which it
          does on an animation frame. Wait until the canonical names this route —
          until then the head is still the shell's. Polled on a timer, not on
-         frames: a headless page can go seconds without one. */
+         frames: a headless page can go seconds without one. A landing that
+         repeats a broader one names that one instead (route.canonical). */
+      const expectedCanonical = route.canonical ?? route.path;
       await page
         .waitForFunction(
           (path) => {
@@ -275,7 +277,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
               return false;
             }
           },
-          route.path,
+          expectedCanonical,
           { timeout: 10_000 * attempt, polling: 100 },
         )
         .catch(() => {
@@ -303,7 +305,7 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
       const canonicalPath = shape.canonical
         ? new URL(shape.canonical, ORIGIN).pathname.replace(/\/+$/, "")
         : null;
-      if (canonicalPath !== route.path.replace(/\/+$/, "")) {
+      if (canonicalPath !== expectedCanonical.replace(/\/+$/, "")) {
         throw new Error(
           shape.canonical
             ? `canonical is ${shape.canonical}, not this page — captured before its <head> was written`

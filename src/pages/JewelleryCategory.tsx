@@ -74,6 +74,9 @@ const JewelleryCategory = () => {
   if (!landing) return <Navigate to={{ pathname: "/jewellery", search }} replace />;
 
   const url = `${SITE_URL}/jewellery/collections/${landing.slug}`;
+  /* A landing that repeats a broader landing's grid names that one, so
+     search keeps one page per set of pieces (see canonicalSlug). */
+  const canonical = landing.canonicalSlug ? `${SITE_URL}/jewellery/collections/${landing.canonicalSlug}` : url;
   const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Naira Flore, could you help me pick the right size in ${label.toLowerCase()}?`
   )}`;
@@ -83,7 +86,7 @@ const JewelleryCategory = () => {
       <PageSEO
         title={landing.metaTitle}
         description={landing.metaDescription}
-        canonical={url}
+        canonical={canonical}
         image={pieces[0]?.image}
         jsonLd={[
           breadcrumbLd([

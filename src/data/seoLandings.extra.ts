@@ -102,6 +102,9 @@ export const extraLandings: CategoryLanding[] = [
   {
     slug: "gold-plated-jewellery",
     crumb: "Gold Plated",
+    /* Same selector as the 18K landing, so the same pieces in the same order.
+       The 18K page is the one the footer and the category bar link. */
+    canonicalSlug: "18k-gold-plated-jewellery",
     h1: "Gold Plated Jewellery for Women",
     kicker: "NAIRA PETITE · GOLD PLATED",
     metaTitle: "Gold Plated Jewellery Online for Women | Naira Flore",
@@ -571,6 +574,8 @@ export const extraLandings: CategoryLanding[] = [
     slug: "pendant-sets",
     category: "Necklaces",
     crumb: "Pendant Sets",
+    /* Its rule takes in every necklace, so its grid is the Necklaces grid. */
+    canonicalSlug: "necklaces",
     h1: "Pendant Sets with Matching Earrings",
     kicker: "NAIRA PETITE · PENDANT SETS",
     metaTitle: "Pendant Sets for Women, Pendant & Earring Sets | Naira Flore",

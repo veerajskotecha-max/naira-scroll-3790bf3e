@@ -20,6 +20,9 @@ export const BASE_URL = "https://nairaflore.com";
 
 export interface SiteRoute {
   path: string;
+  /** Set when the page names another URL as its canonical: it is still
+      prerendered, but a sitemap lists canonical URLs only. */
+  canonical?: string;
   lastmod?: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
@@ -34,6 +37,7 @@ export const siteRoutes: SiteRoute[] = [
   { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
   ...categoryLandings.map<SiteRoute>((c) => ({
     path: `/jewellery/collections/${c.slug}`,
+    ...(c.canonicalSlug ? { canonical: `/jewellery/collections/${c.canonicalSlug}` } : {}),
     changefreq: "weekly",
     priority: "0.9",
   })),
@@ -103,6 +107,9 @@ const fetchLiveProducts = async (): Promise<LiveProduct[] | null> => {
     return null;
   }
 };
+
+/** The routes a sitemap may list: those that are their own canonical. */
+export const sitemapRoutes = (routes: SiteRoute[]) => routes.filter((r) => !r.canonical || r.canonical === r.path);
 
 export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   const products = await fetchLiveProducts();

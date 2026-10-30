@@ -32,6 +32,10 @@ export interface CategoryLanding {
   intro: string[];
   bullets: { title: string; body: string }[];
   faqs: FaqItem[];
+  /** Slug of the broader landing that shows the very same pieces. The page
+      stays for shoppers, but its canonical names that landing and it is left
+      out of the sitemap, so search sees one page per grid. */
+  canonicalSlug?: string;
 }
 
 export const categoryLandings: CategoryLanding[] = [

@@ -337,6 +337,21 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
           items: current.items.map((cartItem) => (keyOf(cartItem) === key ? withShopifyPrice({ ...cartItem, quantity: syncedQuantity }, result.price) : cartItem)),
         }));
+        /* "+" in the bag puts another piece in Shopify's cart, an add to cart
+           like any other (it is how a shopper reaches Buy 2 / Buy 3), and Meta
+           heard nothing of it. Each piece Shopify really added is told, never
+           a raise it capped, never a "−". */
+        const added = Math.min(quantity, syncedQuantity) - item.quantity;
+        if (added > 0) {
+          trackPixel("AddToCart", productParams({
+            id: item.id,
+            variantId: item.variantId,
+            name: item.name,
+            price: item.price,
+            currencyCode: item.currencyCode,
+            quantity: added,
+          }));
+        }
       }
     } catch (error) {
       console.error("Failed to update Shopify quantity", error);

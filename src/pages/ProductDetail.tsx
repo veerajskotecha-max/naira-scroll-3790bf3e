@@ -19,6 +19,7 @@ import ProductDetails, { type ProductSelection } from "@/components/product/Prod
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { clipText } from "@/lib/clipText";
 import { jewellery as staticJewellery } from "@/data/jewellery";
 import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import ReelPeek from "@/components/reels/ReelPeek";
@@ -194,12 +195,12 @@ const ProductDetail = () => {
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
       <Helmet>
         <title>{`${title} | Naira Flore`}</title>
-        <meta name="description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <meta name="description" content={`Shop ${title} by Naira Flore, ${clipText(description, 110)}`} />
         <link rel="canonical" href={`https://nairaflore.com/product/${id}`} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta property="og:type" content="product" />
         <meta property="og:title" content={`${title} | Naira Flore`} />
-        <meta property="og:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <meta property="og:description" content={`Shop ${title} by Naira Flore, ${clipText(description, 110)}`} />
         <meta property="og:url" content={`https://nairaflore.com/product/${id}`} />
         <meta property="og:site_name" content="Naira Flore" />
         <meta property="og:image" content={ogImageUrl} />
@@ -210,7 +211,7 @@ const ProductDetail = () => {
         <meta property="og:image:alt" content={title} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${title} | Naira Flore`} />
-        <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${clipText(description, 110)}`} />
         <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
       <JsonLd data={structuredData} />

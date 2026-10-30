@@ -37,6 +37,7 @@ import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
+import { clipText } from "@/lib/clipText";
 import UpiBadges from "@/components/checkout/UpiBadges";
 
 /*
@@ -851,13 +852,13 @@ const JewelDetailNext = () => {
     <div className="min-h-screen bg-nf-ivory text-nf-ink">
       <Helmet>
         <title>{inPreview ? `Preview · ${title}` : title}</title>
-        <meta name="description" content={`${piece.name}, ${piece.blurb.slice(0, 130)}`} />
+        <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
         <link rel="canonical" href={canonical} />
         {/* Under review at /preview/: kept out of search, pointing at the live page. */}
         <meta name="robots" content={inPreview ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
         <meta property="og:type" content="product" />
         <meta property="og:title" content={title} />
-        <meta property="og:description" content={piece.blurb.slice(0, 150)} />
+        <meta property="og:description" content={clipText(piece.blurb, 150)} />
         <meta property="og:image" content={ogImageUrl} />
         <meta property="og:image:secure_url" content={ogImageUrl} />
         <meta property="og:image:type" content="image/jpeg" />
@@ -868,7 +869,7 @@ const JewelDetailNext = () => {
         <meta property="og:site_name" content="Naira Flore" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
+        <meta name="twitter:description" content={clipText(piece.blurb, 150)} />
         <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
       <JsonLd data={structuredData} />

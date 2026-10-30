@@ -156,3 +156,15 @@ describe("product structured data", () => {
     });
   }
 });
+
+/* Descriptions were cut at a fixed count and ended mid-word in search
+   results and link previews ("…each s"); they go through clipText now. */
+describe("meta and social descriptions", () => {
+  for (const file of ["JewelDetailNext.tsx", "JewelDetail.tsx", "ProductDetail.tsx"]) {
+    it(`${file} cuts its descriptions between words`, () => {
+      const page = readFileSync(resolve(__dirname, file), "utf8");
+      expect(page).not.toMatch(/(?:blurb|description)\.slice\(0, \d+\)/);
+      expect(page.match(/clipText\(/g)?.length).toBe(3);
+    });
+  }
+});

@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { menuCategories } from "@/data/navigation";
 
 /* ───────────────────────────────────────────────────────────────
    PAGE CURTAIN
    Reserved for category browsing only: it plays when the client opens
-   a filtered category view (e.g. /jewellery?category=Rings) so the new
+   a category view (/jewellery/collections/rings, /jewellery?category=Rings) so the new
    edit reveals with a bloom. Every other route change navigates plainly.
    ─────────────────────────────────────────────────────────────── */
 
@@ -20,7 +21,9 @@ const PageCurtain = () => {
     if (first.current) { first.current = false; return; }
     if (!pathChanged) return; // filter chips only rewrite the query — never curtain them
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const isCategoryView = new URLSearchParams(search).has("category");
+    // The menus and category tiles open each category's landing page now.
+    const isCategoryView =
+      new URLSearchParams(search).has("category") || menuCategories.some((c) => c.to === pathname);
     if (!isCategoryView) return;
     setKey((k) => k + 1);
   }, [pathname, search]);

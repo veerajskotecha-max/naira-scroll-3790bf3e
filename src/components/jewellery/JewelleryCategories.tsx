@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
+import { menuCategories } from "@/data/navigation";
 
 /* Categories strip — follows the ZirconeTurn on the home page.
    Four quiet category cards (Rings / Bracelets / Earrings / Necklaces)
@@ -25,6 +26,10 @@ const categoryImages: Record<string, string> = {
 
 const categoryImage = (category: string) => categoryImages[category] ?? "";
 
+/* Each tile opens its category's indexable landing, as the menus do. */
+const categoryLanding = (category: string) =>
+  menuCategories.find((c) => c.category === category)?.to ?? "/jewellery";
+
 
 const cats = [
   { label: "Rings", img: categoryImage("Rings"), note: "solitaires, halo & stack" },
@@ -47,7 +52,7 @@ const JewelleryCategories = () => (
       </div>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {cats.map((c) => (
-          <Link key={c.label} to={`/jewellery?category=${c.label}`} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
+          <Link key={c.label} to={categoryLanding(c.label)} className="group relative block overflow-hidden bg-[#F4EBE2] shadow-[0_20px_44px_-28px_rgba(122,90,40,0.55)] transition-transform duration-200 active:scale-[0.98]">
             {/* still-life crop — product centred */}
             <div className="relative overflow-hidden">
               {/* The Shopify masters are ~2048px / 100-130 KB each and were being

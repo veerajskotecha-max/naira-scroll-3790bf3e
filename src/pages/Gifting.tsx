@@ -17,9 +17,9 @@ const priceEdits = [
 ];
 
 const forWhom = [
-  { title: "For Her", copy: "Demi-fine everyday pieces she will actually reach for.", to: "/jewellery?category=Necklaces" },
-  { title: "For the Bride", copy: "Zircone sets that read fine at wedding-light distance.", to: "/jewellery?category=Earrings" },
-  { title: "For a First Gift", copy: "Quiet rings and bracelets that suit any wrist or finger.", to: "/jewellery?category=Bracelets" },
+  { title: "For Her", copy: "Demi-fine everyday pieces she will actually reach for.", to: "/jewellery/collections/necklaces" },
+  { title: "For the Bride", copy: "Zircone sets that read fine at wedding-light distance.", to: "/jewellery/collections/earrings" },
+  { title: "For a First Gift", copy: "Quiet rings and bracelets that suit any wrist or finger.", to: "/jewellery/collections/bracelets" },
 ];
 
 /** Gifting hub — a merchandised entry point rather than a new catalogue. */

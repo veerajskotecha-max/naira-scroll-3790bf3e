@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { BadgeCheck, LockKeyhole, RotateCcw, Truck } from "lucide-react";
 import nairaLogo from "@/assets/naira-logo-footer.svg";
 import NairaBoxShowcase from "@/components/NairaBoxShowcase";
+import { popularSearches } from "@/data/navigation";
 
 const shopLinks = [
   { label: "New Arrivals", to: "/jewellery?sort=newest" },
@@ -338,35 +339,19 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
             className="text-[12px] leading-[1.9]"
             style={{ color: CREAM_FAINT }}
           >
-            {[
-              "Zircone Rings",
-              "Gold Plated Earrings",
-              "Huggie Hoops",
-              "Tennis Bracelet",
-              "Layered Necklace",
-              "Anti-Tarnish Jewellery",
-              "Demi-Fine Jewellery",
-              "Gifts for Her",
-              "Made to Measure",
-              "Handmade Custom Outfits",
-            ].map((term, i, arr) => {
-              const customTerms = ["Made to Measure", "Handmade Custom Outfits"];
-                            const to = customTerms.includes(term)
-                ? "/customize"
-                : `/jewellery?search=${encodeURIComponent(term)}`;
-              return (
-              <span key={term}>
+            {popularSearches.map(({ label, to }, i, arr) => (
+              <span key={label}>
                 <Link
                   to={to}
                   className="transition-colors duration-200 hover:opacity-100"
                   style={{ color: CREAM_FAINT }}
                 >
-                  {term}
+                  {label}
                 </Link>
 
                 {i < arr.length - 1 && <span className="mx-2 opacity-40">·</span>}
               </span>
-            );})}
+            ))}
 
           </p>
         </div>

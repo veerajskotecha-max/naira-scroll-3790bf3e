@@ -19,6 +19,7 @@
   — a checkout button must never dead-end on a third-party script.
 */
 import type { CartItem } from "@/contexts/CartContext";
+import { sessionUtmParams } from "@/lib/landingUtm";
 import { shopifyNumericId, CURRENCY } from "@/lib/pixel";
 import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
 import { SIZE_ATTRIBUTE } from "@/lib/shopify";
@@ -223,7 +224,9 @@ export const startFastrrCheckout = async (
 
     ensureSellerDomainInput();
 
-    const utmParams = currentUtmParams();
+    /* The campaign the session landed with: by the tap the address may be a
+       page the shopper browsed to, with no campaign left on it. */
+    const utmParams = sessionUtmParams() || currentUtmParams();
     const payload: BuyDirectPayload = {
       type: "cart",
       products,

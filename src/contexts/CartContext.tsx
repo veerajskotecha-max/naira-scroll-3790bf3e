@@ -15,6 +15,7 @@ import { isFastrrEnabled, primeFastrr, startFastrrCheckout } from "@/lib/fastrr"
 import { productParams, shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { cartKeyOf, findCartLine } from "@/lib/cartLines";
 import { setClarityTag } from "@/lib/clarity";
+import { withSessionUtm } from "@/lib/landingUtm";
 
 export interface CartItem {
   id: string;
@@ -471,6 +472,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
        order comes back to Shopify. Anything less than a usable URL (script
        blocked, slow, empty response) falls through to Shopify's own checkout
        rather than leaving the button dead. */
+    /* Shopify's checkout gets the session's campaign on its address too. */
+    target = withSessionUtm(target);
     if (isFastrrEnabled()) {
       setIsLoading(true);
       try {

@@ -1,4 +1,5 @@
 import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
+import { sessionUtm } from "@/lib/landingUtm";
 
 export const SHOPIFY_API_VERSION = "2025-07";
 export const SHOPIFY_STORE_PERMANENT_DOMAIN = "nc5eti-gp.myshopify.com";
@@ -585,6 +586,9 @@ export const trackingCartAttributes = (): Array<{ key: string; value: string }> 
   if (fbc) attrs.push({ key: "fbc", value: fbc });
   const fbp = getFbBrowserId();
   if (fbp) attrs.push({ key: "fbp", value: fbp });
+  /* The campaign the session landed with, so an order placed on Shopify's
+     own checkout says which ad brought it, as a Fastrr order does. */
+  for (const [key, value] of Object.entries(sessionUtm())) attrs.push({ key, value });
   return attrs;
 };
 

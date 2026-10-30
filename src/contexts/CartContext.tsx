@@ -455,6 +455,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       } finally {
         setIsLoading(false);
       }
+    } else if (cartId) {
+      /* One piece earns no code: take an earlier rung's off the cart (it
+         stayed there after a removal). Not awaited, so a one-piece checkout
+         is never held up; a rung's code never applies to one piece, so the
+         price cannot change whichever way the call lands. */
+      void (async () => {
+        try {
+          await applyCartDiscountCodes(cartId, []);
+        } catch (error) {
+          console.error("Could not clear cart discount", error);
+        }
+      })();
     }
 
     /* Straight to checkout in this tab.

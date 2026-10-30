@@ -3,11 +3,12 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 /* tailwindcss-animate defines its own duration-*, delay-* and ease-* for
-   animations, so an arbitrary value such as duration-[600ms] matches two
-   utilities. Tailwind calls it ambiguous and generates NOTHING for it: the
-   product card's hover zoom ran at the default 150 ms instead of 600 ms. Use
-   a configured step (duration-600) or the property form
-   ([transition-duration:600ms]) instead. */
+   animations, so an arbitrary duration (the card had duration-[ 600ms ]
+   without the spaces) matches two utilities. Tailwind calls it ambiguous and
+   generates NOTHING for it: the product card's hover zoom ran at the default
+   150 ms instead of 600 ms. Use a configured step (duration-600) or the
+   property form ([transition-duration:600ms]) instead. Spelt with spaces
+   here because Tailwind scans this file too, and warns on the bare class. */
 const src = resolve(__dirname, "..");
 const files = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

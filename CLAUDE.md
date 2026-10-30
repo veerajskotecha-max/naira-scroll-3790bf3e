@@ -338,7 +338,7 @@ to Shopify as a note on its size-6 variant, and silver showed the gold price.
 ## Verification expected before any push
 
 ```
-npx vitest run                          # currently 349 tests
+npx vitest run                          # currently 643 tests
 npx tsc --noEmit -p tsconfig.app.json
 npx vite build
 ```
@@ -355,8 +355,10 @@ work was actually confirmed.
 
 Storage serves back whatever content type it was given at upload and there is no
 way to edit it in place — the bytes have to be written again at the same path.
-Both seeded reels (`seed/reel-1.mp4`, `seed/reel-2.mp4`) are stored as
-`application/octet-stream`, which iOS Safari will not decode.
+Both seeded reels (`seed/reel-1.mp4`, `seed/reel-2.mp4`) were stored as
+`application/octet-stream`, which iOS Safari will not decode; they were rewritten
+on 17 Sep 2026 and now serve `video/mp4` (read back 30 Oct 2026; `useReels.ts`
+cache v4, Audit C81).
 
 Writing to the `reels` bucket needs an authenticated user with the `admin` role
 (`storage.objects` policies). The repo carries only the publishable key, so a

@@ -6,6 +6,9 @@ export interface WishlistItem {
   name: string;
   price: string;
   image: string;
+  /** Which page the piece opens on. Missing on items saved before it was
+      stored; the wishlist looks those up (WishlistDrawer). */
+  kind?: "jewellery" | "apparel";
 }
 
 interface WishlistContextType {

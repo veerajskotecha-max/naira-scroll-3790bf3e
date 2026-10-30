@@ -7,6 +7,12 @@ describe("isOptionalChunkFailure", () => {
     expect(isOptionalChunkFailure(new Error("Failed to fetch dynamically imported module: https://nairaflore.com/assets/three-D4k2_x9a.js"))).toBe(true);
   });
 
+  /* Opening the wishlist fetches the handle list for pieces saved before
+     they carried their kind; a failed fetch must not reload the page. */
+  it("recognises the wishlist's handle list, which has a fallback link", () => {
+    expect(isOptionalChunkFailure(new Error("Failed to fetch dynamically imported module: https://nairaflore.com/assets/jewelleryHandles-Yy5OagZw.js"))).toBe(true);
+  });
+
   it("leaves page code to the reload that recovers a stale build", () => {
     expect(isOptionalChunkFailure(new Error("Failed to fetch dynamically imported module: https://nairaflore.com/assets/JewelDetail-CWQOXrxH.js"))).toBe(false);
     expect(isOptionalChunkFailure(new Error("Unable to preload CSS for /assets/index-Cq67g9dH.css"))).toBe(false);

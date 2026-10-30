@@ -66,7 +66,7 @@ const JewelCard = ({ piece, index = 0 }: { piece: JewelPiece; index?: number }) 
        is no navigation to suppress. stopPropagation stays as cheap insurance
        against a handler being added to the card wrapper later. */
     e.stopPropagation();
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: frontImg });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: frontImg, kind: "jewellery" });
   };
 
   const cartItem = () => ({

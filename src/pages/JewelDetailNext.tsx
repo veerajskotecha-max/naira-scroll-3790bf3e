@@ -661,7 +661,7 @@ const JewelDetailNext = () => {
 
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece) });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece), kind: "jewellery" });
   };
 
   /* Tarnish and skin, answered from the piece's own materials, in Care.

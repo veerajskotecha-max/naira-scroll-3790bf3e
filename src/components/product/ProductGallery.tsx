@@ -55,7 +55,8 @@ const ProductGallery = ({ product }: { product?: ShopifyProductNode | null }) =>
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleItem({ id: productId, name: productName, price: "", image: firstImage });
+    // Only the outfit page has this gallery: ProductDetail sends jewellery on first.
+    toggleItem({ id: productId, name: productName, price: "", image: firstImage, kind: "apparel" });
   };
 
   const WishlistBtn = (

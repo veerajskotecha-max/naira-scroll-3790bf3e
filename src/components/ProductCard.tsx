@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 export interface Product {
@@ -187,7 +188,14 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               e.preventDefault();
               e.stopPropagation();
               if (!wishlisted) setHeartPopped(true);
-              toggleItem({ id: slug, name: product.name, price: product.price, image: product.image });
+              toggleItem({
+                id: slug,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                // "You May Also Like" draws from the whole store, jewellery included.
+                kind: !product.shopifyProduct ? undefined : isJewelleryProduct(product.shopifyProduct) ? "jewellery" : "apparel",
+              });
             }}
             aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           >

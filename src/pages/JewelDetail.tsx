@@ -455,7 +455,7 @@ const JewelDetail = () => {
 
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image, kind: "jewellery" });
   };
   const structuredData = {
     "@context": "https://schema.org",

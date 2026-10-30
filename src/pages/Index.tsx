@@ -52,6 +52,8 @@ const Index = () => {
         jsonLd={organizationLd as unknown as Record<string, unknown>}
       />
       <div className="pt-[107px] md:pt-[114px] lg:pt-[132px]">
+        {/* The page's one main landmark; the footer stays outside it. */}
+        <main>
         <HeroScrollyWrapper
           beforeArrivals={
             <>
@@ -87,6 +89,7 @@ const Index = () => {
 
         <Testimonials />
         <CampaignFilm />
+        </main>
         <Footer />
       </div>
     </>

@@ -116,12 +116,14 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
 
   const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
     <div>
-      <h4
+      {/* h2, at the size it always had: as h4 it skipped two levels after
+          the page's h1. */}
+      <h2
         className="font-cormorant text-[16px] font-semibold uppercase tracking-nf-10 mb-5"
         style={{ color: CREAM }}
       >
         {title}
-      </h4>
+      </h2>
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.label}>
@@ -259,12 +261,12 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
 
           {/* Newsletter */}
           <div>
-            <h4
+            <h2
               className="font-cormorant text-[16px] font-semibold uppercase tracking-nf-10 mb-5"
               style={{ color: CREAM }}
             >
               Newsletter
-            </h4>
+            </h2>
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-5"
               style={{ color: CREAM_MUTED }}

@@ -46,9 +46,9 @@ const JewelleryCategories = () => (
     <div className="mx-auto max-w-6xl px-6">
       <div className="mb-8 text-center">
         <p className="text-[10px] tracking-[0.45em] text-[#B0843A]" style={jost}>SHOP BY CATEGORY</p>
-        <h3 className="mt-2 text-[clamp(1.7rem,5vw,2.8rem)]" style={velista}>
+        <h2 className="mt-2 text-[clamp(1.7rem,5vw,2.8rem)]" style={velista}>
           The <span className="italic text-[#B0843A]" style={editorial}>edit.</span>
-        </h3>
+        </h2>
       </div>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
         {cats.map((c) => (

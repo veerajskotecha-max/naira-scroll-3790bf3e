@@ -239,6 +239,8 @@ const Jewellery = () => {
         ]}
       />
       <div className="relative bg-nf-ivory pt-[107px] text-nf-ink md:pt-[114px] lg:pt-[132px]">
+        {/* The page's one main landmark; the footer stays outside it. */}
+        <main>
         {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
         <div className="relative overflow-hidden bg-[#FBF3EC]">
           {/* The drifting atelier backdrop is decorative; a phone spends its
@@ -249,8 +251,9 @@ const Jewellery = () => {
             </div>
           )}
 
-          {/* indexable header */}
-          <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
+          {/* indexable header — a div, not a header element: here that made a
+              second banner landmark beside the site's own. */}
+          <div className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
             <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>NAIRA PETITE</p>
             <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
               Demi-Fine Jewellery
@@ -258,7 +261,7 @@ const Jewellery = () => {
             <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
               Brilliant-cut zircone in an 18K gold finish.
             </p>
-          </header>
+          </div>
         </div>
 
         {/* most-loved row: a piece, a price and a way in, on the first screen */}
@@ -360,6 +363,9 @@ const Jewellery = () => {
 
 
 
+        {/* The cards are h3s: name their level-2 section, for screen readers only. */}
+        <h2 className="sr-only">{active === "All" ? "All pieces" : active}</h2>
+
         {/* grid */}
         {pieces.length === 0 ? (
           <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pb-24 pt-16 text-center">
@@ -449,6 +455,7 @@ const Jewellery = () => {
             </dl>
           </details>
         </section>
+        </main>
 
         <Footer />
       </div>

@@ -906,9 +906,11 @@ const JewelDetailNext = () => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify({ piece, rating }).replace(/</g, "\\u003c") }}
       />
 
+      {/* The page's one main landmark; the footer and the phone buy bar stay outside it. */}
+      <main>
       {/* Breadcrumb (desktop) */}
       <div className="mx-auto hidden max-w-[1400px] items-center justify-between gap-4 px-6 pb-3 pt-[126px] md:flex lg:pt-[136px]">
-        <nav className="flex items-center gap-2 text-[11px] tracking-nf-4 text-nf-ink/70">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[11px] tracking-nf-4 text-nf-ink/70">
           <Link to="/" className="hover:text-nf-ink">Home</Link>
           <span>/</span>
           <Link to="/jewellery" className="hover:text-nf-ink">Jewellery</Link>
@@ -1324,6 +1326,7 @@ const JewelDetailNext = () => {
           mobileStickyVisible={stickyBarVisible}
         />
       </Suspense>
+      </main>
 
       <Footer compact slim />
 

@@ -39,12 +39,18 @@ describe("clipText", () => {
 /* 26 pages had titles of 66–76 characters that search results cut off, most
    because " | Naira Flore" followed a full "Topic, qualifier" title. */
 describe("fitTitle", () => {
-  it("drops trailing qualifiers whole before words", () => {
+  it("keeps what comes before the first qualifier, before cutting words", () => {
     expect(fitTitle("Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish")).toBe("Demi-Fine Jewellery Online India | Naira Flore");
-    expect(fitTitle("American Diamond Jewellery, Brilliant-Cut Zircone, 18K Finish")).toBe(
-      "American Diamond Jewellery, Brilliant-Cut Zircone | Naira Flore",
-    );
+    expect(fitTitle("American Diamond Jewellery, Brilliant-Cut Zircone, 18K Finish")).toBe("American Diamond Jewellery | Naira Flore");
     expect(fitTitle("Serpentine Whisper Chain — Silver · Demi-Gold Jewellery")).toBe("Serpentine Whisper Chain — Silver | Naira Flore");
+  });
+
+  /* Peeling qualifiers off the end one at a time left half a list in the
+     title search results show: "Zirconia vs Diamond, Sparkle" and "How to
+     Layer Necklaces, Lengths, Spacing". */
+  it("never leaves half a list", () => {
+    expect(fitTitle("Zirconia vs Diamond, Sparkle, Hardness and Cost Compared")).toBe("Zirconia vs Diamond | Naira Flore");
+    expect(fitTitle("How to Layer Necklaces, Lengths, Spacing, No Tangles")).toBe("How to Layer Necklaces | Naira Flore");
   });
 
   it("leaves a title that fits as it is", () => {
@@ -65,5 +71,17 @@ describe("fitTitle", () => {
     expect(pages.filter((t) => t.length > 65)).toEqual([]);
     // Shortening must not leave two pages with one title.
     expect(pages.filter((t, i) => pages.indexOf(t) !== i)).toEqual([]);
+  });
+
+  it("shortens every landing and journal title to a whole phrase, never part of a list", () => {
+    const shortened = [...allLandings.map((c) => c.metaTitle), ...allArticles.map((a) => a.metaTitle)]
+      .map((t) => t.replace(/ \| Naira Flore$/, ""))
+      .map((t) => ({ t, fit: fitTitle(t).replace(/ \| Naira Flore$/, "") }))
+      .filter(({ t, fit }) => fit !== t);
+    expect(shortened.length).toBeGreaterThan(0);
+    for (const { t, fit } of shortened) {
+      expect(t.startsWith(`${fit}, `) || t.startsWith(`${fit} · `), `${t} -> ${fit}`).toBe(true);
+      expect(fit, t).not.toMatch(/,|\s(and|or|&|vs|for|with|of|to|the|a)$/i);
+    }
   });
 });

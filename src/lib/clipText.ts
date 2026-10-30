@@ -17,17 +17,20 @@ export const clipText = (text: string, max: number): string => {
 
 /**
  * A page title with the brand, at most `max` characters: search results cut
- * longer ones off. Trailing qualifiers go whole first ("American Diamond
- * Jewellery, Brilliant-Cut Zircone, 18K Finish" keeps its first two parts),
- * then words. 26 pages ran to 66–76 characters, /jewellery among them.
+ * longer ones off. 26 pages ran to 66–76 characters, /jewellery among them.
+ *
+ * A title that is too long keeps only what comes before its FIRST ", " or
+ * " · ", then words if that is still too long. Peeling parts off the end
+ * instead left half a list: "Zirconia vs Diamond, Sparkle, Hardness and Cost
+ * Compared" became "Zirconia vs Diamond, Sparkle". A page whose first part
+ * alone reads badly gets a shorter title of its own in its data.
  */
 export const fitTitle = (page: string, brand = " | Naira Flore", max = 65): string => {
   const room = max - brand.length;
   let fit = page.replace(/\s+/g, " ").trim();
-  while (fit.length > room) {
-    const cut = Math.max(fit.lastIndexOf(", "), fit.lastIndexOf(" · "));
-    if (cut <= 0) break;
-    fit = fit.slice(0, cut);
+  if (fit.length > room) {
+    const cuts = [fit.indexOf(", "), fit.indexOf(" · ")].filter((i) => i > 0);
+    if (cuts.length) fit = fit.slice(0, Math.min(...cuts));
   }
   if (fit.length > room) {
     const space = fit.charAt(room) === " " ? room : fit.lastIndexOf(" ", room);

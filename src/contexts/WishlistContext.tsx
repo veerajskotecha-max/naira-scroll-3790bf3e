@@ -36,8 +36,13 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<WishlistItem[]>(loadWishlist);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
+  // Above every error boundary: a throw here (storage blocked) blanked the whole site.
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      /* storage blocked or full — the list still works for this visit */
+    }
   }, [items]);
 
   const addItem = useCallback((item: WishlistItem) => {

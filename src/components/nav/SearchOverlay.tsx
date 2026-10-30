@@ -115,7 +115,11 @@ const SearchOverlay = ({
     trackPixel("Search", { search_string: clean, content_type: "product" });
     const next = [clean, ...recent.filter((r) => r.toLowerCase() !== clean.toLowerCase())].slice(0, 5);
     setRecent(next);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    } catch {
+      /* storage blocked: the search itself must still go ahead */
+    }
   };
 
   if (!open) return null;

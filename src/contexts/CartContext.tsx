@@ -95,8 +95,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const { items, cartId, checkoutUrl } = storedCart;
 
+  /* Guarded like commitCart: with storage blocked ("Block all cookies", some
+     in-app WebViews) a throw here, above every error boundary, unmounted the
+     whole app and left a blank page a second after the pre-built one showed. */
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCart));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(storedCart));
+    } catch {
+      /* storage blocked or full — state still updates */
+    }
   }, [storedCart]);
 
   /* The ref is set with the state, not after the render: an Add opens the bag

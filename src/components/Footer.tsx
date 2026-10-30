@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BadgeCheck, LockKeyhole, RotateCcw, Truck } from "lucide-react";
-import nairaLogo from "@/assets/naira-logo-footer.svg";
+import NairaWordmark from "@/components/NairaWordmark";
 import NairaBoxShowcase from "@/components/NairaBoxShowcase";
 import { popularSearches } from "@/data/navigation";
 
@@ -173,13 +173,7 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
         <div className="max-w-[1200px] mx-auto px-5 py-8 md:px-10 md:py-10">
           <div className="flex flex-col items-center gap-5 text-center md:flex-row md:justify-between md:text-left">
             <Link to="/" aria-label="Naira home" className="inline-flex min-h-[44px] items-center">
-              <img
-                src={nairaLogo}
-                alt="NAIRA"
-                loading="lazy"
-                decoding="async"
-                className="w-[88px] h-auto brightness-0 invert"
-              />
+              <NairaWordmark still className="w-[88px] brightness-0 invert" />
             </Link>
             <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5">
               <Link to="/contact" className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
@@ -216,13 +210,10 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-8 lg:gap-12 pb-12 md:pb-16">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <img
-              src={nairaLogo}
-              alt="NAIRA"
-              loading="lazy"
-              decoding="async"
-              className="w-[100px] md:w-[120px] lg:w-[150px] h-auto max-w-full mb-4 brightness-0 invert"
-            />
+            {/* The header's vector wordmark, flat (`still`: no three.js),
+                whitened by the filter. It replaced a 103 KB SVG wrapping a
+                4000x2250 PNG that every cold visit downloaded for a 100px mark. */}
+            <NairaWordmark still className="w-[100px] md:w-[120px] lg:w-[150px] max-w-full mb-4 brightness-0 invert" />
 
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"

@@ -561,6 +561,10 @@ export function isCartNotFoundError(userErrors: Array<{ message: string }>): boo
   });
 }
 
+/* Shopify's answer when the line is already off the cart. */
+const isMissingLineError = (userErrors: Array<{ message: string }>) =>
+  userErrors.length > 0 && userErrors.every(({ message }) => /\bline\b[\s\S]*does not exist/i.test(message));
+
 /** The attribute Shopify carries the chosen size on, so it reaches the order. */
 export const SIZE_ATTRIBUTE = "Size";
 
@@ -744,7 +748,9 @@ export async function removeLineFromShopifyCart(cartId: string, lineId: string):
 
   const userErrors = data.data.cartLinesRemove.userErrors;
   if (isCartNotFoundError(userErrors)) return { success: false, cartNotFound: true };
-  if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
+  /* Removing a line that is already gone has done what was asked: the bag
+     drops it rather than keep a row checkout would still be handed. */
+  if (userErrors.length && !isMissingLineError(userErrors)) throw new Error(userErrors.map((error) => error.message).join(", "));
   return { success: true, checkoutUrl: data.data.cartLinesRemove.cart?.checkoutUrl ? formatCheckoutUrl(data.data.cartLinesRemove.cart.checkoutUrl) : undefined };
 }
 

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { isShopPage } from "../../supabase/functions/meta-capi/guard";
+import { isRelayedEvent, isShopOrigin, isShopPage, RELAYED_EVENTS } from "../../supabase/functions/meta-capi/guard";
+import { SERVER_EVENTS } from "./pixel";
 
 /*
   The meta-capi relay forwarded any event_source_url to Meta: a Lovable
@@ -44,5 +45,53 @@ describe("the Meta relay forwards events from the shop's own pages only", () => 
     expect(check).toBeGreaterThan(relay.indexOf("const body = parsed.data;"));
     expect(check).toBeLessThan(relay.indexOf("await fetch(`${GRAPH}"));
     expect(relay.slice(check, check + 200)).toMatch(/return new Response/);
+  });
+});
+
+/*
+  Anyone could post to the relay with the publishable key the bundle ships:
+  a forged Purchase {value: 999999} from https://evil.example, or a made-up
+  event name, went to Meta under the shop's pixel exactly like a shopper's
+  ViewContent.
+*/
+describe("the Meta relay takes only the shop's own callers and events", () => {
+  it.each(["https://nairaflore.com", "https://www.nairaflore.com"])("accepts posts from %s", (origin) => {
+    expect(isShopOrigin(origin)).toBe(true);
+  });
+
+  it.each([
+    ["another site", "https://evil.example"],
+    ["a Lovable preview", "https://id-preview--1a2b3c.lovable.app"],
+    ["plain http", "http://nairaflore.com"],
+    ["a look-alike", "https://nairaflore.com.evil.example"],
+    ["the checkout subdomain", "https://payments.nairaflore.com"],
+    ["an opaque origin", "null"],
+    ["no Origin header (a script)", null],
+  ])("refuses %s", (_name, origin) => {
+    expect(isShopOrigin(origin)).toBe(false);
+  });
+
+  it("relays exactly the events the shop's pages send", () => {
+    expect([...RELAYED_EVENTS].sort()).toEqual([...SERVER_EVENTS].sort());
+    for (const name of SERVER_EVENTS) expect(isRelayedEvent(name)).toBe(true);
+  });
+
+  it.each(["Purchase", "TotallyMadeUpEvent", "PageView", "Subscribe", "CustomizeProduct", "viewcontent", "", undefined])(
+    "refuses %s",
+    (name) => {
+      expect(isRelayedEvent(name)).toBe(false);
+    },
+  );
+
+  it("refuses a foreign caller first, and an unlisted event before anything reaches Meta", () => {
+    const origin = relay.indexOf('if (!isShopOrigin(req.headers.get("origin")))');
+    const event = relay.indexOf("if (!isRelayedEvent(body.event_name))");
+    const send = relay.indexOf("await fetch(`${GRAPH}");
+    expect(origin).toBeGreaterThan(relay.indexOf('if (req.method === "OPTIONS")'));
+    expect(origin).toBeLessThan(relay.indexOf("const parsed = BodySchema.safeParse"));
+    expect(relay.slice(origin, origin + 260)).toMatch(/status: 403/);
+    expect(event).toBeGreaterThan(relay.indexOf("const body = parsed.data;"));
+    expect(event).toBeLessThan(send);
+    expect(relay.slice(event, event + 260)).toMatch(/status: 400/);
   });
 });

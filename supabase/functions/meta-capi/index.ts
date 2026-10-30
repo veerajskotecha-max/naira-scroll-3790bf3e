@@ -12,7 +12,7 @@
  */
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { z } from "npm:zod@3";
-import { isShopPage } from "./guard.ts";
+import { isRelayedEvent, isShopOrigin, isShopPage } from "./guard.ts";
 
 const PIXEL_ID = "1232524215695667";
 const GRAPH = `https://graph.facebook.com/v21.0/${PIXEL_ID}/events`;
@@ -47,6 +47,15 @@ const BodySchema = z.object({
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  /* Only the shop's own pages may use the relay; any other caller could send
+     Meta any event at any value under the shop's pixel. */
+  if (!isShopOrigin(req.headers.get("origin"))) {
+    return new Response(JSON.stringify({ error: "origin_not_allowed" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 403,
+    });
+  }
+
   const token = Deno.env.get("META_CAPI_ACCESS_TOKEN");
   if (!token) {
     // Not configured yet — never surface an error to the shop.
@@ -64,6 +73,15 @@ Deno.serve(async (req) => {
     });
   }
   const body = parsed.data;
+
+  /* The events the shop sends and no others: never Purchase, which only
+     Shopify and Shiprocket report, with the real order. */
+  if (!isRelayedEvent(body.event_name)) {
+    return new Response(JSON.stringify({ error: "event_not_allowed" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 400,
+    });
+  }
 
   /* Only events from the shop's own pages. The browser gate (window.__nairaProd)
      keeps previews, localhost and the publish build's capture browser from

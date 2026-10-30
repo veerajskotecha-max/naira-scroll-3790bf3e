@@ -47,8 +47,9 @@ export const CURRENCY = "INR";
 
 export const PIXEL_ID = "1232524215695667";
 
-/** Events worth the server round trip. Low-value UI signals stay browser-only. */
-const SERVER_EVENTS = new Set<PixelEvent>([
+/** Events worth the server round trip. Low-value UI signals stay browser-only.
+    The meta-capi relay forwards these names and no others (its guard.ts). */
+export const SERVER_EVENTS = new Set<PixelEvent>([
   "ViewContent",
   "AddToCart",
   "AddToWishlist",

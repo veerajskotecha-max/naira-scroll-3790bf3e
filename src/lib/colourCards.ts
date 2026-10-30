@@ -1,5 +1,5 @@
 import type { JewelPiece, JewelVariant } from "@/data/jewellery";
-import { choices, firstBuyable, initialChoice, openingVariant } from "@/lib/variants";
+import { choices, firstBuyable, initialChoice, openingVariant, sizeOption } from "@/lib/variants";
 
 /*
   A piece sold in more than one metal or stone shows each colour as its own
@@ -21,15 +21,34 @@ export const colourFromParam = (piece: JewelPiece, param?: string | null) => {
   return option && value ? { option: option.name, value } : undefined;
 };
 
-/** The colour a catalogue ad's link names by Shopify's variant number
-    (?variant=50651970109602): Meta links every metal and size of a piece to the
-    same page that way. The page opens on that colour, as the ad pictured it;
-    the size stays the shopper's to choose. */
+/** The variant a catalogue ad's link names by Shopify's variant number
+    (?variant=50651970109602), when it is one of this piece's: Meta links every
+    metal, size and month of a piece to the same page that way. */
+export const variantFromParam = (piece: JewelPiece, param?: string | null): JewelVariant | undefined => {
+  const id = param?.trim();
+  if (!id || !/^\d+$/.test(id)) return undefined;
+  return piece.variants?.find((v) => v.id.split("/").pop() === id);
+};
+
+/** The colour of the variant an ad's link names. */
 export const colourOfVariant = (piece: JewelPiece, param?: string | null) => {
   const option = colourOption(piece);
-  const id = param?.trim();
-  if (!option || !id || !/^\d+$/.test(id)) return undefined;
-  return piece.variants?.find((v) => v.id.split("/").pop() === id)?.options[option.name];
+  return option ? variantFromParam(piece, param)?.options[option.name] : undefined;
+};
+
+/** The choices an ad's ?variant= link opens on: every option of the variant
+    it names, its size and month too, as the ad showed it. Only the colour was
+    read before, so Silver / US 7 opened on Silver / US 6 and a May birthstone
+    on January. Sold out, the nearest that can be bought: the same metal,
+    stone or month in another size. Undefined when the link names none of
+    this piece's variants. */
+export const variantChoice = (piece: JewelPiece, param?: string | null): Record<string, string> | undefined => {
+  const named = variantFromParam(piece, param);
+  if (!named) return undefined;
+  if (named.availableForSale) return { ...named.options };
+  const size = sizeOption(piece);
+  const kin = (piece.variants ?? []).filter((v) => Object.entries(named.options).every(([name, value]) => name === size || v.options[name] === value));
+  return { ...openingVariant(piece, kin).options };
 };
 
 /** The choices a page opens on: its opening variant in the colour its link

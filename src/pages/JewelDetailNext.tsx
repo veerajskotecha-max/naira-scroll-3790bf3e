@@ -34,7 +34,7 @@ import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
-import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantPhoto } from "@/lib/colourCards";
+import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
@@ -384,29 +384,34 @@ const JewelDetailNext = () => {
      one way. It opens on the first variant that can be bought; once the shopper
      picks, that variant's own photo leads the gallery. A colour card in the
      shop grid links here on its colour (?colour=silver): the page opens on that
-     colour, its photo first. A catalogue ad names its colour by Shopify's
-     variant number instead (?variant=…), and opens the same way. */
+     colour, its photo first. A catalogue ad names the exact variant by
+     Shopify's number instead (?variant=…): the page opens on all of it,
+     size and month included, its photo first. A colour picked here
+     (?colour=) then wins over the ad's link. */
   const [searchParams, setSearchParams] = useSearchParams();
-  const colourParam =
-    searchParams.get("colour") ?? (piece ? colourOfVariant(piece, searchParams.get("variant"))?.toLowerCase() : undefined) ?? null;
-  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? openingChoice(piece, colourParam) : {}));
-  const [picked, setPicked] = useState(() => Boolean(piece && colourFromParam(piece, colourParam)));
+  const colourLink = searchParams.get("colour");
+  const variantLink = colourLink ? null : searchParams.get("variant");
+  const colourParam = colourLink ?? (piece ? colourOfVariant(piece, variantLink)?.toLowerCase() : undefined) ?? null;
+  const opening = (p: JewelPiece) => variantChoice(p, variantLink) ?? openingChoice(p, colourParam);
+  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? opening(piece) : {}));
+  const [picked, setPicked] = useState(() => Boolean(piece && (variantChoice(piece, variantLink) || colourFromParam(piece, colourParam))));
   const variantKey = piece?.variants?.map((v) => v.id).join(",") ?? "";
   useEffect(() => {
     const colour = piece ? colourFromParam(piece, colourParam) : undefined;
+    const named = piece ? variantChoice(piece, variantLink) : undefined;
     /* A colour picked here writes the link; that must not undo a size the
        shopper has already chosen. */
     setChosen((current) =>
       !piece
         ? {}
-        : colour && current[colour.option] === colour.value && findVariant(piece, current)
+        : !named && colour && current[colour.option] === colour.value && findVariant(piece, current)
           ? current
-          : openingChoice(piece, colourParam),
+          : opening(piece),
     );
-    setPicked(Boolean(colour));
+    setPicked(Boolean(named || colour));
     // A refetch of the same variants must not undo the shopper's choice.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [piece?.handle, variantKey, colourParam]);
+  }, [piece?.handle, variantKey, colourParam, variantLink]);
   const variant = piece ? findVariant(piece, chosen) : undefined;
   const pick = (option: string, value: string) => {
     if (!piece) return;

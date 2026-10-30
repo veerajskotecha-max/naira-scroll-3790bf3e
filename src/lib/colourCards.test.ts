@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { JewelPiece, JewelVariant } from "@/data/jewellery";
-import { cardKey, colourCards, colourFromParam, colourOfVariant, colourOption, openingChoice, pieceHref, variantPhoto } from "./colourCards";
+import { cardKey, colourCards, colourFromParam, colourOfVariant, colourOption, openingChoice, pieceHref, variantChoice, variantPhoto } from "./colourCards";
 
 const variant = (id: string, options: Record<string, string>, price: number, extra: Partial<JewelVariant> = {}): JewelVariant => ({
   id,
@@ -202,13 +202,52 @@ describe("opening a product page on a colour", () => {
     expect(openingChoice(starPoint, null)).toEqual({ Metal: "Gold", Size: "6" });
   });
 
-  it("reads a catalogue ad's colour from Shopify's variant number, leaving the size to the shopper", () => {
+  it("reads a catalogue ad's colour from Shopify's variant number", () => {
     expect(colourOfVariant(tubogas, "14")).toBe("Silver");
-    expect(openingChoice(tubogas, colourOfVariant(tubogas, "14"))).toEqual({ Metal: "Silver", Size: "6" });
     expect(colourOfVariant(cuff, " 2 ")).toBe("Silver");
     expect(colourOfVariant(cuff, "999")).toBeUndefined();
     expect(colourOfVariant(cuff, "gid://shopify/ProductVariant/2")).toBeUndefined();
     expect(colourOfVariant(sized, "1")).toBeUndefined();
     expect(colourOfVariant(cuff, null)).toBeUndefined();
+  });
+});
+
+/*
+  A catalogue ad names the exact variant it shows (?variant=<Shopify number>).
+  Only its colour was read: Tubogas Silver / US 7 opened on Silver / US 6, and
+  a May (emerald) Birthstone Heart Necklace on January (garnet), its photo
+  first. The page opens on all of the variant now.
+*/
+const months = piece("birthstone-heart-necklace", {
+  category: "Necklaces",
+  options: [{ name: "Month", values: ["January · Garnet", "May · Emerald", "October · Rose"] }],
+  variants: [
+    variant(gid(31), { Month: "January · Garnet" }, 699, { image: cdn("garnet.jpg") }),
+    variant(gid(35), { Month: "May · Emerald" }, 699, { image: cdn("emerald.jpg") }),
+    variant(gid(40), { Month: "October · Rose" }, 699, { image: cdn("rose.jpg"), availableForSale: false }),
+  ],
+});
+const tubogasSoldOut = { ...tubogas, variants: tubogas.variants!.map((v) => (v.id === gid(14) ? { ...v, availableForSale: false } : v)) };
+
+describe("opening a product page on the variant a catalogue ad names", () => {
+  it("opens on every option of that variant, its size and month too", () => {
+    expect(variantChoice(tubogas, "14")).toEqual({ Metal: "Silver", Size: "7" });
+    expect(variantChoice(tubogas, " 12 ")).toEqual({ Metal: "Gold", Size: "7" });
+    expect(variantChoice(months, "35")).toEqual({ Month: "May · Emerald" });
+  });
+
+  it("opens a sold-out variant's metal in a size that can be bought", () => {
+    expect(variantChoice(tubogasSoldOut, "14")).toEqual({ Metal: "Silver", Size: "6" });
+  });
+
+  it("keeps a sold-out month as named, with nothing else in that month to offer", () => {
+    expect(variantChoice(months, "40")).toEqual({ Month: "October · Rose" });
+  });
+
+  it("leaves a link that names none of the piece's variants to the colour rules", () => {
+    expect(variantChoice(tubogas, "999")).toBeUndefined();
+    expect(variantChoice(tubogas, gid(14))).toBeUndefined();
+    expect(variantChoice(tubogas, null)).toBeUndefined();
+    expect(variantChoice(plain, "1")).toBeUndefined();
   });
 });

@@ -95,6 +95,13 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/aria-label="Decrease quantity"/);
   });
 
+  it("opens an ad's ?variant= link on all of that variant, a colour picked here winning over it", () => {
+    expect(code).toMatch(/const variantLink = colourLink \? null : searchParams\.get\("variant"\)/);
+    expect(code).toMatch(/const opening = \(p: JewelPiece\) => variantChoice\(p, variantLink\) \?\? openingChoice\(p, colourParam\)/);
+    expect(code).toMatch(/useState<Record<string, string>>\(\(\) => \(piece \? opening\(piece\) : \{\}\)\)/);
+    expect(code).toMatch(/\[piece\?\.handle, variantKey, colourParam, variantLink\]/);
+  });
+
   it("routes Buy Now through checkout with the chosen variant, but reserves pre-orders on WhatsApp", () => {
     const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
     expect(handler).toContain("if (isPreorder) return handlePreOrder();");

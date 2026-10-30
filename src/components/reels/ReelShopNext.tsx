@@ -8,6 +8,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { reelCover } from "@/lib/reelCovers";
+import { relabelledVideoUrl } from "@/lib/videoRecovery";
 import localReelPoster from "@/assets/reel-fallback.webp";
 import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
@@ -168,23 +169,16 @@ export const ReelFrame = ({
   const objectUrlRef = useRef<string | null>(null);
   const recoveryTriedRef = useRef(false);
 
-  useEffect(
-    () => () => {
-      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
-    },
-    [],
-  );
-
-  /* Supabase serves the reels as application/octet-stream, which Safari and
-     the Instagram webview refuse; the same bytes relabelled as video/mp4 play
-     (see MobileReelShop.tsx). */
+  /* A reel stored as application/octet-stream is refused by Safari and the
+     Instagram webview; the same bytes relabelled as video/mp4 play
+     (lib/videoRecovery). */
   const recoverFromMimeError = useCallback(async () => {
     if (recoveryTriedRef.current || !reel.videoUrl) return;
     recoveryTriedRef.current = true;
     try {
-      const response = await fetch(reel.videoUrl);
-      if (!response.ok) throw new Error(`video fetch ${response.status}`);
-      const url = URL.createObjectURL(new Blob([await response.blob()], { type: "video/mp4" }));
+      // Only for a MIME refusal, once per source; null leaves the poster up.
+      const url = await relabelledVideoUrl(reel.videoUrl, videoRef.current?.error ?? null);
+      if (!url) return;
       objectUrlRef.current = url;
       const video = videoRef.current;
       if (!video) return;

@@ -9,6 +9,7 @@ import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { reelCover } from "@/lib/reelCovers";
+import { relabelledVideoUrl } from "@/lib/videoRecovery";
 import localReelPoster from "@/assets/reel-fallback.webp";
 import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
@@ -137,34 +138,27 @@ const ReelFrame = ({
   const objectUrlRef = useRef<string | null>(null);
   const recoveryTriedRef = useRef(false);
 
-  useEffect(
-    () => () => {
-      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
-    },
-    [],
-  );
-
   /*
     Recover a video the browser refuses on MIME grounds.
 
-    These reels are served from Supabase storage as `application/octet-stream`
-    (verified against the live signed URLs). Chromium tolerates it; Safari and
-    the Instagram webview do not — the element raises an error before the first
-    frame, which is why the reel never played on a phone. Range requests and
-    the bytes themselves are fine, so refetching and re-labelling them as
-    `video/mp4` plays the exact same file.
+    The seeded reels were served from Supabase storage as
+    `application/octet-stream`. Chromium tolerates it; Safari and the Instagram
+    webview do not — the element raises an error before the first frame, which
+    is why the reel never played on a phone. Range requests and the bytes
+    themselves are fine, so refetching and re-labelling them as `video/mp4`
+    plays the exact same file.
 
-    This is the fallback, not the happy path: the direct src is tried first and
-    costs nothing extra once the stored Content-Type is corrected, at which
-    point this never runs.
+    This is the fallback, not the happy path: the direct src is tried first,
+    and lib/videoRecovery only downloads for a MIME refusal of a file storage
+    does not label as video, once per source.
   */
   const recoverFromMimeError = useCallback(async () => {
     if (recoveryTriedRef.current || !reel.videoUrl) return;
     recoveryTriedRef.current = true;
     try {
-      const response = await fetch(reel.videoUrl);
-      if (!response.ok) throw new Error(`video fetch ${response.status}`);
-      const url = URL.createObjectURL(new Blob([await response.blob()], { type: "video/mp4" }));
+      // Only for a MIME refusal, once per source; null leaves the poster up.
+      const url = await relabelledVideoUrl(reel.videoUrl, videoRef.current?.error ?? null);
+      if (!url) return;
       objectUrlRef.current = url;
       const video = videoRef.current;
       if (!video) return;

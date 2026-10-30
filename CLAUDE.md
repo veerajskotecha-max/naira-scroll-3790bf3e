@@ -146,7 +146,8 @@ motion and Data Saver keep the flat flower and never download three.js. The
 canvas is wider than the flower on purpose (`HALF_WIDTH`): the low leaf
 swings 0.42 flower-heights out from the stem. Face-on, a frontal key light
 mirrored off the flat face and read as cream — the key sits high and to the
-side on purpose. The footer and hero still use the old bitmap logos.
+side on purpose. Both footers draw this wordmark flat (`still`, no three.js),
+whitened by a CSS filter; the hero still uses the old bitmap logo.
 
 **The header bar was made 20% taller** at the owner's ask, with the wordmark
 20% wider: `--navbar-h` 77 / 86 / 96px (phone / md / lg), wordmark 96–168px.

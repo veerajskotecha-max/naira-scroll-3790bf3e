@@ -40,8 +40,10 @@ const Craftsmanship = () => {
             }`}
             style={{ transitionDuration: "0.6s" }}
           >
-            {/* Main image */}
+            {/* Main image. loading before src, or React starts the download
+                before the image is marked lazy (see CustomerReviews). */}
             <img
+              loading="lazy"
               src={craftsmanshipMain}
               alt="Hand embroidery craftsmanship"
               className="w-full rounded-2xl object-cover"
@@ -49,7 +51,6 @@ const Craftsmanship = () => {
                 aspectRatio: "4/5",
                 boxShadow: "0 10px 35px -8px hsla(0,0%,0%,0.18)",
               }}
-              loading="lazy"
             />
 
             {/* Overlapping smaller image */}
@@ -69,10 +70,10 @@ const Craftsmanship = () => {
               }}
             >
               <img
+                loading="lazy"
                 src={craftsmanshipOverlay}
                 alt="Uniquely yours customisation"
                 className="w-full aspect-square object-cover object-center rounded-lg"
-                loading="lazy"
               />
             </div>
           </div>

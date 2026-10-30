@@ -32,13 +32,14 @@ const FounderStoryTeaser = () => (
               className="relative overflow-hidden w-[150px] sm:w-[170px] md:w-[190px] lg:w-[215px]"
               style={{ borderRadius: "1px", aspectRatio: "4/5" }}
             >
+              {/* loading before src — see CustomerReviews for why */}
               <img
+                loading="lazy"
                 src={founderImg}
                 alt="Vandana, founder of Naira Flore, in her Nashik studio"
                 className="w-full h-full object-cover"
                 width={430}
                 height={538}
-                loading="lazy"
               />
             </div>
           </div>

@@ -32,7 +32,7 @@ import { jewellery as authored } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { fromShopify } from "@/hooks/useLiveJewellery";
 
-const nodes = await fetchShopifyProducts(250);
+const nodes = await fetchShopifyProducts();
 if (nodes.length < 20) {
   throw new Error(`Shopify returned only ${nodes.length} products — refusing to write a near-empty snapshot.`);
 }

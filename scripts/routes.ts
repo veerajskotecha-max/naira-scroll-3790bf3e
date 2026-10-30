@@ -89,25 +89,34 @@ interface LiveProduct {
 /** The Shopify vendor holding the jewellery line; everything else is clothing. */
 const JEWELLERY_VENDOR = "naira petite";
 
+/* Shopify answers at most 250 products a request; past that the next page is
+   asked for, or the newest listings would drop out of the sitemap. */
 const fetchLiveProducts = async (): Promise<LiveProduct[] | null> => {
   try {
-    const res = await fetch(STOREFRONT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
-      },
-      body: JSON.stringify({
-        query: `{ products(first: 250) { edges { node { handle vendor updatedAt } } } }`,
-      }),
-    });
-    if (!res.ok) return null;
-    const json = (await res.json()) as {
-      data?: { products?: { edges?: { node: LiveProduct }[] } };
-    };
-    const edges = json.data?.products?.edges;
-    if (!edges?.length) return null;
-    return edges.map((e) => e.node);
+    const products: LiveProduct[] = [];
+    let after: string | null = null;
+    do {
+      const res = await fetch(STOREFRONT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
+        },
+        body: JSON.stringify({
+          query: `query($after: String) { products(first: 250, after: $after) { pageInfo { hasNextPage endCursor } edges { node { handle vendor updatedAt } } } }`,
+          variables: { after },
+        }),
+      });
+      if (!res.ok) return null;
+      const json = (await res.json()) as {
+        data?: { products?: { edges?: { node: LiveProduct }[]; pageInfo?: { hasNextPage: boolean; endCursor: string | null } } };
+      };
+      const page = json.data?.products;
+      if (!page?.edges) return null;
+      products.push(...page.edges.map((e) => e.node));
+      after = page.pageInfo?.hasNextPage ? page.pageInfo.endCursor : null;
+    } while (after);
+    return products.length ? products : null;
   } catch {
     return null;
   }

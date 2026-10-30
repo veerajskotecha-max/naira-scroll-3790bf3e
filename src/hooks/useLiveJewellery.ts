@@ -294,7 +294,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
 export const useLiveJewellery = (enabled = true): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
-    queryFn: () => fetchShopifyProducts(250),
+    queryFn: () => fetchShopifyProducts(),
     enabled,
     // Stock state must read live: refresh often and whenever the tab regains
     // focus so a piece that sells out in Shopify shows Sold Out here quickly.

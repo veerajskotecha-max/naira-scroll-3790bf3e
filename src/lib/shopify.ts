@@ -58,6 +58,8 @@ export interface ShopifyProductNode {
     edges: Array<{
       node: ShopifyProductVariant;
     }>;
+    /** Present on a query answer: whether Shopify held variants back. */
+    pageInfo?: ShopifyPageInfo;
   };
   options: Array<{
     name: string;
@@ -67,6 +69,11 @@ export interface ShopifyProductNode {
 
 export interface ShopifyProductEdge {
   node: ShopifyProductNode;
+}
+
+export interface ShopifyPageInfo {
+  hasNextPage: boolean;
+  endCursor: string | null;
 }
 
 export interface ShopifyCartLine {
@@ -80,8 +87,12 @@ export interface ShopifyCartLine {
 }
 
 export const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!, $query: String) {
-    products(first: $first, query: $query) {
+  query GetProducts($first: Int!, $after: String, $query: String) {
+    products(first: $first, after: $after, query: $query) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
         node {
           id
@@ -108,6 +119,10 @@ export const PRODUCTS_QUERY = `
             }
           }
           variants(first: 20) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
             edges {
               node {
                 id
@@ -168,6 +183,10 @@ export const PRODUCT_BY_HANDLE_QUERY = `
         }
       }
       variants(first: 50) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
         edges {
           node {
             id
@@ -195,6 +214,43 @@ export const PRODUCT_BY_HANDLE_QUERY = `
       options {
         name
         values
+      }
+    }
+  }
+`;
+
+/* The rest of one product's variants, when the catalogue query held some back. */
+const PRODUCT_VARIANTS_QUERY = `
+  query ProductVariants($id: ID!, $after: String) {
+    product(id: $id) {
+      variants(first: 250, after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+            sku
+            image {
+              url
+            }
+          }
+        }
       }
     }
   }
@@ -415,18 +471,49 @@ export const availabilityByOption = (
   return out;
 };
 
-export async function fetchShopifyProducts(first = 20, query?: string): Promise<ShopifyProductNode[]> {
-  const data = await storefrontApiRequest<{ data: { products: { edges: ShopifyProductEdge[] } } }>(PRODUCTS_QUERY, {
-    first,
-    query,
-  });
-  return data.data.products.edges.map((edge) => wornFirst(withLeadImage(dropCatalogSquare(edge.node))) as ShopifyProductNode);
+/* Shopify answers 20 variants a product in the catalogue query (the most any
+   piece has is 12) and says nothing about the rest: a ring in three metals and
+   seven sizes would lose its last size to "sold out". Any it held back are
+   asked for by the product's id. */
+const withAllVariants = async (node: ShopifyProductNode): Promise<ShopifyProductNode> => {
+  let page = node.variants.pageInfo;
+  if (!page?.hasNextPage) return node;
+  const edges = [...node.variants.edges];
+  while (page?.hasNextPage) {
+    const data = await storefrontApiRequest<{ data: { product: { variants: ShopifyProductNode["variants"] } | null } }>(PRODUCT_VARIANTS_QUERY, { id: node.id, after: page.endCursor });
+    const more = data.data.product?.variants;
+    if (!more) break;
+    edges.push(...more.edges);
+    page = more.pageInfo;
+  }
+  return { ...node, variants: { edges } };
+};
+
+/* Shopify answers at most 250 products a request, and a 251st listing would
+   simply not be on the site, so pages are followed to the end. With no limit
+   this is the whole catalogue; a row that wants a few names how many. */
+export async function fetchShopifyProducts(limit = Infinity, query?: string): Promise<ShopifyProductNode[]> {
+  const nodes: ShopifyProductNode[] = [];
+  let after: string | null = null;
+  do {
+    const data = await storefrontApiRequest<{ data: { products: { edges: ShopifyProductEdge[]; pageInfo?: ShopifyPageInfo } } }>(PRODUCTS_QUERY, {
+      first: Math.min(250, limit - nodes.length),
+      after,
+      query,
+    });
+    const { edges, pageInfo } = data.data.products;
+    nodes.push(...edges.map((edge) => edge.node));
+    after = pageInfo?.hasNextPage ? pageInfo.endCursor : null;
+  } while (after && nodes.length < limit);
+  const complete = await Promise.all(nodes.map(withAllVariants));
+  return complete.map((node) => wornFirst(withLeadImage(dropCatalogSquare(node))) as ShopifyProductNode);
 }
 
 export async function fetchShopifyProductByHandle(handle: string): Promise<ShopifyProductNode | null> {
   if (!handle) return null;
   const data = await storefrontApiRequest<{ data: { product: ShopifyProductNode | null } }>(PRODUCT_BY_HANDLE_QUERY, { handle });
-  return wornFirst(withLeadImage(dropCatalogSquare(data.data.product)));
+  const product = data.data.product;
+  return wornFirst(withLeadImage(dropCatalogSquare(product && (await withAllVariants(product)))));
 }
 
 

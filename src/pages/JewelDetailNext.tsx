@@ -569,9 +569,7 @@ const JewelDetailNext = () => {
 
   const wishlisted = isWishlisted(piece.handle);
   const adjustable = isAdjustableRing(piece);
-  /* Adjustability is fit, not inventory: an open-back ring Shopify has sold
-     out is reserved like any other piece, not promised as shipping now. */
-  const soldOut = piece.availableForSale === false;
+  const soldOut = piece.availableForSale === false && !adjustable;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
   const soldCount = recentSoldCount(piece.handle);

@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
+import { isAdjustableRing } from "@/data/ringFit";
 import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
@@ -45,8 +46,7 @@ const productHref: HrefFor = (handle) => `/jewellery/${handle}`;
 const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: JewelPiece; hrefFor: HrefFor }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
-  // Adjustability is fit, not inventory: Shopify is the stock authority (as on JewelCard).
-  const soldOut = live?.availableForSale === false;
+  const soldOut = live?.availableForSale === false && !isAdjustableRing(live ?? product.handle);
   const image = live?.image ?? product.image_url ?? "";
   const price = live?.priceLabel ?? product.price_label ?? "";
   const name = live?.name ?? product.title;

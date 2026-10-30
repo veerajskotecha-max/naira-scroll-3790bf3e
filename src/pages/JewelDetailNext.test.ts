@@ -169,19 +169,19 @@ describe("meta and social descriptions", () => {
   }
 });
 
-/* The page sold an open-back ring Shopify had sold out: Add to cart, "US 6
-   ships now" and a delivery date, while its card on the listing said SOLD
-   OUT. Adjustability is fit, not inventory. */
+/* Held for the owner: an adjustable ring keeps Add to cart, Buy Now and
+   InStock when Shopify says it is unavailable (the owner's 25 Oct rule, "all
+   ready to ship from one stock"). Dropping the exemption (Audit C27) changes
+   whether checkout is offered at all, so it waits for sign-off. */
 describe("stock on the product page and reel cards", () => {
-  it("takes Shopify's sold-out for every piece, adjustable rings included", () => {
-    expect(code).toMatch(/const soldOut = piece\.availableForSale === false;/);
+  it("keeps the adjustable-ring exemption from Shopify's sold-out", () => {
+    expect(code).toMatch(/const soldOut = piece\.availableForSale === false && !adjustable;/);
   });
 
   it("does the same on both reel cards", () => {
     for (const file of ["../components/reels/ReelShopNext.tsx", "../components/reels/MobileReelShop.tsx"]) {
       const reel = readFileSync(resolve(__dirname, file), "utf8");
-      expect(reel).toMatch(/const soldOut = live\?\.availableForSale === false;/);
-      expect(reel).not.toMatch(/isAdjustableRing/);
+      expect(reel).toMatch(/const soldOut = live\?\.availableForSale === false && !isAdjustableRing\(live \?\? product\.handle\);/);
     }
   });
 

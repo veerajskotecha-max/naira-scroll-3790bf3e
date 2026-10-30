@@ -1,8 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { setAdMatchIdentity, trackPageView, trackPixel } from "@/lib/pixel";
 import { tagClaritySession } from "@/lib/clarity";
 import { useAuth } from "@/contexts/AuthContext";
+
+/* The address index.html's snippet reported the first PageView for: the one
+   the page loaded at (the pre-boot /products hop has already run). Module
+   state, not a ref: it must outlive the shell's unmount under the error panel. */
+let landing: string | null =
+  typeof window === "undefined" ? null : `${window.location.pathname}${window.location.search}`;
 
 /**
  * Global Meta Pixel wiring:
@@ -32,13 +38,17 @@ const PixelEvents = () => {
     tagClaritySession({ signedIn: Boolean(user) });
   }, [user]);
 
-  // The very first PageView is fired by the inline snippet in index.html.
-  const firstRender = useRef(true);
+  /* Every page the shopper is shown gets one PageView. The landing's comes
+     from the inline snippet in index.html, so it is skipped here, once. A
+     route change reports; so does this component coming back after the
+     error panel, which unmounts the whole shell: the page the shopper reaches
+     from the panel is a fresh mount, and a per-mount "first render" flag
+     skipped its PageView. */
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
+    const here = `${pathname}${search}`;
+    const isLanding = here === landing;
+    landing = null;
+    if (isLanding) return;
     trackPageView();
   }, [pathname, search]);
 

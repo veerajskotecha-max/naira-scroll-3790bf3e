@@ -37,7 +37,7 @@ import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
-import { clipText } from "@/lib/clipText";
+import { clipText, fitTitle } from "@/lib/clipText";
 import UpiBadges from "@/components/checkout/UpiBadges";
 
 /*
@@ -693,7 +693,7 @@ const JewelDetailNext = () => {
       url: canonical,
     },
   };
-  const title = `${piece.name} · Demi-Gold Jewellery | Naira Flore`;
+  const title = fitTitle(`${piece.name} · Demi-Gold Jewellery`);
   const ogImageUrl = absoluteUrl(shopifyOgImage(piece.image));
 
   const heart = (

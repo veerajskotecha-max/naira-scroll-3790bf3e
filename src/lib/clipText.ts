@@ -14,3 +14,24 @@ export const clipText = (text: string, max: number): string => {
   const words = space > 0 ? head.slice(0, space) : head;
   return `${words.replace(/[\s,;:.–—-]+$/, "")}…`;
 };
+
+/**
+ * A page title with the brand, at most `max` characters: search results cut
+ * longer ones off. Trailing qualifiers go whole first ("American Diamond
+ * Jewellery, Brilliant-Cut Zircone, 18K Finish" keeps its first two parts),
+ * then words. 26 pages ran to 66–76 characters, /jewellery among them.
+ */
+export const fitTitle = (page: string, brand = " | Naira Flore", max = 65): string => {
+  const room = max - brand.length;
+  let fit = page.replace(/\s+/g, " ").trim();
+  while (fit.length > room) {
+    const cut = Math.max(fit.lastIndexOf(", "), fit.lastIndexOf(" · "));
+    if (cut <= 0) break;
+    fit = fit.slice(0, cut);
+  }
+  if (fit.length > room) {
+    const space = fit.charAt(room) === " " ? room : fit.lastIndexOf(" ", room);
+    fit = fit.slice(0, space > 0 ? space : room).replace(/[\s,;:–—-]+$/, "");
+  }
+  return `${fit}${brand}`;
+};

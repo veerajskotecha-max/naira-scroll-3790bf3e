@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { clipText } from "./clipText";
+import { clipText, fitTitle } from "./clipText";
+import { allArticles, allLandings } from "@/data/seoContent";
 
 /* The live blurb of prism-riviere-bracelet, the most-advertised piece. Its
    meta description ended "…cushion cut pastel cubic zirconia " and its
@@ -32,5 +33,37 @@ describe("clipText", () => {
 
   it("keeps a word that ends exactly at the limit", () => {
     expect(clipText("abc def ghi", 8)).toBe("abc def…");
+  });
+});
+
+/* 26 pages had titles of 66–76 characters that search results cut off, most
+   because " | Naira Flore" followed a full "Topic, qualifier" title. */
+describe("fitTitle", () => {
+  it("drops trailing qualifiers whole before words", () => {
+    expect(fitTitle("Demi-Fine Jewellery Online India, Anti-Tarnish 18K Gold Finish")).toBe("Demi-Fine Jewellery Online India | Naira Flore");
+    expect(fitTitle("American Diamond Jewellery, Brilliant-Cut Zircone, 18K Finish")).toBe(
+      "American Diamond Jewellery, Brilliant-Cut Zircone | Naira Flore",
+    );
+    expect(fitTitle("Serpentine Whisper Chain — Silver · Demi-Gold Jewellery")).toBe("Serpentine Whisper Chain — Silver | Naira Flore");
+  });
+
+  it("leaves a title that fits as it is", () => {
+    expect(fitTitle("Prism Rivière Bracelet · Demi-Gold Jewellery")).toBe("Prism Rivière Bracelet · Demi-Gold Jewellery | Naira Flore");
+    expect(fitTitle("Track Your Order")).toBe("Track Your Order | Naira Flore");
+  });
+
+  it("cuts a single long phrase between words", () => {
+    const out = fitTitle("A very long product name that keeps going well past any limit at all");
+    expect(out.length).toBeLessThanOrEqual(65);
+    expect(out).toBe("A very long product name that keeps going well past | Naira Flore");
+  });
+
+  it("keeps every landing and journal title within 65 characters", () => {
+    const pages = [...allLandings.map((c) => c.metaTitle), ...allArticles.map((a) => a.metaTitle)].map((t) =>
+      fitTitle(t.replace(/ \| Naira Flore$/, "")),
+    );
+    expect(pages.filter((t) => t.length > 65)).toEqual([]);
+    // Shortening must not leave two pages with one title.
+    expect(pages.filter((t, i) => pages.indexOf(t) !== i)).toEqual([]);
   });
 });

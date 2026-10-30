@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
-import { siteRoutes, sitemapRoutes } from "../../scripts/routes";
+import { resolveSiteRoutes, siteRoutes, sitemapRoutes } from "../../scripts/routes";
 import { jewellery } from "@/data/jewellery";
 import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 import { allLandings } from "@/data/seoContent";
@@ -39,5 +39,29 @@ describe("sitemap routes", () => {
     const stocked = new Set(stockedLandings(firstPaint, allLandings).map((c) => c.slug));
     expect(linked.length).toBeGreaterThan(0);
     expect(linked.filter((slug) => !stocked.has(slug))).toEqual([]);
+  });
+});
+
+/* Only the 19 journal URLs carried <lastmod>, so a new photo, price or
+   description gave search no hint to come back to a product page. The day
+   Shopify last changed the listing is read with the route list. */
+describe("product lastmod", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("dates every product route from Shopify's updatedAt", async () => {
+    const products = [
+      { handle: jewellery[0].handle, vendor: "Naira Petite", updatedAt: "2026-10-26T09:00:00Z" },
+      { handle: "a-new-piece", vendor: "Naira Petite", updatedAt: "2026-10-30T10:00:00Z" },
+      { handle: "blush-of-dawn", vendor: "Naira Flore", updatedAt: "2026-09-16T08:14:47Z" },
+    ];
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: { products: { edges: products.map((node) => ({ node })) } } }))));
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+    const routes = await resolveSiteRoutes();
+    const lastmod = (path: string) => routes.find((r) => r.path === path)?.lastmod;
+    expect(lastmod(`/jewellery/${jewellery[0].handle}`)).toBe("2026-10-26");
+    expect(lastmod("/jewellery/a-new-piece")).toBe("2026-10-30");
+    expect(lastmod("/product/blush-of-dawn")).toBe("2026-09-16");
+    // The bundled route list itself is not dated by a build.
+    expect(siteRoutes.find((r) => r.path === `/jewellery/${jewellery[0].handle}`)?.lastmod).toBeUndefined();
   });
 });

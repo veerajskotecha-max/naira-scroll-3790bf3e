@@ -83,6 +83,7 @@ const STOREFRONT_TOKEN = "0f6fd83502924ac437a5d19180bb08c3";
 interface LiveProduct {
   handle: string;
   vendor: string;
+  updatedAt?: string;
 }
 
 /** The Shopify vendor holding the jewellery line; everything else is clothing. */
@@ -97,7 +98,7 @@ const fetchLiveProducts = async (): Promise<LiveProduct[] | null> => {
         "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
       },
       body: JSON.stringify({
-        query: `{ products(first: 250) { edges { node { handle vendor } } } }`,
+        query: `{ products(first: 250) { edges { node { handle vendor updatedAt } } } }`,
       }),
     });
     if (!res.ok) return null;
@@ -122,6 +123,13 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
     return siteRoutes;
   }
   const live = new Set(products.map((p) => p.handle));
+  /* Each product page carries the day Shopify last changed its listing, so a
+     new photo, price or description is a recrawl hint, not just the journal. */
+  const updated = new Map(products.map((p) => [p.handle, p.updatedAt?.slice(0, 10)]));
+  const dated = (route: SiteRoute, handle: string): SiteRoute => {
+    const lastmod = updated.get(handle);
+    return lastmod ? { ...route, lastmod } : route;
+  };
   /* A collection whose every piece has since been unlisted is empty too. One
      stocked only by pieces newer than the snapshot stays out until the
      snapshot is regenerated: under-advertised for a while, never a soft 404. */
@@ -146,6 +154,10 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
     console.log(`routes: skipping ${dropped.length} delisted product route(s)`);
   }
   if (emptied.length) console.log(`routes: skipping ${emptied.length} emptied collection(s): ${emptied.join(", ")}`);
+  const keptDated = kept.map((route) => {
+    const match = route.path.match(/^\/jewellery\/([^/]+)$/);
+    return match ? dated(route, match[1]) : route;
+  });
 
   // Jewellery listings added in Shopify after the bundled file was generated
   // still render fine at runtime (the app merges static + live), but they were
@@ -155,7 +167,7 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   const routed = new Set(kept.map((r) => r.path));
   const jewellery = products
     .filter((p) => (p.vendor || "").trim().toLowerCase() === JEWELLERY_VENDOR)
-    .map<SiteRoute>((p) => ({ path: `/jewellery/${p.handle}`, changefreq: "weekly", priority: "0.8" }))
+    .map<SiteRoute>((p) => dated({ path: `/jewellery/${p.handle}`, changefreq: "weekly", priority: "0.8" }, p.handle))
     .filter((r) => !routed.has(r.path));
   if (jewellery.length) console.log(`routes: adding ${jewellery.length} live jewellery route(s)`);
 
@@ -165,10 +177,10 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   const jewellerySet = new Set(jewelleryHandles);
   const clothing = products
     .filter((p) => (p.vendor || "").trim().toLowerCase() !== JEWELLERY_VENDOR && !jewellerySet.has(p.handle))
-    .map<SiteRoute>((p) => ({ path: `/product/${p.handle}`, changefreq: "monthly", priority: "0.8" }));
+    .map<SiteRoute>((p) => dated({ path: `/product/${p.handle}`, changefreq: "monthly", priority: "0.8" }, p.handle));
   if (clothing.length) console.log(`routes: adding ${clothing.length} clothing product route(s)`);
 
-  return [...kept, ...jewellery, ...clothing];
+  return [...keptDated, ...jewellery, ...clothing];
 };
 
 

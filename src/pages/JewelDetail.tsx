@@ -34,7 +34,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
-import { clipText } from "@/lib/clipText";
+import { clipText, fitTitle } from "@/lib/clipText";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
@@ -648,12 +648,12 @@ const JewelDetail = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>
       <Helmet>
-        <title>{piece.name} · Demi-Gold Jewellery | Naira Flore</title>
+        <title>{fitTitle(`${piece.name} · Demi-Gold Jewellery`)}</title>
         <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
         <link rel="canonical" href={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
+        <meta property="og:title" content={fitTitle(`${piece.name} · Demi-Gold Jewellery`)} />
         <meta property="og:description" content={clipText(piece.blurb, 150)} />
         <meta property="og:image" content={ogImageUrl} />
         <meta property="og:image:secure_url" content={ogImageUrl} />
@@ -664,7 +664,7 @@ const JewelDetail = () => {
         <meta property="og:url" content={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <meta property="og:site_name" content="Naira Flore" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
+        <meta name="twitter:title" content={fitTitle(`${piece.name} · Demi-Gold Jewellery`)} />
         <meta name="twitter:description" content={clipText(piece.blurb, 150)} />
         <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>

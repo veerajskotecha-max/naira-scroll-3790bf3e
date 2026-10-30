@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from "./chunkFailure";
+import { clearChunkReloadFlag, handlePreloadError, isChunkImportFailure, reloadForStaleChunk } from "./chunkFailure";
 
 /*
   Pins the crash the shopper sees when a page's code never arrives. Each browser
@@ -61,5 +61,50 @@ describe("reloadForStaleChunk", () => {
     clearChunkReloadFlag();
     expect(reloadForStaleChunk()).toBe(true);
     expect(reload).toHaveBeenCalledTimes(2);
+  });
+});
+
+/* Vite's import helper hands back undefined when its preloadError event is
+   prevented. Prevented after the one reload was spent, a missing page file
+   reached the error panel as "Cannot read properties of undefined (reading
+   'default')" instead of the import failure it was. */
+describe("handlePreloadError", () => {
+  const failure = (payload: unknown) =>
+    Object.assign(new Event("vite:preloadError", { cancelable: true }), { payload });
+  const missingPage = new TypeError(
+    "Failed to fetch dynamically imported module: https://nairaflore.com/assets/JewelDetailNext-Zi3Qz6BX.js",
+  );
+  let reload = vi.fn();
+
+  beforeEach(() => {
+    sessionStorage.clear();
+    reload = vi.fn();
+    Object.defineProperty(window, "location", {
+      value: { ...window.location, reload },
+      configurable: true,
+      writable: true,
+    });
+  });
+
+  it("holds the failure back only while the page reloads", () => {
+    const first = failure(missingPage);
+    handlePreloadError(first);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(first.defaultPrevented).toBe(true);
+  });
+
+  it("lets the real error through once the reload is spent", () => {
+    handlePreloadError(failure(missingPage));
+    const again = failure(missingPage);
+    handlePreloadError(again);
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(again.defaultPrevented).toBe(false);
+  });
+
+  it("never reloads, or holds back, for a 3D decoration", () => {
+    const three = failure(new TypeError("Failed to fetch dynamically imported module: https://nairaflore.com/assets/three-sES_xdo2.js"));
+    handlePreloadError(three);
+    expect(reload).not.toHaveBeenCalled();
+    expect(three.defaultPrevented).toBe(false);
   });
 });

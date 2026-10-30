@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import { preloadRouteFor } from "./pageCode";
 import "./index.css";
 import { isOptionalChunkFailure } from "./lib/optionalChunk";
-import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
+import { clearChunkReloadFlag, handlePreloadError, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
 
 /* A page loaded before a rebuild or publish still points at the old chunk
    files, so the next lazy route fails with "Importing a module script failed"
@@ -13,12 +13,7 @@ import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from 
    These two listeners only catch a download that fails on its own. When React
    throws the same failure while rendering a route, nothing here sees it — that
    path is ChunkErrorBoundary's. */
-window.addEventListener("vite:preloadError", (e) => {
-  // The 3D decorations fall back to flat art on their own; never reload for them.
-  if (isOptionalChunkFailure((e as Event & { payload?: unknown }).payload)) return;
-  e.preventDefault();
-  reloadForStaleChunk();
-});
+window.addEventListener("vite:preloadError", handlePreloadError);
 window.addEventListener("unhandledrejection", (e) => {
   if (isOptionalChunkFailure(e.reason)) return;
   if (isChunkImportFailure(e.reason)) reloadForStaleChunk();

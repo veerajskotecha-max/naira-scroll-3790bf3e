@@ -467,7 +467,8 @@ const JewelDetail = () => {
     url: `https://nairaflore.com/jewellery/${piece.handle}`,
     // ponytail: no aggregateRating until real per-product reviews exist — emitting a
     // site-wide constant here is fabricated structured data. Re-add from Judge.me data.
-    sku: piece.sku,
+    // An empty "sku" is invalid structured data; a piece without one leaves it out.
+    ...(piece.sku ? { sku: piece.sku } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",

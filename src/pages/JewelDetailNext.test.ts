@@ -144,3 +144,15 @@ describe("redesigned product page", () => {
     expect(row).toMatch(/platingBadge\(finish\)/);
   });
 });
+
+/* "sku": "" is invalid structured data, and 115 product pages served it. A
+   piece without a code leaves the key out. */
+describe("product structured data", () => {
+  for (const file of ["JewelDetailNext.tsx", "JewelDetail.tsx"]) {
+    it(`${file} never emits an empty sku`, () => {
+      const page = readFileSync(resolve(__dirname, file), "utf8").replace(/\/\/.*$/gm, "");
+      expect(page).not.toMatch(/^\s*sku: piece\.sku,/m);
+      expect(page).toMatch(/\.\.\.\(piece\.sku \? \{ sku: piece\.sku \} : \{\}\)/);
+    });
+  }
+});

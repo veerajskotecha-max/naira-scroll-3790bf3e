@@ -260,6 +260,17 @@ async function renderWorker(browser: Browser, queue: SiteRoute[]) {
           /* fall through — the assertion below reports it properly */
         });
 
+      /* A collection judged stocked from the bundled catalogue that Shopify has
+         since emptied draws its empty state and asks not to be indexed (see
+         stockedLandings). Like a piece unlisted mid-build, it gets the shell
+         and a warning rather than failing the publish. */
+      if (route.path.startsWith("/jewellery/collections/") && (await page.$("[data-empty-collection]"))) {
+        console.warn(`prerender: ${route.path} has no pieces in Shopify — given the SPA shell`);
+        delisted += 1;
+        lastError = undefined;
+        break;
+      }
+
       /* The <h1> can land before Helmet has written the page's <head>, which it
          does on an animation frame. Wait until the canonical names this route —
          until then the head is still the shell's. Polled on a timer, not on

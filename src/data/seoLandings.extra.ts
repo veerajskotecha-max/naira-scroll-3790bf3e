@@ -978,7 +978,7 @@ export const extraLandings: CategoryLanding[] = [
       },
       {
         q: "What is a good birthday gift for a girlfriend?",
-        a: "A fine chain with a pendant, or an evil eye bracelet. Skip rings unless you already know her size.",
+        a: "A fine chain with a pendant, or a charm bracelet. Skip rings unless you already know her size.",
       },
       {
         q: "Can I get a gift note included?",

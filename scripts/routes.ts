@@ -5,16 +5,20 @@
 // no longer existed in the data, and every one of them bounced to /jewellery.
 // One source means a URL cannot be advertised without also being prerendered.
 
-import { readFileSync } from "fs";
-import { resolve } from "path";
 import { allLandings as categoryLandings, allArticles as journal } from "../src/data/seoContent";
+// Both data files are plain data now (no Vite asset imports), so tsx loads them.
+import { jewellery } from "../src/data/jewellery";
+import { jewellerySnapshot } from "../src/data/jewellerySnapshot";
+import { stockedLandings } from "../src/lib/jewelleryCollections";
 
-// Product handles are read from the data file as text rather than imported —
-// the module pulls in Vite asset imports that tsx cannot resolve outside the
-// bundler.
-const jewelleryHandles = [
-  ...readFileSync(resolve("src/data/jewellery.ts"), "utf8").matchAll(/handle:\s*"([^"]+)"/g),
-].map((m) => m[1]);
+const jewelleryHandles = jewellery.map((p) => p.handle);
+
+/* Every piece the site can draw before Shopify answers: the hand-authored
+   file plus the snapshot the app's own mapping made from the live store
+   (scripts/generate-jewellery-snapshot.ts). A collection with none of them is
+   empty, and is neither advertised nor prerendered. */
+const firstPaint = [...jewellery, ...jewellerySnapshot];
+const landingPath = (slug: string) => `/jewellery/collections/${slug}`;
 
 export const BASE_URL = "https://nairaflore.com";
 
@@ -35,9 +39,9 @@ export const siteRoutes: SiteRoute[] = [
      they redirect, to /customize and /jewellery. */
 
   { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
-  ...categoryLandings.map<SiteRoute>((c) => ({
-    path: `/jewellery/collections/${c.slug}`,
-    ...(c.canonicalSlug ? { canonical: `/jewellery/collections/${c.canonicalSlug}` } : {}),
+  ...stockedLandings(firstPaint, categoryLandings).map<SiteRoute>((c) => ({
+    path: landingPath(c.slug),
+    ...(c.canonicalSlug ? { canonical: landingPath(c.canonicalSlug) } : {}),
     changefreq: "weekly",
     priority: "0.9",
   })),
@@ -118,8 +122,20 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
     return siteRoutes;
   }
   const live = new Set(products.map((p) => p.handle));
+  /* A collection whose every piece has since been unlisted is empty too. One
+     stocked only by pieces newer than the snapshot stays out until the
+     snapshot is regenerated: under-advertised for a while, never a soft 404. */
+  const stocked = new Set(
+    stockedLandings(firstPaint.filter((p) => live.has(p.handle)), categoryLandings).map((c) => landingPath(c.slug)),
+  );
   const dropped: string[] = [];
+  const emptied: string[] = [];
   const kept = siteRoutes.filter((route) => {
+    if (route.path.startsWith("/jewellery/collections/")) {
+      if (stocked.has(route.path)) return true;
+      emptied.push(route.path);
+      return false;
+    }
     const match = route.path.match(/^\/jewellery\/([^/]+)$/);
     if (!match || match[1] === "collections") return true;
     if (live.has(match[1])) return true;
@@ -129,6 +145,7 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   if (dropped.length) {
     console.log(`routes: skipping ${dropped.length} delisted product route(s)`);
   }
+  if (emptied.length) console.log(`routes: skipping ${emptied.length} emptied collection(s): ${emptied.join(", ")}`);
 
   // Jewellery listings added in Shopify after the bundled file was generated
   // still render fine at runtime (the app merges static + live), but they were

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collectionPieces, matchesOccasion } from "./jewelleryCollections";
+import { collectionPieces, matchesOccasion, stockedLandings } from "./jewelleryCollections";
 import { colourCards } from "./colourCards";
 import { jewellery, type JewelPiece } from "@/data/jewellery";
 import { jewellerySnapshot } from "@/data/jewellerySnapshot";
@@ -75,5 +75,31 @@ describe("landings that repeat a broader landing", () => {
     expect(broader!.canonicalSlug, `${target} must be its own canonical`).toBeUndefined();
     const outside = [...handles(slug)].filter((h) => !handles(target).has(h));
     expect(outside).toEqual([]);
+  });
+});
+
+describe("landings with nothing to show", () => {
+  /* No evil-eye piece is listed, so its landing showed "No pieces in this
+     collection right now" under copy describing bracelets the shop does not
+     sell, while the sitemap, Shop All and 30 other landings advertised it. */
+  const bracelet = piece("heartbead-bracelet", "Heartbead Bracelet", "Bracelets", ["Demi Fine", "Naira Petite"]);
+  const evilEye = categoryBySlug("evil-eye-bracelets")!;
+  const charm = categoryBySlug("charm-bracelets")!;
+
+  it("drops a landing none of the pieces belong to and keeps the rest", () => {
+    expect(stockedLandings([bracelet], [evilEye, charm])).toEqual([charm]);
+    expect(stockedLandings([], [evilEye, charm])).toEqual([]);
+  });
+
+  it("counts a piece by the colour card the landing draws", () => {
+    const twoTone = {
+      ...piece("verdant-band", "Verdant Band", "Rings"),
+      options: [{ name: "Metal", values: ["Gold", "Rose Gold"] }],
+      variants: ["Gold", "Rose Gold"].map((metal, i) => ({
+        id: `gid://shopify/ProductVariant/${i}`, title: metal, price: 999, availableForSale: true,
+        options: { Metal: metal }, image: `https://cdn.example/verdant-band-${metal.replace(" ", "-").toLowerCase()}.jpg`,
+      })),
+    } as JewelPiece;
+    expect(stockedLandings([twoTone], [categoryBySlug("rose-gold-jewellery")!])).toHaveLength(1);
   });
 });

@@ -20,6 +20,7 @@ import { Link, useLocation, useNavigationType, useSearchParams } from "react-rou
 import { shopifyImage } from "@/lib/shopifyImage";
 import { cardCover } from "@/lib/cardCover";
 import { cardKey, colourCards } from "@/lib/colourCards";
+import { stockedLandings } from "@/lib/jewelleryCollections";
 
 
 const hubFaqs = [
@@ -107,7 +108,13 @@ const Jewellery = () => {
     else params.set("category", next);
     setSearchParams(params, { replace: true });
   };
-  const { jewellery } = useLiveJewellery();
+  const { jewellery, isLive } = useLiveJewellery();
+  /* A collection with nothing in it is not offered (see stockedLandings),
+     judged once Shopify answers: the bundled first paint knows 21 pieces. */
+  const collectionLinks = useMemo(
+    () => (isLive ? stockedLandings(jewellery, categoryLandings) : categoryLandings),
+    [isLive, jewellery]
+  );
 
   /* Sort + filters live in the URL so a filtered edit is shareable, and are
      written with replace so the grid never jumps back to the top. */
@@ -412,7 +419,7 @@ const Jewellery = () => {
               SHOP BY COLLECTION
             </summary>
             <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-2.5">
-              {categoryLandings.map((c) => (
+              {collectionLinks.map((c) => (
                 <Link
                   key={c.slug}
                   to={`/jewellery/collections/${c.slug}`}

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { matchRoutes } from "react-router-dom";
+import { ROUTE_CODE } from "@/lib/routeCode";
 
 /*
   nairaflore.com is the Shopify store's primary domain, so every address a
@@ -103,5 +104,21 @@ describe("Shopify-shaped addresses", () => {
   it("keeps the ad's query on an unknown collection's way to the listing", () => {
     const page = readFileSync(resolve(__dirname, "../pages/JewelleryCategory.tsx"), "utf8");
     expect(page).toMatch(/if \(!landing\) return <Navigate to=\{\{ pathname: "\/jewellery", search \}\} replace \/>/);
+  });
+});
+
+/* main.tsx loads a landing page's code before React starts, from the table in
+   lib/routeCode.ts. /shop/indo-western still named ShopAll there after App.tsx
+   began redirecting it to /customize: every landing downloaded ~29 kB of a page
+   no route renders, then the real one, one after the other. */
+describe("the landing preload table", () => {
+  const PAGE_OF: Record<string, string> = {
+    PieceRoute: "JewelDetailNext",
+    CollectionRoute: "JewelleryCategory",
+    ProductRoute: "ProductDetail",
+  };
+  it.each(ROUTE_CODE.map(([pattern, key]) => [pattern, key]))("loads the page %s really renders (%s)", (pattern, key) => {
+    const [, element] = land(pattern.replace(/:\w+/g, "x"));
+    expect(PAGE_OF[element] ?? element).toBe(key);
   });
 });

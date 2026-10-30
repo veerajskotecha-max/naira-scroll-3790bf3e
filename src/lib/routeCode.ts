@@ -9,7 +9,7 @@ import { matchPath } from "react-router-dom";
 export const ROUTE_CODE = [
   ["/", "Index"],
   ["/index", "Index"],
-  ["/shop/indo-western", "ShopAll"],
+  ["/shop/indo-western", "MadeForYou"],
   ["/product/:id", "ProductDetail"],
   ["/products/:id", "ProductDetail"],
   ["/customize", "MadeForYou"],

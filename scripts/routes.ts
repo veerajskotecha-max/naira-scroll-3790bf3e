@@ -29,7 +29,7 @@ export const siteRoutes: SiteRoute[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   /* /shop now redirects to /jewellery, so it is not a prerenderable route and is
      no longer advertised. /shop/indo-western and /shop/jewellery stay absent too:
-     both render ShopAll, which disclaims its own canonical. */
+     they redirect, to /customize and /jewellery. */
 
   { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
   ...categoryLandings.map<SiteRoute>((c) => ({

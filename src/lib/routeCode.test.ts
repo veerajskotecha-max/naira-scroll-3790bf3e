@@ -20,6 +20,7 @@ describe("routeKeyFor", () => {
     expect(routeKeyFor("/collections/bracelets/products/prism-riviere-bracelet")).toBe("ProductDetail");
     expect(routeKeyFor("/collections/dusk")).toBe("MadeForYou");
     expect(routeKeyFor("/collections/frontpage")).toBe("MadeForYou");
+    expect(routeKeyFor("/shop/indo-western")).toBe("MadeForYou");
   });
 
   it("leaves unknown URLs to render the ordinary way", () => {

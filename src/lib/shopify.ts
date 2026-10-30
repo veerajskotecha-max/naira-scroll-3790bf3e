@@ -646,8 +646,7 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
 
   const cart = data.data.cartCreate.cart;
   const line = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
-  /* A sold-out piece comes back as a line of 0 with no error; the bag showed it at ₹0. */
-  if (!cart?.checkoutUrl || !line?.id || line.quantity === 0) return null;
+  if (!cart?.checkoutUrl || !line?.id) return null;
 
   return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id, quantity: line.quantity ?? quantity, price: linePrice(line) };
 }
@@ -732,9 +731,7 @@ export async function addLineToShopifyCart(cartId: string, variantId: string, qu
   if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
 
   const cart = data.data.cartLinesAdd.cart;
-  const found = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
-  // A line of 0 is a piece Shopify could not add (sold out): no line.
-  const line = found?.quantity === 0 ? undefined : found;
+  const line = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
   return { success: true, lineId: line?.id, quantity: line?.quantity, price: linePrice(line), checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
 }
 

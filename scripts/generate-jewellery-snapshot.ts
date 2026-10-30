@@ -20,13 +20,6 @@
  * query. The two drifted apart once already — a piece switched to DRAFT stayed in
  * the handle list — and deriving both from one response is what stops that.
  *
- * And it refreshes the price, MRP and stock of the hand-authored pieces in
- * src/data/jewellery.ts, which the listings draw until the live catalogue
- * answers. Nothing ever updated them: on 30 Oct 19 of 21 prices were stale
- * (Woven Gold Hoops at ₹2,349 for ₹1,299) and five sold-out pieces showed Add
- * to cart. Their variant stays as written: it is what a tap before the
- * catalogue puts in the bag.
- *
  * Run it whenever pieces are added, repriced or restocked in Shopify. A stale
  * snapshot is corrected by live data within a second of load; a MISSING piece
  * is what brings the skeleton back, and productSnapshot.test.ts will fail if
@@ -37,7 +30,7 @@ import { resolve } from "node:path";
 import { fetchShopifyProducts } from "@/lib/shopify";
 import { jewellery as authored } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
-import { fromShopify, liveCatalogue } from "@/hooks/useLiveJewellery";
+import { fromShopify } from "@/hooks/useLiveJewellery";
 
 const nodes = await fetchShopifyProducts();
 if (nodes.length < 20) {
@@ -81,28 +74,3 @@ writeFileSync(handlesPath, nextHandles);
 console.log(`handle list: ${liveHandles.length} live jewellery handles`);
 console.log(`wrote ${pieces.length} pieces (skipped ${known.size} hand-authored)`);
 console.log(pieces.map((p) => `  ${p.availableForSale ? " " : "×"} ${p.handle}  ₹${p.price}`).join("\n"));
-
-/* The hand-authored pieces, from the same response: each gets what the live
-   catalogue would show for it. Only these lines of an entry are rewritten. */
-const liveByHandle = new Map(liveCatalogue(nodes).map((p) => [p.handle, p]));
-const authoredPath = resolve(process.cwd(), "src/data/jewellery.ts");
-let authoredSrc = readFileSync(authoredPath, "utf8");
-const refreshed: string[] = [];
-for (const piece of authored) {
-  const live = liveByHandle.get(piece.handle);
-  if (!live) continue;
-  const block = new RegExp(
-    `(handle: ${JSON.stringify(piece.handle)},\\n(?:(?!\\s+handle: )[^\\n]*\\n)*?)(\\s+)price: [^\\n]*\\n\\s+priceLabel: [^\\n]*\\n(?:\\s+compareAtPrice: [^\\n]*\\n\\s+compareAtLabel: [^\\n]*\\n)?(\\s+variantId: [^\\n]*\\n)\\s+availableForSale: [^\\n]*\\n`,
-  );
-  if (!block.test(authoredSrc)) throw new Error(`jewellery.ts: could not find the price lines of ${piece.handle}`);
-  authoredSrc = authoredSrc.replace(block, (_all, head: string, indent: string, variantLine: string) => {
-    const pad = indent.replace(/^\n/, "");
-    const lines = [`price: ${live.price},`, `priceLabel: ${JSON.stringify(live.priceLabel)},`];
-    if (live.compareAtPrice) lines.push(`compareAtPrice: ${live.compareAtPrice},`, `compareAtLabel: ${JSON.stringify(live.compareAtLabel)},`);
-    return `${head}${lines.map((line) => `${pad}${line}\n`).join("")}${variantLine.replace(/^\n/, "")}${pad}availableForSale: ${live.availableForSale},\n`;
-  });
-  refreshed.push(`  ${live.availableForSale ? " " : "×"} ${piece.handle}  ₹${piece.price} → ₹${live.price}`);
-}
-writeFileSync(authoredPath, authoredSrc);
-console.log(`refreshed ${refreshed.length} hand-authored pieces in jewellery.ts`);
-console.log(refreshed.join("\n"));

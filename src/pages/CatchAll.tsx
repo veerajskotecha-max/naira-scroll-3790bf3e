@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ComingSoon from "@/pages/ComingSoon";
+import PageSEO from "@/components/PageSEO";
 import { shopifyForwardTarget } from "@/lib/shopifyForward";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 
@@ -34,6 +35,9 @@ const CatchAll = () => {
 
   return (
     <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-[var(--nf-surface)] px-6 text-center">
+      {/* The host answers every address with the homepage's file, canonical and
+          "index" included; like Coming Soon, this state must replace them. */}
+      <PageSEO title="Opening your order" description="Taking you to your Naira Flore order." noindex />
       <p className="font-cormorant text-[24px] text-[var(--nf-text)]">Opening your order…</p>
       {slow && (
         <a

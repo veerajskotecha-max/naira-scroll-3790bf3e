@@ -269,7 +269,7 @@ footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule)
       all.addEventListener('click', () => g.items.forEach(it => { if (!it.optional && !it.pick && !state[it.id]) choose(it.id, 'yes'); }));
       tools.append(all); s.append(tools);
       if (g.fixed.length) {
-        const d = el('details'); d.append(el('summary', null, 'What the check found and was fixed (' + g.fixed.length + ')'));
+        const d = el('details'); d.append(el('summary', null, 'Problems the checks found, all fixed (' + g.fixed.length + ')'));
         const ul = el('ul', 'fixed'); g.fixed.forEach(f => ul.append(el('li', null, f.summary))); d.append(ul); s.append(d);
       }
       if (g.skipped.length) {

@@ -1,0 +1,597 @@
+[
+ {
+  "key": "checkout",
+  "cards": [
+   {
+    "id": "checkout-2b702d9",
+    "hash": "4f22b39f89af",
+    "what": "When a shopper adds a piece to the bag then taps Buy Now on it, checkout gets that piece once, not twice.",
+    "shoppers": "With only that piece in the bag, checkout now opens with 1 piece at full price, not 2 at 15% off. If Shopify has lost the piece, Buy Now puts it back and opens checkout instead of failing.",
+    "meta": "With the bracelet alone, Meta gets one add to cart fewer, and the checkout start shows ₹2,399 for 1 piece, not ₹4,798 for 2. Checkouts that used to fail now send an add to cart and a checkout start.",
+    "ask": "Should Add to cart then Buy Now on the same piece send 1 piece at full price to checkout, rather than 2 pieces at 15% off?",
+    "advice": "Your call",
+    "why": "It changes discount and Meta counts here, so the reviewer held it for you; approve only with its fix."
+   },
+   {
+    "id": "checkout-3e6cff9",
+    "hash": "826ddd36dbce",
+    "what": "On the outfit page, Buy Now sends the picked quantity to checkout, rather than adding it on top of the outfit already in the bag.",
+    "shoppers": "A shopper with the outfit in the bag who picks 3 now gets 3 at checkout, not 4. Jewellery pages are unchanged, and outfits are sold out today.",
+    "meta": "Meta's add to cart counts the 2 extra pieces asked for, not 3, and the checkout start counts the 3 in the bag. If stock is short, add to cart still over-reports, as before.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "A clear fix for the wrong quantity at checkout, and outfits are sold out on the live shop today."
+   },
+   {
+    "id": "checkout-39ccbce",
+    "hash": "efc18acc2a47",
+    "what": "Tapping Undo straight after Remove in the bag now brings the piece back and keeps the rest of the bag.",
+    "shoppers": "Undo straight after Remove now brings the piece back and keeps the rest of the bag, where before a piece could vanish or the bag be wiped. A piece Shopify already dropped no longer empties the bag.",
+    "meta": "Undo now always sends one add to cart for the piece brought back, which stays in the bag. Bags that used to be wiped can now reach checkout, so Meta may see more checkout starts and payment steps.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Clear bug fix; approve it together with the next card (removing a dropped line), or hold both."
+   },
+   {
+    "id": "checkout-f2b05f4",
+    "hash": "15a423e73f5b",
+    "what": "Removing a piece from the bag that Shopify has already dropped now just takes it out, instead of an error or emptying the bag.",
+    "shoppers": "Remove on a piece Shopify has already dropped now takes it out quietly and keeps the rest of the bag. Before, the whole bag was emptied.",
+    "meta": "The next checkout start and payment step count only the pieces really left, for example the bracelet at ₹2,399. Before, the bag was empty, so neither was sent.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Low-risk bug fix that only runs when Shopify says the piece is gone; pairs with the Undo card."
+   },
+   {
+    "id": "checkout-8b0b4ff",
+    "hash": "1f3386f72f7f",
+    "what": "For rings Shopify does not list in sizes, the size a shopper picks now reaches Fastrr orders; before, no size was passed on.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Fixes missing ring sizes on Fastrr orders; worth checking the next real ring order shows the size."
+   },
+   {
+    "id": "checkout-930306e",
+    "hash": "8d01445df6bd",
+    "what": "Checkout now records which ad campaign brought the shopper, for both Fastrr and Shopify's own checkout.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "If a shopper arrives from one ad then opens another in the same tab, should checkout credit the first campaign (as built) rather than the latest?",
+    "advice": "Your call",
+    "why": "Low risk, but crediting the first or latest campaign is an open choice for you."
+   },
+   {
+    "id": "checkout-d4ac0c0",
+    "hash": "c1d532819e79",
+    "what": "When Fastrr cannot start, Shopify's own checkout now opens directly instead of bouncing through extra pages and reloading the site.",
+    "shoppers": "When Fastrr cannot start, Shopify's checkout opens about 3 seconds sooner, without the site flashing up in between. The order summary and discount are the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Low-risk speed fix; the old forwarding page stays as a safety net for old links."
+   },
+   {
+    "id": "checkout-b87f67a",
+    "hash": "d83e242d87e9",
+    "what": "When checking out a single piece, an old Buy 2 or Buy 3 code is taken off the Shopify cart used as the fallback.",
+    "shoppers": "Shopify's fallback checkout no longer carries an old Buy 2 code that does not apply. The price is the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Very low risk: it never slows checkout and cannot change the price."
+   },
+   {
+    "id": "checkout-98ca8cb",
+    "hash": "ff1731c45b5d",
+    "what": "With other pieces in the bag, Buy Now sends only the piece being viewed to checkout, at its own price.",
+    "shoppers": "With the hoops in the bag, Buy Now on the bracelet shows the bracelet alone at ₹2,399, not both at 15% off. Both pieces stay in the bag.",
+    "meta": "The checkout start now counts only the viewed piece, for example ₹2,399 for 1 item instead of ₹3,698 for 2, so checkout values may look smaller. Add to cart is unchanged.",
+    "ask": "Should Buy Now send only the piece being viewed at its own price, or the whole bag with its Buy 2 / Buy 3 discount as today?",
+    "advice": "Your call",
+    "why": "Optional business choice: less discount and a smaller checkout on Buy Now."
+   }
+  ],
+  "corrections": [
+   {
+    "id": "checkout-3e6cff9",
+    "field": "what",
+    "problem": "'Sends exactly that number' overstated it. The full text says checkout gets fewer when stock is short (2 left gives 2), and gets the bag's own amount when the bag already holds more than was picked (3 in the bag, 2 picked gives 3). Reworded to say Buy Now sends the picked quantity instead of adding it on top of what is in the bag."
+   },
+   {
+    "id": "checkout-39ccbce",
+    "field": "what",
+    "problem": "'Without losing or wiping other pieces' got the old bug wrong. Before, the piece being undone was the one that got lost (the hoops), or the whole bag was wiped. Other pieces were never lost on their own. 'Reliably' was also dropped. Now says Undo brings the piece back and keeps the rest of the bag."
+   },
+   {
+    "id": "checkout-8b0b4ff",
+    "field": "what",
+    "problem": "Covered too much. The full text says the change only applies to rings Shopify does not list in sizes (the adjustable rings, Droplet Open Ring and rings sold only in US 6). It does not apply to every ring size. Now limited to those rings."
+   }
+  ]
+ },
+ {
+  "key": "tracking",
+  "cards": [
+   {
+    "id": "tracking-d2c5e87",
+    "hash": "d1b67eacb0db",
+    "what": "When the site is built for publishing, the hidden browser that pre-draws its pages stops sending fake product views to Meta.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Each publish stops adding fake product views from the build. The audit counted 154 per publish, so Ads Manager may show fewer product views, while real shopper views are unaffected.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Removes fake product views, rated low risk; tested on sample pages, though a full publish build was not run."
+   },
+   {
+    "id": "tracking-29a482a",
+    "hash": "1399c35abf45",
+    "what": "The server's copy of each event now goes to Meta only from the real shop, matching the browser's copy.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Previews, test runs and site builds no longer send events to Meta through the server. Shop pages send them as before, but a page missing a small built-in setting would send none.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Stops test events reaching Meta, rated low risk; the live product page was checked and has the needed setting."
+   },
+   {
+    "id": "tracking-2690b7c",
+    "hash": "91c95041fd8c",
+    "what": "Once deployed, the relay that passes events to Meta will only pass on events from nairaflore.com pages.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Events from previews, test copies, look-alike sites or with no page address will be dropped. In testing, events from shop pages passed through unchanged.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Blocks non-shop events, rated low risk; any new shop web address would need adding to the list."
+   },
+   {
+    "id": "tracking-459d528",
+    "hash": "878aa4d14552",
+    "what": "Once deployed, the relay to Meta accepts only events from the shop's own website, and only the nine event types the shop sends.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Events from other websites, or of a type the shop's pages do not send (such as purchase), will be refused; any new type added later must join the list. In testing, genuine shop events passed through unchanged.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Refuses outside and made-up events, rated low risk, though a script can still pretend to come from the shop."
+   },
+   {
+    "id": "tracking-773e02f",
+    "hash": "caf3f1281150",
+    "what": "When a shopper lands on a product in a particular colour or size, Meta is now told that exact item, not the default.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Product views, such as Star Point Band's Silver ads or rings opening on US 6, now name the item on screen, mostly at the same price. A few reach Meta about a second later; still one view per piece.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Fixes Meta being told the wrong colour or size; still one view per piece, rated low risk."
+   },
+   {
+    "id": "tracking-51f4f4b",
+    "hash": "c123cb90bc09",
+    "what": "When a shopper taps a wishlist heart, Meta is now told the exact catalogue item and its price.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Wishlist adds now name the exact catalogue item and carry its price, such as ₹1,300 for Molten Bloom Hoops. Still one event per add, and none on removal.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Gives Meta the exact item and price for wishlist adds; counts unchanged, rated low risk."
+   },
+   {
+    "id": "tracking-c63c96c",
+    "hash": "02577787065f",
+    "what": "Every search a shopper settles on is now reported to Meta once, including searches with no results or closed straight away.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Ads Manager may show more searches, as searches with no results or closed straight away now count, each once. A shopper pausing a second mid-word may send that partial word.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Fixes searches that were missed; rated low risk, though a mid-word pause can count as a search."
+   },
+   {
+    "id": "tracking-2ad2699",
+    "hash": "f15fe8ed86d1",
+    "what": "Meta's browser id cookie is now set as soon as a shopper lands, so even the first product view carries it.",
+    "shoppers": "One more cookie, Meta's browser id, is saved for nairaflore.com only, for 90 days. Nothing visible changes.",
+    "meta": "The first product view now includes Meta's browser id, even before any tap. The id is also passed to Shopify and Shiprocket at checkout; items, coupon and totals are unchanged.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Rated low risk and uses Meta's own documented format; nothing changes on screen."
+   },
+   {
+    "id": "tracking-5753a88",
+    "hash": "ae4e43c5226f",
+    "what": "The shop's visitor id and Meta ad-click id are now readable on the shop's Shopify checkout pages, not just the main site.",
+    "shoppers": "Nothing visible changes. Returning visitors keep the same ids, and the visitor id's expiry now renews on each visit.",
+    "meta": "Events from the shop's pages are unchanged. Shopify's checkout can now read the visitor id and the ad-click id.",
+    "ask": "",
+    "advice": "Your call",
+    "why": "Rated low to medium risk because it changes cookie handling for every shopper."
+   },
+   {
+    "id": "tracking-4465eee",
+    "hash": "9b985db8e094",
+    "what": "The privacy page and the two consent boxes now say a member's phone number, not just email, is scrambled and shared with Meta.",
+    "shoppers": "Shoppers see new wording on the privacy page and the sign-up and account details consent boxes. It says email, and phone if added, are scrambled and shared with Meta only to match them.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "Is the new wording what you want members to read, or should the shop stop sending phone numbers and keep the policy email-only?",
+    "advice": "Your call",
+    "why": "You must confirm the privacy wording; the email-only option would need a separate change."
+   },
+   {
+    "id": "tracking-3d6dfaa",
+    "hash": "0db89096b3c4",
+    "what": "Tapping Checkout in the bag no longer tells Meta a shopper reached the payment step; only Shiprocket reports that now.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Each Checkout tap now sends one checkout start instead of a checkout start plus a payment step. Expect fewer payment-step events; Shiprocket's own, sent when payment is really reached, remain.",
+    "ask": "Which checkout start should Meta hear: (a) the site's own at the Checkout tap (recommended), switching off Shiprocket's in its settings, or (b) Shiprocket's, needing a small site change?",
+    "advice": "Your call",
+    "why": "Needs your choice on duplicate checkout starts; Shopify-checkout orders, about 1 in 50, may lose the payment step."
+   },
+   {
+    "id": "tracking-baa72ac",
+    "hash": "8e575f7a9547",
+    "what": "The value Meta is told at checkout start becomes the bag's actual Total after discounts, instead of the price before discount.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "In Ads Manager, checkout-start values drop for discounted bags; a two-piece BUY2 bag goes from ₹3,398 to ₹2,888. Any custom conversion based on that value would shift.",
+    "ask": "This change is optional: do you want Meta's checkout-start value to show the discounted bag Total rather than the pre-discount price?",
+    "advice": "Your call",
+    "why": "Optional, and it lowers reported checkout-start values for discounted bags in Ads Manager."
+   },
+   {
+    "id": "tracking-f7d43e9",
+    "hash": "6523a4c14e6e",
+    "what": "Each product page's hidden product details again carry the supplier code from Shopify, which Meta and Google read; two swapped codes are corrected.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Product views reaching Meta now include each piece's supplier code, such as B00681C, and Google reads the same codes. A piece sold in several colours or sizes gives its main item's code, whatever is on screen.",
+    "ask": "Are you happy for supplier product codes, such as B00681C, to appear in every product page where Meta and Google can read them?",
+    "advice": "Your call",
+    "why": "Supplier codes become readable in every product page, which is your business choice to make."
+   }
+  ],
+  "corrections": [
+   {
+    "id": "tracking-d2c5e87",
+    "field": "what",
+    "problem": "Called it a 'test browser'. The full text says it is the capture browser that pre-draws pages while the site is built, not a test tool."
+   },
+   {
+    "id": "tracking-d2c5e87",
+    "field": "why",
+    "problem": "Left out the testing gap the risk text names: only the blocking rule was replayed on 3 product pages, and the full publish build was not run."
+   },
+   {
+    "id": "tracking-29a482a",
+    "field": "meta",
+    "problem": "Left out the named risk that a page served without the inline setting would send no server copies to Meta. 'Exactly as before' was also stronger than what was measured."
+   },
+   {
+    "id": "tracking-29a482a",
+    "field": "why",
+    "problem": "Rewrote it around the actual safeguard: the live product page was checked and has the setting that server copies now depend on."
+   },
+   {
+    "id": "tracking-2690b7c",
+    "field": "why",
+    "problem": "Left out the named risk that if the shop ever serves pages on another web address, that address must be added to the list or its events are dropped."
+   },
+   {
+    "id": "tracking-459d528",
+    "field": "meta",
+    "problem": "Left out that any new event type added to the site later must also be added to the relay's list, or it will be refused."
+   },
+   {
+    "id": "tracking-459d528",
+    "field": "why",
+    "problem": "Left out the named risk that a script can fake the website check. Without it, 'only from the shop's own website' overstates the protection."
+   },
+   {
+    "id": "tracking-773e02f",
+    "field": "meta",
+    "problem": "Left out a change in what Meta is told on every plain visit: the plain pages of sized rings now report the US 6 item they open on, not US 5."
+   },
+   {
+    "id": "tracking-f7d43e9",
+    "field": "meta",
+    "problem": "Left out the named risk that a piece with several variants gives its lead variant's code whatever colour is on screen. Also took the second example code out of the meta line and made clear that Google reads the codes from the page rather than receiving product views."
+   }
+  ]
+ },
+ {
+  "key": "prices",
+  "cards": [
+   {
+    "id": "prices-834e4be",
+    "hash": "ffe148eb4e1d",
+    "what": "The bag now always uses Shopify's current price for each piece, so the bag Total matches what checkout charges.",
+    "shoppers": "Bag prices, the Total and the Buy 2 / Buy 3 saving now match what checkout charges. A saved bag showing Mesh Band Ring at ₹699 now shows ₹799, Shopify's price.",
+    "meta": "Checkout start and payment step values now follow Shopify's price, while add to cart from a product page keeps the page's price. An Undo in the bag sends add to cart at Shopify's price.",
+    "ask": "Do you accept that the checkout values Meta receives follow Shopify's current price, not the price the page showed when the piece was added?",
+    "advice": "Your call",
+    "why": "Low risk fix, but checkout, payment step and Undo values sent to Meta change and need your acceptance."
+   },
+   {
+    "id": "prices-41e1a06",
+    "hash": "ab3b6c11e5f5",
+    "what": "In the brief moment before the live catalogue loads, the site now shows today's Shopify prices, sold-out labels and photos.",
+    "shoppers": "Before the catalogue loads, cards show today's prices, such as Heartline ₹1,899 not ₹2,449, or Mesh Band Ring ₹799 not ₹699. Sold-out pieces say SOLD OUT, move to the end, and their pages offer only Reserve now.",
+    "meta": "In that moment, product view and add to cart values use today's prices, such as Woven Gold Hoops ₹2,349 to ₹1,299; payment step and checkout values follow. Sold-out pieces stop sending add to cart and empty checkout starts.",
+    "ask": "Do you accept that, before the catalogue loads, prices, sold-out labels, photos, suggestions and values sent to Meta follow today's Shopify, with the price refresh re-run after repricing or restocking?",
+    "advice": "Your call",
+    "why": "Fixes stale prices and empty checkouts, but changes values Meta sees and needs refreshing when you reprice or restock."
+   },
+   {
+    "id": "prices-1491b11",
+    "hash": "8ccd5a47c232",
+    "what": "Meta is told about an add to cart only when Shopify actually adds a piece, and only for the quantity added.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Taps that added nothing no longer count as add to cart, so you may see fewer in Ads Manager. With one piece left, three taps sent 3 before, now 1.",
+    "ask": "Is it OK to stop telling Meta about add to cart taps that added nothing, and to count only the pieces actually added?",
+    "advice": "Your call",
+    "why": "Low risk fix for add to carts that never happened, but Meta may see fewer add to carts."
+   },
+   {
+    "id": "prices-0fde095",
+    "hash": "9ba93b269ecf",
+    "what": "Tapping '+' in the bag to add another of a piece will now be reported to Meta as an add to cart.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "Each accepted '+' now sends one add to cart at the bag line's price, so you may see more add to carts. A '+' blocked by stock, or any '−', sends nothing.",
+    "ask": "Is it OK for '+' in the bag to count as an add to cart for Meta, one per piece added?",
+    "advice": "Your call",
+    "why": "A choice about what counts as an add to cart; it can raise the add to cart numbers Meta sees."
+   },
+   {
+    "id": "prices-16a210e",
+    "hash": "c0d4a99d5f35",
+    "what": "When Shopify marks an adjustable ring sold out, its page and reel row offer only WhatsApp 'Reserve now', and Google is told out of stock.",
+    "shoppers": "Nothing changes today, as all 14 adjustable rings were in stock. If one sells out, shoppers see only 'Reserve now' instead of a Buy Now that cannot complete.",
+    "meta": "If an adjustable ring sells out, Meta no longer gets an add to cart and an empty checkout start from its Buy Now. Approving the card on prices before the catalogue loads also stops both; nothing changes now.",
+    "ask": "Optional: when an adjustable ring sells out, keep Add to cart and Buy Now (A), or switch to WhatsApp 'Reserve now' like other sold-out pieces (B)?",
+    "advice": "Your call",
+    "why": "An optional owner decision; nothing changes today because no adjustable ring is sold out."
+   }
+  ],
+  "corrections": [
+   {
+    "id": "prices-41e1a06",
+    "field": "shoppers",
+    "problem": "The only example was a price drop (Heartline), which suggests every first-paint price goes down. Some go up, for example Mesh Band Ring ₹699 to ₹799, so that example is now added."
+   },
+   {
+    "id": "prices-41e1a06",
+    "field": "meta",
+    "problem": "It left out that payment step values change too. It also used the Woven Gold Hoops ₹2,349 to ₹1,299 figure for checkout values, but that figure was only measured for product view and add to cart. 'From that moment' could also be read as 'permanently from now on'. The text is now limited to 'in that moment', the example is tied to product view and add to cart, and payment step and checkout are named."
+   },
+   {
+    "id": "prices-41e1a06",
+    "field": "ask",
+    "problem": "It left out that the values sent to Meta change, which the card's own question names. It also turned the price refresh reminder into a separate thing to agree to. Meta values are now in the question, and the refresh is worded as a condition."
+   },
+   {
+    "id": "prices-41e1a06",
+    "field": "why",
+    "problem": "It said a refresh is needed only after repricing. The card says to re-run it after restocking too."
+   },
+   {
+    "id": "prices-1491b11",
+    "field": "advice",
+    "problem": "Approve was too strong. The change lowers the add to cart count in Ads Manager, and that is a shift in ad numbers the owner should weigh. The card also asks the owner a direct question. Changed to Your call."
+   },
+   {
+    "id": "prices-1491b11",
+    "field": "why",
+    "problem": "Rewritten to match the Your call advice. It now says plainly that Meta may see fewer add to carts."
+   },
+   {
+    "id": "prices-16a210e",
+    "field": "meta",
+    "problem": "It left out that approving the card on prices before the catalogue loads already stops this add to cart and empty checkout start. So this card only changes what Meta is told if that card is declined."
+   },
+   {
+    "id": "prices-16a210e",
+    "field": "what",
+    "problem": "It left out the effect the card names on Google: a sold-out adjustable ring is reported to Google as out of stock instead of in stock."
+   }
+  ]
+ },
+ {
+  "key": "landings",
+  "cards": [
+   {
+    "id": "landings-2a0f307",
+    "hash": "6930699813b7",
+    "what": "Old Shopify web addresses that showed 'Coming soon' now open a real page on the shop, keeping the ad's tracking.",
+    "shoppers": "23 kinds of old Shopify link that showed 'Coming soon' now open a real page, such as the product or FAQs. Two old collections open the outfits page, not the jewellery; account links and unknown addresses still show Coming soon.",
+    "meta": "Most redirected visits now send two page views instead of one, the old address then the real page, with the ad's click id kept. A product opened from an old collection link also sends a new product view.",
+    "ask": "",
+    "advice": "Your call",
+    "why": "Fixes dead old links, but is rated low to medium risk and adds page views in Meta."
+   },
+   {
+    "id": "landings-ba6f429",
+    "hash": "a1f2edd9f69c",
+    "what": "When a product page fails to load, the 'Browse the collection' link and the phone's Back button now actually leave the error panel.",
+    "shoppers": "Tapping 'Browse the collection' on the 'This page didn't load' panel now opens the collection instead of leaving the panel stuck on screen. Ordinary visits look and behave the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "A clear fix for shoppers stuck on the error panel, marked low risk."
+   },
+   {
+    "id": "landings-63318c5",
+    "hash": "d758363f28c4",
+    "what": "Makes sure the page a shopper reaches from the error panel is counted as a page view in Meta.",
+    "shoppers": "Nothing changes for shoppers.",
+    "meta": "After a shopper leaves the error panel, the page they reach now sends one page view, where before nothing was sent. Ordinary visits send exactly what they do today.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Low-risk fix that counts a missed page view; ordinary visits send exactly the same."
+   },
+   {
+    "id": "landings-25611e3",
+    "hash": "027f8b3ff8e3",
+    "what": "A catalogue ad naming a birthstone month now opens on that month instead of January; rings still open on US 6, as today.",
+    "shoppers": "The Birthstone Heart Necklace May ad now opens on May (emerald) with its photo, instead of January (garnet). Rings open exactly as today, and a sold-out month would show as sold out, though none is today.",
+    "meta": "Only the birthstone month ad changes: add to cart and checkout start now name May's version instead of January's. Values stay at ₹699, and product views are unchanged.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Fixes ads opening on the wrong month; its two follow-up fixes keep rings exactly as today."
+   },
+   {
+    "id": "landings-f3bbff9",
+    "hash": "6f007aa5dc28",
+    "what": "A longer form of the homepage address now opens the homepage instead of 'Coming soon', keeping the ad's tracking.",
+    "shoppers": "Shoppers arriving on that address keep seeing the homepage, instead of 'Coming soon' appearing over it after about 8.5 seconds.",
+    "meta": "Visits to that address now count two page views instead of one: that address, then the homepage, with the ad's click id kept. No other events change.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Clear fix marked very low risk; only page views on this one address double."
+   },
+   {
+    "id": "landings-ce1ca1d",
+    "hash": "640615b2210c",
+    "what": "On slow phones, a piece listed since the last Publish shows its ivory outline while loading, instead of the homepage for about 5 seconds.",
+    "shoppers": "Shoppers on slow phones opening a newly listed piece no longer see the homepage ('Softly, slowly, worn.') before the product appears. Load times and everything else stay the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Low-risk fix for a confusing flash on slow phones; Meta sees no change."
+   },
+   {
+    "id": "landings-590059c",
+    "hash": "0a0ace7c3154",
+    "what": "When an ad opens a piece in a particular colour, stone or month, the page shows that choice from the very first moment.",
+    "shoppers": "A Silver Triple Coil ad now shows the silver bangle straight away, instead of gold first, and the Birthstone May ad shows May's emerald from the start. It takes effect after the next Publish; plain links look the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Your call",
+    "why": "Rated medium-low risk: it adds a script to multi-option product pages, and its build step was only emulated."
+   },
+   {
+    "id": "landings-9477921",
+    "hash": "eab00a2565cf",
+    "what": "Adds free shipping, delivery time and 7-day returns to the hidden product details that search results can show.",
+    "shoppers": "Nothing visible on the shop's pages. Search results may show free delivery and a 7-day return window for your pieces.",
+    "meta": "No events, values or ids change. Meta's automatic product reading on each product page will also see the new shipping and returns details.",
+    "ask": "Are free insured shipping in India, delivery in 3-5 working days and 7-day returns correct, given the FAQ says 3-7 days and the policy page says defects only?",
+    "advice": "Your call",
+    "why": "Search results would state these terms, and the site's own pages disagree in two places."
+   },
+   {
+    "id": "landings-ca79b89",
+    "hash": "5b40668e6213",
+    "what": "Links in Shopify's account emails and order pages, which now show 'Coming soon', would open the shop's Track Order page instead.",
+    "shoppers": "A shopper following a Shopify account link lands on Track Order, which explains that orders sit behind Shopify's sign-in. One more tap on Find My Order reaches that sign-in.",
+    "meta": "These visits now count two page views instead of one: the account address, then Track Order, with the ad's click id kept. No other events change.",
+    "ask": "Should Shopify account links open Track Order, one tap from sign-in (this option), go straight to Shopify's sign-in (Option 2), or keep showing Coming soon (neither)?",
+    "advice": "Your call",
+    "why": "Low risk, but it is one of two options and only one should be approved."
+   },
+   {
+    "id": "landings-f56804f",
+    "hash": "d41efe37163c",
+    "what": "Links in Shopify's account emails and order pages, which now show 'Coming soon', would go straight to Shopify's own sign-in.",
+    "shoppers": "A shopper following a Shopify account link goes straight to Shopify's sign-in, without seeing the shop; Back returns them to the email. If sent back within a minute, or in some private modes, they see Track Order.",
+    "meta": "These visits now send no page view at all, where today they send one, and the ad's click id is not passed on. If Track Order shows instead, it sends one page view.",
+    "ask": "Should Shopify account links go straight to Shopify's sign-in (this option), open Track Order first (Option 1), or keep showing Coming soon (neither)?",
+    "advice": "Your call",
+    "why": "Low risk, but one of two options, and it adds a small script to every page."
+   },
+   {
+    "id": "landings-dd89fe9",
+    "hash": "9ddfcab1d841",
+    "what": "A ring ad would open the product page on the ring size the ad names, instead of always opening on US 6.",
+    "shoppers": "A Tubogas Silver / US 7 ad opens on US 7, not US 6. The page uses stock from the last Publish, so a size sold out since may open with only 'Reserve now', no Add to cart.",
+    "meta": "Add to cart and checkout start would name the ad's ring size; values and product views are unchanged. Where a shopper lands on 'Reserve now', no add to cart or checkout start is sent.",
+    "ask": "Should a ring ad open on the size its catalogue row names (approve), or keep opening on US 6 and let the shopper pick (leave it out)?",
+    "advice": "Your call",
+    "why": "An optional choice rated medium risk: it can land shoppers on a size sold out since the last Publish."
+   }
+  ],
+  "corrections": [
+   {
+    "id": "landings-2a0f307",
+    "field": "what",
+    "problem": "'the matching real page' overstated it: about-us goes to the homepage, and cart, search and checkout go to the jewellery page, which are not matching pages. Changed to 'a real page on the shop'."
+   },
+   {
+    "id": "landings-2a0f307",
+    "field": "shoppers",
+    "problem": "It left out a change shoppers can see and the risk text counts (25 kinds of address): /collections/dusk and /collections/frontpage now open the outfits page instead of the jewellery. Added it and stayed within 40 words."
+   },
+   {
+    "id": "landings-2a0f307",
+    "field": "meta",
+    "problem": "'now count two page views' did not say that today there is one. Added 'instead of one' so the owner can see page views go up. Also made clear that the product view from an old collection link is new."
+   },
+   {
+    "id": "landings-25611e3",
+    "field": "what",
+    "problem": "It said ads naming a metal or stone 'now' open on that choice. The full text shows main already opened the ad's metal and stone (Tubogas Silver, Gold, Baguette Ruby), and the meta text says only the birthstone month link changes. Rewrote it so the birthstone month is the one real change and rings stay on US 6."
+   },
+   {
+    "id": "landings-f56804f",
+    "field": "shoppers",
+    "problem": "'such a link' pointed back to nothing inside the field. It also left out the risk that tabs keeping no storage (some private modes) show Track Order instead of the sign-in. Named the link and added the private-mode case."
+   },
+   {
+    "id": "landings-dd89fe9",
+    "field": "shoppers",
+    "problem": "'only Reserve now' did not say what the shopper loses. The full text says those pages have no Add to cart or Buy Now. Added 'no Add to cart' so the owner sees the shopper cannot buy straight away."
+   }
+  ]
+ },
+ {
+  "key": "contrast",
+  "cards": [
+   {
+    "id": "contrast-108a8d0",
+    "hash": "7ee6d94e536e",
+    "what": "Turns the pale lettering in the sage footer and the top announcement strip dark, so it is much easier to read.",
+    "shoppers": "On every page, footer text and the top strip's message turn near-black on the same green backgrounds. Social icons and the newsletter box outline turn dark too; the NAIRA logo and SUBSCRIBE button stay as they are.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "Do you want dark footer lettering; for the top strip, dark letters on pale green or white on deeper green (next card); and the NAIRA logo dark or white?",
+    "advice": "Your call",
+    "why": "Low risk and Meta sees no change, but the strip and logo colours are your design choices."
+   },
+   {
+    "id": "contrast-9a1c33c",
+    "hash": "2334b0027e01",
+    "what": "Instead of dark letters, keeps white capitals on the top strip and changes the strip from pale green to the logo's deep green.",
+    "shoppers": "Every page gets a heavier, darker green band at the top, in the green of the footer's SUBSCRIBE button; nothing else changes. Its white letters become much easier to read, though dark letters on pale green are easier still.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "Optional: for the top strip, do you prefer white letters on a deeper green (approve) or dark letters on today's pale green (hold)?",
+    "advice": "Your call",
+    "why": "Optional look choice; it only works if the dark footer lettering card is also approved."
+   },
+   {
+    "id": "contrast-f46b992",
+    "hash": "5be7f514c270",
+    "what": "Makes small, faint lettering on product cards and around Shop All slightly darker gold or grey, so it is easier to read.",
+    "shoppers": "Small lettering on product cards, Shop All headings and the gift-box lines above the footer turn a deeper gold or darker grey, including on the Golden Hour page your ads link to. Sizes, wording and layout stay the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "",
+    "advice": "Approve",
+    "why": "Low risk readability fix using the shop's existing deeper gold; nothing Meta sees changes."
+   },
+   {
+    "id": "contrast-61cb3f9",
+    "hash": "737eb6c446de",
+    "what": "Turns the small '% OFF' badge on every product card photo a deeper, browner gold, so its lettering is easier to read.",
+    "shoppers": "Every product card photo, including on the Golden Hour page, shows a darker gold '% OFF' block in the corner. Size, position and wording stay the same.",
+    "meta": "Nothing changes in what Meta is told.",
+    "ask": "Optional: should the '% OFF' badge on every card photo turn deeper gold for easier reading, or stay as it is?",
+    "advice": "Your call",
+    "why": "Optional: a darker block on every photo, and it only works if the darker card lettering is approved."
+   }
+  ],
+  "corrections": [
+   {
+    "id": "contrast-9a1c33c",
+    "field": "shoppers",
+    "problem": "The draft said only that white lettering becomes much easier to read. It left out that the other option, dark letters on pale green, measured more readable still (9.20:1 against 5.33:1). Without that, the owner could not weigh the two strip options fairly. The line now says this and still says nothing else changes, within 40 words."
+   },
+   {
+    "id": "contrast-61cb3f9",
+    "field": "what",
+    "problem": "'every product photo' overstated where the change happens. The full text places the badge only on product card photos, and the product page's own photos are not mentioned. It now says 'every product card photo'."
+   }
+  ]
+ }
+]

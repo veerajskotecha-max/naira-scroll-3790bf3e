@@ -39,17 +39,19 @@ describe("Buy Now add failure", () => {
 
 describe("Buy Now on a piece already in the bag", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks(); // an answer one case leaves unused must not reach the next
     localStorage.clear();
     localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "cart-1", checkoutUrl: "https://example.com/checkout", items: [{ ...piece, quantity: 1, lineId: "line-1" }] }));
   });
 
   // Add, then Buy Now, sent two of the piece to checkout with BUY2 on them.
   it("hands off the line as it is, without adding a second unit", async () => {
+    mocks.update.mockResolvedValueOnce({ success: true, quantity: 1, checkoutUrl: "https://example.com/checkout" });
     mocks.start.mockResolvedValueOnce(true);
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(piece); });
-    expect(mocks.update).not.toHaveBeenCalled();
+    // Asked only whether Shopify still has the line: set to the 1 it holds.
+    expect(mocks.update).toHaveBeenCalledWith("cart-1", "line-1", 1);
     expect(mocks.add).not.toHaveBeenCalled();
     expect(mocks.track).not.toHaveBeenCalledWith("AddToCart", expect.anything());
     expect(mocks.start).toHaveBeenCalledTimes(1);
@@ -75,7 +77,7 @@ describe("Buy Now on a piece already in the bag", () => {
 describe("Buy Now with a quantity, on a piece already in the bag", () => {
   const outfit = { ...piece, id: "lehenga", variantId: "v-lehenga", name: "Lehenga", size: "M" };
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     localStorage.clear();
     localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "c1", checkoutUrl: "https://example.com/checkout", items: [{ ...outfit, quantity: 1, lineId: "l1" }] }));
   });
@@ -96,10 +98,11 @@ describe("Buy Now with a quantity, on a piece already in the bag", () => {
 
   it("hands off the bag as it is when it already holds that many", async () => {
     localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "c1", checkoutUrl: "https://example.com/checkout", items: [{ ...outfit, quantity: 3, lineId: "l1" }] }));
+    mocks.update.mockResolvedValueOnce({ success: true, quantity: 3, checkoutUrl: "https://example.com/checkout" });
     mocks.start.mockResolvedValueOnce(true);
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(outfit, 2); });
-    expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.update).toHaveBeenCalledWith("c1", "l1", 3);
     expect(mocks.track).not.toHaveBeenCalledWith("AddToCart", expect.anything());
     expect(sent()).toEqual([["v-lehenga", 3]]);
   });

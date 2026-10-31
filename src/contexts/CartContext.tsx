@@ -534,6 +534,45 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     openCheckout(latestUrl);
   }, [checkoutUrl, openCheckout]);
 
+  /* Buy Now hands off a line the bag already holds once Shopify says it still
+     has it. Setting the line to the quantity it already has adds nothing, and
+     is the one call the second add used to make. Without it, a bag whose
+     Shopify cart had gone (run out after some days, or used for a Shopify
+     checkout order), or whose line was taken out in another tab, went to
+     checkout as it showed, on a cart Shopify no longer had. In those cases
+     the piece goes in again as if the bag had not held it: on a new cart when
+     the cart is gone, as a new line when only its line is. */
+  const confirmInBag = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, line: CartItem, quantity: number): Promise<string | null> => {
+    const { cartId, checkoutUrl: url } = loadCart();
+    if (!cartId || !line.lineId) return url;
+    const key = keyOf(item);
+    setIsLoading(true);
+    try {
+      const result = await updateShopifyCartLine(cartId, line.lineId, line.quantity);
+      if (result.cartNotFound) {
+        clearCart();
+        return await addItem(item, quantity);
+      }
+      /* Its one other refusal: Shopify no longer has this line. */
+      if (!result.success) {
+        commitCart((current) => ({ ...current, items: current.items.filter((cartItem) => keyOf(cartItem) !== key) }));
+        return await addItem(item, quantity);
+      }
+      const committed = commitCart((current) => ({
+        ...current,
+        checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
+        items: current.items.map((cartItem) => (keyOf(cartItem) === key ? { ...cartItem, quantity: result.quantity ?? cartItem.quantity } : cartItem)),
+      }));
+      return committed.checkoutUrl;
+    } catch (error) {
+      /* Never hold checkout on the check itself: the line goes as it is. */
+      console.error("Could not check the bag line with Shopify", error);
+      return url;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [addItem, clearCart, commitCart]);
+
   /* One-tap "Pre-order now / Shop now": add to the Shopify cart, then go straight
      to Shopify checkout using the URL that add returned (no stale-state race).
      A line already in the bag goes as it is: adding again sent a shopper who
@@ -550,7 +589,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       ? await addItem(item, quantity)
       : inBag.quantity < quantity
         ? await addItem(item, quantity - inBag.quantity)
-        : latest.checkoutUrl;
+        : await confirmInBag(item, inBag, quantity);
     if (!url) {
       toast.error("Could not open checkout. Please try again.");
       return;
@@ -572,7 +611,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     await openCheckout(url);
-  }, [addItem, openCheckout]);
+  }, [addItem, confirmInBag, openCheckout]);
 
   const totalItems = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);

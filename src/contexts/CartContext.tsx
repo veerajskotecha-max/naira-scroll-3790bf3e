@@ -543,29 +543,44 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
      the piece goes in again as if the bag had not held it: on a new cart when
      the cart is gone, as a new line when only its line is. It goes in as many
      times as the bag showed it (2 after + in the bag), so checkout gets what
-     a working cart would have handed off, not 1 at full price. */
+     a working cart would have handed off, not 1 at full price. If Shopify
+     has fewer of the piece left than the bag showed, checkout gets what it
+     has and the shopper is told why, in the words an Add over the stock left
+     uses (main's second add said it on this tap too). */
   const confirmInBag = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, line: CartItem, quantity: number): Promise<string | null> => {
     const { cartId, checkoutUrl: url } = loadCart();
     if (!cartId || !line.lineId) return url;
     const key = keyOf(item);
+    const sayIfFewer = (wanted: number) => {
+      const kept = loadCart().items.find((cartItem) => keyOf(cartItem) === key)?.quantity;
+      if (kept === undefined || kept >= wanted) return;
+      const message = `Only ${kept} of ${item.name} left, all in your bag.`;
+      setAddError(message);
+      if (!drawerOpenRef.current) toast.error(message);
+    };
     setIsLoading(true);
     try {
       const result = await updateShopifyCartLine(cartId, line.lineId, line.quantity);
       const again = Math.max(quantity, line.quantity);
       if (result.cartNotFound) {
         clearCart();
-        return await addItem(item, again);
+        const readded = await addItem(item, again);
+        if (readded) sayIfFewer(again);
+        return readded;
       }
       /* Its one other refusal: Shopify no longer has this line. */
       if (!result.success) {
         commitCart((current) => ({ ...current, items: current.items.filter((cartItem) => keyOf(cartItem) !== key) }));
-        return await addItem(item, again);
+        const readded = await addItem(item, again);
+        if (readded) sayIfFewer(again);
+        return readded;
       }
       const committed = commitCart((current) => ({
         ...current,
         checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
         items: current.items.map((cartItem) => (keyOf(cartItem) === key ? { ...cartItem, quantity: result.quantity ?? cartItem.quantity } : cartItem)),
       }));
+      sayIfFewer(line.quantity);
       return committed.checkoutUrl;
     } catch (error) {
       /* Never hold checkout on the check itself: the line goes as it is. */

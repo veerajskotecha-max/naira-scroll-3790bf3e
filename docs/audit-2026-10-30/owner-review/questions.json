@@ -1,0 +1,150 @@
+{
+  "groups": [
+    {
+      "key": "shopify",
+      "title": "Shopify listings",
+      "intro": "Store data only you can confirm. Say yes and I make the change in Shopify Admin, all in one batch. First photos stay as they are.",
+      "items": [
+        {
+          "id": "C06",
+          "title": "Tubogas Dome Ring: Silver shows a gold photo",
+          "body": "When a shopper picks Silver, every photo is the gold ring, because no silver photo exists.",
+          "options": ["Hide Silver until a silver photo exists", "Make a silver photo with Higgsfield (2 credits, then you approve it)", "Leave as it is"]
+        },
+        {
+          "id": "C35",
+          "title": "Triple Dawn Cuff has no size at all",
+          "body": "No size photo and no measurement in the description. Send me the inner diameter, opening and width, or say I may take them from the supplier sheet.",
+          "options": ["Use the supplier sheet", "I'll send the measurements", "Leave as it is"]
+        },
+        {
+          "id": "C76",
+          "title": "Roman Numeral Trio Ring US 9 costs ₹1,900; the other sizes cost ₹1,899",
+          "body": "Also, 19 active pieces have no MRP (compare-at price), so they show no saving.",
+          "options": ["Set US 9 to ₹1,899 and leave the MRPs", "Set US 9 to ₹1,899; I'll send the 19 MRPs", "Leave both"]
+        },
+        {
+          "id": "C87",
+          "title": "10 pieces give their size only inside the size photo",
+          "body": "Heartline Paperclip, Pearl Legacy, Lumière Oval necklace and bracelet, Verdant Cushion Studs, Baguette Halo Drops, Petite Square Huggies, Petite Bow Studs, Pearl Circlet Studs, Prism Cluster Studs Silver. I would copy the size from each size photo into a SIZE line in its description.",
+          "options": ["Yes, add the size lines", "No"]
+        },
+        {
+          "id": "C88",
+          "title": "Coating wording doesn't match on 4 pieces",
+          "body": "Rose Verdant Band's badge leaves out 'rose'. Solitaire Drop Huggies, Watch Link Strap Bracelet and Lotus Pear Drop Studs have no PVD line, and their badge and details use different wording.",
+          "options": ["Yes, add the PVD line to the 3 descriptions", "No"]
+        },
+        {
+          "id": "C89",
+          "title": "Photo descriptions for Google and screen readers",
+          "body": "77 photos on 36 listings have no description. 7 say 'catalog-square', and Golden Duet Ring's says 'JDR0104342'. Heartbead Bracelet is tagged 'Rhodium Plated', but its copy says gold coated.",
+          "options": ["Yes, write them all and fix the Heartbead tag", "No"]
+        }
+      ]
+    },
+    {
+      "key": "decisions",
+      "title": "Business decisions",
+      "intro": "These change what shoppers are told, so the call is yours.",
+      "items": [
+        {
+          "id": "RET",
+          "title": "Returns: which is true?",
+          "body": "Product pages promise 7-day returns if a piece doesn't suit. The returns policy allows returns for defects only. Whichever you choose, I'll make the other match.",
+          "options": ["7-day returns if it doesn't suit", "Defects only", "Something else (write it in the note)"]
+        },
+        {
+          "id": "C55",
+          "title": "Cash on delivery and prepaid discount",
+          "body": "The bag no longer shows a COD fee and COD orders carry none. Paying online takes 5% off on top of Buy 2 / Buy 3, and the bag doesn't show that 5%.",
+          "options": ["Keep it this way, and show the 5% in the bag", "Keep it this way, don't show it", "Bring back a COD fee (write the amount in the note)"]
+        },
+        {
+          "id": "C64",
+          "title": "Business address",
+          "body": "The site's hidden data, the Contact page and Shopify give three different addresses. Which one is public? If it's a home address, I'll leave the street out of Google's data.",
+          "options": ["I'll write the address in the note"]
+        },
+        {
+          "id": "C66",
+          "title": "Brand name for jewellery",
+          "body": "Product pages tell Google the brand is 'Naira Flore'. Shopify (and so the Meta and Google feeds) say 'Naira Petite'.",
+          "options": ["Naira Flore", "Naira Petite"]
+        },
+        {
+          "id": "C37",
+          "title": "www.nairaflore.com should redirect permanently",
+          "body": "www sends a temporary redirect to nairaflore.com, so every catalogue ad click takes an extra hop. A permanent (301) redirect is set in Lovable's domain settings, not in the code.",
+          "options": ["I'll change it in Lovable", "Leave it"]
+        },
+        {
+          "id": "C21",
+          "title": "Press Publish after Shopify price changes",
+          "body": "The pages Google and ad clicks see first keep the prices from the last Publish (27 Oct). 4 pieces are already out of date. Publishing in Lovable fixes them now. I can also add a check that tells you when Shopify and the site disagree.",
+          "options": ["I'll Publish now, and add the check", "I'll Publish now, no check"]
+        }
+      ]
+    },
+    {
+      "key": "drive",
+      "title": "Drive photos held back",
+      "intro": "5 photos from your Drive folder that I didn't place.",
+      "items": [
+        {
+          "id": "D18",
+          "title": "Photos #18 and #69: a plain gold cable cuff with ball ends",
+          "body": "No listing matches it. It looks like the Torsade Pearl Cuff without its pearls.",
+          "options": ["It's a new piece; I'll send the details", "Put it on Torsade Pearl Cuff", "Leave it out"]
+        },
+        {
+          "id": "D07",
+          "title": "Photos #7, #72 and #73: the silver tubogas ring on a black disc",
+          "body": "These could be the silver photos Tubogas Dome Ring is missing (see C06), but the black disc doesn't match the other photos.",
+          "options": ["Use them for Silver", "Use one, cleaned up with Higgsfield (2 credits)", "Leave them out"]
+        },
+        {
+          "id": "CLARTE",
+          "title": "Clarté Baguette Bracelet in Silver went to Draft",
+          "body": "Someone set it to Draft on 28 Oct at 09:44, so it's off the site. It wasn't this session.",
+          "options": ["That was on purpose", "Bring it back"]
+        }
+      ]
+    },
+    {
+      "key": "portal",
+      "title": "Try-on portal",
+      "intro": "The portal is built and tested here, and it isn't on the site. Nothing in it can run until you do the Lovable steps.",
+      "blockers": [
+        "Turn on Lovable AI. That creates the key the try-on uses.",
+        "Turn OFF \"AI app context\". It's on by default and keeps every request, selfies included, for 90 days.",
+        "Ask Lovable support how long they and Google keep uploaded photos, so the privacy page can say so.",
+        "Set a Lovable AI usage limit that blocks at the cap.",
+        "Ask Lovable to apply the database migration.",
+        "Publish the try-on privacy section before switching the try-on on.",
+        "Approve each piece's test renders (needs about 115 Higgsfield credits).",
+        "Run the photo-reference check before each Publish.",
+        "Check the Lovable preview, then run a 1–2 week hidden pilot before adding the 'Try it on' button."
+      ],
+      "items": [
+        {"id": "P1", "title": "Lovable plan", "body": "Will you turn on Lovable AI, and which Lovable plan are you on?", "options": ["I'll write it in the note"]},
+        {"id": "P2", "title": "Budget and limits", "body": "About ₹12–14 per try-on (estimate), against pieces at ₹999–2,449. Limits: 5 per phone, 30 per internet connection, 100 a day (about $16 a day at the cap, $28 at worst), plus a usage limit that blocks.", "options": ["Approve these limits", "Change them (note)"]},
+        {"id": "P3", "title": "About 115 Higgsfield credits for test renders", "body": "Renders on made-up model photos (never a real person's) to certify each of the 20 pieces before it goes in the try-on.", "options": ["Approve 115 credits", "Not yet"]},
+        {"id": "P4", "title": "Who certifies, and the pass mark", "body": "Will you approve each piece yourself? Is '18 of 20 pieces pass on both test models' the bar?", "options": ["Yes, I approve; 18 of 20", "Different bar (note)"]},
+        {"id": "P5", "title": "Bold Nocturne Chain link size", "body": "The size card says 10 mm. The description says 11.7 mm.", "options": ["10 mm", "11.7 mm"]},
+        {"id": "P6", "title": "Ear cuffs: where they sit", "body": "Is 'middle ridge of the ear' the outer rim (helix) or the inner ridge (conch)?", "options": ["Outer rim (helix)", "Inner ridge (conch)"]},
+        {"id": "P8", "title": "Launch shape", "body": "A hidden pilot first, then the 'Try it on' button, or the button from day one?", "options": ["Hidden pilot first", "Button from day one"]},
+        {"id": "P9", "title": "When a render fails the likeness check", "body": "Strict: it's never shown (about $0.14 still spent). Log: it's shown with a label while we measure.", "options": ["Strict", "Log"]},
+        {"id": "P11", "title": "Stand-ins if a piece sells out during the pilot", "body": "May Pearl Nugget Hoops, Molten Wave Ear Cuff or Baguette Tennis Necklace replace it, after certification?", "options": ["Yes", "No"]},
+        {"id": "P12", "title": "Measuring lift", "body": "Hide the button from 20% of shoppers for two weeks to measure the lift in sales, or show it to everyone?", "options": ["80/20 for two weeks", "Everyone"]},
+        {"id": "P13", "title": "Product pages: 2 more small files", "body": "With try-on off, product pages now load 2 more small files (+1.2 KB in all, 27 → 29 requests), because the try-on shares them.", "options": ["Accept", "Keep them in the product page's file"]},
+        {"id": "P14", "title": "Android Back during a try-on", "body": "Pressing Back while cropping or waiting leaves the site, and a render that's running still counts.", "options": ["Back returns to the previous step", "Ask 'Leave and lose this preview?'"]},
+        {"id": "P15", "title": "Where the test photos live", "body": "The automated test and its 650 KB of made-up photos: in the shop's code, or on the separate tools branch?", "options": ["Tools branch", "Shop code"]},
+        {"id": "P16", "title": "Cushion Halo sizes in the try-on", "body": "The try-on shows the product page's US 5–9 choice (US 6 picked) and names the size on the button.", "options": ["Confirm", "Change (note)"]},
+        {"id": "P17", "title": "Save photo", "body": "In Instagram and other in-app browsers, 'Save photo' opens a press-and-hold view, as it already does on iPhone.", "options": ["Confirm", "Change (note)"]},
+        {"id": "P18", "title": "Bot check", "body": "Leave the try-on without a bot check (as now), or add Cloudflare's invisible one? That adds a Cloudflare script.", "options": ["Leave it off", "Add it"]},
+        {"id": "P19", "title": "A site-wide connection hint", "body": "The site sets up its connection to Shopify's image server the wrong way for images. Fixing it changes every page, so I left it.", "options": ["Fix it (goes in the next review batch)", "Leave it"]}
+      ]
+    }
+  ]
+}

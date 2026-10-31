@@ -103,6 +103,8 @@ C01 is split: the build-side part (the prerender capture browser posting to meta
 
 ## Owner review first (Meta tracking, checkout hand-off, ad landings, colours, policy text)
 
+**Status 31 Oct:** every item below is built as its own commit on five local branches off ddb72b7 (`own-tracking`, `own-checkout`, `own-prices`, `own-landings`, `own-contrast`; 60 commits, 42 approval cards once fixups sit with their parent). They are saved in [`owner-review/owner-patches.bundle`](owner-review/owner-patches.bundle). Each branch had two rounds of independent review and repair; a final check of the last fixes and every owner line is running. [`owner-review/SHIP-MAP.md`](owner-review/SHIP-MAP.md) lists which commits each card ships. Nothing is on main or live; the owner approves card by card on the approval page, then writes "ship".
+
 | Id | Severity | Area | Finding |
 |---|---|---|---|
 | C05 | medium | accessibility / contrast | Footer and announcement bar text fail WCAG AA contrast on every page (1.67-2.27:1 and 1.95:1) |

@@ -1,0 +1,385 @@
+<title>Naira Owner Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap">
+<style>
+/* Layout: one reading column of decision cards, grouped by what each change touches; a sticky tally keeps both counts in view. */
+:root {
+  --ground: #FBF3EC;
+  --paper: #FFF9F4;
+  --ink: #1A1614;
+  --muted: #6A5D55;
+  --rule: #E7D9CB;
+  --gold: #B0843A;
+  --deep: #7E6029;
+  --yes: #355F53;
+  --yes-bg: #E2ECE7;
+  --no: #8E4A3F;
+  --no-bg: #F4E2DC;
+  --warn: #8A5A12;
+  --warn-bg: #F6E9CF;
+  --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --utility: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #171311; --paper: #201A17; --ink: #F2E7DC; --muted: #B4A497; --rule: #3A2F29;
+    --gold: #C99A4E; --deep: #D4B072;
+    --yes: #93C9B6; --yes-bg: #1E302A; --no: #E3A090; --no-bg: #3A231F; --warn: #E8C27A; --warn-bg: #3A2E1A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #171311; --paper: #201A17; --ink: #F2E7DC; --muted: #B4A497; --rule: #3A2F29;
+  --gold: #C99A4E; --deep: #D4B072;
+  --yes: #93C9B6; --yes-bg: #1E302A; --no: #E3A090; --no-bg: #3A231F; --warn: #E8C27A; --warn-bg: #3A2E1A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: var(--utility); font-weight: 300; font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ground); }
+.wrap { max-width: 820px; margin: 0 auto; padding-block: 40px 96px; display: grid; gap: 48px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--deep); font-weight: 400; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 50px); line-height: 1.05; }
+h2 { font-size: clamp(26px, 4vw, 34px); line-height: 1.1; }
+h3 { font-size: 22px; line-height: 1.15; font-weight: 500; }
+p { margin: 0; max-width: 66ch; }
+header { display: grid; gap: 14px; }
+.lede { color: var(--muted); font-size: 16px; }
+.lede strong { color: var(--ink); font-weight: 500; }
+
+.tally {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--ground); border-bottom: 1px solid var(--rule);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-block: 12px;
+}
+.tally .count { font-variant-numeric: tabular-nums; font-size: 14px; }
+.tally .count b { font-weight: 500; }
+.tally .bar { flex: 1 1 140px; height: 2px; background: var(--rule); position: relative; min-width: 100px; }
+.tally .bar i { position: absolute; inset: 0 auto 0 0; background: var(--gold); width: 0; transition: width .3s ease; }
+.save-state { font-size: 12px; color: var(--muted); }
+.notice { border-left: 2px solid var(--gold); padding: 10px 14px; background: var(--paper); font-size: 14px; }
+.notice[hidden] { display: none; }
+
+nav.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+nav.toc a { font-size: 13px; color: var(--ink); text-decoration: none; border: 1px solid var(--rule); padding: 8px 12px; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; background: var(--paper); }
+nav.toc a:hover { border-color: var(--gold); }
+nav.toc a span { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+section { display: grid; gap: 18px; scroll-margin-top: 64px; }
+.sec-head { display: grid; gap: 8px; border-top: 1px solid var(--rule); padding-top: 22px; }
+.sec-head p { color: var(--muted); }
+.sec-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pill { font-size: 12px; letter-spacing: 0.04em; padding: 4px 10px; border-radius: 999px; display: inline-block; }
+.pill.passed { background: var(--yes-bg); color: var(--yes); }
+.pill.repaired, .pill.pending { background: var(--warn-bg); color: var(--warn); }
+.btn {
+  font: inherit; font-size: 13px; letter-spacing: 0.04em; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink);
+  padding: 9px 14px; min-height: 44px; border-radius: 2px;
+}
+.btn:hover { border-color: var(--gold); }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.cards { display: grid; gap: 14px; }
+.card { background: var(--paper); border: 1px solid var(--rule); padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.card.is-yes { border-color: var(--yes); }
+.card.is-no { border-color: var(--no); }
+.card .top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.tag { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--deep); }
+.tag.opt { color: var(--warn); }
+.ask { font-family: var(--display); font-size: 19px; line-height: 1.3; font-style: italic; color: var(--ink); }
+.rows { display: grid; gap: 10px; }
+.row { display: grid; gap: 2px; padding-left: 12px; border-left: 2px solid var(--rule); font-size: 14px; }
+.row b { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--deep); font-weight: 400; }
+details { font-size: 14px; }
+details summary { cursor: pointer; color: var(--deep); font-size: 13px; letter-spacing: 0.04em; min-height: 32px; display: flex; align-items: center; }
+details .rows { margin-top: 8px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; overflow-wrap: anywhere; }
+.needs { font-size: 13px; color: var(--muted); }
+.needs.bad { color: var(--no); }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice button, .opts button {
+  font: inherit; font-size: 13px; letter-spacing: 0.04em; cursor: pointer; min-height: 44px;
+  border: 1px solid var(--rule); background: transparent; color: var(--ink); border-radius: 2px; padding: 8px 12px;
+}
+.choice button[aria-pressed="true"][data-v="yes"] { background: var(--yes-bg); border-color: var(--yes); color: var(--yes); font-weight: 500; }
+.choice button[aria-pressed="true"][data-v="no"] { background: var(--no-bg); border-color: var(--no); color: var(--no); font-weight: 500; }
+.opts { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.opts button { text-align: left; }
+.opts button[aria-pressed="true"] { background: var(--yes-bg); border-color: var(--yes); color: var(--yes); font-weight: 500; }
+.card.answered { border-color: var(--yes); }
+input[type="text"], textarea { width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--ground); border: 1px solid var(--rule); padding: 10px 12px; border-radius: 2px; }
+textarea { min-height: 96px; resize: vertical; background: var(--paper); }
+label.small { font-size: 12px; color: var(--muted); }
+.fixed { display: grid; gap: 6px; font-size: 14px; color: var(--muted); padding-left: 0; margin: 0; list-style: none; }
+.fixed li { padding-left: 12px; border-left: 2px solid var(--rule); }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; max-width: 66ch; }
+.what { font-size: 16px; font-weight: 400; }
+.advice { font-size: 12px; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 999px; }
+.advice.a-approve { background: var(--yes-bg); color: var(--yes); }
+.advice.a-call { background: var(--warn-bg); color: var(--warn); }
+.advice.a-hold { background: var(--no-bg); color: var(--no); }
+.full .row span + span { margin-top: 4px; }
+.stamp { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+.card.is-yes .stamp { color: var(--yes); }
+.card.is-no .stamp { color: var(--no); }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 18px; }
+@media (prefers-reduced-motion: reduce) { .tally .bar i { transition: none; } html { scroll-behavior: auto; } }
+@media (max-width: 420px) { .card { padding: 14px; } .ask { font-size: 18px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Naira · Owner review · 31 Oct</div>
+    <h1>Nothing below goes live until you say yes</h1>
+    <p class="lede"><strong>41 fixes are already on main.</strong> Press <strong>Publish</strong> in Lovable to make them live. Below are <strong id="h-np">0</strong> changes that touch what Meta is told, checkout, prices, ad landings or text colours, and <strong id="h-nq">0</strong> questions only you can answer.</p>
+    <p class="lede">Each group says whether it has passed its final independent check. While a check is still running, I update this page when it finishes, and your choices stay.</p>
+    <p class="lede">Tap <strong>Approve</strong> or <strong>Hold</strong> on each change and pick an answer to each question. Your choices save as you tap. When you're done, write <strong>“ship”</strong> in chat. I'll send only what you approved, and you Publish once more.</p>
+  </header>
+
+  <div class="tally" role="status" aria-live="polite">
+    <div class="count"><b id="pd">0</b>/<b id="pn">0</b> changes · <b id="qd">0</b>/<b id="qn">0</b> questions</div>
+    <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+    <span class="save-state" id="savestate"></span>
+  </div>
+
+  <p class="notice" id="offline" hidden>Choices can't be saved in this view. Open this page in Claude while signed in, or reply in chat with your answers.</p>
+
+  <nav class="toc" id="toc" aria-label="Sections"></nav>
+
+  <div id="patches" class="wrap" style="padding:0;gap:48px"></div>
+  <div id="questions" class="wrap" style="padding:0;gap:48px"></div>
+
+  <section aria-labelledby="h-note" id="sec-note">
+    <div class="sec-head">
+      <div class="eyebrow">Optional</div>
+      <h2 id="h-note">Anything else?</h2>
+    </div>
+    <label for="note" class="eyebrow">Note for Claude</label>
+    <textarea id="note" placeholder="e.g. Hold all tracking changes until after Diwali"></textarea>
+  </section>
+
+  <footer>Each change was built on its own and tested against the current site on emulated phones. Nothing was sent to Meta and no checkout was opened. Nothing on this page changes the site or Shopify by itself: I act only after you write “ship”.</footer>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(function () {
+  const DATA = JSON.parse(document.getElementById('data').textContent);
+  const state = {};     // id -> 'yes' | 'no' | option text
+  const detail = {};    // id -> free text
+  const patchIds = [], qIds = [], byId = {};
+  let db = null, live = false;
+
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const row = (label, text) => { const r = el('div', 'row'); r.append(el('b', null, label), el('span', null, text)); return r; };
+
+  function secHead(eyebrow, title, intro, id) {
+    const h = el('div', 'sec-head');
+    h.append(el('div', 'eyebrow', eyebrow));
+    const t = el('h2', null, title); t.id = 'h-' + id; h.append(t);
+    if (intro) h.append(el('p', null, intro));
+    return h;
+  }
+
+  function patchCard(g, it) {
+    const c = el('article', 'card'); c.dataset.id = it.id;
+    const sm = it.sum;
+    const top = el('div', 'top');
+    top.append(el('span', 'tag', it.finding.replace(/\s*\(.*$/, '')));
+    if (it.optional) top.append(el('span', 'tag opt', 'Optional'));
+    if (it.pick) top.append(el('span', 'tag opt', it.pick + ' · pick one'));
+    if (sm) top.append(el('span', 'advice ' + ({ 'Approve': 'a-approve', 'Hold': 'a-hold' }[sm.advice] || 'a-call'), 'My advice: ' + sm.advice));
+    top.append(el('span', 'stamp'));
+    c.append(top, el('h3', null, it.title));
+    if (sm && sm.what) c.append(el('p', 'what', sm.what));
+    const ask = sm ? sm.ask : it.question;
+    if (ask) c.append(el('p', 'ask', ask));
+    const rows = el('div', 'rows');
+    rows.append(row('For shoppers', sm ? sm.shoppers : it.shoppers));
+    rows.append(row('For Meta', sm ? sm.meta : it.meta));
+    if (sm && sm.why) rows.append(row('Why ' + sm.advice.toLowerCase(), sm.why));
+    c.append(rows);
+    const d = el('details', 'full'); d.append(el('summary', null, sm ? 'Full detail, checkout, risk and proof' : 'Checkout, risk and proof'));
+    const dr = el('div', 'rows');
+    if (sm && it.question) dr.append(row('Full question', it.question));
+    if (sm && it.shoppers) dr.append(row('For shoppers, in full', it.shoppers));
+    if (sm && it.meta) dr.append(row('For Meta, in full', it.meta));
+    if (it.checkout) dr.append(row('For checkout', it.checkout));
+    if (it.risk) dr.append(row('Risk', it.risk));
+    it.fixes.forEach((x, k) => {
+      const r = el('div', 'row');
+      r.append(el('b', null, 'Later fix ' + (k + 1) + (x.title ? ': ' + x.title : '')));
+      if (x.shoppers) r.append(el('span', null, 'For shoppers: ' + x.shoppers));
+      if (x.meta) r.append(el('span', null, 'For Meta: ' + x.meta));
+      if (x.checkout) r.append(el('span', null, 'For checkout: ' + x.checkout));
+      dr.append(r);
+    });
+    if (it.test) dr.append(row('Test', it.test));
+    const tech = row(it.commits.length === 1 ? 'Commit' : 'Commits', g.branch + ' · ' + it.commits.join(' + ')); tech.querySelector('span').className = 'mono'; dr.append(tech);
+    d.append(dr); c.append(d);
+    if (it.rivals.length) { const n = el('p', 'rival'); n.dataset.rivals = it.rivals.join(','); c.append(n); }
+    if (it.deps.length) { const n = el('p', 'needs'); n.dataset.deps = it.deps.map(x => x.id).join(','); n.dataset.names = it.deps.map(x => x.title).join('; '); c.append(n); }
+    const ch = el('div', 'choice');
+    [['yes', 'Approve'], ['no', 'Hold']].forEach(([v, t]) => {
+      const b = el('button', null, t); b.type = 'button'; b.dataset.v = v; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => choose(it.id, v)); ch.append(b);
+    });
+    c.append(ch);
+    return c;
+  }
+
+  function questionCard(it) {
+    const c = el('article', 'card'); c.dataset.id = it.id;
+    const top = el('div', 'top'); top.append(el('span', 'tag', /^C\d/.test(it.id) ? it.id : ''), el('span', 'stamp')); c.append(top);
+    c.append(el('h3', null, it.title));
+    if (it.body) c.append(el('p', null, it.body));
+    const o = el('div', 'opts');
+    (it.options || []).forEach(t => {
+      const b = el('button', null, t); b.type = 'button'; b.dataset.v = t; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => choose(it.id, t)); o.append(b);
+    });
+    c.append(o);
+    const lid = 'd-' + it.id;
+    const l = el('label', 'small', 'Detail (optional)'); l.htmlFor = lid;
+    const inp = el('input'); inp.type = 'text'; inp.id = lid; inp.autocomplete = 'off';
+    let t = null;
+    inp.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => saveDetail(it.id, inp.value), 900); });
+    c.append(l, inp);
+    return c;
+  }
+
+  function build() {
+    const toc = $('toc');
+    DATA.patches.forEach(g => {
+      const s = el('section'); s.id = 'sec-' + g.key; s.setAttribute('aria-labelledby', 'h-' + g.key);
+      s.append(secHead('Needs your OK · ' + g.items.length + (g.items.length === 1 ? ' change' : ' changes'), g.title, g.intro, g.key));
+      const tools = el('div', 'sec-tools');
+      tools.append(el('span', 'pill ' + g.check.state, g.check.text));
+      const all = el('button', 'btn', 'Approve all except optional ones'); all.type = 'button';
+      all.addEventListener('click', () => g.items.forEach(it => { if (!it.optional && !it.pick && !state[it.id]) choose(it.id, 'yes'); }));
+      tools.append(all); s.append(tools);
+      if (g.fixed.length) {
+        const d = el('details'); d.append(el('summary', null, 'What the check found and was fixed (' + g.fixed.length + ')'));
+        const ul = el('ul', 'fixed'); g.fixed.forEach(f => ul.append(el('li', null, f.summary))); d.append(ul); s.append(d);
+      }
+      if (g.skipped.length) {
+        const d = el('details'); d.append(el('summary', null, 'Left out on purpose (' + g.skipped.length + ')'));
+        const ul = el('ul', 'fixed'); g.skipped.forEach(f => ul.append(el('li', null, f.finding + ': ' + f.why))); d.append(ul); s.append(d);
+      }
+      const cards = el('div', 'cards');
+      g.items.forEach(it => { byId[it.id] = it; patchIds.push(it.id); cards.append(patchCard(g, it)); });
+      s.append(cards); $('patches').append(s);
+      const a = el('a', null, g.title); a.href = '#sec-' + g.key; const n = el('span'); n.dataset.toc = g.key; a.append(n); toc.append(a);
+    });
+    DATA.questions.forEach(g => {
+      const s = el('section'); s.id = 'sec-q-' + g.key; s.setAttribute('aria-labelledby', 'h-q-' + g.key);
+      s.append(secHead('Your answer · ' + g.items.length + (g.items.length === 1 ? ' question' : ' questions'), g.title, g.intro, 'q-' + g.key));
+      if (g.blockers) {
+        const d = el('details'); d.open = true; d.append(el('summary', null, 'Your Lovable steps before launch, in order'));
+        const ol = el('ol', 'steps'); g.blockers.forEach(b => ol.append(el('li', null, b))); d.append(ol); s.append(d);
+      }
+      const cards = el('div', 'cards');
+      g.items.forEach(it => { byId[it.id] = it; qIds.push(it.id); cards.append(questionCard(it)); });
+      s.append(cards); $('questions').append(s);
+      const a = el('a', null, g.title); a.href = '#sec-q-' + g.key; const n = el('span'); n.dataset.toc = 'q-' + g.key; a.append(n); toc.append(a);
+    });
+    $('pn').textContent = patchIds.length; $('qn').textContent = qIds.length;
+    $('h-np').textContent = patchIds.length; $('h-nq').textContent = qIds.length;
+  }
+
+  function paint() {
+    let pd = 0, qd = 0;
+    patchIds.forEach(id => {
+      const v = state[id]; if (v === 'yes' || v === 'no') pd++;
+      const c = document.querySelector('.card[data-id="' + id + '"]');
+      c.classList.toggle('is-yes', v === 'yes'); c.classList.toggle('is-no', v === 'no');
+      c.querySelectorAll('.choice button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+      c.querySelector('.stamp').textContent = v === 'yes' ? 'Approved' : v === 'no' ? 'Held' : '';
+      const rv = c.querySelector('.rival');
+      if (rv) {
+        const ids = rv.dataset.rivals.split(',');
+        const clash = v === 'yes' && ids.some(r => state[r] === 'yes');
+        rv.className = 'needs' + (clash ? ' bad' : '') + ' rival';
+        rv.textContent = clash
+          ? 'You approved both options. Approve only one of: ' + [byId[id].title].concat(ids.map(r => byId[r].title)).join(' / ') + '.'
+          : 'Pick one of: ' + [byId[id].title].concat(ids.map(r => byId[r].title)).join(' / ') + '. Holding both keeps today\'s behaviour.';
+      }
+      const n = c.querySelector('.needs:not(.rival)');
+      if (n) {
+        const held = n.dataset.deps.split(',').some(d => state[d] === 'no');
+        n.className = 'needs' + (held && v === 'yes' ? ' bad' : '');
+        n.textContent = held && v === 'yes'
+          ? 'Builds on a change you are holding (' + n.dataset.names + '). I would hold this one too unless you say otherwise in the note.'
+          : 'Builds on: ' + n.dataset.names + '.';
+      }
+    });
+    qIds.forEach(id => {
+      const v = state[id]; if (v) qd++;
+      const c = document.querySelector('.card[data-id="' + id + '"]');
+      c.classList.toggle('answered', !!v);
+      c.querySelectorAll('.opts button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+      const inp = c.querySelector('input'); if (detail[id] != null && document.activeElement !== inp && !inp.value) inp.value = detail[id];
+    });
+    document.querySelectorAll('[data-toc]').forEach(n => {
+      const key = n.dataset.toc;
+      const ids = key.startsWith('q-') ? DATA.questions.find(g => 'q-' + g.key === key).items.map(i => i.id) : DATA.patches.find(g => g.key === key).items.map(i => i.id);
+      n.textContent = ids.filter(i => state[i]).length + '/' + ids.length;
+    });
+    $('pd').textContent = pd; $('qd').textContent = qd;
+    const total = patchIds.length + qIds.length;
+    $('barfill').style.width = (total ? 100 * (pd + qd) / total : 0) + '%';
+  }
+
+  let pending = Promise.resolve();
+  function status(t) { $('savestate').textContent = t; }
+  function failText(e) { return (e && e.code === 'invalid_argument') ? 'You can view but not change these choices' : 'Could not save. Try again'; }
+  function save(id, v) {
+    if (!live) { status('Not saved in this view'); return; }
+    status('Saving…');
+    pending = pending.then(() => db.collection('decisions').doc(id).set({ choice: v, at: new Date().toISOString() }))
+      .then(() => status('Saved'), (e) => status(failText(e)));
+  }
+  function saveDetail(id, text) {
+    detail[id] = text;
+    if (!live) { status('Not saved in this view'); return; }
+    status('Saving…');
+    pending = pending.then(() => db.collection('details').doc(id).set({ text, at: new Date().toISOString() }))
+      .then(() => status('Saved'), (e) => status(failText(e)));
+  }
+  function choose(id, v) { if (state[id] === v) return; state[id] = v; paint(); save(id, v); }
+
+  let noteTimer = null, lastNote = '';
+  $('note').addEventListener('input', () => {
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      const text = $('note').value; if (!live || text === lastNote) return; lastNote = text;
+      pending = pending.then(() => db.doc('notes/main').set({ text, at: new Date().toISOString() }))
+        .then(() => status('Note saved'), () => status('Could not save the note'));
+    }, 900);
+  });
+
+  build(); paint();
+
+  (async () => {
+    try { db = window.claude && window.claude.use ? await window.claude.use('db') : null; } catch (e) { db = null; }
+    if (!db) { $('offline').hidden = false; return; }
+    live = true;
+    db.collection('decisions').onSnapshot((snap) => {
+      snap.docs.forEach(d => { const b = d.data(); if (b && typeof b.choice === 'string' && byId[d.id]) state[d.id] = b.choice; });
+      paint();
+    }, () => status('Live updates paused'));
+    db.collection('details').get().then(snap => { snap.docs.forEach(d => { const b = d.data(); if (b && typeof b.text === 'string') detail[d.id] = b.text; }); paint(); }).catch(() => {});
+    db.doc('notes/main').get().then(s => { if (s.exists && !$('note').value) { lastNote = (s.data() || {}).text || ''; $('note').value = lastNote; } }).catch(() => {});
+  })();
+})();
+</script>

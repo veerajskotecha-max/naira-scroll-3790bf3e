@@ -36,16 +36,17 @@ export const colourOfVariant = (piece: JewelPiece, param?: string | null) => {
   return option ? variantFromParam(piece, param)?.options[option.name] : undefined;
 };
 
-/** The choices an ad's ?variant= link opens on: every option of the variant
-    it names, its size and month too, as the ad showed it. Only the colour was
-    read before, so Silver / US 7 opened on Silver / US 6 and a May birthstone
-    on January. Sold out, the nearest that can be bought: the same metal,
-    stone or month in another size. Undefined when the link names none of
-    this piece's variants. */
+/** The choices an ad's ?variant= link opens on: the metal, stone or month
+    of the variant it names, as the ad showed it. Only the colour was read
+    before, so a May birthstone opened on January, its garnet photo first.
+    The size stays the shopper's to choose: a ring opens on US 6 when it can
+    be bought in that metal or stone, as every ring does (openingVariant),
+    since a catalogue row's size is Meta's pick, not the shopper's. A
+    sold-out month still opens as named. Undefined when the link names none
+    of this piece's variants. */
 export const variantChoice = (piece: JewelPiece, param?: string | null): Record<string, string> | undefined => {
   const named = variantFromParam(piece, param);
   if (!named) return undefined;
-  if (named.availableForSale) return { ...named.options };
   const size = sizeOption(piece);
   const kin = (piece.variants ?? []).filter((v) => Object.entries(named.options).every(([name, value]) => name === size || v.options[name] === value));
   return { ...openingVariant(piece, kin).options };

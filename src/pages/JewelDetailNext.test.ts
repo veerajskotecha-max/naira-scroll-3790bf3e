@@ -95,7 +95,7 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/aria-label="Decrease quantity"/);
   });
 
-  it("opens an ad's ?variant= link on all of that variant, a colour picked here winning over it", () => {
+  it("opens an ad's ?variant= link on its variant, a colour picked here winning over it", () => {
     expect(code).toMatch(/const variantLink = colourLink \? null : searchParams\.get\("variant"\)/);
     expect(code).toMatch(/const opening = \(p: JewelPiece\) => variantChoice\(p, variantLink\) \?\? openingChoice\(p, colourParam\)/);
     expect(code).toMatch(/useState<Record<string, string>>\(\(\) => \(piece \? opening\(piece\) : \{\}\)\)/);

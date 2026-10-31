@@ -214,9 +214,10 @@ describe("opening a product page on a colour", () => {
 
 /*
   A catalogue ad names the exact variant it shows (?variant=<Shopify number>).
-  Only its colour was read: Tubogas Silver / US 7 opened on Silver / US 6, and
-  a May (emerald) Birthstone Heart Necklace on January (garnet), its photo
-  first. The page opens on all of the variant now.
+  Only its colour was read, so a May (emerald) Birthstone Heart Necklace
+  opened on January (garnet), its photo first. The page opens on the
+  variant's metal, stone and month now; a ring's size stays the shopper's,
+  from US 6 like every ring (37a664b).
 */
 const months = piece("birthstone-heart-necklace", {
   category: "Necklaces",
@@ -230,10 +231,14 @@ const months = piece("birthstone-heart-necklace", {
 const tubogasSoldOut = { ...tubogas, variants: tubogas.variants!.map((v) => (v.id === gid(14) ? { ...v, availableForSale: false } : v)) };
 
 describe("opening a product page on the variant a catalogue ad names", () => {
-  it("opens on every option of that variant, its size and month too", () => {
-    expect(variantChoice(tubogas, "14")).toEqual({ Metal: "Silver", Size: "7" });
-    expect(variantChoice(tubogas, " 12 ")).toEqual({ Metal: "Gold", Size: "7" });
+  it("opens on the month it names", () => {
     expect(variantChoice(months, "35")).toEqual({ Month: "May · Emerald" });
+  });
+
+  it("opens a ring on the metal it names, in the size every ring opens on", () => {
+    expect(variantChoice(tubogas, "14")).toEqual({ Metal: "Silver", Size: "6" });
+    expect(variantChoice(tubogas, " 12 ")).toEqual({ Metal: "Gold", Size: "6" });
+    expect(variantChoice(tubogas, "14")).toEqual(openingChoice(tubogas, colourOfVariant(tubogas, "14")));
   });
 
   it("opens a sold-out variant's metal in a size that can be bought", () => {

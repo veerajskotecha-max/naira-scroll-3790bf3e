@@ -384,9 +384,9 @@ const JewelDetailNext = () => {
      one way. It opens on the first variant that can be bought; once the shopper
      picks, that variant's own photo leads the gallery. A colour card in the
      shop grid links here on its colour (?colour=silver): the page opens on that
-     colour, its photo first. A catalogue ad names the exact variant by
-     Shopify's number instead (?variant=…): the page opens on all of it,
-     size and month included, its photo first. A colour picked here
+     colour, its photo first. A catalogue ad names a variant by Shopify's
+     number instead (?variant=…): the page opens on what variantChoice
+     (lib/colourCards) takes from it, its photo first. A colour picked here
      (?colour=) then wins over the ad's link. */
   const [searchParams, setSearchParams] = useSearchParams();
   const colourLink = searchParams.get("colour");

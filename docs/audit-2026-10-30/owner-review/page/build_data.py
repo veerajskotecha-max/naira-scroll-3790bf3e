@@ -24,6 +24,11 @@ ORDER = ['checkout', 'tracking', 'prices', 'landings', 'contrast']
 BASE = 'ddb72b7'
 HEX = re.compile(r'\b[0-9a-f]{7,40}\b')
 INTERNAL_SKIP = re.compile(r'rewrit|history|commit message|autosquash', re.I)
+# An optional fixup gets its own card (so it can be refused alone); its git subject repeats the
+# parent's, so it needs its own title.
+OPTIONAL_FIXUP_TITLES = {
+    'ac7de45': "A product view that waited for Shopify keeps the piece's own page address",
+}
 
 
 def dep_hashes(text):
@@ -87,9 +92,9 @@ def real(rv):
 
 
 def check_state(early, fin):
-    n_early = sum(len(real(r)) for r in early)
-    earlier = f' Earlier checks found {n_early} problem{"s" if n_early != 1 else ""}; all were fixed.' if n_early else ''
     revs, reps = fin.get('reviews', []), fin.get('repairs', [])
+    n_early = sum(len(real(r)) for r in early + revs[:-1])
+    earlier = f' Earlier checks found {n_early} problem{"s" if n_early != 1 else ""}; all were fixed.' if n_early else ''
     if not revs:
         return {'state': 'pending', 'text': 'Final check running.' + earlier}
     last = revs[-1]
@@ -132,7 +137,7 @@ def main(build_path, final_path, qpath, out):
         if missing:
             raise SystemExit(f'{key}: commits on the branch but not in the report: {missing}')
         # parent of each commit: itself, or the earliest non-fixup commit with the same subject
-        parent = {}
+        parent, fixes_card, subj = {}, {}, {h[:7]: sx for h, sx in subjects}
         for h, s in subjects:
             h7 = h[:7]
             if s.startswith('fixup: '):
@@ -140,7 +145,14 @@ def main(build_path, final_path, qpath, out):
                 p = next((x[:7] for x, sx in subjects if sx == target), None)
                 if not p:
                     raise SystemExit(f'{key}: no parent for {h7} "{s}"')
-                parent[h7] = parent.get(p, p)
+                root = parent.get(p, p)
+                root_optional = by7[root].get('optional') or re.match(r'(?:OPTIONAL|OPTION \d+|Owner option)', subj[root])
+                if by7[h7].get('optional') and not root_optional:
+                    if h7 not in OPTIONAL_FIXUP_TITLES:
+                        raise SystemExit(f'{key}: optional fixup {h7} needs a title in OPTIONAL_FIXUP_TITLES')
+                    parent[h7], fixes_card[h7] = h7, root
+                else:
+                    parent[h7] = parent.get(p, p)
             else:
                 parent[h7] = h7
         withdrawn = {h for h in full if parent[h] == h and (by7[h].get('risk') or '').startswith('Withdrawn')}
@@ -155,12 +167,13 @@ def main(build_path, final_path, qpath, out):
             if p == h7:
                 m = re.match(r'^OPTION (\d+):', s)
                 cards[h7] = {
-                    'id': f'{key}-{h7}', 'finding': c.get('finding', ''), 'title': clean_title(c['title']),
+                    'id': f'{key}-{h7}', 'finding': c.get('finding', ''), 'title': OPTIONAL_FIXUP_TITLES.get(h7) or clean_title(c['title']),
                     'question': c.get('ownerQuestion', ''), 'shoppers': c.get('forShoppers', ''), 'meta': c.get('forMeta', ''),
                     'checkout': c.get('forCheckout', ''), 'risk': c.get('risk', ''), 'test': c.get('test', ''),
                     'optional': bool(c.get('optional')) or s.startswith('OPTIONAL'),
-                    'pick': f'Option {m.group(1)}' if m else '', 'depsRaw': dep_hashes(c.get('dependsOn')),
-                    'commits': [h7], 'fixes': [],
+                    'pick': f'Option {m.group(1)}' if m else '',
+                    'depsRaw': ([fixes_card[h7]] if h7 in fixes_card else []) + dep_hashes(c.get('dependsOn')),
+                    'commits': [h7], 'fixes': [], 'squashInto': f'{key}-{fixes_card[h7]}' if h7 in fixes_card else '',
                 }
             else:
                 cards[p]['commits'].append(h7)

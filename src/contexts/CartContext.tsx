@@ -541,7 +541,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
      checkout order), or whose line was taken out in another tab, went to
      checkout as it showed, on a cart Shopify no longer had. In those cases
      the piece goes in again as if the bag had not held it: on a new cart when
-     the cart is gone, as a new line when only its line is. */
+     the cart is gone, as a new line when only its line is. It goes in as many
+     times as the bag showed it (2 after + in the bag), so checkout gets what
+     a working cart would have handed off, not 1 at full price. */
   const confirmInBag = useCallback(async (item: Omit<CartItem, "quantity" | "lineId">, line: CartItem, quantity: number): Promise<string | null> => {
     const { cartId, checkoutUrl: url } = loadCart();
     if (!cartId || !line.lineId) return url;
@@ -549,14 +551,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const result = await updateShopifyCartLine(cartId, line.lineId, line.quantity);
+      const again = Math.max(quantity, line.quantity);
       if (result.cartNotFound) {
         clearCart();
-        return await addItem(item, quantity);
+        return await addItem(item, again);
       }
       /* Its one other refusal: Shopify no longer has this line. */
       if (!result.success) {
         commitCart((current) => ({ ...current, items: current.items.filter((cartItem) => keyOf(cartItem) !== key) }));
-        return await addItem(item, quantity);
+        return await addItem(item, again);
       }
       const committed = commitCart((current) => ({
         ...current,

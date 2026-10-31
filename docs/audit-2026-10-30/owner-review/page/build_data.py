@@ -167,7 +167,7 @@ def main(build_path, final_path, qpath, out):
             if p == h7:
                 m = re.match(r'^OPTION (\d+):', s)
                 cards[h7] = {
-                    'id': f'{key}-{h7}', 'finding': c.get('finding', ''), 'title': OPTIONAL_FIXUP_TITLES.get(h7) or clean_title(c['title']),
+                    'id': f'{key}-{h7}', 'finding': by7[fixes_card[h7]].get('finding', '') if h7 in fixes_card else c.get('finding', ''), 'title': OPTIONAL_FIXUP_TITLES.get(h7) or clean_title(c['title']),
                     'question': c.get('ownerQuestion', ''), 'shoppers': c.get('forShoppers', ''), 'meta': c.get('forMeta', ''),
                     'checkout': c.get('forCheckout', ''), 'risk': c.get('risk', ''), 'test': c.get('test', ''),
                     'optional': bool(c.get('optional')) or s.startswith('OPTIONAL'),

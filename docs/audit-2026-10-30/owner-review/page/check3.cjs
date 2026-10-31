@@ -1,0 +1,25 @@
+const { chromium } = require('playwright');
+(async () => {
+  const b = await chromium.launch();
+  const p = await b.newPage({ viewport: { width: 390, height: 900 } });
+  const errs = [];
+  p.on('pageerror', e => errs.push(String(e)));
+  await p.route(/fonts\.(googleapis|gstatic)/, r => r.abort());
+  await p.goto('file://' + process.cwd() + '/index.html');
+  await p.waitForTimeout(400);
+  const card = p.locator('.card[data-id="tracking-ac7de45"]');
+  console.log('before:', await card.locator('.needs').textContent());
+  await p.click('.card[data-id="tracking-29a482a"] .choice button[data-v="no"]');
+  await p.click('.card[data-id="tracking-ac7de45"] .choice button[data-v="yes"]');
+  console.log('held dep:', await card.locator('.needs').textContent());
+  console.log('tags:', await card.locator('.tag').allTextContents());
+  await card.scrollIntoViewIfNeeded();
+  await card.screenshot({ path: 'card-ac7de45-390.png' });
+  const c2 = p.locator('.card[data-id="checkout-2b702d9"]');
+  await c2.scrollIntoViewIfNeeded();
+  await c2.screenshot({ path: 'card-2b702d9-390.png' });
+  const st = await p.locator('#sec-tracking .check, #sec-tracking [class*=check]').first().textContent().catch(() => 'n/a');
+  console.log('tracking check line:', st);
+  console.log('errors', errs);
+  await b.close();
+})();

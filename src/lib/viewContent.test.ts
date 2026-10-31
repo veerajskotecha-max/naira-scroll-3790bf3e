@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { jewellery } from "@/data/jewellery";
 import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 import { colourOfVariant } from "@/lib/colourCards";
 import { viewContentParams } from "./viewContent";
@@ -52,10 +53,29 @@ describe("ViewContent names the variant the page opens on", () => {
     expect(viewContentParams(p, "silver").content_ids).toEqual(["50651931639970"]);
   });
 
-  it("is what the product page sends, once per piece", () => {
+  /* Star Point Band, once Shopify's Gold / Silver, US 5–8 have arrived (the
+     bundled copy has none; see useViewContent for the wait). */
+  it("names Star Point Band's Silver / US 6 from its Silver ad link", () => {
+    const bundled = jewellery.find((p) => p.handle === "star-point-band")!;
+    const ids: Array<[string, string, string]> = [
+      ["50709664333986", "Gold", "5"], ["47501788774562", "Gold", "6"], ["50709664366754", "Gold", "7"], ["50709664399522", "Gold", "8"],
+      ["50709664432290", "Silver", "5"], ["50652105605282", "Silver", "6"], ["50709664465058", "Silver", "7"], ["50709664497826", "Silver", "8"],
+    ];
+    const live = {
+      ...bundled,
+      options: [{ name: "Metal", values: ["Gold", "Silver"] }, { name: "Size", values: ["5", "6", "7", "8"] }],
+      variants: ids.map(([id, Metal, Size]) => ({ id: `gid://shopify/ProductVariant/${id}`, title: `${Metal} / ${Size}`, availableForSale: true, price: 799, options: { Metal, Size } })),
+    };
+    const colour = colourOfVariant(live, "50652105605282")?.toLowerCase();
+    expect(viewContentParams(live, colour).content_ids).toEqual(["50652105605282"]);
+    expect(viewContentParams(live, "silver").content_ids).toEqual(["50652105605282"]);
+    expect(viewContentParams(live, null).content_ids).toEqual(["47501788774562"]);
+  });
+
+  it("is what the product page sends, once per piece, waiting for Shopify when it must", () => {
     const page = readFileSync(resolve(__dirname, "../pages/JewelDetailNext.tsx"), "utf8");
-    const effect = page.match(/useEffect\(\(\) => \{\s*if \(!piece\) return;[\s\S]*?\}, \[piece\?\.handle\]\);/g)!.find((e) => e.includes('"ViewContent"'))!;
-    expect(effect).toMatch(/trackPixel\("ViewContent", viewContentParams\(piece, colourParam\)\)/);
-    expect(effect).not.toMatch(/piece\.variantId/);
+    expect(page).toMatch(/useViewContent\(piece, colourParam, Boolean\(piece && linkPlaced\(piece, searchParams\)\), isLive \|\| !catalogueLoading\);/);
+    expect(page).not.toMatch(/"ViewContent"/);
+    expect(page).not.toMatch(/piece\.variantId,\s*name: piece\.name,\s*price: piece\.price,\s*category/);
   });
 });

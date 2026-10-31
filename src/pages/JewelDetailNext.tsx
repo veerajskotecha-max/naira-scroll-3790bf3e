@@ -28,8 +28,8 @@ import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/rin
 import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
-import { trackPixel } from "@/lib/pixel";
-import { viewContentParams } from "@/lib/viewContent";
+import { linkPlaced } from "@/lib/viewContent";
+import { useViewContent } from "@/hooks/useViewContent";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
@@ -462,13 +462,11 @@ const JewelDetailNext = () => {
   const { data: reels } = useReels(reelsWanted);
   const galleryReel = useMemo(() => (piece ? reelForPiece(reels, piece.handle) : null), [reels, piece]);
 
-  useEffect(() => {
-    if (!piece) return;
-    /* The variant the page opens on, worked out here rather than read from
-       `variant`, which a sibling effect may still be resetting on this render. */
-    trackPixel("ViewContent", viewContentParams(piece, colourParam));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per piece: live data replacing it must not fire ViewContent again
-  }, [piece?.handle]);
+  /* The product view, once per piece, naming the variant the page opens on,
+     worked out from the link rather than read from `variant`, which a sibling
+     effect may still be resetting on this render. A link the piece as first
+     drawn cannot place (Star Point Band's Silver ad) waits for Shopify. */
+  useViewContent(piece, colourParam, Boolean(piece && linkPlaced(piece, searchParams)), isLive || !catalogueLoading);
 
   /* The phone's buy bar shows whenever Add to cart is not fully on screen —
      so a buy button is visible from the moment the page opens — but never

@@ -64,8 +64,11 @@ const bagCart = (lines: Array<[string, string]>): Cart => ({
 const bag = (rows: Array<[typeof bracelet, string]>) =>
   localStorage.setItem("naira-shopify-cart", JSON.stringify({ cartId: "gid://shopify/Cart/bag", checkoutUrl: "https://payments.nairaflore.com/checkouts/cn/bag?key=k", items: rows.map(([p, lineId]) => ({ ...p, quantity: 1, lineId })) }));
 const handedOff = () => start.mock.calls[0]?.[0]?.map((l: { variantId: string; quantity: number }) => [l.variantId.split("/").pop(), l.quantity]);
-/* The fake cart a checkout address points at, and what it holds. */
-const cartAt = (carts: Cart[], url?: string) => carts.find((c) => c.id === `gid://shopify/Cart/${url?.match(/\/checkouts\/cn\/([^?/]+)/)?.[1]}`);
+/* The fake cart a checkout address points at, and what it holds. The address
+   is Shopify's /checkouts/cn/<cart> with d4ac0c0 and the older /cart/c/<cart>
+   without it; either names the same cart, so these checks hold either way. */
+const cartIn = (url?: string) => url?.match(/\/(?:checkouts\/cn|cart\/c)\/([^?/]+)/)?.[1];
+const cartAt = (carts: Cart[], url?: string) => carts.find((c) => c.id === `gid://shopify/Cart/${cartIn(url)}`);
 const holds = (cart?: Cart) => cart?.lines.map((l) => [l.merchandise.id.split("/").pop(), l.quantity]);
 const stored = () => JSON.parse(localStorage.getItem("naira-shopify-cart")!) as { cartId: string; items: Array<{ id: string; lineId: string }> };
 const fallback = () => start.mock.calls[0]?.[1]?.fallbackUrl as string | undefined;
@@ -89,7 +92,7 @@ describe("Buy Now on a piece the bag already holds asks Shopify about that line 
     expect(ops[0]).toEqual(["cartLinesUpdate", "gid://shopify/Cart/bag"]);
     expect(ops.map(([op]) => op)).not.toContain("cartLinesAdd");
     expect(handedOff()).toEqual([["47501788348578", 1]]);
-    expect(fallback()).toContain("/checkouts/cn/bag");
+    expect(cartIn(fallback())).toBe("bag");
     expect(events("AddToCart")).toHaveLength(0);
     expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 1]]);
   });
@@ -101,7 +104,7 @@ describe("Buy Now on a piece the bag already holds asks Shopify about that line 
     await act(async () => { await result.current.buyNow(bracelet); });
     expect(ops.slice(0, 2).map(([op]) => op)).toEqual(["cartLinesUpdate", "cartCreate"]);
     expect(handedOff()).toEqual([["47501788348578", 1]]);
-    expect(fallback()).toContain("/checkouts/cn/new1");
+    expect(cartIn(fallback())).toBe("new1");
     // Nothing more goes to the cart that is gone.
     expect(ops.filter(([, cart]) => cart === "gid://shopify/Cart/bag")).toHaveLength(1);
     expect(events("AddToCart")).toEqual([expect.objectContaining({ id: "prism-riviere-bracelet", price: 2399, quantity: 1 })]);
@@ -117,7 +120,7 @@ describe("Buy Now on a piece the bag already holds asks Shopify about that line 
     await act(async () => { await result.current.buyNow(bracelet); });
     expect(handedOff()).toEqual([["47501788348578", 1]]);
     expect(start.mock.calls[0][1].couponCode).toBeNull();
-    expect(fallback()).toContain("/checkouts/cn/new1");
+    expect(cartIn(fallback())).toBe("new1");
     // The hoops were on the cart that is gone, as main's emptied bag said.
     expect(result.current.items.map((i) => i.id)).toEqual(["prism-riviere-bracelet"]);
   });
@@ -160,7 +163,7 @@ describe("Buy Now on a piece the bag already holds asks Shopify about that line 
     const { result } = renderHook(() => useCart(), { wrapper: CartProvider });
     await act(async () => { await result.current.buyNow(bracelet); });
     expect(handedOff()).toEqual([["47501788348578", 1]]);
-    expect(fallback()).toContain("/checkouts/cn/bag");
+    expect(cartIn(fallback())).toBe("bag");
     expect(events("AddToCart")).toHaveLength(0);
   });
 });

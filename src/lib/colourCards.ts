@@ -48,6 +48,9 @@ export const variantChoice = (piece: JewelPiece, param?: string | null): Record<
   const named = variantFromParam(piece, param);
   if (!named) return undefined;
   const size = sizeOption(piece);
+  /* Left without its size, a ring sold only in sizes names nothing: the link
+     opens as a plain one (US 6, the page's own photo first), as on main. */
+  if (Object.keys(named.options).every((name) => name === size)) return undefined;
   const kin = (piece.variants ?? []).filter((v) => Object.entries(named.options).every(([name, value]) => name === size || v.options[name] === value));
   return { ...openingVariant(piece, kin).options };
 };

@@ -228,6 +228,17 @@ const months = piece("birthstone-heart-necklace", {
     variant(gid(40), { Month: "October · Rose" }, 699, { image: cdn("rose.jpg"), availableForSale: false }),
   ],
 });
+const sizedOnly = piece("roman-numeral-trio-ring", {
+  category: "Rings",
+  image: cdn("roman-card.jpg"),
+  gallery: [cdn("roman-card.jpg"), cdn("roman-on-hand.jpg")],
+  options: [{ name: "Size", values: ["6", "7", "8"] }],
+  variants: [
+    variant(gid(51), { Size: "6" }, 1899, { image: cdn("roman-shopify-first.jpg") }),
+    variant(gid(52), { Size: "7" }, 1899, { image: cdn("roman-shopify-first.jpg") }),
+    variant(gid(53), { Size: "8" }, 1899, { image: cdn("roman-shopify-first.jpg"), availableForSale: false }),
+  ],
+});
 const tubogasSoldOut = { ...tubogas, variants: tubogas.variants!.map((v) => (v.id === gid(14) ? { ...v, availableForSale: false } : v)) };
 
 describe("opening a product page on the variant a catalogue ad names", () => {
@@ -247,6 +258,18 @@ describe("opening a product page on the variant a catalogue ad names", () => {
 
   it("keeps a sold-out month as named, with nothing else in that month to offer", () => {
     expect(variantChoice(months, "40")).toEqual({ Month: "October · Rose" });
+  });
+
+  /* Roman Numeral Trio Ring and Crystal Baguette Eternity Ring are sold only
+     in sizes. Without the ad's size there is nothing left for the link to
+     name, so it must not open US 6 as if it had been named (that put the
+     size's own Shopify photo first, where main opens the page as built). */
+  it("opens a ring sold only in sizes on the ad's size, or as a plain link, never on another size as if named", () => {
+    for (const v of sizedOnly.variants!) {
+      const opened = variantChoice(sizedOnly, v.id.split("/").pop());
+      if (opened) expect(opened).toEqual(v.options);
+    }
+    expect(variantChoice(sizedOnly, "53")).toBeUndefined();
   });
 
   it("leaves a link that names none of the piece's variants to the colour rules", () => {

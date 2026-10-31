@@ -189,16 +189,22 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           clearCart();
           return fail("Your cart timed out. Please add the piece again.");
         }
-        const syncedQuantity = result.quantity ?? nextQuantity;
-        if (syncedQuantity < nextQuantity) fail(`Only ${syncedQuantity} of ${item.name} left, all in your bag.`);
-        const committed = commitCart((current) => ({
-          ...current,
-          checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
-          items: current.items.map((cartItem) =>
-            keyOf(cartItem) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
-          ),
-        }));
-        return committed.checkoutUrl;
+        if (!result.lineMissing) {
+          const syncedQuantity = result.quantity ?? nextQuantity;
+          if (syncedQuantity < nextQuantity) fail(`Only ${syncedQuantity} of ${item.name} left, all in your bag.`);
+          const committed = commitCart((current) => ({
+            ...current,
+            checkoutUrl: result.checkoutUrl ?? current.checkoutUrl,
+            items: current.items.map((cartItem) =>
+              keyOf(cartItem) === key ? { ...cartItem, quantity: syncedQuantity } : cartItem
+            ),
+          }));
+          return committed.checkoutUrl;
+        }
+        /* Shopify no longer has the bag's line for this piece, so its row is
+           stale (the next sync would drop it). Drop it now and add the piece
+           as a new line, as if the bag had not held it. */
+        commitCart((current) => ({ ...current, items: current.items.filter((cartItem) => keyOf(cartItem) !== key) }));
       }
 
       const result = await addLineToShopifyCart(latest.cartId, item.variantId, quantity, item.size);
@@ -304,6 +310,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (result.cartNotFound) {
           clearCart();
           toast.error("Your cart timed out. Please add the piece again.");
+          return;
+        }
+        /* Shopify no longer has this line: drop the row, as the next sync
+           would, and say why it went (the shopper asked for more, not less). */
+        if (result.lineMissing) {
+          commitCart((current) => {
+            const nextItems = current.items.filter((cartItem) => keyOf(cartItem) !== key);
+            return nextItems.length === 0 ? emptyCart : { ...current, items: nextItems };
+          });
+          toast.error(`${item.name} was no longer in your bag. Please add it again.`);
           return;
         }
         const syncedQuantity = result.quantity ?? quantity;

@@ -726,7 +726,7 @@ export async function addLineToShopifyCart(cartId: string, variantId: string, qu
   return { success: true, lineId: line?.id, quantity: line?.quantity, checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
 }
 
-export async function updateShopifyCartLine(cartId: string, lineId: string, quantity: number): Promise<{ success: boolean; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
+export async function updateShopifyCartLine(cartId: string, lineId: string, quantity: number): Promise<{ success: boolean; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean; lineMissing?: boolean }> {
   const data = await storefrontApiRequest<{
     data: { cartLinesUpdate: { cart: { checkoutUrl: string; lines: { edges: Array<{ node: { id: string; quantity: number } }> } } | null; userErrors: Array<{ message: string }> } };
   }>(CART_LINES_UPDATE_MUTATION, {
@@ -736,6 +736,9 @@ export async function updateShopifyCartLine(cartId: string, lineId: string, quan
 
   const userErrors = data.data.cartLinesUpdate.userErrors;
   if (isCartNotFoundError(userErrors)) return { success: false, cartNotFound: true };
+  /* The line is already off the cart: the caller drops the bag's row for it
+     rather than keep one checkout would still be handed. */
+  if (isMissingLineError(userErrors)) return { success: false, lineMissing: true };
   if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
   const cart = data.data.cartLinesUpdate.cart;
   const updatedQuantity = cart?.lines.edges.find((line) => line.node.id === lineId)?.node.quantity;

@@ -165,7 +165,7 @@ const CAPI_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
     browser copy was gated but this one was not, so every localhost run, every
     Lovable preview and the publish build's capture browser (127.0.0.1) sent
     ViewContent to Meta through our relay, where it reads as a shopper. */
-const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<string, unknown>) => {
+const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<string, unknown>, pageUrl?: string) => {
   if (typeof window === "undefined" || window.__nairaProd !== true) return;
   if (!CAPI_URL.startsWith("http") || !SERVER_EVENTS.has(event)) return;
   try {
@@ -176,7 +176,7 @@ const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<str
       body: JSON.stringify({
         event_name: event,
         event_id: eventId,
-        event_source_url: window.location.href,
+        event_source_url: pageUrl ?? window.location.href,
         custom_data: params ?? {},
         user_data: {
           external_id: getVisitorId(),
@@ -193,15 +193,23 @@ const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<str
   }
 };
 
+export type TrackOptions = {
+  /** The page the event happened on, for one sent after the shopper may have
+      moved on (a product view held for Shopify, see useViewContent). The
+      server copy reports it instead of the address bar at send time. Meta's
+      own script reads the browser copy's page itself. */
+  pageUrl?: string;
+};
+
 /** Fires a Meta standard event (browser + server). No-ops when blocked. */
-export const trackPixel = (event: PixelEvent, params?: Record<string, unknown>) => {
+export const trackPixel = (event: PixelEvent, params?: Record<string, unknown>, options?: TrackOptions) => {
   const eventId = newEventId();
   try {
     window.fbq?.("track", event, params, { eventID: eventId });
   } catch {
     /* pixel blocked — analytics must never break the shop */
   }
-  sendServerEvent(event, eventId, params);
+  sendServerEvent(event, eventId, params, options?.pageUrl);
 };
 
 /** Fires the base PageView (used on client-side route changes). */

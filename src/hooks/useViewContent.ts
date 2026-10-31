@@ -21,6 +21,11 @@ export const VIEW_WAIT_MS = 3000;
  * (`settled`), at most VIEW_WAIT_MS, and goes out at once if the shopper leaves
  * the page, hides it or moves to another piece first. Every other link sends
  * it at first paint, as before.
+ *
+ * Its server copy names the page the view was drawn on. It read the address
+ * bar at send time, so a shopper who tapped through to another page of the
+ * shop during the wait had Star Point Band's view reported on Woven Gold
+ * Hoops' page (checker, built site, Shopify held).
  */
 export const useViewContent = (
   piece: JewelPiece | null | undefined,
@@ -32,16 +37,21 @@ export const useViewContent = (
   const now = useRef({ piece, colourParam, ready });
   now.current = { piece, colourParam, ready };
   const sent = useRef<string | null>(null);
+  /* The address the piece was first drawn at; Shopify answering re-runs the
+     effect below, and must not move it. */
+  const drawnAt = useRef<{ handle: string; pageUrl: string } | null>(null);
   const handle = piece?.handle;
 
   useEffect(() => {
     if (!handle || sent.current === handle) return;
     const drawn = now.current;
+    if (drawnAt.current?.handle !== handle) drawnAt.current = { handle, pageUrl: window.location.href };
+    const { pageUrl } = drawnAt.current;
     const send = () => {
       if (sent.current === handle) return;
       sent.current = handle;
       const latest = now.current.piece?.handle === handle ? now.current : drawn;
-      if (latest.piece) trackPixel("ViewContent", viewContentParams(latest.piece, latest.colourParam));
+      if (latest.piece) trackPixel("ViewContent", viewContentParams(latest.piece, latest.colourParam), { pageUrl });
     };
     if (ready) {
       send();

@@ -1,0 +1,2228 @@
+{
+  "summary": "Find every set of Naira pieces that visibly match or look alike (from their photos), verify each group with two independent photo checkers, then a completeness critic looks for missed matches. Read-only: changes nothing.",
+  "agentCount": 34,
+  "logs": [
+    "108 candidate groups from 3 finders",
+    "86 of 108 groups survived both checkers",
+    "critic proposed 8; 7 survived"
+  ],
+  "result": {
+    "confirmed": [
+      {
+        "handles": [
+          "verdant-eternity-band",
+          "emerald-halo-c-hoops"
+        ],
+        "strength": "set",
+        "reason": "Both are silver pieces made of deep-green round stones, each in a small clear pavé halo, set all the way round. The C-hoops are the earring version of the band. / Verdant Eternity Band and Emerald Halo C-Hoops are the same design: a silver line of round green stones, each ringed by its own small pavé halo (band vs C-hoop). / Same look in silver: a row of deep emerald-green round/oval stones set close together with tiny clear pavé accents between them - the Verdant band and the Emerald Halo C-hoops read as one matching set.",
+        "notes": [
+          "Both are silver rows of deep emerald-green faceted stones with clear pavé sparkle, and side by side they plainly go together. They are not one design, though: the band has oval stones, each in a wavy S-shaped pavé halo, while the C-hoops have prong-set round stones with small clusters of clear stones between them, so this is a strong set, not a twin.",
+          "Both are rhodium-silver rows of deep emerald-green stones with clear micro-pavé, so they plainly go together, but they are not one design: the band has oval stones wrapped in wavy S-shaped pavé halos, while the C-hoops have claw-set round stones with small clear pavé clusters between them."
+        ]
+      },
+      {
+        "handles": [
+          "verdant-eternity-band",
+          "emerald-halo-c-hoops",
+          "verdant-cushion-studs",
+          "emerald-deco-hoops"
+        ],
+        "strength": "set",
+        "reason": "All silver with green stones framed by clear stones: haloed rounds on the band and C-hoops, a big green cushion in a clear sunburst halo, emerald-cuts between clear baguettes, and a lighter aqua-green cushion under a pavé hook. / The silver-and-emerald look: green stones in rhodium silver with clear pavé or baguette accents (halo eternity band, halo C-hoops, cushion halo studs, emerald-cut deco hoops; the drop earrings in a lighter mint-green). / Silver pieces built around emerald-green faceted stones with clear crystal accents (Verdant band, C-hoops, Deco hoops, Verdant cushion studs, and the Verdant drops in a lighter mint green).",
+        "notes": [
+          "Band, C-hoops, cushion studs (big deep-green cushion in a clear sunburst halo) and Deco hoops (deep-green step-cuts alternating with clear baguettes) all share the silver, deep-emerald and clear-crystal look. Verdant Drop Earrings dropped: the stone is a pale aqua/mint cushion in a plain 4-claw drop, which reads as a different colour from the deep emerald pieces.",
+          "The band, C-hoops, cushion studs (big emerald cushion in a clear sunburst halo) and Deco hoops (emerald-cuts between clear baguettes) share the same silver, deep-emerald and clear-stone look; the Verdant Drop Earrings are dropped because their stone is a light aqua/teal mint, visibly a different green from the rest."
+        ]
+      },
+      {
+        "handles": [
+          "verdant-eternity-band",
+          "emerald-halo-c-hoops"
+        ],
+        "strength": "set",
+        "reason": "Round deep-green stones set among rows of tiny clear pavé. The Rose Verdant Band is the rose-gold version of the look.",
+        "notes": [
+          "Rose Verdant Band dropped: it is rose gold, and its look is a mostly clear multi-row pavé band with four small green dots, so it does not look like the chunky silver row of green stones. Only the band and C-hoops (already matched in group 1) remain.",
+          "The Rose Verdant Band is dropped: it is rose gold rather than silver, and it is a wide open multi-row pavé lattice with four small green dots, not a single row of haloed green stones; the remaining pair just repeats group 1."
+        ]
+      },
+      {
+        "handles": [
+          "verdant-eternity-band",
+          "emerald-halo-c-hoops"
+        ],
+        "strength": "set",
+        "reason": "The same chunky silver row of stones, each in its own pavé halo. The Rivière Hoops are the all-clear version of the green Verdant band and hoops. / Same silver construction of round stones each in a tiny pavé halo running round a band or C-hoop; the Rivière Hoops are this exact hoop in clear stones, the Verdant pair in green.",
+        "notes": [
+          "Rivière Hoops dropped: their stones are all clear ovals, each touching the next in a milgrain bezel, so they differ in both stone colour and setting from the green prong-set and halo pieces and are not the same hoop in another colour. Only the band and C-hoops remain.",
+          "The Rivière Hoops are dropped: they are all-clear oval stones in milgrain bezel cups set edge to edge, which is not the green Verdant look and not the same construction as the haloed band or the claw-and-pavé C-hoops; the remaining pair just repeats group 1."
+        ]
+      },
+      {
+        "handles": [
+          "emerald-square-ear-cuff",
+          "emerald-carre-bracelet",
+          "baguette-eternity-band",
+          "baguette-huggies",
+          "baguette-tennis-necklace",
+          "baguette-tennis-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Square and emerald-cut green stones claw-set in gold. The ear cuff and the Carré bracelet are shown in green; the four baguette pieces match in their Emerald option.",
+        "notes": [
+          "The ear cuff and the Carré bracelet both have square bright-green stones claw-set in yellow gold. The Emerald-option photos of the baguette ring, huggies and bracelet, and the worn emerald necklace photo, show green baguettes claw-set in the same yellow gold, so they read as one emerald-and-gold look. The baguette four match only on their Emerald option (their main photos are ruby or clear), so these links should open the Emerald variant.",
+          "In yellow gold, the ear cuff's single square emerald and the Carré bracelet's line of square emeralds are claw-set the same way, and the four baguette pieces in their Emerald option (checked against the shop's Emerald colour photos) are the same gold-and-green step-cut look; the baguette main photos show ruby or crystal, so the match holds only on the Emerald option."
+        ]
+      },
+      {
+        "handles": [
+          "birthstone-heart-necklace",
+          "emerald-square-ear-cuff",
+          "emerald-carre-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Deep emerald-green stones on warm gold: a cushion stud, a green heart pendant (May · Emerald, as photographed), a square-stone ear cuff, the green Carré tennis and the rose-gold band with green rounds. / Emerald-green faceted stones on warm gold: square emerald ear cuff and Carré bracelet, Verdant Circlet studs, Rose Verdant band, and the Birthstone Heart in its May emerald option.",
+        "notes": [
+          "Side by side, the heart pendant (May · Emerald option, as photographed), the square-stone ear cuff and the Carré tennis bracelet all have bright emerald stones claw-set in yellow gold and clearly go together. Circlet studs dropped: their pearl-and-star circlet and darker teal cushion make a different, more ornate look. Rose Verdant Band dropped: it is rose gold and mostly clear pavé.",
+          "The circlet studs, the heart pendant (in its May · Emerald option, as photographed), the ear cuff and the Carré bracelet are all deep emerald-green faceted stones on yellow gold and go together as one look; the Rose Verdant Band is dropped because its rose-gold, multi-row pavé lattice clashes with the yellow gold and the silhouette."
+        ]
+      },
+      {
+        "handles": [
+          "baguette-eternity-band",
+          "baguette-huggies",
+          "baguette-tennis-necklace",
+          "baguette-tennis-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "One gold baguette design made as a ring, huggies, necklace and bracelet. All four come in Ruby (the ring and huggies are photographed in ruby) and Emerald, and the ring and huggies also come in Amethyst. / Baguette line: a channel of claw-set baguettes in gold; ring, huggies, necklace and bracelet all sold in Ruby and Emerald (and Crystal on the huggies, necklace and bracelet).",
+        "notes": [
+          "One gold baguette design: the same claw-set baguette stones in yellow gold, made as a ring, huggies, a necklace and a bracelet. The ring and huggies are photographed in ruby and the necklace and bracelet in clear, and the Emerald-option photos confirm all four look identical in green. All four are sold in Ruby and Emerald, so link them on those shared options (the ring has no Crystal option).",
+          "This is one design (a continuous line of claw-set baguettes in yellow gold) made as a ring, huggies, necklace and bracelet; the ring and huggies are photographed in ruby and the necklace and bracelet in crystal, and all four are sold in Ruby and Emerald, so they should be linked on the same stone."
+        ]
+      },
+      {
+        "handles": [
+          "crystal-baguette-eternity-ring",
+          "baguette-arc-hoops",
+          "baguette-eclat-bracelet",
+          "baguette-tennis-necklace",
+          "baguette-tennis-bracelet",
+          "baguette-huggies"
+        ],
+        "strength": "twin",
+        "reason": "Clear baguette stones in a single gold claw-set row. The necklace and tennis bracelet are photographed in Crystal, and the Baguette Huggies match in their Crystal option. / Clear baguette stones in a continuous gold-claw line: eternity ring, arc hoops, Éclat bracelet, and the Crystal option of the tennis necklace, tennis bracelet and huggies. / Clear baguette-cut crystals channelled around gold - the Baguette Arc Hoops match the crystal baguette band, huggies (Crystal option), necklace and bracelets.",
+        "notes": [
+          "All six show clear emerald-cut baguettes in a single gold row; the ring, necklace and tennis bracelet are photographed in clear stones, and the huggies are photographed in Ruby but are the same claw-set baguette design, so they match in their Crystal option. The Arc Hoops (narrower baguettes on a C-hoop) and the Éclat (slightly smaller baguettes) are near-identical in look rather than strictly the same design.",
+          "Every photo shows the same unbroken row of clear baguettes in gold settings, and the Éclat and Tennis bracelets look almost identical. The huggies photo is Ruby, but the Crystal option photo on Shopify is the same clear baguette row, so the huggies match in Crystal."
+        ]
+      },
+      {
+        "handles": [
+          "crystal-baguette-eternity-ring",
+          "baguette-arc-hoops",
+          "baguette-eclat-bracelet",
+          "baguette-tennis-necklace",
+          "baguette-tennis-bracelet"
+        ],
+        "strength": "set",
+        "reason": "The same clear gold-set baguettes. On the Halo Drops they radiate around a pearl, so the drops sit with the baguette rows (necklace and tennis bracelet in their Crystal option).",
+        "notes": [
+          "Dropped the Baguette Halo Drops because the photo reads as a pearl drop earring, with the baguettes only a small sunburst frame around the pearl, so it does not look like the baguette rows; the other five are the clear gold baguette line that is already confirmed in group 1.",
+          "The drops have a gold-rimmed disc of clear baguettes fanned around a pearl, with a pearl drop below. They use the same clear baguettes in gold as the rows, so a shopper would pair them, but the shape and pearls are different: this is a set, not a twin."
+        ]
+      },
+      {
+        "handles": [
+          "amethyst-carre-bracelet",
+          "blush-carre-bracelet",
+          "champagne-carre-bracelet",
+          "emerald-carre-bracelet",
+          "sapphire-carre-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "The same gold tennis bracelet of square claw-set stones in five colours (violet, blush, champagne, green, blue). They look alike and stack together. / Carré line: identical square-stone tennis bracelet in gold in amethyst, blush, champagne, emerald and sapphire. / The same Carré tennis bracelet in gold with square-cut stones, sold as separate colours: amethyst, blush, champagne, emerald and sapphire.",
+        "notes": [
+          "All five photos show the same gold tennis bracelet with square claw-set stones, shot on the same cube, and only the stone colour changes (violet, lilac-pink, champagne, green and royal blue).",
+          "The five photos are the same gold tennis bracelet of claw-set square stones, shot the same way, with only the stone colour changed."
+        ]
+      },
+      {
+        "handles": [
+          "aquarelle-riviere-bracelet",
+          "midnight-riviere-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Both are gold tennis bracelets of round royal-blue claw-set stones. Aquarelle matches in its Royal Blue option, which is the one photographed. / The same round-stone rivière tennis bracelet in gold with blue stones (B02 in its Royal Blue option, B24 in midnight blue).",
+        "notes": [
+          "Both are gold tennis bracelets with round blue claw-set stones, but the photos are not one design: Midnight has visibly larger stones in deep navy, while the Aquarelle (Royal Blue, as photographed) has smaller, brighter royal-blue stones, so this is set, not twin.",
+          "Both are gold tennis bracelets of round claw-set blue stones and plainly look alike (Aquarelle in its Royal Blue option). Midnight's stones are larger and a darker navy, so they are the same look rather than one design."
+        ]
+      },
+      {
+        "handles": [
+          "aquarelle-riviere-bracelet",
+          "midnight-riviere-bracelet",
+          "sapphire-carre-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Rich royal-blue stones in gold tennis bracelets, round on two and square on the Sapphire Carré. Aquarelle matches in its Royal Blue option.",
+        "notes": [
+          "These are three blue gold tennis bracelets that stack together: the Sapphire Carré's royal blue is the same shade as the Aquarelle's Royal Blue (as photographed), with square stones instead of round, and Midnight is a darker navy round-stone version.",
+          "Side by side, all three are rich blue stones in gold tennis bracelets. The Sapphire Carré's royal blue is almost the same shade as Aquarelle in Royal Blue, and the only difference is square versus round stones."
+        ]
+      },
+      {
+        "handles": [
+          "aquarelle-riviere-bracelet",
+          "midnight-riviere-bracelet",
+          "sorbet-riviere-bracelet"
+        ],
+        "strength": "set",
+        "reason": "The same gold tennis bracelet of round coloured stones in blue, navy and pastel sorbet, made to stack together. / Same round-stone rivière tennis bracelet in gold in coloured stones (Aquarelle royal blue and other colours, midnight navy, sorbet pastels).",
+        "notes": [
+          "All three have the same round four-claw gold tennis build; the Sorbet's pastel stones are the same size as the Aquarelle's, so those two are the same bracelet in different colours, while Midnight's navy stones are larger, which makes the group set rather than twin.",
+          "All three are the same round claw-set rivière tennis bracelet in gold. Sorbet's mixed pastels have the same stone size as Aquarelle and echo its Pink and Lavender options. Midnight has bigger navy stones, so this is a set, not twins."
+        ]
+      },
+      {
+        "handles": [
+          "blush-cluster-ring",
+          "blush-station-bracelet",
+          "blush-carre-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Soft blush-pink stones in gold: a pink round cluster ring, pink round station bracelet and pink square tennis. The Aquarelle Rivière matches in its Pink option.",
+        "notes": [
+          "The cluster ring, station bracelet and Blush Carré all show soft pink-lilac stones in gold (round claw-set, round bezel-set and square claw-set respectively), so they read as one blush colour story. I dropped the Aquarelle because its photo is royal blue and the Pink option is not shown. Note also that the Blush Station Bracelet is marked not buyable in pieces.json.",
+          "Side by side, all four are soft pink stones in gold: round claw-set on the cluster ring, round bezels on the station bracelet, squares on the Blush Carré, and Aquarelle's Pink option (confirmed from its Shopify photo) is the same lilac-pink as the Carré. The Blush Station Bracelet is not buyable (sold out), so leave it out of the links if they only show pieces in stock."
+        ]
+      },
+      {
+        "handles": [
+          "lilac-papillon-ring",
+          "blush-carre-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Lilac-pink stones in gold: the lavender pavé butterfly ring and the orchid-lilac square tennis. The Aquarelle Rivière matches in its Lavender option.",
+        "notes": [
+          "The butterfly ring's lavender pavé and the Blush Carré's lilac-pink princess stones are the same lilac colour in gold, so they pair as a colour set, though cut and setting differ; I dropped Aquarelle because its photo shows royal-blue round stones and its Lavender option can't be seen to match.",
+          "The lavender pavé butterfly ring and the Blush Carré square tennis bracelet both have the same lilac stones in gold, so they read as a colour set even though their shapes differ; I dropped the Aquarelle Rivière because its photo shows royal-blue round stones and the Lavender option is not pictured to confirm the shade."
+        ]
+      },
+      {
+        "handles": [
+          "prism-pear-drop-hoops",
+          "prism-pear-drop-necklace"
+        ],
+        "strength": "twin",
+        "reason": "The same trio of pear drops (raspberry pink, lavender, yellow) on gold, made as earrings and a pendant. / Prism pear drops: a vertical cascade of small pear stones in pink, lilac and yellow in gold, as hoop drops and pendant. / Matching Prism set: a vertical drop of ruby-pink, lavender and yellow pear stones in gold, as huggie drops and pendant.",
+        "notes": [
+          "Same design: a vertical drop of three claw-set pear stones (raspberry pink, lavender, canary yellow) in gold, made as huggie drops and as a pendant.",
+          "Both photos show the identical vertical trio of raspberry-pink, lavender and yellow pear stones in gold claws, once as huggie drops and once as a pendant, so this is plainly one matching set."
+        ]
+      },
+      {
+        "handles": [
+          "prism-cluster-studs-silver",
+          "prism-riviere-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Silver pieces with candy-coloured emerald-cut and square stones (pink, lilac, yellow, aqua) set side by side. / Silver with mixed pastel multicolour square/emerald-cut stones (lilac, pink, yellow, aqua): prism cluster studs and rivière bracelet. / Silver pieces with the same candy palette of emerald-cut and square stones in lilac, pink, yellow and aqua.",
+        "notes": [
+          "Both are silver with mixed square and emerald-cut stones in pink, purple and yellow; the climber's stones are deeper (amethyst, citrine) with pearl accents and no aqua, and the bracelet is pastel with each stone in a pavé halo, so they share a look but are not one design.",
+          "Both are silver with mixed pink, purple and yellow square and emerald-cut stones; the studs use deeper amethyst and citrine tones plus pearls and have no aqua, while the bracelet is pastel stones in pavé halos, so they share a look but are not one design."
+        ]
+      },
+      {
+        "handles": [
+          "prism-pear-drop-hoops",
+          "prism-pear-drop-necklace",
+          "sorbet-riviere-bracelet"
+        ],
+        "strength": "set",
+        "reason": "A multi-coloured pastel rainbow of pink, lilac and yellow stones mixed in one piece. It is the Prism and Sorbet look. / Multicolour candy stones - pink, lilac, yellow and pastel - across the Prism and Sorbet pieces (E26/B30 in silver, E27/N19/B36 in gold).",
+        "notes": [
+          "In gold, the Sorbet tennis bracelet's pastel pink, lilac and yellow round stones match the Prism pear drops' pink, lavender and yellow palette; I dropped the silver Prism climber and Rivière because mixing silver with gold here isn't a plain match (group 3 already pairs those two).",
+          "The gold pieces (the Prism pear drops and the Sorbet tennis bracelet with its pastel pink, lilac, yellow and blue round stones) share a multicolour-candy-stones-in-gold look, but I dropped the silver Prism studs and bracelet because next to these the metal colour clashes."
+        ]
+      },
+      {
+        "handles": [
+          "cushion-halo-ring",
+          "whisper-pave-band",
+          "solitaire-whisper-studs"
+        ],
+        "strength": "twin",
+        "reason": "The same silver design: a large round clear stone inside a cushion-shaped pavé halo, as two rings and as studs. / Same silver cushion-shaped pavé halo around a round centre stone (Cushion Halo and Whisper Pavé rings with pavé shanks, Solitaire Whisper studs). / Same design in silver: a round brilliant crystal in a cushion-shaped pavé halo (R07 and R28 are near-identical halo rings on pavé shanks; E32 is the matching halo stud).",
+        "notes": [
+          "Same silver design: a round clear brilliant inside a cushion-shaped pavé halo; the two rings are near-identical with pavé shanks and the studs are the same halo (studs are currently not buyable).",
+          "All three are the same silver design, a round clear stone inside a cushion-shaped pavé halo; the two rings are near-identical on pavé shanks and the studs are the same halo head (note that the studs are currently not buyable)."
+        ]
+      },
+      {
+        "handles": [
+          "cushion-halo-ring",
+          "whisper-pave-band",
+          "vintage-halo-ring",
+          "solitaire-whisper-studs"
+        ],
+        "strength": "set",
+        "reason": "Silver with clear stones framed in pavé halos, from single halo solitaires to the hoop of haloed ovals. It reads as one bridal-silver look.",
+        "notes": [
+          "The Vintage Halo is a clear round solitaire in a round pavé halo on a pavé shank in silver, plainly the same bridal-halo look as the cushion-halo pieces; I dropped the Rivière Hoops because they are a row of milgrain bezel-set ovals with no pavé halo.",
+          "The Vintage Halo is also a silver pavé-halo solitaire on a pavé band (round open halo instead of cushion), so it shares the halo look, but I dropped the Rivière Hoops because they are a plain row of milgrain-bezel ovals with no halo or solitaire and match only as generic silver-and-clear."
+        ]
+      },
+      {
+        "handles": [
+          "serpentine-whisper-chain",
+          "serpentine-whisper-chain-silver"
+        ],
+        "strength": "twin",
+        "reason": "The same square clear solitaire pendant on a snake chain, in gold and in silver. / Same Serpentine Whisper design: snake chain with a claw-set square solitaire pendant, in gold and in silver. / The same Serpentine Whisper solitaire pendant on a snake chain, sold in gold and in silver.",
+        "notes": [
+          "Both photos show the same piece, one in gold and one in silver: a snake chain with a clear square cushion solitaire in a claw basket on a tube bail, with the same lobster clasp and extender tag.",
+          "Both photos show the same snake chain, lobster clasp with extender tab and claw-set clear square-cushion pendant, one in gold and one in silver."
+        ]
+      },
+      {
+        "handles": [
+          "asscher-solitaire-ring",
+          "cushion-solitaire-ring",
+          "lumiere-oval-solitaire-ring",
+          "serpentine-whisper-chain",
+          "dewdrop-bezel-necklace",
+          "solitaire-drop-huggies",
+          "first-light-set"
+        ],
+        "strength": "set",
+        "reason": "One large clear claw-set solitaire on plain polished gold (asscher, cushion, oval, square, pear and round) across rings, pendants and drop huggies.",
+        "notes": [
+          "Each one is a single clear solitaire on plain polished gold (asscher, cushion, oval, square, pear, round), so the solitaire look carries across all seven. On the model shot the cushion ring's stone seems held by a thin gold rim rather than visible claws, but it still reads as a big clear solitaire on a gold band.",
+          "Each piece has a single large clear solitaire on plain polished gold (asscher, elongated cushion in a slim rim, oval, square cushion pendant, pear pendant, round drop on a huggie, round pendant with studs), so they share a look without being one design; note that first-light-set is marked not buyable."
+        ]
+      },
+      {
+        "handles": [
+          "lumiere-oval-necklace",
+          "lumiere-oval-bracelet",
+          "lumiere-solitaire-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "The same gold tennis line of clear oval claw-set stones, made as a necklace and bracelets. The Solitaire bracelet adds one round centre stone. / Gold tennis line of oval clear crystals; B22 is the same oval bracelet with a round solitaire centre.",
+        "notes": [
+          "All three use the same gold tennis line of clear oval stones, each set crosswise in four claws. The necklace and the Oval bracelet are the same design, and close-ups show the Solitaire bracelet is that same oval line with one large round claw-set stone in the centre and the same fold-over clasp.",
+          "Close-ups show the same gold tennis line of clear oval stones set crosswise in four claws on all three, and the Solitaire bracelet is that same oval line with one large round stone in the middle."
+        ]
+      },
+      {
+        "handles": [
+          "lumiere-oval-solitaire-ring",
+          "lumiere-oval-necklace",
+          "lumiere-oval-bracelet",
+          "lumiere-solitaire-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Clear oval stones in four gold claws. The oval solitaire ring matches the oval tennis necklace and bracelets.",
+        "notes": [
+          "The ring holds one clear oval in four gold claws on a plain band, the same cut, colour and claw setting as the stones in the oval tennis necklace and both bracelets, so it plainly goes with them.",
+          "The ring has one clear oval in four gold claws on a thin open band, the same stone cut, claws and gold as the oval tennis necklace and bracelets, so it is a natural pairing rather than one design."
+        ]
+      },
+      {
+        "handles": [
+          "riviere-eternal-necklace",
+          "riviere-eternal-bracelet"
+        ],
+        "strength": "set",
+        "reason": "The same gold tennis line of clear round claw-set stones with the same clasp, made as a necklace and a bracelet. / Rivière Eternal: round clear stones in a gold tennis line as necklace and bracelet. / Matching Rivière Eternal set: one line of round clear crystals prong-set in gold with the same clasp, as necklace and bracelet.",
+        "notes": [
+          "Downgraded from twin. Zoomed in, the necklace's stones are square cushion cuts in square four-claw baskets, while the bracelet's are round. Both are gold tennis lines of clear stones with a similar fold-over box clasp, so they go together but are not the same design.",
+          "Both are gold tennis lines of clear claw-set stones with the same rectangular fold-over clasp, but the claim of round stones is only half true: the necklace close-up shows square cushion stones and the bracelet shows round ones, so they go together without being one design."
+        ]
+      },
+      {
+        "handles": [
+          "riviere-eternal-necklace",
+          "riviere-eternal-bracelet",
+          "riviere-of-light-bracelet",
+          "fine-tennis-bracelet",
+          "aquarelle-riviere-bracelet"
+        ],
+        "strength": "set",
+        "reason": "A classic gold tennis line of clear round claw-set stones. The Aquarelle Rivière matches in its White option. / Round clear crystal tennis line in gold (B02 in its White option) - the Rivière necklace pairs with any of these bracelets.",
+        "notes": [
+          "The four bracelets are gold tennis lines of round stones in four claws. Aquarelle's photo shows royal blue, so it matches only in its White option. Rivière of Light and Fine Tennis look almost identical. The necklace uses square cushion stones rather than round ones but still reads as the matching gold tennis necklace.",
+          "All are gold tennis lines of clear claw-set stones (the Eternal necklace's stones are square, the bracelets' are round, Fine Tennis is slimmer); the Aquarelle photo shows Royal Blue, so it matches only in its White option."
+        ]
+      },
+      {
+        "handles": [
+          "marquise-drop-choker",
+          "marquise-layering-set",
+          "marquise-wheat-cuff",
+          "lotus-pear-drop-studs"
+        ],
+        "strength": "set",
+        "reason": "Clear marquise-cut stones in gold claws: a single marquise on the choker and pendant, rows of marquise on the cuff, and marquise fans on both pairs of earrings.",
+        "notes": [
+          "The choker, layering set, coil cuff and lotus studs all show clear marquise stones in gold claws (a single marquise, marquise stations, double rows, a three-marquise fan). Mint Pear Drop is dropped: it is led by a large mint-green pear with a few small clear pear accents, not a clear marquise fan.",
+          "Choker, layering set, coil cuff and lotus studs all show clear marquise stones in gold claws (single, stationed, double row, three-stone fan); the Mint earrings are dropped because a close-up shows their small clear stones are pear cuts, not marquise, and the large mint-green pear dominates the piece."
+        ]
+      },
+      {
+        "handles": [
+          "bow-pear-drop-necklace",
+          "lotus-pear-drop-studs"
+        ],
+        "strength": "set",
+        "reason": "A cluster of clear stones in gold with a clear pear-cut drop hanging beneath it.",
+        "notes": [
+          "The bow pendant (two heart stones) and the lotus studs (three-marquise fan) are both a small cluster of clear fancy-cut stones in gold with a clear claw-set pear drop hanging from a jump ring, so they read as a pair. The Marquise Drop Choker is dropped: it is a sleek tubogas collar with one sideways marquise and a long chain drop, a different look from the bow pendant.",
+          "The bow necklace (two heart stones) and the lotus studs (marquise fan) both hang a clear gold-claw pear drop from a small clear cluster and look made to wear together; the choker is dropped because it has a single marquise on a coil collar with a pear on a chain dangle, not a cluster with a drop."
+        ]
+      },
+      {
+        "handles": [
+          "crystal-pear-ear-cuff",
+          "pear-point-open-cuff",
+          "dewdrop-bezel-necklace"
+        ],
+        "strength": "set",
+        "reason": "A clear pear-cut stone claw-set on plain polished gold. / A clear pear-cut crystal in gold prongs on high-polish gold: Dewdrop pendant, pear ear cuff and pear-point cuff.",
+        "notes": [
+          "All three have a clear pear-cut stone in small gold claws on smooth, high-polish gold (chunky hoop on the ear cuff, pear tips on the open cuff, a large pear under a polished bail on the pendant), so they plainly share one look.",
+          "All three photos show a clear pear-cut stone in gold claws on thick, high-polish yellow gold (ear-cuff hoop, open cuff ends, chunky pendant bail), so they look like one family without being one design."
+        ]
+      },
+      {
+        "handles": [
+          "twin-heart-studs",
+          "twin-heart-necklace"
+        ],
+        "strength": "twin",
+        "reason": "The same pair of clear heart-cut stones side by side in gold claws, as studs and a pendant. / Twin Heart: two clear heart-cut stones side by side in gold, as studs and necklace. / Matching Twin Heart set: two heart-cut clear crystals side by side in gold prongs, as pendant and studs.",
+        "notes": [
+          "Same design: a large and a small clear heart-cut stone side by side in gold claws, as studs and as a pendant (the necklace is listed as not buyable right now).",
+          "Both photos show the same design: one large and one small clear heart-cut stone side by side in thin gold claws, as studs and as a pendant on a fine gold chain (the necklace is currently listed as not buyable)."
+        ]
+      },
+      {
+        "handles": [
+          "bow-pear-drop-necklace",
+          "ribbon-bead-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "The same little bow of two clear heart stones on a fine gold chain. The necklace adds a pear drop. / Same bow made of two heart-shaped clear stones on a fine gold chain, as necklace (with pear drop) and bracelet. / The same bow made of two heart-cut clear crystals in gold on a fine chain, as necklace and bracelet.",
+        "notes": [
+          "The same bow of two mirrored clear heart stones in gold claws with a gold knot sits on both fine gold chains; the necklace adds a pear drop and the bracelet adds satellite beads.",
+          "Both show the same small bow of two clear heart stones meeting point-to-point at a gold knot on a fine gold cable chain; the necklace adds a hanging pear drop and the bracelet adds gold satellite beads."
+        ]
+      },
+      {
+        "handles": [
+          "twin-heart-studs",
+          "twin-heart-necklace",
+          "bow-pear-drop-necklace",
+          "ribbon-bead-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Clear heart-cut stones claw-set in gold, used as a pair, as a bow or as a linked row.",
+        "notes": [
+          "All four use pairs of large clear heart-cut stones in open gold claws. Heartline Paperclip is dropped because its hearts are small, set in gold bezels with a pavé halo, and strung along a chunky paperclip chain, a different setting and scale.",
+          "The twin-heart and bow pieces all use bare clear heart-cut stones in thin gold claws on fine chains and look alike side by side, but Heartline is a row of small hearts each in a pavé halo on a paperclip chain, a different tennis-style look, so it is dropped."
+        ]
+      },
+      {
+        "handles": [
+          "ribbon-bow-earrings",
+          "bow-pear-drop-necklace",
+          "ribbon-bead-bracelet"
+        ],
+        "strength": "set",
+        "reason": "A bow made of clear stones set in gold (kite stones, heart stones or baguettes). / Bow/ribbon motif in gold: pavé ribbon bow ring with pearl, crystal ribbon bow earrings, and the bow of two heart stones on the necklace and bracelet. / The bow motif in gold with clear crystals: pearl ribbon ring, crystal ribbon bow earrings, and the heart-crystal bow necklace and bracelet.",
+        "notes": [
+          "The earrings (four large clear kite stones in gold frames) and the necklace/bracelet (two clear heart stones in gold claws) are both gold bows built from big clear fancy-cut stones. The Pearl Ribbon Ring is dropped: it is a thin gold ribbon outline with small channel-set baguettes, and a large pearl dominates it, so it looks different.",
+          "Every photo shows a yellow-gold bow set with clear stones (kite stones framed in molten gold on the earrings, two hearts on the necklace and bracelet, baguette-channel ribbon loops on the ring), so the bow motif plainly links them even though the bows are built differently."
+        ]
+      },
+      {
+        "handles": [
+          "petite-bow-studs",
+          "pearl-blossom-earrings"
+        ],
+        "strength": "set",
+        "reason": "A silver bow covered in clear pavé. / Silver-tone ribbon bows outlined in pavé (Petite Bow Studs are photographed in silver tone though listed gold); the Pearl Blossom pair adds a pearl inside a pavé ring under the bow. / Silver bows outlined in clear pavé (E19 adds a pearl in a pavé circle).",
+        "notes": [
+          "Both are silver-tone bow earrings outlined in clear pavé (Petite Bow is a lacy scalloped bow with a heart centre; Pearl Blossom puts a pavé bow over a pavé circle holding a pearl). Caveat: Petite Bow Studs are listed as gold but photographed silver, so the match holds only if the silver-tone photo is what ships.",
+          "Both are silver-tone bows outlined in clear pavé (the Petite Bow Studs are lacy and scalloped with a heart centre stone, while the Pearl Blossom bow sits over a pavé circle with a pearl); Petite Bow is listed as gold but photographed silver."
+        ]
+      },
+      {
+        "handles": [
+          "clover-drop-earrings",
+          "clover-trio-edit",
+          "clover-charm-necklace",
+          "clover-drop-pendant-necklace",
+          "clover-chain-bracelet",
+          "clover-station-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "The same clover of four clear round stones in gold claws across earrings, pendants and bracelets. The drop earrings and drop pendant share the same double-clover drop. / Clover line: the same four round clear stones claw-set as a clover in gold, as drop earrings, stud/huggie trio, charm and double-drop pendants, and chain/station bracelets. / One clover line: four round clear crystals set as a clover in gold, across drop earrings, trio set, charm and drop necklaces, and chain and station bracelets.",
+        "notes": [
+          "All six photos show the same clover of four round clear stones around a gold centre bead in yellow gold (double-clover drop on the earrings and pendant, single clover on the charm, chain bracelet and three-station bracelet, clover studs and clover-charm huggies in the trio), so it is one matching line.",
+          "All six photos show the same four clear round stones arranged as a clover around a gold bead centre, in yellow gold. The drop earrings, drop pendant, chain bracelet and station bracelet are one claw-set design, the earrings and pendant share the same double-clover drop, and the charm necklace and the trio's huggie charms are the gold-framed version of the same clover."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-legacy-necklace",
+          "baroque-shell-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "A strand of irregular white baroque pearls with a gold toggle clasp and a baroque pearl drop, as a necklace and a bracelet. / Strand of white baroque pearls closed with a gold T-bar toggle worn at the front, as necklace and bracelet. / Matching baroque pearl set: a strand of white baroque pearls with a gold toggle clasp and a dangling baroque pearl, as necklace and bracelet.",
+        "notes": [
+          "Both are strands of irregular white baroque pearls with small gold bead spacers, a gold T-bar toggle and a single baroque pearl hanging below the toggle: the same design as a necklace and a bracelet.",
+          "Both are strands of irregular white baroque pearls spaced with small gold beads, closed by a gold T-bar toggle at the front with one baroque pearl hanging from it. They are plainly a matching necklace and bracelet."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-legacy-necklace",
+          "baroque-shell-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Organic, irregular baroque white pearls (and the cuff's lustrous baroque pearl slab) set against polished gold.",
+        "notes": [
+          "Reverie's peanut-shaped white baroque pearls on gold paperclip chain share the organic baroque pearl + gold look of the Legacy/Shell strands; the lariat uses smooth round pearls on a sleek snake chain with a polished oval ring, and the cuff is a flat bezel-set nacre slab with a baguette crystal, so both are dropped.",
+          "Only the legacy necklace and shell bracelet truly match (the same toggle pearl strand as group 2), so I dropped the other three. The Pearl Reverie Bracelet is mostly chunky gold paperclip links with a hammered open ring and only two pearls, the Baroque Pearl Lariat is a sleek snake-chain lariat with a gold oval and round-ish pearls, and the Baroque Bloom Cuff is a thin open cuff with a flat mother-of-pearl slab and a baguette, so none of them looks like the pearl strand."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-point-studs",
+          "torsade-pearl-cuff"
+        ],
+        "strength": "set",
+        "reason": "A round white pearl framed by twisted rope-textured gold with small clear accents. / Twisted rope-texture gold accented with white pearls.",
+        "notes": [
+          "Both show a large round white pearl framed by twisted rope/cable gold with small clear round crystals (prong accents on the studs, pavé collars on the cuff): same look, different designs.",
+          "Both put a round white pearl inside twisted rope (cable) gold with small clear stone accents, so they read as one cable-and-pearl look, though they are not one design."
+        ]
+      },
+      {
+        "handles": [
+          "bold-nocturne-drops",
+          "bold-nocturne-chain",
+          "bold-nocturne-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "The same chunky gold link with a clear pavé-set oval link, made as drops, a chain and a bracelet. / Bold Nocturne set: chunky polished oval/paperclip gold links with one link fully pavé-set, as chain, bracelet and drop earrings. / Matching Bold Nocturne set: chunky polished gold oval links with one fully pavé-set link, as drops, chain and bracelet.",
+        "notes": [
+          "All three use the same chunky polished gold oval/paperclip links with one link fully pavé-set in clear stones: a matching drop, chain and bracelet.",
+          "All three use the same chunky polished gold oval links with one fully pavé-set clear oval link. They are plainly one matching set of drops, chain and bracelet."
+        ]
+      },
+      {
+        "handles": [
+          "granule-dome-ring",
+          "silver-dome-ring"
+        ],
+        "strength": "twin",
+        "reason": "Same open ring with a granulated beaded dome on one end and a polished teardrop tail on the other; Granule Dome in gold, Pavé Dome in silver. / The same beaded/granulated dome ring with a smooth teardrop tail - R11 in gold, R17 in silver.",
+        "notes": [
+          "The photos show one design (open ring with a granulated beaded dome on one end and a polished teardrop tail) in gold (Granule Dome) and in silver (Pavé Dome).",
+          "These are the identical open ring, a granulated beaded dome at one end and a polished teardrop tail at the other, in gold (Granule Dome) and in silver (Pavé Dome). Same design, different metal."
+        ]
+      },
+      {
+        "handles": [
+          "chain-drop-dome-ring",
+          "bold-dome-huggies"
+        ],
+        "strength": "set",
+        "reason": "Chunky, puffy domed gold tube shapes: the thick polished dome band of the Chain Drop ring matches the Bold Dome Huggies, with the Brushed Gold Huggies as the satin-finish version of the same dome.",
+        "notes": [
+          "The Chain Drop ring's body is the same chunky, puffed, high-polish gold tube as the Bold Dome Huggies, so the two read as a pair. The Brushed Gold Huggies are a wide, flattened bombé shape in a matte brushed finish, a different look, so I dropped them.",
+          "The Chain Drop ring's main body is the same chunky, mirror-polished gold dome tube as the Bold Dome Huggies, so they go together. The Brushed Gold Huggies are dropped: they have a matte brushed finish and are a wide, short cuff shape, so they read differently next to the polished pieces."
+        ]
+      },
+      {
+        "handles": [
+          "tubogas-dome-ring",
+          "triple-coil-wrap-bangle",
+          "kiss-knot-bangle",
+          "marquise-drop-choker"
+        ],
+        "strength": "set",
+        "reason": "Tubogas: ribbed flexible snake-coil gold (Tubogas ring, Triple Coil Wrap bangle, Kiss Knot bangle and the tubogas collar of the Marquise Drop Choker); ring and bangles also sold in silver. / Ribbed tubogas gold: the tubogas ring, triple coil wrap bangle, kiss-knot bangle and the omega choker of the Marquise Drop Choker.",
+        "notes": [
+          "All four show the same ribbed gold tubogas coil: the ring's close-up shows the ribbing clearly, then the double-wrap bangle with pavé end caps, the bangle with a polished infinity knot, and the fine tubogas collar holding the marquise stone. They match in gold, which is the choker's only metal.",
+          "All four are clearly ribbed gold tubogas (snake-coil). The ring is a ribbed dome band, the bangles are coiled and knotted tubogas, and the choker's collar is fine tubogas with a marquise CZ. Same look, different designs."
+        ]
+      },
+      {
+        "handles": [
+          "droplet-open-ring",
+          "droplet-open-cuff"
+        ],
+        "strength": "twin",
+        "reason": "Same open design: a polished gold ball facing a polished teardrop droplet, as a ring and as a cuff (both sold in Gold and Silver). / Same design: an open polished gold band ending in a ball on one side and a teardrop on the other, as ring and cuff (both sold in gold and silver).",
+        "notes": [
+          "Identical design: an open polished gold band with a round ball on one end facing a teardrop on the other, made as a ring and as a cuff (both also sold in Silver).",
+          "Identical design: an open, polished gold band ending in a round ball on one side and a teardrop on the other, made as a ring and as a cuff (both sold in Gold and Silver)."
+        ]
+      },
+      {
+        "handles": [
+          "mesh-band-ring",
+          "silk-mesh-cuff"
+        ],
+        "strength": "set",
+        "reason": "Woven gold mesh band construction as a ring and an open cuff with polished end caps (both sold in Gold and Silver). / The same fine woven gold mesh as a band ring and an open cuff (both sold in gold and silver).",
+        "notes": [
+          "Both are woven gold mesh, but they are not one design: the ring is a flat, wide band of coarser twisted-wire mesh, and the cuff is a padded tube of finer mesh with polished end caps. That makes it set, not twin (both sold in Gold and Silver).",
+          "Both are plainly gold mesh, but they are not one design. The ring is a flat, coarser twisted-wire mesh band; the cuff is a finer, rounded mesh tube with polished end caps. Same look, so set rather than twin (both sold in Gold and Silver)."
+        ]
+      },
+      {
+        "handles": [
+          "watch-link-ring",
+          "watch-link-strap-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "Watch-strap (president-style) brick link in polished gold, as a ring and a bracelet. / The same chunky gold watch-strap (jubilee) link, as a ring and a bracelet.",
+        "notes": [
+          "The same rounded-brick watch-strap link in polished gold, as a ring and as a bracelet, so it is plainly one matching design (note: the bracelet is listed as not buyable).",
+          "Same polished gold three-row watch-strap brick/barrel link, as a ring and a bracelet. Note: the bracelet is marked not buyable in pieces.json."
+        ]
+      },
+      {
+        "handles": [
+          "watch-link-ring",
+          "watch-link-strap-bracelet",
+          "molten-panel-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Multi-row interlocking panel links in polished gold: the Molten Panel Bangle reads as the same watch-strap/brick-link look as the Watch Link ring and bracelet. / Wide flexible gold link bands with a watch-strap look - the Molten Panel bangle's overlapping gold panels read like the watch-link pieces.",
+        "notes": [
+          "The Molten Panel bangle is rows of staggered, puffed oval gold links in a wide flexible band, the same stacked-link watch-band look as the Watch Link pieces, though its links are ovals rather than bricks, so set rather than twin.",
+          "The Molten Panel Bangle is a wide, multi-row band of staggered polished gold links (oval panther-style rather than rectangular barrels), so it shares the chunky watch-strap look of the Watch Link pieces without being the same design."
+        ]
+      },
+      {
+        "handles": [
+          "duo-link-necklace",
+          "duo-link-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "Duo Link: two-tone paperclip chain alternating gold and silver links joined by small knot links, as necklace and bracelet. / Matching Duo Link set: two-tone gold and silver elongated links joined by small knots, as necklace and bracelet.",
+        "notes": [
+          "The same chain: long oval links alternating gold and silver, joined by small gold knot links, made as a necklace and a bracelet.",
+          "Identical chain: elongated paperclip links alternating gold and silver, joined by small gold knot links, as a necklace and a bracelet."
+        ]
+      },
+      {
+        "handles": [
+          "clover-drop-earrings",
+          "clover-trio-edit",
+          "clover-charm-necklace",
+          "clover-drop-pendant-necklace",
+          "clover-chain-bracelet",
+          "clover-station-bracelet",
+          "petal-flower-studs"
+        ],
+        "strength": "set",
+        "reason": "Gold four-stone clover/cross motif: the Petal Flower Studs use the same cluster of round claw-set stones (with one pear petal) as the clover pieces.",
+        "notes": [
+          "All seven show the same thing: clear round brilliant CZs, claw-set in a gold flower around a gold centre bead. The six clover pieces are one design, and the Charm Necklace is the same clover with slightly cupped settings. The Petal Flower Studs (Gold option) use the same round claw-set stones and gold centre dot, with one pear petal, so they belong as a set rather than a twin.",
+          "All are polished gold with a four-petal cluster of clear round claw-set stones around a gold centre dot. The six clover pieces are one design: drop earrings, the trio's clover huggie charms and studs, the charm pendant, the drop pendant, and the single and three-station bracelets. The Petal Flower Studs (Gold option) are a close sister, with the same cluster and gold centre but one pear petal, which makes the group set rather than twin."
+        ]
+      },
+      {
+        "handles": [
+          "birthstone-heart-necklace",
+          "twin-heart-studs",
+          "twin-heart-necklace"
+        ],
+        "strength": "set",
+        "reason": "Heart-cut stones in gold settings: birthstone heart pendant, bezel hearts along the paperclip necklace, and the twin-heart studs and necklace.",
+        "notes": [
+          "The Twin Heart studs and necklace are one design: a large and a small clear heart-cut stone in 3-claw gold settings. The Birthstone Heart uses the same claw-set heart-cut solitaire (green in the photo) and matches in its April · Crystal option. The Heartline Paperclip is dropped: its hearts sit in pavé halo bezels on a chunky paperclip chain, which reads as a different, vintage look.",
+          "The Twin Heart studs and necklace are one design: a large and a small clear heart, each claw-set in gold. The Birthstone Heart is the same kind of claw-set heart solitaire on a fine gold cable chain, so it matches in its April Crystal option (the photo shows the green May stone). I dropped the Heartline Paperclip: its small hearts sit in pavé halo frames along a chunky paperclip chain, so they only share the heart theme, not the look."
+        ]
+      },
+      {
+        "handles": [
+          "star-point-band",
+          "north-star-bangle"
+        ],
+        "strength": "set",
+        "reason": "Smooth polished band with small stones set in engraved star bursts spaced around it, as a ring and a hinged bangle (both sold in Gold and Silver).",
+        "notes": [
+          "Both are flat polished bands with tiny clear CZs set flush into star-shaped motifs spaced around them. The ring has four-point pavé stars; the bangle has engraved starbursts with a centre stone between round bezel stones. They read as a ring and bangle stack in the same metal (both sold in Gold and Silver), though they are not one design.",
+          "Both are smooth, flat, high-polish bands with small stone-set star motifs spaced around them, and both are sold in Gold and Silver, so the metal can match. The motifs aren't identical: the ring has pavé four-point stars, while the bangle has engraved eight-point bursts with a centre stone and round bezel stones in between. They read as a matching ring and bangle in the same style, not as one design."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-legacy-necklace",
+          "baroque-shell-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "Front-worn gold toggle clasp as the focal point: baroque pearl necklace and bracelet, grey pearl Heartbead bracelet, and the Toggle Link paperclip chain.",
+        "notes": [
+          "The Pearl Legacy necklace and Baroque Shell bracelet are plainly one set: flat white baroque pearls spaced with small gold beads, a front gold toggle and a baroque pearl drop hanging from it. The Heartbead is dropped (round grey pearls and a puffy heart charm). The Toggle Link Chain is dropped (all-gold paperclip chain with a round ring and no pearls).",
+          "The Pearl Legacy necklace and the Baroque Shell bracelet are plainly a matching set: white baroque pearls with tiny gold spacer beads, a gold toggle worn at the front, and a baroque pearl hanging from the toggle. I dropped the Heartbead (grey round pearls with a puffy gold heart, a different look) and the Toggle Link Chain (an all-gold paperclip chain with no pearls)."
+        ]
+      },
+      {
+        "handles": [
+          "torsade-pearl-cuff",
+          "pearl-point-studs"
+        ],
+        "strength": "set",
+        "reason": "Twisted rope texture in polished gold: torsade huggies, cable-twist pearl cuff, rope-framed pearl studs and the braided woven hoops.",
+        "notes": [
+          "The cuff and the studs both pair a white round pearl and small clear CZ accents with a fine gold cable-twist (rope) texture, so they clearly go together. The Torsade Huggies are dropped: they are chunky smooth croissant-twist with no pearls or stones. The Woven Gold Hoops are dropped: braided wire, not a twist, and no stones.",
+          "All three share a solid, polished gold twisted-rope texture: the chunky twisted huggies, the cable-twist cuff with pearl ends, and the studs with a pearl inside a twisted rope frame. The studs and cuff also share the pearl. I dropped the Woven Gold Hoops: their open, braided wire plait reads as a different texture from the solid twisted rope."
+        ]
+      },
+      {
+        "handles": [
+          "torsade-pearl-cuff",
+          "garnet-cable-cuff"
+        ],
+        "strength": "set",
+        "reason": "Same cable-twist cuff construction with pavé collars and stone end caps: pearls on the all-gold Torsade cuff, garnets on the two-tone Garnet Cable cuff. / Same silhouette: a twisted cable open cuff with capped ends holding a stone (pearl on B38, garnet on B18).",
+        "notes": [
+          "The same cuff design: a twisted cable open cuff with double pavé-CZ collar rings and a stone cap at each end. It comes as an all-gold version with white pearl ends and a silver-cable version with gold collars and garnet ends, so they look alike as two colourways of one design.",
+          "They have the same silhouette and build: an open twisted-cable cuff with pavé-banded gold collars and a stone at each end. The Torsade is all gold with white pearls, while the Garnet is a silver cable with gold caps and garnet ends. A shopper would see them as the same cuff style, but with a different metal and stone they aren't one design."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-point-studs",
+          "filigree-bloom-studs",
+          "baguette-halo-drops"
+        ],
+        "strength": "set",
+        "reason": "Single round white pearl centred in a round gold frame: rope-twist frame, nugget hoop, filigree flower petals, and the baguette sunburst of the Baguette Halo Drops. / A round white pearl framed by a textured gold surround: rope-twist, filigree petals, baguette sunburst, and nugget-texture hoop.",
+        "notes": [
+          "Pearl Point, Baguette Halo and Filigree Bloom are all round gold studs with one white pearl in the middle of a decorative round frame (rope twist, baguette sunburst, wire petals), but the Nugget Hoops are a hoop with the pearl hanging loose inside, so they don't look like the others and were dropped.",
+          "Pearl Point (rope-twist button), Baguette Halo Drops (baguette sunburst button) and Filigree Bloom (wire flower) are all round, flat gold studs with a single white pearl in the centre, so they look alike. Pearl Nugget Hoops is a hanging hoop with the pearl loose inside a chunky beaded ring, a different shape, so I dropped it."
+        ]
+      },
+      {
+        "handles": [
+          "molten-bloom-hoops",
+          "molten-wave-ear-cuff",
+          "triple-dawn-cuff"
+        ],
+        "strength": "set",
+        "reason": "Molten, organic wavy polished gold: wavy hoops, wave ear cuff, hammered cuff, and the wavy open ring link of the Pearl Reverie bracelet.",
+        "notes": [
+          "The wavy hoops, the wavy openwork ear cuff and the dimpled wide cuff share the same look: chunky, organic, molten polished gold with no stones. The Pearl Reverie bracelet is a fine paperclip chain with baroque pearls and only one thin wavy ring, so it doesn't share that look and was dropped.",
+          "The wavy hoops, the wavy open-loop cuff and the hammered wide cuff are all chunky, high-shine, melted-looking yellow gold and plainly go together. Pearl Reverie is a pearl-and-paperclip-chain bracelet with just one slightly wavy ring link, so it does not read as part of this look."
+        ]
+      },
+      {
+        "handles": [
+          "baroque-pearl-lariat",
+          "pearl-reverie-bracelet"
+        ],
+        "strength": "set",
+        "reason": "An open gold ring/circle link paired with white pearls on a gold chain (lariat and bracelet). / An open gold ring link paired with lustrous white freshwater pearls on a gold chain.",
+        "notes": [
+          "Both pieces are built around a large open gold ring with white pearls beside it on a gold chain, so they plainly go together. The chains differ (snake chain on the lariat, paperclip on the bracelet) and the lariat's ring is smooth where the bracelet's is wavy, so this is a set, not one design.",
+          "Both pair a large open gold ring link with lustrous white baroque pearls on a gold chain (snake chain on the lariat, paperclip on the bracelet). Clearly the same modern pearl-and-ring look, though not one design."
+        ]
+      },
+      {
+        "handles": [
+          "dewdrop-bezel-necklace",
+          "lotus-pear-drop-studs",
+          "bow-pear-drop-necklace"
+        ],
+        "strength": "set",
+        "reason": "Clear pear/teardrop stone hanging as a drop in gold claws: Dewdrop pendant, Lotus drop studs, Bow necklace drop and the choker's dangling pear.",
+        "notes": [
+          "All four have a clear pear-cut stone in gold claws hanging as a drop. The Bow necklace and Lotus studs are the closest pair (clear cluster on top, pear drop below), and the choker's marquise plus small pear drop matches the Lotus studs' marquise and pear.",
+          "Dewdrop, Lotus studs and Bow necklace each hang a clear pear-cut stone in gold claws as the main drop, and Lotus and Bow share the same small-cluster-then-pear-drop shape. In the Marquise Drop Choker the ribbed gold collar with a marquise stone dominates, and its pear is a tiny end on a fine chain, so I dropped it."
+        ]
+      },
+      {
+        "handles": [
+          "crystal-pear-ear-cuff",
+          "pear-point-open-cuff"
+        ],
+        "strength": "set",
+        "reason": "Polished gold tube with a claw-set clear pear stone at the open end: ear cuff and open cuff.",
+        "notes": [
+          "Both are thick polished gold bands with a clear pear-cut stone held in gold claws at the open end (one stone on the ear cuff, one on each end of the cuff), so they plainly go together as ear and wrist pieces.",
+          "Both are a smooth, rounded polished-gold band with a clear pear stone in gold claws at the end (one on the ear cuff, one at each tip of the cuff). Same look in two categories."
+        ]
+      },
+      {
+        "handles": [
+          "crystal-pear-ear-cuff",
+          "emerald-square-ear-cuff"
+        ],
+        "strength": "set",
+        "reason": "Same chunky polished gold ear cuff/huggie with a single claw-set stone on the side (clear pear vs square emerald).",
+        "notes": [
+          "Both are the same chunky polished gold ear cuff with one claw-set stone on the side. The stone differs (clear pear against green square), so the match rests on the cuff and its setting, not the stone, but side by side they read as sister pieces.",
+          "The same chunky polished-gold ear cuff with a single claw-set stone on the side. Only the stone differs (clear pear vs green square emerald), so they read as sibling styles."
+        ]
+      },
+      {
+        "handles": [
+          "emerald-square-ear-cuff",
+          "emerald-carre-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Square-cut emerald green stones in gold claw settings (ear cuff and carré tennis bracelet).",
+        "notes": [
+          "Both use the same bright green square-cut stones in square gold claw settings, so the ear cuff and the tennis bracelet plainly coordinate. They are different designs, so this is a set.",
+          "The same square-cut emerald-green stone in a yellow-gold four-claw setting: one on the ear cuff, a full row on the tennis bracelet. They plainly match and look like a pair."
+        ]
+      },
+      {
+        "handles": [
+          "marquise-drop-choker",
+          "marquise-layering-set",
+          "lotus-pear-drop-studs",
+          "marquise-wheat-cuff"
+        ],
+        "strength": "set",
+        "reason": "Marquise-cut clear stones set in gold: sideways marquise on the choker and layering set, marquise fan on the Lotus studs, rows of marquise on the coil cuff. / Clear marquise-cut crystals in gold settings: marquise pendants, marquise-fan drop studs, and the marquise coil cuff.",
+        "notes": [
+          "All four use clear marquise stones in gold claws: a sideways marquise with a pear drop on the choker, a marquise pendant and marquise stations on the layering set, a marquise fan with a pear drop on the Lotus studs (which echoes the choker most closely), and a double row of claw-set marquises on the coil cuff, which is bolder but the same stone and setting.",
+          "Every piece uses clear marquise stones in gold claws. The choker's single marquise with a pear on a dangling chain echoes the Lotus marquise fan with its pear drop. The layering set has a marquise pendant and marquise stations. The coil cuff is a much bolder double row of the same marquise stones, so it goes with the others but is the loosest fit."
+        ]
+      },
+      {
+        "handles": [
+          "riviere-eternal-necklace",
+          "riviere-eternal-bracelet",
+          "riviere-of-light-bracelet",
+          "fine-tennis-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Round clear-stone tennis line in gold (Lumière Solitaire adds one larger centre stone).",
+        "notes": [
+          "The three bracelets are plain tennis lines of round clear stones in gold four-claw settings, and the Riviere Eternal necklace is a gold tennis line with the same interlocking clasp as the Riviere Eternal bracelet (its stones look more square-cushion than round); Lumiere Solitaire is dropped because its side stones are oval with one oversized round centre stone, a different statement design that belongs with the Lumiere Oval pieces.",
+          "The Rivière necklace, both Rivière bracelets and the Fine Tennis bracelet are the same gold line of round clear stones, and the Eternal necklace and Eternal bracelet even share the box clasp. I dropped the Lumière Solitaire: its photo shows larger oval stones set crosswise around one big round centre stone, a bolder design that belongs with the Lumière Oval pieces."
+        ]
+      },
+      {
+        "handles": [
+          "lumiere-oval-necklace",
+          "lumiere-oval-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "Lumière Oval: oval clear stones in gold claws as a tennis necklace and bracelet. / Matching Lumière Oval set: oval-cut clear crystals prong-set side by side in gold, as necklace and bracelet.",
+        "notes": [
+          "Both are the same design: oval clear stones in gold claws set side by side as a tennis line, made as a necklace and a bracelet.",
+          "The necklace and the bracelet are the same design: oval clear stones in gold claws, set side by side as a tennis line."
+        ]
+      },
+      {
+        "handles": [
+          "lumiere-oval-solitaire-ring",
+          "lumiere-oval-necklace",
+          "lumiere-oval-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Oval-cut clear stone claw-set in gold: the Lumière oval solitaire ring matches the Lumière oval tennis necklace and bracelet.",
+        "notes": [
+          "The ring is a single oval clear stone in four gold claws on a thin open band, and it plainly echoes the oval clear claw-set stones of the Lumiere Oval tennis necklace and bracelet.",
+          "The ring is a single oval clear stone in four gold claws on a thin open band, the same stone shape and claw setting as the oval tennis necklace and bracelet. They share a look but are not one design."
+        ]
+      },
+      {
+        "handles": [
+          "asscher-solitaire-ring",
+          "serpentine-whisper-chain"
+        ],
+        "strength": "set",
+        "reason": "Square/asscher-cut clear solitaire held in four claws in gold, as a ring and a snake-chain pendant. / Same stone and setting: a square-cushion clear crystal held in gold prongs, as a solitaire ring and a solitaire pendant.",
+        "notes": [
+          "The ring holds a step-cut asscher and the gold snake-chain pendant a brilliant-cut cushion, but both are a single square clear stone in four gold claws and read as matching solitaires side by side (the matching chain is the gold one, not the silver N22).",
+          "Both are a single square clear stone in four gold claws, a solitaire ring and a solitaire pendant on a snake chain. The cuts are not identical: the ring is an octagonal step-cut asscher and the pendant is a cushion brilliant. Side by side they still plainly go together."
+        ]
+      },
+      {
+        "handles": [
+          "solitaire-drop-huggies",
+          "first-light-set"
+        ],
+        "strength": "set",
+        "reason": "Single round clear solitaire in a four-claw gold setting hanging from a huggie or a fine chain.",
+        "notes": [
+          "The huggie drop and the First Light pendant and studs all use the same round clear solitaire in a four-claw gold setting, so they plainly go together; note that First Light is marked not buyable.",
+          "Both use the same round clear solitaire in a four-claw gold setting, hanging from a plain huggie on one and from a fine cable chain (with matching studs) on the other. Note that First Light Set is currently not buyable."
+        ]
+      },
+      {
+        "handles": [
+          "cushion-halo-ring",
+          "whisper-pave-band",
+          "solitaire-whisper-studs",
+          "vintage-halo-ring"
+        ],
+        "strength": "set",
+        "reason": "Silver halo setting: a centre stone ringed in pavé (round halo on the Vintage ring, green cushion centre on the Verdant Cushion studs).",
+        "notes": [
+          "The Cushion Halo ring, Whisper Pave band and Solitaire Whisper studs share one look (a round clear centre stone in a cushion-shaped pave halo, in silver), and the Vintage Halo ring is the same idea with a round open halo and pave shoulders; Verdant Cushion Studs are dropped because their large green cushion sits in a bezel inside a sunburst of big claw-set clear stones, a coloured cocktail cluster rather than a clear pave halo.",
+          "Despite its name, the Whisper Pavé Band photo shows a halo ring almost identical to the Cushion Halo Ring: a round clear centre in a cushion pavé halo, on a pavé shank. The Whisper studs are that same halo head, and the Vintage ring is the round-halo version in the same silver. I dropped Verdant Cushion Studs: a large green cushion stone in a sunburst of bigger clear stones is a bold coloured cocktail look, not this delicate clear halo. Solitaire Whisper Studs are currently not buyable."
+        ]
+      },
+      {
+        "handles": [
+          "blush-cluster-ring",
+          "blush-station-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Soft pink round stones clustered/haloed in pink pavé on gold, as ring and station bracelet. / Pink round stones in gold settings: the blush flower cluster ring and the blush station bracelet.",
+        "notes": [
+          "Both are soft-pink round stones on yellow gold. The ring is a prong-set flower cluster and the bracelet has bezel-set stations, so the settings differ, but the pink and the round cut match closely and a shopper would pair them (no pink pave on the bracelet, unlike the claim).",
+          "Both use the same soft pink round stones on yellow gold, so the pink and gold look matches even though the settings differ: the ring is a claw-set flower cluster and the bracelet has graduated bezel stations (note that the bracelet is currently not buyable)."
+        ]
+      },
+      {
+        "handles": [
+          "halo-curve-ring",
+          "baroque-bloom-cuff"
+        ],
+        "strength": "set",
+        "reason": "Toi-et-moi bypass design in gold: two bezel-set stones meeting at the open ends (two clear rounds on the Duet ring, tiger-eye and champagne on the Halo Curve ring, pearl and baguette on the cuff).",
+        "notes": [
+          "The Halo Curve ring (tiger-eye plus clear cushion) and the Baroque Bloom cuff (baguette plus baroque pearl) share a thin smooth gold wire with two mismatched stones in organic bezels at the open ends, so they read as one look; the Golden Duet is a chunky bamboo-textured band with two matching clear rounds in ridged bezels, a different look, so it is dropped.",
+          "The Halo Curve ring and the Baroque Bloom cuff share one look: a thin gold wire open at the ends, each end holding a different stone in a smooth organic bezel (tiger-eye and champagne on the ring, baroque pearl and baguette on the cuff); the Golden Duet is a chunky, textured band with two matching clear round stones in heavy bezels and looks different, so drop it."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-heart-layered-necklace",
+          "open-heart-layered-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Pre-layered two-strand gold piece where one strand is a fine chain with gold bead stations. / Layered double gold chains with hearts and small gold bead stations (heart pearls on N16, open gold hearts on B27).",
+        "notes": [
+          "Both are pre-layered two-strand gold pieces with a heart motif and round gold bead stations (white pearl hearts on the necklace, open gold hearts on the bracelet), so they coordinate as a heart-station pair even though only the necklace has pearls.",
+          "Both are pre-layered two-strand gold pieces where one fine chain carries heart stations alternating with polished gold beads (pearl hearts on the necklace, open gold hearts on the bracelet), so they read as a coordinated heart-and-bead layering pair."
+        ]
+      },
+      {
+        "handles": [
+          "cushion-halo-ring",
+          "whisper-pave-band",
+          "vintage-halo-ring"
+        ],
+        "strength": "set",
+        "reason": "Silver halo solitaire rings: a single round crystal ringed by a pavé halo on a pavé band.",
+        "notes": [
+          "All three are silver solitaire rings with a clear round stone in a pave halo on a pave shank; Cushion Halo and Whisper Pave are near-identical cushion-halo designs (one open/adjustable, one closed), and Vintage Halo has a smaller stone in an open round halo but plainly shares the bridal-halo look.",
+          "All three are silver halo solitaires with pavé shoulders; the Cushion Halo and Whisper Pavé are almost the same design (round clear centre in a cushion pavé halo), and the Vintage Halo shares the look with a smaller centre inside an open round pavé halo."
+        ]
+      },
+      {
+        "handles": [
+          "baguette-eternity-band",
+          "crystal-baguette-eternity-ring"
+        ],
+        "strength": "twin",
+        "reason": "The same prong-set baguette eternity band in gold: R06 is the crystal version, R02 the ruby/emerald/amethyst version.",
+        "notes": [
+          "Same design: a full eternity band of prong-set emerald-cut baguettes in gold, with R02 shown in ruby (also sold in emerald and amethyst) and R06 in clear crystal.",
+          "Both are the same gold eternity band of claw-set baguettes all the way round; R06 is the clear crystal version and R02 is the coloured version (ruby in the photo, also sold in emerald and amethyst)."
+        ]
+      },
+      {
+        "handles": [
+          "baguette-tennis-bracelet",
+          "baguette-eclat-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "The same gold tennis bracelet of clear baguette stones in individual prongs with a fold-over clasp - visually identical listings.",
+        "notes": [
+          "Both are gold tennis bracelets with a single row of clear rectangular baguettes, each held in a four-corner prong box, and they look identical side by side. The only difference is the clasp: B03 has a box clasp and B04 a fold-over clasp, not fold-over on both as claimed.",
+          "Both are gold tennis bracelets with one line of clear baguettes set edge to edge, so they read as the same design; they are not identical listings, because B03 has a box clasp and slightly wider stones while B04 has a fold-over clasp and finer stones."
+        ]
+      },
+      {
+        "handles": [
+          "baguette-eternity-band",
+          "crystal-baguette-eternity-ring",
+          "baguette-huggies",
+          "baguette-tennis-necklace",
+          "baguette-tennis-bracelet",
+          "baguette-eclat-bracelet"
+        ],
+        "strength": "twin",
+        "reason": "One baguette line: rectangular baguette stones prong-set edge to edge in gold, sold in ruby, emerald, amethyst and crystal across ring, huggies, tennis necklace and tennis bracelet.",
+        "notes": [
+          "Every piece has rectangular baguettes prong-set edge to edge in gold. The ruby band and ruby huggies have the same claw prongs, and the necklace and bracelets use the same baguette-in-box links. The colours line up through the options: Ruby and Emerald on the band, huggies, necklace and B03, and Crystal on the crystal eternity ring, huggies, necklace, B03 and Éclat.",
+          "Every photo shows the same rectangular baguettes claw-set edge to edge in gold: the ruby band and ruby huggies (both also sold in emerald, and the huggies in crystal), the crystal ring, the crystal necklace and the crystal bracelets; this is plainly one matching line, and it lines up by stone option (Ruby/Emerald: band, huggies, necklace, B03; Crystal: R06, huggies, necklace, B03, B04)."
+        ]
+      },
+      {
+        "handles": [
+          "aquarelle-riviere-bracelet",
+          "midnight-riviere-bracelet",
+          "sorbet-riviere-bracelet",
+          "fine-tennis-bracelet",
+          "riviere-of-light-bracelet",
+          "riviere-eternal-bracelet"
+        ],
+        "strength": "set",
+        "reason": "Classic gold tennis bracelets of round prong-set stones in a single line - the same style in blue, pastel multicolour and clear.",
+        "notes": [
+          "All six are gold tennis bracelets with one line of round stones in four-prong settings, so the cut and setting are the same and only the colour changes. Aquarelle is royal blue, Midnight a deeper navy with bigger stones, Sorbet pastel mixed, and the other three clear. Aquarelle also links through its White and Lavender/Pink options. Fine Tennis and Rivière Eternal share the same rectangular clasp, and Rivière of Light is not buyable.",
+          "All six are gold tennis bracelets with one line of round, four-prong stones (royal blue, deep navy, pastel mix and three clear), the same look in different colours; Riviere of Light is marked not buyable (SOLD) and Riviere Eternal has only an on-model photo, though its clear round line and gold clasp are visible."
+        ]
+      },
+      {
+        "handles": [
+          "asscher-solitaire-ring",
+          "cushion-solitaire-ring",
+          "lumiere-oval-solitaire-ring"
+        ],
+        "strength": "set",
+        "reason": "Gold solitaire rings: one large clear stone (asscher, elongated cushion, round/oval) on a slim plain gold band.",
+        "notes": [
+          "Asscher and Lumière are nearly the same ring, with the same slim open adjustable gold band and four-prong head, one holding an asscher stone and the other an oval. Cushion has only an on-model photo, but it shows the same look: one large clear elongated cushion stone on a slim gold band. All three are single clear solitaires, so it is the same look rather than one design.",
+          "Asscher and Lumiere are almost twins (the same slim open polished-gold band with one large clear four-prong stone, asscher-cut on one and oval on the other); the Cushion ring has only an on-model photo, which shows the same idea, a single large elongated clear cushion on a slim gold band."
+        ]
+      },
+      {
+        "handles": [
+          "first-light-set",
+          "solitaire-drop-huggies",
+          "lumiere-oval-solitaire-ring"
+        ],
+        "strength": "set",
+        "reason": "A single round clear crystal in a four-prong gold setting: First Light pendant and studs, the solitaire drop huggies, and the Lumiere solitaire ring.",
+        "notes": [
+          "The First Light pendant and studs and the drop on the huggies are the same thing: a single round clear stone in a four-prong gold basket. The Lumière ring uses the same clear stone in four prongs in gold but cut oval, so it is the weakest member, though it still reads as part of the same solitaire set. First Light Set is not buyable.",
+          "The First Light pendant and studs and the stone hanging from the huggies are the same round clear crystal in a four-prong gold setting, and the Lumiere ring carries the same clear four-prong solitaire look on a slim gold band (its stone is oval, not round); First Light is marked not buyable (SOLD)."
+        ]
+      },
+      {
+        "handles": [
+          "clover-drop-earrings",
+          "clover-drop-pendant-necklace"
+        ],
+        "strength": "twin",
+        "reason": "The same double-clover drop - a four-crystal clover hanging from a clover - as earrings and pendant.",
+        "notes": [
+          "They are the same design: a clover of four round clear crystals with a gold centre, hanging from a jump ring under a second matching clover, in gold. One is a pair of earrings and the other a pendant on a cable chain.",
+          "Both photos show the identical design: a four-round-crystal clover with a gold centre bead, and a smaller crystal clover hanging below it, in gold; one is made as earrings and the other as a pendant."
+        ]
+      },
+      {
+        "handles": [
+          "petal-flower-studs",
+          "clover-drop-earrings",
+          "clover-trio-edit"
+        ],
+        "strength": "set",
+        "reason": "Crystal flower studs in gold: round crystals clustered around a centre (E23 adds a pear petal) - the closest earring lookalikes to the clover pieces.",
+        "notes": [
+          "All three are small gold flower clusters of clear round prong-set crystals around a gold centre. The clover drop earrings and the clover studs and clover huggie in the Trio are the same four-stone clover. Petal Flower Studs swap one petal for a pear and use a flat gold disc for the centre, but they still look like the same family. That match is on the Gold option; the Silver option does not match.",
+          "The Clover Trio's clover studs and huggie charms repeat the Clover Drop's four-crystal clover exactly, and the Petal Flower studs use the same build (round clear crystals in gold claws around a gold centre bead, with one pear petal) in their Gold option, so they read as part of the same crystal-flower look."
+        ]
+      },
+      {
+        "handles": [
+          "molten-bloom-hoops",
+          "molten-wave-ear-cuff",
+          "triple-dawn-cuff"
+        ],
+        "strength": "set",
+        "reason": "Molten organic gold: wavy liquid-look hoops, wavy cut-out ear cuff and hammered molten cuff.",
+        "notes": [
+          "All three are stone-free, high-polish 'liquid' gold: wavy polished hoops, an ear cuff of wavy molten loops, and a wide cuff with a hammered, melted surface. They share one organic molten look across three different designs.",
+          "All three are high-polish yellow gold with a liquid, molten look: the wavy tube hoops and the wavy tube loops of the ear cuff are very close, and the wide cuff has the same molten feel through its dented, puddled surface."
+        ]
+      },
+      {
+        "handles": [
+          "bold-dome-huggies",
+          "brushed-gold-huggies",
+          "torsade-huggies"
+        ],
+        "strength": "set",
+        "reason": "Chunky domed gold huggies with no stones: polished round, brushed, square, and twisted.",
+        "notes": [
+          "Bold-dome (polished), brushed (matte) and torsade (twisted ridges) are all chunky, rounded, puffy gold huggies with no stones. Petite-square is dropped: it has a square shape and is dotted with small pearls, so it is neither domed nor stone-free.",
+          "Bold dome, brushed and torsade are all chunky, rounded, domed gold huggies (polished, matte-brushed and twisted). Petite square is dropped: it has a squared shape and is studded with small pearls, so the 'no stones' claim is wrong and it does not read as the same piece."
+        ]
+      },
+      {
+        "handles": [
+          "torsade-huggies",
+          "woven-gold-hoops"
+        ],
+        "strength": "set",
+        "reason": "Chunky gold hoops with a twisted, braided texture.",
+        "notes": [
+          "Both are chunky polished gold hoops with a twisted, rope-like texture: solid diagonal croissant ridges on the torsade and an open braid of gold wires on the woven hoops. Same textured-twist look, different construction.",
+          "Both are chunky polished-gold round hoops with a rope-like texture, one a solid sculpted twist and one an openwork braided wire, and side by side they read as the same textured-rope look."
+        ]
+      },
+      {
+        "handles": [
+          "chain-drop-dome-ring",
+          "bold-dome-huggies"
+        ],
+        "strength": "set",
+        "reason": "Bold high-polish chunky gold dome shape.",
+        "notes": [
+          "The ring's body is a thick, high-polish domed gold tube, the same chunky profile and finish as the dome huggies, so they plainly pair as a look. The ring also has small pavé collars and a chain with a clear pear drop, so it is not a twin.",
+          "The ring's band is the same thick, high-polish domed gold tube as the bold dome huggies (the ring adds pavé collars and a chain with a pear drop); this match is on the ring's Gold option, not Silver."
+        ]
+      },
+      {
+        "handles": [
+          "bow-pear-drop-necklace",
+          "ribbon-bead-bracelet",
+          "twin-heart-necklace",
+          "twin-heart-studs",
+          "birthstone-heart-necklace"
+        ],
+        "strength": "set",
+        "reason": "Heart-cut clear crystals in gold prongs on dainty gold chains and studs (N03 in its April Crystal option, N12 with heart stations).",
+        "notes": [
+          "All use clear heart-cut crystals in gold on dainty pieces. The bow necklace and bracelet share the same two-heart bow in prongs (twin pair), and the twin-heart necklace and studs are twins too. Birthstone matches only in its April Crystal option (the photo shows green). Heartline is the weakest: its clear hearts sit in pavé halos on a heavier paperclip chain, not in plain prongs.",
+          "All five show clear heart-cut crystals in plain gold claws on fine gold chain: the bow necklace and the bracelet share the same two-heart bow, the twin-heart necklace and studs share the same large-plus-small heart pair, and the birthstone heart (shown in emerald) matches in its April Crystal option. Heartline paperclip is dropped because its hearts sit in pavé halos as repeated stations on a paperclip chain, a different, heavier look. Note N25 is not buyable."
+        ]
+      },
+      {
+        "handles": [
+          "chevron-whisper-ring",
+          "petite-pave-band"
+        ],
+        "strength": "set",
+        "reason": "Stacked-look gold bands mixing plain gold with pavé lines.",
+        "notes": [
+          "Both are multi-row gold rings that look stacked, mixing one plain polished gold line with fine lines of small round clear pavé. Chevron V-shaped rows versus crossover rows with a prong-set solitaire: same look, not one design.",
+          "Both are dainty yellow-gold multi-row rings mixing plain gold lines with single rows of pavé, giving a stacked look; one is a V-chevron and one a crossover with a small solitaire, so they share the look but are not one design."
+        ]
+      },
+      {
+        "handles": [
+          "linked-trio-ring",
+          "star-point-band",
+          "north-star-bangle"
+        ],
+        "strength": "set",
+        "reason": "Smooth high-polish band with small stones set flush into the metal (bezel rounds, star and flower motifs); B26 in its Gold option.",
+        "notes": [
+          "All three are flat, high-polish bands with small stones set flush at intervals. Star Point's inset pavé flowers echo the bangle's inset stars, and the Linked Pair's wide band has the same flush round bezel stones as the bangle. That makes a clear matching set in Gold, the bangle's Gold option (the ring and band are also sold in Silver).",
+          "All three are flat, high-polish bands with small stones set flush into the metal. Linked Pair's main band has bezel-set round CZs, Star Point has flush-set flower clusters, and North Star alternates bezel-set rounds with engraved stars. The bangle photo is silver, so the match is on its Gold option, which lines up with the gold rings. They go together as one stack."
+        ]
+      },
+      {
+        "handles": [
+          "verdant-eternity-band",
+          "emerald-halo-c-hoops",
+          "verdant-cushion-studs",
+          "emerald-deco-hoops"
+        ],
+        "strength": "set",
+        "reason": "Verdant Drop Earrings are silver too, with a green cushion-cut stone held in claws below a pavé hook, so they fit the silver green-stone-and-pavé look of the Verdant band and the other green earrings. The stone is a slightly lighter, more teal green.",
+        "notes": [
+          "The band, C-hoops, cushion studs and deco hoops all have deep emerald-green stones with clear accents in silver, but the Verdant Drop Earrings stone is a clearly lighter mint/aqua-teal, in both the large photo and the contact sheet, so it does not match the emerald look and is dropped.",
+          "The band, C-hoops, cushion studs and deco hoops are all silver with deep emerald-green stones and clear sparkle, so they belong together; the Verdant Drop Earrings are dropped because their stone is clearly a pale mint/aqua (paraiba-like) colour in both the single photo and the sheet, not the band's deep emerald."
+        ]
+      },
+      {
+        "handles": [
+          "birthstone-heart-necklace",
+          "emerald-square-ear-cuff",
+          "emerald-carre-bracelet",
+          "verdant-circlet-studs"
+        ],
+        "strength": "set",
+        "reason": "Verdant Circlet Studs have a deep emerald-green cushion stone in a yellow-gold bezel, the same yellow gold and deep emerald green as the ear cuff, the Carré bracelet and the heart necklace in its May · Emerald option.",
+        "notes": [
+          "Every piece is yellow gold with the same deep emerald green, and the Circlet Studs' large emerald cushion in a gold bezel is the main feature even with the pearl-and-star ring below it; the heart necklace matches in its May · Emerald option, which is the colour shown in its photo.",
+          "All yellow gold with the same deep emerald green (the heart necklace photo itself shows the May · Emerald option); the Circlet studs' big emerald cushion in a gold bezel matches the Carré bracelet and ear cuff even though its pearl-and-star circlet adds extra detail."
+        ]
+      },
+      {
+        "handles": [
+          "birthstone-heart-necklace",
+          "twin-heart-studs",
+          "twin-heart-necklace",
+          "heartline-paperclip-necklace"
+        ],
+        "strength": "set",
+        "reason": "The Heartline necklace is a row of clear heart-cut stones set in yellow gold, the same clear-heart-in-gold look as the Twin Heart studs and necklace and the Birthstone heart in its April · Crystal option.",
+        "notes": [
+          "The Twin Heart studs and necklace are one design, and the Heartline necklace's row of small clear heart-cut stones (each in a pavé halo) on gold reads as the same clear-heart-in-gold look; the Birthstone heart matches in its April · Crystal option (its photo shows emerald).",
+          "The Twin Heart studs and necklace are one design, and the Heartline necklace is a row of clear heart stones in gold with small halos, the same clear-heart-in-gold look; the Birthstone heart matches only in its April · Crystal option, since the main photo shows the green May stone."
+        ]
+      },
+      {
+        "handles": [
+          "ribbon-bow-earrings",
+          "bow-pear-drop-necklace",
+          "ribbon-bead-bracelet",
+          "pearl-ribbon-ring"
+        ],
+        "strength": "set",
+        "reason": "The Pearl Ribbon Ring is a yellow-gold ribbon bow set with clear stones (plus a pearl), the same gold crystal-bow motif as the bow earrings, necklace and bracelet.",
+        "notes": [
+          "The necklace and bracelet share the same two-heart-stone bow, the earrings are a larger crystal bow in gold, and the ring is a gold ribbon bow lined with clear baguettes; the ring adds a big pearl and has a different stone cut, but it clearly shows the same gold crystal-bow motif.",
+          "The necklace and bracelet share the same bow of two heart stones, the earrings are a gold bow of large clear stones, and the ring is plainly a gold looped ribbon bow lined with clear baguettes (plus a pearl), so the gold crystal-bow motif carries across all four."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-point-studs",
+          "torsade-pearl-cuff"
+        ],
+        "strength": "set",
+        "reason": "Each has a round white pearl framed by heavily textured yellow gold: rope twist on the studs and cuff, chunky nugget beads on the hoops.",
+        "notes": [
+          "The studs and cuff share the defining feature, a round white pearl with gold rope/cable twist and small clear-stone accents, but the Nugget Hoops have stacked faceted gold beads and no rope twist, so they only share a generic gold-and-pearl look and are dropped.",
+          "The studs and cuff share the same rope-twist yellow gold with white pearls and small clear stones; the nugget hoops also frame a single round white pearl in a ring of chunky textured gold, the same pearl-inside-textured-gold look."
+        ]
+      },
+      {
+        "handles": [
+          "bold-dome-huggies",
+          "brushed-gold-huggies",
+          "torsade-huggies",
+          "petite-square-huggies"
+        ],
+        "strength": "set",
+        "reason": "The Petite Square Huggies are a chunky, puffy yellow-gold huggie in the same style as the bold dome, brushed and torsade huggies, here in a softened square shape with tiny pearls.",
+        "notes": [
+          "All four are chunky, stone-free yellow-gold huggies, and the Petite Square is a thick polished gold huggie much like the Bold Dome, with its tiny pearls only a small accent, so a shopper would see them as the same chunky-gold-huggie look.",
+          "All four are chunky, puffy yellow-gold huggies, and the Petite Square is the same polished thick gold hoop in a softened square shape with tiny pearl dots, so it reads as part of the same family."
+        ]
+      },
+      {
+        "handles": [
+          "clover-drop-earrings",
+          "clover-trio-edit",
+          "clover-charm-necklace",
+          "clover-drop-pendant-necklace",
+          "clover-chain-bracelet",
+          "clover-station-bracelet",
+          "petal-flower-studs"
+        ],
+        "strength": "set",
+        "reason": "Quatrefoil Éclat Studs are a four-petal flower of clear stones in yellow gold with a centre stone, the same four-leaf crystal motif and metal as the clover pieces.",
+        "notes": [
+          "The six clover pieces are one design (four round clear stones in gold claws around a gold bead, twin-level among themselves), and the Petal Flower Studs in Gold keep the same claw-set round stones around a gold centre; the Quatrefoil Éclat Studs are an ornate four-point star of pear stones with a pavé outline and a bezel-set centre, a different cut and setting, so they are dropped.",
+          "The clover pieces are one design (four round clear stones around a gold bead in gold claws), and Petal Flower Studs (Gold option) are built the same way with one pear petal, so they stay; Quatrefoil Éclat Studs are dropped because they are a pointed star outlined in pavé with pear stones, an ornate silhouette that does not look like the round-stone clover (also note the Clover Charm necklace is not currently buyable)."
+        ]
+      }
+    ],
+    "rejected": [
+      {
+        "handles": [
+          "verdant-circlet-studs",
+          "verdant-cushion-studs"
+        ],
+        "claimed": "The same big cushion-cut deep-green stone framed by clear stones: in gold with a pearl circlet on one, in silver with a sunburst halo on the other.",
+        "notes": [
+          "Both studs have a similar deep-green bezel-set cushion stone, but the Circlet is yellow gold with a circlet of pearls, gold stars and clear stones, while the Cushion studs are silver in a large sunburst halo of clear stones. Different metal and different design, so a shopper would not see them as lookalikes.",
+          "Both studs centre on a similar bezel-set deep-green cushion, but one is yellow gold with a whimsical pearl, star and crystal circlet and the other is a silver cocktail stud with a clear sunburst halo, so the different metal and styling mean they do not read as lookalikes."
+        ]
+      },
+      {
+        "handles": [
+          "amethyst-carre-bracelet",
+          "baguette-eternity-band",
+          "baguette-huggies"
+        ],
+        "claimed": "Deep violet square or baguette stones claw-set in gold. The band and huggies match in their Amethyst option.",
+        "notes": [
+          "Both the Baguette Eternity Band and the Huggies are photographed in Ruby and their Amethyst option cannot be seen, and even then they use elongated baguettes while the Amethyst Carré uses square stones, so the photos do not plainly show a match (the band's real twins are the huggies, necklace and tennis bracelet in their Ruby or Emerald options, which this group does not claim).",
+          "Drop the Amethyst Carré: in the Amethyst option photos the band and huggies are pale lilac baguettes, while the Carré bracelet has deep indigo-violet square stones, so the colour and cut don't match. The band and huggies are one design (claw-set baguettes in gold) and are sold in the same Ruby, Emerald and Amethyst colours."
+        ]
+      },
+      {
+        "handles": [
+          "aqua-heart-drops-silver",
+          "birthstone-heart-necklace"
+        ],
+        "claimed": "A light aqua-blue heart-cut stone. The Birthstone Heart matches in its March · Aquamarine option.",
+        "notes": [
+          "The Aqua Heart Drops are a silver hoop of clear round stones with an aqua heart drop, while the Birthstone necklace photo shows a small green heart on a gold chain; the March Aquamarine option can't be seen and would still be gold, so this is not a match.",
+          "The Aqua Heart Drops are a silver hoop of clear stones with an aqua heart, while the Birthstone Heart is a small heart on a gold chain (shown in green); the only link is the March option's colour, the metals differ, and side by side they do not read as matching."
+        ]
+      },
+      {
+        "handles": [
+          "serpentine-whisper-chain-silver",
+          "cushion-halo-ring",
+          "whisper-pave-band",
+          "solitaire-whisper-studs"
+        ],
+        "claimed": "One large clear claw-set solitaire in silver: the pendant on a silver snake chain matches the silver halo solitaire rings and studs.",
+        "notes": [
+          "The silver Serpentine pendant is a plain four-claw cushion-cut solitaire with no halo, so its cut and setting don't match the round-in-cushion pavé halo rings and studs (those three are already matched in group 6).",
+          "The pendant is a single cushion-cut clear stone claw-set on a silver snake chain; it has no pavé halo, but its silver, single-stone, cushion outline goes plainly with the cushion halo rings and studs as a solitaire set."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-ribbon-ring",
+          "pearl-blossom-earrings"
+        ],
+        "claimed": "A round white pearl paired with a sparkling stone-set bow. The ring is gold and the earrings are silver.",
+        "notes": [
+          "The ring is gold with a channel-set baguette ribbon and its pearl off to one side, while the earrings are silver with round pavé and the pearl centred in a circle, and neither piece comes in the other metal, so they do not read as matching.",
+          "Both share a pearl and a sparkly bow, but the ring is yellow gold with baguettes and the earrings are rhodium silver with round pavé and no gold option, so the metals clash and they should not be linked as a look."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-ribbon-ring",
+          "baguette-halo-drops"
+        ],
+        "claimed": "A round white pearl framed by clear baguette stones in gold.",
+        "notes": [
+          "Side by side both are gold, white pearl and clear baguette stones, a distinctive shared mix, though the shapes differ (bow ring vs round baguette sunburst with pearl drop) and the ring's pearl is not actually framed by baguettes as claimed.",
+          "Both are gold with a pearl and clear baguettes, but the ring is an open ribbon bow with the pearl beside it while the drops are round sunburst discs of baguettes around a pearl with a hanging pearl, so the silhouette and motif differ."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-ribbon-ring",
+          "baguette-halo-drops",
+          "filigree-bloom-studs",
+          "pearl-drop-studs",
+          "pearl-nugget-hoops",
+          "pearl-point-studs",
+          "torsade-pearl-cuff"
+        ],
+        "claimed": "A round white pearl as the focal point, set in gold.",
+        "notes": [
+          "Kept pieces pair a round white pearl with clear crystal sparkle in polished gold (baguette channel on the ring and halo drops, round claw/pavé accents on the rope-framed studs and cable cuff); dropped filigree-bloom-studs (airy wire flower, no stones), pearl-drop-studs (pearl with big plain gold ball) and pearl-nugget-hoops (faceted gold bead hoop), which only share 'has a pearl'.",
+          "The only thing these seven pieces share is a pearl in gold; their designs are unrelated: a baguette bow ring, a baguette sunburst halo with a pearl drop, wire filigree flowers, a pearl with a polished gold ball, heishi-nugget hoops, rope-framed studs and a cable cuff. The one true pair (pearl-point-studs with torsade-pearl-cuff) is kept in group 5, and ribbon ring with halo drops share only pearl plus baguettes in different silhouettes, which is too weak to link."
+        ]
+      },
+      {
+        "handles": [
+          "pearl-heart-layered-necklace",
+          "petite-pearl-chain"
+        ],
+        "claimed": "Small white pearls stationed along a fine gold chain. / Fine gold chain with small pearl stations at intervals. / Fine gold chains with small white pearls spaced along them as stations.",
+        "notes": [
+          "Pearl Heart Layered has heart-shaped pearls strung loose between gold beads, with a separate snake-chain layer, while Petite Pearl Chain has square pearl cabochons each bezel-set in gold, so the stone cut and setting differ and they only share the general idea of pearls spaced along a chain.",
+          "Both are fine gold chains with small white pearls spaced along them as stations, so they look alike from a distance. The details differ: heart-shaped pearls between gold beads plus a snake-chain layer on one, square bezel-set pearls on the other, so this is a shared look, not one design."
+        ]
+      },
+      {
+        "handles": [
+          "linked-trio-ring",
+          "charm-box-chain"
+        ],
+        "claimed": "Gold box chain carrying a pavé-set band: the Linked Pair Ring's chained bands (one a pavé eternity) echo the Charm Box Chain's pavé barrel on a box chain.",
+        "notes": [
+          "The Linked Pair Ring is a screw-style band with set round stones chained to a pavé eternity band, while the Charm Box Chain is a pavé barrel bead on a box chain. The only things they share are a box chain and clear stones, which is too generic for a shopper to call them lookalikes.",
+          "Both use the same polished gold box chain carrying a pavé-CZ ring shape: the Linked Pair Ring joins a pavé eternity band and a bezel-stone band on a box chain, and the Charm Box Chain hangs a pavé barrel on a box chain. A clear echo, but not one design."
+        ]
+      },
+      {
+        "handles": [
+          "heartbead-bracelet",
+          "open-heart-layered-bracelet"
+        ],
+        "claimed": "Polished gold metal heart charms on bracelets: puffy heart on the toggle of the Heartbead bracelet, open heart outlines on the layered bracelet.",
+        "notes": [
+          "Not a match. The Heartbead is a chunky strand of round grey pearls with a gold toggle and a puffy heart charm. The Open Heart Layered is a dainty all-gold double chain with flat open-heart outlines and gold balls, and has no stones. Different stones, colour and scale.",
+          "These don't look alike. The Heartbead is a strand of grey round pearls with a gold toggle and a puffy gold heart. The Open Heart Layered is two all-gold chains with open heart outlines and gold beads. The silhouette, colour and materials all differ, and the only thing they share is a heart."
+        ]
+      },
+      {
+        "handles": [
+          "north-star-bangle",
+          "tile-stone-bangle"
+        ],
+        "claimed": "Slim hinged gold bangle with small clear stones flush-set at intervals around the band (North Star in its Gold option). / Slim hinged bangles with crystals spaced evenly round the band.",
+        "notes": [
+          "Too generic. All they share is a hinged bangle with spaced clear stones. The Tile Stone is made of segmented square tiles with stones in square bezels; the North Star is a smooth band with engraved starbursts and round bezels. The defining features differ.",
+          "The only thing they share is a generic slim hinged bangle with stones. The Tile Stone is built from segmented square tiles with stones in square frames, a geometric look. The North Star is a smooth band with engraved starbursts and round bezel stones, and its photo is silver. Their motifs and character are different."
+        ]
+      },
+      {
+        "handles": [
+          "teardrop-lariat",
+          "marquise-drop-choker"
+        ],
+        "claimed": "Y-lariat construction in gold: a fine chain drop at the front ending in a teardrop.",
+        "notes": [
+          "Both are Y-shaped necklaces, but the Teardrop Lariat is a gold bead chain ending in pavé-covered gold teardrops, while the choker is a smooth coiled-gold collar with one clear claw-set marquise and pear, so the stones, setting and chain all differ.",
+          "Both are Y-shaped with a teardrop end, but the Teardrop Lariat is a gold ball-bead chain with pavé teardrops, while the choker is a sleek ribbed gold collar with claw-set marquise and pear stones. They look clearly different."
+        ]
+      },
+      {
+        "handles": [
+          "lotus-pear-drop-studs",
+          "mint-pear-drop-earrings"
+        ],
+        "claimed": "Same stud construction: a fan of clear marquise/pear stones above a dangling pear drop in gold (clear vs mint green). / Gold earrings of clear marquise/pear crystals leading to a larger pear stone (clear on E15, mint green on E16).",
+        "notes": [
+          "Lotus is a fan of three clear marquises with a clear pear dangling below it, while Mint is a sideways climber of small clear pears ending in a large mint-green pear, so the shape, construction and main stone colour all differ and only the name 'pear drop' links them.",
+          "Lotus is a fan of three clear marquises with a clear pear dangling below it, while Mint is a climber that curves along the ear: three small clear pears lead into a large mint-green pear, with no dangle. The outlines and the main colour both differ, so the claim that they share the same construction is wrong."
+        ]
+      },
+      {
+        "handles": [
+          "chevron-whisper-ring",
+          "pave-zigzag-ring"
+        ],
+        "claimed": "Pointed V/zigzag line of pavé stones on a gold ring. / A pavé-lined pointed chevron/zigzag shape in gold.",
+        "notes": [
+          "Chevron Whisper is a dainty double-V stacked ring lined fully with clear pave, while the Pave Zigzag is a bold plain gold N-shaped wire with pave on only one short diagonal; the shapes and how much pave each has differ too much to call them lookalikes.",
+          "The shapes don't match: the Chevron Whisper is a delicate double-row pavé V band, while the Pavé Zigzag is an open lightning-bolt/N wave with pavé on only one stroke, so gold and small clear stones are the only things they share."
+        ]
+      },
+      {
+        "handles": [
+          "emerald-halo-c-hoops",
+          "riviere-huggies-silver"
+        ],
+        "claimed": "Same silhouette: silver open C-hoops lined all the way round with large round stones (emerald green on E12, clear on E30).",
+        "notes": [
+          "Only the silver C-hoop silhouette is shared: E12 has emerald-green round prong-set stones with clear pave spacers, while E30 has clear oval stones in milgrain bezels, so the stone colour, cut and setting all differ.",
+          "Both are silver C-hoops, but E12's look comes from emerald-green round prong-set stones with clear pavé spacers, while E30 has clear oval stones in milgrain bezels, so colour, stone shape and setting all differ and side by side they don't read as a match."
+        ]
+      },
+      {
+        "handles": [
+          "solitaire-whisper-studs",
+          "verdant-cushion-studs"
+        ],
+        "claimed": "Big silver statement studs: one large cushion stone framed by a sparkling clear halo (clear on E32, emerald green on E38).",
+        "notes": [
+          "E32 is a clear round stone in a fine cushion-shaped micro-pave halo, while E38 is a big bezel-set emerald-green cushion stone in a scalloped sunburst of large prong-set clear stones; the centre colour, cut and halo style all differ, so they are not lookalikes.",
+          "E32 has a round clear centre in a tight cushion micro-pavé halo; E38 has a bezel-set cushion emerald inside a spiky sunburst halo of larger prong-set clear stones, so colour, centre cut and halo style all differ (E32 actually looks like the Cushion Halo ring and Whisper Pavé band, and it is not buyable)."
+        ]
+      },
+      {
+        "handles": [
+          "droplet-open-cuff",
+          "pear-point-open-cuff",
+          "baroque-bloom-cuff"
+        ],
+        "claimed": "Same silhouette: slim high-polish gold open cuffs with decorated terminals (ball and teardrop on B14, pear crystals on B28, baroque pearl and baguette on B05).",
+        "notes": [
+          "These only share the open-cuff shape, and the stones do not match. B14 has no stones at all, just polished gold with a ball at one end and a teardrop at the other. B28 has clear pear crystals in prongs at each end. B05 has a bezel-set baroque pearl and one baguette, which is an organic toi-et-moi look. They are three different styles.",
+          "These only share the generic open-cuff shape: B14 is a chunky polished-gold ball and teardrop with no stones, B28 is a sleek band ending in clear pear crystals, and B05 is a thin wire with a bezel-set baroque pearl and a baguette, so the motifs and the overall look differ and a shopper would not call them lookalikes."
+        ]
+      },
+      {
+        "handles": [
+          "quatrefoil-eclat-studs",
+          "textured-gold-hoops"
+        ],
+        "claimed": "Four-petal crystal flower motif in gold: pear petals around a round centre on the quatrefoil studs, repeated around the textured hoops.",
+        "notes": [
+          "Both are gold earrings with clear crystals set as four-petal flowers: pear petals around a bezel round centre inside a pavé outline on the studs, and small marquise petals inside scalloped gold discs all around the hoops. Same floral sparkle look, but not one design.",
+          "Quatrefoil studs are a bold pointed-star outline with a pavé halo around pear stones and a bezel centre, while the textured hoops are scalloped openwork gold discs with small marquise flowers; both are gold and floral, but they do not look alike side by side."
+        ]
+      },
+      {
+        "handles": [
+          "molten-bloom-hoops",
+          "pearl-reverie-bracelet"
+        ],
+        "claimed": "The same molten, wavy organic gold ring shape - as hoops on E17 and as the centre link of the B29 bracelet.",
+        "notes": [
+          "The hoops are a chunky, puffy, polished wavy tube with no stones. The bracelet reads as baroque pearls on a paperclip chain, and its only gold link is a thin, flat, hammered open ring, so stones and form do not match.",
+          "The bracelet's centre link is an irregular, wavy, molten gold ring that plainly echoes the wavy organic shape of the hoops (the bracelet adds baroque pearls and a paperclip chain); note E17 is currently not buyable."
+        ]
+      },
+      {
+        "handles": [
+          "petite-pave-band",
+          "rose-verdant-band"
+        ],
+        "claimed": "Same silhouette: multi-row open wire bands lined with pavé (R22 in rose gold with green accents).",
+        "notes": [
+          "Both are open-cuff bands with several pavé wire rows, but Petite Pavé is yellow gold with one clear prong-set solitaire on a crossover, while Rose Verdant is rose gold with four green prong-set rounds on parallel rows. The stone colour and metal that define each look differ, so a shopper would not call them lookalikes.",
+          "Both are open multi-row pavé bands, but Petite Pavé is yellow gold with crossing clear rows and a single clear stone, while Rose Verdant is rose gold with four straight rows and green round stones. The metal colour and the green motif that defines R22 are missing from R20."
+        ]
+      },
+      {
+        "handles": [
+          "golden-duet-ring",
+          "halo-curve-ring"
+        ],
+        "claimed": "Two-stone toi-et-moi gold rings with the stones on a bypass shank.",
+        "notes": [
+          "Both use the two-stone toi-et-moi idea, but Golden Duet has two identical large clear round brilliants in textured gold bezel frames on a chunky segmented shank. Halo Curve pairs a brown tiger's-eye with a clear faceted stone in smooth bezels on a thin wire bypass. The stones, their colours, the setting and the shank all differ.",
+          "Both are yellow-gold open toi-et-moi rings with two bezel-set faceted stones facing each other on a bypass shank, so the silhouette is plainly the same. Golden Duet is chunkier, with two clear round stones in textured bezels; Halo Curve is a thin wire with a tiger-eye and a clear cushion stone. Same look, not one design."
+        ]
+      },
+      {
+        "handles": [
+          "aqua-heart-drops-silver",
+          "verdant-drop-earrings"
+        ],
+        "claimed": "Silver drop earrings with a pavé hook leading to a pale aqua/mint faceted stone.",
+        "notes": [
+          "Aqua Heart is a chunky half-hoop of large prong-set clear rounds holding a pale sky-blue heart. Verdant Drop is a fine pavé arc holding a mint-green cushion in four prongs. The stone colour (blue vs green), the cut (heart vs cushion) and the top (tennis hoop vs thin pavé hook) all differ, and being silver drops with a coloured stone is not enough to make them a match.",
+          "Aqua Heart Drops have a chunky half-hoop of large claw-set clear round stones holding a pale-blue heart. Verdant Drop has a thin micro-pavé hook holding a teal-green cushion stone in four prongs. They share only 'silver drop with a coloured stone'. The shape, the colour (ice blue vs teal green) and the top element all differ, so this pair is not a plain match."
+        ]
+      },
+      {
+        "handles": [
+          "riviere-huggies-silver",
+          "aqua-heart-drops-silver"
+        ],
+        "claimed": "Both are silver C-shaped half-hoops lined with a single row of large clear stones. The Aqua Heart pair adds a pale-blue heart drop.",
+        "notes": [
+          "The Rivière hoops are oval clear stones in vintage milgrain bezels, while the Aqua Heart pair has claw-set round stones and a large pale-blue heart drop as its focus; beyond both being sparkly silver C-hoops, the cut, setting and overall look differ, so this is not a lookalike.",
+          "Both are silver C-shaped half-hoops lined with one row of large clear stones (oval and milgrain-bezelled on the Rivière, round and prong-set on the Aqua Heart), and the Aqua pair adds a pale-blue heart drop; they look alike but are not one design."
+        ]
+      }
+    ],
+    "candidates": 108,
+    "criticProposed": 8
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Find"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Verify"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 3,
+      "title": "Critic"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "find-stone",
+      "phaseIndex": 1,
+      "phaseTitle": "Find",
+      "agentId": "a74249a94673ca4cd",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793561527488,
+      "queuedAt": 1793561527457,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793561955825,
+      "tokens": 204925,
+      "toolCalls": 44,
+      "durationMs": 428335,
+      "resultPreview": "{\"groups\":[{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\"],\"strength\":\"twin\",\"reason\":\"Both are silver pieces made of deep-green round stones, each in a small clear pavé halo, set all the way round. The C-hoops are the earring version of the band.\"},{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\",\"verdant-cushion-studs\",\"emerald-deco-hoops\",\"verdant-drop-earrings\"],\"strength…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "find-motif",
+      "phaseIndex": 1,
+      "phaseTitle": "Find",
+      "agentId": "a48381f4a59f2959c",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793561527488,
+      "queuedAt": 1793561527457,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793561980357,
+      "tokens": 189833,
+      "toolCalls": 51,
+      "durationMs": 452866,
+      "resultPreview": "{\"groups\":[{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\"],\"strength\":\"twin\",\"reason\":\"Verdant Eternity Band and Emerald Halo C-Hoops are the same design: a silver line of round green stones, each ringed by its own small pavé halo (band vs C-hoop).\"},{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\",\"riviere-huggies-silver\"],\"strength\":\"set\",\"reason\":\"Same silver construction …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "find-twin",
+      "phaseIndex": 1,
+      "phaseTitle": "Find",
+      "agentId": "ae321368eeab7636a",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793561957813,
+      "queuedAt": 1793561527457,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793562522740,
+      "tokens": 220162,
+      "toolCalls": 75,
+      "durationMs": 564925,
+      "resultPreview": "{\"groups\":[{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\"],\"strength\":\"twin\",\"reason\":\"Same look in silver: a row of deep emerald-green round/oval stones set close together with tiny clear pavé accents between them - the Verdant band and the Emerald Halo C-hoops read as one matching set.\"},{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\",\"emerald-deco-hoops\",\"verdant-cushion-…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "verify-1",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "ab2f8b5c2798a4c80",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562524468,
+      "queuedAt": 1793562524427,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793562732570,
+      "tokens": 127073,
+      "toolCalls": 29,
+      "durationMs": 208100,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\"],\"strength\":\"set\",\"note\":\"Both are silver rows of deep emerald-green faceted stones with clear pavé sparkle, and side by side they plainly go together. They are not one design, though: the band has oval stones, each in a wavy S-shaped pavé halo, while the C-hoops have prong-set round stones with small clusters of clear stones…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "verify-1",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a78f5000e897fb798",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562524469,
+      "queuedAt": 1793562524427,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793562661960,
+      "tokens": 115755,
+      "toolCalls": 24,
+      "durationMs": 136775,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\"],\"strength\":\"set\",\"note\":\"Both are rhodium-silver rows of deep emerald-green stones with clear micro-pavé, so they plainly go together, but they are not one design: the band has oval stones wrapped in wavy S-shaped pavé halos, while the C-hoops have claw-set round stones with small clear pavé clusters between them.\"},{\"n\":2,\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "verify-2",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "aaeffc2ddb083680d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562663572,
+      "queuedAt": 1793562524509,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793562812602,
+      "tokens": 118294,
+      "toolCalls": 26,
+      "durationMs": 149027,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"crystal-baguette-eternity-ring\",\"baguette-arc-hoops\",\"baguette-eclat-bracelet\",\"baguette-tennis-necklace\",\"baguette-tennis-bracelet\",\"baguette-huggies\"],\"strength\":\"twin\",\"note\":\"All six show clear emerald-cut baguettes in a single gold row; the ring, necklace and tennis bracelet are photographed in clear stones, and the huggies are photographed in Ruby but are the same …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "verify-2",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a3e7d074b88ccf95e",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562734091,
+      "queuedAt": 1793562524509,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793562964480,
+      "tokens": 161374,
+      "toolCalls": 48,
+      "durationMs": 230388,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"crystal-baguette-eternity-ring\",\"baguette-arc-hoops\",\"baguette-eclat-bracelet\",\"baguette-tennis-necklace\",\"baguette-tennis-bracelet\",\"baguette-huggies\"],\"strength\":\"twin\",\"note\":\"Every photo shows the same unbroken row of clear baguettes in gold settings, and the Éclat and Tennis bracelets look almost identical. The huggies photo is Ruby, but the Crystal option photo on …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "verify-3",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "ae487c7a5ceb1bde2",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562814305,
+      "queuedAt": 1793562524510,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793562942021,
+      "tokens": 132345,
+      "toolCalls": 27,
+      "durationMs": 127714,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"lilac-papillon-ring\",\"blush-carre-bracelet\"],\"strength\":\"set\",\"note\":\"The butterfly ring's lavender pavé and the Blush Carré's lilac-pink princess stones are the same lilac colour in gold, so they pair as a colour set, though cut and setting differ; I dropped Aquarelle because its photo shows royal-blue round stones and its Lavender option can't be seen to match.\"},{\"n\":…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "verify-3",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "ab99db1551e7ca467",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562943667,
+      "queuedAt": 1793562524510,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563057595,
+      "tokens": 123916,
+      "toolCalls": 27,
+      "durationMs": 113927,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"lilac-papillon-ring\",\"blush-carre-bracelet\"],\"strength\":\"set\",\"note\":\"The lavender pavé butterfly ring and the Blush Carré square tennis bracelet both have the same lilac stones in gold, so they read as a colour set even though their shapes differ; I dropped the Aquarelle Rivière because its photo shows royal-blue round stones and the Lavender option is not pictured to c…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "verify-4",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a9a40f2eccfe0002f",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793562966065,
+      "queuedAt": 1793562524510,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563125051,
+      "tokens": 127519,
+      "toolCalls": 38,
+      "durationMs": 158985,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"serpentine-whisper-chain\",\"serpentine-whisper-chain-silver\"],\"strength\":\"twin\",\"note\":\"Both photos show the same piece, one in gold and one in silver: a snake chain with a clear square cushion solitaire in a claw basket on a tube bail, with the same lobster clasp and extender tag.\"},{\"n\":2,\"keep\":[\"asscher-solitaire-ring\",\"cushion-solitaire-ring\",\"lumiere-oval-solitaire-…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "verify-4",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a4b636a256c56e870",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563059184,
+      "queuedAt": 1793562524510,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563168070,
+      "tokens": 123153,
+      "toolCalls": 34,
+      "durationMs": 108885,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"serpentine-whisper-chain\",\"serpentine-whisper-chain-silver\"],\"strength\":\"twin\",\"note\":\"Both photos show the same snake chain, lobster clasp with extender tab and claw-set clear square-cushion pendant, one in gold and one in silver.\"},{\"n\":2,\"keep\":[\"asscher-solitaire-ring\",\"cushion-solitaire-ring\",\"lumiere-oval-solitaire-ring\",\"serpentine-whisper-chain\",\"dewdrop-bezel-ne…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "verify-5",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a63ae21854e1eabc7",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563126527,
+      "queuedAt": 1793562524510,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563213825,
+      "tokens": 108392,
+      "toolCalls": 21,
+      "durationMs": 87297,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"crystal-pear-ear-cuff\",\"pear-point-open-cuff\",\"dewdrop-bezel-necklace\"],\"strength\":\"set\",\"note\":\"All three have a clear pear-cut stone in small gold claws on smooth, high-polish gold (chunky hoop on the ear cuff, pear tips on the open cuff, a large pear under a polished bail on the pendant), so they plainly share one look.\"},{\"n\":2,\"keep\":[\"twin-heart-studs\",\"twin-heart-…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "verify-5",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a0af6ae32818404ff",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563169691,
+      "queuedAt": 1793562524510,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563240038,
+      "tokens": 100305,
+      "toolCalls": 17,
+      "durationMs": 70347,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"crystal-pear-ear-cuff\",\"pear-point-open-cuff\",\"dewdrop-bezel-necklace\"],\"strength\":\"set\",\"note\":\"All three photos show a clear pear-cut stone in gold claws on thick, high-polish yellow gold (ear-cuff hoop, open cuff ends, chunky pendant bail), so they look like one family without being one design.\"},{\"n\":2,\"keep\":[\"twin-heart-studs\",\"twin-heart-necklace\"],\"strength\":\"twi…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "verify-6",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "af9a6a5a0ac1ab650",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563215414,
+      "queuedAt": 1793562524521,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563319516,
+      "tokens": 114705,
+      "toolCalls": 27,
+      "durationMs": 104099,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"clover-drop-earrings\",\"clover-trio-edit\",\"clover-charm-necklace\",\"clover-drop-pendant-necklace\",\"clover-chain-bracelet\",\"clover-station-bracelet\"],\"strength\":\"twin\",\"note\":\"All six photos show the same clover of four round clear stones around a gold centre bead in yellow gold (double-clover drop on the earrings and pendant, single clover on the charm, chain bracelet and …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "verify-6",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a92585ba45c15b14b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563241600,
+      "queuedAt": 1793562524521,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563342779,
+      "tokens": 114531,
+      "toolCalls": 27,
+      "durationMs": 101178,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"clover-drop-earrings\",\"clover-trio-edit\",\"clover-charm-necklace\",\"clover-drop-pendant-necklace\",\"clover-chain-bracelet\",\"clover-station-bracelet\"],\"strength\":\"twin\",\"note\":\"All six photos show the same four clear round stones arranged as a clover around a gold bead centre, in yellow gold. The drop earrings, drop pendant, chain bracelet and station bracelet are one claw-s…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 16,
+      "label": "verify-7",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a297cf3b808fec060",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563321056,
+      "queuedAt": 1793562524521,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563397776,
+      "tokens": 105827,
+      "toolCalls": 22,
+      "durationMs": 76719,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"chain-drop-dome-ring\",\"bold-dome-huggies\"],\"strength\":\"set\",\"note\":\"The Chain Drop ring's body is the same chunky, puffed, high-polish gold tube as the Bold Dome Huggies, so the two read as a pair. The Brushed Gold Huggies are a wide, flattened bombé shape in a matte brushed finish, a different look, so I dropped them.\"},{\"n\":2,\"keep\":[\"tubogas-dome-ring\",\"triple-coil-wr…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 17,
+      "label": "verify-7",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a0dfa0db539dd4053",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563344330,
+      "queuedAt": 1793562524521,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563410553,
+      "tokens": 105468,
+      "toolCalls": 20,
+      "durationMs": 66223,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"chain-drop-dome-ring\",\"bold-dome-huggies\"],\"strength\":\"set\",\"note\":\"The Chain Drop ring's main body is the same chunky, mirror-polished gold dome tube as the Bold Dome Huggies, so they go together. The Brushed Gold Huggies are dropped: they have a matte brushed finish and are a wide, short cuff shape, so they read differently next to the polished pieces.\"},{\"n\":2,\"keep\":…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 18,
+      "label": "verify-8",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "af82031f0c20e3524",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563399336,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563529583,
+      "tokens": 116611,
+      "toolCalls": 29,
+      "durationMs": 130246,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"clover-drop-earrings\",\"clover-trio-edit\",\"clover-charm-necklace\",\"clover-drop-pendant-necklace\",\"clover-chain-bracelet\",\"clover-station-bracelet\",\"petal-flower-studs\"],\"strength\":\"set\",\"note\":\"All seven show the same thing: clear round brilliant CZs, claw-set in a gold flower around a gold centre bead. The six clover pieces are one design, and the Charm Necklace is the s…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 19,
+      "label": "verify-8",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a70ae6b11f8360bf5",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563412032,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563522833,
+      "tokens": 114817,
+      "toolCalls": 29,
+      "durationMs": 110800,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"clover-drop-earrings\",\"clover-trio-edit\",\"clover-charm-necklace\",\"clover-drop-pendant-necklace\",\"clover-chain-bracelet\",\"clover-station-bracelet\",\"petal-flower-studs\"],\"strength\":\"set\",\"note\":\"All are polished gold with a four-petal cluster of clear round claw-set stones around a gold centre dot. The six clover pieces are one design: drop earrings, the trio's clover hugg…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 20,
+      "label": "verify-9",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a5e9891b6ecd09384",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563524336,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563635177,
+      "tokens": 116318,
+      "toolCalls": 22,
+      "durationMs": 110840,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"pearl-point-studs\",\"baguette-halo-drops\",\"filigree-bloom-studs\"],\"strength\":\"set\",\"note\":\"Pearl Point, Baguette Halo and Filigree Bloom are all round gold studs with one white pearl in the middle of a decorative round frame (rope twist, baguette sunburst, wire petals), but the Nugget Hoops are a hoop with the pearl hanging loose inside, so they don't look like the others…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 21,
+      "label": "verify-9",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "abd4f0cd2340092e9",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563530982,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563617652,
+      "tokens": 110982,
+      "toolCalls": 20,
+      "durationMs": 86670,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"pearl-point-studs\",\"baguette-halo-drops\",\"filigree-bloom-studs\"],\"strength\":\"set\",\"note\":\"Pearl Point (rope-twist button), Baguette Halo Drops (baguette sunburst button) and Filigree Bloom (wire flower) are all round, flat gold studs with a single white pearl in the centre, so they look alike. Pearl Nugget Hoops is a hanging hoop with the pearl loose inside a chunky bead…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 22,
+      "label": "verify-10",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a212638914ad62b93",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563619181,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563761022,
+      "tokens": 140847,
+      "toolCalls": 39,
+      "durationMs": 141840,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[],\"strength\":\"none\",\"note\":\"Lotus is a fan of three clear marquises with a clear pear dangling below it, while Mint is a sideways climber of small clear pears ending in a large mint-green pear, so the shape, construction and main stone colour all differ and only the name 'pear drop' links them.\"},{\"n\":2,\"keep\":[\"marquise-drop-choker\",\"marquise-layering-set\",\"lotus-pear-dr…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 23,
+      "label": "verify-10",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a0c1749709134ba86",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563636646,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563772846,
+      "tokens": 124196,
+      "toolCalls": 29,
+      "durationMs": 136199,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[],\"strength\":\"none\",\"note\":\"Lotus is a fan of three clear marquises with a clear pear dangling below it, while Mint is a climber that curves along the ear: three small clear pears lead into a large mint-green pear, with no dangle. The outlines and the main colour both differ, so the claim that they share the same construction is wrong.\"},{\"n\":2,\"keep\":[\"marquise-drop-chok…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 24,
+      "label": "verify-11",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "acb918bf16431e3a5",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563762608,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563831947,
+      "tokens": 102830,
+      "toolCalls": 20,
+      "durationMs": 69338,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"blush-cluster-ring\",\"blush-station-bracelet\"],\"strength\":\"set\",\"note\":\"Both are soft-pink round stones on yellow gold. The ring is a prong-set flower cluster and the bracelet has bezel-set stations, so the settings differ, but the pink and the round cut match closely and a shopper would pair them (no pink pave on the bracelet, unlike the claim).\"},{\"n\":2,\"keep\":[\"halo-cu…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 25,
+      "label": "verify-11",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "aeb6867fe8bf25284",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563774405,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563858491,
+      "tokens": 106384,
+      "toolCalls": 20,
+      "durationMs": 84086,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"blush-cluster-ring\",\"blush-station-bracelet\"],\"strength\":\"set\",\"note\":\"Both use the same soft pink round stones on yellow gold, so the pink and gold look matches even though the settings differ: the ring is a claw-set flower cluster and the bracelet has graduated bezel stations (note that the bracelet is currently not buyable).\"},{\"n\":2,\"keep\":[\"halo-curve-ring\",\"baroque…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 26,
+      "label": "verify-12",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "af6afe0fe00ab5a89",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563833534,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563950965,
+      "tokens": 137067,
+      "toolCalls": 35,
+      "durationMs": 117429,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"baguette-tennis-bracelet\",\"baguette-eclat-bracelet\"],\"strength\":\"twin\",\"note\":\"Both are gold tennis bracelets with a single row of clear rectangular baguettes, each held in a four-corner prong box, and they look identical side by side. The only difference is the clasp: B03 has a box clasp and B04 a fold-over clasp, not fold-over on both as claimed.\"},{\"n\":2,\"keep\":[\"bagu…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 27,
+      "label": "verify-12",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a82778a8c52af22a1",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563860818,
+      "queuedAt": 1793562524522,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793563974466,
+      "tokens": 136980,
+      "toolCalls": 35,
+      "durationMs": 113647,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"baguette-tennis-bracelet\",\"baguette-eclat-bracelet\"],\"strength\":\"twin\",\"note\":\"Both are gold tennis bracelets with one line of clear baguettes set edge to edge, so they read as the same design; they are not identical listings, because B03 has a box clasp and slightly wider stones while B04 has a fold-over clasp and finer stones.\"},{\"n\":2,\"keep\":[\"baguette-eternity-band\",…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 28,
+      "label": "verify-13",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a68b62c6072107eb7",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563952511,
+      "queuedAt": 1793562524523,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564041704,
+      "tokens": 107900,
+      "toolCalls": 22,
+      "durationMs": 89192,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"quatrefoil-eclat-studs\",\"textured-gold-hoops\"],\"strength\":\"set\",\"note\":\"Both are gold earrings with clear crystals set as four-petal flowers: pear petals around a bezel round centre inside a pavé outline on the studs, and small marquise petals inside scalloped gold discs all around the hoops. Same floral sparkle look, but not one design.\"},{\"n\":2,\"keep\":[],\"strength\":\"no…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 29,
+      "label": "verify-13",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "a2d142bd903e96f5c",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563976025,
+      "queuedAt": 1793562524523,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564094637,
+      "tokens": 115725,
+      "toolCalls": 28,
+      "durationMs": 118612,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[],\"strength\":\"none\",\"note\":\"Quatrefoil studs are a bold pointed-star outline with a pavé halo around pear stones and a bezel centre, while the textured hoops are scalloped openwork gold discs with small marquise flowers; both are gold and floral, but they do not look alike side by side.\"},{\"n\":2,\"keep\":[\"molten-bloom-hoops\",\"pearl-reverie-bracelet\"],\"strength\":\"set\",\"note…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 30,
+      "label": "verify-14",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "ab8fd23213116a58b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793564043351,
+      "queuedAt": 1793562524523,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564104221,
+      "tokens": 97538,
+      "toolCalls": 14,
+      "durationMs": 60870,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[],\"strength\":\"none\",\"note\":\"Both are open-cuff bands with several pavé wire rows, but Petite Pavé is yellow gold with one clear prong-set solitaire on a crossover, while Rose Verdant is rose gold with four green prong-set rounds on parallel rows. The stone colour and metal that define each look differ, so a shopper would not call them lookalikes.\"},{\"n\":2,\"keep\":[],\"stren…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 31,
+      "label": "verify-14",
+      "phaseIndex": 2,
+      "phaseTitle": "Verify",
+      "agentId": "ad1187fdac96667f5",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793564096153,
+      "queuedAt": 1793562524523,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564143420,
+      "tokens": 93301,
+      "toolCalls": 11,
+      "durationMs": 47267,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[],\"strength\":\"none\",\"note\":\"Both are open multi-row pavé bands, but Petite Pavé is yellow gold with crossing clear rows and a single clear stone, while Rose Verdant is rose gold with four straight rows and green round stones. The metal colour and the green motif that defines R22 are missing from R20.\"},{\"n\":2,\"keep\":[\"golden-duet-ring\",\"halo-curve-ring\"],\"strength\":\"set\",…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 32,
+      "label": "critic",
+      "phaseIndex": 3,
+      "phaseTitle": "Critic",
+      "agentId": "a284a1c197b66cc3d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793564145095,
+      "queuedAt": 1793564145086,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564405543,
+      "tokens": 160021,
+      "toolCalls": 47,
+      "durationMs": 260448,
+      "resultPreview": "{\"groups\":[{\"handles\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\",\"verdant-cushion-studs\",\"emerald-deco-hoops\",\"verdant-drop-earrings\"],\"strength\":\"set\",\"reason\":\"Verdant Drop Earrings are silver too, with a green cushion-cut stone held in claws below a pavé hook, so they fit the silver green-stone-and-pavé look of the Verdant band and the other green earrings. The stone is a slightly lighter,…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 33,
+      "label": "verify-critic-1",
+      "phaseIndex": 3,
+      "phaseTitle": "Critic",
+      "agentId": "a879367edaf2aebd2",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793564407299,
+      "queuedAt": 1793564407286,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564538138,
+      "tokens": 135836,
+      "toolCalls": 37,
+      "durationMs": 130838,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\",\"verdant-cushion-studs\",\"emerald-deco-hoops\"],\"strength\":\"set\",\"note\":\"The band, C-hoops, cushion studs and deco hoops all have deep emerald-green stones with clear accents in silver, but the Verdant Drop Earrings stone is a clearly lighter mint/aqua-teal, in both the large photo and the contact sheet, so it does not match th…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 34,
+      "label": "verify-critic-1",
+      "phaseIndex": 3,
+      "phaseTitle": "Critic",
+      "agentId": "a1cd24f08100d2d92",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793564407300,
+      "queuedAt": 1793564407286,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are helping a small Indian demi-fine jewellery shop (Naira) link its product pages. Each product page shows a \"Complete the look\" row (pieces from other categories to wear with it) and a \"More rings/earrings/…\" row (same category). The owner wants pieces that visibly MATCH or LOOK ALIKE to be linked to each other. Their example: the Verdant Eternity Band (ring, handle verdant-eternity-band: si…",
+      "promptFramed": true,
+      "lastProgressAt": 1793564523055,
+      "tokens": 130977,
+      "toolCalls": 36,
+      "durationMs": 115753,
+      "resultPreview": "{\"groups\":[{\"n\":1,\"keep\":[\"verdant-eternity-band\",\"emerald-halo-c-hoops\",\"verdant-cushion-studs\",\"emerald-deco-hoops\"],\"strength\":\"set\",\"note\":\"The band, C-hoops, cushion studs and deco hoops are all silver with deep emerald-green stones and clear sparkle, so they belong together; the Verdant Drop Earrings are dropped because their stone is clearly a pale mint/aqua (paraiba-like) colour in both th…"
+    }
+  ],
+  "totalTokens": 4341907,
+  "totalToolCalls": 1030
+}

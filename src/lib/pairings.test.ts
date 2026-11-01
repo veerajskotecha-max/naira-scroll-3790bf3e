@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { JewelPiece } from "@/data/jewellery";
-import { bagAddOns, completeTheLook, DEEP_STOCK, familyOf, isPreorder, isSetRow, kindOf, linesOf, matchScore, moreLikeThis, sharedLine, styleOf, wornWithNoun } from "./pairings";
+import { LOOKALIKES } from "@/data/lookalikes";
+import { bagAddOns, completeTheLook, DEEP_STOCK, familyOf, isPreorder, isSetRow, kindOf, linesOf, lookalike, matchScore, moreLikeThis, sharedLine, styleOf, wornWithNoun } from "./pairings";
 
 const piece = (handle: string, category: JewelPiece["category"], price: number, materials: string, extra: Partial<JewelPiece> = {}): JewelPiece => ({
   handle,
@@ -98,11 +99,12 @@ describe("the metal colour of a piece", () => {
 });
 
 describe("the lines that join pieces", () => {
-  it("reads sets and motifs from names, and pearls from the Pearl tag too", () => {
-    expect(sharedLine(byHandle("bold-nocturne-chain"), byHandle("bold-nocturne-bracelet"))).toBe("set");
+  it("reads sets and motifs from names, and pearls from the Pearl tag too; the photo check comes first", () => {
+    expect(linesOf(byHandle("bold-nocturne-chain"))).toEqual([["nocturne", "set"]]);
+    expect(sharedLine(byHandle("bold-nocturne-chain"), byHandle("bold-nocturne-bracelet"))).toBe("twin");
     expect(sharedLine(byHandle("baroque-shell-bracelet"), byHandle("pearl-drop-studs"))).toBe("set");
     expect(sharedLine(byHandle("heartline-paperclip-necklace"), byHandle("heartbead-bracelet"))).toBe("motif");
-    expect(sharedLine(byHandle("star-point-band"), byHandle("north-star-bangle"))).toBe("motif");
+    expect(sharedLine(byHandle("star-point-band"), byHandle("north-star-bangle"))).toBe("set");
     expect(sharedLine(byHandle("woven-gold-hoops"), byHandle("prism-riviere-bracelet"))).toBeNull();
     expect(linesOf(byHandle("serpentine-whisper-chain-silver")).map(([line]) => line)).toEqual(["whisper"]);
   });
@@ -241,8 +243,8 @@ const family = (handle: string) => families.find((p) => p.handle === handle)!;
 
 describe("pieces made as a pair or a family", () => {
   it("are a set, not just a shared motif", () => {
-    expect(sharedLine(family("twin-heart-studs"), family("twin-heart-necklace"))).toBe("set");
-    expect(sharedLine(family("clover-drop-earrings"), family("clover-chain-bracelet"))).toBe("set");
+    expect(sharedLine(family("twin-heart-studs"), family("twin-heart-necklace"))).toBe("twin");
+    expect(sharedLine(family("clover-drop-earrings"), family("clover-chain-bracelet"))).toBe("twin");
     expect(sharedLine(family("watch-link-bracelet"), family("watch-link-ring"))).toBe("set");
     expect(sharedLine(family("twin-heart-studs"), family("birthstone-heart-necklace"))).toBe("motif");
     expect(sharedLine(family("clover-drop-earrings"), family("molten-bloom-hoops"))).toBe("motif");
@@ -267,5 +269,63 @@ describe("pieces made as a pair or a family", () => {
     const look = completeTheLook(family("clover-drop-pendant-necklace"), families);
     expect(handles(look).slice(0, 2).sort()).toEqual(["clover-chain-bracelet", "clover-drop-earrings"]);
     expect(isSetRow(family("clover-drop-pendant-necklace"), look)).toBe(true);
+  });
+});
+
+/* Live pieces the photo check of 1 November matched, at their prices that day:
+   the Verdant Eternity Band showed the Emerald Deco Hoops, a different design,
+   and the gold Emerald Carré Bracelet; the two dome rings never met. */
+const looks = [
+  piece("verdant-eternity-band", "Rings", 1099, silver, { name: "Verdant Eternity Band" }),
+  piece("emerald-halo-c-hoops", "Earrings", 1299, silver, { name: "Emerald Halo C-Hoops" }),
+  piece("emerald-deco-hoops", "Earrings", 1299, silver, { name: "Emerald Deco Hoops" }),
+  piece("verdant-cushion-studs", "Earrings", 1199, gold, { name: "Verdant Cushion Studs", tags: ["Earrings", "Edition One", "KAVNAR", "pre-order"] }),
+  piece("verdant-drop-earrings", "Earrings", 1459, silver, { name: "Verdant Drop Earrings" }),
+  piece("emerald-carre-bracelet", "Bracelets", 1299, gold, { name: "Emerald Carré Bracelet" }),
+  piece("serpentine-whisper-chain-silver", "Necklaces", 1499, silver, { name: "Serpentine Whisper Chain — Silver" }),
+  piece("woven-gold-hoops", "Earrings", 1499, gold, { name: "Woven Gold Hoops" }),
+  piece("granule-dome-ring", "Rings", 1199, gold, { name: "Granule Dome Ring" }),
+  piece("silver-dome-ring", "Rings", 1099, silver, { name: "Pavé Dome Ring" }),
+  piece("mesh-band-ring", "Rings", 799, gold, { name: "Mesh Band Ring" }),
+  piece("droplet-open-ring", "Rings", 1199, gold, { name: "Droplet Open Ring" }),
+  piece("droplet-open-cuff", "Bracelets", 1299, gold, { name: "Droplet Open Cuff" }),
+  piece("toggle-link-chain", "Necklaces", 1499, gold, { name: "Toggle Link Chain" }),
+];
+const look = (handle: string) => looks.find((p) => p.handle === handle)!;
+
+describe("pieces that look alike in their photos", () => {
+  it("give the Verdant Eternity Band its own earrings, the Emerald Halo C-Hoops, ahead of the Deco Hoops", () => {
+    expect(lookalike(look("verdant-eternity-band"), look("emerald-halo-c-hoops"))).toEqual({ strength: "set", groups: 2 });
+    expect(handles(completeTheLook(look("verdant-eternity-band"), looks))[0]).toBe("emerald-halo-c-hoops");
+    expect(handles(completeTheLook(look("emerald-halo-c-hoops"), looks))).toContain("verdant-eternity-band");
+  });
+
+  it("put a twin of any kind first, ahead of the proven hoops", () => {
+    expect(sharedLine(look("droplet-open-ring"), look("droplet-open-cuff"))).toBe("twin");
+    expect(handles(completeTheLook(look("droplet-open-ring"), looks))[0]).toBe("droplet-open-cuff");
+  });
+
+  it("show the same design in the other metal first under More", () => {
+    expect(sharedLine(look("granule-dome-ring"), look("silver-dome-ring"))).toBe("twin");
+    expect(handles(moreLikeThis(look("granule-dome-ring"), looks))[0]).toBe("silver-dome-ring");
+    expect(handles(moreLikeThis(look("silver-dome-ring"), looks))[0]).toBe("granule-dome-ring");
+  });
+
+  it("leave the bag's one offer to names and proven sales", () => {
+    expect(sharedLine(byHandle("star-point-band"), byHandle("north-star-bangle"), false)).toBe("motif");
+    expect(pick(["star-point-band"])).toEqual(["woven-gold-hoops"]);
+  });
+
+  it("still never offer a pre-order piece for a one-tap Add", () => {
+    expect(handles(completeTheLook(look("verdant-eternity-band"), looks, 10))).not.toContain("verdant-cushion-studs");
+  });
+
+  it("are listed cleanly: two or more pieces each, no piece twice in a group", () => {
+    for (const [strength, group] of LOOKALIKES) {
+      expect(["twin", "set"]).toContain(strength);
+      expect(group.length).toBeGreaterThanOrEqual(2);
+      expect(new Set(group).size).toBe(group.length);
+      for (const handle of group) expect(handle).toMatch(/^[a-z0-9-]+$/);
+    }
   });
 });

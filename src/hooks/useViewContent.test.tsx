@@ -20,6 +20,8 @@ import { useViewContent, VIEW_WAIT_MS } from "./useViewContent";
   naming Gold / US 6 (47501788774562, value 999), in the browser and the server
   copy alike (reviewer, built site, iPhone 13 and Pixel 7).
 */
+/* The first-paint view carries the bundled price, whatever the last price
+   refresh wrote there (999 when this was written, 799 since 30 Oct's). */
 const bundled = jewellery.find((p) => p.handle === "star-point-band")!;
 const gid = (n: string) => `gid://shopify/ProductVariant/${n}`;
 /* Shopify's listing, read-only Storefront query, 31 Oct 2026: Gold and Silver,
@@ -77,34 +79,34 @@ describe("Star Point Band's Silver links, landed on cold", () => {
     vi.advanceTimersByTime(VIEW_WAIT_MS - 1);
     expect(views()).toEqual([]);
     vi.advanceTimersByTime(1);
-    expect(views()).toEqual([["47501788774562", 999]]);
+    expect(views()).toEqual([["47501788774562", bundled.price]]);
   });
 
   it("sends at once when the shopper leaves or hides the page first, and only once", () => {
     page({ piece: bundled, search: "?colour=silver", settled: false });
     window.dispatchEvent(new Event("pagehide"));
     vi.advanceTimersByTime(VIEW_WAIT_MS);
-    expect(views()).toEqual([["47501788774562", 999]]);
+    expect(views()).toEqual([["47501788774562", bundled.price]]);
 
     track.mockClear();
     page({ piece: bundled, search: "?colour=silver", settled: false });
     Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "hidden" });
     document.dispatchEvent(new Event("visibilitychange"));
     Object.defineProperty(document, "visibilityState", { configurable: true, get: () => "visible" });
-    expect(views()).toEqual([["47501788774562", 999]]);
+    expect(views()).toEqual([["47501788774562", bundled.price]]);
   });
 
   it("still counts the view when the shopper moves to another piece or page before Shopify answers", () => {
     const other = jewellerySnapshot.find((p) => p.handle === "triple-coil-wrap-bangle")!;
     const { rerender, unmount } = page({ piece: bundled, search: "?colour=silver", settled: false });
     rerender({ piece: other, search: "", settled: false });
-    expect(views()).toEqual([["47501788774562", 999], ["50651931639970", 1499]]);
+    expect(views()).toEqual([["47501788774562", bundled.price], ["50651931639970", other.price]]);
 
     track.mockClear();
     const second = page({ piece: bundled, search: "?colour=silver", settled: false });
     second.unmount();
     unmount();
-    expect(views()).toEqual([["47501788774562", 999]]);
+    expect(views()).toEqual([["47501788774562", bundled.price]]);
   });
 
   it("does not wait once Shopify has answered (a tap on the shop's Silver card)", () => {

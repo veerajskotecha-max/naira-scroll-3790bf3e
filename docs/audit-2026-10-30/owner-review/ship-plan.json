@@ -1,0 +1,397 @@
+{
+ "groups": [
+  {
+   "key": "checkout",
+   "branch": "own-checkout",
+   "picks": [
+    {
+     "commit": "2b702d9",
+     "subject": "Buy Now on a piece already in the bag hands off that line (restores cb0e434)",
+     "card": "checkout-2b702d9",
+     "title": "Buy Now on a piece already in the bag hands off that line"
+    },
+    {
+     "commit": "3e6cff9",
+     "subject": "Buy Now with a picked quantity raises a bag line to it before checkout",
+     "card": "checkout-3e6cff9",
+     "title": "Buy Now with a picked quantity raises a bag line to it before checkout"
+    },
+    {
+     "commit": "39ccbce",
+     "subject": "Bag Undo waits for an in-flight removal (restores 2128022)",
+     "card": "checkout-39ccbce",
+     "title": "Bag Undo waits for an in-flight removal"
+    },
+    {
+     "commit": "f2b05f4",
+     "subject": "Removing a bag line Shopify no longer has drops it without an error",
+     "card": "checkout-f2b05f4",
+     "title": "Removing a bag line Shopify no longer has drops it without an error"
+    },
+    {
+     "commit": "8b0b4ff",
+     "subject": "The ring size picked reaches a Fastrr order",
+     "card": "checkout-8b0b4ff",
+     "title": "The ring size picked reaches a Fastrr order"
+    },
+    {
+     "commit": "930306e",
+     "subject": "The ad campaign a shopper landed with reaches both checkouts",
+     "card": "checkout-930306e",
+     "title": "The ad campaign a shopper landed with reaches both checkouts"
+    },
+    {
+     "commit": "b87f67a",
+     "subject": "A one-piece checkout takes the old Buy 2 / Buy 3 code off the Shopify cart",
+     "card": "checkout-b87f67a",
+     "title": "A one-piece checkout takes the old Buy 2 / Buy 3 code off the Shopify cart"
+    },
+    {
+     "commit": "98ca8cb",
+     "subject": "OPTIONAL: Buy Now checks out only the piece being viewed",
+     "card": "checkout-98ca8cb",
+     "title": "Buy Now checks out only the piece being viewed"
+    },
+    {
+     "commit": "5bbc08c",
+     "subject": "fixup: Bag Undo waits for an in-flight removal (restores 2128022)",
+     "card": "checkout-39ccbce",
+     "title": "Bag Undo waits for an in-flight removal"
+    },
+    {
+     "commit": "d8a943d",
+     "subject": "fixup: Buy Now on a piece already in the bag hands off that line (restores cb0e434)",
+     "card": "checkout-2b702d9",
+     "title": "Buy Now on a piece already in the bag hands off that line"
+    },
+    {
+     "commit": "eb25b43",
+     "subject": "fixup: Buy Now on a piece already in the bag hands off that line (restores cb0e434)",
+     "card": "checkout-2b702d9",
+     "title": "Buy Now on a piece already in the bag hands off that line"
+    },
+    {
+     "commit": "4f3b3df",
+     "subject": "fixup: Buy Now on a piece already in the bag hands off that line (restores cb0e434)",
+     "card": "checkout-2b702d9",
+     "title": "Buy Now on a piece already in the bag hands off that line"
+    },
+    {
+     "commit": "c54113c",
+     "subject": "fixup: Buy Now on a piece already in the bag hands off that line (restores cb0e434)",
+     "card": "checkout-2b702d9",
+     "title": "Buy Now on a piece already in the bag hands off that line"
+    }
+   ]
+  },
+  {
+   "key": "tracking",
+   "branch": "own-tracking",
+   "picks": [
+    {
+     "commit": "d2c5e87",
+     "subject": "Publish builds stop sending product views to the Meta relay (Audit C01, build side)",
+     "card": "tracking-d2c5e87",
+     "title": "Publish builds stop sending product views to the Meta relay"
+    },
+    {
+     "commit": "29a482a",
+     "subject": "Meta's server copy only reports from the real shop (Audit C01, app side)",
+     "card": "tracking-29a482a",
+     "title": "Meta's server copy only reports from the real shop"
+    },
+    {
+     "commit": "2690b7c",
+     "subject": "Meta relay forwards only events from nairaflore.com pages (Audit C01, server side)",
+     "card": "tracking-2690b7c",
+     "title": "Meta relay forwards only events from nairaflore.com pages"
+    },
+    {
+     "commit": "459d528",
+     "subject": "Meta relay takes posts only from the shop's pages, and only the shop's events (Audit C14)",
+     "card": "tracking-459d528",
+     "title": "Meta relay takes posts only from the shop's pages, and only the shop's events"
+    },
+    {
+     "commit": "773e02f",
+     "subject": "Product views report the colour and size the page opens on (Audit C19)",
+     "card": "tracking-773e02f",
+     "title": "Product views report the colour and size the page opens on"
+    },
+    {
+     "commit": "51f4f4b",
+     "subject": "Wishlist hearts tell Meta which catalogue item and its price (Audit C58)",
+     "card": "tracking-51f4f4b",
+     "title": "Wishlist hearts tell Meta which catalogue item and its price"
+    },
+    {
+     "commit": "c63c96c",
+     "subject": "Every search a shopper settles on reaches Meta, once (Audit C59)",
+     "card": "tracking-c63c96c",
+     "title": "Every search a shopper settles on reaches Meta, once"
+    },
+    {
+     "commit": "2ad2699",
+     "subject": "Meta's browser id is set before the first product view (Audit C60)",
+     "card": "tracking-2ad2699",
+     "title": "Meta's browser id is set before the first product view"
+    },
+    {
+     "commit": "5753a88",
+     "subject": "Visitor and ad-click ids are readable on the shop's checkout domain (Audit C61)",
+     "card": "tracking-5753a88",
+     "title": "Visitor and ad-click ids are readable on the shop's checkout domain"
+    },
+    {
+     "commit": "4465eee",
+     "subject": "Privacy policy and consent boxes say the phone number is shared too (Audit C62)",
+     "card": "tracking-4465eee",
+     "title": "Privacy policy and consent boxes say the phone number is shared too"
+    },
+    {
+     "commit": "3d6dfaa",
+     "subject": "Bag's Checkout tap no longer reports payment details (Audit C20, option 1)",
+     "card": "tracking-3d6dfaa",
+     "title": "Bag's Checkout tap no longer reports payment details"
+    },
+    {
+     "commit": "baa72ac",
+     "subject": "Checkout-started value is the bag's Total, after its discount (Audit C20, option 2)",
+     "card": "tracking-baa72ac",
+     "title": "Checkout-started value is the bag's Total, after its discount"
+    },
+    {
+     "commit": "f7d43e9",
+     "subject": "Product structured data carries Shopify's SKU again (Audit C65, held d01e444)",
+     "card": "tracking-f7d43e9",
+     "title": "Product structured data carries Shopify's SKU again"
+    },
+    {
+     "commit": "972d264",
+     "subject": "fixup: Product views report the colour and size the page opens on (Audit C19)",
+     "card": "tracking-773e02f",
+     "title": "Product views report the colour and size the page opens on"
+    },
+    {
+     "commit": "ac7de45",
+     "subject": "fixup: fixup: Product views report the colour and size the page opens on (Audit C19)",
+     "card": "tracking-ac7de45",
+     "title": "A product view that waited for Shopify keeps the piece's own page address"
+    }
+   ]
+  },
+  {
+   "key": "prices",
+   "branch": "own-prices",
+   "picks": [
+    {
+     "commit": "834e4be",
+     "subject": "Bag lines take Shopify's current price on every cart answer (owner review)",
+     "card": "prices-834e4be",
+     "title": "Bag lines take Shopify's current price on every cart answer"
+    },
+    {
+     "commit": "41e1a06",
+     "subject": "First paint shows Shopify's prices and sold-out state (owner review)",
+     "card": "prices-41e1a06",
+     "title": "First paint shows Shopify's prices and sold-out state"
+    },
+    {
+     "commit": "1491b11",
+     "subject": "Add to cart tells Meta only what Shopify really added (owner review)",
+     "card": "prices-1491b11",
+     "title": "Add to cart tells Meta only what Shopify really added"
+    },
+    {
+     "commit": "0fde095",
+     "subject": "Raising a piece's quantity in the bag counts as an Add to cart (owner review)",
+     "card": "prices-0fde095",
+     "title": "Raising a piece's quantity in the bag counts as an Add to cart"
+    },
+    {
+     "commit": "16a210e",
+     "subject": "OPTIONAL: adjustable rings follow Shopify's sold-out on the product page and reels (owner choice)",
+     "card": "prices-16a210e",
+     "title": "Adjustable rings follow Shopify's sold-out on the product page and reels"
+    },
+    {
+     "commit": "780534a",
+     "subject": "fixup: Bag lines take Shopify's current price on every cart answer (owner review)",
+     "card": "prices-834e4be",
+     "title": "Bag lines take Shopify's current price on every cart answer"
+    },
+    {
+     "commit": "0750c46",
+     "subject": "fixup: First paint shows Shopify's prices and sold-out state (owner review)",
+     "card": "prices-41e1a06",
+     "title": "First paint shows Shopify's prices and sold-out state"
+    },
+    {
+     "commit": "89076f1",
+     "subject": "fixup: OPTIONAL: adjustable rings follow Shopify's sold-out on the product page and reels (owner choice)",
+     "card": "prices-16a210e",
+     "title": "Adjustable rings follow Shopify's sold-out on the product page and reels"
+    },
+    {
+     "commit": "cda5d47",
+     "subject": "fixup: First paint shows Shopify's prices and sold-out state (owner review)",
+     "card": "prices-41e1a06",
+     "title": "First paint shows Shopify's prices and sold-out state"
+    }
+   ]
+  },
+  {
+   "key": "landings",
+   "branch": "own-landings",
+   "picks": [
+    {
+     "commit": "ba6f429",
+     "subject": "The error panel's Browse link and Back leave the panel (owner review)",
+     "card": "landings-ba6f429",
+     "title": "The error panel's Browse link and Back leave the panel"
+    },
+    {
+     "commit": "63318c5",
+     "subject": "The page reached from the error panel gets its Meta PageView",
+     "card": "landings-63318c5",
+     "title": "The page reached from the error panel gets its Meta PageView"
+    },
+    {
+     "commit": "25611e3",
+     "subject": "A catalogue ad's ?variant= link opens on that exact variant",
+     "card": "landings-25611e3",
+     "title": "A catalogue ad's link opens on the metal, stone or month it names"
+    },
+    {
+     "commit": "5536ec8",
+     "subject": "fixup: A catalogue ad's ?variant= link opens on that exact variant",
+     "card": "landings-25611e3",
+     "title": "A catalogue ad's link opens on the metal, stone or month it names"
+    },
+    {
+     "commit": "8054e38",
+     "subject": "fixup: A catalogue ad's ?variant= link opens on that exact variant",
+     "card": "landings-25611e3",
+     "title": "A catalogue ad's link opens on the metal, stone or month it names"
+    }
+   ]
+  },
+  {
+   "key": "contrast",
+   "branch": "own-contrast",
+   "picks": []
+  }
+ ],
+ "notShipped": [
+  {
+   "commit": "d4ac0c0",
+   "card": "checkout-d4ac0c0",
+   "title": "Shopify's checkout opens straight, not through two bounces and a reload"
+  },
+  {
+   "commit": "2a0f307",
+   "card": "landings-2a0f307",
+   "title": "Old Shopify addresses land on their real pages, query kept"
+  },
+  {
+   "commit": "b7fa854",
+   "card": null,
+   "title": "Shopify customer-account links open Track Order, not the member sign-in (no card: withdrawn)"
+  },
+  {
+   "commit": "f3bbff9",
+   "card": "landings-f3bbff9",
+   "title": "/index.html opens the homepage, query kept"
+  },
+  {
+   "commit": "ce1ca1d",
+   "card": "landings-ce1ca1d",
+   "title": "A new piece's ivory outline holds until the app takes over"
+  },
+  {
+   "commit": "590059c",
+   "card": "landings-590059c",
+   "title": "An ad for a piece's second colour shows that colour from the first paint"
+  },
+  {
+   "commit": "9477921",
+   "card": "landings-9477921",
+   "title": "Product results carry the shipping and return terms the site states"
+  },
+  {
+   "commit": "e28dd59",
+   "card": null,
+   "title": "fixup: Shopify customer-account links open Track Order, not the member sign-in (no card: withdrawn)"
+  },
+  {
+   "commit": "4e1c19e",
+   "card": "landings-2a0f307",
+   "title": "Old Shopify addresses land on their real pages, query kept"
+  },
+  {
+   "commit": "ca79b89",
+   "card": "landings-ca79b89",
+   "title": "Shopify customer-account links open Track Order"
+  },
+  {
+   "commit": "f56804f",
+   "card": "landings-f56804f",
+   "title": "Shopify customer-account links go straight to Shopify's sign-in"
+  },
+  {
+   "commit": "dd89fe9",
+   "card": "landings-dd89fe9",
+   "title": "A ring ad's ?variant= link opens on the ad's size too"
+  },
+  {
+   "commit": "68f1dcb",
+   "card": "landings-590059c",
+   "title": "An ad for a piece's second colour shows that colour from the first paint"
+  },
+  {
+   "commit": "108a8d0",
+   "card": "contrast-108a8d0",
+   "title": "Dark lettering on the sage footer and the announcement strip"
+  },
+  {
+   "commit": "9a1c33c",
+   "card": "contrast-9a1c33c",
+   "title": "Keep white capitals, deepen the announcement strip"
+  },
+  {
+   "commit": "f46b992",
+   "card": "contrast-f46b992",
+   "title": "Darker small lettering on the Shop All cards"
+  },
+  {
+   "commit": "61cb3f9",
+   "card": "contrast-61cb3f9",
+   "title": "Deeper gold behind the \"% OFF\" badge on card photos"
+  },
+  {
+   "commit": "9b8d8d5",
+   "card": "contrast-108a8d0",
+   "title": "Dark lettering on the sage footer and the announcement strip"
+  },
+  {
+   "commit": "7eccb73",
+   "card": "contrast-9a1c33c",
+   "title": "Keep white capitals, deepen the announcement strip"
+  },
+  {
+   "commit": "0cf8780",
+   "card": "contrast-f46b992",
+   "title": "Darker small lettering on the Shop All cards"
+  },
+  {
+   "commit": "0707d20",
+   "card": "contrast-f46b992",
+   "title": "Darker small lettering on the Shop All cards"
+  },
+  {
+   "commit": "4c9f220",
+   "card": "contrast-f46b992",
+   "title": "Darker small lettering on the Shop All cards"
+  }
+ ]
+}

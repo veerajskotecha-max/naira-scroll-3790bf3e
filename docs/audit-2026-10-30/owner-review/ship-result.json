@@ -1,0 +1,454 @@
+{
+  "summary": "Cherry-pick the 31 owner-approved cards (42 commits) onto main in a separate worktree, then two independent reviewers check the code and the shop in a browser; repair and re-check once. Nothing is pushed.",
+  "agentCount": 6,
+  "logs": [
+    "round 1: code repair-needed, browser repair-needed; 2 reproduced issues",
+    "round 2: code ship, browser ship; 0 reproduced issues"
+  ],
+  "result": {
+    "built": {
+      "head": "8fdd9752acfed12989997501f3246f2e04922070",
+      "commits": 44,
+      "picked": [
+        {
+          "from": "2b702d9",
+          "to": "44a3b17",
+          "conflict": "none"
+        },
+        {
+          "from": "3e6cff9",
+          "to": "2771fc1",
+          "conflict": "none"
+        },
+        {
+          "from": "39ccbce",
+          "to": "c26587d",
+          "conflict": "none"
+        },
+        {
+          "from": "f2b05f4",
+          "to": "075033b",
+          "conflict": "none"
+        },
+        {
+          "from": "8b0b4ff",
+          "to": "84033dc",
+          "conflict": "none"
+        },
+        {
+          "from": "930306e",
+          "to": "c56161b",
+          "conflict": "none"
+        },
+        {
+          "from": "b87f67a",
+          "to": "824d140",
+          "conflict": "none"
+        },
+        {
+          "from": "98ca8cb",
+          "to": "c71f847",
+          "conflict": "none"
+        },
+        {
+          "from": "5bbc08c",
+          "to": "e2a9209",
+          "conflict": "none"
+        },
+        {
+          "from": "d8a943d",
+          "to": "4678358",
+          "conflict": "none"
+        },
+        {
+          "from": "eb25b43",
+          "to": "5baf169",
+          "conflict": "none"
+        },
+        {
+          "from": "4f3b3df",
+          "to": "9bca5bb",
+          "conflict": "none (d4ac0c0 not shipped: this test-only fixup already reads either checkout address, so nothing needed adapting)"
+        },
+        {
+          "from": "c54113c",
+          "to": "33c8168",
+          "conflict": "none"
+        },
+        {
+          "from": "d2c5e87",
+          "to": "4800f78",
+          "conflict": "none"
+        },
+        {
+          "from": "29a482a",
+          "to": "9fcf06e",
+          "conflict": "none"
+        },
+        {
+          "from": "2690b7c",
+          "to": "878e6c4",
+          "conflict": "none"
+        },
+        {
+          "from": "459d528",
+          "to": "ea9d2ea",
+          "conflict": "none"
+        },
+        {
+          "from": "773e02f",
+          "to": "5bca378",
+          "conflict": "none"
+        },
+        {
+          "from": "51f4f4b",
+          "to": "231144d",
+          "conflict": "none"
+        },
+        {
+          "from": "c63c96c",
+          "to": "94c7040",
+          "conflict": "none"
+        },
+        {
+          "from": "2ad2699",
+          "to": "f5cd81f",
+          "conflict": "none"
+        },
+        {
+          "from": "5753a88",
+          "to": "7554de8",
+          "conflict": "none"
+        },
+        {
+          "from": "4465eee",
+          "to": "6707fed",
+          "conflict": "none"
+        },
+        {
+          "from": "3d6dfaa",
+          "to": "3b3eb93",
+          "conflict": "none"
+        },
+        {
+          "from": "baa72ac",
+          "to": "cfa9713",
+          "conflict": "src/contexts/CartContext.tsx openCheckout clashed with 98ca8cb, which works out InitiateCheckout from `lines` (only Buy Now's own lines, or else the whole bag). Resolved so both hold: the discount is resolved from `lines` before the event, and the event's value is the charged total of those lines (discountedSubtotal + SHIPPING_CHARGE), with num_items, content_ids and contents still from `lines`. Test adapted in the same pick: src/contexts/buyNowBagCount.test.tsx (from eb25b43) expected the pre-discount 4798 for 2 bracelets with Buy 2; it now expects the charged 4078, as baa72ac's card says ('applies to Buy Now too'). A ship note is in the commit message."
+        },
+        {
+          "from": "f7d43e9",
+          "to": "6471225",
+          "conflict": "none"
+        },
+        {
+          "from": "972d264",
+          "to": "38d2719",
+          "conflict": "none"
+        },
+        {
+          "from": "ac7de45",
+          "to": "e399b68",
+          "conflict": "none (kept as its own commit, not squashed, as the task says)"
+        },
+        {
+          "from": "834e4be",
+          "to": "ce8066b",
+          "conflict": "src/lib/shopify.ts clashed with 930306e (its sessionUtm import; both imports kept) and with 5bbc08c (updateShopifyCartLine's return type now has both price and lineMissing). src/contexts/CartContext.tsx add path clashed with 5bbc08c's `if (!result.lineMissing)` branch; the withShopifyPrice re-price now sits inside that branch. Two cart answers that the Buy Now card added after 834e4be was written also re-price their line now, so 'every cart answer' stays true: confirmInBag's updateShopifyCartLine check, and Buy Now's own cart beside other pieces (createShopifyCart). One new case in src/contexts/bagPrices.test.tsx ('re-prices the line Buy Now checks with Shopify') covers the line check; it fails without that change. A ship note is in the commit message."
+        },
+        {
+          "from": "41e1a06",
+          "to": "870f9b8",
+          "conflict": "none (no text conflict, but with 972d264 it breaks 3 pinned prices in useViewContent.test.tsx; fixed in Ship commit ec2c066)"
+        },
+        {
+          "from": "1491b11",
+          "to": "21bb856",
+          "conflict": "src/contexts/CartContext.tsx addItemToCart clashed with 5bbc08c's lineMissing branch. Resolved so both hold: inside `if (!result.lineMissing)` the add returns { checkoutUrl, added: syncedQuantity - existing.quantity } as 1491b11 does. When the line is missing, the code falls through to add a new line and reports what Shopify put on it. A ship note is in the commit message."
+        },
+        {
+          "from": "0fde095",
+          "to": "e4f9661",
+          "conflict": "none"
+        },
+        {
+          "from": "16a210e",
+          "to": "3adc098",
+          "conflict": "none"
+        },
+        {
+          "from": "780534a",
+          "to": "f75984d",
+          "conflict": "none"
+        },
+        {
+          "from": "0750c46",
+          "to": "8bfa2e6",
+          "conflict": "none"
+        },
+        {
+          "from": "89076f1",
+          "to": "86be39b",
+          "conflict": "none"
+        },
+        {
+          "from": "cda5d47",
+          "to": "13fcd53",
+          "conflict": "none"
+        },
+        {
+          "from": "ba6f429",
+          "to": "5bc5b57",
+          "conflict": "none"
+        },
+        {
+          "from": "63318c5",
+          "to": "9cf9740",
+          "conflict": "none"
+        },
+        {
+          "from": "25611e3",
+          "to": "0c0e252",
+          "conflict": "none (2a0f307 not shipped; applied and tested clean without it)"
+        },
+        {
+          "from": "5536ec8",
+          "to": "3bc1dad",
+          "conflict": "none"
+        },
+        {
+          "from": "8054e38",
+          "to": "e97e491",
+          "conflict": "none"
+        }
+      ],
+      "extraCommits": [
+        {
+          "commit": "ec2c066 Ship: product-view test reads the first-paint price from the bundled data",
+          "why": "The assembly broke 3 cases in src/hooks/useViewContent.test.tsx. The tracking fixup 972d264 pinned Star Point Band's first-paint ViewContent at 999 (main's jewellery.ts price). The prices card 41e1a06 refreshes that price to Shopify's 799, so the two cards together fail; they were never run together on their branches. The test is about which variant the view names and when it is sent, so its first-paint values now come from the bundled data (bundled.price, other.price). The agreed price refreshes then cannot break it again. Test only; no app code."
+        },
+        {
+          "commit": "8fdd975 Refresh first-paint prices and stock from Shopify (1 Nov 2026)",
+          "why": "Step 4: the 30 Oct first-paint data differed from live Shopify in 84 places, so the data was regenerated with scripts/generate-jewellery-snapshot.ts. That changed src/data/jewellery.ts, jewellerySnapshot.ts and jewelleryHandles.ts. The full list is in the snapshot field and in the commit message."
+        }
+      ],
+      "checks": "At head 8fdd975 in /tmp/ship-approved:\n- vitest: 133 files, 878 of 878 tests pass. Log: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/vitest-head.log\n- tsc (npx tsc --noEmit -p tsconfig.app.json): exit 0, no errors.\n- eslint: 0 errors and 1 warning. The warning is react-refresh/only-export-components in src/contexts/CartContext.tsx (the useCart export). Main ddb72b7 has the same single warning; it was linted from a git archive copy so no other worktree was touched. Nothing new.\n- vite build: succeeded in about 10 s. The only warning is the >500 kB chunk notice, which earlier base builds also show. supabase/functions/mcp/index.ts was restored with git checkout after this build and after every vite-node run; the tree is clean.\n- Browser smoke on the built head, served by distserve on port 4490 and stopped by its PID 25551. Script: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/browser/smoke.mjs, adapted from the checkout fix2 smoke.mjs.\n  - Safety: Meta and the meta-capi relay were aborted through NO_REPORT, navigator.webdriver was overridden, Fastrr was replaced by a recorder, and every cart write went to a fake cart. No checkout opened and no order was placed.\n  - Coverage: 5 profiles (Pixel 7, iPhone 13, 360, 390, 1440) x 7 pages, 35 rows. No horizontal overflow, no console or page errors.\n  - Prism Add, +, Remove/Undo, Buy Now: hands off qty 2 with BUY2. Pixel events: AddToCart 2399 x1, + sends AddToCart 2399 x1, Undo sends 4798 qty 2, InitiateCheckout value 4078 with 2 items (the charged total).\n  - Bag Checkout with 2 pieces: BUY2, InitiateCheckout 4078.\n  - Blush of Dawn Buy Now: qty 1, size S.\n  - Star Point Band ?variant= page loads clean.\n  - Results: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/browser/smoke-head.json",
+      "snapshot": "Read-only comparison of the bundled first-paint data at the assembled head with the live Storefront catalogue, at 19:45 UTC on 1 Nov 2026. Script: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/snap/cmp-live.ts. Output: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/snap/live-vs-head.txt. It found 84 differences, so I re-ran the card's own generator (npx vite-node scripts/generate-jewellery-snapshot.ts) and committed the result as 8fdd975.\n\nPrices changed (old -> new):\n- Hand-authored pieces: Charm Box Chain 1399->1249, Woven Gold Hoops 1299->1199, Baroque Bloom Cuff 1499->1399, Cushion Halo Ring 1199->1099.\n- Snapshot pieces: Pearl Legacy Necklace 1799->1999, Toggle Link Chain 1099->1199, Brushed Gold Huggies 999->799, Baroque Shell Bracelet 1799->1899, Heartbead Bracelet 1299->1199, Granule Dome Ring 1399->1199, Halo Curve Ring 1299->1199, Serpentine Whisper Chain Silver 1299->1199, Baguette Halo Drops 1499->1399, Torsade Huggies 1299->1199, Silk Mesh Cuff 1499->1399, Triple Coil Wrap Bangle 1499->1399, Marquise Wheat Cuff 1499->1699, Baguette Tennis Bracelet 1599->1499, Droplet Open Ring 1299->1199, Pearl Nugget Hoops 1099->1199, Tubogas Dome Ring 1399->1099, Fine Tennis Bracelet 1299->1199, Droplet Open Cuff 1599->1499, Linked Trio Ring 1399->1199, Crystal Baguette Eternity Ring 1299->1199, Watch Link Ring 1199->999, Sorbet Riviere 1300->999, Midnight Riviere 1399->999, Bougainvillea Vine 1499->999, Lumiere Solitaire 1499->1199, Blush Carre 1299->999 (MRP 2500->2200), Sapphire Carre 1299->999, Amethyst Carre 1299->999 (MRP 2500->2200), Solitaire Drop Huggies 649->799, Lotus Pear Drop Studs 945->1099.\n- Every variant moved with its piece.\n\nNow sold out:\n- Roman Numeral Trio Ring (size 6, its last size)\n- Twin Heart Necklace\n- Watch Link Strap Bracelet\n- Baguette Eternity Band Ruby / 7 (the piece itself stays in stock)\n\nNo longer live, so dropped from the snapshot and from the redirect handle list: pearl-circlet-studs and watch-link-bracelet. The handle list now has 134 entries.\n\nThe same run also:\n- fills in the snapshot pieces' Shopify SKUs. The approved card f7d43e9 reads SKUs; the 30 Oct data had sku \"\".\n- shifts the display number of the 70 pieces that came after the two dropped ones.\n\nTubogas Dome Ring keeps its earlier photos, as 41e1a06 did. Shopify's Silver variants still show the Gold on-hand photo, and jewellerySnapshot.test.ts refuses that. Its price, stock and SKU are the refreshed values. Script: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/snap/keep-tubogas.ts.\n\nRe-check after the refresh (19:47 UTC): 0 differences, and the handle list matches the live pieces. Output: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-approved/snap/live-vs-refresh.txt. Nothing was written to Shopify.",
+      "problems": [
+        "Not every commit passes the tests on its own. From 870f9b8 (the 41e1a06 pick) through e97e491, 3 cases in src/hooks/useViewContent.test.tsx fail. The Ship commit ec2c066 fixes them. I put that fix after the picks, as separate Ship commits, rather than folding it into 41e1a06.",
+        "Three of my conflict resolutions go beyond merging text, so the owner or a reviewer should look at them before main.\n- 834e4be (ce8066b): Buy Now's line check and Buy Now's own cart now re-price the line from Shopify. Each has a new test.\n- baa72ac (cfa9713): Buy Now's InitiateCheckout is now the discounted total, and buyNowBagCount.test.tsx now expects 4078 instead of 4798.\n- 1491b11 (21bb856): its AddResult is combined with 5bbc08c's lineMissing branch.\nThe unit tests and the browser smoke pass, but these combinations were never part of the final check, which tested each branch separately on ddb72b7.",
+        "public/sitemap.xml still lists pearl-circlet-studs and watch-link-bracelet, which are no longer live in Shopify. The snapshot generator does not write the sitemap (scripts/generate-sitemap.ts does), so I left it as it is.",
+        "Tubogas Dome Ring still uses its 30 Oct photos at first paint. In Shopify, its Silver variants still show the Gold on-hand photo. Give them their own photo in Shopify, then regenerate.",
+        "Nothing was pushed. ship-approved is only local, in /tmp/ship-approved, 44 commits over ddb72b7."
+      ]
+    },
+    "repaired": {
+      "head": "8fdd9752acfed12989997501f3246f2e04922070",
+      "commits": [],
+      "handled": [
+        {
+          "id": "C19xC11-month-view",
+          "outcome": "Reproduced, but not fixed, because the fix would change what a card promises the owner. The owner needs to decide. Reproduction: (1) I ran the reviewer's probe with vite-node (vitest config) at 8fdd975. It checked 103 bundled ?variant= links and found 11 mismatches, all of them birthstone-heart-necklace February to December. The page opens on the month, but viewContentParams names January 50651969093794 at 699. (2) I did my own npx vite build of the head and served it on port 4493. Every Meta request and the meta-capi relay were aborted, the Fastrr script was stubbed and webdriver was overridden. On Pixel 7 and iPhone 13, ?variant=50651969224866 opens on 'May · Emerald' and ?variant=50651969388706 on 'October · Rose', but the fbq ViewContent is ['50651969093794'] at 699 for both. The Triple Coil Silver ad correctly gives 50651931672738. No server copy is sent from 127.0.0.1. Results: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-fix-vc/vc-month-head-pixel7.json and vc-month-head-iphone13.json. Why not fixed: the approved C11 card (landings-25611e3 with fixup 5536ec8) says outright that for the birthstone month ads 'ViewContent is unchanged (still the lead variant 50651969093794)'. Its summary says 'Only for the birthstone month ads: add to cart and checkout start now name May instead of January... Product views and all ring links are reported exactly as today.' The proposed fix makes ViewContent name the month for 11 month ads. That changes the Ads Manager numbers in a way that no approved card lists, and the C11 card says it will not happen. The head matches every specific measured line on both cards. 773e02f's measured list does not include the birthstone necklace, and its title covers colour and size, while Month is neither. Only 773e02f's general wording ('name the item on screen') is not met for month links. The ready patch is /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/logs/fix-vc-variant.diff (viewContentParams(piece, colourParam, variantLink) using variantChoice(...) ?? openingChoice(...), a trailing variantLink param in useViewContent, and JewelDetailNext passing variantLink; the wiring regex in src/lib/viewContent.test.ts line 77 also needs updating, plus a May case). The reviewer checked it in the browser. If the owner approves month views naming the month, apply it as its own 'Ship:' commit and correct the C11 card's Meta lines and 773e02f's list to match."
+        },
+        {
+          "id": "vc-month-variant",
+          "outcome": "Same root cause as C19xC11-month-view, with the same reproduction: the page opens on May and October while ViewContent names January 50651969093794, on Pixel 7 and iPhone 13, from my own build of 8fdd975. Not fixed, for the same reason: the fix would contradict the approved C11 card's explicit owner lines ('ViewContent is unchanged (still the lead variant 50651969093794)' and 'Product views ... reported exactly as today' for month ads). It would also change Meta ViewContent ids for 11 birthstone month ads without an approved card. The reviewer notes this too: 25611e3's card disclosed it. Waiting on the owner's choice. The patch is ready at the path above."
+        }
+      ],
+      "checks": "All checks ran at head 8fdd975, which has no new commits. npx vitest run: 133 files, 878 of 878 tests passed. npx tsc --noEmit -p tsconfig.app.json: exit 0, no output. npx eslint .: exit 0, 0 errors and 1 warning that was already there (react-refresh/only-export-components in src/contexts/CartContext.tsx:700). npx vite build: exit 0, built in 9.13s, and supabase/functions/mcp/index.ts was restored with git checkout afterwards. The worktree is clean. A second build of the head went into a scratch folder for the browser check, /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-fix-vc/dist-head, and the mcp file was restored after it too. It was served on port 4493, and that server (PID 16553) was stopped by its PID. No Meta or relay request went out: the requests were aborted and 0 were attempted. No cart writes, checkout or form submissions were made. Nothing was pushed, and nothing outside /tmp/ship-approved was changed. Logs are in /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/ship-fix-vc/ (vitest.log, tsc.log, eslint.log, build-final.log)."
+    },
+    "reviews": [
+      {
+        "verdict": "repair-needed",
+        "issues": [
+          {
+            "id": "C19xC11-month-view",
+            "severity": "minor",
+            "reproduced": true,
+            "summary": "Together, the product-view card (773e02f, from tracking) and the ad-variant card (25611e3, from landings) report the wrong product view to Meta for the Birthstone Heart Necklace month ads. The page opens on the month the ad names (for example May), but ViewContent still names January · Garnet (50651969093794). AddToCart and the wishlist heart name May. The card 773e02f promises that product views report the variant the page opens on, and that breaks here. Neither branch had this on its own. On own-tracking the page opened on January and reported January. The two cards were never run together.",
+            "evidence": "Scratch probe /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/rv-ship/probe/vc-vs-open.ts (run with vite-node at the head 8fdd975). It compares the variant JewelDetailNext opens on, `variantChoice(p, variantLink) ?? openingChoice(p, colourParam)`, with the one `viewContentParams(piece, colourParam)` names. Over 103 bundled ?variant= links there are 11 mismatches, all of them birthstone-heart-necklace February to December. Example: ?variant=50651969224866 (May · Emerald) opens on 50651969224866, but ViewContent names 50651969093794. I confirmed it in the browser on my own `npx vite build` of the head, served on port 4497 with Pixel 7 emulation, Meta and the relay aborted and Fastrr stubbed (probe/vc-browser.mjs, output probe/vc-browser.json). /jewellery/birthstone-heart-necklace?variant=50651969224866 shows select 'May · Emerald', and the fbq queue has ViewContent content_ids ['50651969093794'] at value 699. The October ad gives the same result. The Triple Coil Silver ad is correct (50651931672738). Cause: Month is not a colour option, so colourParam is null and viewContentParams falls back to initialChoice (January), while the page uses variantChoice.",
+            "fix": "Pass the ad's variant link to the product view.\n- src/lib/viewContent.ts: `viewContentParams(piece, colourParam?, variantLink?)` with `const opening = findVariant(piece, variantChoice(piece, variantLink) ?? openingChoice(piece, colourParam));`.\n- src/hooks/useViewContent.ts: add a trailing `variantLink: string | null = null` parameter, keep it in `now.current` next to colourParam, and pass `latest.variantLink` to viewContentParams.\n- src/pages/JewelDetailNext.tsx: `useViewContent(piece, colourParam, placed, settled, variantLink)`.\n- src/lib/viewContent.test.ts: update the wiring regex and add a May-link case.\nI tried this on the worktree and then reverted it. The probe gives 0 mismatches over 103 links and tsc is clean. The only test it trips is the exact-call wiring regex in viewContent.test.ts, which has to be updated."
+          }
+        ],
+        "checked": "Worktree /tmp/ship-approved at 8fdd975, clean, nothing pushed.\n(a) Order and completeness: the 42 planned picks are present once each and in plan order, plus ec2c066 and 8fdd975. 36 picks have the same patch-id as their originals. 41e1a06, 5536ec8 and 8054e38 differ only in context lines; their added and removed lines are identical. I rebuilt each group from only its shipped picks with git merge-tree (no worktree):\n- tracking and prices are byte-identical to own-tracking and own-prices.\n- checkout differs from own-checkout only by d4ac0c0.\n- landings differs from own-landings only by the unshipped commits.\nMerging the four group trees on ddb72b7 gives exactly e97e491, except the conflicts in CartContext.tsx and shopify.ts and the two test adaptations. I read those line by line:\n- baa72ac + 98ca8cb: the discount and the charged value are both worked out from `lines`.\n- 834e4be + 5bbc08c / 930306e: price and lineMissing both returned, both imports kept, re-price inside the !lineMissing branch, plus the Buy Now line check and own-cart re-price.\n- 1491b11 + 5bbc08c: added = synced - existing in the branch; the fall-through reports the new line.\nAll of these do what both sides meant.\n(b) No leaks: none of the 1,129 distinctive added lines from the 22 notShipped commits (d4ac0c0, 2a0f307, 4e1c19e, b7fa854/e28dd59, f3bbff9, ce1ca1d, 590059c/68f1dcb, 9477921, ca79b89/f56804f, dd89fe9 and all 9 contrast commits) is at the head. index.html, prerender.ts and JewelCard.tsx equal own-tracking.\n(c) ec2c066 is needed: the e97e491 test fails 3 of 15 at the head. 8fdd975: a field diff shows only price, MRP, stock, sku and number change, and two delisted pieces are dropped; Tubogas photos are kept. My own read-only Storefront compare at 20:05 UTC found 0 price, stock or variant differences, a 134-handle list matching live, and SKUs matching apart from known hand-authored lead differences that were already on main.\n(d) My own runs: vitest 133 files and 878 tests pass; tsc -p tsconfig.app.json clean; eslint 0 errors and 1 warning that main also has. Every approved card's named test file and every fixup test file passed (43 files listed).\n(e) Cross-group checks:\n- relay event allowlist matches SERVER_EVENTS;\n- PixelEvents against the index.html snippet;\n- the prerender reporting filter covers Meta and the relay;\n- the full-catalogue probe of page opening variant against ViewContent, which found the issue above.\nBrowser: my own vite build, served on port 4497 (4491 was another session's server, left untouched; mine stopped by its PID). I re-ran the assembler's smoke on 5 profiles and 7 pages: no overflow, console errors or flow errors. Buy Now and bag hand-offs, BUY2, and InitiateCheckout 4078 were as the cards say. Meta, the relay and Fastrr were aborted or stubbed and all cart writes went to a fake cart. supabase/functions/mcp/index.ts was restored after every build and vite-node or vitest run."
+      },
+      {
+        "verdict": "repair-needed",
+        "issues": [
+          {
+            "id": "vc-month-variant",
+            "severity": "minor",
+            "reproduced": true,
+            "summary": "On head, a catalogue ad link that names a Birthstone Heart Necklace month opens the page on that month, and Add to cart sends that month. The product view still names January, in both the pixel and the server copy. So within one visit, ViewContent and AddToCart name different catalogue items. This breaks 773e02f's promise that 'product views report the colour and size the page opens on'. The cause: the page opens on variantChoice(piece, ?variant=) (from 25611e3 and its fixups), but viewContentParams only reads openingChoice(piece, colourParam). 'Month' is not a colour option, so colourParam is null. Base is consistent: it opened on January and reported January. The only piece affected today is birthstone-heart-necklace (11 of its 12 month ads). 25611e3's own owner line says ViewContent keeps the lead variant, so that card disclosed it, but 773e02f's card did not.",
+            "evidence": "/jewellery/birthstone-heart-necklace?variant=50651969224866 (May), iPhone 13 and Pixel 7. Head: the Month select shows 'May · Emerald' with the emerald photo first, and the Shopify cart line is 50651969224866. ViewContent is 50651969093794 (January) on pixel and server, while AddToCart is 50651969224866 on pixel and server. Base: January everywhere. Logs: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/out/probe-month.json, out/vc-month-head-iphone13.json, out/vc-month-head-pixel7.json, out/vc-month-base-pixel7.json. Fix check on a patched build: out/vc-month-fix-iphone13.json and out/vc-month-fix-pixel7.json give ViewContent 50651969224866. Unchanged with the fix: out/vc-{colour,variant,ring-variant,star,plain-ring,nav}-fix-*.json and out/vc-wait-leave-fix-pixel7.json. Patch: logs/fix-vc-variant.diff.",
+            "fix": "Have the product view use the same opening variant as the page. Three edits: (1) src/lib/viewContent.ts: `viewContentParams(piece, colourParam?, variantLink?)` with `findVariant(piece, variantChoice(piece, variantLink) ?? openingChoice(piece, colourParam))`, importing variantChoice from @/lib/colourCards. (2) src/hooks/useViewContent.ts: add the parameter `variantLink: string | null = null`, keep it in the `now` ref, and pass `latest.variantLink`. (3) src/pages/JewelDetailNext.tsx:474: pass `variantLink` as the fifth argument to useViewContent. Add a May case to src/lib/viewContent.test.ts. Browser-verified; unit tests and tsc not run here, because they would write into the shared node_modules."
+          }
+        ],
+        "checked": "Built two sites with npx vite build from git archive copies: main ddb72b7 (dist-base) and ship-approved 8fdd975 (dist-head). After each build I ran git checkout -- supabase/functions/mcp/index.ts; the worktree is still clean at 8fdd975. Each build was served with distserve on 4490 (base) and 4491 (head), plus a fix candidate on 4492. All three servers were stopped by their own PIDs (32380, 32381, 14575).\n\nEvery page was opened as https://nairaflore.com on iPhone 13 and Pixel 7, using a harness built from hf.mjs, rec.mjs and rec3.mjs (scripts/rv.mjs, scen.mjs, scen2.mjs).\n- All Meta requests were aborted: facebook.com/.net, fbevents.js and the shop's meta-capi relay. The relay bodies were recorded first, and fbq calls were tapped from the stub queue.\n- The Fastrr script was a stub that only records buyDirect.\n- Every Shopify cart call went to a local fake cart; only read-only Storefront product queries reached Shopify.\n- payments.nairaflore.com and off-site navigations were aborted, and webdriver was masked.\n\nBase and head were compared on both phones. Matches the cards:\n- One ViewContent per piece with the right variant for: triple-coil ?colour=silver, the Silver ?variant= link, Tubogas ?variant=Silver/7 (opens and reports Silver/US 6), the Star Point Band Silver ad, the plain ring page (US 6), and in-app navigation.\n- Wishlist hearts send the variant id, value and INR, and nothing on remove.\n- Search fires once each for zzqx+Enter, rings+close and hoops.\n- Add to cart; bag + sends an AddToCart (qty 1, 2399); − sends nothing.\n- Remove then Undo keeps both pieces and sends one AddToCart, also when the Undo races a 900 ms removal.\n- Buy Now on a piece already in the bag: Fastrr gets [{prism,1}] with no coupon, and InitiateCheckout is 2399 for 1 item.\n- Buy Now with the hoops in the bag: a separate one-piece cart, Fastrr gets [{prism,1}] with no coupon and the campaign, InitiateCheckout 2399/1.\n- Bag Checkout:\n  - 2 pieces: InitiateCheckout 3058, equal to the Total after BUY2, with no AddPaymentInfo.\n  - 3 pieces: 4123 with BUY3.\n  - Fastrr gets the products, quantities, coupon and utmParams with all five tags, and the fallback URL carries the UTM.\n  - Ring sizes reach Fastrr as customAttributes plus a sizes attribute.\n  - A one-piece checkout clears the Shopify cart's codes.\n  - The first campaign wins over a second ad.\n  - Stale lines: Remove, + and Add again behave as the fixups say.\n  - Lost or dropped cart on Buy Now: the piece is put back, then AddToCart and InitiateCheckout 2399.\n  - A stale saved price is corrected to 1199 in the bag and in InitiateCheckout.\n  - A stock-capped Add sends only 1 AddToCart.\n- First paint:\n  - With Shopify held 15–20 s, every bundled price and sold-out flag matches live Shopify.\n  - The 5 sold-out pieces read SOLD OUT, and Molten Bloom Hoops shows only Reserve now.\n  - View and Add use the new prices (Woven 1199).\n  - Rose Verdant Band, set to sold out in Shopify's answer, shows only Reserve now (WhatsApp), with nothing handed to Fastrr and no AddToCart or InitiateCheckout.\n- Error panel:\n  - Browse opens /jewellery (126 links) with exactly 1 PageView.\n  - Back from a panel reached by a tap returns to the collection.\n- Also as the cards say:\n  - _fbp is set before the first view.\n  - naira_vid, _fbc and _fbp are on .nairaflore.com, and a returning visitor's ids migrate cleanly.\n  - No server copy is sent from 127.0.0.1.\n  - The privacy page and the sign-up consent box mention the phone number.\n  - The structured-data SKUs match the card.\n  - The wait-then-leave product view names the ad link.\n\nMeta events: 199 head pixel events, each with a server copy carrying the same event_id and identical custom_data. All event names are among the allowed 9, all values carry INR, and head never sends AddPaymentInfo.\n\nLayout: no page errors on either phone, and no horizontal scroll on home, shop, the product pages, the bag, search or privacy. Playwright trial taps pass on Add to cart, Buy Now, the sticky bar, the heart, size and metal choices, Reserve now, the card Add and heart, bag +/−, Remove, Undo, Checkout and close, and search.\n\nThe cards' numbers predate the 1 Nov reprice (for example hoops 1299, now 1199); the measured values follow today's prices. The only remaining defect is the birthstone month product view above."
+      },
+      {
+        "verdict": "ship",
+        "issues": [],
+        "checked": "Reviewed /tmp/ship-approved at 8fdd975, 44 commits over ddb72b7. I found nothing major or minor.\n\n(a) Picks: all 42 planned commits are present once each and in plan order. 37 have the same patch-id as their own-* original. Three more (41e1a06, 5536ec8, 8054e38) differ only in context lines: their zero-context diffs are identical. I read the three conflict resolutions line by line:\n- cfa9713 (baa72ac): the discount is now worked out from `lines` (98ca8cb's Buy Now lines) before InitiateCheckout. The value is discountedSubtotal(value) + SHIPPING_CHARGE. Clarity still gets the pre-discount value. buyNowBagCount now expects 4078 (4798 x 0.85), as the card's 'Applies to Buy Now too' says.\n- ce8066b (834e4be): both shopify.ts imports are kept. The return type carries both price and lineMissing. The re-price sits inside 5bbc08c's !lineMissing branch. confirmInBag and Buy Now's own cart are re-priced too. I reverted the confirmInBag re-price temporarily: the new bagPrices case then fails, as claimed. Restored afterwards.\n- 21bb856 (1491b11): AddResult sits inside the lineMissing branch, and the fall-through reports what Shopify added.\n\n(b) Nothing from the not-shipped commits is in head:\n- App.tsx, vite.config.ts, routeCode, main.tsx, fallbackGuard, index.css, Footer, AnnouncementBar, JewelPriceTag and Jewellery.tsx are all unchanged from ddb72b7.\n- d4ac0c0's formatCheckoutUrl rewrite is absent: the CHECKOUT_DOMAIN guard is still there.\n- dd89fe9's `named.availableForSale` size rule is absent.\n- The new files from those commits (variantPrepaint, merchantPolicy, account-links, signin-hop, the contrast tests, checkoutUrl.test) are absent.\n- The 7 not-shipped-commit files that do differ (JewelDetailNext.tsx and its test, colourCards.ts and its test, JewelCard, index.html, prerender.ts) are touched only by shipped picks.\n\n(c) Extra commits:\n- ec2c066 is needed: 41e1a06 moved Star Point Band 999 -> 799, so 972d264's pinned 999 fails. The change is test only.\n- 8fdd975 changes only price, priceLabel, compareAt, availableForSale, sku and number, and drops 2 pieces. No photos changed, Tubogas kept its photos, and f7d43e9's swapped SKUs survived. `number` is not used in the UI.\n- I re-ran its read-only cmp-live.ts at 20:45 UTC: 0 differences, handle list 134, none missing.\n- The stale public/sitemap.xml is moot: prebuild regenerates it and drops handles that are not live (scripts/routes.ts).\n\n(d) Results:\n- npx vitest run: 133 files, 878 tests pass.\n- tsc -p tsconfig.app.json: clean.\n- eslint: 0 errors, 1 warning (react-refresh on CartContext's useCart export, already on main).\n- Every test file named on a shipped card exists and passes. I re-ran 10 of them explicitly: 37/37 pass.\n\n(e) Cross-group checks:\n- Scratch vitest file /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/rv2/t/cross.test.tsx, 7 cases, all pass. It covers: Buy Now beside another piece with a Shopify re-price (InitiateCheckout and Fastrr carry the new price, no code, no AddToCart, the main cart untouched); Buy Now picking 2 on a line of 1 (one AddToCart of 1, own cart gets BUY2, value 4078); Add again on a dropped line; a capped Add; + on a dropped line; Buy Now on a dropped line; and bag Checkout after a re-price.\n- Probe of every bundled ?variant= link (103), comparing the variant the page opens on with ViewContent: 11 mismatches, all birthstone-heart-necklace February to December. These are the deferred C19xC11-month-view / vc-month-variant items.\n- Browser: my own `npx vite build` (mcp/index.ts restored afterwards), served by distserve on port 4497 (4494 and 4495 belonged to another run and were left alone), stopped by its PID. The rv.mjs harness aborted all Meta and relay requests and stubbed Fastrr. Results, same on Pixel 7 and iPhone 13:\n  - Bag of 2: one InitiateCheckout at 3058 with BUY2, no AddPaymentInfo, the bag shows ₹3,058.\n  - Buy Now beside the hoops: InitiateCheckout 2399 x1 on its own cart, no coupon, the bag keeps both.\n  - Tubogas ?variant=Silver/7: opens Silver / 6, and ViewContent and AddToCart both name 50651970076834 at the refreshed 1099.\n  - Birthstone May link: ViewContent names 50651969093794 (January), AddToCart names May 50651969224866.\n\nDeferred items: I reproduced the month-view gap. The repair round was right to leave it. The approved C11 card says outright that for month ads 'ViewContent is unchanged (still the lead variant 50651969093794)' and that 'Product views ... reported exactly as today'. Head matches that. 773e02f's title covers colour and size, and month is neither. The patch at /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/logs/fix-vc-variant.diff is not applied. This is the owner's decision, not a defect.\n\nNot counted as issues:\n- 870f9b8 through e97e491 each fail 3 test cases on their own. This only affects bisecting, and ec2c066 fixes it.\n- The 2b702d9 card's Buy Now value lines (4798) are superseded by baa72ac's approved 'Applies to Buy Now too'.\n\nWorktree left clean at 8fdd975. Nothing pushed, nothing committed. The ignored dist/ folder came from another run's build at 20:39, not mine."
+      },
+      {
+        "verdict": "ship",
+        "issues": [],
+        "checked": "Builds: git archive of ddb72b7 (base) and 8fdd975 (head) into /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/rev2/src-{base,head}. Built each with npx vite build (both exit 0), then ran git checkout -q -- supabase/functions/mcp/index.ts in /tmp/ship-approved. The worktree is still clean at 8fdd975. Served with distserve on 4494 (base, PID 21808) and 4495 (head, PID 21809). I stopped both by PID afterwards and confirmed they were gone.\n\nHarness: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/rev2/scripts/rv.mjs, a copy of the first review's harness with the output folder changed.\n- Pages open as https://nairaflore.com.\n- Every Meta and NO_REPORT request is recorded, then aborted. That covers fbevents.js and the meta-capi relay bodies.\n- navigator.webdriver is overridden. Fastrr is a buyDirect recorder. Shopify cart calls go to a local fake cart. Only read-only Storefront product queries reach Shopify. payments.* and off-site writes are aborted.\n- Across 120 runs (iPhone 13 and Pixel 7, base and head), the only hosts attempted and aborted were connect.facebook.net (fbevents.js), clarity and the supabase shopper-performance/relay. No navigation went off-site. Every server copy pairs with a pixel event that has the same event id, value and ids: /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/rev2/out/meta-events-summary.json.\n\nScenarios: scripts/scen.mjs and scripts/extra.mjs, outputs in rev2/out/<scenario>-<base|head>-<device>.json and x-*.json. Head matched every card line I measured. Base is shown in brackets.\n\nProduct views: one ViewContent per piece. Picking another colour or month sends none.\n- Triple Coil ?colour=silver and the Silver ad ?variant=50651931672738 give 50651931672738 at 1399 [50651931639970 at 1499].\n- Baguette Tennis ?colour=emerald gives 50651931803810.\n- Aquarelle White and Pink give 50749309649058 and 50749309681826 [Royal Blue 50714620100770].\n- Star Point Silver ad and ?colour=silver give 50652105605282 at 799 [47501788774562 at 999].\n- Tubogas plain gives 50651969978530 at 1099, and its Silver/7 ad opens Silver US 6 and reports 50651970076834 [50710035234978 at 1399].\n- The waited view (Shopify held 6 s, shopper leaves at 1.2 s) keeps Star Point's ad address in the server copy (ac7de45).\n\nMonth links, the two handled items, reproduced on both devices:\n- ?variant=50651969224866 opens 'May · Emerald' with the emerald photo [January].\n- ?variant=50651969388706 opens 'October · Rose'.\n- ViewContent for both, pixel and server copy, is 50651969093794 at 699. AddToCart, InitiateCheckout and Fastrr carry the month's id.\n- This is what the approved C11 card says word for word: ViewContent 'unchanged (still the lead variant 50651969093794)', and its summary says 'Product views ... reported exactly as today'. The ready patch would change Meta ids for 11 month ads, which no approved card lists. I agree it waits on the owner's choice and do not count it as a defect of this branch.\n\nWishlist hearts:\n- Product page heart: 47501786841250, value 1300 [handle id, no value].\n- Shop card heart: 47501788348578, value 2399 [handle id].\n- One event per add, none on remove.\n\nSearch: zzqx+Enter, 'rings' then close, and hoops+Enter give one event each, and each pixel id equals the server id [only hoops].\n\nBag, landed from an ad with all five utm tags:\n- '+' sends AddToCart 2399 ×1 [none]. '−' sends nothing.\n- Remove then Undo keeps both pieces and sends one AddToCart. With the removal delayed 900 ms, Undo keeps the hoops [hoops lost].\n- Checkout tap: InitiateCheckout 3058 = the bag Total, 2 items, no AddPaymentInfo [AddPaymentInfo 3058 + InitiateCheckout 3598]. The stub got the 2 products with BUY2 and utmParams carrying all five tags [no utm]. The Shopify cart notes carry the utm tags.\n- BUY3 bag: InitiateCheckout 3598 = the Total [AddPaymentInfo 3598 + InitiateCheckout 4797].\n- A stale line's Remove keeps the bracelet, then checkout is 2399 [bag emptied].\n\nBuy Now (stub payload, then InitiateCheckout):\n- Piece already in the bag: [{47501788348578,1}], no coupon, no extra AddToCart, InitiateCheckout 2399/1 [qty 2, BUY2, 4798].\n- Other pieces in the bag: only the viewed bracelet, on its own cart with the tracking notes and utm, InitiateCheckout 2399/1. Both pieces stay in the bag [both pieces, BUY2, 3598].\n- Both in the bag: the same [qty 3, BUY3, 5997].\n- Ring US 8 with other pieces: [{47501788938402,1,Size:'US 8'}] plus a sizes attribute.\n- May in the bag, then Buy Now: [{50651969224866,1}].\n\nFirst paint, catalogue held 15 s: all 21 cards show Shopify's live price and MRP. Ring cards were re-checked with a corrected reader, and head first paint equals live. The 5 sold-out pieces read SOLD OUT, disabled, at the end of the grid [12 prices stale]. Molten Bloom reached inside the site shows only Reserve now at ₹1,300 [Add/Buy at ₹2,949]. Woven's ViewContent is 1199 [2349].\n\nSold-out adjustable ring (Rose Verdant, forced sold out): only Reserve now, which opens the WhatsApp pre-order with size and price, and sends no Meta event and no hand-off [Buy Now handed qty 0].\n\nError panel (product chunk blocked): Browse opens /jewellery with 126 links and 1 PageView. Back shows the panel with no extra PageView [stuck on the panel, 0 links].\n\nLayout: no horizontal scroll on any page or bag checked (390/412 px). Trial-clicks pass on Add, Buy Now, heart, search, bag +, Remove, Undo, Checkout, month select, ring size and metal, Reserve and Browse.\n\nNo page errors anywhere. Console errors appear only in the deliberately broken panel run: the expected failed-chunk message, and one 'reading default' that the first review also saw on base.\n\nNot counted as defects:\n- − at quantity 1 not tappable: same on base.\n- tappable() hit-test 'blocked' entries and the first-paint reader's three ring-card prices: harness artefacts, identical on base."
+      }
+    ],
+    "head": "8fdd9752acfed12989997501f3246f2e04922070",
+    "verdict": "ship",
+    "remaining": []
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Assemble"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Review"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 3,
+      "title": "Repair"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "assemble",
+      "phaseIndex": 1,
+      "phaseTitle": "Assemble",
+      "agentId": "a310279a850585ba9",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793561740864,
+      "queuedAt": 1793561740827,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "8fdd9752acfed12989997501f3246f2e04922070",
+      "promptPreview": "Hard rules (break none):\n- Work only in the worktree /tmp/ship-approved (branch ship-approved, created from origin/main ddb72b7). Never push, never touch main, the own-* branches, /tmp/own-*, /tmp/mainwt or any other worktree, and never rewrite their history.\n- Never run npm run build, npm run prerender or scripts/prerender.ts (its capture browser posts product views to Meta). Build only with npx …",
+      "promptFramed": true,
+      "lastProgressAt": 1793563112366,
+      "tokens": 291562,
+      "toolCalls": 99,
+      "durationMs": 1371501,
+      "resultPreview": "{\"head\":\"8fdd9752acfed12989997501f3246f2e04922070\",\"commits\":44,\"picked\":[{\"from\":\"2b702d9\",\"to\":\"44a3b17\",\"conflict\":\"none\"},{\"from\":\"3e6cff9\",\"to\":\"2771fc1\",\"conflict\":\"none\"},{\"from\":\"39ccbce\",\"to\":\"c26587d\",\"conflict\":\"none\"},{\"from\":\"f2b05f4\",\"to\":\"075033b\",\"conflict\":\"none\"},{\"from\":\"8b0b4ff\",\"to\":\"84033dc\",\"conflict\":\"none\"},{\"from\":\"930306e\",\"to\":\"c56161b\",\"conflict\":\"none\"},{\"from\":\"b87f6…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "review-code-r1",
+      "phaseIndex": 2,
+      "phaseTitle": "Review",
+      "agentId": "aea3064968fe61aa8",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563114964,
+      "queuedAt": 1793563114923,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "repair-needed",
+      "promptPreview": "Hard rules (break none):\n- Work only in the worktree /tmp/ship-approved (branch ship-approved, created from origin/main ddb72b7). Never push, never touch main, the own-* branches, /tmp/own-*, /tmp/mainwt or any other worktree, and never rewrite their history.\n- Never run npm run build, npm run prerender or scripts/prerender.ts (its capture browser posts product views to Meta). Build only with npx …",
+      "promptFramed": true,
+      "lastProgressAt": 1793564143363,
+      "tokens": 263591,
+      "toolCalls": 80,
+      "durationMs": 1028397,
+      "resultPreview": "{\"verdict\":\"repair-needed\",\"issues\":[{\"id\":\"C19xC11-month-view\",\"severity\":\"minor\",\"reproduced\":true,\"summary\":\"Together, the product-view card (773e02f, from tracking) and the ad-variant card (25611e3, from landings) report the wrong product view to Meta for the Birthstone Heart Necklace month ads. The page opens on the month the ad names (for example May), but ViewContent still names January · G…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "review-browser-r1",
+      "phaseIndex": 2,
+      "phaseTitle": "Review",
+      "agentId": "a262a17087d261bbc",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793563114965,
+      "queuedAt": 1793563114924,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "repair-needed",
+      "promptPreview": "Hard rules (break none):\n- Work only in the worktree /tmp/ship-approved (branch ship-approved, created from origin/main ddb72b7). Never push, never touch main, the own-* branches, /tmp/own-*, /tmp/mainwt or any other worktree, and never rewrite their history.\n- Never run npm run build, npm run prerender or scripts/prerender.ts (its capture browser posts product views to Meta). Build only with npx …",
+      "promptFramed": true,
+      "lastProgressAt": 1793565200035,
+      "tokens": 375820,
+      "toolCalls": 96,
+      "durationMs": 2084439,
+      "resultPreview": "{\"verdict\":\"repair-needed\",\"issues\":[{\"id\":\"vc-month-variant\",\"severity\":\"minor\",\"reproduced\":true,\"summary\":\"On head, a catalogue ad link that names a Birthstone Heart Necklace month opens the page on that month, and Add to cart sends that month. The product view still names January, in both the pixel and the server copy. So within one visit, ViewContent and AddToCart name different catalogue ite…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "repair",
+      "phaseIndex": 3,
+      "phaseTitle": "Repair",
+      "agentId": "a22449be18ad2dbf0",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793565202142,
+      "queuedAt": 1793565202109,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "8fdd9752acfed12989997501f3246f2e04922070",
+      "promptPreview": "Hard rules (break none):\n- Work only in the worktree /tmp/ship-approved (branch ship-approved, created from origin/main ddb72b7). Never push, never touch main, the own-* branches, /tmp/own-*, /tmp/mainwt or any other worktree, and never rewrite their history.\n- Never run npm run build, npm run prerender or scripts/prerender.ts (its capture browser posts product views to Meta). Build only with npx …",
+      "promptFramed": true,
+      "lastProgressAt": 1793565563296,
+      "tokens": 150435,
+      "toolCalls": 29,
+      "durationMs": 361153,
+      "resultPreview": "{\"head\":\"8fdd9752acfed12989997501f3246f2e04922070\",\"commits\":[],\"handled\":[{\"id\":\"C19xC11-month-view\",\"outcome\":\"Reproduced, but not fixed, because the fix would change what a card promises the owner. The owner needs to decide. Reproduction: (1) I ran the reviewer's probe with vite-node (vitest config) at 8fdd975. It checked 103 bundled ?variant= links and found 11 mismatches, all of them birthsto…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "review-code-r2",
+      "phaseIndex": 3,
+      "phaseTitle": "Repair",
+      "agentId": "a1342cdd7491fff9a",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793565565111,
+      "queuedAt": 1793565565094,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "ship",
+      "promptPreview": "Hard rules (break none):\n- Work only in the worktree /tmp/ship-approved (branch ship-approved, created from origin/main ddb72b7). Never push, never touch main, the own-* branches, /tmp/own-*, /tmp/mainwt or any other worktree, and never rewrite their history.\n- Never run npm run build, npm run prerender or scripts/prerender.ts (its capture browser posts product views to Meta). Build only with npx …",
+      "promptFramed": true,
+      "lastProgressAt": 1793566447016,
+      "tokens": 284020,
+      "toolCalls": 78,
+      "durationMs": 881904,
+      "resultPreview": "{\"verdict\":\"ship\",\"issues\":[],\"checked\":\"Reviewed /tmp/ship-approved at 8fdd975, 44 commits over ddb72b7. I found nothing major or minor.\\n\\n(a) Picks: all 42 planned commits are present once each and in plan order. 37 have the same patch-id as their own-* original. Three more (41e1a06, 5536ec8, 8054e38) differ only in context lines: their zero-context diffs are identical. I read the three conflic…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "review-browser-r2",
+      "phaseIndex": 3,
+      "phaseTitle": "Repair",
+      "agentId": "a6d1af5242b54aa28",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793565565112,
+      "queuedAt": 1793565565095,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "ship",
+      "promptPreview": "Hard rules (break none):\n- Work only in the worktree /tmp/ship-approved (branch ship-approved, created from origin/main ddb72b7). Never push, never touch main, the own-* branches, /tmp/own-*, /tmp/mainwt or any other worktree, and never rewrite their history.\n- Never run npm run build, npm run prerender or scripts/prerender.ts (its capture browser posts product views to Meta). Build only with npx …",
+      "promptFramed": true,
+      "lastProgressAt": 1793566691778,
+      "tokens": 333370,
+      "toolCalls": 72,
+      "durationMs": 1125934,
+      "resultPreview": "{\"verdict\":\"ship\",\"issues\":[],\"checked\":\"Builds: git archive of ddb72b7 (base) and 8fdd975 (head) into /tmp/claude-0/-home-user-naira-scroll-3790bf3e/1603d6c2-8763-5ef3-b941-c9e1d9b9f412/scratchpad/owner-oct30/ship-approved/rev2/src-{base,head}. Built each with npx vite build (both exit 0), then ran git checkout -q -- supabase/functions/mcp/index.ts in /tmp/ship-approved. The worktree is still cle…"
+    }
+  ],
+  "totalTokens": 1698798,
+  "totalToolCalls": 454
+}

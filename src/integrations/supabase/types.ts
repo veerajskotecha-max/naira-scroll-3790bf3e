@@ -412,6 +412,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      piece_visit_counts: { Args: never; Returns: Json }
       shopper_performance_report: { Args: { days?: number }; Returns: Json }
     }
     Enums: {

@@ -3,7 +3,7 @@
 # (ebur128 measure, alimiter). The limiter shaves a little loudness, so the gain is corrected once from the first pass.
 a=$1; in=$a/${2:-mix}.wav; out=$a/${3:-master}.wav
 meas() { ffmpeg -nostdin -hide_banner -i "$1" -af ebur128=peak=true -f null - 2>&1 | awk '/Summary/{s=1} s&&/ I:/{i=$2} s&&/Peak:/{p=$2} END{print i, p}'; }
-lim() { ffmpeg -nostdin -v error -y -i $in -af "volume=${1}dB,alimiter=limit=0.841:level=false:attack=4:release=60" -ar 48000 -c:a pcm_f32le $out; }
+lim() { ffmpeg -nostdin -v error -y -i $in -af "volume=${1}dB,alimiter=limit=${LIMIT:-0.841}:level=false:attack=4:release=60" -ar 48000 -c:a pcm_f32le $out; }
 read I TP < <(meas $in)
 G=$(python3 -c "print(round(-14.0 - $I, 2))"); lim $G
 read I2 TP2 < <(meas $out)

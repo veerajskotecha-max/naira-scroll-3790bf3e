@@ -19,6 +19,7 @@
 import { spawn } from "child_process";
 import { mkdirSync, writeFileSync, existsSync, readdirSync, readFileSync, rmSync } from "fs";
 import { resolve, join } from "path";
+import { homedir } from "os";
 import { chromium, type Browser } from "playwright";
 import { resolveSiteRoutes, type SiteRoute } from "./routes";
 import { productAliasFor, withAliasRedirect } from "../src/lib/productAlias";
@@ -44,18 +45,51 @@ const EXECUTABLE = process.env.PLAYWRIGHT_CHROMIUM_PATH;
 
   So: if the pinned build is missing, use whatever chromium IS installed. A
   build or two apart does not matter for rendering static markup.
+
+  Look where browsers actually live, not only where an env var says. With
+  PLAYWRIGHT_BROWSERS_PATH unset, Playwright keeps them in its default cache
+  (~/.cache/ms-playwright, or under $XDG_CACHE_HOME), and the official
+  Playwright Docker images keep them in /ms-playwright. And accept both folder
+  layouts: builds from Playwright 1.57 on are Chrome for Testing, under
+  chrome-linux64/ and chrome-headless-shell-linux64/; older builds sit under
+  chrome-linux/. Checking only the env var and only the old layout is how the
+  move from Playwright 1.59.1 to 1.64.1 switched prerendering off unnoticed.
+  package.json therefore pins playwright to 1.59.1, the version the last
+  pre-rendered publish used, with an npm override because @lovable.dev/mcp-js
+  asks for a newer one as an optional peer. Move that pin only on purpose.
 */
+const BROWSER_ROOTS = [
+  process.env.PLAYWRIGHT_BROWSERS_PATH,
+  process.env.XDG_CACHE_HOME && join(process.env.XDG_CACHE_HOME, "ms-playwright"),
+  join(homedir(), ".cache", "ms-playwright"),
+  "/ms-playwright",
+];
+const CHROMIUM_BINARIES = [
+  "chrome-linux64/chrome",
+  "chrome-headless-shell-linux64/chrome-headless-shell",
+  "chrome-linux/chrome",
+  "chrome-linux/headless_shell",
+];
+
 const findInstalledChromium = (): string | undefined => {
-  const root = process.env.PLAYWRIGHT_BROWSERS_PATH;
-  if (!root || !existsSync(root)) return undefined;
-  const candidates = readdirSync(root)
-    .filter((d) => d.startsWith("chromium"))
-    // Prefer the full browser over headless_shell, then the newest build.
-    .sort((a, b) => Number(a.includes("headless")) - Number(b.includes("headless")) || b.localeCompare(a, undefined, { numeric: true }));
-  for (const dir of candidates) {
-    for (const bin of ["chrome-linux/chrome", "chrome-linux/headless_shell"]) {
-      const full = join(root, dir, bin);
-      if (existsSync(full)) return full;
+  for (const root of BROWSER_ROOTS) {
+    // "0" means "inside node_modules", which Playwright has already searched.
+    if (!root || root === "0" || !existsSync(root)) continue;
+    let dirs: string[];
+    try {
+      dirs = readdirSync(root);
+    } catch {
+      continue;
+    }
+    const candidates = dirs
+      .filter((d) => d.startsWith("chromium"))
+      // Prefer the full browser over headless_shell, then the newest build.
+      .sort((a, b) => Number(a.includes("headless")) - Number(b.includes("headless")) || b.localeCompare(a, undefined, { numeric: true }));
+    for (const dir of candidates) {
+      for (const bin of CHROMIUM_BINARIES) {
+        const full = join(root, dir, bin);
+        if (existsSync(full)) return full;
+      }
     }
   }
   return undefined;

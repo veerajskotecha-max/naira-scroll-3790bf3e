@@ -15,6 +15,21 @@ import { clearChunkReloadFlag, handlePreloadError, isChunkImportFailure, reloadF
    throws the same failure while rendering a route, nothing here sees it — that
    path is ChunkErrorBoundary's. */
 window.addEventListener("vite:preloadError", handlePreloadError);
+
+/* "ResizeObserver loop …" is a benign notice (the browser just delivers the
+   remaining size changes next frame), but third-party widgets can still raise
+   it and error overlays treat it as a crash that blanks the page. Swallow only
+   that exact message, registered first so later listeners never see it. */
+window.addEventListener(
+  "error",
+  (e) => {
+    if (typeof e.message === "string" && e.message.startsWith("ResizeObserver loop")) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+  },
+  true,
+);
 window.addEventListener("unhandledrejection", (e) => {
   if (isOptionalChunkFailure(e.reason)) return;
   if (isChunkImportFailure(e.reason)) reloadForStaleChunk();

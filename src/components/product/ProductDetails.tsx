@@ -421,8 +421,8 @@ const ProductDetails = ({
         {[
           { icon: RotateCcw, title: "7-day returns", copy: "On ready-to-ship pieces" },
           isJewellery
-            ? { icon: BadgeCheck, title: "2-year plating assurance", copy: "Anti-tarnish finish" }
-            : { icon: BadgeCheck, title: "2-year assurance", copy: "Stitching & embellishment" },
+            ? { icon: BadgeCheck, title: "3-year plating assurance", copy: "Lifelong with gentle care" }
+            : { icon: BadgeCheck, title: "3-year assurance", copy: "Stitching & embellishment" },
           { icon: ShieldCheck, title: "Secure payment", copy: "UPI, cards & wallets" },
         ].map(({ icon: Icon, title: label, copy }) => (
           <div key={label} className="flex flex-col items-center gap-1 text-center px-2 py-2.5" style={{ backgroundColor: "hsl(0 0% 100%)" }}>

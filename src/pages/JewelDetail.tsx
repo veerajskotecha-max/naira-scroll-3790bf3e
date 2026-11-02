@@ -955,7 +955,7 @@ const JewelDetail = () => {
                     >
                       7-day returns
                     </Link>
-                    {" "}· 2-year plating assurance
+                    {" "}· 3-year plating assurance
                   </>
                 )}
               </p>
@@ -1067,7 +1067,7 @@ const JewelDetail = () => {
                 <AccordionContent>
                   <div className="space-y-1.5 pb-2 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>{piece.care ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
-                    <p>Covered by our 2-year plating assurance.</p>
+                    <p>Covered by our 3-year plating assurance. Cared for well, each finish is made to keep its colour for a lifetime.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>

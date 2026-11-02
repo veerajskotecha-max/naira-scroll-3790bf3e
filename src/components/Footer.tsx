@@ -81,7 +81,7 @@ const compactTrustItems = [
   { icon: LockKeyhole, title: "Secure checkout", detail: "Encrypted payments" },
   { icon: Truck, title: "Insured delivery", detail: "3–5 working days" },
   { icon: RotateCcw, title: "7-day returns", detail: "On eligible pieces" },
-  { icon: BadgeCheck, title: "2-year assurance", detail: "Plating protection" },
+  { icon: BadgeCheck, title: "3-year assurance", detail: "Plating, kept for life" },
 ];
 
 const CompactPaymentMarks = () => (

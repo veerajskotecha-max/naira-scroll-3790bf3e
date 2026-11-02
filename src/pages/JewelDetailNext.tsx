@@ -676,7 +676,7 @@ const JewelDetailNext = () => {
       q: "Will it tarnish?",
       a: `It is ${finishInSentence}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
-      }, and the finish is covered by our 2-year plating assurance.`,
+      }, and the finish is covered by our 3-year plating assurance — cared for well, it keeps its colour for a lifetime.`,
     },
     {
       q: "Sensitive skin?",

@@ -331,22 +331,29 @@ describe("pdpOfferStatus: the product page's offer line", () => {
   /* A ₹1,199 piece in the bag: a ₹999 one makes it 2,198 at 20% = 1,758.40,
      so the total goes up by 559, the figure the bag then shows. */
   it("prices this piece as the second, by the bag's own maths", () => {
-    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1 }, 999)).toBe("Add this for 20% off the bag: it adds ₹559, not ₹999.");
+    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1 }, 999)).toBe("Add to bag for 20% off everything: it adds ₹559, not ₹999.");
   });
 
   it("prices this piece as the third", () => {
     // 2,198 at 20% is 1,758; with another 999 at 30% it is 2,238 (2,237.90).
-    expect(pdpOfferStatus({ subtotal: 2198, totalItems: 2 }, 999)).toBe("Add this for 30% off the bag: it adds ₹480, not ₹999.");
+    expect(pdpOfferStatus({ subtotal: 2198, totalItems: 2 }, 999)).toBe("Add to bag for 30% off everything: it adds ₹480, not ₹999.");
+  });
+
+  /* A cheap piece that lifts a dear two-piece bag to 30% lowers its total:
+     5,148 at 20% is 4,118; with ₹599 more at 30% it is 4,023. */
+  it("says the total drops rather than adding a negative amount", () => {
+    expect(pdpOfferStatus({ subtotal: 5148, totalItems: 2 }, 599)).toBe("Add to bag for 30% off everything: your total drops ₹95.");
+    expect(pdpOfferStatus({ subtotal: 4198, totalItems: 2 }, 599)).toBe("Add to bag for 30% off everything: your total stays the same.");
   });
 
   it("at the top rung, says the bag has 30% and what this piece adds", () => {
-    expect(pdpOfferStatus({ subtotal: 2997, totalItems: 3 }, 999)).toBe("30% off is on your bag: this adds ₹699, not ₹999.");
+    expect(pdpOfferStatus({ subtotal: 2997, totalItems: 3 }, 999)).toBe("30% off is on your bag: adding this costs ₹699, not ₹999.");
   });
 
   /* A typed code already worth 20% is never offered back as a saving. */
   it("never offers a saving a typed code already gives", () => {
     expect(pdpOfferStatus({ subtotal: 0, totalItems: 0, promoCode: "FRIENDSANDFAMILY" }, 999)).toBe("Your code takes 20% off. 3 pieces take 30%.");
     expect(pdpOfferStatus({ subtotal: 0, totalItems: 0, promoCode: "NAIRA10" }, 999)).toBe("Your code takes 10% off. 2 pieces take 20%.");
-    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1, promoCode: "FRIENDSANDFAMILY" }, 999)).toBe("20% off is on your bag: this adds ₹799, not ₹999.");
+    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1, promoCode: "FRIENDSANDFAMILY" }, 999)).toBe("20% off is on your bag: adding this costs ₹799, not ₹999.");
   });
 });

@@ -49,7 +49,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     cart.totalItems = 1;
     cart.subtotal = 1199;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add this for 20% off the bag: it adds ₹559, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 20% off everything: it adds ₹559, not ₹999.");
     expect(rung(2).hasAttribute("data-reached")).toBe(false);
   });
 
@@ -59,7 +59,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
     expect(rung(2).hasAttribute("data-reached")).toBe(true);
     expect(rung(3).hasAttribute("data-reached")).toBe(false);
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add this for 30% off the bag: it adds ₹480, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 30% off everything: it adds ₹480, not ₹999.");
   });
 
   it("at three pieces, both rungs are reached and the line says the bag has 30%", () => {
@@ -69,7 +69,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     expect(rung(2).hasAttribute("data-reached")).toBe(true);
     expect(rung(3).hasAttribute("data-reached")).toBe(true);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("3");
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("30% off is on your bag: this adds ₹699, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("30% off is on your bag: adding this costs ₹699, not ₹999.");
   });
 
   /* With pieces in the bag the one control is View bag, a full 44px target. */

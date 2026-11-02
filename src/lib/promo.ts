@@ -193,10 +193,19 @@ export const pdpOfferStatus = (
       : `Your code takes ${percent(now.rate)} off, the best price.`;
   }
   const effect = addOnEffect(bag, price);
+  /* "Add to bag", not "Add this": Buy Now beside it checks out this piece on
+     its own, without the bag's offer. A cheap piece that lifts a dear bag to
+     the next rung can lower its total (₹2,749 + ₹2,399 with a ₹599 piece at
+     30% is ₹95 less than the two at 20%); that is said as a drop, never as
+     "adds ₹-95". */
+  if (effect.adds <= 0) {
+    const drop = effect.adds < 0 ? `your total drops ${rupees(-effect.adds)}` : "your total stays the same";
+    return `Add to bag for ${percent(effect.rate)} off everything: ${drop}.`;
+  }
   const adds = effect.adds < price ? `${rupees(effect.adds)}, not ${rupees(price)}` : rupees(effect.adds);
   return effect.rate > now.rate
-    ? `Add this for ${percent(effect.rate)} off the bag: it adds ${adds}.`
-    : `${percent(now.rate)} off is on your bag: this adds ${adds}.`;
+    ? `Add to bag for ${percent(effect.rate)} off everything: it adds ${adds}.`
+    : `${percent(now.rate)} off is on your bag: adding this costs ${adds}.`;
 };
 
 const CODE_KEY = "naira-promo-code";

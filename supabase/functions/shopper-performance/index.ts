@@ -21,6 +21,12 @@ Deno.serve(async req => {
   if (!url || !key) return reply({ error: "Unavailable" }, 503);
   const db = createClient(url, key);
   try {
+    // Aggregate per-piece page views only (no shopper data) drive the Shop All order.
+    if (req.method === "GET" && new URL(req.url).searchParams.get("popularity") === "1") {
+      const { data, error } = await db.rpc("piece_visit_counts");
+      if (error) return reply({ error: "Unavailable" }, 500);
+      return new Response(JSON.stringify(data ?? {}), { headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" } });
+    }
     if (req.method === "GET") {
       const token = req.headers.get("Authorization")?.replace(/^Bearer /i, "");
       if (!token) return reply({ error: "Sign in required" }, 401);

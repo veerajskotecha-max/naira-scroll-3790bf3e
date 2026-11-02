@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { orderByVisits, readCachedVisits, fetchVisits, type VisitCounts } from "@/lib/shopOrder";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
@@ -162,12 +163,14 @@ const Jewellery = () => {
     () => colourCards(active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
+  const [visits, setVisits] = useState<VisitCounts>(readCachedVisits);
+  useEffect(() => { fetchVisits().then((v) => v && setVisits(v)); }, []);
   const pieces = useMemo(() => {
     const filtered = applyJewelFilters(inCategory, activeFilters);
     if (activeFilters.sort !== "featured") return filtered;
     const leads = FEATURED_LEADS.flatMap((handle) => filtered.filter((p) => p.handle === handle));
-    return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
-  }, [inCategory, activeFilters]);
+    return [...leads, ...orderByVisits(filtered.filter((p) => !FEATURED_LEADS.includes(p.handle)), visits)];
+  }, [inCategory, activeFilters, visits]);
 
   /* Decorative backdrop on larger screens only. */
   const [showBackdrop, setShowBackdrop] = useState(false);

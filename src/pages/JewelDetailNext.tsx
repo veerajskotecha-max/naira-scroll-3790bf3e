@@ -41,7 +41,6 @@ import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
-import PdpOffers from "@/components/jewellery/PdpOffers";
 import { clipText, fitTitle } from "@/lib/clipText";
 import UpiBadges from "@/components/checkout/UpiBadges";
 
@@ -1184,7 +1183,11 @@ const JewelDetailNext = () => {
                 <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
                 {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Gift-ready: every piece arrives in the Naira gift box"}
               </p>
-              {!isPreorder && <PdpOffers price={variant?.price ?? piece.price} />}
+              {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
+                  a second time under Buy Now; the page shows it once, in
+                  PdpOfferLadder under the price, which also follows the bag. To
+                  use the bundle panel instead, render it here and drop the
+                  ladder above. */}
             </div>
 
             {/* Details, care and delivery as fold-downs, closed until asked for

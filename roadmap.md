@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Show individual discounted bag prices as quantity offers change; verified totals, two-/three-piece transitions and removal back to original prices.
 
 - [x] Audit price-filter boundaries and variant prices against Shopify; correct mismatches and verify browsing/back flow.
 - [x] Audit collection membership and homepage/navigation sections; fix concrete mismatches and check jewellery-only scope.

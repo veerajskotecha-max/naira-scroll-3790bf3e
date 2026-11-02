@@ -87,10 +87,10 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
                     In-stock pieces only
                   </p>
                 ) : (
-                  /* A fixed height: the serif figure and the note must take the
+                  /* A fixed height: the figure and the note must take the
                      same room, or picking a pre-order size moves the sizes. */
                   <p className="mt-0.5 h-[22px] whitespace-nowrap pl-[13px] leading-[22px]">
-                    <span className="font-cormorant text-[17px] font-semibold tabular-nums">{rupees(pieceAtRung(price, offer))}</span>
+                    <span className="text-[14.5px] font-semibold tracking-normal tabular-nums">{rupees(pieceAtRung(price, offer))}</span>
                     <span className="font-nf-label text-[11px] text-nf-ink/65"> each</span>
                   </p>
                 )}

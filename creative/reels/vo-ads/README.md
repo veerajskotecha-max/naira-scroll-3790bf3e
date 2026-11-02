@@ -187,3 +187,76 @@ python3.13 -I tools/audio2.py <S> ad10v2 && ./tools/master.sh ad10v2
 ./tools/encode.sh ad10v2 final/naira-ad-10s-bestseller-hoops-v2.mp4 16
 ./tools/encode.sh ad30v2 final/naira-ad-30s-where-is-it-from-v2.mp4 6900k
 ```
+
+## v3: the owner's claims, softer sound, and their earlier songs
+
+The owner gave three notes on v2:
+- tone down the "ting tings";
+- try the trending songs used before;
+- put the PVD coating, the 18K gold coating, the zircon stones and the 3-year plating guarantee ("lifetime, if you use it carefully") in all three ads, and make them elegant.
+
+### The claims, and where each one is true
+
+The listings (checked live, 2 Nov) say:
+- the hoops, huggies and chain have a "PVD 18K gold coating" over surgical stainless steel;
+- the ring has a "PVD rhodium coating", and its stones are "cubic zirconia";
+- the hoops and huggies say "Stones: None".
+
+So each claim appears only on the pieces it is true of:
+- **"18K gold coating"** is never shortened to "18K gold" on screen, so it cannot read as gold content.
+- **The stones** appear on the ring alone, in the listing's own words, "cubic zirconia". The hoops-only 10 s ad mentions no stones.
+- **The guarantee** is the owner's 3 years. **The site still says "2-year plating assurance"** (`Footer.tsx`, `ProductDetails.tsx` on main). Change one of them before these run, so the ad and the shop agree.
+
+The new voice lines are read by the same voice (Maya on ElevenLabs v4), each inside its neighbouring sentences so the delivery flows. They are cut in phrase by phrase:
+
+| Ad | Out | In | Where it shows |
+| --- | --- | --- | --- |
+| 10 s | "Waterproof. Tarnish-free." | "Eighteen-K gold, P.V.D. coated." (`vo10c`, sped up 6% as `vo10c_fast` to fit) | Chips "18K gold coating" and "PVD · anti-tarnish", the card's "PVD 18K gold coating" tag, and the guarantee on the end card |
+| 20 s | "Free shipping across India." | "Three-year plating guarantee." (`vo20c`) | A guarantee chip first, then shipping and COD, with "PVD coated · a lifetime of wear, with care" under them. Card tags: "PVD 18K gold coating" on the gold pieces, "Cubic zirconia" on the ring |
+| 30 s | "Waterproof, tarnish-free, hypoallergenic, and all four under ₹1,200 each" | "P.V.D. coated in eighteen-K gold, with a three-year plating guarantee" (`vo30c`) | Three chips and the care line. The ₹1,200 stamp now lands in the music after the line. A "Cubic zirconia" tag on the ring in its box |
+
+Every end card's trust row now leads with the 3-year plating guarantee, with the care line under it. The 10 s re-times from the price on, to make room for the line. Its end card still opens on a downbeat of the score.
+
+### Calmer, by the owner's ask
+
+The v3 pictures are built by `build3.py` on v2's engine. The changes:
+- The % OFF tags and the offer values wipe or fade on; nothing slams or squashes.
+- The bag's saving chip wipes on.
+- There are no sparkle bursts. Each ad keeps two or three sparkles, and only one makes a sound.
+- Callouts are thinner, with a smaller dot.
+- The button gets one tap.
+- The cue list names only soft sounds: whooshes, card swishes, paper taps, bag thunks, the DM pops, and the flower's bloom and dive.
+  - Every bell, ding, chime, tick and arpeggio is gone.
+  - The effects stem measures about 6–8 dB quieter than v2's.
+
+### Music: an elegant original, and the owner's songs
+
+`audio3.py <S> <ad> score|song` builds both versions over the same picture.
+- **score** is an original track, so it is ours to run in paid placements.
+  - It runs at 93.5 BPM in D major (Dmaj9, Bm9, Gmaj9, A6/9).
+  - The instruments are harp arpeggios, Rhodes, strings, a half-time kick, finger snaps and soft bass.
+  - In the 30 s ad, "Naira" (4.10 s) and the end card (27.20 s) sit exactly nine bars apart.
+- **song** cuts one of the owner's earlier songs so that its silence and drop land on the ad's big moment:
+  - **The GRWM song** (the audio of the owner's GRWM edit) goes on the 10 s. Its drop, 8.63 s into the song, lands on the end card, so "take 20% off" falls in its hush.
+  - **Song D**, the Punjabi "tera karaan intezaar", goes on the 20 s and the 30 s. It comes from the owner's corset edit (`8BB38387….mp4`).
+    - In the 20 s, its 17.849 s drop lands on the end card.
+    - In the 30 s, the drop lands on "Naira". The song then starts again from its first line under the closing DM, so its bass comes in on the end card.
+  - Pankti's song was left out: its English lyrics run under the whole voiceover.
+  - The song bed is levelled, then ducked 9 dB with a further dip at 1–4 kHz, so its vocals step aside for the voice.
+  - A commercial song can be muted or rejected by Meta in a paid ad. The song versions are for comparison, and for an organic post with the same song added from Instagram's own library.
+
+Measured through a phone-speaker filter while the voice speaks, the music sits a median 10–15 dB under the voice. Every master is -14 LUFS, true peak -1.2 dBTP or lower.
+
+### Run v3
+
+Run this after the v1 and v2 steps:
+
+```
+ffmpeg -i <S>/src/grwm.mp4 -vn -ac 2 -ar 48000 <S>/songs/grwm.wav             # likewise d_owner.wav from 8BB38387….mp4
+ffmpeg -i <S>/vo/vo10c.48k.wav -af atempo=1.06 <S>/vo/vo10c_fast.48k.wav
+python3.13 -I tools/build3.py <S>
+cd <S>/ads && node tools/render.mjs ad10v3 out_ad10v3                        # likewise ad20v3, ad30v3
+python3.13 -I tools/audio3.py <S> ad10v3 score && ./tools/master.sh ad10v3 mix_score master_score   # and song
+./tools/encode.sh ad10v3 final/naira-ad-10s-final-v3.mp4 16 ad10v3/master_score.wav
+ffmpeg -i final/naira-ad-10s-final-v3.mp4 -i ad10v3/master_song.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 256k -shortest final/naira-ad-10s-v3-grwm-song.mp4
+```

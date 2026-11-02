@@ -170,9 +170,10 @@
       g.style.opacity = dout;
       const dot = g.querySelector('.dot'), ring = g.querySelector('.ring');
       const pop = E.back(clamp((t - C.t0 - .22) / .26, 0, 1));
-      dot.setAttribute('cx', p[1]); dot.setAttribute('cy', p[2]); dot.setAttribute('r', Math.max(0, 11 * pop));
+      const R = C.r || 11;                                              // v3 passes a smaller dot
+      dot.setAttribute('cx', p[1]); dot.setAttribute('cy', p[2]); dot.setAttribute('r', Math.max(0, R * pop));
       const ph = ((t - C.t0 - .3) % .9 + .9) % .9 / .9;                // a ring that keeps pulsing outwards
-      ring.setAttribute('cx', p[1]); ring.setAttribute('cy', p[2]); ring.setAttribute('r', 14 + 34 * ph); ring.style.opacity = t > C.t0 + .3 ? (1 - ph) * .9 : 0;
+      ring.setAttribute('cx', p[1]); ring.setAttribute('cy', p[2]); ring.setAttribute('r', R * 1.27 + R * 3.1 * ph); ring.style.opacity = t > C.t0 + .3 ? (1 - ph) * .9 : 0;
     }
   }
   window.renderAt = async t => {

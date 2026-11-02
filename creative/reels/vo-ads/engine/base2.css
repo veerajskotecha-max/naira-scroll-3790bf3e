@@ -154,3 +154,8 @@ svg.ic24 { fill:none; stroke:var(--deep); stroke-width:2.2; stroke-linecap:squar
   outline:3px solid var(--deep); outline-offset:-12px; }
 .stamp3 .a, .stamp3 .c { font-family:Jost; font-weight:600; font-size:22px; letter-spacing:.24em; }
 .stamp3 .b { font-family:CG; font-weight:600; font-size:78px; line-height:1; font-feature-settings:"lnum" 1; margin:2px 0; }
+
+/* v3 */
+.callout.thin line { stroke-width:2; }
+.care { font-family:CG; font-style:italic; font-weight:500; font-size:30px; color:var(--mast); white-space:nowrap; }
+.care.bg { color:var(--deep); background:rgba(251,243,236,.94); padding:8px 18px 9px; box-shadow:0 10px 24px rgba(26,22,20,.2); }

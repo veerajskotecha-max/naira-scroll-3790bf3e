@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 /*
-  One tap on the bag's Checkout sent AddPaymentInfo (value 2888, the bag's
+  One tap on the bag's Checkout sent AddPaymentInfo (value 2718, the bag's
   total) and, a millisecond later, InitiateCheckout (from the hand-off), both
   to the browser pixel and the server copy, before the shopper had reached
   Shiprocket or typed any payment detail. Shiprocket's checkout sends its own

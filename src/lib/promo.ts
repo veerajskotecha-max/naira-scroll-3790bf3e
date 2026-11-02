@@ -95,18 +95,26 @@ export type ResolvedDiscount = {
  * The one discount the order gets.
  *
  * Only a single code can reach checkout, so the richer of what the bag earned
- * and what the shopper typed wins outright — never both. A typed code takes an
- * exact tie, so someone who went to the trouble of entering one sees it named.
+ * and what the shopper typed wins outright — never both. On an exact tie the
+ * rung wins, unless the typed code IS that rung (BUY2 typed into a two-piece
+ * bag is still named as typed). The rungs are scoped in Shopify to
+ * `discount-scope-all`, every product; FRIENDSANDFAMILY, which ties BUY2 at
+ * 20% since 2 Nov 2026, only to the jewellery collections (175 of 194
+ * products, read 2 Nov). Handing Fastrr FRIENDSANDFAMILY on that tie would
+ * charge an outfit in the bag full price while the bag quoted 20% off it.
  */
 export const resolveCartDiscount = (input: {
   totalItems: number;
   promoCode?: string | null;
 }): ResolvedDiscount => {
   const typed = normalizePromoCode(input.promoCode ?? "");
-  const typedRate = getPromoDiscountRate(typed);
+  /* A rung's code typed by hand still needs the rung's pieces: Shopify holds
+     BUY2 to 2 or more and BUY3 to 3 or more, so below that it is worth 0. */
+  const typedRung = QUANTITY_OFFERS.find((offer) => offer.code === typed);
+  const typedRate = typedRung && input.totalItems < typedRung.minQuantity ? 0 : getPromoDiscountRate(typed);
   const earned = earnedQuantityOffer(input.totalItems);
 
-  if (earned && earned.rate > typedRate) {
+  if (earned && (earned.rate > typedRate || (earned.rate === typedRate && typed !== earned.code))) {
     return { code: earned.code, rate: earned.rate, automatic: true };
   }
   if (typedRate > 0) return { code: typed, rate: typedRate, automatic: false };
@@ -120,7 +128,7 @@ export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount)
 /**
  * What one more piece does to the bag: what it adds to the total and what the
  * bag then saves on it, by the same resolver and rounding as the checkout.
- * A ₹1,499 piece beside a ₹2,399 one adds ₹914 and saves ₹585.
+ * A ₹1,499 piece beside a ₹2,399 one adds ₹719 and saves ₹780.
  */
 export const addOnEffect = (bag: { subtotal: number; totalItems: number; promoCode?: string | null }, price: number) => {
   const now = discountedSubtotal(bag.subtotal, resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode }));
@@ -151,6 +159,44 @@ export const ladderHeadline = (totalItems: number, appliedRate = 0): string => {
     return away === 1 ? `A ${ORDINAL[better.minQuantity]} piece takes ${percent(better.rate)} off your bag` : `${next} take ${percent(better.rate)} off your bag`;
   }
   return `${percent(applied)} off your bag · ${next} ${away === 1 ? "makes" : "make"} it ${percent(better.rate)}`;
+};
+
+/**
+ * What one piece costs at a rung, rounded as the bag rounds its total
+ * (`discountedSubtotal`). For every current price, two of a piece come to
+ * exactly twice this. At three, a price ending in 99 can sit ₹1 under the
+ * bag's total (3 × ₹699 = ₹2,097 against ₹2,098 for three ₹999 pieces): the
+ * bag rounds the total once, this rounds the piece. Never more, never over.
+ */
+export const pieceAtRung = (price: number, offer: { code: string; rate: number }): number =>
+  discountedSubtotal(price, { code: offer.code, rate: offer.rate, automatic: true });
+
+const rupees = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
+
+/**
+ * The product page's offer line, for this piece against the bag as Shopify
+ * last confirmed it. Empty, it says the rungs need no code. Holding pieces, it
+ * says what adding THIS one does to the bag's total, by the bag's own resolver
+ * and rounding (`addOnEffect`), so the figure is the one the bag then shows. A
+ * typed code is never offered back as a saving the shopper already has.
+ */
+export const pdpOfferStatus = (
+  bag: { subtotal: number; totalItems: number; promoCode?: string | null },
+  price: number,
+): string => {
+  const now = resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode });
+  if (bag.totalItems <= 0) {
+    if (now.rate <= 0 || now.automatic) return "Applied in your bag. No code needed.";
+    const better = QUANTITY_OFFERS.find((offer) => offer.rate > now.rate);
+    return better
+      ? `Your code takes ${percent(now.rate)} off. ${better.minQuantity} pieces take ${percent(better.rate)}.`
+      : `Your code takes ${percent(now.rate)} off, the best price.`;
+  }
+  const effect = addOnEffect(bag, price);
+  const adds = effect.adds < price ? `${rupees(effect.adds)}, not ${rupees(price)}` : rupees(effect.adds);
+  return effect.rate > now.rate
+    ? `Add this for ${percent(effect.rate)} off the bag: it adds ${adds}.`
+    : `${percent(now.rate)} off is on your bag: this adds ${adds}.`;
 };
 
 const CODE_KEY = "naira-promo-code";

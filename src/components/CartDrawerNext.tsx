@@ -45,7 +45,10 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
 */
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
-const formatUnitPrice = (n: number) => `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+/* A line of three pieces at 30% off divides its rounded total by three
+   (₹2,098 / 3): "₹699.33 each" read like an error. Each is shown in whole
+   rupees, as the product page quotes it; the line's total stays exact. */
+const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 
 /* "Metal: Silver · Size: 7": the line's choices, and a ring size noted beside

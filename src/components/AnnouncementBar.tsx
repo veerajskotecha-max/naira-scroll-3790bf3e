@@ -1,23 +1,36 @@
 import { Link } from "react-router-dom";
+import { QUANTITY_OFFERS } from "@/lib/promo";
 
 /**
  * Clickable strip — the marquee doubles as the entry point to the jewellery,
  * so the line in the copy has somewhere to land.
  *
- * Three short lines: the sale (owner asked for the exclamation mark, and for
- * the percentage to come off the strip — the ladder names it in the bag),
- * the shipping promise and the small-run scarcity line. NAIRA10 used to
- * alternate here too, but the owner asked for the code to come off the header;
- * the code still exists in Shopify and the resolver still accepts it.
+ * It leads with the buy-more offer (the owner, 2 Nov 2026: "add the offer
+ * smartly to ... website headline"), read from promo.ts so it moves with the
+ * ladder and always names what the bag takes off. The owner had asked for the
+ * percentage to come off the strip on 25 Oct; this later ask puts it back.
+ * Then the sale (owner asked for the exclamation mark), the shipping promise
+ * and the small-run scarcity line. NAIRA10 used to alternate here too, but the
+ * owner asked for the code to come off the header; the code still exists in
+ * Shopify and the resolver still accepts it.
  *
  * The marquee animates to translateX(-50%), so the run must be exactly two
  * identical halves or it visibly jumps on loop.
  */
-const MESSAGES = [
-  "SITEWIDE SALE LIVE TODAY!",
-  "FREE INSURED SHIPPING",
-  "MADE IN LIMITED BATCHES",
-];
+const OFFER_LINE = QUANTITY_OFFERS.map(
+  (offer) => `BUY ${offer.minQuantity} GET ${Math.round(offer.rate * 100)}% OFF`,
+).join(" · ");
+
+const MESSAGES = [OFFER_LINE, "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES"];
+
+/* The run keeps the pace it had before the offer led it: 22 s for the three
+   older lines, about 108 characters' worth once each line's padding and star
+   are counted as 13. The duration grows with the run, so the letters move as
+   fast as they did, not faster. */
+const SECONDS_PER_CHARACTER = 22 / 108;
+const SEPARATOR_CHARACTERS = 13;
+const RUN_SECONDS =
+  Math.round(SECONDS_PER_CHARACTER * MESSAGES.reduce((sum, text) => sum + text.length + SEPARATOR_CHARACTERS, 0) * 10) / 10;
 
 const AnnouncementBar = () => (
   <div
@@ -27,10 +40,10 @@ const AnnouncementBar = () => (
   >
     <Link
       to="/jewellery"
-      aria-label="Shop the jewellery — sitewide sale live today, free insured shipping, made in limited batches"
+      aria-label={`Shop the jewellery — ${OFFER_LINE.toLowerCase()}, sitewide sale live today, free insured shipping, made in limited batches`}
       className="flex items-center h-full"
     >
-      <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap">
+      <div className="animate-marquee flex shrink-0 items-center whitespace-nowrap" style={{ animationDuration: `${RUN_SECONDS}s` }}>
         {[...MESSAGES, ...MESSAGES].map((text, i) => (
           <span
             key={i}

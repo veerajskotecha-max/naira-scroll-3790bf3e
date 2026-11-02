@@ -1,6 +1,8 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryRouter } from "react-router-dom";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 import { BagReturns, SimpleLadder } from "./CartDrawerNext";
 
 afterEach(cleanup);
@@ -44,5 +46,16 @@ describe("BagReturns: the bag's exchange and returns line", () => {
     );
     const line = screen.getByText(/easy 7-day exchange & returns/i).closest("a");
     expect(line).toHaveAttribute("href", "/exchange-return-policy");
+  });
+});
+
+/* Three of one piece at 30% divide a rounded total by three: "₹699.33 each"
+   read like an error. Each shows in whole rupees, as the product page quotes
+   it; the line total stays the exact rupee figure the checkout charges. */
+describe("bag line prices", () => {
+  it("shows each piece's price in whole rupees", () => {
+    const src = readFileSync(resolve(__dirname, "CartDrawerNext.tsx"), "utf8");
+    expect(src).toMatch(/const formatUnitPrice = \(n: number\) => `₹\$\{Math\.round\(n\)\.toLocaleString\("en-IN"\)\}`/);
+    expect(src).not.toMatch(/maximumFractionDigits: 2/);
   });
 });

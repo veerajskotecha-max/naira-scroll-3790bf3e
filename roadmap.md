@@ -57,8 +57,8 @@
 - [x] Restore the full mobile Shop the Reel section below the PDP press strip and remove its floating popup
 - [x] Recover from a page whose code never arrives: one-shot stale-build reload and a branded panel instead of a blank screen
 
-- Keep the bag offer explanation on TOP of the track: "✦ Sitewide sale live today · up to 20% off" — the owner's own wording, saving named.
-- Header strip runs three short lines: "SITEWIDE SALE LIVE TODAY!" (exclamation, no percentage — the bag's line names it), "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
+- Keep the bag offer explanation on TOP of the track: "✦ Sitewide sale live today · up to 30% off" (the figure is the top rung, read from promo.ts) — the owner's own wording, saving named.
+- Header strip leads with the offer, "BUY 2 GET 20% OFF · BUY 3 GET 30% OFF" (rates read from promo.ts; the owner, 2 Nov 2026), then "SITEWIDE SALE LIVE TODAY!", "FREE INSURED SHIPPING", "MADE IN LIMITED BATCHES".
 - Bag offer line stays small and quiet on top of the track at 8.5px — do not let it clutter the bag.
 - [x] Jewellery-only site: apparel removed from menu, footer, search and home/about wording; only the made-to-measure custom outfits section (/customize) remains; /shop/indo-western now opens /customize.
 - [x] State "Easy 7-day exchange & returns" in the bag, one quiet line under the checkout button linking to the policy; verified on phone and tablet.

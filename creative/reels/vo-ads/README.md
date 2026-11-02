@@ -127,3 +127,63 @@ python3.13 -I tools/audio.py <S> ad10                   # then gain to -14 LUFS 
 ```
 
 If a price, MRP or offer changes, change `P` and the bag totals in `build.py`, the voice lines, and the captions together. The voice says the prices aloud.
+
+## v2: graphics and sound redone
+
+The owner asked for better sound effects and graphics on all three ads. The scripts, voice, cut and timings did not change.
+
+### Graphics
+
+The graphics are in `tools/build2.py`, `engine/engine2.js` and `engine/base2.css`.
+
+- **Prices.** Each price card opens on the MRP and counts down to the price as the voice says it. Then the MRP is struck through, and a % OFF stamp lands on the card's corner, clear of the name.
+- **Callouts.** A line runs from the card to the piece and follows it through the shot. The positions were read off grid sheets and checked in crops (`TR` in `build2.py`).
+- **Sparkles.** They sit on the metal, and each one ends inside its own shot.
+- **Light leaks.** Warm leaks mark the section changes.
+- **Captions.** Each word rises in as it is said. Prices, percentages and "#1" are set larger, in Cormorant blush.
+- **The bag.** Pieces drop in and the ladder lights each rung.
+  - The total counts to what the bag really charges: ₹1,598 for two, ₹2,238 for three.
+  - A YOU SAVE chip lands on the bag's lower edge, clear of the total.
+- **The 30 s ad.**
+  - The DM opens as a reply to a story about the hoops, with a typing indicator.
+  - The product tags are kept off faces.
+  - The "all under ₹1,200" stamp sits above the grid so it hides no names.
+- **End cards.** Every end card opens through the brand flower: it pops, then the camera dives into its widest petal. The build found that petal with a distance transform.
+  - The hole is a `clip-path: path()` recomputed each frame, so it stays sharp at any size.
+  - A blush rim is drawn on the canvas just outside the hole.
+  - The last shot runs on, slowed, under the dive, so no black shows before the card fills the frame.
+
+### Sound
+
+The sound is in `tools/audio2.py` and `tools/master.sh`.
+
+- **The groove.** An original deep-house track: Rhodes, a supersaw pad, sidechained bass and swung hats.
+  - It runs at 120 BPM. The 30 s ad runs at 124.675 BPM, so that both "Naira" (4.10 s) and the end card (27.20 s) land on downbeats.
+  - It is arranged to the cut: an intro, the groove, a lift under the offer, a break and a stop before each end card, then a resolving Cmaj9.
+- **Effects.** They play from a cue list that `build2.py` writes from the same times as the graphics:
+  - counter ticks that follow the numbers;
+  - a ding on the price and a pen scratch on the strike;
+  - a stamp, sparkle bells and callout zips;
+  - DM pops and typing;
+  - bag drops on rising notes, chimes on each rung, and a success arpeggio;
+  - the flower bloom and the dive.
+- **Levels.**
+  - The voice is set to -16 LUFS. Each kind of effect sits a fixed number of dB under the voice's loud syllables (`OFF`).
+  - The bed is mixed for phones. Its sub is cut and its mids lifted.
+  - Through a phone-speaker filter, the bed sits about 12–14 dB under the voice, and the effects 7–9 dB under.
+- **Master.** `master.sh` takes each mix to -14 LUFS, with a true peak of -1.2 dBTP or lower.
+- **QC aids.**
+  - `tools/levels.py` gives the loudness of each stem over time.
+  - `tools/sheet.py` makes contact sheets.
+
+### Run v2
+
+Run this after the v1 steps (frames, assets and voice). `encode.sh` takes a CRF, or a bitrate for two passes.
+
+```
+python3.13 -I tools/build2.py <S>
+cd <S>/ads && node tools/render.mjs ad10v2 out_ad10v2              # likewise ad20v2, ad30v2
+python3.13 -I tools/audio2.py <S> ad10v2 && ./tools/master.sh ad10v2
+./tools/encode.sh ad10v2 final/naira-ad-10s-bestseller-hoops-v2.mp4 16
+./tools/encode.sh ad30v2 final/naira-ad-30s-where-is-it-from-v2.mp4 6900k
+```

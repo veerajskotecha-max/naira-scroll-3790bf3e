@@ -81,12 +81,20 @@ Known debt, same shape as the cart's old teal: `WishlistDrawer.tsx` still uses
 it is the panel the heart opens.
 
 **The PDP's first screen is budgeted for the Instagram in-app browser** — half of
-all sessions, ~640px of visible page on a 360px Android. Rating, price, the
-multi-buy ladder and a delivery + COD line (`jewellery/PdpBuyFacts.tsx`) must all
-fit in it; measured 21–24 Sep, 76% of product-page visits saw no second page.
-Each fact is ONE line at 360px — adding a clause wraps it and pushes COD off the
-screen. The sticky buy bar waits until `#product-facts` is clear so it can never
-cover them. The PDP says only "COD available" — the owner's call. The fee is
+all sessions, ~640px of visible page on a 360px Android; measured 21–24 Sep,
+76% of product-page visits saw no second page. The routed page is
+`JewelDetailNext.tsx`: rating, name, price, the badges, the sold strip, then the
+buy-more offer (`jewellery/PdpOfferLadder.tsx`, the owner's ask of 2 Nov 2026:
+both rungs side by side, each priced for this piece by `pieceAtRung`, "Applied
+in your bag · no code" on the panel's top rule, and a line from
+`pdpOfferStatus` under it once the bag holds a piece), then the choices and Add
+to cart. The panel is held to two rows: it moved Add to cart down 68px, which
+keeps it on the first screen of a 390x844 phone for a piece with no choices
+(a three-row version, 93px, did not). The phone's buy bar shows whenever Add to
+cart is not fully on screen, but never over the price, nor over the offer's
+rungs while they are fully on screen (it covered the per-piece prices on a
+360x780 phone). `PdpBuyFacts.tsx` (the old one-line ladder
+and the delivery + COD line) is used only by the unrouted `JewelDetail.tsx`. The PDP says only "COD available" — the owner's call. The fee is
 stated in the BAG instead, as its own line in rupees ("COD fee · none if paid
 online"): Fastrr adds 5% of the post-discount total to COD orders (verified on
 live orders) and books it as shipping. The rate lives in `src/lib/payment.ts`
@@ -226,43 +234,54 @@ true`, `appliesOncePerCustomer: false`, no usage limit, no minimum, so the bag
 can offer it to anyone without quoting a discount the checkout would reject.
 
 NAIRA10 is typed; the rungs are earned, and the resolver returns the richer of
-the two with a TIE going to the typed code. NAIRA10 (10%) is now below both
-rungs, so the second piece out-earns it and the bag names BUY2. (At the old
-rates it tied the 10% rung and the bag named NAIRA10; the charge was the same.)
-Do not flip the tie rule without checking `FRIENDSANDFAMILY` too: at 20% it now
-ties the BUY2 rung, and the bag keeps the typed code on that tie (same charge). Verified in
+the two. On an exact TIE the rung wins, unless the typed code is that rung's
+own code (BUY2 typed into a two-piece bag stays named as typed). NAIRA10 (10%)
+is now below both rungs, so the second piece out-earns it and the bag names
+BUY2. The tie rule exists for `FRIENDSANDFAMILY`, see below. A rung's code
+typed by hand counts only at the rung's own minimum, as Shopify holds it (BUY2
+in a one-piece bag is worth nothing). Verified in
 the browser at the old 10%/20% rates: 2 pieces = BUY2 -₹430 on ₹4,298;
 3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it. The announcement
 strip used to carry it, but the owner asked for the code to come off the
-header: `AnnouncementBar.tsx` now runs only the sale, free-shipping and
-limited-batch lines, and `AnnouncementBar.test.tsx` fails if NAIRA10 comes
-back. Do not put it back on the strip unprompted. Deciding to auto-apply it,
+header: `AnnouncementBar.tsx` now leads with the buy-more offer ("BUY 2 GET
+20% OFF · BUY 3 GET 30% OFF", read from `QUANTITY_OFFERS`; the owner, 2 Nov
+2026), then the sale, free-shipping and limited-batch lines, and
+`AnnouncementBar.test.tsx` fails if NAIRA10 comes back. The run's duration
+grows with its length so it keeps its old pace. Do not put it back on the strip unprompted. Deciding to auto-apply it,
 or to show it somewhere else, is a margin call for the owner, not a code
 change to make unprompted.
 
-`FRIENDSANDFAMILY` (20%) BEATS the two-piece rung (15%) and sits under the
-top one (25%). So a one- or two-piece bag holding it is charged 20%, and the
-third piece takes over at 25%. Anyone handing that code out should know it
-outranks the offer rather than topping it up. Each time the ladder moves,
-re-check this code against it.
+`FRIENDSANDFAMILY` (20%) TIES the two-piece rung (20%) and sits under the top
+one (30%). In Shopify it covers only the jewellery collections (shop-all,
+necklaces, earrings, bracelets, rings: 175 of 194 products), while BUY2 and
+BUY3 cover every product (`discount-scope-all`), read 2 Nov 2026. So on the
+two-piece tie the bag hands Fastrr BUY2, never FRIENDSANDFAMILY: an outfit in
+the bag would otherwise be charged full price against a bag quoting 20% off
+it. One piece with the code gets the typed 20% (an outfit alone still would
+not, in Shopify); the third piece takes over at 30%. Anyone handing that code
+out should know it adds nothing from the second piece on. Each time the ladder
+moves, re-check this code against it.
 
 3. **The rates live in two places and must be changed together.** `QUANTITY_OFFERS`
    in `promo.ts` and the Shopify codes. `OfferProgress.test.tsx` asserts the
    percentages as literals on purpose, so a one-sided change fails the suite
    instead of silently quoting a discount the checkout will not honour.
 
-The ladder is applied by the bag, never typed. `src/components/cart/OfferProgress.tsx`
-renders it as a filling bar at the top of the cart.
+The ladder is applied by the bag, never typed. The live bag (`CartDrawerNext.tsx`)
+renders it as `SimpleLadder`: "✦ Sitewide sale live today · up to {top rung}
+off" over a track with a ring per rung, then "Buy 2 get 20% off" and "Buy 3
+get 30% off". `cart/OfferProgress.tsx` and `cart/LadderBand.tsx` serve only
+the old `CartDrawer.tsx`.
 
 ## The bag (`CartDrawerNext.tsx`)
 
 The live bag; `App.tsx` lazy-loads it and `CartDrawer.tsx` is kept so the switch
 back is one line. Since 16 Oct it is the bag of the "Naira Bag CRO Plan": the
-ladder band says what the discount applies to and labels its rungs
-(`cart/LadderBand.tsx`, copy from `ladderHeadline`), each line keeps its struck
-MRP and "₹X off", one add-on carries its exact effect ("Adds ₹914 · saves
-₹585", `addOnEffect`: the checkout's resolver and rounding, so the total moves by
-exactly that), the gift box is one line that lifts open above itself on a tap,
+ladder sits on top (`SimpleLadder`), each line shows its price after the
+rung with the old one struck (`lib/cartPricing.ts` spreads the bag's one
+rounded total over the lines; "each" is whole rupees), one add-on carries its
+exact effect ("Adds ₹719 · saves ₹780", `addOnEffect`: the checkout's resolver
+and rounding, so the total moves by exactly that), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 
 - The add-on comes from `bagAddOns` (`src/lib/pairings.ts`) and only ever from
@@ -403,8 +422,9 @@ nothing.
 
 Ads and the Shopify catalogue link to `/products/<handle>`; the site links to
 `/jewellery/<handle>`. These are different components — `ProductDetail` (apparel
-template) and `JewelDetail` (the real jewellery page, which carries the offer
-ladder and the reel). `ProductDetail` redirects jewellery to `JewelDetail`,
+template) and `JewelDetailNext` (the real jewellery page at `/jewellery/<handle>`,
+App.tsx and routeCode.ts, which carries the offer panel and the reel;
+`JewelDetail.tsx` is kept unrouted). `ProductDetail` redirects jewellery there,
 **keeping the query string**, because ad clicks arrive with `?fbclid=` and
 `utm_*` and dropping them blinds the pixel on the page that fires ViewContent.
 

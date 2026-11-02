@@ -446,7 +446,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       promoCode: getPromoCode(),
     });
     /* What the shopper is about to be charged: the bag's Total. It was the
-       sum before the discount (3398 for a two-piece BUY2 bag charged 2888). */
+       sum before the discount (3398 for a two-piece BUY2 bag charged 2718). */
     const charged = discountedSubtotal(value, resolved) + SHIPPING_CHARGE;
     trackPixel("InitiateCheckout", {
       currency: lines[0]?.currencyCode || "INR",

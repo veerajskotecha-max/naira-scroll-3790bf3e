@@ -15,17 +15,38 @@ const bar = () =>
   );
 
 describe("AnnouncementBar", () => {
-  /* The owner asked for the code to come off the header, the percentage off
-     the strip (the bag's ladder names it), an exclamation mark on the sale,
-     and the other lines kept short — the strip carries exactly these three
-     messages and nothing here may name a code or a percentage. */
-  it("carries the sale, the shipping promise and the limited-batch line, nothing longer", () => {
-    bar();
-    expect(screen.getAllByText(/SITEWIDE SALE LIVE TODAY!/)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/FREE INSURED SHIPPING/)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/MADE IN LIMITED BATCHES/)[0]).toBeInTheDocument();
-    expect(screen.queryByText(/NAIRA10/)).toBeNull();
-    expect(screen.queryByText(/20% OFF/)).toBeNull();
+  /* The owner asked (2 Nov 2026) for the offer to lead the strip. The rates
+     are literals here on purpose, as in OfferProgress.test.tsx: promo.ts
+     moving without the Shopify codes fails this too. The code stays off the
+     header (the owner's earlier ask), and the three older lines follow. */
+  it("leads with the buy-more offer, then the sale, shipping and limited-batch lines", () => {
+    const { container } = bar();
+    const lines = [...container.querySelectorAll("a > div > span")].map((s) => s.firstChild?.textContent);
+    expect(lines.slice(0, 4)).toEqual([
+      "BUY 2 GET 20% OFF · BUY 3 GET 30% OFF",
+      "SITEWIDE SALE LIVE TODAY!",
+      "FREE INSURED SHIPPING",
+      "MADE IN LIMITED BATCHES",
+    ]);
+    expect(screen.queryByText(/NAIRA10|BUY2\b|BUY3\b|FRIENDSANDFAMILY/)).toBeNull();
+    expect(container.querySelector("a")?.getAttribute("aria-label")).toMatch(/buy 2 get 20% off · buy 3 get 30% off/);
+  });
+
+  /* The rates come from promo.ts, never typed into the strip. */
+  it("reads the rates from promo.ts", () => {
+    const src = readFileSync(resolve(__dirname, "AnnouncementBar.tsx"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(src).toMatch(/QUANTITY_OFFERS\.map/);
+    expect(src).not.toMatch(/\d+%/);
+  });
+
+  /* A longer run on the same 22 s would race. The duration grows with the
+     run so the letters keep the pace they had: 22 s for the three older lines,
+     about 32 s with the offer leading. */
+  it("keeps the strip's pace with the longer run", () => {
+    const { container } = bar();
+    const seconds = parseFloat((container.querySelector(".animate-marquee") as HTMLElement).style.animationDuration);
+    expect(seconds).toBeGreaterThan(30);
+    expect(seconds).toBeLessThan(35);
   });
 
   /* The marquee animates to translateX(-50%): the run must be exactly two

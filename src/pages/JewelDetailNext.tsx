@@ -14,6 +14,7 @@ import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
+import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -477,7 +478,11 @@ const JewelDetailNext = () => {
   /* The phone's buy bar shows whenever Add to cart is not fully on screen —
      so a buy button is visible from the moment the page opens — but never
      over the price. It watches the button itself: the gift line below it
-     reaching past the screen's edge put the bar over a button in full view. */
+     reaching past the screen's edge put the bar over a button in full view.
+     Nor over the offer's two rungs while they are on screen: the panel sits
+     right above Add to cart, so on a 360x780 phone the bar covered the
+     per-piece prices on the first screen. Rungs reaching past the screen's
+     edge do not hold it back (an Instagram-sized screen keeps its bar). */
   useEffect(() => {
     const check = () => {
       const target = document.querySelector("#product-actions > button");
@@ -487,7 +492,9 @@ const JewelDetailNext = () => {
       const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
-      const next = notFullyShown && priceClear;
+      const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
+      const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
+      const next = notFullyShown && priceClear && offerClear;
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -1009,6 +1016,11 @@ const JewelDetailNext = () => {
               </span>
               <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
+
+            {/* Buy 2 / Buy 3, priced for this piece and following the bag. A
+                piece sold out altogether is reserved on WhatsApp and never
+                reaches the bag, so it is offered nothing it cannot get. */}
+            {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
 
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other

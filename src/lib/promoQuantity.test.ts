@@ -8,6 +8,8 @@ import {
   TOP_QUANTITY_OFFER,
   discountedSubtotal,
   earnedQuantityOffer,
+  pdpOfferStatus,
+  pieceAtRung,
   itemsToQuantityOffer,
   nextQuantityOffer,
   quantityOfferProgress,
@@ -50,15 +52,36 @@ describe("resolveCartDiscount", () => {
   });
 
   /* FRIENDSANDFAMILY is 20%: it TIES the two-piece rung (20%) and sits under
-     the top one (30%). On two pieces the typed code is kept on the tie (the
-     charge is the same), and the third piece takes over from it. Whoever hands
-     that code out should know it adds nothing beyond the offer. */
-  it("keeps the typed 20% code on the two-piece tie", () => {
+     the top one (30%). In Shopify it covers only the jewellery collections,
+     while BUY2 covers every product (discount-scope-all, read 2 Nov 2026), so
+     handing Fastrr FRIENDSANDFAMILY on the tie would charge an outfit in the
+     bag full price against a bag that quoted 20% off it. The rung wins the
+     tie; one piece still gets the typed 20%, and the third piece takes 30%. */
+  it("hands Fastrr the rung, not the narrower 20% code, on the two-piece tie", () => {
     expect(resolveCartDiscount({ totalItems: 2, promoCode: "FRIENDSANDFAMILY" })).toEqual({
+      code: "BUY2",
+      rate: 0.2,
+      automatic: true,
+    });
+    expect(resolveCartDiscount({ totalItems: 1, promoCode: "FRIENDSANDFAMILY" })).toEqual({
       code: "FRIENDSANDFAMILY",
       rate: 0.2,
       automatic: false,
     });
+  });
+
+  /* The same bag must always resolve to the same one code, whatever order the
+     codes were typed in or how often it is asked. */
+  it("is deterministic: one code per bag and code, every time", () => {
+    for (const promoCode of [null, "NAIRA10", "FRIENDSANDFAMILY", "BUY2", "BUY3", "junk"]) {
+      for (let totalItems = 0; totalItems <= 4; totalItems++) {
+        const first = resolveCartDiscount({ totalItems, promoCode });
+        expect(resolveCartDiscount({ totalItems, promoCode })).toEqual(first);
+        expect(first.code ?? "").not.toContain(",");
+        // Never less than the rung the bag has earned.
+        expect(first.rate).toBeGreaterThanOrEqual(earnedQuantityOffer(totalItems)?.rate ?? 0);
+      }
+    }
   });
 
   /* The rungs must stay ordered: a 2-piece rung that silently outranked the
@@ -86,6 +109,14 @@ describe("resolveCartDiscount", () => {
   it("keeps the typed code on an exact tie so the shopper sees the one they entered", () => {
     const r = resolveCartDiscount({ totalItems: 2, promoCode: "BUY2" });
     expect(r).toEqual({ code: "BUY2", rate: 0.2, automatic: false });
+  });
+
+  /* Shopify holds BUY2 to 2 or more pieces and BUY3 to 3 or more. Typed by
+     hand into a smaller bag, the bag must not quote a rate checkout refuses. */
+  it("gives a typed rung code nothing below its own minimum", () => {
+    expect(resolveCartDiscount({ totalItems: 1, promoCode: "BUY2" })).toEqual({ code: null, rate: 0, automatic: false });
+    expect(resolveCartDiscount({ totalItems: 2, promoCode: "BUY3" })).toEqual({ code: "BUY2", rate: 0.2, automatic: true });
+    expect(resolveCartDiscount({ totalItems: 3, promoCode: "BUY3" })).toEqual({ code: "BUY3", rate: 0.3, automatic: false });
   });
 
   it("falls back to the earned rung when the typed code is junk", () => {
@@ -242,3 +273,87 @@ describe("ladderHeadline: the band over the bag", () => {
   });
 });
 
+
+/* The ladder end to end, as the bag totals it: no discount on one piece, 20%
+   on two, 30% on three or more, across mixed prices, rounded once on the bag. */
+describe("the ladder on whole bags", () => {
+  const total = (prices: number[], promoCode: string | null = null) =>
+    discountedSubtotal(
+      prices.reduce((sum, p) => sum + p, 0),
+      resolveCartDiscount({ totalItems: prices.length, promoCode }),
+    );
+
+  it.each([
+    ["one piece", [2399], 2399, null],
+    ["two of a kind", [999, 999], 1598, "BUY2"],
+    ["two, mixed", [2399, 999], 2718, "BUY2"],
+    ["three of a kind", [999, 999, 999], 2098, "BUY3"],
+    ["three, mixed", [2399, 1499, 999], 3428, "BUY3"],
+    ["four, mixed", [2399, 2399, 1199, 999], 4897, "BUY3"],
+  ] as const)("%s", (_name, prices, charged, code) => {
+    expect(total([...prices])).toBe(charged);
+    expect(resolveCartDiscount({ totalItems: prices.length }).code).toBe(code);
+  });
+});
+
+/* What the product page quotes per piece at each rung. Rounded as the bag
+   rounds, from the piece's own price, never typed in. */
+describe("pieceAtRung", () => {
+  const [buy2, buy3] = QUANTITY_OFFERS;
+  it.each([
+    [999, 799, 699],
+    [1199, 959, 839],
+    [1499, 1199, 1049],
+    [1799, 1439, 1259],
+    [2399, 1919, 1679],
+  ])("₹%i comes to ₹%i at two and ₹%i at three", (price, two, three) => {
+    expect(pieceAtRung(price, buy2)).toBe(two);
+    expect(pieceAtRung(price, buy3)).toBe(three);
+  });
+
+  /* Two of a piece cost exactly twice the quote; three can sit ₹1 under the
+     bag's total (it rounds the total once), never over it. */
+  it("matches the bag at two pieces and is never above it at three", () => {
+    for (const price of [999, 1199, 1499, 1799, 1899, 2399, 2499]) {
+      expect(2 * pieceAtRung(price, buy2)).toBe(discountedSubtotal(2 * price, resolveCartDiscount({ totalItems: 2 })));
+      const bag3 = discountedSubtotal(3 * price, resolveCartDiscount({ totalItems: 3 }));
+      expect(bag3 - 3 * pieceAtRung(price, buy3)).toBeGreaterThanOrEqual(0);
+      expect(bag3 - 3 * pieceAtRung(price, buy3)).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
+describe("pdpOfferStatus: the product page's offer line", () => {
+  it("says the rungs need no code while the bag is empty", () => {
+    expect(pdpOfferStatus({ subtotal: 0, totalItems: 0 }, 999)).toBe("Applied in your bag. No code needed.");
+  });
+
+  /* A ₹1,199 piece in the bag: a ₹999 one makes it 2,198 at 20% = 1,758.40,
+     so the total goes up by 559, the figure the bag then shows. */
+  it("prices this piece as the second, by the bag's own maths", () => {
+    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1 }, 999)).toBe("Add to bag for 20% off everything: it adds ₹559, not ₹999.");
+  });
+
+  it("prices this piece as the third", () => {
+    // 2,198 at 20% is 1,758; with another 999 at 30% it is 2,238 (2,237.90).
+    expect(pdpOfferStatus({ subtotal: 2198, totalItems: 2 }, 999)).toBe("Add to bag for 30% off everything: it adds ₹480, not ₹999.");
+  });
+
+  /* A cheap piece that lifts a dear two-piece bag to 30% lowers its total:
+     5,148 at 20% is 4,118; with ₹599 more at 30% it is 4,023. */
+  it("says the total drops rather than adding a negative amount", () => {
+    expect(pdpOfferStatus({ subtotal: 5148, totalItems: 2 }, 599)).toBe("Add to bag for 30% off everything: your total drops ₹95.");
+    expect(pdpOfferStatus({ subtotal: 4198, totalItems: 2 }, 599)).toBe("Add to bag for 30% off everything: your total stays the same.");
+  });
+
+  it("at the top rung, says the bag has 30% and what this piece adds", () => {
+    expect(pdpOfferStatus({ subtotal: 2997, totalItems: 3 }, 999)).toBe("30% off is on your bag: adding this costs ₹699, not ₹999.");
+  });
+
+  /* A typed code already worth 20% is never offered back as a saving. */
+  it("never offers a saving a typed code already gives", () => {
+    expect(pdpOfferStatus({ subtotal: 0, totalItems: 0, promoCode: "FRIENDSANDFAMILY" }, 999)).toBe("Your code takes 20% off. 3 pieces take 30%.");
+    expect(pdpOfferStatus({ subtotal: 0, totalItems: 0, promoCode: "NAIRA10" }, 999)).toBe("Your code takes 10% off. 2 pieces take 20%.");
+    expect(pdpOfferStatus({ subtotal: 1199, totalItems: 1, promoCode: "FRIENDSANDFAMILY" }, 999)).toBe("20% off is on your bag: adding this costs ₹799, not ₹999.");
+  });
+});

@@ -7,6 +7,7 @@ import { cardCover } from "@/lib/cardCover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
 import { cartKeyOf } from "@/lib/cartLines";
+import { discountedCartLines } from "@/lib/cartPricing";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import {
@@ -44,6 +45,7 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
 */
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
+const formatUnitPrice = (n: number) => `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 
 /* "Metal: Silver · Size: 7": the line's choices, and a ring size noted beside
@@ -248,6 +250,7 @@ const CartDrawerNext = () => {
   const discount = resolveCartDiscount({ totalItems: lineCount, promoCode });
   const rung = discount.automatic ? QUANTITY_OFFERS.find((offer) => offer.code === discount.code) : undefined;
   const goodsTotal = discountedSubtotal(lineSubtotal, discount);
+  const linePrices = discountedCartLines(lines, discount);
   const discountAmount = lineSubtotal - goodsTotal;
   const orderTotal = goodsTotal + SHIPPING_CHARGE;
   const busy = isLoading || isSyncing;
@@ -459,7 +462,9 @@ const CartDrawerNext = () => {
                         >
                           {item.name}
                         </Link>
-                        <span className="shrink-0 text-[14px] text-nf-ink">{formatPrice(item.price * item.quantity)}</span>
+                        <span data-line-total className="shrink-0 text-[14px] font-medium tabular-nums text-nf-ink">
+                          {formatPrice(discount.rate > 0 ? linePrices[index].total : item.price * item.quantity)}
+                        </span>
                       </div>
                       {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-nf-ink/60">{lineOptions(item)}</p> : null}
                       {cartKeyOf(item) === pendingKey && (
@@ -467,7 +472,15 @@ const CartDrawerNext = () => {
                           <Loader2 size={12} className="animate-spin" aria-hidden="true" /> Adding to your bag…
                         </p>
                       )}
-                      <p data-line-price className="mt-1 text-[13.5px] text-nf-ink/80">{item.priceLabel}</p>
+                      <p data-line-price className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[13.5px] tabular-nums text-nf-ink/80">
+                        {discount.rate > 0 ? (
+                          <>
+                            <del className="text-[12px] text-nf-ink/50">{item.priceLabel}</del>
+                            <span className="font-medium text-nf-ink">{formatUnitPrice(linePrices[index].unit)}{item.quantity > 1 ? " each" : ""}</span>
+                            <span className="text-[11px] text-nf-gold-text">{pct(discount.rate)} off</span>
+                          </>
+                        ) : item.priceLabel}
+                      </p>
                       <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/40">
                         <button
                           type="button"

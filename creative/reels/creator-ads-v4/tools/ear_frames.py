@@ -1,10 +1,11 @@
 """The pearl ad opens on her stud before her face: a native-resolution crop of the 4K CapCut export (a 2x punch-in with
 no upscaling), 1080x1920 from x 0-1080, y 960-2880 of 2160x3840, for the same pictures lv_frames.py chose at 5.40-6.05 s.
-The crop stops above her burned-in captions (y 1440+ in 1080 coordinates). Usage: python3.13 -I ear_frames.py <S>"""
+The crop stops above her burned-in captions (y 1440+ in 1080 coordinates). Usage: python3.13 -I ear_frames.py <S> [t0 t1]   (v4 uses 5.40-6.05; the v5 hooks open on 5.40-6.45)"""
 import json, os, subprocess, sys
 S = sys.argv[1]
 pick = json.load(open(f'{S}/ads/frames/lv/meta.json'))['src50']
-i0, i1 = round(5.40 * 30), round(6.05 * 30); idx = [pick[i] for i in range(i0, i1)]
+t0, t1 = (float(sys.argv[2]), float(sys.argv[3])) if len(sys.argv) > 3 else (5.40, 6.05)
+i0, i1 = round(t0 * 30), round(t1 * 30); idx = [pick[i] for i in range(i0, i1)]
 d = f'{S}/ads/frames/lv_ear'; tmp = f'{S}/ads/new/lv_ear50'; os.makedirs(d, exist_ok=True); os.makedirs(tmp, exist_ok=True)
 order = sorted(set(idx)); sel = '+'.join(f'eq(n\\,{j})' for j in order)
 subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', f'{S}/dl/new/lv0/lv0.mp4', '-vf',

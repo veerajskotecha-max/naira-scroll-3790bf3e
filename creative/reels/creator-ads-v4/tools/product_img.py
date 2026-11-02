@@ -11,6 +11,7 @@ for k, f in SRC.items():
     if not os.path.exists(f'{D}/{k}.jpg'): subprocess.run(['curl', '-sS', '-L', CDN + f, '-o', f'{D}/{k}.jpg'], check=True)
 C = {'ring2': ('ring_cube', (96, 140, 656, 700)), 'ring_det': ('ring_close', (250, 270, 640, 660)),
      'studs': ('studs0', (250, 200, 1600, 1550)), 'studs_det': ('studs0', (330, 640, 1150, 1460)),
-     'heart': ('heart0', (300, 250, 1500, 1450)), 'heart_det': ('heart0', (580, 830, 1060, 1310))}
+     'heart': ('heart0', (300, 250, 1500, 1450)), 'heart_det': ('heart0', (580, 830, 1060, 1310)),
+     'stone_tiger': ('ring_close', (262, 290, 512, 540)), 'stone_crystal': ('ring_close', (385, 408, 635, 658))}   # v5: each stone alone
 for k, (f, box) in C.items():
     Image.open(f'{D}/{f}.jpg').convert('RGB').crop(box).resize((600, 600), Image.LANCZOS).save(f'{S}/ads/img/{k}.jpg', quality=94); print(k)

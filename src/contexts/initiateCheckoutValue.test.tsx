@@ -41,8 +41,8 @@ beforeEach(() => {
 describe("InitiateCheckout's value is what the shopper is charged", () => {
   it.each([
     ["one piece, no offer", [line("prism-riviere-bracelet", "47501788348578", 2399)], null, 2399],
-    ["two pieces, BUY2 (15%)", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], null, 2888],
-    ["three pieces, BUY3 (25%)", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], null, 4348],
+    ["two pieces, BUY2 (20%)", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], null, 2718],
+    ["three pieces, BUY3 (30%)", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], null, 4058],
     ["one piece with a typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399)], "NAIRA10", 2159],
   ])("%s", async (_bag, items, code, charged) => {
     bag(...items);

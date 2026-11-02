@@ -31,9 +31,9 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    A second piece takes 15% off your bag      the ladder, rungs labelled
+    A second piece takes 20% off your bag      the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · one piece, "Adds ₹914 · saves ₹585", Add
+    Wears well with your bracelet · one piece, "Adds ₹719 · saves ₹780", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
     Total · incl. taxes, one savings line, arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next

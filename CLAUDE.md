@@ -213,8 +213,8 @@ Shopify quotes a total the shopper is never charged.
    "BUY2,NAIRA10" as a single unknown code and applied NEITHER. So the resolver
    returns one code, never a pair, and nothing stacks.
 
-Live codes: `BUY2` (15%, min qty 2) and `BUY3` (25%, min qty 3), raised from
-10% and 20% by the owner on 25 Oct 2026, both PRODUCT
+Live codes: `BUY2` (20%, min qty 2) and `BUY3` (30%, min qty 3), raised from
+15% and 25% by the owner on 2 Nov 2026 (10% and 20% before 25 Oct), both PRODUCT
 class scoped to the hidden auto-updating collection `discount-scope-all` — do
 not delete it or both stop working.
 
@@ -229,7 +229,8 @@ NAIRA10 is typed; the rungs are earned, and the resolver returns the richer of
 the two with a TIE going to the typed code. NAIRA10 (10%) is now below both
 rungs, so the second piece out-earns it and the bag names BUY2. (At the old
 rates it tied the 10% rung and the bag named NAIRA10; the charge was the same.)
-Do not flip the tie rule without checking `FRIENDSANDFAMILY` too. Verified in
+Do not flip the tie rule without checking `FRIENDSANDFAMILY` too: at 20% it now
+ties the BUY2 rung, and the bag keeps the typed code on that tie (same charge). Verified in
 the browser at the old 10%/20% rates: 2 pieces = BUY2 -₹430 on ₹4,298;
 3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it. The announcement
 strip used to carry it, but the owner asked for the code to come off the

@@ -25,15 +25,15 @@ describe("resolveCartDiscount", () => {
   });
 
   /* These two rates are not free to drift: they must match the live Shopify
-     codes (BUY2 15%, BUY3 25%, both min-quantity scoped to
+     codes (BUY2 20%, BUY3 30%, both min-quantity scoped to
      `discount-scope-all`). A rate that is generous here and stingy there
      quotes the shopper a total Fastrr never charges. */
-  it("earns 15% on the second piece without the shopper typing anything", () => {
-    expect(resolveCartDiscount({ totalItems: 2 })).toEqual({ code: "BUY2", rate: 0.15, automatic: true });
+  it("earns 20% on the second piece without the shopper typing anything", () => {
+    expect(resolveCartDiscount({ totalItems: 2 })).toEqual({ code: "BUY2", rate: 0.2, automatic: true });
   });
 
-  it("climbs to 25% on the third piece", () => {
-    expect(resolveCartDiscount({ totalItems: 3 })).toEqual({ code: "BUY3", rate: 0.25, automatic: true });
+  it("climbs to 30% on the third piece", () => {
+    expect(resolveCartDiscount({ totalItems: 3 })).toEqual({ code: "BUY3", rate: 0.3, automatic: true });
   });
 
   it("keeps the top rung beyond its threshold", () => {
@@ -46,14 +46,14 @@ describe("resolveCartDiscount", () => {
     const r = resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" });
     expect(typeof r.code).toBe("string");
     expect(r.code).not.toContain(",");
-    expect(r.rate).toBe(0.25);
+    expect(r.rate).toBe(0.3);
   });
 
-  /* FRIENDSANDFAMILY is 20%: it BEATS the two-piece rung (15%) and sits under
-     the top one (25%). On one or two pieces it outranks the offer rather than
-     topping it up, and the third piece takes over from it. Whoever hands that
-     code out should know. */
-  it("lets the 20% code out-earn the two-piece rung", () => {
+  /* FRIENDSANDFAMILY is 20%: it TIES the two-piece rung (20%) and sits under
+     the top one (30%). On two pieces the typed code is kept on the tie (the
+     charge is the same), and the third piece takes over from it. Whoever hands
+     that code out should know it adds nothing beyond the offer. */
+  it("keeps the typed 20% code on the two-piece tie", () => {
     expect(resolveCartDiscount({ totalItems: 2, promoCode: "FRIENDSANDFAMILY" })).toEqual({
       code: "FRIENDSANDFAMILY",
       rate: 0.2,
@@ -71,12 +71,12 @@ describe("resolveCartDiscount", () => {
 
   it("keeps the earned rung when it beats the typed code", () => {
     const r = resolveCartDiscount({ totalItems: 3, promoCode: "BUY2" });
-    expect(r).toEqual({ code: "BUY3", rate: 0.25, automatic: true });
+    expect(r).toEqual({ code: "BUY3", rate: 0.3, automatic: true });
   });
 
   it("lets the third piece out-earn the 20% code", () => {
     const r = resolveCartDiscount({ totalItems: 3, promoCode: "FRIENDSANDFAMILY" });
-    expect(r).toEqual({ code: "BUY3", rate: 0.25, automatic: true });
+    expect(r).toEqual({ code: "BUY3", rate: 0.3, automatic: true });
   });
 
   /* A shopper who typed BUY2 into a two-piece bag gets exactly what the bag
@@ -85,7 +85,7 @@ describe("resolveCartDiscount", () => {
      them. */
   it("keeps the typed code on an exact tie so the shopper sees the one they entered", () => {
     const r = resolveCartDiscount({ totalItems: 2, promoCode: "BUY2" });
-    expect(r).toEqual({ code: "BUY2", rate: 0.15, automatic: false });
+    expect(r).toEqual({ code: "BUY2", rate: 0.2, automatic: false });
   });
 
   it("falls back to the earned rung when the typed code is junk", () => {
@@ -109,7 +109,7 @@ describe("resolveCartDiscount", () => {
   /* NAIRA10 is live again (10%, all customers, no minimum). It must be
      ACCEPTED on a single-piece bag — that is two thirds of orders and the
      ladder gives them nothing — but it must never beat a rung it is worth less
-     than, or a shopper who earned 15% would be charged at 10%. */
+     than, or a shopper who earned 20% would be charged at 10%. */
   it("accepts the welcome code on a bag the ladder does not reach", () => {
     expect(ACCEPTED_PROMO_CODES).toContain("NAIRA10");
     expect(resolveCartDiscount({ totalItems: 1, promoCode: "NAIRA10" })).toEqual({
@@ -119,35 +119,35 @@ describe("resolveCartDiscount", () => {
     });
   });
 
-  /* NAIRA10 is worth less than either rung (10% against 15% and 25%), so the
+  /* NAIRA10 is worth less than either rung (10% against 20% and 30%), so the
      second piece already out-earns it and the bag names the rung, not the
      code. */
   it("lets both rungs out-earn the welcome code", () => {
     expect(resolveCartDiscount({ totalItems: 2, promoCode: "NAIRA10" })).toEqual({
       code: "BUY2",
-      rate: 0.15,
+      rate: 0.2,
       automatic: true,
     });
     expect(resolveCartDiscount({ totalItems: 3, promoCode: "NAIRA10" })).toEqual({
       code: "BUY3",
-      rate: 0.25,
+      rate: 0.3,
       automatic: true,
     });
   });
 });
 
 describe("discountedSubtotal", () => {
-  it("takes 15% off a two-piece bag", () => {
-    // 2 x 1199 = 2398, less 15% = 2038.30.
-    expect(discountedSubtotal(2398, resolveCartDiscount({ totalItems: 2 }))).toBe(2038);
+  it("takes 20% off a two-piece bag", () => {
+    // 2 x 1199 = 2398, less 20% = 1918.40.
+    expect(discountedSubtotal(2398, resolveCartDiscount({ totalItems: 2 }))).toBe(1918);
   });
 
   /* The four-piece bag was the one driven through the live Fastrr checkout,
      which returned totalDiscount 1779.20 on 8896 when the top rung was 20%,
-     the bag's own figure to the rupee. At 25% the same bag is 8896 less
-     2224 = 6672. */
+     the bag's own figure to the rupee. At 30% the same bag is 8896 less
+     2668.80 = 6227.20. */
   it("takes the top rung off the four-piece bag Fastrr was driven with", () => {
-    expect(discountedSubtotal(8896, resolveCartDiscount({ totalItems: 4 }))).toBe(6672);
+    expect(discountedSubtotal(8896, resolveCartDiscount({ totalItems: 4 }))).toBe(6227);
   });
 
   it("leaves the subtotal alone when nothing applies", () => {
@@ -159,7 +159,7 @@ describe("the offer ladder", () => {
   it("counts down to the next rung, not the first", () => {
     expect(itemsToQuantityOffer(0)).toBe(2);
     expect(itemsToQuantityOffer(1)).toBe(1);
-    // Two pieces earned 15%; the bar now points at the 3-piece rung.
+    // Two pieces earned 20%; the bar now points at the 3-piece rung.
     expect(itemsToQuantityOffer(2)).toBe(1);
   });
 
@@ -203,42 +203,42 @@ describe("the offer ladder", () => {
 });
 
 describe("addOnEffect: what one more piece does to the bag", () => {
-  it("adds ₹914 and saves ₹585 when ₹1,499 hoops join a ₹2,399 bracelet", () => {
-    // 3,898 at 15% is 3,313, against 2,399 for the bracelet alone.
-    expect(addOnEffect({ subtotal: 2399, totalItems: 1 }, 1499)).toEqual({ adds: 914, saves: 585, rate: 0.15 });
+  it("adds ₹719 and saves ₹780 when ₹1,499 hoops join a ₹2,399 bracelet", () => {
+    // 3,898 at 20% is 3,118.40, against 2,399 for the bracelet alone.
+    expect(addOnEffect({ subtotal: 2399, totalItems: 1 }, 1499)).toEqual({ adds: 719, saves: 780, rate: 0.2 });
   });
 
-  it("counts the third piece's 25% on the whole bag", () => {
-    // 2,399 + 1,499 at 15% is 3,313; with a third ₹1,499 at 25% it is 4,048.
-    expect(addOnEffect({ subtotal: 3898, totalItems: 2 }, 1499)).toEqual({ adds: 735, saves: 764, rate: 0.25 });
+  it("counts the third piece's 30% on the whole bag", () => {
+    // 2,399 + 1,499 at 20% is 3,118.40; with a third ₹1,499 at 30% it is 3,777.90.
+    expect(addOnEffect({ subtotal: 3898, totalItems: 2 }, 1499)).toEqual({ adds: 660, saves: 839, rate: 0.3 });
   });
 
   /* The bag already takes 10% with the code (2,159), so the second piece only
-     adds the step from 10% to 15% across the bag, not the full 15%. */
+     adds the step from 10% to 20% across the bag, not the full 20%. */
   it("with a 10% code already in hand, counts only the step up to the rung", () => {
-    expect(addOnEffect({ subtotal: 2399, totalItems: 1, promoCode: "NAIRA10" }, 1499)).toEqual({ adds: 1154, saves: 345, rate: 0.15 });
+    expect(addOnEffect({ subtotal: 2399, totalItems: 1, promoCode: "NAIRA10" }, 1499)).toEqual({ adds: 959, saves: 540, rate: 0.2 });
   });
 });
 
 describe("ladderHeadline: the band over the bag", () => {
   it("names what a second piece does, as the plan's mock-up reads", () => {
-    expect(ladderHeadline(1)).toBe("A second piece takes 15% off your bag");
+    expect(ladderHeadline(1)).toBe("A second piece takes 20% off your bag");
   });
 
   it("says what the bag has and what a third piece adds", () => {
-    expect(ladderHeadline(2, 0.15)).toBe("15% off your bag · a third piece makes it 25%");
+    expect(ladderHeadline(2, 0.2)).toBe("20% off your bag · a third piece makes it 30%");
   });
 
   it("stops at the top rung", () => {
-    expect(ladderHeadline(3, 0.25)).toBe("25% off your bag, the best price");
-    expect(ladderHeadline(5, 0.25)).toBe("25% off your bag, the best price");
+    expect(ladderHeadline(3, 0.3)).toBe("30% off your bag, the best price");
+    expect(ladderHeadline(5, 0.3)).toBe("30% off your bag, the best price");
   });
 
-  /* A 20% code already beats the 15% rung, so the line skips it and names
+  /* A 20% code already matches the 20% rung, so the line skips it and names
      only the rung worth more. */
   it("never offers a saving already in hand from a code", () => {
-    expect(ladderHeadline(1, 0.1)).toBe("10% off your bag · a second piece makes it 15%");
-    expect(ladderHeadline(1, 0.2)).toBe("20% off your bag · 3 pieces make it 25%");
+    expect(ladderHeadline(1, 0.1)).toBe("10% off your bag · a second piece makes it 20%");
+    expect(ladderHeadline(1, 0.2)).toBe("20% off your bag · 3 pieces make it 30%");
   });
 });
 

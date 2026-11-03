@@ -1,0 +1,42 @@
+/* ---------- v6: the hero film. Two voices in type: real women in italic, the film (Nyra) upright. One line, one credit. ---------- */
+.q, .b { font-family:CG; font-weight:500; line-height:1.04; white-space:nowrap; font-feature-settings:"lnum" 1; }
+.q { font-style:italic; }
+.b { font-style:normal; letter-spacing:.005em; }
+.lt { color:var(--ink); }
+.dk { color:var(--ivory); text-shadow:0 2px 14px rgba(26,22,20,.55), 0 1px 3px rgba(26,22,20,.4); }
+.q .em, .b .em { color:inherit; }
+.ta-c { text-align:center; } .ta-r { text-align:right; }
+
+/* the credit: one line, the name in Jost caps, the price in Cormorant */
+.cred { display:flex; align-items:baseline; gap:18px; white-space:nowrap; }
+.cred .n { font-family:Jost; font-weight:500; font-size:26px; letter-spacing:.24em; }
+.cred .p { font-family:CG; font-weight:600; font-size:44px; letter-spacing:0; font-feature-settings:"lnum" 1; }
+.cred.lt { color:var(--ink); }
+/* ink with an ivory glow: for a ground that is part pale, part dark (a tee against hair) */
+.lg { color:var(--ink); text-shadow:0 0 18px rgba(251,243,236,.95), 0 0 6px rgba(251,243,236,.9), 0 0 2px rgba(251,243,236,.9); }
+.cred.lg { color:var(--ink); }
+.cred.dk { color:var(--ivory); text-shadow:0 2px 12px rgba(26,22,20,.6), 0 1px 3px rgba(26,22,20,.45); }
+.claim { font-family:Jost; font-weight:500; font-size:23px; letter-spacing:.2em; line-height:1.75; white-space:nowrap; }
+.seed { font-family:CG; font-weight:600; font-size:42px; white-space:nowrap; font-feature-settings:"lnum" 1; }
+
+/* the bag, then the end card built in place from it */
+.hpage { position:absolute; left:0; top:0; width:1080px; height:1920px; background:var(--ivory); }
+.hb-h { font-family:Jost; font-weight:500; font-size:26px; letter-spacing:.24em; color:rgba(26,22,20,.7); }
+.hb-tile { position:absolute; width:300px; height:300px; outline:1px solid var(--deep); outline-offset:-1px; box-sizing:border-box; }
+.hb-tile img { position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; display:block; }
+.hb-more { font-family:Jost; font-weight:500; font-size:22px; letter-spacing:.22em; color:var(--deep); white-space:nowrap; }
+.hb-n { font-family:Jost; font-weight:500; font-size:19px; letter-spacing:.18em; color:rgba(26,22,20,.72); white-space:nowrap; text-align:center; width:300px; }
+.hb-p { font-family:CG; font-weight:600; font-size:40px; color:var(--ink); white-space:nowrap; text-align:center; width:300px; font-feature-settings:"lnum" 1; }
+.rung { position:absolute; width:450px; height:64px; box-sizing:border-box; border:1px solid var(--deep); display:flex; align-items:center; justify-content:center;
+  font-family:Jost; font-weight:500; font-size:24px; letter-spacing:.2em; color:var(--deep); white-space:nowrap; }
+.rung .lit { position:absolute; inset:-1px; background:var(--deep); color:var(--ivory); display:flex; align-items:center; justify-content:center; }
+.hb-was { font-family:Jost; font-size:32px; color:rgba(26,22,20,.5); white-space:nowrap; }
+.hb-was .strike { background:var(--blush); height:3px; }
+.hb-tot { font-family:CG; font-weight:600; font-size:124px; line-height:1; color:var(--ink); white-space:nowrap; font-feature-settings:"lnum" 1, "tnum" 1; }
+.hb-app { font-family:Jost; font-weight:500; font-size:19px; letter-spacing:.24em; color:var(--deep); white-space:nowrap; }
+.hcta { width:560px; height:96px; background:var(--deep); color:var(--ivory); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  font-family:Jost; font-weight:500; font-size:30px; letter-spacing:.24em; box-sizing:border-box; }
+.hcta .dn { position:absolute; inset:0; background:var(--ink); }
+.hcta span { position:relative; }
+.htrust { font-family:Jost; font-weight:500; font-size:18px; letter-spacing:.08em; color:rgba(26,22,20,.75); white-space:nowrap; }
+.hurl { font-family:CG; font-weight:500; font-size:40px; color:var(--deep); white-space:nowrap; }

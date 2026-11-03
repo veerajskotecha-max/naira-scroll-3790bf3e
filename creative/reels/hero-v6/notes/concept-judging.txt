@@ -1,0 +1,202 @@
+===== judge:performance
+{
+"scores": [
+{
+"key": "question",
+"hook": 8.5,
+"hold": 7.5,
+"product_clarity": 7.5,
+"offer_aov": 8.5,
+"brand_elegance": 7,
+"feasibility": 6.5,
+"total": 7.8,
+"verdict": "WINNER. Frame 1 has two hooks at once: Kinn 041FCDC6 at 8.50 (a tight gaze with the hoop, checked on the sheet) and a native-looking \"where is this from?\" DM. It reads muted with no captions, and an Instagram viewer recognises the DM before the brain decides to scroll. The brand lands on the real box at 9.34, Riya says \"under 2500\" lip-synced by 13 s, and the bag arrives at 18.8, before the halfway point. Its line \"Wear one, they ask. Wear three, they stop you\" turns the ad's idea into the reason for buying three, and the DM reply \"Naira.\" closes the loop that frame 1 opened. Weaknesses: 1-3 s is still an Ananaya talking head. Five voices in 31 s (Ananaya, Riya, the pearl creator, Ananaya again, Riya again, plus Nyra) are a lot to follow. DMs, leader tags, captions and a grid together get close to the owner's \"too much graphic\" note. The grid has not been built."
+},
+{
+"key": "editorial",
+"hook": 8.5,
+"hold": 6,
+"product_clarity": 7.5,
+"offer_aov": 7,
+"brand_elegance": 9,
+"feasibility": 8,
+"total": 7.5,
+"verdict": "The best opening and the most premium piece. Three Kinn editorial cuts in 4 s, with no talking head, play under Riya's \"under ₹2,500\" line, which is captioned from frame 0. The type system (creator quotes in italic, the film's voice in upright roman) is the cleanest idea of the four. But the middle stalls exactly where the account bleeds: the groove cuts dead at 14.67, Ananaya runs 3 s, and the hair-fall holds 2.67 s, so 14.7-23.3 s is \"air\" at the 50% mark. The bag does not land until 27.3 s of 32.67, so most viewers never see the offer. \"Three is a signature\" shows Riya's ring, bracelet and hoops (₹4,697), but the bag then prices a different three (huggies, chain, hoops). Its timings are the most trustworthy: in-times were measured on the source files."
+},
+{
+"key": "nobodytold",
+"hook": 7,
+"hold": 7,
+"product_clarity": 9,
+"offer_aov": 8,
+"brand_elegance": 5.5,
+"feasibility": 8.5,
+"total": 7.5,
+"verdict": "The best product clarity and the most buildable. Each of the six pieces lands on its best frame with name, price and material. The callback \"These three. Still under ₹2,500\" is the strongest single line about the bag, and every word time was measured. But 0.87-4.0 s is Riya's talking head lifting a box, which is the opening of the Riya reel that held only 4% to a quarter, so the 3-second hold is a known loser behind a 0.87 s Kinn cold open. Six four-line lockups with struck MRPs at 43-65% off, followed by another 20/30% off in the bag, read as a discount store. That double-discount anchor cheapens a premium brand, and the owner has already sent work back as \"too much graphic, less tacky\"."
+},
+{
+"key": "onebox",
+"hook": 6,
+"hold": 7,
+"product_clarity": 8,
+"offer_aov": 9,
+"brand_elegance": 8.5,
+"feasibility": 6.5,
+"total": 7.3,
+"verdict": "The strongest AOV mechanics and a lovely, restrained premium device: one box passed between women. \"One to keep. One to give.\" plus THE CASE, with its empty third window marked \"+ ONE MORE\", is the best push to buy three in the set. But frame 1 is Pankti's own box opening: a hand across the top of frame, her face half behind the box, and the drawer not moving until 0.8 s. That is the opening of the reel that held 7% to a quarter, and an unboxing is the slowest hook format there is. The 50 px two-line sentence on frame 1 asks for reading before it gives any payoff. Footage timing is off on the huggies: the plate and THE CASE's left window use Pankti 3.35-4.60, where the drawer is open but empty. On the sheet it is empty at 3.94 and the huggies first appear at 4.73. The drawer-to-drawer match cut and THE CASE are both builds that have not been done yet."
+}
+],
+"winner": "question",
+"best_ideas_to_graft": [
+"From EDITORIAL, the first 3 s: replace question's 0-1 s Kinn shot and 1-3 s Ananaya talking head with editorial's three-shot Kinn open (041FCDC6 8.50, then 62379666 4.00, then 74FA1A49 20.10, about 1.0-1.3 s each). Keep the MON/THU DM bubbles on top and Ananaya's \"someone actually asked me… twice this week\" as voiceover. Her face then appears only on \"So it's this ring from Naira\". This removes the last talking head from the first 3 seconds.",
+"From EDITORIAL, type: creator quotes in Cormorant italic, Nyra/brand lines in upright roman. With five voices in question, this is what lets a muted viewer tell who is speaking.",
+"From EDITORIAL, seed the offer early: over Pankti's huggies-to-lens and toggle (around 9-11 s), add a small deep-sage line \"Together, ₹1,598 with Buy 2\", so the ladder is planted before the 18.8 s bag for the viewers who leave at 50%.",
+"From ONEBOX, the empty third slot: the hoops slot stays empty with \"+ ONE MORE\" until BUY 3 lights, so the bag reads as finishing a set and not as a sale banner. It costs nothing and gives the strongest push to three of any script.",
+"From ONEBOX, the fingertip piece-to-lens match-cut chain for the \"Wear one / Wear three\" stretch: Pankti huggies 7.20, then GRWM hoop 0.00, then the Riya Cushion Halo macro 14.87, each cut where the fingertips meet. It makes three creators' footage feel directed.",
+"From NOBODYTOLD, the bag payoff line: once the total lands on ₹2,238, add \"These three. Still under ₹2,500.\" in the same Cormorant italic as Riya's lip-synced \"under ₹2,500\" at 12.8 s. It pays off her claim with a three-piece basket.",
+"From NOBODYTOLD, the measured timings: Riya's hook runs to 4.22-4.30 (not 3.9), and \"under 2500\" starts at about 1.72-1.82 in the source (not 2.20). question's \"under ₹2,500\" caption and its 12.8 s cut are about 0.4 s late against the voice; re-time them. Also take its rule of ink text on light backgrounds and ivory on dark, per shot, never a scrim.",
+"From ONEBOX, an optional variant: put \"One to keep. One to give.\" (with pack_b2 and the pack_b4 ribbon still) in place of the grid for a wedding-season version, since Riya's bridal mehendi already carries it.",
+"Cut from question: the pearl creator's 1.4 s \"I'm not going to gatekeep them\" over the grid. It is a fourth, unseen voice, and \"them\" refers to pieces with only 2 left. Let the wooden clack and \"Everyone asks.\" carry the grid. Fallback if the grid is not built: Kinn 5627AA72 at 13.30, the spin."
+],
+"fatal_problems": [
+"NONE OF THE FOUR HAS AN UNFIXABLE RULE BREAK. All of them avoid NAIRA10, keep \"18K gold coating\" whole, keep Riya's \"two years plating guarantee\" line out, say COD without \"free\", and never name the kada, the two-stone ring or the lariat.",
+"OFFER RATES: three scripts (question, nobodytold, onebox) say in their risks that promo.ts is 10/20. That is wrong for main. Verified: origin/main src/lib/promo.ts has QUANTITY_OFFERS BUY2 rate 0.2 and BUY3 rate 0.3. Only the working branch claude/reel-editing-research-8zt5zw (HEAD a8a7b002, which onebox mislabels as main) is stale at 0.1/0.2. Before spend, still confirm that the Shopify BUY2/BUY3 codes are 20%/30% and that main has been Published in Lovable. Shopify charges ₹2,237.90 and ₹1,598.40, so ₹2,238 and ₹1,598 are rounded.",
+"3-YEAR PLATING GUARANTEE (all four): this is the owner's claim, but the site still says 2 years. The landing page will contradict the ad, so update the PDP and FAQ before launch.",
+"ONEBOX, WRONG FOOTAGE: the huggies beat (Pankti 3.35-4.55) and THE CASE's left window (3.35-4.60) sit on an open but EMPTY drawer. The sheet shows black velvet at 3.94, and the huggies first appear at 4.73. The plate \"BRUSHED GOLD HUGGIES ₹799\" would label an empty box. Move the in-point to about 4.2-5.4.",
+"NOBODYTOLD, HOOK: 0.87-4.0 s is Riya's talking head, which is the opening of the Riya reel that held 4% to a quarter. The six struck MRPs at 43-65% off, stacked on another 20/30% off in the bag, are a double-discount anchor that breaks the owner's \"elegant, less tacky\" note.",
+"ONEBOX, HOOK: frame 1 reuses the opening of Pankti's reel (7% to a quarter), with her face half behind the box and a hand across the top of frame. This is a slow unboxing open on an account whose problem is hold.",
+"EDITORIAL, OFFER TOO LATE: the bag lands at 27.3 of 32.67 s after an 8.7 s slow middle (14.67-23.33). \"Three is a signature\" shows ring + bracelet + hoops, but the bag prices huggies + chain + hoops, so the visual three and the priced three are different sets.",
+"QUESTION, BUILD AND TIMING RISK: the 2x2 grid is not built (a fallback exists). The THU bubble on \"twice\", the cut on \"Nai-\" and the Riya bracelet insert (only the 20.646 frame is confirmed on the sheet; nobodytold measured her cut to the pose at 21.67) all need checking on the timeline. Pankti's grid tile from 27.50 runs to 29.3, where she visibly mouths her song (open mouth at 28.35 and 29.14), so trim the tile to before about 28.2.",
+"UNLISTED TWO-STONE RING NEXT TO THE HALO CURVE RING (question's grid tile
+===== judge:creative
+{
+"scores": [
+{
+"key": "editorial",
+"hook": 8,
+"hold": 7.5,
+"product_clarity": 8.5,
+"offer_aov": 9,
+"brand_elegance": 9.5,
+"feasibility": 8.5,
+"total": 8.5,
+"verdict": "WINNER. The most premium, coherent idea of the four and the one the owner will approve on first viewing. A fashion film interrupted by real women is a real concept, not a device. The two type voices (italic for the women, upright roman for the film) keep it calm, and 'Made to be looked at / asked about / to stay' is campaign copy, not ad copy. 'One is jewellery. Two is a look. Three is a signature.' sells three pieces as styling rather than as a discount, which is the AOV lever this account needs, and it is seeded early ('Together, ₹1,598 with Buy 2'). Every part is already built in the engine and the in-times were checked on the source files. Weaknesses: the first second is less sharp than nobodytold's (three silent Kinn shots under a voice nobody can see yet). At 32.67 s it is the longest, and it has real air at 14.67 and in the 3 s Ananaya pad, while hold is the account's main problem (4-7% reach a quarter). Fix both with the grafts below and trim to about 30 s."
+},
+{
+"key": "nobodytold",
+"hook": 9,
+"hold": 8.5,
+"product_clarity": 9,
+"offer_aov": 9,
+"brand_elegance": 6.5,
+"feasibility": 8,
+"total": 8.3,
+"verdict": "Close runner-up, with the best hook mechanics and the tightest offer logic. Frame 1 is 'Nobody told us…' over Sonal's gaze, and a speaker-reveal cut to Riya comes at 0.87 s. The drop lands on her word 'this'. A price lands about every 2 s, and the bag closes the loop: 'These three. Still under ₹2,500.' But six four-line lockups, each with a struck MRP (57-65% off), plus the 'NOBODY TOLD US' kicker seven times and spoken captions in a top band, put it in the graphic-heavy, discount-store register the owner has already sent back ('too much graphic… less tacky'). Graft its first second and its bag callback into the winner. Do not take its lockup system."
+},
+{
+"key": "onebox",
+"hook": 7,
+"hold": 7,
+"product_clarity": 8,
+"offer_aov": 8.5,
+"brand_elegance": 8.5,
+"feasibility": 6.5,
+"total": 7.6,
+"verdict": "The most restrained, and the most giftable. One device, one plate style, and 'One to keep. One to give.' arrives in Diwali week (8 Nov) and wedding season. The empty third window ('+ ONE MORE') is a clever push to three. But it opens on a box, the same slow open that lost the Pankti reel (7% to a quarter). An earlier ad already did 'your whole stack, in one box'. The huggies drawer in the chosen Pankti window is empty for most of the shot. THE CASE (three live windows) is not built, and the last product image before the end card is the unlisted kada at Sonal's chin. Its gifting couplet and empty slot are worth grafting."
+},
+{
+"key": "question",
+"hook": 8,
+"hold": 8,
+"product_clarity": 8,
+"offer_aov": 8.5,
+"brand_elegance": 6,
+"feasibility": 6.5,
+"total": 7.5,
+"verdict": "A good social-proof loop (an unanswered DM, then 'Naira.' sent back), and 'Wear one, they ask. Wear three, they stop you.' is a decent line. But it is the busiest cut by far: dark IG DM bubbles with invented messages and timestamps from frame 1, price chips with tracked leaders, an unbuilt 2x2 grid, five voices (one of them, the pearl creator, a voice belonging to none of the faces on screen), the bag, and then the iris. It also repeats the earlier 'Somewhere someone just asked… where is it from?' and 'Where is this from?' ads, so it is the least original, and its frame-1 fake DM is a policy risk. Its one great asset is Ananaya's real closing line, which should be grafted."
+}
+],
+"winner": "editorial",
+"best_ideas_to_graft": [
+"FROM NOBODYTOLD, A SHARPER FIRST SECOND. Open on Kinn 041FCDC6 (8.10-8.97) with ONLY 'Nobody told us…' in large Cormorant italic, so the line holds something back. At 0.87 s hard-cut to Riya on camera (4K src 0.87-2.80, in sync) saying 'demi-fine jewellery under ₹2,500'. That plays out the winner's own idea, the film interrupted by real life, in the first second, and a real face says the price. Then cut to Kinn 74FA1A49 (the hoop going in) or 76D95B49 (the hoop held to the lens, 4.40) on 'like this', with three frames of silence and the drop on Riya's word 'this' (about 4.0-4.3 s; the waveform puts 'this' at 4.02-4.30, so do not cut audio at 3.9).",
+"FROM NOBODYTOLD, THE BAG CALLBACK. Once the total lands on ₹2,238, add 'These three. Still under ₹2,500.' in the same Cormorant italic as the frame-1 hook. It closes the loop the ad opens, and it is true only for huggies + chain + hoops, so the copy says 'these three'.",
+"FROM QUESTION, A REAL VOICE FOR THE CLOSE. Replace Nyra's VO6 ('Naira. Now you know where it's from.') with Ananaya's own line over the end card: 'So now if someone asks you where this is from, you know it.' (src 37.92-39.90, then 40.50-41.06). Set the end-card headline to 'Now you know.' in Cormorant italic. A real woman pays off 'Made to be asked about.' Riya's on-face 'You're welcome, but keep it between us.' (31.02-32.90) is the alternative sign-off; use one of the two, not both.",
+"FROM ONEBOX, GIFTING FOR DIWALI WEEK. Diwali is 8 Nov and wedding season is under way. Make a festive variant that puts 'One to keep. One to give.' over the pack_b2 (drawer open) and pack_b4 (ribbon) stills for about 1.6 s before the bag, or that sets it as the end-card kicker. Nyra's warm read, with the drums out under it.",
+"FROM ONEBOX, THE EMPTY THIRD SLOT. In the bag, hold an empty, outlined third square with a small sage Jost caps '+ ONE MORE' after BUY 2 lights, then drop the hoops into it as BUY 3 lights. It turns 'Three is a signature' into a visible gap waiting to be filled, with no extra graphics.",
+"FROM ONEBOX AND NOBODYTOLD, THE HAND-TO-HAND DRAWER. If the editorial's Riya box beat (4.00-6.67) needs more energy, start the drawer slide in Pankti's flipped footage (src 0.80-1.00) and finish it in Riya's mehendi hands (src 4.95 onward), matched on the drawer's travel. Two women, one box, and it costs no time.",
+"TRIM TO ABOUT 30 S for hold. Shorten Ananaya's 'asked me' stretch from 3.0 s to about 2.5 s, take about 0.4 s off the hair-fall, and cut the end card to about 2.3 s once fully built. Keep the 14.67 breath; it is what gives the drop at 23.33 its force.",
+"FROM NOBODYTOLD, CLAIM HYGIENE. Set '18K GOLD COATING' as one unbreakable phrase so '18K GOLD' never sits alone on a line. Use ink type on pale grounds and ivory with a soft shadow on dark ones, never a scrim. Flip Pankti's box shots horizontally so the lid reads NAIRA."
+],
+"fatal_problems": [
+"LAUNCH BLOCKER FOR ALL FOUR: OFFER RATES. origin/main (70ea61db, 2 Nov 21:18 UTC) has BUY2 = 20% and BUY3 = 30% in src/lib/promo.ts, so every script's ₹1,598 and ₹2,238 is right against main. Onebox's risk note citing a8a7b002 at 10/20 is out of date: that is the stale working branch. But committing is not deploying. Confirm that Lovable has been PUBLISHED and that the Shopify BUY2 and BUY3 codes are live at 20/30 before any spend. Otherwise the ad quotes a total Fastrr will not charge. The ad should use ₹2,238 and ₹1,598; the true values are ₹2,237.90 and ₹1,598.40, so check how the live bag rounds.",
+"ALL FOUR: GUARANTEE WORDING. Every script says '3-YEAR PLATING GUARANTEE' and warns that the site still says 2 years. That warning is out of date: main now says '3-year plating assurance' (Footer.tsx, ProductDetails.tsx, JewelDetail.tsx). The remaining mismatch is the word: 'guarantee' is a stronger, legally loaded promise than the site's 'assurance'. Either use '3-YEAR PLATING ASSURANCE' in the ads or have the owner confirm 'guarantee'. Riya's 'Two years plating guarantee' line is correctly unused in all four.",
+"QUESTION, POLICY: FABRICATED DMs ON FRAME 1. Frame 1 shows invented DM text ('where is this from?', 'wait, where's the ring from?') with invented timestamps (MON 8:14 PM, THU 6:02 PM), rendered in Instagram's own dark DM style. On Reels this reads as a real screenshot or notification. That risks rejection under Meta's rule against depicting non-existent platform functionality, and it presents dramatised messages as real testimonial evidence. Ananaya said she was asked twice; she did not say it was by DM. The script cannot open this way as written.",
+"QUESTION, COPY ERROR. The bag's fine line '18K GOLD COATING · PVD · APPLIED IN YOUR BAG' reads as if the coating is applied in the bag. The offer note and the material claim need separate lines.",
+"QUESTION: the pearl creator's voice ('I'm not going to gatekeep them') plays over a grid of four other women, so the line is attributed to someone who is not on screen. That is a fifth voice in 31 s and adds clutter.",
+"ONEBOX, WRONG FOOTAGE UNDER A PRICE. The Pankti window chosen for the huggies (src 3.35-4.55, at ad 5.40-6.60, and THE CASE's left window, src 3.35-4.60) shows an EMPTY drawer. The contact sheet at 3.938 has open black velvet and no huggies; they first appear by 4.725. The 'BRUSHED GOLD HUGGIES ₹799' plate would sit over an empty box. Move the
+===== judge:editor
+{
+"scores": [
+{
+"key": "nobodytold",
+"hook": 9,
+"hold": 8.5,
+"product_clarity": 9.5,
+"offer_aov": 9,
+"brand_elegance": 7.5,
+"feasibility": 8.5,
+"total": 8.7,
+"verdict": "WINNER. Its cut points are the most accurate of the four when checked against the actual files. Riya's own cuts at 15.13, ~21.6 and 22.33 are right; so are Pankti 7.20 (huggies to lens start ~7.17), the drawer reveal at 1.30-1.90, the toggle in her palm at 18.90-20.10, and the ear at 9.45. Riya's \"this\" ends at 4.22-4.26 on the waveform. Frame 1 is the strongest: Kinn 041FCDC6 at 8.10 (eyes to the lens, hoop), with a curiosity line that works muted, two cuts inside the first second, the drop on \"this\" at 4.0 s and the first price at 4.6 s. The callback (one piece \"under ₹2,500\", then three pieces \"still under ₹2,500\" at ₹2,238, about ₹2,350 with the COD fee) is the best AOV logic that is also true. Every claim checks out: real MRPs, \"18K GOLD COATING\" kept whole, CZ only where the listing says so, no NAIRA10, \"Cash on delivery\" never called free. Weakness: six 4-line lockups at 1.2 s each is the \"too much graphic\" the owner has sent back before. Thin them."
+},
+{
+"key": "editorial",
+"hook": 8.5,
+"hold": 7.5,
+"product_clarity": 8.5,
+"offer_aov": 9,
+"brand_elegance": 9,
+"feasibility": 8,
+"total": 8.4,
+"verdict": "Close second and the most premium. The type grammar (real women in italic, the brand in upright roman) is elegant, and the credits are restrained, one line each, with no MRP strikes. \"One is jewellery. Two is a look. Three is a signature.\" plays over one, then two, then three pieces worn, and is the best reason to buy three in any script. Riya 27.00-28.20 (ring, bracelet and hoops in one frame, verified) is a great find. Its in-points check out against the files (Riya 5.05, 16.70, 20.40-21.60; Pankti 7.40-8.73, 19.70-21.03). It loses on pace: at 32.7 s it is the longest, Riya is a disembodied voice for the first 4 s, and E3C6EA7D 13.20-15.87 is a 2.7 s wide shot in which the hoops are tiny. The bag only gets 2.7 s. Two footage errors, listed under fatal problems: Pankti 28.20-29.40 mouths her song, and 267E722A pulls back to a wide shot with the two-stone ring at her chin under a hoop price."
+},
+{
+"key": "question",
+"hook": 8.5,
+"hold": 8,
+"product_clarity": 8,
+"offer_aov": 8.5,
+"brand_elegance": 6.5,
+"feasibility": 6.5,
+"total": 7.7,
+"verdict": "A smart closed loop: the DM \"where is this from?\" opens it, the reply \"Naira.\" closes it, and \"Now you know.\" sits on the end card. The bag maths is correct (YOU SAVE ₹959), and \"Wear one, they ask. Wear three, they stop you.\" is a good reason to buy more. But the DM device repeats earlier ads (\"Somewhere someone just asked… where is it from?\" and the creator cut \"Where is this from?\"), so it is not fresh. It is the busiest of the four on screen: DM bubbles, price chips with leaders, a 2x2 grid with a banner, captions, the bag, the DM reprise, the iris and the end card. It also has the most voices: Ananaya, Riya, an unseen pearl creator whose \"them\" refers to pieces never shown, Nyra, then Riya again. The grid is not built yet. Several in-points land on the wrong shot, and one shot ends on the unlisted ring under a price (see fatal problems)."
+},
+{
+"key": "onebox",
+"hook": 6.5,
+"hold": 7,
+"product_clarity": 7.5,
+"offer_aov": 8.5,
+"brand_elegance": 8,
+"feasibility": 5,
+"total": 7,
+"verdict": "The most charming ideas are here: the box as ritual, the gifting couplet with the ribbon still, and THE CASE with an empty third window marked \"+ ONE MORE\". But the strategy works against the data. It opens on Pankti's slow box opening, the opener that held only 7% to a quarter, with another woman's voice over Pankti's visible, closed mouth. The hook device does not exist as written. Pankti src 0.00-0.37 is a separate shot of two boxes. Riya src 4.95 is still her talking head, and her drawer is SHUT at 5.05; it starts sliding about 5.3 and is fully out by 6.6. So there is no slide that continues from one woman's hands to the other's. Prices and totals are placed at y 1220-1384, inside the Reels bottom UI. Several in-points land on the wrong shot."
+}
+],
+"winner": "nobodytold",
+"best_ideas_to_graft": [
+"From editorial, the push to three: before the bag, insert \"One is jewellery. Two is a look. Three is a signature.\" (Nyra, upright Cormorant) over three shots of one, two and three pieces worn. One: Kinn 76D95B49 4.40-5.00, a single hoop to the lens. Two: Pankti 27.90-28.60, the portrait wearing the huggies and chain (it starts at ~27.87; stop before 28.6, where she starts mouthing her song). Three: Riya 27.00-28.20, hands crossed wearing the ring, bracelet and hoops. It is styling advice rather than a discount, and it sets up nobodytold's \"These three. Still under ₹2,500.\"",
+"From editorial, the type grammar and how lean its credits are. Quote real women in Cormorant italic and set the brand's lines in upright roman. Cut nobodytold's lockups from 4 lines to at most 2-3: drop the material line from the first four, and keep the struck MRP on only two or three of the six. That answers the owner's \"too much graphic\" while every piece is still named and priced.",
+"From editorial, seed the ladder early: at the Pankti huggies and chain beats (about 7-10 s), add one deep-sage line, \"Together, ₹1,598 with Buy 2\", so the offer is heard before 10 s rather than at 20.8 s.",
+"From onebox: in the bag, show the empty third tile with a small sage \"+ ONE MORE\" before the hoops tile lands. Seeing the gap is the push to three.",
+"From onebox, the gifting reason for two: \"One to keep. One to give.\" over pack_b2 (open drawer) then pack_b4 (ribbon), about 1.6 s, fits the bridal mehendi and wedding season. Use it if the owner wants a reason for two pieces beyond the discount.",
+"From onebox, a 1-1.5 s quality beat, \"18K GOLD COATING · PVD\" over \"3-YEAR PLATING GUARANTEE\", on Pankti's huggie going into her ear at 9.45. In nobodytold the guarantee appears only in the end card's trust row.",
+"From question: put \"YOU SAVE ₹959\" under the ₹2,238 total in the bag, and optionally close on Ananaya's \"So now if someone asks you where this is from, you know it\" (src 37.92-41.06, synced) or editorial's VO \"Naira. Now you know where it's from.\" Keep Riya's \"keep it between us\" as the final word over the card."
+],
+"fatal_problems": [
+"ONEBOX, wrong footage in the hook. Pankti src 0.00-0.37 is a separate shot of two small boxes held over her face; the cut to the close box is at ~0.37. Riya src 4.95 is still her talking-head shot (the box insert starts ~5.03), and at 5.05 her drawer is SHUT; it slides out from ~5.3 to 6.6. The \"drawer part-way out at 4.95, one continuous slide that changes hands\" match-cut does not exist. Verified on src/pankti_raw.mp4 and src/riya_F67FB13D.mp4, frames in /tmp/claude-0/-home-user/aaed4e78-f5ea-57f6-bb8a-ea8f2c0ecee0/scratchpad/judge_v/pk2.jpg and riya_b.jpg.",
+"ONEBOX, a placement rule break. Piece plates have their top edge at y 1384, THE CASE total sits at y 1220-1340, and \"FOR ALL THREE · APPLIED IN YOUR BAG\" at y 1360. All of these are inside the Reels bottom UI (the other scripts keep to y 270-1250), so the prices would sit under the caption, handle and CTA.",
+"ONEBOX, wrong shots. \"THE LOOK\" (Pankti 27.56-28.16) is mostly the lips-and-neck close-up; the portrait only starts at ~27.87. Riya 16.50, used twice (beat 11 and the right window of THE CASE), opens on the ring macro; the hoop box starts ~16.6, so use 16.70. Riya 14.87 opens on the wide hand shot; the macro starts at her cut at 15.13. Pankti 7.10 opens on the open box; the huggies reach the lens at ~7.17. Riya 22.20 holds 4 frames, then her own cut at 22.33.",
+"QUESTION, an unlisted piece next to a price. Kinn 212E5E27 18.55-19.99 ends with her hand over her face from ~19.7, so by 19.75-19.99 the unlisted two-stone ring fills the frame while the \"WOVEN GOLD HOOPS ₹1,199\" chip is up. Take the out-point to 19.60 or earlier.",
+"QUESTION, flash frames and wrong shots. Riya in-point 4.96 is still the talking head for 2 frames. Beat 4 at Riya 21.50 is the wrist insert for ~3 frames before her cut to the pose at ~21.6, and runs through another cut at 22.33. The Riya macro at 15.00 is not a macro until 15.13. The grid tile at Riya 18.00 is still the hoop box; the hair flip starts after 18.1. The grid tile at Pankti 27.50 is the neck close-up until ~27.87. The caption timing assumes Riya's \"under\" starts at 2.20, but the word times put it at 1.72 (the waveform dip at 2.18-2.22 falls mid-number), so check the switch from \"demi-fine jewellery\" to \"under ₹2,500\" by ear.",
+"QUESTION, a copy error that reads as a false claim. The fine line \"18K GOLD COATING · PVD · APPLIED IN YOUR BAG\" runs the material claim into the offer, so it reads as though the gold coating is applied in the bag. Split it into a materials line and \"BUY 2 / BUY 3 APPLIED IN YOUR BAG\".",
+"QUESTION, a compliance caution. Two invented DMs with

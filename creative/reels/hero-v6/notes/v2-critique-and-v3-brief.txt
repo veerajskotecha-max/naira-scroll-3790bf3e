@@ -1,0 +1,461 @@
+== performance score 7.5
+BIG IDEA: Make 0-10 s a complete sale on mute. Then ship V3 as a short cut-down and two frame-1 variants as well, not just one hero. With past reels holding only 4-7% to a quarter, the hook and the first 10 s decide ROAS; little after 20 s does.
+
+What to change in the first 10 s:
+- Set 'Any 2 · 20% off' and 'Any 3 · 30% off' as single 104 px lines.
+- At 7.6, show a struck ₹3,197 above 'All three, ₹2,238'.
+- Over the hair flip (8.73-9.87), set 'NO CODE / CASH ON DELIVERY', synced to Nyra's 'No code.'.
+
+On the end card:
+- Land it complete by 21.2 s.
+- Make its offer line the instruction 'PICK ANY 3 · 30% OFF · NO CODE', so it sells only the top rung that lifts AOV from about ₹1,712 to ₹2,238.
+- End at 25.87 s.
+
+From the same timeline, also export:
+- A 15 s cut-down: 0-9.867 plus a 4 s card, with Ananaya's free-delivery line under the card.
+- Two hook variants: Riya's 4K bracelet macro (src 20.40) and the GRWM hoop to the lens (src 0-1.95) in place of the huggies at 0-0.867.
+
+Let Meta pick the hook and the length, rather than betting the final round on one 26 s edit.
+ [major] 5.87-8.53 (offer slot, y 295/354/530): The word that makes this a multi-buy, 'ANY 2' / 'ANY 3', is Jost caps 34 px (about 8 pt on a phone) above a 120 px '20% off'. At scroll speed it reads as a flat sitewide '20% off', then '30% off'. '₹2,238' also arrives with no anchor: the ₹3,197 it is cut from only appears at 22.73 on the card, which almost nobody reaches. So the saving (₹959) is never seen while ~93% of viewers are still watching.
+   FIX: Set each rung as ONE line at one size. 'Any 2 · 20% off' in Cormorant Medium 104 (ivory with shadow, x 64, baseline 450) from 6.07. 'Any 3 · 30% off' (ink) from 7.4. At 7.6, put '₹3,197' in Jost 44, ink 55%, with a 3 px ink strike (baseline 540), and below it 'All three, ₹2,238' in Cormorant Medium 96 upright (baseline 640). Keep the right edge at or left of x 760 on Riya's hoop box (riya_full 16.60).
+ [major] 8.53-9.87 (hair flip) and 23.4 (card): Cash on delivery is never spoken and first appears at 23.4 s at 28 px, so it reaches about 1% of impressions. For an unknown brand in India it is the biggest risk-reducer. 'No code.' (9.12) is audio only, so muted viewers miss it. The hair flip, right after the offer and still inside the hold window, carries no text at all.
+   FIX: Over riya_full 18.10 add 'NO CODE' / 'CASH ON DELIVERY' in Jost caps 40, ink, x 64, cap tops y 300 and 362, on the pale ceiling, right edge at or left of x 780 (the fan sits to the right). On at 8.73, off at 9.87, so 'NO CODE' lands with Nyra's 'No code.' at 9.12. Muted viewers who leave at 10 s then have the whole deal: three pieces, ₹2,238 instead of ₹3,197, no code, COD. Never write 'free COD'.
+ [major] 20.53-26.53 (end card): The card takes 2.9 s to assemble: tile 1 at 20.83, tile 2 at 21.50, tile 3 at 22.17, the strike at 22.73, the total at 23.03, the offer and trust lines at 23.4. A high-intent viewer who reaches 20 s waits for the deal, then the card sits static to 26.53, 6 s or 23% of the ad. There is no ask anywhere, spoken or on screen. The offer line also repeats ANY 2, which dilutes the push to three pieces at the moment of decision.
+   FIX: Land all three tiles together at 20.6 (6-frame fade), the struck ₹3,197 and the total at 20.87, and the offer and trust lines at 21.2. Replace the offer line with an instruction that sells only the top rung: 'PICK ANY 3 · 30% OFF · NO CODE' (Jost caps 32, deep sage, baseline 1165). Start Ananaya's 'available at Naira with free delivery as well.' (ana 34.70-37.58) at 19.95, straight after her own '…twice this week.' (it ends 19.81), as an L-cut over Sonal. Move Riya's 'You're welcome, but keep it
+ [major] 1.9-2.77 (f_00067, 'under ₹2,500'): The hook's only price is ink italic starting at x 64 and runs across Riya's dark hair, so 'under' is ink on dark brown and half-lost. This is the single number that qualifies the viewer in the first 3 s.
+   FIX: Set it on two lines: 'under' / '₹2,500' in Cormorant Medium Italic 120, ink, starting at x 330 on her skin and halter (clear of her hair, left of the sun tattoo at about x 860), baselines 1120 and 1230. Alternatively keep one line but use ivory with the 0 2 14 px 55% shadow.
+ [major] pre-spend (whole offer): The repo checkout here (a8a7b002) still reads BUY2 0.1 / BUY3 0.2 in src/lib/promo.ts; only origin/main reads 0.2 / 0.3. If Lovable has not Published, or the Shopify BUY2/BUY3 codes are not at 20/30, three pieces cost ₹2,558 rather than ₹2,238. That is an over-promise on the ad's headline number, and it leads to drop-off at checkout and COD refusals. Separately, '₹2,238' sits directly above 'CASH ON DELIVERY', but Fastrr adds 5% on COD, so a COD buyer is charged about ₹2,350.
+   FIX: Before spend, put hoops, huggies and chain in the live nairaflore.com bag and confirm it shows ₹2,238 and that Fastrr charges the same prepaid. Leave the card copy as it is (₹2,350 is still under ₹2,500), but never pair ₹2,238 with 'free COD'.
+ [minor] 13.6-14.4 (bracelet credit): PRISM RIVIÈRE BRACELET ₹2,399 is on screen for 0.8 s, under the brief's own 1.2 s minimum. It sits on the most colour-saturated product shot in the library and the only higher-priced piece.
+   FIX: Bring the credit on at 13.4 with 'this bracelet is'. Cut to the pose on the 14.533 beat instead of 14.4 (h_riya_brace src 20.40-21.73; Riya's 'is' ends at ad 14.74, so the cut stays clean). That holds the credit 1.13 s.
+ [minor] 19.2-19.85 (f_00586): Ananaya's last caption, 'twice this week.', runs onto the Sonal shot in ivory over the white brick and is close to invisible. The social-proof payoff word, 'twice', is lost on mute.
+   FIX: Switch that caption to ink at 19.2, the frame the Sonal shot starts, or end it on the cut at 19.2. Ananaya's audio can keep running as the L-cut.
+ [minor] 11.53-13.2 (3-year plating assurance): The strongest trust claim is set as fine print: three stacked lines of tracked Jost 38, right-aligned. The top edge of pk_full 23.2 also cuts across Pankti's eyes, which reads as a framing mistake.
+   FIX: Set '3-year' in Cormorant Medium 96 over 'PLATING ASSURANCE' in Jost caps 34, both right-aligned at x 860. Check pk_full 21.5-23.0 for a neck frame with her face out of shot and the toggle centred, and use it if one exists.
+ [minor] 14.4-16.68 and 1.7-2.77 (Riya): The black ceiling fan still sits right beside 'the one people / stop you for.', and the lav mic sits under the hook caption. Both were flagged in V1 and are unchanged. They pull down perceived quality on the line that sells the ₹2,399 piece.
+   FIX: Reframe inside the native 4K: about 118% anchored low-left for riya_full 21.667 (the fan leaves the top band and the bracelet gets bigger), and about 140% for h_riya_talk so the mic falls below y 1245.
+ [minor] 21.5-26.53 (card tiles), compared with V1: V1 named and priced each bag piece and its end-card product tiles read clearly. V2's tiles carry no names, so a buyer cannot find 'the ₹799 one' on the site. Tile 2 (pk_full 9.45) is mostly dark hair with a huggie about 60 px wide, and the ₹3,197 strike is blush on ivory, which barely shows.
+   FIX: Swap tile 2 to pk_full 7.23-8.10, the bright huggies pinched at the lens. It is also frame 1, so the loop echoes. Caption the tiles 'Hoops ₹1,199', 'Huggies ₹799' and 'Chain ₹1,199' in Cormorant Medium 44. Draw the strike 3 px in ink at 55%. Nothing else from V1 should come back: not the iris, the count-down bag, SHOP NOW or the 'Made to…' / One-Two-Three slogans.
+
+== creative score 7
+BIG IDEA: End on her, not on a page. Make no hard cut to ivory at 20.533. Sonal stays live in the upper half and the card becomes an ivory band beneath her, like an editorial magazine layout. At 20.533 (on the downbeat), the upper half (y 0-940, full width, radius 0) continues as a live Kinn window. Use Kinn 267E722A past 8.70 if her mouth stays closed. Otherwise use DE17C1BF 7.70 (the laugh to the lens) or E3C6EA7D 14.6 (hair down, both hoops), whichever leaves the brick at top-left clear. 'Made to be / asked about.' does not move: x 64, y 412-492, ink on the brick, where V2 already proved it reads. An ivory #FBF3EC band rises 12 px and fades in over 6 frames to fill y 940-1920, with no shadow. In the band, left at x 64, within y 960-1245 and right edges at or left of x 900: the sage-and-blush NAIRA logo (260 px, y 970-1025); '₹3,197' (Cormorant about 40, ink 50%, ink strike) followed by 'All three, ₹2,238' in Cormorant Medium 80 at baseline 1115; 'ANY 2 · 20% OFF · ANY 3 · 30% OFF' in deep sage Jost caps 30 at 1170; and 'NO CODE · CASH ON DELIVERY · FREE SHIPPING' in Jost caps 28 at 1222. The worn tiles go, since the three pieces were already shown in their boxes and worn. If the panel insists on naming them, use one Jost line, 'HOOPS · HUGGIES · CHAIN', in place of the logo row, with the logo moved into the window over the brick in deep sage. Ananaya's CTA (from 20.9, so the D add9 resolve rings for 0.4 s alone) and Riya's 'keep it between us' play over Sonal laughing or letting her hair down. Every selling element of V2's card stays at the same size, and the final looping frame becomes a woman wearing the hoops being admired: the literal picture of 'Made to be asked about.'
+ [major] 5.89-13.49 (Nyra): The synthetic voice is now the longest single voice in the film: 7.6 s, five phrases back to back ('Any two, twenty percent off.' / 'Any three, thirty.' / 'No code.' / 'Waterproof, tarnish-free' / 'with a three-year plating assurance'). It is sped to 1.1x, which makes ElevenLabs sound more machine-made. That is the owner's 'no AI look' in audio form. 'No code.' (9.12-9.74) lands on Riya's hair flip, the joyful beat the brief kept voiceless. So the only music-led moment in 26.5 s is 0.9 s (19.81-
+   FIX: Keep Nyra at 1.0x for the offer only: 'Any two, twenty percent off.' (5.89) and 'Any three, thirty.' (7.79-~9.06). Cut 'No code.' from the voice and set it as type: make the end-card trust line 'NO CODE · CASH ON DELIVERY · FREE SHIPPING' (Jost caps 28, about 810 px wide, still left of x 900). Keep 'Waterproof. Tarnish-free.' spoken (9.94-11.65). Make the plating assurance silent type over harp and legato strings (11.53-13.2). Bring the bed up about 8 dB in the pockets that open: 9.06-9.94 under
+ [major] 20.53-26.53 (end card): The film still ends on a page, not a woman. The card is 6.0 s, 23% of the runtime, and after the third tile settles (about 22.2 s) nothing moves for 4.3 s. The live tiles are cropped badly. Tile 1 (Kinn 041FCDC6 8.50) cuts Sonal's face at the nose with one eye jammed against the edge, and arrives as a disembodied eye (f_00618-00630). Tile 2 (pk 9.45) is about 70% dark hair, with the huggie a small pale blob. Tile 3 (pk 23.40) clips the toggle ring against its right edge (x≈1012). V1's listing-ph
+   FIX: See the big idea: end on a live Kinn window over an ivory band. If the page stays, either re-crop the tiles (hoop at the centre of tile 1 with the face whole or out; pk_full about 10.5-10.8 after her hand leaves, 1:1, with the huggie at least 30% of tile 2; the toggle centred in tile 3 with at least 40 px margin), or better, use the three open-box frames from the film's opening as the tiles: pk_full about 2.3 (chain drawer), pk_full about 5.5 (huggies) and riya_full about 17.2 (hoops on velvet).
+ [major] 19.20-19.85: The ivory italic caption 'twice this week.' (y 1122) carries across the cut onto Kinn 267E722A's white brick and her shoulder. Ivory on white leaves a ghost smear (f_00585) in the shot that carries the campaign line.
+   FIX: End the caption at the 19.2 cut. Ananaya's audio can keep its L-cut over Sonal, but her type should not. If it must run on, switch it to ink for 19.2-19.85.
+ [major] 14.40-16.68 (Riya, 'the one people / stop you for.'): The best line in the bracelet sequence is set in ivory with a shadow on Riya's pale grey ceiling (f_00466), the lowest-contrast type in the film. The brief specified ink. The black ceiling fan (about x 600-1050, y 330-540) is the strongest shape beside it. The fan is also in frame at 1.7-2.77 and 8.53-9.87. Two lenses flagged it in V1, and the native 4K that could crop it out is still unused.
+   FIX: Set the line in ink #1A1614 at x 64, baselines 380/460. Where the 4K allows, reframe to push the fan out: about 150% around the face for h_riya_talk (which also drops the lav mic), and about 125-130% anchored low for the hair flip and the pose. Re-place the type after the crop.
+ [minor] 13.20-14.40 (bracelet credit): 'this bracelet is / PRISM RIVIÈRE BRACELET / ₹2,399' sits in ink across her forearm skin (f_00418). Type laid over the body is the least elegant placement in the film, and ink on mid-tan skin is weak. The brief put it on the wood.
+   FIX: Move the block to the clear pale wood top-left (x 64, y 300-520 is clear above the arm in this crop), keeping the same sizes and the same ink, so nothing touches the arm or the stones.
+ [minor] End card struck price, from 22.73: '₹3,197' is set in grey Jost with a blush strike. A pale pink line through grey numerals reads as an artefact rather than a reduction, and it is the only price not set in Cormorant. The 64 px gap to 'All three, ₹2,238' also detaches it.
+   FIX: Set it in Cormorant Medium about 40 px at ink 50%, with a 3 px ink-50% strike as briefed, on the same baseline as 'All three, ₹2,238', with a gap of about 32 px.
+ [minor] 1.70-2.77 ('under ₹2,500'): 'under' sits in ink on Riya's dark hair and loses contrast. The caption again ends right beside her sun tattoo, so the tattoo reads as a glyph. The lav mic stays centre-chest (y≈1500, visible through the Reels UI). All of this was flagged in V1.
+   FIX: Use the roughly 150% native crop above (face to collarbone, with the mic, fan and tattoo out or at the edge). Set 'under ₹2,500' on the white halter in ink, or in ivory with a shadow if it must cross her hair.
+ [minor] 7.40-8.53 ('all three, ₹2,238'): 'All three' plays over ONE pair of hoops. The three pieces were shown in two women's hands, in two rooms, across three shots, so the sum reads as a claim rather than a bag you can see.
+   FIX: Optional, and only if it stays calm: from 7.6, split the frame into three stacked live bands of the three open boxes (pk_full 2.3 chain, pk_full 5.5 huggies, riya_full 17.2 hoops), each 1080x630 with 6 px ivory gutters and radius 0, and keep the ink type on the hoop band's wood. Real footage in a grid is editorial, not graphic. If it reads busy, keep V2's single box.
+ [minor] Whole film (Kinn share): Sonal, the only editorial footage and the source of the premium feel, is about 4.3 of 26.5 s (16%), all quick hook cuts plus a 1.33 s glance. The shoot's best frame (62379666 4.00), the laugh (DE17C1BF 7.70) and the hair fall (E3C6EA7D 13.60) are unused. The film's emotional register is creators talking, not a woman being admired.
+   FIX: Give Sonal the ending (the big idea). Consider 62379666 4.00-4.83 in place of 041FCDC6 8.10 at 0.867-1.70: the same eyes to the lens, plus the fist-under-chin pose and the hoop. The ring and kada are shown, never named.
+ [minor] V1 vs V2: what to bring back: Only two things V1 did better are worth bringing back. V1's Riya ring box on mehendi hands against pale wood (riya_ringbox, src 4.9-9.5) was the warmest, most festive box shot we own. And V1's bag tiles read as product instantly. Everything else from V1 (iris, count-down, One/Two/Three, SHOP NOW, seven slogans, clacks) should stay dead.
+   FIX: Bring back tile clarity (box frames or clean re-crops, as above). Keep riya_ringbox for a gifting cut-down rather than this hero, because it would change the ₹2,238 bag maths.
+
+== editor score 7.5
+BIG IDEA: Cut the second half to the voices the way V2 already cuts the hook to Riya's words. From 0 to 4.5 s every cut lands on a word, and it is the best stretch of the film. From 5.9 s on, the picture switches to a fixed 1.333 s bar grid while the voices keep their own timing. That is why '20% off' is heard under '30% off' (7.2), 'assurance' is heard over the bracelet (13.2-13.49), 'twice this week.' sits on Sonal (19.2-19.85), and COD appears after Ananaya has said 'free delivery'. For V3, put each picture change on a phrase end: 7.733 after 'off', 13.2 with a shortened 'Three-year plating assurance.', 14.55 after 'is', 15.52 on 'stop', and 19.6 after 'week.'. Bring captions in hard on their cut. Leave about 0.3 s of air between speakers, and make the hair flip music only, with 'NO CODE' shown on screen instead of spoken. Build the card on Ananaya's words: the tiles land under 'available at Naira', the COD and free-shipping line lands on 'free delivery'. End at about 24.4 s on her CTA, with no static hold and no 'keep it between us' contradicting 'Made to be asked about.'. Taken together this makes the back half as tight as the front, with no new footage and no new graphics.
+ [major] 7.200-7.710 (cut 2-3 of the offer): The picture and the super change to 'ANY 3 / 30% off' at 7.20 while Nyra is still saying '...twenty percent off' (hv2_any2 runs 5.89-7.71). For half a second the ear hears 20% under a frame that reads 30%, at the moment the offer is stated. 'ANY 2 / 20% off' is also fully on screen for only 1.13 s (6.07-7.20), and 'all three, ₹2,238' for 0.93 s.
+   FIX: Move the cut to 7.733 (frame 233, after 'off'). The huggies box runs 5.867-7.733 on pk_full 4.85-6.72; I checked, and the box is still held steady to 6.9. The hoop box runs 7.733-9.067 on the same riya_full 16.60-17.93. 'ANY 3 / 30% off' comes on hard at 7.733 and 'all three, ₹2,238' at 7.95, which holds it 1.12 s. The hair flip runs 9.067-9.867 on riya_full 18.63-19.43, which keeps the whip into the 9.867 match cut. The length does not change, and Nyra's 'Any three, thirty.' (7.79) now lands on
+ [major] 14.400-16.683 (riya_full 21.667): The worn bracelet shot hides its own subject. For the whole line 'the one people stop you for.' the Prism Rivière sits at y ≈1400-1600 (f_00436, f_00451, f_00481, f_00499), under the Reels caption and CTA overlay. The black ceiling fan flagged twice in V1 still sits beside the caption.
+   FIX: Make it two shots, cut on 'stop' (src 22.56, ad 15.52). First, 14.55-15.52: riya_full 24.00-24.97. This is the close framing with no fan, the bracelet and the Cushion Halo ring together, and the bracelet at y ≈1250-1300; lift it with a 1.1x native 4K reposition. Second, 15.52-16.683: riya_full 25.55-26.71. Her wrist rises to her cheek, the bracelet sits at y ≈1100-1250, and her fist hides the fan. Put 'the one people' over the first and 'stop you for.' over the second. Run the macro to 14.55, al
+ [major] 19.200-19.850 ('twice this week.'): Ananaya's caption runs 0.65 s past her cut onto Sonal (Kinn 267E722A from 19.2). It is ivory on the white brick, so it is nearly invisible (f_00586), and it puts one woman's quote on another woman's face.
+   FIX: Extend Ananaya to 19.60 (ana src 11.12-14.04; she is still holding the ring over her face, as inventoried for 11.45-14.6). Cut to Sonal 19.60-20.533 on Kinn 267E722A 7.77-8.70; her mouth stays closed until 8.73. The caption ends on the cut. 'Made to be / asked about.' still comes in at 19.85-20.05 on the same glance.
+ [major] 4.60-19.81 (voice track), worst at 13.20-13.52: The voices run wall to wall. The gaps between reads are 0.11, 0.08, 0.06, 0.20, 0.03, 0.03 and 0.09 s, so there are 15 s of talking with six speaker hand-offs. Nyra's 'with a three-year plating assurance' (11.68-13.49) overruns the chain shot and its super (off at 13.20), so 'assurance' is heard over the bracelet macro. Riya then starts 30 ms after Nyra stops, which sounds like a radio spot. The hair flip, which the V2 brief made the one music-only beat, now carries 'No code.', and muted viewers
+   FIX: Regenerate the line as 'Three-year plating assurance.' without 'with a'. At about 2.4 words/s and 1.1x it runs ≈1.5 s from 11.68 and ends on the 13.2 cut, so Riya enters after a 0.3 s breath. Take 'No code.' out of the voice and set 'NO CODE' in Jost caps 34 under 'all three, ₹2,238' on the hoop box. The flip at 9.067-9.867 becomes music only with the harp run, which gives a 0.9 s breath between the offer block and the claims block.
+ [major] 20.533-26.533 (card): The card is 6.0 s long, 23% of the ad, and fully built from 23.4 with frozen tiles for 3.1 s. Its elements arrive one per 0.67 s beat (20.83 / 21.50 / 22.17 / 22.73 / 23.03 / 23.40), so 'CASH ON DELIVERY · FREE SHIPPING' appears after Ananaya has already said 'free delivery'. The last spoken words, Riya's 'keep it between us', contradict the card's own written line, 'Made to be asked about.'
+   FIX: Land the tiles on half-beats (20.70 / 21.03 / 21.37), the price line at 21.70, and the offer and trust lines at ≈22.4, on Ananaya's 'free'. Start Ananaya at 20.85. End at ≈24.4 s (her line ends ≈23.73, then a 0.5 s hold and 4 silent frames), with the resolve's last downbeat at ≈23.8. Drop Riya's sign-off from the hero cut. If the owner wants it kept, do not lay it over a static card: it is her own sync line, so use her picture (riya src 31.02-32.90, peace sign), re-cropped about 150% from the 4K
+ [minor] V1 vs V2: V2 beats V1 on almost every count. Two things V1 did better are missing. First, its bag showed the three pieces as listing photos that read at a glance; V2's live tiles show the women but not the pieces (see the tile item). Second, it had a stretch of score with no voice (7.73-9.20, the huggies at the lens). Nothing else from V1 should come back: not the iris, the UI bag, the count-downs, 'Made to be looked at', the One/Two/Three triad, the SHOP NOW press or the URL row.
+   FIX: Bring back product legibility by cropping the live tiles on the piece, not by returning to plaster-cube photos. Bring back the breath through the music-only hair flip described above. V1's 'Still under ₹2,500' callback is optional; 'All three, ₹2,238' already implies it.
+ [minor] 20.60-26.53 (card tiles): Tile 1 (t_041FCDC6_850) opens on an eye with the hoop off the tile (f_00619, f_00631) while ₹1,199 sits under it. Tile 2 is about 60% hair, and the huggie is a dark blob. Tile 3 holds its LAST frame, by which time the toggle has drifted off the right edge (23.0-26.5).
+   FIX: Re-centre tile 1 on the hoop, at about x 0.38, y 0.47 of the Kinn frame. Build tile 2 from pk_full 10.90-11.20: the hand is gone, the hair is tucked and the huggie sits on a lit ear, as at ad 11.5. Hold tile 3 on t_pk_2340 f_0001-0010 (pk_full 23.40-23.70), where the toggle is centred, not on its last frame.
+ [minor] 22.73-26.53 (struck ₹3,197; offer and trust lines): The blush strike on ivory has about 1.4:1 contrast and disappears on a phone (f_00721). The two lines that close the sale, the offer and COD, are the smallest type on the card at 30 and 28 px Jost caps.
+   FIX: Set the ₹3,197 numeral in ink at 55% with a 3 px deep-sage #50726A strike. Set both small lines at 34 px; 'ANY 2 · 20% OFF  ·  ANY 3 · 30% OFF' and 'CASH ON DELIVERY · FREE SHIPPING' still end left of x 900.
+ [minor] 0.00-2.77 (hook captions): Two problems in the first 3 s. 'Nobody / told us…' is ink on Pankti's dark hair, the weakest contrast in the hook and it sits on frame 1. The captions also fade in over about 0.2 s after every cut (f_00027 has none), so 20-25% of each 0.8-1.1 s shot is uncaptioned while Riya speaks.
+   FIX: Set 'Nobody / told us…' in ivory with the soft ink shadow, the film's own rule for dark grounds, in the same position. Bring every hook caption in hard on its cut frame, as 'this.' already does at 3.867.
+ [minor] 11.80-13.20 and 13.60-14.40 (claim and credit type): Two type problems. First, the owner's headline claim, '3-YEAR / PLATING / ASSURANCE', is about 36 px Jost caps in three one-word lines next to 84 px 'Waterproof.', so it reads like a garment tag. Second, the bracelet credit is on for only 0.8 s with its name at about 20 px. It is stacked directly under the italic 'this bracelet is', so the credit and caption read as one block, and it uses a different slot and size from the Halo Curve credit.
+   FIX: For the claim, the space between the chain's right strand and her hair (x ≈640-860) is the constraint. Set '3-year' in Cormorant Medium 96 (≈260 px wide, so it fits) over 'PLATING ASSURANCE' in Jost caps 30 on two lines, keeping the right edge at x 860. Move the bracelet credit to the fixed top-left slot (y ≈300, ink on the pale wood) at the Halo Curve's size, on for the whole macro (13.2-14.55).
+ [minor] 4.50-5.00 and 20.50-21.00 (mix): These are the two places where the bed equals or beats the voice. At 4.75 the voice is at -23.0 and the bed at -21.0: the groove's first downbeat (4.533) sits on 'This is' of 'This is Naira,'. At 20.75 the voice is at -14.9 and the bed at -16.8: the resolve hit masks Ananaya's opening vowel, 'available'.
+   FIX: Extend the -12 dB bed_gain from 4.25 to 5.00. For Ananaya, either start her at 20.85 so the chord blooms first, or duck the resolve 8 dB under her.
+ [minor] 8.53-9.87 (riya_full 18.1 hair flip): The ceiling fan is prominent at the top right of the one joyful beat, the same domestic clutter V1 was told to remove.
+   FIX: Apply a 1.2x native 4K reposition anchored bottom-left. Her hair stays in frame, the fan goes, and nothing is upscaled.
+ [minor] pre-spend: The local repo checkout (HEAD a8a7b002) still has BUY2 at 0.1 and BUY3 at 0.2; origin/main has 0.2 and 0.3. 'ANY 2 · 20%' and '₹2,238' are true only once Lovable has published origin/main and the Shopify codes are at 20/30.
+   FIX: Before spend, put the huggies, chain and hoops in the live nairaflore.com bag and confirm it shows ₹2,238 and that Fastrr charges the same.
+
+== customer score 7.5
+BIG IDEA: Build the price ladder around my own bag instead of only stating a rate. On the second box (huggies, pk_full 4.85) write 'these two, ₹1,598'. On the third box (Riya's hoops) write 'all three, ₹2,238'. Hold that number through the hair flip with 'NO CODE · MIX ANY PIECES', so the third piece reads as '+₹640 for ₹1,199 hoops'. Close the hook's loop on the card by setting 'All three, ₹2,238' with 'still under ₹2,500' under it; that callback was V1's 'These three. Still under ₹2,500.' and should come back. Name the pieces there ('Hoops ₹1,199 · Huggies ₹799 · Chain ₹1,199'). In the same pass, add the one unanswered fact to the 3-year line: 18K GOLD COATING. I then know what it is, what two cost, why three is smarter, that I don't need a code, and what to search for when I land. Those were the only things still stopping me from buying two.
+ [major] 7.60-9.87 ('all three, ₹2,238' and Nyra's 'No code.' at 9.12-9.74): The number that would make me tap is fully on screen for only 0.93 s (7.60-8.53) and is never spoken. 'No code.' is voice only, over a text-free hair flip, so muted I never learn there's no coupon. Most Indian sites make you hunt for one, and I'd wonder where to enter it.
+   FIX: Hold 'all three, ₹2,238' through the hair flip (riya_full 18.10, 8.53-9.87) in the same slot at x 64, baseline 600, switching to ivory with a soft shadow over the grey ceiling (the fan is at x > 700). From 9.12, in sync with Nyra, add 'NO CODE · MIX ANY PIECES' in Jost caps 34 at baseline 670. The number then holds about 2.3 s and the muted viewer gets 'no code' as well.
+ [major] 5.87-7.20 (ANY 2 beat) and end card: No two-piece price appears anywhere. The ad prices three pieces only, so if I'm thinking of buying two I have to do 20% maths in my head. It also misses the strongest push from two to three: the third piece costs only ₹640 more.
+   FIX: On the huggies box (pk_full 4.85), from 6.27 add 'these two, ₹1,598' in Cormorant Medium Italic 88, baseline 600, the same slot and style as box 3's 'all three, ₹2,238'. The maths: ₹799 + ₹1,199 = ₹1,998, less 20% = ₹1,598.40. Box 3 then reads as an upgrade from ₹1,598 to ₹2,238. Optionally add a small 'the hoops, +₹640' at 7.4 before 'all three'.
+ [major] Whole ad, especially 11.53-13.20: Nothing ever says what the pieces are made of. 'Demi-fine' is the only clue, so 'is it real gold or gold-coloured brass?' goes unanswered. V1 carried '18K GOLD COATING' (unreadable at 20 px). V2 dropped it entirely, which brings back the doubt it was meant to settle. The 3-year assurance, my strongest reason to trust it, is the smallest claim on screen (Jost 38, right-aligned).
+   FIX: On the chain shot (pk_full 23.40; the Toggle Link Chain is a gold piece, so the claim is allowed), stack these, right-aligned at x 860, ink on the tee: '18K GOLD COATING' (Jost caps 32), '3-year' (Cormorant Medium 96) and 'PLATING ASSURANCE' (Jost caps 34). This needs no new voice and no extra time. Never 'gold' or '18K gold' on its own.
+ [major] 23.40-26.53 trust line 'CASH ON DELIVERY · FREE SHIPPING', plus Ananaya's 'free delivery' at 20.70: Fastrr adds 5% to COD orders and books it as SHIPPING (src/lib/payment.ts, verified on live orders). Paying COD, the ₹2,238 bag becomes ₹2,349.90 with a ₹111.90 shipping line. I'd pay COD precisely because I don't know Naira, then see a shipping charge after an ad that put FREE SHIPPING next to CASH ON DELIVERY. That is when I'd feel misled and abandon.
+   FIX: Set it as 'COD AVAILABLE · FREE SHIPPING ON PREPAID' in Jost caps 28 (about 770 px, fits left of x 900), or at the very least don't let 'free' sit next to COD. Ananaya's line can stay because it's true for prepaid, as long as the card qualifies it. This is the owner's call, but it is the trust moment for the COD buyer.
+ [major] 21.20-26.53 end-card tile 2 (t_pk_945) and the whole card: The huggie tile holds its last frame (about pk_full 10.8), after her hair has fallen over the ear, so the ₹799 piece is a dull blob in shadow. I can't see what I'd be buying. The three bag pieces are also never named anywhere in V2 (V1 named all three), so when I land on a 55-piece site I don't know what to look for.
+   FIX: Play the tile from pk_full 9.15 to 10.45 and hold 10.45, where the huggie sits clear on the ear with her hand below it (checked: f_0304 and f_0316). Alternatively crop pk_full 7.23-8.10, the pair pinched at the lens, which echoes frame 1. Turn the price line into names plus prices in Cormorant 44: 'Hoops ₹1,199' / 'Huggies ₹799' / 'Chain ₹1,199' (each about 250 px, fits the 300 px tile).
+ [minor] 13.60-14.40 bracelet credit; 14.40-16.68 Riya pose: The piece I want most is priced for 0.8 s, under V2's own 1.2 s minimum, and the price is gone by the time Riya wears it and I ask 'how much?'.
+   FIX: Carry 'PRISM RIVIÈRE BRACELET' (Jost caps 28) and '₹2,399' (Cormorant Medium 64) onto riya_full 21.667. Place them under 'stop you for.' at x 64, baselines about 480 and 550, ivory with a shadow over the ceiling, left of the fan (x < 600), and hold to 16.65.
+ [minor] 6.07-8.53 ('ANY 2' / 'ANY 3' labels): The condition is the smallest type in the frame (Jost caps 34 over a 120 px '20% off'). On mute at a glance, '20% off' reads as a sitewide sale and I miss that it's per two pieces.
+   FIX: Make the condition part of the headline: 'Any two,' in Cormorant Medium 96 on the line above '20% off' (120), and the same for 'Any three,'. Or set 'ANY 2 PIECES' in Jost caps at 48 px or more.
+ [minor] 4.50-5.00 and 20.53-21.10 (mix): In the audio report, the 4.75 window has the bed at -21.0 against Riya at -23.0 (drop-after peak -10.5 dBFS), right under 'This is Naira,'. That is V1's brand-name clash again, because bed_gain releases at 4.25. At 20.75 the resolve chord sits at -16.8 against Ananaya's -14.9, so 'available at Naira' is only 2 dB over the music on a phone speaker. Both brand mentions are at risk.
+   FIX: Extend the bed_gain of -12 dB from 4.25 to 5.80 (end of 'Naira,'). Duck the 20.533 resolve 8-10 dB until 21.30 so Ananaya's 'available at Naira' sits at least 10 dB clear.
+ [minor] 1.90-2.77 'under ₹2,500': 'under' is ink on her dark-brown hair and loses contrast, and the ₹ collides with the white halter strap. This is the hook's price, the one line I must read.
+   FIX: Stack 'under' (Cormorant Medium Italic 84) over '₹2,500' (120) at x 360, baselines 1120 and 1235, ink on her chest between the strap and the sun tattoo (the tattoo ends about y 1120 at x 880 or more). Or recrop h_riya_talk about 6% to the left so her hair leaves the caption.
+ [minor] End card 20.53-26.53: There is no web address. 'Naira' is a common name, and for a brand I've never heard of, a real .com is my legitimacy check, and how I'd find it again if I screenshot instead of tapping. V1 had nairaflore.com.
+   FIX: Add 'NAIRAFLORE.COM' in Jost caps 28, ink 70%, on the logo's line at x 420-760, y about 340, inside the safe zone and adding no new row.
+ [minor] 16.95-19.20 Halo Curve credit: Buying a ring online, my first doubt is size, and nothing says it fits. The listing says adjustable (US 5-9).
+   FIX: Set the credit as 'HALO CURVE RING · ADJUSTABLE' over '₹1,199'. It costs no time and is a listing fact.
+ [minor] Pre-spend: The local promo.ts still reads BUY2 0.1 / BUY3 0.2; only origin/main (70ea61db) is at 0.2 / 0.3. If Lovable hasn't Published that and Shopify isn't at 20/30, the three pieces come to ₹2,557.60 in the bag, which is OVER the ₹2,500 the hook promises, and I'd bounce on the spot.
+   FIX: Before spend, put the huggies, chain and hoops in the live nairaflore.com bag and confirm ₹2,238, then two pieces at ₹1,598, and check that Fastrr charges the same.
+
+######## BRIEF
+VERDICT: V2 is clearly better than V1, by about a point on every lens (7.5 / 7 / 7.5 / 7.5 against 6 / 6 / 6.5 / 6.5), and its structure is right, so V3 keeps it rather than starting again. What works:
+- Frame 1 is product at the lens.
+- Riya's real hook is cut on her own words.
+- The brand arrives on a real NAIRA lid.
+- The whole offer is built from three real boxes before 8.5 s.
+- The claims are spoken, the social proof is real, there is one campaign line, the card is calm and the mix is disciplined.
+
+V2 falls short in five places, mostly in the second half.
+1. **The offer reads as fine print to a muted viewer.** 'ANY 2' is 34 px over a 120 px '20% off', so it reads as a sitewide sale. ₹2,238 has nothing to be cut from on screen. 'No code' and COD do not appear on screen before 23 s.
+2. **Picture and voice fall out of step after 5.9 s.** The picture keeps a fixed grid and the voices do not. '20%' is heard over a '30%' frame (7.2), 'assurance' plays over the bracelet, and 'twice this week.' runs on to Sonal in ivory on white brick.
+3. **The voices run wall to wall.** The one music-only beat (the hair flip) now carries 'No code.', and gaps between speakers are as short as 0.03 s.
+4. **The worn bracelet is hidden.** It sits at y 1400-1600 under the Reels UI, next to the ceiling fan.
+5. **The card is slow and its tiles miss the pieces.** It takes 2.9 s to build, the tiles show hair rather than jewellery, and the blush strike on ₹3,197 barely shows.
+
+V3 fixes all of this with footage already in the library. I checked each choice frame by frame:
+- Riya's source has hard cuts at 20.30, 21.667, 22.333, 23.967, 25.367 and 26.80. So h_riya_brace2's last two frames are already the wide pose, and the macro cannot run to 14.55.
+- The full-frame macro has clean wood at x 64-600, y 300-540 for the credit.
+- Riya's wrist-to-cheek pose (25.367-26.80) has the bracelet at y 1020-1320 and her fist hides the fan.
+- In the hair flip (18.77-19.43) her head fills y 290-900, so no type can sit there.
+- The hoop box has clean wood down to y 900.
+- The chain shot is free of the eye cut only at pk_full 23.00-23.73. In the window I use (23.00-24.333) her eyes enter at the top as she tilts up, and the shot ends on her gaze.
+
+Rejected from the panel:
+- **One-line 'Any 2 · 20% off' at 104 px.** It is about 700 px wide and runs into Pankti's hand.
+- **'these two, ₹1,598'.** It sells the middle rung, and box 2 shows one piece.
+- **Holding ₹2,238 over the hair flip.** There is no clean ground for type.
+- **The creative lens's 'end on a live Sonal window'.** There is no 5 s closed-mouth Sonal take. 267E722A's lips part at 8.73, DE17C1BF 8.2-9.7 moves like speech in a silent clip, and E3C6EA7D's raised arm crosses the line's slot. I took that lens's fallback instead: the three real boxes as the card tiles.
+- **Ending at 24.4 s and dropping Riya's sign-off.** The brief's floor is 25 s, and the sign-off plays over a card that is already complete, so it costs no information.
+- **Silent claims.** The 3-year assurance is the owner's headline claim, so it stays spoken.
+
+From V1, three things come back, in V2's language:
+- the bag pieces readable at a glance and named, now as real box frames rather than plaster-cube stills;
+- a music-only beat;
+- the web address.
+
+Nothing else from V1 returns: not the iris, the count-down bag, SHOP NOW, the One/Two/Three triad, 'Made to be looked at' or the clacks.
+
+V3 runs 25.9 s, 0.63 s shorter. The complete card is on screen at 21.27 instead of about 23.6. A muted viewer has the whole deal by 9.2 s: any 3 pieces 30% off, ₹3,197 struck to ₹2,238, no code, COD available.
+KEEP:
+ - Frame 1 = pk_full 7.23-8.10, the Brushed Gold Huggies pinched at the lens (opener of the 2.73% CTR reel), with Riya's real hook running unbroken (riya src 0.00-4.26) and cut on her words at 0.867 / 1.700 / 2.767 / 3.867
+ - Kinn 041FCDC6 8.10 (eyes to the lens), Kinn 74FA1A49 20.10 (hoop going in) and the drop on 'this.' at 3.867 over Kinn 76D95B49 4.30, with the 3-frame score silence before it and the drop held 12 dB under 'this.'
+ - The brand arrives as an object: Pankti's NAIRA lid and drawer (pk_full 1.20-2.533) under Riya's own 'This is Naira,' (src 5.04-6.22), with the drawer slide as the only foley in the film
+ - The bag built from three real boxes in order (chain, huggies, hoops), with the offer complete before 9.2 s and voiced by Nyra's existing hv2_any2 / hv2_any3 reads
+ - The hair-flip whip (riya_full 19.30-19.43) match-cut into Pankti's hair at the ear (pk_full 9.30) at 9.867, the best transition in the film
+ - 'Waterproof. / Tarnish-free.' in Cormorant Medium 84, ivory with shadow, spoken, over the huggie going in; 'assurance' never 'guarantee'; no PVD; never Riya's 'two years' line (src 28.14-30.80)
+ - Ananaya's 'Someone actually asked me where this is from twice this week.' over the take where she holds the Halo Curve Ring over her face (ana 11.12 onward), with the HALO CURVE RING ₹1,199 credit top-left on the white wall
+ - Sonal's over-the-shoulder glance (Kinn 267E722A) under 'Made to be / asked about.', the line holding its exact position across the hard cut into the card, so the type is the transition
+ - A calm, left-aligned ivory card at x 64 with 'All three, ₹2,238' at 80 px; no SHOP NOW, no iris, no count-down, no code, no type under 28 px
+ - Ananaya's spoken CTA 'available at Naira with free delivery as well.' and Riya's 'You're welcome, but keep it between us.' as the last word, closing the secret her 'Nobody told us' opened
+ - Type grammar: Cormorant Garamond Medium (italic for the women's words, upright for the film's voice and prices), Jost tracked caps for labels, ink on pale grounds, ivory with soft shadow on dark grounds, radius 0, no grade, scrim or AI footage
+ - Sound discipline: harp / Rhodes / legato strings / felt kick, no snaps, bells or UI ticks, the B minor to D major add9 resolve on the card cut, -14 LUFS / -1.5 dBTP, last 4 frames silent for a clean loop
+CHANGES:
+ 1. Make the offer complete and readable on mute by 9.2 s. The condition goes to headline size, ₹2,238 sits next to a struck anchor, and NO CODE · COD AVAILABLE is on screen.
+    HOW: Box 2, 5.867-7.800, pk_full 4.85-6.783:
+- Hard on at 5.95, ivory with the 0 2 14 px 55% ink shadow over the dark ceiling, x 64, right edges at or left of x 520 (her hand starts near x 560).
+- 'Any 2 pieces' in Cormorant Garamond Medium 72, baseline 372.
+- '20% off' in Cormorant Medium 120, baseline 500.
+
+Box 3, 7.800-9.200, riya_full 16.60-18.00, all ink on the pale wood at x 64:
+- At 7.800, hard: 'Any 3 pieces' (Medium 72, baseline 372) and '30% off' (Medium 120, baseline 500).
+- At 8.000 (4-frame fade), a price row on baseline 632: '₹3,197' in Cormorant Medium 52 at ink 50%, with a 3 px ink-70% strike drawn left to right over 6 frames. Then 'All three, ₹2,238' in Cormorant Medium 92 from x 232; the right edge is about 840.
+- At 8.350 (4-frame fade): 'NO CODE · COD AVAILABLE' in Jost caps 34, 0.14em tracking, ink 80%, baseline 720.
+- All of it stays above y 900 (the box top never rises above y 955 in this window) and clears on the 9.200 cut.
+
+Rejected: a single 104 px line (about 700 px wide, it runs into Pankti's hand), 'these two, ₹1,598', and holding ₹2,238 over the hair flip.
+ 2. Put every picture change on a phrase end, so the ear and the eye always agree.
+    HOW: - Box 2 to box 3 at 7.800, after Nyra's 'off': hv2_any2 moves to 5.95-7.77 and hv2_any3 starts at 7.85, so 'three' lands on the third box.
+- Hair flip 9.200-9.867 on riya_full 18.767-19.433, keeping the whip into the 9.867 match cut.
+- Chain to bracelet at 13.200, after the new assurance read ends at 13.10.
+- Worn bracelet to Ananaya at 16.367, on the end of Riya's 'for.'.
+- Ananaya to Sonal at 19.800, after her 'week.' (19.76).
+- Every caption and super comes on hard on its cut frame or spoken word. V2 faded each hook caption in about 0.2 s late, so 20-25% of each hook shot was uncaptioned.
+ 3. Break up the wall of voices. The film's voice speaks only the offer and the claims, the hair flip is music-only, and every hand-off between speakers gets air.
+    HOW: - Delete hv2_nocode ('No code.'). It is now type, on box 3 and on the card.
+- Regenerate the assurance as 'Three-year plating assurance.' (drop 'with a'), with hv2's voice settings at 1.1x, at or under 1.35 s. Place it at 11.75-13.10.
+- Keep hv2_any2, hv2_any3 and hv2_wt as recorded; their timing is measured.
+
+Voice map:
+- Riya 0.00-4.26 and 4.60-5.78.
+- Nyra 5.95-7.77, 7.85-9.12, 9.94-11.65 and 11.75-13.10.
+- Riya 13.27-16.37.
+- Ananaya 16.70-19.76 and 20.60-23.48.
+- Riya 23.70-25.58.
+
+This leaves two music-only pockets:
+- 9.12-9.94: the flip. Bed +3 dB, harp run, strings in on the 9.200 bar.
+- 19.76-20.60: the breath. Drums out, held cello D.
+
+The shortest gap between speakers is now 0.17 s (V2: 0.03 s).
+ 4. Rebuild the end card. It is complete by 21.27, the tiles are the three real boxes, each piece is named and priced, it sells only the top rung, and it words COD honestly.
+    HOW: Hard cut at 20.533 to ivory #FBF3EC. 'Made to be / asked about.' stays in place (Cormorant Medium 72, x 64, tops 412 and 492).
+
+At 20.533 (6-frame fade):
+- The sage NAIRA logo with the blush flower as the I, 260 px wide, x 64, y 300-358.
+- 'NAIRAFLORE.COM' in Jost caps 28 at ink 60%, right-aligned at x 1016, baseline 350. This comes back from V1; a cold buyer uses the address as a legitimacy check.
+
+Also at 20.533, all three tiles land together (6-frame fade, 12 px rise): 300x330, radius 0, y 600-930, at x 64 / 388 / 712, in the order the boxes opened. Each is a native downscale that plays once and holds:
+- Chain: pk_full 2.40-3.03, crop x 220-820, y 720-1380. Shows the NAIRA lid over the open drawer. Hold at 2.53.
+- Huggies: pk_full 5.00-6.50, crop x 450-1050, y 880-1540. Hold at 5.50.
+- Hoops: riya_full 16.90-18.00 from the 4K, crop x 300-940, y 980-1684. Hold at 17.20.
+
+Under the tiles, baseline 985: the name in Jost caps 28 and the price in Cormorant Medium 44, each at or under 280 px: 'CHAIN ₹1,199', 'HUGGIES ₹799', 'HOOPS ₹1,199'.
+
+At 20.800, the price row on baseline 1090: '₹3,197' in Cormorant Medium 48 at ink 50%, with a 3 px ink-70% strike (not blush), then 'All three, ₹2,238' in Cormorant Medium 80 from x 230.
+
+At 21.067:
+- 'PICK ANY 3 · 30% OFF · NO CODE' in Jost caps 32, deep sage #50726A, baseline 1160.
+- 'FREE SHIPPING · COD AVAILABLE' in Jost caps 30, ink 80%, baseline 1222.
+
+'Free' never sits next to COD. Fastrr adds 5% to a COD order and books it as shipping.
+ 5. Rebuild the bracelet beat so the piece is visible, the credit sits on wood rather than skin, and the fan is gone.
+    HOW: 13.200-14.533: riya_full 20.30-21.633, 40 frames, full frame at 100% from the 4K. Not h_riya_brace2: its frames 39-40 are already the wide pose after Riya's source cut at 21.667.
+- Credit hard on at 13.2 and held 1.33 s (V2: 0.8 s on her forearm).
+- Ink on the clean wood top-left: 'PRISM RIVIÈRE BRACELET' in Jost caps 30 (cap top 312), then '₹2,399' in Cormorant Medium 64 (baseline 432).
+
+14.533-16.367: riya_full 24.967-26.80, playing through Riya's own cut at src 25.367 (ad 14.933).
+- 24.967-25.367: reframed 1.15x (native 4K, anchored bottom-centre) so the top edge sits below her eyes; the bracelet rises to y ≈1130-1345 with the Cushion Halo Ring, which is never named.
+- 25.367-26.80 at 100%: her wrist raised to her cheek, the bracelet at y ≈1020-1320, the hoop in her ear, and her fist covering the ceiling fan.
+
+Riya src 20.56-23.66 plays at 13.27-16.37. The worn shot has no caption: there is no clean ground beside her head and fist.
+
+Dropped: V2's riya_full 21.667 pose (bracelet under the Reels UI, fan beside the type) and riya_full 24.00-24.97 at 100% (the top edge cuts her eyes).
+ 6. Stop Ananaya's quote running on to Sonal, and let her credit answer the ring-size question.
+    HOW: - Ananaya's picture runs 16.367-19.800 on ana src 11.12-14.553. The hand holding the ring is still over her face at 14.53.
+- Her voice plays at 16.70-19.76.
+- Captions in Cormorant Medium Italic 72, ivory with shadow, centred, baseline 1180 over the pink dress, hard on with her words: 'Someone actually asked me' 16.70-18.00, 'where this is from' 18.00-18.70, 'twice this week.' 18.70-19.800. The last one ends on the cut and never touches the white brick.
+- Credit 16.367-19.800: 'HALO CURVE RING · ADJUSTABLE' in Jost caps 30 (cap top 300, right edge about 715, above her fingertips at y ≈540), then '₹1,199' in Cormorant Medium 64 (baseline 420). 'Adjustable, US 5-9' is a listing fact.
+- Sonal plays 19.800-20.533 on Kinn 267E722A 7.97-8.70 (mouth closed). The line fades in over 4 frames from 19.87.
+ 7. Make every hook caption readable in the first 3 s.
+    HOW: - 0-0.867: 'Nobody' / 'told us…' in ink, moved from x 64 to x 480 (baselines 1150 and 1235). In V2 it sat on Pankti's dark hair, which fills x 75-475 at that height; at x 480 it is fully on her pale tee and clears the arm tattoo at x ≈950.
+- 1.700-2.767: reframe Riya's talking shot from 125% to 140% (native 4K) anchored on her eyes at x ≈540, y ≈600. The lav mic drops to y ≈1540, under the Reels caption, and the fan leaves past the right edge.
+- Then set the price on two lines in ink from x 330: 'under' in Medium Italic 84 (baseline 1120) and '₹2,500' in Medium Italic 128 (baseline 1238), on her chest and white halter, clear of her hair and the sun tattoo.
+- All hook captions come on hard on the cut.
+ 8. Make the claims bigger and better framed, and answer the 'is it real gold?' question.
+    HOW: 9.867-11.867, pk_full 9.30-11.30, all ivory with shadow at x 64:
+- A kicker '18K GOLD COATING' in Jost caps 30 (cap top 310). This is the owner's allowed form, never bare '18K gold'.
+- 'Waterproof.' (baseline 440), hard on at 9.95.
+- 'Tarnish-free.' (baseline 530), hard on with Nyra's 'Tarnish' (≈10.75).
+
+11.867-13.200, pk_full 23.00-24.333:
+- The shot opens with no eyes in frame and the toggle rises into the safe zone; her gaze arrives from 24.07.
+- Right-aligned at x 860, ink: '3-year' in Cormorant Medium 96 (baseline 1000), then 'PLATING' and 'ASSURANCE' in Jost caps 32 (baselines 1050 and 1096). V2 set this as three lines of 38 px tracked caps.
+ 9. Fix the two places where the music beats the voice.
+    HOW: - Extend the -12 dB bed_gain from 3.867 to 5.80, through 'Naira,'. In V2 it released at 4.25, and at 4.75 the bed (-21.0) was over Riya (-23.0).
+- At 20.533 the resolve chord sounds on its own, then is ducked 8 dB under Ananaya from 20.60 to 21.30, then the usual 10 dB duck.
+- Ananaya gets +4 dB clip gain.
+- Target: voice at least 10 dB over the bed in every 0.5 s window where someone speaks.
+- Master: -14 LUFS / -1.5 dBTP, last 4 frames (25.767-25.900) silent.
+- Score sections:
+  - pad 0-3.767, reversed swell 2.767-3.767, mute 3.767-3.867
+  - groove 3.867-9.200 (harp from 6.533)
+  - lift 9.200-9.867 (no voice)
+  - groove 9.867-13.200
+  - light 13.200-16.367
+  - soft 16.367-19.760
+  - stop 19.760-20.533
+  - resolve 20.533
+- End downbeats at 22.533 and 25.200.
+ 10. Ship the hero alongside a 15 s cut-down and two frame-1 hook variants, so Meta picks the hook and the length.
+    HOW: 15 s cut-down:
+- 0-9.867 as V3, then a hard cut on the whip to the same card at 9.867.
+- Card builds: tiles, logo and line at 9.867, the price row at 10.133, the offer and trust lines at 10.400.
+- Resolve at 9.867, Ananaya's CTA at 10.00-12.88, hold to 14.30, last 4 frames silent. Total 14.433 s.
+
+Hook B:
+- 0-0.867 is riya_full 20.30-21.167, the bracelet macro.
+- 'Nobody / told us…' in ink at x 64 on the wood (baselines 420 and 505).
+
+Hook C:
+- 0-0.867 is GRWM src 0.40-1.267, the Woven Gold Hoop held up to the lens. Picture only; the GRWM song is not used.
+- Caption ivory with shadow at x 64 over the corset.
+
+Everything else is identical.
+ 11. Pre-spend checks. The headline number depends on them.
+    HOW: 1. This checkout (a8a7b002) still reads BUY2 0.1 / BUY3 0.2 in src/lib/promo.ts; only origin/main (70ea61db) reads 0.2 / 0.3. At the old rates, three pieces cost ₹2,557.60, which is over the hook's ₹2,500. Before spend, put the huggies, chain and hoops in the live nairaflore.com bag (after Lovable Publish) and confirm it shows ₹2,238 and that Fastrr charges the same prepaid. Confirm the Shopify BUY2 and BUY3 codes are at 20% and 30% and scoped to discount-scope-all.
+2. A COD buyer of the ₹2,238 bag pays ₹2,349.90, because Fastrr books the 5% as shipping. That is still under ₹2,500.
+3. The owner approves 'Waterproof' (Care text on the huggies, chain and hoops listings) and '18K gold coating' (the owner's claim; the listings say '18K gold tone'). If either is declined, delete that line; nothing else moves.
+
+NEW SCRIPT:
+NAIRA HERO V3 (FINAL): "MADE TO BE ASKED ABOUT"
+25.900 s (777 frames), 1080x1920, 30 fps, 9:16 Meta Reels
+
+GLOBAL
+- Grid: 90 BPM. The anchor is 3.867; bar downbeats fall at 6.533, 9.200, 11.867, 14.533, 17.200, 19.867, 22.533 and 25.200. From 5.867 on, cuts sit on the ends of spoken phrases; the score places its drop, lift, breath and resolve where the picture needs them.
+- Fonts: Cormorant Garamond MEDIUM (italic for the real women's words; upright for the film's voice, prices and the line); Jost tracked caps for labels. Minimum size 28 px.
+- Colour: ink #1A1614 on pale grounds; ivory #FBF3EC with a 0 2 14 px 55% ink shadow on dark grounds; deep sage #50726A only for the card's offer line; blush only in the logo's flower.
+- Timing: captions and supers come on HARD on their cut frame or spoken word. No caption crosses a cut on to another woman.
+- Safe zone: all type between y 290 and 1245; below y 1050, every right edge at or left of x 900. No type on a face, a featured piece or a hand.
+- Footage: no grade, scrim, filter, AI clip or upscale. Riya reframes are native crops from her 4K (at most 2x). Kinn plays at 1.5x as before; Pankti plays from pk_full at 100%.
+
+[0.000-0.867] HOOK: PRODUCT AT THE LENS
+PIC: pk_full 7.23-8.10. Pankti's Brushed Gold Huggies pinched at the lens, matte gold filling the upper half.
+SND: Riya, src 0.00-4.26, unbroken through 4.26: "Nobody told us demi-fine jewellery under 2500 would look like this." A frame-0 felt sub-hit and a Rhodes Bm9 chord; the pad sits about 20 dB under her.
+TXT: From frame 0, no fade. "Nobody" / "told us…" in Cormorant Medium Italic 92, ink, left edge x 480, baselines 1150 and 1235, entirely on her pale tee. Her hair fills x 75-475 at this height; the right edge (about 800) clears the arm tattoo.
+
+[0.867-1.700]
+PIC: Kinn 041FCDC6 8.10-8.93. Sonal, eyes to the lens, hoop in, no hands. Push from 1.00 to 1.03.
+SND: Riya, "demi-fine jewellery" (src 0.86-1.72). Pad only.
+TXT: Hard on at 0.867. "demi-fine" / "jewellery" in Medium Italic 84, ivory with shadow, x 64, baselines 1150 and 1235, over the black corset.
+
+[1.700-2.767]
+PIC: Riya 4K, src 1.70-2.767, IN SYNC. Reframed from 125% to 140% (native 4K), anchored on her eyes at about x 540, y 600. The lav mic drops to about y 1540, under the Reels caption, and the fan leaves past the right edge.
+SND: Riya, "under 2500" (src 1.72-2.76).
+TXT: Hard on at 1.700, ink, left edge x 330. "under" in Medium Italic 84, baseline 1120, then "₹2,500" in Medium Italic 128, baseline 1238. Both sit on her chest and white halter, clear of her hair and the sun tattoo (now at about x 930).
+
+[2.767-3.867]
+PIC: Kinn 74FA1A49 20.10-21.20. The braided Woven Gold Hoop slides into her ear.
+SND: Riya, "would look like" (src 2.76-3.88). A reversed string swell from 2.767 to 3.767, then the score falls SILENT for 3.767-3.867.
+TXT: Hard on at 2.767. "would look like" in Medium Italic 84, ivory with shadow, x 64, baseline 1235.
+
+[3.867-4.533] THE DROP
+PIC: Kinn 76D95B49 4.30-4.97. Her fingertips hold the hoop at the lens. The kada is never labelled.
+SND: Riya, "this." (src 3.88-4.22). The groove enters (felt kick on beats 1 and 3, round bass, Rhodes, a very low shaker, no snaps), held 12 dB down.
+TXT: "this." in Medium Italic 160, ivory with shadow, x 64, baseline 1225. Hard on at 3.867; fades out over 4 frames from 4.40.
+
+[4.533-5.867] BOX 1: BRAND
+PIC: pk_full 1.20-2.533. The blush box is held to the lens; the NAIRA lid reads correctly; the drawer slides open on the Toggle Link Chain.
+SND: Riya, "This is Naira," (src 5.04-6.22) at 4.60-5.78, with a 30 ms tail fade before "a brand". A soft card-drawer slide at 4.65-5.33, the ONLY foley in the film. The bed stays held at -12 dB from 3.867 to 5.80.
+TXT: None. The lid is the logo.
+
+[5.867-7.800] BOX 2: ANY 2
+PIC: pk_full 4.85-6.783. The huggies on velvet in the open box, the NAIRA lid above.
+SND: Nyra, hv2_any2 (existing read), "Any two, twenty percent off." at 5.95-7.77. A low harp arpeggio enters on the 6.533 bar.
+TXT: Hard on at 5.95. Ivory with shadow over the dark ceiling, x 64, right edges at or left of x 520 (her hand starts near x 560), everything above her hairline at about y 576:
+- "Any 2 pieces" in Cormorant Medium 72, baseline 372.
+- "20% off" in Cormorant Medium 120, baseline 500.
+Both clear on the 7.800 cut.
+
+[7.800-9.200] BOX 3: ANY 3, ALL THREE
+PIC: riya_full 16.60-18.00. The Woven Gold Hoops on velvet in a blush box, held in her mehendi hand, with clean pale wood above about y 950. Riya's own audio is muted.
+SND: Nyra, hv2_any3, "Any three, thirty." at 7.85-9.12.
+TXT: Ink on the wood, x 64, everything above y 900:
+- 7.800, hard: "Any 3 pieces" (Medium 72, baseline 372) and "30% off" (Medium 120, baseline 500).
+- 8.000, 4-frame fade: the price row on baseline 632. "₹3,197" in Cormorant Medium 52 at ink 50%, with a 3 px ink-70% strike drawn left to right over 6 frames, then "All three, ₹2,238" in Cormorant Medium 92 from x 232 (right edge about 840).
+- 8.350, 4-frame fade: "NO CODE · COD AVAILABLE" in Jost caps 34, 0.14em tracking, ink 80%, baseline 720.
+Everything clears on the 9.200 cut.
+
+[9.200-9.867] WORN: BREATHE
+PIC: riya_full 18.767-19.433. Her mehendi hands in her hair, hoops in, looking up, then the hair whip at 19.30-19.43.
+SND: No voice; music only from 9.12 to 9.94. A "lift": bed +3 dB, a warm harp run, legato strings entering on the 9.200 bar.
+TXT: None. Her head fills y 290-900.
+
+[9.867-11.867] QUALITY 1
+PIC: A match cut on the whip into pk_full 9.30-11.30, Pankti's hair at the ear. The huggie is pressed in, her hand leaves at 10.6, the ear is clean at 10.8-11.1, and her hand returns to tuck her hair as we cut.
+SND: Nyra, hv2_wt, "Waterproof. Tarnish-free." at 9.94-11.65. Bed ducked 10 dB.
+TXT: Ivory with shadow, x 64, over the dark wall and her hair:
+- "18K GOLD COATING" in Jost caps 30, 0.14em tracking, cap top 310, and "Waterproof." in Cormorant Medium 84, baseline 440. Both hard on at 9.95.
+- "Tarnish-free." at baseline 530, hard on with Nyra's "Tarnish" (about 10.75; set it from the hv2_wt waveform).
+All off at 11.867.
+
+[11.867-13.200] QUALITY 2
+PIC: pk_full 23.00-24.333. The Toggle Link Chain worn hands-free. The shot opens on her lips and neck with no eyes in frame. As she tilts, the toggle rises from about y 1500 to about y 1200. Her eyes enter the top of frame at about 23.75, and she holds the lens from 24.07.
+SND: Nyra, a NEW read (hv3_assur): "Three-year plating assurance." at 11.75-13.10, at or under 1.35 s, with hv2's voice settings at 1.1x.
+TXT: Hard on at 11.867. Ink on the tee, right-aligned at x 860:
+- "3-year" in Cormorant Medium 96, baseline 1000.
+- "PLATING" in Jost caps 32, 0.14em tracking, baseline 1050.
+- "ASSURANCE" in Jost caps 32, baseline 1096.
+Off at 13.200. QC: the chain's right strand must stay left of x 600 within y 930-1100.
+
+[13.200-14.533] BRACELET: MACRO AND CREDIT
+PIC: riya_full 20.30-21.633 (40 frames), the full frame at 100% from the 4K, not h_riya_brace2. The Prism Rivière Bracelet on her mehendi wrist against pale wood: aqua, pink and yellow stones, each in its halo.
+SND: Riya, src 20.56-23.66 at 13.27-16.37 ("this bracelet is the one people stop you for."; the leading "and" is cut), with a 30 ms fade-in. The score goes "light": kick on beat 1 only, bass, Rhodes, harp, ducked 10 dB.
+TXT: Hard on at 13.2, ink on the clean wood top-left (x 64-600 by y 300-540 is clear of the arm in every frame):
+- "PRISM RIVIÈRE BRACELET" in Jost caps 30, 0.14em tracking, cap top 312.
+- "₹2,399" in Cormorant Medium 64, baseline 432.
+Holds to 14.533.
+
+[14.533-16.367] BRACELET: WORN
+PIC: riya_full 24.967-26.80, playing through Riya's own cut at src 25.367 (ad 14.933).
+- 14.533-14.933: the close framing reframed 1.15x (native 4K, anchored bottom-centre), so the top edge sits below her eyes. The bracelet is at about y 1130-1345, with her mehendi fist and the Cushion Halo Ring, which is never named.
+- 14.933-16.367, at 100%: her wrist raised to her cheek, the bracelet at about y 1020-1320, a hoop in her ear, a closed-mouth smile, and her fist covering the ceiling fan.
+SND: Riya, "the one people" (14.49-15.27), then "stop you for." (15.27-16.37). The cut falls on the end of "for.".
+TXT: None.
+
+[16.367-19.800] SOCIAL PROOF
+PIC: ana src 11.12-14.553, one take. She holds the Halo Curve Ring over her face, tiger eye and champagne crystal to the lens; her mouth stays hidden or closed. The lariat is never named.
+SND: Ananaya, "Someone actually asked me where this is from twice this week." (ana src 0.00-3.06) at 16.70-19.76. Her phone mic is EQ-matched to Riya's lav, with +4 dB of clip gain. The score goes "soft": Rhodes, bass and harp, ducked 10 dB.
+TXT:
+- Credit, hard on at 16.367 through 19.800, top-left at x 64, ink on the white wall: "HALO CURVE RING · ADJUSTABLE" in Jost caps 30, 0.14em tracking, cap top 300 (right edge about 715), then "₹1,199" in Cormorant Medium 64, baseline 420.
+- Captions in Cormorant Medium Italic 72, ivory with shadow, centred, baseline 1180, over the pink dress, each hard on with her words: "Someone actually asked me" 16.70-18.00; "where this is from" 18.00-18.70; "twice this week." 18.70-19.800, ending on the cut.
+
+[19.800-20.533] THE LINE
+PIC: Kinn 267E722A 7.97-8.70. She glances over her shoulder to the lens with both hoops in and her mouth closed; her lips part only at 8.73, after the out-point.
+SND: THE BREATH, music only from 19.76 to 20.60. Drums out; a held low cello D, Rhodes and room tone.
+TXT: "Made to be" / "asked about." in Cormorant Medium 72 upright, ink, x 64, tops 412 and 492, on the white brick (her head stays right of x 480). A 4-frame fade from 19.87. It HOLDS through the cut.
+
+[20.533-25.900] END CARD
+PIC: A hard cut to ivory #FBF3EC, radius 0, no shadows. "Made to be / asked about." stays exactly in place.
+- 20.533, 6-frame fade: the NAIRA logo, sage letters with the blush flower as the I, 260 px wide, x 64, y 300-358. "NAIRAFLORE.COM" in Jost caps 28, 0.14em tracking, ink 60%, right-aligned at x 1016, baseline 350.
+- 20.533, all three together, 6-frame fade with a 12 px rise: three LIVE box tiles, 300x330, radius 0, y 600-930, at x 64 / 388 / 712, in the order the boxes opened. Each is a native downscale that plays once and holds:
+  - Tile 1, CHAIN: pk_full 2.40-3.03, crop x 220-820, y 720-1380 (the NAIRA lid over the open drawer, toggle chain on velvet). Hold at 2.53.
+  - Tile 2, HUGGIES: pk_full 5.00-6.50, crop x 450-1050, y 880-1540 (the lid over both huggies on velvet). Hold at 5.50.
+  - Tile 3, HOOPS: riya_full 16.90-18.00 from the 4K, crop x 300-940, y 980-1684 (both braided hoops on velvet). Hold at 17.20.
+- Under each tile, left-aligned with it on baseline 985: the name in Jost caps 28 and the price in Cormorant Medium 44, each at or under 280 px wide. "CHAIN ₹1,199" / "HUGGIES ₹799" / "HOOPS ₹1,199".
+- 20.800, 6-frame fade: the price row on baseline 1090. "₹3,197" in Cormorant Medium 48 at ink 50%, with a 3 px ink-70% strike drawn over 6 frames, then "All three, ₹2,238" in Cormorant Medium 80, ink, from x 230 (right edge about 760).
+- 21.067, 6-frame fade:
+  - "PICK ANY 3 · 30% OFF · NO CODE" in Jost caps 32, 0.12em tracking, deep sage #50726A, x 64, baseline 1160 (right edge about 790).
+  - "FREE SHIPPING · COD AVAILABLE" in Jost caps 30, 0.12em tracking, ink 80%, x 64, baseline 1222 (right edge about 700).
+- The card is complete at 21.27 and holds to 25.900.
+- Never on the card: SHOP NOW, a code, "free COD", a bare "18K gold", or any type under 28 px.
+SND:
+- 20.533, RESOLVE: strings and Rhodes on D major add9, with a warm low-mid harp glissando down and no bells. Felt kick on beat 1 only. Ducked 8 dB under Ananaya from 20.60 to 21.30, then the usual 10 dB duck.
+- Ananaya (audio only): "available at Naira with free delivery as well." (ana src 34.70-37.58) at 20.60-23.48.
+- Riya (audio only): "You're welcome, but keep it between us." (src 31.02-32.90) at 23.70-25.58.
+- End downbeats at 22.533 and 25.200. The last chord rings out to silence by 25.767; the last 4 frames (25.767-25.900) are silent for a clean loop.
+
+MIX
+- -14 LUFS integrated, -1.5 dBTP.
+- Voice at least 10 dB over the bed in every 0.5 s window where someone speaks. V2 failed at 4.75 and 20.75.
+- Pankti's and Riya's source audio stays muted except for the lines cut in. The Kinn clips have no audio. The only foley is the drawer slide.
+
+QC (render every beat with a Reels UI overlay)
+- The frame-1 caption sits entirely on the tee.
+- No type touches a face, a featured piece or a hand.
+- Right edges are at or left of x 900 below y 1050.
+- The 7.800 cut falls after Nyra's "off".
+- The box-3 stack stays above the box in every frame.
+- The chain strand clears the 3-year stack.
+- "twice this week." never appears over Sonal.
+- Riya's eyes are never cut by the top edge.
+- Price figures render in Cormorant.
+- Frames 614-618 (the cut into the card) contain no black or stray frame.
+
+VARIANTS (export from the same timeline)
+1. 15 s cut-down:
+   - 0-9.867 as above, then a hard cut on the whip to the same card at 9.867 (tiles, logo and line at 9.867; price row at 10.133; offer and trust lines at 10.400).
+   - Resolve at 9.867, Ananaya's CTA at 10.00-12.88, hold to 14.30, last 4 frames silent. Total 14.433 s.
+2. Hook B:
+   - 0-0.867 is riya_full 20.30-21.167, the bracelet macro.
+   - "Nobody / told us…" in ink at x 64 on the wood, baselines 420 and 505.
+3. Hook C:
+   - 0-0.867 is GRWM src 0.40-1.267, the Woven Gold Hoop held up to the lens. Picture only; the GRWM song is not used.
+   - Caption in ivory with shadow at x 64 over the corset, baselines 1150 and 1235.
+4. Everything else in the variants is identical.
+
+PRE-SPEND
+1. Rates: the live bag on nairaflore.com (after Lovable Publish) must show huggies + chain + hoops at ₹2,238, with Fastrr charging the same prepaid.
+   - The local checkout a8a7b002 still has BUY2 0.1 / BUY3 0.2; only origin/main 70ea61db has 0.2 / 0.3.
+   - At the old rates the bag is ₹2,557.60.
+   - Shopify BUY2 = 20% and BUY3 = 30%, both scoped to discount-scope-all.
+2. COD on this bag is ₹2,349.90, because Fastrr books the 5% as shipping. That is still under ₹2,500.
+3. Claims: the owner approves "Waterproof" and "18K gold coating"; if either is declined, delete that line. Never use Riya's src 28.14-30.80 ("two years").

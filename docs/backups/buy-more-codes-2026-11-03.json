@@ -1,0 +1,12 @@
+{
+  "note": "BUY2 and BUY3 before and after the owner set them back to 10% and 20% on 3 Nov 2026 (\"Make it buy 2 get 10% and buy 3 get 20% again. And on websute display too everywhere\"). Only the percentage and title change. To undo, run discountCodeBasicUpdate on each id with the 'before' percentage and title, and revert the site commit that changed src/lib/promo.ts.",
+  "unchanged": "items gid://shopify/Collection/333512638626 (discount-scope-all), combinesWith, status ACTIVE, startsAt, endsAt, minimum quantities 2 and 3",
+  "codes": [
+    { "code": "BUY2", "id": "gid://shopify/DiscountCodeNode/1831564935330", "minimumQuantity": 2,
+      "before": { "title": "BUY2 — extra 20% off 2 or more items", "percentage": 0.2, "usesSoFar": 29, "readAt": "2026-11-03T17:25Z" },
+      "after": { "title": "BUY2 — extra 10% off 2 or more items", "percentage": 0.1 } },
+    { "code": "BUY3", "id": "gid://shopify/DiscountCodeNode/1831570571426", "minimumQuantity": 3,
+      "before": { "title": "BUY3 — extra 30% off 3 or more items", "percentage": 0.3, "usesSoFar": 21, "readAt": "2026-11-03T17:25Z" },
+      "after": { "title": "BUY3 — extra 20% off 3 or more items", "percentage": 0.2 } }
+  ]
+}

@@ -71,15 +71,25 @@ describe("redesigned product page", () => {
     expect(code.match(/<details className="group/g)?.length).toBe(3);
   });
 
-  /* The owner (2 Nov 2026): the offer under the price and the badges. Once,
-     before the choices and Add to cart, priced from the chosen variant; a
-     piece sold out altogether is reserved on WhatsApp, outside the bag. */
-  it("puts the buy-more offer under the price and badges, before the choices and Add to cart", () => {
+  /* The owner (3 Nov 2026): "place this below buy now and all, with space
+     proper so it doesn't affect conversion". Once, after Buy Now, Add to cart
+     and the gift line, outside the buttons' block, before the fold-downs;
+     priced from the chosen variant; a piece sold out altogether is reserved
+     on WhatsApp, outside the bag. Nothing stands between the choices and the
+     buttons. */
+  it("puts the buy-more offer under Buy Now, Add to cart and the gift line, before the fold-downs", () => {
     const offer = code.indexOf("<PdpOfferLadder");
-    expect(offer).toBeGreaterThan(code.indexOf('aria-label="Made to last"'));
-    expect(offer).toBeGreaterThan(code.indexOf("pieces sold in the last 48 hours"));
-    expect(offer).toBeLessThan(code.indexOf("choices(piece).map"));
-    expect(offer).toBeLessThan(code.indexOf('id="product-actions"'));
+    const actions = code.indexOf('id="product-actions"');
+    expect(offer).toBeGreaterThan(code.indexOf("choices(piece).map"));
+    expect(offer).toBeGreaterThan(actions);
+    expect(offer).toBeGreaterThan(code.indexOf("handleBuyNow}"));
+    expect(offer).toBeGreaterThan(code.indexOf("Gift-ready: every piece arrives in the Naira gift box"));
+    expect(offer).toBeLessThan(code.indexOf('id="pdp-panel-details"'));
+    /* Its own block, after the buttons' grid closes: #product-actions keeps
+       only the buttons and the gift line. The slice starts inside the grid's
+       opening tag, so it holds one more </div> than <div: the grid's own. */
+    const block = code.slice(actions, offer);
+    expect((block.match(/<\/div>/g) ?? []).length).toBe((block.match(/<div[\s>]/g) ?? []).length + 1);
     expect(code.match(/<PdpOfferLadder/g)).toHaveLength(1);
     expect(code).toMatch(/\{!soldOut && <PdpOfferLadder price=\{shown\.price\} preorder=\{sizePreorder \|\| variantSoldOut\} \/>\}/);
   });

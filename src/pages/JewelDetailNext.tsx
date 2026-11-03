@@ -478,10 +478,13 @@ const JewelDetailNext = () => {
      so a buy button is visible from the moment the page opens — but never
      over the price. It watches the button itself: the gift line below it
      reaching past the screen's edge put the bar over a button in full view.
-     Nor over the offer's two rungs while they are on screen: the panel sits
-     right above Add to cart, so on a 360x780 phone the bar covered the
-     per-piece prices on the first screen. Rungs reaching past the screen's
-     edge do not hold it back (an Instagram-sized screen keeps its bar). */
+     Nor over the offer's two rungs while they are on screen: when the panel
+     sat right above Add to cart, on a 360x780 phone the bar covered the
+     per-piece prices on the first screen. Under the buttons (3 Nov 2026) the
+     rungs are on screen only once Add to cart is, or has scrolled away above
+     them, so the guard stays as a backstop wherever the panel sits. Rungs
+     reaching past the screen's edge do not hold it back (an Instagram-sized
+     screen keeps its bar). */
   useEffect(() => {
     const check = () => {
       const target = document.querySelector("#product-actions > button");
@@ -1016,11 +1019,6 @@ const JewelDetailNext = () => {
               <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
 
-            {/* Buy 2 / Buy 3, priced for this piece and following the bag. A
-                piece sold out altogether is reserved on WhatsApp and never
-                reaches the bag, so it is offered nothing it cannot get. */}
-            {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
-
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
                 choices as they stand; a sold-out one can still be reserved. */}
@@ -1185,10 +1183,20 @@ const JewelDetailNext = () => {
               </p>
               {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
                   a second time under Buy Now; the page shows it once, in
-                  PdpOfferLadder under the price, which also follows the bag. To
-                  use the bundle panel instead, render it here and drop the
-                  ladder above. */}
+                  PdpOfferLadder just below, which also follows the bag. To
+                  use the bundle panel instead, render it in the ladder's place. */}
             </div>
+
+            {/* Buy 2 / Buy 3, priced for this piece and following the bag,
+                under Buy Now, Add to cart and the gift line (the owner, 3 Nov
+                2026: "place this below buy now and all, with space proper so
+                it doesn't affect conversion"). Nothing stands between the
+                choices and the buttons, which sit 68px higher than with the
+                panel under the price; the panel brings its own space above
+                (PdpOfferLadder). A piece sold out altogether is reserved on
+                WhatsApp and never reaches the bag, so it is offered nothing it
+                cannot get. */}
+            {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
 
             {/* Details, care and delivery as fold-downs, closed until asked for
                 (Nishorama's pattern): the first screen stays the photo, the

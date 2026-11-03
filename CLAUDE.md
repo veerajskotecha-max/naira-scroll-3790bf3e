@@ -83,17 +83,20 @@ it is the panel the heart opens.
 **The PDP's first screen is budgeted for the Instagram in-app browser** — half of
 all sessions, ~640px of visible page on a 360px Android; measured 21–24 Sep,
 76% of product-page visits saw no second page. The routed page is
-`JewelDetailNext.tsx`: rating, name, price, the badges, the sold strip, then the
-buy-more offer (`jewellery/PdpOfferLadder.tsx`, the owner's ask of 2 Nov 2026:
-both rungs side by side, each priced for this piece by `pieceAtRung`, "Applied
-in your bag · no code" on the panel's top rule, and a line from
-`pdpOfferStatus` under it once the bag holds a piece), then the choices and Add
-to cart. The panel is held to two rows: it moved Add to cart down 68px, which
-keeps it on the first screen of a 390x844 phone for a piece with no choices
-(a three-row version, 93px, did not). The phone's buy bar shows whenever Add to
+`JewelDetailNext.tsx`: rating, name, price, the badges, the sold strip, the
+choices, Buy Now and Add to cart, the gift line, then the buy-more offer
+(`jewellery/PdpOfferLadder.tsx`: both rungs side by side, each priced for this
+piece by `pieceAtRung`, "Applied in your bag · no code" on the panel's top
+rule, and a line from `pdpOfferStatus` under it once the bag holds a piece),
+then the fold-downs. The owner asked for the offer on 2 Nov 2026 and had it
+under the price; on 3 Nov moved it under the buttons ("place this below buy
+now and all, with space proper so it doesn't affect conversion"). Under the
+price it pushed Add to cart down 68px, off the first screen of a 390x844 phone
+for any piece with a choice. Keep it below the buttons, with 28px above its top rule and
+32px to the folds, and two rows. The phone's buy bar shows whenever Add to
 cart is not fully on screen, but never over the price, nor over the offer's
 rungs while they are fully on screen (it covered the per-piece prices on a
-360x780 phone). `PdpBuyFacts.tsx` (the old one-line ladder
+360x780 phone when the panel sat above the button). `PdpBuyFacts.tsx` (the old one-line ladder
 and the delivery + COD line) is used only by the unrouted `JewelDetail.tsx`. The PDP says only "COD available" — the owner's call. The fee is
 stated in the BAG instead, as its own line in rupees ("COD fee · none if paid
 online"): Fastrr adds 5% of the post-discount total to COD orders (verified on

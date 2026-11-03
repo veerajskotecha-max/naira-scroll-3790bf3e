@@ -10,9 +10,12 @@ import {
 } from "@/lib/promo";
 
 /*
-  The buy-more offer on the product page, under the price and the badges (the
-  owner, 2 Nov 2026: "offer display on pdp too below price and features like
-  Palmonas"). Palmonas shows three coupon cards on a rail, with bundle prices
+  The buy-more offer on the product page. The owner first had it under the
+  price and the badges (2 Nov 2026: "offer display on pdp too below price and
+  features like Palmonas"), then under the buttons (3 Nov 2026: "place this
+  below buy now and all, with space proper so it doesn't affect conversion"):
+  it now follows Buy Now, Add to cart and the gift line, in JewelDetailNext.
+  Palmonas shows three coupon cards on a rail, with bundle prices
   that ignore the piece and a code to copy. Here both rungs are always in
   view, priced for THIS piece (the chosen variant's price), and there is no
   code: the bag applies the rung itself and hands Fastrr the one code.
@@ -22,14 +25,18 @@ import {
   under the panel from `pdpOfferStatus`, which follows the bag as Shopify last
   confirmed it (a piece still on its way in does not count yet).
 
-  Two rows, because the panel sits right above Add to cart: on a 390x844
-  phone a piece with no choices kept its Add to cart on the first screen only
-  with the panel under 71px, and the phone's buy bar, which shows whenever
-  that button is not fully on screen, would otherwise cover the panel itself.
-  "Applied in your bag · no code" rides on the panel's top rule, costing no
-  row. The line saying what this piece does to the bag appears under it only
-  once the bag holds a piece (or a code is typed); that change happens behind
-  the bag, which opens at the tap.
+  Under the price it sat between the choices and the buttons, and on a
+  390x844 phone it pushed Buy Now and Add to cart off the first screen for
+  any piece with a choice (Marquise Drop Choker: the buttons at 873px, shown
+  only by the buy bar). Below the buttons it costs them nothing: they sit
+  68px higher.
+  The panel brings its own space: 28px above its top rule (the legend rides
+  7px up into it, leaving about 21px of air under the gift line), so it reads
+  as a note about the price, not a third button, and the folds start 32px
+  under it. It stays two rows. "Applied in your bag · no code" rides on the
+  panel's top rule, costing no row. The line saying what this piece does to
+  the bag appears under it only once the bag holds a piece (or a code is
+  typed); that change happens behind the bag, which opens at the tap.
 
   A pre-order choice (a size or metal Shopify has sold out of) is reserved on
   WhatsApp and never reaches the bag, so the per-piece figures would be a
@@ -55,7 +62,7 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
   const top = Math.max(0, ...QUANTITY_OFFERS.filter((offer) => totalItems >= offer.minQuantity).map((offer) => offer.rate));
 
   return (
-    <section data-offer-ladder data-state={Math.min(totalItems, 3)} aria-label="Buy more, pay less" className="mt-3">
+    <section data-offer-ladder data-state={Math.min(totalItems, 3)} aria-label="Buy more, pay less" className="mt-7">
       <div className="relative border border-nf-gold-deep/35 px-3 pb-[7px] pt-[9px]">
         {/* On the top rule, like a fieldset's legend: no row of its own. */}
         <p className="absolute -top-[7px] left-2 bg-nf-ivory px-1.5 font-nf-label text-[9.5px] font-medium uppercase leading-[13px] tracking-nf-16 text-nf-gold-text">
@@ -100,8 +107,8 @@ const PdpOfferLadder = ({ price, preorder = false }: { price: number; preorder?:
         </ul>
       </div>
       {/* Always in the page, so a screen reader hears each new state. View
-          bag's 44px reaches up over the panel's rule, never down onto Buy Now
-          and Add to cart 8px below. */}
+          bag's 44px reaches up over the panel's rule, never down onto the
+          Details fold 32px below. */}
       <div aria-live="polite" className="flex items-start justify-between gap-3">
         {status && (
           <>

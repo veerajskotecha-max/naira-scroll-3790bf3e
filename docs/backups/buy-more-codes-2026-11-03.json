@@ -2,11 +2,43 @@
   "note": "BUY2 and BUY3 before and after the owner set them back to 10% and 20% on 3 Nov 2026 (\"Make it buy 2 get 10% and buy 3 get 20% again. And on websute display too everywhere\"). Only the percentage and title change. To undo, run discountCodeBasicUpdate on each id with the 'before' percentage and title, and revert the site commit that changed src/lib/promo.ts.",
   "unchanged": "items gid://shopify/Collection/333512638626 (discount-scope-all), combinesWith, status ACTIVE, startsAt, endsAt, minimum quantities 2 and 3",
   "codes": [
-    { "code": "BUY2", "id": "gid://shopify/DiscountCodeNode/1831564935330", "minimumQuantity": 2,
-      "before": { "title": "BUY2 — extra 20% off 2 or more items", "percentage": 0.2, "usesSoFar": 29, "readAt": "2026-11-03T17:25Z" },
-      "after": { "title": "BUY2 — extra 10% off 2 or more items", "percentage": 0.1 } },
-    { "code": "BUY3", "id": "gid://shopify/DiscountCodeNode/1831570571426", "minimumQuantity": 3,
-      "before": { "title": "BUY3 — extra 30% off 3 or more items", "percentage": 0.3, "usesSoFar": 21, "readAt": "2026-11-03T17:25Z" },
-      "after": { "title": "BUY3 — extra 20% off 3 or more items", "percentage": 0.2 } }
-  ]
+    {
+      "code": "BUY2",
+      "id": "gid://shopify/DiscountCodeNode/1831564935330",
+      "minimumQuantity": 2,
+      "before": {
+        "title": "BUY2 — extra 20% off 2 or more items",
+        "percentage": 0.2,
+        "usesSoFar": 29,
+        "readAt": "2026-11-03T17:25Z"
+      },
+      "after": {
+        "title": "BUY2 — extra 10% off 2 or more items",
+        "percentage": 0.1
+      }
+    },
+    {
+      "code": "BUY3",
+      "id": "gid://shopify/DiscountCodeNode/1831570571426",
+      "minimumQuantity": 3,
+      "before": {
+        "title": "BUY3 — extra 30% off 3 or more items",
+        "percentage": 0.3,
+        "usesSoFar": 21,
+        "readAt": "2026-11-03T17:25Z"
+      },
+      "after": {
+        "title": "BUY3 — extra 20% off 3 or more items",
+        "percentage": 0.2
+      }
+    }
+  ],
+  "timeline_utc": [
+    "17:27 codes set to 10%/20%",
+    "~18:00 put back to 20%/30% so the live site (still 20/30) never promised more than checkout gave",
+    "18:06 site commit 893d5be (10%/20%) pushed to main",
+    "18:35 owner's publish live (home shows 'Buy 2, 10% off · Buy 3, 20% off')",
+    "18:36 codes set to 10%/20%; live bag checked: 2 x Prism = Rs 4,318, 'You save Rs 480 · 10% for 2 pieces', checkout hand-off couponCode BUY2"
+  ],
+  "also": "Star Point Band Silver / 9 (variant 50798239645858) was Rs 0.00, active, 1 in stock; set to Rs 799 (compare-at Rs 1,500), matching Gold / 9."
 }

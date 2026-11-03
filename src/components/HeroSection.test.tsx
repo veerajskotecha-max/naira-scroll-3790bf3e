@@ -17,7 +17,7 @@ describe("HeroSection: the offer under the headline", () => {
       </MemoryRouter>,
     );
     const line = container.querySelector("[data-hero-offer]") as HTMLElement;
-    expect(line.textContent).toBe("Buy 2, 20% off · Buy 3, 30% off");
+    expect(line.textContent).toBe("Buy 2, 10% off · Buy 3, 20% off");
     expect(line.previousElementSibling?.tagName).toBe("H1");
     expect(line.querySelectorAll("a, button")).toHaveLength(0);
   });

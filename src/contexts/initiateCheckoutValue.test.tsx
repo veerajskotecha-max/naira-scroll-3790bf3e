@@ -4,8 +4,9 @@ import { CartProvider, useCart } from "./CartContext";
 
 /*
   InitiateCheckout's value was the bag's sum before its discount: a two-piece
-  bag (2399 + 999) showing "Total ₹2,718" with BUY2 told Meta 3398, while the
-  shopper was charged 2718. It now reports the bag's Total.
+  bag (2399 + 999) told Meta 3398 while the bag showed, and the shopper was
+  charged, its Total after BUY2 (₹3,058 at today's 10%). It now reports the
+  bag's Total.
 */
 const mocks = vi.hoisted(() => ({ track: vi.fn(), start: vi.fn(), promo: { code: null as string | null } }));
 vi.mock("@/lib/shopify", () => ({
@@ -41,13 +42,17 @@ beforeEach(() => {
 describe("InitiateCheckout's value is what the shopper is charged", () => {
   it.each([
     ["one piece, no offer", [line("prism-riviere-bracelet", "47501788348578", 2399)], null, 2399, null],
-    ["two pieces, BUY2 (20%)", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], null, 2718, "BUY2"],
-    ["three pieces, BUY3 (30%)", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], null, 4058, "BUY3"],
-    // 2,997 at 30% is 2,097.90: the bag rounds once, to 2,098.
-    ["three of one piece, BUY3 (30%)", [line("brushed-gold-huggies", "47501787594914", 999, 3)], null, 2098, "BUY3"],
+    ["two pieces, BUY2 (10%)", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], null, 3058, "BUY2"],
+    ["three pieces, BUY3 (20%)", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], null, 4638, "BUY3"],
+    // 2,997 at 20% is 2,397.60: the bag rounds once, to 2,398.
+    ["three of one piece, BUY3 (20%)", [line("brushed-gold-huggies", "47501787594914", 999, 3)], null, 2398, "BUY3"],
     ["one piece with a typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399)], "NAIRA10", 2159, "NAIRA10"],
-    // FRIENDSANDFAMILY ties BUY2 but covers only the jewellery in Shopify: the rung goes.
-    ["two pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 2718, "BUY2"],
+    // NAIRA10 (10%) ties BUY2 (10%) at two pieces: on a tie the rung goes, at the same charge.
+    ["two pieces with the typed 10% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "NAIRA10", 3058, "BUY2"],
+    // FRIENDSANDFAMILY (20%) beats BUY2 (10%) at two pieces: the typed code goes, and the value is its 20% off.
+    ["two pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 2718, "FRIENDSANDFAMILY"],
+    // FRIENDSANDFAMILY ties BUY3 at three pieces but covers only the jewellery in Shopify: the rung goes.
+    ["three pieces with the typed 20% code", [line("prism-riviere-bracelet", "47501788348578", 2399, 2), line("brushed-gold-huggies", "47501787594914", 999)], "FRIENDSANDFAMILY", 4638, "BUY3"],
   ])("%s", async (_bag, items, code, charged, coupon) => {
     bag(...items);
     mocks.promo.code = code;

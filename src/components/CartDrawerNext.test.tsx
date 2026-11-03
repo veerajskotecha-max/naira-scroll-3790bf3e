@@ -8,20 +8,20 @@ import { BagReturns, SimpleLadder } from "./CartDrawerNext";
 afterEach(cleanup);
 
 /* The offer's explanation rides ON TOP of the track, where the eye lands
-   first — it must name the saving (up to 30% off), say it runs today, and
-   carry the limited-stock urgency. */
+   first — it must name the saving (up to 20% off, the top rung since 3 Nov
+   2026), say it runs today, and carry the limited-stock urgency. */
 describe("SimpleLadder: the bag's offer track", () => {
-  it("leads with the up-to-30% explanation on top of the track", () => {
+  it("leads with the up-to-20% explanation on top of the track", () => {
     const { container } = render(<SimpleLadder totalItems={1} />);
     const ladder = container.querySelector("[data-ladder]") as HTMLElement;
     expect(ladder.firstElementChild?.textContent).toContain("Sitewide sale live today");
-    expect(ladder.firstElementChild?.textContent).toContain("up to 30% off");
+    expect(ladder.firstElementChild?.textContent).toContain("up to 20% off");
   });
 
   it("still states both rungs under the track", () => {
     render(<SimpleLadder totalItems={1} />);
-    expect(screen.getByText(/Buy 2 get 20% off/i)).toBeTruthy();
-    expect(screen.getByText(/Buy 3 get 30% off/i)).toBeTruthy();
+    expect(screen.getByText(/Buy 2 get 10% off/i)).toBeTruthy();
+    expect(screen.getByText(/Buy 3 get 20% off/i)).toBeTruthy();
   });
 });
 
@@ -49,9 +49,10 @@ describe("BagReturns: the bag's exchange and returns line", () => {
   });
 });
 
-/* Three of one piece at 30% divide a rounded total by three: "₹699.33 each"
-   read like an error. Each shows in whole rupees, as the product page quotes
-   it; the line total stays the exact rupee figure the checkout charges. */
+/* Three of one piece at 20% divide a rounded total by three: three ₹999
+   pieces come to ₹2,398, and "₹799.33 each" would read like an error. Each
+   shows in whole rupees, as the product page quotes it; the line total stays
+   the exact rupee figure the checkout charges. */
 describe("bag line prices", () => {
   it("shows each piece's price in whole rupees", () => {
     const src = readFileSync(resolve(__dirname, "CartDrawerNext.tsx"), "utf8");

@@ -23,14 +23,14 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
      promo.ts moves without the Shopify codes. The figures are this piece's
      own price at each rung, rounded as the bag rounds. */
   it.each([
-    [999, "₹799", "₹699"],
-    [1199, "₹959", "₹839"],
-    [1499, "₹1,199", "₹1,049"],
-    [2399, "₹1,919", "₹1,679"],
+    [999, "₹899", "₹799"],
+    [1199, "₹1,079", "₹959"],
+    [1499, "₹1,349", "₹1,199"],
+    [2399, "₹2,159", "₹1,919"],
   ])("prices a ₹%i piece at each rung", (price, two, three) => {
     render(<PdpOfferLadder price={price} />);
-    expect(rung(2).textContent).toBe(`Buy 2 · 20% off${two} each`);
-    expect(rung(3).textContent).toBe(`Buy 3 · 30% off${three} each`);
+    expect(rung(2).textContent).toBe(`Buy 2 · 10% off${two} each`);
+    expect(rung(3).textContent).toBe(`Buy 3 · 20% off${three} each`);
   });
 
   /* Palmonas makes the shopper copy a code. Here there is none to copy: the
@@ -49,7 +49,7 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     cart.totalItems = 1;
     cart.subtotal = 1199;
     const { container } = render(<PdpOfferLadder price={999} />);
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 20% off everything: it adds ₹559, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 10% off everything: it adds ₹779, not ₹999.");
     expect(rung(2).hasAttribute("data-reached")).toBe(false);
   });
 
@@ -59,17 +59,17 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
     expect(rung(2).hasAttribute("data-reached")).toBe(true);
     expect(rung(3).hasAttribute("data-reached")).toBe(false);
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 30% off everything: it adds ₹480, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("Add to bag for 20% off everything: it adds ₹580, not ₹999.");
   });
 
-  it("at three pieces, both rungs are reached and the line says the bag has 30%", () => {
+  it("at three pieces, both rungs are reached and the line says the bag has 20%", () => {
     cart.totalItems = 3;
     cart.subtotal = 2997;
     const { container } = render(<PdpOfferLadder price={999} />);
     expect(rung(2).hasAttribute("data-reached")).toBe(true);
     expect(rung(3).hasAttribute("data-reached")).toBe(true);
     expect(container.querySelector("[data-offer-ladder]")?.getAttribute("data-state")).toBe("3");
-    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("30% off is on your bag: adding this costs ₹699, not ₹999.");
+    expect(container.querySelector("[aria-live] > p")?.textContent).toBe("20% off is on your bag: adding this costs ₹799, not ₹999.");
   });
 
   /* With pieces in the bag the one control is View bag, a full 44px target. */
@@ -83,14 +83,21 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     expect(cart.setDrawerOpen).toHaveBeenCalledWith(true);
   });
 
-  /* A typed code is never offered back as a saving the shopper has. */
+  /* A typed code is never offered back as a saving the shopper has. Since
+     3 Nov 2026 NAIRA10 (10%) matches Buy 2, so the line names only Buy 3;
+     FRIENDSANDFAMILY (20%) matches Buy 3, so it names no rung at all. */
   it("follows a typed code as it changes", () => {
     const { container } = render(<PdpOfferLadder price={999} />);
+    act(() => {
+      localStorage.setItem("naira-promo-code", "NAIRA10");
+      window.dispatchEvent(new CustomEvent(PROMO_EVENT));
+    });
+    expect(container.querySelector("[aria-live]")?.textContent).toBe("Your code takes 10% off. 3 pieces take 20%.");
     act(() => {
       localStorage.setItem("naira-promo-code", "FRIENDSANDFAMILY");
       window.dispatchEvent(new CustomEvent(PROMO_EVENT));
     });
-    expect(container.querySelector("[aria-live]")?.textContent).toBe("Your code takes 20% off. 3 pieces take 30%.");
+    expect(container.querySelector("[aria-live]")?.textContent).toBe("Your code takes 20% off, the best price.");
   });
 
   /* A sold-out size or metal is reserved on WhatsApp and never reaches the
@@ -119,6 +126,6 @@ describe("PdpOfferLadder: Buy 2 / Buy 3 on the product page", () => {
     expect(src).toMatch(/QUANTITY_OFFERS\.map/);
     expect(src).toMatch(/pieceAtRung\(price, offer\)/);
     expect(src).toMatch(/pdpOfferStatus\(/);
-    expect(src).not.toMatch(/\d+%|0\.[23]\b|₹\d/);
+    expect(src).not.toMatch(/\d+%|0\.[123]\b|₹\d/);
   });
 });

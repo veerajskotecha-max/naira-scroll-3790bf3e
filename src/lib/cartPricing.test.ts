@@ -9,29 +9,29 @@ describe("individual bag offer prices", () => {
     expect(discountedCartLines(pieces.slice(0, 1), resolveCartDiscount({ totalItems: 1 }))).toEqual([{ total: 2399, unit: 2399 }]);
   });
 
-  it("shows discounted individual prices when two pieces earn 20%", () => {
+  it("shows discounted individual prices when two pieces earn 10%", () => {
     expect(discountedCartLines(pieces.slice(0, 2), resolveCartDiscount({ totalItems: 2 }))).toEqual([
-      { total: 1919, unit: 1919 }, { total: 1199, unit: 1199 },
+      { total: 2159, unit: 2159 }, { total: 1349, unit: 1349 },
     ]);
   });
 
-  it("lowers every individual price again when three pieces earn 30%", () => {
+  it("lowers every individual price again when three pieces earn 20%", () => {
     expect(discountedCartLines(pieces, resolveCartDiscount({ totalItems: 3 }))).toEqual([
-      { total: 1680, unit: 1680 }, { total: 1049, unit: 1049 }, { total: 699, unit: 699 },
+      { total: 1920, unit: 1920 }, { total: 1199, unit: 1199 }, { total: 799, unit: 799 },
     ]);
   });
 
-  // Independently rounding each ₹999 line would quote ₹2,097 against a ₹2,098 bag.
+  // Independently rounding each ₹999 line would quote ₹2,397 against a ₹2,398 bag.
   it("keeps rounded line prices equal to the goods total", () => {
     const lines = Array.from({ length: 3 }, () => ({ price: 999, quantity: 1 }));
     const discount = resolveCartDiscount({ totalItems: 3 });
     const prices = discountedCartLines(lines, discount);
-    expect(prices.map((price) => price.total)).toEqual([700, 699, 699]);
+    expect(prices.map((price) => price.total)).toEqual([800, 799, 799]);
     expect(prices.reduce((sum, price) => sum + price.total, 0)).toBe(discountedSubtotal(2997, discount));
   });
 
   it("counts multiple quantities of one variant toward the offer and shows its per-piece price", () => {
-    expect(discountedCartLines([{ price: 1199, quantity: 2 }], resolveCartDiscount({ totalItems: 2 }))).toEqual([{ total: 1918, unit: 959 }]);
+    expect(discountedCartLines([{ price: 1199, quantity: 2 }], resolveCartDiscount({ totalItems: 2 }))).toEqual([{ total: 2158, unit: 1079 }]);
   });
 
   it("uses the winning typed offer without stacking discounts", () => {

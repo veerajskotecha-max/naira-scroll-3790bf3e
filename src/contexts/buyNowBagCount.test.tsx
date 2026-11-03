@@ -101,8 +101,8 @@ describe("Buy Now puts a piece back in as many times as the bag showed it", () =
     expect(holds(carts.find((c) => c.id === stored().cartId))).toEqual([["47501788348578", 2]]);
     expect(result.current.items.map((i) => [i.id, i.quantity])).toEqual([["prism-riviere-bracelet", 2]]);
     expect(events("AddToCart")).toEqual([expect.objectContaining({ id: "prism-riviere-bracelet", price: 2399, quantity: 2 })]);
-    /* The bag's charged Total: 2 x 2399 with Buy 2's 20% off (baa72ac). */
-    expect(events("InitiateCheckout")).toEqual([expect.objectContaining({ value: 3838, num_items: 2 })]);
+    /* The bag's charged Total: 2 x 2399 with Buy 2's 10% off (baa72ac). */
+    expect(events("InitiateCheckout")).toEqual([expect.objectContaining({ value: 4318, num_items: 2 })]);
     expect(toastError).not.toHaveBeenCalled();
   });
 

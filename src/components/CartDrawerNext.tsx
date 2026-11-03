@@ -32,9 +32,9 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    A second piece takes 20% off your bag      the ladder, rungs labelled
+    A second piece takes 10% off your bag      the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · one piece, "Adds ₹719 · saves ₹780", Add
+    Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
     Total · incl. taxes, one savings line, arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
@@ -45,9 +45,10 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
 */
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
-/* A line of three pieces at 30% off divides its rounded total by three
-   (₹2,098 / 3): "₹699.33 each" read like an error. Each is shown in whole
-   rupees, as the product page quotes it; the line's total stays exact. */
+/* A line of three pieces at 20% off divides its rounded total by three
+   (₹2,398 / 3 for three ₹999 pieces): "₹799.33 each" read like an error. Each
+   is shown in whole rupees, as the product page quotes it; the line's total
+   stays exact. */
 const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 

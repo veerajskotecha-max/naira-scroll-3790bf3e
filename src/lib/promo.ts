@@ -17,8 +17,8 @@
    the most common order carries no discount at all. */
 export const PROMO_DISCOUNTS = {
   FRIENDSANDFAMILY: 0.2,
-  BUY2: 0.2,
-  BUY3: 0.3,
+  BUY2: 0.1,
+  BUY3: 0.2,
   NAIRA10: 0.1,
 } as const;
 
@@ -38,8 +38,9 @@ export const getPromoDiscountRate = (code: string | null): number => {
 };
 
 /*
-  The buy-more ladder: two pieces take 20% off, three take 30% (the owner,
-  2 Nov 2026; it was 15% and 25%, and 10% and 20% before 25 Oct). BUY2 and
+  The buy-more ladder: two pieces take 10% off, three take 20% (the owner,
+  3 Nov 2026, back to the pre-25 Oct rates; it was 20% and 30% on 2-3 Nov,
+  and 15% and 25% from 25 Oct). BUY2 and
   BUY3 in Shopify carry the same rates, so the bag quotes what Fastrr charges.
 
   Both rungs are CODES in Shopify, not automatic discounts, and that is
@@ -50,8 +51,8 @@ export const getPromoDiscountRate = (code: string | null): number => {
   bag applies whichever rung it has reached.
 */
 export const QUANTITY_OFFERS = [
-  { code: "BUY2", minQuantity: 2, rate: 0.2 },
-  { code: "BUY3", minQuantity: 3, rate: 0.3 },
+  { code: "BUY2", minQuantity: 2, rate: 0.1 },
+  { code: "BUY3", minQuantity: 3, rate: 0.2 },
 ] as const;
 
 export type QuantityOffer = (typeof QUANTITY_OFFERS)[number];
@@ -98,8 +99,8 @@ export type ResolvedDiscount = {
  * and what the shopper typed wins outright — never both. On an exact tie the
  * rung wins, unless the typed code IS that rung (BUY2 typed into a two-piece
  * bag is still named as typed). The rungs are scoped in Shopify to
- * `discount-scope-all`, every product; FRIENDSANDFAMILY, which ties BUY2 at
- * 20% since 2 Nov 2026, only to the jewellery collections (175 of 194
+ * `discount-scope-all`, every product; FRIENDSANDFAMILY (20%), which ties
+ * BUY3 since 3 Nov 2026, only to the jewellery collections (175 of 194
  * products, read 2 Nov). Handing Fastrr FRIENDSANDFAMILY on that tie would
  * charge an outfit in the bag full price while the bag quoted 20% off it.
  */
@@ -128,7 +129,7 @@ export const discountedSubtotal = (subtotal: number, resolved: ResolvedDiscount)
 /**
  * What one more piece does to the bag: what it adds to the total and what the
  * bag then saves on it, by the same resolver and rounding as the checkout.
- * A ₹1,499 piece beside a ₹2,399 one adds ₹719 and saves ₹780.
+ * A ₹1,499 piece beside a ₹2,399 one adds ₹1,109 and saves ₹390.
  */
 export const addOnEffect = (bag: { subtotal: number; totalItems: number; promoCode?: string | null }, price: number) => {
   const now = discountedSubtotal(bag.subtotal, resolveCartDiscount({ totalItems: bag.totalItems, promoCode: bag.promoCode }));
@@ -165,7 +166,7 @@ export const ladderHeadline = (totalItems: number, appliedRate = 0): string => {
  * What one piece costs at a rung, rounded as the bag rounds its total
  * (`discountedSubtotal`). For every current price, two of a piece come to
  * exactly twice this. At three, a price ending in 99 can sit ₹1 under the
- * bag's total (3 × ₹699 = ₹2,097 against ₹2,098 for three ₹999 pieces): the
+ * bag's total (3 × ₹799 = ₹2,397 against ₹2,398 for three ₹999 pieces): the
  * bag rounds the total once, this rounds the piece. Never more, never over.
  */
 export const pieceAtRung = (price: number, offer: { code: string; rate: number }): number =>
@@ -196,8 +197,8 @@ export const pdpOfferStatus = (
   /* "Add to bag", not "Add this": Buy Now beside it checks out this piece on
      its own, without the bag's offer. A cheap piece that lifts a dear bag to
      the next rung can lower its total (₹2,749 + ₹2,399 with a ₹599 piece at
-     30% is ₹95 less than the two at 20%); that is said as a drop, never as
-     "adds ₹-95". */
+     20% is ₹35 less than the two at 10%); that is said as a drop, never as
+     "adds ₹-35". */
   if (effect.adds <= 0) {
     const drop = effect.adds < 0 ? `your total drops ${rupees(-effect.adds)}` : "your total stays the same";
     return `Add to bag for ${percent(effect.rate)} off everything: ${drop}.`;

@@ -221,8 +221,9 @@ Shopify quotes a total the shopper is never charged.
    "BUY2,NAIRA10" as a single unknown code and applied NEITHER. So the resolver
    returns one code, never a pair, and nothing stacks.
 
-Live codes: `BUY2` (20%, min qty 2) and `BUY3` (30%, min qty 3), raised from
-15% and 25% by the owner on 2 Nov 2026 (10% and 20% before 25 Oct), both PRODUCT
+Live codes: `BUY2` (10%, min qty 2) and `BUY3` (20%, min qty 3), set back by
+the owner on 3 Nov 2026 to the rates they had before 25 Oct (20% and 30% on
+2-3 Nov, 15% and 25% from 25 Oct), both PRODUCT
 class scoped to the hidden auto-updating collection `discount-scope-all` — do
 not delete it or both stop working.
 
@@ -235,32 +236,36 @@ can offer it to anyone without quoting a discount the checkout would reject.
 
 NAIRA10 is typed; the rungs are earned, and the resolver returns the richer of
 the two. On an exact TIE the rung wins, unless the typed code is that rung's
-own code (BUY2 typed into a two-piece bag stays named as typed). NAIRA10 (10%)
-is now below both rungs, so the second piece out-earns it and the bag names
-BUY2. The tie rule exists for `FRIENDSANDFAMILY`, see below. A rung's code
+own code (BUY2 typed into a two-piece bag stays named as typed). Since 3 Nov
+2026 NAIRA10 (10%) TIES the two-piece rung (BUY2, 10%): a two-piece bag with
+NAIRA10 typed hands Fastrr BUY2 at the same 10%, and the third piece takes
+over at 20% (BUY3). So NAIRA10 is worth something only on a single piece. The
+tie rule also matters for `FRIENDSANDFAMILY`, see below. A rung's code
 typed by hand counts only at the rung's own minimum, as Shopify holds it (BUY2
 in a one-piece bag is worth nothing). Verified in
-the browser at the old 10%/20% rates: 2 pieces = BUY2 -₹430 on ₹4,298;
+the browser at these same 10%/20% rates (before 25 Oct): 2 pieces = BUY2 -₹430 on ₹4,298;
 3 pieces = BUY3 -₹1,349 on ₹6,747, total ₹5,548 with shipping. It is NOT auto-applied: a shopper has to type it. The announcement
 strip used to carry it, but the owner asked for the code to come off the
 header: `AnnouncementBar.tsx` now leads with the buy-more offer ("BUY 2 GET
-20% OFF · BUY 3 GET 30% OFF", read from `QUANTITY_OFFERS`; the owner, 2 Nov
-2026), then the sale, free-shipping and limited-batch lines, and
+10% OFF · BUY 3 GET 20% OFF", read from `QUANTITY_OFFERS`; the owner, 2 Nov
+2026, rates from 3 Nov), then the sale, free-shipping and limited-batch lines, and
 `AnnouncementBar.test.tsx` fails if NAIRA10 comes back. The run's duration
 grows with its length so it keeps its old pace. Do not put it back on the strip unprompted. Deciding to auto-apply it,
 or to show it somewhere else, is a margin call for the owner, not a code
 change to make unprompted.
 
-`FRIENDSANDFAMILY` (20%) TIES the two-piece rung (20%) and sits under the top
-one (30%). In Shopify it covers only the jewellery collections (shop-all,
-necklaces, earrings, bracelets, rings: 175 of 194 products), while BUY2 and
-BUY3 cover every product (`discount-scope-all`), read 2 Nov 2026. So on the
-two-piece tie the bag hands Fastrr BUY2, never FRIENDSANDFAMILY: an outfit in
-the bag would otherwise be charged full price against a bag quoting 20% off
-it. One piece with the code gets the typed 20% (an outfit alone still would
-not, in Shopify); the third piece takes over at 30%. Anyone handing that code
-out should know it adds nothing from the second piece on. Each time the ladder
-moves, re-check this code against it.
+`FRIENDSANDFAMILY` (20%) BEATS the two-piece rung (10%) and TIES the top one
+(20%) since 3 Nov 2026. In Shopify it covers only the jewellery collections
+(shop-all, necklaces, earrings, bracelets, rings: 175 of 194 products), while
+BUY2 and BUY3 cover every product (`discount-scope-all`), read 2 Nov 2026. So
+on the three-piece tie the bag hands Fastrr BUY3, never FRIENDSANDFAMILY: an
+outfit in the bag would otherwise be charged full price against a bag quoting
+20% off it. On one or two pieces the typed 20% wins outright, so the bag hands
+Fastrr FRIENDSANDFAMILY, and an outfit among those pieces is NOT discounted by
+Shopify while the bag quotes 20% off it (on one piece that was always so; on
+two it is new since 3 Nov, when the code stopped tying BUY2). Anyone handing
+that code out should know it adds nothing from the third piece on. Each time
+the ladder moves, re-check this code against it.
 
 3. **The rates live in two places and must be changed together.** `QUANTITY_OFFERS`
    in `promo.ts` and the Shopify codes. `OfferProgress.test.tsx` asserts the
@@ -269,8 +274,8 @@ moves, re-check this code against it.
 
 The ladder is applied by the bag, never typed. The live bag (`CartDrawerNext.tsx`)
 renders it as `SimpleLadder`: "✦ Sitewide sale live today · up to {top rung}
-off" over a track with a ring per rung, then "Buy 2 get 20% off" and "Buy 3
-get 30% off". `cart/OfferProgress.tsx` and `cart/LadderBand.tsx` serve only
+off" over a track with a ring per rung, then "Buy 2 get 10% off" and "Buy 3
+get 20% off". `cart/OfferProgress.tsx` and `cart/LadderBand.tsx` serve only
 the old `CartDrawer.tsx`.
 
 ## The bag (`CartDrawerNext.tsx`)
@@ -280,7 +285,7 @@ back is one line. Since 16 Oct it is the bag of the "Naira Bag CRO Plan": the
 ladder sits on top (`SimpleLadder`), each line shows its price after the
 rung with the old one struck (`lib/cartPricing.ts` spreads the bag's one
 rounded total over the lines; "each" is whole rupees), one add-on carries its
-exact effect ("Adds ₹719 · saves ₹780", `addOnEffect`: the checkout's resolver
+exact effect ("Adds ₹1,109 · saves ₹390" for a ₹1,499 piece beside a ₹2,399 one, `addOnEffect`: the checkout's resolver
 and rounding, so the total moves by exactly that), the gift box is one line that lifts open above itself on a tap,
 and Checkout has payment, returns, plating and "Next: a quick OTP…" under it.
 

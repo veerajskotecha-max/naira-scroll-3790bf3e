@@ -4,7 +4,7 @@
 
 import { writeFileSync } from "fs";
 import { resolve } from "path";
-import { BASE_URL, resolveSiteRoutes, type SiteRoute } from "./routes";
+import { BASE_URL, resolveSiteRoutes, sitemapRoutes, type SiteRoute } from "./routes";
 import { allLandings, allArticles } from "../src/data/seoContent";
 
 /*
@@ -42,7 +42,7 @@ function generateSitemap(list: SiteRoute[]) {
   ].join("\n");
 }
 
-function generateLlmsTxt() {
+function generateLlmsTxt(landings: typeof allLandings) {
   const line = (path: string, label: string, desc: string) => `- [${label}](${path}): ${desc}`;
 
   return [
@@ -68,7 +68,7 @@ function generateLlmsTxt() {
     "",
     "## Jewellery collections",
     "",
-    ...allLandings.map((c) =>
+    ...landings.map((c) =>
       line(`/jewellery/collections/${c.slug}`, c.h1, c.metaDescription),
     ),
     "",
@@ -85,9 +85,12 @@ function generateLlmsTxt() {
   ].join("\n");
 }
 
-const routes = await resolveSiteRoutes();
+const routes = sitemapRoutes(await resolveSiteRoutes());
 writeFileSync(resolve("public/sitemap.xml"), generateSitemap(routes));
 console.log(`sitemap.xml written (${routes.length} entries)`);
 
-writeFileSync(resolve("public/llms.txt"), generateLlmsTxt());
-console.log(`llms.txt written (${allLandings.length} collections, ${allArticles.length} articles)`);
+/* llms.txt names the same collections the sitemap does. */
+const listed = new Set(routes.map((r) => r.path));
+const landings = allLandings.filter((c) => listed.has(`/jewellery/collections/${c.slug}`));
+writeFileSync(resolve("public/llms.txt"), generateLlmsTxt(landings));
+console.log(`llms.txt written (${landings.length} collections, ${allArticles.length} articles)`);

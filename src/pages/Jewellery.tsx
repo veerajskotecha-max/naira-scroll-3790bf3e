@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { orderByVisits, readCachedVisits, fetchVisits, type VisitCounts } from "@/lib/shopOrder";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 import JewelCard from "@/components/jewellery/JewelCard";
@@ -20,6 +21,7 @@ import { Link, useLocation, useNavigationType, useSearchParams } from "react-rou
 import { shopifyImage } from "@/lib/shopifyImage";
 import { cardCover } from "@/lib/cardCover";
 import { cardKey, colourCards } from "@/lib/colourCards";
+import { stockedLandings } from "@/lib/jewelleryCollections";
 
 
 const hubFaqs = [
@@ -37,7 +39,7 @@ const hubFaqs = [
   },
   {
     q: "What ring sizes do you make?",
-    a: "Our adjustable rings have an open back that fits US 5 to US 9, and every size ships now. Rings sold in sizes show each size's stock on their page. A closed ring is in stock in US 6 and ships now; US 5 and US 7 are a pre-order, delivered in 45 days. Message the atelier on WhatsApp if you are between sizes.",
+    a: "We make US 5, US 6 and US 7. US 6 is in stock and ships now; US 5 and US 7 are available on pre-order with delivery in 45 days. Message the atelier on WhatsApp if you are between sizes.",
   },
 ];
 
@@ -107,7 +109,13 @@ const Jewellery = () => {
     else params.set("category", next);
     setSearchParams(params, { replace: true });
   };
-  const { jewellery } = useLiveJewellery();
+  const { jewellery, isLive } = useLiveJewellery();
+  /* A collection with nothing in it is not offered (see stockedLandings),
+     judged once Shopify answers: the bundled first paint knows 21 pieces. */
+  const collectionLinks = useMemo(
+    () => (isLive ? stockedLandings(jewellery, categoryLandings) : categoryLandings),
+    [isLive, jewellery]
+  );
 
   /* Sort + filters live in the URL so a filtered edit is shareable, and are
      written with replace so the grid never jumps back to the top. */
@@ -126,11 +134,16 @@ const Jewellery = () => {
 
   const setFilters = (next: JewelFilters) => {
     const params = new URLSearchParams(searchParams);
-    next.sort === "featured" ? params.delete("sort") : params.set("sort", next.sort);
-    next.maxPrice == null ? params.delete("under") : params.set("under", String(next.maxPrice));
-    next.minPrice == null ? params.delete("over") : params.set("over", String(next.minPrice));
-    next.inStockOnly ? params.set("stock", "in") : params.delete("stock");
-    next.tag ? params.set("tag", next.tag) : params.delete("tag");
+    if (next.sort === "featured") params.delete("sort");
+    else params.set("sort", next.sort);
+    if (next.maxPrice == null) params.delete("under");
+    else params.set("under", String(next.maxPrice));
+    if (next.minPrice == null) params.delete("over");
+    else params.set("over", String(next.minPrice));
+    if (next.inStockOnly) params.set("stock", "in");
+    else params.delete("stock");
+    if (next.tag) params.set("tag", next.tag);
+    else params.delete("tag");
     setSearchParams(params, { replace: true });
   };
 
@@ -150,12 +163,14 @@ const Jewellery = () => {
     () => colourCards(active === "All" ? jewellery : jewellery.filter((p) => p.category === active)),
     [active, jewellery]
   );
+  const [visits, setVisits] = useState<VisitCounts>(readCachedVisits);
+  useEffect(() => { fetchVisits().then((v) => v && setVisits(v)); }, []);
   const pieces = useMemo(() => {
     const filtered = applyJewelFilters(inCategory, activeFilters);
     if (activeFilters.sort !== "featured") return filtered;
     const leads = FEATURED_LEADS.flatMap((handle) => filtered.filter((p) => p.handle === handle));
-    return [...leads, ...filtered.filter((p) => !FEATURED_LEADS.includes(p.handle))];
-  }, [inCategory, activeFilters]);
+    return [...leads, ...orderByVisits(filtered.filter((p) => !FEATURED_LEADS.includes(p.handle)), visits)];
+  }, [inCategory, activeFilters, visits]);
 
   /* Decorative backdrop on larger screens only. */
   const [showBackdrop, setShowBackdrop] = useState(false);
@@ -232,6 +247,8 @@ const Jewellery = () => {
         ]}
       />
       <div className="relative bg-nf-ivory pt-[107px] text-nf-ink md:pt-[114px] lg:pt-[132px]">
+        {/* The page's one main landmark; the footer stays outside it. */}
+        <main>
         {/* hero block — pressed-flower wash, 3D drift, touch blooms (hero + heading only) */}
         <div className="relative overflow-hidden bg-[#FBF3EC]">
           {/* The drifting atelier backdrop is decorative; a phone spends its
@@ -242,8 +259,9 @@ const Jewellery = () => {
             </div>
           )}
 
-          {/* indexable header */}
-          <header className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
+          {/* indexable header — a div, not a header element: here that made a
+              second banner landmark beside the site's own. */}
+          <div className="relative z-10 mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6 md:pt-10">
             <p className="text-[10px] tracking-nf-40 text-nf-gold-shadow" style={jost}>NAIRA PETITE</p>
             <h1 className="mt-3 text-[30px] leading-[1.05] md:text-[48px]" style={velista}>
               Demi-Fine Jewellery
@@ -251,7 +269,7 @@ const Jewellery = () => {
             <p className="mt-3 max-w-xl text-[14px] leading-[1.8] text-nf-ink/60 md:text-[16px]" style={editorial}>
               Brilliant-cut zircone in an 18K gold finish.
             </p>
-          </header>
+          </div>
         </div>
 
         {/* most-loved row: a piece, a price and a way in, on the first screen */}
@@ -353,6 +371,9 @@ const Jewellery = () => {
 
 
 
+        {/* The cards are h3s: name their level-2 section, for screen readers only. */}
+        <h2 className="sr-only">{active === "All" ? "All pieces" : active}</h2>
+
         {/* grid */}
         {pieces.length === 0 ? (
           <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pb-24 pt-16 text-center">
@@ -412,7 +433,7 @@ const Jewellery = () => {
               SHOP BY COLLECTION
             </summary>
             <nav aria-label="Jewellery collections" className="mt-5 flex flex-wrap gap-2.5">
-              {categoryLandings.map((c) => (
+              {collectionLinks.map((c) => (
                 <Link
                   key={c.slug}
                   to={`/jewellery/collections/${c.slug}`}
@@ -442,6 +463,7 @@ const Jewellery = () => {
             </dl>
           </details>
         </section>
+        </main>
 
         <Footer />
       </div>

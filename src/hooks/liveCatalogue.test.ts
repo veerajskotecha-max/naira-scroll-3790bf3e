@@ -1,5 +1,8 @@
+import { createElement, type ReactNode } from "react";
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it } from "vitest";
-import { liveCatalogue } from "./useLiveJewellery";
+import { liveCatalogue, useLiveJewellery } from "./useLiveJewellery";
 import { jewellery } from "@/data/jewellery";
 import type { ShopifyProductNode } from "@/lib/shopify";
 
@@ -22,5 +25,29 @@ describe("live catalogue authority", () => {
   });
   it("includes new Shopify jewellery without a bundled entry", () => {
     expect(liveCatalogue([node("brand-new-studs")]).map((p) => p.handle)).toEqual(["brand-new-studs"]);
+  });
+});
+/* Every render of every user of the hook rebuilt the whole catalogue (16 times
+   while a product page loaded, again on each gallery swipe), and the new array
+   each time undid the memos downstream. One answer from Shopify, one mapping. */
+describe("useLiveJewellery mapping", () => {
+  it("hands every user the same catalogue until Shopify's answer changes", async () => {
+    const client = new QueryClient();
+    const key = ["shopify-products", "jewellery-catalogue"];
+    client.setQueryData(key, [node("brand-new-studs")]);
+    const wrapper = ({ children }: { children: ReactNode }) => createElement(QueryClientProvider, { client }, children);
+    const first = renderHook(() => useLiveJewellery(false), { wrapper });
+    const second = renderHook(() => useLiveJewellery(false), { wrapper });
+    const before = first.result.current.jewellery;
+    first.rerender();
+    expect(first.result.current.isLive).toBe(true);
+    expect(first.result.current.jewellery).toBe(before);
+    expect(second.result.current.jewellery).toBe(before);
+
+    act(() => {
+      client.setQueryData(key, [node("brand-new-studs"), node("newer-hoops")]);
+    });
+    await waitFor(() => expect(first.result.current.jewellery.map((p) => p.handle)).toEqual(["brand-new-studs", "newer-hoops"]));
+    expect(second.result.current.jewellery).toBe(first.result.current.jewellery);
   });
 });

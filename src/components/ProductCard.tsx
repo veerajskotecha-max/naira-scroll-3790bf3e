@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { formatShopifyPrice, type ShopifyProductNode, type ShopifyProductVariant } from "@/lib/shopify";
+import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
 import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 
 export interface Product {
@@ -35,6 +36,7 @@ interface ProductCardProps {
 const toSlug = (name: string) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+// eslint-disable-next-line react-refresh/only-export-components -- the mapper belongs with the card it feeds
 export const productFromShopify = (product: ShopifyProductNode): Product => {
   const images = product.images.edges.map((edge) => edge.node.url);
   const firstAvailableVariant = product.variants.edges.find((edge) => edge.node.availableForSale)?.node;
@@ -186,7 +188,16 @@ const ProductCard = ({ product, index = 0, visible = true }: ProductCardProps) =
               e.preventDefault();
               e.stopPropagation();
               if (!wishlisted) setHeartPopped(true);
-              toggleItem({ id: slug, name: product.name, price: product.price, image: product.image });
+              toggleItem({
+                id: slug,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                // "You May Also Like" draws from the whole store, jewellery included.
+                kind: !product.shopifyProduct ? undefined : isJewelleryProduct(product.shopifyProduct) ? "jewellery" : "apparel",
+                variantId: product.variantId,
+                amount: product.numericPrice,
+              });
             }}
             aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           >

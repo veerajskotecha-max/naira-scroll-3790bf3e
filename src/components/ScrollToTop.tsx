@@ -19,6 +19,7 @@ import { useLocation, useNavigationType } from "react-router-dom";
 const positions = new Map<string, number>();
 
 /** A product page: /jewellery/<handle> or /jewelry/<handle> (not a collection), or /products/<id>. */
+// eslint-disable-next-line react-refresh/only-export-components -- exported for its unit test
 export const isProductPath = (pathname: string) =>
   /^\/(jewellery|jewelry|products)\/(?!collections(\/|$))[^/]+\/?$/.test(pathname);
 

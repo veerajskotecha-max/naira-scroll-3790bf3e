@@ -5,6 +5,7 @@ import MobileMenu from "./MobileMenu";
 import MegaMenu from "./nav/MegaMenu";
 import SearchOverlay from "./nav/SearchOverlay";
 import NairaWordmark from "./NairaWordmark";
+import { routeKeyFor } from "@/lib/routeCode";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,6 +35,10 @@ const Navbar = ({ scrolled }: NavbarProps) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  /* Product pages, where catalogue ads land, keep the flower in the logo
+     still: the turning one costs a phone three.js (130 KB) and its frames
+     (owner's choice, 27 Oct 2026). */
+  const productPage = ["JewelDetailNext", "ProductDetail"].includes(routeKeyFor(location.pathname) ?? "");
   // Search closes on back as well, off the clothing pages.
   const clothing = CLOTHING.test(location.pathname);
   const search = useBackToClose("nfSearch", searchOpen && !clothing, clothing ? leaveAsIs : setSearchOpen);
@@ -65,6 +70,9 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               className="lg:hidden -m-3 p-3 opacity-70 hover:opacity-100 transition-opacity duration-200"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
+              aria-haspopup="dialog"
+              aria-expanded={mobileOpen}
+              aria-controls="nav-menu"
             >
               <Menu size={22} strokeWidth={1.5} />
             </button>
@@ -124,7 +132,7 @@ const Navbar = ({ scrolled }: NavbarProps) => {
               full-size mark ran into the account icon, so it steps down, and
               again below 300px (a folded phone). */}
           <Link to="/" className="flex items-center justify-center h-full">
-            <NairaWordmark className="w-[72px] min-[300px]:w-[84px] min-[360px]:w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
+            <NairaWordmark still={productPage} className="w-[72px] min-[300px]:w-[84px] min-[360px]:w-[96px] sm:w-[108px] md:w-[120px] lg:w-[156px] xl:w-[168px]" />
           </Link>
 
           {/* Right section */}

@@ -19,8 +19,10 @@
   — a checkout button must never dead-end on a third-party script.
 */
 import type { CartItem } from "@/contexts/CartContext";
+import { sessionUtmParams } from "@/lib/landingUtm";
 import { shopifyNumericId, CURRENCY } from "@/lib/pixel";
 import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
+import { SIZE_ATTRIBUTE } from "@/lib/shopify";
 
 const SCRIPT_SRC = "https://fastrr-boost-ui.pickrr.com/assets/js/channels/shopify.js";
 const STYLE_HREF = "https://fastrr-boost-ui.pickrr.com/assets/styles/shopify.css";
@@ -63,6 +65,9 @@ export const FASTRR_DOMAIN =
 export interface FastrrProduct {
   variantId: string;
   quantity: number;
+  /* The line's own notes. Fastrr's script reads a Shopify cart line's
+     properties into this same field, so it is the line's Size here too. */
+  customAttributes?: Record<string, string>;
 }
 
 type BuyDirectPayload = {
@@ -155,10 +160,17 @@ export const primeFastrr = () => {
 
 export const toFastrrProducts = (items: CartItem[]): FastrrProduct[] =>
   items
-    .map((item) => {
+    .map((item): FastrrProduct | null => {
       const variantId = shopifyNumericId(item.variantId) ?? item.variantId;
       if (!variantId) return null;
-      return { variantId: String(variantId), quantity: item.quantity } satisfies FastrrProduct;
+      /* A ring Shopify does not sell in sizes carries its size as a note, as
+         its Shopify cart line does; without it the order had no size. */
+      const size = item.size?.trim();
+      return {
+        variantId: String(variantId),
+        quantity: item.quantity,
+        ...(size ? { customAttributes: { [SIZE_ATTRIBUTE]: size } } : {}),
+      };
     })
     .filter((product): product is FastrrProduct => product !== null);
 
@@ -175,8 +187,10 @@ export const currentUtmParams = (search = typeof window === "undefined" ? "" : w
 };
 
 /* Opaque ids only — same values we already attach to the Shopify cart, so a
-   Fastrr order can be joined back to the browsing session. No personal data. */
-export const fastrrCartAttributes = (): Record<string, string> => {
+   Fastrr order can be joined back to the browsing session. No personal data.
+   And every size picked, as one note on the order: Fastrr orders are known to
+   keep these attributes, which a line's own note is not yet proven to do. */
+export const fastrrCartAttributes = (items: CartItem[] = []): Record<string, string> => {
   const attrs: Record<string, string> = {};
   const vid = getVisitorId();
   if (vid) attrs.naira_visitor_id = vid;
@@ -185,6 +199,10 @@ export const fastrrCartAttributes = (): Record<string, string> => {
   const fbp = getFbBrowserId();
   if (fbp) attrs.fbp = fbp;
   attrs.currency = CURRENCY;
+  const sizes = items
+    .filter((item) => item.size?.trim())
+    .map((item) => `${item.name}: ${item.size!.trim()}${item.quantity > 1 ? ` x${item.quantity}` : ""}`);
+  if (sizes.length) attrs.sizes = sizes.join("; ");
   return attrs;
 };
 
@@ -206,11 +224,13 @@ export const startFastrrCheckout = async (
 
     ensureSellerDomainInput();
 
-    const utmParams = currentUtmParams();
+    /* The campaign the session landed with: by the tap the address may be a
+       page the shopper browsed to, with no campaign left on it. */
+    const utmParams = sessionUtmParams() || currentUtmParams();
     const payload: BuyDirectPayload = {
       type: "cart",
       products,
-      cartAttributes: fastrrCartAttributes(),
+      cartAttributes: fastrrCartAttributes(items),
       ...(utmParams ? { utmParams } : {}),
       /* Their payload carries exactly ONE coupon code and there is no way to
          hand it a second: the script reduces `couponCode` to a single

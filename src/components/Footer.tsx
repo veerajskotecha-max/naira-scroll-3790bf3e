@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { BadgeCheck, LockKeyhole, RotateCcw, Truck } from "lucide-react";
-import nairaLogo from "@/assets/naira-logo-footer.svg";
+import NairaWordmark from "@/components/NairaWordmark";
 import NairaBoxShowcase from "@/components/NairaBoxShowcase";
+import { popularSearches } from "@/data/navigation";
 
 const shopLinks = [
   { label: "New Arrivals", to: "/jewellery?sort=newest" },
@@ -80,7 +81,7 @@ const compactTrustItems = [
   { icon: LockKeyhole, title: "Secure checkout", detail: "Encrypted payments" },
   { icon: Truck, title: "Insured delivery", detail: "3–5 working days" },
   { icon: RotateCcw, title: "7-day returns", detail: "On eligible pieces" },
-  { icon: BadgeCheck, title: "2-year assurance", detail: "Plating protection" },
+  { icon: BadgeCheck, title: "3-year assurance", detail: "Plating, kept for life" },
 ];
 
 const CompactPaymentMarks = () => (
@@ -115,18 +116,23 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
 
   const renderLinkColumn = (title: string, links: { label: string; to: string }[]) => (
     <div>
-      <h4
+      {/* h2, at the size it always had: as h4 it skipped two levels after
+          the page's h1. */}
+      <h2
         className="font-cormorant text-[16px] font-semibold uppercase tracking-nf-10 mb-5"
         style={{ color: CREAM }}
       >
         {title}
-      </h4>
+      </h2>
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.label}>
+            {/* 44px to the thumb, 14px to the eye: padding on an inline link
+                widens what it catches without moving a line (the column's
+                37px pitch is unchanged; neighbours' padding meets in the gaps). */}
             <Link
               to={link.to}
-              className="font-cormorant text-[14px] transition-colors duration-200"
+              className="-mx-2 px-2 py-[15px] font-cormorant text-[14px] transition-colors duration-200"
               style={{ color: CREAM_MUTED }}
               onMouseEnter={(e) => (e.currentTarget.style.color = CREAM)}
               onMouseLeave={(e) => (e.currentTarget.style.color = CREAM_MUTED)}
@@ -172,20 +178,14 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
         <div className="max-w-[1200px] mx-auto px-5 py-8 md:px-10 md:py-10">
           <div className="flex flex-col items-center gap-5 text-center md:flex-row md:justify-between md:text-left">
             <Link to="/" aria-label="Naira home" className="inline-flex min-h-[44px] items-center">
-              <img
-                src={nairaLogo}
-                alt="NAIRA"
-                loading="lazy"
-                decoding="async"
-                className="w-[88px] h-auto brightness-0 invert"
-              />
+              <NairaWordmark still className="w-[88px] brightness-0 invert" />
             </Link>
             <nav aria-label="Product page footer" className="flex flex-wrap items-center justify-center gap-x-5">
-              <Link to="/contact" className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
+              <Link to="/contact" className="-mx-1 inline-flex min-h-[44px] items-center px-1 font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM }}>
                 Contact Us
               </Link>
               {compactPolicyLinks.map((link) => (
-                <Link key={link.label} to={link.to} className="inline-flex min-h-[44px] items-center font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
+                <Link key={link.label} to={link.to} className="-mx-1 inline-flex min-h-[44px] items-center px-1 font-cormorant text-[14px] transition-opacity hover:opacity-75" style={{ color: CREAM_MUTED }}>
                   {link.label}
                 </Link>
               ))}
@@ -215,13 +215,10 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-8 lg:gap-12 pb-12 md:pb-16">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <img
-              src={nairaLogo}
-              alt="NAIRA"
-              loading="lazy"
-              decoding="async"
-              className="w-[100px] md:w-[120px] lg:w-[150px] h-auto max-w-full mb-4 brightness-0 invert"
-            />
+            {/* The header's vector wordmark, flat (`still`: no three.js),
+                whitened by the filter. It replaced a 103 KB SVG wrapping a
+                4000x2250 PNG that every cold visit downloaded for a 100px mark. */}
+            <NairaWordmark still className="w-[100px] md:w-[120px] lg:w-[150px] max-w-full mb-4 brightness-0 invert" />
 
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-6 max-w-[280px]"
@@ -264,12 +261,12 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
 
           {/* Newsletter */}
           <div>
-            <h4
+            <h2
               className="font-cormorant text-[16px] font-semibold uppercase tracking-nf-10 mb-5"
               style={{ color: CREAM }}
             >
               Newsletter
-            </h4>
+            </h2>
             <p
               className="font-cormorant text-[14px] leading-relaxed mb-5"
               style={{ color: CREAM_MUTED }}
@@ -338,35 +335,21 @@ const Footer = ({ compact = false, slim = false }: { compact?: boolean; slim?: b
             className="text-[12px] leading-[1.9]"
             style={{ color: CREAM_FAINT }}
           >
-            {[
-              "Zircone Rings",
-              "Gold Plated Earrings",
-              "Huggie Hoops",
-              "Tennis Bracelet",
-              "Layered Necklace",
-              "Anti-Tarnish Jewellery",
-              "Demi-Fine Jewellery",
-              "Gifts for Her",
-              "Made to Measure",
-              "Handmade Custom Outfits",
-            ].map((term, i, arr) => {
-              const customTerms = ["Made to Measure", "Handmade Custom Outfits"];
-                            const to = customTerms.includes(term)
-                ? "/customize"
-                : `/jewellery?search=${encodeURIComponent(term)}`;
-              return (
-              <span key={term}>
+            {popularSearches.map(({ label, to }, i, arr) => (
+              <span key={label}>
+                {/* The same inline padding, as far as these 23px lines allow
+                    without one line's link covering the next line's words. */}
                 <Link
                   to={to}
-                  className="transition-colors duration-200 hover:opacity-100"
+                  className="-mx-2 px-2 py-1 transition-colors duration-200 hover:opacity-100"
                   style={{ color: CREAM_FAINT }}
                 >
-                  {term}
+                  {label}
                 </Link>
 
                 {i < arr.length - 1 && <span className="mx-2 opacity-40">·</span>}
               </span>
-            );})}
+            ))}
 
           </p>
         </div>

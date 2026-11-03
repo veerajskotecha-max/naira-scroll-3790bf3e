@@ -7,6 +7,7 @@ const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 export type SortKey = "featured" | "best" | "price-asc" | "price-desc" | "newest";
 
+// eslint-disable-next-line react-refresh/only-export-components -- the filter model lives with the bar that edits it
 export const SORT_OPTIONS: Array<{ key: SortKey; label: string }> = [
   { key: "featured", label: "Featured" },
   { key: "best", label: "Best selling" },
@@ -24,6 +25,7 @@ export interface JewelFilters {
   tag: string | null;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- the filter model lives with the bar that edits it
 export const emptyFilters: JewelFilters = { sort: "featured", maxPrice: null, minPrice: null, inStockOnly: false, tag: null };
 
 export const PRICE_BANDS = [
@@ -33,6 +35,7 @@ export const PRICE_BANDS = [
 ] as const;
 export type PriceBand = (typeof PRICE_BANDS)[number];
 
+// eslint-disable-next-line react-refresh/only-export-components -- the filter model lives with the bar that edits it
 export const parsePriceBound = (value: string | null): number | null => {
   if (!value?.trim()) return null;
   const amount = Number(value);
@@ -40,6 +43,7 @@ export const parsePriceBound = (value: string | null): number | null => {
 };
 
 /** Style/occasion chips built from whatever Shopify tags the catalogue carries. */
+// eslint-disable-next-line react-refresh/only-export-components -- the filter model lives with the bar that edits it
 export const collectTags = (pieces: JewelPiece[]) => {
   const counts = new Map<string, number>();
   pieces.forEach((p) =>
@@ -56,6 +60,7 @@ export const collectTags = (pieces: JewelPiece[]) => {
 };
 
 /** Applies the sort + filter set to a list of pieces. Pure, so it is safe to memoise. */
+// eslint-disable-next-line react-refresh/only-export-components -- the filter model lives with the bar that edits it
 export const applyJewelFilters = (
   pieces: JewelPiece[],
   f: JewelFilters,

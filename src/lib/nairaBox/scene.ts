@@ -414,7 +414,22 @@ export function mountNairaBox(
     camera.aspect = cw / ch;
     camera.updateProjectionMatrix();
   };
-  const ro = new ResizeObserver(resize);
+  // Resizing inside the observer's own callback can re-trigger layout in the
+  // same frame, which Chromium reports as "ResizeObserver loop completed" and
+  // the preview treats as a crash. Defer to the next frame, skip no-op sizes.
+  let roFrame = 0;
+  let lastW = -1;
+  let lastH = -1;
+  const ro = new ResizeObserver(() => {
+    cancelAnimationFrame(roFrame);
+    roFrame = requestAnimationFrame(() => {
+      const { clientWidth: w, clientHeight: h } = canvas;
+      if (w === lastW && h === lastH) return;
+      lastW = w;
+      lastH = h;
+      resize();
+    });
+  });
   ro.observe(canvas);
   resize();
 
@@ -571,6 +586,7 @@ export function mountNairaBox(
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
+    cancelAnimationFrame(roFrame);
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);

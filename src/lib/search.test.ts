@@ -54,6 +54,19 @@ describe("searchPieces", () => {
     expect(handles("earing")).toEqual(["ribbon-bow-earrings", "molten-bloom-hoops", "solitaire-whisper-studs"]);
   });
 
+  /* "ear ring" was read as "ear" + "ring", which no piece has both of, so it
+     found nothing on every device while "earrings" found them all. */
+  it("finds earrings however the word is split or hyphenated", () => {
+    const earrings = handles("earrings");
+    expect(earrings).toHaveLength(3);
+    for (const q of ["ear ring", "ear rings", "Ear Rings", "ear-ring", "ear - rings", "earring", "earring(s)", "ear ring(s)"]) {
+      expect(handles(q), q).toEqual(earrings);
+    }
+    expect(handles("neck lace")).toEqual(handles("necklace"));
+    // "ring" alone still means rings, not the earrings it is part of.
+    expect(handles("ring")).toEqual(["cushion-halo-ring", "golden-duet-ring", "star-point-band"]);
+  });
+
   it("filters by price", () => {
     expect(handles("Under 1500")).toEqual(["molten-bloom-hoops", "solitaire-whisper-studs", "star-point-band", "cushion-halo-ring", "golden-duet-ring"]);
     expect(handles("rings under ₹1,200")).toEqual(["cushion-halo-ring", "star-point-band"]);
@@ -71,6 +84,7 @@ describe("parseQuery", () => {
     expect(parseQuery("rings under 1,500")).toMatchObject({ terms: ["ring"], max: 1500, min: null, category: "Rings" });
     expect(parseQuery("2000+")).toMatchObject({ terms: [], max: null, min: 2000, category: null });
     expect(parseQuery("gold earrings and rings").category).toBeNull();
+    expect(parseQuery("ear rings").category).toBe("Earrings");
   });
 });
 
@@ -79,6 +93,7 @@ describe("shopPageFor", () => {
     expect(shopPageFor("rings")).toBe("/jewellery?category=Rings");
     expect(shopPageFor("under 1500")).toBe("/jewellery?under=1500");
     expect(shopPageFor("earrings under 1000")).toBe("/jewellery?category=Earrings&under=1000");
+    expect(shopPageFor("ear rings")).toBe("/jewellery?category=Earrings");
   });
 
   it("leaves other searches to the results list", () => {

@@ -35,8 +35,9 @@ const CACHE_MS = 1000 * 60 * 60 * 2; // re-sign well before the URLs expire
 
 /** Session cache so a second product page opens the reels instantly, with no round-trip. */
 const readCache = (maxAge = CACHE_MS): Reel[] | undefined => {
-  if (typeof sessionStorage === "undefined") return undefined;
+  // Inside the try: with storage blocked, merely reading `sessionStorage` throws, typeof or not.
   try {
+    if (typeof sessionStorage === "undefined") return undefined;
     const raw = sessionStorage.getItem(CACHE_KEY);
     if (!raw) return undefined;
     const parsed = JSON.parse(raw) as { at: number; reels: Reel[] };
@@ -52,8 +53,8 @@ const readCache = (maxAge = CACHE_MS): Reel[] | undefined => {
 export const readStaleReelCache = (): Reel[] | undefined => readCache(Number.POSITIVE_INFINITY);
 
 const writeCache = (reels: Reel[]) => {
-  if (typeof sessionStorage === "undefined") return;
   try {
+    if (typeof sessionStorage === "undefined") return;
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), reels }));
   } catch {
     /* quota — cache is optional */

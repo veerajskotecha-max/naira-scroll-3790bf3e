@@ -1,11 +1,14 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowLeft, ArrowRight, X, ZoomIn, ZoomOut } from "lucide-react";
+import { useReturnFocus } from "@/hooks/useReturnFocus";
 
 const jost = { fontFamily: "'Jost', 'Inter', sans-serif" } as const;
 
 interface ImageLightboxProps {
   images: string[];
+  /** Alt text per image; without it, "<name>, view N of M". */
+  alts?: string[];
   /** Piece or product name, used for labels and alt text. */
   name?: string;
   open: boolean;
@@ -13,19 +16,24 @@ interface ImageLightboxProps {
   onOpenChange: (open: boolean) => void;
 }
 
+/** How far a finger must travel sideways before it counts as a swipe. */
+const SWIPE_PX = 40;
+
 const controlClasses =
   "flex h-11 w-11 items-center justify-center border border-[#1A1614]/15 bg-[#FBF3EC]/90 text-[#1A1614] transition-colors duration-200 hover:bg-[#1A1614] hover:text-[#FBF3EC] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9A7634]";
 
 /**
  * Full-screen product image viewer for the atelier.
- * Ivory backdrop, ink controls, 2x zoom toggle, arrow-key navigation.
- * Focus trap, Escape and backdrop close are handled by Radix Dialog.
+ * Ivory backdrop, ink controls, 2x zoom toggle, arrow-key and swipe navigation.
+ * Focus trap, Escape and backdrop close are handled by Radix Dialog; closing
+ * gives focus back to the gallery photo that opened it (useReturnFocus).
  */
-const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpenChange }: ImageLightboxProps) => {
+const ImageLightbox = ({ images, alts, name = "Product", open, initialIndex = 0, onOpenChange }: ImageLightboxProps) => {
   const count = images.length;
   const [index, setIndex] = React.useState(initialIndex);
   const [zoomed, setZoomed] = React.useState(false);
   const [origin, setOrigin] = React.useState("50% 50%");
+  const returnFocus = useReturnFocus();
 
   React.useEffect(() => {
     if (open) {
@@ -55,7 +63,29 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
     }
   };
 
+  /* A sideways swipe moves between photos, as the page gallery behind does;
+     only the arrow buttons did. One finger, unzoomed, clearly sideways. */
+  const swipe = React.useRef<{ x: number; y: number } | null>(null);
+  const swipedAt = React.useRef(0);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipe.current = e.touches.length === 1 && !zoomed ? { x: t.clientX, y: t.clientY } : null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = swipe.current;
+    swipe.current = null;
+    const t = e.changedTouches[0];
+    if (!start || !t || zoomed) return;
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    swipedAt.current = Date.now();
+    step(dx < 0 ? 1 : -1);
+  };
+
   const toggleZoomAtPoint = (e: React.MouseEvent<HTMLImageElement>) => {
+    // A browser that still sends a click after the swipe must not zoom too.
+    if (Date.now() - swipedAt.current < 400) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
     const y = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
@@ -77,6 +107,7 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
           className="fixed inset-0 z-[70] bg-[#FBF3EC] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"
         />
         <DialogPrimitive.Content
+          {...returnFocus}
           onKeyDown={handleKeyDown}
           aria-describedby={undefined}
           className="fixed inset-0 z-[70] flex flex-col outline-none duration-200 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"
@@ -113,7 +144,9 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
 
           {/* Stage */}
           <div
-            className="relative mt-3 flex min-h-0 flex-1 items-center justify-center overflow-hidden px-4 pb-6 md:px-24 md:pb-10"
+            className="relative mt-3 flex min-h-0 flex-1 touch-pan-y touch-pinch-zoom items-center justify-center overflow-hidden px-4 pb-6 md:px-24 md:pb-10"
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
             onClick={(e) => {
               if (e.target === e.currentTarget) onOpenChange(false);
             }}
@@ -121,7 +154,7 @@ const ImageLightbox = ({ images, name = "Product", open, initialIndex = 0, onOpe
             <img
               key={index}
               src={images[index]}
-              alt={`${name}, view ${index + 1} of ${count}`}
+              alt={alts?.[index] ?? `${name}, view ${index + 1} of ${count}`}
               draggable={false}
               onClick={toggleZoomAtPoint}
               className={`max-h-full max-w-full select-none object-contain transition-transform duration-500 ${

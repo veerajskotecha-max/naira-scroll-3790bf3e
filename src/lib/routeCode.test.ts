@@ -14,6 +14,12 @@ describe("routeKeyFor", () => {
     expect(routeKeyFor("/journal/how-to-layer")).toBe("JournalArticle");
   });
 
+  /* Load the page a URL really opens: /shop/indo-western redirects to the
+     outfits, and preloading the jewellery grid for it would be wasted. */
+  it("finds the page behind redirected URLs", () => {
+    expect(routeKeyFor("/shop/indo-western")).toBe("MadeForYou");
+  });
+
   it("leaves unknown URLs to render the ordinary way", () => {
     expect(routeKeyFor("/no-such-page")).toBeNull();
     expect(routeKeyFor("/jewellery/a/b/c")).toBeNull();

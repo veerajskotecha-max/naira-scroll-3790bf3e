@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sdk_version": "0.27.0",
+  "sdk_version": "3.4.0",
   "path": "/functions/v1/mcp",
   "auth": {
     "type": "oauth",
@@ -26,23 +26,23 @@
           "openWorldHint": true
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "query": {
+              "description": "Keyword such as 'earrings', 'ring', 'zircone'. Omit to list current pieces.",
               "type": "string",
-              "maxLength": 120,
-              "description": "Keyword such as 'earrings', 'ring', 'zircone'. Omit to list current pieces."
+              "maxLength": 120
             },
             "limit": {
+              "default": 12,
+              "description": "How many pieces to return.",
               "type": "integer",
               "minimum": 1,
-              "maximum": 50,
-              "default": 12,
-              "description": "How many pieces to return."
+              "maximum": 50
             }
           },
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -56,6 +56,7 @@
           "openWorldHint": true
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "handle": {
@@ -68,8 +69,7 @@
           "required": [
             "handle"
           ],
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -83,9 +83,10 @@
           "openWorldHint": false
         },
         "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
-          "properties": {}
+          "properties": {},
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -99,18 +100,18 @@
           "openWorldHint": false
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "limit": {
+              "default": 10,
+              "description": "How many orders to return.",
               "type": "integer",
               "minimum": 1,
-              "maximum": 50,
-              "default": 10,
-              "description": "How many orders to return."
+              "maximum": 50
             }
           },
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       },
@@ -125,21 +126,21 @@
           "openWorldHint": false
         },
         "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
           "type": "object",
           "properties": {
             "name": {
+              "description": "Name to store with the signup.",
               "type": "string",
-              "maxLength": 80,
-              "description": "Name to store with the signup."
+              "maxLength": 80
             },
             "phone": {
+              "description": "Optional phone number.",
               "type": "string",
-              "maxLength": 20,
-              "description": "Optional phone number."
+              "maxLength": 20
             }
           },
-          "additionalProperties": false,
-          "$schema": "http://json-schema.org/draft-07/schema#"
+          "additionalProperties": false
         },
         "outputSchema": null
       }

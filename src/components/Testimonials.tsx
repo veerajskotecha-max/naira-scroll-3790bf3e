@@ -242,10 +242,13 @@ const CollageTile = ({
         boxShadow: "0 6px 20px -10px hsla(20,15%,15%,0.18)",
       }}
     >
+      {/* loading before src: React 18 sets attributes in the order written,
+          and with src first a photo the pre-built page already listed starts
+          downloading before it is ever marked lazy (see CustomerReviews). */}
       <img
+        loading="lazy"
         src={tile.src}
         alt={tile.outfit}
-        loading="lazy"
         className="w-full h-full object-cover transition-transform duration-400 ease-out group-hover:scale-[1.04]"
       />
       {/* Hover overlay */}

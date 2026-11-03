@@ -6,12 +6,15 @@ import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
 import PincodeChecker from "@/components/product/PincodeChecker";
 import { cardCover } from "@/lib/cardCover";
+import { galleryAlt } from "@/lib/galleryAlt";
+import { onRadioGroupKeyDown, rovingTabIndex } from "@/lib/radioGroup";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import { Button } from "@/components/ui/button";
 import PressMarquee from "@/components/jewellery/PressMarquee";
+import PdpOfferLadder from "@/components/jewellery/PdpOfferLadder";
 import { discountPercent } from "@/components/jewellery/JewelPriceTag";
 import { useQuery } from "@tanstack/react-query";
 import { fromShopify, useLiveJewellery } from "@/hooks/useLiveJewellery";
@@ -23,20 +26,22 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
-import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
+import { jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, SOLD_OUT_LEAD, SIZE_PREORDER_LEAD, VARIANT_SOLD_OUT_LEAD, preorderLead, type JewelPiece } from "@/data/jewellery";
 import { absoluteUrl } from "@/lib/absoluteUrl";
 import { shopifyImage, shopifyOgImage, shopifySrcSet, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
-import { productParams, trackPixel } from "@/lib/pixel";
+import { linkPlaced } from "@/lib/viewContent";
+import { useViewContent } from "@/hooks/useViewContent";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
 import { isPreviewPath, previewProductPath } from "@/lib/preview";
 import { completeTheLook, isSetRow, moreLikeThis } from "@/lib/pairings";
 import { buyableValues, cartLineFor, choiceNeeded, choices, choose, findVariant, oneTapVariant, sizeOption, variantLabel } from "@/lib/variants";
-import { colourFromParam, colourOption, openingChoice } from "@/lib/colourCards";
+import { colourFromParam, colourOfVariant, colourOption, openingChoice, variantChoice, variantPhoto } from "@/lib/colourCards";
 import { useBackToClose } from "@/hooks/useBackToClose";
 import { recentSoldCount } from "@/lib/dailySold";
 import { coatingOf, hasZirconeStone, presentJewellery, stoneOf } from "@/lib/jewelleryPresentation";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { QUANTITY_OFFERS } from "@/lib/promo";
+import { clipText, fitTitle } from "@/lib/clipText";
 import UpiBadges from "@/components/checkout/UpiBadges";
 
 /*
@@ -72,6 +77,8 @@ const FomoPopup = lazy(() => import("@/components/FomoPopup"));
 /* Square: 15 of the 16 hero photos are 1:1, and it keeps the name and price
    above the fold on a 390px phone (see JewelDetail.tsx). */
 const MOBILE_FRAME = "1/1";
+/* A transparent 1×1 GIF: what a screen gets from a <picture> whose source is not for it. */
+const BLANK_PIXEL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5).toISOString().slice(0, 10);
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
@@ -198,23 +205,26 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
   const [adding, setAdding] = useState(false);
   const need = choiceNeeded(piece);
   const variant = compact ? oneTapVariant(piece, prefer) : undefined;
-  const image = variant?.image ?? cardCover(piece);
+  const image = variantPhoto(piece, variant) ?? cardCover(piece);
+  /* The page opens on the colour the card shows, not the piece's first. */
+  const colour = variant ? variant.options[colourOption(piece)?.name ?? ""] : undefined;
+  const to = colour ? `${href}${href.includes("?") ? "&" : "?"}colour=${encodeURIComponent(colour.toLowerCase())}` : href;
   const add = async () => {
     setAdding(true);
+    setDrawerOpen(true);
     try {
       await addItem({
         ...cartLineFor(piece, variant),
         // an adjustable ring sold one way goes in as US 6, the size its page opens on
         ...(piece.category === "Rings" && !variant ? { size: "US 6" } : {}),
       });
-      setDrawerOpen(true);
     } finally {
       setAdding(false);
     }
   };
   return (
     <article className="flex min-w-0 flex-col" data-variant={variant ? variantLabel(variant) : undefined}>
-      <Link to={href} className="block aspect-square overflow-hidden bg-nf-ivory-deep">
+      <Link to={to} className="block aspect-square overflow-hidden bg-nf-ivory-deep">
         <img
           src={shopifyImage(image, 360)}
           srcSet={shopifySrcSet(image, [240, 360, 480]) || undefined}
@@ -227,8 +237,12 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
           height={360}
         />
       </Link>
-      <Link to={href} className="mt-2 line-clamp-2 min-h-[34px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
-        {piece.name}
+      {/* A 44px target over the same two-line box: 5px of padding each side,
+          taken back from the margins, so nothing below moves. The clamp sits
+          inside: a clamped box clips at its padding edge, so padding on it
+          showed the top of a third line over the price. */}
+      <Link to={to} className="-mb-[5px] mt-[3px] block min-h-[44px] py-[5px] font-cormorant text-[13px] leading-[1.2] text-nf-ink">
+        <span className="line-clamp-2">{piece.name}</span>
       </Link>
       <p className="mt-0.5 text-[12px] text-nf-ink/75">
         {variant ? `₹${variant.price.toLocaleString("en-IN")}` : piece.priceLabel}
@@ -237,7 +251,7 @@ const PairingCard = ({ piece, href, compact = false, prefer }: { piece: JewelPie
       {compact &&
         (need ? (
           <Link
-            to={href}
+            to={to}
             aria-label={`Choose a ${need} for ${piece.name}`}
             className="press-scale mt-2 flex h-11 w-full items-center justify-center border border-[var(--nf-cta)] font-nf-label text-[10px] uppercase tracking-nf-16 text-[var(--nf-cta)] transition-colors hover:bg-[var(--nf-cta)] hover:text-nf-ivory"
           >
@@ -371,27 +385,34 @@ const JewelDetailNext = () => {
      one way. It opens on the first variant that can be bought; once the shopper
      picks, that variant's own photo leads the gallery. A colour card in the
      shop grid links here on its colour (?colour=silver): the page opens on that
-     colour, its photo first. */
+     colour, its photo first. A catalogue ad names a variant by Shopify's
+     number instead (?variant=…): the page opens on what variantChoice
+     (lib/colourCards) takes from it, its photo first. A colour picked here
+     (?colour=) then wins over the ad's link. */
   const [searchParams, setSearchParams] = useSearchParams();
-  const colourParam = searchParams.get("colour");
-  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? openingChoice(piece, colourParam) : {}));
-  const [picked, setPicked] = useState(() => Boolean(piece && colourFromParam(piece, colourParam)));
+  const colourLink = searchParams.get("colour");
+  const variantLink = colourLink ? null : searchParams.get("variant");
+  const colourParam = colourLink ?? (piece ? colourOfVariant(piece, variantLink)?.toLowerCase() : undefined) ?? null;
+  const opening = (p: JewelPiece) => variantChoice(p, variantLink) ?? openingChoice(p, colourParam);
+  const [chosen, setChosen] = useState<Record<string, string>>(() => (piece ? opening(piece) : {}));
+  const [picked, setPicked] = useState(() => Boolean(piece && (variantChoice(piece, variantLink) || colourFromParam(piece, colourParam))));
   const variantKey = piece?.variants?.map((v) => v.id).join(",") ?? "";
   useEffect(() => {
     const colour = piece ? colourFromParam(piece, colourParam) : undefined;
+    const named = piece ? variantChoice(piece, variantLink) : undefined;
     /* A colour picked here writes the link; that must not undo a size the
        shopper has already chosen. */
     setChosen((current) =>
       !piece
         ? {}
-        : colour && current[colour.option] === colour.value && findVariant(piece, current)
+        : !named && colour && current[colour.option] === colour.value && findVariant(piece, current)
           ? current
-          : openingChoice(piece, colourParam),
+          : opening(piece),
     );
-    setPicked(Boolean(colour));
+    setPicked(Boolean(named || colour));
     // A refetch of the same variants must not undo the shopper's choice.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [piece?.handle, variantKey, colourParam]);
+  }, [piece?.handle, variantKey, colourParam, variantLink]);
   const variant = piece ? findVariant(piece, chosen) : undefined;
   const pick = (option: string, value: string) => {
     if (!piece) return;
@@ -447,24 +468,20 @@ const JewelDetailNext = () => {
   const { data: reels } = useReels(reelsWanted);
   const galleryReel = useMemo(() => (piece ? reelForPiece(reels, piece.handle) : null), [reels, piece]);
 
-  useEffect(() => {
-    if (!piece) return;
-    trackPixel(
-      "ViewContent",
-      productParams({
-        id: piece.handle,
-        variantId: piece.variantId,
-        name: piece.name,
-        price: piece.price,
-        category: piece.category,
-      }),
-    );
-  }, [piece?.handle]);
+  /* The product view, once per piece, naming the variant the page opens on,
+     worked out from the link rather than read from `variant`, which a sibling
+     effect may still be resetting on this render. A link the piece as first
+     drawn cannot place (Star Point Band's Silver ad) waits for Shopify. */
+  useViewContent(piece, colourParam, Boolean(piece && linkPlaced(piece, searchParams)), isLive || !catalogueLoading);
 
   /* The phone's buy bar shows whenever Add to cart is not fully on screen —
      so a buy button is visible from the moment the page opens — but never
      over the price. It watches the button itself: the gift line below it
-     reaching past the screen's edge put the bar over a button in full view. */
+     reaching past the screen's edge put the bar over a button in full view.
+     Nor over the offer's two rungs while they are on screen: the panel sits
+     right above Add to cart, so on a 360x780 phone the bar covered the
+     per-piece prices on the first screen. Rungs reaching past the screen's
+     edge do not hold it back (an Instagram-sized screen keeps its bar). */
   useEffect(() => {
     const check = () => {
       const target = document.querySelector("#product-actions > button");
@@ -474,7 +491,9 @@ const JewelDetailNext = () => {
       const price = document.getElementById("product-price");
       const barHeight = stickyBarRef.current?.offsetHeight ?? 72;
       const priceClear = !price || price.getBoundingClientRect().bottom < window.innerHeight - barHeight;
-      const next = notFullyShown && priceClear;
+      const rungs = document.querySelector("[data-offer-ladder] ul")?.getBoundingClientRect();
+      const offerClear = !rungs || rungs.bottom > window.innerHeight || rungs.bottom < window.innerHeight - barHeight;
+      const next = notFullyShown && priceClear && offerClear;
       /* Writing the same value back keeps React from rendering at all, so a
          reflow that changed nothing cannot ask for another layout pass. */
       setStickyBarVisible((cur) => (cur === next ? cur : next));
@@ -505,7 +524,7 @@ const JewelDetailNext = () => {
     };
   }, [handle]);
 
-  const leadImage = picked ? variant?.image : undefined;
+  const leadImage = picked && piece ? variantPhoto(piece, variant) : undefined;
   const images = useMemo(() => {
     if (!piece) return [];
     const base = piece.gallery && piece.gallery.length > 0 ? piece.gallery : [piece.image];
@@ -554,7 +573,9 @@ const JewelDetailNext = () => {
 
   const wishlisted = isWishlisted(piece.handle);
   const adjustable = isAdjustableRing(piece);
-  const soldOut = piece.availableForSale === false && !adjustable;
+  /* Adjustability is fit, not inventory: an open-back ring Shopify has sold
+     out is reserved like any other piece, not promised as shipping now. */
+  const soldOut = piece.availableForSale === false;
   const isRing = piece.category === "Rings";
   const finish = coatingOf(piece);
   const soldCount = recentSoldCount(piece.handle);
@@ -581,6 +602,8 @@ const JewelDetailNext = () => {
   const sizePreorder = isRing && !sizeName && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
   /* ...or a variant Shopify has sold out of. */
   const isPreorder = soldOut || sizePreorder || variantSoldOut;
+  /* ...and has the one lead time its state carries, wherever delivery is said. */
+  const leadTime = preorderLead({ soldOut, variantSoldOut, sizePreorder, size: selectedSize });
   /* A ring Shopify does not sell in sizes is sized from the US list
      (`ringSizes`), and the size rides on the line as a note, a metal chosen or
      not (Droplet Open Ring is sold in gold and silver, not in sizes). */
@@ -615,10 +638,13 @@ const JewelDetailNext = () => {
           size: noteSize,
         };
 
+  /* The bag opens at the tap with the piece on its way in, and says so there
+     if Shopify cannot add it. It used to open only once Shopify answered,
+     one to three seconds on 4G. */
   const handleAddToCart = async () => {
     if (isPreorder) return handlePreOrder();
-    const added = await addItem(cartItem());
-    if (added) setDrawerOpen(true);
+    setDrawerOpen(true);
+    await addItem(cartItem());
   };
 
   const handleBuyNow = async () => {
@@ -639,7 +665,7 @@ const JewelDetailNext = () => {
 
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece) });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: cardCover(piece), kind: "jewellery", variantId: variant?.id ?? piece.variantId, amount: shown.price });
   };
 
   /* Tarnish and skin, answered from the piece's own materials, in Care.
@@ -650,7 +676,7 @@ const JewelDetailNext = () => {
       q: "Will it tarnish?",
       a: `It is ${finishInSentence}${steel && !/steel/i.test(finish) ? " on surgical stainless steel" : ""}${
         waterproof ? ", waterproof and made not to tarnish" : ", made to resist tarnish"
-      }, and the finish is covered by our 2-year plating assurance.`,
+      }, and the finish is covered by our 3-year plating assurance — cared for well, it keeps its colour for a lifetime.`,
     },
     {
       q: "Sensitive skin?",
@@ -669,7 +695,8 @@ const JewelDetailNext = () => {
     image: [piece.image],
     material: piece.materials,
     url: canonical,
-    sku: piece.sku,
+    // An empty "sku" is invalid structured data; a piece without one leaves it out.
+    ...(piece.sku ? { sku: piece.sku } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
@@ -681,7 +708,7 @@ const JewelDetailNext = () => {
       url: canonical,
     },
   };
-  const title = `${piece.name} · Demi-Gold Jewellery | Naira Flore`;
+  const title = fitTitle(`${piece.name} · Demi-Gold Jewellery`);
   const ogImageUrl = absoluteUrl(shopifyOgImage(piece.image));
 
   const heart = (
@@ -705,6 +732,13 @@ const JewelDetailNext = () => {
   const HERO_WIDTHS = [480, 600, 720, 800, 900, 1000, 1200, 1400];
   const HERO_SIZES = "(max-width: 1024px) 100vw, 50vw";
   const prerendering = typeof navigator !== "undefined" && navigator.webdriver;
+  /* A photo's button names it the way its alt does (lib/galleryAlt): a phone
+     screen reader reads the button, not the photo inside it. */
+  const openLabel = (img: string, i: number) => {
+    const alt = galleryAlt(piece, img, i);
+    const label = `Open ${piece.name} image ${i + 1} full screen`;
+    return alt === `${piece.name} view ${i + 1}` ? label : `${label}: ${alt}`;
+  };
 
   const MobileGallery = (
     <div className="relative">
@@ -720,14 +754,14 @@ const JewelDetailNext = () => {
             onClick={() => openLightbox(i)}
             className="block w-full shrink-0 cursor-zoom-in snap-center bg-nf-ivory-deep p-0"
             style={{ aspectRatio: MOBILE_FRAME, scrollSnapStop: "always" }}
-            aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+            aria-label={openLabel(img, i)}
           >
             {(i === 0 || !prerendering) && (
               <img
                 src={shopifyImage(img, 900)}
                 srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [480, 720, 900, 1200]) || undefined}
                 sizes={i === 0 ? HERO_SIZES : "100vw"}
-                alt={`${piece.name} view ${i + 1}`}
+                alt={galleryAlt(piece, img, i)}
                 className="h-full w-full object-cover"
                 width={900}
                 height={1200}
@@ -788,20 +822,39 @@ const JewelDetailNext = () => {
               onClick={() => openLightbox(i)}
               className={`relative block min-h-0 w-full cursor-zoom-in overflow-hidden bg-nf-ivory-deep p-0 ${count === 3 && i === 0 ? "col-span-2" : ""}`}
               style={{ height: "100%" }}
-              aria-label={`Open ${piece.name} image ${i + 1} full screen`}
+              aria-label={openLabel(img, i)}
             >
-              <img
-                src={shopifyImage(img, i === 0 ? 900 : 1000)}
-                srcSet={shopifySrcSet(img, i === 0 ? HERO_WIDTHS : [600, 800, 1000, 1400]) || undefined}
-                sizes={HERO_SIZES}
-                alt={`${piece.name} view ${i + 1}`}
-                className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
-                width={1000}
-                height={1000}
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : "auto"}
-                decoding={i === 0 ? "sync" : "async"}
-              />
+              {i === 0 ? (
+                <img
+                  src={shopifyImage(img, 900)}
+                  srcSet={shopifySrcSet(img, HERO_WIDTHS) || undefined}
+                  sizes={HERO_SIZES}
+                  alt={galleryAlt(piece, img, i)}
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+                  width={1000}
+                  height={1000}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
+                />
+              ) : (
+                /* Photos two to four are on this grid only, which a phone never
+                   shows, yet phones downloaded them, lazy or not: about 300 KB
+                   on Prism Rivière (27 Oct 2026). Only a desktop-width screen
+                   picks their source; a phone gets a one-pixel blank. */
+                <picture className="contents">
+                  <source media="(min-width: 768px)" srcSet={shopifySrcSet(img, [600, 800, 1000, 1400]) || shopifyImage(img, 1000)} sizes={HERO_SIZES} />
+                  <img
+                    src={BLANK_PIXEL}
+                    alt={galleryAlt(piece, img, i)}
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+                    width={1000}
+                    height={1000}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+              )}
               {more > 0 && i === count - 1 && (
                 <span className="absolute bottom-3 right-3 bg-nf-ivory/90 px-2.5 py-1.5 font-nf-label text-[10.5px] uppercase tracking-nf-16 text-nf-ink">
                   +{more} {more === 1 ? "photo" : "photos"}
@@ -821,13 +874,13 @@ const JewelDetailNext = () => {
     <div className="min-h-screen bg-nf-ivory text-nf-ink">
       <Helmet>
         <title>{inPreview ? `Preview · ${title}` : title}</title>
-        <meta name="description" content={`${piece.name}, ${piece.blurb.slice(0, 130)}`} />
+        <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
         <link rel="canonical" href={canonical} />
         {/* Under review at /preview/: kept out of search, pointing at the live page. */}
         <meta name="robots" content={inPreview ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
         <meta property="og:type" content="product" />
         <meta property="og:title" content={title} />
-        <meta property="og:description" content={piece.blurb.slice(0, 150)} />
+        <meta property="og:description" content={clipText(piece.blurb, 150)} />
         <meta property="og:image" content={ogImageUrl} />
         <meta property="og:image:secure_url" content={ogImageUrl} />
         <meta property="og:image:type" content="image/jpeg" />
@@ -838,7 +891,7 @@ const JewelDetailNext = () => {
         <meta property="og:site_name" content="Naira Flore" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
-        <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
+        <meta name="twitter:description" content={clipText(piece.blurb, 150)} />
         <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
       <JsonLd data={structuredData} />
@@ -860,9 +913,11 @@ const JewelDetailNext = () => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify({ piece, rating }).replace(/</g, "\\u003c") }}
       />
 
+      {/* The page's one main landmark; the footer and the phone buy bar stay outside it. */}
+      <main>
       {/* Breadcrumb (desktop) */}
       <div className="mx-auto hidden max-w-[1400px] items-center justify-between gap-4 px-6 pb-3 pt-[126px] md:flex lg:pt-[136px]">
-        <nav className="flex items-center gap-2 text-[11px] tracking-nf-4 text-nf-ink/70">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[11px] tracking-nf-4 text-nf-ink/70">
           <Link to="/" className="hover:text-nf-ink">Home</Link>
           <span>/</span>
           <Link to="/jewellery" className="hover:text-nf-ink">Jewellery</Link>
@@ -961,6 +1016,11 @@ const JewelDetailNext = () => {
               <span className="h-2 w-px shrink-0 bg-nf-gold/30" aria-hidden="true" />
             </p>
 
+            {/* Buy 2 / Buy 3, priced for this piece and following the bag. A
+                piece sold out altogether is reserved on WhatsApp and never
+                reaches the bag, so it is offered nothing it cannot get. */}
+            {!soldOut && <PdpOfferLadder price={shown.price} preorder={sizePreorder || variantSoldOut} />}
+
             {/* The ways Shopify sells this piece: a metal, a stone, a size, a
                 month. Each value shows whether it can be bought with the other
                 choices as they stand; a sold-out one can still be reserved. */}
@@ -1000,8 +1060,8 @@ const JewelDetailNext = () => {
                       ))}
                     </select>
                   ) : (
-                    <div role="radiogroup" aria-label={option.name} className="mt-1 flex flex-wrap gap-2">
-                      {option.values.map((value) => {
+                    <div role="radiogroup" aria-label={option.name} onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                      {option.values.map((value, i) => {
                         const active = chosen[option.name] === value;
                         const swatch = isSize ? undefined : swatchOf(value);
                         return (
@@ -1010,6 +1070,7 @@ const JewelDetailNext = () => {
                             type="button"
                             role="radio"
                             aria-checked={active}
+                            tabIndex={rovingTabIndex(option.values.indexOf(chosen[option.name] ?? ""), i)}
                             onClick={() => pick(option.name, value)}
                             className={`flex min-h-[44px] min-w-[68px] flex-col items-center justify-center border px-4 text-[12px] font-medium transition-colors duration-150 ${
                               active
@@ -1045,9 +1106,8 @@ const JewelDetailNext = () => {
                     Size guide
                   </button>
                 </div>
-                {/* 56px chips keep an adjustable ring's five sizes (US 5–9) on one row on a 360px phone. */}
-                <div role="radiogroup" aria-label="Ring size, US" className="mt-1 flex flex-wrap gap-2">
-                  {ringSizesFor(piece).map((s) => {
+                <div role="radiogroup" aria-label="Ring size, US" onKeyDown={onRadioGroupKeyDown} className="mt-1 flex flex-wrap gap-2">
+                  {ringSizesFor(piece).map((s, i, sizes) => {
                     const active = selectedSize === s.value;
                     return (
                       <button
@@ -1055,8 +1115,9 @@ const JewelDetailNext = () => {
                         type="button"
                         role="radio"
                         aria-checked={active}
+                        tabIndex={rovingTabIndex(sizes.findIndex((size) => size.value === selectedSize), i)}
                         onClick={() => setSelectedSize(s.value)}
-                        className={`min-h-[44px] min-w-[56px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
+                        className={`min-h-[44px] min-w-[68px] border px-4 text-[12px] font-medium transition-colors duration-150 ${
                           active
                             ? "border-[var(--nf-cta)] bg-[var(--nf-cta)] text-nf-ivory"
                             : "border-nf-ink/25 bg-transparent text-nf-ink hover:border-nf-ink/50"
@@ -1078,15 +1139,16 @@ const JewelDetailNext = () => {
                       ? `US ${selectedSize} ships now. ${adjustableFitNote(piece.handle)}`
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
-                        : `US ${selectedSize} is a pre-order, delivered in 45 days.`}
+                        : `US ${selectedSize} is a pre-order, ${SIZE_PREORDER_LEAD}.`}
                   </p>
                 )}
               </div>
             )}
-            {variant && (sizeName || variantSoldOut) && (
+            {/* A sold-out piece says its lead time once, under the button. */}
+            {variant && !soldOut && (sizeName || variantSoldOut) && (
               <p className="mt-2 text-[11.5px] leading-[1.6] text-nf-ink/75">
                 {variantSoldOut
-                  ? `${sentence(choiceText(variant.options))} is sold out for now. Reserve it and we will confirm the date on WhatsApp.`
+                  ? `${sentence(choiceText(variant.options))} is sold out for now. ${VARIANT_SOLD_OUT_LEAD}`
                   : `${isRing ? "US" : "Size"} ${chosen[sizeName ?? ""]} is in stock and ships now.`}
               </p>
             )}
@@ -1106,6 +1168,7 @@ const JewelDetailNext = () => {
                   {buying ? "Opening checkout…" : <>Buy Now<UpiBadges size={16} /></>}
                 </Button>
               )}
+              {/* eslint-disable-next-line no-constant-binary-expression -- switched off in Lovable on 30 Sep (it was soldOut &&); kept so it can be switched back */}
               {false && (
                 <a
                   href={sizedEnquiryHref}
@@ -1118,8 +1181,13 @@ const JewelDetailNext = () => {
               )}
               <p className="col-span-2 mt-1 flex items-center justify-center gap-2 text-center text-[11.5px] text-nf-ink/80">
                 <Gift size={14} strokeWidth={1.6} className="shrink-0 text-nf-gold-deep" aria-hidden="true" />
-                {soldOut ? "Hand-finished for you and shipped within 2 weeks, gift-boxed" : "Gift-ready: every piece arrives in the Naira gift box"}
+                {soldOut ? `${SOLD_OUT_LEAD}, gift-boxed` : "Gift-ready: every piece arrives in the Naira gift box"}
               </p>
+              {/* Lovable's "Naira bundle" panel (PdpOffers, 11829ae) said the same offer
+                  a second time under Buy Now; the page shows it once, in
+                  PdpOfferLadder under the price, which also follows the bag. To
+                  use the bundle panel instead, render it here and drop the
+                  ladder above. */}
             </div>
 
             {/* Details, care and delivery as fold-downs, closed until asked for
@@ -1197,7 +1265,7 @@ const JewelDetailNext = () => {
                 <div id="pdp-panel-delivery" className="pb-6">
                   <div className="space-y-2.5 text-[13px] leading-[1.7] text-nf-ink/85">
                     <p>
-                      {arrivesBy && !soldOut ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
+                      {leadTime ? `${leadTime} ` : arrivesBy ? `Order today and it arrives by ${arrivesBy}. ` : `${PREORDER_NOTE} `}
                       Free insured shipping across India, dispatched from our Mumbai atelier.
                     </p>
                     <p>
@@ -1208,7 +1276,7 @@ const JewelDetailNext = () => {
                       .
                     </p>
                   </div>
-                  <PincodeChecker />
+                  <PincodeChecker preorder={isPreorder} />
                   <a
                     href={isRing ? sizedEnquiryHref : enquiryHref}
                     target="_blank"
@@ -1276,6 +1344,7 @@ const JewelDetailNext = () => {
           mobileStickyVisible={stickyBarVisible}
         />
       </Suspense>
+      </main>
 
       <Footer compact slim />
 
@@ -1316,6 +1385,7 @@ const JewelDetailNext = () => {
 
       <ImageLightbox
         images={images}
+        alts={images.map((img, i) => galleryAlt(piece, img, i))}
         name={piece.name}
         open={lightboxOpen}
         initialIndex={lightboxIndex}

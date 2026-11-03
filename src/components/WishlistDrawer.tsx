@@ -1,18 +1,50 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Heart } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { useWishlist } from "@/contexts/WishlistContext";
+import { useWishlist, type WishlistItem } from "@/contexts/WishlistContext";
 import { jewellery, PREORDER_LABEL } from "@/data/jewellery";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 
-/* Jewellery is wishlisted by handle; route those to the jewellery PDP. */
-const jewelHandles = new Set(jewellery.map((j) => j.handle));
+/* Jewellery opens on /jewellery/<handle>, outfits on /product/<handle>. A
+   piece carries its kind from the moment it is saved. One saved before that
+   is looked up in the full list of jewellery handles, fetched only when the
+   wishlist opens with such a piece in it: imported here, those 136 handles
+   rode in the first download of every page. Until the list arrives,
+   /product/<handle> still gets there, as ProductDetail sends a piece in the
+   list on to its jewellery page on its first render. */
+const bundledHandles = new Set(jewellery.map((j) => j.handle));
+let jewelHandles: ReadonlySet<string> | null = null;
+
+const useJewelHandles = (needed: boolean) => {
+  const [handles, setHandles] = useState(jewelHandles);
+  useEffect(() => {
+    if (!needed || handles) return;
+    let live = true;
+    import("@/data/jewelleryHandles").then(
+      (m) => {
+        jewelHandles = m.JEWELLERY_HANDLES;
+        if (live) setHandles(jewelHandles);
+      },
+      () => {}, // not fetched: the /product/ hop above still gets there
+    );
+    return () => {
+      live = false;
+    };
+  }, [needed, handles]);
+  return handles;
+};
+
+const pathOf = (item: WishlistItem, handles: ReadonlySet<string> | null) => {
+  const jewel = item.kind ? item.kind === "jewellery" : bundledHandles.has(item.id) || Boolean(handles?.has(item.id));
+  return jewel ? `/jewellery/${item.id}` : `/product/${item.id}`;
+};
 
 const WishlistDrawer = () => {
   const { items, removeItem, isDrawerOpen, setDrawerOpen } = useWishlist();
+  const handles = useJewelHandles(isDrawerOpen && items.some((item) => !item.kind));
   const contentRef = useRef<HTMLDivElement>(null);
   // The phone's back button closes the wishlist — see useBackToClose.
   const { requestClose, closeThen } = useBackToClose("nfWishlist", isDrawerOpen, setDrawerOpen);
@@ -77,21 +109,26 @@ const WishlistDrawer = () => {
         ) : (
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {items.map((item) => (
-              <Link
-                key={item.id}
-                to={jewelHandles.has(item.id) ? `/jewellery/${item.id}` : `/product/${item.id}`}
-                onClick={leave}
-                className="flex gap-3 group"
-              >
+              /* The link and Remove are siblings, as on JewelCard: Remove used
+                 to sit inside the link (invalid HTML; its word joined the
+                 link's name). The name's link is stretched over the row, so a
+                 tap on the photo or price still opens the piece. */
+              <div key={item.id} className="relative flex gap-3 group">
                 <img
                   src={item.image}
-                  alt={item.name}
+                  alt=""
                   className="w-[80px] h-[100px] object-cover shrink-0"
                 />
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div>
                     <p className="font-cormorant text-[15px] font-semibold truncate group-hover:underline" style={{ color: "hsl(0 0% 15%)" }}>
-                      {item.name}
+                      <Link
+                        to={pathOf(item, handles)}
+                        onClick={leave}
+                        className="after:absolute after:inset-0"
+                      >
+                        {item.name}
+                      </Link>
                     </p>
                     {item.price === PREORDER_LABEL ? (
                       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em]" style={{ color: "#9A7634", fontFamily: "'Jost', 'Inter', sans-serif" }}>
@@ -108,14 +145,14 @@ const WishlistDrawer = () => {
                       left on a phone would otherwise be this one. */}
                   <button
                     type="button"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeItem(item.id); }}
-                    className="self-start inline-flex min-h-[44px] items-center px-1 text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline decoration-[color:rgb(var(--nf-ink-rgb)/0.25)] underline-offset-4 transition-colors duration-150 hover:text-[var(--nf-text)]"
+                    onClick={() => removeItem(item.id)}
+                    className="relative z-10 self-start inline-flex min-h-[44px] items-center px-1 text-[11px] tracking-[var(--nf-track-4)] text-[color:rgb(var(--nf-ink-rgb)/0.55)] underline decoration-[color:rgb(var(--nf-ink-rgb)/0.25)] underline-offset-4 transition-colors duration-150 hover:text-[var(--nf-text)]"
                     aria-label={`Remove ${item.name} from wishlist`}
                   >
                     Remove
                   </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}

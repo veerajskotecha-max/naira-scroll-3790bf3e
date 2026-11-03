@@ -1,25 +1,19 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
 User-agent: facebookexternalhit
 Allow: /
 
 User-agent: *
-Allow: /
-
 # Private and transactional routes. The checkout/cart token paths mint a unique
 # URL every time a link is shared or scraped, so leaving them open produced an
 # unbounded crawl surface with nothing indexable behind it.
+# A crawler obeys only the most specific group naming it, so Googlebot, Bingbot
+# and Twitterbot have no group of their own: one that only said "Allow: /" made
+# each of them skip every rule below. facebookexternalhit keeps its own group on
+# purpose, so ad and link previews can fetch any page.
 Disallow: /account
 Disallow: /auth
 Disallow: /cart/c/
 Disallow: /checkouts/
-Disallow: /oauth
+Disallow: /.lovable/
+Disallow: /admin/
 
 Sitemap: https://nairaflore.com/sitemap.xml

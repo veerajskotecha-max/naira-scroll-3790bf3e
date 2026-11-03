@@ -1,4 +1,5 @@
 import type { JewelPiece } from "@/data/jewellery";
+import { LOOKALIKES, type Lookalike } from "@/data/lookalikes";
 import { TOP_QUANTITY_OFFER } from "@/lib/promo";
 import { choiceNeeded } from "@/lib/variants";
 
@@ -6,9 +7,11 @@ import { choiceNeeded } from "@/lib/variants";
   How the shop's pieces connect: what to suggest beside a piece on its product
   page, and in the bag. Three kinds of link, strongest first:
 
-    - the same set: pieces designed together or sharing a named line, stone
-      colour or cut (the Bold Nocturne chain, bracelet and drops; every Verdant
-      and emerald piece; the baguettes; the pearls), read from names and tags;
+    - the same set: pieces that look alike in their photos (LOOKALIKES: the
+      same design, like the Verdant Eternity Band and the Emerald Halo C-Hoops,
+      or the same look), then pieces sharing a named line, stone colour or cut
+      (the Bold Nocturne chain, bracelet and drops; every Verdant and emerald
+      piece; the baguettes; the pearls), read from names and tags;
     - the same look: another kind of piece that completes it (FIT), hoops first,
       the shop's proven second piece;
     - the same style: another piece of the same kind for "More …", tennis
@@ -52,7 +55,7 @@ export const isHoops = (piece: JewelPiece) => kindOf(piece) === "hoops";
 const STYLES: Record<JewelPiece["category"], Array<[string, RegExp]>> = {
   Earrings: [["huggies", /huggie/i], ["hoops", /hoop/i], ["ear cuff", /ear cuff/i], ["studs", /stud/i], ["drops", /./]],
   Necklaces: [["lariat", /lariat/i], ["choker", /choker/i], ["set", /\bset\b|layering/i], ["pendant", /heart|bezel|charm|pendant/i], ["chain", /./]],
-  Bracelets: [["tennis", /tennis|rivi[eè]re|baguette|lumi[eè]re/i], ["cuff", /cuff/i], ["bangle", /bangle/i], ["chain", /./]],
+  Bracelets: [["tennis", /tennis|rivi[eè]re|baguette|lumi[eè]re|carr[eé]/i], ["cuff", /cuff/i], ["bangle", /bangle/i], ["chain", /./]],
   Rings: [["band", /band|eternity/i], ["dome", /dome/i], ["open", /\bopen\b/i], ["statement", /./]],
 };
 export const styleOf = (piece: JewelPiece): string =>
@@ -82,19 +85,18 @@ const LINES: Array<[line: string, strength: Strength, pattern: RegExp]> = [
   ["baroque", "set", /baroque/i],
   ["molten", "set", /molten/i],
   ["mesh", "set", /mesh/i],
-  // Aditya, 25 Oct 2026: the clover drops, chain and station bracelet (with the Clover Charm
-  // Necklace and Clover Trio Edit); the twin heart necklace and studs; the watch link bracelet
-  // beside the Watch Link Ring.
-  ["clover", "set", /clover/i],
+  // Pieces made as a pair or a family, each page naming the others.
   ["twin heart", "set", /twin heart/i],
+  ["clover", "set", /clover/i],
   ["watch link", "set", /watch link/i],
+  ["carré", "set", /carr[eé]/i],
   ["halo", "motif", /halo/i],
   ["heart", "motif", /heart/i],
   ["star", "motif", /\bstar\b/i],
   ["dome", "motif", /dome/i],
   ["pear drop", "motif", /\bpear\b|dewdrop|teardrop/i],
   ["bow", "motif", /\bbow\b|ribbon/i],
-  ["bloom", "motif", /bloom|petal|flower|blossom|clover|quatrefoil/i],
+  ["bloom", "motif", /bloom|petal|flower|blossom|clover|quatrefoil|bougainvillea/i],
   ["trio", "motif", /\btrio\b/i],
   ["link", "motif", /\blinks?\b|linked|cable|toggle/i],
   ["coil", "motif", /coil|tubogas/i],
@@ -107,8 +109,30 @@ export const linesOf = (piece: JewelPiece): Array<[string, Strength]> => {
   const text = `${piece.name} ${(piece.tags ?? []).some((tag) => /^pearl$/i.test(tag.trim())) ? "pearl" : ""}`;
   return LINES.filter(([, , pattern]) => pattern.test(text)).map(([line, strength]) => [line, strength]);
 };
-/** The strongest line two pieces share: "set", "motif" or null. */
-export const sharedLine = (a: JewelPiece, b: JewelPiece): Strength | null => {
+/* The lookalike groups each piece is in, read once (src/data/lookalikes.ts). */
+const LOOKS = new Map<string, Array<[Lookalike, Set<string>]>>();
+for (const [strength, handles] of LOOKALIKES) {
+  const members = new Set(handles);
+  for (const handle of handles) LOOKS.set(handle, [...(LOOKS.get(handle) ?? []), [strength, members]]);
+}
+/** How alike two pieces look in their photos: the strongest group they share
+    and how many groups they share, or null when no group holds both. */
+export const lookalike = (a: JewelPiece, b: JewelPiece): { strength: Lookalike; groups: number } | null => {
+  if (a.handle === b.handle) return null;
+  const shared = (LOOKS.get(a.handle) ?? []).filter(([, members]) => members.has(b.handle));
+  if (!shared.length) return null;
+  return { strength: shared.some(([strength]) => strength === "twin") ? "twin" : "set", groups: shared.length };
+};
+/* A pair the photo check matched more than once is the closer match: the
+   Verdant Eternity Band and the Emerald Halo C-Hoops before the Emerald Deco Hoops. */
+const closeness = (a: JewelPiece, b: JewelPiece) => Math.min((lookalike(a, b)?.groups ?? 1) - 1, 3);
+
+/** The strongest link two pieces share: "twin" (one design, from their photos),
+    "set" (the same look in their photos, or a shared named line), "motif" or
+    null. Without `photos`, only the names count (the bag, below). */
+export const sharedLine = (a: JewelPiece, b: JewelPiece, photos = true): Lookalike | Strength | null => {
+  const look = photos ? lookalike(a, b) : null;
+  if (look) return look.strength;
   const theirs = new Map(linesOf(b));
   let best: Strength | null = null;
   for (const [line] of linesOf(a)) {
@@ -146,26 +170,30 @@ const PROVEN = new Set(["woven-gold-hoops"]);
  * How well `candidate` completes `anchor`, 0 when it does not: the kind it is
  * (FIT), then a shared set or motif, proven sales, the same metal colour and a
  * smaller ticket than the piece already chosen. A shared set outweighs one
- * step of FIT, so a piece's own set comes before the hoops.
+ * step of FIT, so a piece's own set comes before the hoops. A twin, the same
+ * design in another kind, outweighs everything else (55 at the least, against
+ * 54 at the most for any other piece), so a ring's own earrings lead its row.
  */
-export const matchScore = (anchor: JewelPiece, candidate: JewelPiece): number => {
+export const matchScore = (anchor: JewelPiece, candidate: JewelPiece, photos = true): number => {
   const fit = FIT[kindOf(anchor)][kindOf(candidate)] ?? 0;
   if (!fit) return 0;
-  const line = sharedLine(anchor, candidate);
+  const line = sharedLine(anchor, candidate, photos);
   return (
     fit * 10 +
-    (line === "set" ? 15 : line === "motif" ? 5 : 0) +
+    (line === "twin" ? 45 : line === "set" ? 15 : line === "motif" ? 5 : 0) +
+    (photos ? closeness(anchor, candidate) : 0) +
     (PROVEN.has(candidate.handle) ? 3 : 0) +
     (familyOf(candidate) === familyOf(anchor) ? 2 : 0) +
     (candidate.price <= anchor.price ? 1 : 0)
   );
 };
 
-/** How alike two pieces of the same category are: their line, style, metal and price. */
+/** How alike two pieces of the same category are: their look, line, style, metal and price. */
 export const similarScore = (anchor: JewelPiece, candidate: JewelPiece): number => {
   const line = sharedLine(anchor, candidate);
   return (
-    (line === "set" ? 6 : line === "motif" ? 3 : 0) +
+    (line === "twin" ? 12 : line === "set" ? 6 : line === "motif" ? 3 : 0) +
+    closeness(anchor, candidate) +
     (styleOf(candidate) === styleOf(anchor) ? 4 : 0) +
     (familyOf(candidate) === familyOf(anchor) ? 2 : 0) -
     Math.abs(Math.log(candidate.price / Math.max(anchor.price, 1)))
@@ -251,7 +279,10 @@ export const completeTheLook = (piece: JewelPiece, catalogue: JewelPiece[], coun
 
 /** Whether a product page's suggestions are mostly its own set ("Complete the set"). */
 export const isSetRow = (piece: JewelPiece, pieces: JewelPiece[]) =>
-  pieces.filter((p) => sharedLine(piece, p) === "set").length >= 2;
+  pieces.filter((p) => {
+    const line = sharedLine(piece, p);
+    return line === "set" || line === "twin";
+  }).length >= 2;
 
 /** "More bracelets": the same category, closest in line, style, metal and price. */
 export const moreLikeThis = (piece: JewelPiece, catalogue: JewelPiece[], count = 8): JewelPiece[] =>
@@ -268,7 +299,9 @@ export const wornWithNoun = (piece: JewelPiece) => (/huggie/i.test(`${piece.name
 
 /**
  * The add-on for a bag: the best match for the piece added last, and a second
- * only if it is exactly as good. `inBag` holds handles in the order they were
+ * only if it is exactly as good. It keeps to names and proven sales, not the
+ * photo check: its one offer is the shop's tested second piece (Woven Gold
+ * Hoops in most bags), and the lookalikes already lead the product page. `inBag` holds handles in the order they were
  * added. Ties go to the deeper stock, then the handle, so the row never
  * reshuffles between renders.
  */
@@ -286,7 +319,7 @@ export const bagAddOns = (
   const taken = new Set(inBag);
   const scored = catalogue
     .filter((p) => STOCK.has(p.handle) && !taken.has(p.handle) && kindOf(p) !== "ring" && oneTap(p) && !choiceNeeded(p))
-    .map((p) => ({ piece: p, score: matchScore(anchor, p) }))
+    .map((p) => ({ piece: p, score: matchScore(anchor, p, false) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || stockOf(b.piece) - stockOf(a.piece) || a.piece.handle.localeCompare(b.piece.handle));
   if (!scored.length) return null;

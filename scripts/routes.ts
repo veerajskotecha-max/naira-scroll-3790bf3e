@@ -5,21 +5,28 @@
 // no longer existed in the data, and every one of them bounced to /jewellery.
 // One source means a URL cannot be advertised without also being prerendered.
 
-import { readFileSync } from "fs";
-import { resolve } from "path";
 import { allLandings as categoryLandings, allArticles as journal } from "../src/data/seoContent";
+// Both data files are plain data now (no Vite asset imports), so tsx loads them.
+import { jewellery } from "../src/data/jewellery";
+import { jewellerySnapshot } from "../src/data/jewellerySnapshot";
+import { stockedLandings } from "../src/lib/jewelleryCollections";
 
-// Product handles are read from the data file as text rather than imported —
-// the module pulls in Vite asset imports that tsx cannot resolve outside the
-// bundler.
-const jewelleryHandles = [
-  ...readFileSync(resolve("src/data/jewellery.ts"), "utf8").matchAll(/handle:\s*"([^"]+)"/g),
-].map((m) => m[1]);
+const jewelleryHandles = jewellery.map((p) => p.handle);
+
+/* Every piece the site can draw before Shopify answers: the hand-authored
+   file plus the snapshot the app's own mapping made from the live store
+   (scripts/generate-jewellery-snapshot.ts). A collection with none of them is
+   empty, and is neither advertised nor prerendered. */
+const firstPaint = [...jewellery, ...jewellerySnapshot];
+const landingPath = (slug: string) => `/jewellery/collections/${slug}`;
 
 export const BASE_URL = "https://nairaflore.com";
 
 export interface SiteRoute {
   path: string;
+  /** Set when the page names another URL as its canonical: it is still
+      prerendered, but a sitemap lists canonical URLs only. */
+  canonical?: string;
   lastmod?: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
@@ -29,11 +36,12 @@ export const siteRoutes: SiteRoute[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   /* /shop now redirects to /jewellery, so it is not a prerenderable route and is
      no longer advertised. /shop/indo-western and /shop/jewellery stay absent too:
-     both render ShopAll, which disclaims its own canonical. */
+     they redirect, to /customize and /jewellery. */
 
   { path: "/jewellery", changefreq: "weekly", priority: "0.9" },
-  ...categoryLandings.map<SiteRoute>((c) => ({
-    path: `/jewellery/collections/${c.slug}`,
+  ...stockedLandings(firstPaint, categoryLandings).map<SiteRoute>((c) => ({
+    path: landingPath(c.slug),
+    ...(c.canonicalSlug ? { canonical: landingPath(c.canonicalSlug) } : {}),
     changefreq: "weekly",
     priority: "0.9",
   })),
@@ -75,34 +83,47 @@ const STOREFRONT_TOKEN = "0f6fd83502924ac437a5d19180bb08c3";
 interface LiveProduct {
   handle: string;
   vendor: string;
+  updatedAt?: string;
 }
 
 /** The Shopify vendor holding the jewellery line; everything else is clothing. */
 const JEWELLERY_VENDOR = "naira petite";
 
+/* Shopify answers at most 250 products a request; past that the next page is
+   asked for, or the newest listings would drop out of the sitemap. */
 const fetchLiveProducts = async (): Promise<LiveProduct[] | null> => {
   try {
-    const res = await fetch(STOREFRONT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
-      },
-      body: JSON.stringify({
-        query: `{ products(first: 250) { edges { node { handle vendor } } } }`,
-      }),
-    });
-    if (!res.ok) return null;
-    const json = (await res.json()) as {
-      data?: { products?: { edges?: { node: LiveProduct }[] } };
-    };
-    const edges = json.data?.products?.edges;
-    if (!edges?.length) return null;
-    return edges.map((e) => e.node);
+    const products: LiveProduct[] = [];
+    let after: string | null = null;
+    do {
+      const res = await fetch(STOREFRONT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
+        },
+        body: JSON.stringify({
+          query: `query($after: String) { products(first: 250, after: $after) { pageInfo { hasNextPage endCursor } edges { node { handle vendor updatedAt } } } }`,
+          variables: { after },
+        }),
+      });
+      if (!res.ok) return null;
+      const json = (await res.json()) as {
+        data?: { products?: { edges?: { node: LiveProduct }[]; pageInfo?: { hasNextPage: boolean; endCursor: string | null } } };
+      };
+      const page = json.data?.products;
+      if (!page?.edges) return null;
+      products.push(...page.edges.map((e) => e.node));
+      after = page.pageInfo?.hasNextPage ? page.pageInfo.endCursor : null;
+    } while (after);
+    return products.length ? products : null;
   } catch {
     return null;
   }
 };
+
+/** The routes a sitemap may list: those that are their own canonical. */
+export const sitemapRoutes = (routes: SiteRoute[]) => routes.filter((r) => !r.canonical || r.canonical === r.path);
 
 export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   const products = await fetchLiveProducts();
@@ -111,8 +132,27 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
     return siteRoutes;
   }
   const live = new Set(products.map((p) => p.handle));
+  /* Each product page carries the day Shopify last changed its listing, so a
+     new photo, price or description is a recrawl hint, not just the journal. */
+  const updated = new Map(products.map((p) => [p.handle, p.updatedAt?.slice(0, 10)]));
+  const dated = (route: SiteRoute, handle: string): SiteRoute => {
+    const lastmod = updated.get(handle);
+    return lastmod ? { ...route, lastmod } : route;
+  };
+  /* A collection whose every piece has since been unlisted is empty too. One
+     stocked only by pieces newer than the snapshot stays out until the
+     snapshot is regenerated: under-advertised for a while, never a soft 404. */
+  const stocked = new Set(
+    stockedLandings(firstPaint.filter((p) => live.has(p.handle)), categoryLandings).map((c) => landingPath(c.slug)),
+  );
   const dropped: string[] = [];
+  const emptied: string[] = [];
   const kept = siteRoutes.filter((route) => {
+    if (route.path.startsWith("/jewellery/collections/")) {
+      if (stocked.has(route.path)) return true;
+      emptied.push(route.path);
+      return false;
+    }
     const match = route.path.match(/^\/jewellery\/([^/]+)$/);
     if (!match || match[1] === "collections") return true;
     if (live.has(match[1])) return true;
@@ -122,6 +162,11 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   if (dropped.length) {
     console.log(`routes: skipping ${dropped.length} delisted product route(s)`);
   }
+  if (emptied.length) console.log(`routes: skipping ${emptied.length} emptied collection(s): ${emptied.join(", ")}`);
+  const keptDated = kept.map((route) => {
+    const match = route.path.match(/^\/jewellery\/([^/]+)$/);
+    return match ? dated(route, match[1]) : route;
+  });
 
   // Jewellery listings added in Shopify after the bundled file was generated
   // still render fine at runtime (the app merges static + live), but they were
@@ -131,7 +176,7 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   const routed = new Set(kept.map((r) => r.path));
   const jewellery = products
     .filter((p) => (p.vendor || "").trim().toLowerCase() === JEWELLERY_VENDOR)
-    .map<SiteRoute>((p) => ({ path: `/jewellery/${p.handle}`, changefreq: "weekly", priority: "0.8" }))
+    .map<SiteRoute>((p) => dated({ path: `/jewellery/${p.handle}`, changefreq: "weekly", priority: "0.8" }, p.handle))
     .filter((r) => !routed.has(r.path));
   if (jewellery.length) console.log(`routes: adding ${jewellery.length} live jewellery route(s)`);
 
@@ -141,10 +186,10 @@ export const resolveSiteRoutes = async (): Promise<SiteRoute[]> => {
   const jewellerySet = new Set(jewelleryHandles);
   const clothing = products
     .filter((p) => (p.vendor || "").trim().toLowerCase() !== JEWELLERY_VENDOR && !jewellerySet.has(p.handle))
-    .map<SiteRoute>((p) => ({ path: `/product/${p.handle}`, changefreq: "monthly", priority: "0.8" }));
+    .map<SiteRoute>((p) => dated({ path: `/product/${p.handle}`, changefreq: "monthly", priority: "0.8" }, p.handle));
   if (clothing.length) console.log(`routes: adding ${clothing.length} clothing product route(s)`);
 
-  return [...kept, ...jewellery, ...clothing];
+  return [...keptDated, ...jewellery, ...clothing];
 };
 
 

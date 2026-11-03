@@ -3,12 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
-import { isAdjustableRing } from "@/data/ringFit";
 import type { JewelPiece } from "@/data/jewellery";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { readStaleReelCache, useReels, type Reel, type ReelProduct } from "@/hooks/useReels";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { reelCover } from "@/lib/reelCovers";
+import { relabelledVideoUrl } from "@/lib/videoRecovery";
 import localReelPoster from "@/assets/reel-fallback.webp";
 import { cartLineFor, choiceNeeded, oneTapVariant } from "@/lib/variants";
 
@@ -45,7 +45,8 @@ const productHref: HrefFor = (handle) => `/jewellery/${handle}`;
 const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: JewelPiece; hrefFor: HrefFor }) => {
   const { addItem, setDrawerOpen, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
-  const soldOut = live?.availableForSale === false && !isAdjustableRing(live ?? product.handle);
+  // Adjustability is fit, not inventory: Shopify is the stock authority (as on JewelCard).
+  const soldOut = live?.availableForSale === false;
   const image = live?.image ?? product.image_url ?? "";
   const price = live?.priceLabel ?? product.price_label ?? "";
   const name = live?.name ?? product.title;
@@ -62,13 +63,13 @@ const ReelPiece = ({ product, live, hrefFor }: { product: ReelProduct; live?: Je
       return;
     }
     setAdding(true);
+    setDrawerOpen(true);
     try {
       await addItem(
         live
           ? cartLineFor(live, oneTapVariant(live))
           : { id: product.handle, variantId, name, price: parsePrice(product.price_label), priceLabel: price, currencyCode: "INR", image },
       );
-      setDrawerOpen(true);
     } finally {
       setAdding(false);
     }
@@ -168,23 +169,16 @@ export const ReelFrame = ({
   const objectUrlRef = useRef<string | null>(null);
   const recoveryTriedRef = useRef(false);
 
-  useEffect(
-    () => () => {
-      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
-    },
-    [],
-  );
-
-  /* Supabase serves the reels as application/octet-stream, which Safari and
-     the Instagram webview refuse; the same bytes relabelled as video/mp4 play
-     (see MobileReelShop.tsx). */
+  /* A reel stored as application/octet-stream is refused by Safari and the
+     Instagram webview; the same bytes relabelled as video/mp4 play
+     (lib/videoRecovery). */
   const recoverFromMimeError = useCallback(async () => {
     if (recoveryTriedRef.current || !reel.videoUrl) return;
     recoveryTriedRef.current = true;
     try {
-      const response = await fetch(reel.videoUrl);
-      if (!response.ok) throw new Error(`video fetch ${response.status}`);
-      const url = URL.createObjectURL(new Blob([await response.blob()], { type: "video/mp4" }));
+      // Only for a MIME refusal, once per source; null leaves the poster up.
+      const url = await relabelledVideoUrl(reel.videoUrl, videoRef.current?.error ?? null);
+      if (!url) return;
       objectUrlRef.current = url;
       const video = videoRef.current;
       if (!video) return;

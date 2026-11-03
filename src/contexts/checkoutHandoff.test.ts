@@ -43,13 +43,13 @@ describe("discount reaches Shopify", () => {
   });
 
   it("shows a loading state while the discount call runs", () => {
-    const block = code.match(/if \(code && cartId\) \{[\s\S]*?\n    \}/)![0];
+    const block = code.match(/if \(code && cartId\) \{[\s\S]*?\n {4}\}/)![0];
     expect(block, "the call takes up to 1.2s — the button must react").toMatch(/setIsLoading\(true\)/);
     expect(block).toMatch(/setIsLoading\(false\)/);
   });
 
   it("never blocks checkout when the discount call fails", () => {
-    const block = code.match(/if \(code && cartId\) \{[\s\S]*?\n    \}/)![0];
+    const block = code.match(/if \(code && cartId\) \{[\s\S]*?\n {4}\}/)![0];
     expect(block).toMatch(/catch/);
   });
 });

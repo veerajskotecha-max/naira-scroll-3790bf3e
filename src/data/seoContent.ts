@@ -32,6 +32,10 @@ export interface CategoryLanding {
   intro: string[];
   bullets: { title: string; body: string }[];
   faqs: FaqItem[];
+  /** Slug of the broader landing that shows the very same pieces. The page
+      stays for shoppers, but its canonical names that landing and it is left
+      out of the sitemap, so search sees one page per grid. */
+  canonicalSlug?: string;
 }
 
 export const categoryLandings: CategoryLanding[] = [
@@ -66,7 +70,7 @@ export const categoryLandings: CategoryLanding[] = [
     faqs: [
       {
         q: "What ring sizes are available?",
-        a: "US 5 (4.9 cm), US 6 (5.2 cm), US 7 (5.4 cm) and US 8 (5.7 cm), and our open-back rings adjust up to US 9 (6.0 cm). Measurements are inner circumference. Tell us your usual size on WhatsApp and we will confirm the fit before production.",
+        a: "US 5 (4.9 cm), US 6 (5.2 cm), US 7 (5.4 cm) and US 8 (5.7 cm). Measurements are inner circumference. Tell us your usual size on WhatsApp and we will confirm the fit before production.",
       },
       {
         q: "Will the gold finish fade?",

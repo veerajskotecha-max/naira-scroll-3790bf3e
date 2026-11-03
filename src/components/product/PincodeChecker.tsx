@@ -12,10 +12,15 @@ interface Result extends Serviceability {
   eta: string;
 }
 
-const PincodeChecker = () => {
+/* A piece that is reserved rather than in stock (sold out, a sold-out colour,
+   a size made to order) ships when it is ready: the courier's days still hold,
+   but a dated "by Wed, 4 Nov" would be a promise the page does not make. */
+const PincodeChecker = ({ preorder = false }: { preorder?: boolean }) => {
   const [pincode, setPincode] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /* A well-formed pincode the page cannot vouch for (see isCourierZone). */
+  const [unconfirmed, setUnconfirmed] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -24,24 +29,33 @@ const PincodeChecker = () => {
         setPincode(saved);
         check(saved, false);
       }
-    } catch {}
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } catch {
+      /* storage blocked: the shopper types the pincode instead */
+    }
   }, []);
 
   const check = (value: string, save = true) => {
     setError(null);
-    const info = getServiceability(value);
-    if (!info) {
+    setUnconfirmed(null);
+    if (!isValidPincode(value)) {
       setError("Enter a valid 6-digit pincode.");
       setResult(null);
       return;
     }
-    const eta = formatDeliveryDate(addWorkingDays(new Date(), info.days));
-    setResult({ ...info, eta });
+    const info = getServiceability(value);
+    if (info) {
+      const eta = formatDeliveryDate(addWorkingDays(new Date(), info.days));
+      setResult({ ...info, eta });
+    } else {
+      setResult(null);
+      setUnconfirmed(value);
+    }
     if (save) {
       try {
         localStorage.setItem("naira-pincode", value);
-      } catch {}
+      } catch {
+        /* storage blocked: the check still shows, it is just not remembered */
+      }
     }
   };
 
@@ -92,14 +106,29 @@ const PincodeChecker = () => {
         </div>
       )}
 
+      {unconfirmed && (
+        <div className="mt-2.5 flex items-start gap-2">
+          <Info size={12} className="mt-[3px] shrink-0" style={{ color: "hsl(28 70% 42%)" }} />
+          <p className="text-[11px]" style={{ color: "hsl(0 0% 40%)" }}>
+            We can't confirm delivery to {unconfirmed} here. It is checked with your full address at checkout, before you pay.
+          </p>
+        </div>
+      )}
+
       {result && !error && (
         <div className="mt-2.5 space-y-1.5">
           <div className="flex items-start gap-2">
             <CheckCircle2 size={13} className="mt-[2px] shrink-0" style={{ color: "hsl(142 50% 38%)" }} />
             <span className="text-[12px]" style={{ color: "hsl(0 0% 25%)" }}>
               Delivery to <strong className="font-medium">{result.pincode}</strong> in{" "}
-              <strong className="font-medium">{result.days} working days</strong> · by{" "}
-              <strong className="font-medium">{result.eta}</strong>
+              <strong className="font-medium">{result.days} working days</strong>
+              {preorder ? (
+                " once it ships"
+              ) : (
+                <>
+                  {" "}· by <strong className="font-medium">{result.eta}</strong>
+                </>
+              )}
             </span>
           </div>
           {result.cod === "blocked" ? (

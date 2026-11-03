@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { jewellery as authored } from "@/data/jewellery";
 import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
+import { colourCards, colourOption } from "@/lib/colourCards";
 
 const firstPaint = new Set([...authored, ...jewellerySnapshot].map((p) => p.handle));
 
@@ -38,5 +39,18 @@ describe("PDP first paint", () => {
   it("gives every snapshot piece a price, an image and a variant to add to cart", () => {
     const broken = jewellerySnapshot.filter((p) => !(p.price > 0 && p.image && p.variantId.startsWith("gid://shopify/ProductVariant/")));
     expect(broken.map((p) => p.handle)).toEqual([]);
+  });
+
+  /* Shop All shows each metal or stone as its own card. A colour whose
+     variants have no photo of their own in Shopify arrives wearing the
+     listing's first photo, and the grid showed Droplet Open Cuff, Tubogas Dome
+     Ring and Star Point Band twice in gold (27 Oct 2026). If this fails, give
+     each colour's variants that colour's photo in Shopify, then regenerate. */
+  it("has a photo of its own for every colour of every piece", () => {
+    const short = jewellerySnapshot
+      .filter((p) => colourOption(p))
+      .filter((p) => colourCards([p]).length !== colourOption(p)!.values.length)
+      .map((p) => p.handle);
+    expect(short).toEqual([]);
   });
 });

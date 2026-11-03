@@ -70,6 +70,7 @@ const ProductDetails = ({
       category: product.productType || undefined,
       currencyCode: product.priceRange.minVariantPrice.currencyCode,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per product: a refetch of it must not fire ViewContent again
   }, [product?.handle]);
 
   const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
@@ -91,6 +92,7 @@ const ProductDetails = ({
 
   /* Jewellery is sized by the piece, not by garment size: no XS–XL picker,
      no stitching copy. Vendor is the source of truth, productType a backup. */
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the two fields isJewelleryProduct reads
   const isJewellery = useMemo(() => isJewelleryProduct(product), [product?.vendor, product?.productType]);
 
 
@@ -419,8 +421,8 @@ const ProductDetails = ({
         {[
           { icon: RotateCcw, title: "7-day returns", copy: "On ready-to-ship pieces" },
           isJewellery
-            ? { icon: BadgeCheck, title: "2-year plating assurance", copy: "Anti-tarnish finish" }
-            : { icon: BadgeCheck, title: "2-year assurance", copy: "Stitching & embellishment" },
+            ? { icon: BadgeCheck, title: "3-year plating assurance", copy: "Lifelong with gentle care" }
+            : { icon: BadgeCheck, title: "3-year assurance", copy: "Stitching & embellishment" },
           { icon: ShieldCheck, title: "Secure payment", copy: "UPI, cards & wallets" },
         ].map(({ icon: Icon, title: label, copy }) => (
           <div key={label} className="flex flex-col items-center gap-1 text-center px-2 py-2.5" style={{ backgroundColor: "hsl(0 0% 100%)" }}>

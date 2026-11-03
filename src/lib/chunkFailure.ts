@@ -1,3 +1,5 @@
+import { isOptionalChunkFailure } from "./optionalChunk";
+
 /*
   Shared rule for "a page's code never arrived".
 
@@ -39,6 +41,20 @@ export const reloadForStaleChunk = (): boolean => {
   }
   window.location.reload();
   return true;
+};
+
+/**
+ * main.tsx's "vite:preloadError" listener. Vite's import helper resolves to
+ * undefined when this event is default-prevented, so it may only be prevented
+ * when the page really is reloading. Once the one reload was spent it was still
+ * prevented: the route then failed as "Cannot read properties of undefined
+ * (reading 'default')", which ChunkErrorBoundary cannot recognise as a missing
+ * file, and the route's failed download was never let go for a retry.
+ */
+export const handlePreloadError = (e: Event & { payload?: unknown }): void => {
+  // The 3D decorations fall back to flat art on their own; never reload for them.
+  if (isOptionalChunkFailure(e.payload)) return;
+  if (reloadForStaleChunk()) e.preventDefault();
 };
 
 /** Lets a deliberate "try again" press make a fresh attempt. */

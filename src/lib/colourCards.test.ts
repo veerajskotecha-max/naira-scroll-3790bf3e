@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { JewelPiece, JewelVariant } from "@/data/jewellery";
-import { cardKey, colourCards, colourFromParam, colourOption, openingChoice, pieceHref } from "./colourCards";
+import { cardKey, colourCards, colourFromParam, colourOfVariant, colourOption, openingChoice, pieceHref, variantChoice, variantPhoto } from "./colourCards";
 
 const variant = (id: string, options: Record<string, string>, price: number, extra: Partial<JewelVariant> = {}): JewelVariant => ({
   id,
@@ -104,6 +104,85 @@ describe("colourCards", () => {
   });
 });
 
+/* Shopify gives a variant with no photo of its own the listing's first photo,
+   so these arrive with the gold photo on their silver variants too, as they
+   did on 27 Oct 2026. */
+const cdn = (file: string) => `https://cdn.shopify.com/s/files/1/0680/9606/5698/files/${file}?v=1`;
+const gid = (n: number) => `gid://shopify/ProductVariant/${n}`;
+
+const cuff = piece("droplet-open-cuff", {
+  image: cdn("droplet-open-cuff_4_macro.jpg"),
+  gallery: [cdn("droplet-open-cuff_4_macro.jpg"), cdn("droplet-open-cuff_1_main.jpg"), cdn("droplet-open-cuff_3_silver.jpg"), cdn("naira-packaging-b4.jpg")],
+  options: [{ name: "Metal", values: ["Gold", "Silver"] }],
+  variants: [
+    variant(gid(1), { Metal: "Gold" }, 1499, { image: cdn("droplet-open-cuff_1_main.jpg") }),
+    variant(gid(2), { Metal: "Silver" }, 1499, { image: cdn("droplet-open-cuff_1_main.jpg") }),
+  ],
+});
+
+const tubogas = piece("tubogas-dome-ring", {
+  category: "Rings",
+  image: cdn("tubogas-dome-ring-on-hand-true-size.jpg"),
+  gallery: [cdn("tubogas-dome-ring-on-hand-true-size.jpg"), cdn("02ea7c30.jpg")],
+  options: [
+    { name: "Metal", values: ["Gold", "Silver"] },
+    { name: "Size", values: ["6", "7"] },
+  ],
+  variants: [
+    variant(gid(11), { Metal: "Gold", Size: "6" }, 1299, { image: cdn("tubogas-dome-ring-on-hand-true-size.jpg") }),
+    variant(gid(12), { Metal: "Gold", Size: "7" }, 1299, { image: cdn("tubogas-dome-ring-on-hand-true-size.jpg") }),
+    variant(gid(13), { Metal: "Silver", Size: "6" }, 1299, { image: cdn("tubogas-dome-ring-on-hand-true-size.jpg") }),
+    variant(gid(14), { Metal: "Silver", Size: "7" }, 1299, { image: cdn("tubogas-dome-ring-on-hand-true-size.jpg") }),
+  ],
+});
+
+/* Only US 6 had its own photo in each metal. */
+const band = piece("star-point-band", {
+  category: "Rings",
+  options: [
+    { name: "Metal", values: ["Gold", "Silver"] },
+    { name: "Size", values: ["5", "6"] },
+  ],
+  variants: [
+    variant(gid(21), { Metal: "Gold", Size: "5" }, 799, { image: cdn("star-point-band-4.jpg") }),
+    variant(gid(22), { Metal: "Gold", Size: "6" }, 799, { image: cdn("star-point-band-4.jpg") }),
+    variant(gid(23), { Metal: "Silver", Size: "5" }, 799, { image: cdn("star-point-band-4.jpg") }),
+    variant(gid(24), { Metal: "Silver", Size: "6" }, 799, { image: cdn("hf_silver.png") }),
+  ],
+});
+
+describe("each colour in its own photo, never two cards in one", () => {
+  it("finds a colour's photo by its file name when Shopify gave its variant the other metal's", () => {
+    expect(colourCards([cuff]).map((c) => [c.colour?.value, c.image])).toEqual([
+      ["Gold", cdn("droplet-open-cuff_1_main.jpg")],
+      ["Silver", cdn("droplet-open-cuff_3_silver.jpg")],
+    ]);
+  });
+
+  it("takes the photo only that colour's sizes carry", () => {
+    expect(colourCards([band]).map((c) => [c.colour?.value, c.image])).toEqual([
+      ["Gold", cdn("star-point-band-4.jpg")],
+      ["Silver", cdn("hf_silver.png")],
+    ]);
+  });
+
+  it("keeps a piece photographed in one metal as one card, not a gold card twice", () => {
+    expect(colourCards([tubogas])).toEqual([tubogas]);
+  });
+
+  it("never repeats a photo across a whole grid", () => {
+    const images = colourCards([bangle, ring, cuff, tubogas, band, plain]).map((c) => c.image.split("?")[0]);
+    expect(new Set(images).size).toBe(images.length);
+  });
+
+  it("shows a variant in its colour's photo, and none for a colour without one", () => {
+    expect(variantPhoto(cuff, cuff.variants![1])).toBe(cdn("droplet-open-cuff_3_silver.jpg"));
+    expect(variantPhoto(tubogas, tubogas.variants![3])).toBeUndefined();
+    expect(variantPhoto(birthstone, birthstone.variants![0])).toBeUndefined();
+    expect(variantPhoto(cuff, undefined)).toBeUndefined();
+  });
+});
+
 describe("opening a product page on a colour", () => {
   it("finds the colour option and matches the link's colour in any case", () => {
     expect(colourOption(ring)?.name).toBe("Metal");
@@ -121,5 +200,82 @@ describe("opening a product page on a colour", () => {
   it("opens a ring's colour on US 6 when Shopify lists US 5 first", () => {
     expect(openingChoice(starPoint, "silver")).toEqual({ Metal: "Silver", Size: "6" });
     expect(openingChoice(starPoint, null)).toEqual({ Metal: "Gold", Size: "6" });
+  });
+
+  it("reads a catalogue ad's colour from Shopify's variant number", () => {
+    expect(colourOfVariant(tubogas, "14")).toBe("Silver");
+    expect(colourOfVariant(cuff, " 2 ")).toBe("Silver");
+    expect(colourOfVariant(cuff, "999")).toBeUndefined();
+    expect(colourOfVariant(cuff, "gid://shopify/ProductVariant/2")).toBeUndefined();
+    expect(colourOfVariant(sized, "1")).toBeUndefined();
+    expect(colourOfVariant(cuff, null)).toBeUndefined();
+  });
+});
+
+/*
+  A catalogue ad names the exact variant it shows (?variant=<Shopify number>).
+  Only its colour was read, so a May (emerald) Birthstone Heart Necklace
+  opened on January (garnet), its photo first. The page opens on the
+  variant's metal, stone and month now; a ring's size stays the shopper's,
+  from US 6 like every ring (37a664b).
+*/
+const months = piece("birthstone-heart-necklace", {
+  category: "Necklaces",
+  options: [{ name: "Month", values: ["January · Garnet", "May · Emerald", "October · Rose"] }],
+  variants: [
+    variant(gid(31), { Month: "January · Garnet" }, 699, { image: cdn("garnet.jpg") }),
+    variant(gid(35), { Month: "May · Emerald" }, 699, { image: cdn("emerald.jpg") }),
+    variant(gid(40), { Month: "October · Rose" }, 699, { image: cdn("rose.jpg"), availableForSale: false }),
+  ],
+});
+const sizedOnly = piece("roman-numeral-trio-ring", {
+  category: "Rings",
+  image: cdn("roman-card.jpg"),
+  gallery: [cdn("roman-card.jpg"), cdn("roman-on-hand.jpg")],
+  options: [{ name: "Size", values: ["6", "7", "8"] }],
+  variants: [
+    variant(gid(51), { Size: "6" }, 1899, { image: cdn("roman-shopify-first.jpg") }),
+    variant(gid(52), { Size: "7" }, 1899, { image: cdn("roman-shopify-first.jpg") }),
+    variant(gid(53), { Size: "8" }, 1899, { image: cdn("roman-shopify-first.jpg"), availableForSale: false }),
+  ],
+});
+const tubogasSoldOut = { ...tubogas, variants: tubogas.variants!.map((v) => (v.id === gid(14) ? { ...v, availableForSale: false } : v)) };
+
+describe("opening a product page on the variant a catalogue ad names", () => {
+  it("opens on the month it names", () => {
+    expect(variantChoice(months, "35")).toEqual({ Month: "May · Emerald" });
+  });
+
+  it("opens a ring on the metal it names, in the size every ring opens on", () => {
+    expect(variantChoice(tubogas, "14")).toEqual({ Metal: "Silver", Size: "6" });
+    expect(variantChoice(tubogas, " 12 ")).toEqual({ Metal: "Gold", Size: "6" });
+    expect(variantChoice(tubogas, "14")).toEqual(openingChoice(tubogas, colourOfVariant(tubogas, "14")));
+  });
+
+  it("opens a sold-out variant's metal in a size that can be bought", () => {
+    expect(variantChoice(tubogasSoldOut, "14")).toEqual({ Metal: "Silver", Size: "6" });
+  });
+
+  it("keeps a sold-out month as named, with nothing else in that month to offer", () => {
+    expect(variantChoice(months, "40")).toEqual({ Month: "October · Rose" });
+  });
+
+  /* Roman Numeral Trio Ring and Crystal Baguette Eternity Ring are sold only
+     in sizes. Without the ad's size there is nothing left for the link to
+     name, so it must not open US 6 as if it had been named (that put the
+     size's own Shopify photo first, where main opens the page as built). */
+  it("opens a ring sold only in sizes on the ad's size, or as a plain link, never on another size as if named", () => {
+    for (const v of sizedOnly.variants!) {
+      const opened = variantChoice(sizedOnly, v.id.split("/").pop());
+      if (opened) expect(opened).toEqual(v.options);
+    }
+    expect(variantChoice(sizedOnly, "53")).toBeUndefined();
+  });
+
+  it("leaves a link that names none of the piece's variants to the colour rules", () => {
+    expect(variantChoice(tubogas, "999")).toBeUndefined();
+    expect(variantChoice(tubogas, gid(14))).toBeUndefined();
+    expect(variantChoice(tubogas, null)).toBeUndefined();
+    expect(variantChoice(plain, "1")).toBeUndefined();
   });
 });

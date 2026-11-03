@@ -17,7 +17,7 @@ import { AtelierAccordionTrigger } from "@/components/ui/atelier-accordion";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
-import { isAdjustableRing, adjustableFitNote, adjustableSizes } from "@/data/ringFit";
+import { isAdjustableRing, ADJUSTABLE_FIT_NOTE } from "@/data/ringFit";
 import RingSizeGuideModal from "@/components/jewellery/RingSizeGuideModal";
 import RingSizeGuide from "@/components/jewellery/RingSizeGuide";
 import PressMarquee from "@/components/jewellery/PressMarquee";
@@ -34,6 +34,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { deliveryRangeFromNow } from "@/lib/serviceability";
+import { clipText, fitTitle } from "@/lib/clipText";
 import { jewellery as staticJewellery, jewelleryEnquiryUrl, preorderWhatsAppUrl, WHATSAPP_NUMBER, PREORDER_NOTE, type JewelPiece } from "@/data/jewellery";
 
 const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
@@ -52,23 +53,28 @@ const deriveKeyFacts = (piece: JewelPiece): { label: string; value: string }[] =
     { label: "Finish", value: finish },
     { label: "Stone", value: stone },
     piece.category === "Rings"
-      ? { label: "Fit", value: isAdjustableRing(piece.handle) ? "Adjustable · US 5–9" : "Fixed size" }
+      ? { label: "Fit", value: isAdjustableRing(piece.handle) ? "Adjustable · US 6–8" : "Fixed size" }
       : { label: "Category", value: piece.category },
   ];
 };
 
 
-/* A closed ring is stocked in US 6; US 5 and 7 are a pre-order. */
-const closedRingSizes: { value: string; status: "available" | "preorder" }[] = [
-  { value: "5", status: "preorder" },
-  { value: "6", status: "available" },
-  { value: "7", status: "preorder" },
+const ringSizes: { value: string; label: string; status: "available" | "preorder" }[] = [
+  { value: "5", label: "US 5 (Pre-order · 45 days delivery)", status: "preorder" },
+  { value: "6", label: "US 6", status: "available" },
+  { value: "7", label: "US 7 (Pre-order · 45 days delivery)", status: "preorder" },
 ];
 
 /** Size list for a specific ring: open-back styles adjust to fit, so every
     size button reads as available — never pre-order, never out of stock. */
-const ringSizesFor = (handle?: string): { value: string; status: "available" | "preorder" }[] =>
-  isAdjustableRing(handle) ? adjustableSizes(handle).map((value) => ({ value, status: "available" })) : closedRingSizes;
+const ringSizesFor = (handle?: string) =>
+  isAdjustableRing(handle)
+    ? ringSizes.map((s) => ({
+        ...s,
+        status: "available" as const,
+        label: s.value === "6" ? "US 6 — Adjustable (fits US 6–8)" : `US ${s.value} — Adjustable fit`,
+      }))
+    : ringSizes;
 
 
 /* Shown only while the Shopify catalogue is still in flight and the handle
@@ -255,6 +261,7 @@ const JewelDetail = () => {
       price: piece.price,
       category: piece.category,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per piece: live data replacing it must not fire ViewContent again
   }, [piece?.handle]);
 
   /* The mobile buy bar shows whenever the inline CTA block is off screen —
@@ -383,8 +390,8 @@ const JewelDetail = () => {
   const soldOut = piece.availableForSale === false && !adjustable;
   const keyFacts = deriveKeyFacts(piece);
   const enquiryHref = jewelleryEnquiryUrl(piece.name);
-  /* A pre-order is a sold-out piece, or a closed ring's size we do not stock. */
-  const sizePreorder = piece.category === "Rings" && ringSizesFor(piece.handle).find((r) => r.value === selectedSize)?.status === "preorder";
+  /* A pre-order is a sold-out piece, or a ring size we do not stock (US 5 / 7). */
+  const sizePreorder = piece.category === "Rings" && !adjustable && ringSizes.find((r) => r.value === selectedSize)?.status === "preorder";
   const isPreorder = soldOut || sizePreorder;
   const preorderHref = preorderWhatsAppUrl({
     name: piece.name,
@@ -448,7 +455,7 @@ const JewelDetail = () => {
 
   const handleWishlist = () => {
     if (!wishlisted) setHeartPopped(true);
-    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image });
+    toggleItem({ id: piece.handle, name: piece.name, price: piece.priceLabel, image: piece.image, kind: "jewellery" });
   };
   const structuredData = {
     "@context": "https://schema.org",
@@ -462,7 +469,8 @@ const JewelDetail = () => {
     url: `https://nairaflore.com/jewellery/${piece.handle}`,
     // ponytail: no aggregateRating until real per-product reviews exist — emitting a
     // site-wide constant here is fabricated structured data. Re-add from Judge.me data.
-    sku: piece.sku,
+    // An empty "sku" is invalid structured data; a piece without one leaves it out.
+    ...(piece.sku ? { sku: piece.sku } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "INR",
@@ -641,13 +649,13 @@ const JewelDetail = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FFFFFF" }}>
       <Helmet>
-        <title>{piece.name} · Demi-Gold Jewellery | Naira Flore</title>
-        <meta name="description" content={`${piece.name}, ${piece.blurb.slice(0, 130)}`} />
+        <title>{fitTitle(`${piece.name} · Demi-Gold Jewellery`)}</title>
+        <meta name="description" content={`${piece.name}, ${clipText(piece.blurb, 130)}`} />
         <link rel="canonical" href={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
-        <meta property="og:description" content={piece.blurb.slice(0, 150)} />
+        <meta property="og:title" content={fitTitle(`${piece.name} · Demi-Gold Jewellery`)} />
+        <meta property="og:description" content={clipText(piece.blurb, 150)} />
         <meta property="og:image" content={ogImageUrl} />
         <meta property="og:image:secure_url" content={ogImageUrl} />
         <meta property="og:image:type" content="image/jpeg" />
@@ -657,8 +665,8 @@ const JewelDetail = () => {
         <meta property="og:url" content={`https://nairaflore.com/jewellery/${piece.handle}`} />
         <meta property="og:site_name" content="Naira Flore" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${piece.name} · Demi-Gold Jewellery | Naira Flore`} />
-        <meta name="twitter:description" content={piece.blurb.slice(0, 150)} />
+        <meta name="twitter:title" content={fitTitle(`${piece.name} · Demi-Gold Jewellery`)} />
+        <meta name="twitter:description" content={clipText(piece.blurb, 150)} />
         <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
       <JsonLd data={structuredData} />
@@ -844,7 +852,7 @@ const JewelDetail = () => {
                   </div>
                   <p className="mt-2 text-[12px] leading-[1.6]" style={{ color: "hsl(0 0% 45%)" }}>
                     {adjustable
-                      ? `US ${selectedSize} is in stock and ships now. ${adjustableFitNote(piece.handle)}`
+                      ? `US ${selectedSize} is in stock and ships now. ${ADJUSTABLE_FIT_NOTE}`
                       : selectedSize === "6"
                         ? "US 6 is in stock and ships now."
                         : `US ${selectedSize} is a pre-order — 45 days delivery.`}
@@ -947,7 +955,7 @@ const JewelDetail = () => {
                     >
                       7-day returns
                     </Link>
-                    {" "}· 2-year plating assurance
+                    {" "}· 3-year plating assurance
                   </>
                 )}
               </p>
@@ -1059,7 +1067,7 @@ const JewelDetail = () => {
                 <AccordionContent>
                   <div className="space-y-1.5 pb-2 text-[13px] leading-[1.7]" style={{ color: "hsl(0 0% 45%)" }}>
                     <p>{piece.care ?? "Store in the pouch, avoid perfume and chlorinated water, and wipe gently after wear."}</p>
-                    <p>Covered by our 2-year plating assurance.</p>
+                    <p>Covered by our 3-year plating assurance. Cared for well, each finish is made to keep its colour for a lifetime.</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>

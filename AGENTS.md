@@ -10,5 +10,6 @@
 - Keep jewellery PDP coating, confirmed measurement corrections and stone evidence in the shared jewelleryPresentation module; live, embedded and snapshot pages must agree without inferring stones from generic materials summaries.
 - PDP Buy Now must use CartContext.buyNow with the selected cart line; this keeps checkout provider, discount and tracking handoffs shared with the bag.
 - Closed bag catalogue observers must stay disabled while reading shared cached data; this avoids starting catalogue requests on unrelated landing pages.
+- Bag line-price presentation uses cartPricing with the resolved cart discount and allocates rounding across lines; individual prices must sum to the existing checkout goods total without changing offer selection.
 - Shopper performance uses a small production-only observer and anonymous bounded events; keep order paths, click IDs and shopper details out of telemetry to protect privacy and page speed.
-- Performance reports are served only after server-side admin validation; aggregate in SQL and lazy-load the private dashboard so shopper pages never download reporting UI.
+- Performance reports are served only after server-side admin validation; aggregate in SQL and lazy-load the private dashboard so shopper pages never download reporting UI.- Shop All default order: most-visited pieces first from live 30-day product-page views; new and sold-out pieces scattered by a daily seed (src/lib/shopOrder.ts) so Back keeps the same grid.

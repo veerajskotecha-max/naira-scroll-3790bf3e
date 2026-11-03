@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Loader2, Minus, Plus, X } from "lucide-react";
+import { ChevronLeft, Loader2, Minus, Plus, Undo2, X } from "lucide-react";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { cartLineFor, variantById, variantLabel } from "@/lib/variants";
 import { cardCover } from "@/lib/cardCover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart, type CartItem } from "@/contexts/CartContext";
+import { cartKeyOf } from "@/lib/cartLines";
+import { discountedCartLines } from "@/lib/cartPricing";
 import { useSwipeDismiss } from "@/hooks/useSwipeDismiss";
 import { followOut, useBackToClose } from "@/hooks/useBackToClose";
 import {
@@ -20,7 +22,6 @@ import { SHIPPING_CHARGE, deliveryRangeFromNow } from "@/lib/serviceability";
 import UpiBadges from "@/components/checkout/UpiBadges";
 import { useAuth } from "@/contexts/AuthContext";
 import { getSupabase } from "@/integrations/supabase/lazy";
-import { shopifyNumericId, trackPixel } from "@/lib/pixel";
 import { shopifyImage } from "@/lib/shopifyImage";
 import { clarityEvent } from "@/lib/clarity";
 import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewellery";
@@ -31,9 +32,9 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
   reasons to trust sit beside the button.
 
     ‹ Your bag · 1 piece
-    A second piece takes 15% off your bag      the ladder, rungs labelled
+    A second piece takes 10% off your bag      the ladder, rungs labelled
     the piece, its MRP struck and "₹1,801 off"
-    Wears well with your bracelet · one piece, "Adds ₹914 · saves ₹585", Add
+    Wears well with your bracelet · one piece, "Adds ₹1,109 · saves ₹390", Add
     [the box] Comes with a Naira gift box     a tap lifts it open
     Total · incl. taxes, one savings line, arrival date
     Checkout · ₹2,399, then payment, returns and plating, and what comes next
@@ -44,6 +45,11 @@ import { WHATSAPP_NUMBER, type JewelPiece, type JewelVariant } from "@/data/jewe
 */
 
 const formatPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
+/* A line of three pieces at 20% off divides its rounded total by three
+   (₹2,398 / 3 for three ₹999 pieces): "₹799.33 each" read like an error. Each
+   is shown in whole rupees, as the product page quotes it; the line's total
+   stays exact. */
+const formatUnitPrice = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 const pct = (rate: number) => `${Math.round(rate * 100)}%`;
 
 /* "Metal: Silver · Size: 7": the line's choices, and a ring size noted beside
@@ -113,6 +119,28 @@ const PieceCard = ({
   </div>
 );
 
+/* The bag's one reassurance, and the only one it keeps: the way back is as
+   easy as the way in. It sits under the button — after the decision, so it
+   reads as the reason to press it rather than as another term to get through. */
+export const BagReturns = ({
+  onLeave,
+}: {
+  onLeave?: (e: MouseEvent<HTMLAnchorElement>) => void;
+}) => (
+  <Link
+    to="/exchange-return-policy"
+    onClick={onLeave}
+    data-returns
+    /* A 44px target round a 17px line: 11px of padding up (the 12px gap under
+       Checkout, so it never takes that button's taps) and 16px down, each
+       taken back from the margin so nothing moves. */
+    className="-mb-4 mt-px flex items-center justify-center gap-1.5 pb-4 pt-[11px] text-[11.5px] text-nf-ink/60 hover:text-nf-ink"
+  >
+    <Undo2 size={12} strokeWidth={1.6} className="text-nf-gold-text" aria-hidden="true" />
+    Easy 7-day exchange &amp; returns
+  </Link>
+);
+
 /* Project Shades' ladder: a thin track, an open ring at each rung that fills
    once reached, and the offer spelt out under it. */
 export const SimpleLadder = ({ totalItems }: { totalItems: number }) => {
@@ -167,6 +195,8 @@ const CartDrawerNext = () => {
     isLoading,
     isSyncing,
     syncCart,
+    pending,
+    addError,
   } = useCart();
   const { jewellery } = useLiveJewellery(isDrawerOpen);
   const catalogueByHandle = useMemo(() => new Map(jewellery.map((piece) => [piece.handle, piece])), [jewellery]);
@@ -208,11 +238,24 @@ const CartDrawerNext = () => {
   }, [isDrawerOpen]);
 
   const arrivesBy = deliveryRangeFromNow();
+  /* The bag as it will be once Shopify answers: the piece on its way in is
+     listed and counted from the tap, as a line of its own or one more of a
+     line already here. Checkout waits for Shopify (busy, below). */
+  const pendingKey = pending ? cartKeyOf(pending) : null;
+  const lines = useMemo(() => {
+    if (!pending) return items;
+    return items.some((item) => cartKeyOf(item) === pendingKey)
+      ? items.map((item) => (cartKeyOf(item) === pendingKey ? { ...item, quantity: item.quantity + pending.quantity } : item))
+      : [...items, pending];
+  }, [items, pending, pendingKey]);
+  const lineCount = totalItems + (pending?.quantity ?? 0);
+  const lineSubtotal = subtotal + (pending ? pending.price * pending.quantity : 0);
   /* One resolver for the bag and the checkout hand-off: the total shown is the total charged. */
-  const discount = resolveCartDiscount({ totalItems, promoCode });
+  const discount = resolveCartDiscount({ totalItems: lineCount, promoCode });
   const rung = discount.automatic ? QUANTITY_OFFERS.find((offer) => offer.code === discount.code) : undefined;
-  const goodsTotal = discountedSubtotal(subtotal, discount);
-  const discountAmount = subtotal - goodsTotal;
+  const goodsTotal = discountedSubtotal(lineSubtotal, discount);
+  const linePrices = discountedCartLines(lines, discount);
+  const discountAmount = lineSubtotal - goodsTotal;
   const orderTotal = goodsTotal + SHIPPING_CHARGE;
   const busy = isLoading || isSyncing;
 
@@ -223,7 +266,7 @@ const CartDrawerNext = () => {
     const mrp = (variantById(piece, item.variantId) ?? piece)?.compareAtPrice;
     return mrp && mrp > item.price ? mrp : null;
   };
-  const mrpTotal = items.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
+  const mrpTotal = lines.reduce((sum, item) => sum + (mrpOf(item) ?? item.price) * item.quantity, 0) + SHIPPING_CHARGE;
   const youSave = mrpTotal - orderTotal;
 
   const [adding, setAdding] = useState<string | null>(null);
@@ -282,13 +325,10 @@ const CartDrawerNext = () => {
     setOpening(true);
     clarityEvent("bag_checkout_tapped");
     await releaseEntry();
-    trackPixel("AddPaymentInfo", {
-      currency: items[0]?.currencyCode || "INR",
-      value: orderTotal,
-      num_items: totalItems,
-      content_ids: items.map((item) => shopifyNumericId(item.variantId) ?? item.id),
-      content_type: "product",
-    });
+    /* No AddPaymentInfo here. It fired on this tap, beside InitiateCheckout,
+       before any payment detail exists; Shiprocket's checkout reports its own
+       when the shopper actually reaches payment. InitiateCheckout is sent by
+       the hand-off itself (CartContext openCheckout). */
     try {
       if (user) {
         const supabase = await getSupabase();
@@ -353,19 +393,24 @@ const CartDrawerNext = () => {
             </button>
             <SheetTitle className="flex items-baseline gap-2.5 font-nf-editorial text-[20px] font-medium leading-none text-nf-ink">
               Your bag
-              {totalItems > 0 && (
+              {lineCount > 0 && (
                 <span className="font-nf-label text-[9.5px] font-medium uppercase tracking-nf-16 text-nf-ink/70">
-                  {totalItems === 1 ? "1 piece" : `${totalItems} pieces`}
+                  {lineCount === 1 ? "1 piece" : `${lineCount} pieces`}
                 </span>
               )}
             </SheetTitle>
           </div>
         </SheetHeader>
 
-        {items.length > 0 && <SimpleLadder totalItems={totalItems} />}
+        {lines.length > 0 && <SimpleLadder totalItems={lineCount} />}
         {undoNotice}
+        {addError && (
+          <p data-add-error role="alert" className="shrink-0 border-b border-nf-gold/15 bg-nf-ivory-deep px-4 py-2.5 text-[12.5px] leading-snug text-nf-ink sm:px-5">
+            {addError}
+          </p>
+        )}
 
-        {items.length === 0 ? (
+        {lines.length === 0 ? (
           <div className="flex flex-1 flex-col overflow-y-auto">
             <div className="flex flex-1 flex-col justify-center px-6 py-8">
               <p className="text-center font-nf-editorial text-[20px] font-medium text-nf-ink">Your bag is empty</p>
@@ -392,8 +437,14 @@ const CartDrawerNext = () => {
           <>
             <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain bg-[var(--nf-surface)]">
               <ul className="flex flex-col">
-                {items.map((item, index) => (
-                  <li key={`${item.id}-${item.size}-${item.variantId}`} data-line={item.id} data-variant={item.variantId} className="flex gap-4 px-5 py-5">
+                {lines.map((item, index) => (
+                  <li
+                    key={`${item.id}-${item.size}-${item.variantId}`}
+                    data-line={item.id}
+                    data-variant={item.variantId}
+                    data-adding={cartKeyOf(item) === pendingKey ? "" : undefined}
+                    className="flex gap-4 px-5 py-5"
+                  >
                     <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
                       <img
                         src={shopifyImage(item.image, 200) || item.image}
@@ -415,10 +466,25 @@ const CartDrawerNext = () => {
                         >
                           {item.name}
                         </Link>
-                        <span className="shrink-0 text-[14px] text-nf-ink">{formatPrice(item.price * item.quantity)}</span>
+                        <span data-line-total className="shrink-0 text-[14px] font-medium tabular-nums text-nf-ink">
+                          {formatPrice(discount.rate > 0 ? linePrices[index].total : item.price * item.quantity)}
+                        </span>
                       </div>
                       {lineOptions(item) ? <p className="mt-0.5 truncate text-[12px] text-nf-ink/60">{lineOptions(item)}</p> : null}
-                      <p data-line-price className="mt-1 text-[13.5px] text-nf-ink/80">{item.priceLabel}</p>
+                      {cartKeyOf(item) === pendingKey && (
+                        <p role="status" className="mt-1 flex items-center gap-1.5 text-[12.5px] text-nf-gold-text">
+                          <Loader2 size={12} className="animate-spin" aria-hidden="true" /> Adding to your bag…
+                        </p>
+                      )}
+                      <p data-line-price className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[13.5px] tabular-nums text-nf-ink/80">
+                        {discount.rate > 0 ? (
+                          <>
+                            <del className="text-[12px] text-nf-ink/50">{item.priceLabel}</del>
+                            <span className="font-medium text-nf-ink">{formatUnitPrice(linePrices[index].unit)}{item.quantity > 1 ? " each" : ""}</span>
+                            <span className="text-[11px] text-nf-gold-text">{pct(discount.rate)} off</span>
+                          </>
+                        ) : item.priceLabel}
+                      </p>
                       <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/40">
                         <button
                           type="button"
@@ -484,6 +550,7 @@ const CartDrawerNext = () => {
                 {opening ? "Opening checkout…" : "Checkout"}
                 {!opening && <UpiBadges size={18} className="ml-1" />}
               </button>
+              <BagReturns onLeave={leave} />
             </div>
           </>
         )}

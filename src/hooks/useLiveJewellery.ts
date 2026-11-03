@@ -3,9 +3,8 @@ import { fetchShopifyProducts, type ShopifyProductNode } from "@/lib/shopify";
 import { variantFields } from "@/lib/variants";
 import { jewellery as staticJewellery, type JewelPiece } from "@/data/jewellery";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { descriptiveAlts, PACKAGING, SIZE_GUIDE } from "@/lib/galleryAlt";
 
-/** A listing's size guide photo: alt text or file name says "size guide". */
-const SIZE_GUIDE = /size[-_ ]?guide/i;
 const isSizeGuide = (edge: { node: { url: string; altText: string | null } }) =>
   SIZE_GUIDE.test(`${edge.node.url} ${edge.node.altText ?? ""}`);
 
@@ -19,7 +18,7 @@ const productImagesFirst = (node: ShopifyProductNode): string[] =>
       index,
       rank: isSizeGuide(edge)
         ? 2
-        : /(?:naira[-_ ]?packaging|gift\s*box|shipping\s*carton)/i.test(`${edge.node.url} ${edge.node.altText ?? ""}`)
+        : PACKAGING.test(`${edge.node.url} ${edge.node.altText ?? ""}`)
           ? 1
           : 0,
     }))
@@ -75,7 +74,7 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
   const images = productImagesFirst(node);
   const gallery = coverFirst(piece.handle, images.length ? images : piece.gallery);
   // The first buyable variant leads: its price is one the shopper can pay.
-  const { lead, availableForSale, choice } = variantFields(node);
+  const { lead, sku, availableForSale, choice } = variantFields(node);
   const price = lead ? lead.price : piece.price;
   // MRP only counts when Shopify actually has a higher compare-at price set.
   const compareAtPrice = lead?.compareAtPrice;
@@ -90,10 +89,13 @@ const mergeLive = (piece: JewelPiece, node?: ShopifyProductNode): JewelPiece => 
     compareAtPrice,
     compareAtLabel: compareAtPrice ? `₹${compareAtPrice.toLocaleString("en-IN")}` : undefined,
     variantId: lead?.id ?? piece.variantId,
+    // Shopify's code wins: two hand-authored pieces carried each other's.
+    sku: sku ?? piece.sku,
     availableForSale,
     image: gallery[0] ?? piece.image,
     cover: node.leadImage,
     gallery,
+    galleryAlt: descriptiveAlts(node.title || piece.name, node.images.edges),
     sizeGuide: sizeGuideOf(node),
     description: description || piece.description,
     /* The Details panel reads the listing too: a bundled piece kept its own
@@ -253,7 +255,7 @@ const listingCopy = (description: string): Partial<JewelPiece> => {
  * Exported so scripts/generate-jewellery-snapshot.ts can run the SAME mapping
  * ahead of time — the PDP's first paint must be what live would have drawn. */
 export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece => {
-  const { lead, availableForSale, choice } = variantFields(node);
+  const { lead, sku, availableForSale, choice } = variantFields(node);
   const price = lead ? lead.price : Math.round(Number(node.priceRange.minVariantPrice.amount));
   const compareAtPrice = lead?.compareAtPrice;
   const images = coverFirst(node.handle, productImagesFirst(node));
@@ -264,7 +266,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     handle: node.handle,
     name: node.title,
     category: guessCategory(node),
-    sku: "",
+    sku: sku ?? "",
     number: String(index + 1).padStart(2, "0"),
     price,
     priceLabel: `₹${price.toLocaleString("en-IN")}`,
@@ -275,6 +277,7 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
     image: images[0] ?? "",
     cover: node.leadImage,
     gallery: images,
+    galleryAlt: descriptiveAlts(node.title, node.images.edges),
     sizeGuide: sizeGuideOf(node),
     blurb: parsed.blurb,
     description,
@@ -292,17 +295,37 @@ export const fromShopify = (node: ShopifyProductNode, index: number): JewelPiece
 export const useLiveJewellery = (enabled = true): { jewellery: JewelPiece[]; isLive: boolean; isLoading: boolean } => {
   const { data, isLoading } = useQuery({
     queryKey: ["shopify-products", "jewellery-catalogue"],
-    queryFn: () => fetchShopifyProducts(250),
+    queryFn: () => fetchShopifyProducts(),
     enabled,
-    // Stock state must read live: refresh often and whenever the tab regains
-    // focus so a piece that sells out in Shopify shows Sold Out here quickly.
+    // Stock state must read live, so a piece that sells out in Shopify shows
+    // Sold Out here quickly: once the catalogue is 30 s old, coming back to
+    // the tab, opening another page or opening the bag reads it again. A page
+    // left open re-reads it every 5 minutes, a hidden tab never. Every minute
+    // cost a shopper ~70 KB of mobile data (4 MB an hour) per open tab.
     staleTime: 1000 * 30,
-    refetchInterval: enabled ? 1000 * 60 : false,
+    refetchInterval: enabled ? 1000 * 60 * 5 : false,
+    refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
   });
 
   if (!data?.length) return { jewellery: staticJewellery, isLive: false, isLoading };
-  return { jewellery: liveCatalogue(data), isLive: true, isLoading: false };
+  return { jewellery: catalogueFor(data), isLive: true, isLoading: false };
+};
+
+/* The catalogue is mapped once per answer from Shopify, for every user of the
+   hook. Mapped on each render instead, ~15 components rebuilt all 136 pieces
+   on every gallery swipe and Add (16 runs while a product page loaded, long
+   tasks of 120–250 ms per swipe on a 4x-slowed phone), and a new array each
+   time undid every memo downstream. React Query keeps `data` the same object
+   until Shopify's answer actually changes. */
+const mapped = new WeakMap<ShopifyProductNode[], JewelPiece[]>();
+const catalogueFor = (data: ShopifyProductNode[]): JewelPiece[] => {
+  let pieces = mapped.get(data);
+  if (!pieces) {
+    pieces = liveCatalogue(data);
+    mapped.set(data, pieces);
+  }
+  return pieces;
 };
 
 /** The catalogue the site shows, from Shopify's products: the hook's work, for scripts and tests too. */

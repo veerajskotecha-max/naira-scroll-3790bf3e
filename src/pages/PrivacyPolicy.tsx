@@ -78,10 +78,10 @@ const sections = [
         </p>
         <p>
           If you hold a Naira Flore member account and have accepted it, we additionally share a scrambled (SHA-256
-          hashed) version of your email address with Meta so your activity can be matched to your account. Your email
-          address itself is never shared, we do not store the scrambled value, and nothing is shared unless you have
-          accepted. You may withdraw this at any time from the details section of your account, and the change applies
-          immediately.
+          hashed) version of your email address and, if you have added one to your account, your phone number with
+          Meta so your activity can be matched to your account. Your email address and phone number themselves are
+          never shared, we do not store the scrambled values, and nothing is shared unless you have accepted. You may
+          withdraw this at any time from the details section of your account, and the change applies immediately.
         </p>
         <p>You may disable cookies through your browser settings at any time. Please note that doing so may affect certain features and functionality of the website.</p>
       </>

@@ -3,6 +3,7 @@ import type { JewelPiece } from "@/data/jewellery";
 const jost = { fontFamily: "var(--nf-font-label)" } as const;
 
 /** Percentage saved against the MRP, rounded the way retail displays it. */
+// eslint-disable-next-line react-refresh/only-export-components -- the tag and the cards share one rounding
 export const discountPercent = (piece: Pick<JewelPiece, "price" | "compareAtPrice">) =>
   piece.compareAtPrice && piece.compareAtPrice > piece.price
     ? Math.round(((piece.compareAtPrice - piece.price) / piece.compareAtPrice) * 100)

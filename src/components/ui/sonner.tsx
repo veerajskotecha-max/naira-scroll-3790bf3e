@@ -10,6 +10,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      /* On a phone a toast sat 16px from the bottom, over the product page's
+         buy bar, for four seconds: Add to cart, Buy Now and the heart could
+         not be tapped, and a tap on the toast held it there. */
+      mobileOffset={{ bottom: "calc(var(--pdp-sticky-bar-h) + env(safe-area-inset-bottom, 0px) + 12px)" }}
       toastOptions={{
         classNames: {
           toast:

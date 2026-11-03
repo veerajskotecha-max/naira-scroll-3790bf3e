@@ -1,4 +1,6 @@
 import { getFbBrowserId, getFbClickId, getVisitorId } from "@/lib/visitorId";
+import { sessionUtm } from "@/lib/landingUtm";
+import { linePrice } from "@/lib/cartLines";
 
 export const SHOPIFY_API_VERSION = "2025-07";
 export const SHOPIFY_STORE_PERMANENT_DOMAIN = "nc5eti-gp.myshopify.com";
@@ -23,6 +25,8 @@ export interface ShopifyProductVariant {
   /** Shopify "compare at" price — the MRP struck through on cards and PDPs. */
   compareAtPrice?: ShopifyMoney | null;
   selectedOptions: ShopifySelectedOption[];
+  /** The supplier code, when the listing has one (the clothing has none). */
+  sku?: string | null;
   /** The variant's own photo (a metal or stone), when Shopify has one. */
   image?: { url: string } | null;
 }
@@ -55,6 +59,8 @@ export interface ShopifyProductNode {
     edges: Array<{
       node: ShopifyProductVariant;
     }>;
+    /** Present on a query answer: whether Shopify held variants back. */
+    pageInfo?: ShopifyPageInfo;
   };
   options: Array<{
     name: string;
@@ -66,17 +72,28 @@ export interface ShopifyProductEdge {
   node: ShopifyProductNode;
 }
 
+export interface ShopifyPageInfo {
+  hasNextPage: boolean;
+  endCursor: string | null;
+}
+
 export interface ShopifyCartLine {
   id: string;
   quantity: number;
   merchandise: {
     id: string;
+    /** The variant's price now: the bag shows it, not the price at the tap. */
+    price?: { amount: string };
   };
 }
 
 export const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!, $query: String) {
-    products(first: $first, query: $query) {
+  query GetProducts($first: Int!, $after: String, $query: String) {
+    products(first: $first, after: $after, query: $query) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
         node {
           id
@@ -103,6 +120,10 @@ export const PRODUCTS_QUERY = `
             }
           }
           variants(first: 20) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
             edges {
               node {
                 id
@@ -120,6 +141,7 @@ export const PRODUCTS_QUERY = `
                   name
                   value
                 }
+                sku
                 image {
                   url
                 }
@@ -162,6 +184,10 @@ export const PRODUCT_BY_HANDLE_QUERY = `
         }
       }
       variants(first: 50) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
         edges {
           node {
             id
@@ -179,6 +205,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
               name
               value
             }
+            sku
             image {
               url
             }
@@ -188,6 +215,43 @@ export const PRODUCT_BY_HANDLE_QUERY = `
       options {
         name
         values
+      }
+    }
+  }
+`;
+
+/* The rest of one product's variants, when the catalogue query held some back. */
+const PRODUCT_VARIANTS_QUERY = `
+  query ProductVariants($id: ID!, $after: String) {
+    product(id: $id) {
+      variants(first: 250, after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+            sku
+            image {
+              url
+            }
+          }
+        }
       }
     }
   }
@@ -207,6 +271,7 @@ export const CART_QUERY = `
             merchandise {
               ... on ProductVariant {
                 id
+                price { amount }
               }
             }
           }
@@ -231,6 +296,7 @@ const CART_CREATE_MUTATION = `
               merchandise {
                 ... on ProductVariant {
                   id
+                  price { amount }
                 }
               }
             }
@@ -257,6 +323,7 @@ const CART_LINES_ADD_MUTATION = `
               merchandise {
                 ... on ProductVariant {
                   id
+                  price { amount }
                 }
               }
             }
@@ -279,6 +346,12 @@ const CART_LINES_UPDATE_MUTATION = `
             node {
               id
               quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  price { amount }
+                }
+              }
             }
           }
         }
@@ -297,7 +370,7 @@ const CART_LINES_REMOVE_MUTATION = `
   }
 `;
 
-export async function storefrontApiRequest<T = any>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+export async function storefrontApiRequest<T = unknown>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
   const response = await fetch(SHOPIFY_STOREFRONT_URL, {
     method: "POST",
     headers: {
@@ -399,18 +472,49 @@ export const availabilityByOption = (
   return out;
 };
 
-export async function fetchShopifyProducts(first = 20, query?: string): Promise<ShopifyProductNode[]> {
-  const data = await storefrontApiRequest<{ data: { products: { edges: ShopifyProductEdge[] } } }>(PRODUCTS_QUERY, {
-    first,
-    query,
-  });
-  return data.data.products.edges.map((edge) => wornFirst(withLeadImage(dropCatalogSquare(edge.node))) as ShopifyProductNode);
+/* Shopify answers 20 variants a product in the catalogue query (the most any
+   piece has is 12) and says nothing about the rest: a ring in three metals and
+   seven sizes would lose its last size to "sold out". Any it held back are
+   asked for by the product's id. */
+const withAllVariants = async (node: ShopifyProductNode): Promise<ShopifyProductNode> => {
+  let page = node.variants.pageInfo;
+  if (!page?.hasNextPage) return node;
+  const edges = [...node.variants.edges];
+  while (page?.hasNextPage) {
+    const data = await storefrontApiRequest<{ data: { product: { variants: ShopifyProductNode["variants"] } | null } }>(PRODUCT_VARIANTS_QUERY, { id: node.id, after: page.endCursor });
+    const more = data.data.product?.variants;
+    if (!more) break;
+    edges.push(...more.edges);
+    page = more.pageInfo;
+  }
+  return { ...node, variants: { edges } };
+};
+
+/* Shopify answers at most 250 products a request, and a 251st listing would
+   simply not be on the site, so pages are followed to the end. With no limit
+   this is the whole catalogue; a row that wants a few names how many. */
+export async function fetchShopifyProducts(limit = Infinity, query?: string): Promise<ShopifyProductNode[]> {
+  const nodes: ShopifyProductNode[] = [];
+  let after: string | null = null;
+  do {
+    const data = await storefrontApiRequest<{ data: { products: { edges: ShopifyProductEdge[]; pageInfo?: ShopifyPageInfo } } }>(PRODUCTS_QUERY, {
+      first: Math.min(250, limit - nodes.length),
+      after,
+      query,
+    });
+    const { edges, pageInfo } = data.data.products;
+    nodes.push(...edges.map((edge) => edge.node));
+    after = pageInfo?.hasNextPage ? pageInfo.endCursor : null;
+  } while (after && nodes.length < limit);
+  const complete = await Promise.all(nodes.map(withAllVariants));
+  return complete.map((node) => wornFirst(withLeadImage(dropCatalogSquare(node))) as ShopifyProductNode);
 }
 
 export async function fetchShopifyProductByHandle(handle: string): Promise<ShopifyProductNode | null> {
   if (!handle) return null;
   const data = await storefrontApiRequest<{ data: { product: ShopifyProductNode | null } }>(PRODUCT_BY_HANDLE_QUERY, { handle });
-  return wornFirst(withLeadImage(dropCatalogSquare(data.data.product)));
+  const product = data.data.product;
+  return wornFirst(withLeadImage(dropCatalogSquare(product && (await withAllVariants(product)))));
 }
 
 
@@ -466,12 +570,18 @@ export function formatCheckoutUrl(checkoutUrl: string): string {
   }
 }
 
+/* "The merchandise line with id … does not exist" is one stale line, not a lost
+   cart: read as the cart, it emptied the whole bag and orphaned the rest. */
 export function isCartNotFoundError(userErrors: Array<{ message: string }>): boolean {
   return userErrors.some((error) => {
     const message = error.message.toLowerCase();
-    return message.includes("cart not found") || message.includes("does not exist");
+    return message.includes("cart not found") || (message.includes("does not exist") && !message.includes("line"));
   });
 }
+
+/* Shopify's answer when the line is already off the cart. */
+const isMissingLineError = (userErrors: Array<{ message: string }>) =>
+  userErrors.length > 0 && userErrors.every(({ message }) => /\bline\b[\s\S]*does not exist/i.test(message));
 
 /** The attribute Shopify carries the chosen size on, so it reaches the order. */
 export const SIZE_ATTRIBUTE = "Size";
@@ -493,6 +603,9 @@ export const trackingCartAttributes = (): Array<{ key: string; value: string }> 
   if (fbc) attrs.push({ key: "fbc", value: fbc });
   const fbp = getFbBrowserId();
   if (fbp) attrs.push({ key: "fbp", value: fbp });
+  /* The campaign the session landed with, so an order placed on Shopify's
+     own checkout says which ad brought it, as a Fastrr order does. */
+  for (const [key, value] of Object.entries(sessionUtm())) attrs.push({ key, value });
   return attrs;
 };
 
@@ -500,7 +613,7 @@ type CartLineNode = {
   id: string;
   quantity?: number;
   attributes?: Array<{ key: string; value: string }>;
-  merchandise: { id: string };
+  merchandise: { id: string; price?: { amount: string } };
 };
 
 const lineSize = (node: CartLineNode) =>
@@ -518,14 +631,17 @@ export const getLineForVariant = (
 ) => {
   const want = (size ?? "").trim();
   const forVariant = lines.filter((line) => line.node.merchandise.id === variantId);
-  return (forVariant.find((line) => lineSize(line.node) === want) ?? forVariant[0])?.node;
+  const found = (forVariant.find((line) => lineSize(line.node) === want) ?? forVariant[0])?.node;
+  /* Shopify answers an Add of a sold-out piece with a line of 0 and no error;
+     taken as added, the bag showed it at ₹0. A line of 0 is no line. */
+  return found?.quantity === 0 ? undefined : found;
 };
 
-export async function createShopifyCart(variantId: string, quantity: number, size?: string): Promise<{ cartId: string; checkoutUrl: string; lineId: string; quantity: number } | null> {
+export async function createShopifyCart(variantId: string, quantity: number, size?: string): Promise<{ cartId: string; checkoutUrl: string; lineId: string; quantity: number; price?: number } | null> {
   const data = await storefrontApiRequest<{
     data: {
       cartCreate: {
-        cart: { id: string; checkoutUrl: string; lines: { edges: Array<{ node: { id: string; quantity: number; merchandise: { id: string } } }> } } | null;
+        cart: { id: string; checkoutUrl: string; lines: { edges: Array<{ node: CartLineNode }> } } | null;
         userErrors: Array<{ message: string }>;
       };
     };
@@ -543,7 +659,7 @@ export async function createShopifyCart(variantId: string, quantity: number, siz
   const line = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
   if (!cart?.checkoutUrl || !line?.id) return null;
 
-  return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id, quantity: line.quantity ?? quantity };
+  return { cartId: cart.id, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId: line.id, quantity: line.quantity ?? quantity, price: linePrice(line) };
 }
 
 /*
@@ -608,11 +724,11 @@ export async function applyCartDiscountCodes(
   };
 }
 
-export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number, size?: string): Promise<{ success: boolean; lineId?: string; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
+export async function addLineToShopifyCart(cartId: string, variantId: string, quantity: number, size?: string): Promise<{ success: boolean; lineId?: string; quantity?: number; price?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
   const data = await storefrontApiRequest<{
     data: {
       cartLinesAdd: {
-        cart: { checkoutUrl: string; lines: { edges: Array<{ node: { id: string; quantity: number; merchandise: { id: string } } }> } } | null;
+        cart: { checkoutUrl: string; lines: { edges: Array<{ node: CartLineNode }> } } | null;
         userErrors: Array<{ message: string }>;
       };
     };
@@ -627,12 +743,12 @@ export async function addLineToShopifyCart(cartId: string, variantId: string, qu
 
   const cart = data.data.cartLinesAdd.cart;
   const line = cart ? getLineForVariant(cart.lines.edges, variantId, size) : null;
-  return { success: true, lineId: line?.id, quantity: line?.quantity, checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
+  return { success: true, lineId: line?.id, quantity: line?.quantity, price: linePrice(line), checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
 }
 
-export async function updateShopifyCartLine(cartId: string, lineId: string, quantity: number): Promise<{ success: boolean; quantity?: number; checkoutUrl?: string; cartNotFound?: boolean }> {
+export async function updateShopifyCartLine(cartId: string, lineId: string, quantity: number): Promise<{ success: boolean; quantity?: number; price?: number; checkoutUrl?: string; cartNotFound?: boolean; lineMissing?: boolean }> {
   const data = await storefrontApiRequest<{
-    data: { cartLinesUpdate: { cart: { checkoutUrl: string; lines: { edges: Array<{ node: { id: string; quantity: number } }> } } | null; userErrors: Array<{ message: string }> } };
+    data: { cartLinesUpdate: { cart: { checkoutUrl: string; lines: { edges: Array<{ node: ShopifyCartLine }> } } | null; userErrors: Array<{ message: string }> } };
   }>(CART_LINES_UPDATE_MUTATION, {
     cartId,
     lines: [{ id: lineId, quantity }],
@@ -640,10 +756,13 @@ export async function updateShopifyCartLine(cartId: string, lineId: string, quan
 
   const userErrors = data.data.cartLinesUpdate.userErrors;
   if (isCartNotFoundError(userErrors)) return { success: false, cartNotFound: true };
+  /* The line is already off the cart: the caller drops the bag's row for it
+     rather than keep one checkout would still be handed. */
+  if (isMissingLineError(userErrors)) return { success: false, lineMissing: true };
   if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
   const cart = data.data.cartLinesUpdate.cart;
-  const updatedQuantity = cart?.lines.edges.find((line) => line.node.id === lineId)?.node.quantity;
-  return { success: true, quantity: updatedQuantity, checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
+  const updated = cart?.lines.edges.find((line) => line.node.id === lineId)?.node;
+  return { success: true, quantity: updated?.quantity, price: linePrice(updated), checkoutUrl: cart?.checkoutUrl ? formatCheckoutUrl(cart.checkoutUrl) : undefined };
 }
 
 export async function removeLineFromShopifyCart(cartId: string, lineId: string): Promise<{ success: boolean; checkoutUrl?: string; cartNotFound?: boolean }> {
@@ -656,7 +775,9 @@ export async function removeLineFromShopifyCart(cartId: string, lineId: string):
 
   const userErrors = data.data.cartLinesRemove.userErrors;
   if (isCartNotFoundError(userErrors)) return { success: false, cartNotFound: true };
-  if (userErrors.length) throw new Error(userErrors.map((error) => error.message).join(", "));
+  /* Removing a line that is already gone has done what was asked: the bag
+     drops it rather than keep a row checkout would still be handed. */
+  if (userErrors.length && !isMissingLineError(userErrors)) throw new Error(userErrors.map((error) => error.message).join(", "));
   return { success: true, checkoutUrl: data.data.cartLinesRemove.cart?.checkoutUrl ? formatCheckoutUrl(data.data.cartLinesRemove.cart.checkoutUrl) : undefined };
 }
 

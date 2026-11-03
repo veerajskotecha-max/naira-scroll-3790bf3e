@@ -27,7 +27,10 @@ describe("redesigned product page", () => {
     expect(effect).toMatch(/querySelector\("#product-actions > button"\)/); // the button, not the gift line under it
     expect(effect).toMatch(/getElementById\("product-price"\)/);
     expect(effect).toMatch(/const notFullyShown = r\.bottom < 0 \|\| r\.bottom > window\.innerHeight/);
-    expect(effect).toMatch(/const next = notFullyShown && priceClear/);
+    expect(effect).toMatch(/const next = notFullyShown && priceClear && offerClear/);
+    /* ...nor over the offer's rungs while they are fully on screen. */
+    expect(effect).toMatch(/querySelector\("\[data-offer-ladder\] ul"\)/);
+    expect(effect).toMatch(/const offerClear = !rungs \|\| rungs\.bottom > window\.innerHeight \|\| rungs\.bottom < window\.innerHeight - barHeight/);
     /* The observer used to call check() from its own callback, so the bar's
        state was written inside the browser's layout pass. When the size guide's
        chart changed the page height, Chromium threw "ResizeObserver loop
@@ -68,6 +71,19 @@ describe("redesigned product page", () => {
     expect(code.match(/<details className="group/g)?.length).toBe(3);
   });
 
+  /* The owner (2 Nov 2026): the offer under the price and the badges. Once,
+     before the choices and Add to cart, priced from the chosen variant; a
+     piece sold out altogether is reserved on WhatsApp, outside the bag. */
+  it("puts the buy-more offer under the price and badges, before the choices and Add to cart", () => {
+    const offer = code.indexOf("<PdpOfferLadder");
+    expect(offer).toBeGreaterThan(code.indexOf('aria-label="Made to last"'));
+    expect(offer).toBeGreaterThan(code.indexOf("pieces sold in the last 48 hours"));
+    expect(offer).toBeLessThan(code.indexOf("choices(piece).map"));
+    expect(offer).toBeLessThan(code.indexOf('id="product-actions"'));
+    expect(code.match(/<PdpOfferLadder/g)).toHaveLength(1);
+    expect(code).toMatch(/\{!soldOut && <PdpOfferLadder price=\{shown\.price\} preorder=\{sizePreorder \|\| variantSoldOut\} \/>\}/);
+  });
+
   it("keeps the shoppable reels in the page, after the press strip", () => {
     const press = code.indexOf("<PressMarquee />");
     const reels = code.indexOf("<ReelShopNext");
@@ -95,8 +111,15 @@ describe("redesigned product page", () => {
     expect(code).not.toMatch(/aria-label="Decrease quantity"/);
   });
 
+  it("opens an ad's ?variant= link on its variant, a colour picked here winning over it", () => {
+    expect(code).toMatch(/const variantLink = colourLink \? null : searchParams\.get\("variant"\)/);
+    expect(code).toMatch(/const opening = \(p: JewelPiece\) => variantChoice\(p, variantLink\) \?\? openingChoice\(p, colourParam\)/);
+    expect(code).toMatch(/useState<Record<string, string>>\(\(\) => \(piece \? opening\(piece\) : \{\}\)\)/);
+    expect(code).toMatch(/\[piece\?\.handle, variantKey, colourParam, variantLink\]/);
+  });
+
   it("routes Buy Now through checkout with the chosen variant, but reserves pre-orders on WhatsApp", () => {
-    const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n  \};/)?.[0] ?? "";
+    const handler = code.match(/const handleBuyNow = async \(\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
     expect(handler).toContain("if (isPreorder) return handlePreOrder();");
     expect(handler).toContain("await buyNow(cartItem());");
     expect(handler).toContain("if (buying || cartLoading) return;");
@@ -115,7 +138,7 @@ describe("redesigned product page", () => {
   });
 
   it("steps back only inside Naira: a shopper from Google, WhatsApp, an ad or a new tab goes to the jewellery", () => {
-    const back = code.match(/const goBack = \(\) => \{[\s\S]*?\n  \};/)![0];
+    const back = code.match(/const goBack = \(\) => \{[\s\S]*?\n {2}\};/)![0];
     expect(back).not.toMatch(/history\.length > 1\) navigate\(-1\)/); // every page the tab showed, other sites included
     expect(back).toMatch(/history\.state[\s\S]*?\.idx/);
     expect(back).toMatch(/document\.referrer/);
@@ -142,5 +165,72 @@ describe("redesigned product page", () => {
     expect(row).toMatch(/"Anti-tarnish"/);
     expect(row).toMatch(/"Skin-friendly"/);
     expect(row).toMatch(/platingBadge\(finish\)/);
+  });
+});
+
+/* "sku": "" is invalid structured data, and 115 product pages served it. A
+   piece without a code leaves the key out. */
+describe("product structured data", () => {
+  for (const file of ["JewelDetailNext.tsx", "JewelDetail.tsx"]) {
+    it(`${file} never emits an empty sku`, () => {
+      const page = readFileSync(resolve(__dirname, file), "utf8").replace(/\/\/.*$/gm, "");
+      expect(page).not.toMatch(/^\s*sku: piece\.sku,/m);
+      expect(page).toMatch(/\.\.\.\(piece\.sku \? \{ sku: piece\.sku \} : \{\}\)/);
+    });
+  }
+});
+
+/* Descriptions were cut at a fixed count and ended mid-word in search
+   results and link previews ("…each s"); they go through clipText now. */
+describe("meta and social descriptions", () => {
+  for (const file of ["JewelDetailNext.tsx", "JewelDetail.tsx", "ProductDetail.tsx"]) {
+    it(`${file} cuts its descriptions between words`, () => {
+      const page = readFileSync(resolve(__dirname, file), "utf8");
+      expect(page).not.toMatch(/(?:blurb|description)\.slice\(0, \d+\)/);
+      expect(page.match(/clipText\(/g)?.length).toBe(3);
+    });
+  }
+});
+
+/* The page sold an open-back ring Shopify had sold out: Add to cart, "US 6
+   ships now" and a delivery date, while its card on the listing said SOLD
+   OUT. Adjustability is fit, not inventory. */
+describe("stock on the product page and reel cards", () => {
+  it("takes Shopify's sold-out for every piece, adjustable rings included", () => {
+    expect(code).toMatch(/const soldOut = piece\.availableForSale === false;/);
+  });
+
+  it("does the same on both reel cards", () => {
+    for (const file of ["../components/reels/ReelShopNext.tsx", "../components/reels/MobileReelShop.tsx"]) {
+      const reel = readFileSync(resolve(__dirname, file), "utf8");
+      expect(reel).toMatch(/const soldOut = live\?\.availableForSale === false;/);
+      expect(reel).not.toMatch(/isAdjustableRing/);
+    }
+  });
+
+  /* Three lead times sat on one page: 2 weeks under the button, 3–5 working
+     days in Delivery & returns and a dated pincode promise. */
+  it("says one lead time for a piece it cannot ship now", () => {
+    expect(code).toMatch(/const leadTime = preorderLead\(\{ soldOut, variantSoldOut, sizePreorder, size: selectedSize \}\);/);
+    expect(code).toMatch(/\{leadTime \? `\$\{leadTime\} ` : arrivesBy \? `Order today and it arrives by \$\{arrivesBy\}\. `/);
+    expect(code).toMatch(/<PincodeChecker preorder=\{isPreorder\} \/>/);
+    expect(code).not.toMatch(/45 days|within 2 weeks/);
+  });
+});
+
+/* The pairing name's 44px target was padding on the clamped box itself. A
+   clamp clips at the padding edge, so a three-line name ("Serpentine Whisper
+   Chain — Silver") showed the top of its hidden third line over the price.
+   The padding stays on the link and the clamp goes inside it. */
+describe("pairing card names", () => {
+  it("clamp the name inside its 44px link, not on it", () => {
+    const card = code.match(/const PairingCard = [\s\S]*?\n};\n/)![0];
+    const name = card.match(/<Link to=\{to\} className="([^"]*)">\s*<span className="([^"]*)">\{piece\.name\}<\/span>/);
+    expect(name).not.toBeNull();
+    const [, link, clamp] = name!;
+    expect(link).toMatch(/min-h-\[44px\]/);
+    expect(link).not.toMatch(/line-clamp/);
+    expect(clamp).toMatch(/\bline-clamp-2\b/);
+    expect(clamp).not.toMatch(/(?:^|\s)-?(?:p|py|pt|pb)-|min-h-|\bh-/);
   });
 });

@@ -72,7 +72,8 @@ describe("JewelCard", () => {
     const heart = screen.getByLabelText(/wishlist/i);
     const clickEvent = new MouseEvent("click", { bubbles: true, cancelable: true });
     fireEvent(heart, clickEvent);
-    expect(toggleItem).toHaveBeenCalled();
+    // Saved as jewellery, so the wishlist links it to its page with no lookup.
+    expect(toggleItem).toHaveBeenCalledWith(expect.objectContaining({ kind: "jewellery" }));
     // Nothing above it to navigate, so the click never needs cancelling.
     expect(clickEvent.defaultPrevented).toBe(false);
   });

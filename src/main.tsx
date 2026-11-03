@@ -1,9 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { preloadRouteFor } from "./pageCode";
+import { keepPrebuiltPage } from "./lib/prebuiltPage";
 import "./index.css";
 import { isOptionalChunkFailure } from "./lib/optionalChunk";
-import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
+import { clearChunkReloadFlag, handlePreloadError, isChunkImportFailure, reloadForStaleChunk } from "./lib/chunkFailure";
 
 /* A page loaded before a rebuild or publish still points at the old chunk
    files, so the next lazy route fails with "Importing a module script failed"
@@ -13,12 +14,22 @@ import { clearChunkReloadFlag, isChunkImportFailure, reloadForStaleChunk } from 
    These two listeners only catch a download that fails on its own. When React
    throws the same failure while rendering a route, nothing here sees it — that
    path is ChunkErrorBoundary's. */
-window.addEventListener("vite:preloadError", (e) => {
-  // The 3D decorations fall back to flat art on their own; never reload for them.
-  if (isOptionalChunkFailure((e as Event & { payload?: unknown }).payload)) return;
-  e.preventDefault();
-  reloadForStaleChunk();
-});
+window.addEventListener("vite:preloadError", handlePreloadError);
+
+/* "ResizeObserver loop …" is a benign notice (the browser just delivers the
+   remaining size changes next frame), but third-party widgets can still raise
+   it and error overlays treat it as a crash that blanks the page. Swallow only
+   that exact message, registered first so later listeners never see it. */
+window.addEventListener(
+  "error",
+  (e) => {
+    if (typeof e.message === "string" && e.message.startsWith("ResizeObserver loop")) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+  },
+  true,
+);
 window.addEventListener("unhandledrejection", (e) => {
   if (isOptionalChunkFailure(e.reason)) return;
   if (isChunkImportFailure(e.reason)) reloadForStaleChunk();
@@ -33,11 +44,19 @@ window.addEventListener("load", () => {
    fails must never keep the app from starting: after 8 s it starts anyway,
    and a real failure is handled by the stale-chunk reload above. */
 const APP_START_TIMEOUT_MS = 8_000;
+let routeCodeSettled = false;
 Promise.race([
-  preloadRouteFor(window.location.pathname).catch(() => undefined),
+  preloadRouteFor(window.location.pathname)
+    .catch(() => undefined)
+    .then(() => {
+      routeCodeSettled = true;
+    }),
   new Promise((resolve) => window.setTimeout(resolve, APP_START_TIMEOUT_MS)),
 ]).then(() => {
-  createRoot(document.getElementById("root")!).render(<App />);
+  const root = document.getElementById("root")!;
+  // Still downloading: keep the pre-built page on screen meanwhile (lib/prebuiltPage.ts).
+  if (!routeCodeSettled) keepPrebuiltPage(root);
+  createRoot(root).render(<App />);
   // The editorial fonts wait for the page's own code (see index.html).
   document.getElementById("nf-fonts")?.setAttribute("media", "all");
 });

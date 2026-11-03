@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 import { fetchReels, type Reel } from "@/hooks/useReels";
 import { videoMimeFor, MEDIA_CACHE_SECONDS } from "@/lib/mediaType";
+import { deleteReel, deleteReelPrompt } from "@/lib/reelDelete";
 import Footer from "@/components/Footer";
 import PageSEO from "@/components/PageSEO";
 
@@ -201,19 +202,39 @@ const AdminReels = () => {
     await refresh();
   };
 
+  /* Asks first, and keeps the files unless the row really went (lib/reelDelete). */
   const remove = async (reel: Reel) => {
-    await supabase.from("reels").delete().eq("id", reel.id);
-    await supabase.storage.from("reels").remove([reel.video_path, reel.poster_path].filter(Boolean) as string[]);
-    await refresh();
+    if (!window.confirm(deleteReelPrompt(reel))) return;
+    setBusy(true);
+    try {
+      const { filesError } = await deleteReel(supabase, reel);
+      if (filesError) toast("Reel deleted; its files could not be removed", { description: filesError });
+      else toast("Reel deleted");
+    } catch (e) {
+      toast("Could not delete the reel", { description: e instanceof Error ? e.message : "Try again" });
+    } finally {
+      setBusy(false);
+      await refresh();
+    }
   };
 
+  /* Every state carries it: a signed-out visitor (and a crawler) only ever
+     sees the first two, which kept the homepage's head, "index" included. */
+  const seo = <PageSEO title="Reel Studio | Naira Flore" description="Upload and manage shoppable reels." noindex />;
+
   if (isAdmin === null) {
-    return <div className="pt-[140px] pb-20 text-center text-sm">Checking access…</div>;
+    return (
+      <>
+        {seo}
+        <div className="pt-[140px] pb-20 text-center text-sm">Checking access…</div>
+      </>
+    );
   }
 
   if (!isAdmin) {
     return (
       <div className="pt-[140px] pb-24 text-center">
+        {seo}
         <h1 className="font-cormorant text-3xl">Reel studio</h1>
         <p className="mt-3 text-sm" style={{ color: "hsl(0 0% 40%)" }}>
           This page is for Naira Flore admins.{" "}
@@ -228,7 +249,7 @@ const AdminReels = () => {
 
   return (
     <>
-      <PageSEO title="Reel Studio | Naira Flore" description="Upload and manage shoppable reels." noindex />
+      {seo}
       <div className="mx-auto max-w-[880px] px-6 pt-[143px] pb-20">
         <h1 className="font-cormorant text-[34px]">Reel studio</h1>
         <p className="mb-8 text-sm" style={{ color: "hsl(0 0% 42%)" }}>
@@ -326,7 +347,7 @@ const AdminReels = () => {
               <button type="button" onClick={() => togglePublished(reel)} className="text-[11px] underline">
                 {reel.published ? "Unpublish" : "Publish"}
               </button>
-              <button type="button" onClick={() => remove(reel)} className="text-[11px] underline" style={{ color: "hsl(0 60% 45%)" }}>
+              <button type="button" onClick={() => remove(reel)} disabled={busy} className="text-[11px] underline disabled:opacity-60" style={{ color: "hsl(0 60% 45%)" }}>
                 Delete
               </button>
             </div>

@@ -15,6 +15,8 @@
  * handed to Shopify, per-event user data).
  */
 
+import { productionShop } from "@/lib/shopperPerformance";
+
 export const VISITOR_COOKIE = "naira_vid";
 
 declare global {
@@ -39,10 +41,17 @@ const randomId = (): string => {
   return `v-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`;
 };
 
+/** The visitor id cookie as written here: on the shop for .nairaflore.com,
+    so the checkout on payments.nairaflore.com can read it too, as the inline
+    snippet in index.html writes it; anywhere else for the host only. */
+export const visitorCookie = (value: string, hostname: string, protocol: string) =>
+  `${VISITOR_COOKIE}=${encodeURIComponent(value)}; path=/; max-age=63072000` +
+  (productionShop(hostname) ? "; domain=.nairaflore.com" : "") +
+  `; SameSite=Lax${protocol === "https:" ? "; Secure" : ""}`;
+
 const writeCookie = (value: string) => {
-  if (typeof document === "undefined") return;
-  const secure = typeof location !== "undefined" && location.protocol === "https:" ? "; Secure" : "";
-  document.cookie = `${VISITOR_COOKIE}=${encodeURIComponent(value)}; path=/; max-age=63072000; SameSite=Lax${secure}`;
+  if (typeof document === "undefined" || typeof location === "undefined") return;
+  document.cookie = visitorCookie(value, location.hostname, location.protocol);
 };
 
 /*

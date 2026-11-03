@@ -19,6 +19,8 @@ type Fbq = (...args: unknown[]) => void;
 declare global {
   interface Window {
     fbq?: Fbq;
+    /** Set by index.html: true only on nairaflore.com and www.nairaflore.com. */
+    __nairaProd?: boolean;
   }
 }
 
@@ -45,8 +47,9 @@ export const CURRENCY = "INR";
 
 export const PIXEL_ID = "1232524215695667";
 
-/** Events worth the server round trip. Low-value UI signals stay browser-only. */
-const SERVER_EVENTS = new Set<PixelEvent>([
+/** Events worth the server round trip. Low-value UI signals stay browser-only.
+    The meta-capi relay forwards these names and no others (its guard.ts). */
+export const SERVER_EVENTS = new Set<PixelEvent>([
   "ViewContent",
   "AddToCart",
   "AddToWishlist",
@@ -156,8 +159,14 @@ const newEventId = (): string => {
 const CAPI_URL = `${import.meta.env.VITE_SUPABASE_URL ?? ""}/functions/v1/meta-capi`;
 const CAPI_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 
-/** Mirrors one event to Meta's Conversions API through our own function. */
-const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<string, unknown>) => {
+/** Mirrors one event to Meta's Conversions API through our own function.
+
+    Only from the real shop, the same gate index.html puts on fbevents.js. The
+    browser copy was gated but this one was not, so every localhost run, every
+    Lovable preview and the publish build's capture browser (127.0.0.1) sent
+    ViewContent to Meta through our relay, where it reads as a shopper. */
+const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<string, unknown>, pageUrl?: string) => {
+  if (typeof window === "undefined" || window.__nairaProd !== true) return;
   if (!CAPI_URL.startsWith("http") || !SERVER_EVENTS.has(event)) return;
   try {
     void fetch(CAPI_URL, {
@@ -167,7 +176,7 @@ const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<str
       body: JSON.stringify({
         event_name: event,
         event_id: eventId,
-        event_source_url: window.location.href,
+        event_source_url: pageUrl ?? window.location.href,
         custom_data: params ?? {},
         user_data: {
           external_id: getVisitorId(),
@@ -184,15 +193,23 @@ const sendServerEvent = (event: PixelEvent, eventId: string, params?: Record<str
   }
 };
 
+export type TrackOptions = {
+  /** The page the event happened on, for one sent after the shopper may have
+      moved on (a product view held for Shopify, see useViewContent). The
+      server copy reports it instead of the address bar at send time. Meta's
+      own script reads the browser copy's page itself. */
+  pageUrl?: string;
+};
+
 /** Fires a Meta standard event (browser + server). No-ops when blocked. */
-export const trackPixel = (event: PixelEvent, params?: Record<string, unknown>) => {
+export const trackPixel = (event: PixelEvent, params?: Record<string, unknown>, options?: TrackOptions) => {
   const eventId = newEventId();
   try {
     window.fbq?.("track", event, params, { eventID: eventId });
   } catch {
     /* pixel blocked — analytics must never break the shop */
   }
-  sendServerEvent(event, eventId, params);
+  sendServerEvent(event, eventId, params, options?.pageUrl);
 };
 
 /** Fires the base PageView (used on client-side route changes). */

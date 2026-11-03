@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { reportShopperPerformance } from "@/lib/shopperPerformance";
 import { Link, useParams, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -9,7 +9,6 @@ import { shopifyOgImage, OG_IMAGE_SIZE } from "@/lib/shopifyImage";
 import { Helmet } from "react-helmet-async";
 import JsonLd from "@/components/JsonLd";
 import Footer from "@/components/Footer";
-import CustomerReviews from "@/components/CustomerReviews";
 import JudgeMeReviews, { judgeMeEnabled } from "@/components/JudgeMeReviews";
 import MaterialsCraft from "@/components/MaterialsCraft";
 import YouMayAlsoLike from "@/components/YouMayAlsoLike";
@@ -20,9 +19,15 @@ import ProductDetails, { type ProductSelection } from "@/components/product/Prod
 import { AtelierSkeleton } from "@/components/ui/atelier-skeleton";
 import { fetchShopifyProductByHandle, formatShopifyPrice } from "@/lib/shopify";
 import { isJewelleryProduct } from "@/lib/isJewelleryProduct";
+import { clipText, fitTitle } from "@/lib/clipText";
 import { jewellery as staticJewellery } from "@/data/jewellery";
 import { JEWELLERY_HANDLES } from "@/data/jewelleryHandles";
 import ReelPeek from "@/components/reels/ReelPeek";
+
+/* Below the gallery and details, so it waits for its own download, as on the
+   jewellery page: imported with the page it put the reviews, their data and
+   their dialog (~26 KB gzip) ahead of the first render of every outfit page. */
+const CustomerReviews = lazy(() => import("@/components/CustomerReviews"));
 
 /* Ad clicks land on /products/<handle>. For a handle we already know is
    jewellery we hop to the real page on the first render, before the Shopify
@@ -37,13 +42,19 @@ const knownJewelleryHandles = new Set([
   ...staticJewellery.map((p) => p.handle),
 ]);
 
+/* An outfit's place on the site: the made-to-measure service, the one outfit
+   entry in every menu. The visible trail and the structured data both read
+   it, so they agree and name the page itself; they pointed at /shop/indo-western
+   and /shop, which only redirect (to /customize and to /jewellery). */
+const OUTFITS = { name: "Custom Outfits", path: "/customize" };
+
 const ProductDetail = () => {
   const [selection, setSelection] = useState<ProductSelection | null>(null);
   const { id } = useParams();
   const navigate = useNavigate();
   const goBack = () => {
     if (((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0) navigate(-1);
-    else navigate("/shop/indo-western");
+    else navigate(OUTFITS.path);
   };
 
   const earlyJewellery = Boolean(id && knownJewelleryHandles.has(id));
@@ -189,13 +200,13 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(0 0% 100%)" }}>
       <Helmet>
-        <title>{`${title} | Naira Flore`}</title>
-        <meta name="description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <title>{fitTitle(title)}</title>
+        <meta name="description" content={`Shop ${title} by Naira Flore, ${clipText(description, 110)}`} />
         <link rel="canonical" href={`https://nairaflore.com/product/${id}`} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${title} | Naira Flore`} />
-        <meta property="og:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <meta property="og:title" content={fitTitle(title)} />
+        <meta property="og:description" content={`Shop ${title} by Naira Flore, ${clipText(description, 110)}`} />
         <meta property="og:url" content={`https://nairaflore.com/product/${id}`} />
         <meta property="og:site_name" content="Naira Flore" />
         <meta property="og:image" content={ogImageUrl} />
@@ -205,8 +216,8 @@ const ProductDetail = () => {
         <meta property="og:image:height" content={String(OG_IMAGE_SIZE)} />
         <meta property="og:image:alt" content={title} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${title} | Naira Flore`} />
-        <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${description.slice(0, 110)}`} />
+        <meta name="twitter:title" content={fitTitle(title)} />
+        <meta name="twitter:description" content={`Shop ${title} by Naira Flore, ${clipText(description, 110)}`} />
         <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
       <JsonLd data={structuredData} />
@@ -216,7 +227,7 @@ const ProductDetail = () => {
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "https://nairaflore.com/" },
-            { "@type": "ListItem", position: 2, name: "Shop", item: "https://nairaflore.com/shop" },
+            { "@type": "ListItem", position: 2, name: OUTFITS.name, item: `https://nairaflore.com${OUTFITS.path}` },
             { "@type": "ListItem", position: 3, name: title, item: `https://nairaflore.com/product/${id}` },
           ],
         }}
@@ -226,7 +237,7 @@ const ProductDetail = () => {
         <nav className="flex items-center gap-2 text-[11px] tracking-[0.04em]" style={{ color: "hsl(0 0% 55%)" }}>
           <Link to="/" className="transition-colors hover:text-foreground">Home</Link>
           <span>/</span>
-          <Link to="/shop/indo-western" className="transition-colors hover:text-foreground">Shop</Link>
+          <Link to={OUTFITS.path} className="transition-colors hover:text-foreground">{OUTFITS.name}</Link>
           <span>/</span>
           <span style={{ color: "hsl(0 0% 30%)" }}>{title}</span>
         </nav>
@@ -274,7 +285,9 @@ const ProductDetail = () => {
       {judgeMeEnabled ? (
         <JudgeMeReviews productId={product.id} productTitle={product.title} />
       ) : (
-        <CustomerReviews productName={product.title} variant={isJewellery ? "jewellery" : "apparel"} />
+        <Suspense fallback={<div className="min-h-[240px]" aria-hidden="true" />}>
+          <CustomerReviews productName={product.title} variant={isJewellery ? "jewellery" : "apparel"} />
+        </Suspense>
       )}
       <MaterialsCraft />
       <YouMayAlsoLike currentHandle={product.handle} />

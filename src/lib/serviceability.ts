@@ -33,6 +33,13 @@ export interface Serviceability {
 
 export const isValidPincode = (value: string) => /^[1-9]\d{5}$/.test(value);
 
+/* India Post's first digit is the postal zone: 1–8 the civil zones, 9 the Army
+   Postal Service, which mail reaches through the APS, not a courier route. No
+   courier list is held here, so a 9xxxxx pincode was promised a date and COD
+   it may never get ("999999: Delivery in 5 working days"). It is left to
+   checkout, where the full address is checked. */
+export const isCourierZone = (pincode: string) => isValidPincode(pincode) && pincode[0] !== "9";
+
 /** Maharashtra = first two digits 40–44, minus the 403xxx block (Goa). */
 export const isMaharashtraPincode = (pin: string) => {
   const two = Number(pin.slice(0, 2));
@@ -89,8 +96,9 @@ const COD_BLOCKED_PINCODES = new Set<string>([
   "845401", // Bettiah
 ]);
 
+/** Delivery days and COD for a pincode, or null when the page cannot vouch for it. */
 export const getServiceability = (pincode: string): Serviceability | null => {
-  if (!isValidPincode(pincode)) return null;
+  if (!isCourierZone(pincode)) return null;
 
   const isMh = isMaharashtraPincode(pincode);
   const three = Number(pincode.slice(0, 3));

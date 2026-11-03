@@ -33,6 +33,10 @@ const pct = (v: number, of: number) => `${(v / of) * 100}%`;
   Anyone with reduced motion, Data Saver, a slow connection or a low-memory
   phone keeps the flat flower and never downloads three.js at all, and so
   does a browser without WebGL — the logo is whole either way.
+
+  `still` keeps it flat on a product page: a visitor who lands there from an
+  ad never downloads three.js, and one who arrives from the homepage has the
+  scene put away until they leave (owner's choice, 27 Oct 2026).
 */
 const START_AFTER_LOAD_MS = 5000;
 
@@ -46,13 +50,15 @@ const keepFlatFlower = (): boolean => {
   const lowMemory = typeof nav.deviceMemory === "number" && nav.deviceMemory < 4;
   return reduced || Boolean(nav.connection?.saveData) || slowNetwork || lowMemory;
 };
-const NairaWordmark = ({ className = "" }: { className?: string }) => {
+const NairaWordmark = ({ className = "", still = false }: { className?: string; still?: boolean }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [live, setLive] = useState(false);
+  /* A scene put away leaves its canvas behind; the next one gets a new canvas. */
+  const [canvasKey, setCanvasKey] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || still) return;
     if (keepFlatFlower()) return;
 
     let cancelled = false;
@@ -90,9 +96,13 @@ const NairaWordmark = ({ className = "" }: { className?: string }) => {
       cancelled = true;
       window.removeEventListener("load", start);
       cancelWait();
-      handle?.dispose();
+      if (handle) {
+        handle.dispose();
+        setLive(false);
+        setCanvasKey((k) => k + 1);
+      }
     };
-  }, []);
+  }, [still]);
 
   const flowerLeft = F.cx - (FLOWER_ASPECT / 2) * F.height;
   const flowerTop = F.cy - F.height / 2;
@@ -110,6 +120,7 @@ const NairaWordmark = ({ className = "" }: { className?: string }) => {
         />
       </svg>
       <canvas
+        key={canvasKey}
         ref={canvasRef}
         aria-hidden="true"
         className={`pointer-events-none absolute transition-opacity duration-700 ${live ? "opacity-100" : "opacity-0"}`}

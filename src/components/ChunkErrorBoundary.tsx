@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { isChunkImportFailure, reloadForStaleChunk, clearChunkReloadFlag } from "@/lib/chunkFailure";
 import { isOptionalChunkFailure } from "@/lib/optionalChunk";
 
@@ -17,12 +17,24 @@ import { isOptionalChunkFailure } from "@/lib/optionalChunk";
 */
 
 type State = { failed: unknown };
+type Props = { children: ReactNode; resetKey?: unknown };
 
-class ChunkErrorBoundary extends Component<{ children: ReactNode }, State> {
+class ChunkErrorBoundary extends Component<Props, State> {
   state: State = { failed: null };
 
   static getDerivedStateFromError(error: unknown): State {
     return { failed: error };
+  }
+
+  /* A navigation away from the panel — its own "Browse the collection" link,
+     or Back — gives the next page a fresh try. Nothing cleared the failure
+     before, so the link changed the URL under a panel that stayed put. Only
+     once the panel is already showing: the update that caught the error
+     carries the new location too. */
+  componentDidUpdate(prev: Props, prevState: State) {
+    if (this.state.failed && prevState.failed && prev.resetKey !== this.props.resetKey) {
+      this.setState({ failed: null });
+    }
   }
 
   componentDidCatch(error: unknown) {
@@ -71,4 +83,12 @@ const LoadFailed = () => (
   </main>
 );
 
-export default ChunkErrorBoundary;
+/* Keyed on the location's key, not the path: the link must also work from a
+   panel already on /jewellery. Not a React key, which would remount the header
+   and bag on every navigation. */
+const RoutedChunkErrorBoundary = ({ children }: { children: ReactNode }) => {
+  const { key } = useLocation();
+  return <ChunkErrorBoundary resetKey={key}>{children}</ChunkErrorBoundary>;
+};
+
+export default RoutedChunkErrorBoundary;

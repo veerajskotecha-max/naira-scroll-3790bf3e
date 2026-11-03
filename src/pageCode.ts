@@ -8,7 +8,6 @@ import { routeKeyFor, type RouteKey } from "./lib/routeCode";
   longer ride along in the first download of every other page.
 */
 export const Index = lazyRoute(() => import("./pages/Index.tsx"));
-export const ShopAll = lazyRoute(() => import("./pages/ShopAll.tsx"));
 export const ProductDetail = lazyRoute(() => import("./pages/ProductDetail.tsx"));
 // Unknown / retired URLs land on a brand "Coming soon" page instead of a raw 404.
 export const CatchAll = lazyRoute(() => import("./pages/CatchAll.tsx"));
@@ -39,7 +38,7 @@ export const AdminReels = lazyRoute(() => import("./pages/admin/Reels.tsx"));
 
 
 const PAGES: Record<RouteKey, LazyRoute> = {
-  Index, ShopAll, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetailNext,
+  Index, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetailNext,
   Journal, JournalArticle, Gifting, GoldenHourEdit, TrackOrder, InnerCircle, Auth, Account,
   ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs,
 };

@@ -32,7 +32,11 @@ export const useRecentlyViewed = (current?: ViewedItem) => {
     setItems(current ? existing.filter((i) => i.handle !== current.handle) : existing);
     if (!current) return;
     const next = [current, ...existing.filter((i) => i.handle !== current.handle)].slice(0, MAX);
-    localStorage.setItem(KEY, JSON.stringify(next));
+    try {
+      localStorage.setItem(KEY, JSON.stringify(next));
+    } catch {
+      /* storage blocked or full */
+    }
   }, [current?.handle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return items;

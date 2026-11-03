@@ -1,5 +1,5 @@
-import type { JewelPiece } from "@/data/jewellery";
-import { choices, firstBuyable, initialChoice, openingVariant } from "@/lib/variants";
+import type { JewelPiece, JewelVariant } from "@/data/jewellery";
+import { choices, firstBuyable, initialChoice, openingVariant, sizeOption } from "@/lib/variants";
 
 /*
   A piece sold in more than one metal or stone shows each colour as its own
@@ -21,6 +21,40 @@ export const colourFromParam = (piece: JewelPiece, param?: string | null) => {
   return option && value ? { option: option.name, value } : undefined;
 };
 
+/** The variant a catalogue ad's link names by Shopify's variant number
+    (?variant=50651970109602), when it is one of this piece's: Meta links every
+    metal, size and month of a piece to the same page that way. */
+export const variantFromParam = (piece: JewelPiece, param?: string | null): JewelVariant | undefined => {
+  const id = param?.trim();
+  if (!id || !/^\d+$/.test(id)) return undefined;
+  return piece.variants?.find((v) => v.id.split("/").pop() === id);
+};
+
+/** The colour of the variant an ad's link names. */
+export const colourOfVariant = (piece: JewelPiece, param?: string | null) => {
+  const option = colourOption(piece);
+  return option ? variantFromParam(piece, param)?.options[option.name] : undefined;
+};
+
+/** The choices an ad's ?variant= link opens on: the metal, stone or month
+    of the variant it names, as the ad showed it. Only the colour was read
+    before, so a May birthstone opened on January, its garnet photo first.
+    The size stays the shopper's to choose: a ring opens on US 6 when it can
+    be bought in that metal or stone, as every ring does (openingVariant),
+    since a catalogue row's size is Meta's pick, not the shopper's. A
+    sold-out month still opens as named. Undefined when the link names none
+    of this piece's variants. */
+export const variantChoice = (piece: JewelPiece, param?: string | null): Record<string, string> | undefined => {
+  const named = variantFromParam(piece, param);
+  if (!named) return undefined;
+  const size = sizeOption(piece);
+  /* Left without its size, a ring sold only in sizes names nothing: the link
+     opens as a plain one (US 6, the page's own photo first), as on main. */
+  if (Object.keys(named.options).every((name) => name === size)) return undefined;
+  const kin = (piece.variants ?? []).filter((v) => Object.entries(named.options).every(([name, value]) => name === size || v.options[name] === value));
+  return { ...openingVariant(piece, kin).options };
+};
+
 /** The choices a page opens on: its opening variant in the colour its link
     names, else the piece's own (see openingVariant). */
 export const openingChoice = (piece: JewelPiece, param?: string | null): Record<string, string> => {
@@ -36,21 +70,76 @@ export const pieceHref = (piece: JewelPiece) =>
 /** A stable key for a card: one product can show as several colours. */
 export const cardKey = (piece: JewelPiece) => (piece.colour ? `${piece.handle}~${piece.colour.value}` : piece.handle);
 
-/** The grid's cards: one per colour; a piece sold one way, or only in sizes, stays one card. */
+const pathOf = (url: string) => url.split("?")[0];
+const wordsOf = (text: string) => text.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+
+/*
+  The photo each colour of a piece is shown in. Shopify hands a variant with no
+  photo of its own the listing's first photo, so a colour without one arrives
+  wearing the other metal: Droplet Open Cuff, Tubogas Dome Ring and Star Point
+  Band each showed two gold cards on Shop All (27 Oct 2026). A colour's photo is
+  one only its own variants carry; else a gallery photo whose file is named for
+  it ("droplet-open-cuff_3_silver.jpg"); else the shared photo, for the first
+  colour only. A colour left with none gets no card of its own; it is still
+  chosen on the product page.
+*/
+export const colourPhotos = (piece: JewelPiece): Map<string, string> => {
+  const photos = new Map<string, string>();
+  const option = colourOption(piece);
+  if (!option) return photos;
+  const carried = new Map(
+    option.values.map((value) => [
+      value,
+      [...new Set((piece.variants ?? []).filter((v) => v.options[option.name] === value && v.image).map((v) => v.image!))],
+    ]),
+  );
+  const colours = (url: string) => option.values.filter((value) => carried.get(value)!.some((u) => pathOf(u) === pathOf(url))).length;
+  const handleWords = new Set(wordsOf(piece.handle));
+  const named = (value: string) => {
+    const wanted = wordsOf(value);
+    return (piece.gallery ?? []).find((url) => {
+      if (url === piece.sizeGuide) return false;
+      const words = wordsOf(pathOf(url).split("/").pop() ?? "").filter((w) => !handleWords.has(w));
+      return wanted.every((w) => words.includes(w));
+    });
+  };
+  const shown = new Set<string>();
+  for (const value of option.values) {
+    const urls = carried.get(value)!;
+    const photo = urls.find((url) => colours(url) === 1) ?? named(value) ?? urls[0];
+    if (!photo || shown.has(pathOf(photo))) continue;
+    shown.add(pathOf(photo));
+    photos.set(value, photo);
+  }
+  return photos;
+};
+
+/** The photo a variant is shown in: its colour's own photo (see colourPhotos),
+    else Shopify's photo for it. Undefined for a colour with no photo of its own. */
+export const variantPhoto = (piece: JewelPiece, variant?: JewelVariant) => {
+  const option = colourOption(piece);
+  if (!variant) return undefined;
+  return option ? colourPhotos(piece).get(variant.options[option.name]) : variant.image;
+};
+
+/** The grid's cards: one per colour, each in its own photo; a piece sold one
+    way, only in sizes, or photographed in one colour only, stays one card. */
 export const colourCards = (pieces: JewelPiece[]): JewelPiece[] =>
   pieces.flatMap((piece) => {
     const option = colourOption(piece);
     if (!option || !piece.variants?.length) return [piece];
+    const photos = colourPhotos(piece);
     const cards = option.values.flatMap((value): JewelPiece[] => {
       const ways = piece.variants!.filter((v) => v.options[option.name] === value);
-      if (!ways.length) return [];
+      const image = photos.get(value);
+      if (!ways.length || !image) return [];
       const lead = firstBuyable(ways);
       const compare = lead.compareAtPrice;
       return [
         {
           ...piece,
           colour: { option: option.name, value },
-          image: ways.find((v) => v.image)?.image ?? piece.image,
+          image,
           variantId: lead.id,
           price: lead.price,
           priceLabel: `₹${lead.price.toLocaleString("en-IN")}`,

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Star, ChevronDown, PenLine } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import WriteReviewModal from "@/components/WriteReviewModal";
 import { getSupabase } from "@/integrations/supabase/lazy";
@@ -301,9 +301,11 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         onSubmit={handleNewReview}
       />
 
-      {/* Lightbox */}
+      {/* Lightbox. Radix names the dialog from its Title and logs an error
+          on every open without one; the photo needs no description. */}
       <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-w-lg p-2 bg-background">
+        <DialogContent className="max-w-lg p-2 bg-background" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">Customer photo</DialogTitle>
           <img
             src={photos[lightboxIndex]}
             alt="Customer photo"
@@ -312,7 +314,15 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         </DialogContent>
       </Dialog>
 
-      <div className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${reviewsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`} aria-hidden={!reviewsExpanded}>
+      {/* Collapsed, the panel is inert as well as hidden: aria-hidden alone
+          left "View more" and the overflowing filter row as invisible Tab
+          stops. React 18 has no inert prop, so it goes in as an attribute;
+          the tabIndex guards below cover browsers older than inert. */}
+      <div
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${reviewsExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+        aria-hidden={!reviewsExpanded}
+        {...(reviewsExpanded ? {} : { inert: "" })}
+      >
         <div className="overflow-hidden">
       {/* Filters */}
       <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
@@ -394,6 +404,7 @@ const CustomerReviews = ({ productName, variant = "apparel" }: CustomerReviewsPr
         <div className="mt-6 flex justify-center">
           <button
             onClick={() => setVisibleCount((v) => Math.min(v + 4, filteredReviews.length))}
+            tabIndex={reviewsExpanded ? 0 : -1}
             className="min-h-11 border border-foreground px-8 text-[11px] font-medium uppercase tracking-[0.1em] text-foreground transition-colors hover:bg-foreground hover:text-background"
           >
             View more

@@ -2,8 +2,15 @@ import type { JewelPiece } from "@/data/jewellery";
 import type { CategoryLanding } from "@/data/seoContent";
 import { isAdjustableRing } from "@/data/ringFit";
 import { hasZirconeStone } from "@/lib/jewelleryPresentation";
+import { colourCards } from "@/lib/colourCards";
 
-const identity = (piece: JewelPiece) => `${piece.name} ${piece.handle.replace(/-/g, " ")} ${(piece.tags ?? []).join(" ")}`;
+/* Tags every piece in the line carries say nothing about its style: "Demi Fine"
+   and "Naira Petite" matched /fine/ and /petite/, so Minimal and Office Wear
+   listed 131 of 136 pieces, Bold Nocturne Chain and Cushion Halo Ring among
+   them, and the menu's Everyday filter hid almost nothing. */
+const STORE_WIDE_TAG = /^(?:demi fine|naira petite)$/i;
+const identity = (piece: JewelPiece) =>
+  `${piece.name} ${piece.handle.replace(/-/g, " ")} ${(piece.tags ?? []).filter((t) => !STORE_WIDE_TAG.test(t.trim())).join(" ")}`;
 const matches = (piece: JewelPiece, pattern: RegExp) => pattern.test(identity(piece));
 const gold = (piece: JewelPiece) => piece.colour
   ? /gold/i.test(piece.colour.value)
@@ -34,6 +41,16 @@ const selectors: Record<string, (piece: JewelPiece) => boolean> = {
 
 export const collectionPieces = (pieces: JewelPiece[], landing: Pick<CategoryLanding, "slug" | "category">) =>
   pieces.filter((piece) => (!landing.category || piece.category === landing.category) && (selectors[landing.slug]?.(piece) ?? true));
+
+/** The landings with at least one piece to show, judged on the cards the
+    landing page itself draws. An empty landing (Evil Eye, while no evil-eye
+    piece is listed) is a soft 404 whose copy describes stock the shop does
+    not have: it is left out of the links and the sitemap, and is noindex if
+    opened. */
+export const stockedLandings = <T extends Pick<CategoryLanding, "slug" | "category">>(pieces: JewelPiece[], landings: T[]): T[] => {
+  const cards = colourCards(pieces);
+  return landings.filter((landing) => collectionPieces(cards, landing).length > 0);
+};
 
 export const matchesOccasion = (piece: JewelPiece, tag: string) => {
   if ((piece.tags ?? []).some((t) => t.trim().toLowerCase() === tag.trim().toLowerCase())) return true;

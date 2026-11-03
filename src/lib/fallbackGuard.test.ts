@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FALLBACK_ATTR, clearFallbackMark, withFallbackGuard } from "./fallbackGuard";
+import { FALLBACK_ATTR, clearFallbackMark, isStandInPage, withFallbackGuard } from "./fallbackGuard";
 
 const page = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Naira Flore</title></head><body><div id="root"></div></body></html>';
 
@@ -79,5 +79,35 @@ describe("clearFallbackMark", () => {
 
   it("is harmless when nothing was hidden", () => {
     expect(() => clearFallbackMark()).not.toThrow();
+  });
+});
+
+/*
+  The product page kept under the live header while its code downloads must
+  never be the homepage standing in for a new piece. The guard's mark said so
+  only until its own 10 s timer, and a slow start looked later than that
+  (reproduced by review: the homepage under a product address for 8 s).
+*/
+describe("isStandInPage", () => {
+  const parse = (html: string) => new DOMParser().parseFromString(html, "text/html");
+  const homepageFile = () => parse(withFallbackGuard(page));
+
+  it("agrees with the guard's own script on every address, after its mark is gone", () => {
+    for (const path of ["/", "/index", "/index.html", "/index.html/", "/jewellery/watch-link-bracelet", "/jewellery", "/journal/a-new-post"]) {
+      const doc = homepageFile();
+      expect(doc.documentElement.hasAttribute(FALLBACK_ATTR)).toBe(false);
+      expect(isStandInPage(doc, path)).toBe(run(path).mark !== null);
+    }
+  });
+
+  it("says so while the mark is on, wherever it is", () => {
+    const doc = parse(page);
+    doc.documentElement.setAttribute(FALLBACK_ATTR, "piece");
+    expect(isStandInPage(doc, "/jewellery/watch-link-bracelet")).toBe(true);
+  });
+
+  /* A piece's own pre-built file has no guard: it is that page. */
+  it("is false for a page's own file", () => {
+    expect(isStandInPage(parse(page), "/jewellery/watch-link-bracelet")).toBe(false);
   });
 });

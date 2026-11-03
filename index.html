@@ -91,15 +91,27 @@
          src/lib/visitorId.ts, which reads the same cookie. */
       (function(){
         try {
+          /* On the shop, both ids are written for .nairaflore.com, not just
+             the host, so a script on the checkout at payments.nairaflore.com
+             (a Meta pixel there, say) can read them too. Anywhere else they
+             stay on the host. A host-only copy left from before
+             would be read ahead of the shared one, so it is dropped first. */
+          var shopDomain = window.__nairaProd ? '; domain=.nairaflore.com' : '';
+          var put = function (name, value, maxAge) {
+            if (shopDomain) document.cookie = name + '=; path=/; max-age=0';
+            document.cookie = name + '=' + value + '; path=/; max-age=' + maxAge + shopDomain +
+              '; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+          };
+
           var m = document.cookie.match(/(?:^|; )naira_vid=([^;]*)/);
           var id = m ? decodeURIComponent(m[1]) : '';
           if (!id) {
             id = (window.crypto && crypto.randomUUID)
               ? crypto.randomUUID()
               : 'v-' + Date.now().toString(16) + '-' + Math.random().toString(16).slice(2);
-            document.cookie = 'naira_vid=' + encodeURIComponent(id) +
-              '; path=/; max-age=63072000; SameSite=Lax' +
-              (location.protocol === 'https:' ? '; Secure' : '');
+            put('naira_vid', encodeURIComponent(id), 63072000);
+          } else if (shopDomain) {
+            put('naira_vid', encodeURIComponent(id), 63072000);
           }
           window.__nairaVid = id;
 
@@ -115,15 +127,28 @@
              campaign got no credit. A fresh fbclid always wins, which is what
              fbevents.js itself does. */
           var fbclid = new URLSearchParams(location.search).get('fbclid');
-          if (fbclid) {
-            var prior = document.cookie.match(/(?:^|; )_fbc=([^;]*)/);
-            // Stored form is fb.<subdomainIndex>.<creationTime>.<fbclid>.
-            var priorClick = prior ? decodeURIComponent(prior[1]).split('.').slice(3).join('.') : '';
-            if (priorClick !== fbclid) {
-              document.cookie = '_fbc=fb.1.' + Date.now() + '.' + fbclid +
-                '; path=/; max-age=7776000; SameSite=Lax' +
-                (location.protocol === 'https:' ? '; Secure' : '');
-            }
+          var prior = document.cookie.match(/(?:^|; )_fbc=([^;]*)/);
+          // Stored form is fb.<subdomainIndex>.<creationTime>.<fbclid>.
+          var priorValue = prior ? decodeURIComponent(prior[1]) : '';
+          var priorClick = priorValue.split('.').slice(3).join('.');
+          if (fbclid && priorClick !== fbclid) {
+            put('_fbc', 'fb.1.' + Date.now() + '.' + fbclid, 7776000);
+          } else if (shopDomain && priorValue) {
+            /* A click id from before moves onto the shop's domain with what
+               is left of its own 90 days, not a fresh 90. */
+            var left = 7776000 - Math.floor((Date.now() - (+priorValue.split('.')[2] || 0)) / 1000);
+            if (left > 0 && left <= 7776000) put('_fbc', priorValue, left);
+          }
+
+          /* Meta's browser id. fbevents.js writes _fbp only once it loads,
+             after idle or the first tap, so the server copy of a cold
+             landing's first ViewContent went without one (11 of 12 cold
+             landings measured). Minted here on the shop only, as fbevents
+             writes it: fb.1.<ms>.<random>, 90 days, on .nairaflore.com.
+             fbevents.js keeps an _fbp that already exists. */
+          if (window.__nairaProd && !/(?:^|; )_fbp=/.test(document.cookie)) {
+            document.cookie = '_fbp=fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 2147483647) +
+              '; path=/; max-age=7776000; domain=.nairaflore.com; SameSite=Lax; Secure';
           }
         } catch (e) { /* cookies blocked — events simply carry no external_id */ }
       })();

@@ -86,6 +86,33 @@ describe("NairaWordmark", () => {
     expect(opts.axisOffset).toBeGreaterThan(-0.2);
   });
 
+  /* Product pages keep the flower still (owner's choice, 27 Oct 2026): an ad
+     visitor never downloads three.js, and the scene is put away on arrival. */
+  it("never loads the scene on a product page", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    render(<NairaWordmark still />);
+    await afterLoad(12000);
+    expect(mount).not.toHaveBeenCalled();
+  });
+
+  it("puts the turning flower away on a product page and brings it back after", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    const dispose = vi.fn();
+    mount.mockImplementation(() => ({ dispose }));
+    const { rerender, container } = render(<NairaWordmark />);
+    await afterLoad(5200);
+    expect(mount).toHaveBeenCalledTimes(1);
+    rerender(<NairaWordmark still />);
+    expect(dispose).toHaveBeenCalledTimes(1);
+    expect((container.querySelector("path[data-flower]") as SVGPathElement).getAttribute("class")).toContain("opacity-100");
+    rerender(<NairaWordmark />);
+    await vi.advanceTimersByTimeAsync(5200);
+    expect(mount).toHaveBeenCalledTimes(2);
+    mount.mockImplementation(() => ({ dispose: () => {} }));
+  });
+
   it("keeps the 3D canvas out of the accessibility tree", () => {
     const { container } = render(<NairaWordmark />);
     expect(container.querySelector("canvas")?.getAttribute("aria-hidden")).toBe("true");

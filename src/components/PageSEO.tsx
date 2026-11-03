@@ -1,4 +1,7 @@
 import { Helmet } from "react-helmet-async";
+import { fitTitle } from "@/lib/clipText";
+
+const BRAND = " | Naira Flore";
 
 interface PageSEOProps {
   title: string;
@@ -26,8 +29,8 @@ const PageSEO = ({
   jsonLd,
 }: PageSEOProps) => {
   const fullTitle = title.includes("Naira Flore")
-    ? title
-    : `${title} | Naira Flore`;
+    ? title.endsWith(BRAND) ? fitTitle(title.slice(0, -BRAND.length), BRAND) : title
+    : fitTitle(title, BRAND);
   // The previous default was a Lovable preview screenshot on an R2 bucket — a
   // build-tool artifact, not a chosen asset, and it was the social card for
   // every page that did not pass its own image. public/og-image.jpg is a real
@@ -71,6 +74,7 @@ export default PageSEO;
 
 /* ── shared JSON-LD builders ─────────────────────────────────── */
 
+// eslint-disable-next-line react-refresh/only-export-components -- JSON-LD builders shared by the pages that render PageSEO
 export const breadcrumbLd = (crumbs: { name: string; url: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -82,6 +86,7 @@ export const breadcrumbLd = (crumbs: { name: string; url: string }[]) => ({
   })),
 });
 
+// eslint-disable-next-line react-refresh/only-export-components -- JSON-LD builders shared by the pages that render PageSEO
 export const faqLd = (faqs: { q: string; a: string }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",

@@ -16,7 +16,7 @@ export type MemberProfile = {
   phone: string | null;
   birthday: string | null;
   city: string | null;
-  /** Member accepted having their email used (scrambled) for ad matching. */
+  /** Member accepted having their email and phone used (scrambled) for ad matching. */
   ad_matching_consent?: boolean | null;
 };
 
@@ -102,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components -- the hook lives beside its provider
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");

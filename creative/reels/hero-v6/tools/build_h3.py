@@ -35,14 +35,14 @@ if not CUT15:
         shot('riya_full', 13.200, 14.533, off=20.30),                            # the bracelet on her wrist, full frame
         shot('h_riya_r1', 14.533, 14.933, off=0.0),                              # worn: the bracelet and her fist (4K, 1.15x)
         shot('riya_full', 14.933, 16.367, off=25.367),                           # wrist to cheek, the fan hidden
-        shot('ana', 16.367, 19.800, off=11.12),                                  # the Halo Curve over her face
-        shot('k_267E722A_737', 19.800, T_CARD, off=0.60),                        # the glance back, mouth closed
+        shot('ana', 16.367, 19.500, off=11.12),                                  # the Halo Curve over her face
+        shot('k_267E722A_737', 19.500, T_CARD, off=0.30),                        # the glance back, mouth closed (1.03 s; her voice runs on)
     ]
 # the card: the three real boxes, live, in the order they opened; each plays once and holds
 TILE = dict(fadeIn=.2, hold=True)
 shots += [
-    shot('tc_chain', T_CARD, DUR, rect=[64, 600, 300, 330], zoom=[1.188, 1.188], ax=.707, ay=.434, **TILE),
-    shot('tc_hug', T_CARD, DUR, rect=[388, 600, 300, 330], zoom=[1.188, 1.188], ax=.82, ay=.70, **TILE),
+    shot('tc_chain', T_CARD, DUR, rect=[64, 600, 300, 330], zoom=[1.521, 1.521], ax=.676, ay=.439, **TILE),
+    shot('tc_hug', T_CARD, DUR, rect=[388, 600, 300, 330], zoom=[1.521, 1.521], ax=.649, ay=.545, **TILE),
     shot('tc_hoops', T_CARD, DUR, rect=[712, 600, 300, 330], zoom=[1.188, 1.188], ax=1.0, ay=.78, **TILE),
 ]
 bg = [{'t0': T_CARD, 't1': DUR + 1, 'color': '#FBF3EC'}]
@@ -86,9 +86,9 @@ ov.append(line('30% off', B, 'lt', 120, 64, 500, 7.80, 9.20, **H))
 fade4 = lambda t0, t1: K((t0 - .002, {'o': 0}, 'lin'), (t0 + .133, {'o': 1}, 'out'), (t1 - .002, {'o': 1}, 'lin'), (t1, {'o': 0}, 'lin'))
 strike = lambda t: f'<span class="o strike" style="background:rgba(26,22,20,.7);height:3px" data-k=\'{K((t, {"w": 0}, "lin"), (t + .2, {"w": 108}, "out"))}\'></span>'
 ov.append(el(f'<div style="display:flex;align-items:baseline;gap:22px;white-space:nowrap">'
-             f'<span class="b" style="position:relative;display:inline-block;font-size:52px;color:rgba(26,22,20,.5)">{RS(THREE)}{strike(8.05)}</span>'
+             f'<span class="b" style="position:relative;display:inline-block;font-size:60px;color:rgba(26,22,20,.62)">{RS(THREE)}{strike(8.05)}</span>'
              f'<span class="b lt" style="font-size:92px">All three, {RS(THREE30)}</span></div>', 64, 632 - 74, fade4(8.00, 9.20), z=15))
-ov.append(caps('NO CODE &nbsp;·&nbsp; COD AVAILABLE', 'lt', 64, 720 - 26, 34, 8.35, 9.20, track=.14, extra='color:rgba(26,22,20,.8)'))
+ov.append(caps('NO CODE &nbsp;·&nbsp; COD AVAILABLE', 'lt', 64, 726 - 29, 38, 8.25, 9.20, track=.14, extra='color:rgba(26,22,20,.85)'))
 if not CUT15:
     # ---- the quality answer ----
     ov.append(caps('18K GOLD COATING', 'dk', 64, 310, 30, 9.95, 11.867, track=.14, now=True))
@@ -100,14 +100,17 @@ if not CUT15:
     # ---- the bracelet ----
     ov.append(caps('PRISM RIVIÈRE BRACELET', 'lt', 64, 312, 30, 13.20, 14.533, track=.14, now=True))
     ov.append(line(RS(HERO['bracelet']['pr']), B, 'lt', 64, 64, 432, 13.20, 14.533, **H))
+    ov.append(line('this bracelet is', Q, 'lt', 64, 64, 525, 13.27, 14.533, **H))              # her words, on the wood under the credit
+    ov.append(line('the one people', Q, 'dk', 64, 52, 1160, 14.933, 16.367, extra='font-weight:600', **H))   # on her forearm, left of the bracelet
+    ov.append(line('stop you for.', Q, 'dk', 64, 52, 1236, 15.27, 16.367, extra='font-weight:600', **H))
     # ---- the question, asked of her ----
-    ov.append(caps('HALO CURVE RING · ADJUSTABLE', 'lt', 64, 300, 30, 16.367, 19.80, track=.14, now=True))
-    ov.append(line(RS(HERO['halo']['pr']), B, 'lt', 64, 64, 420, 16.367, 19.80, **H))
+    ov.append(caps('HALO CURVE RING · ADJUSTABLE', 'lt', 64, 300, 30, 16.367, 19.50, track=.14, now=True))
+    ov.append(line(RS(HERO['halo']['pr']), B, 'lt', 64, 64, 420, 16.367, 19.50, **H))
     ov.append(line('Someone actually asked me', Q, 'dk', 72, 0, 1180, 16.70, 18.00, align='c', now=True))
     ov.append(line('where this is from', Q, 'dk', 72, 0, 1180, 18.00, 18.70, align='c', now=True))
-    ov.append(line('twice this week.', Q, 'dk', 72, 0, 1180, 18.70, 19.80, align='c', now=True))
+    ov.append(line('twice this week.', Q, 'dk', 72, 0, 1180, 18.70, 19.50, align='c', now=True))   # ends on the cut, never on Sonal
     # ---- the line, which holds through the cut into the card ----
-    LK = K((19.87 - .002, {'o': 0}, 'lin'), (19.87 + .133, {'o': 1}, 'out'))
+    LK = K((19.80 - .002, {'o': 0}, 'lin'), (19.80 + .133, {'o': 1}, 'out'))
 else:
     LK = K((T_CARD - .002, {'o': 0}, 'lin'), (T_CARD, {'o': 1}, 'step'))
 for txt, base in (('Made to be', 470), ('asked about.', 550)):
@@ -140,6 +143,6 @@ page6('hero3_15' if CUT15 else 'hero3', DUR, shots, ov, voice='riya', vo=vo, bg=
       music={'bed_lufs': -18.0, 'duck_db': 12.0,
              'score': {'bpm': 90, 'anchor': ANCHOR, 'end': T_CARD, 'hit0': True, 'harp_from': 6.533, 'strings_from': 9.2,
                        'snaps': False, 'shaker': .45, 'sections': secs,
-                       'rswell': [[2.767, 3.767]], 'mute': [[3.767, 3.867]], 'bed_gain': [[3.867, 5.80, -12], [T_CARD + .067, T_CARD + 1.667, -4]],
+                       'rswell': [[2.767, 3.767]], 'mute': [[3.767, 3.867]], 'bed_gain': [[3.867, 4.55, -5], [4.55, 5.80, -9], [T_CARD + .067, T_CARD + 1.667, -4]],
                        'harp_v': .72,
                        'end_downbeats': ends, 'tail_silence': 4 / 30}})

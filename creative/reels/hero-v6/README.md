@@ -12,9 +12,33 @@ customer), and the panel's brief became the next version. V3 is the one to run.
 | --- | --- | --- | --- |
 | V1 | 29.9 s | 6 / 6 / 6.5 / 6.5 | A fashion film interrupted by real women. Upright type is the film's voice, italic is theirs. A drawn bag at the end. |
 | V2 | 26.5 s | 7.5 / 7 / 7.5 / 7.5 | The offer moves to 6–8.5 s, built from three real boxes opening. Product at the lens on frame 1. The claims are spoken. A calm card. |
-| V3 | 25.9 s | see the final rating below | V2, with the whole deal readable on mute by 9.2 s, every cut on a phrase end, and the card complete by 21.3 s. |
+| V3 | 25.9 s | 7.5 / 7.5 / 7.6 / 7.6 | V2, with the whole deal readable on mute by 9.2 s, every cut on a phrase end, and the card complete by 21.3 s. |
 
 V3 also comes as a 15 s cut-down (14.4 s): V3 to 9.9 s, a hard cut to the same card, then Ananaya's CTA.
+
+**Final rating.** One panel rated all three side by side (`notes/final-rating.txt`) and scored V1 5.5–5.8, V2 6.8–7 and V3
+7.5–7.6. All four lenses said run V3. The claims audit checked every claim, price and offer against the live store: 21 of 21
+passed, with no blockers.
+
+That panel's cheap fixes were then applied to V3 as a polish pass:
+- Riya's bracelet line is captioned again: on the wood under the credit, then in ivory on her forearm.
+- The drop lands: the bed is held 5 dB down under "this.", then 9 dB down under "This is Naira,". It was 12 dB down throughout.
+- Sonal's glance runs 1.03 s, up from 0.73. Ananaya's caption ends on the cut while her voice carries on.
+- The box-3 price anchor is larger and darker.
+- The card tiles are cropped to the boxes, clear of Pankti's face.
+
+Two of that panel's points did not hold:
+- "Move the frame-1 caption to x 480." Pankti's hair is centred in that frame, so x 480 would put the caption on it. The
+  caption sits at x 48 on her tee, in ink with an ivory glow.
+- "The codes may still be 10/20." The live Shopify codes are BUY2 20% and BUY3 30%, and the live site's bundle carries the
+  same rates. Only this working branch's copy of `promo.ts` is behind main.
+
+**Still open, for the owner to decide:**
+- **Nyra's voice.** It reads the offer and the claims, about 6.6 s at 1.1x. The creative lens hears it as the main
+  "AI" tell. A 1.0x regeneration, or the offer as type over the score, are the options.
+- **One hook only.** Frame 1 is the biggest lever. The brief proposed two alternates, the bracelet macro and the GRWM hoop to
+  the lens, and they are not rendered.
+- **A pair reads as "2 pieces".** "Any 2 pieces" sits over one pair of huggies, so a muted viewer may read it as two pieces.
 
 ## How it was made
 
@@ -69,10 +93,10 @@ the real voice reads, the build says so in a comment.
 | 9.20–9.87 | Riya's hair whip in the hoops | music only | none |
 | 9.87–11.87 | Match cut into Pankti's hair: a huggie goes in | "Waterproof, tarnish-free," | 18K GOLD COATING / Waterproof. / Tarnish-free. |
 | 11.87–13.20 | The chain worn, hands free | "Three-year plating assurance." | 3-year / PLATING / ASSURANCE |
-| 13.20–14.53 | The Prism Rivière Bracelet on her wrist | Riya: "this bracelet is the one people stop you for." | PRISM RIVIÈRE BRACELET ₹2,399 |
-| 14.53–16.37 | Worn: wrist to cheek, her fist hiding the fan | (her line continues) | none |
-| 16.37–19.80 | Ananaya, the Halo Curve Ring over her face | "Someone actually asked me where this is from twice this week." | HALO CURVE RING · ADJUSTABLE ₹1,199; her words in italic |
-| 19.80–20.53 | Sonal glances back (Kinn 267E722A), mouth closed | music only: the breath | *Made to be / asked about.* (holds through the cut) |
+| 13.20–14.53 | The Prism Rivière Bracelet on her wrist | Riya: "this bracelet is the one people stop you for." | PRISM RIVIÈRE BRACELET ₹2,399 / *this bracelet is* |
+| 14.53–16.37 | Worn: wrist to cheek, her fist hiding the fan | (her line continues) | *the one people / stop you for.* (from 14.93) |
+| 16.37–19.50 | Ananaya, the Halo Curve Ring over her face | "Someone actually asked me where this is from twice this week." | HALO CURVE RING · ADJUSTABLE ₹1,199; her words in italic |
+| 19.50–20.53 | Sonal glances back (Kinn 267E722A), mouth closed | "…week." runs on, then music only: the breath | *Made to be / asked about.* (holds through the cut) |
 | 20.53–25.90 | The card: the three real boxes as live tiles | Ananaya: "available at Naira with free delivery as well."; Riya: "You're welcome, but keep it between us." | logo, NAIRAFLORE.COM, CHAIN ₹1,199 · HUGGIES ₹799 · HOOPS ₹1,199, ~~₹3,197~~ All three, ₹2,238, PICK ANY 3 · 30% OFF · NO CODE, FREE SHIPPING · COD AVAILABLE |
 
 Sound is our own score:

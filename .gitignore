@@ -40,3 +40,31 @@ scripts/higgsfield/
 
 # Clarity export pulls — data, not website code.
 clarity-reports/
+
+# From the higgsfield-setup branch: Higgsfield and designer-handoff outputs, kept out of the repo
+# Downloaded Higgsfield product frames (see scripts/higgsfield/download.ts)
+gilded-hour-shots/
+gilded-hour-angles/
+
+# Designer handoff package - HD contact book and the frames behind it
+naira-flore-shots.pdf
+naira-flore-shots-*.pdf
+naira-flore-shots/
+naira-flore-review.pdf
+naira-flore-rings.pdf
+naira-flore-earrings.pdf
+naira-flore-bracelets-necklaces.pdf
+
+naira-flore-campaign-softly-slowly-worn.pdf
+naira-flore-campaign/
+naira-flore-campaign-*.pdf
+naira-flore-campaign-branded/
+naira-flore-image-approval.pdf
+
+# Python bytecode, produced when one script importlib-loads another
+__pycache__/
+*.pyc
+
+# Campaign production briefs - deliverables, not website code
+
+# Sourcing / catalogue working files - deliverables, not website code

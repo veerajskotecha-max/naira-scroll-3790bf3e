@@ -1611,6 +1611,27 @@ index 0000000..228d20c
 +};
 +
 +export default CardCalibrate;
+diff --git a/src/components/portal/CardGlyph.tsx b/src/components/portal/CardGlyph.tsx
+new file mode 100644
+index 0000000..f132309
+--- /dev/null
++++ b/src/components/portal/CardGlyph.tsx
+@@ -0,0 +1,15 @@
++/*
++  Her garden card in small: an ivory card on its edge with a sprig and the
++  Naira flower, for every link that leads to /members/card (the garden
++  home's card and the Herbarium's "Share to story").
++*/
++export const CardGlyph = ({ className = "ig-card-bud" }: { className?: string }) => (
++  <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden className={className}>
++    <rect x="17" y="6" width="22" height="40" fill="var(--ig-vellum)" stroke="var(--nf-accent-strong)" strokeWidth="1" />
++    <path d="M28 40V27M28 33C25.5 32.4 24 30.6 23.8 28.4 26.2 28.7 27.7 30.5 28 33Z" fill="none" stroke="#8FAAA4" strokeWidth="1" />
++    {[0, 72, 144, 216, 288].map((a) => (
++      <ellipse key={a} cx="28" cy="18.6" rx="2" ry="3" transform={`rotate(${a} 28 22)`} fill="var(--nf-blush)" />
++    ))}
++    <circle cx="28" cy="22" r="1.4" fill="var(--nf-accent)" />
++  </svg>
++);
 diff --git a/src/components/portal/CareRitual.tsx b/src/components/portal/CareRitual.tsx
 new file mode 100644
 index 0000000..e3435e0
@@ -3501,20 +3522,20 @@ index 0000000..1284aa6
 +};
 diff --git a/src/components/portal/GardenBed.tsx b/src/components/portal/GardenBed.tsx
 new file mode 100644
-index 0000000..7c1fceb
+index 0000000..fc29fca
 --- /dev/null
 +++ b/src/components/portal/GardenBed.tsx
-@@ -0,0 +1,412 @@
+@@ -0,0 +1,450 @@
 +import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, type ReactNode } from "react";
-+import { ARCH, BANDS, BED, boxOf, layoutGarden, plantBed, RING_RX, RING_RY, RING_SOIL, ROW_SHADE, type Plant, type PressedFlower, type SavedSprig } from "@/lib/portal/gardenLayout";
++import { ARCH, BANDS, BED, boxOf, giftsOnArbour, layoutGarden, plantBed, RING_RX, RING_RY, RING_SOIL, ROW_SHADE, type GiftDate, type Plant, type PressedFlower, type SavedSprig } from "@/lib/portal/gardenLayout";
 +import { SPECIES, petalTransform } from "@/lib/portal/species";
 +import { LEAF_SAGE } from "@/lib/portal/brandFlower";
-+import type { Stone } from "@/lib/portal/stones";
++import { stoneForMonth, type Stone } from "@/lib/portal/stones";
 +import { NIGHT_GROUND, type SkyHour } from "@/lib/portal/sky";
 +import { AmbientLoopContext, EASE_BLOOM, EASE_REVEAL, play, stillMotion, useAmbient, useLoop } from "@/lib/portal/motion";
 +import { chainPath, leavesAlong, mirrorSegs, pointOn, type Seg } from "@/lib/portal/curves";
 +import FlowerDraw from "./FlowerDraw";
-+import { StonePlant } from "./StoneArt";
++import { StoneHead, StonePlant } from "./StoneArt";
 +import { useTapBloom, withTouch } from "./useTapBloom";
 +
 +/*
@@ -3537,6 +3558,11 @@ index 0000000..7c1fceb
 +  moon, the fireflies, the dawn mist) and a festival's dressing are drawn in
 +  it, behind the plants or over them. They join the bed's one ambient loop,
 +  so the fireflies rest with the sway: no second loop on the screen.
++
++  Her gift dates (Phase 4) bloom on the arbour's vines, each a small stone
++  flower in its month's colour, her year round the doorway (gardenLayout's
++  giftsOnArbour), drawn once over the plants that lean on the posts, and
++  stand still.
 +*/
 +
 +const STEM_HEAD: Record<0 | 1 | 2, [number, number]> = { 0: [0, -88], 1: [-8, -88], 2: [8, -88] };
@@ -3663,6 +3689,25 @@ index 0000000..7c1fceb
 +  </g>
 +);
 +
++/* Her gift dates: a small stone flower each, on a sprig of the vine that leans into the doorway. */
++export const ArbourGifts = ({ gifts }: { gifts: readonly GiftDate[] }) => {
++  const blooms = useMemo(() => giftsOnArbour(gifts), [gifts]);
++  return (
++    <g className="ig-bed-gifts">
++      {blooms.map((b) => {
++        const into = b.x < BED.w / 2 ? 1 : -1;
++        return (
++          <g key={b.key} data-gift-month={b.month} transform={`translate(${b.x} ${b.y})`}>
++            <path d={`M0 1C${3 * into} 4 ${7 * into} 5 ${11 * into} 4`} fill="none" stroke={LEAF_SAGE} strokeWidth=".9" />
++            <ellipse cx={8 * into} cy="6" rx="4.2" ry="1.7" transform={`rotate(${16 * into} ${8 * into} 6)`} fill={LEAF_SAGE} />
++            <StoneHead stone={stoneForMonth(b.month)} size={20} x={-10} y={-10} />
++          </g>
++        );
++      })}
++    </g>
++  );
++};
++
 +/** One plant's drawing in its own 60 x 112 view (blooms, buds, sprigs, grasses: every kind but her two). */
 +export const PlantArt = ({ p }: { p: Plant }) => art(p);
 +
@@ -3707,6 +3752,7 @@ index 0000000..7c1fceb
 +};
 +
 +const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
++const PASS_THROUGH = { pointerEvents: "none" } as const;
 +
 +export type GardenBedHandle = {
 +  bloomIn: (short?: boolean) => Animation[];
@@ -3730,6 +3776,8 @@ index 0000000..7c1fceb
 +  fitted?: boolean;
 +  /** The pieces in her drawer: a sprig each, gold or silver. */
 +  saved?: readonly SavedSprig[];
++  /** Her gift dates: a small stone flower each on the arbour, in its month's colour. */
++  gifts?: readonly GiftDate[];
 +  /** Drawn over the plants, inside the bed (the next drop's sealed bud, the fireflies, a festival's dressing). */
 +  children?: ReactNode;
 +  /** Drawn behind the plants, inside the bed (the sky: the moon and stars, the low sun, the dawn's glow). */
@@ -3749,7 +3797,7 @@ index 0000000..7c1fceb
 +  </svg>
 +);
 +
-+const GardenBed = forwardRef<GardenBedHandle, Props>(({ seed, stone, plantedOn, stoneLabel, stoneCaption = "Your colour", still = false, className = "", pressed, fitted = false, saved, children, behind, sky }, ref) => {
++const GardenBed = forwardRef<GardenBedHandle, Props>(({ seed, stone, plantedOn, stoneLabel, stoneCaption = "Your colour", still = false, className = "", pressed, fitted = false, saved, gifts, children, behind, sky }, ref) => {
 +  const bedRef = useRef<HTMLDivElement>(null);
 +  const garden = useMemo(() => layoutGarden(seed), [seed]);
 +  // Her own additions, within the 80-plant budget: pressed flowers, then the ring of buds, then the newest sprigs.
@@ -3810,6 +3858,11 @@ index 0000000..7c1fceb
 +      });
 +      root.querySelectorAll(".ig-bed-label").forEach((label) => {
 +        const a = play(label, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: short ? 120 : 520, easing: EASE_REVEAL, fill: "backwards" });
++        if (a) out.push(a);
++      });
++      // Her gift dates open on the vines as the arbour's line arrives.
++      root.querySelectorAll(".ig-bed-gifts").forEach((node) => {
++        const a = play(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: short ? 120 : 560, easing: EASE_REVEAL, fill: "backwards" });
 +        if (a) out.push(a);
 +      });
 +      root.querySelectorAll(".ig-soil, .ig-arbour-line").forEach((line) => {
@@ -3897,6 +3950,12 @@ index 0000000..7c1fceb
 +          </div>
 +        ) : null,
 +      )}
++      {/* Her gift dates on the arbour's posts: one still layer over the plants that lean on them, never in a tap's way. */}
++      {!still && gifts && gifts.length > 0 && (
++        <svg viewBox={`0 0 ${BED.w} ${BED.h}`} className="ig-bed-ground" style={PASS_THROUGH} aria-hidden>
++          <ArbourGifts gifts={gifts} />
++        </svg>
++      )}
 +      {children}
 +      </AmbientLoopContext.Provider>
 +      {!still && plantedOn && (
@@ -3919,11 +3978,11 @@ index 0000000..7c1fceb
 +export default GardenBed;
 diff --git a/src/components/portal/GardenLayers.test.tsx b/src/components/portal/GardenLayers.test.tsx
 new file mode 100644
-index 0000000..f49738b
+index 0000000..0f252fa
 --- /dev/null
 +++ b/src/components/portal/GardenLayers.test.tsx
-@@ -0,0 +1,333 @@
-+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+@@ -0,0 +1,390 @@
++import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +import { readFileSync } from "node:fs";
@@ -3932,7 +3991,9 @@ index 0000000..f49738b
 +import { readNaira } from "@/lib/portal/memberMeta";
 +import { istDayKey } from "@/lib/portal/ist";
 +import { NIGHT_GROUND } from "@/lib/portal/sky";
-+import { ARCH } from "@/lib/portal/gardenLayout";
++import { ARCH, GIFT_POST_X } from "@/lib/portal/gardenLayout";
++import { stoneForMonth } from "@/lib/portal/stones";
++import type { Gift } from "@/lib/portal/memberMeta";
 +import { FLY_X, FLY_Y } from "./SkyLayer";
 +import type { AtelierNote } from "@/lib/portal/notes";
 +import type { Dressing } from "@/lib/portal/seasons";
@@ -4222,6 +4283,61 @@ index 0000000..f49738b
 +    for (const k of puff.keyframes) for (const prop of Object.keys(k)) expect(["transform", "opacity", "offset"]).toContain(prop);
 +    for (let i = 0; i < 10; i++) fireEvent.pointerDown(bed, { clientX: 100 + i, clientY: 300 });
 +    expect(container.querySelectorAll(".ig-festival > span").length - patches).toBeLessThanOrEqual(24);
++  });
++});
++
++/* Her gift ledger in her garden (Phase 4): a small stone flower for each date, on the arbour. */
++describe("her gift dates in the garden", () => {
++  const LEDGER: Gift[] = [
++    { n: "Mum", m: 3, d: 14, b: 1500 },
++    { n: "Didi", m: 12, d: 2, b: 1000 },
++    { n: "Riya", m: 3, d: 14, b: 2500 },
++  ];
++  const withGifts = (gifts: Gift[]) =>
++    render(
++      <MemoryRouter>
++        <MemberProvider value={member({ hour: "day" }, { naira: { ...readNaira(null), gifts } })}>
++          <GardenHome />
++        </MemberProvider>
++      </MemoryRouter>,
++    );
++
++  it("blooms a small stone flower for each date on the arbour, in its month's colour, and says so in words", () => {
++    const bare = withGifts([]);
++    const plants = bare.container.querySelectorAll(".ig-plant").length;
++    const swaying = bare.container.querySelectorAll(".ig-sway").length;
++    expect(bare.container.querySelector(".ig-bed-gifts")).toBeNull();
++    expect(screen.queryByText("Small stone flowers on the arbour")).toBeNull();
++    bare.unmount();
++
++    const { container } = withGifts(LEDGER);
++    const flowers = [...container.querySelectorAll(".ig-bed-gifts > g")];
++    expect(flowers.map((f) => f.getAttribute("data-gift-month"))).toEqual(["3", "12", "3"]);
++    // March on the left post, December on the right; each a stone flower in its month's colour.
++    expect(flowers.map((f) => Number(/translate\(([\d.]+)/.exec(f.getAttribute("transform")!)![1]))).toEqual([GIFT_POST_X[0], GIFT_POST_X[1], GIFT_POST_X[0]]);
++    expect(flowers[0].querySelector(".ig-stone-heart path")!.getAttribute("fill")).toBe(stoneForMonth(3)!.hue);
++    expect(flowers[1].querySelector(".ig-stone-heart path")!.getAttribute("fill")).toBe(stoneForMonth(12)!.hue);
++    // One still layer over the plants, never in a tap's way: no plant layer of their own, nothing more swaying, and the bed's plants as they were.
++    const layer = flowers[0].closest("svg.ig-bed-ground") as SVGSVGElement;
++    expect(layer.style.pointerEvents).toBe("none");
++    const bed = container.querySelector(".ig-bed")!;
++    expect([...bed.children].indexOf(layer)).toBeGreaterThan([...bed.children].indexOf(bed.querySelector(".ig-band")!));
++    expect(container.querySelectorAll(".ig-plant")).toHaveLength(plants);
++    expect(container.querySelectorAll(".ig-sway")).toHaveLength(swaying);
++    expect(on(".ig-bed-gifts, .ig-bed-gifts *")).toHaveLength(0);
++    // And in words, which is the garden for a screen reader: each name once, no count.
++    const growing = screen.getByRole("heading", { name: "What's growing" }).closest("section") as HTMLElement;
++    const line = within(growing).getByText("Small stone flowers on the arbour").closest("li") as HTMLElement;
++    expect(line).toHaveTextContent("for Mum, Didi and Riya, the dates in your gift ledger, each in its month's colour");
++    expect(line.textContent).not.toMatch(/\d/);
++    expect(within(line).getByRole("link", { name: "gift ledger" })).toHaveAttribute("href", "/members/gifts");
++  });
++
++  it("draws them still under reduced motion, as the bed is drawn", () => {
++    setReducedMotion(true);
++    const { container } = withGifts(LEDGER);
++    expect(container.querySelectorAll(".ig-bed-gifts > g")).toHaveLength(3);
++    expect(animations.filter((a) => a.el.closest(".ig-bed-gifts"))).toHaveLength(0);
 +  });
 +});
 +
@@ -11029,10 +11145,10 @@ index 0000000..9e18ac6
 +});
 diff --git a/src/lib/portal/copy.test.ts b/src/lib/portal/copy.test.ts
 new file mode 100644
-index 0000000..1ecfc17
+index 0000000..e5c7160
 --- /dev/null
 +++ b/src/lib/portal/copy.test.ts
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,258 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
@@ -11265,6 +11381,19 @@ index 0000000..1ecfc17
 +    // Every line drawn passes cleanLine, which refuses a digit.
 +    expect(lib).toMatch(/if \(!t \|\| t\.length > 32 \|\| \/\\d\/\.test\(t\)\) return null;/);
 +    expect(lib).not.toMatch(/created_at|user\.id|\.email/);
++  });
++
++  /* The plan's routes: the Herbarium's "Share to story" leads to her garden card, and the garden bed
++     blooms her gift dates (a stone flower each, no names drawn), which the card she shares leaves off. */
++  it("leads the Herbarium's 'Share to story' to the card, and keeps her gift dates off the card", () => {
++    const herbarium = readFileSync(join(src, "pages/members/Herbarium.tsx"), "utf8");
++    expect(herbarium).toMatch(/Share to story/);
++    expect(herbarium).toMatch(/to="\/members\/card"/);
++    const home = readFileSync(join(src, "pages/members/GardenHome.tsx"), "utf8");
++    expect(home).toMatch(/gifts=\{naira\.gifts\}/);
++    expect(home).toMatch(/Small stone flowers on the arbour/);
++    const card = readFileSync(join(src, "pages/members/Card.tsx"), "utf8");
++    expect(card).not.toMatch(/ArbourGifts|gifts=|naira\.gifts/);
 +  });
 +
 +  /* The specimen card's "Stone" row is the listing's own words for it (cubic
@@ -12244,12 +12373,12 @@ index 0000000..462c754
 +};
 diff --git a/src/lib/portal/gardenLayout.test.ts b/src/lib/portal/gardenLayout.test.ts
 new file mode 100644
-index 0000000..1792e1b
+index 0000000..1cbb9e7
 --- /dev/null
 +++ b/src/lib/portal/gardenLayout.test.ts
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,120 @@
 +import { describe, expect, it } from "vitest";
-+import { BANDS, BED, MAX_PLANTS, MAX_SWAY, layoutGarden } from "./gardenLayout";
++import { BANDS, BED, GIFT_GAP, GIFT_POST_X, GIFT_REACH, GIFT_TICKS, MAX_PLANTS, MAX_SWAY, giftsOnArbour, layoutGarden } from "./gardenLayout";
 +
 +/* Her garden is hers: the same id grows the same bed on every visit and
 +   device, and the bed stays inside the budgets a mid-range Android can
@@ -12319,12 +12448,61 @@ index 0000000..1792e1b
 +    }
 +  });
 +});
++
++/* Her gift dates (Phase 4): a small stone flower each on the arbour's
++   posts, her year round the doorway, never crowding a plant or each other. */
++describe("her gift dates on the arbour", () => {
++  const g = (m: number, d: number, n = "Mum") => ({ n, m, d });
++
++  it("climbs the left post from January to June and comes down the right from July to December", () => {
++    const [jan, jun, jul, dec] = giftsOnArbour([g(1, 1), g(6, 30), g(7, 1), g(12, 31)]);
++    expect([jan.x, jun.x, jul.x, dec.x]).toEqual([GIFT_POST_X[0], GIFT_POST_X[0], GIFT_POST_X[1], GIFT_POST_X[1]]);
++    expect(jan.y).toBeGreaterThan(GIFT_TICKS[1] - 1);
++    expect(jun.y).toBeLessThan(GIFT_TICKS[0] + 1);
++    expect(jul.y).toBeLessThan(GIFT_TICKS[0] + 1);
++    expect(dec.y).toBeGreaterThan(GIFT_TICKS[1] - 1);
++    expect([jan, jun, jul, dec].map((b) => b.month)).toEqual([1, 6, 7, 12]);
++  });
++
++  it("stands each month between two of the posts' ticks, at its day", () => {
++    for (let m = 1; m <= 12; m++) {
++      const [b] = giftsOnArbour([g(m, 15)]);
++      const k = m <= 6 ? 6 - m : m - 7;
++      expect(b.y).toBeGreaterThan(GIFT_TICKS[0] + k * 40);
++      expect(b.y).toBeLessThan(GIFT_TICKS[0] + (k + 1) * 40);
++    }
++    // Later in a month on the left post is higher up; on the right, lower down.
++    expect(giftsOnArbour([g(3, 20)])[0].y).toBeLessThan(giftsOnArbour([g(3, 2)])[0].y);
++    expect(giftsOnArbour([g(9, 20)])[0].y).toBeGreaterThan(giftsOnArbour([g(9, 2)])[0].y);
++  });
++
++  it.each([
++    ["eight on one day", Array.from({ length: 8 }, (_, i) => g(3, 14, `P${i}`))],
++    ["eight crowding the top of the left post", Array.from({ length: 8 }, (_, i) => g(6, 23 + i, `P${i}`))],
++    ["eight crowding the foot of the right post", Array.from({ length: 8 }, (_, i) => g(12, 24 + i, `P${i}`))],
++    ["a 29 February and its neighbours", [g(2, 28), g(2, 29), g(3, 1), g(2, 27, "Didi")]],
++  ])("keeps every flower apart and on its post: %s", (_what, gifts) => {
++    const blooms = giftsOnArbour(gifts);
++    expect(blooms).toHaveLength(gifts.length);
++    for (const post of GIFT_POST_X) {
++      const ys = blooms.filter((b) => b.x === post).map((b) => b.y).sort((a, b) => a - b);
++      for (let k = 1; k < ys.length; k++) expect(ys[k] - ys[k - 1]).toBeGreaterThanOrEqual(GIFT_GAP - 0.01);
++      for (const y of ys) {
++        expect(y).toBeGreaterThanOrEqual(GIFT_REACH[0]);
++        expect(y).toBeLessThanOrEqual(GIFT_REACH[1]);
++      }
++    }
++    // The year's order kept on each post, and the same dates always bloom in the same places.
++    expect(giftsOnArbour(gifts)).toEqual(blooms);
++    expect(new Set(blooms.map((b) => b.key)).size).toBe(gifts.length);
++  });
++});
 diff --git a/src/lib/portal/gardenLayout.ts b/src/lib/portal/gardenLayout.ts
 new file mode 100644
-index 0000000..d5468fa
+index 0000000..0f3f05e
 --- /dev/null
 +++ b/src/lib/portal/gardenLayout.ts
-@@ -0,0 +1,320 @@
+@@ -0,0 +1,395 @@
 +import { FLOWER_ASPECT, FLOWER_BASE_X } from "./brandFlower";
 +
 +/*
@@ -12644,6 +12822,81 @@ index 0000000..d5468fa
 +  const w = 60 * p.scale;
 +  const h = 112 * p.scale;
 +  return { left: p.x - w / 2, top: p.y - h, w, h };
++};
++
++/* ── her gift dates (Phase 4) ──────────────────────────
++   Each date in her gift ledger blooms as a small stone flower in its
++   month's colour on the arbour's vines: her year round the garden's
++   doorway, January at the foot of the left post climbing to June, then
++   July at the top of the right post down to December at its foot. Each
++   month stands between two of the posts' seven ticks (y 250 to 490, 40
++   apart), at its day. Dates too close to sit apart are eased apart along
++   their post, the year's order kept, never off it.
++
++   On the posts rather than in the beds, so they never crowd her two
++   flowers, the ring of buds or a festival's diyas and garland; drawn once,
++   in one still layer over the plants that lean against the posts (no layer
++   per flower, no sway), so they cost the 80-plant budget nothing. The
++   garden card leaves them off: the ledger is about the people she buys for. */
++
++export type GiftDate = { n: string; m: number; d: number };
++export type GiftBloom = { key: string; month: number; x: number; y: number };
++
++/** The posts' centre lines, the ticks the months stand between, and the least distance between two flowers. */
++export const GIFT_POST_X = [26, 364] as const;
++export const GIFT_TICKS = [250, 490] as const;
++export const GIFT_GAP = 19;
++/** How far past the end ticks a crowd of dates may be eased (the posts run 214 to the soil; the garland's tassels end above 190). */
++export const GIFT_REACH = [236, 504] as const;
++const GIFT_MONTH_DAYS = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
++
++const spreadAlong = (ys: number[], [lo, hi]: readonly [number, number], gap: number): number[] => {
++  const out = ys.map((y) => Math.max(lo, Math.min(hi, y)));
++  // Neighbours pushed apart equally, until each has its room.
++  for (let pass = 0; pass < 300 && out.length > 1; pass++) {
++    let moved = false;
++    for (let k = 0; k + 1 < out.length; k++) {
++      const short = gap - (out[k + 1] - out[k]);
++      if (short > 1e-6) {
++        out[k] -= short / 2;
++        out[k + 1] += short / 2;
++        moved = true;
++      }
++    }
++    if (out[0] < lo) out[0] = lo;
++    if (out[out.length - 1] > hi) out[out.length - 1] = hi;
++    if (!moved) break;
++  }
++  // And held to it from each end of the post (eight need 133 of its 268).
++  for (let k = 1; k < out.length; k++) out[k] = Math.max(out[k], out[k - 1] + gap);
++  if (out.length && out[out.length - 1] > hi) {
++    out[out.length - 1] = hi;
++    for (let k = out.length - 2; k >= 0; k--) out[k] = Math.min(out[k], out[k + 1] - gap);
++  }
++  return out;
++};
++
++/** Where each of her gift dates blooms on the arbour, in the order given. */
++export const giftsOnArbour = (gifts: readonly GiftDate[]): GiftBloom[] => {
++  const span = GIFT_TICKS[1] - GIFT_TICKS[0];
++  const at = gifts.map((g, i) => {
++    const m = Math.max(1, Math.min(12, Math.round(g.m)));
++    const days = GIFT_MONTH_DAYS[m - 1];
++    const d = Math.max(1, Math.min(days, Math.round(g.d)));
++    const left = m <= 6;
++    // Its place through its half of the year: 0 at the first of January (or July), 1 at the end of June (or December).
++    const f = ((left ? m - 1 : m - 7) + (d - 0.5) / days) / 6;
++    return { i, m, left, y: left ? GIFT_TICKS[1] - f * span : GIFT_TICKS[0] + f * span };
++  });
++  const out: GiftBloom[] = new Array(gifts.length);
++  for (const left of [true, false]) {
++    const post = at.filter((a) => a.left === left).sort((a, b) => a.y - b.y || a.i - b.i);
++    const ys = spreadAlong(post.map((a) => a.y), GIFT_REACH, GIFT_GAP);
++    post.forEach((a, k) => {
++      out[a.i] = { key: `${a.i}-${a.m}-${gifts[a.i].d}`, month: a.m, x: GIFT_POST_X[left ? 0 : 1], y: Number(ys[k].toFixed(2)) };
++    });
++  }
++  return out;
 +};
 diff --git a/src/lib/portal/gifts.test.ts b/src/lib/portal/gifts.test.ts
 new file mode 100644
@@ -21327,10 +21580,10 @@ index 0000000..db40f50
 +});
 diff --git a/src/pages/members/Card.test.tsx b/src/pages/members/Card.test.tsx
 new file mode 100644
-index 0000000..e65d1c9
+index 0000000..9303062
 --- /dev/null
 +++ b/src/pages/members/Card.test.tsx
-@@ -0,0 +1,250 @@
+@@ -0,0 +1,258 @@
 +import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -21441,6 +21694,14 @@ index 0000000..e65d1c9
 +    // The art leaves for the canvas as a standalone SVG: the page's symbols and no CSS variables.
 +    expect(drawn.svgs.at(-1)).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
 +    expect(drawn.svgs.at(-1)).not.toMatch(/var\(--/);
++  });
++
++  /* Her garden home blooms her gift dates on the arbour; the card she shares leaves them off: the ledger is about the people she buys for. */
++  it("leaves her gift dates off the card", () => {
++    const { container } = room(member({ naira: { ...readNaira(null), gifts: [{ n: "Mum", m: 3, d: 14, b: 1500 }] } }));
++    expect(container.querySelector(".ig-cardroom-art .ig-arbour")).not.toBeNull();
++    expect(container.querySelector(".ig-cardroom-art .ig-bed-gifts")).toBeNull();
++    expect(container.textContent).not.toMatch(/Mum/);
 +  });
 +
 +  it("adds her first name only when she asks, and takes it off again", async () => {
@@ -21583,10 +21844,10 @@ index 0000000..e65d1c9
 +});
 diff --git a/src/pages/members/Card.tsx b/src/pages/members/Card.tsx
 new file mode 100644
-index 0000000..a6480c9
+index 0000000..ef917a3
 --- /dev/null
 +++ b/src/pages/members/Card.tsx
-@@ -0,0 +1,186 @@
+@@ -0,0 +1,188 @@
 +import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 +import PortalShell from "@/components/portal/PortalShell";
 +import { Arbour, PlantArt } from "@/components/portal/GardenBed";
@@ -21607,7 +21868,9 @@ index 0000000..a6480c9
 +  the same planting as her bed) or of a flower she pressed, with her
 +  stone's name and the still NAIRA wordmark, as a 1080 x 1920 PNG drawn on
 +  her phone. Her first name is left off unless she adds it; the card never
-+  carries a number, a count or a date.
++  carries a number, a count or a date. Her gift dates, which bloom on her
++  garden's arbour at home, stay off it too: the ledger is about the people
++  she buys for.
 +
 +  The room paints the art at once, in a frame shaped like the card; the
 +  renderer (ShareCard.tsx, with lib/portal/shareCard) is a chunk of its own,
@@ -23614,18 +23877,19 @@ index 0000000..2311979
 +export default Fit;
 diff --git a/src/pages/members/GardenHome.tsx b/src/pages/members/GardenHome.tsx
 new file mode 100644
-index 0000000..1668204
+index 0000000..d238201
 --- /dev/null
 +++ b/src/pages/members/GardenHome.tsx
-@@ -0,0 +1,345 @@
+@@ -0,0 +1,356 @@
 +import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
 +import GardenBed, { type GardenBedHandle } from "@/components/portal/GardenBed";
 +import DoorsOpen, { type DoorsMode } from "@/components/portal/DoorsOpen";
 +import { StoneHead } from "@/components/portal/StoneArt";
++import { CardGlyph } from "@/components/portal/CardGlyph";
 +import { useMember } from "@/components/portal/MemberContext";
-+import { eyebrow } from "@/components/portal/styles";
++import { eyebrow, textLink } from "@/components/portal/styles";
 +import { formatIstDate, greetingFor } from "@/lib/portal/ist";
 +import { shownName, stoneForMonth } from "@/lib/portal/stones";
 +import { pickDoors, recordFullDoors } from "@/lib/portal/doors";
@@ -23649,7 +23913,8 @@ index 0000000..1668204
 +  Her garden: the greeting in Indian time, her own seeded bed with the Naira
 +  flower planted the day she joined and her stone flower beside it, one honest
 +  card, and "What's growing", which is also the garden in words for a screen
-+  reader (the drawing itself is decorative). On her first signed-in visit, and
++  reader (the drawing itself is decorative). The dates in her gift ledger
++  bloom on the arbour, a small stone flower each in its month's colour. On her first signed-in visit, and
 +  only after the Doors, the arrival repair's card follows her garden and the
 +  day's cards: the garden first, the questions after.
 +*/
@@ -23706,6 +23971,12 @@ index 0000000..1668204
 +  holi: ["Colour for Holi", ": tap the garden for a puff of gulal.", ", soft on the ground."],
 +};
 +const NOTE_LIST = { margin: 0, padding: 0, display: "grid", gap: "0.6rem" } as const;
++
++/* The names on her gift dates, as said aloud: "Mum", "Mum and Didi", "Mum, Didi and Riya" (each once). */
++const namesSaid = (names: readonly string[]): string => {
++  const once = [...new Set(names)];
++  return once.length < 2 ? (once[0] ?? "") : `${once.slice(0, -1).join(", ")} and ${once[once.length - 1]}`;
++};
 +
 +/* The drop open now: whether its pieces are on the shop yet needs the live catalogue, read only here. */
 +const OpenDropCard = ({ drop, now }: { drop: Drop; now: number }) => {
@@ -23828,6 +24099,7 @@ index 0000000..1668204
 +            pressed={flowers}
 +            fitted={Boolean(ring)}
 +            saved={sprigs}
++            gifts={naira.gifts}
 +            sky={hour}
 +            behind={sky.shown ? <SkyLayer hour={hour} seed={user.id} part="back" arriving={sky.arriving} /> : null}
 +          >
@@ -23861,14 +24133,7 @@ index 0000000..1668204
 +            </span>
 +          </Link>
 +          <Link to="/members/card" className="ig-card-link">
-+            <svg viewBox="0 0 56 56" width="56" height="56" aria-hidden className="ig-card-bud">
-+              <rect x="17" y="6" width="22" height="40" fill="var(--ig-vellum)" stroke="var(--nf-accent-strong)" strokeWidth="1" />
-+              <path d="M28 40V27M28 33C25.5 32.4 24 30.6 23.8 28.4 26.2 28.7 27.7 30.5 28 33Z" fill="none" stroke="#8FAAA4" strokeWidth="1" />
-+              {[0, 72, 144, 216, 288].map((a) => (
-+                <ellipse key={a} cx="28" cy="18.6" rx="2" ry="3" transform={`rotate(${a} 28 22)`} fill="var(--nf-blush)" />
-+              ))}
-+              <circle cx="28" cy="22" r="1.4" fill="var(--nf-accent)" />
-+            </svg>
++            <CardGlyph />
 +            <span className="ig-card-text">
 +              <span className={eyebrow}>Your garden card</span>
 +              <span className="ig-card-title">A picture of your garden</span>
@@ -23931,6 +24196,15 @@ index 0000000..1668204
 +            {sprigs.length > 0 && (
 +              <li>
 +                <strong>Sprigs for the pieces in your drawer</strong>, each tip gold or silver as the piece is.
++              </li>
++            )}
++            {naira.gifts.length > 0 && (
++              <li>
++                <strong>Small stone flowers on the arbour</strong> for {namesSaid(naira.gifts.map((g) => g.n))}, the dates in your{" "}
++                <Link className={textLink} to="/members/gifts">
++                  gift ledger
++                </Link>
++                , each in its month's colour: January at the foot of the left post, December at the foot of the right.
 +              </li>
 +            )}
 +            {next && (
@@ -25165,15 +25439,16 @@ index 0000000..2595f3f
 +
 diff --git a/src/pages/members/Herbarium.tsx b/src/pages/members/Herbarium.tsx
 new file mode 100644
-index 0000000..e4913ea
+index 0000000..466901f
 --- /dev/null
 +++ b/src/pages/members/Herbarium.tsx
-@@ -0,0 +1,130 @@
+@@ -0,0 +1,149 @@
 +import { useEffect, useMemo, useRef } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
 +import HerbariumFrame from "@/components/portal/HerbariumFrame";
 +import KeepsakeFrame from "@/components/portal/KeepsakeFrame";
++import { CardGlyph } from "@/components/portal/CardGlyph";
 +import { useMember } from "@/components/portal/MemberContext";
 +import { eyebrow, textLink } from "@/components/portal/styles";
 +import { byOpening, dropNumber, speciesIndex, timeOf } from "@/lib/portal/dropPhase";
@@ -25191,7 +25466,9 @@ index 0000000..e4913ea
 +  drop room both hold to inMembersWindow), and gently empty if not ("This
 +  one bloomed in October"); then her four keepsakes,
 +  each with what it was kept for. They are for joy, not points, never
-+  redeemable: nothing here is ranked, compared or opens anything.
++  redeemable: nothing here is ranked, compared or opens anything. Last,
++  "Share to story" leads to her garden card (/members/card), where the
++  garden or one of these pressed flowers becomes a picture to post.
 +
 +  The first time the walls come into view, each frame's gold line draws
 +  itself in (stroke-dashoffset only). Under reduced motion or Data Saver the
@@ -25293,6 +25570,22 @@ index 0000000..e4913ea
 +          </ul>
 +          <p className="ig-fineprint ig-herbarium-joy">These keepsakes are for joy, not points, never redeemable. Nothing here is counted, ranked or traded.</p>
 +        </section>
++
++        {/* Share to story: her garden card, the garden or a flower she pressed as a picture drawn on her phone. */}
++        <section className="ig-section" aria-labelledby="ig-share">
++          <h2 id="ig-share" className="ig-h2">
++            Share to story
++          </h2>
++          <Link to="/members/card" className="ig-card-link">
++            <CardGlyph />
++            <span className="ig-card-text">
++              <span className={eyebrow}>Your garden card</span>
++              <span className="ig-card-title">{pressed.some((p) => drops.some((d) => d.id === p.id)) ? "Your garden, or a flower you pressed" : "A picture of your garden"}</span>
++              <span className="ig-card-more">Make it to share →</span>
++            </span>
++          </Link>
++          <p className="ig-fineprint">Drawn on your phone. Your name stays off it unless you add it.</p>
++        </section>
 +      </div>
 +    </PortalShell>
 +  );
@@ -25301,10 +25594,10 @@ index 0000000..e4913ea
 +export default Herbarium;
 diff --git a/src/pages/members/KeptRooms.test.tsx b/src/pages/members/KeptRooms.test.tsx
 new file mode 100644
-index 0000000..ee5907f
+index 0000000..6586020
 --- /dev/null
 +++ b/src/pages/members/KeptRooms.test.tsx
-@@ -0,0 +1,852 @@
+@@ -0,0 +1,866 @@
 +import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter, Route, Routes } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -26007,6 +26300,20 @@ index 0000000..ee5907f
 +    expect(within(frames).getByText("This one bloomed in October")).toBeInTheDocument();
 +    expect(screen.getByText("Verdant, opened in its first hour")).toBeInTheDocument();
 +    expect(screen.getByText("US 6, measured on your screen, 4 Nov")).toBeInTheDocument();
++    // Share to story: to her garden card, where a pressed flower can be the picture.
++    const share = screen.getByRole("heading", { name: "Share to story" }).closest("section") as HTMLElement;
++    expect(within(share).getByRole("link", { name: /Your garden, or a flower you pressed/ })).toHaveAttribute("href", "/members/card");
++  });
++
++  it("leads 'Share to story' to her garden card, with no name on it unless she adds it", () => {
++    signIn({ v: 1, seen: { last: today } });
++    visit("/members/herbarium");
++    const share = screen.getByRole("heading", { name: "Share to story" }).closest("section") as HTMLElement;
++    const link = within(share).getByRole("link");
++    expect(link).toHaveAttribute("href", "/members/card");
++    expect(link).toHaveTextContent("A picture of your garden");
++    expect(share).toHaveTextContent("Your name stays off it unless you add it.");
++    expect(share.textContent).not.toMatch(/\d/);
 +  });
 +
 +  it("under reduced motion, every frame is drawn at first paint: nothing animates", () => {

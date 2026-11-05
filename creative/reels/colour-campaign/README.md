@@ -53,6 +53,27 @@ Two pairs share sources or grammar, so keep them apart in media:
   ad set; run Three slats only as Blueprint's challenger once Blueprint has data.
 - **Verdant and Blueprint** both annotate a real cream-cube photo. Keep them in different ad sets.
 
+Round 3 deliverables (sent in chat, 5 Nov; not committed). All are H.264 High 5.1 at 24 fps with AAC 256k, mastered to
+-14.0 LUFS integrated.
+- 9:16: 2160×3840, for Reels and Stories.
+- 4:5: 2160×2700, for Feed. It is our own crop of the 9:16 render from y 230.
+
+| Ad | 9:16 Reels and Stories | 4:5 Feed |
+| --- | --- | --- |
+| 2 Verdant Circlet Studs | `naira-p2-verdant-studs-v2-4k.mp4` (19.3 MB) | `naira-p2-verdant-studs-v2-4x5-feed.mp4` (14.9 MB) |
+| 3 Baguette Tennis Necklace | `naira-p3-baguette-necklace-v2-4k.mp4` (18.9 MB) | `naira-p3-baguette-necklace-v2-4x5-feed.mp4` (15.1 MB) |
+| 4 Woven Gold Hoops | `naira-p4-woven-gold-hoops-v2-4k.mp4` (18.8 MB) | `naira-p4-woven-gold-hoops-v2-4x5-feed.mp4` (14.8 MB) |
+| 5 Halo Curve Ring | `naira-p5-halo-curve-ring-v2-4k.mp4` (17.8 MB) | `naira-p5-halo-curve-ring-v2-4x5-feed.mp4` (14.1 MB) |
+| T1 Toggle Link Chain, Blueprint | `naira-t1-toggle-chain-blueprint-4k.mp4` (18.3 MB) | `naira-t1-toggle-chain-blueprint-4x5-feed.mp4` (14.7 MB) |
+| T2 Toggle Link Chain, Three slats | `naira-t2-toggle-chain-three-slats-4k.mp4` (15.4 MB) | `naira-t2-toggle-chain-three-slats-4x5-feed.mp4` (12.3 MB) |
+
+To rebuild:
+- all six: `bash tools/finish_redo.sh <scratchpad>`;
+- some of them: `bash tools/finish_some.sh <scratchpad> p3b tg2b`;
+- one frame sheet to check: `bash tools/qc.sh <scratchpad> <build> <t> ...`.
+
+The round 1 and 2 versions of ads 2–5, T1 and T2 below are superseded.
+
 What the reviews taught, for any next round:
 - **Powder keyed onto a light ground always reads as a sticker**: the matte leaves a dark outline. Keep powder on dark worlds, or leave it out.
 - **Never freeze or enlarge late AI frames.** The dust-caked, 2x-cropped frames were the AIest moments; take stills from a clip's clean opening.

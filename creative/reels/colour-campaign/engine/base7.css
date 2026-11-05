@@ -1,0 +1,10 @@
+/* ---------- v7: the colour campaign. Studio films on black or in a colour world; brand type over them. ---------- */
+body { background:#000; }
+.iv { color:var(--ivory); }
+.iv.sh { text-shadow:0 2px 18px rgba(0,0,0,.55); }
+.lab7 { font-family:Jost; font-weight:500; letter-spacing:.22em; white-space:nowrap; line-height:1.25; }
+.num7 { font-family:CG; font-weight:500; line-height:.95; white-space:nowrap; font-feature-settings:"lnum" 1; }
+.mrp7 { font-family:Jost; font-weight:400; color:rgba(251,243,236,.55); white-space:nowrap; position:relative; display:inline-block; }
+.mrp7 .strike { background:rgba(255,189,168,.9); height:2px; }
+.rule7 { height:1px; background:rgba(251,243,236,.55); }
+.cta7 { font-family:Jost; font-weight:500; letter-spacing:.24em; white-space:nowrap; color:var(--ink); background:var(--ivory); padding:22px 44px 20px 50px; }

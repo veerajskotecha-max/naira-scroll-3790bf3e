@@ -16,8 +16,11 @@ def endcard(t, name, price, mrp, veil, ink=False, chip_y=612, logo_letters='#99B
            f'<div class="o" style="left:0;top:{chip_y}px;width:1080px;display:flex;justify-content:center;z-index:7" data-k=\'{c6(t + .85)}\'>'
            f'<div class="lab7" style="font-size:22px;{chip};padding:14px 30px 12px 36px;letter-spacing:.28em">SHOP NOW</div></div>']
     return out
-def quiet_offer(t0, t1, y=1222, ink=False):
+def quiet_offer(t0, t1, y=1222, ink=False, centre=False):
     tone = 'lt' if ink else 'iv sh'
+    if centre:   # the redo review: at x 64, y 1222 the line ran across the piece; centred under the price it sits on clear ground
+        return (f'<div class="o" style="left:0;top:{y}px;width:1080px;text-align:center;z-index:15" data-k=\'{tk(t0, t1)}\'>'
+                f'<div class="lab7 {tone}" style="font-size:22px">{OFFER2} &nbsp;·&nbsp; {OFFER3}</div></div>')
     return (f'<div class="o" style="left:64px;top:{y}px;z-index:15" data-k=\'{tk(t0, t1)}\'>'
             f'<div class="lab7 {tone}" style="font-size:22px"><span style="color:#FFBDA8">●</span>&nbsp; {OFFER2} &nbsp;·&nbsp; {OFFER3}</div></div>')
 def hook(line1, price, mrp, top=300, size=70, ink=False, line2=None):

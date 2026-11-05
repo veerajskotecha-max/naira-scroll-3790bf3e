@@ -8,7 +8,36 @@ The owner sent an AI studio film of the Cushion Halo Ring and asked for:
 - in 4K, one at a time, each analysed before the next;
 - two Toggle Link Chain films, using the owner's own clasp photo so the clasp is exact.
 
-## The films
+## Round 3, 5 Nov: six product-only redos (these replace ads 2–5, T1 and T2 below)
+
+The owner approved ad 0 (Cushion) and ad 1 v2 (Prism) as they are, and sent the other six back: "the others, the on-model
+shots look AI... make it less and elegant, and unlike the first two, something different for each". So the six redos:
+- show **no AI people at all**: the hands, ears and necks are gone;
+- lean on the **real listing photos** wherever they can;
+- keep at most one AI product shot each;
+- each have **one device of their own** that no other ad uses.
+
+A five-reviewer panel then judged them against the two approved films ("does any of it look AI, is it elegant, is each
+idea distinct"); `workflows/critique-five-lens.js` is the earlier per-ad panel. Its fixes are all applied here.
+
+| # | Piece | Length | Its own device | AI vs real |
+| --- | --- | --- | --- | --- |
+| 2 | Verdant Circlet Studs | 11.25 s | **Anatomy**: on the real photo, each material is drawn out on an even half-second with hairline elbows (emerald-green CZ, gold star points, shell pearl, a ticked 16.8 mm rule). Only this ad uses callouts. | One AI stud macro (hook) and the AI pair (end card), both green-graded to the real stone (`tools/green_grade.py`): the AI emerald was lime, the real one bottle green |
+| 3 | Baguette Tennis Necklace | 11.25 s | **The colour flows**: the three colourway photos are pixel-registered, so ruby turns emerald, then crystal, by flowing along the strand from the clasp, round the loop and down the tail; nothing else in the frame moves (`tools/swap_frames.py`). Ends on the three side by side. | 100% real listing photos |
+| 4 | Woven Gold Hoops | 11.9 s | **The framed print**: the hook's petal rain racks out of focus into amber bokeh, and a print hangs over it: a square window, ivory mat, gold fillet, the real photos dissolving on the beat. | One AI hook (petals on a thali), shown sharp only for the first 3.75 s |
+| 5 | Halo Curve Ring | 10.6 s | **The live diptych**: the sand shot splits full-bleed into two halves, tiger eye left and crystal right, still drifting (slowed with blended frames, never frozen). | One AI sand reveal (the most believable clip of the six) |
+| T1 | Toggle Link Chain, "Blueprint" | 10.6 s | **Drafting geometry**: the only ad that opens on a real photo. The cube photo sits on drafting paper, with a compass circle on the ring clasp (Ø 15 mm), a dashed detail circle on one link (4 mm) and a title block (50 CM / PVD 18K GOLD COATING). Then the one colour beat: gold dust rings the clasp on the jade plate. | Real photo first; the owner's accurate jade-plate AI clip second, stopped before the heavy pour |
+| T2 | Toggle Link Chain, "Three slats" | 8.75 s | **Three slats**: the piece seen through three bands on flat jade from frame 1 (links, toggle bar, ring clasp), one listing fact per beat, then dissolving into the real cube photo. | Stills from the jade-plate clip's clean first frames (before any dust), at 1.3x at most; then the real photo |
+
+What the review taught, for any next round:
+- **Powder keyed onto a light ground always reads as a sticker**: the matte leaves a dark outline. Keep powder on dark worlds, or leave it out.
+- **Never freeze or enlarge late AI frames.** The dust-caked, 2x-cropped frames were the AIest moments; take stills from a clip's clean opening.
+- **Copy can give the AI away.** "THE REAL PIECE" told viewers the opening was not real.
+- **Every hook needs a veil** under the type when the shot is bright (saffron, light shafts), or the sage mark disappears.
+- **The offer line goes under the price, centred**, never across the piece at the bottom.
+- The sheets' "uneven fade to black" on the last frame was a QC artefact: a still rendered at t = DUR, which the render never outputs.
+
+## Round 1 and 2: the films
 
 Every ad comes in two shapes, both in 4K:
 - **9:16** (2160×3840) for Reels and Stories. Every line of type sits in y 270–1250, which both UIs leave clear.

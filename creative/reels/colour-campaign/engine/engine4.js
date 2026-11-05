@@ -1,4 +1,4 @@
-// Ad engine v4 (v3 plus: a shot can carry blend ('screen', 'lighten') and alpha, so AI element plates on black composite
+// Ad engine v4 (a shot with mix: true blends adjacent frames, so a clip slowed below 1x never repeats a frame; v3 plus: a shot can carry blend ('screen', 'lighten') and alpha, so AI element plates on black composite
 // over the footage without the AI ever touching the piece; AD.dpr renders the canvas at 2x for native 4K; a square clip can sit on pure black (sqBg 'black')
 // or on its own blur with no ivory wash (sqBg 'blur'), with its own feather; AD.fps sets the timeline rate).
 // Ad engine v3 (v2 plus tiles: a shot with rect [x, y, w, h] cover-fits that rectangle; speed 0 freezes).
@@ -23,9 +23,12 @@
     back: u => { const c = 1.7; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); },
     expo: u => (u >= 1 ? 1 : 1 - Math.pow(2, -10 * u)), sine: u => -(Math.cos(Math.PI * u) - 1) / 2,
   };
-  const frameSrc = (sh, t) => {
-    const m = AD.meta[sh.id]; const loc = (t - sh.t0) * (sh.speed ?? 1) + (sh.off || 0);             // v3: speed 0 is a freeze
-    const k = clamp(Math.floor(loc * m.fps + 1e-6), 0, m.n - 1);
+  const frameAt = (sh, t) => {
+    const m = AD.meta[sh.id]; const f = ((t - sh.t0) * (sh.speed ?? 1) + (sh.off || 0)) * m.fps;    // v3: speed 0 is a freeze
+    const k = clamp(Math.floor(f + 1e-6), 0, m.n - 1); return { k, frac: k >= m.n - 1 || f < 0 ? 0 : f - Math.floor(f + 1e-6) };
+  };
+  const frameSrc = (sh, t, dk = 0) => {
+    const m = AD.meta[sh.id], k = clamp(frameAt(sh, t).k + dk, 0, m.n - 1);
     return `${AD.frames}/${sh.id}/f_${String(k + 1).padStart(4, '0')}.${m.ext || 'jpg'}`;
   };
   const zoomAt = (sh, t) => {
@@ -47,8 +50,8 @@
     for (let i = 1; i < F.length; i++) if (t < F[i][0]) { const u = (t - F[i - 1][0]) / (F[i][0] - F[i - 1][0]); return F[i - 1][1] + (F[i][1] - F[i - 1][1]) * E.io(u); }
     return 0;
   }
-  function drawShot(sh, t, alpha, bx, rot) {
-    return load(frameSrc(sh, t)).then(im => {
+  function drawShot(sh, t, alpha, bx, rot, dk = 0) {
+    return load(frameSrc(sh, t, dk)).then(im => {
       const s = zoomAt(sh, t), ax = sh.ax ?? .5, ay = sh.ay ?? .5;
       cx.save(); cx.globalAlpha = alpha * (sh.alpha ?? 1);
       if (sh.blend) cx.globalCompositeOperation = sh.blend;        // an element plate shot on black (powder, petals, light) screens over the footage
@@ -218,6 +221,7 @@
       if (sh.fadeIn) a *= clamp((t - sh.t0) / sh.fadeIn, 0, 1);
       if (sh.fadeOut) a *= clamp((sh.t1 - t) / sh.fadeOut, 0, 1);
       await drawShot(sh, t, a, bx, rot);
+      if (sh.mix) { const { frac } = frameAt(sh, t); if (frac > .02) await drawShot(sh, t, a * frac, bx, rot, 1); }   // slow motion: blend the next frame in, so nothing repeats
     }
     if (window.drawFX) window.drawFX(cx, t, 'under');
     for (const d of AD.dim || []) {

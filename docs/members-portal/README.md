@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `8a185a8` (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `9ab2dc1` (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -48,7 +48,7 @@ Phase 3 checks on 5cba2a1:
 
 ## Phase 4: built and merged, still in review
 
-This is an interim backup, taken while the reviews run. The final Phase 4 checks will replace it.
+This is an interim backup at 9ab2dc1, taken after the polish and while the acceptance critic runs. The final Phase 4 checks will replace it.
 
 | Commit | What it adds |
 |---|---|

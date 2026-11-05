@@ -498,13 +498,14 @@ index 0000000..2c3e098
 +export default ArrivalRepair;
 diff --git a/src/components/portal/AskAtelier.tsx b/src/components/portal/AskAtelier.tsx
 new file mode 100644
-index 0000000..7fd1264
+index 0000000..b846b2f
 --- /dev/null
 +++ b/src/components/portal/AskAtelier.tsx
-@@ -0,0 +1,149 @@
+@@ -0,0 +1,181 @@
 +import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type RefObject } from "react";
 +import { FLOWER_PETALS, FLOWER_STEM, FLOWER_VIEWBOX } from "@/lib/portal/brandFlower";
-+import { atelierLink, atelierMessage, type AtelierAbout } from "@/lib/portal/whatsapp";
++import { WHATSAPP_URL, atelierLink, atelierMessage, type AtelierAbout } from "@/lib/portal/whatsapp";
++import { handOff } from "@/lib/portal/handOff";
 +import { EASE_BLOOM, EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
 +import { useMember } from "./MemberContext";
 +import { eyebrow, outlineButton, primaryButton, quietButton } from "./styles";
@@ -512,16 +513,21 @@ index 0000000..7fd1264
 +
 +/*
 +  Ask the atelier (in Care and on the Order Desk). Opening it lays an ivory
-+  card down and a gold wax seal, the Naira flower pressed into it, presses
-+  onto the card; the message is written on the card from what her account
-+  keeps (her size, metal, stone month and first three saved pieces, and on
-+  the Order Desk the email she used at checkout), hers to change, and "Open
-+  WhatsApp" opens the atelier's chat with her words filled in, to change
-+  again or send. Nothing is sent from here. No reply hours are said until
-+  the owner gives them.
++  card down, its seal's place waiting; the message is written on the card from what her account
++  keeps (in Care her size, metal, month's colour and first three saved
++  pieces; on the Order Desk the email she used at checkout and a line for
++  the order number), hers to change, and "Open WhatsApp" presses a gold wax
++  seal, the Naira flower in it, onto the card and opens the atelier's chat
++  with her words filled in, to change again or send. The
++  link itself names only the shop's number: her words are put on it at the
++  tap (lib/portal/handOff), so no click recorder ever reads them. Nothing
++  is sent from here. No reply hours are said until the owner gives them.
 +
-+  The press is transform and opacity only, once; under reduced motion or
-+  Data Saver the card is simply there, sealed.
++  The card opens with the seal's place drawn in a gold hairline (stroke-
++  dashoffset, once); the seal presses onto it as she taps Open WhatsApp
++  (transform and opacity, once), never holding WhatsApp back, so she comes
++  back to a sealed card. Under reduced motion or Data Saver the card is
++  simply there, sealed.
 +*/
 +
 +const C = 36;
@@ -538,8 +544,13 @@ index 0000000..7fd1264
 +  return `${d}Z`;
 +})();
 +
-+const WaxSeal = ({ sealRef }: { sealRef: RefObject<SVGSVGElement> }) => (
++const WaxSeal = ({ sealRef, sealed }: { sealRef: RefObject<SVGSVGElement>; sealed: boolean }) => (
 +  <svg ref={sealRef} className="ig-seal" viewBox="0 0 72 72" width="72" height="72" aria-hidden>
++    {!sealed ? (
++      // Its place, waiting: a gold hairline round where the wax will go.
++      <circle cx={C} cy={C} r="31" className="ig-seal-place" pathLength={1} strokeDasharray="1 1" />
++    ) : (
++      <>
 +    <path d={SEAL_EDGE} className="ig-seal-wax" />
 +    <circle cx={C} cy={C} r="24" className="ig-seal-rim" />
 +    <svg x="22" y="14" width="28" height="44" viewBox={FLOWER_VIEWBOX}>
@@ -548,6 +559,8 @@ index 0000000..7fd1264
 +        <path key={i} d={d} className="ig-seal-flower" />
 +      ))}
 +    </svg>
++      </>
++    )}
 +  </svg>
 +);
 +
@@ -567,21 +580,29 @@ index 0000000..7fd1264
 +    [about, naira.ring?.us, naira.metal, month, naira.saved, email],
 +  );
 +  const [open, setOpen] = useState(false);
++  const [still] = useState(stillMotion);
++  const [sealed, setSealed] = useState(still);
 +  const [text, setText] = useState(written);
 +  const [edited, setEdited] = useState(false);
 +  const cardRef = useRef<HTMLDivElement>(null);
 +  const sealRef = useRef<SVGSVGElement>(null);
-+  const fieldRef = useRef<HTMLTextAreaElement>(null);
++  const toRef = useRef<HTMLParagraphElement>(null);
 +
 +  // Her account's words, until she has written her own.
 +  useEffect(() => {
 +    if (!edited) setText(written);
 +  }, [written, edited]);
 +
-+  // The card lays down, then the seal presses onto it.
++  // The card lays down, and the seal's place draws itself in.
 +  useLayoutEffect(() => {
-+    if (!open || stillMotion()) return;
++    if (!open || still) return;
 +    play(cardRef.current, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: EASE_REVEAL, fill: "backwards" });
++    play(sealRef.current?.querySelector(".ig-seal-place") ?? null, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 700, delay: 220, easing: EASE_REVEAL, fill: "backwards" });
++  }, [open, still]);
++
++  // Open WhatsApp: the seal presses onto the card, once (WhatsApp is already on its way).
++  useLayoutEffect(() => {
++    if (!sealed || still) return;
 +    play(
 +      sealRef.current,
 +      [
@@ -589,12 +610,13 @@ index 0000000..7fd1264
 +        { opacity: 1, transform: "translateY(0) scale(0.9) rotate(0deg)", offset: 0.72 },
 +        { opacity: 1, transform: "none" },
 +      ],
-+      { duration: 620, delay: 260, easing: EASE_BLOOM, fill: "backwards" },
++      { duration: 620, easing: EASE_BLOOM, fill: "backwards" },
 +    );
-+  }, [open]);
++  }, [sealed, still]);
 +
++  // Focus goes to the card, not into the message, so a phone's keyboard does not rise over the seal; she taps the message to change it.
 +  useEffect(() => {
-+    if (open) fieldRef.current?.focus({ preventScroll: true });
++    if (open) toRef.current?.focus({ preventScroll: true });
 +  }, [open]);
 +
 +  return (
@@ -604,7 +626,7 @@ index 0000000..7fd1264
 +      </h2>
 +      <p className="ig-fineprint">
 +        {lede ??
-+          "Write to the atelier on WhatsApp. Your size, metal, stone and the first three pieces you saved go in the message, for you to change before it goes."}
++          "Write to the atelier on WhatsApp. Your size, metal, month's colour and the first three pieces you saved go in the message, for you to change before it goes."}
 +      </p>
 +      {!open ? (
 +        <button type="button" className={outlineButton} onClick={() => setOpen(true)} aria-expanded={false}>
@@ -612,13 +634,14 @@ index 0000000..7fd1264
 +        </button>
 +      ) : (
 +        <div ref={cardRef} className="ig-ask-card" data-clarity-mask="true">
-+          <WaxSeal sealRef={sealRef} />
-+          <p className={eyebrow}>To the atelier, Naira Flore</p>
++          <WaxSeal sealRef={sealRef} sealed={sealed} />
++          <p ref={toRef} tabIndex={-1} className={`${eyebrow} ig-ask-to`}>
++            To the atelier, Naira Flore
++          </p>
 +          <label htmlFor={`${id}-text`} className="ig-ask-label">
 +            Your message
 +          </label>
 +          <textarea
-+            ref={fieldRef}
 +            id={`${id}-text`}
 +            className="ig-ask-text"
 +            rows={9}
@@ -628,7 +651,16 @@ index 0000000..7fd1264
 +              setEdited(true);
 +            }}
 +          />
-+          <a className={primaryButton} href={atelierLink(text)} target="_blank" rel="noopener noreferrer">
++          <a
++            className={primaryButton}
++            href={WHATSAPP_URL}
++            target="_blank"
++            rel="noopener noreferrer"
++            onClick={(e) => {
++              handOff(() => atelierLink(text))(e);
++              setSealed(true);
++            }}
++          >
 +            Open WhatsApp
 +          </a>
 +          <p className="ig-fineprint">WhatsApp opens with these words. Nothing is sent until you send it there.</p>
@@ -653,10 +685,10 @@ index 0000000..7fd1264
 +export default AskAtelier;
 diff --git a/src/components/portal/AtelierNote.tsx b/src/components/portal/AtelierNote.tsx
 new file mode 100644
-index 0000000..a1eefe0
+index 0000000..137a42c
 --- /dev/null
 +++ b/src/components/portal/AtelierNote.tsx
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,75 @@
 +import { useId, useRef, useState, type CSSProperties } from "react";
 +import { FlowerGlyph } from "./FlowerGlyph";
 +import { eyebrow } from "./styles";
@@ -685,6 +717,7 @@ index 0000000..a1eefe0
 +  transformOrigin: "50% 0",
 +};
 +const PARA: CSSProperties = { margin: "0 0 0.6rem", fontFamily: "var(--nf-font-editorial)", fontSize: "1.1rem", lineHeight: 1.55 };
++const SIGN: CSSProperties = { margin: "0.2rem 0 0", fontFamily: "var(--nf-font-editorial)", fontStyle: "italic", fontSize: "1.02rem", color: "var(--nf-gold-text)", textAlign: "right" };
 +
 +const AtelierNote = ({ note }: { note: Note }) => {
 +  const [open, setOpen] = useState(false);
@@ -705,12 +738,13 @@ index 0000000..a1eefe0
 +
 +  return (
 +    <li style={{ listStyle: "none" }}>
-+      <button type="button" className="ig-card-link" style={BUTTON} aria-expanded={open} aria-controls={id} onClick={toggle}>
++      <button type="button" className="ig-card-link" style={BUTTON} aria-expanded={open} aria-controls={open ? id : undefined} onClick={toggle}>
 +        <span ref={flowerRef} style={{ flex: "none", display: "inline-flex" }}>
 +          <FlowerGlyph species={speciesIndex(note.flower)} accent={note.accent} state={open ? "bloom" : "pressed"} size={56} />
 +        </span>
 +        <span className="ig-card-text">
-+          <span className={eyebrow}>From the atelier · {formatIstDay(`${note.from}T12:00:00+05:30`)}</span>
++          {/* The section is already headed "From the atelier": the note's own line is its day. */}
++          <span className={eyebrow}>{formatIstDay(`${note.from}T12:00:00+05:30`)}</span>
 +          <span className="ig-card-title">{note.title}</span>
 +          <span className="ig-card-more">{open ? "Fold it away" : "Tap to unfold"}</span>
 +        </span>
@@ -722,6 +756,7 @@ index 0000000..a1eefe0
 +              {p}
 +            </p>
 +          ))}
++          <p style={SIGN}>— the atelier, Naira Flore</p>
 +        </div>
 +      )}
 +    </li>
@@ -1578,10 +1613,10 @@ index 0000000..228d20c
 +export default CardCalibrate;
 diff --git a/src/components/portal/CareRitual.tsx b/src/components/portal/CareRitual.tsx
 new file mode 100644
-index 0000000..a144b19
+index 0000000..e3435e0
 --- /dev/null
 +++ b/src/components/portal/CareRitual.tsx
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,166 @@
 +import { useEffect, useLayoutEffect, useRef, useState } from "react";
 +import type { RitualStep } from "@/lib/portal/care";
 +import type { Metal } from "@/lib/portal/memberMeta";
@@ -1590,22 +1625,30 @@ index 0000000..a144b19
 +/*
 +  The wipe ritual: three steps, each the listings' own care words, and for
 +  each a pass of the cloth. A ring (the bag's own small cut-out of a
-+  solitaire, gold or silver to her metal) starts under a dull film; at each
-+  step a cloth, a gold hairline at its edge, sweeps across it and the film
-+  behind it thins; after the third, the stone catches a glint.
++  solitaire, gold or silver to her metal) starts under a warm haze; at each
++  step a cloth, a gold hairline at its edge, sweeps across it and the haze
++  behind it thins; after the third, the stone catches a glint. The words
++  never say more than the listings do: a soft dry cloth, and nothing
++  that would wear a coat.
++
++  Each step is one button for the whole ritual, never swapped out while
++  its pass runs (a tap mid-pass is ignored, aria-disabled says so), and
++  when a pass ends after a keyboard or screen-reader press, focus moves to
++  the next step, then to "Once more", which brings it back to the first.
++  A finger's tap leaves focus where the phone put it.
 +
 +  Transform and opacity only: the film is cleared by a window that slides
 +  one way while the film inside it slides back (so it stays put and is cut
 +  away), and the cloth rides the window's edge. Each pass runs once, on her
 +  tap; nothing loops. Under reduced motion or Data Saver the ring is shown
-+  polished, with its glint, and the three steps as a plain list: still art.
++  cleared, with its glint, and the three steps as a plain list: still art.
 +*/
 +
 +/** How dull the ring is before each step, and after the last. */
 +export const FILM = [0.66, 0.4, 0.17, 0] as const;
 +const PASS_MS = 950;
 +
-+const CAPTION = ["Three passes of the cloth.", "One step done.", "Two steps done.", "Polished to a glint."];
++const CAPTION = ["Three steps, a pass of the cloth for each.", "Kept from perfume.", "Wiped with a soft dry cloth.", "Back in its pouch, with its glint."];
 +
 +type Props = { steps: readonly RitualStep[]; metal?: Metal };
 +
@@ -1617,6 +1660,11 @@ index 0000000..a144b19
 +  const filmRef = useRef<HTMLDivElement>(null);
 +  const clothRef = useRef<HTMLDivElement>(null);
 +  const glintRef = useRef<SVGSVGElement>(null);
++  const ritualRef = useRef<HTMLDivElement>(null);
++  const stepRefs = useRef<(HTMLButtonElement | null)[]>([]);
++  const againRef = useRef<HTMLButtonElement>(null);
++  /** Focus follows the ritual only when she pressed a step from the keyboard or a screen reader (it was focused). */
++  const follow = useRef(false);
 +  const live = useRef(true);
 +  useEffect(
 +    () => () => {
@@ -1641,6 +1689,19 @@ index 0000000..a144b19
 +    else done();
 +  }, [passing, steps.length]);
 +
++  // After a pass (or "Once more"), focus goes to what comes next, if it was on the ritual.
++  useLayoutEffect(() => {
++    if (passing !== null || !follow.current) return;
++    follow.current = false;
++    (level < steps.length ? stepRefs.current[level] : againRef.current)?.focus({ preventScroll: true });
++  }, [level, passing, steps.length]);
++
++  const tap = (i: number) => {
++    if (i !== level || passing !== null) return;
++    follow.current = Boolean(ritualRef.current?.contains(document.activeElement));
++    setPassing(i);
++  };
++
 +  // The glint, once, when the last pass is done.
 +  useLayoutEffect(() => {
 +    if (still || level < steps.length) return;
@@ -1651,7 +1712,7 @@ index 0000000..a144b19
 +  const done = level >= steps.length;
 +
 +  return (
-+    <div className={`ig-ritual${metal === "s" ? " ig-ritual--silver" : ""}`}>
++    <div ref={ritualRef} className={`ig-ritual${metal === "s" ? " ig-ritual--silver" : ""}`}>
 +      <div className="ig-ritual-stage" aria-hidden>
 +        <div className="ig-ritual-ring">
 +          <div className="ig-ritual-shine" />
@@ -1682,10 +1743,18 @@ index 0000000..a144b19
 +      <ol className="ig-ritual-steps">
 +        {steps.map((step, i) => (
 +          <li key={step.words} className={i < level ? "is-done" : i === level ? "is-now" : undefined}>
-+            {!still && i === level && passing === null ? (
-+              <button type="button" className="ig-ritual-step" onClick={() => setPassing(i)}>
++            {!still ? (
++              <button
++                ref={(el) => (stepRefs.current[i] = el)}
++                type="button"
++                className="ig-ritual-step"
++                aria-disabled={i !== level || passing !== null}
++                aria-current={i === level ? "step" : undefined}
++                onClick={() => tap(i)}
++              >
 +                <span className="ig-ritual-no">{i + 1}</span>
 +                {step.words}
++                {i < level && <span className="sr-only"> (done)</span>}
 +              </button>
 +            ) : (
 +              <span className="ig-ritual-step">
@@ -1697,7 +1766,15 @@ index 0000000..a144b19
 +        ))}
 +      </ol>
 +      {!still && done && (
-+        <button type="button" className="ig-quiet" onClick={() => setLevel(0)}>
++        <button
++          ref={againRef}
++          type="button"
++          className="ig-quiet"
++          onClick={() => {
++            follow.current = true;
++            setLevel(0);
++          }}
++        >
 +          Once more
 +        </button>
 +      )}
@@ -1708,10 +1785,10 @@ index 0000000..a144b19
 +export default CareRitual;
 diff --git a/src/components/portal/DoorsOpen.test.tsx b/src/components/portal/DoorsOpen.test.tsx
 new file mode 100644
-index 0000000..28d33cb
+index 0000000..f004cac
 --- /dev/null
 +++ b/src/components/portal/DoorsOpen.test.tsx
-@@ -0,0 +1,219 @@
+@@ -0,0 +1,221 @@
 +import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -1760,6 +1837,8 @@ index 0000000..28d33cb
 +  press: () => {},
 +  naira: readNaira(null),
 +  changeMeta: () => ({ ok: true }),
++  savedSync: { h: [], x: [] },
++  keepSavedSync: () => {},
 +  metaProblem: null,
 +  retryMeta: () => {},
 +  since: null,
@@ -2403,7 +2482,7 @@ index 0000000..8be5c07
 +export default DropBud;
 diff --git a/src/components/portal/DropPieceCard.tsx b/src/components/portal/DropPieceCard.tsx
 new file mode 100644
-index 0000000..8dbe5cf
+index 0000000..7baf9d1
 --- /dev/null
 +++ b/src/components/portal/DropPieceCard.tsx
 @@ -0,0 +1,223 @@
@@ -2621,7 +2700,7 @@ index 0000000..8dbe5cf
 +        )}
 +        {adding === "done" && (
 +          <p className="ig-fineprint" role="status">
-+            {preview ? "Preview only: nothing was added to a bag." : "In your bag."}
++            {import.meta.env.DEV && preview ? "Preview only: nothing was added to a bag." : "In your bag."}
 +          </p>
 +        )}
 +      </div>
@@ -2848,13 +2927,13 @@ index 0000000..0abb635
 +export default DropUnbox;
 diff --git a/src/components/portal/FestivalDressing.tsx b/src/components/portal/FestivalDressing.tsx
 new file mode 100644
-index 0000000..f7576b6
+index 0000000..d3b4065
 --- /dev/null
 +++ b/src/components/portal/FestivalDressing.tsx
-@@ -0,0 +1,330 @@
+@@ -0,0 +1,337 @@
 +import { useEffect, useLayoutEffect, useMemo, useRef, type CSSProperties } from "react";
 +import { BED, hashString, layoutGarden, mulberry32 } from "@/lib/portal/gardenLayout";
-+import { EASE_BLOOM, EASE_REVEAL, play, stillMotion, useAmbientLoop } from "@/lib/portal/motion";
++import { EASE_BLOOM, play, stillMotion, useAmbientLoop } from "@/lib/portal/motion";
 +import type { Dressing } from "@/lib/portal/seasons";
 +
 +/*
@@ -3012,26 +3091,33 @@ index 0000000..f7576b6
 +  return `radial-gradient(closest-side, rgb(${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255} / ${alpha}), rgb(${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255} / 0))`;
 +};
 +
++/* A puff's cloud holds its colour for a beat before it drifts and fades (never a front-loaded fade), and
++   opens out past the fingertip and the tap bloom drawn over the same spot. */
++const PUFF_EASE = "cubic-bezier(0.2, 0.6, 0.3, 1)";
++
 +/** A puff of colour at (x, y) in the layer's own box: six soft dots that open out and fade, each removed when it has. */
 +const puffAt = (layer: HTMLElement, x: number, y: number, alive: HTMLElement[]) => {
 +  const first = Math.floor(Math.random() * GULAL.length);
 +  for (let i = 0; i < PUFF_DOTS; i++) {
 +    const dot = document.createElement("span");
-+    const size = Math.round(22 + Math.random() * 18);
++    const size = Math.round(28 + Math.random() * 18);
 +    dot.setAttribute("aria-hidden", "true");
 +    dot.style.cssText = `position:absolute;left:${x - size / 2}px;top:${y - size / 2}px;width:${size}px;height:${size}px;pointer-events:none;will-change:transform,opacity;background:${glow(GULAL[(first + (i % 3)) % GULAL.length], 0.9)}`;
 +    layer.appendChild(dot);
 +    alive.push(dot);
 +    while (alive.length > MAX_PUFF_DOTS) alive.shift()?.remove();
 +    const angle = (i / PUFF_DOTS) * Math.PI * 2 + Math.random() * 0.6;
-+    const dist = 22 + Math.random() * 28;
++    const dist = 30 + Math.random() * 26;
++    const dx = Math.cos(angle) * dist;
++    const dy = Math.sin(angle) * dist - 8;
 +    const a = play(
 +      dot,
 +      [
-+        { transform: "translate(0px, 0px) scale(0.35)", opacity: 0.9 },
-+        { transform: `translate(${(Math.cos(angle) * dist).toFixed(1)}px, ${(Math.sin(angle) * dist - 8).toFixed(1)}px) scale(1.5)`, opacity: 0 },
++        { transform: "translate(0px, 0px) scale(0.6)", opacity: 0.9 },
++        { transform: `translate(${(dx * 0.55).toFixed(1)}px, ${(dy * 0.55).toFixed(1)}px) scale(1.25)`, opacity: 0.85, offset: 0.3 },
++        { transform: `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(1.7)`, opacity: 0 },
 +      ],
-+      { duration: 1000 + Math.random() * 300, easing: EASE_REVEAL, fill: "forwards" },
++      { duration: 1300 + Math.random() * 200, easing: PUFF_EASE, fill: "forwards" },
 +    );
 +    const gone = () => {
 +      dot.remove();
@@ -3173,7 +3259,7 @@ index 0000000..f7576b6
 +              top: pct(p.y - 9, BED.h),
 +              width: pct(p.w, BED.w),
 +              height: pct(18, BED.h),
-+              background: glow(GULAL[p.c], 0.42),
++              background: glow(GULAL[p.c], 0.55),
 +            }}
 +          />
 +        ))}
@@ -3415,16 +3501,16 @@ index 0000000..1284aa6
 +};
 diff --git a/src/components/portal/GardenBed.tsx b/src/components/portal/GardenBed.tsx
 new file mode 100644
-index 0000000..ca19057
+index 0000000..7c1fceb
 --- /dev/null
 +++ b/src/components/portal/GardenBed.tsx
-@@ -0,0 +1,407 @@
-+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, type CSSProperties, type ReactNode } from "react";
-+import { BANDS, BED, boxOf, layoutGarden, plantBed, RING_RX, RING_RY, RING_SOIL, ROW_SHADE, type Plant, type PressedFlower, type SavedSprig } from "@/lib/portal/gardenLayout";
+@@ -0,0 +1,412 @@
++import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, type ReactNode } from "react";
++import { ARCH, BANDS, BED, boxOf, layoutGarden, plantBed, RING_RX, RING_RY, RING_SOIL, ROW_SHADE, type Plant, type PressedFlower, type SavedSprig } from "@/lib/portal/gardenLayout";
 +import { SPECIES, petalTransform } from "@/lib/portal/species";
 +import { LEAF_SAGE } from "@/lib/portal/brandFlower";
 +import type { Stone } from "@/lib/portal/stones";
-+import { NIGHT_GROUND, NIGHT_INK, type SkyHour } from "@/lib/portal/sky";
++import { NIGHT_GROUND, type SkyHour } from "@/lib/portal/sky";
 +import { AmbientLoopContext, EASE_BLOOM, EASE_REVEAL, play, stillMotion, useAmbient, useLoop } from "@/lib/portal/motion";
 +import { chainPath, leavesAlong, mirrorSegs, pointOn, type Seg } from "@/lib/portal/curves";
 +import FlowerDraw from "./FlowerDraw";
@@ -3446,8 +3532,8 @@ index 0000000..ca19057
 +  month's colour (drawn by gardenTouch.ts, with the tap blooms: a chunk
 +  fetched as the bed mounts, never part of its first paint).
 +
-+  The bed keeps Indian time (Phase 4): at night its ground is ink and its
-+  labels ivory and gold from the first paint, and the sky's own layers (the
++  The bed keeps Indian time (Phase 4): at night the arbour's doorway is ink
++  from the first paint (the labels under the soil stay on ivory), and the sky's own layers (the
 +  moon, the fireflies, the dawn mist) and a festival's dressing are drawn in
 +  it, behind the plants or over them. They join the bed's one ambient loop,
 +  so the fireflies rest with the sway: no second loop on the screen.
@@ -3520,7 +3606,7 @@ index 0000000..ca19057
 +
 +/* The arbour over her bed: the gate's arch, opened out, with a vine climbing
 +   each post and wisteria-like drops hanging from the top. Drawn once. */
-+const ARBOUR_OUTER = `M22 ${BED.soil}V214C22 132 104 78 195 78C286 78 368 132 368 214V${BED.soil}`;
++const ARBOUR_OUTER = ARCH.replace(/H22Z$/, "");
 +const ARBOUR_INNER = `M30 ${BED.soil}V216C30 140 108 88 195 88C282 88 360 140 360 216V${BED.soil}`;
 +const VINE_L: Seg[] = [
 +  [26, 520, 42, 470, 12, 430, 28, 388],
@@ -3655,10 +3741,13 @@ index 0000000..ca19057
 +/* Where each band's plants stand, as a share of the bed's height: the band grows from there. */
 +const bandSoil = (band: number) => pct(260 + ((band + 1) * (BED.soil + 2 - 260)) / BANDS, BED.h);
 +
-+/* The night garden: ink under the plants, and its labels in ivory and gold (held to 4.5:1 by sky.test). */
-+const NIGHT_BED: CSSProperties = { background: NIGHT_GROUND };
-+const NIGHT_LABEL: CSSProperties = { color: NIGHT_INK.text };
-+const NIGHT_CAPTION: CSSProperties = { color: NIGHT_INK.caption };
++/* The night garden: ink inside the arbour's arch, never the whole bed's box, so night falls in the
++   garden's doorway on the ivory page; the labels under the soil stay on ivory in their day colours. */
++const NightGround = () => (
++  <svg viewBox={`0 0 ${BED.w} ${BED.h}`} className="ig-bed-ground" aria-hidden>
++    <path d={ARCH} fill={NIGHT_GROUND} />
++  </svg>
++);
 +
 +const GardenBed = forwardRef<GardenBedHandle, Props>(({ seed, stone, plantedOn, stoneLabel, stoneCaption = "Your colour", still = false, className = "", pressed, fitted = false, saved, children, behind, sky }, ref) => {
 +  const bedRef = useRef<HTMLDivElement>(null);
@@ -3761,8 +3850,10 @@ index 0000000..ca19057
 +  }, [calm, garden, loop]);
 +
 +  return (
-+    <div ref={bedRef} className={`ig-bed ${className}`} data-resting={active ? undefined : ""} data-sky={still ? undefined : sky} style={night ? NIGHT_BED : undefined}>
++    <div ref={bedRef} className={`ig-bed ${className}`} data-resting={active ? undefined : ""} data-sky={still ? undefined : sky}>
 +      <AmbientLoopContext.Provider value={loop}>
++      {/* Under the sky's own layer, which paints the moon and stars over it. */}
++      {night && <NightGround />}
 +      {!still && behind}
 +      <svg viewBox={`0 0 ${BED.w} ${BED.h}`} className="ig-bed-ground" aria-hidden>
 +        {!still && <Arbour />}
@@ -3809,14 +3900,14 @@ index 0000000..ca19057
 +      {children}
 +      </AmbientLoopContext.Provider>
 +      {!still && plantedOn && (
-+        <p className="ig-bed-label ig-bed-label--naira" style={{ left: pct(garden.naira.x, BED.w), ...(night ? NIGHT_LABEL : null) }}>
-+          <span style={night ? NIGHT_CAPTION : undefined}>Planted</span>
++        <p className="ig-bed-label ig-bed-label--naira" style={{ left: pct(garden.naira.x, BED.w) }}>
++          <span>Planted</span>
 +          {plantedOn}
 +        </p>
 +      )}
 +      {!still && stoneLabel && (
-+        <p className="ig-bed-label ig-bed-label--stone" style={{ left: pct(garden.stone.x, BED.w), ...(night ? NIGHT_LABEL : null) }}>
-+          <span style={night ? NIGHT_CAPTION : undefined}>{stoneCaption}</span>
++        <p className="ig-bed-label ig-bed-label--stone" style={{ left: pct(garden.stone.x, BED.w) }}>
++          <span>{stoneCaption}</span>
 +          {stoneLabel}
 +        </p>
 +      )}
@@ -3828,10 +3919,10 @@ index 0000000..ca19057
 +export default GardenBed;
 diff --git a/src/components/portal/GardenLayers.test.tsx b/src/components/portal/GardenLayers.test.tsx
 new file mode 100644
-index 0000000..b3e12a0
+index 0000000..f49738b
 --- /dev/null
 +++ b/src/components/portal/GardenLayers.test.tsx
-@@ -0,0 +1,301 @@
+@@ -0,0 +1,333 @@
 +import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -3840,7 +3931,9 @@ index 0000000..b3e12a0
 +import { MemberProvider, type GardenOverrides, type Member } from "./MemberContext";
 +import { readNaira } from "@/lib/portal/memberMeta";
 +import { istDayKey } from "@/lib/portal/ist";
-+import { NIGHT_GROUND, NIGHT_INK } from "@/lib/portal/sky";
++import { NIGHT_GROUND } from "@/lib/portal/sky";
++import { ARCH } from "@/lib/portal/gardenLayout";
++import { FLY_X, FLY_Y } from "./SkyLayer";
 +import type { AtelierNote } from "@/lib/portal/notes";
 +import type { Dressing } from "@/lib/portal/seasons";
 +
@@ -3930,6 +4023,8 @@ index 0000000..b3e12a0
 +  press: () => {},
 +  naira: readNaira(null),
 +  changeMeta: () => ({ ok: true }),
++  savedSync: { h: [], x: [] },
++  keepSavedSync: () => {},
 +  metaProblem: null,
 +  retryMeta: () => {},
 +  since: null,
@@ -3968,20 +4063,32 @@ index 0000000..b3e12a0
 +
 +describe("garden hours on the garden home", () => {
 +  /* First in the file: the sky's chunk has not been fetched yet. */
-+  it("lays the night's ink and its labels at first paint, and brings the moon and fireflies after it", async () => {
++  it("lays the night's ink in the arbour's doorway at first paint, and brings the moon and fireflies after it", async () => {
 +    const { container } = home({ hour: "night" });
 +    const bed = container.querySelector<HTMLElement>(".ig-bed")!;
 +    expect(bed.dataset.sky).toBe("night");
-+    expect(bed.style.background).toMatch(/rgb\(26, 22, 20\)|#1A1614/i);
-+    const label = container.querySelector<HTMLElement>(".ig-bed-label--naira")!;
-+    expect(label.style.color).toBe("rgb(251, 243, 236)");
-+    expect(label.querySelector("span")!.style.color).toBe("rgb(201, 154, 76)");
++    // Ink inside the arch only, under everything else: never the bed's whole box on the ivory page.
++    expect(bed.style.background).toBe("");
++    const ink = bed.firstElementChild!.querySelector("path")!;
++    expect(ink.getAttribute("d")).toBe(ARCH);
++    expect(ink.getAttribute("fill")).toBe(NIGHT_GROUND);
 +    expect(NIGHT_GROUND).toBe("#1A1614");
-+    expect(NIGHT_INK.text).toBe("#FBF3EC");
++    // The labels under the soil stay on ivory, in their day colours.
++    const label = container.querySelector<HTMLElement>(".ig-bed-label--naira")!;
++    expect(label.style.color).toBe("");
++    expect(label.querySelector("span")!.style.color).toBe("");
 +    // Not in the first paint: the sky is a chunk of its own, fetched after it.
 +    expect(container.querySelector(".ig-sky")).toBeNull();
 +    await waitFor(() => expect(container.querySelectorAll("[data-firefly]")).toHaveLength(12));
 +    expect(container.querySelector('.ig-sky[data-part="back"] circle')).not.toBeNull();
++    // The sky's layer paints over the ink: the moon and stars are never under it.
++    const order = [...bed.children];
++    expect(order.indexOf(container.querySelector('.ig-sky[data-part="back"]')!)).toBeGreaterThan(order.indexOf(ink.closest("svg")!));
++    // The stars are cut to the arch, and every firefly flies inside it.
++    expect(container.querySelector('.ig-sky[data-part="back"] g[clip-path="url(#ig-sky-arch)"] circle')).not.toBeNull();
++    expect(FLY_X[0] - 24).toBeGreaterThan(30);
++    expect(FLY_X[1] + 24).toBeLessThan(360);
++    expect(FLY_Y[0] - 24).toBeGreaterThanOrEqual(180);
 +    // Said in words too.
 +    expect(screen.getByText("The night garden")).toBeInTheDocument();
 +  });
@@ -4002,6 +4109,13 @@ index 0000000..b3e12a0
 +      await waitFor(() => expect(container.querySelector(`.ig-sky[data-hour="${hour}"]`)).not.toBeNull());
 +      const wash = container.querySelector<SVGRectElement>('.ig-sky[data-part="back"] rect')!;
 +      expect(Number(wash.getAttribute("height"))).toBeLessThanOrEqual(400);
++      // Cut to the arbour's arch: no hard-edged box of colour under the greeting.
++      expect(wash.getAttribute("clip-path")).toBe("url(#ig-sky-arch)");
++      if (hour === "dawn") {
++        // The mist lies behind the plants, never over a flower.
++        expect(container.querySelectorAll('.ig-sky[data-part="back"] [data-mist]')).toHaveLength(3);
++        expect(container.querySelectorAll('.ig-sky[data-part="front"] [data-mist]')).toHaveLength(0);
++      }
 +      expect(container.querySelector<HTMLElement>(".ig-bed")!.style.background).toBe("");
 +      unmount();
 +    }
@@ -4063,6 +4177,9 @@ index 0000000..b3e12a0
 +      if (dressing === "holi") {
 +        fireEvent.pointerDown(container.querySelector(".ig-bed")!, { clientX: 100, clientY: 200 });
 +        expect(container.querySelectorAll(".ig-festival > span").length).toBe(5);
++        // Nothing puffs, so nothing says it does; nor that a tap blooms.
++        expect(screen.getByText(/, soft on the ground\./)).toBeInTheDocument();
++        expect(document.body.textContent).not.toMatch(/puff|Tap it, and it blooms/);
 +      }
 +      // Nothing moves at all.
 +      expect(animations).toHaveLength(0);
@@ -4097,6 +4214,12 @@ index 0000000..b3e12a0
 +    const patches = container.querySelectorAll(".ig-festival > span").length;
 +    fireEvent.pointerDown(bed, { clientX: 120, clientY: 300 });
 +    expect(container.querySelectorAll(".ig-festival > span").length - patches).toBe(6);
++    expect(screen.getByText(/: tap the garden for a puff of gulal\./)).toBeInTheDocument();
++    // The cloud holds its colour before it drifts and fades: transform and opacity only.
++    const puff = animations.filter((x) => x.el.closest(".ig-festival")).at(-1)!;
++    expect(puff.keyframes).toHaveLength(3);
++    expect(puff.keyframes[1]).toMatchObject({ offset: 0.3, opacity: 0.85 });
++    for (const k of puff.keyframes) for (const prop of Object.keys(k)) expect(["transform", "opacity", "offset"]).toContain(prop);
 +    for (let i = 0; i < 10; i++) fireEvent.pointerDown(bed, { clientX: 100 + i, clientY: 300 });
 +    expect(container.querySelectorAll(".ig-festival > span").length - patches).toBeLessThanOrEqual(24);
 +  });
@@ -4274,16 +4397,18 @@ index 0000000..f3e2209
 +export default GateIronwork;
 diff --git a/src/components/portal/GiftRing.tsx b/src/components/portal/GiftRing.tsx
 new file mode 100644
-index 0000000..ee695d5
+index 0000000..8fb3545
 --- /dev/null
 +++ b/src/components/portal/GiftRing.tsx
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,194 @@
 +import { useLayoutEffect, useMemo, useRef } from "react";
-+import { bandLabel, giftDay, whenSaid, yearFraction, MONTHS_SHORT, nextOn, type Gift } from "@/lib/portal/gifts";
++import { bandLabel, giftDay, sameGift, whenSaid, yearFraction, MONTHS_SHORT, nextOn, type Gift } from "@/lib/portal/gifts";
 +import { istParts } from "@/lib/portal/ist";
 +import { stoneForMonth } from "@/lib/portal/stones";
-+import { EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
++import { EASE_BLOOM, EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
 +import { StoneHead } from "./StoneArt";
++import { burstPetals } from "./PetalBurst";
++import { PETAL_HUE, PETAL_SPARK } from "./PetalSymbols";
 +
 +/*
 +  The gift ledger's twelve-month ring: a gold hairline round the year,
@@ -4296,15 +4421,17 @@ index 0000000..ee695d5
 +  the same in words, for a screen reader and for anyone who would rather read it.
 +
 +  The hairline draws itself in once (stroke-dashoffset) and the gold ring
-+  fades up; under reduced motion or Data Saver both are simply there. No
-+  loop runs here.
++  fades up; a date she has just kept opens on the ring (its flower blooms
++  up from its stem, a few petals in its month's colour, removed as they
++  land: a bloom for something she did). Under reduced motion or Data Saver
++  all of it is simply there. No loop runs here.
 +*/
 +
 +const C = 180;
 +/** The ring's hairline, and the round just inside it where the flowers sit, each on a short stem from its day. */
 +export const RING_R = 140;
 +export const FLOWER_R = 118;
-+/** Centre to centre, in the ring's own units (a 360 px ring is 1:1): enough that on a 320 px phone, where the ring is 288 px, two flowers' 44 px targets still do not overlap. */
++/** Centre to centre, in the ring's own units (a 360 px ring is 1:1): enough that on a 320 px phone, where the ring is 288 px, two flowers' round 44 px targets still do not overlap (each button is round to the touch, gifts.css). */
 +export const RING_GAP = 56;
 +/** The narrowest ring drawn (a 320 px phone less its 16 px gutters). */
 +export const RING_MIN_PX = 288;
@@ -4356,12 +4483,15 @@ index 0000000..ee695d5
 +  selected: number;
 +  now: number;
 +  onSelect: (index: number) => void;
++  /** The date she has just kept (added, changed or put back): its flower opens. */
++  bloom?: Gift | null;
 +};
 +
 +const pct = (n: number) => `${((n / (2 * C)) * 100).toFixed(3)}%`;
 +
-+const GiftRing = ({ gifts, next, selected, now, onSelect }: Props) => {
++const GiftRing = ({ gifts, next, selected, now, onSelect, bloom = null }: Props) => {
 +  const places = useMemo(() => ringPlaces(gifts), [gifts]);
++  const rootRef = useRef<HTMLDivElement>(null);
 +  const ringRef = useRef<SVGCircleElement>(null);
 +  const haloRef = useRef<SVGGElement>(null);
 +  const today = istParts(new Date(now));
@@ -4373,6 +4503,21 @@ index 0000000..ee695d5
 +    if (stillMotion()) return;
 +    play(ringRef.current, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1100, easing: EASE_REVEAL, fill: "backwards" });
 +  }, []);
++  // A date just kept: its flower opens up from its stem, and a few petals in its month's colour.
++  useLayoutEffect(() => {
++    const root = rootRef.current;
++    if (!bloom || !root || stillMotion()) return;
++    const i = gifts.findIndex((g) => sameGift(g, bloom));
++    const head = root.querySelectorAll<HTMLElement>(".ig-gring-flower svg")[i];
++    const p = places[i];
++    if (!head || !p) return;
++    play(head, [{ transform: "scale(0)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 700, easing: EASE_BLOOM, fill: "backwards" });
++    const k = root.offsetWidth / (2 * C);
++    burstPetals(root, p.x * k, p.y * k, { count: 10, spread: 54, size: [7, 12], ids: [PETAL_HUE, PETAL_HUE, PETAL_SPARK], color: stoneForMonth(bloom.m)?.hue, delay: 220 });
++    // Only when another date is kept.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [bloom]);
++
 +  // The gold ring round the next date fades up whenever the next date changes.
 +  useLayoutEffect(() => {
 +    if (stillMotion() || next < 0) return;
@@ -4380,7 +4525,7 @@ index 0000000..ee695d5
 +  }, [next, nextGift?.n, nextGift?.m, nextGift?.d]);
 +
 +  return (
-+    <div className="ig-gring">
++    <div ref={rootRef} className="ig-gring">
 +      <svg className="ig-gring-art" viewBox={`0 0 ${2 * C} ${2 * C}`} aria-hidden>
 +        <circle ref={ringRef} className="ig-gring-line" cx={C} cy={C} r={RING_R} pathLength={1} />
 +        <circle className="ig-gring-line ig-gring-line--fine" cx={C} cy={C} r={RING_R + 5} />
@@ -4769,10 +4914,10 @@ index 0000000..60c30a9
 +export default LaidOut;
 diff --git a/src/components/portal/MemberContext.tsx b/src/components/portal/MemberContext.tsx
 new file mode 100644
-index 0000000..877e1a5
+index 0000000..9aa0bae
 --- /dev/null
 +++ b/src/components/portal/MemberContext.tsx
-@@ -0,0 +1,102 @@
+@@ -0,0 +1,111 @@
 +import { createContext, useContext, type ReactNode } from "react";
 +import type { User } from "@supabase/supabase-js";
 +import type { MemberProfile } from "@/contexts/AuthContext";
@@ -4835,6 +4980,13 @@ index 0000000..877e1a5
 +  /** Her account's memory, as it stands on screen (written to her account soon after each change). */
 +  naira: Naira;
 +  changeMeta: (update: Updater) => MetaResult;
++  /**
++   * What this phone and her account last agreed on for her saved pieces (the Jewel drawer's merge base, `h`),
++   * and the hearts here her account had no room for (`x`, spilled: they stay hearted, never taken off).
++   * Kept by the portal, not by a room, so a piece any room's change lets go to make room is spilled at once.
++   */
++  savedSync: SavedSync;
++  keepSavedSync: (h: readonly string[], x: readonly string[]) => void;
 +  /** The last write did not reach her account; `retryMeta` tries again. */
 +  metaProblem: string | null;
 +  retryMeta: () => void;
@@ -4851,6 +5003,8 @@ index 0000000..877e1a5
 +  /** Development preview only: the garden's hour, dressings and notes to see each one. Always null in production. */
 +  garden?: GardenOverrides | null;
 +};
++
++export type SavedSync = { readonly h: readonly string[]; readonly x: readonly string[] };
 +
 +const MemberContext = createContext<Member | null>(null);
 +
@@ -4990,10 +5144,10 @@ index 0000000..aae10a7
 +export default NewInGarden;
 diff --git a/src/components/portal/OccasionForm.tsx b/src/components/portal/OccasionForm.tsx
 new file mode 100644
-index 0000000..f82d5eb
+index 0000000..9447ad9
 --- /dev/null
 +++ b/src/components/portal/OccasionForm.tsx
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,168 @@
 +import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 +import { BANDS, LABEL_MAX, MONTHS_LONG, bandLabel, checkGift, daysInMonth, type Gift } from "@/lib/portal/gifts";
 +import { primaryButton, quietButton } from "./styles";
@@ -5002,7 +5156,7 @@ index 0000000..f82d5eb
 +  One date for the gift ledger: a short name (12 characters or fewer), the
 +  day and the month (no year: it comes round every year), and a budget band
 +  from the shop's Gifting page. Checked as she saves; when it cannot be kept
-+  the form says why, beside the field, and keeps what she typed. Clarity
++  the form says why, beside the field (and takes her to it), and keeps what she typed. Clarity
 +  masks it (the portal's screens already are; the form says so itself too).
 +*/
 +
@@ -5023,6 +5177,9 @@ index 0000000..f82d5eb
 +  const [b, setB] = useState<number | null>(initial?.b ?? null);
 +  const [problem, setProblem] = useState<{ field: string; message: string } | null>(null);
 +  const nameRef = useRef<HTMLInputElement>(null);
++  const dayRef = useRef<HTMLSelectElement>(null);
++  const monthRef = useRef<HTMLSelectElement>(null);
++  const bandRef = useRef<HTMLDivElement>(null);
 +
 +  useEffect(() => {
 +    nameRef.current?.focus({ preventScroll: true });
@@ -5038,6 +5195,9 @@ index 0000000..f82d5eb
 +    const checked = checkGift({ n, m, d, b });
 +    if (checked.ok === false) {
 +      setProblem({ field: checked.field, message: checked.message });
++      // Focus goes to what needs her: the field itself (the budget's first choice).
++      const to = { n: nameRef.current, d: dayRef.current, m: monthRef.current, b: bandRef.current?.querySelector("input") ?? null }[checked.field];
++      to?.focus();
 +      return;
 +    }
 +    const answer = onSave(checked.gift);
@@ -5045,6 +5205,13 @@ index 0000000..f82d5eb
 +  };
 +
 +  const err = (field: string) => (problem?.field === field ? `${id}-problem` : undefined);
++  /* The reason, beside the field it is about (under the day and month for either); the form's own answer above its buttons. */
++  const said = (...fields: string[]) =>
++    problem && fields.includes(problem.field) ? (
++      <p id={`${id}-problem`} className="ig-error" role="alert">
++        {problem.message}
++      </p>
++    ) : null;
 +
 +  return (
 +    <form className="ig-oform" onSubmit={submit} noValidate data-clarity-mask="true">
@@ -5069,6 +5236,7 @@ index 0000000..f82d5eb
 +        <p id={`${id}-n-hint`} className="ig-fineprint">
 +          A first name or a word, {LABEL_MAX} characters at most.
 +        </p>
++        {said("n")}
 +      </div>
 +
 +      <fieldset className="ig-oform-row">
@@ -5078,6 +5246,7 @@ index 0000000..f82d5eb
 +            Day
 +          </label>
 +          <select
++            ref={dayRef}
 +            id={`${id}-d`}
 +            className="ig-input ig-oform-select"
 +            value={d || ""}
@@ -5096,6 +5265,7 @@ index 0000000..f82d5eb
 +            Month
 +          </label>
 +          <select
++            ref={monthRef}
 +            id={`${id}-m`}
 +            className="ig-input ig-oform-select"
 +            value={m || ""}
@@ -5112,11 +5282,14 @@ index 0000000..f82d5eb
 +          </select>
 +        </div>
 +        <p className="ig-fineprint">No year: it comes round every year.</p>
++        {said("d", "m")}
 +      </fieldset>
 +
-+      <fieldset className="ig-oform-row" aria-invalid={problem?.field === "b" || undefined} aria-errormessage={err("b")}>
-+        <legend className="ig-oform-label">Budget</legend>
-+        <div className="ig-chips">
++      <fieldset className="ig-oform-row" role="radiogroup" aria-labelledby={`${id}-b-l`} aria-invalid={problem?.field === "b" || undefined} aria-errormessage={err("b")}>
++        <legend id={`${id}-b-l`} className="ig-oform-label">
++          Budget
++        </legend>
++        <div ref={bandRef} className="ig-chips">
 +          {BANDS.map((band) => (
 +            <label key={band} className="ig-chip">
 +              <input type="radio" className="sr-only" name={`${id}-b`} value={band} checked={b === band} onChange={() => setB(band)} />
@@ -5124,13 +5297,10 @@ index 0000000..f82d5eb
 +            </label>
 +          ))}
 +        </div>
++        {said("b")}
 +      </fieldset>
 +
-+      {problem && (
-+        <p id={`${id}-problem`} className="ig-error" role="alert">
-+          {problem.message}
-+        </p>
-+      )}
++      {said("form")}
 +      <div className="ig-oform-actions">
 +        <button type="submit" className={primaryButton}>
 +          {initial ? "Keep the change" : "Keep this date"}
@@ -5715,13 +5885,14 @@ index 0000000..2e45653
 +export default PetalSymbols;
 diff --git a/src/components/portal/PieceCard.tsx b/src/components/portal/PieceCard.tsx
 new file mode 100644
-index 0000000..1af09f4
+index 0000000..6e7974d
 --- /dev/null
 +++ b/src/components/portal/PieceCard.tsx
-@@ -0,0 +1,119 @@
+@@ -0,0 +1,120 @@
 +import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 +import { Link } from "react-router-dom";
 +import { preorderWhatsAppUrl, type JewelPiece } from "@/data/jewellery";
++import { WHATSAPP_URL, handOff } from "@/lib/portal/handOff";
 +import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 +import { choices } from "@/lib/variants";
 +import { shownName } from "@/lib/portal/stones";
@@ -5814,7 +5985,7 @@ index 0000000..1af09f4
 +        {chosen && <p className="ig-pc-note">In {shownName(chosen)}</p>}
 +        {note && <div className="ig-pc-note">{note}</div>}
 +        {!available ? (
-+          <a className={textLink} href={preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, choice: preset.fit.note })} target="_blank" rel="noopener noreferrer">
++          <a className={textLink} href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={handOff(() => preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, choice: preset.fit.note }))}>
 +            Ask on WhatsApp
 +          </a>
 +        ) : line ? (
@@ -5828,7 +5999,7 @@ index 0000000..1af09f4
 +        )}
 +        {adding === "done" && (
 +          <p className="ig-fineprint" role="status">
-+            {preview ? "Preview only: nothing was added to a bag." : "In your bag."}
++            {import.meta.env.DEV && preview ? "Preview only: nothing was added to a bag." : "In your bag."}
 +          </p>
 +        )}
 +        {typeof extra === "function" ? extra(nameId) : extra}
@@ -5961,10 +6132,10 @@ index 0000000..d6eff2e
 +export default PortalMore;
 diff --git a/src/components/portal/PortalNav.tsx b/src/components/portal/PortalNav.tsx
 new file mode 100644
-index 0000000..04cd78f
+index 0000000..5209a0b
 --- /dev/null
 +++ b/src/components/portal/PortalNav.tsx
-@@ -0,0 +1,156 @@
+@@ -0,0 +1,162 @@
 +import { Suspense, useEffect, useRef, useState, type CSSProperties } from "react";
 +import { Link, useLocation } from "react-router-dom";
 +import { lazyRoom, whenIdle } from "@/lib/portal/lazyRoom";
@@ -6065,6 +6236,7 @@ index 0000000..04cd78f
 +  const here = useLocation().pathname.replace(/\/+$/, "") || "/";
 +  const [open, setOpen] = useState(false);
 +  const navRef = useRef<HTMLElement>(null);
++  const moreRef = useRef<HTMLButtonElement>(null);
 +  const inMore = (MORE_PATHS as readonly string[]).includes(here);
 +
 +  // Its tabs, fetched once the bar has painted.
@@ -6079,7 +6251,11 @@ index 0000000..04cd78f
 +      if (!navRef.current?.contains(e.target as Node)) setOpen(false);
 +    };
 +    const key = (e: KeyboardEvent) => {
-+      if (e.key === "Escape") setOpen(false);
++      if (e.key !== "Escape") return;
++      // From inside the row, focus goes back to More, never to the page's top.
++      const within = Boolean(document.getElementById("ig-nav-more")?.contains(document.activeElement));
++      setOpen(false);
++      if (within) moreRef.current?.focus();
 +    };
 +    document.addEventListener("pointerdown", away);
 +    document.addEventListener("keydown", key);
@@ -6097,6 +6273,7 @@ index 0000000..04cd78f
 +        ))}
 +        <li>
 +          <button
++            ref={moreRef}
 +            type="button"
 +            className={`ig-nav-link${inMore || open ? " is-here" : ""}`}
 +            style={{ width: "100%", border: 0, background: "none", cursor: "pointer" }}
@@ -6836,11 +7013,11 @@ index 0000000..161fed3
 +export default SeedCeremony;
 diff --git a/src/components/portal/ShareCard.tsx b/src/components/portal/ShareCard.tsx
 new file mode 100644
-index 0000000..2731603
+index 0000000..b37ff41
 --- /dev/null
 +++ b/src/components/portal/ShareCard.tsx
-@@ -0,0 +1,199 @@
-+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+@@ -0,0 +1,261 @@
++import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from "react";
 +import { primaryButton, quietButton } from "./styles";
 +import { CARD_FILE, cardLayout, cardTexts, composeArtSvg, renderCard, shareMode, type CardInput } from "@/lib/portal/shareCard";
 +import { EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
@@ -6859,9 +7036,16 @@ index 0000000..2731603
 +    and save, with a way back.
 +
 +  It draws again (a moment after the last change) when she adds or takes
-+  off her name or picks another flower. Drawing happens on a still page,
-+  never during an animation; how long it took is kept on the picture
-+  (data-ms) for the room's checks.
++  off her name or picks another flower. Until the new picture is in, the
++  one on screen is the old choice's: it is dimmed, its words (alt) stay the
++  old picture's, and Share and Open wait ("Drawing your card…"), so a tap
++  in between can never send the picture with her name after she took it
++  off. Drawing happens on a still page, never during an animation; how
++  long it took is kept on the picture (data-ms) for the room's checks.
++
++  The open-image view is a dialog: while it is open, everything else in
++  the portal is inert and Tab goes round inside it; Escape or "Back to
++  your card" closes it and gives focus back to the button that opened it.
 +*/
 +
 +type Props = {
@@ -6870,7 +7054,8 @@ index 0000000..2731603
 +  input: CardInput;
 +};
 +
-+type Drawn = { url: string; blob: Blob; ms: number };
++/* What was drawn, with the choice it was drawn from (its key) and its words. */
++type Drawn = { url: string; blob: Blob; ms: number; key: string; alt: string };
 +
 +const canShareFiles = (file: File): boolean => {
 +  try {
@@ -6891,9 +7076,23 @@ index 0000000..2731603
 +/** The card in words, for a screen reader: what it shows, as drawn. */
 +const describe = (input: CardInput): string => {
 +  const t = cardTexts(input);
-+  return ["Your garden card: the NAIRA wordmark, The Inner Garden", t.title, input.art === "flower" ? t.line ?? "a pressed flower" : "your garden", input.art === "garden" && t.line ? `${t.line}, in your month's colour` : null]
-+    .filter(Boolean)
-+    .join(", ");
++  const art = input.art === "flower" ? (t.line ?? "a pressed flower") : t.title ? null : "your garden";
++  return ["Your garden card: the NAIRA wordmark, The Inner Garden", t.title, art, input.art === "garden" && t.line ? `my month's colour, ${t.line}` : null].filter(Boolean).join(", ");
++};
++
++/* Everything in the portal but the open view (and the path down to it) is made inert while it is open. */
++const inertAround = (view: HTMLElement): (() => void) => {
++  const made: Element[] = [];
++  let at: HTMLElement | null = view;
++  while (at && at.parentElement && at !== document.body && !at.classList.contains("ig-root")) {
++    for (const sibling of at.parentElement.children) {
++      if (sibling === at || sibling.hasAttribute("inert")) continue;
++      sibling.setAttribute("inert", "");
++      made.push(sibling);
++    }
++    at = at.parentElement;
++  }
++  return () => made.forEach((el) => el.removeAttribute("inert"));
 +};
 +
 +const ShareCard = ({ source, input }: Props) => {
@@ -6903,13 +7102,16 @@ index 0000000..2731603
 +  const [note, setNote] = useState<string | null>(null);
 +  const imgRef = useRef<HTMLImageElement>(null);
 +  const openRef = useRef<HTMLHeadingElement>(null);
++  const viewRef = useRef<HTMLDivElement>(null);
 +  const backTo = useRef<HTMLButtonElement | null>(null);
 +  const made = useRef<string | null>(null);
 +  const key = JSON.stringify(input);
 +
-+  // Draw (again), a moment after the last change.
++  // Draw (again), a moment after the last change, labelled with the choice it was drawn from.
 +  useEffect(() => {
 +    let live = true;
++    const drawnKey = key;
++    const drawnAlt = describe(input);
 +    const timer = window.setTimeout(async () => {
 +      const art = source.current;
 +      if (!art) return;
@@ -6921,7 +7123,7 @@ index 0000000..2731603
 +        if (!live) return;
 +        if (made.current) URL.revokeObjectURL(made.current);
 +        made.current = URL.createObjectURL(blob);
-+        setDrawn({ url: made.current, blob, ms: Math.round(ms) });
++        setDrawn({ url: made.current, blob, ms: Math.round(ms), key: drawnKey, alt: drawnAlt });
 +        setFailed(false);
 +      } catch {
 +        if (live) setFailed(true);
@@ -6948,11 +7150,13 @@ index 0000000..2731603
 +    if (drawn && !stillMotion()) play(imgRef.current, [{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: EASE_REVEAL });
 +  }, [drawn]);
 +
++  /* The picture on screen is an earlier choice's while the new one is drawn: nothing leaves until it is in. */
++  const stale = drawn !== null && drawn.key !== key;
 +  const file = useMemo(() => (drawn ? new File([drawn.blob], CARD_FILE, { type: "image/png" }) : null), [drawn]);
 +  const mode = useMemo(() => shareMode(navigator.userAgent, file ? canShareFiles(file) : false), [file]);
 +
 +  const openImage = useCallback(async (from: HTMLButtonElement | null) => {
-+    if (!drawn) return;
++    if (!drawn || stale) return;
 +    backTo.current = from;
 +    setNote(null);
 +    try {
@@ -6960,10 +7164,11 @@ index 0000000..2731603
 +    } catch {
 +      setOpen(drawn.url);
 +    }
-+  }, [drawn]);
++  }, [drawn, stale]);
 +
++  // Never queued for later: a share needs the tap itself, so a tap while drawing simply waits for another.
 +  const share = async (from: HTMLButtonElement | null) => {
-+    if (!file) return;
++    if (!file || stale) return;
 +    setNote(null);
 +    try {
 +      await navigator.share({ files: [file], title: "My garden" });
@@ -6981,21 +7186,48 @@ index 0000000..2731603
 +    window.setTimeout(() => backTo.current?.focus(), 0);
 +  }, []);
 +
-+  useEffect(() => {
-+    if (!open) return;
++  // The open view holds the keyboard: the rest is inert, Tab goes round inside, Escape closes it.
++  useLayoutEffect(() => {
++    const view = viewRef.current;
++    if (!open || !view) return;
++    const release = inertAround(view);
 +    openRef.current?.focus();
-+    const key = (e: KeyboardEvent) => {
-+      if (e.key === "Escape") close();
++    const onKey = (e: KeyboardEvent) => {
++      if (e.key === "Escape") {
++        e.preventDefault();
++        close();
++        return;
++      }
++      if (e.key !== "Tab") return;
++      const stops = Array.from(view.querySelectorAll<HTMLElement>("button, a[href]"));
++      const first = stops[0];
++      const last = stops[stops.length - 1];
++      const now = document.activeElement;
++      if (!first) {
++        e.preventDefault();
++      } else if (!view.contains(now) || now === openRef.current) {
++        e.preventDefault();
++        (e.shiftKey ? last : first).focus();
++      } else if (e.shiftKey && now === first) {
++        e.preventDefault();
++        last.focus();
++      } else if (!e.shiftKey && now === last) {
++        e.preventDefault();
++        first.focus();
++      }
 +    };
-+    document.addEventListener("keydown", key);
-+    return () => document.removeEventListener("keydown", key);
++    document.addEventListener("keydown", onKey);
++    return () => {
++      document.removeEventListener("keydown", onKey);
++      release();
++    };
 +  }, [open, close]);
 +
-+  const alt = describe(input);
++  const busy = stale ? { "aria-disabled": true as const, "aria-describedby": "ig-cardroom-drawing" } : {};
 +
 +  return (
 +    <>
-+      {drawn && <img ref={imgRef} className="ig-cardroom-png" src={drawn.url} alt={alt} data-ms={drawn.ms} width={1080} height={1920} />}
++      {drawn && <img ref={imgRef} className={stale ? "ig-cardroom-png is-stale" : "ig-cardroom-png"} src={drawn.url} alt={drawn.alt} data-ms={drawn.ms} width={1080} height={1920} />}
 +      <div className="ig-cardroom-actions">
 +        {failed ? (
 +          <p className="ig-error" role="alert">
@@ -7005,30 +7237,37 @@ index 0000000..2731603
 +          <p className="ig-cardroom-status" role="status">
 +            Drawing your card…
 +          </p>
-+        ) : mode === "share" ? (
-+          <>
-+            <button type="button" className={primaryButton} onClick={(e) => void share(e.currentTarget)}>
-+              Share your card
-+            </button>
-+            <button type="button" className={quietButton} onClick={(e) => void openImage(e.currentTarget)}>
-+              Open the image
-+            </button>
-+          </>
 +        ) : (
-+          <button type="button" className={primaryButton} onClick={(e) => void openImage(e.currentTarget)}>
-+            Open the image
-+          </button>
++          <>
++            {mode === "share" ? (
++              <>
++                <button type="button" className={primaryButton} {...busy} onClick={(e) => void share(e.currentTarget)}>
++                  Share your card
++                </button>
++                <button type="button" className={quietButton} {...busy} onClick={(e) => void openImage(e.currentTarget)}>
++                  Open the image
++                </button>
++              </>
++            ) : (
++              <button type="button" className={primaryButton} {...busy} onClick={(e) => void openImage(e.currentTarget)}>
++                Open the image
++              </button>
++            )}
++            <p id="ig-cardroom-drawing" className="ig-cardroom-status ig-cardroom-redraw" role="status">
++              {stale ? "Drawing your card…" : ""}
++            </p>
++          </>
 +        )}
 +        {note && !open && <p className="ig-fineprint">{note}</p>}
 +      </div>
 +      {open && (
-+        <div className="ig-cardroom-open" role="dialog" aria-modal="true" aria-labelledby="ig-cardroom-open-h">
++        <div ref={viewRef} className="ig-cardroom-open" role="dialog" aria-modal="true" aria-labelledby="ig-cardroom-open-h">
 +          <h2 id="ig-cardroom-open-h" ref={openRef} tabIndex={-1} className="ig-h2">
 +            Your garden card
 +          </h2>
 +          {note && <p className="ig-fineprint">{note}</p>}
 +          <p className="ig-fineprint">Press and hold the picture, then choose to save it to your photos.</p>
-+          <img className="ig-cardroom-big" src={open} alt={alt} width={1080} height={1920} />
++          <img className="ig-cardroom-big" src={open} alt={drawn?.alt ?? ""} width={1080} height={1920} />
 +          <button type="button" className={quietButton} onClick={close}>
 +            Back to your card
 +          </button>
@@ -7253,12 +7492,12 @@ index 0000000..7dc1ff7
 +export default SinceLastVisit;
 diff --git a/src/components/portal/SkyLayer.tsx b/src/components/portal/SkyLayer.tsx
 new file mode 100644
-index 0000000..bee0b6d
+index 0000000..a75ddef
 --- /dev/null
 +++ b/src/components/portal/SkyLayer.tsx
-@@ -0,0 +1,214 @@
+@@ -0,0 +1,231 @@
 +import { useLayoutEffect, useMemo, useRef, type CSSProperties } from "react";
-+import { BED, hashString, mulberry32 } from "@/lib/portal/gardenLayout";
++import { ARCH, BED, hashString, mulberry32 } from "@/lib/portal/gardenLayout";
 +import { EASE_REVEAL, play, stillMotion, useAmbientLoop } from "@/lib/portal/motion";
 +import { FIREFLIES, NIGHT_GROUND, type SkyHour } from "@/lib/portal/sky";
 +
@@ -7267,12 +7506,17 @@ index 0000000..bee0b6d
 +  fetched after the garden's first paint and never by day. Drawn inside the
 +  bed in two parts, behind the plants ("back") and over them ("front"):
 +
-+  - dawn:   a blush glow low in the sky and a pale sun; over the beds, three
-+            bands of mist that drift a little;
++  - dawn:   a blush glow low in the sky and a pale sun; behind the beds,
++            three bands of mist that drift a little between the stems (never
++            over a flower: the sky never dims a plant);
 +  - golden: a warm wash high in the sky and a low sun behind the arbour;
-+  - night:  (the bed has already laid the ink) a crescent moon inside the
-+            arbour and a scatter of still stars; among the flowers, twelve
-+            slow gold fireflies.
++  - night:  (the bed has already laid the ink in the arbour's doorway) a
++            crescent moon inside the arbour and a scatter of still stars;
++            among the flowers, twelve slow gold fireflies.
++
++  Every wash and star is cut to the arbour's arch (ARCH), so the sky lives
++  inside the garden's doorway, never as a hard-edged box on the ivory page;
++  the fireflies fly inside it too.
 +
 +  The mist and the fireflies join the bed's one ambient loop (motion.ts):
 +  they rest with the sway after 20 s untouched, off screen and on a hidden
@@ -7325,13 +7569,17 @@ index 0000000..bee0b6d
 +};
 +
 +type Firefly = { x: number; y: number; size: number; dur: number; phase: number; path: [number, number][]; glow: number };
++/** Where a firefly may rest, in the bed's view (it flies 24 either way of it). */
++export const FLY_X = [60, 330] as const;
++export const FLY_Y = [210, 490] as const;
 +const firefliesFor = (seed: string): Firefly[] => {
 +  const rand = seeded(seed, "fireflies");
 +  const step = () => (rand() - 0.5) * 48;
 +  return Array.from({ length: FIREFLIES }, (_, i) => ({
-+    // Spread across the bed in twelve columns, at any height among the plants.
-+    x: 34 + ((i + 0.2 + rand() * 0.6) * (BED.w - 68)) / FIREFLIES,
-+    y: 176 + rand() * 318,
++    // Spread across the bed in twelve columns, at any height among the plants: with their 24 px of
++    // flight either way, always inside the arbour's arch (clear of its posts and its shoulders).
++    x: FLY_X[0] + ((i + 0.2 + rand() * 0.6) * (FLY_X[1] - FLY_X[0])) / FIREFLIES,
++    y: FLY_Y[0] + rand() * (FLY_Y[1] - FLY_Y[0]),
 +    size: Math.round(14 + rand() * 8),
 +    dur: Math.round(7000 + rand() * 6000),
 +    phase: rand(),
@@ -7365,7 +7613,7 @@ index 0000000..bee0b6d
 +  { transform: `translate(${f.path[2][0].toFixed(1)}px, ${f.path[2][1].toFixed(1)}px)`, opacity: 0.95 },
 +];
 +
-+/* Dawn's mist: three long soft bands, low over the beds. */
++/* Dawn's mist: three long soft bands, low behind the beds. */
 +const MIST = [
 +  { y: 318, h: 44, drift: 16, dur: 19000, o: 0.7 },
 +  { y: 396, h: 52, drift: -20, dur: 23000, o: 0.55 },
@@ -7384,6 +7632,11 @@ index 0000000..bee0b6d
 +
 +const Back = ({ hour, stars }: { hour: SkyHour; stars: Star[] }) => (
 +  <svg viewBox={`0 0 ${BED.w} ${BED.h}`} style={ART} aria-hidden>
++    <defs>
++      <clipPath id="ig-sky-arch">
++        <path d={ARCH} />
++      </clipPath>
++    </defs>
 +    {hour === "dawn" && (
 +      <>
 +        <defs>
@@ -7392,7 +7645,7 @@ index 0000000..bee0b6d
 +            <stop offset="1" stopColor="#FFD9C8" stopOpacity="0" />
 +          </linearGradient>
 +        </defs>
-+        <rect x="0" y="0" width={BED.w} height={WASH_END - 92} fill="url(#ig-sky-dawn)" />
++        <rect x="0" y="0" width={BED.w} height={WASH_END - 92} fill="url(#ig-sky-dawn)" clipPath="url(#ig-sky-arch)" />
 +        <circle cx="96" cy="232" r="20" fill="#FFE7DB" stroke={GOLD} strokeWidth=".6" opacity=".9" />
 +      </>
 +    )}
@@ -7404,15 +7657,17 @@ index 0000000..bee0b6d
 +            <stop offset="1" stopColor="#F2CE97" stopOpacity="0" />
 +          </linearGradient>
 +        </defs>
-+        <rect x="0" y="0" width={BED.w} height={WASH_END} fill="url(#ig-sky-golden)" />
++        <rect x="0" y="0" width={BED.w} height={WASH_END} fill="url(#ig-sky-golden)" clipPath="url(#ig-sky-arch)" />
 +        <circle cx="300" cy="212" r="24" fill="#F7D49B" stroke={GOLD_DEEP} strokeWidth=".7" opacity=".7" />
 +      </>
 +    )}
 +    {hour === "night" && (
 +      <>
-+        {stars.map((s, i) => (
-+          <circle key={i} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(2)} fill={s.gold ? GOLD : MOON} opacity={s.o.toFixed(2)} />
-+        ))}
++        <g clipPath="url(#ig-sky-arch)">
++          {stars.map((s, i) => (
++            <circle key={i} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(2)} fill={s.gold ? GOLD : MOON} opacity={s.o.toFixed(2)} />
++          ))}
++        </g>
 +        <g>
 +          <circle cx={MOON_AT[0]} cy={MOON_AT[1]} r="15" fill={MOON} stroke={GOLD} strokeWidth=".6" />
 +          <circle cx={MOON_AT[0] + 6} cy={MOON_AT[1] - 4.5} r="12.6" fill={NIGHT_GROUND} />
@@ -7428,7 +7683,8 @@ index 0000000..bee0b6d
 +  const calm = stillMotion();
 +  const stars = useMemo(() => (hour === "night" && part === "back" ? starsFor(seed) : []), [hour, part, seed]);
 +  const flies = useMemo(() => (hour === "night" && part === "front" ? firefliesFor(seed) : []), [hour, part, seed]);
-+  const mist = hour === "dawn" && part === "front";
++  // Behind the plants: the mist lies between the stems, never across a flower.
++  const mist = hour === "dawn" && part === "back";
 +
 +  // Before the layer's first paint, so it never shows a frame before its fade or its fireflies' flight.
 +  useLayoutEffect(() => {
@@ -7461,8 +7717,8 @@ index 0000000..bee0b6d
 +
 +  return (
 +    <div ref={rootRef} className="ig-sky" data-hour={hour} data-part={part} style={LAYER} aria-hidden>
-+      {part === "back" && <Back hour={hour} stars={stars} />}
 +      {mist && MIST.map((m, i) => <div key={i} data-mist="" style={MIST_BAND(m)} />)}
++      {part === "back" && <Back hour={hour} stars={stars} />}
 +      {flies.map((f, i) => (
 +        <span key={i} data-firefly="" style={FIREFLY(f, calm)} />
 +      ))}
@@ -7593,10 +7849,10 @@ index 0000000..723d750
 +);
 diff --git a/src/components/portal/StoneCard.test.tsx b/src/components/portal/StoneCard.test.tsx
 new file mode 100644
-index 0000000..286a5ac
+index 0000000..6736fa4
 --- /dev/null
 +++ b/src/components/portal/StoneCard.test.tsx
-@@ -0,0 +1,196 @@
+@@ -0,0 +1,201 @@
 +import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 +import { MemoryRouter, Route, Routes } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -7679,8 +7935,13 @@ index 0000000..286a5ac
 +    expect(screen.queryByRole("button", { name: "Add to bag" })).toBeNull();
 +    expect(screen.getByText("Sold out")).toBeInTheDocument();
 +    const reserve = screen.getByRole("link", { name: "Reserve on WhatsApp" });
-+    expect(reserve.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
-+    expect(decodeURIComponent(reserve.getAttribute("href")!)).toContain("in July · Ruby");
++    // The link names only the shop's number (her month would ride on it to a click recorder); the message opens at the tap.
++    expect(reserve.getAttribute("href")).toBe("https://wa.me/919561557935");
++    const open = vi.fn((_url?: string | URL) => ({ opener: window }) as unknown as Window);
++    window.open = open as typeof window.open;
++    fireEvent.click(reserve);
++    expect(String(open.mock.calls[0][0])).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
++    expect(decodeURIComponent(String(open.mock.calls[0][0]))).toContain("in July · Ruby");
 +  });
 +
 +  /* The bag never throws: a refused add comes back false, and the open bag
@@ -7720,7 +7981,7 @@ index 0000000..286a5ac
 +    expect(screen.queryByText("Available")).toBeNull();
 +    expect(screen.queryByText(/₹/)).toBeNull();
 +    expect(screen.getByText("This month isn't in the shop right now.")).toBeInTheDocument();
-+    expect(screen.getByRole("link", { name: "Ask on WhatsApp" }).getAttribute("href")).toMatch(/^https:\/\/wa\.me\//);
++    expect(screen.getByRole("link", { name: "Ask on WhatsApp" }).getAttribute("href")).toBe("https://wa.me/919561557935");
 +  });
 +
 +  /* The stones are cubic zirconia in each month's colour: the variant name is
@@ -7795,13 +8056,14 @@ index 0000000..286a5ac
 +});
 diff --git a/src/components/portal/StoneCard.tsx b/src/components/portal/StoneCard.tsx
 new file mode 100644
-index 0000000..745ff98
+index 0000000..da1aff0
 --- /dev/null
 +++ b/src/components/portal/StoneCard.tsx
-@@ -0,0 +1,293 @@
+@@ -0,0 +1,295 @@
 +import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 +import { Link } from "react-router-dom";
 +import { preorderWhatsAppUrl, type JewelPiece } from "@/data/jewellery";
++import { WHATSAPP_URL, handOff } from "@/lib/portal/handOff";
 +import { cartLineFor } from "@/lib/variants";
 +import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 +import { shownName, type Stone } from "@/lib/portal/stones";
@@ -8013,7 +8275,7 @@ index 0000000..745ff98
 +              <p className="ig-fineprint">
 +                {monthMissing ? "This month isn't in the shop right now." : "The Birthstone Heart Necklace isn't in the shop right now."}
 +              </p>
-+              <a className={textLink} href={ask(name)} target="_blank" rel="noopener noreferrer">
++              <a className={textLink} href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={handOff(() => ask(name))}>
 +                Ask on WhatsApp
 +              </a>
 +            </div>
@@ -8058,16 +8320,17 @@ index 0000000..745ff98
 +              ) : (
 +                <a
 +                  className={primaryButton}
-+                  href={preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, priceLabel: price !== undefined ? rupees(price) : undefined, choice: name })}
++                  href={WHATSAPP_URL}
 +                  target="_blank"
 +                  rel="noopener noreferrer"
++                  onClick={handOff(() => preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, priceLabel: price !== undefined ? rupees(price) : undefined, choice: name }))}
 +                >
 +                  Reserve on WhatsApp
 +                </a>
 +              )}
 +              {adding === "done" && (
 +                <p className="ig-fineprint" role="status">
-+                  {preview ? "Preview only: nothing was added to a bag." : "In your bag."}
++                  {import.meta.env.DEV && preview ? "Preview only: nothing was added to a bag." : "In your bag."}
 +                </p>
 +              )}
 +              {facts.length > 0 && (
@@ -8094,10 +8357,10 @@ index 0000000..745ff98
 +export default StoneCard;
 diff --git a/src/components/portal/ask.css b/src/components/portal/ask.css
 new file mode 100644
-index 0000000..18ad85e
+index 0000000..08e1c27
 --- /dev/null
 +++ b/src/components/portal/ask.css
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,39 @@
 +/* Ask the atelier: the ivory card and its wax seal. Loaded only with the rooms that offer it (Care, the Order Desk). */
 +
 +.ig-ask > .ig-btn { margin-top: 1rem; }
@@ -8118,22 +8381,25 @@ index 0000000..18ad85e
 +.ig-seal-wax { fill: var(--nf-accent-strong); }
 +.ig-seal-rim { fill: none; stroke: rgb(255 248 238 / 0.45); stroke-width: 1; }
 +.ig-seal-flower { fill: rgb(255 248 238 / 0.62); }
++.ig-seal-place { fill: rgb(var(--nf-ivory-rgb)); stroke: var(--nf-accent); stroke-width: 1; }
 +.ig-ask-label { font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-20); text-transform: uppercase; color: var(--nf-gold-text); }
++/* A note on ivory, not a form box: the editorial serif on faint gold rules that scroll with the words. */
 +.ig-ask-text {
 +  width: 100%;
 +  min-height: 12rem;
-+  padding: 0.7rem;
-+  border: 1px solid rgb(var(--nf-ink-rgb) / 0.18);
-+  background: rgb(255 255 255 / 0.5);
-+  font-family: var(--nf-font-label);
-+  font-size: 16px;
-+  line-height: 1.5;
++  padding: 0 0.7rem;
++  border: 1px solid rgb(var(--nf-ink-rgb) / 0.14);
++  background: repeating-linear-gradient(transparent 0 27px, rgb(var(--nf-gold-rgb) / 0.32) 27px 28px) local;
++  font-family: var(--nf-font-editorial);
++  font-size: 18px;
++  line-height: 28px;
 +  color: var(--nf-ink);
 +  resize: vertical;
 +}
 +.ig-ask-text:focus { outline: none; border-color: var(--nf-accent-strong); }
 +.ig-ask-card .ig-btn { max-width: none; }
 +.ig-ask-card .ig-quiet { align-self: flex-start; }
++.ig-ask-to:focus { outline: none; }
 diff --git a/src/components/portal/bloomclock.css b/src/components/portal/bloomclock.css
 new file mode 100644
 index 0000000..4032260
@@ -10213,10 +10479,10 @@ index 0000000..7d9bae2
 +export const LEAF_SAGE = "#8FAAA4";
 diff --git a/src/lib/portal/care.test.ts b/src/lib/portal/care.test.ts
 new file mode 100644
-index 0000000..48a2fba
+index 0000000..6e98cb3
 --- /dev/null
 +++ b/src/lib/portal/care.test.ts
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,76 @@
 +import { describe, expect, it } from "vitest";
 +import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 +import { jewellery, type JewelPiece } from "@/data/jewellery";
@@ -10259,9 +10525,14 @@ index 0000000..48a2fba
 +    expect(RITUAL).toHaveLength(3);
 +    for (const step of RITUAL) {
 +      expect(step.match.test(step.words)).toBe(true);
-+      // Each step's words, less the closing stop, are the care line's own (in any case).
-+      expect(line?.toLowerCase()).toContain(step.words.replace(/\.$/, "").toLowerCase());
++      // Each step is found in the care line itself.
++      expect(step.match.test(line ?? "")).toBe(true);
 +    }
++    // The "keep it dry" lines share the three steps too: the ritual is not the waterproof line's alone.
++    const dry = [...new Set(catalogue.map(careLineOf).filter((c): c is string => Boolean(c && /keep (it|them) dry/i.test(c))))];
++    expect(dry.length).toBeGreaterThan(0);
++    for (const c of dry.filter((c) => /pouch/i.test(c))) expect(ritualFor(c), c).toBe(RITUAL);
++    for (const step of RITUAL) expect(step.words).not.toMatch(/waterproof|tarnish|water|dry\b(?! cloth)/i);
 +    // A care line that no longer says one of them takes the ritual away.
 +    expect(ritualFor("Keep it dry and away from perfume and harsh chemicals. Wipe with a soft dry cloth.")).toBeNull();
 +    expect(ritualFor(null)).toBeNull();
@@ -10290,10 +10561,10 @@ index 0000000..48a2fba
 +});
 diff --git a/src/lib/portal/care.ts b/src/lib/portal/care.ts
 new file mode 100644
-index 0000000..0763a06
+index 0000000..c168e98
 --- /dev/null
 +++ b/src/lib/portal/care.ts
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,91 @@
 +import type { JewelPiece } from "@/data/jewellery";
 +
 +/*
@@ -10304,10 +10575,13 @@ index 0000000..0763a06
 +  claim of its own, offers a service the shop has not confirmed, or says a
 +  piece was bought: pieces from a checkout are "from a checkout you started".
 +
-+  The wipe ritual's three steps are phrases the listings' care lines share.
-+  It is drawn only when the most common care line (the shop's own, read
-+  from the catalogue) still says all three, so a change to the listings
-+  takes the ritual away rather than leave it saying something they no longer do.
++  The wipe ritual's three steps are phrases the listings' care lines share
++  (the waterproof line, the "keep it dry" lines alike). It is drawn only
++  when the most common care line (the shop's own, read from the catalogue)
++  still says all three, so a change to the listings takes the ritual away
++  rather than leave it saying something they no longer do. That line itself
++  is never quoted as if it were about her pieces: a third of the range asks
++  to be kept dry, and each of hers says so on its own card.
 +*/
 +
 +const detail = (piece: JewelPiece, label: RegExp): string | null => {
@@ -10341,11 +10615,11 @@ index 0000000..0763a06
 +
 +export type RitualStep = { words: string; match: RegExp };
 +
-+/* Each step's words are the care line's own; `match` finds them in it. */
++/* Each step's words are the care lines' own; `match` finds them in a line (said of "it" or "them", flat or not). */
 +export const RITUAL: readonly RitualStep[] = [
 +  { words: "Keep it away from perfume and harsh chemicals.", match: /away from perfume and harsh chemicals/i },
-+  { words: "Wipe with a soft dry cloth.", match: /wipe (it )?with a soft dry cloth/i },
-+  { words: "Store it flat in its pouch.", match: /store (it|them) flat in (its|their) pouch/i },
++  { words: "Wipe with a soft dry cloth.", match: /wipe (it |them )?with a soft dry cloth/i },
++  { words: "Store it in its pouch.", match: /store (it|them)( flat)? in (its|their) pouch/i },
 +];
 +
 +/** The ritual, when the shop's own care line still says each of its steps; null otherwise. */
@@ -10755,10 +11029,10 @@ index 0000000..9e18ac6
 +});
 diff --git a/src/lib/portal/copy.test.ts b/src/lib/portal/copy.test.ts
 new file mode 100644
-index 0000000..f2fbbd8
+index 0000000..1ecfc17
 --- /dev/null
 +++ b/src/lib/portal/copy.test.ts
-@@ -0,0 +1,225 @@
+@@ -0,0 +1,245 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
@@ -10809,6 +11083,8 @@ index 0000000..f2fbbd8
 +  /* Phase 4: no gift note, gift wrap or re-polish is offered until the shop confirms it has one; WhatsApp
 +     shows no reply hours until the owner gives them; a checkout's pieces are never "what you bought". */
 +  ["a gift note, gift wrap or re-polish nobody confirmed", /gift (note|message|wrap|wrapping|card)s?\b|re-?polish(ing)?\b|replat(e|ing)\b|repair service|free (polish|cleaning)/i],
++  /* The listings say "wipe with a soft dry cloth": never polish, which invites a cloth that wears a coat. */
++  ["care beyond the listings' wipe", /\bpolish(ed|es|ing)?\b|\bbuff(ed|ing)?\b/i],
 +  ["WhatsApp reply hours the owner has not given", /reply (within|in) \d|replies (within|in) \d|\b(we|the atelier) (reply|replies|answer|answers) (within|by|between)|\b\d{1,2}\s?(am|pm)\s?(to|-|–)\s?\d{1,2}\s?(am|pm)\b/i],
 +  ["a checkout's pieces called what she bought", /\b(you|she) (bought|purchased|ordered)\b|your purchases?\b/i],
 +];
@@ -10940,8 +11216,23 @@ index 0000000..f2fbbd8
 +    // The room quotes what the catalogue says; it carries no care sentence of its own.
 +    const room = readFileSync(join(src, "pages/members/Care.tsx"), "utf8");
 +    expect(room).not.toMatch(/waterproof|tarnish|soft dry cloth|perfume/i);
-+    const wa = readFileSync(join(src, "lib/portal/whatsapp.ts"), "utf8");
++    const wa = readFileSync(join(src, "lib/portal/handOff.ts"), "utf8");
 +    expect(wa).toMatch(/https:\/\/wa\.me\/\$\{WHATSAPP_NUMBER\}/);
++  });
++
++  /* Clarity and Meta's automatic events keep a tapped link's whole address:
++     no link on a portal page may carry her words (her email, size, month,
++     saved pieces) or a gift date. Each names the bare address and builds the
++     filled one at the tap (lib/portal/handOff). */
++  it("never puts her words or a gift date on a link's address", () => {
++    const carriers = /href=\{\s*(atelierLink|waLink|googleCalendarUrl\(\s*gift|icsHref\(\s*gift|preorderWhatsAppUrl|ringInSizeWhatsApp|outsideSizeWhatsApp\(`|ask\()/;
++    for (const file of sources.filter((f) => /\.tsx$/.test(f))) expect(readFileSync(file, "utf8"), relative(src, file)).not.toMatch(carriers);
++    const route = readFileSync(join(src, "pages/members/MembersRoute.tsx"), "utf8");
++    expect(route).toMatch(/useEffect\(\(\) => quietMetaClicks\(\), \[\]\);/);
++    const hand = readFileSync(join(src, "lib/portal/handOff.ts"), "utf8");
++    // The switch sends no event: only fbq's own setting, off and back on.
++    expect(hand.match(/window\.fbq\?\.\(/g)).toHaveLength(2);
++    expect(hand).not.toMatch(/fbq\?\.\("(track|trackCustom|init)"/);
 +  });
 +
 +  /* Phase 4's garden: the sky keeps Indian time and never takes anything
@@ -10982,6 +11273,9 @@ index 0000000..f2fbbd8
 +    const card = readFileSync(join(src, "components/portal/StoneCard.tsx"), "utf8");
 +    expect(card).not.toMatch(/<span>Stone<\/span>\s*<span>\{(shownName\()?(name|stone\.variant)/);
 +    expect(card).toMatch(/<span>Stone<\/span>\s*<span>\{STONE_WORDS\}/);
++    // Nor in the atelier's message, nor the gift ledger's stone card.
++    expect(readFileSync(join(src, "lib/portal/whatsapp.ts"), "utf8")).not.toMatch(/My stone:/);
++    expect(readFileSync(join(src, "pages/members/Gifts.tsx"), "utf8")).not.toMatch(/Gift her stone/);
 +  });
 +});
 diff --git a/src/lib/portal/countdown.ts b/src/lib/portal/countdown.ts
@@ -12027,10 +12321,10 @@ index 0000000..1792e1b
 +});
 diff --git a/src/lib/portal/gardenLayout.ts b/src/lib/portal/gardenLayout.ts
 new file mode 100644
-index 0000000..3e79bbe
+index 0000000..d5468fa
 --- /dev/null
 +++ b/src/lib/portal/gardenLayout.ts
-@@ -0,0 +1,318 @@
+@@ -0,0 +1,320 @@
 +import { FLOWER_ASPECT, FLOWER_BASE_X } from "./brandFlower";
 +
 +/*
@@ -12047,6 +12341,8 @@ index 0000000..3e79bbe
 +*/
 +
 +export const BED = { w: 390, h: 560, soil: 522 } as const;
++/** The arbour's outer arch, closed along the soil: the doorway the sky lives in (night's ink, dawn's and the golden hour's washes). */
++export const ARCH = `M22 ${BED.soil}V214C22 132 104 78 195 78C286 78 368 132 368 214V${BED.soil}H22Z`;
 +export const MAX_PLANTS = 80;
 +export const MAX_SWAY = 24;
 +export const BANDS = 12;
@@ -12351,10 +12647,10 @@ index 0000000..3e79bbe
 +};
 diff --git a/src/lib/portal/gifts.test.ts b/src/lib/portal/gifts.test.ts
 new file mode 100644
-index 0000000..1336964
+index 0000000..b591128
 --- /dev/null
 +++ b/src/lib/portal/gifts.test.ts
-@@ -0,0 +1,291 @@
+@@ -0,0 +1,315 @@
 +import { describe, expect, it } from "vitest";
 +import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 +import type { JewelPiece } from "@/data/jewellery";
@@ -12536,6 +12832,11 @@ index 0000000..1336964
 +  it("repeats a leap-day birthday on the last day of February", () => {
 +    expect(yearlyRule(gift("Isha", 2, 29))).toBe("FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-1");
 +    expect(buildIcs(giftDayEvent(gift("Isha", 2, 29), now), 0)).toContain("RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-1");
++    // Google's reminder: a week before February's last day, every year (the 21st, or the 22nd in a leap year).
++    const google = new URL(googleCalendarUrl(giftReminderEvent(gift("Isha", 2, 29), now)));
++    expect(google.searchParams.get("recur")).toBe("RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-8");
++    // Its first day is one of the rule's own: 21 February 2027 (28 - 7).
++    expect(google.searchParams.get("dates")).toBe("20270221/20270222");
 +  });
 +
 +  it("puts Google's reminder a week before her day, all day, every year", () => {
@@ -12613,7 +12914,9 @@ index 0000000..1336964
 +    return { ...n, saved, gifts };
 +  };
 +
-+  it("keeps all eight dates under 1.2 KB, letting only the oldest saved handles go", () => {
++  /* Said plainly: with everything at its most, the dates and the Phase 3 fields fit only because every
++     saved piece gives way (the portal keeps each still hearted on this phone: MembersRoute's spill). */
++  it("with everything at its most, keeps all eight dates under 1.2 KB, and the saved pieces give way", () => {
 +    const n = fullest();
 +    expect(n.gifts[0].n).toHaveLength(12);
 +    expect(new TextEncoder().encode(n.gifts[0].n).length).toBe(36);
@@ -12626,8 +12929,25 @@ index 0000000..1336964
 +    expect(fitted.naira.ring && fitted.naira.metal && fitted.naira.month && fitted.naira.seen).toBeTruthy();
 +    expect(bytesOf(fitted.naira)).toBeLessThanOrEqual(META_CAP_BYTES);
 +    expect(new TextEncoder().encode(JSON.stringify(compactNaira(fitted.naira))).length).toBeLessThanOrEqual(META_CAP_BYTES);
-+    // What was let go is saved pieces only, the oldest first.
++    // What was let go is saved pieces only, the oldest first: here, all 24 of them.
 +    expect(fitted.trimmed).toEqual(n.saved.slice(0, fitted.trimmed.length));
++    expect(fitted.trimmed).toHaveLength(24);
++    expect(fitted.naira.saved).toEqual([]);
++  });
++
++  it("lets nothing go for a realistic full ledger: the 24 longest real handles, a few pressed, eight of the longest names", () => {
++    const longest = [...(jewellerySnapshot as JewelPiece[])].map((p) => p.handle).sort((a, b) => b.length - a.length || a.localeCompare(b)).slice(0, 24);
++    let n = mergePressed(["drop-one", "drop-two", "drop-three"])(keepRing(7, "k", "2026-11-05")(readNaira(null)));
++    n = pressInto("drop-one", true)(n);
++    n = touchSeen("2026-11-05")(keepMonth(7)(keepMetal("g")(n)));
++    // Latin names of 12 letters; and, in the test above, Devanagari's three-byte letters are the most a name can take.
++    const gifts = Array.from({ length: MAX_GIFTS }, (_, i): Gift => ({ n: "Nani and Mum".slice(0, 12), m: 1 + i, d: 28, b: 1500 }));
++    const fitted = fitToCap({ ...n, saved: longest, gifts });
++    expect(fitted.ok).toBe(true);
++    if (fitted.ok === false) return;
++    expect(fitted.trimmed).toEqual([]);
++    expect(fitted.naira.saved).toEqual(longest);
++    expect(fitted.naira.gifts).toHaveLength(8);
 +  });
 +
 +  it("fits them with no saved piece at all to let go", () => {
@@ -12648,10 +12968,10 @@ index 0000000..1336964
 +});
 diff --git a/src/lib/portal/gifts.ts b/src/lib/portal/gifts.ts
 new file mode 100644
-index 0000000..8566c4b
+index 0000000..8eee640
 --- /dev/null
 +++ b/src/lib/portal/gifts.ts
-@@ -0,0 +1,251 @@
+@@ -0,0 +1,254 @@
 +import type { JewelPiece } from "@/data/jewellery";
 +import { GIFT_BANDS, MAX_GIFTS, giftLabelOk, packGift, type Gift, type Updater } from "./memberMeta";
 +import { addGift } from "./roomChanges";
@@ -12861,7 +13181,10 @@ index 0000000..8566c4b
 +    title: `A week until ${g.n} · ${giftDay(g)}`,
 +    start: isoDay(at),
 +    allDay: true,
-+    repeat: "FREQ=YEARLY",
++    /* A week before the last day of February, for a 29 February date (the 21st, or the 22nd in a leap
++       year). Other dates repeat on the reminder's own day, so a reminder for 1 to 7 March falls a day
++       early in a leap year: a calendar's yearly rule cannot count back from another day. */
++    repeat: g.m === 2 && g.d === 29 ? "FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=-8" : "FREQ=YEARLY",
 +    details: detailsOf(g),
 +    url: GIFTS_URL,
 +  };
@@ -12903,6 +13226,145 @@ index 0000000..8566c4b
 +  gifts.map((gift, index) => ({ gift, index, next: nextOn(gift, now) })).sort((a, b) => a.next.days - b.next.days || a.index - b.index);
 +
 +export type { Gift };
+diff --git a/src/lib/portal/handOff.test.ts b/src/lib/portal/handOff.test.ts
+new file mode 100644
+index 0000000..47fc3ef
+--- /dev/null
++++ b/src/lib/portal/handOff.test.ts
+@@ -0,0 +1,59 @@
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { GOOGLE_CALENDAR_URL, WHATSAPP_URL, openOut, quietMetaClicks, saveFile } from "./handOff";
++
++/*
++  The hand-offs: a link names only the bare address, the filled one is
++  opened at the tap with the opener cut, a file made at the tap is saved
++  through a link never on the page, and Meta's automatic click events are
++  off while the portal is open and back on as she leaves.
++*/
++
++afterEach(() => {
++  vi.restoreAllMocks();
++  delete (window as { fbq?: unknown }).fbq;
++});
++
++describe("handing off", () => {
++  it("names only the bare addresses", () => {
++    expect(WHATSAPP_URL).toBe("https://wa.me/919561557935");
++    expect(GOOGLE_CALENDAR_URL).toBe("https://calendar.google.com/calendar/r");
++  });
++
++  it("opens the filled address in a new tab, its opener cut", () => {
++    const tab = { opener: window as unknown };
++    const open = vi.fn(() => tab as Window);
++    window.open = open as typeof window.open;
++    openOut("https://wa.me/919561557935?text=Hello");
++    expect(open).toHaveBeenCalledWith("https://wa.me/919561557935?text=Hello", "_blank");
++    expect(tab.opener).toBeNull();
++  });
++
++  it("saves a file through a link that is never on the page", () => {
++    let made: Blob | null = null;
++    URL.createObjectURL = vi.fn((b: Blob) => {
++      made = b;
++      return "blob:x";
++    }) as typeof URL.createObjectURL;
++    URL.revokeObjectURL = vi.fn();
++    const clicked: HTMLAnchorElement[] = [];
++    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
++      clicked.push(this);
++    });
++    saveFile("BEGIN:VCALENDAR", "a.ics", "text/calendar");
++    expect(clicked).toHaveLength(1);
++    expect(clicked[0].isConnected).toBe(false);
++    expect(clicked[0].download).toBe("a.ics");
++    expect((made as Blob | null)?.type).toBe("text/calendar");
++  });
++
++  it("turns Meta's automatic click events off while the portal is open, and back on after", () => {
++    const fbq = vi.fn();
++    window.fbq = fbq;
++    const leave = quietMetaClicks();
++    expect(fbq).toHaveBeenLastCalledWith("set", "autoConfig", false);
++    leave();
++    expect(fbq).toHaveBeenLastCalledWith("set", "autoConfig", true);
++    // It never sends an event.
++    expect(fbq.mock.calls.every((c) => c[0] === "set")).toBe(true);
++  });
++});
+diff --git a/src/lib/portal/handOff.ts b/src/lib/portal/handOff.ts
+new file mode 100644
+index 0000000..1aa08a1
+--- /dev/null
++++ b/src/lib/portal/handOff.ts
+@@ -0,0 +1,68 @@
++import type { MouseEvent } from "react";
++import { WHATSAPP_NUMBER } from "@/data/jewellery";
++
++/*
++  Leaving the portal for WhatsApp, Google Calendar or a calendar file,
++  without her words riding on the link.
++
++  The shop's session analytics (Clarity) and Meta's pixel both watch every
++  click on the page and keep the clicked link's full address. A link whose
++  href carries her message (her email, size, metal, stone, saved pieces) or
++  a gift date (its name, day and budget) would hand those words to them at
++  the tap, whatever the page masks. So each such link names only the bare
++  address (https://wa.me/<number>, Google Calendar's own page), and the
++  address with her words in it is built and opened from the tap itself;
++  a calendar file is made from the tap and saved through a link that is
++  never on the page. Long-press "open in new tab" opens the bare address:
++  the accepted cost.
++
++  The shop's own WhatsApp Contact event (PixelEvents, unchanged) still sees
++  a wa.me link and still carries the page's path only.
++
++  This module rides in the portal's own chunk (MembersRoute imports it for
++  quietMetaClicks), so no room fetches a chunk for it.
++*/
++
++export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
++export const GOOGLE_CALENDAR_URL = "https://calendar.google.com/calendar/r";
++
++/** Opens an address in a new tab, the opener cut; where the phone will not open one, here instead. */
++export const openOut = (url: string): void => {
++  // Not "noopener" as a feature: window.open then returns null, which would also navigate this tab.
++  const w = window.open(url, "_blank");
++  if (w) w.opener = null;
++  else window.location.href = url;
++};
++
++/** A hand-off link's click: the address with her words, built at the tap. */
++export const handOff =
++  (build: () => string) =>
++  (e: MouseEvent<HTMLAnchorElement>): void => {
++    e.preventDefault();
++    openOut(build());
++  };
++
++/** Saves a file made at the tap (a calendar's .ics), through a link that is never on the page. */
++export const saveFile = (text: string, name: string, type: string): void => {
++  const url = URL.createObjectURL(new Blob([text], { type }));
++  const a = document.createElement("a");
++  a.href = url;
++  a.download = name;
++  a.rel = "noopener";
++  a.click();
++  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
++};
++
++/*
++  Meta's automatic events ("Track events automatically without code", on
++  for the shop's pixel) send a tapped button's words and a tapped link's
++  address. Inside the portal every screen is hers, so while it is open they
++  are switched off (fbq's own 'autoConfig' setting, which sends nothing),
++  and switched back on as she leaves, so the shop is as it was. It adds no
++  event and only ever sends less. FOR THE OWNER: the same switch can be
++  turned off for the whole shop in Events Manager.
++*/
++export const quietMetaClicks = (): (() => void) => {
++  window.fbq?.("set", "autoConfig", false);
++  return () => window.fbq?.("set", "autoConfig", true);
++};
 diff --git a/src/lib/portal/ics.test.ts b/src/lib/portal/ics.test.ts
 new file mode 100644
 index 0000000..df24918
@@ -13202,10 +13664,10 @@ index 0000000..6e89712
 +  `Google sign-in doesn't open inside ${app}. Use your email, or open this page in your browser.`;
 diff --git a/src/lib/portal/isolation.test.ts b/src/lib/portal/isolation.test.ts
 new file mode 100644
-index 0000000..85feb9d
+index 0000000..85354a2
 --- /dev/null
 +++ b/src/lib/portal/isolation.test.ts
-@@ -0,0 +1,351 @@
+@@ -0,0 +1,353 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
@@ -13296,7 +13758,9 @@ index 0000000..85feb9d
 +     insert (lib/portal/arrival), and names lib/innerCircle's joinInnerCircle
 +     only for the owner's switch: already the shared chunk the gate's
 +     JoinInnerCircleForm, /innercircle and Auth load, under a name it
-+     already exports, and itself unchanged.
++     already exports. Its source is unchanged; its chunk is not quite (the
++     dynamic import adds a module namespace object, about 79 B gzip, and a
++     new hash for /auth and /innercircle), which the release notes say.
 +     Phase 4 adds one: lib/nairaFlower/wordmark (the header's NAIRA paths,
 +     in the entry chunk), read only by the garden card's renderer
 +     (lib/portal/shareCard, inside ShareCard's own chunk) for the still
@@ -15005,10 +15469,10 @@ index 0000000..9ca0807
 +});
 diff --git a/src/lib/portal/memberMeta.ts b/src/lib/portal/memberMeta.ts
 new file mode 100644
-index 0000000..ef2f64f
+index 0000000..10d4229
 --- /dev/null
 +++ b/src/lib/portal/memberMeta.ts
-@@ -0,0 +1,344 @@
+@@ -0,0 +1,345 @@
 +/*
 +  Her account's memory: user_metadata.naira, the portal's own corner of the
 +  sign-in account's metadata (no table, no migration). It keeps what makes
@@ -15076,7 +15540,8 @@ index 0000000..ef2f64f
 +export type MetaPatch = { [key: string]: unknown };
 +export type Updater = (naira: Naira) => Naira;
 +/** A change kept, with the saved handles it let go (a 25th piece pushing out the oldest, or the 1.2 KB cap). */
-+export type MetaResult = { ok: true; dropped?: readonly string[] } | { ok: false; message: string };
++/** `dropped`: what left her saved list with the change; `trimmed`: of those, the ones the 1.2 KB cap alone let go (oldest first). */
++export type MetaResult = { ok: true; dropped?: readonly string[]; trimmed?: readonly string[] } | { ok: false; message: string };
 +
 +const DAY = /^\d{4}-\d{2}-\d{2}$/;
 +/** A piece's handle or a drop's id, as her account keeps them. */
@@ -16188,10 +16653,10 @@ index 0000000..31ad98f
 +};
 diff --git a/src/lib/portal/preview.ts b/src/lib/portal/preview.ts
 new file mode 100644
-index 0000000..61c5589
+index 0000000..ac78f66
 --- /dev/null
 +++ b/src/lib/portal/preview.ts
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,143 @@
 +import type { User } from "@supabase/supabase-js";
 +import type { MemberProfile } from "@/contexts/AuthContext";
 +import { PORTAL_KEY, safeRemove } from "./safeStorage";
@@ -16264,8 +16729,10 @@ index 0000000..61c5589
 +    .map((m) => `${m[2]}${m[3]}${["1000", "1500", "2500"].indexOf(m[4])}${m[1]}`);
 +};
 +
-+/* Two checkouts started, a week apart: names of real listings, so Care can find their care lines. */
-+const previewCheckouts = (on: boolean): Checkout[] | null =>
++/* Two checkouts started, a week apart: names of real listings, so Care can find their care lines.
++   Without the switch, none at all (an empty list, never null): the Order Desk shows its own empty
++   line, and the live Supabase is never asked about the stand-in member. */
++const previewCheckouts = (on: boolean): Checkout[] =>
 +  on
 +    ? [
 +        { id: "preview-checkout-2", createdAt: "2026-11-03T14:10:00Z", items: [{ name: "Birthstone Heart Necklace", quantity: 1, size: null }] },
@@ -16278,7 +16745,7 @@ index 0000000..61c5589
 +          ],
 +        },
 +      ]
-+    : null;
++    : [];
 +
 +/** Only on this machine: a development build served anywhere else (an editor preview, `vite build --mode development`) never stands in a member. */
 +export const previewHost = (hostname: string): boolean => /^(localhost|127\.0\.0\.1|\[::1\])$/.test(hostname);
@@ -16471,10 +16938,10 @@ index 0000000..7395f6f
 +};
 diff --git a/src/lib/portal/previewGarden.ts b/src/lib/portal/previewGarden.ts
 new file mode 100644
-index 0000000..5ab9229
+index 0000000..47d1369
 --- /dev/null
 +++ b/src/lib/portal/previewGarden.ts
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,53 @@
 +import type { GardenOverrides } from "@/components/portal/MemberContext";
 +import type { SkyHour } from "./sky";
 +import type { Dressing } from "./seasons";
@@ -16500,10 +16967,8 @@ index 0000000..5ab9229
 +    id: "preview-note-pressing",
 +    from: "2026-11-01",
 +    title: "On pressing flowers",
-+    body: [
-+      "Every piece starts on paper here: a flower drawn, then drawn again, until the line sits still.",
-+      "This note is a preview fixture. The atelier writes the real ones.",
-+    ],
++    // Placeholder words only: a fixture models no claim about the atelier for the owner to copy.
++    body: ["A note from the atelier goes here: two or three short lines in the house's own voice.", "This note is a preview fixture. The atelier writes the real ones."],
 +    flower: "jasmine star",
 +    accent: "#E8C88A",
 +  },
@@ -16955,10 +17420,10 @@ index 0000000..6d6d51f
 +};
 diff --git a/src/lib/portal/shareCard.test.ts b/src/lib/portal/shareCard.test.ts
 new file mode 100644
-index 0000000..704dd45
+index 0000000..485cc8a
 --- /dev/null
 +++ b/src/lib/portal/shareCard.test.ts
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,232 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync } from "node:fs";
 +import { resolve } from "node:path";
@@ -17035,7 +17500,8 @@ index 0000000..704dd45
 +  it("names her stone as the listing does, in her month's colour", () => {
 +    const t = cardTexts({ art: "garden", name: null, stone: "July · Ruby" });
 +    expect(t.line).toBe("July · Ruby");
-+    expect(t.caption).toBe("IN YOUR MONTH’S COLOUR");
++    // In her own voice, since she posts it: to a friend seeing her story, "your month" would be the friend's.
++    expect(t.caption).toBe("MY MONTH’S COLOUR");
 +    expect(cardTexts({ art: "garden", name: null, stone: null }).caption).toBeNull();
 +  });
 +
@@ -17192,10 +17658,10 @@ index 0000000..704dd45
 +});
 diff --git a/src/lib/portal/shareCard.ts b/src/lib/portal/shareCard.ts
 new file mode 100644
-index 0000000..3a12dd1
+index 0000000..b2efe58
 --- /dev/null
 +++ b/src/lib/portal/shareCard.ts
-@@ -0,0 +1,430 @@
+@@ -0,0 +1,451 @@
 +import { WORDMARK, WORDMARK_FLOWER } from "@/lib/nairaFlower/wordmark";
 +import { FLOWER_ASPECT, FLOWER_PETALS, FLOWER_STEM } from "./brandFlower";
 +
@@ -17206,8 +17672,8 @@ index 0000000..3a12dd1
 +  it draws). On it: the still NAIRA wordmark (the header's own paths), "The
 +  Inner Garden", her garden as its SVG (the same seed and planting as her
 +  bed) or a pressed drop flower on a herbarium sheet, her stone's name as the
-+  listing words it ("July · Ruby", in her month's colour) and the shop's
-+  address.
++  listing words it ("July · Ruby", under "My month's colour": she posts it,
++  so it speaks as her) and the shop's address.
 +
 +  What it never carries: a member number, a count of anything, a date, or
 +  her name unless she turns it on. Every word drawn passes through
@@ -17292,7 +17758,7 @@ index 0000000..3a12dd1
 +  return {
 +    eyebrow: "THE INNER GARDEN",
 +    title: name ? gardenOf(name) : null,
-+    caption: isFlower ? (flower ? "A PRESSED FLOWER" : null) : stone ? "IN YOUR MONTH’S COLOUR" : null,
++    caption: isFlower ? (flower ? "A PRESSED FLOWER" : null) : stone ? "MY MONTH’S COLOUR" : null,
 +    line: isFlower ? (flower ? `The ${flower} flower` : null) : stone,
 +    site: "NAIRAFLORE.COM",
 +  };
@@ -17506,9 +17972,14 @@ index 0000000..3a12dd1
 +    ctx.save();
 +    ctx.translate(box.x + box.w * l, box.y + box.h * t);
 +    ctx.rotate((deg * Math.PI) / 180);
-+    ctx.globalAlpha = 0.82;
-+    ctx.fillStyle = "#FFFAF4";
++    // Ivory-deep with a gold hairline edge, so the slips read on the vellum sheet.
++    ctx.globalAlpha = 0.85;
++    ctx.fillStyle = "#F4EBE2";
 +    ctx.fillRect(0, 0, box.w * w, box.h * 0.05);
++    ctx.globalAlpha = 0.7;
++    ctx.strokeStyle = GOLD;
++    ctx.lineWidth = 1;
++    ctx.strokeRect(0, 0, box.w * w, box.h * 0.05);
 +    ctx.globalAlpha = 1;
 +    ctx.restore();
 +  }
@@ -17570,7 +18041,8 @@ index 0000000..3a12dd1
 +  new Promise((resolve, reject) => {
 +    const img = new Image();
 +    img.decoding = "async";
-+    img.onload = () => resolve(img);
++    // Decoded before it is drawn, so drawImage does not decode on the main thread.
++    img.onload = () => void (img.decode ? img.decode().catch(() => undefined) : Promise.resolve()).then(() => resolve(img));
 +    img.onerror = () => reject(new Error("The card's art did not load."));
 +    img.src = src;
 +  });
@@ -17584,6 +18056,7 @@ index 0000000..3a12dd1
 +    }
 +  });
 +
++/** `ms`: the drawing and the PNG's making, from once the card's fonts are in (their download is not drawing time). */
 +export type RenderedCard = { blob: Blob; ms: number; artDrawn: boolean };
 +
 +/**
@@ -17600,14 +18073,21 @@ index 0000000..3a12dd1
 +  return { canvas, ctx };
 +};
 +
++/* A canvas's 8 MB of pixels is let go at once, not whenever the phone gets round to it: iOS caps all
++   canvases together, and a card drawn again and again would otherwise run it out. */
++const letGo = (canvas: HTMLCanvasElement) => {
++  canvas.width = 0;
++  canvas.height = 0;
++};
++
 +export const renderCard = async (input: CardInput, artSvg: string): Promise<RenderedCard> => {
++  await fontsReady(cardLayout(input));
 +  const start = performance.now();
 +  const { canvas, ctx } = newCanvas();
 +  const measure = (text: string, font: CardFont, size: number, tracking: number) => {
 +    ctx.font = fontOf(font, size);
 +    return ctx.measureText(text).width + tracking * size * Math.max(0, [...text].length - 1);
 +  };
-+  await fontsReady(cardLayout(input));
 +  // Measured with the fonts in, so a long name is set to fit.
 +  const layout = cardLayout(input, measure);
 +  let image: HTMLImageElement | null = null;
@@ -17616,14 +18096,21 @@ index 0000000..3a12dd1
 +  } catch {
 +    image = null;
 +  }
-+  drawCard(ctx, input, layout, image);
 +  try {
++    drawCard(ctx, input, layout, image);
 +    return { blob: await toBlob(canvas), ms: performance.now() - start, artDrawn: Boolean(image) };
 +  } catch {
 +    // A phone that will not let a canvas be read once the SVG is on it: a fresh one, with the Naira flower.
++    letGo(canvas);
 +    const again = newCanvas();
-+    drawCard(again.ctx, input, layout, null);
-+    return { blob: await toBlob(again.canvas), ms: performance.now() - start, artDrawn: false };
++    try {
++      drawCard(again.ctx, input, layout, null);
++      return { blob: await toBlob(again.canvas), ms: performance.now() - start, artDrawn: false };
++    } finally {
++      letGo(again.canvas);
++    }
++  } finally {
++    letGo(canvas);
 +  }
 +};
 diff --git a/src/lib/portal/sizer.test.ts b/src/lib/portal/sizer.test.ts
@@ -17999,12 +18486,12 @@ index 0000000..06406df
 +  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Naira Flore, I'm looking for a ring in US ${us}. Could you help me find one?`)}`;
 diff --git a/src/lib/portal/sky.test.ts b/src/lib/portal/sky.test.ts
 new file mode 100644
-index 0000000..8f071cb
+index 0000000..bf92c0b
 --- /dev/null
 +++ b/src/lib/portal/sky.test.ts
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,96 @@
 +import { describe, expect, it } from "vitest";
-+import { FIREFLIES, NIGHT_GROUND, NIGHT_INK, SKY_FROM, nextSkyChange, skyDraws, skyHour } from "./sky";
++import { FIREFLIES, NIGHT_GROUND, SKY_FROM, nextSkyChange, skyDraws, skyHour } from "./sky";
 +
 +/* An instant written as the owner writes times: in IST. */
 +const ist = (clock: string, day = "2026-11-05") => new Date(`${day}T${clock}+05:30`);
@@ -18082,8 +18569,10 @@ index 0000000..8f071cb
 +    expect(NIGHT_GROUND).toBe("#1A1614");
 +  });
 +
-+  it.each(Object.entries(NIGHT_INK))("holds %s at 4.5:1 or more on the night ground", (_name, colour) => {
-+    expect(contrast(colour, NIGHT_GROUND)).toBeGreaterThanOrEqual(4.5);
++  /* The labels stand under the soil, outside the ink arch, on ivory in their day colours. */
++  it("keeps the bed's labels on ivory at night, at 4.5:1 or more", () => {
++    expect(contrast("#1A1614", "#FBF3EC")).toBeGreaterThanOrEqual(4.5);
++    expect(contrast("#80612A", "#FBF3EC")).toBeGreaterThanOrEqual(4.5);
 +  });
 +
 +  /* The next drop's day ("Opens tomorrow · 8 pm") stands on its own ivory slip, never on the ink: the slip is opaque. */
@@ -18099,10 +18588,10 @@ index 0000000..8f071cb
 +});
 diff --git a/src/lib/portal/sky.ts b/src/lib/portal/sky.ts
 new file mode 100644
-index 0000000..d99628b
+index 0000000..626faa8
 --- /dev/null
 +++ b/src/lib/portal/sky.ts
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,62 @@
 +import { istParts } from "./ist";
 +
 +/*
@@ -18115,9 +18604,9 @@ index 0000000..d99628b
 +  The sky is only ever weather. It never dims or droops a plant, and it says
 +  nothing about when she was last here: an absence costs nothing.
 +
-+  The night's ground and the label colours are painted by the bed itself at
-+  first paint (a style, no chunk), so the garden never opens on ivory and
-+  turns dark; the moon, stars and fireflies (SkyLayer.tsx) are a chunk of
++  The night's ground (ink in the arbour's doorway) is painted by the bed
++  itself at first paint (an SVG path, no chunk), so the garden never opens
++  on ivory and turns dark; the moon, stars and fireflies (SkyLayer.tsx) are a chunk of
 +  their own, fetched after first paint, and never fetched by day.
 +*/
 +
@@ -18158,16 +18647,10 @@ index 0000000..d99628b
 +/** Whether this hour draws anything over the garden (the ivory day draws nothing, and fetches nothing). */
 +export const skyDraws = (hour: SkyHour): boolean => hour !== "day";
 +
-+/* The night garden's ground and the words that stand on it, each held to
-+   4.5:1 or more against the ground by sky.test. Flower and firefly colours
-+   are art, inside the drawing only. */
++/* The night garden's ground: ink inside the arbour's arch (gardenLayout's ARCH), never the bed's whole
++   box; the bed's labels stand under the soil on ivory, in their day colours. Flower and firefly
++   colours are art, inside the drawing only. */
 +export const NIGHT_GROUND = "#1A1614";
-+export const NIGHT_INK = {
-+  /** The bed's labels ("Planted" day, her stone's name). */
-+  text: "#FBF3EC",
-+  /** Their small gold captions over them. */
-+  caption: "#C99A4C",
-+} as const;
 +
 +/* The fireflies: twelve, never more, and slow. */
 +export const FIREFLIES = 12;
@@ -18473,10 +18956,10 @@ index 0000000..6dd3a4d
 +export const shownName = (name: string): string => name.replace(/ · /g, "\u00a0·\u00a0");
 diff --git a/src/lib/portal/useMemberMeta.ts b/src/lib/portal/useMemberMeta.ts
 new file mode 100644
-index 0000000..60bfb7d
+index 0000000..cf19e63
 --- /dev/null
 +++ b/src/lib/portal/useMemberMeta.ts
-@@ -0,0 +1,145 @@
+@@ -0,0 +1,146 @@
 +import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 +import type { User } from "@supabase/supabase-js";
 +import { getSupabase } from "@/integrations/supabase/lazy";
@@ -18610,8 +19093,9 @@ index 0000000..60bfb7d
 +      current.current = fitted.naira;
 +      setNaira(fitted.naira);
 +      writer.queue(update);
-+      // What left her saved list with this change (taken out, or let go to make room), so the drawer can tell her.
-+      return { ok: true, dropped: before.saved.filter((h) => !fitted.naira.saved.includes(h)) };
++      // What left her saved list with this change (taken out, or let go to make room), so the drawer can tell her;
++      // and which of them the cap alone let go, so the portal keeps them hearted on this phone (MembersRoute).
++      return { ok: true, dropped: before.saved.filter((h) => !fitted.naira.saved.includes(h)), trimmed: fitted.trimmed };
 +    },
 +    [writer, setNaira],
 +  );
@@ -18624,13 +19108,13 @@ index 0000000..60bfb7d
 +};
 diff --git a/src/lib/portal/whatsapp.test.ts b/src/lib/portal/whatsapp.test.ts
 new file mode 100644
-index 0000000..0084fe5
+index 0000000..e795fe9
 --- /dev/null
 +++ b/src/lib/portal/whatsapp.test.ts
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,79 @@
 +import { describe, expect, it } from "vitest";
 +import { WHATSAPP_NUMBER } from "@/data/jewellery";
-+import { SAVED_IN_MESSAGE, WHATSAPP_URL, atelierLink, atelierMessage, waLink } from "./whatsapp";
++import { ORDER_NUMBER_LINE, SAVED_IN_MESSAGE, WHATSAPP_URL, atelierLink, atelierMessage, waLink } from "./whatsapp";
 +
 +/*
 +  The atelier's WhatsApp: the shop's own number, her words filled in from
@@ -18652,7 +19136,9 @@ index 0000000..0084fe5
 +    expect(text).toContain("I have a question about caring for a piece.");
 +    expect(text).toContain("My ring size: US 7");
 +    expect(text).toContain("My metal: Gold");
-+    expect(text).toContain("My stone: July · Ruby");
++    // The month's variant as the shop names it, never "my stone" (they are cubic zirconia).
++    expect(text).toContain("My month's colour: July · Ruby");
++    expect(text).not.toMatch(/My stone:/);
 +    expect(text).toContain("https://nairaflore.com/jewellery/a-piece\nhttps://nairaflore.com/jewellery/b-piece\nhttps://nairaflore.com/jewellery/c-piece");
 +    expect(text).not.toContain("d-piece");
 +    expect(SAVED_IN_MESSAGE).toBe(3);
@@ -18665,11 +19151,15 @@ index 0000000..0084fe5
 +    expect(atelierMessage({ about: "care", month: 13 })).not.toMatch(/My stone/);
 +  });
 +
-+  it("puts her checkout email in the order desk's message, as she leaves it", () => {
-+    const text = atelierMessage({ about: "order", email: " meera@example.com ", size: 6 });
++  it("puts her checkout email and a line for the order number in the order desk's message, and nothing else", () => {
++    const text = atelierMessage({ about: "order", email: " meera@example.com ", size: 6, metal: "g", month: 7, saved: ["a-piece", "b-piece"] });
 +    expect(text).toContain("Could you check on an order for me?");
 +    expect(text).toContain("The email I used at checkout: meera@example.com");
-+    expect(atelierMessage({ about: "order", email: "" })).not.toContain("email");
++    expect(text).toContain(ORDER_NUMBER_LINE);
++    expect(ORDER_NUMBER_LINE).toBe("The order number (from my confirmation email): ");
++    // Her size, metal, month and saved pieces would only muddle which order she means.
++    expect(text).not.toMatch(/My ring size|My metal|My month|My stone|Pieces I saved|a-piece/);
++    expect(atelierMessage({ about: "order", email: "" })).not.toContain("email I used");
 +    // Never her orders: an order she asks about.
 +    expect(text).not.toMatch(/\b(your|my) orders?\b/i);
 +  });
@@ -18684,6 +19174,16 @@ index 0000000..0084fe5
 +    expect(textOf(link)).toBe(words);
 +  });
 +
++  it("never throws on half of a broken character (an emoji cut by a paste)", () => {
++    const fffd = "%EF%BF%BD";
++    expect(waLink("Hi \uD83C")).toBe(`${WHATSAPP_URL}?text=Hi%20${fffd}`);
++    expect(waLink("\uDC00")).toBe(`${WHATSAPP_URL}?text=${fffd}`);
++    expect(waLink("\uDC00\uD83C")).toBe(`${WHATSAPP_URL}?text=${fffd}${fffd}`);
++    // A whole pair beside a broken half: the pair kept, the half replaced.
++    expect(textOf(waLink("\uD83C🌸"))).toBe("\uFFFD🌸");
++    expect(textOf(atelierLink("नमस्ते ₹500 😀\n"))).toBe("नमस्ते ₹500 😀");
++  });
++
 +  it("promises no reply hours, gift note or re-polish", () => {
 +    for (const about of ["care", "order"] as const) {
 +      const text = atelierMessage({ about, size: 7, metal: "s", month: 1, saved: ["x"], email: "a@b.co" });
@@ -18693,30 +19193,40 @@ index 0000000..0084fe5
 +});
 diff --git a/src/lib/portal/whatsapp.ts b/src/lib/portal/whatsapp.ts
 new file mode 100644
-index 0000000..791290e
+index 0000000..04bb631
 --- /dev/null
 +++ b/src/lib/portal/whatsapp.ts
-@@ -0,0 +1,61 @@
-+import { WHATSAPP_NUMBER } from "@/data/jewellery";
+@@ -0,0 +1,80 @@
 +import type { Metal, UsSize } from "./memberMeta";
++import { WHATSAPP_URL } from "./handOff";
 +import { stoneForMonth } from "./stones";
 +
 +/*
 +  Writing to the atelier on WhatsApp (wa.me/919561557935, the shop's own
-+  number). The message is written for her from what her account keeps (her
-+  ring size, her metal, her stone's month and the first three pieces she
-+  saved), shown to her on the card first and hers to change, and then again
-+  in WhatsApp before she sends it. Nothing is sent by the portal: a wa.me
-+  link only opens a chat with the words filled in.
++  number). The message is written for her from what her account keeps:
++  about care, her ring size, her metal, her month's colour and the first
++  three pieces she saved; about an order, only the email she used at
++  checkout and a line for the order number from her confirmation email
++  (her size and saved pieces would only muddle which order she means). It
++  is shown to her on the card first and hers to change, and then again in
++  WhatsApp before she sends it. Nothing is sent by the portal: a wa.me
++  link only opens a chat with the words filled in, and it is built at the
++  tap (lib/portal/handOff), never left on the page.
 +
 +  No reply hours are said anywhere until the owner gives them, and nothing
 +  is offered that the shop has not confirmed.
 +*/
 +
-+export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
++export { WHATSAPP_URL };
++
++/* Half of a broken character (an emoji cut in two by a paste) becomes the
++   replacement character, as String.prototype.toWellFormed would make it:
++   encodeURIComponent throws on one, and her message must never take the
++   room down. No lookbehind, which older iPhones cannot read. */
++const wellFormed = (s: string): string => s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDFFF]/g, (m) => (m.length === 2 ? m : "\uFFFD"));
 +
 +/** A wa.me link with the message filled in (encoded whole: line breaks, ₹, Devanagari and all). */
-+export const waLink = (text: string): string => `${WHATSAPP_URL}?text=${encodeURIComponent(text)}`;
++export const waLink = (text: string): string => `${WHATSAPP_URL}?text=${encodeURIComponent(wellFormed(text))}`;
 +
 +export const METAL_WORDS: Record<Metal, string> = { g: "Gold", s: "Silver", b: "Gold and silver" };
 +export const SAVED_IN_MESSAGE = 3;
@@ -18734,6 +19244,9 @@ index 0000000..791290e
 +  email?: string | null;
 +};
 +
++/** The order message's line for her to finish: the number is on her confirmation email. */
++export const ORDER_NUMBER_LINE = "The order number (from my confirmation email): ";
++
 +const OPENING: Record<AtelierAbout, string> = {
 +  care: "I have a question about caring for a piece.",
 +  order: "Could you check on an order for me?",
@@ -18745,11 +19258,17 @@ index 0000000..791290e
 +  const email = (facts.email ?? "").trim();
 +  const saved = (facts.saved ?? []).slice(0, SAVED_IN_MESSAGE);
 +  const lines = ["Hello Naira Flore, I'm writing from the Inner Garden.", OPENING[facts.about]];
-+  if (facts.about === "order" && email) lines.push(`The email I used at checkout: ${email}`);
++  if (facts.about === "order") {
++    // Only what finds the order: the email it was placed with, and its number for her to fill in.
++    if (email) lines.push(`The email I used at checkout: ${email}`);
++    lines.push(ORDER_NUMBER_LINE, "", "");
++    return lines.join("\n");
++  }
 +  const about: string[] = [];
 +  if (facts.size) about.push(`My ring size: US ${facts.size}`);
 +  if (facts.metal) about.push(`My metal: ${METAL_WORDS[facts.metal]}`);
-+  if (stone) about.push(`My stone: ${stone.variant}`);
++  // The month's variant as the shop names it, never called her stone (they are cubic zirconia).
++  if (stone) about.push(`My month's colour: ${stone.variant}`);
 +  if (saved.length) about.push("Pieces I saved:", ...saved.map((h) => `https://nairaflore.com/jewellery/${h}`));
 +  if (about.length) lines.push("", ...about);
 +  lines.push("", "");
@@ -20603,18 +21122,18 @@ index 141e7f1..a3df065 100644
              href={WHATSAPP}
              target="_blank"
 diff --git a/src/pages/PrivacyPolicy.tsx b/src/pages/PrivacyPolicy.tsx
-index 40afe35..0e1eec3 100644
+index 40afe35..7aedcbd 100644
 --- a/src/pages/PrivacyPolicy.tsx
 +++ b/src/pages/PrivacyPolicy.tsx
-@@ -24,6 +24,8 @@ const sections = [
-           <li>Payment-related information</li>
-           <li>Browsing activity on the website</li>
+@@ -32,6 +32,8 @@ const sections = [
+           <li>Contact customer support</li>
+           <li>Interact with the website</li>
          </ul>
-+        {/* DRAFT for the owner's approval (members' portal, Phase 4): what a member's account keeps. Not live until approved; drop this commit to remove it. */}
-+        <p>If you use the Inner Garden, our members' area, your account also keeps what you choose to keep there: your ring size and metal, your birth month, the pieces you save, the drop flowers you press, the day you last visited, and for each gift date you add, a short name of your choosing (such as "Mum"), its day and month, and a budget. You can change or remove your saved pieces, size, metal, month and gift dates there at any time.</p>
-         <p>This information may be collected when you:</p>
-         <ul>
-           <li>Create an account</li>
++        {/* DRAFT for the owner's approval (members' portal, Phase 4): what a member's account keeps. It ships live with these commits: drop 063bef7 and this one together to remove it. */}
++        <p>If you use the Inner Garden, our members' area, your sign-in account also keeps what you choose to keep there: your ring size (and whether you measured it on screen, used a thread or already knew it, and on which day), your metal, your birthday or, if you prefer, only your birth month, up to 24 pieces you save, the drop flowers you press (and whether you pressed one in its drop's first hour), the last day you visited, and up to eight gift dates, each a short name you choose (such as "Mum"), a day and month, and a budget. Please use a first name or a word for a gift date: we keep nothing else about that person and never contact them. The Order Desk also lists the checkouts you started while signed in (when, and which pieces). A few small notes stay only in your browser (such as whether you have seen today's opening and your ring-sizer screen setting), and your garden card is drawn on your phone and is not uploaded. Nothing you keep there goes to WhatsApp or a calendar unless you open it yourself, and you can read and change a WhatsApp message before you send it. You can change or remove your size, metal, month, saved pieces and gift dates in the Inner Garden at any time; to have anything else removed, write to us.</p>
+       </>
+     ),
+   },
 diff --git a/src/pages/adMatchingDisclosure.test.ts b/src/pages/adMatchingDisclosure.test.ts
 index d05ac0f..26eceb7 100644
 --- a/src/pages/adMatchingDisclosure.test.ts
@@ -20808,11 +21327,11 @@ index 0000000..db40f50
 +});
 diff --git a/src/pages/members/Card.test.tsx b/src/pages/members/Card.test.tsx
 new file mode 100644
-index 0000000..eebf6e3
+index 0000000..e65d1c9
 --- /dev/null
 +++ b/src/pages/members/Card.test.tsx
-@@ -0,0 +1,186 @@
-+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+@@ -0,0 +1,250 @@
++import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +import { MemberProvider, type Member } from "@/components/portal/MemberContext";
@@ -20833,7 +21352,7 @@ index 0000000..eebf6e3
 +vi.mock("@/components/Footer", () => ({ default: () => null }));
 +vi.mock("@/hooks/useLiveJewellery", () => ({ useLiveJewellery: () => ({ jewellery: [], isLive: false, isLoading: false }) }));
 +
-+const drawn = vi.hoisted(() => ({ inputs: [] as CardInput[], svgs: [] as string[] }));
++const drawn = vi.hoisted(() => ({ inputs: [] as CardInput[], svgs: [] as string[], wait: null as Promise<void> | null }));
 +vi.mock("@/lib/portal/shareCard", async (importActual) => {
 +  const actual = await importActual<typeof import("@/lib/portal/shareCard")>();
 +  return {
@@ -20841,7 +21360,8 @@ index 0000000..eebf6e3
 +    renderCard: vi.fn(async (input: CardInput, svg: string) => {
 +      drawn.inputs.push(input);
 +      drawn.svgs.push(svg);
-+      return { blob: new Blob(["png"], { type: "image/png" }), ms: 120, artDrawn: true };
++      if (drawn.wait) await drawn.wait;
++      return { blob: new Blob([`png ${input.name ?? "plain"}`], { type: "image/png" }), ms: 120, artDrawn: true };
 +    }),
 +  };
 +});
@@ -20865,6 +21385,8 @@ index 0000000..eebf6e3
 +  press: () => {},
 +  naira: readNaira(null),
 +  changeMeta: () => ({ ok: true }),
++  savedSync: { h: [], x: [] },
++  keepSavedSync: () => {},
 +  metaProblem: null,
 +  retryMeta: () => {},
 +  since: null,
@@ -20892,6 +21414,7 @@ index 0000000..eebf6e3
 +beforeEach(() => {
 +  drawn.inputs.length = 0;
 +  drawn.svgs.length = 0;
++  drawn.wait = null;
 +  share.mockClear();
 +  URL.createObjectURL = vi.fn(() => "blob:card");
 +  URL.revokeObjectURL = vi.fn();
@@ -20997,13 +21520,73 @@ index 0000000..eebf6e3
 +    expect(screen.queryByRole("dialog")).toBeNull();
 +    expect(screen.queryByText(/would not share/)).toBeNull();
 +  });
++
++  it("never shares the picture with her name once she has taken it off, while the new one is drawn", async () => {
++    Object.assign(navigator, { share, canShare: () => true });
++    room();
++    const button = await screen.findByRole("button", { name: "Share your card" });
++    const toggle = screen.getByRole("checkbox", { name: /Add my first name/ });
++    fireEvent.click(toggle);
++    await waitFor(() => expect(screen.getByRole("img", { name: /Ananya’s garden/ })).toBeInTheDocument());
++    // She takes her name off; the new picture is slow to come.
++    let release = () => {};
++    drawn.wait = new Promise<void>((r) => (release = r));
++    fireEvent.click(toggle);
++    // At once: the buttons wait, the line says so, and the picture's words are still the picture's (with her name).
++    expect(button).toHaveAttribute("aria-disabled", "true");
++    expect(screen.getByRole("status")).toHaveTextContent("Drawing your card…");
++    expect(document.querySelector(".ig-cardroom-png")).toHaveClass("is-stale");
++    expect(screen.getByRole("img", { name: /Ananya’s garden/ })).toBeInTheDocument();
++    fireEvent.click(button);
++    fireEvent.click(screen.getByRole("button", { name: "Open the image" }));
++    await waitFor(() => expect(drawn.inputs.at(-1)?.name).toBeNull());
++    expect(share).not.toHaveBeenCalled();
++    expect(screen.queryByRole("dialog")).toBeNull();
++    // The plain picture lands: now it can go.
++    release();
++    await waitFor(() => expect(button).not.toHaveAttribute("aria-disabled"));
++    expect(screen.getByRole("img", { name: /Your garden card/ }).getAttribute("alt")).not.toMatch(/Ananya/);
++    fireEvent.click(button);
++    await waitFor(() => expect(share).toHaveBeenCalledTimes(1));
++    const sent = (share.mock.calls[0] as unknown as [{ files: File[] }])[0].files[0];
++    const words = await new Promise<string>((resolve) => {
++      const reader = new FileReader();
++      reader.onload = () => resolve(String(reader.result));
++      reader.readAsText(sent);
++    });
++    expect(words).toBe("png plain");
++  });
++
++  it("keeps the keyboard inside the open image, the room behind it inert, and gives focus back on closing", async () => {
++    room();
++    const opener = await screen.findByRole("button", { name: "Open the image" });
++    opener.focus();
++    fireEvent.click(opener);
++    const view = await screen.findByRole("dialog", { name: "Your garden card" });
++    const back = within(view).getByRole("button", { name: "Back to your card" });
++    expect(document.activeElement).toBe(within(view).getByRole("heading", { name: "Your garden card" }));
++    // Everything else in the portal is inert: her choices, the button behind, the garden path.
++    expect(screen.getByRole("checkbox", { hidden: true, name: /Add my first name/ }).closest("[inert]")).not.toBeNull();
++    expect(opener.closest("[inert]")).not.toBeNull();
++    expect(document.querySelector(".ig-nav")?.closest("[inert]")).not.toBeNull();
++    expect(view.closest("[inert]")).toBeNull();
++    for (const shift of [false, true, false, true]) {
++      fireEvent.keyDown(document, { key: "Tab", shiftKey: shift });
++      expect(view.contains(document.activeElement)).toBe(true);
++    }
++    expect(document.activeElement).toBe(back);
++    fireEvent.keyDown(document, { key: "Escape" });
++    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
++    expect(document.querySelectorAll("[inert]")).toHaveLength(0);
++    await waitFor(() => expect(document.activeElement).toBe(opener));
++  });
 +});
 diff --git a/src/pages/members/Card.tsx b/src/pages/members/Card.tsx
 new file mode 100644
-index 0000000..3225a2a
+index 0000000..a6480c9
 --- /dev/null
 +++ b/src/pages/members/Card.tsx
-@@ -0,0 +1,183 @@
+@@ -0,0 +1,186 @@
 +import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 +import PortalShell from "@/components/portal/PortalShell";
 +import { Arbour, PlantArt } from "@/components/portal/GardenBed";
@@ -21100,6 +21683,9 @@ index 0000000..3225a2a
 +
 +  useEffect(() => {
 +    h1Ref.current?.focus({ preventScroll: true });
++    // The card's three faces, asked for now, so the first drawing does not wait on them.
++    const fonts = (document as Document & { fonts?: FontFaceSet }).fonts;
++    for (const face of ["400 26px Jost", "400 58px 'Cormorant Garamond'", "italic 400 68px 'Cormorant Garamond'"]) void fonts?.load?.(face).catch(() => undefined);
 +  }, []);
 +
 +  // The renderer, once the room has painted.
@@ -21189,11 +21775,11 @@ index 0000000..3225a2a
 +export default Card;
 diff --git a/src/pages/members/Care.tsx b/src/pages/members/Care.tsx
 new file mode 100644
-index 0000000..8324ecc
+index 0000000..b13ddd3
 --- /dev/null
 +++ b/src/pages/members/Care.tsx
-@@ -0,0 +1,134 @@
-+import { useEffect, useMemo, useRef } from "react";
+@@ -0,0 +1,141 @@
++import { useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
 +import CareRitual from "@/components/portal/CareRitual";
@@ -21204,17 +21790,22 @@ index 0000000..8324ecc
 +import { useLiveJewellery } from "@/hooks/useLiveJewellery";
 +import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 +import { careLineOf, houseCareLine, piecesForCare, platingOf, pvdExplainer, ritualFor } from "@/lib/portal/care";
++import { stillMotion } from "@/lib/portal/motion";
 +import "./care.css";
 +
 +/*
 +  /members/care: looking after what she owns, only in the listings' own
-+  words. The wipe ritual (three steps the listings' care line says, a cloth
-+  polishing a dull ring to a glint), the "PVD vs plating" explainer the PVD
++  words. The wipe ritual (three steps the listings' care lines share, a
++  cloth clearing a haze from a ring to a glint), the "PVD vs plating" explainer the PVD
 +  listings carry, and a card for each piece she saved or took to a checkout
 +  (called just that: a checkout is not always an order), each with its own
 +  Plating and Care lines from its listing. No service of the shop's is
 +  offered that it has not said exists. Ask the atelier on WhatsApp for
 +  anything else. No ambient motion here.
++
++  No care line is quoted at the top as if it were hers: the commonest one
++  says water is fine, and a third of the range asks to be kept dry. What
++  each of her pieces asks, water included, is on its own card.
 +*/
 +
 +const Care = () => {
@@ -21222,6 +21813,7 @@ index 0000000..8324ecc
 +  const { jewellery } = useLiveJewellery();
 +  const { rows } = useCheckouts();
 +  const h1Ref = useRef<HTMLHeadingElement>(null);
++  const [still] = useState(stillMotion);
 +
 +  useEffect(() => {
 +    h1Ref.current?.focus({ preventScroll: true });
@@ -21250,9 +21842,10 @@ index 0000000..8324ecc
 +            <h2 id="ig-ritual-h" className="ig-h2">
 +              The ritual
 +            </h2>
-+            <p className="ig-fineprint">The care line most of the listings carry:</p>
-+            <blockquote className="ig-care-quote">{house}</blockquote>
-+            <p className="ig-fineprint">Its three steps, and a pass of the cloth for each. Tap each in turn.</p>
++            <p className="ig-fineprint">
++              {still ? "Three steps most of the listings' care lines share." : "Three steps most of the listings' care lines share, a pass of the cloth for each. Tap each in turn."} What each of
++              yours asks, water included, is on its card below.
++            </p>
 +            <CareRitual steps={ritual} metal={naira.metal} />
 +          </section>
 +        )}
@@ -21329,10 +21922,10 @@ index 0000000..8324ecc
 +export default Care;
 diff --git a/src/pages/members/Drawer.tsx b/src/pages/members/Drawer.tsx
 new file mode 100644
-index 0000000..3627f64
+index 0000000..372cf5c
 --- /dev/null
 +++ b/src/pages/members/Drawer.tsx
-@@ -0,0 +1,392 @@
+@@ -0,0 +1,378 @@
 +import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -21354,7 +21947,6 @@ index 0000000..3627f64
 +import { serverNow } from "@/lib/portal/clock";
 +import { presetFor } from "@/lib/portal/fit";
 +import { EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
-+import { readPortal, writePortal } from "@/lib/portal/safeStorage";
 +import "./drawer.css";
 +
 +/*
@@ -21391,7 +21983,6 @@ index 0000000..3627f64
 +
 +const same = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((h, i) => h === b[i]);
 +const sameSet = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((h) => b.includes(h));
-+const strings = (x: unknown): string[] => (Array.isArray(x) ? x.filter((h): h is string => typeof h === "string") : []);
 +
 +type Out = { handle: string; index: number; name: string };
 +
@@ -21414,7 +22005,7 @@ index 0000000..3627f64
 +};
 +
 +const Drawer = () => {
-+  const { user, naira, changeMeta, metaProblem, retryMeta, month, addToBag, bagBusy, preview, since, firstVisit } = useMember();
++  const { naira, changeMeta, savedSync: sync, keepSavedSync: keepSync, metaProblem, retryMeta, month, addToBag, bagBusy, preview, since, firstVisit } = useMember();
 +  const wishlist = useWishlist();
 +  const { jewellery, isLive, isLoading } = useLiveJewellery();
 +  const h1Ref = useRef<HTMLHeadingElement>(null);
@@ -21425,19 +22016,7 @@ index 0000000..3627f64
 +  const catalogue = useMemo(() => (isLive ? new Set(jewellery.map((p) => p.handle)) : null), [isLive, jewellery]);
 +  const byHandle = useMemo(() => new Map(jewellery.map((p) => [p.handle, p])), [jewellery]);
 +  const device = useMemo(() => deviceHandles(wishlist.items), [wishlist.items]);
-+  // What this phone and her account last agreed on, and the hearts here the drawer had no room for.
-+  const [sync, setSync] = useState(() => {
-+    const kept = readPortal().savedSync;
-+    const mine = Boolean(kept && kept.u === user.id);
-+    return { h: mine ? strings(kept?.h) : [], x: mine ? strings(kept?.x) : [] };
-+  });
-+  const keepSync = useCallback(
-+    (h: string[], x: string[]) => {
-+      setSync({ h, x });
-+      writePortal({ savedSync: { u: user.id, h, x } });
-+    },
-+    [user.id],
-+  );
++  // What this phone and her account last agreed on, and the hearts here her account had no room for: the portal's own (MembersRoute), shared with every room that can let a piece go.
 +  // Taken out this visit: a line with Undo where each was, and its heart held on this phone until she leaves.
 +  const [outs, setOuts] = useState<Out[]>([]);
 +  // Kept this visit, with the line saying what was let go to make room ("" when nothing was).
@@ -22639,10 +23218,10 @@ index 0000000..686bac9
 +export default Drops;
 diff --git a/src/pages/members/Fit.tsx b/src/pages/members/Fit.tsx
 new file mode 100644
-index 0000000..bbec424
+index 0000000..2311979
 --- /dev/null
 +++ b/src/pages/members/Fit.tsx
-@@ -0,0 +1,389 @@
+@@ -0,0 +1,390 @@
 +import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -22657,6 +23236,7 @@ index 0000000..bbec424
 +import type { Metal, RingHow, UsSize } from "@/lib/portal/memberMeta";
 +import { forgetMetal, forgetRing, keepMetal, keepRing } from "@/lib/portal/roomChanges";
 +import { betweenSizesWhatsApp, outsideSizeWhatsApp, ringInSizeWhatsApp, sizeForCircumference, US_SIZES } from "@/lib/portal/sizer";
++import { WHATSAPP_URL, handOff } from "@/lib/portal/handOff";
 +import { presetFor, ringsFor } from "@/lib/portal/fit";
 +import { formatIstDay, istDayKey } from "@/lib/portal/ist";
 +import { serverNow } from "@/lib/portal/clock";
@@ -22792,7 +23372,7 @@ index 0000000..bbec424
 +          <p className="ig-fineprint">
 +            That is {answer.kind === "below" ? "smaller than US 5" : "larger than US 9"}, outside the shop's rings. Tell us on WhatsApp, and we'll tell you honestly what we can do.
 +          </p>
-+          <a className={primaryButton} href={outsideSizeWhatsApp(`${value} mm around`)} target="_blank" rel="noopener noreferrer">
++          <a className={primaryButton} href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={handOff(() => outsideSizeWhatsApp(`${value} mm around`))}>
 +            Ask us on WhatsApp
 +          </a>
 +        </div>
@@ -23006,7 +23586,7 @@ index 0000000..bbec424
 +                <p className="ig-fineprint">
 +                  No ring is in US {ring.us}
 +                  {metal === "g" ? " in gold" : metal === "s" ? " in silver" : ""} right now.{" "}
-+                  <a className="ig-link" href={ringInSizeWhatsApp(ring.us)} target="_blank" rel="noopener noreferrer">
++                  <a className="ig-link" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={handOff(() => ringInSizeWhatsApp(ring.us))}>
 +                    Ask us on WhatsApp
 +                  </a>
 +                </p>
@@ -23034,10 +23614,10 @@ index 0000000..bbec424
 +export default Fit;
 diff --git a/src/pages/members/GardenHome.tsx b/src/pages/members/GardenHome.tsx
 new file mode 100644
-index 0000000..ac70313
+index 0000000..1668204
 --- /dev/null
 +++ b/src/pages/members/GardenHome.tsx
-@@ -0,0 +1,342 @@
+@@ -0,0 +1,345 @@
 +import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -23049,7 +23629,7 @@ index 0000000..ac70313
 +import { formatIstDate, greetingFor } from "@/lib/portal/ist";
 +import { shownName, stoneForMonth } from "@/lib/portal/stones";
 +import { pickDoors, recordFullDoors } from "@/lib/portal/doors";
-+import { EASE_REVEAL, play } from "@/lib/portal/motion";
++import { EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
 +import { byOpening, dropPhase, msUntil, petalsOpen, phaseBoundaries, speciesIndex, timeOf, VAULT_AFTER_MS } from "@/lib/portal/dropPhase";
 +import { formatIstDay, formatIstOpening, istOpensWhen } from "@/lib/portal/ist";
 +import { useServerNow } from "@/lib/portal/clock";
@@ -23119,10 +23699,11 @@ index 0000000..ac70313
 +  golden: ["The golden hour", ", a low sun behind the arbour: the garden keeps Indian time."],
 +  night: ["The night garden", ", with fireflies among the flowers: the garden keeps Indian time."],
 +};
-+const FESTIVAL_WORDS: Record<Dressing, [string, string]> = {
++/* Said as she will see it: with motion off (reduced motion, Data Saver) nothing puffs, so nothing says it does. */
++const FESTIVAL_WORDS: Record<Dressing, [string, string, string?]> = {
 +  diwali: ["Diyas and a marigold garland", ", for Diwali."],
 +  monsoon: ["Monsoon rain", ", in fine hairlines over the garden."],
-+  holi: ["Colour for Holi", ": tap the garden and it puffs."],
++  holi: ["Colour for Holi", ": tap the garden for a puff of gulal.", ", soft on the ground."],
 +};
 +const NOTE_LIST = { margin: 0, padding: 0, display: "grid", gap: "0.6rem" } as const;
 +
@@ -23179,6 +23760,8 @@ index 0000000..ac70313
 +  const { flowers, sprigs } = useGardenPlants();
 +  const ring = naira.ring;
 +  const [greeting] = useState(() => greetingFor(new Date()));
++  // Reduced motion or Data Saver: no tap blooms and no puffs, so the page does not offer them.
++  const [still] = useState(stillMotion);
 +  const [doors, setDoors] = useState<DoorsMode | null>(() => pickDoors(doorsPlayed));
 +  const firstOfDay = useRef(doors === "full");
 +  const bedRef = useRef<GardenBedHandle>(null);
@@ -23231,7 +23814,7 @@ index 0000000..ac70313
 +          <h1 ref={h1Ref} tabIndex={-1} className="ig-h1 ig-h1--greet">
 +            {greeting}, <em>{firstName}</em>
 +          </h1>
-+          <p className="ig-lede">Grown from your own seed. Tap it, and it blooms.</p>
++          <p className="ig-lede">Grown from your own seed.{still ? "" : " Tap it, and it blooms."}</p>
 +        </div>
 +
 +        <div className="ig-bed-wrap">
@@ -23364,7 +23947,7 @@ index 0000000..ac70313
 +            {season && (
 +              <li>
 +                <strong>{FESTIVAL_WORDS[season.dressing][0]}</strong>
-+                {FESTIVAL_WORDS[season.dressing][1]}
++                {(still && FESTIVAL_WORDS[season.dressing][2]) || FESTIVAL_WORDS[season.dressing][1]}
 +              </li>
 +            )}
 +            <li>
@@ -23533,10 +24116,10 @@ index 0000000..a42ec52
 +export default GateWelcome;
 diff --git a/src/pages/members/Gifts.tsx b/src/pages/members/Gifts.tsx
 new file mode 100644
-index 0000000..a0f1b67
+index 0000000..d71295f
 --- /dev/null
 +++ b/src/pages/members/Gifts.tsx
-@@ -0,0 +1,384 @@
+@@ -0,0 +1,410 @@
 +import { useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -23548,6 +24131,7 @@ index 0000000..a0f1b67
 +import { useMember, type BagLine } from "@/components/portal/MemberContext";
 +import { eyebrow, outlineButton, primaryButton, quietButton, textLink } from "@/components/portal/styles";
 +import { useLiveJewellery } from "@/hooks/useLiveJewellery";
++import { useWishlist } from "@/contexts/WishlistContext";
 +import { preorderWhatsAppUrl, type JewelPiece } from "@/data/jewellery";
 +import { cartLineFor } from "@/lib/variants";
 +import {
@@ -23571,7 +24155,8 @@ index 0000000..a0f1b67
 +  type Gift,
 +} from "@/lib/portal/gifts";
 +import { MAX_GIFTS, type MetaResult } from "@/lib/portal/memberMeta";
-+import { googleCalendarUrl, icsHref } from "@/lib/portal/ics";
++import { buildIcs, googleCalendarUrl } from "@/lib/portal/ics";
++import { GOOGLE_CALENDAR_URL, WHATSAPP_URL, handOff, saveFile } from "@/lib/portal/handOff";
 +import { presetFor } from "@/lib/portal/fit";
 +import { BIRTHSTONE_HANDLE, MONTH_OPTION, variantForMonth } from "@/lib/portal/stonePiece";
 +import { shownName, stoneForMonth } from "@/lib/portal/stones";
@@ -23628,10 +24213,8 @@ index 0000000..a0f1b67
 +    <div className="ig-gstone">
 +      <HeartStone stone={stone} size={34} className="ig-gstone-heart" />
 +      <div className="ig-gstone-body">
-+        <h3 className="ig-gcard-h3">Gift her stone</h3>
-+        <p className="ig-fineprint">
-+          The Birthstone Heart Necklace in {MONTHS_LONG[gift.m - 1]}'s colour: {shownName(name)}.
-+        </p>
++        <h3 className="ig-gcard-h3">{MONTHS_LONG[gift.m - 1]}'s stone</h3>
++        <p className="ig-fineprint">The Birthstone Heart Necklace, as the shop names {MONTHS_LONG[gift.m - 1]}'s colour: {shownName(name)}.</p>
 +        {status === "loading" && (
 +          <p className="ig-fineprint" role="status">
 +            Reading today's price from the shop…
@@ -23648,16 +24231,16 @@ index 0000000..a0f1b67
 +            </p>
 +            {variant.availableForSale ? (
 +              <button type="button" className={primaryButton} onClick={add} disabled={adding === "busy"}>
-+                {adding === "busy" ? "Adding…" : `Add ${stone.monthName} to bag`}
++                {adding === "busy" ? "Adding…" : `Add the ${stone.monthName} heart to bag`}
 +              </button>
 +            ) : (
-+              <a className={textLink} href={preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, choice: name })} target="_blank" rel="noopener noreferrer">
++              <a className={textLink} href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" onClick={handOff(() => preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, choice: name }))}>
 +                Ask on WhatsApp
 +              </a>
 +            )}
 +            {adding === "done" && (
 +              <p className="ig-fineprint" role="status">
-+                {preview ? "Preview only: nothing was added to a bag." : "In your bag."}
++                {import.meta.env.DEV && preview ? "Preview only: nothing was added to a bag." : "In your bag."}
 +              </p>
 +            )}
 +          </>
@@ -23672,18 +24255,20 @@ index 0000000..a0f1b67
 +  );
 +};
 +
-+/* A reminder a week before, every year: Google's link first (it opens inside Instagram too), then the .ics. */
++/* A reminder a week before, every year: Google's link first (it opens inside Instagram too), then the .ics.
++   Neither carries the date on the page: Google's address with her date's name is built at the tap, and
++   the .ics is made at the tap and saved (lib/portal/handOff), so no click recorder reads either. */
 +const GiftReminder = ({ gift, now }: { gift: Gift; now: number }) => {
 +  const inApp = typeof navigator !== "undefined" && IN_APP.test(navigator.userAgent ?? "");
 +  return (
 +    <div className="ig-gremind">
-+      <a className={outlineButton} href={googleCalendarUrl(giftReminderEvent(gift, now))} target="_blank" rel="noopener noreferrer">
++      <a className={outlineButton} href={GOOGLE_CALENDAR_URL} target="_blank" rel="noopener noreferrer" onClick={handOff(() => googleCalendarUrl(giftReminderEvent(gift, now)))}>
 +        Remind me a week before
 +      </a>
 +      {!inApp && (
-+        <a className={textLink} href={icsHref(giftDayEvent(gift, now))} download={`naira-gift-${gift.m}-${gift.d}.ics`}>
++        <button type="button" className={textLink} onClick={() => saveFile(buildIcs(giftDayEvent(gift, now)), `naira-gift-${gift.m}-${gift.d}.ics`, "text/calendar;charset=utf-8")}>
 +          Apple or Outlook · yearly
-+        </a>
++        </button>
 +      )}
 +    </div>
 +  );
@@ -23703,10 +24288,13 @@ index 0000000..a0f1b67
 +  const [adding, setAdding] = useState(gifts.length === 0);
 +  const [editing, setEditing] = useState<Gift | null>(null);
 +  const [notice, setNotice] = useState<Notice | null>(null);
++  // The date just kept, whose flower opens on the ring.
++  const [kept, setKept] = useState<Gift | null>(null);
 +  const h1Ref = useRef<HTMLHeadingElement>(null);
 +  const cardRef = useRef<HTMLElement>(null);
 +  const noticeRef = useRef<HTMLParagraphElement>(null);
 +  const { jewellery, isLive, isLoading } = useLiveJewellery();
++  const { isWishlisted } = useWishlist();
 +
 +  useEffect(() => {
 +    h1Ref.current?.focus({ preventScroll: true });
@@ -23731,12 +24319,21 @@ index 0000000..a0f1b67
 +    return picksWithin(jewellery, isLive, gift.b, { seed: shown, priceOf: (p) => preset(p).price }).map((piece) => ({ piece, preset: preset(piece) }));
 +  }, [gift, jewellery, isLive, shown]);
 +
-+  /* Her account answers: refused (it has no room), or kept, with any saved piece it let go named. */
++  /* Her account answers: refused (it has no room), or kept, with any saved piece it let go named, and
++     said to be still hearted on this phone when it is (the portal keeps it so: MembersRoute's spill). */
 +  const answer = (result: MetaResult, done: string): SaveAnswer => {
 +    if (result.ok === false) return result;
 +    const dropped = result.dropped ?? [];
-+    const gone = dropped.map((h) => names.get(h) ?? h).join(", ");
-+    setNotice({ text: dropped.length ? `${done} To make room on your account, the oldest piece in your drawer was let go: ${gone}.` : done });
++    if (!dropped.length) {
++      setNotice({ text: done });
++      return { ok: true };
++    }
++    const named = dropped.map((h) => names.get(h) ?? h);
++    const gone = named.length > 1 ? `${named.slice(0, -1).join(", ")} and ${named[named.length - 1]}` : named[0];
++    const one = dropped.length === 1;
++    const hearted = dropped.filter((h) => isWishlisted(h)).length;
++    const still = !hearted ? "" : hearted === dropped.length ? (one ? " It is still hearted on this phone." : " They are still hearted on this phone.") : " Those hearted on this phone stay hearted.";
++    setNotice({ text: `${done} To make room on your account, ${one ? "the oldest piece in your drawer was" : "the oldest pieces in your drawer were"} let go: ${gone}.${still}` });
 +    return { ok: true };
 +  };
 +
@@ -23747,6 +24344,7 @@ index 0000000..a0f1b67
 +    if (saved.ok) {
 +      setAdding(false);
 +      setChosen(g);
++      setKept(g);
 +    }
 +    return saved;
 +  };
@@ -23761,6 +24359,7 @@ index 0000000..a0f1b67
 +    if (saved.ok) {
 +      setEditing(null);
 +      setChosen(after);
++      setKept(after);
 +    }
 +    return saved;
 +  };
@@ -23782,6 +24381,7 @@ index 0000000..a0f1b67
 +    }
 +    answer(changeMeta(giftRestored(u.gift, u.index)), `${u.gift.n} is back in your ledger.`);
 +    setChosen(u.gift);
++    setKept(u.gift);
 +  };
 +
 +  const full = gifts.length >= MAX_GIFTS;
@@ -23798,7 +24398,7 @@ index 0000000..a0f1b67
 +          <p className="ig-lede">The people you buy for, round the year. The next to come is ringed in gold.</p>
 +        </div>
 +
-+        <GiftRing gifts={gifts} next={next} selected={shown} now={now} onSelect={(i) => setChosen(gifts[i] ?? null)} />
++        <GiftRing gifts={gifts} next={next} selected={shown} now={now} onSelect={(i) => setChosen(gifts[i] ?? null)} bloom={kept} />
 +        {gifts.length === 0 && <p className="ig-fineprint ig-gifts-empty">No dates yet. Add the first below, and its flower opens on the ring in its month's colour.</p>}
 +
 +        {gift && (
@@ -23866,10 +24466,17 @@ index 0000000..a0f1b67
 +          )}
 +          {metaProblem && (
 +            <p className="ig-fineprint" role="alert">
-+              {metaProblem} Your dates are kept here and will be saved to your account.{" "}
-+              <button type="button" className={quietButton} onClick={retryMeta}>
-+                Try again
-+              </button>
++              {/* A connection that failed is tried again; an account with no room is not, so nothing is promised then. */}
++              {/couldn't reach/i.test(metaProblem) ? (
++                <>
++                  {metaProblem} Your dates are kept here and will be saved to your account.{" "}
++                  <button type="button" className={quietButton} onClick={retryMeta}>
++                    Try again
++                  </button>
++                </>
++              ) : (
++                `${metaProblem} The ledger here may not match your account until then.`
++              )}
 +            </p>
 +          )}
 +          {list.length > 0 && (
@@ -23881,13 +24488,15 @@ index 0000000..a0f1b67
 +                  </li>
 +                ) : (
 +                  <li key={`${g.n}-${g.m}-${g.d}-${g.b}`} className={index === shown ? "is-shown" : undefined}>
-+                    <button type="button" className="ig-glist-pick" onClick={() => setChosen(g)} aria-current={index === shown ? "true" : undefined}>
++                    {/* A choice, not a button: a tapped button's words (her date's name, day and budget) are what Meta's automatic events would read. */}
++                    <label className="ig-glist-pick">
++                      <input type="radio" name="ig-gift" className="ig-glist-radio" checked={index === shown} onChange={() => setChosen(g)} />
 +                      <span className="ig-glist-name">{g.n}</span>
 +                      <span className="ig-glist-when">
 +                        {giftDay(g)} · {whenSaid(when.days)}
 +                      </span>
 +                      <span className="ig-glist-band">{bandLabel(g.b)}</span>
-+                    </button>
++                    </label>
 +                    <span className="ig-glist-actions">
 +                      <button type="button" className={quietButton} onClick={() => setEditing(g)} aria-label={`Change ${g.n}`}>
 +                        Change
@@ -23923,11 +24532,11 @@ index 0000000..a0f1b67
 +export default Gifts;
 diff --git a/src/pages/members/GiftsCareOrders.test.tsx b/src/pages/members/GiftsCareOrders.test.tsx
 new file mode 100644
-index 0000000..b494752
+index 0000000..2595f3f
 --- /dev/null
 +++ b/src/pages/members/GiftsCareOrders.test.tsx
-@@ -0,0 +1,457 @@
-+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+@@ -0,0 +1,627 @@
++import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter, Route, Routes } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +import { jewellerySnapshot } from "@/data/jewellerySnapshot";
@@ -24054,6 +24663,43 @@ index 0000000..b494752
 +  return { onfinish: null, oncancel: null, cancel: () => {}, play: () => {}, pause: () => {}, finish: () => {}, currentTime: 0, playState: "running", finished: Promise.resolve() } as unknown as Animation;
 +};
 +
++/* The hand-offs (lib/portal/handOff): links name only the bare address, and the filled one is opened at the tap. */
++const opened: string[] = [];
++const saved: { name: string; blob: Blob }[] = [];
++const stubHandOffs = () => {
++  opened.length = 0;
++  saved.length = 0;
++  window.open = vi.fn((url?: string | URL) => {
++    opened.push(String(url));
++    return { opener: window } as unknown as Window;
++  }) as typeof window.open;
++  let blob: Blob | null = null;
++  URL.createObjectURL = vi.fn((b: Blob) => {
++    blob = b;
++    return "blob:https://nairaflore.com/ics";
++  }) as typeof URL.createObjectURL;
++  URL.revokeObjectURL = vi.fn();
++  vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
++    if (blob) saved.push({ name: this.download, blob });
++  });
++};
++const textOfBlob = (blob: Blob) =>
++  new Promise<string>((resolve) => {
++    const reader = new FileReader();
++    reader.onload = () => resolve(String(reader.result));
++    reader.readAsText(blob);
++  });
++
++/* Nothing of hers on the page's links or in a button's words: what Clarity and Meta's automatic events read at a tap. */
++const expectNothingOfHersOnLinks = (words: RegExp) => {
++  for (const a of document.querySelectorAll("a[href]")) {
++    const href = a.getAttribute("href") ?? "";
++    expect(href, href).not.toMatch(words);
++    expect(href, href).not.toMatch(/\?text=|@|data:text\/calendar|SUMMARY|US%20\d|calendar\/render/);
++  }
++  for (const b of document.querySelectorAll("button, [class*=btn]")) expect(b.textContent ?? "").not.toMatch(words);
++};
++
 +const lastNaira = () => (sb.updateUser.mock.calls.at(-1)?.[0] as { data: { naira: Row } } | undefined)?.data.naira;
 +
 +beforeEach(() => {
@@ -24075,12 +24721,14 @@ index 0000000..b494752
 +  });
 +  animated.length = 0;
 +  (Element.prototype as unknown as { animate: unknown }).animate = animate;
++  stubHandOffs();
 +  setReducedMotion(false);
 +});
 +
 +afterEach(() => {
 +  cleanup();
 +  vi.useRealTimers();
++  vi.restoreAllMocks();
 +  delete (Element.prototype as unknown as { animate?: unknown }).animate;
 +  setReducedMotion(false);
 +});
@@ -24099,6 +24747,13 @@ index 0000000..b494752
 +    fireEvent.click(screen.getByLabelText("Under ₹1,500"));
 +    fireEvent.click(screen.getByRole("button", { name: "Keep this date" }));
 +    expect(screen.getByText("Mum, 14 March, is in your ledger.")).toBeInTheDocument();
++    // Its flower opens on the ring, with a few petals in March's colour (removed as they land): transform and opacity only.
++    const opened = animated.filter((a) => a.el.closest(".ig-gring-flower"));
++    expect(opened.some((a) => JSON.stringify(a.keyframes).includes("scale(0)"))).toBe(true);
++    const petals = document.querySelectorAll(".ig-gring .ig-petal");
++    expect(petals.length).toBeGreaterThan(0);
++    expect(petals.length).toBeLessThanOrEqual(24);
++    for (const a of animated.filter((x) => x.el.closest(".ig-gring"))) for (const k of a.keyframes) for (const prop of Object.keys(k).filter((p) => !["offset", "easing"].includes(p))) expect(["transform", "opacity", "strokeDashoffset"]).toContain(prop);
 +    expect(screen.getByRole("button", { name: /^Mum, 14 March, under ₹1,500\. The next to come, / })).toHaveAttribute("aria-pressed", "true");
 +    await waitFor(() => expect(lastNaira()?.gifts).toEqual(["03141Mum"]), { timeout: 2500 });
 +    // Her name, picture and everything else on the account are left alone: only `naira` is written.
@@ -24112,6 +24767,11 @@ index 0000000..b494752
 +    fireEvent.change(screen.getByLabelText("Who it is for"), { target: { value: "Thirteen chars" } });
 +    fireEvent.click(screen.getByRole("button", { name: "Keep this date" }));
 +    expect(screen.getByRole("alert")).toHaveTextContent("Keep the name to 12 characters or fewer.");
++    // Said beside the name, and she is taken to it.
++    const name = screen.getByLabelText("Who it is for");
++    expect(document.activeElement).toBe(name);
++    expect(name.closest(".ig-oform-row")?.contains(screen.getByRole("alert"))).toBe(true);
++    expect(name).toHaveAttribute("aria-errormessage", screen.getByRole("alert").id);
 +    fireEvent.change(screen.getByLabelText("Who it is for"), { target: { value: "Asha" } });
 +    fireEvent.change(screen.getByLabelText("Month"), { target: { value: "4" } });
 +    // April has no 31st to choose.
@@ -24145,11 +24805,12 @@ index 0000000..b494752
 +    signIn(ledger("03141Mum"));
 +    visit("/members/gifts");
 +    const card = (await screen.findByRole("heading", { level: 2, name: "Mum" })).closest("section") as HTMLElement;
-+    expect(within(card).getByText(/The Birthstone Heart Necklace in March's colour: March · Aquamarine/)).toBeInTheDocument();
++    expect(within(card).getByRole("heading", { level: 3, name: "March's stone" })).toBeInTheDocument();
++    expect(within(card).getByText(/The Birthstone Heart Necklace, as the shop names March's colour: March · Aquamarine/)).toBeInTheDocument();
 +    const necklace = catalogue.find((p) => p.handle === BIRTHSTONE_HANDLE) as JewelPiece;
 +    const march = necklace.variants?.find((v) => v.options.Month === "March · Aquamarine");
 +    if (march?.availableForSale) {
-+      fireEvent.click(within(card).getByRole("button", { name: "Add March to bag" }));
++      fireEvent.click(within(card).getByRole("button", { name: "Add the March heart to bag" }));
 +      await waitFor(() => expect(cart.addItem).toHaveBeenCalledTimes(1));
 +      expect(cart.addItem.mock.calls[0][0]).toMatchObject({ id: BIRTHSTONE_HANDLE, variantId: march.id });
 +    }
@@ -24165,11 +24826,23 @@ index 0000000..b494752
 +      expect(within(pick).getByText("Available")).toBeInTheDocument();
 +    }
 +    expect(within(card).getByRole("link", { name: "Everything under ₹1,500" })).toHaveAttribute("href", "/jewellery?under=1500");
-+    const google = new URL(within(card).getByRole("link", { name: "Remind me a week before" }).getAttribute("href") ?? "");
++    // The link names only Google Calendar's page; the reminder, with her date in it, opens at the tap.
++    const remind = within(card).getByRole("link", { name: "Remind me a week before" });
++    expect(remind).toHaveAttribute("href", "https://calendar.google.com/calendar/r");
++    fireEvent.click(remind);
++    const google = new URL(opened.at(-1) ?? "");
++    expect(google.pathname).toBe("/calendar/render");
 +    expect(google.searchParams.get("recur")).toBe("RRULE:FREQ=YEARLY");
-+    const ics = decodeURIComponent((within(card).getByRole("link", { name: /Apple or Outlook/ }).getAttribute("href") ?? "").split(",")[1]);
++    expect(google.searchParams.get("text")).toBe("A week until Mum · 14 March");
++    // The .ics is made at the tap and saved through a link never on the page.
++    fireEvent.click(within(card).getByRole("button", { name: /Apple or Outlook/ }));
++    expect(saved.at(-1)?.name).toBe("naira-gift-3-14.ics");
++    const ics = await textOfBlob(saved.at(-1)?.blob as Blob);
 +    expect(ics).toContain("RRULE:FREQ=YEARLY");
 +    expect(ics).toContain("TRIGGER:-P7D");
++    expect(ics).toContain("SUMMARY:Mum · 14 March");
++    // (The shop's own "Everything under ₹1,500" link names a budget band, one of five, and nothing of the date.)
++    expectNothingOfHersOnLinks(/Mum|14 March|03-14|0314/);
 +    // No gift note, gift wrap or message is offered: the shop has not said it can take one.
 +    expect(card.textContent).not.toMatch(/gift (note|message|wrap)/i);
 +  });
@@ -24224,12 +24897,40 @@ index 0000000..b494752
 +    expect(Math.atan2(lone.y - 180, lone.x - 180)).toBeCloseTo(Math.atan2(lone.dot.y - 180, lone.dot.x - 180), 6);
 +  });
 +
++  it("lists her dates as a choice, not as buttons carrying their names, with Meta's automatic click events off in the portal", async () => {
++    const fbq = vi.fn();
++    window.fbq = fbq;
++    signIn(ledger("03141Mum", "12020Didi"));
++    const { unmount } = visit("/members/gifts");
++    await screen.findByRole("heading", { name: "Your gift ledger" });
++    expect(fbq).toHaveBeenCalledWith("set", "autoConfig", false);
++    const list = document.querySelector(".ig-glist") as HTMLElement;
++    const didi = within(list).getByRole("radio", { name: /^Didi/ });
++    expect(within(list).getAllByRole("radio")).toHaveLength(2);
++    // No button in the list holds a date's name, day or budget in its words.
++    for (const b of within(list).getAllByRole("button")) expect(b.textContent).toMatch(/^(Change|Remove)$/);
++    fireEvent.click(didi);
++    expect(didi).toBeChecked();
++    expect(screen.getByRole("heading", { level: 2, name: "Didi" })).toBeInTheDocument();
++    unmount();
++    expect(fbq).toHaveBeenLastCalledWith("set", "autoConfig", true);
++    // Only the switch: no event is ever sent.
++    expect(fbq.mock.calls.every((c) => c[0] === "set")).toBe(true);
++    delete (window as { fbq?: unknown }).fbq;
++  });
++
 +  it("joins the More row", async () => {
 +    signIn();
 +    visit("/members/gifts");
 +    const nav = screen.getByRole("navigation", { name: "Your garden" });
 +    fireEvent.click(within(nav).getByRole("button", { name: "More" }));
-+    expect(await within(nav).findByRole("link", { name: "Gifts" })).toHaveAttribute("aria-current", "page");
++    const gifts = await within(nav).findByRole("link", { name: "Gifts" });
++    expect(gifts).toHaveAttribute("aria-current", "page");
++    // Escape from inside the row closes it and gives focus back to More.
++    gifts.focus();
++    fireEvent.keyDown(gifts, { key: "Escape" });
++    await waitFor(() => expect(within(nav).queryByRole("link", { name: "Gifts" })).toBeNull());
++    expect(document.activeElement).toBe(within(nav).getByRole("button", { name: "More" }));
 +  });
 +});
 +
@@ -24277,42 +24978,53 @@ index 0000000..b494752
 +    expect(await screen.findByText(/We couldn't read them just now/)).toBeInTheDocument();
 +  });
 +
-+  it("writes to the atelier with her email in the message, hers to change before WhatsApp opens", async () => {
++  it("writes to the atelier with her email and a line for the order number, hers to change before WhatsApp opens", async () => {
 +    signIn({ ring: { us: 7, how: "k", at: "2026-11-01" }, metal: "g", saved: ["a-one", "a-two", "a-three", "a-four"] });
 +    visit("/members/orders");
++    expect(await screen.findByText(/with a line for the order number from your confirmation email/)).toBeInTheDocument();
 +    fireEvent.click(await screen.findByRole("button", { name: "Write to the atelier" }));
 +    const field = screen.getByLabelText("Your message") as HTMLTextAreaElement;
 +    expect(field.value).toContain("The email I used at checkout: meera@example.com");
-+    expect(field.value).toContain("My ring size: US 7");
-+    expect(field.value).toContain("My stone: July · Ruby");
-+    expect(field.value).toContain("https://nairaflore.com/jewellery/a-three");
-+    expect(field.value).not.toContain("a-four");
-+    const link = () => new URL(screen.getByRole("link", { name: "Open WhatsApp" }).getAttribute("href") ?? "");
-+    expect(link().origin + link().pathname).toBe("https://wa.me/919561557935");
-+    expect(link().searchParams.get("text")).toContain("meera@example.com");
++    expect(field.value).toContain("The order number (from my confirmation email):");
++    // Her size, metal, month and saved pieces would only muddle which order she means.
++    expect(field.value).not.toMatch(/My ring size|My metal|My month|My stone|Pieces I saved|a-one/);
++    // The link names only the shop's number; her words go on it at the tap.
++    const open = screen.getByRole("link", { name: "Open WhatsApp" });
++    expect(open).toHaveAttribute("href", "https://wa.me/919561557935");
++    expectNothingOfHersOnLinks(/meera|US 7|Ruby/i);
++    fireEvent.click(open);
++    const sent = () => new URL(opened.at(-1) ?? "");
++    expect(sent().origin + sent().pathname).toBe("https://wa.me/919561557935");
++    expect(sent().searchParams.get("text")).toContain("meera@example.com");
 +    fireEvent.change(field, { target: { value: "Hello, it was ananya@other.in" } });
-+    expect(link().searchParams.get("text")).toBe("Hello, it was ananya@other.in");
++    fireEvent.click(open);
++    expect(sent().searchParams.get("text")).toBe("Hello, it was ananya@other.in");
++    // Half a broken emoji (a paste cut mid-character) neither takes the room down nor breaks the link.
++    fireEvent.change(field, { target: { value: "Hi \uD83C" } });
++    expect(screen.getByLabelText("Your message")).toBeInTheDocument();
++    fireEvent.click(open);
++    expect(opened.at(-1)).toBe("https://wa.me/919561557935?text=Hi%20%EF%BF%BD");
 +    // No reply hours are promised.
 +    expect(document.body.textContent).not.toMatch(/reply (within|in)|hours|\b\d{1,2}\s?(am|pm)\s?(to|-|–)/i);
 +  });
 +});
 +
 +describe("Care", () => {
-+  it("quotes the listings' own care line and PVD explainer, and runs the ritual still under reduced motion", async () => {
++  it("quotes the PVD explainer, and runs the ritual still under reduced motion, with nothing to tap said", async () => {
 +    setReducedMotion(true);
 +    signIn();
 +    visit("/members/care");
 +    expect(await screen.findByRole("heading", { level: 1, name: "Caring for your pieces" })).toBeInTheDocument();
 +    const quotes = [...document.querySelectorAll(".ig-care-quote")].map((q) => q.textContent);
-+    expect(quotes).toContain("Waterproof and tarnish free, so daily wear and water are fine. Keep it away from perfume and harsh chemicals, wipe with a soft dry cloth and store it flat in its pouch.");
-+    expect(quotes).toContain("Regular plating is a soft layer that wears off over time. PVD is bonded to the metal in a vacuum, so it is far harder, stands up to sweat and keeps its colour much longer.");
-+    // Still art: polished, the glint drawn, the three steps a plain list, nothing to play.
-+    expect(screen.getByRole("status", { name: "" })).toBeTruthy();
-+    expect(screen.getByText("Polished to a glint.")).toBeInTheDocument();
++    expect(quotes).toEqual(["Regular plating is a soft layer that wears off over time. PVD is bonded to the metal in a vacuum, so it is far harder, stands up to sweat and keeps its colour much longer."]);
++    // Still art: the haze cleared, the glint drawn, the three steps a plain list, nothing to play or tap.
++    expect(screen.getByText("Back in its pouch, with its glint.")).toBeInTheDocument();
 +    expect(document.querySelector(".ig-ritual-glint")).not.toBeNull();
 +    expect(document.querySelectorAll("button.ig-ritual-step")).toHaveLength(0);
 +    expect(document.querySelectorAll(".ig-ritual-steps li")).toHaveLength(3);
 +    expect(animated.filter((a) => a.el.closest(".ig-ritual"))).toEqual([]);
++    expect(document.body.textContent).not.toMatch(/Tap each/);
++    expect(document.body.textContent).not.toMatch(/polish/i);
 +    // No re-polish, repair or replating service is offered.
 +    expect(document.body.textContent).not.toMatch(/re-?polish|replat|repair service|send it (back|to us)/i);
 +  });
@@ -24321,14 +25033,45 @@ index 0000000..b494752
 +    signIn();
 +    visit("/members/care");
 +    await screen.findByRole("heading", { level: 1, name: "Caring for your pieces" });
-+    expect(screen.getByText("Three passes of the cloth.")).toBeInTheDocument();
++    expect(screen.getByText("Three steps, a pass of the cloth for each.")).toBeInTheDocument();
++    expect(screen.getByText(/Tap each in turn\. What each of yours asks, water included, is on its card below\./)).toBeInTheDocument();
 +    const first = screen.getByRole("button", { name: /Keep it away from perfume and harsh chemicals/ });
 +    fireEvent.click(first);
 +    const pass = animated.filter((a) => a.el.closest(".ig-ritual"));
 +    expect(pass.length).toBeGreaterThanOrEqual(3);
 +    for (const a of pass) for (const k of a.keyframes) for (const prop of Object.keys(k).filter((p) => p !== "offset")) expect(["transform", "opacity"]).toContain(prop);
-+    // One pass at a time: the next step waits for this one.
-+    expect(document.querySelectorAll("button.ig-ritual-step")).toHaveLength(0);
++    // One pass at a time: the step stays the same button, waiting (a second tap starts nothing), and the next waits too.
++    const steps = document.querySelectorAll("button.ig-ritual-step");
++    expect(steps).toHaveLength(3);
++    for (const b of steps) expect(b).toHaveAttribute("aria-disabled", "true");
++    const before = animated.length;
++    fireEvent.click(first);
++    fireEvent.click(steps[1]);
++    expect(animated.length).toBe(before);
++  });
++
++  it("moves focus to the next step after a keyboard press, then to Once more, and back to the first", async () => {
++    let finish: (() => void) | null = null;
++    (Element.prototype as unknown as { animate: unknown }).animate = function (this: Element, keyframes: Keyframe[]) {
++      const a = animate.call(this, keyframes) as Animation & { onfinish: (() => void) | null };
++      if (this.classList.contains("ig-ritual-window")) finish = () => (a.onfinish as unknown as () => void)?.();
++      return a;
++    };
++    signIn();
++    visit("/members/care");
++    await screen.findByRole("heading", { level: 1, name: "Caring for your pieces" });
++    const steps = [...document.querySelectorAll<HTMLButtonElement>("button.ig-ritual-step")];
++    for (let i = 0; i < 3; i++) {
++      steps[i].focus();
++      fireEvent.click(steps[i]);
++      // Mid-pass the focused step is still there, still focused.
++      expect(document.activeElement).toBe(steps[i]);
++      act(() => finish?.());
++      expect(document.activeElement).toBe(i < 2 ? steps[i + 1] : screen.getByRole("button", { name: "Once more" }));
++    }
++    expect(screen.getByText("Back in its pouch, with its glint.")).toBeInTheDocument();
++    fireEvent.click(screen.getByRole("button", { name: "Once more" }));
++    expect(document.activeElement).toBe(document.querySelectorAll("button.ig-ritual-step")[0]);
 +  });
 +
 +  it("lays a card for each piece she saved or took to a checkout, in its listing's own words", async () => {
@@ -24348,6 +25091,22 @@ index 0000000..b494752
 +    expect(section.textContent).not.toMatch(/you bought|your order|purchased/i);
 +  });
 +
++  it("says water is fine only on the cards of pieces whose own listing says so", async () => {
++    const dry = catalogue.find((p) => /keep (it|them) dry|before swimming/i.test(p.care ?? "")) as JewelPiece;
++    const waterproof = catalogue.find((p) => /^Waterproof/.test(p.care ?? "")) as JewelPiece;
++    signIn({ saved: [dry.handle, waterproof.handle] });
++    visit("/members/care");
++    const section = (await screen.findByRole("heading", { name: "Your pieces" })).closest("section") as HTMLElement;
++    const cards = within(section).getAllByRole("listitem");
++    expect(cards).toHaveLength(2);
++    const at = (el: Element) => (el.textContent ?? "").match(/waterproof/gi)?.length ?? 0;
++    expect(at(cards[0])).toBe(0);
++    expect(at(cards[1])).toBe(1);
++    // Nowhere else in the room: not over the ritual, not in a quote.
++    expect(at(document.body)).toBe(1);
++    expect(cards[0].textContent).toMatch(/dry/i);
++  });
++
 +  it("asks the atelier about care, with her size, metal, stone and saved pieces", async () => {
 +    signIn({ ring: { us: 6, how: "s", at: "2026-11-01" }, metal: "s", saved: ["toggle-link-chain"] });
 +    visit("/members/care");
@@ -24357,10 +25116,21 @@ index 0000000..b494752
 +    expect(field.value).toContain("My ring size: US 6");
 +    expect(field.value).toContain("My metal: Silver");
 +    expect(field.value).not.toContain("email");
-+    // The seal presses on the card, transform and opacity only.
-+    const pressed = animated.filter((a) => a.el.closest(".ig-ask"));
-+    expect(pressed.length).toBeGreaterThanOrEqual(2);
-+    for (const a of pressed) for (const k of a.keyframes) for (const prop of Object.keys(k).filter((p) => p !== "offset")) expect(["transform", "opacity"]).toContain(prop);
++    expect(screen.getByRole("link", { name: "Open WhatsApp" })).toHaveAttribute("href", "https://wa.me/919561557935");
++    expectNothingOfHersOnLinks(/US 6|US%206|Silver/);
++    // The card lays down and the seal's place draws in; the wax waits for her tap.
++    expect(document.querySelector(".ig-seal-place")).not.toBeNull();
++    expect(document.querySelector(".ig-seal-wax")).toBeNull();
++    fireEvent.click(screen.getByRole("link", { name: "Open WhatsApp" }));
++    // The tap opens WhatsApp at once, and the seal presses onto the card.
++    expect(opened.at(-1)).toMatch(/^https:\/\/wa\.me\/919561557935\?text=/);
++    expect(document.querySelector(".ig-seal-wax")).not.toBeNull();
++    const seal = animated.filter((a) => a.el.matches(".ig-seal"));
++    expect(seal).toHaveLength(1);
++    // The card, the seal's place (gone now, under the wax), the seal.
++    const pressed = animated.filter((a) => /^ig-(ask-card|seal-place|seal)$/.test(a.el.getAttribute("class") ?? ""));
++    expect(pressed.map((a) => a.el.getAttribute("class"))).toEqual(["ig-ask-card", "ig-seal-place", "ig-seal"]);
++    for (const a of pressed) for (const k of a.keyframes) for (const prop of Object.keys(k).filter((p) => p !== "offset")) expect(["transform", "opacity", "strokeDashoffset"]).toContain(prop);
 +  });
 +
 +  it("reads her checkouts once a visit, from her own rows", async () => {
@@ -24380,6 +25150,15 @@ index 0000000..b494752
 +    visit("/members/orders");
 +    expect(await screen.findByText("Toggle Link Chain")).toBeInTheDocument();
 +    expect(screen.getAllByRole("link", { name: "Did this go through? Track it" })).toHaveLength(2);
++    expect(sb.reads).toEqual([]);
++  });
++
++  it("shows the empty line without stand-in checkouts, and still never asks Supabase", async () => {
++    window.history.replaceState(null, "", "/members/orders?portalPreview=1&name=Ananya");
++    auth.state = { user: null, profile: null, loading: false, session: null, refreshProfile: async () => {}, signOut: async () => {} };
++    visit("/members/orders");
++    expect(await screen.findByText("Nothing here yet. A checkout you start while signed in will appear here.")).toBeInTheDocument();
++    await new Promise((r) => setTimeout(r, 50));
 +    expect(sb.reads).toEqual([]);
 +  });
 +});
@@ -24522,10 +25301,10 @@ index 0000000..e4913ea
 +export default Herbarium;
 diff --git a/src/pages/members/KeptRooms.test.tsx b/src/pages/members/KeptRooms.test.tsx
 new file mode 100644
-index 0000000..670fae3
+index 0000000..ee5907f
 --- /dev/null
 +++ b/src/pages/members/KeptRooms.test.tsx
-@@ -0,0 +1,801 @@
+@@ -0,0 +1,852 @@
 +import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter, Route, Routes } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -24535,6 +25314,7 @@ index 0000000..670fae3
 +import { istDayKey } from "@/lib/portal/ist";
 +import { readPortal, writePortal } from "@/lib/portal/safeStorage";
 +import { currentScreenKey } from "@/lib/portal/sizer";
++import { META_CAP_BYTES, bytesOf, compactNaira, readNaira } from "@/lib/portal/memberMeta";
 +
 +/*
 +  Phase 3's rooms through the portal's own route: Your fit (the sizer, the
@@ -24823,7 +25603,13 @@ index 0000000..670fae3
 +    fireEvent.change(input, { target: { value: "66" } });
 +    fireEvent.click(screen.getByRole("button", { name: "Find my size" }));
 +    expect(screen.queryByRole("button", { name: /^Keep US/ })).toBeNull();
-+    expect(screen.getByRole("link", { name: "Ask us on WhatsApp" }).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/919561557935\?text=/);
++    // The link names only the shop's number; her measurement goes on it at the tap.
++    const ask = screen.getByRole("link", { name: "Ask us on WhatsApp" });
++    expect(ask.getAttribute("href")).toBe("https://wa.me/919561557935");
++    const open = vi.fn((_url?: string | URL) => ({ opener: window }) as unknown as Window);
++    window.open = open as typeof window.open;
++    fireEvent.click(ask);
++    expect(String(open.mock.calls[0][0])).toMatch(/^https:\/\/wa\.me\/919561557935\?text=.*66%20mm/);
 +  });
 +
 +  it("opens the ring sizer as its own chunk: the card first, then the circle through the chart", async () => {
@@ -25046,6 +25832,50 @@ index 0000000..670fae3
 +    visit("/members/drawer");
 +    await waitFor(() => expect(sb.updateUser).toHaveBeenCalled(), { timeout: 2500 });
 +    expect(writes().at(-1)!.data.naira).toMatchObject({ saved: ["granule-dome-ring", "toggle-link-chain", "verdant-eternity-band"] });
++  });
++
++  /* A gift date (or any room's change) that her account's 1.2 KB cap makes room for by letting the
++     oldest saved piece go: the piece is spilled at once, so the drawer never reads it as taken out on
++     another phone, and its heart stays on this one. */
++  it("keeps a piece hearted here when a gift date lets it go from her account to make room", async () => {
++    const longest = [...catalogue].sort((a, b) => b.handle.length - a.handle.length || a.handle.localeCompare(b.handle)).slice(0, 24);
++    const saved = longest.map((p) => p.handle);
++    const label = (i: number) => "अआइईउऊएऐओऔक" + "चछजझटठडढणतथ"[i];
++    const gifts = Array.from({ length: 7 }, (_, i) => `${String(i + 1).padStart(2, "0")}011${label(i)}`);
++    const base: Record<string, unknown> = { v: 1, seen: { last: today }, ring: { us: 7, how: "k", at: "2026-11-01" }, metal: "g", month: 7, saved, gifts, pressed: [] as string[] };
++    // Pressed flowers until one more twelve-character date no longer fits.
++    const eighth = { ...base, gifts: [...gifts, `08011${label(7)}`] };
++    for (let i = 0; i < 24 && bytesOf(readNaira({ ...eighth, pressed: base.pressed })) <= META_CAP_BYTES; i++) (base.pressed as string[]).push(`drop-${i}`);
++    (eighth as Record<string, unknown>).pressed = base.pressed;
++    expect(bytesOf(readNaira(base))).toBeLessThanOrEqual(META_CAP_BYTES);
++    expect(bytesOf(readNaira(eighth))).toBeGreaterThan(META_CAP_BYTES);
++    wish.items = longest.map((p) => heart(p.handle));
++    writePortal({ savedSync: { u: USER_ID, h: saved, x: [] } });
++    signIn(compactNaira(readNaira(base)));
++    visit("/members/gifts");
++    await screen.findByRole("heading", { name: "Your gift ledger" });
++    fireEvent.click(screen.getByRole("button", { name: "Add a date" }));
++    fireEvent.change(screen.getByLabelText("Who it is for"), { target: { value: label(7) } });
++    fireEvent.change(screen.getByLabelText("Month"), { target: { value: "8" } });
++    fireEvent.change(screen.getByLabelText("Day"), { target: { value: "1" } });
++    fireEvent.click(screen.getByLabelText("Under ₹1,500"));
++    fireEvent.click(screen.getByRole("button", { name: "Keep this date" }));
++    const notice = screen.getByText(/To make room on your account, the oldest/);
++    expect(notice.textContent).toMatch(/still hearted on this phone\.$/);
++    const gone = saved.filter((h) => !(readPortal().savedSync?.h ?? []).includes(h));
++    expect(gone.length).toBeGreaterThan(0);
++    expect(gone).toEqual(saved.slice(0, gone.length));
++    // Spilled at once: kept hearted here, out of the merge base.
++    expect(readPortal().savedSync?.x).toEqual(gone);
++    // Then the drawer: it takes no heart off this phone.
++    fireEvent.click(within(screen.getByRole("navigation", { name: "Your garden" })).getByRole("link", { name: "Drawer" }));
++    expect(await screen.findByRole("heading", { level: 1, name: /jewel drawer/i }, { timeout: 3000 })).toBeInTheDocument();
++    await waitFor(() => expect(sb.updateUser).toHaveBeenCalled(), { timeout: 2500 });
++    await new Promise((r) => setTimeout(r, 300));
++    expect(wish.toggleItem).not.toHaveBeenCalled();
++    expect(wish.items).toHaveLength(24);
++    expect(readPortal().savedSync?.x).toEqual(expect.arrayContaining(gone));
++    expect((writes().at(-1)!.data.naira as { gifts: string[] }).gifts).toHaveLength(8);
 +  });
 +
 +  it("settles with more hearts on this phone than the drawer holds, and takes none of them off", async () => {
@@ -25493,16 +26323,16 @@ index 0000000..cf60a76
 +});
 diff --git a/src/pages/members/MembersRoute.tsx b/src/pages/members/MembersRoute.tsx
 new file mode 100644
-index 0000000..ce49c97
+index 0000000..dbc391e
 --- /dev/null
 +++ b/src/pages/members/MembersRoute.tsx
-@@ -0,0 +1,387 @@
-+import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useState, type ReactElement } from "react";
+@@ -0,0 +1,441 @@
++import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactElement } from "react";
 +import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 +import { useAuth } from "@/contexts/AuthContext";
 +import { useCart } from "@/contexts/CartContext";
 +import { getSupabase } from "@/integrations/supabase/lazy";
-+import { MemberProvider, firstNameOf, type BagLine, type Member, type SaveResult } from "@/components/portal/MemberContext";
++import { MemberProvider, firstNameOf, type BagLine, type Member, type SaveResult, type SavedSync } from "@/components/portal/MemberContext";
 +import { logPreviewWrite, previewHost, readPreviewMember } from "@/lib/portal/preview";
 +import { DROPS } from "@/lib/portal/drops";
 +import { claimPressed, pressDrop, readPressed, type Pressed } from "@/lib/portal/pressed";
@@ -25510,11 +26340,12 @@ index 0000000..ce49c97
 +import { serverNow } from "@/lib/portal/clock";
 +import { HOUR, inMembersWindow, timeOf } from "@/lib/portal/dropPhase";
 +import { hasDropFlag, readPortal, writePortal } from "@/lib/portal/safeStorage";
-+import { firstVisit as isFirstVisit, mergePressed, pressInto, sinceFor, touchSeen } from "@/lib/portal/memberMeta";
++import { firstVisit as isFirstVisit, mergePressed, pressInto, sinceFor, touchSeen, type MetaResult, type Updater } from "@/lib/portal/memberMeta";
 +import { monthOfBirthday } from "@/lib/portal/stones";
 +import { useMemberMeta } from "@/lib/portal/useMemberMeta";
 +import type { ArrivalActions, JoinFn } from "@/lib/portal/arrival";
 +import { lazyRoom, whenIdle } from "@/lib/portal/lazyRoom";
++import { quietMetaClicks } from "@/lib/portal/handOff";
 +import PortalShell from "@/components/portal/PortalShell";
 +import Gate from "./Gate";
 +import GardenHome from "./GardenHome";
@@ -25547,6 +26378,14 @@ index 0000000..ce49c97
 +const AT_STONE = /^\/members\/stone\/?$/;
 +
 +const NO_HANDLES: readonly string[] = [];
++
++const handles = (x: unknown): string[] => (Array.isArray(x) ? x.filter((h): h is string => typeof h === "string") : []);
++/** This phone's saved-piece merge base and spill for her (the Jewel drawer's), from this device's notes. */
++const readSavedSync = (u: string | undefined): SavedSync => {
++  const kept = readPortal().savedSync;
++  const mine = Boolean(u && kept && kept.u === u);
++  return { h: mine ? handles(kept?.h) : [], x: mine ? handles(kept?.x) : [] };
++};
 +
 +/* The arrival repair's writes (lib/portal/arrival) are made only from its
 +   card, on her first visit, so they ride in the card's chunk: each action
@@ -25626,6 +26465,8 @@ index 0000000..ce49c97
 +
 +const MembersRoute = () => {
 +  useStickyRoom();
++  // Meta's automatic button-click events stay off while the portal is open (lib/portal/handOff).
++  useEffect(() => quietMetaClicks(), []);
 +  const { pathname } = useLocation();
 +  const [arrivedAtStone] = useState(() => AT_STONE.test(pathname));
 +  /* Arriving at her stone, the gate stays closed until its room is in, so
@@ -25661,7 +26502,48 @@ index 0000000..ce49c97
 +  /* Her account's memory (user_metadata.naira). The preview member's lives in
 +     memory and is printed to the console instead of written. */
 +  const meta = useMemberMeta(user, import.meta.env.DEV && preview ? (naira) => logPreviewWrite("user_metadata.naira", naira) : null);
-+  const { naira, change: changeMeta, problem: metaProblem, retry: retryMeta } = meta;
++  const { naira, change: changeNaira, problem: metaProblem, retry: retryMeta } = meta;
++
++  /* Her saved pieces' merge base and spill on this phone (the Jewel drawer's
++     three-way merge, wishlistSync), kept here rather than in the drawer: a
++     piece that any room's change lets go to make room on her account (a gift
++     date, a pressed flower, today's visit) is spilled at once, so the drawer
++     never reads it as taken out on another phone and never takes its heart
++     off this one. Another phone still cannot tell a piece let go for room
++     from one taken out: the three-way merge's own limit. */
++  const [savedSync, setSavedSync] = useState<SavedSync>(() => readSavedSync(memberId));
++  const syncRef = useRef(savedSync);
++  const [syncFor, setSyncFor] = useState(memberId);
++  if (syncFor !== memberId) {
++    setSyncFor(memberId);
++    const fresh = readSavedSync(memberId);
++    syncRef.current = fresh;
++    setSavedSync(fresh);
++  }
++  const keepSavedSync = useCallback(
++    (h: readonly string[], x: readonly string[]) => {
++      const next = { h: [...h], x: [...x] };
++      syncRef.current = next;
++      setSavedSync(next);
++      if (memberId) writePortal({ savedSync: { u: memberId, h: next.h, x: next.x } });
++    },
++    [memberId],
++  );
++  const changeMeta = useCallback(
++    (update: Updater): MetaResult => {
++      const result = changeNaira(update);
++      const trimmed = result.ok ? (result.trimmed ?? []) : [];
++      if (trimmed.length) {
++        const { h, x } = syncRef.current;
++        keepSavedSync(
++          h.filter((k) => !trimmed.includes(k)),
++          [...x, ...trimmed.filter((k) => !x.includes(k))],
++        );
++      }
++      return result;
++    },
++    [changeNaira, keepSavedSync],
++  );
 +
 +  // The day each flower was pressed, kept on this device; the flowers themselves are in her account.
 +  const [devicePressed, setDevicePressed] = useState<Pressed[]>(() => readPressed(memberId));
@@ -25845,6 +26727,8 @@ index 0000000..ce49c97
 +            press,
 +            naira,
 +            changeMeta,
++            savedSync,
++            keepSavedSync,
 +            metaProblem,
 +            retryMeta,
 +            since,
@@ -25855,7 +26739,7 @@ index 0000000..ce49c97
 +            garden: previewGarden,
 +          }
 +        : null,
-+    [user, profile, preview, saveBirthday, addToBag, buyNow, bagBusy, doorsPlayed, markDoorsPlayed, drops, previewDrops, pressed, press, naira, changeMeta, metaProblem, retryMeta, since, month, firstVisit, arrivalProfile, arrival, previewGarden],
++    [user, profile, preview, saveBirthday, addToBag, buyNow, bagBusy, doorsPlayed, markDoorsPlayed, drops, previewDrops, pressed, press, naira, changeMeta, savedSync, keepSavedSync, metaProblem, retryMeta, since, month, firstVisit, arrivalProfile, arrival, previewGarden],
 +  );
 +
 +  if (!preview && (auth.loading || !profileReady)) return <Gate loading />;
@@ -25886,7 +26770,7 @@ index 0000000..ce49c97
 +export default MembersRoute;
 diff --git a/src/pages/members/Orders.tsx b/src/pages/members/Orders.tsx
 new file mode 100644
-index 0000000..5e463c7
+index 0000000..cf6f36a
 --- /dev/null
 +++ b/src/pages/members/Orders.tsx
 @@ -0,0 +1,133 @@
@@ -26009,7 +26893,7 @@ index 0000000..5e463c7
 +          about="order"
 +          email={user.email ?? null}
 +          title="Ask the order desk"
-+          lede="Write to the atelier on WhatsApp about an order. The email you used at checkout goes in the message (change it if it was another), with your size, metal and stone."
++          lede="Write to the atelier on WhatsApp about an order. The email you used at checkout goes in the message (change it if it was another), with a line for the order number from your confirmation email."
 +        />
 +
 +        <p className="ig-orders-more">
@@ -26375,10 +27259,10 @@ index 0000000..2612e0c
 +export default Vault;
 diff --git a/src/pages/members/card.css b/src/pages/members/card.css
 new file mode 100644
-index 0000000..b9a3076
+index 0000000..53c994b
 --- /dev/null
 +++ b/src/pages/members/card.css
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,113 @@
 +/* /members/card: her garden card. Imported only by Card.tsx. Radius 0; the finished picture fades in (opacity) and nothing else moves. */
 +
 +.ig-cardroom {
@@ -26426,6 +27310,10 @@ index 0000000..b9a3076
 +}
 +.ig-cardroom-actions { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; width: 100%; margin-top: 1.25rem; }
 +.ig-cardroom-actions .ig-cardroom-status { margin-top: 0; }
++/* While a new picture is drawn: the old one dimmed, its buttons waiting, a line saying so (its room kept, so nothing jumps). */
++.ig-cardroom-png.is-stale { opacity: 0.55; }
++.ig-cardroom-actions [aria-disabled="true"] { opacity: 0.55; cursor: progress; }
++.ig-cardroom-redraw { min-height: 1.5em; }
 +
 +/* Her choices: the art, and her name (off until she adds it). */
 +.ig-cardroom-choices { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 360px; margin-top: 1.75rem; text-align: left; }
@@ -26490,10 +27378,10 @@ index 0000000..b9a3076
 +}
 diff --git a/src/pages/members/care.css b/src/pages/members/care.css
 new file mode 100644
-index 0000000..42b0eab
+index 0000000..2b0e1fa
 --- /dev/null
 +++ b/src/pages/members/care.css
-@@ -0,0 +1,84 @@
+@@ -0,0 +1,86 @@
 +/* /members/care: Care. Imported only by Care.tsx (the atelier's card brings its own sheet). */
 +
 +.ig-care {
@@ -26525,7 +27413,7 @@ index 0000000..42b0eab
 +.ig-ritual-window { position: absolute; inset: 0; }
 +.ig-ritual-shine { background: url("../../assets/naira-box-ring-sm.webp") center / contain no-repeat; }
 +.ig-ritual-film {
-+  background: #c9bfb2;
++  background: rgb(244 235 226);
 +  -webkit-mask: url("../../assets/naira-box-ring-sm.webp") center / contain no-repeat;
 +  mask: url("../../assets/naira-box-ring-sm.webp") center / contain no-repeat;
 +}
@@ -26559,11 +27447,13 @@ index 0000000..42b0eab
 +  text-align: left;
 +  color: rgb(var(--nf-ink-rgb) / 0.62);
 +}
-+button.ig-ritual-step { border-color: var(--nf-accent-strong); background: var(--ig-vellum); color: var(--nf-ink); cursor: pointer; }
++button.ig-ritual-step { cursor: pointer; }
++button.ig-ritual-step[aria-disabled="true"] { cursor: default; }
++.is-now button.ig-ritual-step { border-color: var(--nf-accent-strong); background: var(--ig-vellum); color: var(--nf-ink); }
 +button.ig-ritual-step:focus-visible { outline: 2px solid var(--nf-accent-strong); outline-offset: 1px; }
 +.is-done .ig-ritual-step { color: var(--nf-ink); border-color: var(--ig-gold-line); }
 +.ig-ritual-no { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--nf-accent); font-size: 11px; color: var(--nf-gold-text); }
-+.is-done .ig-ritual-no { background: var(--nf-blush); }
++.is-done .ig-ritual-no { background: var(--nf-blush); color: var(--nf-ink); }
 +
 +/* her pieces */
 +.ig-care-cards { display: grid; gap: 0.7rem; margin: 0; padding: 0; list-style: none; }
@@ -26945,10 +27835,10 @@ index 0000000..a8d22ed
 +}
 diff --git a/src/pages/members/gifts.css b/src/pages/members/gifts.css
 new file mode 100644
-index 0000000..39e2dba
+index 0000000..3940c2d
 --- /dev/null
 +++ b/src/pages/members/gifts.css
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,127 @@
 +/* /members/gifts: the gift ledger. Imported only by Gifts.tsx (a piece card brings its own sheet). */
 +
 +.ig-gifts {
@@ -26969,7 +27859,7 @@ index 0000000..39e2dba
 +.ig-gring-line { fill: none; stroke: var(--nf-accent); stroke-width: 1; stroke-dasharray: 1 1; }
 +.ig-gring-line--fine { stroke-width: 0.6; opacity: 0.5; stroke-dasharray: none; }
 +.ig-gring-tick { stroke: var(--nf-accent); stroke-width: 0.8; opacity: 0.75; }
-+.ig-gring-month { font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: 0.14em; fill: var(--nf-gold-text); }
++.ig-gring-month { font-family: var(--nf-font-label); font-size: 12px; letter-spacing: 0.12em; fill: var(--nf-gold-text); }
 +.ig-gring-stem line { stroke: var(--nf-accent); stroke-width: 0.7; opacity: 0.75; }
 +.ig-gring-stem circle { fill: var(--nf-accent); }
 +.ig-gring-stem.is-next line { stroke: var(--nf-accent-strong); opacity: 1; }
@@ -26988,9 +27878,11 @@ index 0000000..39e2dba
 +  cursor: pointer;
 +  -webkit-tap-highlight-color: transparent;
 +}
-+.ig-gring-flower svg { display: block; overflow: visible; }
++.ig-gring-flower svg { display: block; overflow: visible; pointer-events: none; }
 +.ig-gring-flower[aria-pressed="true"]::after { content: ""; position: absolute; left: 13px; right: 13px; bottom: -3px; height: 1px; background: var(--nf-ink); }
 +.ig-gring-flower:focus-visible { outline: 2px solid var(--nf-accent-strong); outline-offset: 1px; }
++/* Round to the touch (the art inside stays as drawn): close neighbours' squares would overlap at their corners. */
++.ig-gring-flower { border-radius: 50%; }
 +.ig-gring-halo { fill: rgb(var(--nf-gold-rgb) / 0.16); stroke: var(--nf-accent); stroke-width: 1; }
 +.ig-gring-halo--fine { fill: none; stroke-width: 0.6; }
 +.ig-gring-centre {
@@ -27029,7 +27921,9 @@ index 0000000..39e2dba
 +.ig-glist { margin: 0; padding: 0; list-style: none; }
 +.ig-glist li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid var(--ig-line); }
 +.ig-glist li.is-shown { border-bottom-color: var(--ig-gold-line); }
-+.ig-glist-pick { display: grid; flex: 1 1 12rem; min-height: 48px; padding: 0.3rem 0; border: 0; background: none; text-align: left; color: inherit; cursor: pointer; }
++.ig-glist-pick { position: relative; display: grid; flex: 1 1 12rem; min-height: 48px; padding: 0.3rem 0; text-align: left; cursor: pointer; }
++.ig-glist-radio { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
++.ig-glist-radio:focus-visible + .ig-glist-name { outline: 2px solid var(--nf-accent-strong); outline-offset: 2px; }
 +.ig-glist-name { font-family: var(--nf-font-editorial); font-size: 1.25rem; line-height: 1.2; overflow-wrap: anywhere; }
 +.ig-glist-when, .ig-glist-band { font-family: var(--nf-font-label); font-size: 12px; color: rgb(var(--nf-ink-rgb) / 0.7); }
 +.ig-glist-actions { display: flex; gap: 0.25rem; }
@@ -27045,6 +27939,9 @@ index 0000000..39e2dba
 +.ig-oform-row { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; margin: 0; padding: 0; border: 0; }
 +.ig-oform-label { padding: 0; font-family: var(--nf-font-label); font-size: 10.5px; letter-spacing: var(--nf-track-20); text-transform: uppercase; color: var(--nf-gold-text); }
 +.ig-oform-input { text-align: left; }
++.ig-oform .ig-input::placeholder { color: rgb(var(--nf-ink-rgb) / 0.55); opacity: 1; }
++.ig-oform .ig-input[aria-invalid="true"] { border-bottom: 2px solid #a44a34; }
++.ig-oform .ig-error { margin: 0.2rem 0 0; }
 +.ig-oform-when { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 0.6rem; }
 +.ig-oform-select { padding: 0 0.4rem; text-align: left; }
 +.ig-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem; }

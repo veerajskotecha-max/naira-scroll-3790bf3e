@@ -17,7 +17,7 @@ shots = [shot('tg_real_cube' + X, CUT[0], CUT[1], speed=0, zoom=[1.15, 1.15], ax
          shot('tg_plate', CUT[1], CUT[2], off=0, speed=PL, mix=True, zoom=[1.0, 1.08], ax=.54, ay=.55),
          shot('tg_plate', CUT[2], DUR + .05, off=(CUT[2] - CUT[1]) * PL, speed=0, zoom=[1.08, 1.12], ax=.54, ay=.55)]
 INK, GLOW, SAGE = 'lt', 'text-shadow:0 0 16px rgba(251,243,236,.95)', '#50726A'
-END = CUT[1] - .1
+END = CUT[1]                                             # held to the cut (ending .1 early left two bare frames)
 ov = []
 # ---- drafting paper from frame 1: a fine grid, every fifth line stronger ----
 ov.append(f'<div class="o" style="left:0;top:0;width:1080px;height:1920px;z-index:3;background-image:'
@@ -41,18 +41,20 @@ ov.append(f'<div class="o ta-r" style="left:{270 - 1080}px;top:1150px;width:1080
           f'<div class="num7 lt" style="font-size:46px;margin-top:8px;{GLOW}">Ø 15 mm</div></div>')
 # ---- (b) one link: a dashed detail circle and a leader to its width ----
 lx, ly = 497, 908
-ov.append(draw(circle(lx, ly, 52), 1.9, END, stroke=SAGE, width=1.6, d=.5, dash='7 5'))
+# dashed, so it fades in rather than drawing on (the draw-on owns the dash pattern)
+ov.append(f'<div class="o" style="left:0;top:0;width:1080px;height:1920px;z-index:17" data-k=\'{tk(1.9, END, dy=0)}\'>'
+          f'<svg width="1080" height="1920"><circle cx="{lx}" cy="{ly}" r="52" fill="none" stroke="{SAGE}" stroke-width="1.6" stroke-dasharray="7 5"/></svg></div>')
 ov.append(draw(f'M{lx + 52} {ly}L{596} {ly}', 2.35, END, stroke=SAGE, width=1.5, d=.2))
 ov.append(f'<div class="o" style="left:608px;top:{ly - 44}px;z-index:18" data-k=\'{tk(2.45, END)}\'>'
           f'<div class="num7 lt" style="font-size:42px;{GLOW}">4 mm</div>'
           f'<div class="lab7 lt" style="font-size:19px;margin-top:8px;{GLOW}">PAPERCLIP LINKS</div></div>')
 # ---- (c) the title block, bottom right on the cube face: two cells ----
-TX0, TX1, TY0, TY1, TM = 480, 894, 1190, 1246, 580       # right edge inside x 900; left edge clear of the compass (460)
-ov.append(draw(f'M{TX0} {TY0}L{TX1} {TY0}L{TX1} {TY1}L{TX0} {TY1}ZM{TM} {TY0}L{TM} {TY1}', 3.1, END, stroke=SAGE, width=1.5, d=.45))
-ov.append(f'<div class="o" style="left:{TX0}px;top:{TY0 + 18}px;width:{TM - TX0}px;text-align:center;z-index:18" data-k=\'{tk(3.4, END)}\'>'
-          f'<div class="lab7 lt" style="font-size:17px;margin-right:-.22em">50 CM</div></div>')
-ov.append(f'<div class="o" style="left:{TM}px;top:{TY0 + 18}px;width:{TX1 - TM}px;text-align:center;z-index:18" data-k=\'{tk(3.55, END)}\'>'
-          f'<div class="lab7 lt" style="font-size:17px;margin-right:-.22em">PVD 18K GOLD COATING</div></div>')
+# two rows, so both read at 20 px inside x 900 (side by side at 17 px they were the hardest type in the film to read)
+TX0, TX1, TY0, TYM, TY1 = 520, 894, 1152, 1196, 1240
+ov.append(draw(f'M{TX0} {TY0}L{TX1} {TY0}L{TX1} {TY1}L{TX0} {TY1}ZM{TX0} {TYM}L{TX1} {TYM}', 3.1, END, stroke=SAGE, width=1.5, d=.45))
+for (y0, txt, t0) in ((TY0, '50 CM', 3.4), (TYM, 'PVD 18K GOLD COATING', 3.55)):
+    ov.append(f'<div class="o" style="left:{TX0}px;top:{y0 + 12}px;width:{TX1 - TX0}px;text-align:center;z-index:18" data-k=\'{tk(t0, END)}\'>'
+              f'<div class="lab7 lt" style="font-size:20px;margin-right:-.22em">{txt}</div></div>')
 # ---- the plate: the one colour beat, the type on a veil so it never fights the links ----
 ov.append(f'<div class="o" style="left:0;top:0;width:1080px;height:640px;z-index:14;background:linear-gradient(180deg, rgba(14,44,34,.5) 0%, '
           f'rgba(14,44,34,0) 100%)" data-k=\'{tk(CUT[1], CUT[2] + .3)}\'></div>')

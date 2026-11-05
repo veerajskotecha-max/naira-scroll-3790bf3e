@@ -16,9 +16,10 @@ CUT = [0, 6 * B, 12 * B, 18 * B]                         # 0, 3.75, 7.5, 11.25
 DUR = CUT[-1]
 shots = [shot('p2_hook' + X, CUT[0], CUT[1], off=.3),
          shot('v_real_one' + X, CUT[1], CUT[2], speed=0, zoom=[1.0, 1.015], ax=.42, ay=.5),
-         # the pair from clip 4.0 s (by 3.4 s a big plume is still behind it), lower and larger so the chip clears the stones
-         shot('p2_pair' + X, CUT[2], CUT[2] + 1.04, off=4.0, zoom=[1.10, 1.12], ax=.5, ay=0),
-         shot('p2_pair' + X, CUT[2] + 1.04, DUR + .05, off=5.04, speed=0, zoom=[1.12, 1.13], ax=.5, ay=0)]
+         # the pair from clip 4.5 s, once the CG smoke has thinned (at 4.0 it still filled the right third), lower and larger
+         # so the chip clears the stones; it plays to the clip's end, then holds
+         shot('p2_pair' + X, CUT[2], CUT[2] + .54, off=4.5, zoom=[1.11, 1.12], ax=.5, ay=0),
+         shot('p2_pair' + X, CUT[2] + .54, DUR + .05, off=5.04, speed=0, zoom=[1.12, 1.13], ax=.5, ay=0)]
 GLOW = 'text-shadow:0 0 16px rgba(251,243,236,.95)'
 ov = [f'<div class="o" style="left:0;top:0;width:1080px;height:620px;z-index:14;background:linear-gradient(180deg, rgba(10,34,26,.6) 0%, '
       f'rgba(10,34,26,.45) 70%, rgba(10,34,26,0) 100%)" data-k=\'{tk(0, CUT[1], now=True)}\'></div>']
@@ -27,7 +28,7 @@ ov.append(quiet_offer(1.0, CUT[1], y=570, centre=True))
 # ---- the anatomy, on the real photo: one detail every half second ----
 t = CUT[1]
 ov.append(caps('THE DETAILS', 'lt', 0, 296, 22, t + .05, CUT[2], track=.34, extra='width:1080px;text-align:center;color:#50726A'))
-ov += elbow(505, 662, 560, 470, 'EMERALD-GREEN CZ', t + .25, CUT[2], glow=GLOW)        # the dot on the gold bezel, not the dark facets
+ov += elbow(505, 650, 560, 470, 'EMERALD-GREEN CZ', t + .25, CUT[2], glow=GLOW)        # the dot straddles the gold rim (at 662 it sat on a black facet)
 ov += elbow(302, 935, 64, 560, '', t + .75, CUT[2])
 ov.append(f'<div class="o" style="left:64px;top:518px;z-index:18" data-k=\'{tk(t + 1.2, CUT[2])}\'><div class="lab7 lt" style="font-size:20px;{GLOW}">GOLD STAR POINTS</div></div>')
 ov.append(dot(736, 1046, t + 1.25, CUT[2], r=6, fill='#1A1614'))
@@ -38,6 +39,9 @@ ov.append(vlabel(200, 945, '16.8 mm', t + 1.9, CUT[2], size=30))
 ov.append(caps('PVD 18K GOLD COATING', 'lt', 0, 334, 18, t + 2.15, CUT[2], track=.28, extra=f'width:1080px;text-align:center;{GLOW}'))
 # ---- the pair, seen clean for a beat, then the card ----
 ov += endcard(CUT[2] + .4, 'Verdant Circlet Studs', 1099, 2200, 'rgba(10,34,26,A)', chip_y=596)
+# a floor veil: the crumpled gold-leaf flakes on the velvet read as a stock render (the studs end at y 1215, untouched)
+ov.append(f'<div class="o" style="left:0;top:1300px;width:1080px;height:620px;z-index:14;background:linear-gradient(180deg, rgba(10,34,26,0) 0%, '
+          f'rgba(10,34,26,.82) 28%, rgba(10,34,26,.9) 100%)" data-k=\'{tk(CUT[2], DUR + .05)}\'></div>')
 cue('air', 0, t1=1.6, v=.35); cue('bloom', CUT[2] + .45, v=.3)
 page7('p2b' if DPR == 1 else 'p2b_4k', DUR, shots, ov, fps=FPS, dpr=DPR,
       music={'bed_lufs': -16.0, 'duck_db': 0.0,

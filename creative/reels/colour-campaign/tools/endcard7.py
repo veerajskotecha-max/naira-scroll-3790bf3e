@@ -12,7 +12,7 @@ def endcard(t, name, price, mrp, veil, ink=False, chip_y=612, logo_letters='#99B
            f'<span class="num7 {tone}" style="font-size:88px">{RS(price)}</span>'
            f'<span class="mrp7" style="font-size:30px;{mrpc}">{RS(mrp)}<span class="o strike" data-k=\'{K((t + .55, {"w": 0}, "lin"), (t + .75, {"w": 104}, "out"))}\'></span></span></div>',
            f'<div class="o" style="left:0;top:540px;width:1080px;text-align:center;z-index:6" data-k=\'{c6(t + .5)}\'>'
-           f'<div class="lab7 {tone}" style="font-size:20px">{OFFER2} &nbsp;·&nbsp; {OFFER3} &nbsp;·&nbsp; FREE SHIPPING &nbsp;·&nbsp; COD</div></div>',
+           f'<div class="lab7 {tone}" style="font-size:18px">{OFFER2} &nbsp;·&nbsp; {OFFER3} &nbsp;·&nbsp; FREE SHIPPING &nbsp;·&nbsp; COD AVAILABLE</div></div>',
            f'<div class="o" style="left:0;top:{chip_y}px;width:1080px;display:flex;justify-content:center;z-index:7" data-k=\'{c6(t + .85)}\'>'
            f'<div class="lab7" style="font-size:22px;{chip};padding:14px 30px 12px 36px;letter-spacing:.28em">SHOP NOW</div></div>']
     return out

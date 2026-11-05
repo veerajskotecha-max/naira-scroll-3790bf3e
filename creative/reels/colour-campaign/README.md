@@ -17,25 +17,53 @@ shots look AI... make it less and elegant, and unlike the first two, something d
 - keep at most one AI product shot each;
 - each have **one device of their own** that no other ad uses.
 
-A five-reviewer panel then judged them against the two approved films ("does any of it look AI, is it elegant, is each
-idea distinct"); `workflows/critique-five-lens.js` is the earlier per-ad panel. Its fixes are all applied here.
+Two review rounds shaped them, both judged against the two approved films:
+1. **A six-reviewer panel on the first cut** ("does any of it look AI, is it elegant, is each idea distinct"). Its lead
+   ranked 14 fixes, and all of them are applied. `workflows/critique-five-lens.js` is the earlier per-ad panel.
+2. **A final QC on the delivered 4K files**: one reviewer per film, then a head of creative who checked the set. Every film
+   passed the hard rules: logo, the 270–1250 type band and the x 900 rail, the 4:5 crop, listing-true claims and -14.0 LUFS.
+   Four changes were verified as ones the owner would send back, and all four are fixed:
+   - the end cards said "FREE SHIPPING · COD", which skims as free COD; they now say **COD AVAILABLE**, as the approved
+     films do;
+   - the diptych dissolved in with see-through, doubled rings; it is now a hard cut on the beat;
+   - the slats crossfaded through grey murk with the AI ring over the real one; they now dip through the photo's own cream;
+   - the necklace dissolved over its own tiles; it now clears first.
 
-| # | Piece | Length | Its own device | AI vs real |
-| --- | --- | --- | --- | --- |
-| 2 | Verdant Circlet Studs | 11.25 s | **Anatomy**: on the real photo, each material is drawn out on an even half-second with hairline elbows (emerald-green CZ, gold star points, shell pearl, a ticked 16.8 mm rule). Only this ad uses callouts. | One AI stud macro (hook) and the AI pair (end card), both green-graded to the real stone (`tools/green_grade.py`): the AI emerald was lime, the real one bottle green |
-| 3 | Baguette Tennis Necklace | 11.25 s | **The colour flows**: the three colourway photos are pixel-registered, so ruby turns emerald, then crystal, by flowing along the strand from the clasp, round the loop and down the tail; nothing else in the frame moves (`tools/swap_frames.py`). Ends on the three side by side. | 100% real listing photos |
-| 4 | Woven Gold Hoops | 11.9 s | **The framed print**: the hook's petal rain racks out of focus into amber bokeh, and a print hangs over it: a square window, ivory mat, gold fillet, the real photos dissolving on the beat. | One AI hook (petals on a thali), shown sharp only for the first 3.75 s |
-| 5 | Halo Curve Ring | 10.6 s | **The live diptych**: the sand shot splits full-bleed into two halves, tiger eye left and crystal right, still drifting (slowed with blended frames, never frozen). | One AI sand reveal (the most believable clip of the six) |
-| T1 | Toggle Link Chain, "Blueprint" | 10.6 s | **Drafting geometry**: the only ad that opens on a real photo. The cube photo sits on drafting paper, with a compass circle on the ring clasp (Ø 15 mm), a dashed detail circle on one link (4 mm) and a title block (50 CM / PVD 18K GOLD COATING). Then the one colour beat: gold dust rings the clasp on the jade plate. | Real photo first; the owner's accurate jade-plate AI clip second, stopped before the heavy pour |
-| T2 | Toggle Link Chain, "Three slats" | 8.75 s | **Three slats**: the piece seen through three bands on flat jade from frame 1 (links, toggle bar, ring clasp), one listing fact per beat, then dissolving into the real cube photo. | Stills from the jade-plate clip's clean first frames (before any dust), at 1.3x at most; then the real photo |
+   The worthwhile "should" items went in too:
+   - the Verdant pair starts after the CG smoke, and a floor veil sinks its gold-leaf flakes;
+   - the hoops get a real rack focus, with their black edge bars cropped and the catch disc held gold (`tools/disc_fix.py`);
+   - the colour swaps start on the downbeat;
+   - the blueprint's title block is two rows at 20 px.
 
-What the review taught, for any next round:
+| # | Piece | Length | Its own device | AI vs real | Rating |
+| --- | --- | --- | --- | --- | --- |
+| 2 | Verdant Circlet Studs | 11.25 s | **Anatomy**: on the real photo, each material is drawn out on an even half-second with hairline elbows (emerald-green CZ, gold star points, shell pearl, a ticked 16.8 mm rule). Only this ad uses callouts. | One AI stud macro (hook) and the AI pair (end card), both green-graded to the real stone (`tools/green_grade.py`): the AI emerald was lime, the real one bottle green | 8 |
+| 3 | Baguette Tennis Necklace | 11.25 s | **The colour flows**: the three colourway photos are pixel-registered, so ruby turns emerald, then crystal, by flowing along the strand from the clasp, round the loop and down the tail; nothing else in the frame moves (`tools/swap_frames.py`). Ends on the three side by side. | 100% real listing photos | 8.5 |
+| 4 | Woven Gold Hoops | 11.9 s | **The framed print**: the hook's petal rain racks out of focus into amber bokeh (a real focus pull), and a print hangs over it: a square window, ivory mat, gold fillet, the real photos dissolving on the beat. | One AI hook (petals on a thali), shown sharp only for the first 3.75 s | 7.5 |
+| 5 | Halo Curve Ring | 10.6 s | **The live diptych**: the sand shot splits full-bleed into two halves, tiger eye left and crystal right, still drifting (slowed with blended frames, never frozen). | One AI sand reveal (the most believable clip of the six) | 7.5 |
+| T1 | Toggle Link Chain, "Blueprint" | 10.6 s | **Drafting geometry**: the only ad that opens on a real photo. The cube photo sits on drafting paper, with a compass circle on the ring clasp (Ø 15 mm), a dashed detail circle on one link (4 mm) and a title block (50 CM / PVD 18K GOLD COATING). Then the one colour beat: gold dust rings the clasp on the jade plate. | Real photo first; the owner's accurate jade-plate AI clip second, stopped before the heavy pour | 7.5 |
+| T2 | Toggle Link Chain, "Three slats" | 8.75 s | **Three slats**: the piece seen through three bands on flat jade from frame 1 (links, toggle bar, ring clasp), one listing fact per beat, then dipping through cream into the real cube photo. | Stills from the jade-plate clip's clean first frames (before any dust), at 1.3x at most; then the real photo | 7 |
+
+Ratings are mine, after the final QC's fixes. The QC panel scored the delivered cut before those fixes at 7.5 / 8 / 7 / 7 /
+7.5 / 6.5, in the table's order. **Launch order for Meta testing:** Baguette first (strongest, highest ticket at Rs 2,099, three
+colourways in one ad), then Verdant, Hoops (in season for weddings), Halo Curve, Blueprint, and Three slats last.
+
+Two pairs share sources or grammar, so keep them apart in media:
+- **The two Toggle films** are built from the same cube photo and jade plate, in mirror order. Never run them in the same
+  ad set; run Three slats only as Blueprint's challenger once Blueprint has data.
+- **Verdant and Blueprint** both annotate a real cream-cube photo. Keep them in different ad sets.
+
+What the reviews taught, for any next round:
 - **Powder keyed onto a light ground always reads as a sticker**: the matte leaves a dark outline. Keep powder on dark worlds, or leave it out.
 - **Never freeze or enlarge late AI frames.** The dust-caked, 2x-cropped frames were the AIest moments; take stills from a clip's clean opening.
 - **Copy can give the AI away.** "THE REAL PIECE" told viewers the opening was not real.
 - **Every hook needs a veil** under the type when the shot is bright (saffron, light shafts), or the sage mark disappears.
 - **The offer line goes under the price, centred**, never across the piece at the bottom.
 - The sheets' "uneven fade to black" on the last frame was a QC artefact: a still rendered at t = DUR, which the render never outputs.
+- **Never dissolve between an AI shot and a real photo of the same piece.** For the frames they overlap, both versions
+  show at once: doubled rings, the AI clasp over the real one. Cut on the beat, dip through a colour from the photo, or
+  bring the real piece in only once the AI shot is out of focus.
+- **"COD" alone after "FREE SHIPPING" reads as free COD.** Write COD AVAILABLE.
 
 ## Round 1 and 2: the films
 
@@ -121,9 +149,11 @@ from 20/30 on 3–4 Nov. Re-check it on launch morning and change `col_kit.py` i
 updated.
 
 ## Open for the owner
-- **4K for two shots.** The Halo Curve hand shot and the Toggle clasp macro have no 4K pass yet. That needs about 20
-  Higgsfield credits.
-- **The Toggle 2 neck still.** It is a still with a push-in. A Kling pass of the gold-dust swirl (16 credits) would make
-  it move.
+- **The hoops hook is now the most AI footage left in the set.** Its petals are uniform ovals, and the right catch disc
+  turned translucent at 1.6–3.0 s. `disc_fix.py` holds that disc's colour and brightness gold, but its glassy texture
+  stays. Only a regenerated clip (about 16 Kling credits) removes it. The account has under 6 credits.
+- **4K for the Toggle jade plate.** It has no Topaz pass (about 10 credits). Blueprint shows it at 1.0–1.12x and the slats
+  at 1.3x, so at 4K it is upscaled in the render.
 - **Ad 0's open back.** Its AI film shows a closed band. The real-photo beat ("NO RING SIZE NEEDED / Open back") is the
   answer, and its turn is framed tight on the head so the closed back stays out of shot.
+- Round 1's Halo Curve hand shot and Toggle 2 neck still are gone: the redos dropped every on-model shot.

@@ -18,10 +18,10 @@ DUR = CUT[-1]
 T1, T2, T3 = [64, 520, 952, 210], [64, 750, 952, 210], [64, 980, 952, 210]
 def slat(px, py, rect, z0, z1):
     a = aim(px, py, rect, 1.3); a['zoom'] = [z0, z1]       # a 952-wide slat at 1.3 needs aim x within 415-665
-    return shot('tg_plate', 0, CUT[1] + .4, off=.15, speed=0, **a)
+    return shot('tg_plate', 0, CUT[1] + .25, off=.15, speed=0, **a)
 shots = [slat(415, 620, T1, 1.30, 1.36), slat(495, 905, T2, 1.36, 1.30), slat(562, 1160, T3, 1.30, 1.36),
-         shot('tg_real_cube' + X, CUT[1], DUR + .05, speed=0, fadeIn=.4, zoom=[1.0, 1.04], ax=.5, ay=0)]
-JADE = dict(t0=0, t1=CUT[1] + .4, color='#14392D')
+         shot('tg_real_cube' + X, CUT[1] + .2, DUR + .05, speed=0, zoom=[1.0, 1.04], ax=.5, ay=0)]
+JADE = dict(t0=0, t1=CUT[1] + .25, color='#14392D')
 fact = lambda t0: K((t0 - .002, {'o': 0}, 'lin'), (t0 + .3, {'o': 1}, 'io'), (CUT[1] - .13, {'o': 1}, 'lin'), (CUT[1], {'o': 0}, 'in'))
 ov = [f'<div class="o" style="left:465px;top:278px;width:150px;z-index:16" data-k=\'{tk(0, CUT[1], now=True)}\'>{logo(letters="#99B4AF")}</div>',
       line('The details are the design.', 'q', 'iv sh', 56, 0, 392, 0, CUT[1], now=True),
@@ -33,7 +33,10 @@ ov.append(quiet_offer(.6, CUT[1], y=1222, centre=True))
 for (x, y), t0, lab in (((560, 615), B, '4 MM PAPERCLIP LINKS'), ((86, 905), 2 * B, 'THE TOGGLE BAR'), ((86, 1046), 3 * B, 'CLASP SITS<br>FRONT OR SIDE')):
     ov.append(f'<div class="o" style="left:{x}px;top:{y}px;z-index:16" data-k=\'{fact(t0)}\'>'
               f'<div class="lab7" style="font-size:{22 if y < 1000 else 19}px;color:#FBF3EC;letter-spacing:.25em;line-height:1.5;text-shadow:0 1px 10px rgba(6,23,15,.7)">{lab}</div></div>')
-# ---- the real piece ----
+# ---- the real piece: the jade dips to the photo's own backdrop cream and the chain surfaces out of it (a straight
+# crossfade passed through grey-sage murk with the 1.3x AI ring ghosting over the real one) ----
+ov.append(f'<div class="o" style="left:0;top:0;width:1080px;height:1920px;background:#E8D2BC;z-index:13" '
+          f'data-k=\'{K((CUT[1] - .002, {"o": 0}, "lin"), (CUT[1] + .2, {"o": 1}, "io"), (CUT[1] + .24, {"o": 1}, "lin"), (CUT[1] + .55, {"o": 0}, "io"))}\'></div>')
 ov.append(caps('PVD 18K GOLD COATING &nbsp;·&nbsp; 50 CM', 'lt', 0, 300, 22, CUT[1] + .45, CUT[2], track=.3, extra='width:1080px;text-align:center'))
 ov += endcard(CUT[2], 'Toggle Link Chain', 1199, 2900, 'rgba(248,240,232,A)', ink=True, logo_letters='#50726A', chip_y=576)
 cue('bloom', 0, v=.3); cue('bloom', B, v=.22); cue('bloom', 2 * B, v=.22); cue('bloom', 3 * B, v=.22)

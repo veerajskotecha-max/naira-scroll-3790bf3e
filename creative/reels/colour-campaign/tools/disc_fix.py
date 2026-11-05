@@ -1,8 +1,8 @@
 """disc_fix.py <frames_dir> <scale> <first> <last> <ref>: hold the Woven Hoops' right catch disc gold through the AI clip's
 drift. Between frames ~44 and ~90 the generated disc slides from polished gold to a translucent orange (a review flagged it
 as the clip's loudest AI tell). The hoops do not move, so a fixed feathered ellipse covers the disc; inside it each frame's
-chroma (YCbCr) is shifted to the clean reference frame's disc while the luminance is kept, so the texture and highlights
-stay and nothing is amplified (a per-channel gain pushed blue x23 and fringed the rim purple). Petals keep falling past (the frame is not
+mean YCbCr is shifted three quarters of the way to the clean reference frame's disc (an additive shift, so the texture and
+highlights stay and nothing is amplified (a per-channel gain pushed blue x23 and fringed the rim purple). Petals keep falling past (the frame is not
 replaced, only graded), and a frame whose disc already matches is left as it is. Rewrites frames in place."""
 import sys
 sys.path.append('/root/.local/lib/python3.13/site-packages')
@@ -26,7 +26,8 @@ def rgb(c):
     return np.stack([y + 1.402 * cr, y - .344136 * cb - .714136 * cr, y + 1.772 * cb], -1)
 cref = ycc(R)[core].mean(0)
 for k in range(a, b + 1):
-    C = ycc(load(k)); sh = .75 * (cref[1:] - C[core].mean(0)[1:])        # 3/4 of the way: the full shift landed olive under saffron light
-    C[..., 1:] += mask[..., None] * sh
+    w = min(1, (k - a + 1) / 6, (b - k + 1) / 6)                        # taper in and out, so the grade never switches on or off in one frame
+    C = ycc(load(k)); sh = .75 * w * (cref - C[core].mean(0))                # 3/4 of the way, luminance too: the drifting disc also dims (Y 123 vs 144), which reads as glass
+    C += mask[..., None] * sh
     Image.fromarray(np.clip(rgb(C) + .5, 0, 255).astype(np.uint8)).save(f'{d}/f_{k:04d}.jpg', quality=95)
     if k in (a, (a + b) // 2, b): print(k, 'chroma shift', sh.round(1))

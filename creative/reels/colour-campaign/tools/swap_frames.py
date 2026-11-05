@@ -10,7 +10,7 @@ from PIL import Image
 from scipy.spatial import cKDTree
 from scipy.ndimage import gaussian_filter
 
-old_p, new_p, out, sc = sys.argv[1], sys.argv[2], sys.argv[3], float(sys.argv[4]); n = int(sys.argv[5]) if len(sys.argv) > 5 else 24
+old_p, new_p, out, sc = sys.argv[1], sys.argv[2], sys.argv[3], float(sys.argv[4]); n = int(sys.argv[5]) if len(sys.argv) > 5 else 30
 # the line, in 1080x1920 photo coordinates: the loop is an ellipse (centre 470,735; 400 x 180) from the clasp anticlockwise
 # all the way round, then the strand that leaves the clasp on the right, round the outside and down the tail
 th = np.radians(np.linspace(-62, -400, 240))
@@ -27,11 +27,11 @@ A = np.asarray(Image.open(old_p).convert('RGB')).astype(np.float32); Bm = np.asa
 H, W = A.shape[:2]
 yy, xx = np.mgrid[0:H, 0:W]
 _, idx = cKDTree(dense).query(np.stack([xx.ravel(), yy.ravel()], 1), workers=-1)
-param = gaussian_filter(s[idx].reshape(H, W).astype(np.float32), 6 * sc)       # smooth the seams where two strands meet
+param = gaussian_filter(s[idx].reshape(H, W).astype(np.float32), 20 * sc)      # where two strands lie side by side the front blends across, never a hard edge through a stone
 stones = np.clip((np.abs(A - Bm).max(2) - 12) / 40, 0, 1); stones = gaussian_filter(stones, 2 * sc)
-soft, glw = 260 * sc, 120 * sc
+soft, glw = 320 * sc, 130 * sc
 os.makedirs(out, exist_ok=True)
-io = lambda u: 4 * u ** 3 if u < .5 else 1 - (-2 * u + 2) ** 3 / 2
+io = lambda u: u * u * (3 - 2 * u)                               # smoothstep: moving within two frames of the downbeat (a cubic held still for six)
 for k in range(n):
     u = io(k / (n - 1)); front = -soft + u * (total + 2 * soft)
     m = np.clip((front - param) / soft + .5, 0, 1); m = m * m * (3 - 2 * m)

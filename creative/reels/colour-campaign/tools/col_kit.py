@@ -10,14 +10,14 @@ OFFER2, OFFER3, OFFER_NOTE = 'ANY 2 · 10% OFF', 'ANY 3 · 20% OFF', 'APPLIED IN
 GRADES = {'g_neutral': '0.96 0 0 0 0  0 1 0 0 0  0 0 1.05 0 0  0 0 0 1 0',
           'g_neutral_lift': '1.06 0 0 0 0.01  0 1.1 0 0 0.01  0 0 1.16 0 0.01  0 0 0 1 0'}
 
-def page7(name, dur, shots, overlays, fps=24, dpr=1, voice=None, vo=None, music=None, bg=(), dim=(), flash=(), css=(), fx=(), leaks=(), grades=None):
+def page7(name, dur, shots, overlays, fps=24, dpr=1, voice=None, vo=None, music=None, bg=(), dim=(), flash=(), css=(), fx=(), leaks=(), grades=None, fblur=()):
     ids = sorted({s['id'] for s in shots})
     meta = {d: {k: v for k, v in json.load(open(f'{A}/frames/{d}/meta.json')).items() if k in ('fps', 'n', 'sq', 'ext')} for d in ids}
     for s in shots:
         m = meta[s['id']]; last = (s['t1'] - s['t0']) * s.get('speed', 1) + s.get('off', 0)
         assert s.get('hold') or last <= m['n'] / m['fps'] + 1e-3, (s, m)
     data = {'fps': fps, 'dpr': dpr, 'dur': dur, 'frames': '../frames', 'meta': meta, 'shots': shots, 'bg': list(bg), 'flash': list(flash),
-            'dim': list(dim), 'fblur': [], 'leaks': list(leaks), 'fx': list(fx), 'iris': IRIS, 'flower': FLOWER}
+            'dim': list(dim), 'fblur': [list(f) for f in fblur], 'leaks': list(leaks), 'fx': list(fx), 'iris': IRIS, 'flower': FLOWER}
     links = ''.join(f'<link rel="stylesheet" href="../engine/{c}">' for c in ('base5.css', 'base6.css', 'base7.css') + tuple(css))
     html = f'''<!doctype html><html><head><meta charset="utf-8">
 <style>

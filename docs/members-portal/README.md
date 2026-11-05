@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `5cba2a1` (includes a real merge commit, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `8a185a8` (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -45,6 +45,17 @@ Phase 3 checks on 5cba2a1:
 - 180 test files and 1,448 tests pass; tsc is clean.
 - index.html, index.css, CartContext, WishlistContext, promo.ts, innerCircle.ts and shopify.ts are unchanged.
 - MembersRoute is 33.8 KB gzip (budget 35). Fit, RingSizer, Drawer and Herbarium are each in their own chunk. Auth grows by 3.1 KB gzip.
+
+## Phase 4: built and merged, still in review
+
+This is an interim backup, taken while the reviews run. The final Phase 4 checks will replace it.
+
+| Commit | What it adds |
+|---|---|
+| b7d4f07 | Merge of the rooms: a gift ledger (a 12-month ring, up to 8 dates, calendar reminders a week ahead), the Order Desk (order tracking, WhatsApp, 'Checkouts you started'), Care (the wipe ritual), Ask the atelier |
+| 063bef7 | Privacy policy: one drafted line on what a member's account keeps, in its own commit so the owner can drop it |
+| b209c9c | Merge of the garden: garden hours by Indian time, festival dressings (the table ships empty), atelier notes (ship empty), a shareable garden card |
+| 8a185a8 | Integration: the More row holds the seven rooms in order |
 
 ## Phase 1 checks on 2f278c0
 

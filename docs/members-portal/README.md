@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `64d992d` (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `fc888a3` (Phase 5 in progress; Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -65,6 +65,15 @@ Phase 4 checks on 64d992d (run twice: once by the screens step, once independent
 - vendor and the global CSS are byte-identical to a 893d5be build. dist has no preview code or fixtures. seasons.ts and notes.ts ship empty.
 - Sizes (gzip -9): MembersRoute is 29.8 KB (budget 35) and members.css is 2.9 KB (budget 4). Gifts is 9.9 KB JS and 1.7 KB CSS, Care 3.0 + 1.3, Orders 1.5 + 0.5, Card 2.3 + 1.2, and the ShareCard renderer is 4.9. Auth is still +3.1 KB on main.
 - No Supabase writes, Shopify changes, Meta or Clarity requests, WhatsApp opens or shares happened in any capture.
+
+## Phase 5 (in progress, interim backup)
+
+17 commits on top of 64d992d, including two real merges (b538a98 spectacle, fc888a3 orders). Reviews are still running; this copy has not been checked or polished yet.
+
+- **Bloom Field:** a 3D fall of the brand's flowers when a drop opens, only on phones that pass the device checks and a 60-frame test; every other phone keeps today's flat petals.
+- **Drop-room motion:** physics-driven petals and a smooth move from the box to the piece grid.
+- **Confirmed orders:** `supabase/functions/order-bloom` (Shopify's orders/create webhook) is written and tested but **not deployed**. The Order Desk says 'Order' only once it has confirmed a row, and a gold rose grows in her garden's front row for each confirmed order.
+- A review has confirmed one blocker in order-bloom's matching, and the polish step is fixing it.
 
 ## Phase 1 checks on 2f278c0
 

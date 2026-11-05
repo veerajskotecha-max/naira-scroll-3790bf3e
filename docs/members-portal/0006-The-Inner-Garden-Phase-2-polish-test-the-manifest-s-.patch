@@ -1,0 +1,45 @@
+From 365bd9942058cbb09bd6ce6370574d33682db394 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 5 Nov 2026 04:24:22 +0000
+Subject: [PATCH 6/6] The Inner Garden, Phase 2 polish: test the manifest's
+ gentle notes and kept numbers
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ src/lib/portal/drops.test.ts | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/lib/portal/drops.test.ts b/src/lib/portal/drops.test.ts
+index 3a16863..bb2e14b 100644
+--- a/src/lib/portal/drops.test.ts
++++ b/src/lib/portal/drops.test.ts
+@@ -1,6 +1,6 @@
+ import { describe, expect, it } from "vitest";
+ import { DROPS, DROP_SPECIES, type Drop } from "./drops";
+-import { dropPhase, dropProblems, type LiveState } from "./dropPhase";
++import { dropNumber, dropPhase, dropProblems, dropWarnings, type LiveState } from "./dropPhase";
+ import { SPECIES } from "./species";
+ import { FIXTURE_PREFIX, PREVIEW_DROP_STATES, readPreviewDrops } from "./previewDrops";
+ 
+@@ -47,6 +47,17 @@ describe("dropProblems tells the owner what to fix", () => {
+     expect(dropProblems(good)).toEqual([]);
+   });
+ 
++  /* Not errors: the drop works, but would look better with them. */
++  it("notes, gently, a drop with no cut-out for the box to lift", () => {
++    expect(dropWarnings(good)).toEqual([expect.stringMatching(/no cutoutUrl/)]);
++    expect(dropWarnings({ ...good, cutoutUrl: "https://cdn.shopify.com/s/files/1/0680/9606/5698/files/cut.webp" })).toEqual([]);
++  });
++
++  it("keeps a drop's own number for good, and checks it", () => {
++    expect(dropNumber({ ...good, number: 7 }, [good])).toBe("07");
++    expect(dropProblems({ ...good, number: 0 })).toEqual([expect.stringMatching(/number must be a whole number/)]);
++  });
++
+   it.each([
+     ["a time without +05:30", { membersFrom: "2026-11-21T20:00:00Z" }, /membersFrom must be written in IST/],
+     ["a time with another offset", { everyoneFrom: "2026-11-23T20:00:00+05:00" }, /everyoneFrom must be written in IST/],
+-- 
+2.43.0
+

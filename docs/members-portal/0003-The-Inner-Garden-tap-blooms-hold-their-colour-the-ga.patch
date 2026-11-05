@@ -1,0 +1,87 @@
+From 2f278c0e3200bdd4d618964772ba8ea0e3aa9bca Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 5 Nov 2026 02:01:44 +0000
+Subject: [PATCH 3/3] The Inner Garden: tap blooms hold their colour; the gate
+ fits a 320 px phone
+
+Tap blooms and petal bursts ran one strong ease-out over their whole
+keyframe set, so they reached the fade a third of the way in and were pale
+for most of their life. They now run linear overall with an easing per
+stage: open fast, hold in full colour, fade. On short phones (568 px tall)
+the gate scene gives up a little height so "Enter the garden" stays on the
+first screen.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ src/components/portal/PetalBurst.ts  |  6 +++---
+ src/components/portal/useTapBloom.ts | 11 +++++++----
+ src/pages/members/members.css        |  6 ++++++
+ 3 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/src/components/portal/PetalBurst.ts b/src/components/portal/PetalBurst.ts
+index 0e3e196..9cf0553 100644
+--- a/src/components/portal/PetalBurst.ts
++++ b/src/components/portal/PetalBurst.ts
+@@ -73,11 +73,11 @@ export const burstPetals = (layer: HTMLElement | null, x: number, y: number, opt
+     const a = play(
+       svg,
+       [
+-        { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg) scale(.3)", opacity: 0 },
+-        { transform: `translate(-50%,-50%) translate(${dx * 0.62}px,${dy * 0.62 - 18}px) rotate(${turn * 0.6}deg) scale(1)`, opacity: 1, offset: 0.45 },
++        { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg) scale(.3)", opacity: 0, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" },
++        { transform: `translate(-50%,-50%) translate(${dx * 0.62}px,${dy * 0.62 - 18}px) rotate(${turn * 0.6}deg) scale(1)`, opacity: 1, offset: 0.4, easing: EASE_IN },
+         { transform: `translate(-50%,-50%) translate(${dx}px,${dy + 34}px) rotate(${turn}deg) scale(.85)`, opacity: 0 },
+       ],
+-      { duration: duration * (0.8 + Math.random() * 0.35), delay: (options.delay ?? 0) + Math.random() * 60, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "both" },
++      { duration: duration * (0.8 + Math.random() * 0.35), delay: (options.delay ?? 0) + Math.random() * 60, easing: "linear", fill: "both" },
+     );
+     settle(svg, a, out);
+   }
+diff --git a/src/components/portal/useTapBloom.ts b/src/components/portal/useTapBloom.ts
+index 1d806dc..00edf1a 100644
+--- a/src/components/portal/useTapBloom.ts
++++ b/src/components/portal/useTapBloom.ts
+@@ -97,15 +97,18 @@ export const useTapBloom = (rootRef: RefObject<HTMLElement>, enabled = true, opt
+       while (list.length > MAX_BLOOMS) list.shift()?.remove();
+ 
+       const dur = species.dur * 1000;
++      /* Linear overall, eased per stage: opens fast, holds in full colour,
++         then fades. (One ease-out over the whole run would reach the fade
++         a third of the way in, and the bloom would be pale most of its life.) */
+       const a = play(
+         node,
+         [
+-          { transform: "translate(-50%,-50%) scale(.15) rotate(-50deg)", opacity: 0 },
+-          { transform: "translate(-50%,-50%) scale(1.04) rotate(0deg)", opacity: 1, offset: 0.36 },
+-          { transform: "translate(-50%,-50%) scale(1) rotate(5deg)", opacity: 1, offset: 0.72 },
++          { transform: "translate(-50%,-50%) scale(.15) rotate(-50deg)", opacity: 0, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
++          { transform: "translate(-50%,-50%) scale(1.04) rotate(0deg)", opacity: 1, offset: 0.3, easing: "ease-in-out" },
++          { transform: "translate(-50%,-50%) scale(1) rotate(5deg)", opacity: 1, offset: 0.7, easing: "cubic-bezier(0.42, 0, 1, 1)" },
+           { transform: "translate(-50%,-50%) scale(1.08) rotate(9deg)", opacity: 0 },
+         ],
+-        { duration: dur, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "both" },
++        { duration: dur, easing: "linear", fill: "both" },
+       );
+       play(node.querySelector(".ig-bloom-in"), [{ transform: "rotate(-30deg) scale(.6)" }, { transform: "rotate(0deg) scale(1)" }], {
+         duration: dur * 0.5,
+diff --git a/src/pages/members/members.css b/src/pages/members/members.css
+index a2c66da..9e2d12e 100644
+--- a/src/pages/members/members.css
++++ b/src/pages/members/members.css
+@@ -584,6 +584,12 @@
+   color: var(--nf-gold-text);
+ }
+ 
++/* Short phones (320 x 568): the gate gives up a little height so its one action stays on the first screen. */
++@media (max-height: 620px) {
++  .ig-gate-scene { width: min(100%, 30vh * 1.048); width: min(100%, 30svh * 1.048); }
++  .ig-gate-cta { margin-top: 1rem; }
++}
++
+ @media (min-width: 768px) {
+   .ig-months { grid-template-columns: repeat(6, 1fr); }
+   .ig-gate-page,
+-- 
+2.43.0
+

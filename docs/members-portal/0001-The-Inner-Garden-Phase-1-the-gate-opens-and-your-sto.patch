@@ -1,0 +1,4776 @@
+From de79aadfb36596d1dde4fc6397b99f12b6e40636 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 5 Nov 2026 00:51:09 +0000
+Subject: [PATCH 1/3] The Inner Garden, Phase 1: the gate opens, and your stone
+ blooms
+
+A members' portal at /members (one lazy, noindexed route, Disallowed in
+robots.txt, left out of scripts/routes.ts and the shopper telemetry):
+
+- The Gate for signed-out visitors: gold ironwork drawn from the Account
+  sprig, three plain promises, Sign in or join (back to the room asked
+  for), the Inner Circle form (source members-gate) and WhatsApp. While
+  sign-in is being read the gate stays closed, with no signed-out flash.
+- THE DOORS: the Naira flower draws itself in gold in the latch, petals
+  burst, the leaves swing back (rotateY 100deg, perspective 900px) and a
+  sage curtain lifts on its five-petal tassel while the garden blooms in.
+  1.6 s once per IST day per device, 0.5 s after; a tap or key skips;
+  nothing under reduced motion, where the heading takes focus.
+- Her garden: a bed seeded from her user id (at most 80 plants, 24
+  swaying, paused off screen, on a hidden tab and after 20 s idle) under
+  a gold arbour, with the Naira flower planted the day she joined and her
+  stone flower beside it; tap blooms on the bed and gate only (five at
+  most, on the element, not window); "What's growing" as its text.
+- Your stone: a first-visit seed ceremony with Skip; a birthday field that
+  writes profiles.birthday through the existing row security; a specimen
+  card that turns over (tap or drag) to the live Birthstone Heart Necklace
+  with her month chosen by the listing's own variant name, live price and
+  compare-at, Add to bag through CartContext, or Reserve on WhatsApp when
+  sold out; every other month below, for a gift.
+- Entry points: Account's COMING SOON preview-room panel becomes "Your
+  garden"; /innercircle gets one static link; /auth replaces the Google
+  button inside Instagram and Facebook's browsers with a note.
+- A development-only preview member (?portalPreview=1) behind
+  import.meta.env.DEV, absent from the build.
+
+Isolation, honesty and IST tests guard it. The global CSS and the vendor
+chunk build byte-identical to origin/main; the entry chunk grows by the
+route rows (+87 B gzip); the route is 17.6 KB gzip JS and 3.3 KB CSS.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01TpEhS3XnffjKP5JTdNrd3V
+---
+ public/robots.txt                          |   1 +
+ src/App.tsx                                |   2 +
+ src/components/portal/DoorsOpen.test.tsx   | 138 +++++
+ src/components/portal/DoorsOpen.tsx        | 151 ++++++
+ src/components/portal/FlowerDraw.tsx       |  90 ++++
+ src/components/portal/GardenBed.tsx        | 309 +++++++++++
+ src/components/portal/GateIronwork.tsx     | 133 +++++
+ src/components/portal/MemberContext.tsx    |  51 ++
+ src/components/portal/PetalBurst.ts        |  58 +++
+ src/components/portal/PetalSymbols.tsx     |  35 ++
+ src/components/portal/PortalNav.tsx        |  63 +++
+ src/components/portal/PortalShell.tsx      |  34 ++
+ src/components/portal/SeedCeremony.tsx     | 148 ++++++
+ src/components/portal/Sprig.tsx            |  29 ++
+ src/components/portal/StoneArt.tsx         |  59 +++
+ src/components/portal/StoneCard.test.tsx   | 142 +++++
+ src/components/portal/StoneCard.tsx        | 248 +++++++++
+ src/components/portal/styles.ts            |  13 +
+ src/components/portal/useTapBloom.test.tsx |  74 +++
+ src/components/portal/useTapBloom.ts       | 112 ++++
+ src/lib/portal/brandFlower.ts              |  44 ++
+ src/lib/portal/copy.test.ts                |  47 ++
+ src/lib/portal/curves.ts                   |  41 ++
+ src/lib/portal/doors.ts                    |  20 +
+ src/lib/portal/gardenLayout.test.ts        |  50 ++
+ src/lib/portal/gardenLayout.ts             | 160 ++++++
+ src/lib/portal/inAppBrowser.test.ts        |  45 ++
+ src/lib/portal/inAppBrowser.ts             |  19 +
+ src/lib/portal/isolation.test.ts           | 111 ++++
+ src/lib/portal/ist.test.ts                 |  35 ++
+ src/lib/portal/ist.ts                      |  62 +++
+ src/lib/portal/motion.ts                   | 116 +++++
+ src/lib/portal/preview.ts                  |  52 ++
+ src/lib/portal/safeStorage.test.ts         |  52 ++
+ src/lib/portal/safeStorage.ts              |  69 +++
+ src/lib/portal/species.ts                  |  85 +++
+ src/lib/portal/stones.test.ts              |  54 ++
+ src/lib/portal/stones.ts                   |  93 ++++
+ src/lib/routeCode.ts                       |   1 +
+ src/lib/shopperPerformance.ts              |   2 +-
+ src/pageCode.ts                            |   4 +-
+ src/pages/Account.tsx                      |  27 +-
+ src/pages/Auth.tsx                         |  39 +-
+ src/pages/InnerCircle.tsx                  |   7 +
+ src/pages/members/GardenHome.tsx           | 120 +++++
+ src/pages/members/Gate.tsx                 |  85 +++
+ src/pages/members/MembersRoute.test.tsx    |  99 ++++
+ src/pages/members/MembersRoute.tsx         | 101 ++++
+ src/pages/members/Stone.tsx                | 150 ++++++
+ src/pages/members/members.css              | 570 +++++++++++++++++++++
+ src/test/robots.test.ts                    |   1 +
+ 51 files changed, 4218 insertions(+), 33 deletions(-)
+ create mode 100644 src/components/portal/DoorsOpen.test.tsx
+ create mode 100644 src/components/portal/DoorsOpen.tsx
+ create mode 100644 src/components/portal/FlowerDraw.tsx
+ create mode 100644 src/components/portal/GardenBed.tsx
+ create mode 100644 src/components/portal/GateIronwork.tsx
+ create mode 100644 src/components/portal/MemberContext.tsx
+ create mode 100644 src/components/portal/PetalBurst.ts
+ create mode 100644 src/components/portal/PetalSymbols.tsx
+ create mode 100644 src/components/portal/PortalNav.tsx
+ create mode 100644 src/components/portal/PortalShell.tsx
+ create mode 100644 src/components/portal/SeedCeremony.tsx
+ create mode 100644 src/components/portal/Sprig.tsx
+ create mode 100644 src/components/portal/StoneArt.tsx
+ create mode 100644 src/components/portal/StoneCard.test.tsx
+ create mode 100644 src/components/portal/StoneCard.tsx
+ create mode 100644 src/components/portal/styles.ts
+ create mode 100644 src/components/portal/useTapBloom.test.tsx
+ create mode 100644 src/components/portal/useTapBloom.ts
+ create mode 100644 src/lib/portal/brandFlower.ts
+ create mode 100644 src/lib/portal/copy.test.ts
+ create mode 100644 src/lib/portal/curves.ts
+ create mode 100644 src/lib/portal/doors.ts
+ create mode 100644 src/lib/portal/gardenLayout.test.ts
+ create mode 100644 src/lib/portal/gardenLayout.ts
+ create mode 100644 src/lib/portal/inAppBrowser.test.ts
+ create mode 100644 src/lib/portal/inAppBrowser.ts
+ create mode 100644 src/lib/portal/isolation.test.ts
+ create mode 100644 src/lib/portal/ist.test.ts
+ create mode 100644 src/lib/portal/ist.ts
+ create mode 100644 src/lib/portal/motion.ts
+ create mode 100644 src/lib/portal/preview.ts
+ create mode 100644 src/lib/portal/safeStorage.test.ts
+ create mode 100644 src/lib/portal/safeStorage.ts
+ create mode 100644 src/lib/portal/species.ts
+ create mode 100644 src/lib/portal/stones.test.ts
+ create mode 100644 src/lib/portal/stones.ts
+ create mode 100644 src/pages/members/GardenHome.tsx
+ create mode 100644 src/pages/members/Gate.tsx
+ create mode 100644 src/pages/members/MembersRoute.test.tsx
+ create mode 100644 src/pages/members/MembersRoute.tsx
+ create mode 100644 src/pages/members/Stone.tsx
+ create mode 100644 src/pages/members/members.css
+
+diff --git a/public/robots.txt b/public/robots.txt
+index 3ce8f50..984ad19 100644
+--- a/public/robots.txt
++++ b/public/robots.txt
+@@ -15,5 +15,6 @@ Disallow: /cart/c/
+ Disallow: /checkouts/
+ Disallow: /.lovable/
+ Disallow: /admin/
++Disallow: /members
+ 
+ Sitemap: https://nairaflore.com/sitemap.xml
+diff --git a/src/App.tsx b/src/App.tsx
+index e922d4d..909dcf6 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -50,6 +50,7 @@ import {
+   Account,
+   OAuthConsent,
+   AdminReels,
++  Members,
+ } from "./pageCode";
+ 
+ 
+@@ -147,6 +148,7 @@ const AppShell = () => {
+           <Route path="/inner-circle" element={<InnerCircle />} />
+           <Route path="/auth" element={<Auth />} />
+           <Route path="/account" element={<Account />} />
++          <Route path="/members/*" element={<Members />} />
+           <Route path="/admin/reels" element={<AdminReels />} />
+           <Route path="/admin/performance" element={<PerformanceDashboard />} />
+           <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+diff --git a/src/components/portal/DoorsOpen.test.tsx b/src/components/portal/DoorsOpen.test.tsx
+new file mode 100644
+index 0000000..e1c2cad
+--- /dev/null
++++ b/src/components/portal/DoorsOpen.test.tsx
+@@ -0,0 +1,138 @@
++import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
++import { MemoryRouter } from "react-router-dom";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import DoorsOpen, { DOORS_MS } from "./DoorsOpen";
++import { MemberProvider, type Member } from "./MemberContext";
++import { doorsModeFor, pickDoors } from "@/lib/portal/doors";
++import { istDayKey } from "@/lib/portal/ist";
++import { writePortal } from "@/lib/portal/safeStorage";
++
++vi.mock("@/components/PageSEO", () => ({ default: () => null }));
++vi.mock("@/components/Footer", () => ({ default: () => null }));
++
++import GardenHome from "@/pages/members/GardenHome";
++
++const setReducedMotion = (reduce: boolean) => {
++  window.matchMedia = ((query: string) => ({
++    matches: reduce && query.includes("reduce"),
++    media: query,
++    onchange: null,
++    addListener: () => {},
++    removeListener: () => {},
++    addEventListener: () => {},
++    removeEventListener: () => {},
++    dispatchEvent: () => false,
++  })) as typeof window.matchMedia;
++};
++
++const member = (over: Partial<Member> = {}): Member => ({
++  user: { id: "u-1", email: "ananya@example.com", created_at: "2026-11-04T05:00:00Z", user_metadata: {} } as unknown as Member["user"],
++  profile: { id: "u-1", full_name: "Ananya", birthday: "1999-07-14", phone: null, city: null },
++  firstName: "Ananya",
++  preview: false,
++  saveBirthday: async () => ({ ok: true }),
++  addToBag: async () => {},
++  doorsPlayed: false,
++  markDoorsPlayed: () => {},
++  ...over,
++});
++
++const home = (m: Member) =>
++  render(
++    <MemoryRouter>
++      <MemberProvider value={m}>
++        <GardenHome />
++      </MemberProvider>
++    </MemoryRouter>,
++  );
++
++beforeEach(() => {
++  window.localStorage.clear();
++  setReducedMotion(false);
++});
++afterEach(() => {
++  cleanup();
++  vi.useRealTimers();
++});
++
++describe("the Doors", () => {
++  it("fit the plan's timings: 1.6 s in full, 0.5 s after", () => {
++    expect(DOORS_MS.full).toBeLessThanOrEqual(1600);
++    expect(DOORS_MS.short).toBeLessThanOrEqual(500);
++  });
++
++  it("play in full once per IST day on this device, then short", () => {
++    const today = istDayKey(new Date("2026-11-05T06:00:00Z"));
++    expect(doorsModeFor(undefined, today)).toBe("full");
++    expect(doorsModeFor("2026-11-04", today)).toBe("full");
++    expect(doorsModeFor(today, today)).toBe("short");
++    writePortal({ doorsDay: istDayKey() });
++    expect(pickDoors(false)).toBe("short");
++    expect(pickDoors(true)).toBeNull();
++  });
++
++  it("record the full entrance, so the next visit that day is short", () => {
++    const first = home(member());
++    expect(first.container.querySelector(".ig-doors")?.getAttribute("data-mode")).toBe("full");
++    first.unmount();
++    const second = home(member());
++    expect(second.container.querySelector(".ig-doors")?.getAttribute("data-mode")).toBe("short");
++  });
++
++  it("sway at most 24 plants when motion is allowed", () => {
++    const { container } = home(member({ doorsPlayed: true }));
++    const sway = container.querySelectorAll(".ig-sway").length;
++    expect(sway).toBeGreaterThan(0);
++    expect(sway).toBeLessThanOrEqual(24);
++  });
++
++  it("do not replay when she comes back to the garden in the same visit", () => {
++    const { container } = home(member({ doorsPlayed: true }));
++    expect(container.querySelector(".ig-doors")).toBeNull();
++    expect(document.activeElement).toBe(screen.getByRole("heading", { level: 1 }));
++  });
++
++  it("start the garden as the curtain lifts and finish within their time", () => {
++    vi.useFakeTimers();
++    const onReveal = vi.fn();
++    const onDone = vi.fn();
++    render(<DoorsOpen mode="full" name="Ananya" greeting="Good evening" onReveal={onReveal} onDone={onDone} />);
++    act(() => void vi.advanceTimersByTime(819));
++    expect(onReveal).not.toHaveBeenCalled();
++    act(() => void vi.advanceTimersByTime(1));
++    expect(onReveal).toHaveBeenCalledWith(false);
++    act(() => void vi.advanceTimersByTime(780));
++    expect(onDone).toHaveBeenCalledTimes(1);
++  });
++
++  it("skip on a tap, once", () => {
++    const onDone = vi.fn();
++    const { container } = render(<DoorsOpen mode="full" name="Ananya" greeting="Good evening" onReveal={() => {}} onDone={onDone} />);
++    fireEvent.pointerDown(container.querySelector(".ig-doors")!);
++    fireEvent.pointerDown(container.querySelector(".ig-doors")!);
++    expect(onDone).toHaveBeenCalledTimes(1);
++  });
++
++  it("skip on Escape too", () => {
++    const onDone = vi.fn();
++    render(<DoorsOpen mode="short" name="Ananya" greeting="Good evening" onReveal={() => {}} onDone={onDone} />);
++    fireEvent.keyDown(window, { key: "Escape" });
++    expect(onDone).toHaveBeenCalledTimes(1);
++  });
++
++  /* Under reduced motion the garden is simply open: no overlay, nothing left
++     waiting at opacity 0, and the heading takes focus. */
++  it("show the final state at once under reduced motion", () => {
++    setReducedMotion(true);
++    const { container } = home(member());
++    expect(container.querySelector(".ig-doors")).toBeNull();
++    const h1 = screen.getByRole("heading", { level: 1 });
++    expect(h1).toHaveTextContent(/Ananya$/);
++    expect(document.activeElement).toBe(h1);
++    const hidden = [...container.querySelectorAll<HTMLElement>("*")].filter((el) => el.style.opacity === "0");
++    expect(hidden).toEqual([]);
++    // No sway layers either: every plant stands still.
++    expect(container.querySelector(".ig-bed")).not.toBeNull();
++    expect(container.querySelectorAll(".ig-sway")).toHaveLength(0);
++  });
++});
+diff --git a/src/components/portal/DoorsOpen.tsx b/src/components/portal/DoorsOpen.tsx
+new file mode 100644
+index 0000000..90b024f
+--- /dev/null
++++ b/src/components/portal/DoorsOpen.tsx
+@@ -0,0 +1,151 @@
++import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
++import GateIronwork from "./GateIronwork";
++import FlowerDraw, { drawFlower } from "./FlowerDraw";
++import { burstPetals } from "./PetalBurst";
++import { EASE_CURTAIN, EASE_DRAWER, EASE_IN, EASE_REVEAL, cue, play } from "@/lib/portal/motion";
++
++/*
++  THE DOORS: the way into her garden. Over a sage curtain, the Naira flower
++  draws itself in gold in the gate's latch and fills blush; petals burst from
++  the latch, the two leaves swing back (rotateY ±100°, perspective 900px,
++  --ease-drawer), and the curtain lifts like a blind on its cream five-petal
++  tassel (the shop's PageCurtain recipe, copied, not shared: the global
++  curtain is untouched) while the garden blooms in beneath. 1.6 s in full,
++  once per IST day on this device; 0.5 s every other visit. A tap or a key
++  skips it. The caller never mounts it under reduced motion.
++*/
++
++export type DoorsMode = "full" | "short";
++
++// eslint-disable-next-line react-refresh/only-export-components -- the entrance's timings, beside it for its test
++export const DOORS_MS: Record<DoorsMode, number> = { full: 1600, short: 500 };
++
++type Props = {
++  mode: DoorsMode;
++  name: string;
++  greeting: string;
++  /** The curtain is lifting: start the garden's own bloom-in. */
++  onReveal: (short: boolean) => void;
++  onDone: () => void;
++};
++
++const DoorsOpen = ({ mode, name, greeting, onReveal, onDone }: Props) => {
++  const short = mode === "short";
++  const rootRef = useRef<HTMLDivElement>(null);
++  const curtainRef = useRef<HTMLDivElement>(null);
++  const stageRef = useRef<HTMLDivElement>(null);
++  const leftRef = useRef<HTMLDivElement>(null);
++  const rightRef = useRef<HTMLDivElement>(null);
++  const latchRef = useRef<HTMLDivElement>(null);
++  const greetRef = useRef<HTMLParagraphElement>(null);
++  const anims = useRef<Animation[]>([]);
++  const ended = useRef(false);
++
++  const end = useCallback(() => {
++    if (ended.current) return;
++    ended.current = true;
++    anims.current.forEach((a) => {
++      try {
++        a.finish();
++      } catch {
++        a.cancel();
++      }
++    });
++    onDone();
++  }, [onDone]);
++
++  // Before the first paint, so the closed gate is the first thing she sees.
++  useLayoutEffect(() => {
++    const list = anims.current;
++    const keep = (a: Animation | null) => {
++      if (a) list.push(a);
++    };
++    // Steps cued on the same timeline as the animations, so they stay in time.
++    const later = (ms: number, fn: () => void) => keep(cue(rootRef.current, ms, () => !ended.current && fn()));
++
++    if (!short) {
++      // Drawn and coloured (by ~0.75 s) before the leaves part and it opens out.
++      list.push(...drawFlower(latchRef.current, { duration: 620 }));
++      keep(play(greetRef.current, [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 120, easing: EASE_REVEAL, fill: "backwards" }));
++      later(650, () => {
++        const root = rootRef.current;
++        const latch = latchRef.current?.getBoundingClientRect();
++        if (!root || !latch) return;
++        list.push(...burstPetals(root, latch.left + latch.width / 2, latch.top + latch.height / 2, { count: 20, spread: 150 }));
++      });
++    }
++
++    const swing = { duration: short ? 420 : 900, delay: short ? 0 : 560, easing: EASE_DRAWER, fill: "both" as const };
++    keep(play(leftRef.current, [{ transform: "rotateY(0deg)", opacity: 1 }, { transform: "rotateY(62deg)", opacity: 1, offset: 0.62 }, { transform: "rotateY(100deg)", opacity: 0 }], swing));
++    keep(play(rightRef.current, [{ transform: "rotateY(0deg)", opacity: 1 }, { transform: "rotateY(-62deg)", opacity: 1, offset: 0.62 }, { transform: "rotateY(-100deg)", opacity: 0 }], swing));
++    const away = { duration: short ? 220 : 280, delay: short ? 60 : 780, easing: EASE_IN, fill: "forwards" as const };
++    keep(play(stageRef.current, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], away));
++    // As the leaves part, the flower in the latch rises and opens out, then goes with the curtain.
++    keep(
++      play(
++        latchRef.current,
++        short
++          ? [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-26px) scale(1.12)" }]
++          : [
++              { opacity: 1, transform: "none" },
++              { opacity: 1, transform: "translateY(-12px) scale(2.3)", offset: 0.62 },
++              { opacity: 0, transform: "translateY(-34px) scale(2.7)" },
++            ],
++        short ? away : { duration: 560, delay: 560, easing: EASE_REVEAL, fill: "forwards" },
++      ),
++    );
++    keep(play(curtainRef.current, [{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], { duration: short ? 400 : 600, delay: short ? 80 : 820, easing: EASE_CURTAIN, fill: "forwards" }));
++
++    later(short ? 60 : 820, () => onReveal(short));
++    later(DOORS_MS[mode], end);
++    // A safety net should the timeline never run (a tab hidden mid-entrance).
++    const net = window.setTimeout(end, 8000);
++    return () => window.clearTimeout(net);
++    // Played once, as mounted.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
++
++  useEffect(() => {
++    const onKey = (e: KeyboardEvent) => {
++      if (e.key === "Escape" || e.key === "Enter" || e.key === " ") end();
++    };
++    window.addEventListener("keydown", onKey);
++    return () => window.removeEventListener("keydown", onKey);
++  }, [end]);
++
++  return (
++    <div ref={rootRef} className="ig-doors" aria-hidden onPointerDown={end} data-mode={mode}>
++      <div ref={curtainRef} className="ig-curtain">
++        <svg className="ig-tassel" viewBox="0 0 40 40" width="40" height="40">
++          {[0, 72, 144, 216, 288].map((a) => {
++            const rad = ((a - 90) * Math.PI) / 180;
++            const x = 20 + Math.cos(rad) * 9;
++            const y = 20 + Math.sin(rad) * 9;
++            return <ellipse key={a} cx={x} cy={y} rx="6" ry="3.4" fill="#FFF8F5" transform={`rotate(${a - 90} ${x} ${y})`} />;
++          })}
++          <circle cx="20" cy="20" r="4.4" fill="var(--nf-blush)" />
++        </svg>
++      </div>
++      <div className="ig-doors-stage">
++        <GateIronwork
++          tone="sage"
++          leftRef={leftRef}
++          rightRef={rightRef}
++          latch={
++            <div ref={latchRef} className="ig-doors-latch">
++              <FlowerDraw height={64} />
++            </div>
++          }
++        />
++        <div ref={stageRef} className="ig-doors-words">
++          <p ref={greetRef} className="ig-doors-greet" data-clarity-mask="true">
++            {greeting}, <em>{name}</em>
++          </p>
++          {!short && <p className="ig-doors-hint">Tap to skip</p>}
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default DoorsOpen;
+diff --git a/src/components/portal/FlowerDraw.tsx b/src/components/portal/FlowerDraw.tsx
+new file mode 100644
+index 0000000..63455e1
+--- /dev/null
++++ b/src/components/portal/FlowerDraw.tsx
+@@ -0,0 +1,90 @@
++import {
++  FLOWER_ASPECT,
++  FLOWER_PETALS,
++  FLOWER_STEM,
++  FLOWER_VIEWBOX,
++  LEAF_SAGE,
++  PETAL_BLUSH,
++} from "@/lib/portal/brandFlower";
++import { EASE_REVEAL, play } from "@/lib/portal/motion";
++
++/*
++  The Naira flower drawing itself: a gold line traces the stem and its leaves,
++  then the four petals, and the colour comes in under the line (sage leaves,
++  blush petals). Rendered complete; drawFlower() animates it from nothing,
++  using stroke-dashoffset on pathLength=1 lines and opacity on the fills, so
++  under reduced motion or with no animation support it simply stays drawn.
++*/
++
++type Props = {
++  /** Rendered height in px; the stroke is set from it so the line stays a hairline. */
++  height: number;
++  className?: string;
++  /** Leave the colour out: a gold line drawing only. */
++  lineOnly?: boolean;
++  label?: string;
++};
++
++const FlowerDraw = ({ height, className = "", lineOnly = false, label }: Props) => {
++  const stroke = (1.15 / height).toFixed(5);
++  const parts = [FLOWER_STEM, ...FLOWER_PETALS];
++  return (
++    <svg
++      viewBox={FLOWER_VIEWBOX}
++      width={Math.round(height * FLOWER_ASPECT)}
++      height={height}
++      className={`ig-flower ${className}`}
++      role={label ? "img" : undefined}
++      aria-label={label}
++      aria-hidden={label ? undefined : true}
++    >
++      {!lineOnly && (
++        <g className="ig-flower-fill">
++          {parts.map((d, i) => (
++            <path key={i} d={d} fill={i === 0 ? LEAF_SAGE : PETAL_BLUSH} />
++          ))}
++        </g>
++      )}
++      <g className="ig-flower-line" fill="none" stroke="var(--nf-accent-strong)" strokeWidth={stroke} strokeLinejoin="round">
++        {parts.map((d, i) => (
++          <path key={i} d={d} pathLength={1} strokeDasharray="1 1" />
++        ))}
++      </g>
++    </svg>
++  );
++};
++
++export default FlowerDraw;
++
++/**
++ * Draws every flower inside `root`: the stem first, the petals overlapping
++ * it, then the colour. `duration` covers the line; the fill takes 220 ms more.
++ */
++// eslint-disable-next-line react-refresh/only-export-components -- the flower's own choreography, beside its markup
++export const drawFlower = (root: Element | null, { delay = 0, duration = 700 } = {}): Animation[] => {
++  if (!root) return [];
++  const out: Animation[] = [];
++  root.querySelectorAll(".ig-flower").forEach((svg) => {
++    const lines = svg.querySelectorAll(".ig-flower-line path");
++    lines.forEach((path, i) => {
++      const start = i === 0 ? 0 : duration * (0.3 + (i - 1) * 0.08);
++      const span = i === 0 ? duration * 0.62 : duration - start;
++      const a = play(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], {
++        duration: span,
++        delay: delay + start,
++        easing: "cubic-bezier(0.45, 0, 0.25, 1)",
++        fill: "backwards",
++      });
++      if (a) out.push(a);
++    });
++    const fill = svg.querySelector(".ig-flower-fill");
++    const f = play(fill, [{ opacity: 0 }, { opacity: 1 }], {
++      duration: 260,
++      delay: delay + duration * 0.86,
++      easing: EASE_REVEAL,
++      fill: "backwards",
++    });
++    if (f) out.push(f);
++  });
++  return out;
++};
+diff --git a/src/components/portal/GardenBed.tsx b/src/components/portal/GardenBed.tsx
+new file mode 100644
+index 0000000..2c796b7
+--- /dev/null
++++ b/src/components/portal/GardenBed.tsx
+@@ -0,0 +1,309 @@
++import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from "react";
++import { BED, layoutGarden, type Plant } from "@/lib/portal/gardenLayout";
++import { SPECIES, petalTransform } from "@/lib/portal/species";
++import { FLOWER_ASPECT, FLOWER_BASE_X, LEAF_SAGE } from "@/lib/portal/brandFlower";
++import type { Stone } from "@/lib/portal/stones";
++import { EASE_BLOOM, play, stillMotion, useAmbient } from "@/lib/portal/motion";
++import { chainPath, leavesAlong, mirrorSegs, pointOn, type Seg } from "@/lib/portal/curves";
++import FlowerDraw from "./FlowerDraw";
++import { StonePlant } from "./StoneArt";
++import { useTapBloom } from "./useTapBloom";
++
++/*
++  Her garden bed. Every plant is its own small layer placed over a 390 x 560
++  view, so the sway (at most 24 of them, ±2.5° about the stem base) and the
++  bloom-in move only transform and opacity on the compositor; the soil and
++  everything still is painted once. The sway stops off screen, on a hidden
++  tab and after 20 s without a touch, and never starts under reduced motion.
++*/
++
++const STEM_HEAD: Record<0 | 1 | 2, [number, number]> = { 0: [0, -88], 1: [-8, -88], 2: [8, -88] };
++const BUD_TONES = ["#FFBDA8", "#F3D9C6", "#E5B9A4", "#FFE0D3"];
++const ROW_SHADE = [0.62, 0.84, 1];
++
++/* The bed's shapes, stamped by every plant. */
++export const GardenSymbols = () => (
++  <>
++    <symbol id="ig-stem-0" viewBox="-30 -112 60 112">
++      <path d="M0 0C-2-28 3-56 0-84" fill="none" stroke={LEAF_SAGE} strokeWidth="1.6" />
++      <ellipse cx="-8" cy="-30" rx="9" ry="3.4" transform="rotate(-32 -8 -30)" fill={LEAF_SAGE} />
++      <ellipse cx="8" cy="-52" rx="8" ry="3.1" transform="rotate(34 8 -52)" fill={LEAF_SAGE} />
++    </symbol>
++    <symbol id="ig-stem-1" viewBox="-30 -112 60 112">
++      <path d="M0 0C2-30-10-58-8-84" fill="none" stroke={LEAF_SAGE} strokeWidth="1.6" />
++      <ellipse cx="6" cy="-28" rx="9" ry="3.4" transform="rotate(30 6 -28)" fill={LEAF_SAGE} />
++      <ellipse cx="-12" cy="-52" rx="8" ry="3.1" transform="rotate(-30 -12 -52)" fill={LEAF_SAGE} />
++    </symbol>
++    <symbol id="ig-stem-2" viewBox="-30 -112 60 112">
++      <path d="M0 0C-2-30 10-58 8-84" fill="none" stroke={LEAF_SAGE} strokeWidth="1.6" />
++      <ellipse cx="-6" cy="-28" rx="9" ry="3.4" transform="rotate(-30 -6 -28)" fill={LEAF_SAGE} />
++      <ellipse cx="12" cy="-52" rx="8" ry="3.1" transform="rotate(30 12 -52)" fill={LEAF_SAGE} />
++    </symbol>
++    {SPECIES.map((s, k) => (
++      <symbol key={s.name} id={`ig-head-${k}`} viewBox="-50 -50 100 100">
++        {Array.from({ length: s.petals }, (_, i) => (
++          <path key={i} d={s.d} transform={petalTransform((i * 360) / s.petals, 46)} fill="currentColor" />
++        ))}
++        {s.inner > 0 &&
++          Array.from({ length: s.petals }, (_, i) => (
++            <path key={`i${i}`} d={s.d} transform={petalTransform(180 / s.petals + (i * 360) / s.petals, 46 * s.inner)} fill="#FFF8EE" opacity=".45" />
++          ))}
++        <circle r="8" fill={s.core} />
++        <circle r="3" cx="-2" cy="-2" fill="#FFF8EE" />
++      </symbol>
++    ))}
++    <symbol id="ig-bud" viewBox="-30 -112 60 112">
++      <use href="#ig-stem-0" x="-30" y="-112" width="60" height="112" />
++      <path d="M0-104C7-95 8-88 0-81C-8-88-7-95 0-104Z" fill="currentColor" />
++      <path d="M0-81C-5-84-8-90-7-95M0-81C5-84 8-90 7-95" fill="none" stroke={LEAF_SAGE} strokeWidth="1.4" />
++    </symbol>
++    <symbol id="ig-sprig" viewBox="-30 -112 60 112">
++      <path d="M0 0C-4-30 6-60 2-96" fill="none" stroke={LEAF_SAGE} strokeWidth="1.4" />
++      {[0, 1, 2, 3, 4, 5].map((i) => {
++        const y = -16 - i * 14;
++        const x = (i % 2 ? 7 : -7) + (i > 2 ? 2 : 0);
++        return <ellipse key={i} cx={x} cy={y} rx="7.5" ry="3" transform={`rotate(${i % 2 ? 34 : -34} ${x} ${y})`} fill={LEAF_SAGE} opacity=".8" />;
++      })}
++      <circle cx="2" cy="-98" r="2.4" fill="var(--nf-accent)" />
++    </symbol>
++    <symbol id="ig-grass" viewBox="-30 -112 60 112">
++      <path d="M0 0C-1-20-6-34-12-46M0 0C1-24 2-40 1-58M0 0C2-18 7-30 13-40" fill="none" stroke="var(--nf-accent)" strokeWidth="1" opacity=".85" />
++    </symbol>
++    <symbol id="ig-breath" viewBox="-30 -112 60 112">
++      <path d="M0 0C0-30-2-50-10-70M0-30C4-46 10-58 14-66M-2-48C-6-58-2-66 2-80" fill="none" stroke="var(--nf-accent)" strokeWidth=".9" />
++      {[[-10, -71], [14, -67], [2, -81], [-6, -58], [8, -54], [-3, -40], [11, -74]].map(([x, y], i) => (
++        <circle key={i} cx={x} cy={y} r={i % 3 ? 2.1 : 2.6} fill={i % 2 ? "#FFF6EA" : "#FFD6C6"} />
++      ))}
++    </symbol>
++    <symbol id="ig-leaves" viewBox="-30 -112 60 112">
++      <path d="M0 0C-14-10-22-30-18-52C-6-40-2-20 0 0Z" fill={LEAF_SAGE} />
++      <path d="M0 0C10-8 18-24 16-42C6-32 2-16 0 0Z" fill={LEAF_SAGE} opacity=".85" />
++      <path d="M0 0C-8-16-12-30-17-48M0 0C6-14 10-26 15-39" fill="none" stroke="#7E9893" strokeWidth=".6" />
++    </symbol>
++  </>
++);
++
++/* The arbour over her bed: the gate's arch, opened out, with a vine climbing
++   each post and wisteria-like drops hanging from the top. Drawn once. */
++const ARBOUR_OUTER = `M22 ${BED.soil}V214C22 132 104 78 195 78C286 78 368 132 368 214V${BED.soil}`;
++const ARBOUR_INNER = `M30 ${BED.soil}V216C30 140 108 88 195 88C282 88 360 140 360 216V${BED.soil}`;
++const VINE_L: Seg[] = [
++  [26, 520, 42, 470, 12, 430, 28, 388],
++  [28, 388, 44, 346, 14, 306, 30, 266],
++  [30, 266, 44, 228, 24, 194, 46, 160],
++  [46, 160, 66, 128, 92, 106, 124, 94],
++];
++const VINE_R = mirrorSegs(VINE_L, BED.w);
++const LEAF_TS = [0.05, 0.12, 0.19, 0.26, 0.33, 0.4, 0.47, 0.54, 0.61, 0.68, 0.76, 0.84, 0.92];
++const VINES = [VINE_L, VINE_R].map((segs) => ({
++  d: chainPath(segs),
++  leaves: leavesAlong(segs, LEAF_TS, 6, 50),
++  buds: [0.3, 0.58, 0.88, 0.99].map((t) => pointOn(segs, t)),
++}));
++const DROPS = [
++  { x: 112, y: 104, n: 4 },
++  { x: 150, y: 92, n: 3 },
++  { x: 240, y: 92, n: 3 },
++  { x: 278, y: 104, n: 4 },
++];
++
++const Arbour = () => (
++  <g className="ig-arbour">
++    <path className="ig-arbour-line" d={ARBOUR_OUTER} pathLength={1} strokeDasharray="1 1" />
++    <path className="ig-arbour-line ig-arbour-line--fine" d={ARBOUR_INNER} pathLength={1} strokeDasharray="1 1" />
++    {[250, 290, 330, 370, 410, 450, 490].map((y) => (
++      <path key={y} className="ig-arbour-tick" d={`M22 ${y}H30M360 ${y}H368`} />
++    ))}
++    {VINES.map((v, i) => (
++      <g key={i}>
++        <path d={v.d} fill="none" stroke={LEAF_SAGE} strokeWidth="1.1" />
++        {v.leaves.map((l, j) => (
++          <ellipse key={j} cx={l.x.toFixed(1)} cy={l.y.toFixed(1)} rx="6.2" ry="2.6" transform={`rotate(${l.a.toFixed(1)} ${l.x.toFixed(1)} ${l.y.toFixed(1)})`} fill={LEAF_SAGE} opacity=".85" />
++        ))}
++        {v.buds.map(([x, y], j) => (
++          <circle key={j} cx={x.toFixed(1)} cy={y.toFixed(1)} r={j === 3 ? 3.2 : 2.5} fill={j % 2 ? "#FFF6EA" : "var(--nf-blush)"} stroke="var(--nf-accent)" strokeWidth=".6" />
++        ))}
++      </g>
++    ))}
++    {DROPS.map((d) => (
++      <g key={d.x}>
++        <path d={`M${d.x} ${d.y - 6}V${d.y + (d.n - 1) * 9}`} stroke="var(--nf-accent)" strokeWidth=".6" opacity=".7" />
++        {Array.from({ length: d.n }, (_, k) => (
++          <circle key={k} cx={d.x} cy={d.y + k * 9} r={3.4 - k * 0.55} fill={k % 2 ? "#F3D9C6" : "#FFBDA8"} />
++        ))}
++      </g>
++    ))}
++    <g transform="translate(195 78)">
++      {[0, 72, 144, 216, 288].map((a) => (
++        <ellipse key={a} cx="0" cy="-6" rx="3.4" ry="5.6" transform={`rotate(${a})`} fill="var(--nf-blush)" stroke="var(--nf-accent)" strokeWidth=".6" />
++      ))}
++      <circle r="2.6" fill="var(--nf-accent)" />
++    </g>
++  </g>
++);
++
++const art = (p: Plant) => {
++  const flip = p.flip ? "scale(-1 1)" : undefined;
++  if (p.kind === "bloom") {
++    const [hx, hy] = STEM_HEAD[p.stem];
++    const s = SPECIES[p.species];
++    return (
++      <g transform={flip}>
++        <use href={`#ig-stem-${p.stem}`} x="-30" y="-112" width="60" height="112" />
++        <use href={`#ig-head-${p.species}`} x={hx - 17} y={hy - 17} width="34" height="34" style={{ color: s.palette[p.tone % s.palette.length] }} />
++      </g>
++    );
++  }
++  if (p.kind === "bud") {
++    return <use href="#ig-bud" x="-30" y="-112" width="60" height="112" transform={flip} style={{ color: BUD_TONES[p.tone % BUD_TONES.length] }} />;
++  }
++  return <use href={`#ig-${p.kind}`} x="-30" y="-112" width="60" height="112" transform={flip} />;
++};
++
++/* Each plant's box in the view: 60 x 112 scaled, stem base at the bottom middle. */
++const boxOf = (p: Plant) => {
++  if (p.kind === "naira") {
++    const h = 208;
++    const w = h * FLOWER_ASPECT;
++    return { left: p.x - w * FLOWER_BASE_X, top: p.y - h, w, h };
++  }
++  if (p.kind === "stone") return { left: p.x - 40 * 1.05, top: p.y - 170 * 1.05, w: 80 * 1.05, h: 170 * 1.05 };
++  const w = 60 * p.scale;
++  const h = 112 * p.scale;
++  return { left: p.x - w / 2, top: p.y - h, w, h };
++};
++
++const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
++
++export type GardenBedHandle = { bloomIn: (short?: boolean) => Animation[] };
++
++type Props = {
++  seed: string;
++  stone: Stone | null;
++  plantedOn?: string | null;
++  stoneLabel?: string;
++  /** The gate's backdrop: no sway, no taps, no labels. */
++  still?: boolean;
++  className?: string;
++};
++
++const GardenBed = forwardRef<GardenBedHandle, Props>(({ seed, stone, plantedOn, stoneLabel, still = false, className = "" }, ref) => {
++  const bedRef = useRef<HTMLDivElement>(null);
++  const garden = useMemo(() => layoutGarden(seed), [seed]);
++  const calm = still || stillMotion();
++  const active = useAmbient(bedRef, !calm);
++  const sways = useRef<Animation[]>([]);
++
++  useTapBloom(bedRef, !still);
++
++  useImperativeHandle(ref, () => ({
++    bloomIn: (short = false) => {
++      const root = bedRef.current;
++      if (!root || calm) return [];
++      const out: Animation[] = [];
++      root.querySelectorAll<HTMLElement>(".ig-plant").forEach((node) => {
++        const band = Number(node.dataset.band ?? 0);
++        const a = play(node, [{ transform: "scale(0)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], {
++          duration: short ? 300 : 500,
++          delay: Math.floor((band * 2) / 3) * (short ? 12 : 40),
++          easing: EASE_BLOOM,
++          fill: "backwards",
++        });
++        if (a) out.push(a);
++      });
++      root.querySelectorAll(".ig-soil, .ig-arbour-line").forEach((line) => {
++        const a = play(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], {
++          duration: short ? 300 : 620,
++          easing: "cubic-bezier(0.45, 0, 0.25, 1)",
++          fill: "backwards",
++        });
++        if (a) out.push(a);
++      });
++      return out;
++    },
++  }), [calm]);
++
++  // The sway: built once, then paused and resumed with the garden's attention.
++  useEffect(() => {
++    const root = bedRef.current;
++    if (!root || calm) return;
++    const list: Animation[] = [];
++    root.querySelectorAll<HTMLElement>(".ig-sway").forEach((node) => {
++      const dur = Number(node.dataset.dur ?? 4) * 1000;
++      const a = play(node, [{ transform: "rotate(-2.5deg)" }, { transform: "rotate(2.5deg)" }], {
++        duration: dur,
++        iterations: Infinity,
++        direction: "alternate",
++        easing: "ease-in-out",
++      });
++      if (!a) return;
++      a.currentTime = Number(node.dataset.phase ?? 0) * dur;
++      a.pause();
++      list.push(a);
++    });
++    sways.current = list;
++    return () => {
++      list.forEach((a) => a.cancel());
++      sways.current = [];
++    };
++  }, [calm, garden]);
++
++  useEffect(() => {
++    sways.current.forEach((a) => (active ? a.play() : a.pause()));
++  }, [active]);
++
++  return (
++    <div ref={bedRef} className={`ig-bed ${className}`} data-resting={active ? undefined : ""}>
++      <svg viewBox={`0 0 ${BED.w} ${BED.h}`} className="ig-bed-ground" aria-hidden>
++        {!still && <Arbour />}
++        <path className="ig-soil" d={`M14 ${BED.soil + 1}H${BED.w - 14}`} pathLength={1} strokeDasharray="1 1" />
++        {[40, 92, 236, 318, 352].map((x) => (
++          <circle key={x} cx={x} cy={BED.soil + 5} r="1.2" fill="var(--nf-accent)" opacity=".7" />
++        ))}
++      </svg>
++      {garden.plants.map((p) => {
++        const b = boxOf(p);
++        return (
++          <div
++            key={p.id}
++            className={`ig-plant ig-plant--${p.kind}`}
++            data-band={p.band}
++            style={{ left: pct(b.left, BED.w), top: pct(b.top, BED.h), width: pct(b.w, BED.w), height: pct(b.h, BED.h) }}
++          >
++            <div
++              className={p.sway && !calm ? "ig-sway" : "ig-still"}
++              data-dur={p.swayDur}
++              data-phase={p.swayPhase.toFixed(3)}
++              style={{ opacity: ROW_SHADE[p.row] }}
++            >
++              {p.kind === "naira" ? (
++                <FlowerDraw height={208} />
++              ) : p.kind === "stone" ? (
++                <StonePlant stone={stone} />
++              ) : (
++                <svg viewBox="-30 -112 60 112" className="ig-sway-art" aria-hidden>
++                  {art(p)}
++                </svg>
++              )}
++            </div>
++          </div>
++        );
++      })}
++      {!still && plantedOn && (
++        <p className="ig-bed-label" style={{ left: pct(garden.naira.x, BED.w) }}>
++          <span>Planted</span>
++          {plantedOn}
++        </p>
++      )}
++      {!still && stoneLabel && (
++        <p className="ig-bed-label ig-bed-label--stone" style={{ left: pct(garden.stone.x, BED.w) }}>
++          <span>Your stone</span>
++          {stoneLabel}
++        </p>
++      )}
++    </div>
++  );
++});
++GardenBed.displayName = "GardenBed";
++
++export default GardenBed;
+diff --git a/src/components/portal/GateIronwork.tsx b/src/components/portal/GateIronwork.tsx
+new file mode 100644
+index 0000000..f3e2209
+--- /dev/null
++++ b/src/components/portal/GateIronwork.tsx
+@@ -0,0 +1,133 @@
++import type { ReactNode, Ref } from "react";
++import { bez, chainPath, leavesAlong, pointOn, type Seg } from "@/lib/portal/curves";
++
++/*
++  The garden gate: two leaves of gold ironwork drawn from the Account sprig.
++  Each leaf is 180 x 360, hinged on its outer edge: a round arch rising to the
++  latch, pickets with bud finials, a vine of the sprig's leaves with blush buds
++  climbing to the latch, and a band of little solitaire rings along the foot
++  (the jewellery, worked into the iron). The right leaf is the left one
++  mirrored, and the two half-rings at the latch close into the medallion that
++  holds the Naira flower.
++
++  The art is drawn twice: a soft under-stroke (cream on the sage curtain,
++  nothing on ivory) and the gold line over it, so the ironwork reads on both
++  grounds without a filter.
++*/
++
++const ARCH = { p0: [8, 118], p1: [8, 70], p2: [104, 44], p3: [180, 44] } as const;
++const MEDAL = { x: 180, y: 196, r: 40 } as const;
++
++/* The arch's height above a picket at x (bisection on the curve's x). */
++const archY = (x: number) => {
++  let lo = 0;
++  let hi = 1;
++  for (let i = 0; i < 24; i++) {
++    const mid = (lo + hi) / 2;
++    if (bez(mid, ARCH.p0[0], ARCH.p1[0], ARCH.p2[0], ARCH.p3[0]) < x) lo = mid;
++    else hi = mid;
++  }
++  return bez(lo, ARCH.p0[1], ARCH.p1[1], ARCH.p2[1], ARCH.p3[1]);
++};
++
++const PICKETS = [34, 60, 86, 112, 138, 160];
++
++/* The climbing vine: one stem, its leaves set alternately along it. */
++const VINE_SEGS: Seg[] = [
++  [16, 262, 46, 246, 30, 208, 62, 192],
++  [62, 192, 96, 176, 84, 140, 116, 128],
++  [116, 128, 140, 119, 138, 96, 158, 84],
++];
++const VINE = chainPath(VINE_SEGS);
++const LEAVES = leavesAlong(VINE_SEGS, [0.08, 0.19, 0.3, 0.41, 0.52, 0.63, 0.74, 0.86]);
++const BUDS = [0.24, 0.57, 0.97].map((t) => pointOn(VINE_SEGS, t));
++
++const RINGS = [21, 47, 73, 99, 125, 150];
++
++const leafArt = (
++  <>
++    {/* frame: hinge stile, arch, latch stile, rails */}
++    <path className="b" d={`M8 352V118C8 70 104 44 180 44`} />
++    <path className="f" d={`M15 344V121C15 79 106 54 172 52`} />
++    <path className="b" d="M176 48V352" />
++    <path className="b" d="M8 352H176M8 344H176" />
++    <path className="b" d="M8 276H176M8 282H176" />
++    {/* pickets, broken by the medallion, each with a bud finial above the arch */}
++    {PICKETS.map((x) => {
++      const top = archY(x);
++      const inMedal = Math.abs(x - MEDAL.x) < MEDAL.r + 2;
++      const cut = inMedal ? Math.sqrt(Math.max(0, (MEDAL.r + 3) ** 2 - (MEDAL.x - x) ** 2)) : 0;
++      return (
++        <g key={x}>
++          {inMedal ? (
++            <path className="f" d={`M${x} 344V${MEDAL.y + cut}M${x} ${MEDAL.y - cut}V${top}`} />
++          ) : (
++            <path className="f" d={`M${x} 344V${top}`} />
++          )}
++          <path className="f" d={`M${x} ${top}V${top - 9}M${x} ${top - 22}C${x + 4.5} ${top - 16} ${x + 4.5} ${top - 12} ${x} ${top - 9}C${x - 4.5} ${top - 12} ${x - 4.5} ${top - 16} ${x} ${top - 22}Z`} />
++        </g>
++      );
++    })}
++    {/* the vine */}
++    <path className="f" d={VINE} />
++    {LEAVES.map((l, i) => (
++      <ellipse key={i} className="f" cx={l.x.toFixed(1)} cy={l.y.toFixed(1)} rx="7.5" ry="3" transform={`rotate(${l.a.toFixed(1)} ${l.x.toFixed(1)} ${l.y.toFixed(1)})`} />
++    ))}
++    {BUDS.map(([x, y], i) => (
++      <circle key={i} className="bud" cx={x.toFixed(1)} cy={y.toFixed(1)} r={i === 2 ? 3.6 : 2.8} />
++    ))}
++    {/* the band of solitaire rings along the foot */}
++    {RINGS.map((x) => (
++      <g key={x}>
++        <circle className="f" cx={x} cy="314" r="8" />
++        <path className="f" d={`M${x - 3} 306L${x} 301.5L${x + 3} 306Z`} />
++      </g>
++    ))}
++    {/* half of the latch medallion and half of the crest */}
++    <path className="b" d={`M${MEDAL.x} ${MEDAL.y - MEDAL.r}A${MEDAL.r} ${MEDAL.r} 0 0 0 ${MEDAL.x} ${MEDAL.y + MEDAL.r}`} />
++    <path className="f" d={`M${MEDAL.x} ${MEDAL.y - MEDAL.r + 6}A${MEDAL.r - 6} ${MEDAL.r - 6} 0 0 0 ${MEDAL.x} ${MEDAL.y + MEDAL.r - 6}`} />
++    <path className="f" d="M180 44C168 38 158 30 163 21C167 14 177 16 178 25M180 44V12" />
++  </>
++);
++
++export const GateLeaf = ({ side, leafRef }: { side: "left" | "right"; leafRef?: Ref<HTMLDivElement> }) => (
++  <div ref={leafRef} className={`ig-leaf ig-leaf--${side}`}>
++    <svg viewBox="0 0 180 360" className="ig-leaf-art" aria-hidden>
++      <g className="ig-iron-under">{leafArt}</g>
++      <g className="ig-iron">{leafArt}</g>
++    </svg>
++  </div>
++);
++
++/**
++ * The closed gate, with whatever sits in the latch medallion (the flower).
++ * `tone` sets the under-stroke for the ground it stands on.
++ */
++const GateIronwork = ({
++  tone = "ivory",
++  label,
++  latch,
++  leftRef,
++  rightRef,
++  className = "",
++}: {
++  tone?: "ivory" | "sage";
++  label?: string;
++  latch?: ReactNode;
++  leftRef?: Ref<HTMLDivElement>;
++  rightRef?: Ref<HTMLDivElement>;
++  className?: string;
++}) => (
++  <div
++    className={`ig-gate ig-gate--${tone} ${className}`}
++    role={label ? "img" : undefined}
++    aria-label={label}
++    aria-hidden={label ? undefined : true}
++  >
++    <GateLeaf side="left" leafRef={leftRef} />
++    <GateLeaf side="right" leafRef={rightRef} />
++    {latch && <div className="ig-latch">{latch}</div>}
++  </div>
++);
++
++export default GateIronwork;
+diff --git a/src/components/portal/MemberContext.tsx b/src/components/portal/MemberContext.tsx
+new file mode 100644
+index 0000000..af7d050
+--- /dev/null
++++ b/src/components/portal/MemberContext.tsx
+@@ -0,0 +1,51 @@
++import { createContext, useContext, type ReactNode } from "react";
++import type { User } from "@supabase/supabase-js";
++import type { MemberProfile } from "@/contexts/AuthContext";
++import type { CartItem } from "@/contexts/CartContext";
++
++/*
++  The signed-in member as the portal's screens see her, with the only two
++  writes Phase 1 makes: her birthday (profiles.birthday, her own row, under
++  the existing row security) and a bag line (the shared CartContext, so the
++  bag itself is untouched). MembersRoute supplies the real ones, or the
++  development preview's console-only stand-ins.
++*/
++
++export type SaveResult = { ok: true } | { ok: false; message: string };
++export type BagLine = Omit<CartItem, "quantity" | "lineId">;
++
++export type Member = {
++  user: User;
++  profile: MemberProfile | null;
++  firstName: string;
++  preview: boolean;
++  saveBirthday: (birthday: string) => Promise<SaveResult>;
++  addToBag: (line: BagLine) => Promise<void>;
++  /** The Doors play once per portal visit, however often she returns to the garden. */
++  doorsPlayed: boolean;
++  markDoorsPlayed: () => void;
++};
++
++const MemberContext = createContext<Member | null>(null);
++
++export const MemberProvider = ({ value, children }: { value: Member; children: ReactNode }) => (
++  <MemberContext.Provider value={value}>{children}</MemberContext.Provider>
++);
++
++// eslint-disable-next-line react-refresh/only-export-components -- the hook lives beside its provider
++export const useMember = (): Member => {
++  const member = useContext(MemberContext);
++  if (!member) throw new Error("useMember must be used inside the members portal");
++  return member;
++};
++
++const capitalise = (word: string) => (word ? word[0].toUpperCase() + word.slice(1) : word);
++
++/** Her first name: the profile's, then the sign-in's, then her email's (ananya.r@… → Ananya). */
++// eslint-disable-next-line react-refresh/only-export-components -- shared by the route and its tests
++export const firstNameOf = (profile: MemberProfile | null, user: User | null): string => {
++  const named = profile?.full_name || (user?.user_metadata?.full_name as string | undefined) || "";
++  if (named.trim()) return named.trim().split(/\s+/)[0].slice(0, 40);
++  const local = (user?.email ?? "").split("@")[0].split(/[._\d+-]+/).filter(Boolean)[0] ?? "";
++  return capitalise(local.slice(0, 40));
++};
+diff --git a/src/components/portal/PetalBurst.ts b/src/components/portal/PetalBurst.ts
+new file mode 100644
+index 0000000..12c1dd3
+--- /dev/null
++++ b/src/components/portal/PetalBurst.ts
+@@ -0,0 +1,58 @@
++import { PETAL_IDS } from "./PetalSymbols";
++import { play, stillMotion } from "@/lib/portal/motion";
++
++/*
++  A burst of flat petals from one point (the gate's latch, a saved stone).
++  At most 24, each a small <svg><use> moved with transform and opacity only,
++  and each removed the moment its flight ends, so nothing is left behind for
++  the compositor. Nothing at all under reduced motion.
++*/
++
++export const MAX_PETALS = 24;
++const SVG = "http://www.w3.org/2000/svg";
++
++type Options = { count?: number; spread?: number; duration?: number; delay?: number };
++
++export const burstPetals = (layer: HTMLElement | null, x: number, y: number, options: Options = {}): Animation[] => {
++  if (!layer || stillMotion()) return [];
++  const count = Math.min(MAX_PETALS, Math.max(0, options.count ?? 18));
++  const spread = options.spread ?? 120;
++  const duration = options.duration ?? 820;
++  const out: Animation[] = [];
++  for (let i = 0; i < count; i++) {
++    const svg = document.createElementNS(SVG, "svg");
++    svg.setAttribute("viewBox", "0 0 20 20");
++    svg.setAttribute("aria-hidden", "true");
++    svg.setAttribute("class", "ig-petal");
++    const size = 9 + Math.random() * 9;
++    svg.style.cssText = `left:${x}px;top:${y}px;width:${size}px;height:${size}px`;
++    const use = document.createElementNS(SVG, "use");
++    use.setAttribute("href", `#${PETAL_IDS[i % PETAL_IDS.length]}`);
++    svg.appendChild(use);
++    layer.appendChild(svg);
++
++    const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
++    const dist = spread * (0.55 + Math.random() * 0.6);
++    const dx = Math.cos(angle) * dist;
++    const dy = Math.sin(angle) * dist * 0.8;
++    const turn = (Math.random() - 0.5) * 540;
++    const a = play(
++      svg,
++      [
++        { transform: "translate(-50%,-50%) translate(0,0) rotate(0deg) scale(.3)", opacity: 0 },
++        { transform: `translate(-50%,-50%) translate(${dx * 0.62}px,${dy * 0.62 - 18}px) rotate(${turn * 0.6}deg) scale(1)`, opacity: 1, offset: 0.45 },
++        { transform: `translate(-50%,-50%) translate(${dx}px,${dy + 34}px) rotate(${turn}deg) scale(.85)`, opacity: 0 },
++      ],
++      { duration: duration * (0.8 + Math.random() * 0.35), delay: (options.delay ?? 0) + Math.random() * 60, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)", fill: "both" },
++    );
++    if (!a) {
++      svg.remove();
++      continue;
++    }
++    const done = () => svg.remove();
++    a.onfinish = done;
++    a.oncancel = done;
++    out.push(a);
++  }
++  return out;
++};
+diff --git a/src/components/portal/PetalSymbols.tsx b/src/components/portal/PetalSymbols.tsx
+new file mode 100644
+index 0000000..5306a4a
+--- /dev/null
++++ b/src/components/portal/PetalSymbols.tsx
+@@ -0,0 +1,35 @@
++/*
++  Six flat petals for the portal's bursts, redrawn from the homepage's petal
++  artwork without its gradients or drop-shadows (each of those was a paint
++  cost on every frame). Defined once per page and stamped with <use>.
++*/
++
++export const PETAL_IDS = ["ig-petal-0", "ig-petal-1", "ig-petal-2", "ig-petal-3", "ig-petal-4", "ig-petal-5"] as const;
++
++const PetalSymbols = () => (
++  <>
++    <symbol id="ig-petal-0" viewBox="0 0 20 20">
++      <path d="M10 4C12 1.5 17 2.5 17.5 7C18 12 14 17.5 10 18C6 17.5 2 12 2.5 7C3 2.5 8 1.5 10 4Z" fill="#FFBDA8" />
++    </symbol>
++    <symbol id="ig-petal-1" viewBox="0 0 20 20">
++      <path d="M10 1C14.5 6 14.5 14 10 19C5.5 14 5.5 6 10 1Z" fill="#F3D9C6" />
++    </symbol>
++    <symbol id="ig-petal-2" viewBox="0 0 20 20">
++      <path d="M2 17C4 8.5 10 3 18 2C17 10.5 11.5 16.5 2 17Z" fill="#AEBDB6" />
++    </symbol>
++    <symbol id="ig-petal-3" viewBox="0 0 20 20">
++      {[0, 72, 144, 216, 288].map((a) => (
++        <ellipse key={a} cx="10" cy="5.6" rx="3" ry="4.4" fill="#FFF6EA" transform={`rotate(${a} 10 10)`} />
++      ))}
++      <circle cx="10" cy="10" r="2.2" fill="#E8C88A" />
++    </symbol>
++    <symbol id="ig-petal-4" viewBox="0 0 20 20">
++      <path d="M10 2C13 7 15 10 15 13A5 5 0 0 1 5 13C5 10 7 7 10 2Z" fill="#F0BCA8" />
++    </symbol>
++    <symbol id="ig-petal-5" viewBox="0 0 20 20">
++      <path d="M10 2L11.6 10L10 18L8.4 10Z" fill="#C99A4C" />
++    </symbol>
++  </>
++);
++
++export default PetalSymbols;
+diff --git a/src/components/portal/PortalNav.tsx b/src/components/portal/PortalNav.tsx
+new file mode 100644
+index 0000000..03cf9bc
+--- /dev/null
++++ b/src/components/portal/PortalNav.tsx
+@@ -0,0 +1,63 @@
++import { Link, useLocation } from "react-router-dom";
++
++/*
++  The garden path: the portal's own bar, sticky at the foot of the screen
++  while she is in it and resting above the footer at the end. It sits in the
++  z-40 tier, under the bag's z-50, so an open bag always covers it. Phase 1
++  has two rooms; the rest join as they are built, never as "coming soon".
++  Plain Links with aria-current: the shop never uses NavLink, and importing
++  it here would add an export to the vendor chunk every page downloads.
++*/
++
++const GardenIcon = () => (
++  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden>
++    {[0, 72, 144, 216, 288].map((a) => (
++      <ellipse key={a} cx="12" cy="6.2" rx="2.6" ry="3.8" transform={`rotate(${a} 12 10)`} className="ig-nav-petal" />
++    ))}
++    <circle cx="12" cy="10" r="1.7" className="ig-nav-core" />
++    <path d="M12 14V22M12 18C10 16.5 8 16.5 7 17.5M12 20C14 18.5 16 18.5 17 19.5" className="ig-nav-line" />
++  </svg>
++);
++
++const StoneIcon = () => (
++  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden>
++    <path d="M12 20C6.5 15.6 3.5 12.4 3.5 8.9 3.5 6.3 5.5 4.5 7.8 4.5 9.6 4.5 11.1 5.5 12 7 12.9 5.5 14.4 4.5 16.2 4.5 18.5 4.5 20.5 6.3 20.5 8.9 20.5 12.4 17.5 15.6 12 20Z" className="ig-nav-petal" />
++    <path d="M12 7V20M4 9.5H20M7.8 4.5L12 9.5 16.2 4.5" className="ig-nav-line" />
++  </svg>
++);
++
++const AccountIcon = () => (
++  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden>
++    <circle cx="12" cy="8.5" r="3.6" className="ig-nav-line" />
++    <path d="M5 20C5.8 16 8.6 13.8 12 13.8S18.2 16 19 20" className="ig-nav-line" />
++  </svg>
++);
++
++const ROOMS = [
++  { to: "/members", label: "Garden", icon: <GardenIcon /> },
++  { to: "/members/stone", label: "Your stone", icon: <StoneIcon /> },
++  { to: "/account", label: "Account", icon: <AccountIcon /> },
++];
++
++const PortalNav = () => {
++  const here = useLocation().pathname.replace(/\/+$/, "") || "/";
++  return (
++    <nav className="ig-nav" aria-label="Your garden">
++      <ul>
++        {ROOMS.map((room) => {
++          const current = here === room.to;
++          return (
++            <li key={room.to}>
++              <Link to={room.to} className={`ig-nav-link${current ? " is-here" : ""}`} aria-current={current ? "page" : undefined}>
++                {room.icon}
++                <span>{room.label}</span>
++              </Link>
++            </li>
++          );
++        })}
++      </ul>
++    </nav>
++  );
++};
++
++export default PortalNav;
+diff --git a/src/components/portal/PortalShell.tsx b/src/components/portal/PortalShell.tsx
+new file mode 100644
+index 0000000..f02ba98
+--- /dev/null
++++ b/src/components/portal/PortalShell.tsx
+@@ -0,0 +1,34 @@
++import type { ReactNode } from "react";
++import PageSEO from "@/components/PageSEO";
++import Footer from "@/components/Footer";
++import PetalSymbols from "./PetalSymbols";
++import { GardenSymbols } from "./GardenBed";
++import PortalNav from "./PortalNav";
++
++/*
++  Every portal screen: noindex (the route is also Disallowed in robots.txt and
++  kept out of the sitemap and the prerender), clear of the fixed header, the
++  garden path while signed in, and the slim compact footer, so the footer's
++  3D gift box never starts a second WebGL context here.
++*/
++
++type Props = { title: string; description: string; nav?: boolean; children: ReactNode };
++
++const PortalShell = ({ title, description, nav = true, children }: Props) => (
++  <>
++    <PageSEO title={title} description={description} canonical="https://nairaflore.com/members" noindex />
++    <div className="ig-root">
++      <svg className="ig-sprite" aria-hidden focusable="false">
++        <defs>
++          <PetalSymbols />
++          <GardenSymbols />
++        </defs>
++      </svg>
++      <main className="ig-main pt-[123px] md:pt-[144px]">{children}</main>
++      {nav && <PortalNav />}
++      <Footer compact slim />
++    </div>
++  </>
++);
++
++export default PortalShell;
+diff --git a/src/components/portal/SeedCeremony.tsx b/src/components/portal/SeedCeremony.tsx
+new file mode 100644
+index 0000000..469e715
+--- /dev/null
++++ b/src/components/portal/SeedCeremony.tsx
+@@ -0,0 +1,148 @@
++import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
++import type { Stone } from "@/lib/portal/stones";
++import { FLOWER_ASPECT, FLOWER_BASE_X } from "@/lib/portal/brandFlower";
++import { EASE_BLOOM, EASE_IN, play, stillMotion } from "@/lib/portal/motion";
++import FlowerDraw, { drawFlower } from "./FlowerDraw";
++import { StonePlant } from "./StoneArt";
++import { burstPetals } from "./PetalBurst";
++
++/*
++  The seed ceremony, on her first visit to Your stone: a seed falls onto the
++  gold soil line, the Naira flower draws itself from it, and beside it her
++  stone's bud grows and opens in her month's hue with a glint. Skip is always
++  there. After the first time (or under reduced motion) the stage is simply
++  drawn, and when she saves a birthday later the bud opens then, with a burst
++  of petals: a bloom for something she did.
++*/
++
++const W = 390;
++const H = 300;
++const SOIL = 252;
++const NAIRA = { x: 150, h: 200 };
++const STONE_X = 262;
++
++const pct = (v: number, of: number) => `${((v / of) * 100).toFixed(3)}%`;
++
++type Props = { stone: Stone | null; playing: boolean; onDone: () => void };
++
++const openHead = (root: HTMLElement | null, delay: number): Animation[] => {
++  if (!root) return [];
++  const out: (Animation | null)[] = [
++    play(root.querySelector(".ig-stone-outer"), [{ transform: "scale(0) rotate(-70deg)" }, { transform: "none" }], { duration: 720, delay, easing: EASE_BLOOM, fill: "backwards" }),
++    play(root.querySelector(".ig-stone-inner"), [{ transform: "scale(0) rotate(50deg)" }, { transform: "none" }], { duration: 640, delay: delay + 160, easing: EASE_BLOOM, fill: "backwards" }),
++    play(
++      root.querySelector(".ig-glint"),
++      [
++        { opacity: 0, transform: "scale(0) rotate(0deg)" },
++        { opacity: 1, transform: "scale(1.5) rotate(45deg)", offset: 0.5 },
++        { opacity: 1, transform: "scale(1) rotate(90deg)" },
++      ],
++      { duration: 640, delay: delay + 520, easing: "ease-out", fill: "backwards" },
++    ),
++  ];
++  return out.filter((a): a is Animation => Boolean(a));
++};
++
++const SeedCeremony = ({ stone, playing, onDone }: Props) => {
++  const rootRef = useRef<HTMLDivElement>(null);
++  const seedRef = useRef<HTMLDivElement>(null);
++  const nairaRef = useRef<HTMLDivElement>(null);
++  const stoneRef = useRef<HTMLDivElement>(null);
++  const anims = useRef<Animation[]>([]);
++  const timer = useRef(0);
++  const ended = useRef(!playing);
++  const hadStone = useRef(Boolean(stone));
++
++  const end = useCallback(() => {
++    if (ended.current) return;
++    ended.current = true;
++    window.clearTimeout(timer.current);
++    anims.current.forEach((a) => {
++      try {
++        a.finish();
++      } catch {
++        a.cancel();
++      }
++    });
++    onDone();
++  }, [onDone]);
++
++  useLayoutEffect(() => {
++    if (!playing) return;
++    const list = anims.current;
++    const keep = (a: Animation | null) => a && list.push(a);
++    const root = rootRef.current;
++    keep(play(root?.querySelector(".ig-seed-soil"), [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 520, easing: "ease-out", fill: "backwards" }));
++    keep(
++      play(
++        seedRef.current,
++        [
++          { transform: "translateY(-210px)", opacity: 0, easing: "cubic-bezier(.5,0,.9,.4)" },
++          { opacity: 1, offset: 0.12 },
++          { transform: "translateY(0)", offset: 0.7, easing: "ease-out" },
++          { transform: "translateY(-8px)", offset: 0.82, easing: EASE_IN },
++          { transform: "translateY(0)", opacity: 1, offset: 0.92 },
++          { transform: "translateY(4px) scale(.4)", opacity: 0 },
++        ],
++        { duration: 1250, delay: 150, fill: "both" },
++      ),
++    );
++    list.push(...drawFlower(nairaRef.current, { delay: 1150, duration: 900 }));
++    keep(play(stoneRef.current, [{ transform: "scale(.2, 0)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 620, delay: 1800, easing: EASE_BLOOM, fill: "backwards" }));
++    if (stone) list.push(...openHead(stoneRef.current, 2300));
++    timer.current = window.setTimeout(end, stone ? 3500 : 2500);
++    return () => window.clearTimeout(timer.current);
++    // Played once, as mounted.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
++
++  // Her birthday saved after the ceremony: the bud opens now.
++  useEffect(() => {
++    if (!stone || hadStone.current) return;
++    hadStone.current = true;
++    if (stillMotion()) return;
++    openHead(stoneRef.current, 80);
++    const box = stoneRef.current?.getBoundingClientRect();
++    const rootBox = rootRef.current?.getBoundingClientRect();
++    if (box && rootBox) burstPetals(rootRef.current, box.left - rootBox.left + box.width / 2, box.top - rootBox.top + box.height * 0.22, { count: 16, spread: 90, delay: 300 });
++  }, [stone]);
++
++  const nairaW = NAIRA.h * FLOWER_ASPECT;
++  return (
++    <div ref={rootRef} className="ig-seed">
++      <svg viewBox={`0 0 ${W} ${H}`} className="ig-seed-ground" aria-hidden>
++        <path className="ig-seed-soil" d={`M36 ${SOIL}H${W - 36}`} pathLength={1} strokeDasharray="1 1" />
++      </svg>
++      <div
++        className="ig-seed-naira"
++        ref={nairaRef}
++        style={{ left: pct(NAIRA.x - nairaW * FLOWER_BASE_X, W), top: pct(SOIL - NAIRA.h, H), width: pct(nairaW, W), height: pct(NAIRA.h, H) }}
++        aria-hidden
++      >
++        <FlowerDraw height={NAIRA.h} />
++      </div>
++      {playing && (
++        <div ref={seedRef} className="ig-seed-drop" style={{ left: pct(NAIRA.x - 6, W), top: pct(SOIL - 17, H) }} aria-hidden>
++          <svg viewBox="0 0 12 17">
++            <path d="M6 0C10 5 12 9 12 11.5A6 6 0 0 1 0 11.5C0 9 2 5 6 0Z" fill="var(--nf-accent-strong)" />
++          </svg>
++        </div>
++      )}
++      <div
++        ref={stoneRef}
++        className="ig-seed-stone"
++        style={{ left: pct(STONE_X - 40, W), top: pct(SOIL - 170, H), width: pct(80, W), height: pct(170, H) }}
++        aria-hidden
++      >
++        <StonePlant stone={stone} />
++      </div>
++      {playing && (
++        <button type="button" className="ig-skip" onClick={end}>
++          Skip
++        </button>
++      )}
++    </div>
++  );
++};
++
++export default SeedCeremony;
+diff --git a/src/components/portal/Sprig.tsx b/src/components/portal/Sprig.tsx
+new file mode 100644
+index 0000000..b1047fc
+--- /dev/null
++++ b/src/components/portal/Sprig.tsx
+@@ -0,0 +1,29 @@
++/*
++  The gold botanical corner from the Account panels, lifted here with token
++  colours (Account keeps its own copy, so its chunk is untouched). Stroke only:
++  it frames cards, draws the ribbons on the gate and can draw itself in with
++  stroke-dashoffset, since every stroke carries pathLength=1.
++*/
++
++const Sprig = ({ className = "", draw = false }: { className?: string; draw?: boolean }) => (
++  <svg viewBox="0 0 120 120" className={`${className}${draw ? " ig-draw" : ""}`} fill="none" aria-hidden>
++    <path d="M14 108C34 84 54 64 96 24" stroke="var(--nf-accent)" strokeOpacity=".55" strokeWidth="1.1" pathLength={1} />
++    {[0, 1, 2, 3, 4].map((i) => (
++      <ellipse
++        key={i}
++        cx={26 + i * 16}
++        cy={96 - i * 16}
++        rx="11"
++        ry="5.5"
++        transform={`rotate(${-45 + (i % 2 ? 26 : -26)} ${26 + i * 16} ${96 - i * 16})`}
++        stroke="var(--nf-accent)"
++        strokeOpacity=".45"
++        strokeWidth="1"
++        pathLength={1}
++      />
++    ))}
++    <circle cx="96" cy="24" r="4.5" fill="var(--nf-accent)" fillOpacity=".35" />
++  </svg>
++);
++
++export default Sprig;
+diff --git a/src/components/portal/StoneArt.tsx b/src/components/portal/StoneArt.tsx
+new file mode 100644
+index 0000000..0427c6c
+--- /dev/null
++++ b/src/components/portal/StoneArt.tsx
+@@ -0,0 +1,59 @@
++import type { Stone } from "@/lib/portal/stones";
++import { STONE_PETAL, petalTransform } from "@/lib/portal/species";
++import { LEAF_SAGE } from "@/lib/portal/brandFlower";
++
++/*
++  Her stone as a flower: five petals in the month's hue, five inner petals in
++  its tint, a gold heart and one glint. The same drawing at every size: the
++  garden's stone plant, the seed ceremony, the specimen card and the month
++  chips. Until her month is known it is a closed sage bud.
++*/
++
++type HeadProps = { stone: Stone | null; size: number; className?: string; x?: number; y?: number };
++
++export const StoneHead = ({ stone, size, className = "", x, y }: HeadProps) => (
++  <svg viewBox="-50 -50 100 100" x={x} y={y} width={size} height={size} className={`ig-stonehead ${className}`} aria-hidden>
++    {stone ? (
++      <>
++        <g className="ig-stone-outer">
++          {[0, 1, 2, 3, 4].map((i) => (
++            <path key={i} d={STONE_PETAL} transform={petalTransform(i * 72, 46)} fill={stone.hue} stroke="rgb(128 97 42 / .35)" strokeWidth="1.4" />
++          ))}
++        </g>
++        <g className="ig-stone-inner">
++          {[0, 1, 2, 3, 4].map((i) => (
++            <path key={i} d={STONE_PETAL} transform={petalTransform(36 + i * 72, 26)} fill={stone.tint} opacity=".92" />
++          ))}
++        </g>
++        <path d="M0 9C-9 3-12-3-8-7C-5-10-1-9 0-5C1-9 5-10 8-7C12-3 9 3 0 9Z" fill="var(--nf-accent)" />
++        <g transform="translate(-19 -27)">
++          <path className="ig-glint" d="M0-11L1.6-1.6L11 0L1.6 1.6L0 11L-1.6 1.6L-11 0L-1.6-1.6Z" fill="#FFF8EE" stroke="var(--nf-accent)" strokeWidth=".7" />
++        </g>
++      </>
++    ) : (
++      <>
++        <path d="M0-30C13-17 15-4 0 12C-15-4-13-17 0-30Z" fill={LEAF_SAGE} opacity=".85" />
++        <path d="M0-30C13-17 15-4 0 12C-15-4-13-17 0-30Z" fill="none" stroke="var(--nf-accent)" strokeWidth="1.2" />
++        <path d="M0 12C-8 6-16 8-20 2M0 12C8 6 16 8 20 2" fill="none" stroke={LEAF_SAGE} strokeWidth="2" />
++      </>
++    )}
++  </svg>
++);
++
++/** A small heart-cut stone in the month's hue, with its facets: the piece itself. */
++export const HeartStone = ({ stone, size, className = "" }: { stone: Stone; size: number; className?: string }) => (
++  <svg viewBox="0 0 24 22" width={size} height={Math.round((size * 22) / 24)} className={className} aria-hidden>
++    <path d="M12 20.5C5 15 1.5 11 1.5 6.8C1.5 3.6 4 1.5 6.8 1.5C9 1.5 10.9 2.8 12 4.6C13.1 2.8 15 1.5 17.2 1.5C20 1.5 22.5 3.6 22.5 6.8C22.5 11 19 15 12 20.5Z" fill={stone.hue} stroke="var(--nf-accent-strong)" strokeWidth="1" />
++    <path d="M12 4.6V20.5M1.8 7.4H22.2M6.8 1.5L12 7.4L17.2 1.5M12 7.4L5 13.5M12 7.4L19 13.5" fill="none" stroke="#FFF8EE" strokeOpacity=".45" strokeWidth=".7" />
++  </svg>
++);
++
++/* The whole stone plant for the garden: a tall stem with two leaves and the head. */
++export const StonePlant = ({ stone }: { stone: Stone | null }) => (
++  <svg viewBox="-40 -170 80 170" className="ig-sway-art" aria-hidden>
++    <path d="M0 0C-3-40 6-80 0-122" fill="none" stroke={LEAF_SAGE} strokeWidth="2.2" strokeLinecap="round" />
++    <path d="M-1-38C-14-40-24-50-26-64C-12-60-4-52-1-38Z" fill={LEAF_SAGE} />
++    <path d="M2-70C14-72 22-82 24-96C11-92 4-84 2-70Z" fill={LEAF_SAGE} />
++    <StoneHead stone={stone} size={80} x={-40} y={-170} />
++  </svg>
++);
+diff --git a/src/components/portal/StoneCard.test.tsx b/src/components/portal/StoneCard.test.tsx
+new file mode 100644
+index 0000000..87b82ac
+--- /dev/null
++++ b/src/components/portal/StoneCard.test.tsx
+@@ -0,0 +1,142 @@
++import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
++import { MemoryRouter, Route, Routes } from "react-router-dom";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++import type { JewelPiece } from "@/data/jewellery";
++import { BIRTHSTONE_HANDLE, STONES } from "@/lib/portal/stones";
++import StoneCard from "./StoneCard";
++
++const necklace = jewellerySnapshot.find((p) => p.handle === BIRTHSTONE_HANDLE)!;
++const july = STONES[6];
++
++const shop = vi.hoisted(() => ({ jewellery: [] as unknown[] }));
++const cart = vi.hoisted(() => ({ addItem: vi.fn(async () => "https://checkout"), setDrawerOpen: vi.fn() }));
++const db = vi.hoisted(() => {
++  const upsert = vi.fn(async () => ({ error: null }));
++  const from = vi.fn(() => ({ upsert }));
++  return { upsert, from };
++});
++const auth = vi.hoisted(() => ({ state: {} as Record<string, unknown>, refreshProfile: vi.fn(async () => {}) }));
++
++vi.mock("@/hooks/useLiveJewellery", () => ({ useLiveJewellery: () => ({ jewellery: shop.jewellery, isLive: true, isLoading: false }) }));
++vi.mock("@/contexts/CartContext", () => ({ useCart: () => cart }));
++vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => auth.state }));
++vi.mock("@/integrations/supabase/lazy", () => ({ getSupabase: async () => ({ from: db.from }) }));
++vi.mock("@/components/PageSEO", () => ({ default: () => null }));
++vi.mock("@/components/Footer", () => ({ default: () => null }));
++
++import MembersRoute from "@/pages/members/MembersRoute";
++
++const card = (piece: JewelPiece, onAdd = vi.fn(async (_line: unknown) => {})) => {
++  render(
++    <MemoryRouter>
++      <StoneCard stone={july} piece={piece} status="ready" own onAdd={onAdd} />
++    </MemoryRouter>,
++  );
++  return onAdd;
++};
++
++const user = { id: "u-7", email: "meera@example.com", created_at: "2026-11-04T05:00:00Z", user_metadata: {} };
++
++beforeEach(() => {
++  shop.jewellery = [necklace];
++  window.localStorage.clear();
++  window.localStorage.setItem("naira-portal", JSON.stringify({ seedSeen: true, doorsDay: "x" }));
++  vi.clearAllMocks();
++});
++afterEach(cleanup);
++
++describe("the specimen card", () => {
++  it("turns over to the live necklace with her month already chosen, priced from the listing", () => {
++    card(necklace);
++    fireEvent.click(screen.getByRole("button", { name: /turn the card over/i }));
++    expect(screen.getAllByText("July · Ruby").length).toBeGreaterThan(0);
++    expect(screen.getByText("₹699")).toBeInTheDocument();
++    expect(screen.getByText("₹1,200").tagName).toBe("S");
++    expect(screen.getByText("Available")).toBeInTheDocument();
++  });
++
++  it("adds exactly her month's variant to the bag", async () => {
++    const onAdd = card(necklace);
++    fireEvent.click(screen.getByRole("button", { name: /turn the card over/i }));
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
++    await waitFor(() => expect(onAdd).toHaveBeenCalledTimes(1));
++    const line = onAdd.mock.calls[0][0] as { variantId: string; selectedOptions: { name: string; value: string }[] };
++    const variant = necklace.variants!.find((v) => v.options.Month === "July · Ruby")!;
++    expect(line.variantId).toBe(variant.id);
++    expect(line.selectedOptions).toEqual([{ name: "Month", value: "July · Ruby" }]);
++  });
++
++  it("offers WhatsApp, not the bag, when her month is sold out", () => {
++    const soldOut = {
++      ...necklace,
++      variants: necklace.variants!.map((v) => (v.options.Month === "July · Ruby" ? { ...v, availableForSale: false } : v)),
++    };
++    card(soldOut);
++    fireEvent.click(screen.getByRole("button", { name: /turn the card over/i }));
++    expect(screen.queryByRole("button", { name: "Add to bag" })).toBeNull();
++    expect(screen.getByText("Sold out")).toBeInTheDocument();
++    const reserve = screen.getByRole("link", { name: "Reserve on WhatsApp" });
++    expect(reserve.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/);
++    expect(decodeURIComponent(reserve.getAttribute("href")!)).toContain("in July · Ruby");
++  });
++
++  it("keeps the back out of reach until it is turned", () => {
++    card(necklace);
++    const back = document.querySelector(".ig-face--back")!;
++    expect(back.getAttribute("aria-hidden")).toBe("true");
++    fireEvent.click(screen.getByRole("button", { name: /turn the card over/i }));
++    expect(back.getAttribute("aria-hidden")).toBeNull();
++  });
++});
++
++describe("Your stone, in the portal", () => {
++  const visitStone = () =>
++    render(
++      <MemoryRouter initialEntries={["/members/stone"]}>
++        <Routes>
++          <Route path="/members/*" element={<MembersRoute />} />
++        </Routes>
++      </MemoryRouter>,
++    );
++
++  it("asks for a birthday when her profile has none, and saves it to her own profile row", async () => {
++    auth.state = { user, profile: { id: user.id, full_name: "Meera", birthday: null, phone: null, city: null }, loading: false, refreshProfile: auth.refreshProfile };
++    visitStone();
++    const field = screen.getByLabelText("When is your birthday?");
++    expect(field).toHaveAttribute("type", "date");
++    fireEvent.change(field, { target: { value: "2001-10-03" } });
++    fireEvent.click(screen.getByRole("button", { name: "Plant my stone" }));
++    await waitFor(() => expect(db.upsert).toHaveBeenCalledTimes(1));
++    expect(db.from).toHaveBeenCalledWith("profiles");
++    expect(db.upsert).toHaveBeenCalledWith({ id: user.id, birthday: "2001-10-03" });
++    await waitFor(() => expect(auth.refreshProfile).toHaveBeenCalled());
++  });
++
++  it("does not ask again once the birthday is known, and opens on her month", () => {
++    auth.state = { user, profile: { id: user.id, full_name: "Meera", birthday: "2001-10-03", phone: null, city: null }, loading: false, refreshProfile: auth.refreshProfile };
++    visitStone();
++    expect(screen.queryByLabelText("When is your birthday?")).toBeNull();
++    expect(screen.getByRole("button", { name: /^October · Rose\. Turn the card over/ })).toBeInTheDocument();
++  });
++
++  it("puts her month in the shared bag through the cart, opening the bag", async () => {
++    auth.state = { user, profile: { id: user.id, full_name: "Meera", birthday: "2001-10-03", phone: null, city: null }, loading: false, refreshProfile: auth.refreshProfile };
++    visitStone();
++    fireEvent.click(screen.getByRole("button", { name: /turn the card over/i }));
++    fireEvent.click(screen.getByRole("button", { name: "Add to bag" }));
++    await waitFor(() => expect(cart.addItem).toHaveBeenCalledTimes(1));
++    expect(cart.setDrawerOpen).toHaveBeenCalledWith(true);
++    const october = necklace.variants!.find((v) => v.options.Month === "October · Rose")!;
++    expect((cart.addItem.mock.calls[0] as unknown[])[0]).toMatchObject({ id: BIRTHSTONE_HANDLE, variantId: october.id, price: 699 });
++  });
++
++  it("refuses a birthday that is not a real past date, without writing", async () => {
++    auth.state = { user, profile: { id: user.id, full_name: "Meera", birthday: null, phone: null, city: null }, loading: false, refreshProfile: auth.refreshProfile };
++    visitStone();
++    fireEvent.change(screen.getByLabelText("When is your birthday?"), { target: { value: "2999-01-01" } });
++    fireEvent.submit(screen.getByRole("button", { name: "Plant my stone" }).closest("form")!);
++    expect(await screen.findByRole("alert")).toHaveTextContent(/choose your birthday/i);
++    expect(db.upsert).not.toHaveBeenCalled();
++  });
++});
+diff --git a/src/components/portal/StoneCard.tsx b/src/components/portal/StoneCard.tsx
+new file mode 100644
+index 0000000..23f8d94
+--- /dev/null
++++ b/src/components/portal/StoneCard.tsx
+@@ -0,0 +1,248 @@
++import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
++import { Link } from "react-router-dom";
++import { preorderWhatsAppUrl, type JewelPiece } from "@/data/jewellery";
++import { cartLineFor } from "@/lib/variants";
++import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
++import { BIRTHSTONE_HANDLE, MONTH_OPTION, variantForMonth, type Stone } from "@/lib/portal/stones";
++import { stillMotion } from "@/lib/portal/motion";
++import type { BagLine } from "./MemberContext";
++import { StoneHead } from "./StoneArt";
++import Sprig from "./Sprig";
++import { eyebrow, primaryButton, quietButton, textLink } from "./styles";
++
++/*
++  The specimen card: her month pressed like a herbarium sheet, which turns
++  over (a tap, or a drag that follows her finger) to the live Birthstone Heart
++  Necklace with that month already chosen. Everything on the back is the
++  listing's own: the variant's name ("July · Ruby"), its photo, its live ₹
++  price and compare-at, Available or Sold out from Shopify, and the pendant
++  and plating lines from its details. A month that cannot be bought is
++  reserved on WhatsApp, as on the product page; nothing is ever promised that
++  the listing does not say.
++*/
++
++export type ShopStatus = "loading" | "ready" | "missing" | "offline";
++
++type Props = {
++  stone: Stone;
++  piece: JewelPiece | undefined;
++  status: ShopStatus;
++  own: boolean;
++  preview?: boolean;
++  onAdd: (line: BagLine) => Promise<void>;
++};
++
++const rupees = (n: number) => `₹${n.toLocaleString("en-IN")}`;
++const pad2 = (n: number) => String(n).padStart(2, "0");
++
++const setInert = (el: HTMLElement | null, inert: boolean) => {
++  if (!el) return;
++  (el as HTMLElement & { inert?: boolean }).inert = inert;
++  if (inert) el.setAttribute("aria-hidden", "true");
++  else el.removeAttribute("aria-hidden");
++};
++
++const StoneCard = ({ stone, piece, status, own, preview = false, onAdd }: Props) => {
++  const [flipped, setFlipped] = useState(false);
++  const [adding, setAdding] = useState<"idle" | "busy" | "done">("idle");
++  const innerRef = useRef<HTMLDivElement>(null);
++  const frontRef = useRef<HTMLButtonElement>(null);
++  const backRef = useRef<HTMLDivElement>(null);
++  const drag = useRef<{ x: number; id: number; moved: boolean } | null>(null);
++  const swallowClick = useRef(false);
++
++  const variant = variantForMonth(piece, stone.month);
++  const name = variant?.options[MONTH_OPTION] ?? stone.variant;
++  const price = variant?.price ?? piece?.price;
++  const compare = variant?.compareAtPrice ?? piece?.compareAtPrice;
++  const available = status === "ready" && Boolean(variant?.availableForSale);
++  const image = variant?.image ?? piece?.image;
++  const facts = (piece?.details ?? []).filter((line) => /^(Pendant|Plating):/i.test(line));
++
++  useEffect(() => {
++    setInert(frontRef.current, flipped);
++    setInert(backRef.current, !flipped);
++  }, [flipped]);
++
++  useEffect(() => setAdding("idle"), [stone.month]);
++
++  const onPointerDown = (e: ReactPointerEvent<HTMLButtonElement>) => {
++    if (stillMotion()) return;
++    drag.current = { x: e.clientX, id: e.pointerId, moved: false };
++  };
++  const onPointerMove = (e: ReactPointerEvent<HTMLButtonElement>) => {
++    const d = drag.current;
++    const inner = innerRef.current;
++    if (!d || !inner) return;
++    const dx = e.clientX - d.x;
++    if (!d.moved && Math.abs(dx) < 8) return;
++    if (!d.moved) {
++      d.moved = true;
++      try {
++        e.currentTarget.setPointerCapture(d.id);
++      } catch {
++        /* capture is a nicety */
++      }
++    }
++    inner.style.transition = "none";
++    inner.style.transform = `rotateY(${Math.max(-180, Math.min(180, dx * 0.55))}deg)`;
++  };
++  const onPointerUp = (e: ReactPointerEvent<HTMLButtonElement>) => {
++    const d = drag.current;
++    drag.current = null;
++    const inner = innerRef.current;
++    if (!d?.moved || !inner) return;
++    swallowClick.current = true;
++    inner.style.transition = "";
++    inner.style.transform = "";
++    if (Math.abs(e.clientX - d.x) > 60) setFlipped(true);
++  };
++
++  const add = async () => {
++    if (!piece || !variant) return;
++    setAdding("busy");
++    await onAdd(cartLineFor(piece, variant));
++    setAdding("done");
++  };
++
++  return (
++    <div className={`ig-card3d${flipped ? " is-flipped" : ""}`} style={{ ["--ig-hue" as string]: stone.hue }}>
++      <div ref={innerRef} className="ig-card-inner">
++        <button
++          ref={frontRef}
++          type="button"
++          className="ig-face ig-face--front"
++          onClick={() => {
++            if (swallowClick.current) {
++              swallowClick.current = false;
++              return;
++            }
++            setFlipped(true);
++          }}
++          onPointerDown={onPointerDown}
++          onPointerMove={onPointerMove}
++          onPointerUp={onPointerUp}
++          onPointerCancel={() => {
++            drag.current = null;
++            if (innerRef.current) innerRef.current.style.transform = "";
++          }}
++          aria-label={`${name}. Turn the card over to see the necklace in ${stone.monthName}'s colour.`}
++        >
++          <Sprig className="ig-corner ig-corner--tl" />
++          <Sprig className="ig-corner ig-corner--br" />
++          <span className="ig-specimen-no">Specimen No. {pad2(stone.month)}</span>
++          <StoneHead stone={stone} size={150} className="ig-specimen-head" />
++          <span className="ig-specimen-label">
++            <span className="ig-specimen-row">
++              <span>Month</span>
++              <span>{stone.monthName}</span>
++            </span>
++            <span className="ig-specimen-row">
++              <span>Stone</span>
++              <span>{name}</span>
++            </span>
++            <span className="ig-specimen-row">
++              <span>Birth flower</span>
++              <span>{stone.flower}</span>
++            </span>
++          </span>
++          <span className="ig-specimen-note">{own ? "Yours, in your month's colour" : "In this month's colour"}</span>
++          <span className="ig-turn">Turn over ↻</span>
++        </button>
++
++        <div ref={backRef} className="ig-face ig-face--back">
++          {status === "loading" && (
++            <div className="ig-back-wait" role="status">
++              <span className="ig-back-photo atelier-shimmer" />
++              <p className="ig-card-title">{name}</p>
++              <p className="ig-fineprint">Reading today's price from the shop…</p>
++            </div>
++          )}
++          {status === "missing" && (
++            <div className="ig-back-wait">
++              <p className="ig-card-title">{name}</p>
++              <p className="ig-fineprint">The Birthstone Heart Necklace isn't in the shop right now.</p>
++              <a
++                className={textLink}
++                href={preorderWhatsAppUrl({ name: "Birthstone Heart Necklace", handle: BIRTHSTONE_HANDLE, choice: name })}
++                target="_blank"
++                rel="noopener noreferrer"
++              >
++                Ask on WhatsApp
++              </a>
++            </div>
++          )}
++          {status === "offline" && (
++            <div className="ig-back-wait">
++              <p className="ig-card-title">{name}</p>
++              <p className="ig-fineprint">We couldn't reach the shop just now.</p>
++              <Link className={textLink} to={`/jewellery/${BIRTHSTONE_HANDLE}`}>
++                See the piece
++              </Link>
++            </div>
++          )}
++          {status === "ready" && piece && (
++            <>
++              {image && (
++                <img
++                  className="ig-back-photo"
++                  src={shopifyImage(image, 480)}
++                  srcSet={shopifySrcSet(image, [240, 360, 480]) || undefined}
++                  sizes="(min-width: 768px) 320px, 80vw"
++                  width={480}
++                  height={480}
++                  loading="lazy"
++                  decoding="async"
++                  alt={`${piece.name}, ${name}`}
++                />
++              )}
++              <p className={eyebrow}>{piece.name}</p>
++              <p className="ig-card-title">{name}</p>
++              {price !== undefined && (
++                <p className="ig-price">
++                  <span>{rupees(price)}</span>
++                  {compare && compare > price ? <s>{rupees(compare)}</s> : null}
++                  <span className={available ? "ig-stock" : "ig-stock ig-stock--out"}>{available ? "Available" : "Sold out"}</span>
++                </p>
++              )}
++              {available ? (
++                <button type="button" className={primaryButton} onClick={add} disabled={adding === "busy"}>
++                  {adding === "busy" ? "Adding…" : "Add to bag"}
++                </button>
++              ) : (
++                <a
++                  className={primaryButton}
++                  href={preorderWhatsAppUrl({ name: piece.name, handle: piece.handle, priceLabel: price !== undefined ? rupees(price) : undefined, choice: name })}
++                  target="_blank"
++                  rel="noopener noreferrer"
++                >
++                  Reserve on WhatsApp
++                </a>
++              )}
++              {adding === "done" && (
++                <p className="ig-fineprint" role="status">
++                  {preview ? "Preview only: nothing was added to a bag." : "In your bag."}
++                </p>
++              )}
++              {facts.length > 0 && (
++                <ul className="ig-facts">
++                  {facts.map((f) => (
++                    <li key={f}>{f}</li>
++                  ))}
++                </ul>
++              )}
++              <Link className={textLink} to={`/jewellery/${BIRTHSTONE_HANDLE}`}>
++                See the piece
++              </Link>
++            </>
++          )}
++          <button type="button" className={quietButton} onClick={() => setFlipped(false)}>
++            Turn back
++          </button>
++        </div>
++      </div>
++    </div>
++  );
++};
++
++export default StoneCard;
+diff --git a/src/components/portal/styles.ts b/src/components/portal/styles.ts
+new file mode 100644
+index 0000000..e100d80
+--- /dev/null
++++ b/src/components/portal/styles.ts
+@@ -0,0 +1,13 @@
++/*
++  The portal's buttons and type, matched to the product page and the try-on
++  (ink Add to cart, its outline twin, the gold-underlined link, the small gold
++  eyebrow; square corners). They are classes in src/pages/members/members.css,
++  not Tailwind utilities: anything new in a utility would compile into the one
++  global stylesheet the product page downloads.
++*/
++
++export const primaryButton = "ig-btn";
++export const outlineButton = "ig-btn ig-btn--outline";
++export const quietButton = "ig-quiet";
++export const textLink = "ig-link";
++export const eyebrow = "ig-eyebrow";
+diff --git a/src/components/portal/useTapBloom.test.tsx b/src/components/portal/useTapBloom.test.tsx
+new file mode 100644
+index 0000000..27190b7
+--- /dev/null
++++ b/src/components/portal/useTapBloom.test.tsx
+@@ -0,0 +1,74 @@
++import { cleanup, fireEvent, render } from "@testing-library/react";
++import { useRef } from "react";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { MAX_BLOOMS, useTapBloom } from "./useTapBloom";
++import { MAX_PETALS, burstPetals } from "./PetalBurst";
++
++/* The shop's tap-bloom listened on window, so two on one page both answered
++   every tap, and it bloomed under reduced motion. The portal's listens only
++   on its own element, keeps five blooms at most and stays still for anyone
++   who asked for less motion. */
++const Bed = () => {
++  const ref = useRef<HTMLDivElement>(null);
++  useTapBloom(ref);
++  return (
++    <div ref={ref} data-testid="bed">
++      <button type="button">a control</button>
++    </div>
++  );
++};
++
++const reduce = (on: boolean) => {
++  window.matchMedia = ((q: string) => ({ matches: on && q.includes("reduce"), media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, onchange: null, dispatchEvent: () => false })) as typeof window.matchMedia;
++};
++
++afterEach(() => {
++  cleanup();
++  reduce(false);
++  vi.restoreAllMocks();
++});
++
++describe("useTapBloom", () => {
++  it("keeps at most five blooms alive", () => {
++    const { getByTestId } = render(<Bed />);
++    const bed = getByTestId("bed");
++    for (let i = 0; i < 9; i++) fireEvent.pointerDown(bed, { clientX: 10 + i, clientY: 10, button: 0 });
++    expect(bed.querySelectorAll(".ig-bloom").length).toBe(MAX_BLOOMS);
++  });
++
++  it("listens on its own element, never on window", () => {
++    const spy = vi.spyOn(window, "addEventListener");
++    render(<Bed />);
++    expect(spy.mock.calls.filter(([type]) => type === "pointerdown")).toEqual([]);
++  });
++
++  it("leaves taps on controls alone", () => {
++    const { getByTestId, getByRole } = render(<Bed />);
++    fireEvent.pointerDown(getByRole("button"), { button: 0 });
++    expect(getByTestId("bed").querySelectorAll(".ig-bloom")).toHaveLength(0);
++  });
++
++  it("blooms nothing under reduced motion", () => {
++    reduce(true);
++    const { getByTestId } = render(<Bed />);
++    fireEvent.pointerDown(getByTestId("bed"), { button: 0 });
++    expect(getByTestId("bed").querySelectorAll(".ig-bloom")).toHaveLength(0);
++  });
++});
++
++describe("burstPetals", () => {
++  it("never throws more than 24 petals, and none under reduced motion", () => {
++    const layer = document.createElement("div");
++    const animate = vi.fn(() => ({ onfinish: null, oncancel: null }) as unknown as Animation);
++    (HTMLElement.prototype as unknown as { animate: unknown }).animate = animate;
++    (SVGElement.prototype as unknown as { animate: unknown }).animate = animate;
++    burstPetals(layer, 0, 0, { count: 200 });
++    expect(layer.querySelectorAll(".ig-petal")).toHaveLength(MAX_PETALS);
++    reduce(true);
++    const quiet = document.createElement("div");
++    burstPetals(quiet, 0, 0, { count: 10 });
++    expect(quiet.childElementCount).toBe(0);
++    delete (HTMLElement.prototype as unknown as { animate?: unknown }).animate;
++    delete (SVGElement.prototype as unknown as { animate?: unknown }).animate;
++  });
++});
+diff --git a/src/components/portal/useTapBloom.ts b/src/components/portal/useTapBloom.ts
+new file mode 100644
+index 0000000..a86bb71
+--- /dev/null
++++ b/src/components/portal/useTapBloom.ts
+@@ -0,0 +1,112 @@
++import { useEffect, type RefObject } from "react";
++import { SPECIES, petalTransform, type Species } from "@/lib/portal/species";
++import { play, stillMotion } from "@/lib/portal/motion";
++
++/*
++  Every tap blooms. The shop's tap-to-bloom (RingAtelierBackdrop) listens on
++  window, so two on a page both answered every tap; this one listens only on
++  the element it is given (the garden bed, the gate), and only there does a
++  flower open. Six species, never the same twice running, at most five alive,
++  each removed when it has opened and faded. A 10 ms tick on phones that can.
++  Nothing under reduced motion.
++*/
++
++export const MAX_BLOOMS = 5;
++const SVG = "http://www.w3.org/2000/svg";
++
++const el = (name: string, attrs: Record<string, string | number>) => {
++  const node = document.createElementNS(SVG, name);
++  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
++  return node;
++};
++
++const whorl = (species: Species, r: number, offset: number, palette: readonly string[]) => {
++  const g = el("g", {});
++  for (let i = 0; i < species.petals; i++) {
++    const deg = offset + (i * 360) / species.petals;
++    g.appendChild(el("path", { d: species.d, fill: palette[i % palette.length], transform: petalTransform(deg, r) }));
++  }
++  return g;
++};
++
++const bloomNode = (species: Species, x: number, y: number, tilt: number, scale: number) => {
++  const node = document.createElement("div");
++  node.className = "ig-bloom";
++  node.setAttribute("aria-hidden", "true");
++  node.style.cssText = `left:${x}px;top:${y}px`;
++  const svg = el("svg", { viewBox: "-50 -50 100 100", width: Math.round(86 * scale), height: Math.round(86 * scale) });
++  const outer = whorl(species, 40, tilt, species.palette);
++  svg.appendChild(outer);
++  if (species.inner) {
++    const inner = whorl(species, 40 * species.inner, tilt + 180 / species.petals, [...species.palette].reverse());
++    inner.setAttribute("class", "in");
++    svg.appendChild(inner);
++  }
++  svg.appendChild(el("circle", { r: 6.5, fill: species.core }));
++  svg.appendChild(el("circle", { r: 2.4, cx: -1.6, cy: -1.6, fill: "#FFF8EE" }));
++  node.appendChild(svg);
++  return node;
++};
++
++export const useTapBloom = (rootRef: RefObject<HTMLElement>, enabled = true) => {
++  useEffect(() => {
++    const root = rootRef.current;
++    if (!root || !enabled || stillMotion()) return;
++    const alive: HTMLElement[] = [];
++    let last = -1;
++
++    const onDown = (e: PointerEvent) => {
++      if (e.button > 0) return;
++      if ((e.target as Element | null)?.closest?.("a,button,input,select,textarea,label")) return;
++      const box = root.getBoundingClientRect();
++      const x = e.clientX - box.left;
++      const y = e.clientY - box.top;
++      let idx = Math.floor(Math.random() * SPECIES.length);
++      if (idx === last) idx = (idx + 1 + Math.floor(Math.random() * (SPECIES.length - 1))) % SPECIES.length;
++      last = idx;
++      const species = SPECIES[idx];
++      const node = bloomNode(species, x, y, Math.random() * 360, 0.82 + Math.random() * 0.36);
++      root.appendChild(node);
++      alive.push(node);
++      while (alive.length > MAX_BLOOMS) alive.shift()?.remove();
++
++      const dur = species.dur * 1000;
++      const a = play(
++        node,
++        [
++          { transform: "translate(-50%,-50%) scale(.15) rotate(-50deg)", opacity: 0 },
++          { transform: "translate(-50%,-50%) scale(1.04) rotate(0deg)", opacity: 1, offset: 0.36 },
++          { transform: "translate(-50%,-50%) scale(1) rotate(5deg)", opacity: 1, offset: 0.72 },
++          { transform: "translate(-50%,-50%) scale(1.08) rotate(9deg)", opacity: 0 },
++        ],
++        { duration: dur, easing: "cubic-bezier(0.22, 1, 0.36, 1)", fill: "both" },
++      );
++      play(node.querySelector(".in"), [{ transform: "rotate(-30deg) scale(.6)" }, { transform: "rotate(0deg) scale(1)" }], {
++        duration: dur * 0.5,
++        easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
++      });
++      const done = () => {
++        node.remove();
++        const i = alive.indexOf(node);
++        if (i >= 0) alive.splice(i, 1);
++      };
++      if (a) {
++        a.onfinish = done;
++        a.oncancel = done;
++      } else {
++        window.setTimeout(done, dur);
++      }
++      try {
++        navigator.vibrate?.(10);
++      } catch {
++        /* not allowed here: no tick */
++      }
++    };
++
++    root.addEventListener("pointerdown", onDown);
++    return () => {
++      root.removeEventListener("pointerdown", onDown);
++      alive.forEach((n) => n.remove());
++    };
++  }, [rootRef, enabled]);
++};
+diff --git a/src/lib/portal/brandFlower.ts b/src/lib/portal/brandFlower.ts
+new file mode 100644
+index 0000000..7d9bae2
+--- /dev/null
++++ b/src/lib/portal/brandFlower.ts
+@@ -0,0 +1,44 @@
++import { FLOWER_ASPECT, FLOWER_SHAPES } from "@/lib/nairaFlower/outline";
++
++/*
++  The Naira flower from the brand deck, split into its parts so the portal can
++  colour it as a living plant: the stem with its three leaves in sage, the four
++  petals in blush. Same tracing the header draws (nairaFlower/outline, already
++  in the main bundle), in its viewBox 0 0 0.6868 1, y down.
++*/
++
++const STEM = 1;
++
++const toPath = (pts: readonly number[]) => {
++  let d = "";
++  for (let i = 0; i < pts.length; i += 2) {
++    d += `${i ? "L" : "M"}${(pts[i] + FLOWER_ASPECT / 2).toFixed(4)} ${(0.5 - pts[i + 1]).toFixed(4)}`;
++  }
++  return `${d}Z`;
++};
++
++export const FLOWER_VIEWBOX = `0 0 ${FLOWER_ASPECT} 1`;
++
++export const FLOWER_STEM: string = toPath(FLOWER_SHAPES[STEM]);
++export const FLOWER_PETALS: readonly string[] = FLOWER_SHAPES.filter((_, i) => i !== STEM).map(toPath);
++
++/* Where the stem meets the soil, as a share of the box: the plant is
++   positioned so this point sits on the soil line. */
++const stemBase = (() => {
++  const pts = FLOWER_SHAPES[STEM];
++  let best = { x: 0.5, y: 0 };
++  for (let i = 0; i < pts.length; i += 2) {
++    const x = (pts[i] + FLOWER_ASPECT / 2) / FLOWER_ASPECT;
++    const y = 0.5 - pts[i + 1];
++    if (y > best.y) best = { x, y };
++  }
++  return best;
++})();
++
++export const FLOWER_BASE_X: number = stemBase.x;
++export { FLOWER_ASPECT };
++
++/* The deck flower's blush petals and a sage a shade deeper than the token,
++   so the leaves hold their shape on ivory. Flower colours only. */
++export const PETAL_BLUSH = "#F7AE98";
++export const LEAF_SAGE = "#8FAAA4";
+diff --git a/src/lib/portal/copy.test.ts b/src/lib/portal/copy.test.ts
+new file mode 100644
+index 0000000..e51771b
+--- /dev/null
++++ b/src/lib/portal/copy.test.ts
+@@ -0,0 +1,47 @@
++import { describe, expect, it } from "vitest";
++import { readFileSync, readdirSync } from "node:fs";
++import { join, relative, resolve } from "node:path";
++
++/*
++  The portal's honesty rules, enforced on its sources. No invented social
++  proof or scarcity (the product page's "N pieces sold" is exactly what this
++  keeps out), no members' prices, codes or gifts the shop has not created,
++  exclusivity worded as a first look, and stones described as the listing
++  does: cubic zirconia in the month's colour, never real gemstones or solid
++  gold.
++*/
++const src = resolve(__dirname, "../..");
++const dirs = ["pages/members", "components/portal", "lib/portal"];
++const files = (dir: string): string[] =>
++  readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
++    e.isDirectory() ? files(join(dir, e.name)) : /\.(tsx?|css)$/.test(e.name) && !/\.test\./.test(e.name) ? [join(dir, e.name)] : [],
++  );
++const sources = dirs.flatMap((d) => files(join(src, d)));
++
++const BANNED: [string, RegExp][] = [
++  ["the plan's banned phrases", /members-only pric|only \d+ left|\d+ (members|watching)|spots left|sold in the last|selling fast/i],
++  ["exclusivity beyond a first look", /exclusive to members|members only can buy|only members can buy/i],
++  ["a price or reward that does not exist", /\d+\s*%\s*off|discount code|members'? price|birthday gift|free gift|reward points|referral/i],
++  ["scarcity nobody confirmed", /\b(small batch|limited edition|gone for good|almost gone|hurry)\b/i],
++  ["stones or metal beyond the listing's words", /\b(real|genuine|natural|precious) (garnet|amethyst|aquamarine|emerald|ruby|peridot|sapphire|topaz|zircon|gemstone|stone)s?\b|solid gold/i],
++];
++
++describe("portal copy", () => {
++  it("reads the portal's sources", () => {
++    expect(sources.length).toBeGreaterThan(20);
++  });
++
++  it.each(BANNED)("never carries %s", (_what, pattern) => {
++    const hits = sources.flatMap((f) =>
++      readFileSync(f, "utf8")
++        .split("\n")
++        .flatMap((line, i) => (pattern.test(line) ? [`${relative(src, f)}:${i + 1}: ${line.trim()}`] : [])),
++    );
++    expect(hits).toEqual([]);
++  });
++
++  it("says out loud that the garden is for joy, not points", () => {
++    const home = readFileSync(join(src, "pages/members/GardenHome.tsx"), "utf8");
++    expect(home).toMatch(/Nothing in it is points, and nothing in it can be redeemed/);
++  });
++});
+diff --git a/src/lib/portal/curves.ts b/src/lib/portal/curves.ts
+new file mode 100644
+index 0000000..7511224
+--- /dev/null
++++ b/src/lib/portal/curves.ts
+@@ -0,0 +1,41 @@
++/*
++  Vines for the gate and the garden's arbour: a chain of cubic curves, with
++  leaves set alternately along it. Computed once, at module load.
++*/
++
++/** x0 y0 c1x c1y c2x c2y x1 y1 */
++export type Seg = readonly [number, number, number, number, number, number, number, number];
++
++export const bez = (t: number, a: number, b: number, c: number, d: number) =>
++  (1 - t) ** 3 * a + 3 * (1 - t) ** 2 * t * b + 3 * (1 - t) * t ** 2 * c + t ** 3 * d;
++
++export const chainPath = (segs: readonly Seg[]) =>
++  `M${segs[0][0]} ${segs[0][1]}` + segs.map((s) => `C${s[2]} ${s[3]} ${s[4]} ${s[5]} ${s[6]} ${s[7]}`).join("");
++
++/** The point at t (0..1 over the whole chain) and the direction there, in degrees. */
++export const pointOn = (segs: readonly Seg[], t: number): [number, number, number] => {
++  const n = segs.length;
++  const i = Math.min(n - 1, Math.floor(t * n));
++  const u = t * n - i;
++  const [x0, y0, x1, y1, x2, y2, x3, y3] = segs[i];
++  const x = bez(u, x0, x1, x2, x3);
++  const y = bez(u, y0, y1, y2, y3);
++  const v = Math.min(1, u + 0.02);
++  const dx = bez(v, x0, x1, x2, x3) - x;
++  const dy = bez(v, y0, y1, y2, y3) - y;
++  return [x, y, (Math.atan2(dy, dx) * 180) / Math.PI];
++};
++
++export type Leaf = { x: number; y: number; a: number };
++
++/** Leaves at each t, turning out from the stem to alternate sides. */
++export const leavesAlong = (segs: readonly Seg[], ts: readonly number[], reach = 7, splay = 52): Leaf[] =>
++  ts.map((t, i) => {
++    const [x, y, a] = pointOn(segs, t);
++    const ang = a + (i % 2 ? splay : -splay);
++    const r = (ang * Math.PI) / 180;
++    return { x: x + Math.cos(r) * reach, y: y + Math.sin(r) * reach, a: ang };
++  });
++
++export const mirrorSegs = (segs: readonly Seg[], width: number): Seg[] =>
++  segs.map((s) => [width - s[0], s[1], width - s[2], s[3], width - s[4], s[5], width - s[6], s[7]] as const);
+diff --git a/src/lib/portal/doors.ts b/src/lib/portal/doors.ts
+new file mode 100644
+index 0000000..f3b018f
+--- /dev/null
++++ b/src/lib/portal/doors.ts
+@@ -0,0 +1,20 @@
++import { istDayKey } from "./ist";
++import { readPortal, writePortal } from "./safeStorage";
++import { stillMotion } from "./motion";
++
++/* Full on the first visit of each IST day on this device, short after that. */
++export const doorsModeFor = (lastFullDay: string | undefined, today: string): "full" | "short" =>
++  lastFullDay === today ? "short" : "full";
++
++/**
++ * Which entrance to play now. Null under reduced motion (the garden is simply
++ * open) or when the Doors already played this visit. With storage blocked
++ * every visit reads as the day's first: harmless.
++ */
++export const pickDoors = (alreadyPlayed: boolean, now: Date = new Date()): "full" | "short" | null => {
++  if (alreadyPlayed || stillMotion()) return null;
++  return doorsModeFor(readPortal().doorsDay, istDayKey(now));
++};
++
++/** Notes that today's full entrance has played on this device. */
++export const recordFullDoors = (now: Date = new Date()) => writePortal({ doorsDay: istDayKey(now) });
+diff --git a/src/lib/portal/gardenLayout.test.ts b/src/lib/portal/gardenLayout.test.ts
+new file mode 100644
+index 0000000..82a8ce2
+--- /dev/null
++++ b/src/lib/portal/gardenLayout.test.ts
+@@ -0,0 +1,50 @@
++import { describe, expect, it } from "vitest";
++import { BED, MAX_PLANTS, MAX_SWAY, layoutGarden } from "./gardenLayout";
++
++/* Her garden is hers: the same id grows the same bed on every visit and
++   device, and the bed stays inside the budgets a mid-range Android can
++   composite without dropping frames (80 plants, 24 swaying). */
++describe("the seeded garden", () => {
++  const ids = ["3f2c9a1e-0b7d-4c55-9a51-7e7e2d1c0a11", "preview-ananya", "a", "", "naira-flore-gate"];
++
++  it("grows the same garden from the same id", () => {
++    for (const id of ids) expect(layoutGarden(id)).toEqual(layoutGarden(id));
++  });
++
++  it("grows a different garden for a different member", () => {
++    const a = layoutGarden(ids[0]).plants.map((p) => [p.kind, p.x, p.y]);
++    const b = layoutGarden("3f2c9a1e-0b7d-4c55-9a51-7e7e2d1c0a12").plants.map((p) => [p.kind, p.x, p.y]);
++    expect(a).not.toEqual(b);
++  });
++
++  it.each(ids)("keeps within the budgets (%s)", (id) => {
++    const { plants } = layoutGarden(id);
++    expect(plants.length).toBeLessThanOrEqual(MAX_PLANTS);
++    expect(plants.filter((p) => p.sway).length).toBeLessThanOrEqual(MAX_SWAY);
++    expect(plants.length).toBeGreaterThan(40);
++  });
++
++  it("plants her two flowers on the soil, in front, and swaying", () => {
++    const { plants, naira, stone } = layoutGarden(ids[0]);
++    expect(plants.filter((p) => p.kind === "naira")).toHaveLength(1);
++    expect(plants.filter((p) => p.kind === "stone")).toHaveLength(1);
++    for (const p of [naira, stone]) {
++      expect(p.y).toBe(BED.soil);
++      expect(p.sway).toBe(true);
++    }
++    // Painted last: nothing stands in front of them.
++    expect(plants.slice(-2).map((p) => p.kind).sort()).toEqual(["naira", "stone"]);
++  });
++
++  it("keeps every plant inside the bed and paints back to front", () => {
++    const { plants } = layoutGarden(ids[1]);
++    for (const p of plants) {
++      expect(p.x).toBeGreaterThanOrEqual(0);
++      expect(p.x).toBeLessThanOrEqual(BED.w);
++      expect(p.y).toBeLessThanOrEqual(BED.soil);
++      expect(p.band).toBeGreaterThanOrEqual(0);
++    }
++    const ys = plants.map((p) => p.y);
++    expect(ys).toEqual([...ys].sort((a, b) => a - b));
++  });
++});
+diff --git a/src/lib/portal/gardenLayout.ts b/src/lib/portal/gardenLayout.ts
+new file mode 100644
+index 0000000..29cf304
+--- /dev/null
++++ b/src/lib/portal/gardenLayout.ts
+@@ -0,0 +1,160 @@
++/*
++  Her garden bed, laid out from her own user id: the same id always grows the
++  same garden, on every device and every visit, and no two members share one.
++  Pure maths (a 32-bit FNV-1a hash seeding mulberry32), so it is the same in a
++  test, the prerender and the browser.
++
++  The bed is a 390 x 560 view (phone first), planted in three rows from the
++  back. Two plants are hers alone, at the front: the Naira flower, planted the
++  day she joined, and her stone flower (a closed bud until her birthday is
++  known). Budgets from the plan: at most 80 plants and at most 24 swaying, so a
++  mid-range Android composites the bed without dropping frames.
++*/
++
++export const BED = { w: 390, h: 560, soil: 522 } as const;
++export const MAX_PLANTS = 80;
++export const MAX_SWAY = 24;
++export const BANDS = 12;
++
++export type PlantKind = "grass" | "sprig" | "bud" | "bloom" | "breath" | "leaves" | "naira" | "stone";
++
++export type Plant = {
++  id: string;
++  kind: PlantKind;
++  /** 0 back, 1 middle, 2 front. */
++  row: 0 | 1 | 2;
++  /** Stem base, in the 390 x 560 view. */
++  x: number;
++  y: number;
++  scale: number;
++  flip: boolean;
++  /** Index into SPECIES for blooms. */
++  species: number;
++  /** Index into that species' palette. */
++  tone: number;
++  /** Which of the three stems a bloom or bud stands on. */
++  stem: 0 | 1 | 2;
++  sway: boolean;
++  /** Back-to-front band, 0..BANDS-1, for the bloom-in. */
++  band: number;
++  /** Seconds for one sway, and where in it this plant starts. */
++  swayDur: number;
++  swayPhase: number;
++};
++
++export const hashString = (text: string): number => {
++  let h = 0x811c9dc5;
++  for (let i = 0; i < text.length; i++) {
++    h ^= text.charCodeAt(i);
++    h = Math.imul(h, 0x01000193);
++  }
++  return h >>> 0;
++};
++
++export const mulberry32 = (seed: number) => {
++  let a = seed >>> 0;
++  return () => {
++    a = (a + 0x6d2b79f5) >>> 0;
++    let t = a;
++    t = Math.imul(t ^ (t >>> 15), t | 1);
++    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
++    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
++  };
++};
++
++type Weights = Partial<Record<PlantKind, number>>;
++type RowSpec = { row: 0 | 1 | 2; count: number; yMin: number; yMax: number; sMin: number; sMax: number; weights: Weights };
++
++const ROWS: RowSpec[] = [
++  { row: 0, count: 26, yMin: 262, yMax: 330, sMin: 0.58, sMax: 0.82, weights: { grass: 26, sprig: 24, breath: 20, bud: 14, bloom: 16 } },
++  { row: 1, count: 22, yMin: 372, yMax: 448, sMin: 0.74, sMax: 0.96, weights: { bloom: 34, sprig: 20, bud: 20, grass: 14, leaves: 12 } },
++  { row: 2, count: 18, yMin: 510, yMax: 520, sMin: 0.92, sMax: 1.14, weights: { bloom: 38, leaves: 20, bud: 14, grass: 16, sprig: 12 } },
++];
++
++const pick = (rand: () => number, weights: Weights): PlantKind => {
++  const entries = Object.entries(weights) as [PlantKind, number][];
++  const total = entries.reduce((s, [, w]) => s + w, 0);
++  let r = rand() * total;
++  for (const [kind, w] of entries) {
++    if ((r -= w) < 0) return kind;
++  }
++  return entries[entries.length - 1][0];
++};
++
++const bandOf = (y: number) => Math.max(0, Math.min(BANDS - 1, Math.floor(((y - 260) / (BED.soil + 2 - 260)) * BANDS)));
++
++export type Garden = { plants: Plant[]; naira: Plant; stone: Plant };
++
++export const layoutGarden = (seedText: string): Garden => {
++  const rand = mulberry32(hashString(seedText || "naira"));
++  const r = (min: number, max: number) => min + rand() * (max - min);
++  const plants: Plant[] = [];
++
++  // Her two plants first, so the rows can keep clear of them.
++  const nairaX = Math.round(r(138, 168));
++  const stoneX = Math.round(nairaX + r(96, 116));
++  const feature = (id: string, kind: PlantKind, x: number): Plant => ({
++    id,
++    kind,
++    row: 2,
++    x,
++    y: BED.soil,
++    scale: 1,
++    flip: false,
++    species: 1,
++    tone: 0,
++    stem: 0,
++    sway: true,
++    band: BANDS - 1,
++    swayDur: r(4.2, 5.4),
++    swayPhase: rand(),
++  });
++  const naira = feature("naira", "naira", nairaX);
++  const stone = feature("stone", "stone", stoneX);
++  const clear = (x: number) => Math.abs(x - (nairaX + 18)) > 62 && Math.abs(x - stoneX) > 34;
++
++  for (const spec of ROWS) {
++    // Inside the arbour's posts.
++    const left = 40;
++    const span = BED.w - 80;
++    const slot = span / spec.count;
++    for (let i = 0; i < spec.count; i++) {
++      const x = Math.round(left + slot * (i + 0.15 + rand() * 0.7));
++      const y = Math.round(r(spec.yMin, spec.yMax));
++      const kind = pick(rand, spec.weights);
++      const species = Math.floor(rand() * 6);
++      const plant: Plant = {
++        id: `p${spec.row}-${i}`,
++        kind,
++        row: spec.row,
++        x,
++        y,
++        scale: Number(r(spec.sMin, spec.sMax).toFixed(3)),
++        flip: rand() < 0.5,
++        species,
++        tone: Math.floor(rand() * 4),
++        stem: Math.floor(rand() * 3) as 0 | 1 | 2,
++        sway: false,
++        band: bandOf(y),
++        swayDur: Number(r(3.4, 5.6).toFixed(2)),
++        swayPhase: rand(),
++      };
++      // The front row leaves room around her two plants.
++      if (spec.row === 2 && !clear(x)) continue;
++      plants.push(plant);
++    }
++  }
++
++  // Sway: her two, then the front and middle rows in a seeded order.
++  const candidates = plants
++    .filter((p) => p.row > 0)
++    .map((p) => ({ p, key: rand() }))
++    .sort((a, b) => a.key - b.key)
++    .slice(0, MAX_SWAY - 2);
++  for (const { p } of candidates) p.sway = true;
++
++  const all = [...plants, naira, stone].slice(0, MAX_PLANTS);
++  // Painter's order: back to front, so nearer plants overlap farther ones.
++  all.sort((a, b) => a.y - b.y || a.x - b.x);
++  return { plants: all, naira, stone };
++};
+diff --git a/src/lib/portal/inAppBrowser.test.ts b/src/lib/portal/inAppBrowser.test.ts
+new file mode 100644
+index 0000000..4e73f44
+--- /dev/null
++++ b/src/lib/portal/inAppBrowser.test.ts
+@@ -0,0 +1,45 @@
++import { describe, expect, it } from "vitest";
++import { googleBlockedNote, inAppBrowser } from "./inAppBrowser";
++
++/* Google refuses sign-in inside embedded browsers (disallowed_useragent), and
++   about half the shop's visits arrive in Instagram's. There, /auth shows a
++   note instead of a Google button that can only fail. */
++const UA = {
++  instagramAndroid:
++    "Mozilla/5.0 (Linux; Android 13; SM-A536E Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/119.0.6045.163 Mobile Safari/537.36 Instagram 309.0.0.40.113 Android (33/13; 450dpi; 1080x2177; samsung; SM-A536E; a53x; s5e8825; en_IN; 541635863)",
++  instagramIos:
++    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 307.0.0.17.111 (iPhone14,5; iOS 17_1; en_IN; en-IN; scale=3.00; 1170x2532; 532277014)",
++  facebookIos:
++    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/437.0.0.36.111;FBBV/545519536;FBDV/iPhone14,5;FBMD/iPhone;FBSN/iOS;FBSV/17.0;FBSS/3;FBCR/;FBID/phone;FBLC/en_US;FBOP/80]",
++  facebookAndroid:
++    "Mozilla/5.0 (Linux; Android 12; RMX3363 Build/RKQ1.211119.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/118.0.5993.111 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/438.0.0.33.118;]",
++  chromeAndroid:
++    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
++  safariIos:
++    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1",
++};
++
++describe("inAppBrowser", () => {
++  it("knows Instagram's browser on both phones", () => {
++    expect(inAppBrowser(UA.instagramAndroid)).toBe("Instagram");
++    expect(inAppBrowser(UA.instagramIos)).toBe("Instagram");
++  });
++
++  it("knows Facebook's (FBAN on iOS, FBAV on Android)", () => {
++    expect(inAppBrowser(UA.facebookIos)).toBe("Facebook");
++    expect(inAppBrowser(UA.facebookAndroid)).toBe("Facebook");
++  });
++
++  it("leaves real browsers alone, so Google stays on offer there", () => {
++    expect(inAppBrowser(UA.chromeAndroid)).toBeNull();
++    expect(inAppBrowser(UA.safariIos)).toBeNull();
++    expect(inAppBrowser("")).toBeNull();
++    expect(inAppBrowser(undefined)).toBeNull();
++  });
++
++  it("says what to do instead", () => {
++    expect(googleBlockedNote("Instagram")).toBe(
++      "Google sign-in doesn't open inside Instagram. Use your email, or open this page in your browser.",
++    );
++  });
++});
+diff --git a/src/lib/portal/inAppBrowser.ts b/src/lib/portal/inAppBrowser.ts
+new file mode 100644
+index 0000000..6e89712
+--- /dev/null
++++ b/src/lib/portal/inAppBrowser.ts
+@@ -0,0 +1,19 @@
++/*
++  Instagram's and Facebook's in-app browsers. About half the shop's visits
++  arrive in Instagram's, and Google refuses its sign-in inside embedded
++  browsers (disallowed_useragent), so there the Google button can only fail.
++  Instagram puts "Instagram" in its user agent; Facebook's apps add FBAN
++  (iOS) or FBAV (Android).
++*/
++
++export type InAppBrowser = "Instagram" | "Facebook" | null;
++
++export const inAppBrowser = (userAgent: string | null | undefined): InAppBrowser => {
++  const ua = userAgent ?? "";
++  if (/\bInstagram\b/i.test(ua)) return "Instagram";
++  if (/\bFB(AN|AV)\b|FB_IAB|\[FB/i.test(ua)) return "Facebook";
++  return null;
++};
++
++export const googleBlockedNote = (app: Exclude<InAppBrowser, null>) =>
++  `Google sign-in doesn't open inside ${app}. Use your email, or open this page in your browser.`;
+diff --git a/src/lib/portal/isolation.test.ts b/src/lib/portal/isolation.test.ts
+new file mode 100644
+index 0000000..ad2d626
+--- /dev/null
++++ b/src/lib/portal/isolation.test.ts
+@@ -0,0 +1,111 @@
++import { describe, expect, it } from "vitest";
++import { readFileSync, readdirSync } from "node:fs";
++import { join, relative, resolve } from "node:path";
++
++/*
++  The portal must cost the shop nothing. A portal module imported by the
++  product page, the bag or the header would ride in their download; a shop
++  module imported for the first time by the portal and one other route would
++  be split by Rollup into a new chunk the shop then fetches. So:
++  - only pageCode.ts reaches the portal's route, and only Auth.tsx borrows
++    one portal helper (the in-app browser check);
++  - the product page, bag, checkout and header import nothing of the portal;
++  - portal code imports only what already sits in the main or shared chunks.
++*/
++
++const src = resolve(__dirname, "../..");
++const files = (dir: string): string[] =>
++  readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
++    e.isDirectory() ? files(join(dir, e.name)) : /\.(tsx?|css)$/.test(e.name) ? [join(dir, e.name)] : [],
++  );
++const all = files(src).map((f) => relative(src, f).split("\\").join("/"));
++const isTest = (f: string) => /\.test\.tsx?$/.test(f);
++const isPortal = (f: string) => /^(pages\/members|components\/portal|lib\/portal)\//.test(f);
++
++const IMPORT = /(?:import|export)\s[^'";]*?from\s*["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)|import\s+["']([^"']+)["']/g;
++const importsOf = (f: string) =>
++  [...readFileSync(join(src, f), "utf8").matchAll(IMPORT)].map((m) => m[1] ?? m[2] ?? m[3]);
++
++/* Where an import lands, as a path under src (or the bare package name). */
++const target = (from: string, spec: string) => {
++  if (spec.startsWith("@/")) return spec.slice(2);
++  if (spec.startsWith(".")) {
++    const parts = from.split("/").slice(0, -1);
++    for (const seg of spec.split("/")) {
++      if (seg === "..") parts.pop();
++      else if (seg !== ".") parts.push(seg);
++    }
++    return parts.join("/");
++  }
++  return spec;
++};
++
++const reachesPortal = (t: string) => /^(pages\/members|components\/portal|lib\/portal)(\/|$)/.test(t);
++
++describe("the portal's isolation", () => {
++  it("finds the portal and the shop", () => {
++    expect(all.filter(isPortal).length).toBeGreaterThan(20);
++    expect(all).toContain("pages/JewelDetailNext.tsx");
++  });
++
++  it("is reached only from pageCode.ts, plus Auth's in-app browser check", () => {
++    const outside = all
++      .filter((f) => !isPortal(f) && !isTest(f))
++      .flatMap((f) => importsOf(f).map((spec) => [f, target(f, spec)] as const))
++      .filter(([, t]) => reachesPortal(t))
++      .map(([f, t]) => `${f} -> ${t.replace(/\.tsx?$/, "")}`);
++    expect(outside.sort()).toEqual(["pageCode.ts -> pages/members/MembersRoute", "pages/Auth.tsx -> lib/portal/inAppBrowser"]);
++  });
++
++  it("is never imported by the product page, the bag, checkout or the header", () => {
++    const shop = all.filter(
++      (f) =>
++        !isTest(f) &&
++        (/^pages\/(JewelDetailNext|ProductDetail)/.test(f) ||
++          /^components\/(cart|checkout)\//.test(f) ||
++          /^contexts\/CartContext/.test(f) ||
++          /^components\/(Header|Navbar|CartDrawer)/.test(f)),
++    );
++    expect(shop.length).toBeGreaterThan(5);
++    const offenders = shop.flatMap((f) => importsOf(f).filter((s) => reachesPortal(target(f, s))).map((s) => `${f}: ${s}`));
++    expect(offenders).toEqual([]);
++  });
++
++  /* Each of these is already in the main bundle or an existing shared chunk
++     (checked against the build: index, PageSEO, Footer, JoinInnerCircleForm,
++     shopifyImage, background_image_flora). Anything new needs the same check. */
++  const ALLOWED = new Set([
++    "react",
++    "react-router-dom",
++    "@supabase/supabase-js",
++    "contexts/AuthContext",
++    "contexts/CartContext",
++    "hooks/useLiveJewellery",
++    "lib/variants",
++    "data/jewellery",
++    "lib/nairaFlower/outline",
++    "components/PageSEO",
++    "components/Footer",
++    "components/members/JoinInnerCircleForm",
++    "lib/shopifyImage",
++    "integrations/supabase/lazy",
++  ]);
++
++  it("imports only modules the shop already ships, or its own", () => {
++    const offenders = all
++      .filter((f) => isPortal(f) && !isTest(f))
++      .flatMap((f) => importsOf(f).map((spec) => [f, target(f, spec)] as const))
++      .filter(([, t]) => !reachesPortal(t) && !ALLOWED.has(t))
++      .map(([f, t]) => `${f}: ${t}`);
++    expect(offenders).toEqual([]);
++  });
++
++  /* lucide icons all compile into the "ui" chunk every page downloads, so a
++     new icon here would grow every page; the portal draws its own. */
++  it("brings in no icon library and none of the shop's invented social proof", () => {
++    const bad = all
++      .filter((f) => isPortal(f) && !isTest(f))
++      .flatMap((f) => importsOf(f).filter((s) => /lucide|FomoPopup|JewelTrustStrip|dailySold|framer-motion|lottie|gsap|three/.test(s)).map((s) => `${f}: ${s}`));
++    expect(bad).toEqual([]);
++  });
++});
+diff --git a/src/lib/portal/ist.test.ts b/src/lib/portal/ist.test.ts
+new file mode 100644
+index 0000000..c309865
+--- /dev/null
++++ b/src/lib/portal/ist.test.ts
+@@ -0,0 +1,35 @@
++import { describe, expect, it } from "vitest";
++import { dayBand, formatIstDate, greetingFor, istDayKey } from "./ist";
++
++/* The garden keeps Indian time whatever zone the phone is set to: 18:30 UTC
++   is already tomorrow in Pune, and 11:29 UTC is still morning there. */
++const utc = (s: string) => new Date(`${s}Z`);
++
++describe("IST", () => {
++  it("turns the day over at 18:30 UTC", () => {
++    expect(istDayKey(utc("2026-11-04T18:29:59"))).toBe("2026-11-04");
++    expect(istDayKey(utc("2026-11-04T18:30:00"))).toBe("2026-11-05");
++    expect(istDayKey(utc("2026-12-31T18:30:00"))).toBe("2027-01-01");
++  });
++
++  it.each([
++    ["2026-11-04T22:29:59", "night", "Hello"], // 03:59:59 IST
++    ["2026-11-04T22:30:00", "morning", "Good morning"], // 04:00
++    ["2026-11-05T06:29:59", "morning", "Good morning"], // 11:59:59
++    ["2026-11-05T06:30:00", "afternoon", "Good afternoon"], // 12:00
++    ["2026-11-05T11:29:59", "afternoon", "Good afternoon"], // 16:59:59
++    ["2026-11-05T11:30:00", "evening", "Good evening"], // 17:00
++    ["2026-11-05T18:29:59", "evening", "Good evening"], // 23:59:59
++    ["2026-11-05T18:30:00", "night", "Hello"], // 00:00 IST, the next day
++  ])("%s UTC is %s in IST", (at, band, greeting) => {
++    expect(dayBand(utc(at))).toBe(band);
++    expect(greetingFor(utc(at))).toBe(greeting);
++  });
++
++  it("dates the day she joined as she saw it in India", () => {
++    expect(formatIstDate("2026-11-03T20:00:00Z")).toBe("4 Nov 2026");
++    expect(formatIstDate("2026-11-04T10:00:00+05:30")).toBe("4 Nov 2026");
++    expect(formatIstDate("not a date")).toBeNull();
++    expect(formatIstDate(undefined)).toBeNull();
++  });
++});
+diff --git a/src/lib/portal/ist.ts b/src/lib/portal/ist.ts
+new file mode 100644
+index 0000000..8e84a62
+--- /dev/null
++++ b/src/lib/portal/ist.ts
+@@ -0,0 +1,62 @@
++/*
++  The garden keeps Indian time. A member in Pune at 7 pm is greeted "Good
++  evening" even if her phone is set to another zone, and "once per day" for
++  the Doors means one IST day. IST has no daylight saving, so it is plain
++  UTC + 5:30 and needs no Intl time-zone data (which some older Android
++  WebViews lack).
++*/
++
++const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
++
++const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
++
++export type IstParts = { year: number; month: number; day: number; hour: number; minute: number };
++
++export const istParts = (at: Date = new Date()): IstParts => {
++  const t = new Date(at.getTime() + IST_OFFSET_MS);
++  return {
++    year: t.getUTCFullYear(),
++    month: t.getUTCMonth() + 1,
++    day: t.getUTCDate(),
++    hour: t.getUTCHours(),
++    minute: t.getUTCMinutes(),
++  };
++};
++
++const pad = (n: number) => String(n).padStart(2, "0");
++
++/** "2026-11-04": the IST calendar day, for once-a-day things on this device. */
++export const istDayKey = (at: Date = new Date()): string => {
++  const p = istParts(at);
++  return `${p.year}-${pad(p.month)}-${pad(p.day)}`;
++};
++
++export type DayBand = "morning" | "afternoon" | "evening" | "night";
++
++/** Morning from 4:00, afternoon from 12:00, evening from 17:00, night from midnight. */
++export const dayBand = (at: Date = new Date()): DayBand => {
++  const { hour } = istParts(at);
++  if (hour >= 4 && hour < 12) return "morning";
++  if (hour >= 12 && hour < 17) return "afternoon";
++  if (hour >= 17) return "evening";
++  return "night";
++};
++
++const GREETING: Record<DayBand, string> = {
++  morning: "Good morning",
++  afternoon: "Good afternoon",
++  evening: "Good evening",
++  // Between midnight and four, "good evening" reads wrong and "good night" is a farewell.
++  night: "Hello",
++};
++
++export const greetingFor = (at: Date = new Date()): string => GREETING[dayBand(at)];
++
++/** "4 Nov 2026", in IST: the day a member joined, as she would have seen it. */
++export const formatIstDate = (iso: string | null | undefined): string | null => {
++  if (!iso) return null;
++  const at = new Date(iso);
++  if (Number.isNaN(at.getTime())) return null;
++  const p = istParts(at);
++  return `${p.day} ${MONTHS[p.month - 1]} ${p.year}`;
++};
+diff --git a/src/lib/portal/motion.ts b/src/lib/portal/motion.ts
+new file mode 100644
+index 0000000..4ba1900
+--- /dev/null
++++ b/src/lib/portal/motion.ts
+@@ -0,0 +1,116 @@
++import { useEffect, useState, type RefObject } from "react";
++
++/*
++  Motion for the portal, in two tiers. Tier 1 (every phone) moves only
++  transform, opacity and stroke-dashoffset, with the Web Animations API, so
++  nothing joins the site-wide stylesheet and every animation can be finished
++  on a tap. Tier 0 (reduced motion, Data Saver, 2g/3g, the prerender) draws
++  every screen in its final state at once.
++*/
++
++export const prefersReducedMotion = (): boolean => {
++  try {
++    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
++  } catch {
++    return false;
++  }
++};
++
++type Connection = { saveData?: boolean; effectiveType?: string };
++
++const saveData = (): boolean => {
++  try {
++    const c = (navigator as Navigator & { connection?: Connection }).connection;
++    return Boolean(c?.saveData) || /(^|-)(2g|3g)$/.test(c?.effectiveType ?? "");
++  } catch {
++    return false;
++  }
++};
++
++/** Tier 0: show final states only. */
++export const stillMotion = (): boolean => prefersReducedMotion() || saveData();
++
++/** Starts a WAAPI animation, or returns null where it cannot (old WebViews, tests, Tier 0). */
++export const play = (
++  el: Element | null | undefined,
++  keyframes: Keyframe[],
++  options: KeyframeAnimationOptions,
++): Animation | null => {
++  if (!el || typeof (el as HTMLElement).animate !== "function") return null;
++  try {
++    return (el as HTMLElement).animate(keyframes, options);
++  } catch {
++    return null;
++  }
++};
++
++/**
++ * Calls `fn` `ms` into the element's animation timeline: a cue that keeps
++ * pace with the animations around it (a busy phone, a slowed-down devtools
++ * timeline) where a setTimeout would drift. Finishing it early fires it, so
++ * callers guard against running after a skip. Falls back to a timer.
++ */
++export const cue = (el: Element | null | undefined, ms: number, fn: () => void): Animation | null => {
++  const a = play(el, [{ opacity: 1 }, { opacity: 1 }], { duration: Math.max(1, ms) });
++  if (a) a.onfinish = fn;
++  else window.setTimeout(fn, ms);
++  return a;
++};
++
++export const EASE_DRAWER = "cubic-bezier(0.32, 0.72, 0, 1)";
++export const EASE_REVEAL = "cubic-bezier(0.22, 1, 0.36, 1)";
++export const EASE_BLOOM = "cubic-bezier(0.34, 1.56, 0.64, 1)";
++export const EASE_CURTAIN = "cubic-bezier(0.76, 0, 0.24, 1)";
++/* Accelerating. Spelt out as a curve: the CSS keyword for it, written in any
++   source file, makes Tailwind add a matching utility to the global CSS. */
++export const EASE_IN = "cubic-bezier(0.42, 0, 1, 1)";
++
++export const IDLE_MS = 20_000;
++
++/**
++ * Whether the ambient loop on this screen should run: the element is on
++ * screen, the tab is visible, and someone has touched, scrolled or typed in
++ * the last 20 s. After that "the garden rests" until the next interaction.
++ */
++export const useAmbient = (ref: RefObject<Element>, enabled = true, idleMs = IDLE_MS): boolean => {
++  const [onScreen, setOnScreen] = useState(false);
++  const [visible, setVisible] = useState(() => typeof document === "undefined" || document.visibilityState !== "hidden");
++  const [awake, setAwake] = useState(true);
++
++  useEffect(() => {
++    const el = ref.current;
++    if (!enabled || !el) return;
++    if (typeof IntersectionObserver === "undefined") {
++      setOnScreen(true);
++      return;
++    }
++    const io = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting), { rootMargin: "40px" });
++    io.observe(el);
++    return () => io.disconnect();
++  }, [ref, enabled]);
++
++  useEffect(() => {
++    if (!enabled) return;
++    const onVisibility = () => setVisible(document.visibilityState !== "hidden");
++    document.addEventListener("visibilitychange", onVisibility);
++    return () => document.removeEventListener("visibilitychange", onVisibility);
++  }, [enabled]);
++
++  useEffect(() => {
++    if (!enabled) return;
++    let timer = window.setTimeout(() => setAwake(false), idleMs);
++    const wake = () => {
++      window.clearTimeout(timer);
++      setAwake(true);
++      timer = window.setTimeout(() => setAwake(false), idleMs);
++    };
++    const events = ["pointerdown", "pointermove", "scroll", "keydown", "touchstart"] as const;
++    events.forEach((e) => window.addEventListener(e, wake, { passive: true }));
++    return () => {
++      window.clearTimeout(timer);
++      events.forEach((e) => window.removeEventListener(e, wake));
++    };
++  }, [enabled, idleMs]);
++
++  return enabled && onScreen && visible && awake;
++};
+diff --git a/src/lib/portal/preview.ts b/src/lib/portal/preview.ts
+new file mode 100644
+index 0000000..0e1cd51
+--- /dev/null
++++ b/src/lib/portal/preview.ts
+@@ -0,0 +1,52 @@
++import type { User } from "@supabase/supabase-js";
++import type { MemberProfile } from "@/contexts/AuthContext";
++import { PORTAL_KEY, safeRemove } from "./safeStorage";
++
++/*
++  DEVELOPMENT ONLY. A stand-in member so the portal can be seen signed in
++  without creating an account or touching the live Supabase or Shopify:
++
++    /members?portalPreview=1&name=Ananya&birthday=1999-07-14
++
++  MembersRoute reaches this only behind `import.meta.env.DEV`, which Vite
++  replaces with false in a production build, so the build drops this module
++  (the build check greps dist for its query name). Every write the preview
++  would make is logged to the console instead.
++
++  Extra switches: joined=2026-11-04 (the planted date), reset=1 (forget this
++  device's Doors and seed-ceremony flags, to see them again).
++*/
++
++export type PreviewMember = { user: User; profile: MemberProfile };
++
++const DATE = /^\d{4}-\d{2}-\d{2}$/;
++
++export const readPreviewMember = (search: string): PreviewMember | null => {
++  const q = new URLSearchParams(search);
++  if (q.get("portalPreview") !== "1") return null;
++  if (q.get("reset") === "1") safeRemove(PORTAL_KEY);
++  const name = (q.get("name") ?? "Ananya").trim().slice(0, 40) || "Ananya";
++  const birthday = q.get("birthday") ?? "";
++  const joined = q.get("joined") ?? "";
++  const id = `preview-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
++  const user = {
++    id,
++    aud: "authenticated",
++    email: `${id}@example.invalid`,
++    created_at: DATE.test(joined) ? `${joined}T10:00:00+05:30` : "2026-11-04T10:00:00+05:30",
++    app_metadata: {},
++    user_metadata: { full_name: name },
++  } as unknown as User;
++  const profile: MemberProfile = {
++    id,
++    full_name: name,
++    phone: null,
++    birthday: DATE.test(birthday) ? birthday : null,
++    city: null,
++  };
++  return { user, profile };
++};
++
++export const logPreviewWrite = (what: string, detail: unknown) => {
++  console.info(`[portal preview] not written: ${what}`, detail);
++};
+diff --git a/src/lib/portal/safeStorage.test.ts b/src/lib/portal/safeStorage.test.ts
+new file mode 100644
+index 0000000..47a32ce
+--- /dev/null
++++ b/src/lib/portal/safeStorage.test.ts
+@@ -0,0 +1,52 @@
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { PORTAL_KEY, readPortal, safeGet, safeRemove, safeSet, writePortal } from "./safeStorage";
++
++/* Instagram's in-app browser, private windows and "Block all cookies" make
++   localStorage throw on any touch. A throw in a render takes the page down,
++   so blocked storage must read as a first visit and never as an error. */
++afterEach(() => {
++  vi.restoreAllMocks();
++  window.localStorage.clear();
++});
++
++describe("safeStorage", () => {
++  it("keeps and merges the portal's flags", () => {
++    expect(readPortal()).toEqual({});
++    expect(writePortal({ doorsDay: "2026-11-05" })).toBe(true);
++    writePortal({ seedSeen: true });
++    expect(readPortal()).toEqual({ doorsDay: "2026-11-05", seedSeen: true });
++  });
++
++  it("reads a corrupt entry as empty", () => {
++    window.localStorage.setItem(PORTAL_KEY, "{not json");
++    expect(readPortal()).toEqual({});
++    window.localStorage.setItem(PORTAL_KEY, "[1,2]");
++    expect(readPortal()).toEqual({});
++  });
++
++  it("never throws when storage does", () => {
++    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
++      throw new DOMException("denied", "SecurityError");
++    });
++    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
++      throw new DOMException("full", "QuotaExceededError");
++    });
++    vi.spyOn(Storage.prototype, "removeItem").mockImplementation(() => {
++      throw new DOMException("denied", "SecurityError");
++    });
++    expect(() => readPortal()).not.toThrow();
++    expect(readPortal()).toEqual({});
++    expect(writePortal({ seedSeen: true })).toBe(false);
++    expect(safeGet("x", "session")).toBeNull();
++    expect(safeSet("x", "1", "session")).toBe(false);
++    expect(() => safeRemove("x")).not.toThrow();
++  });
++
++  it("never throws when the storage object itself is out of reach", () => {
++    vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
++      throw new DOMException("denied", "SecurityError");
++    });
++    expect(readPortal()).toEqual({});
++    expect(writePortal({ doorsDay: "2026-11-05" })).toBe(false);
++  });
++});
+diff --git a/src/lib/portal/safeStorage.ts b/src/lib/portal/safeStorage.ts
+new file mode 100644
+index 0000000..e0f83af
+--- /dev/null
++++ b/src/lib/portal/safeStorage.ts
+@@ -0,0 +1,69 @@
++/*
++  The portal's device conveniences: which IST day the gates last opened in
++  full, whether the seed ceremony has been seen. Instagram's in-app browser,
++  "Block all cookies" and private windows can make localStorage throw on any
++  access, and a throw inside a render or effect takes the page down with it.
++  Every read and write goes through here, so an empty or broken store only
++  ever means "first visit".
++*/
++
++export const PORTAL_KEY = "naira-portal";
++
++export type PortalStore = {
++  /** IST day (YYYY-MM-DD) the full Doors entrance last played on this device. */
++  doorsDay?: string;
++  /** The first-visit seed ceremony on Your stone has been seen or skipped. */
++  seedSeen?: boolean;
++};
++
++type Area = "local" | "session";
++
++const areaOf = (area: Area): Storage | null => {
++  try {
++    return area === "local" ? window.localStorage : window.sessionStorage;
++  } catch {
++    return null;
++  }
++};
++
++export const safeGet = (key: string, area: Area = "local"): string | null => {
++  try {
++    return areaOf(area)?.getItem(key) ?? null;
++  } catch {
++    return null;
++  }
++};
++
++export const safeSet = (key: string, value: string, area: Area = "local"): boolean => {
++  try {
++    const store = areaOf(area);
++    if (!store) return false;
++    store.setItem(key, value);
++    return true;
++  } catch {
++    return false;
++  }
++};
++
++export const safeRemove = (key: string, area: Area = "local"): void => {
++  try {
++    areaOf(area)?.removeItem(key);
++  } catch {
++    /* blocked storage: nothing to remove */
++  }
++};
++
++export const readPortal = (): PortalStore => {
++  const raw = safeGet(PORTAL_KEY);
++  if (!raw) return {};
++  try {
++    const parsed: unknown = JSON.parse(raw);
++    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as PortalStore) : {};
++  } catch {
++    return {};
++  }
++};
++
++/** Merges `patch` into the stored object; false when the device would not keep it. */
++export const writePortal = (patch: Partial<PortalStore>): boolean =>
++  safeSet(PORTAL_KEY, JSON.stringify({ ...readPortal(), ...patch }));
+diff --git a/src/lib/portal/species.ts b/src/lib/portal/species.ts
+new file mode 100644
+index 0000000..2986fc3
+--- /dev/null
++++ b/src/lib/portal/species.ts
+@@ -0,0 +1,85 @@
++/*
++  The six botanicals of the shop's tap-to-bloom (jewellery/RingAtelierBackdrop),
++  lifted here so the portal's garden, its tap blooms and its drop flowers draw
++  from one table without the portal importing the homepage backdrop (which
++  would split it into a chunk the shop pages then fetch). Flat fills only: the
++  backdrop's radial-gradient cores are replaced by a solid core and a cream
++  dot, which costs nothing to paint on a phone.
++
++  `d` is one petal in a 40x80 box, tip at the top (20,3), base at (20,77).
++*/
++
++export type Species = {
++  name: string;
++  d: string;
++  petals: number;
++  /** Ratio of the inner whorl to the outer one (0 = no inner whorl). */
++  inner: number;
++  palette: readonly string[];
++  core: string;
++  /** Seconds a tap bloom takes to open and fade. */
++  dur: number;
++};
++
++export const SPECIES: readonly Species[] = [
++  {
++    name: "rose",
++    d: "M20,3 C34,20 35,52 20,77 C5,52 6,20 20,3 Z",
++    petals: 9,
++    inner: 0.58,
++    palette: ["#F3D9C6", "#E5B9A4", "#FFC9B4", "#EFCDBB"],
++    core: "#E5B9A4",
++    dur: 1.5,
++  },
++  {
++    name: "wild five",
++    d: "M20,4 C36,22 38,54 20,76 C2,54 4,22 20,4 Z",
++    petals: 5,
++    inner: 0,
++    palette: ["#AEBDB6", "#C9D5CE", "#DCE6E1"],
++    core: "#C9A44C",
++    dur: 1.35,
++  },
++  {
++    name: "jasmine star",
++    d: "M20,2 C26,24 30,40 20,78 C10,40 14,24 20,2 Z",
++    petals: 6,
++    inner: 0.5,
++    palette: ["#FFF6EA", "#F6E4D5", "#FFEFE2"],
++    core: "#E8C88A",
++    dur: 1.6,
++  },
++  {
++    name: "marigold",
++    d: "M20,6 C30,22 31,48 20,74 C9,48 10,22 20,6 Z",
++    petals: 14,
++    inner: 0.62,
++    palette: ["#E9C79B", "#DCB07E", "#F2D9B6", "#C99A4C"],
++    core: "#C99A4C",
++    dur: 1.7,
++  },
++  {
++    name: "camellia",
++    d: "M20,4 C39,18 40,56 20,78 C0,56 1,18 20,4 Z",
++    petals: 7,
++    inner: 0.55,
++    palette: ["#FFD6C6", "#F0BCA8", "#FFE6DA", "#E5B9A4"],
++    core: "#F0BCA8",
++    dur: 1.45,
++  },
++  {
++    name: "teal bud",
++    d: "M20,3 C31,26 32,52 20,77 C8,52 9,26 20,3 Z",
++    petals: 8,
++    inner: 0.5,
++    palette: ["#8FB0AE", "#B7CCC6", "#2F5D63", "#D6E3DE"],
++    core: "#8FB0AE",
++    dur: 1.55,
++  },
++];
++
++/* The wild five's petal, used for her stone flower in every size. */
++export const STONE_PETAL = SPECIES[1].d;
++
++/** A petal's transform in a head of radius `r` at angle `deg`, base at the centre. */
++export const petalTransform = (deg: number, r: number) => `rotate(${deg}) translate(0 ${-r * 0.04}) scale(${(r / 74).toFixed(4)}) translate(-20 -77)`;
+diff --git a/src/lib/portal/stones.test.ts b/src/lib/portal/stones.test.ts
+new file mode 100644
+index 0000000..6829359
+--- /dev/null
++++ b/src/lib/portal/stones.test.ts
+@@ -0,0 +1,54 @@
++import { describe, expect, it } from "vitest";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++import { BIRTHSTONE_HANDLE, MONTH_OPTION, STONES, isPlausibleBirthday, monthOfBirthday, stoneForBirthday, variantForMonth } from "./stones";
++
++/* The specimen card opens the Birthstone Heart Necklace on her month. If our
++   twelve names drifted from the listing's ("June · Light Amethyst", not
++   "June · Alexandrite"), the card would open on no variant, or the wrong one,
++   and Add to bag would carry a stone she did not choose. */
++const necklace = jewellerySnapshot.find((p) => p.handle === BIRTHSTONE_HANDLE)!;
++
++describe("her stone, as the shop sells it", () => {
++  it("finds the necklace and its twelve Month variants in the shop's data", () => {
++    expect(necklace).toBeTruthy();
++    expect(necklace.options?.find((o) => o.name === MONTH_OPTION)?.values).toHaveLength(12);
++  });
++
++  it.each(STONES.map((s) => [s.month, s.variant]))("month %i preselects the listing's own variant, %s", (month, name) => {
++    const variant = variantForMonth(necklace, month);
++    expect(variant?.options[MONTH_OPTION]).toBe(name);
++    // Exactly the snapshot's value for that month, in the listing's order.
++    expect(necklace.options!.find((o) => o.name === MONTH_OPTION)!.values[month - 1]).toBe(name);
++  });
++
++  it("keeps the shop's own name if a stone is renamed", () => {
++    const renamed = {
++      ...necklace,
++      variants: necklace.variants!.map((v) =>
++        v.options[MONTH_OPTION] === "July · Ruby" ? { ...v, options: { [MONTH_OPTION]: "July · Crimson" } } : v,
++      ),
++    };
++    expect(variantForMonth(renamed, 7)?.options[MONTH_OPTION]).toBe("July · Crimson");
++  });
++
++  it("reads the month from the birthday text itself, never through a time zone", () => {
++    expect(monthOfBirthday("1999-07-14")).toBe(7);
++    expect(monthOfBirthday("2001-01-01")).toBe(1);
++    expect(monthOfBirthday("2001-12-31")).toBe(12);
++    expect(monthOfBirthday(null)).toBeNull();
++    expect(monthOfBirthday("14/07/1999")).toBeNull();
++    expect(stoneForBirthday("1999-10-03")?.variant).toBe("October · Rose");
++  });
++
++  it("accepts only real, past birthdays", () => {
++    const today = new Date("2026-11-05T00:00:00Z");
++    expect(isPlausibleBirthday("1999-07-14", today)).toBe(true);
++    expect(isPlausibleBirthday("1999-02-30", today)).toBe(false);
++    expect(isPlausibleBirthday("2027-01-01", today)).toBe(false);
++    expect(isPlausibleBirthday("1850-01-01", today)).toBe(false);
++  });
++
++  it("never names a stone as a real gemstone on its own: each name is the listing's month pairing", () => {
++    for (const s of STONES) expect(s.variant.startsWith(`${s.monthName} · `)).toBe(true);
++  });
++});
+diff --git a/src/lib/portal/stones.ts b/src/lib/portal/stones.ts
+new file mode 100644
+index 0000000..aea3cf6
+--- /dev/null
++++ b/src/lib/portal/stones.ts
+@@ -0,0 +1,93 @@
++import type { JewelPiece, JewelVariant } from "@/data/jewellery";
++
++/*
++  Her stone, as the shop sells it. The Birthstone Heart Necklace's "Month"
++  option names each variant "January · Garnet" … "December · Blue Zircon";
++  `variant` below must equal those names exactly (stones.test reads the
++  snapshot), so the card opens on the variant she can actually buy. The
++  stones are cubic zirconia in each month's colour, so the portal says "in
++  your month's colour" and never calls them garnets or rubies on their own.
++
++  `hue` is sampled from each variant's own photo and drawn only inside
++  flowers and petals, never on buttons or text. `flower` is the traditional
++  birth flower for the month.
++*/
++
++export const BIRTHSTONE_HANDLE = "birthstone-heart-necklace";
++export const MONTH_OPTION = "Month";
++
++export type Stone = {
++  month: number;
++  monthName: string;
++  stone: string;
++  variant: string;
++  hue: string;
++  /** A lighter tint of the hue for inner petals. */
++  tint: string;
++  flower: string;
++};
++
++const row = (month: number, monthName: string, stone: string, hue: string, tint: string, flower: string): Stone => ({
++  month,
++  monthName,
++  stone,
++  variant: `${monthName} · ${stone}`,
++  hue,
++  tint,
++  flower,
++});
++
++export const STONES: readonly Stone[] = [
++  row(1, "January", "Garnet", "#8C1C2C", "#C7707A", "Carnation"),
++  row(2, "February", "Amethyst", "#8A5DB5", "#C4A8DE", "Violet"),
++  row(3, "March", "Aquamarine", "#7DBBD0", "#C3E2EC", "Daffodil"),
++  row(4, "April", "Crystal", "#DCE5EB", "#F6F9FB", "Daisy"),
++  row(5, "May", "Emerald", "#1F8A55", "#8CC9A8", "Lily of the valley"),
++  row(6, "June", "Light Amethyst", "#C9AEDD", "#E9DCF2", "Rose"),
++  row(7, "July", "Ruby", "#C20E3A", "#EC8AA0", "Larkspur"),
++  row(8, "August", "Peridot", "#8DB52A", "#CBE08C", "Gladiolus"),
++  row(9, "September", "Sapphire", "#23509E", "#8EA9DA", "Aster"),
++  row(10, "October", "Rose", "#EE9FBA", "#F9D6E2", "Marigold"),
++  row(11, "November", "Topaz", "#E0950F", "#F3CC83", "Chrysanthemum"),
++  row(12, "December", "Blue Zircon", "#1C9FBC", "#90D3E2", "Narcissus"),
++];
++
++/** 1–12 from a profiles.birthday DATE ("1999-07-14"), or null. Read from the
++    string itself: parsing it as a Date would shift it a day in some zones. */
++export const monthOfBirthday = (birthday: string | null | undefined): number | null => {
++  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthday ?? "");
++  if (!m) return null;
++  const month = Number(m[2]);
++  return month >= 1 && month <= 12 ? month : null;
++};
++
++export const stoneForMonth = (month: number | null | undefined): Stone | null =>
++  month && month >= 1 && month <= 12 ? STONES[month - 1] : null;
++
++export const stoneForBirthday = (birthday: string | null | undefined): Stone | null =>
++  stoneForMonth(monthOfBirthday(birthday));
++
++/**
++ * The live variant for a month. Exact name first; if the shop ever renames a
++ * stone, the variant whose name still starts with the month, so the card shows
++ * the listing's own (new) name rather than ours.
++ */
++export const variantForMonth = (piece: JewelPiece | undefined, month: number): JewelVariant | undefined => {
++  const stone = stoneForMonth(month);
++  if (!piece?.variants || !stone) return undefined;
++  const nameOf = (v: JewelVariant) => v.options[MONTH_OPTION] ?? v.title;
++  return (
++    piece.variants.find((v) => nameOf(v) === stone.variant) ??
++    piece.variants.find((v) => nameOf(v).toLowerCase().startsWith(stone.monthName.toLowerCase()))
++  );
++};
++
++/** A valid birthday a member could have: a real date, not in the future, after 1900. */
++export const isPlausibleBirthday = (value: string, today: Date = new Date()): boolean => {
++  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
++  if (!m) return false;
++  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
++  const at = new Date(Date.UTC(y, mo - 1, d));
++  if (at.getUTCFullYear() !== y || at.getUTCMonth() !== mo - 1 || at.getUTCDate() !== d) return false;
++  return y >= 1900 && at.getTime() <= today.getTime();
++};
+diff --git a/src/lib/routeCode.ts b/src/lib/routeCode.ts
+index a8d2cc0..58d4734 100644
+--- a/src/lib/routeCode.ts
++++ b/src/lib/routeCode.ts
+@@ -29,6 +29,7 @@ export const ROUTE_CODE = [
+   ["/inner-circle", "InnerCircle"],
+   ["/auth", "Auth"],
+   ["/account", "Account"],
++  ["/members/*", "Members"],
+   ["/contact", "ContactUs"],
+   ["/privacy", "PrivacyPolicy"],
+   ["/terms", "TermsOfService"],
+diff --git a/src/lib/shopperPerformance.ts b/src/lib/shopperPerformance.ts
+index a3c4f4d..dd12e06 100644
+--- a/src/lib/shopperPerformance.ts
++++ b/src/lib/shopperPerformance.ts
+@@ -4,7 +4,7 @@ export type PerformanceKind = "timing" | "missing_product" | "unknown_page" | "p
+ export const productionShop = (host: string) => host === "nairaflore.com" || host === "www.nairaflore.com";
+ // Never collect checkout/order tokens, arbitrary query strings or shopper identifiers.
+ export const safePerformancePath = (path: string) => {
+-  if (/^\/(?:admin|auth|account|cart|checkouts|\.lovable|\d{6,})(?:\/|$)/.test(path)) return null;
++  if (/^\/(?:admin|auth|account|members|cart|checkouts|\.lovable|\d{6,})(?:\/|$)/.test(path)) return null;
+   return /^\/[a-zA-Z0-9/_-]{0,299}$/.test(path) ? path : null;
+ };
+ export const campaignLabels = (search: string) => {
+diff --git a/src/pageCode.ts b/src/pageCode.ts
+index f722fc6..1043f47 100644
+--- a/src/pageCode.ts
++++ b/src/pageCode.ts
+@@ -35,11 +35,13 @@ export const Auth = lazyRoute(() => import("./pages/Auth.tsx"));
+ export const Account = lazyRoute(() => import("./pages/Account.tsx"));
+ export const OAuthConsent = lazyRoute(() => import("./pages/OAuthConsent.tsx"));
+ export const AdminReels = lazyRoute(() => import("./pages/admin/Reels.tsx"));
++// The Inner Garden, the members' portal: private, noindexed, never prerendered.
++export const Members = lazyRoute(() => import("./pages/members/MembersRoute.tsx"));
+ 
+ 
+ const PAGES: Record<RouteKey, LazyRoute> = {
+   Index, ProductDetail, MadeForYou, Jewellery, JewelleryCategory, JewelDetailNext,
+-  Journal, JournalArticle, Gifting, GoldenHourEdit, TrackOrder, InnerCircle, Auth, Account,
++  Journal, JournalArticle, Gifting, GoldenHourEdit, TrackOrder, InnerCircle, Auth, Account, Members,
+   ContactUs, PrivacyPolicy, TermsOfService, ExchangeReturnPolicy, FAQs,
+ };
+ 
+diff --git a/src/pages/Account.tsx b/src/pages/Account.tsx
+index e532f6c..3a97765 100644
+--- a/src/pages/Account.tsx
++++ b/src/pages/Account.tsx
+@@ -16,7 +16,6 @@ import Footer from "@/components/Footer";
+ import { supabase } from "@/integrations/supabase/client";
+ import { useAuth } from "@/contexts/AuthContext";
+ import { useWishlist } from "@/contexts/WishlistContext";
+-import JoinInnerCircleForm from "@/components/members/JoinInnerCircleForm";
+ 
+ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
+ const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
+@@ -262,24 +261,18 @@ const Account = () => {
+             </Link>
+           </Panel>
+ 
+-          {/* Pre-launch portal */}
+-          <Panel
+-            title="The private preview room"
+-            eyebrow="MEMBERS ONLY"
+-            icon={<Sparkles size={18} strokeWidth={1.4} />}
+-            soon
+-          >
++          {/* The members' portal (/members), in place of the old preview-room shell */}
++          <Panel title="Your garden" eyebrow="THE INNER GARDEN" icon={<Sparkles size={18} strokeWidth={1.4} />}>
+             <p className="text-[0.98rem] italic leading-[1.65] text-[#1A1614]/65" style={editorial}>
+-              The next collection is being finished by hand. Members see it, and can reserve from it,
+-              a full week before anyone else.
++              A garden of your own, grown from the day you joined, and your stone in your month's colour.
+             </p>
+-            <div className="mt-5">
+-              <JoinInnerCircleForm
+-                source="account-prelaunch"
+-                withName={false}
+-                cta="Reserve my early access"
+-              />
+-            </div>
++            <Link
++              to="/members"
++              className="mt-4 inline-block border-b border-[#B0843A] pb-1 text-[10px] tracking-[0.3em] text-[#8A6A2F]"
++              style={jost}
++            >
++              YOUR GARDEN →
++            </Link>
+           </Panel>
+ 
+           {/* Jewel box */}
+diff --git a/src/pages/Auth.tsx b/src/pages/Auth.tsx
+index f9c8eb5..a5995aa 100644
+--- a/src/pages/Auth.tsx
++++ b/src/pages/Auth.tsx
+@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
+ import { trackPixel } from "@/lib/pixel";
+ import { joinInnerCircle } from "@/lib/innerCircle";
+ import { safeNextPath } from "@/lib/nextPath";
++import { googleBlockedNote, inAppBrowser } from "@/lib/portal/inAppBrowser";
+ 
+ const velista = { fontFamily: "var(--font-cormorant), 'Velista', Georgia, serif" } as const;
+ const editorial = { fontFamily: "'Cormorant Garamond', Georgia, serif" } as const;
+@@ -36,6 +37,8 @@ const Auth = () => {
+   const [busy, setBusy] = useState(false);
+   const [error, setError] = useState<string | null>(null);
+   const [notice, setNotice] = useState<string | null>(null);
++  // Google refuses its sign-in inside Instagram's and Facebook's own browsers.
++  const [webview] = useState(() => (typeof navigator === "undefined" ? null : inAppBrowser(navigator.userAgent)));
+ 
+   useEffect(() => {
+     if (!loading && session) navigate(nextPath, { replace: true });
+@@ -215,21 +218,29 @@ const Auth = () => {
+             </button>
+           </form>
+ 
+-          <div className="my-6 flex w-full items-center gap-3">
+-            <span className="h-px flex-1 bg-[#1A1614]/10" />
+-            <span className="text-[10px] tracking-[0.3em] text-[#1A1614]/40" style={jost}>
+-              OR
+-            </span>
+-            <span className="h-px flex-1 bg-[#1A1614]/10" />
+-          </div>
++          {webview ? (
++            <p className="mt-6 w-full border border-[#1A1614]/20 px-6 py-4 text-[11px] leading-[1.6] text-[#1A1614]/60" style={jost}>
++              {googleBlockedNote(webview)}
++            </p>
++          ) : (
++            <>
++              <div className="my-6 flex w-full items-center gap-3">
++                <span className="h-px flex-1 bg-[#1A1614]/10" />
++                <span className="text-[10px] tracking-[0.3em] text-[#1A1614]/40" style={jost}>
++                  OR
++                </span>
++                <span className="h-px flex-1 bg-[#1A1614]/10" />
++              </div>
+ 
+-          <button
+-            onClick={google}
+-            className="w-full border border-[#1A1614]/20 px-6 py-4 text-[11px] uppercase tracking-[0.28em] text-[#1A1614] transition-colors hover:bg-[#1A1614]/[0.04]"
+-            style={jost}
+-          >
+-            Continue with Google
+-          </button>
++              <button
++                onClick={google}
++                className="w-full border border-[#1A1614]/20 px-6 py-4 text-[11px] uppercase tracking-[0.28em] text-[#1A1614] transition-colors hover:bg-[#1A1614]/[0.04]"
++                style={jost}
++              >
++                Continue with Google
++              </button>
++            </>
++          )}
+ 
+           <button
+             onClick={() => {
+diff --git a/src/pages/InnerCircle.tsx b/src/pages/InnerCircle.tsx
+index 141e7f1..5d317e9 100644
+--- a/src/pages/InnerCircle.tsx
++++ b/src/pages/InnerCircle.tsx
+@@ -52,6 +52,13 @@ const InnerCircle = () => (
+           >
+             REGISTER NOW / SIGN IN →
+           </Link>
++          <Link
++            to="/members"
++            className="inline-flex min-h-[44px] items-center text-center text-[10px] tracking-[0.3em] text-[#8A6A2F]"
++            style={jost}
++          >
++            MEMBERS: ENTER THE GARDEN →
++          </Link>
+           <a
+             href={WHATSAPP}
+             target="_blank"
+diff --git a/src/pages/members/GardenHome.tsx b/src/pages/members/GardenHome.tsx
+new file mode 100644
+index 0000000..e7076e6
+--- /dev/null
++++ b/src/pages/members/GardenHome.tsx
+@@ -0,0 +1,120 @@
++import { useCallback, useEffect, useRef, useState } from "react";
++import { Link } from "react-router-dom";
++import PortalShell from "@/components/portal/PortalShell";
++import GardenBed, { type GardenBedHandle } from "@/components/portal/GardenBed";
++import DoorsOpen, { type DoorsMode } from "@/components/portal/DoorsOpen";
++import { StoneHead } from "@/components/portal/StoneArt";
++import { useMember } from "@/components/portal/MemberContext";
++import { eyebrow } from "@/components/portal/styles";
++import { formatIstDate, greetingFor } from "@/lib/portal/ist";
++import { stoneForBirthday } from "@/lib/portal/stones";
++import { pickDoors, recordFullDoors } from "@/lib/portal/doors";
++import { EASE_REVEAL, play } from "@/lib/portal/motion";
++
++/*
++  Her garden: the greeting in Indian time, her own seeded bed with the Naira
++  flower planted the day she joined and her stone flower beside it, one honest
++  card for today, and "What's growing", which is also the garden in words for
++  a screen reader (the drawing itself is decorative).
++*/
++
++const GardenHome = () => {
++  const member = useMember();
++  const { user, profile, firstName, doorsPlayed, markDoorsPlayed } = member;
++  const stone = stoneForBirthday(profile?.birthday);
++  const plantedOn = formatIstDate(user.created_at);
++  const [greeting] = useState(() => greetingFor(new Date()));
++  const [doors, setDoors] = useState<DoorsMode | null>(() => pickDoors(doorsPlayed));
++  const bedRef = useRef<GardenBedHandle>(null);
++  const headRef = useRef<HTMLDivElement>(null);
++  const h1Ref = useRef<HTMLHeadingElement>(null);
++
++  useEffect(() => {
++    markDoorsPlayed();
++    if (doors === "full") recordFullDoors();
++    // Arriving with no entrance to watch (reduced motion, or back from another
++    // room), the heading takes focus at once, as a new page's should.
++    if (!doors) h1Ref.current?.focus({ preventScroll: true });
++    // On arrival only.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []);
++
++  const reveal = useCallback((short: boolean) => {
++    bedRef.current?.bloomIn(short);
++    play(headRef.current, [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], {
++      duration: short ? 300 : 600,
++      delay: short ? 0 : 80,
++      easing: EASE_REVEAL,
++      fill: "backwards",
++    });
++  }, []);
++
++  const done = useCallback(() => {
++    setDoors(null);
++    h1Ref.current?.focus({ preventScroll: true });
++  }, []);
++
++  return (
++    <PortalShell title="Your garden" description="Your garden in the Inner Garden, Naira Flore's members' portal.">
++      {doors && <DoorsOpen mode={doors} name={firstName} greeting={greeting} onReveal={reveal} onDone={done} />}
++      <div className="ig-home">
++        <div ref={headRef} className="ig-head">
++          <p className={eyebrow}>The Inner Garden</p>
++          {/* Her name stays out of session recordings (Clarity masks marked content). */}
++          <h1 ref={h1Ref} tabIndex={-1} className="ig-h1 ig-h1--greet" data-clarity-mask="true">
++            {greeting}, <em>{firstName}</em>
++          </h1>
++          <p className="ig-lede">Grown from your own seed. Tap it, and it blooms.</p>
++        </div>
++
++        <div className="ig-bed-wrap">
++          <GardenBed ref={bedRef} seed={user.id} stone={stone} plantedOn={plantedOn} stoneLabel={stone ? stone.variant : "Waiting"} />
++        </div>
++
++        <section className="ig-section" aria-labelledby="ig-today">
++          <h2 id="ig-today" className="ig-h2">
++            Today in the garden
++          </h2>
++          <Link to="/members/stone" className="ig-card-link">
++            <StoneHead stone={stone} size={56} />
++            <span className="ig-card-text">
++              <span className={eyebrow}>{stone ? `${stone.monthName}'s stone` : "Your stone"}</span>
++              <span className="ig-card-title">{stone ? stone.variant : "Waiting for your birthday"}</span>
++              <span className="ig-card-more">{stone ? "See it in your month's colour" : "Tell us your month"} →</span>
++            </span>
++          </Link>
++        </section>
++
++        <section className="ig-section" aria-labelledby="ig-growing">
++          <h2 id="ig-growing" className="ig-h2">
++            What's growing
++          </h2>
++          <ul className="ig-growing">
++            <li>
++              <strong>The Naira flower</strong>
++              {plantedOn ? `, planted ${plantedOn}, the day you joined.` : ", planted the day you joined."}
++            </li>
++            <li>
++              {stone ? (
++                <>
++                  <strong>Your stone flower</strong>, {stone.variant}, in your month's colour.
++                </>
++              ) : (
++                <>
++                  <strong>A bud for your stone</strong>, waiting for your birthday.
++                </>
++              )}
++            </li>
++            <li>
++              <strong>Grasses, sprigs, buds and blooms</strong> grown from your own seed: the same garden on every visit, and
++              yours alone.
++            </li>
++          </ul>
++          <p className="ig-fineprint">Your garden is for joy. Nothing in it is points, and nothing in it can be redeemed.</p>
++        </section>
++      </div>
++    </PortalShell>
++  );
++};
++
++export default GardenHome;
+diff --git a/src/pages/members/Gate.tsx b/src/pages/members/Gate.tsx
+new file mode 100644
+index 0000000..dcae778
+--- /dev/null
++++ b/src/pages/members/Gate.tsx
+@@ -0,0 +1,85 @@
++import { useRef } from "react";
++import { Link, useLocation } from "react-router-dom";
++import JoinInnerCircleForm from "@/components/members/JoinInnerCircleForm";
++import { WHATSAPP_NUMBER } from "@/data/jewellery";
++import PortalShell from "@/components/portal/PortalShell";
++import GateIronwork from "@/components/portal/GateIronwork";
++import GardenBed from "@/components/portal/GardenBed";
++import FlowerDraw from "@/components/portal/FlowerDraw";
++import { useTapBloom } from "@/components/portal/useTapBloom";
++import { primaryButton, quietButton, eyebrow } from "@/components/portal/styles";
++
++/*
++  The gate, for anyone not signed in, and (closed, with no sign-in prompt)
++  while sign-in is still being read, so a member never sees the signed-out
++  page flash before her garden. Plain promises only: nothing about prices,
++  codes or perks the shop has not made.
++*/
++
++const WHATSAPP = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
++  "Hello Naira Flore, I'd like to know about the Inner Garden, the members' side of the Inner Circle.",
++)}`;
++
++const PROMISES = [
++  "A first look at each new drop",
++  "Your stone and your size, kept for you",
++  "A pressed flower for every drop",
++];
++
++const Gate = ({ loading = false }: { loading?: boolean }) => {
++  const { pathname } = useLocation();
++  const sceneRef = useRef<HTMLDivElement>(null);
++  useTapBloom(sceneRef, !loading);
++  const next = encodeURIComponent(pathname.startsWith("/members") ? pathname : "/members");
++
++  return (
++    <PortalShell
++      title="The Inner Garden"
++      description="The Inner Garden: the members' side of Naira Flore's Inner Circle."
++      nav={false}
++    >
++      <section className="ig-gate-page">
++        <div ref={sceneRef} className="ig-gate-scene">
++          <GardenBed seed="naira-flore-gate" stone={null} still className="ig-bed--behind" />
++          <GateIronwork
++            tone="ivory"
++            label="A closed gold garden gate, the Naira flower at its latch"
++            latch={<FlowerDraw height={64} />}
++          />
++        </div>
++        <p className={eyebrow}>Naira Flore members</p>
++        <h1 className="ig-h1">
++          The Inner <em>Garden</em>
++        </h1>
++        {loading ? (
++          <p className="ig-lede" role="status">
++            Opening the gate…
++          </p>
++        ) : (
++          <>
++            <p className="ig-lede">The members' side of the Inner Circle: a garden of your own, grown from the day you join.</p>
++            <ul className="ig-promises">
++              {PROMISES.map((p) => (
++                <li key={p}>{p}</li>
++              ))}
++            </ul>
++            <Link to={`/auth?next=${next}`} className={primaryButton}>
++              Sign in or join
++            </Link>
++            <p className="ig-or">
++              <span>or keep in touch</span>
++            </p>
++            <div className="ig-join">
++              <JoinInnerCircleForm source="members-gate" withName={false} cta="Join the Inner Circle" />
++            </div>
++            <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className={quietButton}>
++              Ask us on WhatsApp
++            </a>
++          </>
++        )}
++      </section>
++    </PortalShell>
++  );
++};
++
++export default Gate;
+diff --git a/src/pages/members/MembersRoute.test.tsx b/src/pages/members/MembersRoute.test.tsx
+new file mode 100644
+index 0000000..442fff3
+--- /dev/null
++++ b/src/pages/members/MembersRoute.test.tsx
+@@ -0,0 +1,99 @@
++import { cleanup, render, screen } from "@testing-library/react";
++import { MemoryRouter, Route, Routes } from "react-router-dom";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { safePerformancePath } from "@/lib/shopperPerformance";
++
++const auth = vi.hoisted(() => ({
++  state: { user: null as unknown, profile: null as unknown, loading: true, refreshProfile: async () => {}, session: null, signOut: async () => {} },
++}));
++vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => auth.state }));
++vi.mock("@/contexts/CartContext", () => ({ useCart: () => ({ addItem: vi.fn(), setDrawerOpen: vi.fn() }) }));
++vi.mock("@/components/PageSEO", () => ({ default: () => null }));
++vi.mock("@/components/Footer", () => ({ default: () => <footer /> }));
++vi.mock("@/components/members/JoinInnerCircleForm", () => ({ default: () => <form aria-label="Join the Inner Circle" /> }));
++vi.mock("@/hooks/useLiveJewellery", () => ({ useLiveJewellery: () => ({ jewellery: [], isLive: false, isLoading: true }) }));
++vi.mock("@/integrations/supabase/lazy", () => ({ getSupabase: vi.fn() }));
++
++import MembersRoute from "./MembersRoute";
++
++const visit = (path: string) =>
++  render(
++    <MemoryRouter initialEntries={[path]}>
++      <Routes>
++        <Route path="/members/*" element={<MembersRoute />} />
++      </Routes>
++    </MemoryRouter>,
++  );
++
++const member = {
++  id: "3f2c9a1e-0b7d-4c55-9a51-7e7e2d1c0a11",
++  email: "ananya.r@example.com",
++  created_at: "2026-11-04T05:00:00Z",
++  user_metadata: {},
++};
++
++beforeEach(() => {
++  auth.state = { ...auth.state, user: null, profile: null, loading: true };
++  window.localStorage.clear();
++});
++afterEach(cleanup);
++
++describe("/members", () => {
++  /* While Supabase is still reading the session, a member must not see the
++     signed-out page (and its sign-in prompt) flash before her garden. */
++  it("keeps the gate closed while sign-in is being read", () => {
++    visit("/members");
++    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("The Inner Garden");
++    expect(screen.getByRole("status")).toHaveTextContent("Opening the gate");
++    expect(screen.queryByRole("link", { name: /sign in or join/i })).toBeNull();
++    expect(screen.queryByRole("form", { name: /join the inner circle/i })).toBeNull();
++  });
++
++  it("sends a signed-out visitor to sign in, and back to the room she asked for", () => {
++    auth.state = { ...auth.state, loading: false };
++    visit("/members/stone");
++    const link = screen.getByRole("link", { name: /sign in or join/i });
++    const next = new URLSearchParams(link.getAttribute("href")!.split("?")[1]).get("next");
++    expect(link.getAttribute("href")!.startsWith("/auth?")).toBe(true);
++    expect(next).toBe("/members/stone");
++    expect(screen.getByRole("form", { name: /join the inner circle/i })).toBeInTheDocument();
++    expect(screen.getByRole("img", { name: /closed gold garden gate/i })).toBeInTheDocument();
++  });
++
++  it("makes no promise of prices, codes or perks at the gate", () => {
++    auth.state = { ...auth.state, loading: false };
++    const { container } = visit("/members");
++    expect(container.textContent).not.toMatch(/price|discount|% off|code|reward|exclusive/i);
++  });
++
++  it("opens her garden when she is signed in, greeting her by name", () => {
++    auth.state = { ...auth.state, loading: false, user: member, profile: { id: member.id, full_name: "Ananya Rao", birthday: "1999-07-14", phone: null, city: null } };
++    const { container } = visit("/members");
++    expect(screen.getByRole("heading", { level: 1 }).textContent).toMatch(/^Good (morning|afternoon|evening), Ananya$|^Hello, Ananya$/);
++    expect(container.querySelectorAll(".ig-plant").length).toBeGreaterThan(40);
++    expect(container.querySelectorAll(".ig-plant").length).toBeLessThanOrEqual(80);
++    const growing = screen.getByRole("heading", { name: "What's growing" }).nextElementSibling!;
++    expect(growing.textContent).toMatch(/The Naira flower, planted 4 Nov 2026/);
++    expect(growing.textContent).toMatch(/July · Ruby, in your month's colour/);
++    expect(screen.getByRole("navigation", { name: "Your garden" })).toBeInTheDocument();
++  });
++
++  it("falls back to her email for a name", () => {
++    auth.state = { ...auth.state, loading: false, user: member, profile: { id: member.id, full_name: null, birthday: null, phone: null, city: null } };
++    visit("/members");
++    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/, Ananya$/);
++  });
++
++  it("returns an unknown room to the garden", () => {
++    auth.state = { ...auth.state, loading: false, user: member, profile: null };
++    visit("/members/nowhere");
++    expect(screen.getByRole("heading", { name: "What's growing" })).toBeInTheDocument();
++  });
++
++  /* /auth and /account are kept out of shopper telemetry; so is the portal. */
++  it("is left out of the shopper performance telemetry", () => {
++    expect(safePerformancePath("/members")).toBeNull();
++    expect(safePerformancePath("/members/stone")).toBeNull();
++    expect(safePerformancePath("/jewellery")).toBe("/jewellery");
++  });
++});
+diff --git a/src/pages/members/MembersRoute.tsx b/src/pages/members/MembersRoute.tsx
+new file mode 100644
+index 0000000..eefe4a8
+--- /dev/null
++++ b/src/pages/members/MembersRoute.tsx
+@@ -0,0 +1,101 @@
++import { useCallback, useMemo, useState } from "react";
++import { Navigate, Route, Routes } from "react-router-dom";
++import { useAuth } from "@/contexts/AuthContext";
++import { useCart } from "@/contexts/CartContext";
++import { getSupabase } from "@/integrations/supabase/lazy";
++import { MemberProvider, firstNameOf, type BagLine, type Member, type SaveResult } from "@/components/portal/MemberContext";
++import { readPreviewMember, logPreviewWrite } from "@/lib/portal/preview";
++import Gate from "./Gate";
++import GardenHome from "./GardenHome";
++import Stone from "./Stone";
++import "./members.css";
++
++/*
++  /members/* — The Inner Garden. One lazy, noindexed route (Disallowed in
++  robots.txt, kept out of scripts/routes.ts and the sitemap, left out of the
++  shopper telemetry). While sign-in is still being read the gate stays closed,
++  never flashing the signed-out page at a member; signed out, the Gate; signed
++  in, her rooms.
++
++  In development only, ?portalPreview=1 stands in a member (see
++  lib/portal/preview.ts). The check sits behind import.meta.env.DEV, which a
++  production build replaces with false, so the preview is not in the build.
++*/
++
++const MembersRoute = () => {
++  const auth = useAuth();
++  const { addItem, setDrawerOpen } = useCart();
++  const [preview, setPreview] = useState(() => (import.meta.env.DEV ? readPreviewMember(window.location.search) : null));
++  const [doorsPlayed, setDoorsPlayed] = useState(false);
++  const markDoorsPlayed = useCallback(() => setDoorsPlayed(true), []);
++
++  const user = preview?.user ?? auth.user;
++  const profile = preview ? preview.profile : auth.profile;
++  const { refreshProfile } = auth;
++
++  const saveBirthday = useCallback(
++    async (birthday: string): Promise<SaveResult> => {
++      if (!user) return { ok: false, message: "Please sign in again." };
++      if (import.meta.env.DEV && preview) {
++        logPreviewWrite("profiles.birthday", { id: user.id, birthday });
++        setPreview({ ...preview, profile: { ...preview.profile, birthday } });
++        return { ok: true };
++      }
++      try {
++        const supabase = await getSupabase();
++        // Her own row, through the same row security Account's details form uses.
++        const { error } = await supabase.from("profiles").upsert({ id: user.id, birthday } as never);
++        if (error) return { ok: false, message: "We couldn't save your birthday. Please try again." };
++        await refreshProfile();
++        return { ok: true };
++      } catch {
++        return { ok: false, message: "We couldn't reach your account. Please try again." };
++      }
++    },
++    [user, preview, refreshProfile],
++  );
++
++  const addToBag = useCallback(
++    async (line: BagLine) => {
++      if (import.meta.env.DEV && preview) {
++        logPreviewWrite("bag line", line);
++        return;
++      }
++      setDrawerOpen(true);
++      await addItem(line);
++    },
++    [preview, addItem, setDrawerOpen],
++  );
++
++  const member = useMemo<Member | null>(
++    () =>
++      user
++        ? {
++            user,
++            profile,
++            firstName: firstNameOf(profile, user) || "friend",
++            preview: Boolean(preview),
++            saveBirthday,
++            addToBag,
++            doorsPlayed,
++            markDoorsPlayed,
++          }
++        : null,
++    [user, profile, preview, saveBirthday, addToBag, doorsPlayed, markDoorsPlayed],
++  );
++
++  if (!preview && auth.loading) return <Gate loading />;
++  if (!member) return <Gate />;
++
++  return (
++    <MemberProvider value={member}>
++      <Routes>
++        <Route index element={<GardenHome />} />
++        <Route path="stone" element={<Stone />} />
++        <Route path="*" element={<Navigate to="/members" replace />} />
++      </Routes>
++    </MemberProvider>
++  );
++};
++
++export default MembersRoute;
+diff --git a/src/pages/members/Stone.tsx b/src/pages/members/Stone.tsx
+new file mode 100644
+index 0000000..8fb43ad
+--- /dev/null
++++ b/src/pages/members/Stone.tsx
+@@ -0,0 +1,150 @@
++import { useEffect, useRef, useState, type FormEvent } from "react";
++import PortalShell from "@/components/portal/PortalShell";
++import SeedCeremony from "@/components/portal/SeedCeremony";
++import StoneCard, { type ShopStatus } from "@/components/portal/StoneCard";
++import { HeartStone } from "@/components/portal/StoneArt";
++import { useMember } from "@/components/portal/MemberContext";
++import { eyebrow, primaryButton, quietButton } from "@/components/portal/styles";
++import { useLiveJewellery } from "@/hooks/useLiveJewellery";
++import { BIRTHSTONE_HANDLE, STONES, isPlausibleBirthday, stoneForBirthday, stoneForMonth } from "@/lib/portal/stones";
++import { formatIstDate } from "@/lib/portal/ist";
++import { readPortal, writePortal } from "@/lib/portal/safeStorage";
++import { stillMotion } from "@/lib/portal/motion";
++
++/*
++  Your stone. The first visit plays the seed ceremony; a birthday, if her
++  profile has none, is one date field saved to her own profile (the column
++  Account already edits). Her month's specimen card turns over to the live
++  necklace; the other eleven months sit below it, for a gift.
++*/
++
++const todayIso = () => new Date().toISOString().slice(0, 10);
++
++const BirthdayForm = ({ onSave }: { onSave: (birthday: string) => Promise<{ ok: true } | { ok: false; message: string }> }) => {
++  const [value, setValue] = useState("");
++  const [busy, setBusy] = useState(false);
++  const [message, setMessage] = useState<string | null>(null);
++
++  const submit = async (e: FormEvent) => {
++    e.preventDefault();
++    if (!isPlausibleBirthday(value)) {
++      setMessage("Please choose your birthday from the calendar.");
++      return;
++    }
++    setBusy(true);
++    setMessage(null);
++    const result = await onSave(value);
++    setBusy(false);
++    if (result.ok === false) setMessage(result.message);
++  };
++
++  return (
++    <form className="ig-birthday" onSubmit={submit} data-clarity-mask="true">
++      <label htmlFor="ig-birthday" className="ig-h2">
++        When is your birthday?
++      </label>
++      <p className="ig-fineprint">Your flower opens in your month's colour. It is saved to your account, where you can change it.</p>
++      <input
++        id="ig-birthday"
++        type="date"
++        required
++        max={todayIso()}
++        min="1900-01-01"
++        value={value}
++        onChange={(e) => setValue(e.target.value)}
++        className="ig-input"
++        autoComplete="bday"
++      />
++      {message && (
++        <p className="ig-error" role="alert">
++          {message}
++        </p>
++      )}
++      <button type="submit" className={primaryButton} disabled={busy}>
++        {busy ? "Planting…" : "Plant my stone"}
++      </button>
++    </form>
++  );
++};
++
++const Stone = () => {
++  const member = useMember();
++  const { profile, user, preview, saveBirthday, addToBag } = member;
++  const own = stoneForBirthday(profile?.birthday);
++  const [picked, setPicked] = useState<number | null>(null);
++  const shown = stoneForMonth(picked ?? own?.month ?? null);
++  const [ceremony, setCeremony] = useState(() => !readPortal().seedSeen && !stillMotion());
++  const h1Ref = useRef<HTMLHeadingElement>(null);
++  const { jewellery, isLive, isLoading } = useLiveJewellery();
++  const piece = isLive ? jewellery.find((p) => p.handle === BIRTHSTONE_HANDLE) : undefined;
++  const status: ShopStatus = piece ? "ready" : isLive ? "missing" : isLoading ? "loading" : "offline";
++
++  useEffect(() => {
++    h1Ref.current?.focus({ preventScroll: true });
++  }, []);
++
++  const endCeremony = () => {
++    writePortal({ seedSeen: true });
++    setCeremony(false);
++  };
++
++  return (
++    <PortalShell title="Your stone" description="Your birthstone in the Inner Garden, Naira Flore's members' portal.">
++      <div className="ig-stone-page">
++        <div className="ig-head">
++          <p className={eyebrow}>The Inner Garden</p>
++          <h1 ref={h1Ref} tabIndex={-1} className="ig-h1">
++            Your <em>stone</em>
++          </h1>
++          <p className="ig-lede">
++            {own ? `${own.variant}: the heart in your month's colour.` : "Tell us your birthday, and your flower opens in your month's colour."}
++          </p>
++        </div>
++
++        <SeedCeremony stone={own} playing={ceremony} onDone={endCeremony} />
++        <p className="ig-seed-caption">
++          A seed for you{formatIstDate(user.created_at) ? `, planted ${formatIstDate(user.created_at)}` : ""}.{" "}
++          {own ? `Your stone opens: ${own.variant}.` : "Your stone's bud waits for your birthday."}
++        </p>
++
++        {!own && <BirthdayForm onSave={saveBirthday} />}
++
++        {shown && (
++          <section className="ig-section" aria-label={`${shown.variant}, specimen card`}>
++            <StoneCard stone={shown} piece={piece} status={status} own={shown.month === own?.month} preview={preview} onAdd={addToBag} />
++          </section>
++        )}
++
++        <section className="ig-section" aria-labelledby="ig-months">
++          <h2 id="ig-months" className="ig-h2">
++            Every month's colour
++          </h2>
++          <p className="ig-fineprint">For a gift, or a second birthday.</p>
++          <ul className="ig-months">
++            {STONES.map((s) => (
++              <li key={s.month}>
++                <button
++                  type="button"
++                  className="ig-month"
++                  aria-pressed={shown?.month === s.month}
++                  onClick={() => setPicked(s.month)}
++                >
++                  <HeartStone stone={s} size={22} />
++                  <span>{s.monthName.slice(0, 3)}</span>
++                  {own?.month === s.month && <span className="ig-month-own">Yours</span>}
++                </button>
++              </li>
++            ))}
++          </ul>
++          {picked && own && picked !== own.month && (
++            <button type="button" className={quietButton} onClick={() => setPicked(null)}>
++              Back to {own.monthName}
++            </button>
++          )}
++        </section>
++      </div>
++    </PortalShell>
++  );
++};
++
++export default Stone;
+diff --git a/src/pages/members/members.css b/src/pages/members/members.css
+new file mode 100644
+index 0000000..7eae9dc
+--- /dev/null
++++ b/src/pages/members/members.css
+@@ -0,0 +1,570 @@
++/*
++  The Inner Garden. Imported only by MembersRoute, so Vite ships this as the
++  route's own stylesheet: nothing here reaches the product page, the bag or
++  the global CSS. Colours come from the brand tokens; the vellum pane and the
++  flower colours are portal-local. Radius 0 throughout. Motion moves only
++  transform, opacity and stroke-dashoffset.
++*/
++
++.ig-root {
++  --ig-vellum: rgb(255 248 245 / 0.86);
++  --ig-line: rgb(var(--nf-ink-rgb) / 0.1);
++  --ig-gold-line: rgb(var(--nf-gold-rgb) / 0.55);
++  background: var(--nf-surface);
++  color: var(--nf-text);
++}
++.ig-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
++.ig-main { min-height: 100svh; }
++
++/* ── type ───────────────────────────────────────────── */
++.ig-eyebrow {
++  margin: 0;
++  font-family: var(--nf-font-label);
++  font-size: 10px;
++  letter-spacing: var(--nf-track-28);
++  text-transform: uppercase;
++  color: var(--nf-gold-text);
++}
++.ig-h1 {
++  margin: 0.45rem 0 0;
++  font-family: var(--nf-font-editorial);
++  font-weight: 400;
++  font-size: clamp(2.3rem, 10vw, 3.3rem);
++  line-height: 1.04;
++}
++.ig-h1 em { font-style: italic; color: var(--nf-gold-text); }
++.ig-h1:focus { outline: none; }
++.ig-lede {
++  max-width: 30rem;
++  margin: 0.75rem auto 0;
++  font-family: var(--nf-font-editorial);
++  font-style: italic;
++  font-size: 1.1rem;
++  line-height: 1.55;
++  color: rgb(var(--nf-ink-rgb) / 0.72);
++}
++.ig-h2 {
++  display: block;
++  margin: 0;
++  font-family: var(--nf-font-editorial);
++  font-weight: 500;
++  font-size: 1.5rem;
++  line-height: 1.2;
++}
++.ig-fineprint {
++  margin: 0.4rem 0 0;
++  font-family: var(--nf-font-label);
++  font-size: 12px;
++  line-height: 1.6;
++  color: rgb(var(--nf-ink-rgb) / 0.64);
++}
++.ig-error { margin: 0; font-family: var(--nf-font-label); font-size: 12px; color: #a44a34; }
++
++/* ── buttons ────────────────────────────────────────── */
++.ig-btn {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: 0.5rem;
++  width: 100%;
++  max-width: 360px;
++  height: 50px;
++  padding: 0 1rem;
++  border: 1px solid var(--nf-ink);
++  background: var(--nf-ink);
++  color: var(--nf-ivory);
++  font-family: var(--nf-font-label);
++  font-size: 11.5px;
++  font-weight: 500;
++  letter-spacing: var(--nf-track-16);
++  text-transform: uppercase;
++  text-decoration: none;
++  cursor: pointer;
++  transition: background-color 0.2s ease, transform 0.25s var(--nf-ease-reveal);
++}
++.ig-btn:hover { background: rgb(var(--nf-ink-rgb) / 0.88); }
++.ig-btn:active { transform: scale(0.98); }
++.ig-btn:disabled { opacity: 0.6; pointer-events: none; }
++.ig-btn--outline { background: transparent; color: var(--nf-ink); }
++.ig-link,
++.ig-quiet {
++  display: inline-flex;
++  align-items: center;
++  min-height: 44px;
++  padding: 0 0.25rem;
++  border: 0;
++  background: none;
++  font-family: var(--nf-font-label);
++  font-size: 11px;
++  letter-spacing: var(--nf-track-16);
++  text-transform: uppercase;
++  color: var(--nf-ink);
++  text-decoration: underline;
++  text-decoration-color: var(--nf-accent);
++  text-underline-offset: 6px;
++  cursor: pointer;
++}
++.ig-quiet { font-size: 10.5px; color: rgb(var(--nf-ink-rgb) / 0.72); }
++
++/* ── page columns ───────────────────────────────────── */
++.ig-gate-page,
++.ig-home,
++.ig-stone-page {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  max-width: 592px;
++  margin: 0 auto;
++  padding: 1.25rem 16px 3.5rem;
++  text-align: center;
++}
++.ig-head { width: 100%; }
++.ig-section { width: 100%; margin-top: 2.75rem; text-align: left; }
++.ig-section > .ig-h2 { padding-bottom: 0.6rem; margin-bottom: 1rem; border-bottom: 1px solid var(--ig-gold-line); }
++
++/* ── the gate ───────────────────────────────────────── */
++.ig-gate { position: relative; display: flex; aspect-ratio: 1; }
++.ig-leaf { position: relative; width: 50%; height: 100%; }
++.ig-leaf--left { transform-origin: 0 50%; }
++.ig-leaf--right { transform-origin: 100% 50%; }
++.ig-leaf-art { display: block; width: 100%; height: 100%; overflow: visible; }
++.ig-leaf--right .ig-leaf-art { transform: scaleX(-1); }
++.ig-iron,
++.ig-iron-under { fill: none; stroke-linecap: round; stroke-linejoin: round; }
++.ig-iron { stroke: var(--nf-accent-strong); }
++.ig-iron .b { stroke-width: 2.2; }
++.ig-iron .f { stroke-width: 1.15; }
++.ig-iron .bud { fill: var(--nf-blush); stroke-width: 0.8; }
++.ig-iron-under { display: none; stroke: var(--nf-ivory); stroke-opacity: 0.6; }
++.ig-gate--sage .ig-iron-under { display: inline; }
++.ig-gate--sage .ig-iron-under .b { stroke-width: 4.8; }
++.ig-gate--sage .ig-iron-under .f { stroke-width: 3.2; }
++.ig-gate--sage .ig-iron-under .bud { fill: none; stroke-width: 3; }
++.ig-latch {
++  position: absolute;
++  left: 50%;
++  top: 54.45%;
++  width: 11.6%;
++  transform: translate(-50%, -50%);
++}
++.ig-latch .ig-flower,
++.ig-doors-latch { display: block; width: 100%; height: auto; }
++.ig-flower { overflow: visible; }
++
++.ig-gate-scene {
++  position: relative;
++  width: 100%;
++  max-width: 420px;
++  aspect-ratio: 390 / 372;
++  margin: 0 auto 1.5rem;
++  overflow: hidden;
++  touch-action: manipulation;
++  -webkit-tap-highlight-color: transparent;
++  user-select: none;
++}
++.ig-gate-scene .ig-gate {
++  position: absolute;
++  left: 50%;
++  bottom: 3%;
++  width: min(82%, 340px);
++  transform: translateX(-50%);
++}
++.ig-gate-scene .ig-bed { position: absolute; left: 0; right: 0; bottom: 0; }
++.ig-bed--behind { opacity: 0.42; }
++.ig-promises {
++  display: grid;
++  gap: 0.6rem;
++  margin: 1.5rem 0 1.75rem;
++  padding: 0;
++  list-style: none;
++}
++.ig-promises li,
++.ig-growing li {
++  position: relative;
++  font-family: var(--nf-font-editorial);
++  font-size: 1.12rem;
++  line-height: 1.5;
++}
++.ig-promises li { display: flex; align-items: center; justify-content: center; gap: 0.7rem; }
++.ig-promises li::before {
++  content: "";
++  flex: none;
++  width: 7px;
++  height: 7px;
++  background: var(--nf-blush);
++  box-shadow: 0 0 0 1px var(--ig-gold-line);
++  transform: rotate(45deg);
++}
++.ig-growing li::before {
++  content: "";
++  position: absolute;
++  left: 0.15rem;
++  top: 0.62em;
++  width: 7px;
++  height: 7px;
++  background: var(--nf-blush);
++  box-shadow: 0 0 0 1px var(--ig-gold-line);
++  transform: rotate(45deg);
++}
++.ig-or {
++  display: flex;
++  align-items: center;
++  gap: 0.75rem;
++  width: 100%;
++  max-width: 360px;
++  margin: 1.9rem 0 0.6rem;
++  font-family: var(--nf-font-label);
++  font-size: 10px;
++  letter-spacing: var(--nf-track-28);
++  text-transform: uppercase;
++  color: rgb(var(--nf-ink-rgb) / 0.55);
++}
++.ig-or::before,
++.ig-or::after { content: ""; flex: 1; height: 1px; background: var(--ig-line); }
++.ig-join { display: flex; justify-content: center; width: 100%; max-width: 360px; margin-bottom: 0.5rem; }
++
++/* ── the doors ──────────────────────────────────────── */
++.ig-doors {
++  position: fixed;
++  inset: 0;
++  z-index: 40;
++  overflow: hidden;
++  cursor: pointer;
++  -webkit-tap-highlight-color: transparent;
++}
++.ig-curtain { position: absolute; inset: 0; background: var(--nf-sage); will-change: transform; }
++.ig-tassel { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); }
++.ig-doors-stage {
++  position: absolute;
++  inset: 0;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: 1.1rem;
++  padding: 96px 16px 0;
++}
++.ig-doors .ig-gate { width: min(84vw, 380px); perspective: 900px; }
++.ig-doors .ig-leaf { will-change: transform, opacity; }
++.ig-doors-words { text-align: center; }
++.ig-doors-greet {
++  margin: 0;
++  font-family: var(--nf-font-editorial);
++  font-size: clamp(1.8rem, 7.5vw, 2.6rem);
++  line-height: 1.1;
++  color: #fff8f5;
++}
++.ig-doors-greet em { font-style: italic; }
++.ig-doors-hint {
++  margin: 0.6rem 0 0;
++  font-family: var(--nf-font-label);
++  font-size: 10px;
++  letter-spacing: var(--nf-track-28);
++  text-transform: uppercase;
++  color: rgb(255 248 245 / 0.78);
++}
++.ig-petal { position: absolute; pointer-events: none; will-change: transform, opacity; }
++
++/* ── the garden bed ─────────────────────────────────── */
++.ig-bed-wrap { position: relative; width: 100%; margin-top: 0.75rem; }
++.ig-bed-wrap::before {
++  content: "";
++  position: absolute;
++  inset: 6% 0 4%;
++  background: url("../../assets/background_image_flora.webp") center / 520px auto repeat;
++  opacity: 0.07;
++  pointer-events: none;
++}
++.ig-bed {
++  position: relative;
++  width: 100%;
++  aspect-ratio: 390 / 560;
++  overflow: hidden;
++  touch-action: manipulation;
++  -webkit-tap-highlight-color: transparent;
++  user-select: none;
++}
++.ig-bed-ground { position: absolute; inset: 0; width: 100%; height: 100%; }
++.ig-soil,
++.ig-seed-soil { fill: none; stroke: var(--nf-accent); stroke-width: 1; }
++.ig-arbour-line { fill: none; stroke: var(--nf-accent); stroke-width: 1.2; opacity: 0.85; }
++.ig-arbour-line--fine { stroke-width: 0.7; opacity: 0.55; }
++.ig-arbour-tick { stroke: var(--nf-accent); stroke-width: 0.8; opacity: 0.6; }
++.ig-plant { position: absolute; transform-origin: 50% 100%; }
++.ig-sway,
++.ig-still { width: 100%; height: 100%; transform-origin: 50% 100%; }
++.ig-sway { will-change: transform; }
++.ig-plant svg,
++.ig-seed-naira svg,
++.ig-seed-stone svg,
++.ig-seed-drop svg { display: block; width: 100%; height: 100%; overflow: visible; }
++.ig-bed-label {
++  position: absolute;
++  top: 93.4%;
++  margin: 0;
++  padding-top: 5px;
++  transform: translateX(-50%);
++  font-family: var(--nf-font-editorial);
++  font-style: italic;
++  font-size: 13px;
++  line-height: 1.2;
++  white-space: nowrap;
++  text-align: center;
++}
++.ig-bed-label span {
++  display: block;
++  font-family: var(--nf-font-label);
++  font-style: normal;
++  font-size: 8.5px;
++  letter-spacing: var(--nf-track-24);
++  text-transform: uppercase;
++  color: var(--nf-gold-text);
++}
++.ig-bloom { position: absolute; pointer-events: none; will-change: transform, opacity; }
++.ig-bloom svg { display: block; overflow: visible; }
++.ig-glint { transform-box: fill-box; transform-origin: center; }
++
++/* ── today and what's growing ───────────────────────── */
++.ig-card-link {
++  display: flex;
++  align-items: center;
++  gap: 1rem;
++  padding: 1rem 1.1rem;
++  border: 1px solid var(--ig-gold-line);
++  background: var(--ig-vellum);
++  color: inherit;
++  text-decoration: none;
++  transition: border-color 0.25s ease;
++}
++.ig-card-link:hover { border-color: var(--nf-accent-strong); }
++.ig-card-text { display: flex; flex-direction: column; gap: 0.2rem; }
++.ig-card-title { margin: 0; font-family: var(--nf-font-editorial); font-size: 1.4rem; line-height: 1.2; }
++.ig-card-more {
++  margin-top: 0.2rem;
++  font-family: var(--nf-font-label);
++  font-size: 10.5px;
++  letter-spacing: var(--nf-track-16);
++  text-transform: uppercase;
++  color: var(--nf-gold-text);
++}
++.ig-growing { margin: 0; padding: 0; list-style: none; }
++.ig-growing li { padding: 0.6rem 0 0.6rem 1.4rem; border-bottom: 1px solid var(--ig-line); }
++.ig-growing li::before { top: 1.25rem; }
++.ig-growing strong { font-weight: 500; }
++
++/* ── the garden path ────────────────────────────────── */
++.ig-nav {
++  position: sticky;
++  bottom: 0;
++  z-index: 39;
++  padding-bottom: env(safe-area-inset-bottom);
++  border-top: 1px solid var(--ig-gold-line);
++  background: rgb(var(--nf-ivory-rgb) / 0.96);
++}
++.ig-nav ul { display: flex; max-width: 560px; margin: 0 auto; padding: 0; list-style: none; }
++.ig-nav li { flex: 1; }
++.ig-nav-link {
++  position: relative;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: 3px;
++  min-height: 58px;
++  font-family: var(--nf-font-label);
++  font-size: 9.5px;
++  letter-spacing: var(--nf-track-20);
++  text-transform: uppercase;
++  color: rgb(var(--nf-ink-rgb) / 0.62);
++  text-decoration: none;
++}
++.ig-nav-link.is-here { color: var(--nf-ink); }
++.ig-nav-link.is-here::after {
++  content: "";
++  position: absolute;
++  top: -1px;
++  left: 32%;
++  right: 32%;
++  height: 2px;
++  background: var(--nf-accent-strong);
++}
++.ig-nav-petal { fill: none; stroke: currentColor; stroke-width: 1.1; }
++.ig-nav-line { fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; }
++.ig-nav-core { fill: var(--nf-accent); }
++.is-here .ig-nav-petal { fill: var(--nf-blush); stroke: var(--nf-accent-strong); }
++
++/* ── your stone ─────────────────────────────────────── */
++.ig-seed { position: relative; width: 100%; max-width: 420px; aspect-ratio: 390 / 300; margin: 1rem auto 0; }
++.ig-seed-ground { position: absolute; inset: 0; width: 100%; height: 100%; }
++.ig-seed-naira,
++.ig-seed-stone { position: absolute; transform-origin: 50% 100%; }
++.ig-seed-drop { position: absolute; width: 3.1%; aspect-ratio: 12 / 17; }
++.ig-skip {
++  position: absolute;
++  top: 0;
++  right: 0;
++  min-height: 44px;
++  padding: 0 0.9rem;
++  border: 1px solid var(--ig-gold-line);
++  background: rgb(var(--nf-ivory-rgb) / 0.92);
++  font-family: var(--nf-font-label);
++  font-size: 10.5px;
++  letter-spacing: var(--nf-track-20);
++  text-transform: uppercase;
++  color: var(--nf-ink);
++  cursor: pointer;
++}
++.ig-seed-caption {
++  margin: 0.25rem 0 0;
++  font-family: var(--nf-font-editorial);
++  font-style: italic;
++  font-size: 1.04rem;
++  line-height: 1.5;
++  color: rgb(var(--nf-ink-rgb) / 0.74);
++}
++.ig-birthday {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  gap: 0.75rem;
++  width: 100%;
++  max-width: 360px;
++  margin: 2rem auto 0;
++  padding: 1.5rem 1.25rem;
++  border: 1px solid var(--ig-gold-line);
++  background: var(--ig-vellum);
++}
++.ig-input {
++  width: 100%;
++  height: 50px;
++  padding: 0 0.75rem;
++  border: 0;
++  border-bottom: 1px solid rgb(var(--nf-ink-rgb) / 0.3);
++  background: transparent;
++  font-family: var(--nf-font-label);
++  font-size: 16px;
++  color: var(--nf-ink);
++  text-align: center;
++}
++.ig-input:focus { border-bottom-color: var(--nf-accent-strong); }
++
++.ig-card3d { width: min(100%, 340px); margin: 0 auto; perspective: 1400px; }
++.ig-card-inner {
++  display: grid;
++  transform-style: preserve-3d;
++  transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1);
++}
++.is-flipped .ig-card-inner { transform: rotateY(180deg); }
++.ig-face {
++  position: relative;
++  grid-area: 1 / 1;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  gap: 0.7rem;
++  width: 100%;
++  padding: 1.75rem 1.4rem 1.4rem;
++  border: 1px solid var(--ig-gold-line);
++  outline: 1px solid rgb(var(--nf-gold-rgb) / 0.3);
++  outline-offset: -9px;
++  background: var(--ig-vellum);
++  box-shadow: 0 22px 44px -30px rgb(122 90 40 / 0.55);
++  color: inherit;
++  font: inherit;
++  text-align: center;
++  -webkit-backface-visibility: hidden;
++  backface-visibility: hidden;
++}
++.ig-face--front { justify-content: center; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-tap-highlight-color: transparent; }
++.ig-face--back { transform: rotateY(180deg); }
++.ig-corner { position: absolute; width: 78px; height: 78px; pointer-events: none; }
++.ig-corner--tl { top: -4px; left: -4px; transform: scaleX(-1); }
++.ig-corner--br { right: -4px; bottom: -4px; transform: scaleY(-1); }
++.ig-specimen-no {
++  font-family: var(--nf-font-label);
++  font-size: 10px;
++  letter-spacing: var(--nf-track-28);
++  text-transform: uppercase;
++  color: var(--nf-gold-text);
++}
++.ig-specimen-label { display: block; width: 100%; border-top: 1px solid var(--ig-gold-line); }
++.ig-specimen-row {
++  display: flex;
++  align-items: baseline;
++  justify-content: space-between;
++  gap: 1rem;
++  padding: 0.5rem 0.2rem;
++  border-bottom: 1px solid var(--ig-line);
++}
++.ig-specimen-row span:first-child {
++  font-family: var(--nf-font-label);
++  font-size: 9.5px;
++  letter-spacing: var(--nf-track-20);
++  text-transform: uppercase;
++  color: rgb(var(--nf-ink-rgb) / 0.58);
++}
++.ig-specimen-row span:last-child { font-family: var(--nf-font-editorial); font-size: 1.14rem; text-align: right; }
++.ig-specimen-note { font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.02rem; color: rgb(var(--nf-ink-rgb) / 0.72); }
++.ig-turn {
++  font-family: var(--nf-font-label);
++  font-size: 10px;
++  letter-spacing: var(--nf-track-20);
++  text-transform: uppercase;
++  color: var(--nf-gold-text);
++}
++.ig-back-photo { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--nf-surface-raised); }
++.ig-back-wait { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; width: 100%; }
++.ig-price { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0.6rem; margin: 0; font-family: var(--nf-font-label); font-size: 16px; }
++.ig-price s { font-size: 13px; color: rgb(var(--nf-ink-rgb) / 0.5); }
++.ig-stock { font-size: 10px; letter-spacing: var(--nf-track-20); text-transform: uppercase; color: var(--nf-cta); }
++.ig-stock--out { color: rgb(var(--nf-ink-rgb) / 0.6); }
++.ig-facts {
++  margin: 0;
++  padding: 0;
++  list-style: none;
++  font-family: var(--nf-font-label);
++  font-size: 11.5px;
++  line-height: 1.55;
++  color: rgb(var(--nf-ink-rgb) / 0.66);
++}
++.ig-months { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 1rem 0 0; padding: 0; list-style: none; }
++.ig-month {
++  position: relative;
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  justify-content: center;
++  gap: 4px;
++  width: 100%;
++  min-height: 64px;
++  border: 1px solid var(--ig-line);
++  background: transparent;
++  font-family: var(--nf-font-label);
++  font-size: 10px;
++  letter-spacing: var(--nf-track-16);
++  text-transform: uppercase;
++  color: rgb(var(--nf-ink-rgb) / 0.75);
++  cursor: pointer;
++}
++.ig-month[aria-pressed="true"] { border-color: var(--nf-accent-strong); background: var(--ig-vellum); color: var(--nf-ink); }
++.ig-month-own {
++  position: absolute;
++  top: 3px;
++  right: 4px;
++  font-size: 7.5px;
++  letter-spacing: var(--nf-track-10);
++  color: var(--nf-gold-text);
++}
++
++@media (min-width: 768px) {
++  .ig-months { grid-template-columns: repeat(6, 1fr); }
++  .ig-gate-page,
++  .ig-home,
++  .ig-stone-page { padding-top: 2rem; }
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .ig-card-inner,
++  .ig-btn,
++  .ig-card-link { transition: none; }
++}
+diff --git a/src/test/robots.test.ts b/src/test/robots.test.ts
+index ccb66e7..ee81629 100644
+--- a/src/test/robots.test.ts
++++ b/src/test/robots.test.ts
+@@ -47,6 +47,7 @@ const PRIVATE = [
+   "/checkouts/cn/abc123",
+   "/.lovable/oauth/consent",
+   "/admin/reels",
++  "/members/drops/x",
+ ];
+ const PUBLIC = ["/", "/jewellery", "/jewellery/prism-riviere-bracelet", "/products/blush-of-dawn", "/journal"];
+ 
+-- 
+2.43.0
+

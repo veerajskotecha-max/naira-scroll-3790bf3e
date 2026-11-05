@@ -1217,21 +1217,23 @@ index 0000000..bb70ed7
 +export default BloomClock;
 diff --git a/src/components/portal/BloomField.test.tsx b/src/components/portal/BloomField.test.tsx
 new file mode 100644
-index 0000000..e3b7a6e
+index 0000000..d41e3c5
 --- /dev/null
 +++ b/src/components/portal/BloomField.test.tsx
-@@ -0,0 +1,230 @@
+@@ -0,0 +1,317 @@
 +import { act, cleanup, render } from "@testing-library/react";
-+import { createRef } from "react";
++import { createRef, type MutableRefObject } from "react";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +
 +/* The Bloom Field's component, with its scene stood in: nothing on Tier 1;
-+   on Tier 2 a canvas laid over the screen once the room has painted, put
-+   away (the scene disposed, the canvas gone) when the fall ends, when it is
-+   skipped, when the room is left, or when the probe finds the phone slow. */
++   on Tier 2 a canvas laid over the screen once the room has painted,
++   prepared and held unseen until the opening begins (go), and never mounted
++   or started once the opening has begun without it; put away (the scene
++   disposed, the canvas gone) when the fall ends, when it is skipped, when
++   the room is left, or when the probe finds the phone slow. */
 +
 +const scene = vi.hoisted(() => ({
-+  options: null as null | { colours: string[]; seed: string; probe?: boolean; onEnd: (why: "done" | "slow" | "lost") => void; onStart?: () => void },
++  options: null as null | { colours: string[]; seed: string; probe?: boolean; onEnd: (why: "done" | "slow" | "lost") => void; onStart?: () => void; onReady?: () => void },
 +  handle: { pause: vi.fn(), resume: vi.fn(), dispose: vi.fn() },
 +  throws: false,
 +  delay: 0,
@@ -1261,12 +1263,37 @@ index 0000000..e3b7a6e
 +const show = (stop = false) => {
 +  const anchor = createRef<HTMLDivElement>();
 +  const onGone = vi.fn();
-+  const view = render(
++  const onReady = vi.fn();
++  const go: MutableRefObject<() => void> = { current: () => {} };
++  const now = { stop };
++  const el = () => (
 +    <div ref={anchor}>
-+      <BloomField accent="#2F6B4F" seed="verdant" anchor={anchor} stop={stop} onGone={onGone} />
-+    </div>,
++      <BloomField accent="#2F6B4F" seed="verdant" anchor={anchor} go={go} stop={now.stop} onReady={onReady} onGone={onGone} />
++    </div>
 +  );
-+  return { ...view, onGone, anchor, again: (s: boolean) => view.rerender(<div ref={anchor}><BloomField accent="#2F6B4F" seed="verdant" anchor={anchor} stop={s} onGone={onGone} /></div>) };
++  const view = render(el());
++  return {
++    ...view,
++    onGone,
++    onReady,
++    anchor,
++    again: (s: boolean) => {
++      now.stop = s;
++      view.rerender(el());
++    },
++    /* The opening begins: the unboxing tells the field in the same task. */
++    begin: () => act(() => go.current()),
++  };
++};
++/* The scene says it is prepared (compiled, its unseen frame drawn). */
++const prepared = () => act(() => scene.options!.onReady!());
++/* Mounted, prepared, and the opening begun: the fall may run. */
++const running = async () => {
++  const shown = show();
++  await idle();
++  prepared();
++  shown.begin();
++  return shown;
 +};
 +
 +beforeEach(() => {
@@ -1303,7 +1330,7 @@ index 0000000..e3b7a6e
 +
 +  it("asks for the scene only once the room has painted, then lays a canvas over the screen that takes no tap", async () => {
 +    forceTier(2);
-+    show();
++    const { onReady, begin } = show();
 +    expect(loadBloomScene).not.toHaveBeenCalled();
 +    await idle();
 +    expect(loadBloomScene).toHaveBeenCalledTimes(1);
@@ -1312,14 +1339,21 @@ index 0000000..e3b7a6e
 +    expect(canvas.getAttribute("aria-hidden")).toBe("true");
 +    expect(canvas.parentElement).toBe(document.body);
 +    expect(scene.options).toMatchObject({ colours: ["#2F6B4F", expect.stringMatching(/^#[0-9a-f]{6}$/i)], seed: "verdant", probe: true });
++    // Prepared before the opening, and held: nothing falls until it begins.
++    expect(scene.handle.pause).toHaveBeenCalled();
++    expect(onReady).not.toHaveBeenCalled();
++    prepared();
++    expect(onReady).toHaveBeenCalledTimes(1);
++    expect(scene.handle.resume).not.toHaveBeenCalled();
++    begin();
++    expect(scene.handle.resume).toHaveBeenCalledTimes(1);
 +    act(() => scene.options!.onStart!());
 +    expect(canvas.classList.contains("is-on")).toBe(true);
 +  });
 +
 +  it("fades and puts everything away once the fall is done", async () => {
 +    forceTier(2);
-+    const { onGone } = show();
-+    await idle();
++    const { onGone } = await running();
 +    const canvas = field()!;
 +    act(() => scene.options!.onStart!());
 +    act(() => scene.options!.onEnd("done"));
@@ -1335,10 +1369,13 @@ index 0000000..e3b7a6e
 +  it("goes back to Tier 1 for the visit when the probe finds the phone slow", async () => {
 +    capable();
 +    expect(portalTier()).toBe(2);
-+    show();
-+    await idle();
++    await running();
++    const canvas = field()!;
 +    act(() => scene.options!.onStart!());
 +    act(() => scene.options!.onEnd("slow"));
++    // It fades (its flowers do not vanish mid-air), then goes.
++    expect(canvas.classList.contains("is-on")).toBe(false);
++    expect(scene.handle.dispose).not.toHaveBeenCalled();
 +    await act(async () => void vi.advanceTimersByTime(400));
 +    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
 +    expect(field()).toBeNull();
@@ -1355,10 +1392,19 @@ index 0000000..e3b7a6e
 +    expect(field()).toBeNull();
 +  });
 +
++  it("goes at once when its context is lost: nothing is left to fade", async () => {
++    capable();
++    await running();
++    act(() => scene.options!.onStart!());
++    act(() => scene.options!.onEnd("lost"));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++    expect(portalTier()).toBe(1);
++  });
++
 +  it("goes with the ritual when she skips", async () => {
 +    forceTier(2);
-+    const { again, onGone } = show();
-+    await idle();
++    const { again, onGone } = await running();
 +    act(() => scene.options!.onStart!());
 +    again(true);
 +    await act(async () => void vi.advanceTimersByTime(400));
@@ -1366,21 +1412,61 @@ index 0000000..e3b7a6e
 +    expect(onGone).toHaveBeenCalledTimes(1);
 +  });
 +
-+  it("is never started late: a scene not here 1.8 s after the opening began stays away", async () => {
-+    forceTier(2);
++  it("is never mounted mid-opening: a scene not here when the opening began stays away", async () => {
++    capable();
 +    scene.delay = 2500;
-+    const { onGone } = show();
-+    await act(async () => void vi.advanceTimersByTime(2600));
++    const { onGone, onReady, begin } = show();
++    await act(async () => void vi.advanceTimersByTime(900));
++    begin();
++    await act(async () => void vi.advanceTimersByTime(2000));
 +    expect(mountBloomField).not.toHaveBeenCalled();
 +    expect(field()).toBeNull();
 +    expect(onGone).toHaveBeenCalledTimes(1);
++    // The hold is let go, and the network's lateness is not the phone's: Tier 2 holds.
++    expect(onReady).toHaveBeenCalled();
++    expect(portalTier()).toBe(2);
++  });
++
++  it("never mounts a scene that arrives too late in the wait to be prepared in it", async () => {
++    capable();
++    scene.delay = 600;
++    const { onGone, onReady } = show();
++    await act(async () => void vi.advanceTimersByTime(700));
++    expect(mountBloomField).not.toHaveBeenCalled();
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(onReady).toHaveBeenCalled();
++    expect(portalTier()).toBe(2);
++  });
++
++  it("is never started mid-opening: one not prepared when the opening began is put away, and the phone keeps Tier 1", async () => {
++    capable();
++    const { onGone, begin } = show();
++    await idle();
++    expect(field()).not.toBeNull();
++    begin();
++    expect(scene.handle.resume).not.toHaveBeenCalled();
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(field()).toBeNull();
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(portalTier()).toBe(1);
++  });
++
++  it("is put away when it has not drawn 1.8 s after the opening began (the box off screen then)", async () => {
++    capable();
++    const { onGone } = await running();
++    await act(async () => void vi.advanceTimersByTime(1900));
++    expect(scene.handle.dispose).toHaveBeenCalledTimes(1);
++    expect(onGone).toHaveBeenCalledTimes(1);
++    expect(portalTier()).toBe(2);
 +  });
 +
 +  it("pauses, unseen, on a hidden tab, and goes on when she is back", async () => {
 +    forceTier(2);
-+    show();
-+    await idle();
++    await running();
 +    const canvas = field()!;
++    scene.handle.pause.mockClear();
++    scene.handle.resume.mockClear();
 +    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
 +    act(() => void document.dispatchEvent(new Event("visibilitychange")));
 +    expect(scene.handle.pause).toHaveBeenCalled();
@@ -1407,9 +1493,10 @@ index 0000000..e3b7a6e
 +        disconnect() {}
 +      },
 +    );
-+    const { anchor } = show();
-+    await idle();
++    const { anchor } = await running();
 +    const canvas = field()!;
++    scene.handle.pause.mockClear();
++    scene.handle.resume.mockClear();
 +    expect(observed).toEqual([anchor.current]);
 +    act(() => seen!([{ isIntersecting: false }]));
 +    expect(scene.handle.pause).toHaveBeenCalled();
@@ -1422,8 +1509,8 @@ index 0000000..e3b7a6e
 +
 +  it("is put away when paused for 10 s", async () => {
 +    forceTier(2);
-+    const { onGone } = show();
-+    await idle();
++    const { onGone } = await running();
++    act(() => scene.options!.onStart!());
 +    Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
 +    act(() => void document.dispatchEvent(new Event("visibilitychange")));
 +    await act(async () => void vi.advanceTimersByTime(10_100));
@@ -1453,11 +1540,11 @@ index 0000000..e3b7a6e
 +});
 diff --git a/src/components/portal/BloomField.tsx b/src/components/portal/BloomField.tsx
 new file mode 100644
-index 0000000..4dd0160
+index 0000000..8ac3898
 --- /dev/null
 +++ b/src/components/portal/BloomField.tsx
-@@ -0,0 +1,164 @@
-+import { useEffect, useRef, type RefObject } from "react";
+@@ -0,0 +1,226 @@
++import { useEffect, useRef, type MutableRefObject, type RefObject } from "react";
 +import { demoteTier, portalTier, probeWanted } from "@/lib/portal/tier";
 +import { whenIdle } from "@/lib/portal/lazyRoom";
 +import { PAPER, mixHex } from "@/lib/portal/species";
@@ -1469,18 +1556,31 @@ index 0000000..4dd0160
 +  petals and the pieces keep their own timing, and on Tier 1 nothing here
 +  is made at all.
 +
-+  Once the room has painted (an idle callback), and only on a capable phone,
-+  the scene is fetched (usually already here: the room asks for it ahead)
-+  and a canvas is laid over the screen: fixed, pointer-events none, at
-+  z-index 38, so it never takes a tap, never covers the garden path (39),
-+  the header or the bag (50). The flowers fall for 6 s; then the canvas
-+  fades and everything is put away, the WebGL context with it. A scene that
-+  is not running 1.8 s after the opening began is not started: the fall is
-+  for the opening, never after it.
++  Its cost comes before the opening moves, never during it. As the room
++  shows the unboxing (after its first paint, an idle callback, and only on
++  a capable phone) the scene is fetched (asked for ahead by the room) and
++  prepared, unseen: the renderer and the room's light, the shaders, one
++  hidden frame. The unboxing holds its first move until the field says it
++  is ready (onReady), for at most FIELD_WAIT_MS, while nothing on the stage
++  moves; then the opening begins and tells the field at once, in the same
++  task (go, a ref the field fills), and the fall begins with it. A field
++  not ready by then is put away there and then, before its unseen frame
++  could land mid-opening (a phone that took that long to prepare it keeps
++  Tier 1 for the visit); one whose scene arrives too late in the wait to be
++  prepared in it (MOUNT_BY_MS) is never mounted; and one not drawn LATE_MS
++  after the opening began is put away: the fall is for the opening, never
++  after.
++
++  The canvas is fixed, pointer-events none, at z-index 37: under the room's
++  own words (38, so the title and story are never crossed), the garden path
++  (39), the header and the bag (50); it never takes a tap. The flowers fall
++  for 6 s; then the canvas fades and everything is put away, the WebGL
++  context with it. A phone the probe finds too slow fades it too.
 +
 +  The fall pauses, unseen, while the box is off screen or the tab is hidden,
 +  and goes on when it is back; paused for 10 s, it is put away. Skip ends
-+  it with the ritual. Leaving the room puts it away at once.
++  it with the ritual, and so does the bag opening over it (the drop room
++  passes that in as `stop` as well). Leaving the room puts it away at once.
 +*/
 +
 +type Props = {
@@ -1488,35 +1588,50 @@ index 0000000..4dd0160
 +  seed: string;
 +  /** The unboxing's stage: the fall runs while it is on screen. */
 +  anchor: RefObject<Element>;
-+  /** Skip was tapped: the fall goes with the ritual. */
++  /** Filled by the field: the unboxing calls it, in the very task its opening begins (the fall starts then, if it is ready). */
++  go: MutableRefObject<() => void>;
++  /** Skip was tapped, or the bag opened: the fall goes. */
 +  stop: boolean;
++  /** Prepared and ready to fall at once, or never to be: the opening need not wait for it. */
++  onReady: () => void;
 +  /** It is over and put away, or was never started: unmount it. */
 +  onGone: () => void;
 +};
 +
++/** The most the opening waits for the field to be prepared. */
++export const FIELD_WAIT_MS = 900;
++/** Later in the wait than this, a scene that has only just arrived is not mounted: its setup would outrun the wait. */
++const MOUNT_BY_MS = FIELD_WAIT_MS - 400;
 +const LATE_MS = 1800;
 +const PAUSED_MAX_MS = 10_000;
 +const FADE_MS = 320;
 +
-+const BloomField = ({ accent, seed, anchor, stop, onGone }: Props) => {
++const BloomField = ({ accent, seed, anchor, go, stop, onReady, onGone }: Props) => {
 +  const gone = useRef(onGone);
 +  gone.current = onGone;
++  const readyFn = useRef(onReady);
++  readyFn.current = onReady;
 +  const endRef = useRef<() => void>(() => {});
 +
 +  useEffect(() => {
 +    let cancelled = false;
 +    let finished = false;
++    let started = false;
++    let going = false;
++    let prepared = false;
 +    let canvas: HTMLCanvasElement | null = null;
 +    let handle: BloomFieldHandle | null = null;
 +    let io: IntersectionObserver | null = null;
 +    let onScreen = true;
 +    let pausedFor = 0;
 +    let fadeTimer = 0;
-+    const began = Date.now();
++    let lateTimer = 0;
++    const shown = Date.now();
 +
 +    const putAway = () => {
 +      window.clearTimeout(pausedFor);
 +      window.clearTimeout(fadeTimer);
++      window.clearTimeout(lateTimer);
 +      io?.disconnect();
 +      document.removeEventListener("visibilitychange", onVisibility);
 +      handle?.dispose();
@@ -1528,6 +1643,7 @@ index 0000000..4dd0160
 +    const finish = (fade: boolean) => {
 +      if (finished) return;
 +      finished = true;
++      readyFn.current();
 +      if (fade && canvas?.classList.contains("is-on")) {
 +        canvas.classList.remove("is-on");
 +        handle?.pause();
@@ -1544,6 +1660,11 @@ index 0000000..4dd0160
 +
 +    const sync = () => {
 +      if (!handle || finished) return;
++      // Held, prepared and unseen, until the opening begins.
++      if (!going) {
++        handle.pause();
++        return;
++      }
 +      const showing = onScreen && document.visibilityState !== "hidden";
 +      canvas?.classList.toggle("is-away", !showing);
 +      window.clearTimeout(pausedFor);
@@ -1557,14 +1678,31 @@ index 0000000..4dd0160
 +      sync();
 +    }
 +
++    // The opening begins: the fall now, if it is ready; else never.
++    go.current = () => {
++      if (going || finished) return;
++      going = true;
++      if (!prepared) {
++        // Prepared too slowly for the opening (the scene was mounted): Tier 1 for the rest of her visit.
++        if (handle) demoteTier();
++        finish(false);
++        return;
++      }
++      lateTimer = window.setTimeout(() => {
++        if (!started) finish(false);
++      }, LATE_MS);
++      sync();
++    };
++
 +    if (portalTier() !== 2) {
-+      gone.current();
++      finish(false);
 +      return;
 +    }
 +    const cancelIdle = whenIdle(() => {
 +      void loadBloomScene().then((mod) => {
 +        if (cancelled || finished) return;
-+        if (!mod || Date.now() - began > LATE_MS) {
++        // Not here in time to be prepared before the opening: it is not mounted mid-opening (the preview's &probe=0 waits for it).
++        if (!mod || going || (probeWanted() && Date.now() - shown > MOUNT_BY_MS)) {
 +          finish(false);
 +          return;
 +        }
@@ -1577,11 +1715,20 @@ index 0000000..4dd0160
 +            colours: [accent, mixHex(accent, PAPER, 0.38)],
 +            seed,
 +            probe: probeWanted(),
-+            onStart: () => canvas?.classList.add("is-on"),
++            onReady: () => {
++              prepared = true;
++              if (!going) readyFn.current();
++              sync();
++            },
++            onStart: () => {
++              started = true;
++              canvas?.classList.add("is-on");
++            },
 +            onEnd: (why) => {
 +              // Too slow for this phone, or the context was lost: Tier 1 for the rest of her visit.
 +              if (why !== "done") demoteTier();
-+              finish(why === "done");
++              // A finished fall and a slow phone's both fade; a lost context has nothing left to show.
++              finish(why !== "lost");
 +            },
 +          });
 +        } catch {
@@ -1590,6 +1737,8 @@ index 0000000..4dd0160
 +          finish(false);
 +          return;
 +        }
++        // Held until the opening begins.
++        handle.pause();
 +        document.addEventListener("visibilitychange", onVisibility);
 +        const stage = anchor.current;
 +        if (stage && typeof IntersectionObserver !== "undefined") {
@@ -1609,7 +1758,7 @@ index 0000000..4dd0160
 +      finished = true;
 +      putAway();
 +    };
-+    // Once, as the opening begins.
++    // Once, as the room shows the unboxing.
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, []);
 +
@@ -3144,10 +3293,10 @@ index 0000000..7baf9d1
 +export default DropPieceCard;
 diff --git a/src/components/portal/DropUnbox.test.tsx b/src/components/portal/DropUnbox.test.tsx
 new file mode 100644
-index 0000000..4947516
+index 0000000..39473f7
 --- /dev/null
 +++ b/src/components/portal/DropUnbox.test.tsx
-@@ -0,0 +1,142 @@
+@@ -0,0 +1,212 @@
 +import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +import type { Drop } from "@/lib/portal/drops";
@@ -3157,7 +3306,10 @@ index 0000000..4947516
 +   with the ritual only on a Tier 2 phone and goes with a Skip; the petals
 +   are thrown by the gsap choreography when it is in, and on today's arcs
 +   when it is not, or when it declines (reduced motion turned on). Either
-+   way the same 24 petals, from the same drawer, at the same moment. */
++   way the same 24 petals, from the same drawer, at the same moment. On
++   Tier 2 the opening holds its first move (the stage still) until the
++   field says it is prepared, for at most FIELD_WAIT_MS; the bag opening
++   ends the fall. */
 +
 +const tier2 = vi.hoisted(() => ({
 +  allowed: true,
@@ -3167,13 +3319,23 @@ index 0000000..4947516
 +  spectacleAllowed: () => tier2.allowed,
 +  choreographyNow: () => tier2.choreo,
 +}));
-+const field = vi.hoisted(() => ({ props: [] as { accent: string; seed: string; stop: boolean }[] }));
++type FieldProps = { accent: string; seed: string; stop: boolean; go: { current: () => void }; onReady: () => void; onGone: () => void };
++const field = vi.hoisted(() => ({ props: [] as FieldProps[], autoReady: true, readied: false, went: 0 }));
 +vi.mock("./BloomField", () => ({
-+  default: (props: { accent: string; seed: string; stop: boolean }) => {
++  FIELD_WAIT_MS: 900,
++  default: (props: FieldProps) => {
 +    field.props.push(props);
++    props.go.current = () => void (field.went += 1);
++    // Prepared at once, unless a test holds it.
++    if (field.autoReady && !field.readied) {
++      field.readied = true;
++      queueMicrotask(props.onReady);
++    }
 +    return null;
 +  },
 +}));
++const bag = vi.hoisted(() => ({ open: false }));
++vi.mock("@/contexts/CartContext", () => ({ useCart: () => ({ isDrawerOpen: bag.open }) }));
 +
 +import DropUnbox from "./DropUnbox";
 +
@@ -3207,6 +3369,10 @@ index 0000000..4947516
 +  Element.prototype.animate = animate as never;
 +  made.length = 0;
 +  field.props.length = 0;
++  field.autoReady = true;
++  field.readied = false;
++  field.went = 0;
++  bag.open = false;
 +  tier2.allowed = true;
 +  tier2.choreo = null;
 +  window.matchMedia = ((query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} })) as unknown as typeof window.matchMedia;
@@ -3232,8 +3398,61 @@ index 0000000..4947516
 +  it("lays the Bloom Field over the ritual, and lets it go with a Skip", async () => {
 +    await open();
 +    expect(field.props.at(-1)).toMatchObject({ accent: "#2F6B4F", seed: "verdant", stop: false });
++    expect(field.went).toBe(1);
 +    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
 +    expect(field.props.at(-1)).toMatchObject({ stop: true });
++  });
++
++  it("holds its first move, the stage still, until the field is prepared, then opens with the fall", async () => {
++    field.autoReady = false;
++    render(<DropUnbox drop={drop} piece={{ src: "https://cdn.shopify.com/x.jpg", cutout: false }} ritual onUnfold={vi.fn()} />);
++    await act(async () => void vi.advanceTimersByTime(600));
++    // Nothing made yet: the field is still preparing, and the fall has not been told to go.
++    expect(made.filter((m) => m.el.closest?.(".ig-unbox"))).toHaveLength(0);
++    expect(field.went).toBe(0);
++    await act(async () => {
++      field.props.at(-1)!.onReady();
++      for (let i = 0; i < 5; i++) await Promise.resolve();
++    });
++    expect(made.filter((m) => m.el.closest?.(".ig-unbox")).length).toBeGreaterThan(5);
++    expect(field.went).toBe(1);
++  });
++
++  it("waits no more than FIELD_WAIT_MS for the field, then opens without waiting further", async () => {
++    field.autoReady = false;
++    render(<DropUnbox drop={drop} piece={{ src: "https://cdn.shopify.com/x.jpg", cutout: false }} ritual onUnfold={vi.fn()} />);
++    await act(async () => void vi.advanceTimersByTime(850));
++    expect(made.filter((m) => m.el.closest?.(".ig-unbox"))).toHaveLength(0);
++    await act(async () => {
++      vi.advanceTimersByTime(100);
++      for (let i = 0; i < 5; i++) await Promise.resolve();
++    });
++    expect(made.filter((m) => m.el.closest?.(".ig-unbox")).length).toBeGreaterThan(5);
++    // Told to go, in the same task: the field, not ready, puts itself away rather than start mid-opening.
++    expect(field.went).toBe(1);
++  });
++
++  it("ends the fall when the bag opens over it", async () => {
++    const view = await open();
++    expect(field.props.at(-1)?.stop).toBe(false);
++    bag.open = true;
++    view.rerender(<DropUnbox drop={drop} piece={{ src: "https://cdn.shopify.com/x.jpg", cutout: false }} ritual onUnfold={view.onUnfold} />);
++    await act(async () => void (await Promise.resolve()));
++    expect(field.props.at(-1)?.stop).toBe(true);
++  });
++
++  it("moves her focus on to the pieces when she skips", async () => {
++    const heading = document.createElement("h2");
++    heading.id = "ig-pieces";
++    heading.tabIndex = -1;
++    document.body.appendChild(heading);
++    try {
++      await open();
++      fireEvent.click(screen.getByRole("button", { name: "Skip" }));
++      expect(document.activeElement).toBe(heading);
++    } finally {
++      heading.remove();
++    }
 +  });
 +
 +  it("throws the petals with the choreography when it is in: 24, from the drawer, at the burst", async () => {
@@ -3292,11 +3511,12 @@ index 0000000..4947516
 +});
 diff --git a/src/components/portal/DropUnbox.tsx b/src/components/portal/DropUnbox.tsx
 new file mode 100644
-index 0000000..68ab9fb
+index 0000000..b594b02
 --- /dev/null
 +++ b/src/components/portal/DropUnbox.tsx
-@@ -0,0 +1,265 @@
-+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+@@ -0,0 +1,326 @@
++import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
++import { useCart } from "@/contexts/CartContext";
 +import type { Drop } from "@/lib/portal/drops";
 +import { ballisticFlights, BURST_MS, MAX_BURST } from "@/lib/portal/petalPaths";
 +import { BUD_CLOSED, BUD_OPEN, PAPER, mixHex } from "@/lib/portal/species";
@@ -3307,8 +3527,9 @@ index 0000000..68ab9fb
 +import { PEEK_POSE, REST_POSE, drawerTransforms, poseTransform } from "@/lib/portal/boxPose";
 +import { PETAL_HUE, PETAL_SPARK } from "./PetalSymbols";
 +import { quietButton } from "./styles";
-+import BloomField from "./BloomField";
++import BloomField, { FIELD_WAIT_MS } from "./BloomField";
 +import { choreographyNow, spectacleAllowed, type Choreography } from "@/lib/portal/spectacle";
++import { probeWanted } from "@/lib/portal/tier";
 +
 +/*
 +  THE UNBOXING, once per drop on this device. It opens on the bud she has
@@ -3328,8 +3549,12 @@ index 0000000..68ab9fb
 +  petals thrown under Physics2D instead of on worked-out arcs, at the same
 +  moment, as many, gone by the same 1.6 s (if it is still on its way as the
 +  box starts, the petals are made as ever and which hand throws them is
-+  settled 0.2 s before the burst). Without either (Tier 1, reduced motion,
-+  a chunk that did not arrive) it is exactly as above.
++  settled 0.2 s before the burst, and their sweep is timed from that throw).
++  The field is prepared before anything moves: the opening holds its first
++  move until it is ready, for at most FIELD_WAIT_MS (the stage is still
++  empty then), so its setup never lands mid-opening. Without either (Tier
++  1, reduced motion, a chunk that did not arrive) it is exactly as above,
++  with no wait.
 +
 +  Every animation, petals included, is made at once when the page has
 +  settled and starts on its own delay, so nothing is built mid-flight. At
@@ -3359,12 +3584,32 @@ index 0000000..68ab9fb
 +const PETAL_LEAD = 200;
 +const AT = { turn: PRE + 200, drawer: PRE + 850, rise: PRE + 1250, glint: PRE + 1950, petals: PRE + 1900, unfold: PRE + 2300, rest: PRE + 3500 };
 +
++/* While the Bloom Field lives: the bag opening over it ends the fall (its slide-in is the moment that matters). */
++const BagOpens = ({ onOpen }: { onOpen: () => void }) => {
++  const { isDrawerOpen } = useCart();
++  useEffect(() => {
++    if (isDrawerOpen) onOpen();
++  }, [isDrawerOpen, onOpen]);
++  return null;
++};
++
 +const DropUnbox = ({ drop, piece, ritual, onUnfold, size = 156 }: Props) => {
 +  // Where the Web Animations API is missing (an old WebView) the box is simply open: nothing would move.
 +  const [playing, setPlaying] = useState(() => ritual && !stillMotion() && typeof document.documentElement.animate === "function");
 +  // The Bloom Field rides with the ritual on a Tier 2 phone, and outlasts it (its fall is 6 s).
 +  const [field, setField] = useState(() => playing && spectacleAllowed());
 +  const [skipped, setSkipped] = useState(false);
++  // The opening has begun (after the field's preparation, or without it): the fall starts with it, told in the same task.
++  const fieldGo = useRef<() => void>(() => {});
++  const [bagOpened, setBagOpened] = useState(false);
++  const onBagOpen = useCallback(() => setBagOpened(true), []);
++  // The field's word that it is ready (or gone): the opening's hold lets go.
++  const fieldReady = useRef<() => void>(() => {});
++  const fieldSaid = useRef(false);
++  const releaseHold = useCallback(() => {
++    fieldSaid.current = true;
++    fieldReady.current();
++  }, []);
 +  const parts = {
 +    lift: useRef<HTMLDivElement>(null),
 +    box: useRef<HTMLDivElement>(null),
@@ -3433,8 +3678,20 @@ index 0000000..68ab9fb
 +      return a;
 +    };
 +
-+    settled().then(() => {
++    // On Tier 2, held (the stage still) until the field is prepared, or FIELD_WAIT_MS.
++    let holdTimer = 0;
++    const hold = field
++      ? new Promise<void>((resolve) => {
++          fieldReady.current = resolve;
++          if (fieldSaid.current) resolve();
++          // The development preview's &probe=0 (a software-GL machine) waits for it, so its look can be seen.
++          holdTimer = window.setTimeout(resolve, probeWanted() ? FIELD_WAIT_MS : 15_000);
++        })
++      : null;
++    Promise.all([settled(), hold]).then(() => {
++      window.clearTimeout(holdTimer);
 +      if (!alive) return;
++      if (field) fieldGo.current();
 +      // The bud from the Bloom Clock: its last petal turns out and takes its colour, then it gives way to the box.
 +      const bud = budRef.current;
 +      const last = bud?.querySelector('.ig-bud-petal[data-k="4"]') ?? null;
@@ -3501,9 +3758,13 @@ index 0000000..68ab9fb
 +          thrown.current = choreo.throwPetals(made, throws, delay);
 +          if (!thrown.current) arcs(made, delay);
 +        };
++        // Whatever is left is gone 1.6 s after the burst: timed from the throw itself, so a late throw still flies in full.
++        const sweep = (after: number) => cues.push(cue(stage.current, after, () => petals.current.forEach((p) => p.remove())));
 +        const choreo = choreographyNow();
-+        if (choreo) throwWith(choreo, null, AT.petals);
-+        else if (spectacleAllowed()) {
++        if (choreo) {
++          throwWith(choreo, null, AT.petals);
++          sweep(AT.petals + BURST_MS);
++        } else if (spectacleAllowed()) {
 +          // Tier 2, its choreography still on its way: the petals are made now, unseen, and which hand throws them is settled just before the burst.
 +          const nodes = flights.map((f, i) => petal(i, f.size, f.tone));
 +          cues.push(
@@ -3512,11 +3773,13 @@ index 0000000..68ab9fb
 +              const late = choreographyNow();
 +              if (late) throwWith(late, nodes, PETAL_LEAD);
 +              else arcs(nodes, PETAL_LEAD);
++              sweep(PETAL_LEAD + BURST_MS);
 +            }),
 +          );
-+        } else arcs(null, AT.petals);
-+        // Whatever is left is gone 1.6 s after the burst.
-+        cues.push(cue(stage.current, AT.petals + BURST_MS, () => petals.current.forEach((p) => p.remove())));
++        } else {
++          arcs(null, AT.petals);
++          sweep(AT.petals + BURST_MS);
++        }
 +      }
 +      cues.push(cue(stage.current, AT.unfold, letUnfold));
 +      cues.push(cue(stage.current, AT.rest, finish));
@@ -3524,6 +3787,7 @@ index 0000000..68ab9fb
 +
 +    return () => {
 +      alive = false;
++      window.clearTimeout(holdTimer);
 +      cues.forEach((c) => c.cancel());
 +      letGo();
 +    };
@@ -3550,12 +3814,28 @@ index 0000000..68ab9fb
 +          onClick={() => {
 +            setSkipped(true);
 +            end.current();
++            // The button goes with the ritual: her focus goes on to the pieces, never to the page's top.
++            document.getElementById("ig-pieces")?.focus({ preventScroll: true });
 +          }}
 +        >
 +          Skip
 +        </button>
 +      )}
-+      {field && <BloomField accent={drop.accent} seed={drop.id} anchor={stage} stop={skipped} onGone={() => setField(false)} />}
++      {field && (
++        <BloomField
++          accent={drop.accent}
++          seed={drop.id}
++          anchor={stage}
++          go={fieldGo}
++          stop={skipped || bagOpened}
++          onReady={releaseHold}
++          onGone={() => {
++            releaseHold();
++            setField(false);
++          }}
++        />
++      )}
++      {field && <BagOpens onOpen={onBagOpen} />}
 +    </div>
 +  );
 +};
@@ -5348,10 +5628,10 @@ index 0000000..8fb3545
 +export default GiftRing;
 diff --git a/src/components/portal/GoldRose.test.tsx b/src/components/portal/GoldRose.test.tsx
 new file mode 100644
-index 0000000..fb14fb1
+index 0000000..98b8285
 --- /dev/null
 +++ b/src/components/portal/GoldRose.test.tsx
-@@ -0,0 +1,348 @@
+@@ -0,0 +1,412 @@
 +import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -5361,7 +5641,7 @@ index 0000000..fb14fb1
 +import { readNaira } from "@/lib/portal/memberMeta";
 +import { layoutGarden } from "@/lib/portal/gardenLayout";
 +import { checkoutOf, confirmedOf, ROSES_SHOWN, type Checkout } from "@/lib/portal/checkouts";
-+import { NAIRA_CLEAR, ROSE_GAP, ROSE_ROW, STONE_CLEAR, rosesInFront } from "@/lib/portal/goldRoses";
++import { NAIRA_CLEAR, NAIRA_LEAVES, ROSE_GAP, ROSE_ROW, STONE_CLEAR, rosesInFront } from "@/lib/portal/goldRoses";
 +import { hasDropFlag, writePortal } from "@/lib/portal/safeStorage";
 +import { stoneForMonth } from "@/lib/portal/stones";
 +
@@ -5609,6 +5889,56 @@ index 0000000..fb14fb1
 +    }
 +  });
 +
++  it("waits, undrawn, until its row is in view above the garden path: the bed on screen is not enough", async () => {
++    type Seen = { el: Element; options: IntersectionObserverInit; fire: (on: boolean) => void; off: boolean };
++    const seen: Seen[] = [];
++    vi.stubGlobal(
++      "IntersectionObserver",
++      class {
++        rec: Seen;
++        constructor(cb: IntersectionObserverCallback, options: IntersectionObserverInit = {}) {
++          this.rec = { el: document.body, options, off: false, fire: (on) => cb([{ isIntersecting: on, target: this.rec.el } as IntersectionObserverEntry], this as unknown as IntersectionObserver) };
++          seen.push(this.rec);
++        }
++        observe(el: Element) {
++          this.rec.el = el;
++          // The bed (useAmbient's 40px margin) reports itself on screen at once; the roses' row does not.
++          if (this.rec.options.rootMargin === "40px") queueMicrotask(() => this.rec.fire(true));
++        }
++        disconnect() {
++          this.rec.off = true;
++        }
++      },
++    );
++    try {
++      const { container } = home({ checkoutsPreview: PREVIEW_ROWS });
++      await waitFor(() => expect(roseAnimations().length).toBeGreaterThan(0));
++      const row = seen.find((o) => o.el.classList?.contains("ig-rose"));
++      expect(row).toBeDefined();
++      // Below the path (the margin leaves the path out), half of it at least.
++      expect(row?.options.threshold).toBe(0.5);
++      expect(row?.options.rootMargin).toMatch(/^0px 0px -\d+px$/);
++      const bed = seen.find((o) => o.el.classList?.contains("ig-bed"));
++      expect(bed).toBeDefined();
++      await waitFor(() => expect(container.querySelector(".ig-bed")?.hasAttribute("data-resting")).toBe(false));
++      // The garden's loop runs, yet nothing of the roses plays, and nothing is marked grown.
++      await new Promise((r) => setTimeout(r, 20));
++      expect(roseAnimations().filter((a) => a.playing)).toEqual([]);
++      expect(hasDropFlag("grown", "order-b")).toBe(false);
++      const rose = row;
++      // She scrolls the row into view: it grows now, on the bed's loop, and is marked grown only once it has played.
++      rose?.fire(true);
++      expect(rose?.off).toBe(true);
++      expect(roseAnimations().filter((a) => a.playing).length).toBe(roseAnimations().length);
++      expect(hasDropFlag("grown", "order-b")).toBe(false);
++      for (const a of roseAnimations()) a.done();
++      await waitFor(() => expect(hasDropFlag("grown", "order-b")).toBe(true));
++      expect(container.querySelectorAll(".ig-rose")).toHaveLength(2);
++    } finally {
++      vi.unstubAllGlobals();
++    }
++  });
++
 +  it("is still art under reduced motion: drawn whole, nothing moving", async () => {
 +    setReducedMotion(true);
 +    const { container } = home({ checkoutsPreview: PREVIEW_ROWS });
@@ -5649,6 +5979,20 @@ index 0000000..fb14fb1
 +    for (const r of a) {
 +      expect(r.x).toBeGreaterThanOrEqual(ROSE_ROW.left);
 +      expect(r.x).toBeLessThanOrEqual(ROSE_ROW.right);
++    }
++  });
++
++  it("keeps off the Naira flower's low leaves while the row has room, in every garden", () => {
++    for (let s = 0; s < 50; s++) {
++      const seed = `member-${s}`;
++      const g = layoutGarden(seed);
++      // Up to four, the most a phone's row can hold clear of both her plants' leaves; more stand nearer her stem.
++      for (let n = 1; n <= 4; n++) {
++        const roses = rosesInFront(seed, Array.from({ length: n }, (_, i) => order(i)), g.naira.x, g.stone.x);
++        for (const r of roses) expect(r.x < g.naira.x + NAIRA_LEAVES[0] || r.x > g.naira.x + NAIRA_LEAVES[1], `${seed}, ${n} roses: ${r.x}`).toBe(true);
++        const xs = roses.map((r) => r.x).sort((p, q) => p - q);
++        for (let i = 1; i < xs.length; i++) expect(xs[i] - xs[i - 1]).toBeGreaterThanOrEqual(ROSE_GAP);
++      }
 +    }
 +  });
 +
@@ -5702,18 +6046,17 @@ index 0000000..fb14fb1
 +});
 diff --git a/src/components/portal/GoldRose.tsx b/src/components/portal/GoldRose.tsx
 new file mode 100644
-index 0000000..58111d7
+index 0000000..228443a
 --- /dev/null
 +++ b/src/components/portal/GoldRose.tsx
-@@ -0,0 +1,151 @@
-+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+@@ -0,0 +1,157 @@
++import { useLayoutEffect, useMemo, useRef } from "react";
 +import { BED } from "@/lib/portal/gardenLayout";
-+import { confirmedOf, readConfirmed, type ConfirmedOrder } from "@/lib/portal/checkouts";
++import { useConfirmed } from "@/lib/portal/checkouts";
 +import { rosesInFront } from "@/lib/portal/goldRoses";
 +import { formatIstDate } from "@/lib/portal/ist";
 +import { EASE_BLOOM, EASE_REVEAL, play, stillMotion, useAmbientLoop } from "@/lib/portal/motion";
 +import { hasDropFlag, setDropFlag } from "@/lib/portal/safeStorage";
-+import { useMember } from "./MemberContext";
 +
 +/*
 +  Her gold-leaf roses (Phase 5): a chunk of its own, fetched once the
@@ -5725,12 +6068,18 @@ index 0000000..58111d7
 +
 +  A rose grows once on this device: its stem, veins and the swirl of its
 +  petals draw in gold (stroke-dashoffset), the leaves and the head open
-+  after (opacity, and a small bloom in transform). A one-shot, never a loop: it
-+  joins the bed's one ambient loop only until it has grown (so it waits
-+  while the garden rests, off screen or on a hidden tab), then leaves it.
-+  After that, and under reduced motion or Data Saver, it is still art.
++  after (opacity, and a small bloom in transform). A one-shot, never a loop.
++  It waits, undrawn (paused at its first frame), until the front row is in
++  view above the garden path: the row stands at the soil, often below the
++  fold or under the path on a phone, and a growth played there would be
++  marked grown unseen. Once in view it joins the bed's one ambient loop
++  until it has grown (so it waits while the garden rests, off screen or on
++  a hidden tab), then leaves it; "grown" is set only when it has played to
++  its end. That one look is the bed's own business (an observer that
++  disconnects at once, never a loop). After that, and under reduced motion
++  or Data Saver, it is still art.
 +
-+  Her rows are read once a visit, ids and order times only (readConfirmed,
++  Her rows are read once a visit, ids and order times only (useConfirmed,
 +  under the existing row security); the development preview member's
 +  stand-in rows are used instead, and Supabase is never asked.
 +*/
@@ -5749,27 +6098,6 @@ index 0000000..58111d7
 +/* Once an animation has played to its end (never on a cancel). */
 +const whenDone = (a: Animation, fn: () => void) => void a.finished?.then(fn, () => undefined);
 +
-+/* Both parts mount together: one read for the two. */
-+let lastRead: { user: string; at: number; rows: Promise<ConfirmedOrder[]> } | null = null;
-+const readOnce = (user: string): Promise<ConfirmedOrder[]> => {
-+  if (lastRead?.user !== user || Date.now() - lastRead.at > 5000) lastRead = { user, at: Date.now(), rows: readConfirmed(user).catch(() => []) };
-+  return lastRead.rows;
-+};
-+
-+const useConfirmed = (): ConfirmedOrder[] => {
-+  const { user, checkoutsPreview } = useMember();
-+  const [read, setRead] = useState<ConfirmedOrder[]>([]);
-+  useEffect(() => {
-+    if (checkoutsPreview) return;
-+    let live = true;
-+    void readOnce(user.id).then((rows) => live && setRead(rows));
-+    return () => {
-+      live = false;
-+    };
-+  }, [user.id, checkoutsPreview]);
-+  return useMemo(() => (checkoutsPreview ? confirmedOf(checkoutsPreview) : read), [checkoutsPreview, read]);
-+};
-+
 +/** One rose, its stem base at 0,0 (the soil), about 60 high: gold lines that draw, and leaves and a head that open. */
 +const Rose = () => (
 +  <>
@@ -5781,7 +6109,7 @@ index 0000000..58111d7
 +        <path d="M-1 0C-7 0-11-4-11-9C-11-13-8-15-5-14C-6-10-5-5-1 0ZM1 0C7 0 11-4 11-9C11-13 8-15 5-14C6-10 5-5 1 0Z" fill={GOLD} stroke={GOLD_DEEP} strokeWidth=".5" />
 +        <path d="M-6-12C-6-17-2-20 0-20C2-20 6-17 6-12C6-6 3-3 0-3C-3-3-6-6-6-12Z" fill={GOLD_LEAF} stroke={GOLD_DEEP} strokeWidth=".5" />
 +        <path d="M-8-8C-5-4-2-3 0-3C2-3 5-4 8-8C8-3 5 0 0 0C-5 0-8-3-8-8Z" fill={GOLD} stroke={GOLD_DEEP} strokeWidth=".5" />
-+        <path d="M6-19L7-17L9-16.6L7-16L6-14L5-16L3-16.6L5-17Z" fill="#FFF6EA" />
++        <path d="M6-19l1 2 2 .4-2 .6-1 2-1-2-2-.6 2-.4Z" fill="#FFF6EA" />
 +      </g>
 +      <path {...LINE} d="M-2-12C-2-15 2-16 3-13C4-10 0-9-1-11C-2-12 0-14 1-13" strokeWidth=".6" />
 +    </g>
@@ -5794,16 +6122,19 @@ index 0000000..58111d7
 +  const ref = useRef<SVGSVGElement>(null);
 +  const loop = useAmbientLoop();
 +
-+  // Grows once on this device, with the bed's attention: the lines draw, then the leaves and the head open. Then it stands.
++  // Grows once on this device, in view and with the bed's attention: the lines draw, then the leaves and the head open. Then it stands.
 +  useLayoutEffect(() => {
 +    const root = ref.current;
 +    if (!root || !roses.length || stillMotion()) return;
 +    const made: Animation[] = [];
 +    const leaving: (() => void)[] = [];
++    let first: Element | undefined;
 +    let k = 0;
-+    root.querySelectorAll<SVGGElement>(".ig-rose").forEach((rose) => {
-+      const id = roses[Number(rose.dataset.rose)]?.id;
-+      if (!id || hasDropFlag("grown", id)) return;
++    // The layer's children are the roses, in order.
++    roses.forEach(({ id }, i) => {
++      const rose = root.children[i];
++      if (!rose || hasDropFlag("grown", id)) return;
++      first ??= rose;
 +      const delay = 120 + k++ * 180;
 +      const grow = (selector: string, keyframes: Keyframe[], after: number, easing: string) =>
 +        rose.querySelectorAll(selector).forEach((el) => {
@@ -5816,13 +6147,31 @@ index 0000000..58111d7
 +      if (last) whenDone(last, () => setDropFlag("grown", id));
 +    });
 +    // On the bed's loop (resting with it), each leaving it once it has played: a one-shot never replays.
-+    if (loop)
-+      for (const a of made) {
-+        const leave = loop.join([a]);
++    const start = () =>
++      made.forEach((a) => {
++        const leave = loop ? loop.join([a]) : (a.play(), () => undefined);
 +        leaving.push(leave);
 +        whenDone(a, leave);
-+      }
++      });
++    // Held undrawn until the row (every rose stands on the same soil) is half in view above the garden path
++    // (members.css .ig-nav: about 59 px, sticky at the bottom; the page sets no viewport-fit, so no safe-area inset).
++    let io: IntersectionObserver | null = null;
++    if (first && window.IntersectionObserver) {
++      made.forEach((a) => a.pause());
++      const seen = new IntersectionObserver(
++        ([e]) => {
++          if (e.isIntersecting) {
++            seen.disconnect();
++            start();
++          }
++        },
++        { rootMargin: "0px 0px -72px", threshold: 0.5 },
++      );
++      seen.observe(first);
++      io = seen;
++    } else start();
 +    return () => {
++      if (io) io.disconnect();
 +      leaving.forEach((leave) => leave());
 +      made.forEach((a) => a.cancel());
 +    };
@@ -5831,8 +6180,8 @@ index 0000000..58111d7
 +  if (!roses.length) return null;
 +  return (
 +    <svg ref={ref} viewBox={`0 0 ${BED.w} ${BED.h}`} className="ig-bed-ground ig-bed-roses" aria-hidden>
-+      {roses.map((r, i) => (
-+        <g key={r.id} className="ig-rose" data-rose={i} transform={`translate(${r.x} ${r.y}) scale(${r.flip ? -1.25 : 1.25} 1.25)`}>
++      {roses.map((r) => (
++        <g key={r.id} className="ig-rose" transform={`translate(${r.x} ${r.y}) scale(${r.flip ? -1.25 : 1.25} 1.25)`}>
 +          <Rose />
 +        </g>
 +      ))}
@@ -5847,7 +6196,8 @@ index 0000000..58111d7
 +    <>
 +      {orders.map((o) => (
 +        <li key={o.id} data-clarity-mask="true">
-+          <strong>A gold-leaf rose</strong>, for the order placed {formatIstDate(o.confirmedAt)}.
++          <strong>A gold-leaf rose</strong>
++          {`, for the order placed ${formatIstDate(o.confirmedAt)}.`}
 +        </li>
 +      ))}
 +    </>
@@ -6895,10 +7245,10 @@ index 0000000..4bd78c0
 +});
 diff --git a/src/components/portal/PetalReveal.tsx b/src/components/portal/PetalReveal.tsx
 new file mode 100644
-index 0000000..55c9ca8
+index 0000000..3bef79c
 --- /dev/null
 +++ b/src/components/portal/PetalReveal.tsx
-@@ -0,0 +1,216 @@
+@@ -0,0 +1,218 @@
 +import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 +import type { Drop } from "@/lib/portal/drops";
 +import { speciesIndex } from "@/lib/portal/dropPhase";
@@ -6911,7 +7261,7 @@ index 0000000..55c9ca8
 +import { BudGlyph } from "./FlowerGlyph";
 +import { burstPetals } from "./PetalBurst";
 +import { petalNode } from "./petalFlight";
-+import { choreographyNow, loadChoreography } from "@/lib/portal/spectacle";
++import { choreographyNow } from "@/lib/portal/spectacle";
 +import { PETAL_HUE, PETAL_SPARK } from "./PetalSymbols";
 +import { quietButton } from "./styles";
 +
@@ -6933,11 +7283,11 @@ index 0000000..55c9ca8
 +  since changed size (a turned phone) still wipes under the finger; a second
 +  finger is ignored rather than drawing a line between the two.
 +
-+  On a Tier 2 phone her first stroke asks for the drop room's gsap
-+  choreography (lib/portal/spectacle), and if it is in by the time the
-+  petals let go they fall under Physics2D; otherwise, as on every other
-+  phone, the round burst. Nothing is fetched for a Reveal tap, or under
-+  reduced motion.
++  The petals let go in the round burst, on every phone. Nothing is fetched
++  for them: on a Tier 2 phone whose drop room already brought in the gsap
++  choreography this visit (lib/portal/spectacle), they fall under
++  Physics2D instead; a sealed room never asks for its ~38 KB just for
++  twelve petals.
 +*/
 +
 +type Props = {
@@ -6962,6 +7312,9 @@ index 0000000..55c9ca8
 +  const box = useRef<DOMRect | null>(null);
 +  const painted = useRef({ w: 1, h: 1 });
 +  const done = useRef(revealed);
++  // The gsap let-go's stop (Tier 2, its choreography already in): put away with the room.
++  const scattered = useRef<(() => void) | null>(null);
++  useEffect(() => () => scattered.current?.(), []);
 +
 +  const finish = useCallback(
 +    (how: "rub" | "button") => {
@@ -6976,7 +7329,8 @@ index 0000000..55c9ca8
 +        const ids = [PETAL_HUE, PETAL_HUE, PETAL_SPARK];
 +        const choreo = choreographyNow();
 +        const nodes = choreo ? Array.from({ length: 12 }, (_, i) => petalNode(wrap, x, y, ids[i % 3], 9 + Math.random() * 9, ids[i % 3] === PETAL_HUE ? drop.accent : undefined)) : [];
-+        if (!choreo?.scatterPetals(nodes, 110)) {
++        scattered.current = choreo?.scatterPetals(nodes, 110) ?? null;
++        if (!scattered.current) {
 +          nodes.forEach((n) => n.remove());
 +          burstPetals(wrap, x, y, { count: 12, spread: 110, ids, color: drop.accent });
 +        }
@@ -7038,8 +7392,6 @@ index 0000000..55c9ca8
 +    }
 +    const p = at(e);
 +    last.current = p;
-+    // Her first stroke: the choreography for the petals' let-go, on a Tier 2 phone only (null, and nothing fetched, otherwise).
-+    if (!rubbing) void loadChoreography();
 +    ctx.beginPath();
 +    ctx.arc(p.x, p.y, BRUSH_RADIUS, 0, Math.PI * 2);
 +    ctx.fill();
@@ -11292,10 +11644,10 @@ index 69db6f5..897cd97 100644
  
 diff --git a/src/lib/orderBloom.test.ts b/src/lib/orderBloom.test.ts
 new file mode 100644
-index 0000000..e34eb82
+index 0000000..98c1aa4
 --- /dev/null
 +++ b/src/lib/orderBloom.test.ts
-@@ -0,0 +1,567 @@
+@@ -0,0 +1,778 @@
 +import { afterEach, describe, expect, it, vi } from "vitest";
 +import { createHmac } from "node:crypto";
 +import { readFileSync } from "node:fs";
@@ -11303,7 +11655,11 @@ index 0000000..e34eb82
 +import {
 +  COLUMNS,
 +  EMAIL_WINDOW_MS,
++  MAX_AGE_MS,
++  ROWS_READ,
 +  SHOP_DOMAIN,
++  TOKEN_WINDOW_MS,
++  TooLarge,
 +  bloomOrder,
 +  handleWebhook,
 +  orderFacts,
@@ -11325,8 +11681,10 @@ index 0000000..e34eb82
 +  Shopify's orders/create webhook says it was placed. Its Deno entry point
 +  cannot be imported here, so its logic lives in bloom.ts and this file pins
 +  both: the HMAC check, the inert state without a secret, the matching rule,
-+  idempotent retries, the one write (status and completed_at, nothing else)
-+  and logs without personal data. The database is an in-memory member_orders
++  idempotent retries, the one write (status and completed_at, nothing else),
++  whose row it is (only the member who signs in with the order's email, as
++  auth.users says, never a row's own browser-written email) and logs
++  without personal data. The database is an in-memory member_orders
 +  table behind the same query calls supabase-js makes; nothing here reaches
 +  the live Supabase.
 +*/
@@ -11390,7 +11748,7 @@ index 0000000..e34eb82
 +
 +/* ── an in-memory member_orders table, answering supabase-js's calls ── */
 +
-+type Stored = Row & { completed_at: string | null; user_id: string; items: unknown; total: number; currency: string; source: string };
++type Stored = Omit<Row, "names"> & { completed_at: string | null; user_id: string; items: unknown; total: number; currency: string; source: string };
 +
 +const like = (pattern: string) => new RegExp(`^${pattern.split("*").map((p) => p.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/_/g, ".")).join(".*")}$`);
 +const test1 = (row: Stored, column: string, op: string, value: string): boolean => {
@@ -11400,11 +11758,21 @@ index 0000000..e34eb82
 +  if (op === "gte") return String(v) >= value;
 +  if (op === "lte") return String(v) <= value;
 +  if (op === "like") return typeof v === "string" && like(value).test(v);
++  if (op === "in") return value.replace(/^\(|\)$/g, "").split(",").includes(String(v));
 +  throw new Error(`unexpected filter ${op}`);
 +};
 +
-+const fakeDb = (rows: Stored[]) => {
++/* auth.users as the service role reads it: each member's sign-in email, confirmed unless said otherwise. */
++type Account = { email: string | null; email_confirmed_at?: string | null } | "missing" | "broken";
++const ACCOUNTS: Record<string, Account> = {
++  "member-1": { email: "Ananya.Rao+naira@example.com", email_confirmed_at: "2026-01-02T00:00:00Z" },
++  "member-2": { email: "someone@example.com", email_confirmed_at: "2026-01-02T00:00:00Z" },
++  attacker: { email: "planter@example.com", email_confirmed_at: "2026-01-02T00:00:00Z" },
++};
++
++const fakeDb = (rows: Stored[], accounts: Record<string, Account> = ACCOUNTS) => {
 +  const writes: Record<string, unknown>[] = [];
++  const asked: string[] = [];
 +  const queries: string[] = [];
 +  const failing = { on: false };
 +  const query = (update?: Record<string, unknown>): DbQuery => {
@@ -11417,6 +11785,7 @@ index 0000000..e34eb82
 +      neq: (c, v) => (filters.push((r) => test1(r, c, "neq", v)), q),
 +      gte: (c, v) => (filters.push((r) => test1(r, c, "gte", v)), q),
 +      lte: (c, v) => (filters.push((r) => test1(r, c, "lte", v)), q),
++      not: (c, op, v) => (queries.push(`not ${c} ${op} ${v}`), filters.push((r) => !test1(r, c, op, v)), q),
 +      or: (f) => {
 +        queries.push(f);
 +        const parts = f.split(",").map((p) => {
@@ -11449,12 +11818,23 @@ index 0000000..e34eb82
 +    return q;
 +  };
 +  const db: Db = {
++    auth: {
++      admin: {
++        getUserById: async (id) => {
++          asked.push(id);
++          const a = accounts[id];
++          if (!a || a === "missing") return { data: { user: null }, error: { status: 404, code: "user_not_found" } };
++          if (a === "broken") return { data: null, error: { status: 500, code: "unexpected_failure" } };
++          return { data: { user: { email: a.email, email_confirmed_at: a.email_confirmed_at === undefined ? "2026-01-02T00:00:00Z" : a.email_confirmed_at } }, error: null };
++        },
++      },
++    },
 +    from: (table) => {
 +      expect(table).toBe("member_orders");
 +      return { select: () => query(), update: (values) => query(values) };
 +    },
 +  };
-+  return { db, writes, queries, failing };
++  return { db, writes, queries, failing, asked };
 +};
 +
 +let seq = 0;
@@ -11476,11 +11856,14 @@ index 0000000..e34eb82
 +  ...over,
 +});
 +
-+const deps = (rows: Stored[], over: Partial<Deps> = {}) => {
-+  const fake = fakeDb(rows);
++/* The fixtures' clock: just after the order (2026-11-03T14:45Z) was placed. */
++const NOW = Date.parse("2026-11-03T15:00:00.000Z");
++
++const deps = (rows: Stored[], over: Partial<Deps> = {}, accounts?: Record<string, Account>) => {
++  const fake = fakeDb(rows, accounts);
 +  const log = vi.fn();
 +  const store = vi.fn(() => supabaseStore(fake.db));
-+  return { fake, log, store, deps: { secret: SECRET, store, log, ...over } as Deps };
++  return { fake, log, store, deps: { secret: SECRET, store, log, now: () => NOW, ...over } as Deps };
 +};
 +
 +afterEach(() => vi.restoreAllMocks());
@@ -11526,7 +11909,7 @@ index 0000000..e34eb82
 +});
 +
 +describe("order-bloom: inert and closed without its secret", () => {
-+  it.each([undefined, null, ""])("answers 401 to every request when the secret is %s, reading nothing and writing nothing", async (secret) => {
++  it.each([undefined, null, "", "   ", "\n", "short", "x".repeat(31), ` ${"y".repeat(30)} \n`])("answers 401 to every request when the secret is %j, reading nothing and writing nothing", async (secret) => {
 +    const rows = [row()];
 +    const before = JSON.parse(JSON.stringify(rows));
 +    const { deps: d, store } = deps(rows, { secret });
@@ -11538,6 +11921,19 @@ index 0000000..e34eb82
 +    }
 +    expect(store).not.toHaveBeenCalled();
 +    expect(rows).toEqual(before);
++  });
++
++  it("refuses a body signed with a blank key, even when the secret is set to one", async () => {
++    const raw = JSON.stringify(order());
++    const { deps: d, store } = deps([row()], { secret: " " });
++    expect((await handleWebhook(request({ raw, headers: { "x-shopify-hmac-sha256": sign(raw, " ") } }).req, d)).status).toBe(401);
++    expect(store).not.toHaveBeenCalled();
++  });
++
++  it("trims the secret as pasted (a trailing newline), so Shopify's real deliveries still verify", async () => {
++    const target = row();
++    const { deps: d } = deps([target], { secret: `${SECRET}\n` });
++    expect((await handleWebhook(request().req, d)).body.result).toBe("bloomed_by_token");
 +  });
 +});
 +
@@ -11562,6 +11958,18 @@ index 0000000..e34eb82
 +    expect((await handleWebhook(request({ headers: { "content-length": String(10 * 1024 * 1024) } }).req, d)).status).toBe(413);
 +    const huge = JSON.stringify(order({ note: "x".repeat(600 * 1024) }));
 +    expect((await handleWebhook(request({ raw: huge }).req, d)).status).toBe(413);
++    expect(store).not.toHaveBeenCalled();
++  });
++
++  it("answers 413 when the body reader gives up past the cap (a request with no content-length), never hashing it", async () => {
++    const { deps: d, store } = deps([row()]);
++    const { req } = request();
++    const body = vi.fn(async (max: number) => {
++      expect(max).toBe(512 * 1024);
++      throw new TooLarge();
++    });
++    expect((await handleWebhook({ ...req, body }, d)).status).toBe(413);
++    expect(body).toHaveBeenCalledTimes(1);
 +    expect(store).not.toHaveBeenCalled();
 +  });
 +});
@@ -11647,6 +12055,7 @@ index 0000000..e34eb82
 +    ["a test order", { test: true }],
 +    ["a cancelled order", { cancelled_at: "2026-11-03T21:00:00+05:30" }],
 +    ["an order without a time", { created_at: null, processed_at: null }],
++    ["an order placed long ago (a replayed delivery)", { created_at: new Date(NOW - MAX_AGE_MS - 60_000).toISOString(), processed_at: null }],
 +  ])("ignores %s with a 200, writing nothing", async (_what, over) => {
 +    const rows = [row()];
 +    const { deps: d, fake, store } = deps(rows);
@@ -11744,6 +12153,151 @@ index 0000000..e34eb82
 +  });
 +});
 +
++describe("order-bloom: whose row it is (a row's email, tokens and time are the browser's word)", () => {
++  const noToken = (over: Record<string, unknown> = {}) => JSON.stringify(order({ cart_token: null, checkout_token: null, ...over }));
++  /* What another member can insert under her own user_id: anyone's email, no tokens, no pieces, any time. */
++  const planted = (k: number, over: Partial<Stored> = {}) =>
++    row({ id: `planted-${k}`, user_id: "attacker", checkout_url: null, item_count: 0, items: [], created_at: new Date(Date.parse("2026-11-03T14:44:00.000Z") - k * 1000).toISOString(), ...over });
++
++  it("never marks another member's row that only copies the order's email, nor tells her the order's time", async () => {
++    const rows = [planted(1), planted(2, { item_count: 2 })];
++    const before = JSON.parse(JSON.stringify(rows));
++    const { deps: d, fake } = deps(rows);
++    for (const raw of [noToken(), JSON.stringify(order({ cart_token: OTHER_CART, checkout_token: null }))]) {
++      expect((await handleWebhook(request({ raw }).req, d)).body.result).toBe("unmatched");
++    }
++    expect(fake.writes).toEqual([]);
++    expect(rows).toEqual(before);
++  });
++
++  it("is not made ambiguous by a planted row: her own row still blooms", async () => {
++    const hers = row({ id: "hers", checkout_url: null, created_at: "2026-11-03T14:10:00.000Z" });
++    const { deps: d } = deps([hers, planted(1)]);
++    expect((await handleWebhook(request({ raw: noToken() }).req, d)).body.result).toBe("bloomed_by_email");
++    expect(hers.status).toBe("completed");
++  });
++
++  it("is not stopped by more planted rows than one read holds: hers is found past them", async () => {
++    const hers = row({ id: "hers", checkout_url: null, created_at: "2026-11-03T13:00:00.000Z" });
++    const rows = [hers, ...Array.from({ length: ROWS_READ + 5 }, (_, k) => planted(k + 1))];
++    const { deps: d, fake } = deps(rows);
++    expect((await handleWebhook(request({ raw: noToken() }).req, d)).body.result).toBe("bloomed_by_email");
++    expect(hers.status).toBe("completed");
++    expect(rows.filter((r) => r.status === "completed").map((r) => r.id)).toEqual(["hers"]);
++    expect(fake.queries).toContain("not user_id in (attacker)");
++  });
++
++  it("asks auth.users for the sign-in email, and counts it only once confirmed", async () => {
++    const target = row({ checkout_url: null });
++    const unconfirmed = deps([target], {}, { "member-1": { email: PERSONAL.email, email_confirmed_at: null } });
++    expect((await handleWebhook(request({ raw: noToken() }).req, unconfirmed.deps)).body.result).toBe("unmatched");
++    const gone = deps([target], {}, { "member-1": "missing" });
++    expect((await handleWebhook(request({ raw: noToken() }).req, gone.deps)).body.result).toBe("unmatched");
++    expect(target.status).toBe("checkout_started");
++    // An auth read that fails is a retry (500), never a guess.
++    const broken = deps([target], {}, { "member-1": "broken" });
++    expect((await handleWebhook(request({ raw: noToken() }).req, broken.deps)).status).toBe(500);
++    expect(target.status).toBe("checkout_started");
++  });
++
++  it("needs the piece count by email: a row noting none, or an order listing none, writes nothing", async () => {
++    for (const [over, raw] of [
++      [{ item_count: 0 }, noToken()],
++      [{}, noToken({ line_items: [] })],
++    ] as const) {
++      const target = row({ checkout_url: null, ...over });
++      const { deps: d, fake } = deps([target]);
++      expect((await handleWebhook(request({ raw }).req, d)).body.result).toBe("unmatched");
++      expect(fake.writes).toEqual([]);
++    }
++  });
++
++  it("by email, never claims a bag checkout of other pieces for an order without tokens (Buy now writes no row)", async () => {
++    const bag = row({ id: "bag", items: [{ name: "Orb Cable Cuff", quantity: 1 }, { name: "Clover Garland Bracelet", quantity: 1 }] });
++    const { deps: d, fake } = deps([bag]);
++    expect((await handleWebhook(request({ raw: noToken() }).req, d)).body.result).toBe("unmatched");
++    expect(fake.writes).toEqual([]);
++    // The same bag checkout, its pieces the order's: a tokened row, an order without tokens, matched by email.
++    const same = row({ id: "same" });
++    const ok = deps([same]);
++    expect((await handleWebhook(request({ raw: noToken() }).req, ok.deps)).body.result).toBe("bloomed_by_email");
++  });
++
++  describe("by token", () => {
++    it("on a cart two members' rows carry, marks the row of the member who paid (her sign-in email), never the other's", async () => {
++      const a = row({ id: "A", user_id: "member-2", email: "someone@example.com", created_at: "2026-11-03T14:30:00.000Z" });
++      const b = row({ id: "B", created_at: "2026-11-03T14:20:00.000Z" });
++      const { deps: d } = deps([a, b]);
++      expect((await handleWebhook(request().req, d)).body.result).toBe("bloomed_by_token");
++      expect([a.status, b.status]).toEqual(["checkout_started", "completed"]);
++    });
++
++    it("leaves her row alone when someone else paid her cart (a shared phone, a passed-on link)", async () => {
++      const hers = row({ id: "hers", user_id: "member-2", email: "someone@example.com" });
++      const { deps: d, fake } = deps([hers]);
++      expect((await handleWebhook(request().req, d)).body.result).toBe("mismatched");
++      expect(fake.writes).toEqual([]);
++    });
++
++    it("cannot be hijacked by a newer row planted with her token, nor stopped by a decoy marked completed", async () => {
++      const hers = row({ id: "hers", created_at: "2026-11-03T14:20:00.000Z" });
++      const newer = row({ id: "newer", user_id: "attacker", email: PERSONAL.email.toLowerCase(), created_at: "2026-11-03T14:44:00.000Z" });
++      const decoy = row({ id: "decoy", user_id: "attacker", status: "completed", completed_at: "2026-01-01T00:00:00.000Z" });
++      const { deps: d } = deps([hers, newer, decoy]);
++      expect((await handleWebhook(request().req, d)).body.result).toBe("bloomed_by_token");
++      expect([hers.status, newer.status, decoy.completed_at]).toEqual(["completed", "checkout_started", "2026-01-01T00:00:00.000Z"]);
++      // A guest's order on a cart whose only row was planted: nothing is written.
++      const alone = row({ id: "alone", user_id: "attacker", email: PERSONAL.email.toLowerCase() });
++      const guest = deps([alone]);
++      expect((await handleWebhook(request().req, guest.deps)).body.result).toBe("mismatched");
++      expect(alone.status).toBe("checkout_started");
++    });
++
++    it("writes nothing when two members' rows carry the token of an order that names no email", async () => {
++      const a = row({ id: "A" });
++      const b = row({ id: "B", user_id: "member-2", email: "someone@example.com" });
++      const { deps: d, fake } = deps([a, b]);
++      const raw = JSON.stringify(order({ email: null, contact_email: null, customer: null }));
++      expect((await handleWebhook(request({ raw }).req, d)).body.result).toBe("ambiguous");
++      expect(fake.writes).toEqual([]);
++      // One member's cart and no email: hers.
++      const one = deps([row({ id: "one" })]);
++      expect((await handleWebhook(request({ raw }).req, one.deps)).body.result).toBe("bloomed_by_token");
++    });
++
++    it("takes a phone sign-in's row (no email on her account, nor on the row)", async () => {
++      const target = row({ id: "phone", user_id: "phone-member", email: null });
++      const { deps: d } = deps([target], {}, { ...ACCOUNTS, "phone-member": { email: null } });
++      expect((await handleWebhook(request().req, d)).body.result).toBe("bloomed_by_token");
++    });
++
++    it.each([
++      ["Buy now after the bag changed: two pieces noted, one ordered", { item_count: 2 }, { line_items: [{ title: "Toggle Link Chain", quantity: 1 }] }],
++      ["the same count of other pieces (Toggle noted, Verdant ordered)", { item_count: 1, items: [{ name: "Toggle Link Chain", quantity: 1 }] }, { line_items: [{ title: "Verdant Drop Earrings", quantity: 1 }] }],
++      ["Buy now with a raised quantity: one noted, two ordered", { item_count: 1 }, { line_items: [{ title: "Toggle Link Chain", quantity: 2 }] }],
++    ])("writes nothing for %s", async (_what, over, orderOver) => {
++      const target = row(over as Partial<Stored>);
++      const { deps: d, fake } = deps([target]);
++      expect((await handleWebhook(request({ raw: JSON.stringify(order(orderOver)) }).req, d)).body.result).toBe("mismatched");
++      expect(fake.writes).toEqual([]);
++    });
++
++    it("agrees on names written a little differently (case, punctuation, a longer title)", async () => {
++      const target = row({ item_count: 1, items: [{ name: "Toggle Link Chain", quantity: 1 }] });
++      const { deps: d } = deps([target]);
++      const raw = JSON.stringify(order({ line_items: [{ title: "TOGGLE-LINK CHAIN (Gold)", quantity: 1 }] }));
++      expect((await handleWebhook(request({ raw }).req, d)).body.result).toBe("bloomed_by_token");
++    });
++
++    it("does not reach back past a cart's life for a stale row", async () => {
++      const old = row({ created_at: new Date(Date.parse("2026-11-03T14:45:00.000Z") - TOKEN_WINDOW_MS - 60_000).toISOString() });
++      const { deps: d, fake } = deps([old]);
++      expect((await handleWebhook(request().req, d)).body.result).toBe("unmatched");
++      expect(fake.writes).toEqual([]);
++    });
++  });
++});
++
 +describe("order-bloom: logs carry no personal data", () => {
 +  it("logs outcome codes alone, through every path", async () => {
 +    const lines: string[] = [];
@@ -11798,14 +12352,19 @@ index 0000000..e34eb82
 +  });
 +
 +  it("reads only the columns matching needs", () => {
-+    for (const column of COLUMNS.split(", ")) expect(["id", "status", "created_at", "cart_id", "checkout_token", "checkout_url", "email", "item_count"]).toContain(column);
++    for (const column of COLUMNS.split(", ")) expect(["id", "user_id", "status", "created_at", "cart_id", "checkout_token", "checkout_url", "email", "item_count", "items"]).toContain(column);
 +  });
 +
 +  it("is a thin Deno handler over the tested logic, inert without its secret, and says so", () => {
 +    expect(index).toMatch(/from "\.\/bloom\.ts"/);
-+    expect(index).toMatch(/secret: Deno\.env\.get\("SHOPIFY_WEBHOOK_SECRET"\)/);
++    // Its own secret's name, so a generic one another integration set cannot switch it on.
++    expect(index).toMatch(/secret: Deno\.env\.get\("ORDER_BLOOM_WEBHOOK_SECRET"\)/);
++    expect(index).not.toMatch(/SHOPIFY_WEBHOOK_SECRET/);
 +    expect(index).toMatch(/Merging this to main may let\s+\* Lovable deploy it/);
-+    expect(index).toMatch(/Without\s+\* the SHOPIFY_WEBHOOK_SECRET secret it does nothing at all/);
++    expect(index).toMatch(/Without\s+\* the ORDER_BLOOM_WEBHOOK_SECRET secret it does nothing at all/);
++    // The body is read capped, never whole before its size is known.
++    expect(index).toMatch(/body: \(max\) => readCapped\(req, max\)/);
++    expect(index).not.toMatch(/req\.arrayBuffer\(\)/);
 +    expect(index).not.toMatch(/Access-Control-Allow-Origin|corsHeaders/);
 +    // The logic module runs under vitest: no Deno global, no npm: import.
 +    expect(logic).not.toMatch(/\bDeno\.|from "npm:|from "jsr:|from "https?:/);
@@ -11813,9 +12372,10 @@ index 0000000..e34eb82
 +
 +  it("refuses the secret's absence before anything else", () => {
 +    const handler = logic.slice(logic.indexOf("export const handleWebhook"));
-+    expect(handler.indexOf("if (!deps.secret)")).toBeGreaterThan(0);
-+    expect(handler.indexOf("if (!deps.secret)")).toBeLessThan(handler.indexOf("req.method"));
-+    expect(handler.indexOf("if (!deps.secret)")).toBeLessThan(handler.indexOf("req.body()"));
++    const check = handler.indexOf("if (secret.length < MIN_SECRET)");
++    expect(check).toBeGreaterThan(0);
++    expect(check).toBeLessThan(handler.indexOf("req.method"));
++    expect(check).toBeLessThan(handler.indexOf("req.body(MAX_BODY)"));
 +  });
 +});
 +
@@ -11844,6 +12404,7 @@ index 0000000..e34eb82
 +      email: "ananya.rao+naira@example.com",
 +      placedAt: "2026-11-03T14:45:00.000Z",
 +      pieces: 2,
++      names: ["toggle link chain", "verdant drop earrings"],
 +      test: false,
 +      cancelled: false,
 +    });
@@ -11856,6 +12417,8 @@ index 0000000..e34eb82
 +    const store = {
 +      byTokens: vi.fn(async () => (calls.push("tokens"), [])),
 +      byEmail: vi.fn(async () => (calls.push("email"), [])),
++      byOwner: vi.fn(async () => (calls.push("owner"), [])),
++      accountEmail: vi.fn(async () => (calls.push("account"), null)),
 +      complete: vi.fn(async () => true),
 +    };
 +    expect(await bloomOrder(orderFacts(order())!, store)).toBe("unmatched");
@@ -12426,10 +12989,10 @@ index 0000000..6e98cb3
 +});
 diff --git a/src/lib/portal/care.ts b/src/lib/portal/care.ts
 new file mode 100644
-index 0000000..c168e98
+index 0000000..d458ca0
 --- /dev/null
 +++ b/src/lib/portal/care.ts
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,105 @@
 +import type { JewelPiece } from "@/data/jewellery";
 +
 +/*
@@ -12493,14 +13056,21 @@ index 0000000..c168e98
 +
 +const nameKey = (name: string) => name.trim().toLowerCase().replace(/\s+/g, " ");
 +
-+export type CarePiece = { piece: JewelPiece; from: "saved" | "checkout" };
++/** Where a care card's piece came from; `on` (an order's own time) only for an order Shopify's webhook confirmed. */
++export type CarePiece = { piece: JewelPiece; from: "saved" | "checkout" | "order"; on?: string };
 +
 +/**
 + * Her pieces for care cards: the ones she saved (her account's handles), then
 + * those named in the checkouts she started (matched to the listing by its
 + * name, since a checkout row keeps names, not handles), each once.
 + */
-+export const piecesForCare = (catalogue: readonly JewelPiece[], saved: readonly string[], checkoutNames: readonly string[]): CarePiece[] => {
++export const piecesForCare = (
++  catalogue: readonly JewelPiece[],
++  saved: readonly string[],
++  checkoutNames: readonly string[],
++  /** Pieces of her confirmed orders (status 'completed'), each with its order's own time: before the checkouts, so a confirmed piece is called an order's. */
++  orderPieces: readonly { name: string; on: string }[] = [],
++): CarePiece[] => {
 +  const byHandle = new Map(catalogue.map((p) => [p.handle, p]));
 +  const byName = new Map(catalogue.map((p) => [nameKey(p.name), p]));
 +  const out: CarePiece[] = [];
@@ -12510,6 +13080,13 @@ index 0000000..c168e98
 +    if (piece && !seen.has(piece.handle)) {
 +      seen.add(piece.handle);
 +      out.push({ piece, from: "saved" });
++    }
++  }
++  for (const o of orderPieces) {
++    const piece = byName.get(nameKey(o.name));
++    if (piece && !seen.has(piece.handle)) {
++      seen.add(piece.handle);
++      out.push({ piece, from: "order", on: o.on });
 +    }
 +  }
 +  for (const n of checkoutNames) {
@@ -12523,11 +13100,13 @@ index 0000000..c168e98
 +};
 diff --git a/src/lib/portal/checkouts.ts b/src/lib/portal/checkouts.ts
 new file mode 100644
-index 0000000..b461260
+index 0000000..b18f5fb
 --- /dev/null
 +++ b/src/lib/portal/checkouts.ts
-@@ -0,0 +1,87 @@
+@@ -0,0 +1,128 @@
++import { useEffect, useMemo, useState } from "react";
 +import { getSupabase } from "@/integrations/supabase/lazy";
++import { useMember } from "@/components/portal/MemberContext";
 +
 +/*
 +  The checkouts she started while signed in: her own member_orders rows,
@@ -12535,9 +13114,17 @@ index 0000000..b461260
 +  them. The bag writes a row each time it hands her to checkout, before any
 +  payment, so a row is a checkout she started, never an order: it may have
 +  been paid, or left. A row is called an order only once the shop's order
-+  webhook has confirmed it (Phase 5's order-bloom, which alone sets status
-+  'completed' and completed_at, the order's own time): it then carries
-+  `confirmedAt`. Every other row is only ever "Checkouts you started".
++  webhook has confirmed it (Phase 5's order-bloom sets status 'completed'
++  and completed_at, the order's own time): it then carries `confirmedAt`.
++  Every other row is only ever "Checkouts you started".
++
++  The database does not yet hold that line by itself: the table's insert
++  rule checks only whose row it is, so a member's own browser could write
++  'completed' onto her own rows (for her own eyes alone, since she reads
++  only hers). An owner-approved migration that lets browsers insert only
++  open checkouts closes that; until then nothing here gates, prices or
++  redeems anything, and order-bloom never writes one member's order onto
++  another's row.
 +*/
 +
 +export type CheckoutItem = { name: string; quantity: number; size: string | null };
@@ -12575,17 +13162,26 @@ index 0000000..b461260
 +  return confirmedAt && !Number.isNaN(Date.parse(confirmedAt)) ? { id, createdAt, items, confirmedAt } : { id, createdAt, items };
 +};
 +
-+/** Her own rows, newest first (row security limits the read to her; the filter says so too). */
++/**
++ * Her own rows, newest first (row security limits the read to her; the
++ * filter says so too): her twelve newest of any kind, and with them every
++ * order that has a rose in her garden (her newest confirmed ones), so an
++ * order whose rose stands is always listed, however many checkouts came
++ * after it.
++ */
 +export const readCheckouts = async (userId: string): Promise<Checkout[]> => {
 +  const supabase = await getSupabase();
-+  const { data, error } = await supabase
-+    .from("member_orders")
-+    .select("id, created_at, items, status, completed_at")
-+    .eq("user_id", userId)
-+    .order("created_at", { ascending: false })
-+    .limit(CHECKOUTS_SHOWN);
-+  if (error) throw error;
-+  return (data ?? []).map(checkoutOf).filter((c): c is Checkout => c !== null);
++  const columns = "id, created_at, items, status, completed_at";
++  const [newest, orders] = await Promise.all([
++    supabase.from("member_orders").select(columns).eq("user_id", userId).order("created_at", { ascending: false }).limit(CHECKOUTS_SHOWN),
++    supabase.from("member_orders").select(columns).eq("user_id", userId).eq("status", "completed").order("completed_at", { ascending: false }).limit(ROSES_SHOWN),
++  ]);
++  if (newest.error) throw newest.error;
++  const seen = new Set<string>();
++  return [...(newest.data ?? []), ...(orders.error ? [] : (orders.data ?? []))]
++    .map(checkoutOf)
++    .filter((c): c is Checkout => c !== null && !seen.has(c.id) && Boolean(seen.add(c.id)))
++    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 +};
 +
 +/** At most this many gold roses stand in her garden's front row: the newest orders' (the Order Desk lists her twelve newest rows). */
@@ -12614,6 +13210,28 @@ index 0000000..b461260
 +    .map((c) => ({ id: c.id, confirmedAt: c.confirmedAt }))
 +    .sort((a, b) => Date.parse(b.confirmedAt) - Date.parse(a.confirmedAt))
 +    .slice(0, ROSES_SHOWN);
++
++/* The garden's bed and its words mount together: one read for the two. */
++let lastRead: { user: string; at: number; rows: Promise<ConfirmedOrder[]> } | null = null;
++const readOnce = (user: string): Promise<ConfirmedOrder[]> => {
++  if (lastRead?.user !== user || Date.now() - lastRead.at > 5000) lastRead = { user, at: Date.now(), rows: readConfirmed(user).catch(() => []) };
++  return lastRead.rows;
++};
++
++/** Her confirmed orders for the gold roses, read once a visit (the preview member's stand-in rows instead, and Supabase never asked). */
++export const useConfirmed = (): ConfirmedOrder[] => {
++  const { user, checkoutsPreview } = useMember();
++  const [read, setRead] = useState<ConfirmedOrder[]>([]);
++  useEffect(() => {
++    if (checkoutsPreview) return;
++    let live = true;
++    void readOnce(user.id).then((rows) => live && setRead(rows));
++    return () => {
++      live = false;
++    };
++  }, [user.id, checkoutsPreview]);
++  return useMemo(() => (checkoutsPreview ? confirmedOf(checkoutsPreview) : read), [checkoutsPreview, read]);
++};
 diff --git a/src/lib/portal/clock.test.ts b/src/lib/portal/clock.test.ts
 new file mode 100644
 index 0000000..5779fbd
@@ -12931,10 +13549,10 @@ index 0000000..9e18ac6
 +});
 diff --git a/src/lib/portal/copy.test.ts b/src/lib/portal/copy.test.ts
 new file mode 100644
-index 0000000..3ecb6b9
+index 0000000..3443c9a
 --- /dev/null
 +++ b/src/lib/portal/copy.test.ts
-@@ -0,0 +1,286 @@
+@@ -0,0 +1,296 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
@@ -13109,6 +13727,10 @@ index 0000000..3ecb6b9
 +    expect(readFileSync(join(src, "lib/portal/checkouts.ts"), "utf8")).not.toMatch(/\.(insert|update|upsert|delete)\(/);
 +    const care = readFileSync(join(src, "pages/members/Care.tsx"), "utf8");
 +    expect(care).toMatch(/From a checkout you started/);
++    // A piece is called an order's only from a row the webhook confirmed, dated with that order.
++    expect(care.match(/From the order placed/g)).toHaveLength(1);
++    expect(care).toMatch(/from === "order" && on \? `From the order placed \$\{formatIstDate\(on\)\}`/);
++    expect(care).toMatch(/r\.confirmedAt \? r\.items\.map/);
 +  });
 +
 +  /* Phase 5: a row is called an Order only once Shopify's webhook (order-bloom) has set status
@@ -13129,8 +13751,14 @@ index 0000000..3ecb6b9
 +    expect(desk).toMatch(/\{started\.map\(\(row\) => \(/);
 +    expect(desk).toMatch(/Started \{formatIstDate\(row\.createdAt\)\}/);
 +    const rose = readFileSync(join(src, "components/portal/GoldRose.tsx"), "utf8");
-+    expect(rose).toMatch(/<strong>A gold-leaf rose<\/strong>, for the order placed \{formatIstDate\(o\.confirmedAt\)\}\./);
-+    expect(rose).toMatch(/confirmedOf\(checkoutsPreview\)/);
++    // Each rose dated with its own order's time (the rendered words are pinned in GoldRose.test).
++    expect(rose).toMatch(/<strong>A gold-leaf rose<\/strong>/);
++    expect(rose).toMatch(/placed \$\{formatIstDate\(o\.confirmedAt\)\}\./);
++    expect(rose).not.toMatch(/new Date\(\)|Date\.now\(\)/);
++    // The roses come from confirmed rows alone, the preview's too.
++    expect(lib).toMatch(/confirmedOf\(checkoutsPreview\)/);
++    // No cap or count of roses said in words: never "the eight newest", never a row to fill.
++    expect(desk).not.toMatch(/\b(eight|\d+) newest\b/i);
 +    // Never a number of them, in the drawing or in words.
 +    for (const text of [rose, readFileSync(join(src, "pages/members/GardenHome.tsx"), "utf8"), desk]) {
 +      expect(text).not.toMatch(/\{\s*(orders|roses|confirmed)\.length\s*\}|\$\{(orders|roses|confirmed)\.length|\b(roses|orders) so far\b/);
@@ -15295,10 +15923,10 @@ index 0000000..8eee640
 +export type { Gift };
 diff --git a/src/lib/portal/goldRoses.ts b/src/lib/portal/goldRoses.ts
 new file mode 100644
-index 0000000..eaf745b
+index 0000000..f68f079
 --- /dev/null
 +++ b/src/lib/portal/goldRoses.ts
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,54 @@
 +import { BED, hashString, mulberry32 } from "./gardenLayout";
 +import type { ConfirmedOrder } from "./checkouts";
 +
@@ -15310,7 +15938,10 @@ index 0000000..eaf745b
 +  a new order's rose never moves the ones before it (until a ninth lets the
 +  oldest go). They keep clear of her two plants' stems (and the ring of
 +  buds round her stone flower) and of each other, and cost the bed's
-+  80-plant budget nothing: one still layer, drawn by GoldRose.
++  80-plant budget nothing: one still layer, drawn by GoldRose. While there
++  is room, a rose also keeps off the Naira flower's low leaves (NAIRA_LEAVES),
++  so its gold head never sits on the hero's sage leaf; only a crowded row
++  lets one stand nearer, beside its stem.
 +
 +  Each is dated with its own order's time (`at`), never with today's, and
 +  nothing counts them.
@@ -15322,6 +15953,8 @@ index 0000000..eaf745b
 +export const ROSE_GAP = 16;
 +/** Kept clear of the Naira flower's stem (its leaves lean right) and of her stone flower and its ring of buds. */
 +export const NAIRA_CLEAR = [-24, 40] as const;
++/** The Naira flower's low leaves, either side of its stem (its painted span over the bed's last 60 units): kept clear while the row has room. */
++export const NAIRA_LEAVES = [-64, 56] as const;
 +export const STONE_CLEAR = 50;
 +
 +export type RosePlace = { id: string; x: number; y: number; flip: boolean; at: string };
@@ -15332,6 +15965,7 @@ index 0000000..eaf745b
 +    if ((x < nairaX + NAIRA_CLEAR[0] || x > nairaX + NAIRA_CLEAR[1]) && Math.abs(x - stoneX) > STONE_CLEAR) free.push(x);
 +  }
 +  if (!free.length) return [];
++  const open = free.filter((x) => x < nairaX + NAIRA_LEAVES[0] || x > nairaX + NAIRA_LEAVES[1]);
 +  const placed: RosePlace[] = [];
 +  const room = (x: number) => Math.min(ROSE_GAP, ...placed.map((p) => Math.abs(p.x - x)));
 +  const oldestFirst = [...orders].sort((a, b) => Date.parse(a.confirmedAt) - Date.parse(b.confirmedAt));
@@ -15339,7 +15973,10 @@ index 0000000..eaf745b
 +    const rand = mulberry32(hashString(`${seed || "naira"}:rose:${order.id}`));
 +    // Its own seeded spot, or the nearest free one with room around it (in a crowded row, the roomiest).
 +    const want = free[Math.floor(rand() * free.length)];
-+    const x = free.reduce((best, c) => (room(c) * 1000 - Math.abs(c - want) > room(best) * 1000 - Math.abs(best - want) ? c : best));
++    const pick = (list: number[]) => list.reduce((best, c) => (room(c) * 1000 - Math.abs(c - want) > room(best) * 1000 - Math.abs(best - want) ? c : best));
++    // Clear of the hero's leaves while one spot there has full room; else anywhere free.
++    const clear = open.length && pick(open);
++    const x = clear && room(clear) >= ROSE_GAP ? clear : pick(free);
 +    placed.push({ id: order.id, x, y: ROSE_ROW.soil, flip: rand() < 0.5, at: order.confirmedAt });
 +  }
 +  return placed.sort((a, b) => a.x - b.x);
@@ -15782,10 +16419,10 @@ index 0000000..6e89712
 +  `Google sign-in doesn't open inside ${app}. Use your email, or open this page in your browser.`;
 diff --git a/src/lib/portal/isolation.test.ts b/src/lib/portal/isolation.test.ts
 new file mode 100644
-index 0000000..d92c122
+index 0000000..619aa9f
 --- /dev/null
 +++ b/src/lib/portal/isolation.test.ts
-@@ -0,0 +1,425 @@
+@@ -0,0 +1,446 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
@@ -16014,6 +16651,27 @@ index 0000000..d92c122
 +    expect(home.match(/<ArrivalRepair\b/g)).toHaveLength(1);
 +    // On her first signed-in visit only (memberMeta firstVisit), and never over the Doors.
 +    expect(home).toMatch(/\{firstVisit && !doors && <ArrivalRepair /);
++  });
++
++  /* The tier switch (&tier=1|2, &probe=0) is the preview member's alone: only preview.ts calls
++     forceTier (itself a no-op outside import.meta.env.DEV), never a room. */
++  it("lets only the preview member force a tier", () => {
++    const callers = all.filter((f) => !isTest(f) && f !== "lib/portal/tier.ts" && /\bforceTier\(/.test(readFileSync(join(src, f), "utf8")));
++    expect(callers).toEqual(["lib/portal/preview.ts"]);
++    expect(readFileSync(join(src, "lib/portal/tier.ts"), "utf8")).toMatch(/export const forceTier = [^{]*\{\s*if \(import\.meta\.env\.DEV\) forced = /);
++  });
++
++  /* The shop's performance function refuses exactly the paths the browser
++     already refuses: the browser's pattern, character for character, its
++     flags included. Phase 5 gives the server 'members' in one commit of its
++     own (c792610), which the owner may drop: the server is then the
++     browser's pattern without 'members', as on main. */
++  it("has shopper-performance refuse exactly the paths the browser refuses", () => {
++    const exclusion = /\/\^\\\/\(\?:admin\|.*?\.test\(/;
++    const browser = readFileSync(join(src, "lib/shopperPerformance.ts"), "utf8").match(exclusion)?.[0] ?? "";
++    const server = readFileSync(join(src, "../supabase/functions/shopper-performance/index.ts"), "utf8").match(exclusion)?.[0];
++    expect(browser).toContain("|members|");
++    expect([browser, browser.replace("|members|", "|")]).toContain(server);
 +  });
 +
 +  /* The preview drops are fixtures for this machine only: reached through
@@ -19511,10 +20169,10 @@ index 0000000..d7cc497
 +  safeSet(PORTAL_KEY, JSON.stringify({ ...readPortal(), ...patch }));
 diff --git a/src/lib/portal/scene.test.ts b/src/lib/portal/scene.test.ts
 new file mode 100644
-index 0000000..ed88a3e
+index 0000000..cd6b7b8
 --- /dev/null
 +++ b/src/lib/portal/scene.test.ts
-@@ -0,0 +1,269 @@
+@@ -0,0 +1,326 @@
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +
 +/* The Bloom Field's scene with three.js's renderer and light probe stood in
@@ -19568,7 +20226,8 @@ index 0000000..ed88a3e
 +  }
 +  class PMREMGenerator {
 +    fromScene() {
-+      return { texture: { isTexture: true, dispose: () => (gl.pmrem.env += 1) } };
++      // A render target: freeing it (not only its texture) frees its framebuffer too.
++      return { texture: { isTexture: true, dispose: () => undefined }, dispose: () => (gl.pmrem.env += 1) };
 +    }
 +    dispose() {
 +      gl.pmrem.disposed += 1;
@@ -19578,7 +20237,7 @@ index 0000000..ed88a3e
 +});
 +
 +const THREE = await import("three");
-+const { FALL_MS, MAX_FLOWERS, MIN_FLOWERS, fallPlan, flowerCount, liveScenes, mountBloomField, simplifyOutline } = await import("./scene");
++const { BANK, FALL_MS, MAX_FLOWERS, MIN_FLOWERS, ROCK, SETTING_GOLD, fallPlan, flowerCount, liveScenes, mountBloomField, pose, simplifyOutline } = await import("./scene");
 +const { FLOWER_SHAPES } = await import("@/lib/nairaFlower/outline");
 +
 +/* A frame clock: each step runs the waiting callbacks `ms` after the last. */
@@ -19622,14 +20281,15 @@ index 0000000..ed88a3e
 +const mount = (extra: Partial<Parameters<typeof mountBloomField>[1]> = {}) => {
 +  const onEnd = vi.fn();
 +  const onStart = vi.fn();
++  const onReady = vi.fn();
 +  const canvas = document.createElement("canvas");
 +  const add = vi.spyOn(THREE.Scene.prototype, "add");
-+  const handle = mountBloomField(canvas, { colours: ["#2F6B4F", "#9DB8A6"], seed: "verdant", onEnd, onStart, ...extra });
++  const handle = mountBloomField(canvas, { colours: ["#2F6B4F", "#9DB8A6"], seed: "verdant", onEnd, onStart, onReady, ...extra });
 +  // Its flowers (RoomEnvironment's own boxes are an InstancedMesh too).
 +  const mesh = add.mock.calls.map((c) => c[0]).find((o) => (o as { isInstancedMesh?: boolean }).isInstancedMesh && (o as { geometry?: unknown }).geometry instanceof THREE.ExtrudeGeometry) as InstanceType<typeof THREE.InstancedMesh>;
 +  add.mockRestore();
 +  mounted.push(handle);
-+  return { handle, onEnd, onStart, canvas, mesh, renderer: gl.renderers.at(-1)! };
++  return { handle, onEnd, onStart, onReady, canvas, mesh, renderer: gl.renderers.at(-1)! };
 +};
 +
 +describe("the Bloom Field's scene", () => {
@@ -19639,7 +20299,15 @@ index 0000000..ed88a3e
 +    expect(mesh.count).toBe(flowerCount(390, 844));
 +    expect(mesh.count).toBeGreaterThanOrEqual(MIN_FLOWERS);
 +    expect(mesh.count).toBeLessThanOrEqual(MAX_FLOWERS);
-+    expect(mesh.material).toBeInstanceOf(THREE.MeshStandardMaterial);
++    // Enamel faces in the drop's colour and a gold setting: two materials, two draws (not one per shape and side).
++    const materials = mesh.material as InstanceType<typeof THREE.MeshStandardMaterial>[];
++    expect(materials).toHaveLength(2);
++    for (const m of materials) expect(m).toBeInstanceOf(THREE.MeshStandardMaterial);
++    expect(materials[1].metalness).toBe(1);
++    expect(`#${materials[1].color.getHexString()}`.toUpperCase()).toBe(SETTING_GOLD.toUpperCase());
++    expect(mesh.geometry.groups.map((g) => g.materialIndex)).toEqual([0, 1]);
++    expect(mesh.geometry.groups[0].start).toBe(0);
++    expect(mesh.geometry.groups[1].start + mesh.geometry.groups[1].count).toBe(mesh.geometry.attributes.position.count);
 +    expect(mesh.geometry).toBeInstanceOf(THREE.ExtrudeGeometry);
 +    expect(mesh.instanceColor).not.toBeNull();
 +    expect(renderer.pixelRatio).toBe(2);
@@ -19669,7 +20337,8 @@ index 0000000..ed88a3e
 +    handle.dispose();
 +    handle.dispose();
 +    expect(geometry).toHaveBeenCalled();
-+    expect(material).toHaveBeenCalled();
++    // Both of the flower's materials, and the room's own (its boxes freed as soon as its light was made).
++    expect(material.mock.calls.length).toBeGreaterThanOrEqual(2);
 +    expect(instances).toHaveBeenCalled();
 +    expect(gl.pmrem).toEqual({ disposed: 1, env: 1 });
 +    expect(renderer.disposed).toBe(1);
@@ -19735,6 +20404,36 @@ index 0000000..ed88a3e
 +    handle.dispose();
 +  });
 +
++  it("is prepared before it falls: compiled, and one unseen frame drawn with every flower hidden, then ready", async () => {
++    const { handle, onReady, onStart, renderer, mesh } = mount({ probe: false });
++    // Held, as the drop room holds it until the opening begins.
++    handle.pause();
++    expect(onReady).not.toHaveBeenCalled();
++    await settle();
++    expect(onReady).toHaveBeenCalledTimes(1);
++    expect(renderer.renders).toBe(1);
++    const m = new THREE.Matrix4();
++    for (let i = 0; i < mesh.count; i++) {
++      mesh.getMatrixAt(i, m);
++      expect(new THREE.Vector3().setFromMatrixScale(m).length()).toBe(0);
++    }
++    // Nothing falls until it is wanted, and then at once.
++    step(16.7, 5);
++    expect(onStart).not.toHaveBeenCalled();
++    handle.resume();
++    step(16.7);
++    expect(onStart).toHaveBeenCalledTimes(1);
++    handle.dispose();
++  });
++
++  it("never prepares a disposed scene", async () => {
++    const { handle, onReady, renderer } = mount();
++    handle.dispose();
++    await settle();
++    expect(onReady).not.toHaveBeenCalled();
++    expect(renderer.renders).toBe(0);
++  });
++
 +  it("frees what it made when it cannot start", () => {
 +    const fail = vi.spyOn(THREE.PerspectiveCamera.prototype, "lookAt").mockImplementation(() => {
 +      throw new Error("no");
@@ -19762,12 +20461,28 @@ index 0000000..ed88a3e
 +    for (const f of plan) {
 +      expect(f.delay + f.time).toBeLessThan(FALL_MS / 1000);
 +      expect(Math.abs(f.x)).toBeLessThanOrEqual(1.05);
-+      expect(Math.hypot(...f.axis)).toBeCloseTo(1, 6);
 +    }
 +    // The drop's colour leads; the brand blush is about one in eight.
 +    const blush = plan.filter((f) => f.tone === 2).length / plan.length;
 +    expect(blush).toBeGreaterThan(0.05);
 +    expect(blush).toBeLessThan(0.22);
++  });
++
++  it("flutters, its face always to her: it rocks and banks within ±0.6 rad, and turns in its own plane", () => {
++    expect(ROCK).toBeLessThanOrEqual(0.6);
++    expect(BANK).toBeLessThanOrEqual(0.6);
++    for (const f of fallPlan(200, "fixture-drop-fleur")) {
++      for (let t = 0; t <= 6; t += 0.1) {
++        const [x, y] = pose(f, t);
++        expect(Math.abs(x)).toBeLessThanOrEqual(ROCK + 1e-9);
++        expect(Math.abs(y)).toBeLessThanOrEqual(BANK + 1e-9);
++        // Its face's normal, turned by the pose, still points at the camera by at least cos(0.45)·cos(0.55).
++        const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(...pose(f, t)));
++        expect(new THREE.Vector3(0, 0, 1).applyQuaternion(q).z).toBeGreaterThan(0.75);
++      }
++      expect(Math.abs(f.spin)).toBeGreaterThanOrEqual(0.6);
++      expect(Math.abs(f.spin)).toBeLessThanOrEqual(1.6);
++    }
 +  });
 +
 +  it("draws the header flower's own outline, with less than half its points", () => {
@@ -19786,10 +20501,10 @@ index 0000000..ed88a3e
 +});
 diff --git a/src/lib/portal/scene.ts b/src/lib/portal/scene.ts
 new file mode 100644
-index 0000000..8c4983c
+index 0000000..c62023c
 --- /dev/null
 +++ b/src/lib/portal/scene.ts
-@@ -0,0 +1,397 @@
+@@ -0,0 +1,465 @@
 +import * as THREE from "three";
 +import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 +import { BEVEL, BLUSH, DEPTH } from "@/lib/nairaFlower/config";
@@ -19799,14 +20514,25 @@ index 0000000..8c4983c
 +
 +/*
 +  THE BLOOM FIELD (Tier 2): as a drop opens, a fall of the brand's own
-+  flower, cast as enamel charms in the drop's colour, over the unboxing.
-+  One InstancedMesh of 60 to 200 flowers (by the screen's size), each the
-+  header flower's five shapes extruded with its DEPTH and BEVEL and glazed
-+  with its BLUSH roughness; MeshStandardMaterial lit by RoomEnvironment and
-+  one key light, no shadow maps, the device pixels capped at 2. Every
-+  flower is out of sight by 6 s and the scene stops; the caller then puts
-+  it away (dispose), which frees the geometry, the material, the room's
-+  light and the renderer, and gives the WebGL context back at once.
++  flower, cast as enamel charms in the drop's colour, set in gold, over the
++  unboxing. One InstancedMesh of 60 to 200 flowers (by the screen's size),
++  each the header flower's five shapes extruded with its DEPTH and BEVEL;
++  its faces glazed in the drop's colour with the BLUSH roughness, its edge
++  and bevel in bright gold (two MeshStandardMaterials, two draws), lit by
++  RoomEnvironment and one key light, no shadow maps, the device pixels
++  capped at 2. Each flower flutters as it falls (rocking, banking into its
++  glide, turning in its own plane), so its face is always to her: never an
++  edge-on bar. Every flower is out of sight by 6 s and the scene stops; the
++  caller then puts it away (dispose), which frees the geometry, the
++  materials, the room's light and its render target, and the renderer, and
++  gives the WebGL context back at once.
++
++  Its cost is paid before the opening moves: mounting makes the renderer
++  and the room's light (one synchronous task), the shaders compile (off the
++  main thread where the browser can), and one unseen frame is drawn with
++  every flower hidden, so a browser that links its programs on first use
++  does so then, not mid-fall. Only then is it ready (onReady); the caller
++  holds the fall (pause) until the opening begins.
 +
 +  Reached only by import() (lib/portal/spectacle.ts), so three.js stays the
 +  shared "three" chunk the header flower already brought, and a scene that
@@ -19879,7 +20605,7 @@ index 0000000..8c4983c
 +  sway: number;
 +  swayHz: number;
 +  phase: number;
-+  axis: [number, number, number];
++  /** Its turn in its own plane (rad/s), and where that turn starts. */
 +  spin: number;
 +  turn: number;
 +  /** 0 the drop's colour, 1 its paler tint, 2 the brand flower's blush. */
@@ -19893,10 +20619,6 @@ index 0000000..8c4983c
 +  return Array.from({ length: n }, (_, i) => {
 +    // An even rain across the width, jittered, so no gap opens down the middle.
 +    const x = ((i + rand()) / n) * 2.1 - 1.05;
-+    const ax = rand() - 0.5;
-+    const ay = rand() - 0.5;
-+    const az = rand() - 0.5;
-+    const al = Math.hypot(ax, ay, az) || 1;
 +    const r = rand();
 +    return {
 +      x,
@@ -19908,12 +20630,25 @@ index 0000000..8c4983c
 +      sway: 0.12 + rand() * 0.3,
 +      swayHz: 0.45 + rand() * 0.6,
 +      phase: rand() * Math.PI * 2,
-+      axis: [ax / al, ay / al, az / al],
-+      spin: (rand() < 0.5 ? -1 : 1) * (1.4 + rand() * 2.4),
++      spin: (rand() < 0.5 ? -1 : 1) * (0.6 + rand() * 1.0),
 +      turn: rand() * Math.PI * 2,
 +      tone: r < 0.125 ? 2 : r < 0.45 ? 1 : 0,
 +    };
 +  });
++};
++
++/** The most a flower rocks (about its x axis) and banks (about y), rad: its face never turns more than about 40° from her. */
++export const ROCK = 0.45;
++export const BANK = 0.55;
++
++/**
++ * A flower's flutter t seconds into the fall, as Euler angles (x, y, z):
++ * it rocks, banks into its sideways glide (the y tilt follows the sway's
++ * velocity) and turns in its own plane. Its face stays to her.
++ */
++export const pose = (f: Fall, t: number): [number, number, number] => {
++  const a = f.phase + t * f.swayHz * Math.PI * 2;
++  return [Math.sin(a * 0.75 + f.phase) * ROCK, Math.cos(a) * BANK, f.turn + f.spin * t];
 +};
 +
 +export type FallEnd = "done" | "slow" | "lost";
@@ -19929,6 +20664,8 @@ index 0000000..8c4983c
 +  onEnd: (why: FallEnd) => void;
 +  /** Its first frame is drawn. */
 +  onStart?: () => void;
++  /** Prepared (shaders compiled, an unseen frame drawn): it will start at once when it is wanted. */
++  onReady?: () => void;
 +};
 +
 +export type BloomFieldHandle = {
@@ -19956,14 +20693,44 @@ index 0000000..8c4983c
 +    bevelEnabled: true,
 +    bevelThickness: BEVEL,
 +    bevelSize: BEVEL * 0.7,
-+    // One chamfer catches the light as it tumbles; the header's three segments are for a flower sixty times the size.
++    // One chamfer catches the light as it turns; the header's three segments are for a flower sixty times the size.
 +    bevelSegments: 1,
 +    curveSegments: 1,
 +  });
 +  geometry.translate(0, 0, -DEPTH / 2);
 +  geometry.computeVertexNormals();
++  return twoGroups(geometry);
++};
++
++/**
++ * ExtrudeGeometry gives each shape its own two groups (its faces, then its
++ * edge and bevel), ten draws for five shapes. Its triangles are reordered
++ * in place, every face first, then every edge, so the flower draws in two:
++ * the enamel, and the gold.
++ */
++export const twoGroups = <G extends THREE.BufferGeometry>(geometry: G): G => {
++  const order = [0, 1].flatMap((m) => geometry.groups.filter((g) => (g.materialIndex ?? 0) === m));
++  if (order.length < 3) return geometry;
++  for (const attr of Object.values(geometry.attributes) as THREE.BufferAttribute[]) {
++    const size = attr.itemSize;
++    const was = attr.array.slice();
++    let at = 0;
++    for (const g of order) {
++      (attr.array as Float32Array).set(was.subarray(g.start * size, (g.start + g.count) * size) as Float32Array, at);
++      at += g.count * size;
++    }
++    attr.needsUpdate = true;
++  }
++  const faces = order.filter((g) => (g.materialIndex ?? 0) === 0).reduce((n, g) => n + g.count, 0);
++  const all = order.reduce((n, g) => n + g.count, 0);
++  geometry.clearGroups();
++  geometry.addGroup(0, faces, 0);
++  geometry.addGroup(faces, all - faces, 1);
 +  return geometry;
 +};
++
++/** The setting's gold: the brand's gold, as bright metal. */
++export const SETTING_GOLD = "#C99A4C";
 +
 +const FOV = 30;
 +const CAMERA_Z = 14;
@@ -20010,9 +20777,12 @@ index 0000000..8c4983c
 +    const scene = new THREE.Scene();
 +    const pmrem = new THREE.PMREMGenerator(renderer);
 +    parts.push(pmrem);
-+    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
++    // The room's light: its boxes and their materials freed at once, its render target (not only its texture) with the rest.
++    const room = new RoomEnvironment();
++    const env = pmrem.fromScene(room, 0.04);
++    room.dispose();
 +    parts.push(env);
-+    scene.environment = env;
++    scene.environment = env.texture;
 +
 +    const camera = new THREE.PerspectiveCamera(FOV, 1, 0.5, 40);
 +    camera.position.set(0, 0, CAMERA_Z);
@@ -20028,9 +20798,14 @@ index 0000000..8c4983c
 +
 +    const geometry = buildFlower();
 +    parts.push(geometry);
-+    const material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: BLUSH.roughness, metalness: 0.08 });
-+    parts.push(material);
-+    const mesh = new THREE.InstancedMesh(geometry, material, plan.length);
++    // The enamel takes each flower's colour; the gold keeps its own (the instance colour is left out of its shader).
++    const enamel = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: BLUSH.roughness, metalness: 0.08 });
++    const gold = new THREE.MeshStandardMaterial({ color: SETTING_GOLD, roughness: 0.34, metalness: 1 });
++    gold.onBeforeCompile = (shader) => {
++      shader.fragmentShader = shader.fragmentShader.replace("#include <color_fragment>", "");
++    };
++    parts.push(enamel, gold);
++    const mesh = new THREE.InstancedMesh(geometry, [enamel, gold], plan.length);
 +    parts.push(mesh);
 +    // THREE.DynamicDrawUsage, by its value: the shared three chunk then gains no export for it (InstancedMesh is its one new name).
 +    mesh.instanceMatrix.setUsage(35048);
@@ -20056,7 +20831,6 @@ index 0000000..8c4983c
 +
 +    // One stand-in moved to each flower in turn (Object3D, which the shared chunk already exports, rather than Matrix4 and Quaternion).
 +    const stand = new THREE.Object3D();
-+    const axis = new THREE.Vector3();
 +    const hide = (i: number) => {
 +      stand.scale.setScalar(0);
 +      stand.updateMatrix();
@@ -20079,7 +20853,8 @@ index 0000000..8c4983c
 +        const s = f.size * pxToWorld;
 +        const top = half + s;
 +        stand.position.set(f.x * half * aspect + Math.sin(f.phase + t * f.swayHz * Math.PI * 2) * f.sway, top - k * 2 * top, f.z);
-+        stand.quaternion.setFromAxisAngle(axis.set(f.axis[0], f.axis[1], f.axis[2]), f.turn + f.spin * t);
++        const [rx, ry, rz] = pose(f, t);
++        stand.rotation.set(rx, ry, rz);
 +        stand.scale.setScalar(s);
 +        stand.updateMatrix();
 +        mesh.setMatrixAt(i, stand.matrix);
@@ -20166,7 +20941,15 @@ index 0000000..8c4983c
 +    void Promise.resolve(compiled)
 +      .catch(() => undefined)
 +      .then(() => {
++        if (disposed) return;
++        // One unseen frame (every flower hidden, the canvas not yet shown): a browser that links its programs on first use does it now.
++        try {
++          renderer.render(scene, camera);
++        } catch {
++          /* the first real frame tries again */
++        }
 +        ready = true;
++        options.onReady?.();
 +        run();
 +      });
 +
@@ -22399,10 +23182,10 @@ index 0000000..18261ca
 +};
 diff --git a/src/lib/portal/unboxGsap.test.ts b/src/lib/portal/unboxGsap.test.ts
 new file mode 100644
-index 0000000..37e8915
+index 0000000..2379cd8
 --- /dev/null
 +++ b/src/lib/portal/unboxGsap.test.ts
-@@ -0,0 +1,148 @@
+@@ -0,0 +1,186 @@
 +import { afterEach, beforeEach, describe, expect, it } from "vitest";
 +import gsap from "gsap";
 +import { BURST_MS, MAX_BURST } from "./petalPaths";
@@ -22535,6 +23318,44 @@ index 0000000..37e8915
 +  });
 +});
 +
++describe("the pieces' flight", () => {
++  it("keeps a card unseen while it crosses the box: its fade begins only late in the flight", async () => {
++    await ready;
++    const stage = document.createElement("div");
++    const card = document.createElement("article");
++    document.body.append(stage, card);
++    const stop = unfoldFromBox([card], stage);
++    const tick = takeClock();
++    tick(UNFOLD.duration * (UNFOLD.fadeAt - 0.05));
++    expect(Number(card.style.opacity)).toBe(0);
++    tick(UNFOLD.duration * 0.25);
++    expect(Number(card.style.opacity)).toBeGreaterThan(0);
++    tick(UNFOLD.duration);
++    expect(card.style.opacity).toBe("");
++    stop?.();
++  });
++
++  it("is a one-shot: once played it is let go, so reduced motion turned on and off never replays it", async () => {
++    await ready;
++    const stage = document.createElement("div");
++    const card = document.createElement("article");
++    document.body.append(stage, card);
++    unfoldFromBox([card], stage);
++    takeClock()(UNFOLD.duration + 0.2);
++    expect(card.style.opacity).toBe("");
++    // She turns reduced motion on, then off again: nothing is built again (a rebuild would hide the card at once).
++    const toggle = async (on: boolean) => {
++      reduce = on;
++      listeners.forEach((f) => f());
++      await new Promise((r) => setTimeout(r, 5));
++    };
++    await toggle(true);
++    await toggle(false);
++    expect(card.style.opacity).toBe("");
++    expect(card.style.transform).toBe("");
++  });
++});
++
 +describe("under reduced motion", () => {
 +  it("makes nothing, so the room plays today's choreography", async () => {
 +    await ready;
@@ -22553,10 +23374,10 @@ index 0000000..37e8915
 +});
 diff --git a/src/lib/portal/unboxGsap.ts b/src/lib/portal/unboxGsap.ts
 new file mode 100644
-index 0000000..06d9a4e
+index 0000000..e7563bc
 --- /dev/null
 +++ b/src/lib/portal/unboxGsap.ts
-@@ -0,0 +1,193 @@
+@@ -0,0 +1,234 @@
 +import gsap from "gsap";
 +import { hashString, mulberry32 } from "./gardenLayout";
 +
@@ -22571,7 +23392,11 @@ index 0000000..06d9a4e
 +    1.6 s, exactly as today's arcs are.
 +  - The pieces come out of the box: each card starts fitted onto a seat in
 +    the box (Flip.fit, at the card's own proportions) and unfolds to its
-+    place in the grid, one after another.
++    place in the grid, one after another. Only cards whose place is in view
++    are given (the room checks): a flight into a grid below the fold is
++    never seen. A card stays unseen while it is over the box (its fade
++    begins late in the flight), so no name or price is ever half seen over
++    the box's art.
 +  - The rub's last petals let go the same way.
 +
 +  Only transform and opacity move. Everything is made inside
@@ -22600,19 +23425,34 @@ index 0000000..06d9a4e
 +/** Stops whatever it started and puts every element back as it was. */
 +export type Stop = () => void;
 +
-+/* Builds inside the no-preference media query, or not at all. */
-+const whenMotion = (build: () => (() => void) | void): Stop | null => {
++/*
++  Builds inside the no-preference media query, or not at all. Each is a
++  one-shot: once it has played (`done`), the media query is let go, left as
++  it ended, so turning reduced motion on and off again never replays it;
++  its Stop puts everything back and lets go too.
++*/
++const whenMotion = (build: (done: () => void) => (() => void) | void): Stop | null => {
 +  const mm = gsap.matchMedia();
 +  let made = false;
++  const done = () => mm.kill(false);
 +  mm.add(MOTION_OK, () => {
 +    made = true;
-+    return build();
++    return build(done);
 +  });
 +  if (!made) {
-+    mm.revert();
++    mm.kill();
 +    return null;
 +  }
-+  return () => mm.revert();
++  return () => mm.kill(true);
++};
++
++/* Calls `done` once `n` of them have ended. */
++const after = (n: number, done: () => void) => {
++  let left = n;
++  if (!left) done();
++  return () => {
++    if (--left === 0) done();
++  };
 +};
 +
 +export type Throw = {
@@ -22668,7 +23508,8 @@ index 0000000..06d9a4e
 + * now, each removed as it lands. Null under reduced motion: nothing made.
 + */
 +export const throwPetals = (nodes: readonly Element[], throws: readonly Throw[], startMs = 0): Stop | null =>
-+  whenMotion(() => {
++  whenMotion((done) => {
++    const landed = after(nodes.filter((_, i) => throws[i]).length, done);
 +    nodes.forEach((node, i) => {
 +      const t = throws[i];
 +      if (!t) {
@@ -22678,7 +23519,13 @@ index 0000000..06d9a4e
 +      const T = t.duration / 1000;
 +      gsap.set(node, { xPercent: -50, yPercent: -50, x: 0, y: 0, rotation: 0, scale: 0.4, opacity: 0 });
 +      gsap
-+        .timeline({ delay: (startMs + t.delay) / 1000, onComplete: () => node.remove() })
++        .timeline({
++          delay: (startMs + t.delay) / 1000,
++          onComplete: () => {
++            node.remove();
++            landed();
++          },
++        })
 +        .to(node, { duration: T, ease: "none", rotation: t.spin, physics2D: { velocity: t.velocity, angle: t.angle, gravity: t.gravity, friction: t.friction } }, 0)
 +        .to(node, { duration: T * 0.12, ease: "none", opacity: 1, scale: 1 }, 0)
 +        .to(node, { duration: T * 0.22, ease: "none", opacity: 0 }, T * 0.78);
@@ -22692,13 +23539,20 @@ index 0000000..06d9a4e
 + * out a little, then down under gravity, each removed as it lands.
 + */
 +export const scatterPetals = (nodes: readonly Element[], spread = 110): Stop | null =>
-+  whenMotion(() => {
++  whenMotion((done) => {
++    const landed = after(nodes.length, done);
 +    nodes.forEach((node, i) => {
 +      const angle = (i / Math.max(1, nodes.length)) * 360 + Math.random() * 30;
 +      const T = 0.7 + Math.random() * 0.3;
 +      gsap.set(node, { xPercent: -50, yPercent: -50, x: 0, y: 0, scale: 0.3, opacity: 0 });
 +      gsap
-+        .timeline({ delay: Math.random() * 0.06, onComplete: () => node.remove() })
++        .timeline({
++          delay: Math.random() * 0.06,
++          onComplete: () => {
++            node.remove();
++            landed();
++          },
++        })
 +        .to(node, { duration: T, ease: "none", rotation: (Math.random() - 0.5) * 540, physics2D: { velocity: spread * (1 + Math.random() * 0.7), angle, gravity: spread * 4.2, friction: 0.03 } }, 0)
 +        .to(node, { duration: T * 0.25, ease: "none", opacity: 1, scale: 1 }, 0)
 +        .to(node, { duration: T * 0.4, ease: "none", opacity: 0, scale: 0.85 }, T * 0.6);
@@ -22706,7 +23560,8 @@ index 0000000..06d9a4e
 +    return () => nodes.forEach((n) => n.remove());
 +  });
 +
-+export const UNFOLD = { duration: 0.78, stagger: 0.07, seat: 0.42 };
++/** `fadeAt`: how far into its flight (0 to 1) a card begins to show; by then power3 has carried it most of the way. */
++export const UNFOLD = { duration: 0.78, stagger: 0.07, seat: 0.42, fadeAt: 0.45 };
 +
 +/**
 + * The pieces come out of the box: each card is fitted (Flip.fit) onto a seat
@@ -22717,7 +23572,8 @@ index 0000000..06d9a4e
 +export const unfoldFromBox = (cards: readonly HTMLElement[], stage: HTMLElement): Stop | null => {
 +  const Flip = flip;
 +  if (!Flip || !cards.length) return null;
-+  return whenMotion(() => {
++  return whenMotion((done) => {
++    const shown = after(cards.length, done);
 +    const seat = document.createElement("div");
 +    seat.setAttribute("aria-hidden", "true");
 +    seat.style.cssText = "position:absolute;left:50%;top:48%;visibility:hidden;pointer-events:none";
@@ -22734,19 +23590,25 @@ index 0000000..06d9a4e
 +    seat.remove();
 +    cards.forEach((card, i) => {
 +      const fit = fits[i];
++      const delay = i * UNFOLD.stagger;
 +      gsap.from(card, {
 +        x: fit.x ?? 0,
 +        y: fit.y ?? 0,
 +        scaleX: fit.scaleX ?? 1,
 +        scaleY: fit.scaleY ?? 1,
-+        opacity: 0,
 +        duration: UNFOLD.duration,
-+        delay: i * UNFOLD.stagger,
++        delay,
 +        ease: "power3.out",
 +        immediateRender: true,
 +        // Left as the grid laid it out: no transform of gsap's stays behind.
-+        clearProps: "transform,opacity",
++        clearProps: "transform",
 +      });
++      // Unseen while it crosses the box; shown as it reaches its place.
++      gsap.fromTo(
++        card,
++        { opacity: 0 },
++        { opacity: 1, duration: UNFOLD.duration * (1 - UNFOLD.fadeAt), delay: delay + UNFOLD.duration * UNFOLD.fadeAt, ease: "none", immediateRender: true, clearProps: "opacity", onComplete: shown },
++      );
 +    });
 +  });
 +};
@@ -25581,10 +26443,10 @@ index 0000000..ef917a3
 +export default Card;
 diff --git a/src/pages/members/Care.tsx b/src/pages/members/Care.tsx
 new file mode 100644
-index 0000000..b13ddd3
+index 0000000..a28f806
 --- /dev/null
 +++ b/src/pages/members/Care.tsx
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,144 @@
 +import { useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -25597,6 +26459,7 @@ index 0000000..b13ddd3
 +import { shopifyImage, shopifySrcSet } from "@/lib/shopifyImage";
 +import { careLineOf, houseCareLine, piecesForCare, platingOf, pvdExplainer, ritualFor } from "@/lib/portal/care";
 +import { stillMotion } from "@/lib/portal/motion";
++import { formatIstDate } from "@/lib/portal/ist";
 +import "./care.css";
 +
 +/*
@@ -25629,8 +26492,10 @@ index 0000000..b13ddd3
 +  const house = useMemo(() => houseCareLine(jewellery), [jewellery]);
 +  const ritual = ritualFor(house);
 +  const pvd = useMemo(() => pvdExplainer(jewellery), [jewellery]);
-+  const checkoutNames = useMemo(() => (rows ?? []).flatMap((r) => r.items.map((i) => i.name)), [rows]);
-+  const pieces = useMemo(() => piecesForCare(jewellery, naira.saved, checkoutNames), [jewellery, naira.saved, checkoutNames]);
++  // A confirmed order's pieces are called that order's (dated with it); every other row's stay "a checkout you started".
++  const checkoutNames = useMemo(() => (rows ?? []).flatMap((r) => (r.confirmedAt ? [] : r.items.map((i) => i.name))), [rows]);
++  const orderPieces = useMemo(() => (rows ?? []).flatMap((r) => (r.confirmedAt ? r.items.map((i) => ({ name: i.name, on: r.confirmedAt as string })) : [])), [rows]);
++  const pieces = useMemo(() => piecesForCare(jewellery, naira.saved, checkoutNames, orderPieces), [jewellery, naira.saved, checkoutNames, orderPieces]);
 +
 +  return (
 +    <PortalShell title="Care" description="Caring for your pieces, in the Inner Garden, Naira Flore's members' portal.">
@@ -25679,7 +26544,7 @@ index 0000000..b13ddd3
 +            </p>
 +          ) : (
 +            <ul className="ig-care-cards" data-clarity-mask="true">
-+              {pieces.map(({ piece, from }) => {
++              {pieces.map(({ piece, from, on }) => {
 +                const care = careLineOf(piece);
 +                const plating = platingOf(piece);
 +                const image = piece.cover ?? piece.image;
@@ -25699,7 +26564,7 @@ index 0000000..b13ddd3
 +                      />
 +                    )}
 +                    <div className="ig-care-body">
-+                      <p className={eyebrow}>{from === "saved" ? "In your drawer" : "From a checkout you started"}</p>
++                      <p className={eyebrow}>{from === "saved" ? "In your drawer" : from === "order" && on ? `From the order placed ${formatIstDate(on)}` : "From a checkout you started"}</p>
 +                      <h3 className="ig-care-name">
 +                        <Link to={`/jewellery/${piece.handle}`}>{piece.name}</Link>
 +                      </h3>
@@ -26112,10 +26977,10 @@ index 0000000..372cf5c
 +export default Drawer;
 diff --git a/src/pages/members/DropRoom.test.tsx b/src/pages/members/DropRoom.test.tsx
 new file mode 100644
-index 0000000..30104dc
+index 0000000..40f8b34
 --- /dev/null
 +++ b/src/pages/members/DropRoom.test.tsx
-@@ -0,0 +1,461 @@
+@@ -0,0 +1,522 @@
 +import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 +import { MemoryRouter, Route, Routes } from "react-router-dom";
 +import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -26373,6 +27238,67 @@ index 0000000..30104dc
 +    expect(again.container.querySelectorAll(".ig-unbox-petals .ig-petal")).toHaveLength(0);
 +  });
 +
++  it("never unfolds a piece unseen: one whose place is below the fold waits, hidden, and rises as she reaches it", async () => {
++    vi.useFakeTimers({ now: opens + 20 * 60_000 });
++    Element.prototype.animate = animate as never;
++    const rose: Element[] = [];
++    const animateAndNote = function (this: Element, k: Keyframe[], o?: number | KeyframeAnimationOptions) {
++      if (this.classList.contains("ig-piece")) rose.push(this);
++      return animate.call(this, k, o);
++    };
++    Element.prototype.animate = animateAndNote as never;
++    // The first card's place is in view; the rest are below the fold (under the garden path).
++    const rect = vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(function (this: Element) {
++      const below = this.classList.contains("ig-piece") && this.previousElementSibling !== null;
++      return { top: below ? 900 : 300, bottom: below ? 1140 : 540, left: 16, right: 374, width: 358, height: 240, x: 16, y: below ? 900 : 300, toJSON: () => ({}) } as DOMRect;
++    });
++    const seen: { cb: IntersectionObserverCallback; els: Element[]; options?: IntersectionObserverInit }[] = [];
++    vi.stubGlobal(
++      "IntersectionObserver",
++      class {
++        rec: { cb: IntersectionObserverCallback; els: Element[]; options?: IntersectionObserverInit };
++        constructor(cb: IntersectionObserverCallback, options?: IntersectionObserverInit) {
++          this.rec = { cb, els: [], options };
++          seen.push(this.rec);
++        }
++        observe(el: Element) {
++          this.rec.els.push(el);
++        }
++        unobserve(el: Element) {
++          this.rec.els = this.rec.els.filter((e) => e !== el);
++        }
++        disconnect() {
++          this.rec.els = [];
++        }
++      },
++    );
++    try {
++      const { container } = await visit("/members/drops/verdant");
++      await act(async () => void vi.advanceTimersByTime(400));
++      await flush();
++      await act(async () => void vi.advanceTimersByTime(3000));
++      await flush();
++      const cards = [...container.querySelectorAll<HTMLElement>(".ig-piece")];
++      expect(cards.length).toBeGreaterThan(1);
++      // The one in view rose at once; the others wait, unseen, watched.
++      expect(rose).toEqual([cards[0]]);
++      for (const card of cards.slice(1)) expect(card.style.opacity).toBe("0");
++      const watch = seen.find((o) => o.els.includes(cards[1]))!;
++      expect(watch.options?.threshold).toBe(0.15);
++      // She scrolls to the second: it rises then, and only it.
++      act(() => watch.cb([{ isIntersecting: true, target: cards[1] } as unknown as IntersectionObserverEntry], {} as IntersectionObserver));
++      expect(cards[1].style.opacity).toBe("");
++      expect(rose).toEqual([cards[0], cards[1]]);
++      expect(cards[2].style.opacity).toBe("0");
++      // Leaving the room leaves none of them hidden.
++      cleanup();
++      for (const card of cards) expect(card.style.opacity).toBe("");
++    } finally {
++      rect.mockRestore();
++      vi.unstubAllGlobals();
++    }
++  });
++
 +  it("shows the box open and the pieces at once under reduced motion", async () => {
 +    vi.useFakeTimers({ now: opens + 20 * 60_000 });
 +    setReducedMotion(true);
@@ -26579,10 +27505,10 @@ index 0000000..30104dc
 +});
 diff --git a/src/pages/members/DropRoom.tsx b/src/pages/members/DropRoom.tsx
 new file mode 100644
-index 0000000..8682628
+index 0000000..1705e89
 --- /dev/null
 +++ b/src/pages/members/DropRoom.tsx
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,371 @@
 +import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 +import { Link, Navigate, useParams } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -26630,12 +27556,60 @@ index 0000000..8682628
 +  - vault: the archive: her pressed flower (or a gentle empty frame), the
 +    story and the pieces with live availability, by kind.
 +
-+  On a Tier 2 phone (lib/portal/tier), a room that may unbox fetches the
-+  Bloom Field's scene and the gsap choreography once it has painted (an
-+  idle callback), while the shop is still answering; when the pieces
-+  unfold they then come out of the box (Flip) rather than rising in place.
-+  Under reduced motion, Data Saver or on Tier 1 neither is ever fetched.
++  On a Tier 2 phone (lib/portal/tier), a room that will unbox (decided once
++  the shop has answered: never for a drop that turns out "opening shortly")
++  fetches the Bloom Field's scene and the gsap choreography at once (an
++  idle callback); when the pieces unfold, those whose place is in view come
++  out of the box (Flip). Under reduced motion, Data Saver or on Tier 1
++  neither is ever fetched.
++
++  A piece whose place is below the fold (under the garden path, on most
++  phones) does not unfold unseen: it waits, hidden, and rises in place as
++  she scrolls to it (an observer, with a timed re-check; without one, at
++  once), on every tier.
 +*/
++
++/* What a card's top must clear to count as in view at the unfold: the garden path (about 59 px) and a little more. */
++const PATH_CLEAR = 84;
++const RISE: Keyframe[] = [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }];
++
++/**
++ * The pieces that were below the fold rise as she reaches them, each once,
++ * hidden until then (an inline opacity, set before the browser paints).
++ * Returns their stop, which shows every one still waiting.
++ */
++const riseInView = (cards: readonly HTMLElement[], rise: (card: HTMLElement, i: number) => void): (() => void) => {
++  if (!cards.length) return () => undefined;
++  if (typeof IntersectionObserver === "undefined") {
++    cards.forEach(rise);
++    return () => undefined;
++  }
++  const waiting = new Set(cards);
++  const show = (list: readonly HTMLElement[]) =>
++    list.forEach((card, i) => {
++      if (!waiting.delete(card)) return;
++      io.unobserve(card);
++      card.style.opacity = "";
++      rise(card, i);
++    });
++  const io = new IntersectionObserver((entries) => show(entries.filter((e) => e.isIntersecting).map((e) => e.target as HTMLElement)), {
++    threshold: 0.15,
++    rootMargin: "0px 0px -10% 0px",
++  });
++  // An observer can miss its first word (a layout still settling): anything already in view is shown on a re-check.
++  const check = () => show([...waiting].filter((c) => c.getBoundingClientRect().top < window.innerHeight - PATH_CLEAR));
++  const timers = [350, 1100].map((ms) => window.setTimeout(check, ms));
++  cards.forEach((card) => {
++    card.style.opacity = "0";
++    io.observe(card);
++  });
++  return () => {
++    io.disconnect();
++    timers.forEach((t) => window.clearTimeout(t));
++    waiting.forEach((card) => (card.style.opacity = ""));
++    waiting.clear();
++  };
++};
 +
 +const EYEBROW: Record<DropPhase, string> = {
 +  sealed: "a first look soon",
@@ -26676,15 +27650,14 @@ index 0000000..8682628
 +  const unfoldedOnce = useRef(false);
 +  const unfoldStop = useRef<(() => void) | null>(null);
 +
-+  // A room that may unbox asks for Tier 2's code ahead, once it has painted: in by the time the box opens.
-+  const mayUnbox = phase === "members" && !hasDropFlag("unboxed", dropId);
++  // A room that will unbox asks for Tier 2's code at once (the field is prepared while the opening holds; the choreography is wanted 2.5 s in).
 +  useEffect(() => {
-+    if (!mayUnbox || !spectacleAllowed()) return;
++    if (!ritual || !spectacleAllowed()) return;
 +    return whenIdle(() => {
 +      void loadChoreography();
 +      void loadBloomScene();
 +    });
-+  }, [mayUnbox]);
++  }, [ritual]);
 +  useEffect(() => () => unfoldStop.current?.(), []);
 +
 +  // Seen once its pieces unfold (or she skips to them): only then is it used up on this device.
@@ -26709,13 +27682,20 @@ index 0000000..8682628
 +    unfoldedOnce.current = true;
 +    if (!ritual) return;
 +    const cards = [...(gridRef.current?.querySelectorAll<HTMLElement>(".ig-piece") ?? [])];
-+    // Tier 2: out of the box and into the grid (Flip). Otherwise, or if it declines, one after another in place.
++    const rise = (card: HTMLElement, i: number) => void play(card, RISE, { duration: 460, delay: i * 60, easing: EASE_REVEAL, fill: "backwards" });
++    // Measured before anything moves: whose place she can see now, above the garden path.
++    const fold = window.innerHeight - PATH_CLEAR;
++    const seen = cards.filter((c) => c.getBoundingClientRect().top < fold);
++    const below = cards.filter((c) => !seen.includes(c));
++    // Tier 2: the pieces in view come out of the box and into the grid (Flip). Otherwise, or if it declines, one after another in place.
 +    const stage = gridRef.current?.closest(".ig-room")?.querySelector<HTMLElement>(".ig-unbox-stage");
-+    unfoldStop.current = stage ? (choreographyNow()?.unfoldFromBox(cards, stage) ?? null) : null;
-+    if (unfoldStop.current) return;
-+    cards.forEach((card, i) =>
-+      play(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 460, delay: i * 60, easing: EASE_REVEAL, fill: "backwards" }),
-+    );
++    const flown = stage && seen.length ? (choreographyNow()?.unfoldFromBox(seen, stage) ?? null) : null;
++    if (!flown) seen.forEach(rise);
++    const rising = riseInView(below, rise);
++    unfoldStop.current = () => {
++      flown?.();
++      rising();
++    };
 +  }, [unfolded, ritual]);
 +
 +  if (!drop || !phase) return <Navigate to="/members/drops" replace />;
@@ -26850,7 +27830,7 @@ index 0000000..8682628
 +              <DropUnbox drop={drop} piece={unboxPiece} ritual={ritual} onUnfold={onUnfold} />
 +            ) : null}
 +            <section className="ig-section" aria-labelledby="ig-pieces">
-+              <h2 id="ig-pieces" className="ig-h2">
++              <h2 id="ig-pieces" tabIndex={-1} className="ig-h2">
 +                {phase === "members" ? "The pieces · a first look" : "The pieces"}
 +              </h2>
 +              {phase === "members" && (
@@ -26878,7 +27858,7 @@ index 0000000..8682628
 +              />
 +            </section>
 +            <section className="ig-section" aria-labelledby="ig-pieces">
-+              <h2 id="ig-pieces" className="ig-h2">
++              <h2 id="ig-pieces" tabIndex={-1} className="ig-h2">
 +                Its pieces, as the shop has them now
 +              </h2>
 +              {kinds.length > 1 && (
@@ -28380,10 +29360,10 @@ index 0000000..d71295f
 +export default Gifts;
 diff --git a/src/pages/members/GiftsCareOrders.test.tsx b/src/pages/members/GiftsCareOrders.test.tsx
 new file mode 100644
-index 0000000..e1eb29d
+index 0000000..c9e5d99
 --- /dev/null
 +++ b/src/pages/members/GiftsCareOrders.test.tsx
-@@ -0,0 +1,685 @@
+@@ -0,0 +1,720 @@
 +import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter, Route, Routes } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -28436,7 +29416,9 @@ index 0000000..e1eb29d
 +          return q;
 +        },
 +        order: () => q,
-+        limit: () => Promise.resolve({ data: sb.rowsError ? null : sb.rows, error: sb.rowsError }),
++        // Her rows as the query asks for them (a status filter honoured), at most `n`.
++        limit: (n: number) =>
++          Promise.resolve({ data: sb.rowsError ? null : sb.rows.filter((r) => read.eq.every(([c, v]) => c === "user_id" || r[c] === v)).slice(0, n), error: sb.rowsError }),
 +        insert: () => {
 +          sb.writes.push(`insert ${table}`);
 +          return Promise.resolve({ error: null });
@@ -28832,7 +29814,7 @@ index 0000000..e1eb29d
 +    expect(within(confirmed[0]).getByText("Ordered 4 Nov 2026 · 5:56 pm IST")).toBeInTheDocument();
 +    expect(within(confirmed[0]).getByText("Woven Gold Hoops")).toBeInTheDocument();
 +    expect(within(confirmed[0]).getByRole("link", { name: "Where is it now? Track it" })).toHaveAttribute("href", "/track-order");
-+    expect(orders.textContent).toMatch(/A gold-leaf rose grows for each in your garden's front row/);
++    expect(orders.textContent).toMatch(/A gold-leaf rose grows in your garden's front row for each, for joy, never points/);
 +    // No count of anything, and no price.
 +    expect(orders.textContent).not.toMatch(/\b\d+ (orders?|roses?)\b|₹/i);
 +    // Every other row stays a checkout she started, in the same words.
@@ -28842,6 +29824,22 @@ index 0000000..e1eb29d
 +    expect(within(started).getByText("Star Point Band, US 7")).toBeInTheDocument();
 +    expect(within(started).getByText("Prism Cluster Studs")).toBeInTheDocument();
 +    expect(started.textContent).toMatch(/A checkout is not always an order: it may have been paid, or left before paying\./);
++    expect(sb.writes).toEqual([]);
++  });
++
++  it("lists every order that has a rose, however many checkouts came after it, and puts her orders before the help", async () => {
++    const later = Array.from({ length: 13 }, (_, i) => ({ id: `later-${i}`, created_at: new Date(Date.UTC(2026, 10, 1 + i, 9)).toISOString(), status: "checkout_started", items: [{ name: "Toggle Link Chain", quantity: 1, size: null }] }));
++    sb.rows = [...later, { id: "row-old", created_at: "2026-10-01T08:00:00Z", status: "completed", completed_at: "2026-10-01T08:06:00Z", items: [{ name: "Woven Gold Hoops", quantity: 1, size: null }] }];
++    signIn();
++    visit("/members/orders");
++    const heading = await screen.findByRole("heading", { name: "Orders" });
++    const orders = heading.closest("section") as HTMLElement;
++    expect(within(orders).getByText("Ordered 1 Oct 2026 · 1:36 pm IST")).toBeInTheDocument();
++    expect(within(orders).getByText("Woven Gold Hoops")).toBeInTheDocument();
++    // Her own orders first, then where any order can be seen.
++    const track = screen.getByRole("heading", { name: "Track an order" });
++    expect(heading.compareDocumentPosition(track) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
++    expect(sb.reads.filter((r) => r.table === "member_orders").map((r) => r.eq)).toEqual([[["user_id", USER_ID]], [["user_id", USER_ID], ["status", "completed"]]]);
 +    expect(sb.writes).toEqual([]);
 +  });
 +
@@ -28985,6 +29983,21 @@ index 0000000..e1eb29d
 +    expect(section.textContent).not.toMatch(/you bought|your order|purchased/i);
 +  });
 +
++  it("calls a piece the order's only when the shop's webhook confirmed that order, dated with it", async () => {
++    sb.rows = [
++      { id: "row-9", created_at: "2026-11-04T12:20:00Z", status: "completed", completed_at: "2026-11-04T12:26:00Z", items: [{ name: "Birthstone Heart Necklace", quantity: 1, size: null }] },
++      { id: "row-1", created_at: "2026-10-27T09:40:00Z", status: "checkout_started", items: [{ name: "Toggle Link Chain", quantity: 1, size: null }] },
++    ];
++    signIn();
++    visit("/members/care");
++    const section = (await screen.findByRole("heading", { name: "Your pieces" })).closest("section") as HTMLElement;
++    await waitFor(() => expect(within(section).getAllByRole("listitem")).toHaveLength(2));
++    const [order, checkout] = within(section).getAllByRole("listitem");
++    expect(within(order).getByText("From the order placed 4 Nov 2026")).toBeInTheDocument();
++    expect(within(checkout).getByText("From a checkout you started")).toBeInTheDocument();
++    expect(section.textContent).not.toMatch(/you bought|your order|purchased/i);
++  });
++
 +  it("says water is fine only on the cards of pieces whose own listing says so", async () => {
 +    const dry = catalogue.find((p) => /keep (it|them) dry|before swimming/i.test(p.care ?? "")) as JewelPiece;
 +    const waterproof = catalogue.find((p) => /^Waterproof/.test(p.care ?? "")) as JewelPiece;
@@ -29031,7 +30044,9 @@ index 0000000..e1eb29d
 +    signIn();
 +    visit("/members/care");
 +    await screen.findByRole("heading", { name: "Your pieces" });
-+    await waitFor(() => expect(sb.reads.map((r) => r.table)).toEqual(["member_orders"]));
++    // Her newest rows, and with them her confirmed orders: both her own, both read once.
++    await waitFor(() => expect(sb.reads.map((r) => r.table)).toEqual(["member_orders", "member_orders"]));
++    for (const r of sb.reads) expect(r.eq[0]).toEqual(["user_id", USER_ID]);
 +  });
 +});
 +
@@ -30709,10 +31724,10 @@ index 0000000..dbc391e
 +export default MembersRoute;
 diff --git a/src/pages/members/Orders.tsx b/src/pages/members/Orders.tsx
 new file mode 100644
-index 0000000..275f445
+index 0000000..2f57f88
 --- /dev/null
 +++ b/src/pages/members/Orders.tsx
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,173 @@
 +import { useEffect, useRef } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -30725,7 +31740,8 @@ index 0000000..275f445
 +import "./orders.css";
 +
 +/*
-+  /members/orders: the Order Desk. Where an order can really be seen: the
++  /members/orders: the Order Desk. Her confirmed orders first, when she
++  has any (below). Then where an order can really be seen: the
 +  shop's own Track Order page (its sign-in with the checkout email, which
 +  lists each order and its status), and the confirmation email's own
 +  button, which opens that order's page on any phone. Then the checkouts
@@ -30785,6 +31801,31 @@ index 0000000..275f445
 +          <p className="ig-lede">Where to see an order, and who to ask about one.</p>
 +        </div>
 +
++        {/* Only rows the shop's webhook confirmed (status 'completed'): each dated with its order's own time. First, when there is one: her own orders before the help. */}
++        {orders.length > 0 && (
++          <section className="ig-section" aria-labelledby="ig-orders-h">
++            <h2 id="ig-orders-h" className="ig-h2">
++              Orders
++            </h2>
++            <p className="ig-fineprint">
++              Confirmed by the shop as each was placed, with its pieces as the bag noted them at checkout. The confirmation email lists the order itself. A gold-leaf rose grows in your garden's front row for each, for joy, never points.
++            </p>
++            <ul className="ig-started ig-orders-list" data-clarity-mask="true">
++              {orders.map((row) => (
++                <li key={row.id} className="ig-started-row ig-order-row">
++                  <p className="ig-started-when">
++                    Ordered {formatIstDate(row.confirmedAt)} · {istClock(row.confirmedAt)} IST
++                  </p>
++                  <Pieces items={row.items} />
++                  <Link className={textLink} to="/track-order">
++                    Where is it now? Track it
++                  </Link>
++                </li>
++              ))}
++            </ul>
++          </section>
++        )}
++
 +        <section className="ig-section" aria-labelledby="ig-track-h">
 +          <h2 id="ig-track-h" className="ig-h2">
 +            Track an order
@@ -30805,31 +31846,6 @@ index 0000000..275f445
 +            When an order is placed, an email confirms it. Its {EMAIL_BUTTON} button opens that order's own page, with its status, on any phone. Keep the email: it is the record of the order.
 +          </p>
 +        </section>
-+
-+        {/* Only rows the shop's webhook confirmed (status 'completed'): each dated with its order's own time. */}
-+        {orders.length > 0 && (
-+          <section className="ig-section" aria-labelledby="ig-orders-h">
-+            <h2 id="ig-orders-h" className="ig-h2">
-+              Orders
-+            </h2>
-+            <p className="ig-fineprint">
-+              Confirmed by the shop as each was placed, with its pieces as the bag noted them at checkout. The confirmation email lists the order itself. A gold-leaf rose grows for each in your garden's front row (the eight newest, when there are more), for joy, never points.
-+            </p>
-+            <ul className="ig-started ig-orders-list" data-clarity-mask="true">
-+              {orders.map((row) => (
-+                <li key={row.id} className="ig-started-row ig-order-row">
-+                  <p className="ig-started-when">
-+                    Ordered {formatIstDate(row.confirmedAt)} · {istClock(row.confirmedAt)} IST
-+                  </p>
-+                  <Pieces items={row.items} />
-+                  <Link className={textLink} to="/track-order">
-+                    Where is it now? Track it
-+                  </Link>
-+                </li>
-+              ))}
-+            </ul>
-+          </section>
-+        )}
 +
 +        <section className="ig-section" aria-labelledby="ig-started-h">
 +          <h2 id="ig-started-h" className="ig-h2">
@@ -31486,10 +32502,10 @@ index 0000000..152e52d
 +}
 diff --git a/src/pages/members/droproom.css b/src/pages/members/droproom.css
 new file mode 100644
-index 0000000..72a0516
+index 0000000..19889d6
 --- /dev/null
 +++ b/src/pages/members/droproom.css
-@@ -0,0 +1,169 @@
+@@ -0,0 +1,171 @@
 +/* A drop's room: rub the petals, the unboxing, the pieces and the press.
 +   Imported only by DropRoom.tsx. Motion is transform and opacity only. */
 +
@@ -31571,7 +32587,9 @@ index 0000000..72a0516
 +.ig-box-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
 +
 +/* the Bloom Field (Tier 2): a canvas laid over the screen for the fall, under the garden path (39), the header and the bag (50); it never takes a tap */
-+.ig-bloomfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 38; pointer-events: none; opacity: 0; transition: opacity 0.32s var(--nf-ease-reveal); }
++/* The Bloom Field (Tier 2) falls under the room's words (the back link, the eyebrow, the title and story at 38), over the box and the pieces; the garden path (39), the header and the bag (50) stay above both. */
++.ig-room > .ig-head, .ig-room > .ig-room-back { position: relative; z-index: 38; }
++.ig-bloomfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 37; pointer-events: none; opacity: 0; transition: opacity 0.32s var(--nf-ease-reveal); }
 +.ig-bloomfield.is-on { opacity: 1; }
 +.ig-bloomfield.is-away { opacity: 0; transition: none; }
 +
@@ -31591,7 +32609,7 @@ index 0000000..72a0516
 +.ig-piece-photo--blank { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--nf-surface-raised), rgb(var(--nf-gold-rgb) / 0.12)); }
 +.ig-piece-body { display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem; min-width: 0; }
 +.ig-piece-name { margin: 0; font-family: var(--nf-font-editorial); font-weight: 400; font-size: 1.25rem; line-height: 1.2; }
-+.ig-piece-name a { display: inline-block; padding: 6px 0; color: inherit; text-decoration: none; }
++.ig-piece-name a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-decoration: none; }
 +.ig-piece .ig-price { justify-content: flex-start; font-size: 15px; }
 +.ig-piece-opt { display: flex; flex-direction: column; gap: 0.2rem; width: 100%; }
 +.ig-piece-opt span {
@@ -32729,12 +33747,24 @@ index ccb66e7..ee81629 100644
  ];
  const PUBLIC = ["/", "/jewellery", "/jewellery/prism-riviere-bracelet", "/products/blush-of-dawn", "/journal"];
  
+diff --git a/supabase/config.toml b/supabase/config.toml
+index 5c63fbc..f2fd988 100644
+--- a/supabase/config.toml
++++ b/supabase/config.toml
+@@ -1 +1,5 @@
+-project_id = "xlsejigpjlqfvzfhhntf"
+\ No newline at end of file
++project_id = "xlsejigpjlqfvzfhhntf"
++# order-bloom (Phase 5): Shopify sends no Supabase token; the function's own HMAC check is its
++# authentication, and without ORDER_BLOOM_WEBHOOK_SECRET it refuses every request (401).
++[functions.order-bloom]
++verify_jwt = false
 diff --git a/supabase/functions/order-bloom/bloom.ts b/supabase/functions/order-bloom/bloom.ts
 new file mode 100644
-index 0000000..c8248a7
+index 0000000..d2fc688
 --- /dev/null
 +++ b/supabase/functions/order-bloom/bloom.ts
-@@ -0,0 +1,367 @@
+@@ -0,0 +1,511 @@
 +/*
 +  order-bloom's logic: when Shopify says an order was placed, the checkout
 +  a member started for it is marked as an order (member_orders.status
@@ -32748,40 +33778,67 @@ index 0000000..c8248a7
 +  handler, imports it as ./bloom.ts.
 +
 +  How a request is answered, in order:
-+  1. No secret set (SHOPIFY_WEBHOOK_SECRET): 401 for every request, before
-+     anything is read. The function is inert until the owner sets it.
-+  2. Not a POST: 405. A body over MAX_BODY: 413.
++  1. No secret set (ORDER_BLOOM_WEBHOOK_SECRET), or one shorter than
++     MIN_SECRET once trimmed: 401 for every request, before anything is
++     read. The function is inert until the owner sets it.
++  2. Not a POST: 405. A body over MAX_BODY (by its content-length, or as it
++     is read, for a request that sends none): 413.
 +  3. X-Shopify-Hmac-Sha256 must be the base64 HMAC-SHA256 of the raw body
 +     under the secret, compared in constant time: else 401, nothing written.
-+  4. Signed, but not this shop's orders/create, unreadable, a test order or
-+     a cancelled one: 200, nothing written.
++  4. Signed, but not this shop's orders/create, unreadable, a test order, a
++     cancelled one, or one placed more than MAX_AGE_MS ago (a replayed or
++     re-sent old delivery): 200, nothing written.
 +  5. The order is matched to one row (the rule below) and that row alone is
 +     marked; an order that matches nothing gets 200 at once, nothing written.
 +     A database error is a 500, so Shopify delivers again later (step 5 is
 +     safe to repeat).
 +
++  Whose row it is. A member's browser writes her rows (the bag's insert),
++  so every column but user_id is the browser's word: its email, its tokens,
++  its time. user_id alone is the database's (row security sets it to the
++  member who wrote the row), and the one email that proves who a member is
++  is her own sign-in email (auth.users, confirmed), read here with the
++  service role. Sign-in emails are unique, so at most one member is the
++  order's.
++
 +  The matching rule:
 +  - First by token. The order's cart_token and checkout_token are compared
 +    with each row's cart_id, checkout_token and the token in its
 +    checkout_url (/cart/c/<token> or /checkouts/cn/<token>, which the bag
-+    stores for every checkout it starts). Every row that carries one of the
-+    order's tokens is that order's cart. If one of them is already
++    stores for every checkout it starts). The rows carrying one of them are
++    the cart's. When the order names an email, only the rows of the member
++    who signs in with it count; when none of the cart's members does, the
++    order was paid by someone else (a phone shared, a link passed on) and
++    nothing is written. Without an email, a cart shared by two members is a
++    doubt, and nothing is written. Among her rows: if one is already
 +    completed, the order has bloomed before (a retry): nothing is written.
-+    Otherwise only the newest of them started before the order (allowing
-+    SKEW_MS of clock difference) is marked: a cart sent to checkout twice
-+    became one order.
++    Otherwise only the newest started before the order (allowing SKEW_MS
++    of clock difference, and no more than TOKEN_WINDOW_MS before it) is
++    the one: a cart sent to checkout twice became one order. It is marked
++    only when its pieces agree with the order's (samePieces): the bag
++    notes a row only on its own Checkout tap, so a cart changed afterwards
++    and paid through Buy now is not the checkout the row describes.
 +  - Then, only when no row carries any of the order's tokens, by email,
-+    under a conservative rule: the order's email equals the row's exactly
-+    (lower-cased); exactly one row with that email was started in the
-+    EMAIL_WINDOW_MS before the order (up to SKEW_MS after it), of any
-+    status; that row is not completed already; its piece count equals the
-+    order's when both are known; and, when the order carries a token, the
-+    row carries none (a row with a token of its own was another cart). Two
-+    rows, or none, or any doubt: nothing is written. A missed match only
-+    leaves a checkout under "Checkouts you started", which is still true.
++    under a conservative rule: the member who signs in with the order's
++    email (found among the owners of rows naming that email; rows other
++    members wrote under her email are passed over, never counted as hers);
++    exactly one of her own rows was started in the EMAIL_WINDOW_MS before
++    the order (up to SKEW_MS after it), of any status; that row is not
++    completed already; its piece count is known and equals the order's,
++    and its pieces' names agree (samePieces); and, when the order carries a
++    token, the row carries none (a row with a token of its own was another
++    cart).
++  Two rows, or none, or any doubt: nothing is written. A missed match only
++  leaves a checkout under "Checkouts you started", which is still true.
++  What a member can still do, until the database itself refuses browser
++  rows that claim 'completed' (an owner-approved migration, outside this
++  function): mark her own rows so, for her own eyes. She cannot make this
++  function write another member's order onto her row, nor write hers onto
++  another's: at most, holding someone's cart token, a row she plants can
++  leave that person's order unmatched when it names no email.
 +
 +  Never logged: an email, a name, an address, a phone, a token, an order or
-+  row id, an amount. The log carries outcome codes alone.
++  row id, an amount, a piece's name. The log carries outcome codes alone.
 +*/
 +
 +/** The shop's own Shopify domain (src/lib/shopify.ts SHOPIFY_STORE_PERMANENT_DOMAIN): another shop's signed webhook is ignored. */
@@ -32795,10 +33852,18 @@ index 0000000..c8248a7
 +export const EMAIL_WINDOW_MS = 2 * 60 * 60 * 1000;
 +/** Clock difference allowed between the shop's database and Shopify's. */
 +export const SKEW_MS = 10 * 60 * 1000;
++/** For the token rule: a Shopify cart lives about ten days, so an older row is not this order's checkout. */
++export const TOKEN_WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
 +/** Rows read per question: a cart, or a member's checkouts in two hours, never comes near it. */
 +export const ROWS_READ = 20;
++/** Reads of the rows naming the order's email, each passing over the members already asked: rows others planted under her email cannot crowd hers out. */
++export const EMAIL_READS = 3;
++/** An order placed longer ago than this is never matched (a replayed or re-sent old delivery): Shopify's own retries end within two days. */
++export const MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000;
++/** A signing secret shorter than this, once trimmed, is treated as unset (Shopify's are 64 characters). */
++export const MIN_SECRET = 32;
 +/** Only these columns are ever read, and only on the service side. */
-+export const COLUMNS = "id, status, created_at, cart_id, checkout_token, checkout_url, email, item_count";
++export const COLUMNS = "id, user_id, status, created_at, cart_id, checkout_token, checkout_url, email, item_count, items";
 +
 +const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,255}$/;
 +
@@ -32848,11 +33913,24 @@ index 0000000..c8248a7
 +  placedAt: string;
 +  /** The sum of its line items' quantities, when it has any. */
 +  pieces: number | null;
++  /** Its line items' titles, folded (nameKey), for samePieces alone; never logged, never written. */
++  names: string[];
 +  test: boolean;
 +  cancelled: boolean;
 +};
 +
 +const record = (x: unknown): Record<string, unknown> | null => (x && typeof x === "object" && !Array.isArray(x) ? (x as Record<string, unknown>) : null);
++
++/** A piece's name folded for comparison: lower case, letters and digits, single spaces. */
++export const nameKey = (x: unknown): string =>
++  typeof x === "string"
++    ? x
++        .toLowerCase()
++        .replace(/[^a-z0-9]+/g, " ")
++        .trim()
++        .slice(0, 120)
++    : "";
++const namesOf = (list: readonly unknown[]): string[] => [...new Set(list.map(nameKey).filter(Boolean))];
 +
 +export const orderFacts = (payload: unknown): OrderFacts | null => {
 +  const o = record(payload);
@@ -32871,6 +33949,7 @@ index 0000000..c8248a7
 +    email,
 +    placedAt: new Date(when).toISOString(),
 +    pieces: quantities.length ? quantities.reduce((s, q) => s + q, 0) : null,
++    names: namesOf(lines.map((l) => record(l)?.title ?? record(l)?.name)),
 +    test: o.test === true,
 +    cancelled: o.cancelled_at != null && o.cancelled_at !== "",
 +  };
@@ -32880,6 +33959,8 @@ index 0000000..c8248a7
 +
 +export type Row = {
 +  id: string;
++  /** The member who wrote it (set by row security, so the one column a browser cannot choose). */
++  user_id: string;
 +  status: string;
 +  created_at: string;
 +  cart_id: string | null;
@@ -32887,13 +33968,15 @@ index 0000000..c8248a7
 +  checkout_url: string | null;
 +  email: string | null;
 +  item_count: number | null;
++  /** Its pieces' names as the bag noted them, folded (nameKey). */
++  names: string[];
 +};
 +
 +const CART_GID = /^gid:\/\/shopify\/Cart\/([^?/#]+)/;
 +const URL_TOKEN = /\/(?:cart\/c|checkouts\/(?:cn|co|c))\/([A-Za-z0-9_-]+)\/?$/;
 +
 +/** Every token a row carries: its cart id (bare, or as Shopify's gid), its checkout token, and its checkout address's. */
-+export const tokensOfRow = (row: Row): string[] => {
++export const tokensOfRow = (row: Pick<Row, "cart_id" | "checkout_token" | "checkout_url">): string[] => {
 +  const out: string[] = [];
 +  const add = (t: string | null | undefined) => {
 +    if (t && TOKEN.test(t) && !out.includes(t)) out.push(t);
@@ -32915,11 +33998,13 @@ index 0000000..c8248a7
 +export const rowOf = (x: unknown): Row | null => {
 +  const r = record(x);
 +  const id = text(r?.id);
++  const user = text(r?.user_id);
 +  const created = text(r?.created_at);
-+  if (!r || !id || !created || Number.isNaN(Date.parse(created))) return null;
++  if (!r || !id || !user || !created || Number.isNaN(Date.parse(created))) return null;
 +  const count = Number(r.item_count);
 +  return {
 +    id,
++    user_id: user,
 +    status: text(r.status) ?? "",
 +    created_at: created,
 +    cart_id: text(r.cart_id),
@@ -32927,6 +34012,7 @@ index 0000000..c8248a7
 +    checkout_url: text(r.checkout_url),
 +    email: text(r.email),
 +    item_count: Number.isInteger(count) ? count : null,
++    names: namesOf((Array.isArray(r.items) ? r.items : []).map((i) => record(i)?.name)),
 +  };
 +};
 +
@@ -32935,41 +34021,95 @@ index 0000000..c8248a7
 +export interface Store {
 +  /** Rows of any status that may carry one of these tokens (a coarse filter: bloomOrder checks each exactly). */
 +  byTokens(tokens: readonly string[]): Promise<Row[]>;
-+  /** Rows of any status with exactly this email, started between `from` and `to`. */
-+  byEmail(email: string, from: string, to: string): Promise<Row[]>;
++  /** Rows of any status with exactly this email, started between `from` and `to`, of members other than `skip`. */
++  byEmail(email: string, from: string, to: string, skip: readonly string[]): Promise<Row[]>;
++  /** This member's own rows of any status, started between `from` and `to`. */
++  byOwner(userId: string, from: string, to: string): Promise<Row[]>;
++  /** The member's own sign-in email (auth.users), lower-cased, once confirmed; null when she has none, or none confirmed. Never logged. */
++  accountEmail(userId: string): Promise<string | null>;
 +  /** Marks this one row completed at `completedAt` unless it is already; true when it changed. */
 +  complete(id: string, completedAt: string): Promise<boolean>;
 +}
 +
-+export type Outcome = "bloomed_by_token" | "bloomed_by_email" | "already_bloomed" | "unmatched" | "ambiguous";
++export type Outcome = "bloomed_by_token" | "bloomed_by_email" | "already_bloomed" | "unmatched" | "ambiguous" | "mismatched";
 +
 +const newestFirst = (a: Row, b: Row) => Date.parse(b.created_at) - Date.parse(a.created_at);
++const startedIn = (r: Row, from: number, to: number) => {
++  const at = Date.parse(r.created_at);
++  return at >= from && at <= to;
++};
++
++/**
++ * Whether a row's pieces can be the order's: the same number of pieces when
++ * both are known, and, when both name theirs, at least one name in common
++ * (one name holding the other, so a shorter or longer title still agrees).
++ * Lenient on names on purpose: it only refuses a row that plainly noted
++ * other pieces, never one whose names were written a little differently.
++ */
++export const samePieces = (row: Row, order: OrderFacts): boolean => {
++  if (order.pieces !== null && row.item_count !== null && row.item_count > 0 && row.item_count !== order.pieces) return false;
++  if (order.names.length && row.names.length && !row.names.some((a) => order.names.some((b) => a.includes(b) || b.includes(a)))) return false;
++  return true;
++};
 +
 +export const bloomOrder = async (order: OrderFacts, store: Store): Promise<Outcome> => {
 +  const placed = Date.parse(order.placedAt);
 +  const latest = placed + SKEW_MS;
++  const emails = new Map<string, string | null>();
++  const accountEmail = async (id: string) => {
++    if (!emails.has(id)) emails.set(id, await store.accountEmail(id));
++    return emails.get(id) ?? null;
++  };
 +
 +  if (order.tokens.length) {
 +    const carts = (await store.byTokens(order.tokens)).filter((r) => tokensOfRow(r).some((t) => order.tokens.includes(t)));
 +    if (carts.length) {
-+      if (carts.some((r) => r.status === "completed")) return "already_bloomed";
-+      const started = carts.filter((r) => Date.parse(r.created_at) <= latest).sort(newestFirst);
-+      if (!started.length) return "unmatched";
-+      return (await store.complete(started[0].id, order.placedAt)) ? "bloomed_by_token" : "already_bloomed";
++      // Whose cart: the member who signs in with the order's email; without one, the cart's only member.
++      const owners = [...new Set(carts.map((r) => r.user_id))];
++      let owner: string | undefined;
++      if (order.email) {
++        for (const id of owners) if ((await accountEmail(id)) === order.email) owner = id;
++        // One member with no sign-in email (a phone sign-in): her row, when it names no email either.
++        if (!owner && owners.length === 1 && (await accountEmail(owners[0])) === null && carts.every((r) => !r.email)) owner = owners[0];
++        if (!owner) return "mismatched";
++      } else if (owners.length === 1) owner = owners[0];
++      else return "ambiguous";
++      const hers = carts.filter((r) => r.user_id === owner);
++      if (hers.some((r) => r.status === "completed")) return "already_bloomed";
++      const [row] = hers.filter((r) => startedIn(r, placed - TOKEN_WINDOW_MS, latest)).sort(newestFirst);
++      if (!row) return "unmatched";
++      if (!samePieces(row, order)) return "mismatched";
++      return (await store.complete(row.id, order.placedAt)) ? "bloomed_by_token" : "already_bloomed";
 +    }
 +  }
 +
-+  if (!order.email) return "unmatched";
++  if (!order.email || order.pieces === null) return "unmatched";
 +  const from = placed - EMAIL_WINDOW_MS;
-+  const near = (await store.byEmail(order.email, new Date(from).toISOString(), new Date(latest).toISOString())).filter((r) => {
-+    const at = Date.parse(r.created_at);
-+    return (r.email ?? "").trim().toLowerCase() === order.email && at >= from && at <= latest;
-+  });
-+  if (near.length !== 1) return near.length ? "ambiguous" : "unmatched";
-+  const [row] = near;
++  const fromIso = new Date(from).toISOString();
++  const toIso = new Date(latest).toISOString();
++  // The member who signs in with the order's email, among the owners of rows that name it.
++  let owner: string | undefined;
++  const asked: string[] = [];
++  for (let read = 0; read < EMAIL_READS && !owner; read++) {
++    const near = await store.byEmail(order.email, fromIso, toIso, asked);
++    for (const id of new Set(near.map((r) => r.user_id))) {
++      if (asked.includes(id)) continue;
++      asked.push(id);
++      if ((await accountEmail(id)) === order.email) {
++        owner = id;
++        break;
++      }
++    }
++    if (near.length < ROWS_READ) break;
++  }
++  if (!owner) return "unmatched";
++  // Her own rows in the window, read again by owner.
++  const mine = (await store.byOwner(owner, fromIso, toIso)).filter((r) => r.user_id === owner && startedIn(r, from, latest));
++  if (mine.length !== 1) return mine.length ? "ambiguous" : "unmatched";
++  const [row] = mine;
 +  if (row.status === "completed") return "already_bloomed";
 +  if (order.tokens.length && tokensOfRow(row).length) return "unmatched";
-+  if (order.pieces !== null && row.item_count !== null && row.item_count > 0 && row.item_count !== order.pieces) return "unmatched";
++  if (row.item_count === null || row.item_count <= 0 || !samePieces(row, order)) return "unmatched";
 +  return (await store.complete(row.id, order.placedAt)) ? "bloomed_by_email" : "already_bloomed";
 +};
 +
@@ -32982,11 +34122,15 @@ index 0000000..c8248a7
 +  neq(column: string, value: string): DbQuery;
 +  gte(column: string, value: string): DbQuery;
 +  lte(column: string, value: string): DbQuery;
++  not(column: string, operator: "in", value: string): DbQuery;
 +  or(filters: string): DbQuery;
 +  order(column: string, options: { ascending: boolean }): DbQuery;
 +  limit(count: number): DbQuery;
 +}
++export type AuthUser = { email?: string | null; email_confirmed_at?: string | null } | null;
 +export type Db = {
++  /** The service role's read of one member's sign-in email (supabase-js auth.admin.getUserById). */
++  auth: { admin: { getUserById(id: string): PromiseLike<{ data: { user: AuthUser } | null; error: { status?: number; code?: string } | null }> } };
 +  from(table: "member_orders"): {
 +    select(columns: string): DbQuery;
 +    /** The function's only write: these two columns, nothing else. */
@@ -33001,8 +34145,9 @@ index 0000000..c8248a7
 +  }
 +}
 +
++const codeOf = (code: unknown, fallback: string) => String(code ?? fallback).replace(/[^A-Za-z0-9_]/g, "").slice(0, 12) || fallback;
 +const rowsOf = ({ data, error }: DbResult): Row[] => {
-+  if (error) throw new StoreError(String(error.code ?? "unknown").replace(/[^A-Za-z0-9_]/g, "").slice(0, 12) || "unknown");
++  if (error) throw new StoreError(codeOf(error.code, "unknown"));
 +  return (Array.isArray(data) ? data : []).map(rowOf).filter((r): r is Row => r !== null);
 +};
 +
@@ -33013,14 +34158,32 @@ index 0000000..c8248a7
 +    .flatMap((t) => [`cart_id.like.*${t}*`, `checkout_token.eq.${t}`, `checkout_url.like.*${t}*`])
 +    .join(",");
 +
++const MEMBER_ID = /^[A-Za-z0-9-]{1,64}$/;
++
 +export const supabaseStore = (db: Db): Store => ({
 +  byTokens: async (tokens) => {
 +    const filter = tokenFilter(tokens);
 +    if (!filter) return [];
 +    return rowsOf(await db.from("member_orders").select(COLUMNS).or(filter).order("created_at", { ascending: false }).limit(ROWS_READ));
 +  },
-+  byEmail: async (email, from, to) =>
-+    rowsOf(await db.from("member_orders").select(COLUMNS).eq("email", email).gte("created_at", from).lte("created_at", to).order("created_at", { ascending: false }).limit(ROWS_READ)),
++  byEmail: async (email, from, to, skip) => {
++    let q = db.from("member_orders").select(COLUMNS).eq("email", email).gte("created_at", from).lte("created_at", to);
++    // Member ids are the database's own (uuid-shaped); anything else is never put in the filter, and its rows are simply read again.
++    const ids = skip.filter((id) => MEMBER_ID.test(id));
++    if (ids.length) q = q.not("user_id", "in", `(${ids.join(",")})`);
++    return rowsOf(await q.order("created_at", { ascending: false }).limit(ROWS_READ));
++  },
++  byOwner: async (userId, from, to) =>
++    rowsOf(await db.from("member_orders").select(COLUMNS).eq("user_id", userId).gte("created_at", from).lte("created_at", to).order("created_at", { ascending: false }).limit(ROWS_READ)),
++  accountEmail: async (userId) => {
++    const { data, error } = await db.auth.admin.getUserById(userId);
++    if (error) {
++      if (error.status === 404) return null;
++      throw new StoreError(codeOf(error.code ?? error.status, "auth"));
++    }
++    const user = data?.user;
++    return user?.email && user.email_confirmed_at ? user.email.trim().toLowerCase() : null;
++  },
 +  complete: async (id, completedAt) => {
 +    const changed = rowsOf(await db.from("member_orders").update({ status: "completed", completed_at: completedAt }).eq("id", id).neq("status", "completed").select("id, created_at"));
 +    return changed.length > 0;
@@ -33032,15 +34195,19 @@ index 0000000..c8248a7
 +export type Incoming = {
 +  method: string;
 +  header: (name: string) => string | null;
-+  /** The raw body, read only once the secret is known to be set. */
-+  body: () => Promise<ArrayBuffer>;
++  /** The raw body, read only once the secret is known to be set; it rejects with TooLarge past `max` bytes, without reading the rest. */
++  body: (max: number) => Promise<ArrayBuffer>;
 +};
++/** A body that grew past MAX_BODY while it was read (a request without a content-length). */
++export class TooLarge extends Error {}
 +export type Deps = {
 +  secret: string | null | undefined;
 +  /** The service-role store, or null when the function's own Supabase settings are missing. */
 +  store: () => Store | null;
 +  /** Outcome codes only. */
 +  log?: (event: string) => void;
++  /** The clock, for the age check (tests pass their own). */
++  now?: () => number;
 +};
 +export type Reply = { status: number; body: Record<string, string | boolean> };
 +
@@ -33049,7 +34216,9 @@ index 0000000..c8248a7
 +export const handleWebhook = async (req: Incoming, deps: Deps): Promise<Reply> => {
 +  const log = deps.log ?? (() => undefined);
 +  // Inert until the owner sets the secret: nothing is read, nothing is written, every request refused.
-+  if (!deps.secret) {
++  // (Trimmed, as a pasted key often carries a newline; a blank or short one counts as unset.)
++  const secret = typeof deps.secret === "string" ? deps.secret.trim() : "";
++  if (secret.length < MIN_SECRET) {
 +    log("refused_not_configured");
 +    return reply(401, { error: "unauthorized" });
 +  }
@@ -33057,12 +34226,12 @@ index 0000000..c8248a7
 +  if (Number(req.header("content-length") ?? 0) > MAX_BODY) return reply(413, { error: "too_large" });
 +  let body: ArrayBuffer;
 +  try {
-+    body = await req.body();
-+  } catch {
-+    return reply(400, { error: "unreadable" });
++    body = await req.body(MAX_BODY);
++  } catch (error) {
++    return error instanceof TooLarge ? reply(413, { error: "too_large" }) : reply(400, { error: "unreadable" });
 +  }
 +  if (body.byteLength > MAX_BODY) return reply(413, { error: "too_large" });
-+  if (!(await verifyShopifyHmac(body, req.header("x-shopify-hmac-sha256"), deps.secret))) {
++  if (!(await verifyShopifyHmac(body, req.header("x-shopify-hmac-sha256"), secret))) {
 +    log("refused_signature");
 +    return reply(401, { error: "unauthorized" });
 +  }
@@ -33088,6 +34257,11 @@ index 0000000..c8248a7
 +    log(order.test ? "ignored_test" : "ignored_cancelled");
 +    return reply(200, { ok: true, result: "ignored" });
 +  }
++  // An old order (a replayed or re-sent delivery) is never matched: its checkout, if any, stays a checkout.
++  if ((deps.now ?? Date.now)() - Date.parse(order.placedAt) > MAX_AGE_MS) {
++    log("ignored_stale");
++    return reply(200, { ok: true, result: "ignored" });
++  }
 +  const store = deps.store();
 +  if (!store) {
 +    log("unavailable");
@@ -33104,10 +34278,10 @@ index 0000000..c8248a7
 +};
 diff --git a/supabase/functions/order-bloom/index.ts b/supabase/functions/order-bloom/index.ts
 new file mode 100644
-index 0000000..5561c27
+index 0000000..1573faa
 --- /dev/null
 +++ b/supabase/functions/order-bloom/index.ts
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,105 @@
 +/**
 + * order-bloom: Shopify's orders/create webhook, for the Inner Garden.
 + *
@@ -33121,17 +34295,37 @@ index 0000000..5561c27
 + *
 + * NOT DEPLOYED, AND INERT WITHOUT ITS SECRET. Merging this to main may let
 + * Lovable deploy it (Lovable deploys supabase/functions on publish). Without
-+ * the SHOPIFY_WEBHOOK_SECRET secret it does nothing at all: every request
++ * the ORDER_BLOOM_WEBHOOK_SECRET secret it does nothing at all: every request
 + * gets 401 before its body is read, and nothing is read from or written to
-+ * the database. To switch it on, the owner (after approving it):
++ * the database. (Its own name, so that no secret another integration set
++ * can switch it on unasked; a blank or short value counts as unset.) To
++ * switch it on, the owner (after approving it):
 + *   1. creates the Shopify webhook (Settings, Notifications, Webhooks:
 + *      Order creation, JSON) pointing at this function's address;
-+ *   2. sets SHOPIFY_WEBHOOK_SECRET to the signing key Shopify shows there;
++ *   2. sets ORDER_BLOOM_WEBHOOK_SECRET to the signing key Shopify shows
++ *      there;
 + *   3. has the function deployed with JWT verification off
-+ *      (verify_jwt = false for order-bloom), since Shopify sends no Supabase
-+ *      token: the HMAC check below is its authentication;
++ *      (supabase/config.toml [functions.order-bloom] verify_jwt = false),
++ *      since Shopify sends no Supabase token: the HMAC check is its
++ *      authentication;
 + *   4. confirms that Fastrr (Shiprocket checkout) orders carry the cart
 + *      token, or they can only ever match by the cautious email rule.
++ *
++ * What it cannot see, for the owner to know:
++ *   - The bag notes a checkout only on its own Checkout tap, signed in, and
++ *     a failed note is never retried; Buy now notes none. Such an order
++ *     matches a row only when the row's pieces agree with it, else nothing.
++ *   - An order paid under another email than her sign-in email stays a
++ *     checkout when the cart was shared (a phone, a passed-on link): that
++ *     is the one sign another person paid.
++ *   - orders/create only: an order cancelled or refused at the door after
++ *     it was placed keeps its "Order" and its rose (Track Order shows its
++ *     status). Handling orders/cancelled would need another write, which
++ *     this function does not make.
++ *   - Until an owner-approved migration makes the database refuse browser
++ *     rows that say 'completed', a member can mark her own rows so, for her
++ *     own eyes; this function never writes one member's order onto another
++ *     member's row.
 + *
 + * All of its logic is in ./bloom.ts (no Deno globals there, so the shop's
 + * vitest suite tests it): the HMAC check (base64 HMAC-SHA256 of the raw
@@ -33143,17 +34337,42 @@ index 0000000..5561c27
 + * this function.
 + */
 +import { createClient } from "npm:@supabase/supabase-js@2";
-+import { handleWebhook, supabaseStore, type Db } from "./bloom.ts";
++import { TooLarge, handleWebhook, supabaseStore, type Db } from "./bloom.ts";
++
++/** The raw body, read chunk by chunk and abandoned past `max` bytes (a chunked request carries no content-length). */
++const readCapped = async (req: Request, max: number): Promise<ArrayBuffer> => {
++  const reader = req.body?.getReader();
++  if (!reader) return new ArrayBuffer(0);
++  const parts: Uint8Array[] = [];
++  let size = 0;
++  for (;;) {
++    const { done, value } = await reader.read();
++    if (done) break;
++    size += value.byteLength;
++    if (size > max) {
++      await reader.cancel().catch(() => undefined);
++      throw new TooLarge();
++    }
++    parts.push(value);
++  }
++  const out = new Uint8Array(size);
++  let at = 0;
++  for (const part of parts) {
++    out.set(part, at);
++    at += part.byteLength;
++  }
++  return out.buffer;
++};
 +
 +Deno.serve(async (req) => {
 +  const result = await handleWebhook(
 +    {
 +      method: req.method,
 +      header: (name) => req.headers.get(name),
-+      body: () => req.arrayBuffer(),
++      body: (max) => readCapped(req, max),
 +    },
 +    {
-+      secret: Deno.env.get("SHOPIFY_WEBHOOK_SECRET"),
++      secret: Deno.env.get("ORDER_BLOOM_WEBHOOK_SECRET"),
 +      store: () => {
 +        const url = Deno.env.get("SUPABASE_URL");
 +        const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");

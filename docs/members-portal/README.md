@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `fc888a3` (Phase 5 in progress; Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `0f4f709` (Phase 5 in progress; Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -68,12 +68,12 @@ Phase 4 checks on 64d992d (run twice: once by the screens step, once independent
 
 ## Phase 5 (in progress, interim backup)
 
-17 commits on top of 64d992d, including two real merges (b538a98 spectacle, fc888a3 orders). Reviews are still running; this copy has not been checked or polished yet.
+Commits on top of 64d992d, including two real merges (b538a98 spectacle, fc888a3 orders). Interim copy at 0f4f709; acceptance checks are still running.
 
 - **Bloom Field:** a 3D fall of the brand's flowers when a drop opens, only on phones that pass the device checks and a 60-frame test; every other phone keeps today's flat petals.
 - **Drop-room motion:** physics-driven petals and a smooth move from the box to the piece grid.
 - **Confirmed orders:** `supabase/functions/order-bloom` (Shopify's orders/create webhook) is written and tested but **not deployed**. The Order Desk says 'Order' only once it has confirmed a row, and a gold rose grows in her garden's front row for each confirmed order.
-- A review has confirmed one blocker in order-bloom's matching, and the polish step is fixing it.
+- Polish (d695ec5 to 0f4f709) fixed the confirmed blocker: order-bloom now marks only the row of the member who placed the order. 73d926a lets order-bloom deploy without JWT verification, as Shopify's webhook needs; the owner may drop that commit. Acceptance checks are still running.
 
 ## Phase 1 checks on 2f278c0
 

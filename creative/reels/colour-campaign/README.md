@@ -35,6 +35,24 @@ Every ad follows the same template, from the Ad 0 critiques:
 - an end card with name, price, offer, free shipping, COD and SHOP NOW;
 - a soft cleared score (harp, strings, felt kick) with no tings, mastered to -14 LUFS / -1.5 dBTP.
 
+
+## Deliverables (sent in chat, 5 Nov; not committed: the video files are 15–26 MB each)
+
+| Ad | 9:16 Reels and Stories (2160×3840) | 4:5 Feed (2160×2700) |
+| --- | --- | --- |
+| 0 Cushion Halo Ring | `naira-c0-cushion-halo-4k.mp4` (26.0 MB) | `naira-c0-cushion-halo-4x5-feed.mp4` (19.9 MB) |
+| 1 Prism Rivière Bracelet | `naira-p1-prism-riviere-4k.mp4` (22.3 MB) | `naira-p1-prism-riviere-4x5-feed.mp4` (17.2 MB) |
+| 2 Verdant Circlet Studs | `naira-p2-verdant-studs-4k.mp4` (24.1 MB) | `naira-p2-verdant-studs-4x5-feed.mp4` (18.7 MB) |
+| 3 Baguette Tennis Necklace | `naira-p3-baguette-necklace-4k.mp4` (26.4 MB) | `naira-p3-baguette-necklace-4x5-feed.mp4` (21.2 MB) |
+| 4 Woven Gold Hoops | `naira-p4-woven-gold-hoops-4k.mp4` (19.8 MB) | `naira-p4-woven-gold-hoops-4x5-feed.mp4` (15.6 MB) |
+| 5 Halo Curve Ring | `naira-p5-halo-curve-ring-4k.mp4` (20.9 MB) | `naira-p5-halo-curve-ring-4x5-feed.mp4` (16.2 MB) |
+| T1 Toggle Link Chain, Gold rush | `naira-t1-toggle-chain-gold-rush-4k.mp4` (22.8 MB) | `naira-t1-toggle-chain-gold-rush-4x5-feed.mp4` (17.6 MB) |
+| T2 Toggle Link Chain, Jade & gold | `naira-t2-toggle-chain-jade-gold-4k.mp4` (22.5 MB) | `naira-t2-toggle-chain-jade-gold-4x5-feed.mp4` (17.4 MB) |
+
+All are H.264 High 5.1, 24 fps, AAC 256k, -14 LUFS integrated / -1.5 dBTP. To rebuild any of them:
+`bash tools/finish_all.sh <scratchpad>`. The build scripts read frames from `<scratchpad>/ads/frames`, which come
+from the Higgsfield jobs in `notes/shots-and-prompts.md`.
+
 ## How it is made
 1. **Start frames.** nano_banana_2_1 at 2K, built on the real listing photos. Each frame is checked against the photo
    (stone colour, cut, count pattern, claws, clasp) before any motion credit is spent.

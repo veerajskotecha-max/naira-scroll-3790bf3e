@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `0f4f709` (Phase 5 in progress; Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `1238125` (Phase 5 final; Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -66,14 +66,27 @@ Phase 4 checks on 64d992d (run twice: once by the screens step, once independent
 - Sizes (gzip -9): MembersRoute is 29.8 KB (budget 35) and members.css is 2.9 KB (budget 4). Gifts is 9.9 KB JS and 1.7 KB CSS, Care 3.0 + 1.3, Orders 1.5 + 0.5, Card 2.3 + 1.2, and the ShareCard renderer is 4.9. Auth is still +3.1 KB on main.
 - No Supabase writes, Shopify changes, Meta or Clarity requests, WhatsApp opens or shares happened in any capture.
 
-## Phase 5 (in progress, interim backup)
+## Phase 5
 
-Commits on top of 64d992d, including two real merges (b538a98 spectacle, fc888a3 orders). Interim copy at 0f4f709; acceptance checks are still running.
+25 commits on top of 64d992d, including two real merges.
 
-- **Bloom Field:** a 3D fall of the brand's flowers when a drop opens, only on phones that pass the device checks and a 60-frame test; every other phone keeps today's flat petals.
-- **Drop-room motion:** physics-driven petals and a smooth move from the box to the piece grid.
-- **Confirmed orders:** `supabase/functions/order-bloom` (Shopify's orders/create webhook) is written and tested but **not deployed**. The Order Desk says 'Order' only once it has confirmed a row, and a gold rose grows in her garden's front row for each confirmed order.
-- Polish (d695ec5 to 0f4f709) fixed the confirmed blocker: order-bloom now marks only the row of the member who placed the order. 73d926a lets order-bloom deploy without JWT verification, as Shopify's webhook needs; the owner may drop that commit. Acceptance checks are still running.
+| Commit | What it adds |
+|---|---|
+| c792610 | shopper-performance refuses /members paths, as the browser already does. It is one word in its own commit; drop it to remove it. |
+| 3f854ce to 828a0d5, merged in b538a98 | **Bloom Field:** when a drop opens, a 3D fall of the brand's flowers in the drop's colour with a gold edge, on Tier 2 phones only. It is skipped with reduced motion, Data Saver, 2g/3g, under 4 GB memory or no WebGL. It steps aside if more than 25% of its first 60 frames are slow, and it is fully disposed after about 6 s. **Drop-room motion (gsap):** the 24 petals are thrown with Physics2D and the pieces Flip from the box into the grid. Today's motion stays for every other phone and if a chunk fails. |
+| 8864bb0 to c18e2e7, merged in fc888a3 | **Real orders:** `supabase/functions/order-bloom` (Shopify's orders/create webhook) is written and tested but **not deployed**. Without `ORDER_BLOOM_WEBHOOK_SECRET` it answers 401 to everything. It checks Shopify's HMAC in constant time and only sets `status` and `completed_at` on an existing row, so retries change nothing. The Order Desk says 'Order' only for a confirmed row. **Gold rose:** a gold-leaf rose for each confirmed order grows in her garden's front row, dated with its order and never counted. |
+| d695ec5 to 1238125 | Polish after five reviews (phone and performance, engineering, brand and delight, data and security, journey) with adversarial checks, plus the acceptance critic. order-bloom marks only the row of the member who placed the order. The rose grows only where she can see it. The field is ready before the opening moves, and no piece unfolds unseen. Only the preview member may force a tier. |
+| 73d926a | `verify_jwt = false` for order-bloom in supabase/config.toml, because Shopify sends no Supabase token and the HMAC is the real check. Drop it to remove it. |
+
+Phase 5 checks on 1238125 (run twice: once by the screens step, once independently):
+- 201 test files and 1,786 tests pass, including order-bloom's ~45 cases. tsc is clean.
+- index.html, index.css, the contexts, shopify.ts, promo.ts, innerCircle.ts, the header, NairaWordmark, the product page, the bag, main.tsx, vite.config, package.json and bun.lock are unchanged since 893d5be. No new dependency was added.
+- three, gsap, vendor and the global CSS are byte-identical to a 893d5be build. ProductDetail, CartDrawerNext, JewelDetailNext, Jewellery, JewelleryCategory and Index are identical to main once file hashes are masked.
+- The only new static importers of three and gsap are src/lib/portal/scene.ts and unboxGsap.ts, reached only by import(). config.test.ts gains exactly one allow-list line.
+- dist has no preview code or fixtures (&tier, &probe, &orders, &checkouts included).
+- Sizes (gzip -9): MembersRoute 29.9 KB (budget 35), members.css 2.9 KB, DropRoom 14.1 KB JS and 1.6 KB CSS, the portal scene 3.1 KB, unboxGsap 1.7 KB, Orders 1.8 KB, GoldRose 2.0 KB. Flip (9.6 KB) and Physics2D (1.0 KB) load only in a drop room on Tier 2.
+- Reduced motion and Data Saver: no three, gsap or scene requests, even with &tier=2. On /members at most two WebGL contexts are live (the header flower and the field).
+- Not done: frame rates come only from software GL. The Bloom Field still needs a check on a real mid-range Android. The firm members-first window was deferred, as planned.
 
 ## Phase 1 checks on 2f278c0
 
@@ -107,3 +120,15 @@ Commits on top of 64d992d, including two real merges (b538a98 spectacle, fc888a3
   - gift notes on orders
   - the Order Desk wording
   - the atelier notes
+- Phase 5:
+  - three.js and one WebGL scene (the Bloom Field) in drop rooms
+  - gsap (with Flip and Physics2D) in the drop room
+  - creating Shopify's orders/create webhook and the ORDER_BLOOM_WEBHOOK_SECRET
+  - deploying order-bloom, and keeping 73d926a (verify_jwt = false)
+  - redeploying shopper-performance with 'members' (c792610)
+  - whether Fastrr orders carry the cart or checkout token
+  - the Flip on short phones (the grid sits below the fold)
+  - cancelled orders keep their rose (orders/cancelled later?)
+  - Buy now does not note a checkout row
+  - a later migration so the browser cannot write status='completed'
+  - the firm members-first window (deferred)

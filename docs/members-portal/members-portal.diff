@@ -32502,10 +32502,10 @@ index 0000000..152e52d
 +}
 diff --git a/src/pages/members/droproom.css b/src/pages/members/droproom.css
 new file mode 100644
-index 0000000..19889d6
+index 0000000..1f84111
 --- /dev/null
 +++ b/src/pages/members/droproom.css
-@@ -0,0 +1,171 @@
+@@ -0,0 +1,170 @@
 +/* A drop's room: rub the petals, the unboxing, the pieces and the press.
 +   Imported only by DropRoom.tsx. Motion is transform and opacity only. */
 +
@@ -32586,7 +32586,6 @@ index 0000000..19889d6
 +}
 +.ig-box-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
 +
-+/* the Bloom Field (Tier 2): a canvas laid over the screen for the fall, under the garden path (39), the header and the bag (50); it never takes a tap */
 +/* The Bloom Field (Tier 2) falls under the room's words (the back link, the eyebrow, the title and story at 38), over the box and the pieces; the garden path (39), the header and the bag (50) stay above both. */
 +.ig-room > .ig-head, .ig-room > .ig-room-back { position: relative; z-index: 38; }
 +.ig-bloomfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 37; pointer-events: none; opacity: 0; transition: opacity 0.32s var(--nf-ease-reveal); }

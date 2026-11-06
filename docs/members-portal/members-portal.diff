@@ -10507,10 +10507,10 @@ index 0000000..7345c74
 +export default RangoliDoor;
 diff --git a/src/components/portal/RangoliField.test.tsx b/src/components/portal/RangoliField.test.tsx
 new file mode 100644
-index 0000000..4b8bbfc
+index 0000000..8be1cb1
 --- /dev/null
 +++ b/src/components/portal/RangoliField.test.tsx
-@@ -0,0 +1,365 @@
+@@ -0,0 +1,470 @@
 +import { act, cleanup, render } from "@testing-library/react";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
@@ -10522,12 +10522,13 @@ index 0000000..4b8bbfc
 +  The shower (Phase 7, Tier 2): the host of Phase 5's Bloom Field over the
 +  rangoli room, with the Bloom Field itself a stand-in here (its own tests
 +  are BloomField.test's). It is never fetched on Tier 1; a field is mounted
-+  (and so prepared) only once her hands have been still a while, never in
-+  the moments after a tap or a change on the floor; it is held ready
-+  unseen; keeping her rangoli lets it fall only once it said it was ready;
-+  a field whose scene came late is mounted again in her next pause; a held
-+  field is never put away for her being idle or an empty floor, only after
-+  a while on a hidden tab, as the bag opens and as she leaves.
++  (and so prepared) once the room is idle and her hands have been still a
++  while, never in the moments after a tap or a change on the floor; it is
++  held ready unseen; keeping her rangoli lets it fall only once it said it
++  was ready; a field whose scene came late is mounted once more on her
++  next placement; a held field is put away after 20 s without her touch,
++  on a hidden tab, as she sweeps the floor, as the bag opens and as she
++  leaves, and mounted again on her next placement.
 +*/
 +
 +const state = vi.hoisted(() => ({
@@ -10579,7 +10580,8 @@ index 0000000..4b8bbfc
 +  return { default: FakeBloomField };
 +});
 +
-+import RangoliField, { HIDDEN_MAX_MS, QUIET_MS } from "./RangoliField";
++import RangoliField, { QUIET_MS } from "./RangoliField";
++import { IDLE_MS } from "@/lib/portal/motion";
 +
 +const reduce = (on: boolean) => {
 +  window.matchMedia = ((query: string) => ({
@@ -10627,6 +10629,7 @@ index 0000000..4b8bbfc
 +
 +const one = compose("u-1", 7, null);
 +const two: Rangoli = { ...one, at: one.at.map((s, i) => (i === 0 ? null : s)) };
++const three: Rangoli = { ...one, at: one.at.map((s, i) => (i === 1 ? null : s)) };
 +
 +beforeEach(() => {
 +  vi.useFakeTimers();
@@ -10689,6 +10692,31 @@ index 0000000..4b8bbfc
 +    expect(fields.mounts).toBe(1);
 +  });
 +
++  it("lets a field go unprepared if her touch comes before its preparation began, and prepares it in her next pause", async () => {
++    host(one);
++    await quiet();
++    expect(fields.mounts).toBe(1);
++    // No canvas yet (its scene not yet mounted): her tap lets it go.
++    act(() => void window.dispatchEvent(new Event("pointerdown")));
++    expect(fields.unmounts).toBe(1);
++    await wait(QUIET_MS - 300);
++    expect(fields.mounts).toBe(1);
++    await wait(400);
++    expect(fields.mounts).toBe(2);
++    // Once its canvas is made (its preparation under way), a touch leaves it be.
++    const canvas = document.createElement("canvas");
++    canvas.className = "ig-bloomfield";
++    document.body.appendChild(canvas);
++    act(() => void window.dispatchEvent(new Event("pointerdown")));
++    expect(fields.unmounts).toBe(1);
++    canvas.remove();
++    // And so does a field already prepared.
++    act(() => latest().onReady());
++    act(() => void window.dispatchEvent(new Event("pointerdown")));
++    expect(fields.unmounts).toBe(1);
++    expect(state.demoted).toBe(0);
++  });
++
 +  it("lets it fall as she keeps it only once it said it was ready, and never demotes her for an early keep", async () => {
 +    const { go } = host(one);
 +    await quiet();
@@ -10703,7 +10731,7 @@ index 0000000..4b8bbfc
 +    expect(fields.gos).toBe(1);
 +  });
 +
-+  it("mounts a field whose scene came late once more in her next pause, never on her placement", async () => {
++  it("mounts a field whose scene came late once more on her next placement, in the quiet after it", async () => {
 +    const { redo } = host(one);
 +    await quiet();
 +    // The Bloom Field gave up (its scene arrived past its mount deadline): ready, then gone, at once.
@@ -10712,45 +10740,101 @@ index 0000000..4b8bbfc
 +      latest().onGone();
 +    });
 +    expect(fields.unmounts).toBe(1);
-+    redo(two);
-+    await flush();
++    // Not in a pause alone: her hands still for a minute bring no field.
++    await wait(60_000);
 +    expect(fields.mounts).toBe(1);
-+    await quiet();
++    // Her next placement: a field again, once her hands are still (never in the moments after it).
++    redo(two);
++    await wait(QUIET_MS - 300);
++    expect(fields.mounts).toBe(1);
++    await wait(400);
 +    expect(fields.mounts).toBe(2);
++    expect(latest().stop).toBe(false);
++    expect(state.demoted).toBe(0);
 +  });
 +
-+  it("never puts a held field away for her being idle, nor for an empty floor", async () => {
++  it("puts a held field away 20 s after her last touch, and mounts one again on her next placement", async () => {
 +    const { redo } = host(one);
 +    await quiet();
 +    act(() => latest().onReady());
-+    await wait(60_000);
++    expect(IDLE_MS).toBe(20_000);
++    // A touch, a scroll or a key keeps it held: 20 s are counted from the last of them.
++    await wait(IDLE_MS - QUIET_MS - 2000);
++    act(() => void window.dispatchEvent(new Event("scroll")));
++    await wait(IDLE_MS - 1000);
 +    expect(latest().stop).toBe(false);
-+    // Lifting the last petal, or taking back to nothing: the field stays held.
-+    redo(EMPTY);
++    await wait(1100);
++    expect(latest().stop).toBe(true);
++    act(() => latest().onGone());
++    expect(fields.unmounts).toBe(1);
++    // Her hands still, or a touch with nothing laid: no field.
 +    await wait(60_000);
-+    expect(latest().stop).toBe(false);
++    act(() => void window.dispatchEvent(new Event("pointerdown")));
++    await quiet();
 +    expect(fields.mounts).toBe(1);
-+    expect(fields.unmounts).toBe(0);
++    // Her next placement.
++    redo(two);
++    await quiet();
++    expect(fields.mounts).toBe(2);
++    expect(latest().stop).toBe(false);
 +  });
 +
-+  it("puts a held field away after a while on a hidden tab, and prepares it again in her next pause", async () => {
++  it("counts her 20 s from her last touch, the quiet before the field included", async () => {
 +    host(one);
++    act(() => void window.dispatchEvent(new Event("pointerdown")));
 +    await quiet();
-+    setVisibility("hidden");
-+    await wait(HIDDEN_MAX_MS - 1000);
++    expect(fields.mounts).toBe(1);
++    await wait(IDLE_MS - QUIET_MS - 200);
 +    expect(latest().stop).toBe(false);
-+    // Back in time: it stays.
-+    setVisibility("visible");
-+    await wait(HIDDEN_MAX_MS + 1000);
++    await wait(300);
++    expect(latest().stop).toBe(true);
++  });
++
++  it("puts a held field away as she sweeps the floor, and mounts one again on her next placement", async () => {
++    const { redo } = host(one);
++    await quiet();
++    act(() => latest().onReady());
++    redo(EMPTY);
++    expect(latest().stop).toBe(true);
++    act(() => latest().onGone());
++    // An empty floor wants no field.
++    await quiet();
++    await quiet();
++    expect(fields.mounts).toBe(1);
++    // A first petal on the swept floor.
++    redo(two);
++    await quiet();
++    expect(fields.mounts).toBe(2);
 +    expect(latest().stop).toBe(false);
++  });
++
++  it("puts a held field away at once on a hidden tab, and mounts one again on her next placement", async () => {
++    const { redo } = host(one);
++    await quiet();
++    act(() => latest().onReady());
 +    setVisibility("hidden");
-+    await wait(HIDDEN_MAX_MS + 100);
 +    expect(latest().stop).toBe(true);
 +    act(() => latest().onGone());
 +    setVisibility("visible");
 +    await quiet();
++    await quiet();
++    expect(fields.mounts).toBe(1);
++    redo(two);
++    await quiet();
 +    expect(fields.mounts).toBe(2);
 +    expect(latest().stop).toBe(false);
++  });
++
++  it("leaves a falling field to the Bloom Field's own rules: neither her stillness nor the hidden tab puts it away", async () => {
++    const { go } = host(one);
++    await quiet();
++    act(() => latest().onReady());
++    act(() => go.current());
++    expect(fields.gos).toBe(1);
++    setVisibility("hidden");
++    await wait(IDLE_MS + 1000);
++    expect(latest().stop).toBe(false);
++    setVisibility("visible");
 +  });
 +
 +  it("falls once for each rangoli she keeps: after a fall, a field is prepared again only once the floor changes", async () => {
@@ -10784,6 +10868,23 @@ index 0000000..4b8bbfc
 +      />,
 +    );
 +    expect(latest().stop).toBe(true);
++  });
++
++  it("puts a held field away as the bag opens, and mounts one again on her next placement once it has closed", async () => {
++    const { redo } = host(one);
++    await quiet();
++    act(() => latest().onReady());
++    state.drawer = true;
++    redo(one);
++    expect(latest().stop).toBe(true);
++    act(() => latest().onGone());
++    state.drawer = false;
++    redo(one);
++    await quiet();
++    expect(fields.mounts).toBe(1);
++    redo(three);
++    await quiet();
++    expect(fields.mounts).toBe(2);
 +  });
 +
 +  it("lets the fall run while the room's column is on screen, not the floor alone", async () => {
@@ -10863,10 +10964,14 @@ index 0000000..4b8bbfc
 +    ]);
 +  });
 +
-+  it("is fetched only with motion on, WebGL there and memory enough, its canvas under the room's words and controls", () => {
++  it("is fetched only where the gate lets Tier 2 run (in development, never under the preview's &tier=1), its canvas under the room's words and controls", () => {
++    // Reduced motion, Data Saver and a 2g / 3g connection (stillMotion), no WebGL, under 4 GB; in development the
++    // preview's &tier=1, read from the address the page opened at (as preview.ts read it), and the build drops that.
 +    expect(read("pages/members/Rangoli.tsx")).toMatch(
-+      /\{!still && "WebGLRenderingContext" in window && !\(Number\(\(navigator as \{ deviceMemory\?: number \}\)\.deviceMemory\) < 4\) && <Later room=\{RangoliField\} fallback=\{null\} /,
++      /\{!still && "WebGLRenderingContext" in window && !\(Number\(\(navigator as \{ deviceMemory\?: number \}\)\.deviceMemory\) < 4\) && !\(import\.meta\.env\.DEV && preview && \/\[\?&\]tier=1\(&\|\$\)\/\.test\(String\(performance\.getEntriesByType\?\.\("navigation"\)\[0\]\?\.name\)\)\) && <Later room=\{RangoliField\} fallback=\{null\} /,
 +    );
++    expect(read("lib/portal/motion.ts")).toMatch(/export const stillMotion = \(\): boolean => prefersReducedMotion\(\) \|\| saveData\(\);/);
++    expect(read("lib/portal/motion.ts")).toMatch(/return Boolean\(c\?\.saveData\) \|\| \/\(\^\|-\)\(2g\|3g\)\$\/\.test/);
 +    const css = readFileSync(resolve(__dirname, "rangolifield.css"), "utf8");
 +    expect(css).toMatch(
 +      /\.ig-bloomfield \{[^}]*z-index: 37;[^}]*pointer-events: none;/,
@@ -10878,14 +10983,14 @@ index 0000000..4b8bbfc
 +});
 diff --git a/src/components/portal/RangoliField.tsx b/src/components/portal/RangoliField.tsx
 new file mode 100644
-index 0000000..dc4b6ba
+index 0000000..efef6e9
 --- /dev/null
 +++ b/src/components/portal/RangoliField.tsx
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,233 @@
 +import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject, type RefObject } from "react";
 +import { useCart } from "@/contexts/CartContext";
 +import { portalTier } from "@/lib/portal/tier";
-+import { stillMotion } from "@/lib/portal/motion";
++import { IDLE_MS, stillMotion } from "@/lib/portal/motion";
 +import type { Rangoli } from "@/lib/portal/rangoli";
 +import BloomField from "./BloomField";
 +import "./rangolifield.css";
@@ -10904,28 +11009,38 @@ index 0000000..dc4b6ba
 +  forceContextLoss disposal all apply as they do over the drop room. Its
 +  canvas sits at z-index 37, under the room's words, controls and story
 +  card (38, rangolifield.css), over the floor, under the garden path and
-+  the bag.
++  the bag. The room fetches this host only where the gate would let Tier 2
++  run (Rangoli.tsx's mount: motion on, no Data Saver or slow connection,
++  WebGL there, 4 GB or more where the phone says, and in development not
++  the preview's &tier=1).
 +
-+  Its cost comes while her hands are still, never in the moments after a
-+  tap (Phase 5's rule for the field: its cost before the moment, never in
-+  it). Preparing a field is one long task on the main thread (the renderer,
-+  the room's light, the shaders), and the floor's ripple and "Draw it for
-+  me" are main-thread animations, so a field is mounted (and so prepared,
-+  on idle) only once no tap, key or touch has come for QUIET_MS and the
-+  floor has not changed for as long: as she arrives, if she waits; else
-+  in her first pause. A field whose scene came late (a cold fetch) gives
-+  up and is mounted again in her next pause, the scene cached by then.
++  A field is mounted once the room has painted and gone idle, and its cost
++  comes while her hands are still, never in the moments after a tap (Phase
++  5's rule for the field: its cost before the moment, never in it).
++  Preparing one is a long task on the main thread (the renderer, the
++  room's light, the shaders), and the floor's ripple and "Draw it for me"
++  are main-thread animations, so it is mounted (and so prepared, on idle)
++  only once no tap, key or touch has come for QUIET_MS and the floor has
++  not changed for as long: as she arrives, if she waits; else in her first
++  pause. A touch after it was mounted but before its preparation began
++  lets it go unprepared, to be mounted again in her next pause.
 +
-+  A held field is paused and draws nothing, so her being idle never puts
-+  it away (the idle rule is for loops); nor does an empty floor. It is put
-+  away after HIDDEN_MAX_MS on a hidden tab (as Stone Light's gem is), when
-+  the bag opens and when she leaves; prepared again in her next pause. One
-+  fall for each rangoli she keeps: after a fall, a field is wanted again
-+  only once the floor changes. Keeping her rangoli lets it fall in that very
-+  task, and only once it said it was ready: a go() before then would cost
-+  her Tier 2 for the visit, so before then the moment is Tier 1's alone.
-+  The fall runs while the room's column is on screen (not the floor alone,
-+  so it goes on as she scrolls to the buttons under the tray).
++  A held field is paused and draws nothing, and it is put away: after
++  IDLE_MS (20 s) with no touch, scroll or key from her; at once on a hidden
++  tab; as she sweeps the floor (or takes it back to nothing); as the bag
++  opens; and as she leaves. A field that gave up because its scene came
++  late (a cold fetch past BloomField's mount deadline) is put away by the
++  field itself. Either way a field is wanted again only on her next
++  placement (any change to a floor with something laid on it, the scene
++  cached by then), and mounted in the quiet after it. One fall for each
++  rangoli she keeps: after a fall, likewise, only the next placement wants
++  another. Keeping her rangoli lets it fall in that very task, and only
++  once it said it was ready: a go() before then would cost her Tier 2 for
++  the visit, so before then the moment is Tier 1's alone. The fall runs
++  while the room's column is on screen (not the floor alone, so it goes on
++  as she scrolls to the buttons under the tray); a falling field keeps
++  BloomField's own rules (paused off screen or on a hidden tab, put away
++  after 10 s paused).
 +*/
 +
 +type Props = {
@@ -10941,8 +11056,10 @@ index 0000000..dc4b6ba
 +
 +/** Her hands still this long (no tap, key or touch, the floor unchanged) before a field is prepared. */
 +export const QUIET_MS = 1800;
-+/** A held field on a hidden tab is put away after this long. */
-+export const HIDDEN_MAX_MS = 10_000;
++/* Her hands: a tap, a key or a touch (what a field is never prepared just after). */
++const TOUCH = ["pointerdown", "keydown", "touchstart"] as const;
++/* Her being there at all (the ambient loop's own list): a held field is put away after IDLE_MS without any of these. */
++const AWAKE = ["pointerdown", "pointermove", "scroll", "keydown", "touchstart"] as const;
 +
 +/* On a capable phone only: everything else keeps Tier 1, and nothing of the field is fetched or watched. */
 +const RangoliField = (props: Props) => {
@@ -10960,6 +11077,11 @@ index 0000000..dc4b6ba
 +  const ready = useRef(false);
 +  const falling = useRef(false);
 +  const made = useRef(0);
++  // The field mounted, or about to be (its key; 0 for none), as her touch sees it.
++  const live = useRef(0);
++  // The floor as this host last saw it: only a change to it is her placement.
++  const was = useRef(rangoli);
++  const last = useRef(Date.now());
 +  // The room's whole column, found from the floor.
 +  const room = useMemo<RefObject<Element>>(
 +    () => ({
@@ -10978,11 +11100,22 @@ index 0000000..dc4b6ba
 +    fieldGo.current = () => {};
 +    setStop(false);
 +    made.current += 1;
++    live.current = made.current;
 +    setHeld(made.current);
 +  }, []);
 +
-+  // Any change on the floor wants a field again (after a fall, the next rangoli has its own).
-+  useEffect(() => setWanted(true), [rangoli]);
++  // Her placement wants a field again (after a put-away or a fall); a floor swept to nothing puts the held one away.
++  useEffect(() => {
++    if (was.current === rangoli) return;
++    was.current = rangoli;
++    // A change on the floor is her hand too ("Draw it for me" lays its rings after one tap).
++    last.current = Date.now();
++    if (rangoli.at.some(Boolean)) setWanted(true);
++    else {
++      setWanted(false);
++      if (live.current) setStop(true);
++    }
++  }, [rangoli]);
 +
 +  // A field, once her hands have been still a while: each tap, key, touch or change on the floor starts the wait again.
 +  useEffect(() => {
@@ -10993,24 +11126,53 @@ index 0000000..dc4b6ba
 +      if (document.visibilityState !== "hidden") timer = window.setTimeout(mount, QUIET_MS);
 +    };
 +    wait();
-+    const events = ["pointerdown", "keydown", "touchstart"] as const;
-+    events.forEach((e) => window.addEventListener(e, wait, { passive: true }));
++    TOUCH.forEach((e) => window.addEventListener(e, wait, { passive: true }));
 +    document.addEventListener("visibilitychange", wait);
 +    return () => {
 +      window.clearTimeout(timer);
-+      events.forEach((e) => window.removeEventListener(e, wait));
++      TOUCH.forEach((e) => window.removeEventListener(e, wait));
 +      document.removeEventListener("visibilitychange", wait);
 +    };
 +  }, [held, wanted, isDrawerOpen, rangoli, mount]);
 +
-+  // Held unseen on a hidden tab: put away after a while (back, it is prepared again in her next pause).
++  // Her touch after a field was mounted but before its preparation began (its canvas not yet made): it is let go
++  // unprepared, to be prepared in her next pause, so the long task never lands just after her tap.
++  useEffect(() => {
++    const touch = () => {
++      if (!live.current || ready.current || falling.current || document.querySelector("canvas.ig-bloomfield")) return;
++      live.current = 0;
++      setHeld(0);
++    };
++    TOUCH.forEach((e) => window.addEventListener(e, touch, { passive: true }));
++    return () => TOUCH.forEach((e) => window.removeEventListener(e, touch));
++  }, []);
++
++  // When she last touched, scrolled or typed.
++  useEffect(() => {
++    const mark = () => {
++      last.current = Date.now();
++    };
++    AWAKE.forEach((e) => window.addEventListener(e, mark, { passive: true }));
++    return () => AWAKE.forEach((e) => window.removeEventListener(e, mark));
++  }, []);
++
++  // A held field (not falling) is put away IDLE_MS after her last touch, and at once on a hidden tab. One timer,
++  // set for the moment she would have been away that long, and set again from there if she was not.
 +  useEffect(() => {
 +    if (!held || stop) return;
 +    let timer = 0;
-+    const seen = () => {
-+      window.clearTimeout(timer);
-+      if (document.visibilityState === "hidden" && !falling.current) timer = window.setTimeout(() => setStop(true), HIDDEN_MAX_MS);
++    const away = () => {
++      if (!falling.current) setStop(true);
 +    };
++    const check = () => {
++      const left = last.current + IDLE_MS - Date.now();
++      if (left > 0) timer = window.setTimeout(check, left);
++      else away();
++    };
++    const seen = () => {
++      if (document.visibilityState === "hidden") away();
++    };
++    check();
 +    seen();
 +    document.addEventListener("visibilitychange", seen);
 +    return () => {
@@ -11045,10 +11207,13 @@ index 0000000..dc4b6ba
 +        ready.current = true;
 +      }}
 +      onGone={() => {
++        // Put away, fallen, or given up (a scene too late, or a phone the probe kept at Tier 1): her next placement wants another.
 +        ready.current = false;
 +        falling.current = false;
++        live.current = 0;
 +        setHeld(0);
 +        setStop(false);
++        setWanted(false);
 +      }}
 +    />
 +  );
@@ -12362,14 +12527,14 @@ index 0000000..7dc1ff7
 +export default SinceLastVisit;
 diff --git a/src/components/portal/SkyLayer.tsx b/src/components/portal/SkyLayer.tsx
 new file mode 100644
-index 0000000..4da3ceb
+index 0000000..567d3a7
 --- /dev/null
 +++ b/src/components/portal/SkyLayer.tsx
-@@ -0,0 +1,286 @@
+@@ -0,0 +1,289 @@
 +import { useLayoutEffect, useMemo, useRef, type CSSProperties, type ReactNode } from "react";
 +import { ARCH, BED, hashString, mulberry32 } from "@/lib/portal/gardenLayout";
 +import { EASE_REVEAL, play, stillMotion, useAmbientLoop } from "@/lib/portal/motion";
-+import { FIREFLIES, NIGHT_GROUND, type SkyHour } from "@/lib/portal/sky";
++import { FIREFLIES, type SkyHour } from "@/lib/portal/sky";
 +import { lazyRoom, useDecoration } from "@/lib/portal/lazyRoom";
 +import { FULL, NEW, isCrescent, litPath, moonAt, moonOfAge, moonWords, shapeOf, type Moon } from "@/lib/portal/moon";
 +
@@ -12410,10 +12575,12 @@ index 0000000..4da3ceb
 +  Phase 7: after dark the moon under the arbour's crown is tonight's moon,
 +  its real shape (moon.ts, Meeus): its lit limb and terminator, on the right
 +  while it waxes, a crescent's dark part in a faint earthshine. At full, a
-+  fine gold halo (a wash over the ink sky only greyed it); at new, no
-+  moon, and the still stars a touch brighter. In What's growing, at night,
-+  part "words" says its shape in one line, and only its shape: never where
-+  it is or when it rises. All still art: nothing here adds an animation.
++  fine gold halo and a still moonlit wash: a soft ivory light round the
++  moon, under the stars, that fades to nothing well above the bed (a flat
++  wash over the whole doorway only greyed the ink); at new, no moon, and
++  the still stars a touch brighter. In What's growing, at night, part
++  "words" says its shape in one line, and only its shape: never where it
++  is or when it rises. All still art: nothing here adds an animation.
 +*/
 +
 +const SkyWritten = lazyRoom(() => import("./SkyWritten"));
@@ -12527,20 +12694,7 @@ index 0000000..4da3ceb
 +  willChange: "transform",
 +});
 +
-+/* A wash that fades from the top of the arbour's doorway down to its height (dawn's, the golden hour's, a full moon's). */
-+const Wash = ({ id, color, o, h }: { id: string; color: string; o: string; h: number }) => (
-+  <>
-+    <defs>
-+      <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-+        <stop offset="0" stopColor={color} stopOpacity={o} />
-+        <stop offset="1" stopColor={color} stopOpacity="0" />
-+      </linearGradient>
-+    </defs>
-+    <rect x="0" y="0" width={BED.w} height={h} fill={`url(#${id})`} clipPath="url(#ig-sky-arch)" />
-+  </>
-+);
-+
-+/* Tonight's moon, still: its lit part, a crescent's earthshine, and at full a fine halo. */
++/* Tonight's moon, still: its lit part, a crescent's earthshine, and at full a fine halo (its wash is under the stars). */
 +const MOON_R = 15;
 +const TonightsMoon = ({ moon, shape }: { moon: Moon; shape: number }) => {
 +  const lit = litPath(moon, MOON_R);
@@ -12553,30 +12707,44 @@ index 0000000..4da3ceb
 +  ) : null;
 +};
 +
++/* The arch's clip and the washes' gradients are never drawn themselves, so they need no <defs>; what they leave out is SVG's default (0). */
 +const Back = ({ hour, stars, flower, moon, shape }: { hour: SkyHour; stars: Star[]; flower: ReactNode; moon: Moon; shape: number }) => (
 +  <svg viewBox={`0 0 ${BED.w} ${BED.h}`} style={ART} aria-hidden>
-+    <defs>
-+      <clipPath id="ig-sky-arch">
-+        <path d={ARCH} />
-+      </clipPath>
-+    </defs>
++    <clipPath id="ig-sky-arch">
++      <path d={ARCH} />
++    </clipPath>
 +    {hour === "dawn" && (
 +      <>
-+        <Wash id="ig-sky-dawn" color="#FFD9C8" o=".55" h={WASH_END - 92} />
++        <linearGradient id="ig-sky-dawn" x2="0" y2="1">
++          <stop stopColor="#FFD9C8" stopOpacity=".55" />
++          <stop offset="1" stopColor="#FFD9C8" stopOpacity="0" />
++        </linearGradient>
++        <rect width={BED.w} height={WASH_END - 92} fill="url(#ig-sky-dawn)" clipPath="url(#ig-sky-arch)" />
 +        <circle cx="96" cy="232" r="20" fill="#FFE7DB" stroke={GOLD} strokeWidth=".6" opacity=".9" />
 +      </>
 +    )}
 +    {hour === "golden" && (
 +      <>
-+        <Wash id="ig-sky-golden" color="#F2CE97" o=".5" h={WASH_END} />
++        <linearGradient id="ig-sky-golden" x2="0" y2="1">
++          <stop stopColor="#F2CE97" stopOpacity=".5" />
++          <stop offset="1" stopColor="#F2CE97" stopOpacity="0" />
++        </linearGradient>
++        <rect width={BED.w} height={WASH_END} fill="url(#ig-sky-golden)" clipPath="url(#ig-sky-arch)" />
 +        <circle cx="300" cy="212" r="24" fill="#F7D49B" stroke={GOLD_DEEP} strokeWidth=".7" opacity=".7" />
 +      </>
 +    )}
 +    {hour === "night" && (
 +      <>
++        {/* At new moon the stars come up a touch (o^0.7: the faint ones most, never past 1). */}
 +        <g clipPath="url(#ig-sky-arch)">
++          <radialGradient id="ig-sky-moon">
++            <stop stopColor={MOON} stopOpacity=".16" />
++            <stop offset="1" stopColor={MOON} stopOpacity="0" />
++          </radialGradient>
++          {/* At full, the moon's light round it, under the stars: centred on the moon (twice its height), gone by the arch. */}
++          {shape === FULL && <rect width={BED.w} height={316} fill="url(#ig-sky-moon)" />}
 +          {stars.map((s, i) => (
-+            <circle key={i} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(2)} fill={s.gold ? GOLD : MOON} opacity={(shape === NEW ? Math.min(1, s.o * 1.3) : s.o).toFixed(2)} />
++            <circle key={i} cx={s.x.toFixed(1)} cy={s.y.toFixed(1)} r={s.r.toFixed(2)} fill={s.gold ? GOLD : MOON} opacity={(shape === NEW ? s.o ** 0.7 : s.o).toFixed(2)} />
 +          ))}
 +        </g>
 +        <TonightsMoon moon={moon} shape={shape} />
@@ -12595,8 +12763,8 @@ index 0000000..4da3ceb
 +  const flies = useMemo(() => (hour === "night" && part === "front" ? firefliesFor(seed) : []), [hour, part, seed]);
 +  // Behind the plants: the mist lies between the stems, never across a flower.
 +  const mist = hour === "dawn" && part === "back";
-+  // Tonight's moon (or, in the preview only, the moon of the age asked for), once per render.
-+  const moon = useMemo(() => (import.meta.env.DEV && age !== undefined ? moonOfAge(age) : moonAt(new Date())), [age]);
++  // Tonight's moon (or, in the preview only, the moon of the age asked for): a few sums, each render.
++  const moon = import.meta.env.DEV && age !== undefined ? moonOfAge(age) : moonAt(new Date());
 +  const shape = shapeOf(moon);
 +
 +  // Before the layer's first paint, so it never shows a frame before its fade or its fireflies' flight.
@@ -12654,17 +12822,18 @@ index 0000000..4da3ceb
 +export default SkyLayer;
 diff --git a/src/components/portal/SkyMoon.test.tsx b/src/components/portal/SkyMoon.test.tsx
 new file mode 100644
-index 0000000..7c2cbba
+index 0000000..8643356
 --- /dev/null
 +++ b/src/components/portal/SkyMoon.test.tsx
-@@ -0,0 +1,105 @@
+@@ -0,0 +1,129 @@
 +import { cleanup, render } from "@testing-library/react";
 +import { afterEach, beforeEach, describe, expect, it } from "vitest";
 +import { SHAPES, litPath, moonOfAge, shapeOf, moonWords } from "@/lib/portal/moon";
 +import SkyLayer from "./SkyLayer";
 +
-+/* Tonight's moon in the night garden's sky (Phase 7): its real shape, still; at full a fine halo; at new
-+   no moon and brighter stars; its shape said in words at night only. Nothing about it animates. */
++/* Tonight's moon in the night garden's sky (Phase 7): its real shape, still; at full a fine halo and a moonlit
++   wash round it, under the stars; at new no moon and brighter stars; its shape said in words at night only.
++   Nothing about it animates. */
 +
 +const animated: Element[] = [];
 +beforeEach(() => {
@@ -12713,15 +12882,38 @@ index 0000000..7c2cbba
 +    expect(a.some((o, i) => o > b[i])).toBe(true);
 +  });
 +
-+  it("lays a fine halo at full, and only then, and no wash over the ink sky (it greyed it)", () => {
++  it("lays a moonlit wash and a fine halo at full, and only then", () => {
 +    const full = back(15);
 +    expect(full.querySelector('[data-moon] circle[fill="none"]')).not.toBeNull();
-+    expect(full.querySelector('rect[fill="url(#ig-sky-moonlit)"]')).toBeNull();
-+    for (const age of [4, 7, 11, 19, 22, 26]) {
++    const wash = full.querySelector('[fill="url(#ig-sky-moon)"]')!;
++    expect(wash).not.toBeNull();
++    for (const age of [0, 4, 7, 11, 19, 22, 26]) {
 +      const c = back(age);
-+      expect(c.querySelector('rect[fill="url(#ig-sky-moonlit)"]'), String(age)).toBeNull();
++      expect(c.querySelector('[fill="url(#ig-sky-moon)"]'), String(age)).toBeNull();
 +      expect(c.querySelector('[data-moon] circle[fill="none"]'), String(age)).toBeNull();
 +    }
++  });
++
++  it("keeps the wash a still light round the moon, under the stars, cut to the arch and high above the bed", () => {
++    const full = back(15);
++    const wash = full.querySelector('[fill="url(#ig-sky-moon)"]')!;
++    // Inside the arch's clip, before (under) every star, and never animated.
++    const sky = wash.closest('g[clip-path="url(#ig-sky-arch)"]')!;
++    expect(sky).not.toBeNull();
++    expect(sky.firstElementChild?.tagName.toLowerCase()).toBe("radialgradient");
++    expect([...sky.children].indexOf(wash)).toBe(1);
++    expect(animated.filter((el) => el === wash)).toEqual([]);
++    // Centred on the moon (a radial gradient over a box whose middle is the moon), ending well above the soil and labels.
++    const x = Number(wash.getAttribute("x") ?? 0);
++    const y = Number(wash.getAttribute("y") ?? 0);
++    expect([x + Number(wash.getAttribute("width")) / 2, y + Number(wash.getAttribute("height")) / 2]).toEqual([...AT]);
++    expect(y + Number(wash.getAttribute("height"))).toBeLessThanOrEqual(392);
++    // Ivory light that fades out: brightest at the moon, and faint even there (a sixth), nothing at its edge.
++    const stops = [...full.querySelectorAll("#ig-sky-moon stop")].map((s) => [s.getAttribute("offset") ?? "0", s.getAttribute("stop-color"), Number(s.getAttribute("stop-opacity"))]);
++    expect(stops).toEqual([
++      ["0", "#F4EBE2", 0.16],
++      ["1", "#F4EBE2", 0],
++    ]);
 +  });
 +
 +  it("gives a crescent's dark part a faint earthshine", () => {
@@ -27189,10 +27381,10 @@ index 0000000..bb6bcff
 +});
 diff --git a/src/lib/portal/moon.ts b/src/lib/portal/moon.ts
 new file mode 100644
-index 0000000..1b27d48
+index 0000000..920d1dc
 --- /dev/null
 +++ b/src/lib/portal/moon.ts
-@@ -0,0 +1,112 @@
+@@ -0,0 +1,114 @@
 +/*
 +  TONIGHT'S MOON (Phase 7): the shape of the real Moon, for her garden's
 +  night sky. A pure module, read only by the sky's own chunk (SkyLayer), so
@@ -27259,10 +27451,12 @@ index 0000000..1b27d48
 + */
 +export const moonAtJde = (jde: number): Moon => {
 +  const T = (jde - 2451545) / 36525;
-+  const D = rad(297.8502 + 445267.1114 * T);
++  // D in degrees, as the phase angle below is reckoned.
++  const d = 297.8502 + 445267.1114 * T;
++  const D = rad(d);
 +  const M = rad(357.5291 + 35999.0503 * T);
 +  const Mp = rad(134.9634 + 477198.8675 * T);
-+  const i = mod360(180 - (D * 180) / Math.PI - 6.289 * Math.sin(Mp) + 2.1 * Math.sin(M) - 1.274 * Math.sin(2 * D - Mp) - 0.658 * Math.sin(2 * D) - 0.214 * Math.sin(2 * Mp) - 0.11 * Math.sin(D));
++  const i = mod360(180 - d - 6.289 * Math.sin(Mp) + 2.1 * Math.sin(M) - 1.274 * Math.sin(2 * D - Mp) - 0.658 * Math.sin(2 * D) - 0.214 * Math.sin(2 * Mp) - 0.11 * Math.sin(D));
 +  // Waxing while the elongation (180 - i) is under 180 degrees.
 +  return { fraction: (1 + Math.cos(rad(i))) / 2, waxing: i > 0 && i <= 180 };
 +};
@@ -45455,7 +45649,7 @@ index 0000000..700ed4f
 +});
 diff --git a/src/pages/members/Rangoli.tsx b/src/pages/members/Rangoli.tsx
 new file mode 100644
-index 0000000..4b2e27d
+index 0000000..6087b64
 --- /dev/null
 +++ b/src/pages/members/Rangoli.tsx
 @@ -0,0 +1,500 @@
@@ -45528,7 +45722,7 @@ index 0000000..4b2e27d
 +
 +/* The story card's renderer: the garden card's own (ShareCard, with lib/portal/shareCard), a chunk of its own. */
 +const ShareCard = lazyRoom(() => import("@/components/portal/ShareCard"));
-+const RangoliField = lazyRoom(() => import("@/components/portal/RangoliField")); // The shower (Tier 2, droppable): Phase 5's Bloom Field over her rangoli as she keeps it.
++const RangoliField = lazyRoom(() => import("@/components/portal/RangoliField")); // The shower (Tier 2, droppable): Phase 5's Bloom Field over her rangoli as she keeps it; fetched only where the gate lets Tier 2 run (below: motion on, no Data Saver or 2g/3g, WebGL, 4 GB or more, and in development not the preview's &tier=1, which preview.ts read from the address the page opened at).
 +
 +/* A part of the room in a chunk of its own: fetched once the room is idle, drawn once it is in (it never
 +   suspends the room, and a chunk that cannot arrive leaves the fallback where it would be). */
@@ -45567,7 +45761,7 @@ index 0000000..4b2e27d
 +
 +  // Her floor as she left it this visit, else her rangoli as this phone kept it (or, in development only, &rangoli=drawn: as "Draw it for me" lays it).
 +  const [start] = useState(() => {
-+    if (import.meta.env.DEV && garden?.rangoli === "drawn") {
++    if (import.meta.env.DEV && garden?.rangoli === "drawn" && !fresh) {
 +      const drawn = compose(user.id, month, dropSpecies);
 +      return { floor: drawn, kept: encode(drawn) };
 +    }
@@ -45803,7 +45997,7 @@ index 0000000..4b2e27d
 +            label={WORDS.places}
 +          />
 +          <div ref={petalsRef} className="ig-rg-petals" aria-hidden />
-+          {!still && "WebGLRenderingContext" in window && !(Number((navigator as { deviceMemory?: number }).deviceMemory) < 4) && <Later room={RangoliField} fallback={null} rangoli={rangoli} accent={accent} seed={user.id} anchor={floorRef} go={showerGo} />}
++          {!still && "WebGLRenderingContext" in window && !(Number((navigator as { deviceMemory?: number }).deviceMemory) < 4) && !(import.meta.env.DEV && preview && /[?&]tier=1(&|$)/.test(String(performance.getEntriesByType?.("navigation")[0]?.name))) && <Later room={RangoliField} fallback={null} rangoli={rangoli} accent={accent} seed={user.id} anchor={floorRef} go={showerGo} />}
 +        </div>
 +        <p className="ig-rg-said" role="status">
 +          {said}
@@ -46785,10 +46979,10 @@ index 0000000..206b85e
 +});
 diff --git a/src/pages/members/Twins.tsx b/src/pages/members/Twins.tsx
 new file mode 100644
-index 0000000..778f2fa
+index 0000000..d3a65ef
 --- /dev/null
 +++ b/src/pages/members/Twins.tsx
-@@ -0,0 +1,506 @@
+@@ -0,0 +1,511 @@
 +import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -46838,6 +47032,7 @@ index 0000000..778f2fa
 +  its own animation's end, and the re-lay waits on a cue.
 +*/
 +
++const GOLD_TEXT = { color: "var(--nf-gold-text)" } as const;
 +const PHOTO_SIZES = "(min-width: 600px) 130px, (min-width: 360px) 22vw, 30vw";
 +/** The pair moment and the last turn settle before the cards lay themselves out in their pairs. */
 +const RELAY_AFTER = 900;
@@ -47277,6 +47472,10 @@ index 0000000..778f2fa
 +            )}
 +            {done && (
 +              <div className="ig-tw-done">
++                {/* Its finale in the display italic, for her eyes (the status line over the table has said it). */}
++                <p className="ig-h2" aria-hidden>
++                  <em style={GOLD_TEXT}>{WORDS.allUp}</em>
++                </p>
 +                {keptSaid && <p className="ig-fineprint">{keptSaid}</p>}
 +                <Link className={textLink} to="/members/herbarium#ig-keep-twins">
 +                  {WORDS.herbarium}

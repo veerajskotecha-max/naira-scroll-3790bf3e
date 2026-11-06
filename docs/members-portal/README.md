@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `9cbfa40` (Phase 7 'Pairs and Petals' in progress, interim: built and merged, being integrated; Phase 6 final is `fc54f58`; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `cea4e0b` (Phase 7 'Pairs and Petals' in progress, interim: reviewed, findings verified, polish under way; Phase 6 final is `fc54f58`; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 

@@ -10300,10 +10300,10 @@ index 0000000..0517ba6
 +export default memo(RangoliArt);
 diff --git a/src/components/portal/RangoliDoor.test.tsx b/src/components/portal/RangoliDoor.test.tsx
 new file mode 100644
-index 0000000..92371e9
+index 0000000..05ac6e4
 --- /dev/null
 +++ b/src/components/portal/RangoliDoor.test.tsx
-@@ -0,0 +1,144 @@
+@@ -0,0 +1,146 @@
 +import { cleanup, render, screen, waitFor } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, describe, expect, it, vi } from "vitest";
@@ -10350,6 +10350,8 @@ index 0000000..92371e9
 +    door();
 +    expect(uses()).toBe(kept.at.reduce((n, s, i) => n + (s ? copies(i).length : 0), 0));
 +    expect(screen.getByRole("link", { name: WORDS.door }).getAttribute("href")).toBe("/members/rangoli");
++    // Its words apart from the link, so the caption and the action never read as one.
++    expect(screen.getByText(WORDS.doorSaid).tagName).toBe("P");
 +    expect(document.querySelector(".ig-door-rangoli")?.getAttribute("aria-hidden")).toBe("true");
 +    expect(animate).not.toHaveBeenCalled();
 +  });
@@ -10450,10 +10452,10 @@ index 0000000..92371e9
 +});
 diff --git a/src/components/portal/RangoliDoor.tsx b/src/components/portal/RangoliDoor.tsx
 new file mode 100644
-index 0000000..5a77671
+index 0000000..7345c74
 --- /dev/null
 +++ b/src/components/portal/RangoliDoor.tsx
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,49 @@
 +import { useMemo } from "react";
 +import { Link } from "react-router-dom";
 +import RangoliArt from "./RangoliArt";
@@ -10464,8 +10466,9 @@ index 0000000..5a77671
 +
 +/*
 +  Her rangoli at her garden's door (Phase 7): laid on the step under her
-+  bed, foreshortened by the step's own still transform, with a way back to
-+  the room to make another. A chunk of its own, fetched through lazyRoom by
++  bed, foreshortened by the step's own still transform, said in the
++  editorial italic, with a way to the room to make another on a fresh
++  floor. A chunk of its own, fetched through lazyRoom by
 +  the garden home once the garden has painted, and only when this phone
 +  holds a rangoli of hers (lib/portal/rangoliKey). Still art: nothing here
 +  moves, nothing loops, nothing sits above the page.
@@ -10492,7 +10495,9 @@ index 0000000..5a77671
 +      <div className="ig-door-rangoli" aria-hidden>
 +        <RangoliArt rangoli={rangoli} ground="round" kept />
 +      </div>
-+      <Link className={textLink} to="/members/rangoli">
++      {/* Its words, then the way to make another: a fresh floor (her kept one stays here until she keeps a new one). */}
++      <p className="ig-door-said">{WORDS.doorSaid}</p>
++      <Link className={textLink} to="/members/rangoli" state={{ fresh: true }}>
 +        {WORDS.door}
 +      </Link>
 +    </>
@@ -10502,10 +10507,10 @@ index 0000000..5a77671
 +export default RangoliDoor;
 diff --git a/src/components/portal/RangoliField.test.tsx b/src/components/portal/RangoliField.test.tsx
 new file mode 100644
-index 0000000..51a8486
+index 0000000..4b8bbfc
 --- /dev/null
 +++ b/src/components/portal/RangoliField.test.tsx
-@@ -0,0 +1,311 @@
+@@ -0,0 +1,365 @@
 +import { act, cleanup, render } from "@testing-library/react";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
@@ -10516,11 +10521,13 @@ index 0000000..51a8486
 +/*
 +  The shower (Phase 7, Tier 2): the host of Phase 5's Bloom Field over the
 +  rangoli room, with the Bloom Field itself a stand-in here (its own tests
-+  are BloomField.test's). It is never fetched on Tier 1; it is held ready
++  are BloomField.test's). It is never fetched on Tier 1; a field is mounted
++  (and so prepared) only once her hands have been still a while, never in
++  the moments after a tap or a change on the floor; it is held ready
 +  unseen; keeping her rangoli lets it fall only once it said it was ready;
-+  a field whose scene came late is mounted again on her next placement;
-+  a held field is put away after a while without her touch, on a hidden
-+  tab, on a swept floor and as the bag opens.
++  a field whose scene came late is mounted again in her next pause; a held
++  field is never put away for her being idle or an empty floor, only after
++  a while on a hidden tab, as the bag opens and as she leaves.
 +*/
 +
 +const state = vi.hoisted(() => ({
@@ -10531,6 +10538,7 @@ index 0000000..51a8486
 +type FieldProps = {
 +  accent: string;
 +  seed: string;
++  anchor: { current: Element | null };
 +  go: MutableRefObject<() => void>;
 +  stop: boolean;
 +  onReady: () => void;
@@ -10571,7 +10579,7 @@ index 0000000..51a8486
 +  return { default: FakeBloomField };
 +});
 +
-+import RangoliField from "./RangoliField";
++import RangoliField, { HIDDEN_MAX_MS, QUIET_MS } from "./RangoliField";
 +
 +const reduce = (on: boolean) => {
 +  window.matchMedia = ((query: string) => ({
@@ -10584,6 +10592,13 @@ index 0000000..51a8486
 +const latest = () => fields.props[fields.props.length - 1];
 +const flush = () =>
 +  act(async () => void (await vi.advanceTimersByTimeAsync(50)));
++const wait = (ms: number) => act(async () => void (await vi.advanceTimersByTimeAsync(ms)));
++/* Her hands still long enough for a field to be prepared. */
++const quiet = () => wait(QUIET_MS + 50);
++const setVisibility = (v: "hidden" | "visible") => {
++  Object.defineProperty(document, "visibilityState", { configurable: true, get: () => v });
++  act(() => void document.dispatchEvent(new Event("visibilitychange")));
++};
 +
 +const host = (rangoli: Rangoli = EMPTY) => {
 +  const go = { current: () => {} } as MutableRefObject<() => void>;
@@ -10633,21 +10648,24 @@ index 0000000..51a8486
 +  it("mounts no Bloom Field on Tier 1 or under reduced motion, and keeping it is the Tier 1 finale alone", async () => {
 +    state.tier = 1;
 +    const a = host(one);
-+    await flush();
++    await quiet();
 +    a.go.current();
 +    a.unmount();
 +    state.tier = 2;
 +    reduce(true);
 +    const b = host(one);
-+    await flush();
++    await quiet();
 +    b.go.current();
 +    expect(fields.mounts).toBe(0);
 +    expect(fields.gos).toBe(0);
 +  });
 +
-+  it("holds a field ready, unseen, once the room is idle, in her stone's hue and seeded by her id", async () => {
++  it("holds a field ready, unseen, once her hands have been still a while, in her stone's hue and seeded by her id", async () => {
 +    host(one);
 +    await flush();
++    // Not as she arrives: only after the wait.
++    expect(fields.mounts).toBe(0);
++    await quiet();
 +    expect(fields.mounts).toBe(1);
 +    expect(latest()).toMatchObject({
 +      accent: "#C20E3A",
@@ -10656,9 +10674,24 @@ index 0000000..51a8486
 +    });
 +  });
 +
++  it("never prepares a field in the moments after a tap, a key or a change on the floor", async () => {
++    const { redo } = host(one);
++    await wait(QUIET_MS - 300);
++    window.dispatchEvent(new Event("pointerdown"));
++    await wait(QUIET_MS - 300);
++    window.dispatchEvent(new Event("keydown"));
++    await wait(QUIET_MS - 300);
++    // A placement (her ripple, or a ring of "Draw it for me") starts the wait again too.
++    redo(two);
++    await wait(QUIET_MS - 300);
++    expect(fields.mounts).toBe(0);
++    await wait(400);
++    expect(fields.mounts).toBe(1);
++  });
++
 +  it("lets it fall as she keeps it only once it said it was ready, and never demotes her for an early keep", async () => {
 +    const { go } = host(one);
-+    await flush();
++    await quiet();
 +    go.current();
 +    expect(fields.gos).toBe(0);
 +    expect(state.demoted).toBe(0);
@@ -10670,9 +10703,9 @@ index 0000000..51a8486
 +    expect(fields.gos).toBe(1);
 +  });
 +
-+  it("mounts a field whose scene came late once more on her next placement", async () => {
++  it("mounts a field whose scene came late once more in her next pause, never on her placement", async () => {
 +    const { redo } = host(one);
-+    await flush();
++    await quiet();
 +    // The Bloom Field gave up (its scene arrived past its mount deadline): ready, then gone, at once.
 +    act(() => {
 +      latest().onReady();
@@ -10680,51 +10713,64 @@ index 0000000..51a8486
 +    });
 +    expect(fields.unmounts).toBe(1);
 +    redo(two);
++    await flush();
++    expect(fields.mounts).toBe(1);
++    await quiet();
 +    expect(fields.mounts).toBe(2);
 +  });
 +
-+  it("puts a held field away after a while without her touch, and mounts it again on her next placement", async () => {
++  it("never puts a held field away for her being idle, nor for an empty floor", async () => {
 +    const { redo } = host(one);
-+    await flush();
++    await quiet();
 +    act(() => latest().onReady());
-+    await act(async () => void (await vi.advanceTimersByTimeAsync(19_000)));
++    await wait(60_000);
 +    expect(latest().stop).toBe(false);
-+    window.dispatchEvent(new Event("pointerdown"));
-+    await act(async () => void (await vi.advanceTimersByTimeAsync(19_000)));
++    // Lifting the last petal, or taking back to nothing: the field stays held.
++    redo(EMPTY);
++    await wait(60_000);
 +    expect(latest().stop).toBe(false);
-+    await act(async () => void (await vi.advanceTimersByTimeAsync(1_100)));
++    expect(fields.mounts).toBe(1);
++    expect(fields.unmounts).toBe(0);
++  });
++
++  it("puts a held field away after a while on a hidden tab, and prepares it again in her next pause", async () => {
++    host(one);
++    await quiet();
++    setVisibility("hidden");
++    await wait(HIDDEN_MAX_MS - 1000);
++    expect(latest().stop).toBe(false);
++    // Back in time: it stays.
++    setVisibility("visible");
++    await wait(HIDDEN_MAX_MS + 1000);
++    expect(latest().stop).toBe(false);
++    setVisibility("hidden");
++    await wait(HIDDEN_MAX_MS + 100);
 +    expect(latest().stop).toBe(true);
 +    act(() => latest().onGone());
-+    redo(two);
++    setVisibility("visible");
++    await quiet();
 +    expect(fields.mounts).toBe(2);
 +    expect(latest().stop).toBe(false);
 +  });
 +
-+  it("puts a held field away on a hidden tab", async () => {
-+    host(one);
-+    await flush();
-+    Object.defineProperty(document, "visibilityState", {
-+      configurable: true,
-+      get: () => "hidden",
-+    });
-+    act(() => void document.dispatchEvent(new Event("visibilitychange")));
-+    expect(latest().stop).toBe(true);
-+    Object.defineProperty(document, "visibilityState", {
-+      configurable: true,
-+      get: () => "visible",
-+    });
-+  });
-+
-+  it("puts a held field away as she sweeps the floor", async () => {
-+    const { redo } = host(one);
-+    await flush();
-+    redo(EMPTY);
-+    expect(latest().stop).toBe(true);
++  it("falls once for each rangoli she keeps: after a fall, a field is prepared again only once the floor changes", async () => {
++    const { go, redo } = host(one);
++    await quiet();
++    act(() => latest().onReady());
++    act(() => go.current());
++    expect(fields.gos).toBe(1);
++    act(() => latest().onGone());
++    await quiet();
++    await quiet();
++    expect(fields.mounts).toBe(1);
++    redo(two);
++    await quiet();
++    expect(fields.mounts).toBe(2);
 +  });
 +
 +  it("stops the field as the bag opens, falling or held", async () => {
 +    const { rerender, go } = host(one);
-+    await flush();
++    await quiet();
 +    act(() => latest().onReady());
 +    go.current();
 +    state.drawer = true;
@@ -10740,9 +10786,22 @@ index 0000000..51a8486
 +    expect(latest().stop).toBe(true);
 +  });
 +
++  it("lets the fall run while the room's column is on screen, not the floor alone", async () => {
++    const column = document.createElement("div");
++    column.className = "ig-rg";
++    const floor = document.createElement("div");
++    column.appendChild(floor);
++    document.body.appendChild(column);
++    const go = { current: () => {} } as MutableRefObject<() => void>;
++    render(<RangoliField rangoli={one} accent="#C20E3A" seed="u-1" anchor={{ current: floor }} go={go} />);
++    await quiet();
++    expect(latest().anchor.current).toBe(column);
++    column.remove();
++  });
++
 +  it("puts the field away as she leaves", async () => {
 +    const { unmount } = host(one);
-+    await flush();
++    await quiet();
 +    unmount();
 +    expect(fields.unmounts).toBe(1);
 +  });
@@ -10813,20 +10872,20 @@ index 0000000..51a8486
 +      /\.ig-bloomfield \{[^}]*z-index: 37;[^}]*pointer-events: none;/,
 +    );
 +    expect(css).toMatch(
-+      /\.ig-rg-words,\s*\.ig-rg-said,\s*\.ig-rg-controls \{ position: relative; z-index: 38; \}/,
++      /\.ig-rg-words,\s*\.ig-rg-said,\s*\.ig-rg-controls,\s*\.ig-rg-card \{ position: relative; z-index: 38; \}/,
 +    );
 +  });
 +});
 diff --git a/src/components/portal/RangoliField.tsx b/src/components/portal/RangoliField.tsx
 new file mode 100644
-index 0000000..365d00c
+index 0000000..dc4b6ba
 --- /dev/null
 +++ b/src/components/portal/RangoliField.tsx
-@@ -0,0 +1,148 @@
-+import { useCallback, useEffect, useRef, useState, type MutableRefObject, type RefObject } from "react";
+@@ -0,0 +1,173 @@
++import { useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject, type RefObject } from "react";
 +import { useCart } from "@/contexts/CartContext";
 +import { portalTier } from "@/lib/portal/tier";
-+import { IDLE_MS, stillMotion } from "@/lib/portal/motion";
++import { stillMotion } from "@/lib/portal/motion";
 +import type { Rangoli } from "@/lib/portal/rangoli";
 +import BloomField from "./BloomField";
 +import "./rangolifield.css";
@@ -10840,22 +10899,33 @@ index 0000000..365d00c
 +  petals) is the whole moment.
 +
 +  This host imports no scene and not the spectacle's loaders: the Bloom
-+  Field does its own gating and fetching (spectacle.loadBloomScene, once
-+  the room is idle), and its 60-frame probe, DPR cap, pause rules, late
-+  deadline and forceContextLoss disposal all apply as they do over the drop
-+  room. Its canvas sits at z-index 37, under the room's words and controls
-+  (38, rangolifield.css), over the floor, under the garden path and the bag.
++  Field does its own gating and fetching (spectacle.loadBloomScene, on
++  idle), and its 60-frame probe, DPR cap, pause rules, late deadline and
++  forceContextLoss disposal all apply as they do over the drop room. Its
++  canvas sits at z-index 37, under the room's words, controls and story
++  card (38, rangolifield.css), over the floor, under the garden path and
++  the bag.
 +
-+  The host is fetched once the room has gone idle (the room's lazyRoom), and
-+  only where the phone could take it; its field is mounted at once, prepared
-+  on idle and held unseen (BloomField's own way: no frames until it falls).
-+  One that gave up because its scene came late (a cold fetch) is mounted
-+  once more on her next placement, when the scene is cached. A held field is
-+  put away after IDLE_MS without her touch, on a hidden tab, when she sweeps
-+  the floor, when the bag opens and when she leaves; her next placement
-+  mounts it again. Keeping her rangoli lets it fall in that very task, and
-+  only once it said it was ready: a go() before then would cost her Tier 2
-+  for the visit, so before then the moment is Tier 1's alone.
++  Its cost comes while her hands are still, never in the moments after a
++  tap (Phase 5's rule for the field: its cost before the moment, never in
++  it). Preparing a field is one long task on the main thread (the renderer,
++  the room's light, the shaders), and the floor's ripple and "Draw it for
++  me" are main-thread animations, so a field is mounted (and so prepared,
++  on idle) only once no tap, key or touch has come for QUIET_MS and the
++  floor has not changed for as long: as she arrives, if she waits; else
++  in her first pause. A field whose scene came late (a cold fetch) gives
++  up and is mounted again in her next pause, the scene cached by then.
++
++  A held field is paused and draws nothing, so her being idle never puts
++  it away (the idle rule is for loops); nor does an empty floor. It is put
++  away after HIDDEN_MAX_MS on a hidden tab (as Stone Light's gem is), when
++  the bag opens and when she leaves; prepared again in her next pause. One
++  fall for each rangoli she keeps: after a fall, a field is wanted again
++  only once the floor changes. Keeping her rangoli lets it fall in that very
++  task, and only once it said it was ready: a go() before then would cost
++  her Tier 2 for the visit, so before then the moment is Tier 1's alone.
++  The fall runs while the room's column is on screen (not the floor alone,
++  so it goes on as she scrolls to the buttons under the tray).
 +*/
 +
 +type Props = {
@@ -10863,13 +10933,16 @@ index 0000000..365d00c
 +  /** Her stone's hue, or blush without a month. */
 +  accent: string;
 +  seed: string;
-+  /** The floor: the fall runs while it is on screen. */
++  /** The floor: the fall runs while its room's column is on screen. */
 +  anchor: RefObject<Element>;
 +  /** Filled here; the room calls it as she keeps her rangoli. */
 +  go: MutableRefObject<() => void>;
 +};
 +
-+const laidAny = (r: Rangoli) => r.at.some(Boolean);
++/** Her hands still this long (no tap, key or touch, the floor unchanged) before a field is prepared. */
++export const QUIET_MS = 1800;
++/** A held field on a hidden tab is put away after this long. */
++export const HIDDEN_MAX_MS = 10_000;
 +
 +/* On a capable phone only: everything else keeps Tier 1, and nothing of the field is fetched or watched. */
 +const RangoliField = (props: Props) => {
@@ -10879,13 +10952,23 @@ index 0000000..365d00c
 +
 +const Shower = ({ rangoli, accent, seed, anchor, go }: Props) => {
 +  const { isDrawerOpen } = useCart();
-+  // The field mounted now (its key; 0 for none), and whether it is to be put away.
++  // The field mounted now (its key; 0 for none), whether it is to be put away, and whether one is wanted.
 +  const [held, setHeld] = useState(0);
 +  const [stop, setStop] = useState(false);
++  const [wanted, setWanted] = useState(true);
 +  const fieldGo = useRef<() => void>(() => {});
 +  const ready = useRef(false);
 +  const falling = useRef(false);
-+  const last = useRef(rangoli);
++  const made = useRef(0);
++  // The room's whole column, found from the floor.
++  const room = useMemo<RefObject<Element>>(
++    () => ({
++      get current() {
++        return anchor.current?.closest(".ig-rg") ?? anchor.current;
++      },
++    }),
++    [anchor],
++  );
 +
 +  // A new field, held unseen until she keeps her rangoli (never once the probe has said this phone keeps Tier 1).
 +  const mount = useCallback(() => {
@@ -10894,45 +10977,45 @@ index 0000000..365d00c
 +    falling.current = false;
 +    fieldGo.current = () => {};
 +    setStop(false);
-+    setHeld((k) => k + 1);
++    made.current += 1;
++    setHeld(made.current);
 +  }, []);
 +
-+  // As the host arrives: a field prepared and held unseen.
-+  useEffect(() => mount(), [mount]);
++  // Any change on the floor wants a field again (after a fall, the next rangoli has its own).
++  useEffect(() => setWanted(true), [rangoli]);
 +
-+  // Her next placement: a field put away (or one whose scene came late) is mounted again; sweeping the floor puts one away.
++  // A field, once her hands have been still a while: each tap, key, touch or change on the floor starts the wait again.
 +  useEffect(() => {
-+    if (last.current === rangoli) return;
-+    const before = last.current;
-+    last.current = rangoli;
-+    if (!laidAny(rangoli) && laidAny(before)) {
-+      if (held && !falling.current) setStop(true);
-+      return;
-+    }
-+    if (!held) mount();
-+  }, [rangoli, held, mount]);
++    if (held || !wanted || isDrawerOpen) return;
++    let timer = 0;
++    const wait = () => {
++      window.clearTimeout(timer);
++      if (document.visibilityState !== "hidden") timer = window.setTimeout(mount, QUIET_MS);
++    };
++    wait();
++    const events = ["pointerdown", "keydown", "touchstart"] as const;
++    events.forEach((e) => window.addEventListener(e, wait, { passive: true }));
++    document.addEventListener("visibilitychange", wait);
++    return () => {
++      window.clearTimeout(timer);
++      events.forEach((e) => window.removeEventListener(e, wait));
++      document.removeEventListener("visibilitychange", wait);
++    };
++  }, [held, wanted, isDrawerOpen, rangoli, mount]);
 +
-+  // Held unseen: put away after a while without her touch, or as the tab is hidden.
++  // Held unseen on a hidden tab: put away after a while (back, it is prepared again in her next pause).
 +  useEffect(() => {
 +    if (!held || stop) return;
 +    let timer = 0;
-+    const wake = () => {
++    const seen = () => {
 +      window.clearTimeout(timer);
-+      timer = window.setTimeout(() => {
-+        if (!falling.current) setStop(true);
-+      }, IDLE_MS);
++      if (document.visibilityState === "hidden" && !falling.current) timer = window.setTimeout(() => setStop(true), HIDDEN_MAX_MS);
 +    };
-+    const hidden = () => {
-+      if (document.visibilityState === "hidden" && !falling.current) setStop(true);
-+    };
-+    wake();
-+    const events = ["pointerdown", "keydown", "scroll", "touchstart"] as const;
-+    events.forEach((e) => window.addEventListener(e, wake, { passive: true }));
-+    document.addEventListener("visibilitychange", hidden);
++    seen();
++    document.addEventListener("visibilitychange", seen);
 +    return () => {
 +      window.clearTimeout(timer);
-+      events.forEach((e) => window.removeEventListener(e, wake));
-+      document.removeEventListener("visibilitychange", hidden);
++      document.removeEventListener("visibilitychange", seen);
 +    };
 +  }, [held, stop]);
 +
@@ -10945,6 +11028,7 @@ index 0000000..365d00c
 +  go.current = () => {
 +    if (!held || stop || !ready.current || falling.current) return;
 +    falling.current = true;
++    setWanted(false);
 +    fieldGo.current();
 +  };
 +
@@ -10954,7 +11038,7 @@ index 0000000..365d00c
 +      key={held}
 +      accent={accent}
 +      seed={seed}
-+      anchor={anchor}
++      anchor={room}
 +      go={fieldGo}
 +      stop={stop}
 +      onReady={() => {
@@ -12278,10 +12362,10 @@ index 0000000..7dc1ff7
 +export default SinceLastVisit;
 diff --git a/src/components/portal/SkyLayer.tsx b/src/components/portal/SkyLayer.tsx
 new file mode 100644
-index 0000000..1aa9f23
+index 0000000..4da3ceb
 --- /dev/null
 +++ b/src/components/portal/SkyLayer.tsx
-@@ -0,0 +1,289 @@
+@@ -0,0 +1,286 @@
 +import { useLayoutEffect, useMemo, useRef, type CSSProperties, type ReactNode } from "react";
 +import { ARCH, BED, hashString, mulberry32 } from "@/lib/portal/gardenLayout";
 +import { EASE_REVEAL, play, stillMotion, useAmbientLoop } from "@/lib/portal/motion";
@@ -12326,7 +12410,7 @@ index 0000000..1aa9f23
 +  Phase 7: after dark the moon under the arbour's crown is tonight's moon,
 +  its real shape (moon.ts, Meeus): its lit limb and terminator, on the right
 +  while it waxes, a crescent's dark part in a faint earthshine. At full, a
-+  still moonlit wash over the night bed and a fine gold halo; at new, no
++  fine gold halo (a wash over the ink sky only greyed it); at new, no
 +  moon, and the still stars a touch brighter. In What's growing, at night,
 +  part "words" says its shape in one line, and only its shape: never where
 +  it is or when it rises. All still art: nothing here adds an animation.
@@ -12456,19 +12540,16 @@ index 0000000..1aa9f23
 +  </>
 +);
 +
-+/* Tonight's moon, still: its lit part, a crescent's earthshine, and at full a moonlit wash and a fine halo. */
++/* Tonight's moon, still: its lit part, a crescent's earthshine, and at full a fine halo. */
 +const MOON_R = 15;
 +const TonightsMoon = ({ moon, shape }: { moon: Moon; shape: number }) => {
 +  const lit = litPath(moon, MOON_R);
 +  return lit ? (
-+    <>
-+      {shape === FULL && <Wash id="ig-sky-moonlit" color="#FFF6EA" o=".26" h={WASH_END} />}
-+      <g data-moon={shape} transform={`translate(${MOON_AT})`} fill={MOON} stroke={GOLD}>
-+        {shape === FULL && <circle r={MOON_R + 7} fill="none" strokeWidth=".45" opacity=".75" />}
-+        {isCrescent(shape) && <circle r={MOON_R} stroke="none" opacity=".1" />}
-+        <path d={lit} strokeWidth=".6" />
-+      </g>
-+    </>
++    <g data-moon={shape} transform={`translate(${MOON_AT})`} fill={MOON} stroke={GOLD}>
++      {shape === FULL && <circle r="22" fill="none" strokeWidth=".45" opacity=".75" />}
++      {isCrescent(shape) && <circle r={MOON_R} stroke="none" opacity=".1" />}
++      <path d={lit} strokeWidth=".6" />
++    </g>
 +  ) : null;
 +};
 +
@@ -12573,7 +12654,7 @@ index 0000000..1aa9f23
 +export default SkyLayer;
 diff --git a/src/components/portal/SkyMoon.test.tsx b/src/components/portal/SkyMoon.test.tsx
 new file mode 100644
-index 0000000..49b5bc3
+index 0000000..7c2cbba
 --- /dev/null
 +++ b/src/components/portal/SkyMoon.test.tsx
 @@ -0,0 +1,105 @@
@@ -12582,7 +12663,7 @@ index 0000000..49b5bc3
 +import { SHAPES, litPath, moonOfAge, shapeOf, moonWords } from "@/lib/portal/moon";
 +import SkyLayer from "./SkyLayer";
 +
-+/* Tonight's moon in the night garden's sky (Phase 7): its real shape, still; at full a moonlit wash and a halo; at new
++/* Tonight's moon in the night garden's sky (Phase 7): its real shape, still; at full a fine halo; at new
 +   no moon and brighter stars; its shape said in words at night only. Nothing about it animates. */
 +
 +const animated: Element[] = [];
@@ -12632,10 +12713,10 @@ index 0000000..49b5bc3
 +    expect(a.some((o, i) => o > b[i])).toBe(true);
 +  });
 +
-+  it("lays a moonlit wash and a fine halo at full, and only then", () => {
++  it("lays a fine halo at full, and only then, and no wash over the ink sky (it greyed it)", () => {
 +    const full = back(15);
-+    expect(full.querySelector('rect[fill="url(#ig-sky-moonlit)"]')).not.toBeNull();
 +    expect(full.querySelector('[data-moon] circle[fill="none"]')).not.toBeNull();
++    expect(full.querySelector('rect[fill="url(#ig-sky-moonlit)"]')).toBeNull();
 +    for (const age of [4, 7, 11, 19, 22, 26]) {
 +      const c = back(age);
 +      expect(c.querySelector('rect[fill="url(#ig-sky-moonlit)"]'), String(age)).toBeNull();
@@ -15695,10 +15776,10 @@ index 0000000..f925166
 +export default StoneLight;
 diff --git a/src/components/portal/TwinCard.test.tsx b/src/components/portal/TwinCard.test.tsx
 new file mode 100644
-index 0000000..613ee51
+index 0000000..ed59e4e
 --- /dev/null
 +++ b/src/components/portal/TwinCard.test.tsx
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,77 @@
 +import { act, cleanup, render } from "@testing-library/react";
 +import { afterEach, beforeEach, describe, expect, it } from "vitest";
 +import { jewellery } from "@/data/jewellery";
@@ -15755,6 +15836,20 @@ index 0000000..613ee51
 +    expect(fakes).toHaveLength(0);
 +  });
 +
++  it("shows the name on vellum until its photo decodes, then fades the photo in by opacity alone", () => {
++    const photo = { src: "https://cdn.shopify.com/x.jpg?width=240", sizes: "30vw" };
++    const face = (decoded: boolean) => <TwinCard card={card} up paired={false} photo={photo} decoded={decoded} label={jewellery[0].name} tabIndex={0} onTurn={() => {}} onKeyDown={() => {}} onFocus={() => {}} />;
++    const { rerender, container } = render(face(false));
++    expect(container.querySelector(".ig-tw-name")!.textContent).toBe(jewellery[0].name);
++    expect(container.querySelector("img")).toBeNull();
++    rerender(face(true));
++    const img = container.querySelector("img")!;
++    expect(img.getAttribute("src")).toBe(photo.src);
++    const fade = fakes.filter((f) => f.el === img);
++    expect(fade).toHaveLength(1);
++    for (const k of fade[0].keyframes) expect(Object.keys(k)).toEqual(["opacity"]);
++  });
++
 +  it("is a button with its name in words", () => {
 +    const { container } = render(draw(false));
 +    const b = container.querySelector("button")!;
@@ -15764,10 +15859,10 @@ index 0000000..613ee51
 +});
 diff --git a/src/components/portal/TwinCard.tsx b/src/components/portal/TwinCard.tsx
 new file mode 100644
-index 0000000..dc43bbf
+index 0000000..a11b8f3
 --- /dev/null
 +++ b/src/components/portal/TwinCard.tsx
-@@ -0,0 +1,147 @@
+@@ -0,0 +1,157 @@
 +import { forwardRef, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 +import { FlowerGlyph } from "./FlowerGlyph";
 +import { SPECIES } from "@/lib/portal/species";
@@ -15785,9 +15880,9 @@ index 0000000..dc43bbf
 +  170 ms back to flat. No 3D context and no hidden back face (Chrome for
 +  Android flattens a 3D context under opacity or a clip; iOS flickers an
 +  image as its back face toggles), nothing softened or shaded. Under reduced motion
-+  and Data Saver the face simply swaps. In a pair, the face's frame redraws
-+  in gold leaf (stroke-dashoffset) and the pressed flower in its corner opens
-+  into bloom. A photo not yet decoded shows the name on vellum, and fades in
++  and Data Saver the face simply swaps. In a pair, both faces' frames redraw
++  in gold leaf together (stroke-dashoffset) and the pressed flowers in their
++  corners open into bloom, the card just turned included. A photo not yet decoded shows the name on vellum, and fades in
 +  (opacity) once it is.
 +*/
 +
@@ -15813,6 +15908,8 @@ index 0000000..dc43bbf
 +const EDGE = "perspective(600px) rotateY(90deg)";
 +const FLAT = "perspective(600px) rotateY(0deg)";
 +const BACK_EDGE = "perspective(600px) rotateY(-90deg)";
++/** A turn's first half, to its edge (the face swaps at its end). */
++const TO_EDGE_MS = 150;
 +/** Where the pair moment starts: the second card's turn has ended. */
 +const AFTER_TURN = 320;
 +
@@ -15823,13 +15920,15 @@ index 0000000..dc43bbf
 +  const imgRef = useRef<HTMLImageElement>(null);
 +  // The side that shows: it follows `up` at the turn's midpoint.
 +  const [shown, setShown] = useState(up);
-+  const wasPaired = useRef(paired);
++  // Its gold leaf has drawn (a card laid already paired shows it still), and the side that showed last time.
++  const drew = useRef(paired);
++  const shownBefore = useRef(shown);
 +  const wasDecoded = useRef(decoded);
 +
 +  useLayoutEffect(() => {
 +    if (shown === up) return;
 +    const leaf = leafRef.current;
-+    const toEdge = stillMotion() ? null : play(leaf, [{ transform: FLAT }, { transform: EDGE }], { duration: 150, easing: EASE_IN, fill: "forwards" });
++    const toEdge = stillMotion() ? null : play(leaf, [{ transform: FLAT }, { transform: EDGE }], { duration: TO_EDGE_MS, easing: EASE_IN, fill: "forwards" });
 +    if (!toEdge) {
 +      setShown(up);
 +      return;
@@ -15849,21 +15948,27 @@ index 0000000..dc43bbf
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, [up]);
 +
-+  // Twinned: the frame draws in gold leaf and the corner's flower opens, once its turn has ended.
++  /* Twinned: the frame draws in gold leaf and the corner's flower opens, on both cards together once the
++     second turn has ended. The card already face up waits the whole turn; one still turning starts as its
++     face shows (the turn's midpoint) and waits only the turn's second half. */
 +  useEffect(() => {
-+    if (!paired || wasPaired.current) {
-+      wasPaired.current = paired;
++    const justShown = shown && !shownBefore.current;
++    shownBefore.current = shown;
++    if (!paired) {
++      drew.current = false;
 +      return;
 +    }
-+    wasPaired.current = true;
++    if (drew.current || !shown) return;
++    drew.current = true;
 +    if (stillMotion()) return;
-+    const frame = play(frameRef.current, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 500, delay: AFTER_TURN, easing: EASE_REVEAL, fill: "backwards" });
-+    const bloom = play(bloomRef.current, [{ transform: "scale(.4)", opacity: 0.4 }, { transform: "scale(1)", opacity: 1 }], { duration: 420, delay: AFTER_TURN + 120, easing: EASE_BLOOM, fill: "backwards" });
++    const wait = justShown ? AFTER_TURN - TO_EDGE_MS : AFTER_TURN;
++    const frame = play(frameRef.current, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 500, delay: wait, easing: EASE_REVEAL, fill: "backwards" });
++    const bloom = play(bloomRef.current, [{ transform: "scale(.4)", opacity: 0.4 }, { transform: "scale(1)", opacity: 1 }], { duration: 420, delay: wait + 120, easing: EASE_BLOOM, fill: "backwards" });
 +    return () => {
 +      frame?.cancel();
 +      bloom?.cancel();
 +    };
-+  }, [paired]);
++  }, [paired, shown]);
 +
 +  // A photo that decodes while its face shows fades in.
 +  useEffect(() => {
@@ -15994,16 +16099,16 @@ index 0000000..7bcd353
 +});
 diff --git a/src/components/portal/TwinPairs.tsx b/src/components/portal/TwinPairs.tsx
 new file mode 100644
-index 0000000..573b454
+index 0000000..2d74935
 --- /dev/null
 +++ b/src/components/portal/TwinPairs.tsx
-@@ -0,0 +1,155 @@
-+import { useState } from "react";
+@@ -0,0 +1,165 @@
++import { useEffect, useRef, useState } from "react";
 +import type { JewelPiece } from "@/data/jewellery";
 +import type { Metal, Naira, UsSize } from "@/lib/portal/memberMeta";
 +import { offerWords } from "@/lib/portal/offer";
 +import { saveHandle } from "@/lib/portal/roomChanges";
-+import { handOff } from "@/lib/portal/handOff";
++import { openOut } from "@/lib/portal/handOff";
 +import { WORDS, inAppBrowsing, letGoWords, pieceUrl, twinPreset, type TwinPair } from "@/lib/portal/twins";
 +import type { BagLine } from "./MemberContext";
 +import type { MetaResult, Updater } from "@/lib/portal/memberMeta";
@@ -16012,15 +16117,16 @@ index 0000000..573b454
 +
 +/*
 +  PAIRS YOU'VE TURNED, under Twin Blooms' table, newest first: each pair in
-+  one gold frame with a sprig between, two of the shop's own piece cards
++  one gold frame headed with its two names (the twin line said once, over
++  the list), a sprig between two of the shop's own piece cards
 +  (live ₹ price and compare-at, Available or Sold out, Add to bag with her
 +  size, metal and month already chosen; a pre-order piece, or one whose
 +  size is still hers to choose, is linked to its page, never added in one
 +  tap), the twin line, "Keep them in your drawer" (her account, with the
 +  Drawer's own words when the oldest saved piece has to go) and "Send these
 +  two": the share sheet with the two pieces' own addresses and one fixed
-+  line, or inside Instagram's or Facebook's browser a WhatsApp link with no
-+  number, built at the tap. Once under the list, and only when two or more
++  line, or inside Instagram's or Facebook's browser WhatsApp, opened from
++  the tap (a button, so the shop's pixel counts no Contact), with no number. Once under the list, and only when two or more
 +  listed pieces can go in the bag: the bag's own Buy 2 / Buy 3 line, read
 +  from promo.ts through offer.ts.
 +*/
@@ -16058,10 +16164,10 @@ index 0000000..573b454
 +  const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function" && !inApp;
 +  if (!canShare)
 +    return (
-+      // A bare address on the page; the one with the two links is built at the tap (handOff), with no number and nothing of hers.
-+      <a className={quietButton} href="https://wa.me/" target="_blank" rel="noopener noreferrer" aria-describedby={describedBy} onClick={handOff(() => `https://wa.me/?text=${encodeURIComponent(shareText(pair))}`)}>
++      // A button, never a wa.me anchor: the shop's PixelEvents counts any tap on <a href*="wa.me"> as a Meta Contact (browser and meta-capi, with her match keys), and sending two pieces to a friend is no contact with the shop. WhatsApp opens from the tap, with no number and nothing of hers.
++      <button type="button" className={quietButton} aria-describedby={describedBy} onClick={() => openOut(`https://wa.me/?text=${encodeURIComponent(shareText(pair))}`)}>
 +        {WORDS.send}
-+      </a>
++      </button>
 +    );
 +  const send = async () => {
 +    setFailed(false);
@@ -16088,6 +16194,14 @@ index 0000000..573b454
 +const TwinPairs = ({ pairs, live, naira, us, metal, month, preview, bagBusy, onAdd, changeMeta }: Props) => {
 +  // What "Keep them in your drawer" said, by pair: kept, and who was let go to make room.
 +  const [kept, setKept] = useState<Record<number, string>>({});
++  // "Keep them in your drawer" gives way to its words: focus moves on to the same pair's next control.
++  const [moved, setMoved] = useState<number | null>(null);
++  const listRef = useRef<HTMLUListElement>(null);
++  useEffect(() => {
++    if (moved === null) return;
++    listRef.current?.querySelector<HTMLElement>(`[data-pair="${moved}"] .ig-tw-pair-actions button`)?.focus();
++    setMoved(null);
++  }, [moved]);
 +  const fresh = (p: JewelPiece) => live.get(p.handle) ?? p;
 +  const shown = pairs.map((p) => ({ ...p, a: fresh(p.a), b: fresh(p.b) }));
 +  const presets = new Map(shown.flatMap((p) => [p.a, p.b]).map((x) => [x.handle, twinPreset(x, us, metal, month)] as const));
@@ -16100,6 +16214,7 @@ index 0000000..573b454
 +    if (result.ok === false) return;
 +    const gone = (result.dropped ?? []).filter((h) => h !== pair.a.handle && h !== pair.b.handle).map((h) => live.get(h)?.name ?? "a piece");
 +    setKept((k) => ({ ...k, [pair.family]: gone.length ? letGoWords(gone) : "" }));
++    setMoved(pair.family);
 +  };
 +
 +  return (
@@ -16110,19 +16225,19 @@ index 0000000..573b454
 +      {shown.length === 0 ? (
 +        <p className="ig-fineprint">{WORDS.pairsNone}</p>
 +      ) : (
-+        <ul className="ig-tw-pairlist">
++        <p className="ig-fineprint ig-tw-line">{WORDS.twinLine}</p>
++      )}
++      {shown.length > 0 && (
++        <ul ref={listRef} className="ig-tw-pairlist">
 +          {shown.map((pair) => {
 +            const id = `ig-tw-pair-${pair.family}`;
 +            // Kept just now (said, with who was let go), or both were already in her drawer.
 +            const keptNow = pair.family in kept;
 +            const both = keptNow || (naira.saved.includes(pair.a.handle) && naira.saved.includes(pair.b.handle));
 +            return (
-+              <li key={pair.family} className="ig-tw-pair">
++              <li key={pair.family} className="ig-tw-pair" data-pair={pair.family}>
 +                <p className="ig-tw-twin" id={id}>
-+                  <span className="sr-only">
-+                    {pair.a.name}, {pair.b.name}:{" "}
-+                  </span>
-+                  {WORDS.twinLine}
++                  {`${pair.a.name} & ${pair.b.name}`}
 +                </p>
 +                <div className="ig-tw-two">
 +                  <PieceCard piece={pair.a} preset={presets.get(pair.a.handle)!} preview={preview} bagBusy={bagBusy} onAdd={onAdd} />
@@ -16764,23 +16879,24 @@ index 0000000..51c090a
 +}
 diff --git a/src/components/portal/rangolidoor.css b/src/components/portal/rangolidoor.css
 new file mode 100644
-index 0000000..f68d027
+index 0000000..715be72
 --- /dev/null
 +++ b/src/components/portal/rangolidoor.css
-@@ -0,0 +1,3 @@
+@@ -0,0 +1,4 @@
 +/* Her rangoli on the step at her garden's door: imported by RangoliDoor alone. The step's own still transform (members.css). */
 +.ig-door-rangoli { position: absolute; left: 0; top: 0; width: 100%; aspect-ratio: 1 / 1; margin-top: -62%; transform: perspective(700px) rotateX(62deg); transform-origin: 50% 100%; pointer-events: none; }
 +.ig-door-rangoli svg { display: block; width: 88%; height: auto; margin: 6% auto 0; }
++.ig-door-said { margin: 0.2rem 0 0; font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.05rem; line-height: 1.4; color: rgb(var(--nf-ink-rgb) / 0.78); }
 diff --git a/src/components/portal/rangolifield.css b/src/components/portal/rangolifield.css
 new file mode 100644
-index 0000000..a22725d
+index 0000000..0887026
 --- /dev/null
 +++ b/src/components/portal/rangolifield.css
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,13 @@
 +/*
 +  The shower over the rangoli room (Tier 2): imported by RangoliField alone. The Bloom Field's canvas is
 +  droproom.css's own rule (that sheet rides with the drop room only), fixed at z-index 37, never taking
-+  a tap; the room's words, status line and controls stand over it at 38, the garden path (39), the
++  a tap; the room's words, status line, controls and story card stand over it at 38, the garden path (39), the
 +  header and the bag (50) over both. Only its opacity moves.
 +*/
 +.ig-bloomfield { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 37; pointer-events: none; opacity: 0; transition: opacity 0.32s var(--nf-ease-reveal); }
@@ -16788,7 +16904,8 @@ index 0000000..a22725d
 +.ig-bloomfield.is-away { opacity: 0; transition: none; }
 +.ig-rg-words,
 +.ig-rg-said,
-+.ig-rg-controls { position: relative; z-index: 38; }
++.ig-rg-controls,
++.ig-rg-card { position: relative; z-index: 38; }
 diff --git a/src/components/portal/sizer.css b/src/components/portal/sizer.css
 new file mode 100644
 index 0000000..a417ad1
@@ -20034,10 +20151,10 @@ index 0000000..9e18ac6
 +});
 diff --git a/src/lib/portal/copy.test.ts b/src/lib/portal/copy.test.ts
 new file mode 100644
-index 0000000..ddeaf5f
+index 0000000..ee97e20
 --- /dev/null
 +++ b/src/lib/portal/copy.test.ts
-@@ -0,0 +1,640 @@
+@@ -0,0 +1,645 @@
 +import { describe, expect, it } from "vitest";
 +import { readFileSync, readdirSync } from "node:fs";
 +import { join, relative, resolve } from "node:path";
@@ -20163,6 +20280,8 @@ index 0000000..ddeaf5f
 +    const said: string[] = [...Object.values(rangoli.WORDS), ...Object.values(key.WORDS), ...rangoli.PLACES.map((_, i) => rangoli.placeName(i))];
 +    for (const m of rangoli.MOTIF_CHARS) said.push(rangoli.motifName(m), rangoli.laidSaid({ m, c: "b" }, 2), rangoli.placeSaid(5, { m, c: "G" }, false, 7));
 +    for (const c of ["b", "g", "s", "o", "y", "k", "u", ..."ABCDEFGHIJKL"]) said.push(rangoli.colourName(c, true, 3));
++    // The tray's choice, said under its swatches.
++    for (const m of rangoli.MOTIF_CHARS) for (const c of ["b", "o", "k", "G"]) said.push(rangoli.pickSaid(m, c, false, 7));
 +    for (const w of said) {
 +      expect(w, w).not.toMatch(/\d/);
 +      expect(w, w).not.toMatch(/\b(win|won|prize|reward|unlock|score|bonus|streak|level|collect\w*|hurry|secret|points? (balance|total))\b/i);
@@ -20618,6 +20737,7 @@ index 0000000..ddeaf5f
 +    all.push(twins.turnedWords("A"), twins.pairWords("A", "B"), twins.missWords("A", "B"), twins.letGoWords(["A"]), twins.letGoWords(["A", "B"]));
 +    for (let s = 0; s < moon.SHAPES.length; s++) all.push(Object.values(moon.moonWords(s)).join(""));
 +    for (let i = 0; i < 12; i++) all.push(twins.backName(i, 3, 12), twins.backName(i, 4, 12));
++    for (const state of ["paired", "waiting", "turnsBack"] as const) all.push(twins.faceName("A", state));
 +    expect(all.length).toBeGreaterThan(60);
 +    for (const w of all) {
 +      expect(w, w).not.toMatch(/\d/);
@@ -20668,7 +20788,9 @@ index 0000000..ddeaf5f
 +  it("sends nothing of hers and tells Meta nothing new: two public links, one fixed line, no tracking", () => {
 +    for (const f of TWINS) expect(read(f), f).not.toMatch(/utm_|fbq|clarity|trackEvent|sendBeacon|AddToWishlist/);
 +    const pairs = read("components/portal/TwinPairs.tsx");
-+    expect(pairs).toMatch(/href="https:\/\/wa\.me\/"/);
++    // No wa.me anchor at all: the shop's PixelEvents would count a tap on one as a Meta Contact.
++    expect(pairs).not.toMatch(/href="https:\/\/wa\.me/);
++    expect(pairs).toMatch(/openOut\(`https:\/\/wa\.me\/\?text=/);
 +    expect(pairs).not.toMatch(/WHATSAPP_NUMBER|wa\.me\/\$\{/);
 +  });
 +
@@ -29446,10 +29568,10 @@ index 0000000..cc18647
 +};
 diff --git a/src/lib/portal/rangoli.test.ts b/src/lib/portal/rangoli.test.ts
 new file mode 100644
-index 0000000..09b05bf
+index 0000000..197a949
 --- /dev/null
 +++ b/src/lib/portal/rangoli.test.ts
-@@ -0,0 +1,275 @@
+@@ -0,0 +1,316 @@
 +import { describe, expect, it } from "vitest";
 +import { BIRTH_FLOWER_PATHS } from "@/components/portal/BirthFlowers";
 +import {
@@ -29466,12 +29588,15 @@ index 0000000..09b05bf
 +  compose,
 +  copies,
 +  decode,
++  draftFor,
 +  encode,
 +  fold,
++  keepDraft,
 +  laidSaid,
 +  monthChar,
 +  motifName,
 +  placeName,
++  pickSaid,
 +  placeSaid,
 +  shapesOf,
 +  speciesChar,
@@ -29616,7 +29741,7 @@ index 0000000..09b05bf
 +      `${good}.`,
 +      `x${good.slice(1)}`,
 +      good.replace(/[a-z](?=[bgsoyku])/, "Z"),
-+      good.replace(/\./, "?"),
++      `${good.slice(0, 3)}?${good.slice(4)}`,
 +      `v${".".repeat(PLACES.length - 1)}`,
 +      `v${".".repeat(PLACES.length + 1)}`,
 +      `v${"pb".repeat(PLACES.length)}x`,
@@ -29643,10 +29768,25 @@ index 0000000..09b05bf
 +describe("Draw it for me", () => {
 +  const filled = (r: Rangoli) => r.at.filter(Boolean) as Stamp[];
 +
-+  it("is the same rangoli every time for her", () => {
++  it("is the same rangoli every time for one seed", () => {
 +    expect(compose("member-a", 7, null)).toEqual(compose("member-a", 7, null));
 +    expect(compose("member-a", 7, "camellia")).toEqual(compose("member-a", 7, "camellia"));
 +    expect(new Set(Array.from({ length: 40 }, (_, i) => encode(compose(`member-${i}`, 7, null)))).size).toBeGreaterThan(1);
++  });
++
++  it("draws another for each press (her id and the press's number), in patterns as well as colours", () => {
++    const motifs = (r: Rangoli) => r.at.map((s) => s?.m ?? ".").join("");
++    let differ = 0;
++    for (let i = 0; i < 100; i++) if (encode(compose(`member-${i}:1`, 7, null)) !== encode(compose(`member-${i}:2`, 7, null))) differ += 1;
++    expect(differ).toBeGreaterThanOrEqual(95);
++    const layouts = new Set(Array.from({ length: 51 }, (_, n) => motifs(compose(n ? `member-a:${n}` : "member-a", 7, null))));
++    expect(layouts.size).toBeGreaterThanOrEqual(20);
++    // Never more than one place left empty, and only the blooms the tray offers (or an open drop's).
++    for (let n = 0; n < 200; n++) {
++      const r = compose(`member-a:${n}`, null, null);
++      expect(r.at.filter((s) => !s).length).toBeLessThanOrEqual(1);
++      expect(filled(r).every((s) => "pfjmrld".includes(s.m))).toBe(true);
++    }
 +  });
 +
 +  it("fills eight places or more, with the Naira flower round the bindu", () => {
@@ -29680,6 +29820,25 @@ index 0000000..09b05bf
 +  });
 +});
 +
++describe("a rangoli not yet kept", () => {
++  it("is remembered for her alone for the visit, and an empty floor is none", () => {
++    const r = compose("member-a", 7, null);
++    keepDraft("member-a", r);
++    expect(draftFor("member-a")).toEqual(r);
++    expect(draftFor("member-b")).toBeNull();
++    keepDraft("member-b", r);
++    expect(draftFor("member-a")).toBeNull();
++    keepDraft("member-b", EMPTY);
++    expect(draftFor("member-b")).toBeNull();
++  });
++
++  it("says her tray's choice in words", () => {
++    expect(pickSaid("m", "k", false, 7)).toBe("A marigold in kumkum red");
++    expect(pickSaid("G", "G", false, 7)).toBe("A larkspur in your month's colour");
++    expect(pickSaid("p", "o", true, 7)).toBe("A Naira petal in ivory");
++  });
++});
++
 +describe("the rangoli's flowers and words", () => {
 +  it("draws every letter it can lay", () => {
 +    for (const m of MOTIF_CHARS) {
@@ -29704,7 +29863,11 @@ index 0000000..09b05bf
 +    expect(WORDS.keep).toBe("Lay it at my door");
 +    expect(WORDS.kept).toBe("Laid at your garden's door.");
 +    expect(WORDS.inkFloor).toBe("By lamplight");
-+    expect(WORDS.door).toBe("Your rangoli, at your garden's door. Draw another →");
++    expect(WORDS.inkOn).toBe("By lamplight now.");
++    expect(WORDS.inkOff).toBe("By daylight now.");
++    expect(WORDS.doorSaid).toBe("Your rangoli, at your garden's door.");
++    expect(WORDS.door).toBe("Draw another →");
++    expect(WORDS.hint).toBe("Tap anywhere on the floor to lay your flower.");
 +    expect(WORDS.cardEyebrow).toBe("A RANGOLI OF PETALS");
 +    expect(WORDS.madeForYou).toBe("Made for you, in my garden");
 +    expect(WORDS.keptPhone).toBe("Kept on this phone; your account has no room for the keepsake just now.");
@@ -29727,10 +29890,10 @@ index 0000000..09b05bf
 +});
 diff --git a/src/lib/portal/rangoli.ts b/src/lib/portal/rangoli.ts
 new file mode 100644
-index 0000000..0e63fc4
+index 0000000..311b73f
 --- /dev/null
 +++ b/src/lib/portal/rangoli.ts
-@@ -0,0 +1,386 @@
+@@ -0,0 +1,426 @@
 +import { FLOWER_PETALS, FLOWER_STEM } from "./brandFlower";
 +import { SPECIES } from "./species";
 +import { STONES } from "./stones";
@@ -29918,27 +30081,38 @@ index 0000000..0e63fc4
 +
 +/* ── "Draw it for me" ───────────────────────────────── */
 +
++/* "Draw it for me"'s rings, out from the second: a pattern for each ring's places from its spoke to halfway (p a
++   Naira petal, l a leaf, d a dot, B a marigold, jasmine star or rose, "." left empty, never more than one). */
++const RING_PATTERNS: readonly (readonly string[])[] = [
++  ["plB", "BdP", "lBl", "dpd", "PlP"],
++  ["BdP", "plB", "dBd", "lpl", "BlB"],
++  ["ld.p", "dlpB", "lpdp", "pBlB", "d.ld", "lPdP"],
++];
++
 +/**
-+ * A whole rangoli, the same every time for her: the Naira flower round the
-+ * bindu, her month's flower in her month's colour (once her month is
-+ * known), blush petals, gold dots and sage leaves, and an open drop's
-+ * flower while one is open. Seeded by her id; never fewer than eight places.
++ * A whole rangoli: the Naira flower round the bindu (in blush, or in her
++ * stone's hue once her month is known, else gold), her month's flower in
++ * her month's colour (once known), an open drop's flower while one is open,
++ * and rings of Naira petals, leaves, dots and the tray's blooms in patterns
++ * the seed chooses, coloured from the tray. The same for one seed every
++ * time (her id for her first "Draw it for me", then her id and the press's
++ * number, so each press draws another); never fewer than eight places.
 + */
 +export const compose = (seed: string, month: number | null, drop: DropSpecies | null): Rangoli => {
 +  const rand = mulberry32(hashString(`${seed || "naira"}:rangoli`));
 +  const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length) % xs.length];
 +  const mine = month ? monthChar(month) : null;
-+  const bloom = () => pick(["m", "j", "r"]);
-+  const warm = () => pick(["g", "b", "y"]);
++  const petal = () => pick(["b", "b", "k", "g", ...(mine ? [mine] : [])]);
++  const warm = () => pick(["g", "b", "y", "u"]);
++  const stamp = (k: string): Stamp | null =>
++    k === "." ? null : k === "l" ? { m: "l", c: "s" } : k === "d" ? { m: "d", c: pick(["g", "g", "u"]) } : k === "B" ? { m: pick(["m", "j", "r"]), c: warm() } : { m: "p", c: k === "P" ? "k" : petal() };
 +  const rows: (Stamp | null)[][] = [
-+    [{ m: "f", c: pick(["b", "g"]) }],
-+    [mine ? { m: mine, c: mine } : { m: "p", c: "b" }, { m: "d", c: "g" }],
-+    [{ m: "p", c: "b" }, { m: "l", c: "s" }, drop ? { m: speciesChar(drop), c: pick(["g", "b"]) } : { m: bloom(), c: warm() }],
-+    [{ m: bloom(), c: warm() }, { m: "d", c: "g" }, { m: "p", c: pick(["b", "k"]) }],
-+    [{ m: "l", c: "s" }, { m: "d", c: "g" }, rand() < 0.5 ? null : { m: "p", c: "b" }, { m: pick(["p", "j"]), c: pick(["b", "u"]) }],
++    [{ m: "f", c: pick(["b", mine ?? "g"]) }],
++    [mine ? { m: mine, c: mine } : { m: pick(["p", "r"]), c: "b" }, stamp(pick(["d", "l", "p"]))],
++    ...RING_PATTERNS.map((patterns) => [...pick(patterns)].map(stamp)),
 +  ];
-+  // Each member's own turn of the same rangoli: the rings' halfway flowers swap places with their spokes' on some.
-+  if (rand() < 0.5) [rows[3][0], rows[3][2]] = [rows[3][2], rows[3][0]];
++  // An open drop's flower: halfway round the third ring.
++  if (drop) rows[2][2] = { m: speciesChar(drop), c: pick(["g", "b"]) };
 +  return { ink: false, at: rows.flat() };
 +};
 +
@@ -30052,7 +30226,13 @@ index 0000000..0e63fc4
 +  addName: "Add my first name,",
 +  cardNote: "Your first name and the line are left off unless you add them. The card carries no number of any kind, and nothing else about your account.",
 +  backToFloor: "Back to your rangoli",
-+  door: "Your rangoli, at your garden's door. Draw another →",
++  doorSaid: "Your rangoli, at your garden's door.",
++  door: "Draw another →",
++  hint: "Tap anywhere on the floor to lay your flower.",
++  pick: "{a} {flower} in {colour}",
++  cardMonth: "Your month's flower and colour are on the card wherever they lie on your floor.",
++  keptHere: "The Herbarium keeps Rangoli for you.",
++  herbarium: "See it in the Herbarium →",
 +  description: "Your rangoli in the Inner Garden, Naira Flore's members' portal.",
 +  place: "The {ring} ring, {where}",
 +  empty: "empty",
@@ -30062,8 +30242,8 @@ index 0000000..0e63fc4
 +  takenBack: "The last one is taken back.",
 +  swept: "The floor is swept.",
 +  drawn: "Drawn for you. Change any place you like.",
-+  inkOn: "The floor is ink now.",
-+  inkOff: "The floor is ivory now.",
++  inkOn: "By lamplight now.",
++  inkOff: "By daylight now.",
 +  first: "first",
 +  second: "second",
 +  third: "third",
@@ -30117,6 +30297,29 @@ index 0000000..0e63fc4
 +export const laidSaid = (stamp: Stamp, ring: number): string => fill(WORDS.laid, { flower: motifName(stamp.m), ring: ORDINALS[ring] });
 +
 +export const liftedSaid = (ring: number): string => fill(WORDS.lifted, { ring: ORDINALS[ring] });
++
++/** Her choice in the tray, in words, as a flower and a colour would be laid: "A marigold in kumkum red". */
++export const pickSaid = (m: string, c: string, ink: boolean, month: number | null): string => {
++  const flower = lower(motifName(m));
++  const said = fill(WORDS.pick, { a: /^[aeiou]/i.test(flower) ? "an" : "a", flower, colour: lower(colourName(c, ink, month)) });
++  return said.charAt(0).toUpperCase() + said.slice(1);
++};
++
++/* ── a rangoli not yet kept, for this visit ─────────── */
++
++/* The floor she is laying, kept in memory while the site is open, so leaving the room (to tell us her month, to
++   look at the Drawer) and coming back finds it as she left it. One member's at a time, by her id; nothing is
++   written anywhere, and a floor with nothing on it is no draft. */
++let draft: { u: string; d: string } | null = null;
++
++/** Her floor as she left it this visit, or null. */
++export const draftFor = (u: string): Rangoli | null => (draft?.u === u ? decode(draft.d) : null);
++
++/** Remembers her floor for this visit (an empty floor forgets it). */
++export const keepDraft = (u: string, r: Rangoli): void => {
++  if (anyLaid(r)) draft = { u, d: encode(r) };
++  else if (!u || draft?.u === u) draft = null;
++};
 diff --git a/src/lib/portal/rangoliKey.test.ts b/src/lib/portal/rangoliKey.test.ts
 new file mode 100644
 index 0000000..90f81d5
@@ -34648,14 +34851,19 @@ index 0000000..9040a7a
 +};
 diff --git a/src/lib/portal/twins.test.ts b/src/lib/portal/twins.test.ts
 new file mode 100644
-index 0000000..a944f91
+index 0000000..6369d9e
 --- /dev/null
 +++ b/src/lib/portal/twins.test.ts
-@@ -0,0 +1,252 @@
+@@ -0,0 +1,295 @@
 +import { describe, expect, it } from "vitest";
 +import type { JewelCategory, JewelPiece } from "@/data/jewellery";
 +import { LOOKALIKES } from "./lookalikes";
-+import { FAMILIES, MAX_PAIRS, WORDS, backName, columnsFor, deal, eligible, familiesOf, isPair, liveFamilies, pairFrom, pieceUrl, placeWords, type Laying } from "./twins";
++import { jewellery as bundled } from "@/data/jewellery";
++import { jewellerySnapshot } from "@/data/jewellerySnapshot";
++import { FAMILIES, MAX_PAIRS, WORDS, backName, columnsFor, deal, eligible, faceName, familiesOf, inPairs, isPair, liveFamilies, pairFrom, pieceUrl, placeWords, type Laying } from "./twins";
++
++/* The bundled pieces and the 1 November snapshot, as the room is given them. */
++const snapshotCatalogue = (): JewelPiece[] => [...bundled, ...jewellerySnapshot.filter((p) => !bundled.some((j) => j.handle === p.handle))];
 +
 +/* The live catalogue's twins as the public Storefront API answered on 6 November 2026 (handle, kind, sold now).
 +   Not live that day: baguette-eclat-bracelet. Sold out: clover-charm-necklace, lumiere-oval-necklace,
@@ -34860,9 +35068,47 @@ index 0000000..a944f91
 +    expect(placeWords(0, 3, 12)).toBe(`${WORDS.rows[0]}, ${WORDS.columns3[0]}`);
 +    expect(placeWords(11, 3, 12)).toBe(`${WORDS.bottomRow}, ${WORDS.columns3[2]}`);
 +    expect(placeWords(4, 3, 9)).toBe(`${WORDS.middleRow}, ${WORDS.columns3[1]}`);
++    // Four across from 360 px: a phone's table and its line fit one screen.
 +    expect(columnsFor(320)).toBe(3);
-+    expect(columnsFor(390)).toBe(3);
++    expect(columnsFor(359)).toBe(3);
++    expect(columnsFor(360)).toBe(4);
++    expect(columnsFor(390)).toBe(4);
 +    expect(columnsFor(1440)).toBe(4);
++    expect(placeWords(0, 4, 12)).toBe(`${WORDS.rows[0]}, ${WORDS.columns4[0]}`);
++    expect(placeWords(5, 4, 12)).toBe(`${WORDS.middleRow}, ${WORDS.columns4[1]}`);
++    expect(placeWords(11, 4, 12)).toBe(`${WORDS.bottomRow}, ${WORDS.columns4[3]}`);
++  });
++
++  it("names a face-up card with where it stands, in words", () => {
++    expect(faceName("Clover Drop Earrings", "paired")).toBe(`Clover Drop Earrings, ${WORDS.paired}`);
++    expect(faceName("Clover Drop Earrings", "waiting")).toBe(`Clover Drop Earrings, ${WORDS.waiting}`);
++    expect(faceName("Clover Drop Earrings", "turnsBack")).toBe(`Clover Drop Earrings, ${WORDS.turnsBack}`);
++  });
++
++  it("lays the cards out in their pairs with no pair across a row's end, three or four across, for three to six pairs", () => {
++    for (let n = 3; n <= 6; n++) {
++      for (let seed = 0; seed < 20; seed++) {
++        const t = deal(`relay-${n}-${seed}`, snapshotCatalogue());
++        if (t.kind !== "table") continue;
++        const pairs = t.pairs.slice(0, n);
++        const cards = t.cards.filter((c) => pairs.some((p) => p.family === c.family));
++        for (const cols of [3, 4] as const) {
++          const order = inPairs(cards.map((c) => c.key), cards, cols);
++          expect([...order].sort()).toEqual(cards.map((c) => c.key).sort());
++          for (const p of pairs) {
++            const [i, j] = cards.filter((c) => c.family === p.family).map((c) => order.indexOf(c.key)).sort((a, b) => a - b);
++            const side = Math.floor(i / cols) === Math.floor(j / cols) && j - i === 1;
++            const upright = j - i === cols;
++            expect(side || upright, `${n} pairs, ${cols} across: ${i} and ${j}`).toBe(true);
++            // Four across, every pair side by side, as before.
++            if (cols === 4) expect(side).toBe(true);
++          }
++          // Laid out again for the other columns, the same pairs in the same order.
++          const again = inPairs(inPairs(order, cards, cols === 3 ? 4 : 3), cards, cols);
++          expect(again).toEqual(order);
++        }
++      }
++    }
 +  });
 +
 +  it("links each piece at the shop's own address, with nothing of hers", () => {
@@ -34906,10 +35152,10 @@ index 0000000..a944f91
 +});
 diff --git a/src/lib/portal/twins.ts b/src/lib/portal/twins.ts
 new file mode 100644
-index 0000000..61c155c
+index 0000000..0c5b402
 --- /dev/null
 +++ b/src/lib/portal/twins.ts
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,272 @@
 +import type { JewelPiece } from "@/data/jewellery";
 +import { presetFor, type Preset } from "./fit";
 +import type { Metal, UsSize } from "./memberMeta";
@@ -34949,6 +35195,8 @@ index 0000000..61c155c
 +  eyebrow: "The Inner Garden",
 +  lede: "Pressed flowers, face down. Under each is a piece from the shop, and every piece has a twin of the same design. Turn two at a time.",
 +  tableName: "The pressed flowers",
++  description: "Twins in the Inner Garden, Naira Flore's members' portal.",
++  dealt: "New pressed flowers, face down.",
 +  showPair: "Show me a pair",
 +  showAll: "Show me every pair",
 +  turnBack: "Turn them back",
@@ -34957,12 +35205,14 @@ index 0000000..61c155c
 +  offline: "We couldn't reach the shop just now, so the flowers stay face down.",
 +  resting: "The twins are resting while the shop changes.",
 +  restingPairs: "Twins in the shop now",
-+  everyPair: "Every pair on the table",
 +  allUp: "Every twin found.",
 +  keptHere: "The Herbarium keeps Twin Blooms for you.",
 +  keptVisit: "Kept for this visit: your account has no room for the keepsake just now.",
 +  herbarium: "See it in the Herbarium →",
 +  facedown: "A pressed flower, face down",
++  paired: "with its twin",
++  waiting: "waiting for its twin",
++  turnsBack: "turns back with your next flower",
 +  pairsTitle: "Pairs you've turned",
 +  pairsNone: "Each pair you turn waits here, with both pieces as the shop sells them now.",
 +  twinLine: "Matched from their photos as twins: one design, or made as one set.",
@@ -35127,8 +35377,9 @@ index 0000000..61c155c
 +
 +/* ── where a card lies, in words (no digit) ───────── */
 +
-+/** Three across on a phone, four from 600 px. */
-+export const columnsFor = (width: number): 3 | 4 => (width >= 600 ? 4 : 3);
++/** Four across from 360 px (the table and its line fit one phone screen, four rows of three would not), three below. */
++export const COLUMNS_FROM = 360;
++export const columnsFor = (width: number): 3 | 4 => (width >= COLUMNS_FROM ? 4 : 3);
 +
 +/** "top row, left": a card's place on the table, in words. */
 +export const placeWords = (index: number, columns: 3 | 4, total: number): string => {
@@ -35142,6 +35393,41 @@ index 0000000..61c155c
 +
 +/** A face-down card's name. */
 +export const backName = (index: number, columns: 3 | 4, total: number) => `${WORDS.facedown}, ${placeWords(index, columns, total)}`;
++
++/** A face-up card's name and where it stands: with its twin, waiting for it, or turning back with her next flower. */
++export const faceName = (name: string, state: "paired" | "waiting" | "turnsBack") => `${name}, ${WORDS[state]}`;
++
++/* ── the table in its pairs ─────────────────────────── */
++
++/**
++ * The cards laid out in their pairs, each pair where its first card lay, so
++ * that no pair ever straddles a row's end. Four across, two pairs to a row,
++ * side by side. Three across, pairs go in bands of two rows: the first of
++ * three stands upright in the left column, the other two side by side
++ * beside it (Xa Ya Yb / Xb Za Zb); two left over are one upright and one
++ * side by side; one left over lies side by side. The order the page reads
++ * is the order she sees, so the arrow keys and a screen reader follow it.
++ */
++export const inPairs = (order: readonly string[], cards: readonly Pick<TwinCard, "key" | "family" | "piece">[], columns: 3 | 4): string[] => {
++  const pairs: string[][] = [];
++  const seen = new Set<string>();
++  for (const key of order) {
++    if (seen.has(key)) continue;
++    const card = cards.find((c) => c.key === key);
++    const twin = card && cards.find((c) => c !== card && isPair(c, card));
++    const two = twin ? [key, twin.key] : [key];
++    two.forEach((k) => seen.add(k));
++    pairs.push(two);
++  }
++  if (columns === 4) return pairs.flat();
++  const out: string[] = [];
++  for (let i = 0; i < pairs.length; i += 3) {
++    const [x, y, z] = pairs.slice(i, i + 3);
++    if (!y || x.length < 2) out.push(...x, ...(y ?? []), ...(z ?? []));
++    else out.push(x[0], ...y, x[1], ...(z ?? []));
++  }
++  return out;
++};
 diff --git a/src/lib/portal/unboxGsap.test.ts b/src/lib/portal/unboxGsap.test.ts
 new file mode 100644
 index 0000000..2379cd8
@@ -40980,10 +41266,10 @@ index 0000000..d2ee698
 +export default Fit;
 diff --git a/src/pages/members/GardenHome.tsx b/src/pages/members/GardenHome.tsx
 new file mode 100644
-index 0000000..c19b749
+index 0000000..3d94441
 --- /dev/null
 +++ b/src/pages/members/GardenHome.tsx
-@@ -0,0 +1,465 @@
+@@ -0,0 +1,467 @@
 +import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -41157,7 +41443,9 @@ index 0000000..c19b749
 +  // The Naira flower's pieces she has taken home from her rooms (naira.p's bits 0 to 4; lib/portal/petals): at the arbour's crown after the Doors, and in words.
 +  const pieces = (naira.p ?? 0) & 31;
 +  const crownWords = useDecoration(PetalCrown, pieces > 0);
-+  const door = useDecoration(RangoliDoor, (import.meta.env.DEV && overrides?.rangoli === "drawn") || hasRangoliOn(user.id));
++  // Whether this phone holds a rangoli of hers: read once for her (the garden re-renders often), as the garden mounts.
++  const rangoliHere = useMemo(() => hasRangoliOn(user.id), [user.id]);
++  const door = useDecoration(RangoliDoor, (import.meta.env.DEV && overrides?.rangoli === "drawn") || rangoliHere);
 +  // Her month's flower: traced in her garden's stars after dark (naira.p's bit 5), and resting in her night sky after.
 +  const night = hour === "night";
 +  const flower = stone?.flower.toLowerCase() ?? "";
@@ -41273,7 +41561,7 @@ index 0000000..c19b749
 +            <RangoliDoor member={user.id} month={month} drawn={import.meta.env.DEV && overrides?.rangoli === "drawn"} />
 +          ) : (
 +            !(import.meta.env.DEV && overrides?.rangoli) &&
-+            !hasRangoliOn(user.id) && (
++            !rangoliHere && (
 +              <Link className={textLink} to="/members/rangoli">
 +                {RANGOLI_WORDS.invite}
 +              </Link>
@@ -42748,12 +43036,12 @@ index 0000000..c9e5d99
 +
 diff --git a/src/pages/members/Herbarium.tsx b/src/pages/members/Herbarium.tsx
 new file mode 100644
-index 0000000..9161497
+index 0000000..3682df0
 --- /dev/null
 +++ b/src/pages/members/Herbarium.tsx
-@@ -0,0 +1,181 @@
+@@ -0,0 +1,189 @@
 +import { useEffect, useMemo, useRef } from "react";
-+import { Link } from "react-router-dom";
++import { Link, useLocation } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
 +import HerbariumFrame from "@/components/portal/HerbariumFrame";
 +import KeepsakeFrame from "@/components/portal/KeepsakeFrame";
@@ -42809,11 +43097,19 @@ index 0000000..9161497
 +  const stone = stoneForMonth(month);
 +  const front = drops.find((d) => naira.front.includes(d.id));
 +  const h1Ref = useRef<HTMLHeadingElement>(null);
++  const keepsRef = useRef<HTMLHeadingElement>(null);
 +  const roomRef = useRef<HTMLDivElement>(null);
 +  const drawn = useRef(false);
++  const { hash } = useLocation();
 +
++  // Sent from a room to one keepsake (#ig-keep-twins, #ig-keep-rangoli): its frame in view, focus on the keepsakes' heading; else the page's own.
 +  useEffect(() => {
-+    h1Ref.current?.focus({ preventScroll: true });
++    const frame = /^#ig-keep-[a-z]+$/.test(hash) ? document.getElementById(hash.slice(1)) : null;
++    if (!frame) return h1Ref.current?.focus({ preventScroll: true });
++    keepsRef.current?.focus({ preventScroll: true });
++    frame.scrollIntoView?.({ block: "center" });
++    // Once, as she arrives.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, []);
 +
 +  // The frames draw themselves in once, the first time they are in view.
@@ -42883,12 +43179,12 @@ index 0000000..9161497
 +        </section>
 +
 +        <section className="ig-section" aria-labelledby="ig-keepsakes">
-+          <h2 id="ig-keepsakes" className="ig-h2">
++          <h2 id="ig-keepsakes" ref={keepsRef} tabIndex={-1} className="ig-h2">
 +            Keepsakes
 +          </h2>
 +          <ul className="ig-hwall ig-keeps">
 +            {keepsakes.map((k) => (
-+              <li key={k.id}>
++              <li key={k.id} id={`ig-keep-${k.id}`}>
 +                <KeepsakeFrame keepsake={k} hue={stone?.hue} species={front ? speciesIndex(front.species) : undefined} accent={front?.accent} />
 +                {k.rooms && k.rooms.length > 0 && (
 +                  <>
@@ -44608,10 +44904,10 @@ index 0000000..2f57f88
 +export default Orders;
 diff --git a/src/pages/members/Rangoli.test.tsx b/src/pages/members/Rangoli.test.tsx
 new file mode 100644
-index 0000000..014fdd5
+index 0000000..700ed4f
 --- /dev/null
 +++ b/src/pages/members/Rangoli.test.tsx
-@@ -0,0 +1,416 @@
+@@ -0,0 +1,545 @@
 +import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -44621,7 +44917,8 @@ index 0000000..014fdd5
 +import { MemberProvider, type Member } from "@/components/portal/MemberContext";
 +import { META_CAP_BYTES, bytesOf, readNaira, type Naira, type Updater } from "@/lib/portal/memberMeta";
 +import { RANGOLI_KEY, readRangoliOn } from "@/lib/portal/rangoliKey";
-+import { PLACES, WORDS, compose, decode, encode, placeName } from "@/lib/portal/rangoli";
++import { EMPTY, PLACES, WORDS, compose, decode, encode, keepDraft, placeName } from "@/lib/portal/rangoli";
++import { primeServerClock, resetServerClock } from "@/lib/portal/clock";
 +
 +/*
 +  /members/rangoli: taps, the keyboard and "Draw it for me" each make a
@@ -44656,7 +44953,7 @@ index 0000000..014fdd5
 +  user: { id: "u-1", email: "ananya@example.com", created_at: "2026-11-04T05:00:00Z", user_metadata: {} } as unknown as Member["user"],
 +  profile: { id: "u-1", full_name: "Ananya", birthday: "1999-07-14", phone: null, city: null },
 +  firstName: "Ananya",
-+  preview: true,
++  preview: false,
 +  saveBirthday: async () => ({ ok: true }),
 +  addToBag: async () => true,
 +  buyNow: async () => {},
@@ -44700,9 +44997,9 @@ index 0000000..014fdd5
 +    </MemberProvider>
 +  );
 +};
-+const room = (over: Partial<Member> = {}, start: Naira = readNaira(null)) =>
++const room = (over: Partial<Member> = {}, start: Naira = readNaira(null), state?: unknown) =>
 +  render(
-+    <MemoryRouter>
++    <MemoryRouter initialEntries={[{ pathname: "/members/rangoli", state }]}>
 +      <Account start={start} over={over} />
 +    </MemoryRouter>,
 +  );
@@ -44724,6 +45021,8 @@ index 0000000..014fdd5
 +  writes.length = 0;
 +  made = [];
 +  window.localStorage.clear();
++  // No floor left from an earlier test's visit.
++  keepDraft("", EMPTY);
 +  reduce(false);
 +});
 +afterEach(() => {
@@ -44809,16 +45108,39 @@ index 0000000..014fdd5
 +    expect(button(WORDS.skip)).toBeTruthy();
 +    act(() => vi.advanceTimersByTime(5 * 420 + 50));
 +    const whole = compose("u-1", 7, null);
++    expect(encode({ ...whole, ink: false })).toBe(encode(decode(encode(whole))!));
 +    expect(laidCount()).toBe(whole.at.filter(Boolean).length);
 +    expect(said()).toBe(WORDS.drawn);
 +    expect(button(WORDS.draw)).toBeTruthy();
-+    // Skip lays the rest at once.
++    // Skip lays the rest at once; each press draws another (her id and the press's number).
 +    fireEvent.click(button(WORDS.sweep));
 +    fireEvent.click(button(WORDS.sweepYes));
 +    fireEvent.click(button(WORDS.draw));
 +    act(() => vi.advanceTimersByTime(420));
 +    fireEvent.click(button(WORDS.skip));
-+    expect(laidCount()).toBe(whole.at.filter(Boolean).length);
++    const second = compose("u-1:1", 7, null);
++    expect(places().map((b) => b.getAttribute("aria-label"))).toEqual(PLACES.map((_, i) => expect.stringContaining(placeName(i))));
++    expect(laidCount()).toBe(second.at.filter(Boolean).length);
++  });
++
++  it("brings the floor into view before it draws, and waits a beat for it", () => {
++    vi.useFakeTimers();
++    const scroll = vi.fn();
++    (Element.prototype as unknown as { scrollIntoView: unknown }).scrollIntoView = scroll;
++    const first = room();
++    fireEvent.click(button(WORDS.draw));
++    expect(scroll).toHaveBeenLastCalledWith({ block: "center", behavior: "smooth" });
++    // The first ring waits for the floor to arrive.
++    expect(laidCount()).toBe(0);
++    act(() => vi.advanceTimersByTime(300 + 5 * 420 + 50));
++    expect(said()).toBe(WORDS.drawn);
++    first.unmount();
++    reduce(true);
++    room();
++    fireEvent.click(button(WORDS.draw));
++    expect(scroll).toHaveBeenLastCalledWith({ block: "center", behavior: "auto" });
++    expect(said()).toBe(WORDS.drawn);
++    delete (Element.prototype as unknown as { scrollIntoView?: unknown }).scrollIntoView;
 +  });
 +
 +  it("takes back exactly one placement, and sweeps only once asked", () => {
@@ -44831,17 +45153,58 @@ index 0000000..014fdd5
 +    expect(laidCount()).toBe(1);
 +    expect(said()).toBe(WORDS.takenBack);
 +    fireEvent.click(button(WORDS.sweep));
-+    // It asks first; leaving it keeps the floor.
++    // It asks first; leaving it keeps the floor, and focus goes back to "Sweep the floor" (never the page).
 +    expect(screen.getByText(WORDS.sweepAsk)).toBeTruthy();
++    button(WORDS.sweepNo).focus();
 +    fireEvent.click(button(WORDS.sweepNo));
 +    expect(laidCount()).toBe(1);
++    expect(document.activeElement).toBe(button(WORDS.sweep));
 +    fireEvent.click(button(WORDS.sweep));
++    button(WORDS.sweepYes).focus();
 +    fireEvent.click(button(WORDS.sweepYes));
 +    expect(laidCount()).toBe(0);
 +    expect(said()).toBe(WORDS.swept);
-+    // And a sweep can be taken back too.
-+    fireEvent.click(button(WORDS.takeBack));
++    expect(document.activeElement).toBe(button(WORDS.sweep));
++    // And a sweep can be taken back too; with nothing left, "Take back the last" says so and keeps her focus.
++    const back = button(WORDS.takeBack);
++    back.focus();
++    fireEvent.click(back);
 +    expect(laidCount()).toBe(1);
++    fireEvent.click(back);
++    fireEvent.click(back);
++    expect(back.getAttribute("aria-disabled")).toBe("true");
++    expect(back.hasAttribute("disabled")).toBe(false);
++    expect(document.activeElement).toBe(back);
++  });
++
++  it("remembers a floor not yet kept for the visit, for her alone, and the door's 'Make another' opens a fresh one", () => {
++    const first = room();
++    tap(180, 160);
++    tap(180, 90);
++    first.unmount();
++    // Away and back: as she left it.
++    const second = room();
++    expect(laidCount()).toBe(2);
++    second.unmount();
++    // Another member on this phone: an empty floor.
++    const other = room({ user: { id: "u-2", email: "b@example.com", created_at: "2026-11-04T05:00:00Z", user_metadata: {} } as unknown as Member["user"] });
++    expect(laidCount()).toBe(0);
++    other.unmount();
++    // Kept, then changed: the change is remembered, and the floor is not shown as kept.
++    const third = room();
++    fireEvent.click(button(WORDS.keep));
++    tap(300, 300);
++    third.unmount();
++    const fourth = room();
++    expect(laidCount()).toBe(3);
++    expect(document.querySelector(".ig-rg-line")).toBeNull();
++    fourth.unmount();
++    // From the door, once what she was making is kept: a fresh floor, her kept one still on this phone.
++    keepDraft("u-1", decode(readRangoliOn("u-1"))!);
++    room({}, readNaira(null), { fresh: true });
++    expect(laidCount()).toBe(0);
++    expect(said()).toBe(WORDS.hint);
++    expect(readRangoliOn("u-1")).not.toBeNull();
 +  });
 +
 +  it("keeps it on this phone for her id, and her account's keepsake once", () => {
@@ -44866,6 +45229,61 @@ index 0000000..014fdd5
 +    expect(said()).toBe(WORDS.kept);
 +  });
 +
++  it("says where the keepsake is the first time, with a way to its frame", () => {
++    room();
++    tap(180, 160);
++    fireEvent.click(button(WORDS.keep));
++    expect(screen.getByText(WORDS.keptHere)).toBeTruthy();
++    expect(screen.getByRole("link", { name: WORDS.herbarium }).getAttribute("href")).toBe("/members/herbarium#ig-keep-rangoli");
++  });
++
++  it("says so when this phone will not keep the drawing, with the keepsake and without", () => {
++    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
++      throw new Error("quota");
++    });
++    const first = room();
++    tap(180, 160);
++    fireEvent.click(button(WORDS.keep));
++    expect(said()).toBe(WORDS.notOnPhone);
++    expect(writes).toHaveLength(1);
++    first.unmount();
++    const saved = Array.from({ length: 24 }, (_, i) => `a-saved-handle-${String(i).padStart(2, "0")}`);
++    let full: Naira = readNaira({ v: 1, saved });
++    let pad = "";
++    while (bytesOf({ ...full, pad: `${pad}x` }) <= META_CAP_BYTES - 2) pad += "x";
++    full = { ...full, pad };
++    room({}, full);
++    tap(180, 90);
++    fireEvent.click(button(WORDS.keep));
++    expect(said()).toBe(WORDS.notKept);
++    vi.restoreAllMocks();
++  });
++
++  it("writes nothing to this phone for the development preview member, and logs it instead", () => {
++    const log = vi.spyOn(console, "info").mockImplementation(() => {});
++    room({ preview: true });
++    tap(180, 160);
++    fireEvent.click(button(WORDS.keep));
++    expect(said()).toBe(WORDS.kept);
++    expect(window.localStorage.getItem(RANGOLI_KEY)).toBeNull();
++    expect(log.mock.calls.some((c) => String(c[0]).startsWith("[portal preview] not written: localStorage naira-rangoli"))).toBe(true);
++    log.mockRestore();
++  });
++
++  it("offers the drop's flower by the shop's clock, as the drop rooms read it", () => {
++    const soon = new Date(Date.now() + 60_000).toISOString();
++    const later = new Date(Date.now() + 86_400_000).toISOString();
++    const drops = [{ id: "d1", title: "Verdant", species: "teal bud" as const, accent: "#2F6B4F", story: [], membersFrom: soon, everyoneFrom: later, handles: [], leadHandle: "" }];
++    const first = room({ drops });
++    expect(screen.queryByRole("radio", { name: WORDS.drop })).toBeNull();
++    first.unmount();
++    // The shop's clock is two minutes ahead of this phone's: the drop is open to members.
++    primeServerClock(120_000);
++    room({ drops });
++    expect(screen.getByRole("radio", { name: WORDS.drop })).toBeTruthy();
++    resetServerClock();
++  });
++
 +  it("brings her rangoli into view as she keeps it, at once under reduced motion", () => {
 +    const scroll = vi.fn();
 +    (Element.prototype as unknown as { scrollIntoView: unknown }).scrollIntoView = scroll;
@@ -44875,6 +45293,7 @@ index 0000000..014fdd5
 +    expect(scroll).toHaveBeenLastCalledWith({ block: "center", behavior: "smooth" });
 +    first.unmount();
 +    window.localStorage.clear();
++    keepDraft("", EMPTY);
 +    reduce(true);
 +    room();
 +    tap(180, 160);
@@ -44949,7 +45368,10 @@ index 0000000..014fdd5
 +    room();
 +    expect(places().map((b) => b.getAttribute("aria-label")?.replace(/: empty$/, ""))).toEqual(PLACES.map((_, i) => placeName(i)));
 +    const css = readFileSync(resolve(__dirname, "rangoli.css"), "utf8");
-+    expect(css).toMatch(/\.ig-rg-chip span \{[^}]*min-height: 44px;/);
++    expect(css).toMatch(/\.ig-rg-chip > span \{[^}]*width: 44px;[^}]*min-height: 44px;/);
++    // Each strip scrolls on its own, never the page, and the fieldset shrinks to the column so it can.
++    expect(css).toMatch(/\.ig-rg-chips \{[^}]*overflow-x: auto;/);
++    expect(css).toMatch(/\.ig-rg-tray \{[^}]*min-inline-size: 0;/);
 +    expect(css).toMatch(/\.ig-rg-toggle \{[^}]*min-height: 44px;/);
 +  });
 +});
@@ -44975,6 +45397,8 @@ index 0000000..014fdd5
 +    tap(180, 160);
 +    fireEvent.click(button(WORDS.card));
 +    expect(screen.getByRole("heading", { level: 2, name: WORDS.cardHeading })).toBe(document.activeElement);
++    // Petals alone: nothing of her month on the card, so nothing said of it.
++    expect(screen.queryByText(WORDS.cardMonth)).toBeNull();
 +    await waitFor(() => expect(drawn.inputs.length).toBeGreaterThan(0), { timeout: 3000 });
 +    expect(drawn.inputs[0]).toEqual({ art: "rangoli", name: null, stone: null, words: { caption: WORDS.cardEyebrow, line: null } });
 +    // The drawing it carries: her rangoli alone, no words, no link out, no digit outside its markup.
@@ -45007,6 +45431,7 @@ index 0000000..014fdd5
 +    expect(sent.title).toBe("My rangoli");
 +    expect(sent.files[0].name).toBe("naira-rangoli-card.png");
 +    first.unmount();
++    keepDraft("", EMPTY);
 +
 +    setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Instagram 300.0.0");
 +    room();
@@ -45030,12 +45455,12 @@ index 0000000..014fdd5
 +});
 diff --git a/src/pages/members/Rangoli.tsx b/src/pages/members/Rangoli.tsx
 new file mode 100644
-index 0000000..b8a3fc6
+index 0000000..4b2e27d
 --- /dev/null
 +++ b/src/pages/members/Rangoli.tsx
-@@ -0,0 +1,430 @@
+@@ -0,0 +1,500 @@
 +import { createElement, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-+import { Link } from "react-router-dom";
++import { Link, useLocation } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
 +import RangoliFloor, { type Opening } from "@/components/portal/RangoliFloor";
 +import RangoliArt, { Shapes } from "@/components/portal/RangoliArt";
@@ -45047,6 +45472,7 @@ index 0000000..b8a3fc6
 +import { lazyRoom, useDecoration, type LazyRoom } from "@/lib/portal/lazyRoom";
 +import { stoneForMonth } from "@/lib/portal/stones";
 +import { byOpening, dropPhase } from "@/lib/portal/dropPhase";
++import { serverNow } from "@/lib/portal/clock";
 +import { hasPastime, keepRangoli, pastimeFits } from "@/lib/portal/pastimes";
 +import { keepRangoliOn, readRangoliOn } from "@/lib/portal/rangoliKey";
 +import {
@@ -45060,10 +45486,13 @@ index 0000000..b8a3fc6
 +  colourHex,
 +  compose,
 +  decode,
++  draftFor,
 +  encode,
++  keepDraft,
 +  laidSaid,
 +  liftedSaid,
 +  motifChar,
++  pickSaid,
 +  type ColourKey,
 +  type MotifKey,
 +  type Rangoli as Floor,
@@ -45078,6 +45507,12 @@ index 0000000..b8a3fc6
 +  place by place; "Take back the last" undoes one; "Sweep the floor" asks
 +  first. Taps, the keyboard and "Draw it for me" each make a whole rangoli
 +  on their own.
++
++  A floor not yet kept is remembered for the visit (lib/portal/rangoli's
++  draft), so a look at the Drawer or a trip to tell us her month finds it
++  as she left it; the garden door's "Make another" opens on a fresh floor.
++  "Draw it for me" moves the floor into view first, as keeping it does,
++  and draws another each press.
 +
 +  "Keep it in your garden" keeps it on this phone (lib/portal/rangoliKey),
 +  where her garden's door shows it from then on, and the first time it
@@ -45102,31 +45537,46 @@ index 0000000..b8a3fc6
 +  return shown ? createElement(room, props as unknown as P) : <>{fallback}</>;
 +}
 +
-+/* "Draw it for me": one ring every so often, about two seconds in all. */
++/* "Draw it for me": one ring every so often, about two seconds in all; after the floor glides into view, a beat first. */
 +const DRAW_STEP_MS = 420;
++const INTO_VIEW_MS = 300;
 +const HISTORY = 40;
 +
 +const MOTIFS: readonly MotifKey[] = ["petal", "flower", "birth", "marigold", "jasmine", "rose", "leaf", "dot", "drop"];
 +const COLOURS: readonly ColourKey[] = ["b", "g", "s", "o", "stone", "y", "k", "u"];
 +
++/* The floor into the band between the shop's fixed header and the garden path, centred; whether it had to move. */
++const toFloor = (floor: HTMLElement | null, still: boolean): boolean => {
++  const box = floor?.getBoundingClientRect();
++  const top = document.querySelector("header")?.getBoundingClientRect().bottom ?? 96;
++  if (!floor?.scrollIntoView || !box || (box.top >= top && box.bottom <= window.innerHeight)) return false;
++  floor.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" });
++  return true;
++};
++
 +const Rangoli = () => {
-+  const { user, firstName, month, naira, changeMeta, drops, garden } = useMember();
++  const { user, firstName, month, naira, changeMeta, drops, garden, preview } = useMember();
 +  const stone = stoneForMonth(month);
 +  const [still] = useState(stillMotion);
-+  // A drop open now (its members' first look, or on the shop): its flower joins the tray.
-+  const [now] = useState(() => Date.now());
++  // From the garden door's "Make another": a fresh floor (her kept rangoli stays on the step until she keeps a new one).
++  const fresh = Boolean((useLocation().state as { fresh?: unknown } | null)?.fresh);
++  // A drop open now (its members' first look, or on the shop), by the shop's clock as every drop room reads it: its flower joins the tray.
++  const [now] = useState(serverNow);
 +  const drop = useMemo(() => [...byOpening(drops)].reverse().find((d) => ["members", "public"].includes(dropPhase(d, now, null))) ?? null, [drops, now]);
 +  const dropSpecies = drop?.species ?? null;
 +
-+  // Her rangoli as this phone kept it (or, in development only, &rangoli=drawn: as "Draw it for me" lays it).
++  // Her floor as she left it this visit, else her rangoli as this phone kept it (or, in development only, &rangoli=drawn: as "Draw it for me" lays it).
 +  const [start] = useState(() => {
 +    if (import.meta.env.DEV && garden?.rangoli === "drawn") {
 +      const drawn = compose(user.id, month, dropSpecies);
 +      return { floor: drawn, kept: encode(drawn) };
 +    }
 +    const code = readRangoliOn(user.id);
-+    const floor = decode(code);
-+    return floor ? { floor, kept: code } : { floor: EMPTY, kept: null };
++    const left = draftFor(user.id);
++    // "Make another" starts afresh, unless another was already under way.
++    if (left && !(fresh && encode(left) === code)) return { floor: left, kept: code };
++    const floor = fresh ? null : decode(code);
++    return { floor: floor ?? EMPTY, kept: code };
 +  });
 +  const [rangoli, setRangoli] = useState<Floor>(start.floor);
 +  const [keptCode, setKeptCode] = useState<string | null>(start.kept);
@@ -45134,7 +45584,11 @@ index 0000000..b8a3fc6
 +  const [motif, setMotif] = useState<MotifKey>("petal");
 +  const [colour, setColour] = useState<ColourKey>("b");
 +  const [opening, setOpening] = useState<Opening>(null);
-+  const [said, setSaid] = useState("");
++  const [said, setSaid] = useState(() => (anyLaid(start.floor) ? "" : WORDS.hint));
++  // The tray's choice in words under its swatches: what is picked, or the chip her focus is on.
++  const [peek, setPeek] = useState<{ m?: MotifKey; c?: ColourKey } | null>(null);
++  // Keeping her first: the Herbarium's keepsake, said with a way to it.
++  const [keptNow, setKeptNow] = useState(false);
 +  const [asking, setAsking] = useState(false);
 +  const [drawing, setDrawing] = useState(false);
 +  // The story card: open or not, and what she has added to it (nothing, until she ticks it).
@@ -45153,6 +45607,9 @@ index 0000000..b8a3fc6
 +  const cardHead = useRef<HTMLHeadingElement>(null);
 +  const cardButton = useRef<HTMLButtonElement>(null);
 +  const cardWas = useRef(false);
++  const sweepRef = useRef<HTMLButtonElement>(null);
++  // Each "Draw it for me" this visit draws another: the first from her id, then her id and the press's number.
++  const draws = useRef(0);
 +  /* The shower's hook: the Tier 2 host fills it, and keeping her rangoli calls it; without the host it does nothing. */
 +  const showerGo = useRef<() => void>(() => undefined);
 +  const accent = stone?.hue ?? "#FFBDA8";
@@ -45161,6 +45618,11 @@ index 0000000..b8a3fc6
 +    h1Ref.current?.focus({ preventScroll: true });
 +    return () => cues.current.forEach((c) => c.cancel());
 +  }, []);
++
++  // Her floor, remembered for the visit as it changes (the whole of a "Draw it for me" still being laid).
++  useEffect(() => {
++    keepDraft(user.id, target.current ?? rangoli);
++  }, [rangoli, user.id]);
 +
 +  // The card view takes focus as it opens, and gives it back to its button as it closes.
 +  useEffect(() => {
@@ -45202,6 +45664,7 @@ index 0000000..b8a3fc6
 +  const takeBack = () => {
 +    settle();
 +    const last = history[history.length - 1];
++    // Nothing left to take back: the button says so (aria-disabled) and keeps her focus.
 +    if (!last) return;
 +    setHistory((h) => h.slice(0, -1));
 +    setRangoli(last);
@@ -45212,9 +45675,13 @@ index 0000000..b8a3fc6
 +
 +  const draw = () => {
 +    const base = settle();
-+    const whole: Floor = { ...compose(user.id, month, dropSpecies), ink: base.ink };
++    const seed = draws.current ? `${user.id}:${draws.current}` : user.id;
++    draws.current += 1;
++    const whole: Floor = { ...compose(seed, month, dropSpecies), ink: base.ink };
 +    remember(base);
 +    setAsking(false);
++    // The floor into view first (the button sits under the tray): its rings are for her to see being laid.
++    const moved = toFloor(floorRef.current, still);
 +    if (still) {
 +      setRangoli(whole);
 +      setOpening(null);
@@ -45235,7 +45702,8 @@ index 0000000..b8a3fc6
 +      };
 +      cues.current.push(cue(floorRef.current, DRAW_STEP_MS, next));
 +    };
-+    ringOf(0);
++    if (moved) cues.current.push(cue(floorRef.current, INTO_VIEW_MS, () => ringOf(0)));
++    else ringOf(0);
 +  };
 +
 +  const skip = () => {
@@ -45254,6 +45722,12 @@ index 0000000..b8a3fc6
 +    setOpening(null);
 +    setAsking(false);
 +    setSaid(WORDS.swept);
++    // Its question goes with the answer: focus back on "Sweep the floor", never the page.
++    sweepRef.current?.focus();
++  };
++  const leaveIt = () => {
++    setAsking(false);
++    sweepRef.current?.focus();
 +  };
 +
 +  const inkFloor = (ink: boolean) => {
@@ -45269,10 +45743,13 @@ index 0000000..b8a3fc6
 +      return;
 +    }
 +    const code = encode(base);
-+    const onPhone = keepRangoliOn(user.id, code);
++    // The development preview member writes nothing, here as everywhere: the phone's store is logged instead.
++    const onPhone = import.meta.env.DEV && preview ? (console.info("[portal preview] not written: localStorage naira-rangoli", code), true) : keepRangoliOn(user.id, code);
 +    // Her account's keepsake: once, and never at the cost of anything she saved.
 +    const room = hasPastime(naira, "rangoli") || pastimeFits(naira, "rangoli");
 +    if (!hasPastime(naira, "rangoli") && room) changeMeta(keepRangoli);
++    // The first time, the room says where the keepsake is kept.
++    setKeptNow((was) => was || (!hasPastime(naira, "rangoli") && room));
 +    setKeptCode(code);
 +    showerGo.current();
 +    setOpening(still ? null : { kind: "kept" });
@@ -45280,9 +45757,7 @@ index 0000000..b8a3fc6
 +    if (layer) burstPetals(layer, layer.offsetWidth / 2, layer.offsetHeight / 2, { count: 24, spread: layer.offsetWidth * 0.42, ids: [PETAL_HUE, PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[3]], color: accent, size: [9, 16], delay: 240 });
 +    setSaid(onPhone ? (room ? WORDS.kept : WORDS.keptPhone) : room ? WORDS.notOnPhone : WORDS.notKept);
 +    // Her rangoli into view as it is kept (the button sits under the tray): its finale is for her to see.
-+    const floor = floorRef.current;
-+    const box = floor?.getBoundingClientRect();
-+    if (floor && box && (box.top < 96 || box.bottom > window.innerHeight)) floor.scrollIntoView?.({ block: "center", behavior: still ? "auto" : "smooth" });
++    toFloor(floorRef.current, still);
 +  };
 +
 +  const motifs = MOTIFS.filter((k) => motifChar(k, month, dropSpecies));
@@ -45291,6 +45766,12 @@ index 0000000..b8a3fc6
 +  const colourWord = (k: ColourKey): string =>
 +    ({ b: WORDS.blush, g: WORDS.gold, s: WORDS.sage, o: rangoli.ink ? WORDS.ivory : WORDS.ink, stone: WORDS.stone, y: WORDS.orange, k: WORDS.kumkum, u: WORDS.turmeric })[k];
 +  const kept = keptCode !== null && keptCode === encode(rangoli);
++  // The tray's choice (or the chip in focus), in words: the swatches carry their names for a screen reader alone.
++  const shownMotif = peek?.m ?? motif;
++  const shownColour = peek?.c ?? colour;
++  const picked = pickSaid(motifChar(shownMotif, month, dropSpecies) ?? "p", colourChar(shownColour, month) ?? "b", rangoli.ink, month);
++  // The card can show her month's flower or colour (a capital letter in the code is a month's): said beside it.
++  const showsMonth = /[A-L]/.test(encode(rangoli));
 +  // A name the card would never print (none on her account, or one with a digit) is not offered.
 +  const nameable = firstName !== "friend" && !/\d/.test(firstName);
 +  const cardInput = useMemo(
@@ -45304,7 +45785,7 @@ index 0000000..b8a3fc6
 +        <div className="ig-rg-words">
 +          <p className={eyebrow}>The Inner Garden</p>
 +          <h1 ref={h1Ref} tabIndex={-1} className="ig-h1">
-+            {WORDS.title}
++            <em>{WORDS.title}</em>
 +          </h1>
 +          <p className="ig-lede">{WORDS.lede}</p>
 +        </div>
@@ -45334,12 +45815,12 @@ index 0000000..b8a3fc6
 +            <div className="ig-rg-chips">
 +              {motifs.map((k) => (
 +                <label key={k} className="ig-rg-chip">
-+                  <input type="radio" name="ig-rg-motif" value={k} checked={motif === k} onChange={() => setMotif(k)} />
++                  <input type="radio" name="ig-rg-motif" value={k} checked={motif === k} onChange={() => setMotif(k)} onFocus={() => setPeek({ m: k })} onBlur={() => setPeek(null)} />
 +                  <span>
 +                    <svg viewBox={MOTIF_BOX} aria-hidden>
 +                      <Shapes m={motifChar(k, month, dropSpecies) ?? "p"} />
 +                    </svg>
-+                    {nameOf(k)}
++                    <span className="sr-only">{nameOf(k)}</span>
 +                  </span>
 +                </label>
 +              ))}
@@ -45356,17 +45837,21 @@ index 0000000..b8a3fc6
 +            <div className="ig-rg-chips">
 +              {colours.map((k) => (
 +                <label key={k} className="ig-rg-chip">
-+                  <input type="radio" name="ig-rg-colour" value={k} checked={colour === k} onChange={() => setColour(k)} />
++                  <input type="radio" name="ig-rg-colour" value={k} checked={colour === k} onChange={() => setColour(k)} onFocus={() => setPeek({ c: k })} onBlur={() => setPeek(null)} />
 +                  <span>
 +                    <svg viewBox={MOTIF_BOX} aria-hidden style={{ color: colourHex(colourChar(k, month) ?? "g", rangoli.ink) }}>
 +                      <Shapes m="p" outline />
 +                    </svg>
-+                    {colourWord(k)}
++                    <span className="sr-only">{colourWord(k)}</span>
 +                  </span>
 +                </label>
 +              ))}
 +            </div>
 +          </fieldset>
++          {/* The choice in words for her eyes (each radio already says its own name to a screen reader). */}
++          <p className="ig-lede" aria-hidden>
++            {picked}
++          </p>
 +
 +          <div className="ig-rg-tools">
 +            {drawing ? (
@@ -45379,10 +45864,11 @@ index 0000000..b8a3fc6
 +              </button>
 +            )}
 +            <div className="ig-rg-row">
-+              <button type="button" className={quietButton} onClick={takeBack} disabled={!history.length}>
++              {/* Never disabled (a focused button that is disabled drops focus to the page): with nothing to take back, a press does nothing. */}
++              <button type="button" className={quietButton} onClick={takeBack} aria-disabled={!history.length || undefined}>
 +                {WORDS.takeBack}
 +              </button>
-+              <button type="button" className={quietButton} onClick={sweep} aria-expanded={asking}>
++              <button ref={sweepRef} type="button" className={quietButton} onClick={sweep} aria-expanded={asking}>
 +                {WORDS.sweep}
 +              </button>
 +            </div>
@@ -45392,7 +45878,7 @@ index 0000000..b8a3fc6
 +                <button type="button" className={quietButton} onClick={sweep}>
 +                  {WORDS.sweepYes}
 +                </button>
-+                <button type="button" className={quietButton} onClick={() => setAsking(false)}>
++                <button type="button" className={quietButton} onClick={leaveIt}>
 +                  {WORDS.sweepNo}
 +                </button>
 +              </div>
@@ -45407,6 +45893,14 @@ index 0000000..b8a3fc6
 +            <button type="button" className={primaryButton} onClick={keep}>
 +              {WORDS.keep}
 +            </button>
++            {keptNow && (
++              <p className="ig-fineprint">
++                {WORDS.keptHere}{" "}
++                <Link className={textLink} to="/members/herbarium#ig-keep-rangoli">
++                  {WORDS.herbarium}
++                </Link>
++              </p>
++            )}
 +            {anyLaid(rangoli) && !card && (
 +              <button ref={cardButton} type="button" className={outlineButton} onClick={() => setCard(true)}>
 +                {WORDS.card}
@@ -45440,6 +45934,7 @@ index 0000000..b8a3fc6
 +                  </label>
 +                )}
 +                <p className="ig-fineprint">{WORDS.cardNote}</p>
++                {showsMonth && <p className="ig-fineprint">{WORDS.cardMonth}</p>}
 +              </div>
 +              <Later
 +                key={encode(rangoli)}
@@ -45729,10 +46224,10 @@ index 0000000..39c5722
 +export default Stone;
 diff --git a/src/pages/members/Twins.test.tsx b/src/pages/members/Twins.test.tsx
 new file mode 100644
-index 0000000..1c9fa5d
+index 0000000..206b85e
 --- /dev/null
 +++ b/src/pages/members/Twins.test.tsx
-@@ -0,0 +1,487 @@
+@@ -0,0 +1,555 @@
 +import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -45742,7 +46237,7 @@ index 0000000..1c9fa5d
 +import { jewellerySnapshot } from "@/data/jewellerySnapshot";
 +import { META_CAP_BYTES, bytesOf, readNaira, type Naira, type Updater } from "@/lib/portal/memberMeta";
 +import { offerWords } from "@/lib/portal/offer";
-+import { WORDS, liveFamilies, pairWords } from "@/lib/portal/twins";
++import { WORDS, faceName, liveFamilies, pairWords } from "@/lib/portal/twins";
 +
 +/* Twin Blooms: pressed flowers over the shop's real twins. Each turn is two
 +   animations on one element; a pair stays up, draws its frames and bursts a
@@ -45813,6 +46308,7 @@ index 0000000..1c9fa5d
 +const cardFor = (key: string) => document.querySelector<HTMLButtonElement>(`.ig-tw-card[data-card="${key}"]`)!;
 +const status = () => document.querySelector(".ig-tw-said")!;
 +const leafOf = (b: Element) => b.querySelector(".ig-tw-leaf")!;
++const nameOf = (b: Element) => b.querySelector(".ig-tw-name")!.textContent!;
 +const pastimeWrites = () => writes.filter((u) => u(readNaira(null)).q !== undefined);
 +
 +/* Turns every pair face up by her taps alone. */
@@ -45893,7 +46389,8 @@ index 0000000..1c9fa5d
 +    expect(turn[0].options.duration).toBe(150);
 +    expect(turn[1].options.duration).toBe(170);
 +    expect(a).toHaveClass("is-up");
-+    expect(a.getAttribute("aria-label")).toBe(a.querySelector(".ig-tw-name")!.textContent);
++    // Face up, it is named with where it stands.
++    expect(a.getAttribute("aria-label")).toBe(faceName(nameOf(a), "waiting"));
 +  });
 +
 +  it("keeps a pair face up, draws its frames in gold, says it, and bursts twelve petals or fewer that all leave", () => {
@@ -45910,10 +46407,18 @@ index 0000000..1c9fa5d
 +    expect(a).toHaveClass("is-up", "is-pair");
 +    expect(b).toHaveClass("is-up", "is-pair");
 +    expect(a.querySelector(".ig-tw-gold")).not.toBeNull();
-+    expect(status()).toHaveTextContent(pairWords(a.getAttribute("aria-label")!, b.getAttribute("aria-label")!));
++    expect(status()).toHaveTextContent(pairWords(nameOf(a), nameOf(b)));
++    expect(a.getAttribute("aria-label")).toBe(faceName(nameOf(a), "paired"));
++    expect(b.getAttribute("aria-label")).toBe(faceName(nameOf(b), "paired"));
 +    expect(document.querySelectorAll(".ig-tw-petals .ig-petal")).toHaveLength(0);
-+    // The frame draws by stroke-dashoffset.
-+    expect(fakes.some((f) => f.keyframes.some((k) => "strokeDashoffset" in k))).toBe(true);
++    // Both frames draw by stroke-dashoffset, the card just turned as well, ending together after the second turn.
++    const gold = fakes.filter((f) => f.keyframes.some((k) => "strokeDashoffset" in k));
++    expect(gold.map((f) => f.el.closest(".ig-tw-card"))).toEqual(expect.arrayContaining([a, b]));
++    expect(gold).toHaveLength(2);
++    const [first, second] = [gold.find((f) => f.el.closest(".ig-tw-card") === a)!, gold.find((f) => f.el.closest(".ig-tw-card") === b)!];
++    expect(first.options.delay).toBe(320);
++    expect(second.options.delay).toBe(170);
++    expect(fakes.filter((f) => f.el.classList.contains("ig-tw-corner"))).toHaveLength(2);
 +  });
 +
 +  it("leaves two of two families face up until her next tap turns them back, or 'Turn them back'; nothing counts or scolds", () => {
@@ -45942,6 +46447,49 @@ index 0000000..1c9fa5d
 +    finishAll();
 +    expect(cards().filter((x) => x.classList.contains("is-up"))).toHaveLength(0);
 +    expect(screen.queryByRole("button", { name: WORDS.turnBack })).toBeNull();
++  });
++
++  it("names two face up that are not twins as turning back, and turns them back when she presses one again", () => {
++    room();
++    const a = cards()[0];
++    const c = notTwinOf(a);
++    fireEvent.click(a);
++    finishAll();
++    fireEvent.click(c);
++    finishAll();
++    expect(a.getAttribute("aria-label")).toBe(faceName(nameOf(a), "turnsBack"));
++    fireEvent.click(a);
++    finishAll();
++    expect(cards().filter((x) => x.classList.contains("is-up"))).toHaveLength(0);
++    expect(document.activeElement).toBe(c);
++  });
++
++  it("lays the pairs out with none across a row's end once every pair is face up, and the last pair's moment is the fall alone", () => {
++    room();
++    // Every pair but the last, by taps.
++    for (let guard = 0; guard < 5; guard++) {
++      const down = cards().filter((x) => !x.classList.contains("is-up"));
++      fireEvent.click(down[0]);
++      finishAll();
++      fireEvent.click(twinOf(down[0]));
++      finishAll();
++    }
++    const [x, y] = cards().filter((c) => !c.classList.contains("is-up"));
++    fireEvent.click(x);
++    finishAll();
++    fireEvent.click(y);
++    // No burst for the last pair: the fall is its moment.
++    expect(document.querySelectorAll(".ig-tw-petals .ig-petal")).toHaveLength(0);
++    finishAll();
++    const order = cards();
++    const cols = 3;
++    for (const card of order) {
++      const i = order.indexOf(card);
++      const j = order.indexOf(twinOf(card));
++      const [lo, hi] = [Math.min(i, j), Math.max(i, j)];
++      const side = hi - lo === 1 && Math.floor(lo / cols) === Math.floor(hi / cols);
++      expect(side || hi - lo === cols, `${lo} and ${hi}`).toBe(true);
++    }
 +  });
 +
 +  it("swaps every face at once under reduced motion: no Animation object and no petal", () => {
@@ -45982,6 +46530,8 @@ index 0000000..1c9fa5d
 +    fireEvent.click(twinOf(a));
 +    finishAll();
 +    const pair = document.querySelector(".ig-tw-pair")!;
++    // Headed with its two names; the twin line said once, over the list.
++    expect([`${nameOf(a)} & ${nameOf(twinOf(a))}`, `${nameOf(twinOf(a))} & ${nameOf(a)}`]).toContain(pair.querySelector(".ig-tw-twin")!.textContent);
 +    const pcs = pair.querySelectorAll(".ig-pc");
 +    expect(pcs).toHaveLength(2);
 +    for (const pc of pcs) {
@@ -45989,7 +46539,8 @@ index 0000000..1c9fa5d
 +      expect(pc.querySelector(".ig-stock")!.textContent).toMatch(/^(Available|Sold out)$/);
 +      expect(pc.querySelector(".ig-pc-name a")!.getAttribute("href")).toMatch(/^\/jewellery\/[a-z0-9-]+$/);
 +    }
-+    expect(within(pair as HTMLElement).getByText(WORDS.twinLine)).toBeInTheDocument();
++    expect(within(pair as HTMLElement).queryByText(WORDS.twinLine)).toBeNull();
++    expect(screen.getAllByText(WORDS.twinLine)).toHaveLength(1);
 +  });
 +
 +  it("adds through her bag with fit.ts's preset, and never opens checkout", async () => {
@@ -46011,6 +46562,8 @@ index 0000000..1c9fa5d
 +    fireEvent.click(twinOf(a));
 +    finishAll();
 +    fireEvent.click(screen.getByRole("button", { name: WORDS.keep }));
++    // The button gives way to its words; focus goes on to the same pair's next control, never to the page.
++    expect(document.activeElement).toBe(screen.getByRole("button", { name: WORDS.send }));
 +    const handles = [...document.querySelectorAll(".ig-tw-pair .ig-pc-name a")].map((x) => x.getAttribute("href")!.split("/").pop()!);
 +    expect(naira.saved).toHaveLength(24);
 +    expect(naira.saved.slice(-2).sort()).toEqual(handles.sort());
@@ -46047,7 +46600,7 @@ index 0000000..1c9fa5d
 +    Object.assign(navigator, { share: undefined });
 +  });
 +
-+  it("inside an in-app browser, sends them by a WhatsApp link built at the tap, with no number, and no href on the page carries text=", () => {
++  it("inside an in-app browser, sends them to WhatsApp from a button (no wa.me anchor for the shop's pixel to count), with no number, and no href on the page carries text=", () => {
 +    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (iPhone) Instagram 300.0");
 +    const open = vi.spyOn(window, "open").mockReturnValue({ opener: {} } as Window);
 +    room();
@@ -46056,10 +46609,17 @@ index 0000000..1c9fa5d
 +    finishAll();
 +    fireEvent.click(twinOf(a));
 +    finishAll();
-+    const link = screen.getByRole("link", { name: WORDS.send });
-+    expect(link.getAttribute("href")).toBe("https://wa.me/");
++    const send = screen.getByRole("button", { name: WORDS.send });
++    const main = document.querySelector(".ig-tw-page")!;
++    expect(main.querySelector('a[href*="wa.me"]')).toBeNull();
 +    expect([...document.querySelectorAll("a")].filter((x) => /text=/.test(x.getAttribute("href") ?? ""))).toEqual([]);
-+    fireEvent.click(link);
++    // What the shop's PixelEvents sees in its capture-phase listener: no anchor.
++    const anchors: (Element | null)[] = [];
++    const seen = (e: Event) => anchors.push((e.target as HTMLElement).closest("a"));
++    document.addEventListener("click", seen, true);
++    fireEvent.click(send);
++    document.removeEventListener("click", seen, true);
++    expect(anchors).toEqual([null]);
 +    const url = open.mock.calls[0][0] as string;
 +    expect(url).toMatch(/^https:\/\/wa\.me\/\?text=/);
 +    expect(decodeURIComponent(url.split("text=")[1])).toMatch(new RegExp(`^${WORDS.shareLine}\\nhttps://nairaflore\\.com/jewellery/[a-z0-9-]+\\nhttps://nairaflore\\.com/jewellery/[a-z0-9-]+$`));
@@ -46080,6 +46640,9 @@ index 0000000..1c9fa5d
 +    expect(screen.getByText(WORDS.keptHere)).toBeInTheDocument();
 +    finishAll();
 +    fireEvent.click(screen.getByRole("button", { name: WORDS.layAgain }));
++    // A new laying: said in a word, and focus on its first card (never left on the page).
++    expect(status()).toHaveTextContent(WORDS.dealt);
++    expect(document.activeElement).toBe(cards()[0]);
 +    turnEveryPair();
 +    expect(kept()).toEqual([1]);
 +  });
@@ -46103,14 +46666,14 @@ index 0000000..1c9fa5d
 +    expect(kept()).toEqual([1]);
 +  });
 +
-+  it("by 'Show me every pair' in one press, which lists every pair as links", () => {
++  it("by 'Show me every pair' in one press, which lists every pair with both pieces linked, once", () => {
 +    room();
 +    fireEvent.click(screen.getByRole("button", { name: WORDS.showAll }));
 +    finishAll();
 +    expect(cards().every((c) => c.classList.contains("is-up"))).toBe(true);
 +    expect(kept()).toEqual([1]);
-+    const every = screen.getByRole("heading", { name: WORDS.everyPair }).closest("section")!;
-+    expect(every.querySelectorAll("a")).toHaveLength(12);
++    expect(document.querySelectorAll(".ig-tw-pair")).toHaveLength(6);
++    expect(document.querySelectorAll(".ig-tw-pair .ig-pc-name a")).toHaveLength(12);
 +  });
 +
 +  it("by 'Show me a pair', one pair at a time", () => {
@@ -46222,10 +46785,10 @@ index 0000000..1c9fa5d
 +});
 diff --git a/src/pages/members/Twins.tsx b/src/pages/members/Twins.tsx
 new file mode 100644
-index 0000000..89171ac
+index 0000000..778f2fa
 --- /dev/null
 +++ b/src/pages/members/Twins.tsx
-@@ -0,0 +1,483 @@
+@@ -0,0 +1,506 @@
 +import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 +import { Link } from "react-router-dom";
 +import PortalShell from "@/components/portal/PortalShell";
@@ -46243,7 +46806,7 @@ index 0000000..89171ac
 +import { SPECIES } from "@/lib/portal/species";
 +import { EASE_REVEAL, cue, play, stillMotion, type Cue } from "@/lib/portal/motion";
 +import { hasPastime, keepTwins, pastimeFits } from "@/lib/portal/pastimes";
-+import { WORDS, backName, columnsFor, deal, isPair, missWords, pairWords, photoOf, turnedWords, type Laying, type TwinCard as Card, type TwinPair } from "@/lib/portal/twins";
++import { COLUMNS_FROM, WORDS, backName, columnsFor, deal, faceName, inPairs, isPair, missWords, pairWords, photoOf, turnedWords, type Laying, type TwinCard as Card, type TwinPair } from "@/lib/portal/twins";
 +import "./twins.css";
 +
 +/*
@@ -46254,15 +46817,20 @@ index 0000000..89171ac
 +  you've turned" below, as the shop sells them now. Two of two families stay
 +  face up until her next tap (which turns them back as the new one turns)
 +  or "Turn them back": nothing scolds, shakes, counts or times her. With
-+  every pair face up, the cards lay themselves out in their pairs, a few
-+  petals fall inside the column, and the first time her account keeps the
++  every pair face up, the cards lay themselves out in their pairs (never a
++  pair across a row's end: lib/portal/twins inPairs), a few petals fall
++  inside the column, and the first time her account keeps the
 +  keepsake (pastimes.ts' keepTwins; when it has no room, the room says the
 +  keepsake is kept for this visit and no saved piece is trimmed for it).
 +
 +  "Show me a pair" and "Show me every pair" are always there, above the
 +  table, and keep the keepsake too: nothing is lost if she would rather not
-+  play. Every card is a button named in words, the arrow keys move between
-+  them, and one polite line says each turn. Under reduced motion and Data
++  play. Every card is a button named in words (face up, with where it
++  stands: with its twin, waiting for it, or turning back), the arrow keys
++  move between them, and one polite line, above the table, says each turn.
++  Four across from 360 px, so the tools, that line and the whole table fit
++  one phone screen; a pair shown by a button is brought into view between
++  the shop's header and the garden path. Under reduced motion and Data
 +  Saver every face swaps at once, the frames are drawn and no petal flies.
 +
 +  The photos are asked for once the table is in view, after its first paint,
@@ -46270,7 +46838,7 @@ index 0000000..89171ac
 +  its own animation's end, and the re-lay waits on a cue.
 +*/
 +
-+const PHOTO_SIZES = "(min-width: 600px) 130px, 30vw";
++const PHOTO_SIZES = "(min-width: 600px) 130px, (min-width: 360px) 22vw, 30vw";
 +/** The pair moment and the last turn settle before the cards lay themselves out in their pairs. */
 +const RELAY_AFTER = 900;
 +
@@ -46306,7 +46874,7 @@ index 0000000..89171ac
 +  const [cols, setCols] = useState<3 | 4>(() => (typeof window === "undefined" ? 3 : columnsFor(window.innerWidth)));
 +  useEffect(() => {
 +    if (typeof window.matchMedia !== "function") return;
-+    const mq = window.matchMedia("(min-width: 600px)");
++    const mq = window.matchMedia(`(min-width: ${COLUMNS_FROM}px)`);
 +    const on = () => setCols(mq.matches ? 4 : 3);
 +    on();
 +    mq.addEventListener?.("change", on);
@@ -46315,17 +46883,17 @@ index 0000000..89171ac
 +  return cols;
 +};
 +
-+/** The cards in their pairs, each pair where its first card lay. */
-+const inPairs = (order: readonly string[], cards: readonly Card[]): string[] => {
-+  const out: string[] = [];
-+  for (const key of order) {
-+    if (out.includes(key)) continue;
-+    const card = cards.find((c) => c.key === key);
-+    const twin = card && cards.find((c) => c !== card && isPair(c, card));
-+    out.push(key);
-+    if (twin) out.push(twin.key);
-+  }
-+  return out;
++/* Into the band between the shop's fixed header and the garden path, by the least scroll (its top first): where a pair's moment is for her to see. */
++const intoBand = (els: readonly (Element | null | undefined)[]) => {
++  const boxes = els.flatMap((el) => (el ? [el.getBoundingClientRect()] : []));
++  if (!boxes.length) return;
++  const top = Math.min(...boxes.map((b) => b.top));
++  const bottom = Math.max(...boxes.map((b) => b.bottom));
++  if (!bottom) return;
++  const from = (document.querySelector("header")?.getBoundingClientRect().bottom ?? 0) + 8;
++  const to = (document.querySelector(".ig-nav")?.getBoundingClientRect().top ?? window.innerHeight) - 8;
++  const by = top < from ? top - from : bottom > to ? Math.min(bottom - to, top - from) : 0;
++  if (by) window.scrollBy?.({ top: by, behavior: stillMotion() ? "auto" : "smooth" });
 +};
 +
 +const Twins = () => {
@@ -46333,6 +46901,8 @@ index 0000000..89171ac
 +  const { jewellery, isLive, isLoading } = useLiveJewellery();
 +  const live = useMemo(() => new Map(jewellery.map((p) => [p.handle, p] as const)), [jewellery]);
 +  const cols = useColumns();
++  const colsNow = useRef(cols);
++  colsNow.current = cols;
 +  const h1Ref = useRef<HTMLHeadingElement>(null);
 +  const tableRef = useRef<HTMLDivElement>(null);
 +  const petalRef = useRef<HTMLDivElement>(null);
@@ -46349,7 +46919,6 @@ index 0000000..89171ac
 +  const [open, setOpen] = useState<string[]>([]);
 +  const [order, setOrder] = useState<string[]>([]);
 +  const [said, setSaid] = useState("");
-+  const [everyShown, setEveryShown] = useState(false);
 +  const [focusKey, setFocusKey] = useState<string | null>(null);
 +  const [keptSaid, setKeptSaid] = useState("");
 +  const [fresh, setFresh] = useState<{ family: number; n: number } | null>(null);
@@ -46358,6 +46927,9 @@ index 0000000..89171ac
 +  const keptThisVisit = useRef(false);
 +  const relay = useRef<{ rects: Map<string, DOMRect> } | null>(null);
 +  const relayCue = useRef<Cue | null>(null);
++  // The cards are laid out in their pairs (so a turn of the phone across 360 px lays them again); a new laying takes focus.
++  const laidOut = useRef(false);
++  const refocus = useRef(false);
 +
 +  useEffect(() => {
 +    h1Ref.current?.focus({ preventScroll: true });
@@ -46375,6 +46947,7 @@ index 0000000..89171ac
 +    setLaying(dealt);
 +    if (dealt.kind !== "table") return;
 +    setOrder(dealt.cards.map((c) => c.key));
++    if (round) setSaid(WORDS.dealt);
 +    if (import.meta.env.DEV && garden?.twins === "last" && round === 0) {
 +      const shown = dealt.pairs.slice(1);
 +      setUp(new Set(dealt.cards.filter((c) => shown.some((p) => p.family === c.family)).map((c) => c.key)));
@@ -46424,9 +46997,9 @@ index 0000000..89171ac
 +    return () => io.disconnect();
 +  }, [laid, photos.size]);
 +
-+  // A pair: a few blush and gold petals burst between its two cards, once their turn has ended.
++  // A pair: a few blush and gold petals burst between its two cards, once their turn has ended (the last pair's moment is the fall).
 +  useEffect(() => {
-+    if (!fresh || !laid) return;
++    if (!fresh || !laid || done) return;
 +    const layer = petalRef.current;
 +    const twins = laid.cards.filter((c) => c.family === fresh.family).map((c) => cardRefs.current.get(c.key));
 +    if (!layer || twins.some((t) => !t)) return;
@@ -46436,7 +47009,7 @@ index 0000000..89171ac
 +    const y = (a.top + a.height / 2 + b.top + b.height / 2) / 2 - box.top;
 +    const flight = burstPetals(layer, x, y, { count: 12, spread: 70, size: [8, 14], delay: 320, ids: [PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[0], PETAL_IDS[4]] });
 +    return () => flight.forEach((f) => f.cancel());
-+  }, [fresh, laid]);
++  }, [fresh, laid, done]);
 +
 +  // Every pair face up: her keepsake (once), the words, and the cards laid out in their pairs, a few petals falling inside the column.
 +  useEffect(() => {
@@ -46451,7 +47024,8 @@ index 0000000..89171ac
 +      const rects = new Map<string, DOMRect>();
 +      cardRefs.current.forEach((el, key) => rects.set(key, el.getBoundingClientRect()));
 +      relay.current = stillMotion() ? null : { rects };
-+      setOrder((o) => inPairs(o, laid.cards));
++      laidOut.current = true;
++      setOrder((o) => inPairs(o, laid.cards, colsNow.current));
 +      if (stillMotion()) return;
 +      const layer = petalRef.current;
 +      if (layer) fallPetals(layer, layer.offsetWidth / 2, 8, { count: 24, size: [10, 18], ids: [PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[3], PETAL_IDS[1]] });
@@ -46465,6 +47039,24 @@ index 0000000..89171ac
 +    // Once, as the last pair turns face up.
 +    // eslint-disable-next-line react-hooks/exhaustive-deps
 +  }, [done, laid]);
++
++  // The phone turned across 360 px with the cards in their pairs: laid again for the new columns, at once.
++  useEffect(() => {
++    if (!laidOut.current || !laid) return;
++    relay.current = null;
++    setOrder((o) => inPairs(o, laid.cards, cols));
++  }, [cols, laid]);
++
++  // A new laying (after "Lay them out again"): focus on its first card, in view; with none to turn, it stays on the heading.
++  useEffect(() => {
++    if (!laid || !refocus.current) return;
++    refocus.current = false;
++    const first = cardRefs.current.get(laid.cards.find((c) => c.key === order[0])?.key ?? "");
++    first?.focus({ preventScroll: true });
++    intoBand([first]);
++    // Once, as the new laying lies.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [laid]);
 +
 +  // The re-lay itself: each card glides from where it was (FLIP, by transform alone).
 +  useLayoutEffect(() => {
@@ -46485,7 +47077,12 @@ index 0000000..89171ac
 +  /* ── her turns ─────────────────────────────────── */
 +
 +  const turn = (card: Card) => {
-+    if (!laid || up.has(card.key)) return;
++    if (!laid) return;
++    // A press on one of two face up that are not twins turns them back (as "Turn them back" does); any other face-up card stays.
++    if (up.has(card.key)) {
++      if (open.length === 2 && open.includes(card.key)) turnBack();
++      return;
++    }
 +    // Two face up that were not twins turn back as the new one turns.
 +    const missing = open.length === 2 ? open : [];
 +    const waiting = open.length === 1 ? byKey.get(open[0]) : undefined;
@@ -46534,6 +47131,7 @@ index 0000000..89171ac
 +    setFound((f) => [pick.family, ...f]);
 +    setFresh((p) => ({ family: pick.family, n: (p?.n ?? 0) + 1 }));
 +    setSaid(pairWords(pick.a.name, pick.b.name));
++    intoBand(keys.map((k) => cardRefs.current.get(k)));
 +  };
 +
 +  const showAll = () => {
@@ -46542,13 +47140,17 @@ index 0000000..89171ac
 +    setUp(new Set(laid.cards.map((c) => c.key)));
 +    setOpen([]);
 +    setFound((f) => [...[...unfound].reverse(), ...f]);
-+    setEveryShown(true);
 +    setSaid(WORDS.allUp);
++    intoBand([tableRef.current]);
 +  };
 +
 +  const layAgain = () => {
 +    if (laid) lastFamilies.current = laid.pairs.map((p) => p.family);
 +    relayCue.current?.cancel();
++    // The button goes with the table: focus waits on the heading, then goes to the new laying's first card.
++    h1Ref.current?.focus({ preventScroll: true });
++    refocus.current = true;
++    laidOut.current = false;
 +    setRound((r) => r + 1);
 +    setLaying(null);
 +    setUp(new Set());
@@ -46556,7 +47158,6 @@ index 0000000..89171ac
 +    setOpen([]);
 +    setOrder([]);
 +    setSaid("");
-+    setEveryShown(false);
 +    setKeptSaid("");
 +    setFresh(null);
 +    setPhotos(new Map());
@@ -46584,7 +47185,7 @@ index 0000000..89171ac
 +
 +  const offline = !isLive && !isLoading;
 +  return (
-+    <PortalShell title={WORDS.title} description="Twins in the Inner Garden, Naira Flore's members' portal.">
++    <PortalShell title={WORDS.title} description={WORDS.description}>
 +      <div className="ig-tw-page">
 +        <div className="ig-head">
 +          <p className={eyebrow}>{WORDS.eyebrow}</p>
@@ -46624,7 +47225,10 @@ index 0000000..89171ac
 +                  <li key={p.family}>
 +                    <Link className={textLink} to={`/jewellery/${p.a.handle}`}>
 +                      {p.a.name}
-+                    </Link>{" "}
++                    </Link>
++                    <span className="ig-tw-amp" aria-hidden>
++                      {"&"}
++                    </span>
 +                    <Link className={textLink} to={`/jewellery/${p.b.handle}`}>
 +                      {p.b.name}
 +                    </Link>
@@ -46635,10 +47239,14 @@ index 0000000..89171ac
 +          </div>
 +        ) : (
 +          <>
++            <p className="ig-fineprint ig-tw-said" role="status">
++              {said}
++            </p>
 +            <div ref={tableRef} className="ig-tw-table">
 +              <div className="ig-tw-grid" role="group" aria-label={WORDS.tableName}>
 +                {cards.map((c, i) => {
 +                  const faceUp = up.has(c.key);
++                  const paired = found.includes(c.family);
 +                  return (
 +                    <TwinCard
 +                      key={c.key}
@@ -46648,10 +47256,10 @@ index 0000000..89171ac
 +                      }}
 +                      card={c}
 +                      up={faceUp}
-+                      paired={found.includes(c.family)}
++                      paired={paired}
 +                      photo={photos.get(c.key) ?? null}
 +                      decoded={decoded.has(c.key)}
-+                      label={faceUp ? c.piece.name : backName(i, cols, cards.length)}
++                      label={faceUp ? faceName(c.piece.name, paired ? "paired" : open.length === 2 ? "turnsBack" : "waiting") : backName(i, cols, cards.length)}
 +                      tabIndex={i === focusIndex ? 0 : -1}
 +                      onTurn={() => turn(c)}
 +                      onKeyDown={onKey(i)}
@@ -46662,9 +47270,6 @@ index 0000000..89171ac
 +              </div>
 +              <div ref={petalRef} className="ig-tw-petals" aria-hidden />
 +            </div>
-+            <p className="ig-fineprint ig-tw-said" role="status">
-+              {said}
-+            </p>
 +            {open.length === 2 && (
 +              <button type="button" className={quietButton} onClick={turnBack}>
 +                {WORDS.turnBack}
@@ -46673,32 +47278,13 @@ index 0000000..89171ac
 +            {done && (
 +              <div className="ig-tw-done">
 +                {keptSaid && <p className="ig-fineprint">{keptSaid}</p>}
-+                <Link className={textLink} to="/members/herbarium">
++                <Link className={textLink} to="/members/herbarium#ig-keep-twins">
 +                  {WORDS.herbarium}
 +                </Link>
 +                <button type="button" className={outlineButton} onClick={layAgain}>
 +                  {WORDS.layAgain}
 +                </button>
 +              </div>
-+            )}
-+            {everyShown && (
-+              <section className="ig-tw-every" aria-labelledby="ig-tw-every">
-+                <h2 id="ig-tw-every" className="ig-tw-every-title">
-+                  {WORDS.everyPair}
-+                </h2>
-+                <ul className="ig-tw-links">
-+                  {laid.pairs.map((p) => (
-+                    <li key={p.family}>
-+                      <Link className={textLink} to={`/jewellery/${p.a.handle}`}>
-+                        {p.a.name}
-+                      </Link>{" "}
-+                      <Link className={textLink} to={`/jewellery/${p.b.handle}`}>
-+                        {p.b.name}
-+                      </Link>
-+                    </li>
-+                  ))}
-+                </ul>
-+              </section>
 +            )}
 +            <TwinPairs pairs={turnedPairs} live={live} naira={naira} us={naira.ring?.us ?? null} metal={naira.metal} month={month} preview={preview} bagBusy={bagBusy} onAdd={addToBag} changeMeta={changeMeta} />
 +          </>
@@ -47591,6 +48177,36 @@ index 0000000..2612e0c
 +};
 +
 +export default Vault;
+diff --git a/src/pages/members/buttons.test.ts b/src/pages/members/buttons.test.ts
+new file mode 100644
+index 0000000..37a2ae7
+--- /dev/null
++++ b/src/pages/members/buttons.test.ts
+@@ -0,0 +1,24 @@
++import { readFileSync } from "node:fs";
++import { resolve } from "node:path";
++import { describe, expect, it } from "vitest";
++
++/* The portal's buttons (members.css): an outline button never takes the solid button's ink on hover, and no
++   hover is kept by a phone after a tap (iOS and Android keep :hover on the last element tapped). */
++describe("the portal's buttons", () => {
++  const css = readFileSync(resolve(__dirname, "members.css"), "utf8");
++  const hoverBlock = css.match(/@media \(hover: hover\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
++
++  it("hovers only where a pointer hovers", () => {
++    const outside = css.replace(/@media \(hover: hover\) \{[\s\S]*?\n\}/g, "");
++    expect(outside).not.toMatch(/\.ig-btn(--outline)?:hover/);
++    expect(hoverBlock).toMatch(/\.ig-btn:hover \{ background: rgb\(var\(--nf-ink-rgb\) \/ 0\.88\); \}/);
++  });
++
++  it("keeps an outline button's ink label on a light ground when hovered", () => {
++    const outline = hoverBlock.match(/\.ig-btn--outline:hover \{ background: ([^;]+); \}/)?.[1];
++    expect(outline).toBeDefined();
++    expect(outline).not.toMatch(/0\.88/);
++    // It comes after the solid button's hover, so it wins at equal specificity.
++    expect(hoverBlock.indexOf(".ig-btn--outline:hover")).toBeGreaterThan(hoverBlock.indexOf(".ig-btn:hover"));
++  });
++});
 diff --git a/src/pages/members/card.css b/src/pages/members/card.css
 new file mode 100644
 index 0000000..53c994b
@@ -48308,10 +48924,10 @@ index 0000000..3940c2d
 +}
 diff --git a/src/pages/members/herbarium-room.css b/src/pages/members/herbarium-room.css
 new file mode 100644
-index 0000000..026d622
+index 0000000..cdb85c7
 --- /dev/null
 +++ b/src/pages/members/herbarium-room.css
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,28 @@
 +/* /members/herbarium: pressed flowers and keepsakes. Imported only by Herbarium.tsx (the frames bring herbarium.css). */
 +
 +.ig-herbarium {
@@ -48339,12 +48955,13 @@ index 0000000..026d622
 +  .ig-hwall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 +  .ig-keeps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 +}
++#ig-keepsakes:focus { outline: none; }
 diff --git a/src/pages/members/members.css b/src/pages/members/members.css
 new file mode 100644
-index 0000000..0df0e3c
+index 0000000..de53d4b
 --- /dev/null
 +++ b/src/pages/members/members.css
-@@ -0,0 +1,506 @@
+@@ -0,0 +1,511 @@
 +/*
 +  The Inner Garden. Imported only by MembersRoute, so Vite ships this as the
 +  route's own stylesheet: nothing here reaches the product page, the bag or
@@ -48429,7 +49046,12 @@ index 0000000..0df0e3c
 +  cursor: pointer;
 +  transition: background-color 0.2s ease, transform 0.25s var(--nf-ease-reveal);
 +}
-+.ig-btn:hover { background: rgb(var(--nf-ink-rgb) / 0.88); }
++/* Hover only where there is a pointer that hovers: a phone keeps :hover after a tap, and the outline
++   button's ink label would sit on the solid button's ink (BR7-01). */
++@media (hover: hover) {
++  .ig-btn:hover { background: rgb(var(--nf-ink-rgb) / 0.88); }
++  .ig-btn--outline:hover { background: rgb(var(--nf-ink-rgb) / 0.06); }
++}
 +.ig-btn:active { transform: scale(0.98); }
 +.ig-btn:disabled { opacity: 0.6; pointer-events: none; }
 +.ig-btn--outline { background: transparent; color: var(--nf-ink); }
@@ -48884,10 +49506,10 @@ index 0000000..9ec54aa
 +}
 diff --git a/src/pages/members/rangoli.css b/src/pages/members/rangoli.css
 new file mode 100644
-index 0000000..f0100ad
+index 0000000..16c2148
 --- /dev/null
 +++ b/src/pages/members/rangoli.css
-@@ -0,0 +1,157 @@
+@@ -0,0 +1,154 @@
 +/*
 +  /members/rangoli: the floor, the tray and her buttons. Imported by
 +  Rangoli.tsx alone, so it ships in the room's own chunk, after members.css
@@ -48951,34 +49573,31 @@ index 0000000..f0100ad
 +  color: rgb(var(--nf-ink-rgb) / 0.78);
 +}
 +
-+/* The tray: two named radio groups of 44 px chips; a colour lives only in its petal. */
++/* The tray: two named radio groups, each one strip of 44 px swatches that scrolls on its own (never the page), so
++   the floor's lower rings and both strips share a phone screen; each swatch's name is its radio's, for a screen
++   reader, and the choice is said in words under them. A colour lives only in its petal. */
 +.ig-rg-controls { max-width: 420px; }
-+.ig-rg-tray { width: 100%; margin: 0.6rem 0 0; padding: 0; border: 0; text-align: left; }
-+.ig-rg-tray legend { margin-bottom: 0.5rem; }
-+.ig-rg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-+.ig-rg-chip { position: relative; display: inline-flex; }
++.ig-rg-tray { width: 100%; min-inline-size: 0; margin: 0.4rem 0 0; padding: 0; border: 0; text-align: left; }
++.ig-rg-tray legend { margin-bottom: 0.3rem; }
++.ig-rg-chips { display: flex; gap: 6px; padding: 4px; overflow-x: auto; }
++.ig-rg-chip { position: relative; flex: none; }
 +.ig-rg-chip input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-+.ig-rg-chip span {
-+  display: inline-flex;
-+  align-items: center;
-+  gap: 6px;
++.ig-rg-chip > span {
++  display: grid;
++  place-items: center;
++  width: 44px;
 +  min-height: 44px;
-+  padding: 0 0.7rem 0 0.4rem;
 +  border: 1px solid var(--ig-gold-line);
 +  background: var(--ig-vellum);
-+  font-family: var(--nf-font-label);
-+  font-size: 10.5px;
-+  letter-spacing: var(--nf-track-16);
-+  text-transform: uppercase;
-+  color: var(--nf-ink);
 +}
-+.ig-rg-chip svg { flex: none; width: 26px; height: 26px; overflow: visible; }
-+.ig-rg-chip input:checked + span { border-color: var(--nf-ink); background: var(--nf-ink); color: var(--nf-ivory); }
++.ig-rg-chip svg { width: 26px; height: 26px; overflow: visible; }
++/* Picked: a double ink hairline (a swatch keeps its own colour, ink and ivory too). */
++.ig-rg-chip input:checked + span { border-color: var(--nf-ink); outline: 1px solid var(--nf-ink); outline-offset: -4px; }
 +.ig-rg-chip input:focus-visible + span { outline: 2px solid var(--nf-accent-strong); outline-offset: 2px; }
 +
 +.ig-rg-tools { gap: 0.35rem; margin-top: 1.1rem; }
 +.ig-rg-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 1rem; }
-+.ig-rg-row .ig-quiet:disabled { opacity: 0.45; cursor: default; }
++.ig-rg-row [aria-disabled="true"] { opacity: 0.45; cursor: default; }
 +.ig-rg-ask { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 0.8rem; }
 +.ig-rg-ask .ig-fineprint { width: 100%; margin: 0; }
 +.ig-rg-toggle {
@@ -49223,10 +49842,10 @@ index 0000000..9300264
 +}
 diff --git a/src/pages/members/twins.css b/src/pages/members/twins.css
 new file mode 100644
-index 0000000..104f2c6
+index 0000000..eeac04e
 --- /dev/null
 +++ b/src/pages/members/twins.css
-@@ -0,0 +1,129 @@
+@@ -0,0 +1,130 @@
 +/*
 +  Twin Blooms (/members/twins): the table of pressed flowers and the pairs
 +  she has turned. Imported by Twins.tsx alone, so it ships in that room's own
@@ -49246,14 +49865,17 @@ index 0000000..104f2c6
 +  text-align: center;
 +}
 +.ig-tw-h1 { font-size: clamp(2rem, 8vw, 2.8rem); }
-+.ig-tw-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem 1rem; width: 100%; margin-top: 1rem; }
-+.ig-tw-tools .ig-btn { width: auto; min-width: 11rem; height: 44px; }
++.ig-tw-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem 0.75rem; width: 100%; margin-top: 1rem; }
++.ig-tw-tools .ig-btn { width: auto; min-width: 10rem; height: 44px; }
 +
-+/* ── the table ─────────────────────────────────────── */
-+.ig-tw-table { position: relative; width: 100%; margin-top: 1rem; }
++/* ── the table: four across from 360 px (twins.ts COLUMNS_FROM), so its tools, its line and all of it fit one phone screen ── */
++.ig-tw-table { position: relative; width: 100%; margin-top: 0.5rem; }
 +.ig-tw-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
++@media (min-width: 360px) {
++  .ig-tw-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
++}
 +@media (min-width: 600px) {
-+  .ig-tw-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
++  .ig-tw-grid { gap: 12px; }
 +}
 +.ig-tw-petals { position: absolute; inset: -12px 0; overflow: hidden; pointer-events: none; }
 +
@@ -49309,6 +49931,7 @@ index 0000000..104f2c6
 +.ig-tw-photo img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
 +.ig-tw-name {
 +  display: -webkit-box;
++  min-height: 2.6em;
 +  margin-top: 4px;
 +  overflow: hidden;
 +  font-family: var(--nf-font-label);
@@ -49323,25 +49946,22 @@ index 0000000..104f2c6
 +.ig-tw-corner { position: absolute; top: 3px; right: 4px; display: block; line-height: 0; transform-origin: 70% 80%; }
 +.ig-tw-corner .ig-glyph { display: block; height: 26px; width: auto; }
 +
-+.ig-tw-said { min-height: 1.6em; margin-top: 0.75rem; text-wrap: balance; }
++/* Its line, over the table, with room kept for two lines (three under 360 px), so the table never jumps between turns. */
++.ig-tw-said { min-height: 3.2em; margin-top: 0.75rem; text-wrap: balance; }
++@media (max-width: 359px) {
++  .ig-tw-card { aspect-ratio: 1; }
++  .ig-tw-said { min-height: 4.8em; }
++}
 +.ig-tw-wait { margin-top: 0.75rem; }
 +.ig-tw-done { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; width: 100%; margin-top: 0.5rem; }
 +.ig-tw-done .ig-btn { width: auto; min-width: 12rem; height: 44px; }
 +.ig-tw-rest { width: 100%; margin-top: 1rem; }
 +.ig-tw-links { display: grid; gap: 0.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; }
-+.ig-tw-links li { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 0.75rem; }
-+.ig-tw-every { width: 100%; margin-top: 1rem; }
-+.ig-tw-every-title {
-+  margin: 0;
-+  font-family: var(--nf-font-label);
-+  font-size: 10px;
-+  font-weight: 400;
-+  letter-spacing: var(--nf-track-20);
-+  text-transform: uppercase;
-+  color: var(--nf-gold-text);
-+}
++.ig-tw-links li { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 0.5rem; }
++.ig-tw-amp { font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.2rem; color: var(--nf-gold-text); }
 +
 +/* ── pairs you've turned ───────────────────────────── */
++.ig-tw-line { margin-bottom: 1rem; }
 +.ig-tw-pairlist { display: grid; gap: 1.25rem; margin: 0; padding: 0; list-style: none; }
 +.ig-tw-pair { position: relative; padding: 0.75rem; border: 1px solid var(--ig-gold-line); outline: 1px solid rgb(var(--nf-gold-rgb) / 0.3); outline-offset: -5px; }
 +.ig-tw-twin { margin: 0 0 0.6rem; font-family: var(--nf-font-editorial); font-style: italic; font-size: 1.05rem; color: var(--nf-gold-text); text-align: center; }

@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `03ce4e9` (Phase 6 in progress, interim: built, merged, reviewed, and being polished; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `f6a6a88` (Phase 6 final, after the acceptance critic's fixes; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -88,6 +88,43 @@ Phase 5 checks on 1238125 (run twice: once by the screens step, once independent
 - Reduced motion and Data Saver: no three, gsap or scene requests, even with &tier=2. On /members at most two WebGL contexts are live (the header flower and the field).
 - Not done: frame rates come only from software GL. The Bloom Field still needs a check on a real mid-range Android. The firm members-first window was deferred, as planned.
 
+## Phase 6: Play
+
+36 commits on top of 1238125, including two real merges. Everything here is joy only: no counts, prizes, discounts or urgency, and nothing is lost if she ignores it.
+
+| Commit | What it adds |
+|---|---|
+| 8d6ebb7 to a6b80a5, merged in 69cf555 | **Gathered:** the Naira flower's four petals and its stem are tucked, one each, at a heading's end in Drops, the Drawer, Your fit, Gifts and Care. A tap (or Enter or Space) takes it home in a short flight to the Garden tab, and a faint gold print stays where it lay. At the arbour's crown each piece found stands in its own place in the flower's shape; the small crown flower gives way at the first find, and no empty slot or count is ever drawn. When all five are home, a gold-leaf edge draws once per phone and at most 24 petals fall. The Herbarium keeps a fifth keepsake, 'Gathered' (for joy, not points, never redeemable); until then its frame lists the rooms still holding a piece as links, the path that needs no gesture. **Written in your sky:** after dark, 'Look up' opens a sheet where she joins her month's flower star by star ('Join the next star', 'Draw it for me'); it then rests in her night sky and the Herbarium keeps it. Her account keeps both in one integer, `naira.p`, 1 to 63 (`,"p":63` is 7 bytes; worst case 1,184 B of the 1,200 B cap; a play write never trims a saved piece). |
+| d683fe7 to 1532497, merged in bab9f3a | **Stone Light** ('Hold it to the light') on Your stone: the heart drawn in the month's colour, cut into facets on an ink panel. The light moves only on her drag, the arrow keys or the Turn buttons, or her phone's tilt after she taps 'Tilt your phone' (the iPhone permission is asked then; drag and still fallbacks). **The Vanity** (/members/vanity): up to three necklaces laid on a drawn neckline strictly by each listing's own Length line (a length marked '(to confirm)' or missing is not drawn), chips to toggle, 'Take off', and 'Add the look to your bag' through the bag's own add. The Buy 2 / Buy 3 line is read from promo.ts, so it is always the bag's own rates. |
+| 04f2435 to 03ce4e9 | Integration and polish after five reviews (phone and performance, engineering, brand and delight, data and privacy, journey) with adversarial checks. |
+| 9fddb81 to 65760a8 | Acceptance-critic fixes. `naira.p` is read only from 1 to 63 again (64 and up are dropped, as planned). The crown's pieces stand in their own places from the first find (the polish had laid petals on the arch until the stem came home). forgetDevice.ts and its test are back to 1238125, so the Account chunk is Phase 5's again. The owner wording and Stone Light's Tier 2 were each lifted out whole so they could be laid back as single droppable commits. |
+| 7625aa2 | **Stone Light's Tier 2 (droppable, owner question 3):** on a Tier 2 phone only, once the panel is nearly in view and then on idle, a faceted 3D heart in three.js (`lib/portal/gem/scene.ts`, its own scene chunk) turns in unseen as the 60-frame probe and then crossfades over the drawing. It is disposed with forceContextLoss if it is slow or lost. It shares one WebGL slot (claimGl) with the Bloom Field, so there are at most two contexts with the header flower. It pauses off screen, when the tab is hidden, after 20 s idle and under the open bag. `git revert 7625aa2` drops all of it, and Stone Light stays complete at Tier 1. |
+| f6a6a88 | **Owner wording (droppable):** 'Written in your sky' for the keepsake, the night line, 'gathered from', rooms in lower case mid-sentence, the Vanity's instruction line, and the 'come apart in the breeze' line in What's growing. `git revert f6a6a88` drops it. |
+
+Preview switches (development only, absent from dist): `&hunt=0..5`, `&stars=1`, `&look=1`, `&tilt=sweep`, with Phase 5's `&tier=2&probe=0` and `&hour=night`.
+
+Phase 6 checks on f6a6a88:
+- 215 test files and 2,030 tests pass. tsc is clean (app and node), and eslint is clean on every file changed since 1238125.
+- `git revert 7625aa2`, `git revert f6a6a88`, and both in either order each apply cleanly on f6a6a88. With Tier 2 dropped, 214 files and 1,998 tests pass and tsc is clean, and the build has Phase 5's three scene chunks and no gem code. With the wording dropped, 215 files and 2,029 tests pass and tsc is clean. With both dropped, 214 files and 1,997 tests pass.
+- Since 893d5be, nothing changed in index.html, src/index.css, main.tsx, vite.config.ts, package.json, bun.lock, promo.ts, shopify.ts, CartContext, WishlistContext, the header, the product page, the bag or checkout. Since 1238125 the only file changed outside the portal is src/lib/nairaBox/config.test.ts, with exactly one added line, and that line is inside 7625aa2.
+- vendor, three, gsap, RoomEnvironment and the global CSS are byte-identical to a 893d5be build.
+- Compared with the 1238125 build once hashes are masked: ProductDetail, CartDrawerNext, JewelDetailNext, Index, Jewellery, JewelleryCategory, Account and Auth are identical; the entry chunk is identical apart from renamed minified locals, with the same export aliases.
+- dist has no preview code or fixtures (the Phase 5 pattern plus hunt=, stars=, look=, tilt= and the fixtures' names).
+- Sizes (gzip -9):
+  - MembersRoute 31.0 KB (budget 35; Phase 5 29.9); members.css 2.9 KB (budget 4).
+  - PetalSpot 2.1 KB + 0.4 KB CSS; PetalCrown 1.9 KB; crownArt 0.5 KB; StarSheet 3.7 KB + 0.5 KB CSS; SkyWritten 0.5 KB.
+  - Stone 6.2 KB + 1.4 KB CSS; StoneLight 4.9 KB + 0.7 KB CSS; Vanity 7.6 KB + 1.1 KB CSS.
+  - One new scene chunk, the gem, at 4.0 KB (budget 12). No new gsap or *Gsap chunk.
+- Browser, headless Chromium with SwiftShader (software GL: no timings here are phone numbers):
+  - &hunt=0 fetches no PetalCrown chunk, and the small crown flower stands.
+  - &hunt=1, 2, 3 and 5 draw exactly the pieces found, each at the crown's place in the flower's shape, with no small flower and no empty slot. The layer is pointer-events none.
+  - What's growing names the rooms in words, with no digit.
+  - Taps on the bed outside the crown, and on the crown itself, open tap blooms.
+- Not done (needs a real device or a real member):
+  - the 60-frame probe, compile time and crossfade on a mid-range Android or an iPhone (SwiftShader's crossfade at about 6 s is not a phone number);
+  - the iPhone Safari motion-permission prompt and real DeviceOrientation readings (tested only with a stubbed requestPermission and synthetic events);
+  - a real member's 'Add the look to your bag' against the live Shopify cart, with the bag drawer over the room (covered by mocked tests only: real adds were not allowed here).
+
 ## Phase 1 checks on 2f278c0
 
 - vitest: 150 files and 1,046 tests pass.
@@ -132,3 +169,18 @@ Phase 5 checks on 1238125 (run twice: once by the screens step, once independent
   - Buy now does not note a checkout row
   - a later migration so the browser cannot write status='completed'
   - the firm members-first window (deferred)
+- Phase 6:
+  - her account keeping one small play number, `naira.p` (7 bytes at most)
+  - showing the brand's own flower 'come apart in the breeze', as four petals and a stem tucked about the rooms, and gathered again at the arbour's crown. Before the stem is home, a petal stands alone above the arch in its place; a brand review wanted petals resting on the arch instead, which the plan's spec does not allow
+  - Stone Light's Tier 2, a second three.js scene (drop it with `git revert 7625aa2`)
+  - the iPhone motion-permission prompt after 'Tilt your phone' (nothing from the sensor is kept or sent)
+  - the Vanity's caption: 'Drawn to each listing's own length, one against another. Where a chain sits on you depends on you.'
+  - necklace lengths in Shopify: 9 live listings say '(to confirm)', 13 have no Length line, and the Birthstone Heart Necklace says 'plus extender' without a number. Until then those are left out of the Vanity or drawn without a tail
+  - showing the shop's public Buy 2 / Buy 3 line inside the portal (read from promo.ts)
+  - 'Add the look to your bag' sends one Meta AddToCart per piece, as each Add to bag does today
+  - the names 'Gathered', 'Written in your sky' or 'Written in the stars', 'Hold it to the light' and 'The Vanity'
+  - the owner-wording commit f6a6a88 (droppable): 'Written in your sky', the night line, 'gathered from', lower-case rooms, the Vanity's instruction line, and the 'come apart in the breeze' line
+  - later, optional: a one-time Bloom Field over the garden when the flower is whole (it needs the same Tier 2 approval)
+- Phase 6, for the lead (the acceptance critic's four lines, now held to the plan):
+  - signing out on a phone does not forget the Vanity's look ('naira-vanity') or her gold-leaf mark (naira-portal.crown). Both are tagged with her id, so another member never sees them. Making sign-out forget them means editing the shop's Account chunk (src/lib/auth/forgetDevice.ts and its test). `git revert 38e854f` puts that change back, and it also clears naira-portal.grown, the Phase 5 roses
+  - a later version that wants a seventh play bit must ship a reader that keeps it before any writer sets it, because today's reader drops any number above 63

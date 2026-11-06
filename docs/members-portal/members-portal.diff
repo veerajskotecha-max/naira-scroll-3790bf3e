@@ -7251,10 +7251,10 @@ index 0000000..1410227
 +};
 diff --git a/src/components/portal/PetalCrown.test.tsx b/src/components/portal/PetalCrown.test.tsx
 new file mode 100644
-index 0000000..07122a5
+index 0000000..3229b00
 --- /dev/null
 +++ b/src/components/portal/PetalCrown.test.tsx
-@@ -0,0 +1,377 @@
+@@ -0,0 +1,355 @@
 +import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 +import { MemoryRouter } from "react-router-dom";
 +import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -7264,6 +7264,7 @@ index 0000000..07122a5
 +import { readNaira } from "@/lib/portal/memberMeta";
 +import { BITS, WHOLE, forgetVisit, noteFound } from "@/lib/portal/petals";
 +import { hasDropFlag } from "@/lib/portal/safeStorage";
++import { CROWN_PLACE } from "./crownArt";
 +
 +/*
 +  Gathered at the arbour's crown (Phase 6): the pieces she found, each in
@@ -7380,7 +7381,7 @@ index 0000000..07122a5
 +    expect(growing().queryByText(/arbour's crown/)).toBeNull();
 +  });
 +
-+  it("until the stem is home, keeps the small flower and lays the petals found on the arch beside it, with no empty slot", async () => {
++  it("draws exactly the pieces found, in their places, and no empty slot", async () => {
 +    const { container } = home((1 << BITS.drops) | (1 << BITS.drawer));
 +    await waitFor(() => expect(container.querySelector(".ig-bed-crown")).not.toBeNull());
 +    const crown = container.querySelector(".ig-bed-crown") as HTMLElement;
@@ -7388,60 +7389,37 @@ index 0000000..07122a5
 +    // Two shapes: no outline, frame or placeholder for the three still out.
 +    expect(crown.querySelectorAll("path")).toHaveLength(2);
 +    expect(crown.querySelector(".ig-crown-edge, .ig-crown-glow")).toBeNull();
-+    // The small crown flower still stands (drawn by the crown's layer now, the arbour's own giving way to it).
++    // Each stands in its own place in the Naira flower's shape, at the crown: nothing lays it elsewhere.
++    for (const g of crown.querySelectorAll("[data-piece]")) {
++      expect(g.parentElement?.getAttribute("transform")).toBe(CROWN_PLACE);
++      expect(g.getAttribute("transform")).toBeNull();
++    }
++    // The small crown flower has given way; the layer lets every tap through.
 +    expect(smallCrown(container)).toBeNull();
-+    expect(crown.querySelector(".ig-crown-small")).not.toBeNull();
-+    // Each petal lies on the arch either side of it, never over it: its rest is a transform on its own wrapper.
-+    const rests = [...crown.querySelectorAll("[data-rest]")].map((g) => [(g as HTMLElement).dataset.rest, g.getAttribute("transform")]);
-+    expect(rests).toEqual([
-+      ["drops", expect.stringMatching(/^translate\(172 74\.2\) rotate\(-7\.6\) scale\(1\.3\) translate\(-[\d.]+ -[\d.]+\)$/)],
-+      ["drawer", expect.stringMatching(/^translate\(218 74\.4\) rotate\(-56\.3\) scale\(1\.3\) translate\(-[\d.]+ -[\d.]+\)$/)],
-+    ]);
++    expect(container.querySelector(".ig-crown-small")).toBeNull();
 +    expect(crown.style.pointerEvents).toBe("none");
 +    expect(crown.getAttribute("aria-hidden")).toBe("true");
 +  });
 +
-+  it("with the stem home, stands the petals in their places in the flower's shape, and the small flower gives way", async () => {
++  it("gives the small crown flower's place to the first piece home, so the crown never shows both", async () => {
++    const { container } = home(1 << BITS.gifts);
++    await waitFor(() => expect(container.querySelector(".ig-bed-crown")).not.toBeNull());
++    const crown = container.querySelector(".ig-bed-crown") as HTMLElement;
++    expect([...crown.querySelectorAll("[data-piece]")].map((g) => (g as HTMLElement).dataset.piece)).toEqual(["gifts"]);
++    expect(crown.querySelectorAll("path")).toHaveLength(1);
++    expect(smallCrown(container)).toBeNull();
++    expect(container.querySelector(".ig-arbour ellipse[rx='3.4']")).toBeNull();
++  });
++
++  it("with the stem home, stands it in its place under the petals found; nothing fresh, nothing moves", async () => {
 +    const { container } = home((1 << BITS.drops) | (1 << BITS.drawer) | (1 << BITS.fit));
 +    await waitFor(() => expect(container.querySelector(".ig-bed-crown")).not.toBeNull());
 +    const crown = container.querySelector(".ig-bed-crown") as HTMLElement;
 +    expect([...crown.querySelectorAll("[data-piece]")].map((g) => (g as HTMLElement).dataset.piece)).toEqual(["drops", "drawer", "fit"]);
-+    expect(crown.querySelector(".ig-crown-small")).toBeNull();
++    for (const g of crown.querySelectorAll("[data-piece]")) expect(g.parentElement?.getAttribute("transform")).toBe(CROWN_PLACE);
 +    expect(smallCrown(container)).toBeNull();
-+    for (const g of crown.querySelectorAll("[data-rest]")) expect(g.getAttribute("transform")).toBeNull();
-+    // Nothing fresh: nothing moves.
 +    await new Promise((r) => setTimeout(r, 50));
 +    expect(crownAnimations()).toEqual([]);
-+  });
-+
-+  it("when the stem comes home, presses it in and lifts each petal from the arch into its place, by transform alone", async () => {
-+    noteFound(USER, BITS.fit);
-+    const { container } = home((1 << BITS.drops) | (1 << BITS.gifts) | (1 << BITS.fit));
-+    await waitFor(() => expect(crownAnimations().length).toBeGreaterThan(0));
-+    const crown = container.querySelector(".ig-bed-crown") as HTMLElement;
-+    const rises = crownAnimations().filter((a) => a.el.matches("[data-rest]"));
-+    expect(rises.map((a) => (a.el as HTMLElement).dataset.rest)).toEqual(["drops", "gifts"]);
-+    for (const r of rises) {
-+      expect(r.keyframes[0].transform).toMatch(/^translate\([\d.]+px, [\d.]+px\) rotate\(-?[\d.]+deg\) scale\(1\.3\) translate\(-[\d.]+px, -[\d.]+px\)$/);
-+      expect(r.keyframes[1]).toEqual({ transform: "none" });
-+      expect(r.options.fill).toBe("backwards");
-+    }
-+    // The stem presses in first, then the petals rise; the small flower fades as the stem arrives.
-+    const stem = crownAnimations().find((a) => a.el.matches("[data-piece='fit']"));
-+    expect(Number(rises[0].options.delay)).toBeGreaterThan(Number(stem?.options.delay));
-+    const small = crownAnimations().find((a) => a.el.matches(".ig-crown-small"));
-+    expect(small?.keyframes).toEqual([{ opacity: 1 }, { opacity: 0 }]);
-+    expect(crown.querySelectorAll("[data-rest][transform]")).toHaveLength(0);
-+    for (const a of crownAnimations()) for (const k of a.keyframes) for (const prop of Object.keys(k)) expect(["transform", "opacity"]).toContain(prop);
-+  });
-+
-+  it("draws the same small flower as the arbour's own", async () => {
-+    const { container } = home(1 << BITS.stars);
-+    const arbour = smallCrown(container)?.innerHTML;
-+    cleanup();
-+    const again = home(1 << BITS.drops);
-+    await waitFor(() => expect(again.container.querySelector(".ig-crown-small")).not.toBeNull());
-+    expect(again.container.querySelector(".ig-crown-small")?.innerHTML).toBe(arbour);
 +  });
 +
 +  it("waits, at its first frame, until the crown is in view below the shop's fixed header and above the garden path", async () => {
@@ -7634,32 +7612,31 @@ index 0000000..07122a5
 +});
 diff --git a/src/components/portal/PetalCrown.tsx b/src/components/portal/PetalCrown.tsx
 new file mode 100644
-index 0000000..3f53ba2
+index 0000000..c055c9b
 --- /dev/null
 +++ b/src/components/portal/PetalCrown.tsx
-@@ -0,0 +1,224 @@
+@@ -0,0 +1,196 @@
 +import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 +import { BED } from "@/lib/portal/gardenLayout";
 +import { FLOWER_PETALS, FLOWER_STEM, LEAF_SAGE, PETAL_BLUSH } from "@/lib/portal/brandFlower";
 +import { EASE_BLOOM, EASE_REVEAL, play, stillMotion } from "@/lib/portal/motion";
-+import { BITS, PIECES, WHOLE, WORDS, crownSaid, foundThisVisit, freshFinds, pressedIn, type Piece } from "@/lib/portal/petals";
++import { PIECES, WHOLE, WORDS, crownSaid, foundThisVisit, freshFinds, pressedIn, type Piece } from "@/lib/portal/petals";
 +import { hasDropFlag, setDropFlag } from "@/lib/portal/safeStorage";
 +import { burstPetals } from "./PetalBurst";
 +import { PETAL_IDS, PETAL_SPARK } from "./PetalSymbols";
-+import { CROWN_AT, CROWN_H, CROWN_PLACE, CROWN_W, EDGE, GLOW, GOLD, GOLD_LEAF, HAIR, SmallCrown, restOf } from "./crownArt";
++import { CROWN_AT, CROWN_H, CROWN_PLACE, CROWN_W, EDGE, GLOW, GOLD, GOLD_LEAF, HAIR } from "./crownArt";
 +
 +/*
 +  Gathered, at the crown of her garden's arbour (Phase 6): a decoration in
 +  a chunk of its own, fetched by the bed only once a piece of the Naira
 +  flower is home (naira.p & 31), never on the gate and never before.
 +
-+  Until the stem is home, the small five-petal flower stays on the arch's
-+  crown and the petals she found lie on the arch's ironwork beside it, like
-+  petals the breeze left there (crownArt's rest places); no empty slot is
-+  ever drawn. When the stem comes home, it presses in where the small
-+  flower stood and the petals rise from the arch into their places in the
-+  Naira flower's shape (transform only), so the flower forms. A piece found
-+  since she was last in the garden presses in once (scale and opacity).
++  The pieces she found stand in their own places in the Naira flower's
++  shape, on the arch's crown where the small five-petal flower stood until
++  the first came home (the bed's Arbour lets its own go once this layer is
++  shown), so the flower forms as she finds them; no empty slot is ever
++  drawn. A piece found since she was last in the garden presses in once
++  (scale and opacity).
 +  When all five are home, once on this phone, a gold-leaf line draws round
 +  it (stroke-dashoffset, 1.2 s) and 24 blush and gold petals fall from the
 +  crown, once any petals still in the air (the Doors') have landed; then it
@@ -7680,13 +7657,10 @@ index 0000000..3f53ba2
 +
 +/* Where the bloom is, for the petals' fall: the petals' middle, in the bed's view. */
 +const BLOOM_AT = { x: CROWN_AT.x + 0.53 * CROWN_W, y: CROWN_AT.y + 0.17 * CROWN_H };
-+const STEM = 1 << BITS.fit;
 +
 +const LAYER: CSSProperties = { position: "absolute", inset: 0, pointerEvents: "none" };
 +const ART: CSSProperties = { position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" };
 +const PIECE: CSSProperties = { transformBox: "fill-box", transformOrigin: "50% 50%" };
-+/* A petal's rest on the arch, and its rise into the flower: in the bed's own units, from its corner. */
-+const REST: CSSProperties = { transformBox: "view-box", transformOrigin: "0 0" };
 +const SENTINEL: CSSProperties = {
 +  position: "absolute",
 +  left: `${(CROWN_AT.x / BED.w) * 100}%`,
@@ -7701,7 +7675,6 @@ index 0000000..3f53ba2
 +  // Her account's pieces, and any found this visit that her account had no room for.
 +  const bits = (account | foundThisVisit(member)) & WHOLE;
 +  const whole = bits === WHOLE;
-+  const stemHome = Boolean(bits & STEM);
 +  const found = PIECES.filter((p) => bits & (1 << p.bit));
 +  const rootRef = useRef<HTMLDivElement>(null);
 +  const seenRef = useRef<HTMLSpanElement>(null);
@@ -7709,8 +7682,6 @@ index 0000000..3f53ba2
 +  const [fresh] = useState(() => freshFinds(member) & bits);
 +  const [drawn] = useState(() => hasDropFlag("crown", member));
 +  const [still] = useState(stillMotion);
-+  // The stem has just come home: the petals rise from the arch, and the small flower gives way.
-+  const rising = stemHome && Boolean(fresh & STEM) && !still;
 +
 +  useLayoutEffect(() => {
 +    const root = rootRef.current;
@@ -7721,41 +7692,23 @@ index 0000000..3f53ba2
 +    }
 +    const made: Animation[] = [];
 +    let k = 0;
-+    let stemAt = 0;
 +    root.querySelectorAll<SVGGElement>("[data-piece]").forEach((g) => {
 +      const piece = PIECES.find((p) => p.key === g.dataset.piece);
 +      if (!piece || !(fresh & (1 << piece.bit))) return;
-+      const delay = 160 + k++ * 150;
-+      if (piece.part === "stem") stemAt = delay;
-+      const a = play(g, [{ transform: "scale(1.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 560, delay, easing: EASE_BLOOM, fill: "backwards" });
++      const a = play(g, [{ transform: "scale(1.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 560, delay: 160 + k++ * 150, easing: EASE_BLOOM, fill: "backwards" });
 +      if (a) made.push(a);
 +    });
-+    // With the stem home, each petal rises from where it lay on the arch into its place, and the small flower gives way.
-+    let settled = 0;
-+    if (rising) {
-+      root.querySelectorAll<SVGGElement>("[data-rest]").forEach((g, i) => {
-+        const piece = PIECES.find((p) => p.key === g.dataset.rest);
-+        const from = piece && restOf(piece.part, piece.box, true);
-+        if (!from) return;
-+        const a = play(g, [{ transform: from }, { transform: "none" }], { duration: 700, delay: stemAt + 260 + i * 90, easing: EASE_BLOOM, fill: "backwards" });
-+        if (a) made.push(a);
-+        settled = stemAt + 260 + i * 90 + 700;
-+      });
-+      const small = play(root.querySelector(".ig-crown-small"), [{ opacity: 1 }, { opacity: 0 }], { duration: 400, delay: stemAt, easing: EASE_REVEAL, fill: "both" });
-+      if (small) made.push(small);
-+    }
 +    const leaf = whole && !drawn;
-+    const after = Math.max(0, settled - 240);
 +    let lastEdge: Animation | null = null;
 +    if (leaf) {
 +      root.querySelectorAll(".ig-crown-edge path").forEach((path, i) => {
-+        const a = play(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1200, delay: Math.max(240 + k * 150, after) + i * 60, easing: "cubic-bezier(0.45, 0, 0.25, 1)", fill: "backwards" });
++        const a = play(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1200, delay: 240 + k * 150 + i * 60, easing: "cubic-bezier(0.45, 0, 0.25, 1)", fill: "backwards" });
 +        if (a) {
 +          made.push(a);
 +          lastEdge = a;
 +        }
 +      });
-+      const glow = play(root.querySelector(".ig-crown-glow"), [{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: Math.max(700 + k * 150, after + 460), easing: EASE_REVEAL, fill: "backwards" });
++      const glow = play(root.querySelector(".ig-crown-glow"), [{ opacity: 0 }, { opacity: 1 }], { duration: 900, delay: 700 + k * 150, easing: EASE_REVEAL, fill: "backwards" });
 +      if (glow) made.push(glow);
 +    }
 +    // Held at the first frame until the crown is in view: played unseen, the gold leaf would be marked drawn unseen.
@@ -7777,7 +7730,7 @@ index 0000000..3f53ba2
 +          count: 24,
 +          spread: 70 * Math.max(0.8, scale),
 +          duration: 1400,
-+          delay: Math.max(0, Math.max(1000 + k * 150, after + 760) - (performance.now() - began)),
++          delay: Math.max(0, 1000 + k * 150 - (performance.now() - began)),
 +          size: [7, 13],
 +          ids: [PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[4], PETAL_IDS[0], PETAL_SPARK, PETAL_IDS[1]],
 +        });
@@ -7817,8 +7770,6 @@ index 0000000..3f53ba2
 +    <div ref={rootRef} className="ig-bed-crown" style={LAYER} aria-hidden>
 +      <span ref={seenRef} style={SENTINEL} />
 +      <svg viewBox={`0 0 ${BED.w} ${BED.h}`} style={ART}>
-+        {/* Until the stem is home, the small five-petal flower stays on the crown. */}
-+        {(!stemHome || rising) && <SmallCrown />}
 +        {whole && (
 +          <g transform={CROWN_PLACE} className="ig-crown-glow" fill="none" stroke={GOLD_LEAF} strokeOpacity=".35" strokeWidth={GLOW} strokeLinejoin="round">
 +            {found.map((p) => (
@@ -7826,15 +7777,14 @@ index 0000000..3f53ba2
 +            ))}
 +          </g>
 +        )}
-+        {found.map((p) => (
-+          <g key={p.key} data-rest={p.part === "stem" ? undefined : p.key} transform={stemHome ? undefined : (restOf(p.part, p.box) ?? undefined)} style={REST}>
-+            <g transform={CROWN_PLACE}>
-+              <g data-piece={p.key} style={PIECE}>
-+                <path d={pathOf(p)} fill={p.part === "stem" ? LEAF_SAGE : PETAL_BLUSH} stroke="var(--nf-accent-strong)" strokeWidth={HAIR} strokeLinejoin="round" />
-+              </g>
++        {/* Each piece found, in its own place in the flower's shape: nothing for the ones still out. */}
++        <g transform={CROWN_PLACE}>
++          {found.map((p) => (
++            <g key={p.key} data-piece={p.key} style={PIECE}>
++              <path d={pathOf(p)} fill={p.part === "stem" ? LEAF_SAGE : PETAL_BLUSH} stroke="var(--nf-accent-strong)" strokeWidth={HAIR} strokeLinejoin="round" />
 +            </g>
-+          </g>
-+        ))}
++          ))}
++        </g>
 +        {whole && (
 +          <g transform={CROWN_PLACE} className="ig-crown-edge" fill="none" stroke={GOLD} strokeWidth={EDGE} strokeLinejoin="round">
 +            {found.map((p) => (
@@ -13850,10 +13800,10 @@ index 0000000..4032260
 +.ig-cal .ig-btn { max-width: 300px; }
 diff --git a/src/components/portal/crownArt.tsx b/src/components/portal/crownArt.tsx
 new file mode 100644
-index 0000000..cf33077
+index 0000000..fcaa492
 --- /dev/null
 +++ b/src/components/portal/crownArt.tsx
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,47 @@
 +import { FLOWER_ASPECT, FLOWER_BASE_X, FLOWER_PETALS, FLOWER_STEM, LEAF_SAGE, PETAL_BLUSH } from "@/lib/portal/brandFlower";
 +
 +/*
@@ -13862,10 +13812,10 @@ index 0000000..cf33077
 +  nothing in the garden's first paint.
 +
 +  The Naira flower stands with its stem's foot on the arch's crown
-+  (gardenLayout's ARCH, whose top is at 195, 78), 60 units tall. Until its
-+  stem is home, the small five-petal flower GardenBed's Arbour draws still
-+  stands there, and the petals she found lie on the arch's ironwork beside it
-+  (restOf), like petals the breeze left on the arbour.
++  (gardenLayout's ARCH, whose top is at 195, 78), 60 units tall, where the
++  small five-petal flower GardenBed's Arbour draws stood until the first
++  piece came home. Each piece she found stands in its own place in that
++  shape.
 +*/
 +
 +export const CROWN_H = 60;
@@ -13880,52 +13830,6 @@ index 0000000..cf33077
 +export const HAIR = 0.8 / CROWN_H;
 +export const EDGE = 1 / CROWN_H;
 +export const GLOW = 2.2 / CROWN_H;
-+
-+/** The small five-petal flower on the arch's crown: GardenBed's Arbour draws the same (a test holds the two alike). */
-+export const SmallCrown = () => (
-+  <g transform="translate(195 78)" className="ig-crown-small">
-+    {[0, 72, 144, 216, 288].map((a) => (
-+      <ellipse key={a} cx="0" cy="-6" rx="3.4" ry="5.6" transform={`rotate(${a})`} fill="var(--nf-blush)" stroke="var(--nf-accent)" strokeWidth=".6" />
-+    ))}
-+    <circle r="2.6" fill="var(--nf-accent)" />
-+  </g>
-+);
-+
-+/*
-+  Where each petal lies on the arch until the stem is home, in the bed's
-+  view: either side of the small flower, never over it (its petals reach
-+  12 units from 195), each with its lowest point on the arch's outer line
-+  (y from the arch's own curve there), turned to lie along it, a little
-+  larger so a single petal reads. Keyed by the petal's index in the brand
-+  flower (brandFlower's FLOWER_PETALS).
-+*/
-+const REST: Record<number, { x: number; y: number; turn: number }> = {
-+  0: { x: 172, y: 74.2, turn: -7.6 },
-+  1: { x: 218, y: 74.4, turn: -56.3 },
-+  2: { x: 154, y: 78.6, turn: -78.5 },
-+  3: { x: 236, y: 74.7, turn: -70.1 },
-+};
-+export const REST_SCALE = 1.3;
-+
-+/** A petal's centre in the bed's view, from its box in the flower's view (petals.ts's Piece.box). */
-+// eslint-disable-next-line react-refresh/only-export-components -- the crown's geometry, beside its drawing
-+export const centreOf = ([x, y, w, h]: readonly [number, number, number, number]): [number, number] => [CROWN_AT.x + (x + w / 2) * CROWN_H, CROWN_AT.y + (y + h / 2) * CROWN_H];
-+
-+/**
-+ * The transform that lays a petal on the arch, from its place in the flower: as an SVG attribute
-+ * (`css` false) or as a CSS transform for the stem's arrival (the same numbers, in px, with the
-+ * transform box the view box and its origin 0 0). Null for the stem, or a part with no rest.
-+ */
-+// eslint-disable-next-line react-refresh/only-export-components -- the crown's geometry, beside its drawing
-+export const restOf = (part: number | "stem", box: readonly [number, number, number, number], css = false): string | null => {
-+  const at = part === "stem" ? undefined : REST[part];
-+  if (!at) return null;
-+  const [cx, cy] = centreOf(box);
-+  const u = css ? "px" : "";
-+  const d = css ? "deg" : "";
-+  const sep = css ? ", " : " ";
-+  return `translate(${at.x}${u}${sep}${at.y}${u}) rotate(${at.turn}${d}) scale(${REST_SCALE}) translate(${(-cx).toFixed(2)}${u}${sep}${(-cy).toFixed(2)}${u})`;
-+};
 +
 +const PARTS = [FLOWER_STEM, ...FLOWER_PETALS];
 +
@@ -14955,14 +14859,14 @@ index 0000000..ca64a9c
 +export const EMAIL_CODE_SIGN_IN: boolean = false;
 diff --git a/src/lib/auth/forgetDevice.test.ts b/src/lib/auth/forgetDevice.test.ts
 new file mode 100644
-index 0000000..c6c42e1
+index 0000000..b47dc09
 --- /dev/null
 +++ b/src/lib/auth/forgetDevice.test.ts
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,50 @@
 +import { beforeEach, describe, expect, it } from "vitest";
 +import { readFileSync } from "node:fs";
 +import { resolve } from "node:path";
-+import { DEVICE_FIELDS, MEMBER_FIELDS, MEMBER_MAPS, PORTAL_STORE_KEY, VANITY_STORE_KEY, forgetMemberOnDevice } from "./forgetDevice";
++import { MEMBER_FIELDS, PORTAL_STORE_KEY, forgetMemberOnDevice } from "./forgetDevice";
 +
 +/* Signing out clears what the garden kept on this phone about her, and keeps the phone's own conveniences. */
 +
@@ -14982,38 +14886,13 @@ index 0000000..c6c42e1
 +        pressedFor: "u-1",
 +        early: { d: true },
 +        arrival: { "u-1": { join: true }, "u-2": { consent: true } },
-+        crown: { "u-1": true, "u-2": true },
-+        grown: { "order-1": true },
-+        revealed: { d: true },
 +        cardCal: { key: "390x844@3", pxPerMm: 6.04 },
 +        doorsDay: "2026-11-05",
 +        seedSeen: true,
 +      }),
 +    );
 +    forgetMemberOnDevice("u-1");
-+    expect(store()).toEqual({ arrival: { "u-2": { consent: true } }, crown: { "u-2": true }, revealed: { d: true }, cardCal: { key: "390x844@3", pxPerMm: 6.04 }, doorsDay: "2026-11-05", seedSeen: true });
-+  });
-+
-+  it("drops the gold-leaf mark map once her entry was the only one", () => {
-+    window.localStorage.setItem(PORTAL_STORE_KEY, JSON.stringify({ crown: { "u-1": true }, seedSeen: true }));
-+    forgetMemberOnDevice("u-1");
-+    expect(store()).toEqual({ seedSeen: true });
-+  });
-+
-+  it("clears her Vanity look, even with no garden store on the phone, and keeps another member's", () => {
-+    const look = (u: string) => JSON.stringify({ u, h: [["dewdrop-bezel-necklace", "gid://shopify/ProductVariant/1"]] });
-+    window.localStorage.setItem(VANITY_STORE_KEY, look("u-1"));
-+    forgetMemberOnDevice("u-1");
-+    expect(window.localStorage.getItem(VANITY_STORE_KEY)).toBeNull();
-+    expect(window.localStorage.getItem(PORTAL_STORE_KEY)).toBeNull();
-+    window.localStorage.setItem(VANITY_STORE_KEY, look("u-2"));
-+    forgetMemberOnDevice("u-1");
-+    expect(window.localStorage.getItem(VANITY_STORE_KEY)).toBe(look("u-2"));
-+    // A broken look is nobody's: it goes.
-+    window.localStorage.setItem(VANITY_STORE_KEY, "{not json");
-+    window.localStorage.setItem(PORTAL_STORE_KEY, "{not json");
-+    forgetMemberOnDevice("u-1");
-+    expect(window.localStorage.getItem(VANITY_STORE_KEY)).toBeNull();
++    expect(store()).toEqual({ arrival: { "u-2": { consent: true } }, cardCal: { key: "390x844@3", pxPerMm: 6.04 }, doorsDay: "2026-11-05", seedSeen: true });
 +  });
 +
 +  it("leaves another member's pressed flowers on a shared phone", () => {
@@ -15028,81 +14907,39 @@ index 0000000..c6c42e1
 +    expect(() => forgetMemberOnDevice("u-1")).not.toThrow();
 +  });
 +
-+  it("names the portal's own stores and fields", () => {
++  it("names the portal's own store and fields", () => {
 +    const portal = readFileSync(resolve(__dirname, "../portal/safeStorage.ts"), "utf8");
 +    expect(portal).toMatch(new RegExp(`PORTAL_KEY = "${PORTAL_STORE_KEY}"`));
-+    for (const field of [...MEMBER_FIELDS, ...MEMBER_MAPS, ...DEVICE_FIELDS]) expect(portal).toMatch(new RegExp(`\\b${field}\\?:`));
-+    expect(readFileSync(resolve(__dirname, "../portal/vanity.ts"), "utf8")).toMatch(new RegExp(`VANITY_KEY = "${VANITY_STORE_KEY}"`));
-+  });
-+
-+  it("has every field of the portal's store classified once: hers, hers by member, or the phone's own", () => {
-+    const portal = readFileSync(resolve(__dirname, "../portal/safeStorage.ts"), "utf8");
-+    const block = portal.slice(portal.indexOf("export type PortalStore = {"), portal.indexOf("\n};", portal.indexOf("export type PortalStore = {")));
-+    const fields = [...block.matchAll(/^\s+(\w+)\?:/gm)].map((m) => m[1]);
-+    expect(fields.length).toBeGreaterThan(10);
-+    const classified = [...MEMBER_FIELDS, ...MEMBER_MAPS, ...DEVICE_FIELDS] as string[];
-+    expect(new Set(classified).size).toBe(classified.length);
-+    expect([...fields].sort()).toEqual([...classified].sort());
++    for (const field of MEMBER_FIELDS) expect(portal).toMatch(new RegExp(`\\b${field}\\?:`));
 +  });
 +});
 diff --git a/src/lib/auth/forgetDevice.ts b/src/lib/auth/forgetDevice.ts
 new file mode 100644
-index 0000000..a84aaf1
+index 0000000..bccc79b
 --- /dev/null
 +++ b/src/lib/auth/forgetDevice.ts
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,43 @@
 +/*
 +  Signing out on a phone: what the members' garden kept on this device about
 +  her, and only her, is cleared, so the next person to use the phone cannot
 +  read it in the browser's storage. That is the drawer's record of her saved
 +  pieces (tagged with her account id), the days of her visits, the pressed
-+  flowers' days and owner, which arrival questions she was shown here (on
-+  her first visit only), the gold-leaf mark of her whole Naira flower
-+  (Phase 6), the roses her confirmed orders grew here (Phase 5: keyed by
-+  order ids, which cannot be told apart by member, so the whole map goes and
-+  another member's roses on a shared phone simply grow once more), and the
-+  Vanity's look (Phase 6: its own key, tagged with her account id; it is
-+  gone when she signs back in on this phone, as her drawer's record is).
-+  Conveniences that are the phone's own (the ring sizer's measurement of
-+  this screen, which welcome screens were seen, which drops were revealed
-+  or unboxed here) stay.
++  flowers' days and owner, and which arrival questions she was shown here
++  (on her first visit only). Conveniences that are the phone's own (the
++  ring sizer's measurement of this screen, which welcome screens were seen)
++  stay.
 +
-+  It reads the portal's stores by their keys, without importing the portal
++  It reads the portal's own store by its key, without importing the portal
 +  (Account is its own chunk and must not pull the portal in); a test keeps
-+  the keys and the fields in step with lib/portal/safeStorage.ts and
-+  lib/portal/vanity.ts, and fails on any new field nobody has classified.
++  the key and the fields in step with lib/portal/safeStorage.ts.
 +*/
 +
 +export const PORTAL_STORE_KEY = "naira-portal";
-+/** The Vanity's look: lib/portal/vanity.ts VANITY_KEY. */
-+export const VANITY_STORE_KEY = "naira-vanity";
 +
 +/** Hers alone: cleared on sign-out. */
-+export const MEMBER_FIELDS = ["savedSync", "lastVisitLocal", "pressedFor", "pressedLocal", "pressedOn", "early", "grown"] as const;
-+/** Maps keyed by a member's id: only her own entry is cleared. */
-+export const MEMBER_MAPS = ["arrival", "crown"] as const;
-+/** The phone's own conveniences: they stay. */
-+export const DEVICE_FIELDS = ["doorsDay", "seedSeen", "revealed", "unboxed", "cardCal", "spot"] as const;
-+
-+/* Her look, removed when it is hers (or nobody's: broken, or untagged); another member's stays. */
-+const forgetLook = (userId: string | null | undefined) => {
-+  try {
-+    const raw = window.localStorage.getItem(VANITY_STORE_KEY);
-+    if (!raw) return;
-+    let u: unknown = null;
-+    try {
-+      u = (JSON.parse(raw) as { u?: unknown } | null)?.u;
-+    } catch {
-+      /* broken: nobody's */
-+    }
-+    if (!userId || u === userId || typeof u !== "string") window.localStorage.removeItem(VANITY_STORE_KEY);
-+  } catch {
-+    /* blocked storage: nothing was kept */
-+  }
-+};
++export const MEMBER_FIELDS = ["savedSync", "lastVisitLocal", "pressedFor", "pressedLocal", "pressedOn", "early"] as const;
 +
 +export const forgetMemberOnDevice = (userId: string | null | undefined): void => {
-+  forgetLook(userId);
 +  try {
 +    const raw = window.localStorage.getItem(PORTAL_STORE_KEY);
 +    if (!raw) return;
@@ -15114,13 +14951,11 @@ index 0000000..a84aaf1
 +      if (!pressedHers && (field === "pressedFor" || field === "pressedLocal" || field === "pressedOn")) continue;
 +      delete store[field];
 +    }
-+    for (const name of MEMBER_MAPS) {
-+      const map = store[name];
-+      if (!userId || !map || typeof map !== "object" || Array.isArray(map)) continue;
-+      const rest = { ...(map as Record<string, unknown>) };
++    const arrival = store.arrival;
++    if (userId && arrival && typeof arrival === "object" && !Array.isArray(arrival)) {
++      const rest = { ...(arrival as Record<string, unknown>) };
 +      delete rest[userId];
-+      if (name === "arrival" || Object.keys(rest).length) store[name] = rest;
-+      else delete store[name];
++      store.arrival = rest;
 +    }
 +    window.localStorage.setItem(PORTAL_STORE_KEY, JSON.stringify(store));
 +  } catch {
@@ -23309,14 +23144,14 @@ index 0000000..3604ee0
 +];
 diff --git a/src/lib/portal/memberMeta.test.ts b/src/lib/portal/memberMeta.test.ts
 new file mode 100644
-index 0000000..263a7c8
+index 0000000..9c3020b
 --- /dev/null
 +++ b/src/lib/portal/memberMeta.test.ts
-@@ -0,0 +1,462 @@
+@@ -0,0 +1,451 @@
 +import { afterEach, describe, expect, it, vi } from "vitest";
 +import {
 +  META_CAP_BYTES,
-+  PLAY_KEEP,
++  PLAY_MAX,
 +  MAX_GIFTS,
 +  WRITE_DELAY_MS,
 +  bytesOf,
@@ -23708,6 +23543,7 @@ index 0000000..263a7c8
 +  };
 +
 +  it("round-trips every integer from 1 to 63", () => {
++    expect(PLAY_MAX).toBe(63);
 +    for (let p = 1; p <= 63; p++) {
 +      const written = JSON.parse(JSON.stringify(compactNaira(readNaira({ v: 1, p }))));
 +      expect(written.p).toBe(p);
@@ -23715,20 +23551,8 @@ index 0000000..263a7c8
 +    }
 +  });
 +
-+  it("keeps a later version's bits (to bit nine) through this version's writes", () => {
-+    const later = readNaira({ v: 1, p: 95, seen: { last: "2026-11-05" } });
-+    expect(later.p).toBe(95);
-+    // The next day's visit write, and a find, keep every bit.
-+    const next = touchSeen("2026-11-06")(later);
-+    expect(JSON.parse(JSON.stringify(compactNaira(next))).p).toBe(95);
-+    expect(readNaira(compactNaira(findPiece(1)(next))).p).toBe(95 | 2);
-+    expect(readNaira({ v: 1, p: PLAY_KEEP }).p).toBe(1023);
-+    // Its largest kept form is ,"p":1023: nine bytes, still inside the worst case's room.
-+    expect(bytesOf({ ...worst(), p: PLAY_KEEP })).toBeLessThanOrEqual(META_CAP_BYTES);
-+  });
-+
 +  it("drops anything else, and is left out of what is written when absent", () => {
-+    for (const bad of [0, 1024, -1, 2.5, "7", null, [], {}, true, NaN]) {
++    for (const bad of [0, 64, 65, 95, 1023, -1, 2.5, "7", null, [], {}, true, NaN]) {
 +      const n = readNaira({ v: 1, p: bad, wishes: "kept" });
 +      expect(n.p).toBeUndefined();
 +      expect("p" in compactNaira(n)).toBe(false);
@@ -23777,10 +23601,10 @@ index 0000000..263a7c8
 +});
 diff --git a/src/lib/portal/memberMeta.ts b/src/lib/portal/memberMeta.ts
 new file mode 100644
-index 0000000..039b2d9
+index 0000000..6cb0c69
 --- /dev/null
 +++ b/src/lib/portal/memberMeta.ts
-@@ -0,0 +1,352 @@
+@@ -0,0 +1,351 @@
 +/*
 +  Her account's memory: user_metadata.naira, the portal's own corner of the
 +  sign-in account's metadata (no table, no migration). It keeps what makes
@@ -23841,7 +23665,7 @@ index 0000000..039b2d9
 +  gifts: Gift[];
 +  /** The last IST day she came (written at most once an IST day). */
 +  seen?: { last: string };
-+  /** Play (Phase 6), one small integer, 1 to 63 today, absent when 0: the Naira flower's five pieces she found in her rooms (bits 0 to 4) and her month's flower written in her garden's stars (bit 5). See petals.ts. Bits a later version sets (to bit 9, PLAY_KEEP) are kept. */
++  /** Play (Phase 6), one small integer, 1 to 63, absent when 0: the Naira flower's five pieces she found in her rooms (bits 0 to 4) and her month's flower written in her garden's stars (bit 5). See petals.ts. Anything else is dropped as she reads it. */
 +  p?: number;
 +  /** Keys a later version wrote: kept untouched. */
 +  [key: string]: unknown;
@@ -23858,10 +23682,9 @@ index 0000000..039b2d9
 +export const HANDLE = /^[a-z0-9][a-z0-9-]{0,95}$/;
 +const SIZES: readonly number[] = [5, 6, 7, 8, 9];
 +const KNOWN = new Set(["v", "ring", "metal", "month", "saved", "pressed", "front", "gifts", "seen", "p"]);
-+/** The play number's largest value today: six bits (petals.ts names them). */
++/** The play number's largest value: six bits (petals.ts names them). `,"p":63` is seven bytes. A later
++    version that wants a seventh bit ships a reader that keeps it before any writer sets it. */
 +export const PLAY_MAX = 63;
-+/** What is kept of it: ten bits, so a later version's bits survive this version's writes (`,"p":1023` is nine bytes). */
-+export const PLAY_KEEP = 1023;
 +
 +const isObject = (x: unknown): x is Record<string, unknown> => Boolean(x) && typeof x === "object" && !Array.isArray(x);
 +
@@ -23942,7 +23765,7 @@ index 0000000..039b2d9
 +  out.front = list(src.front, HANDLE, MAX_PRESSED).filter((id) => out.pressed.includes(id)).slice(-MAX_FRONT);
 +  out.gifts = (Array.isArray(src.gifts) ? src.gifts : []).map(giftOf).filter((g): g is Gift => g !== null).slice(0, MAX_GIFTS);
 +  if (isObject(src.seen) && typeof src.seen.last === "string" && DAY.test(src.seen.last)) out.seen = { last: src.seen.last };
-+  if (Number.isInteger(src.p) && (src.p as number) >= 1 && (src.p as number) <= PLAY_KEEP) out.p = src.p as number;
++  if (Number.isInteger(src.p) && (src.p as number) >= 1 && (src.p as number) <= PLAY_MAX) out.p = src.p as number;
 +  return out;
 +};
 +
@@ -25220,10 +25043,10 @@ index 0000000..5743fbf
 +};
 diff --git a/src/lib/portal/petals.test.ts b/src/lib/portal/petals.test.ts
 new file mode 100644
-index 0000000..980a410
+index 0000000..c6d4645
 --- /dev/null
 +++ b/src/lib/portal/petals.test.ts
-@@ -0,0 +1,177 @@
+@@ -0,0 +1,179 @@
 +import { afterEach, describe, expect, it } from "vitest";
 +import { META_CAP_BYTES, MAX_FRONT, MAX_GIFTS, bytesOf, compactNaira, fitToCap, mergePressed, pressInto, readNaira, touchSeen, type Gift, type Naira } from "./memberMeta";
 +import { keepMetal, keepMonth, keepRing } from "./roomChanges";
@@ -25364,10 +25187,12 @@ index 0000000..980a410
 +    expect(piecesFound(readNaira(null), "a")).toBe(0);
 +  });
 +
-+  it("keeps a later version's play bits, and reads only its own", () => {
-+    const later = readNaira({ v: 1, p: 64 | 5 });
-+    expect(piecesFound(later, U)).toBe(5);
-+    expect(playOf(findPiece(BITS.drawer)(later))).toBe(64 | 7);
++  it("never holds a bit above the stars: her account reads only 1 to 63", () => {
++    const n = readNaira({ v: 1, p: 64 | 5 });
++    expect(playOf(n)).toBe(0);
++    expect(piecesFound(n, U)).toBe(0);
++    expect(playOf(findPiece(BITS.drawer)(n))).toBe(2);
++    expect(playOf(keepStars(findPiece(BITS.care)(readNaira({ v: 1, p: 15 }))))).toBe(63);
 +  });
 +});
 +
@@ -25403,10 +25228,10 @@ index 0000000..980a410
 +});
 diff --git a/src/lib/portal/petals.ts b/src/lib/portal/petals.ts
 new file mode 100644
-index 0000000..f759b6d
+index 0000000..72c5f56
 --- /dev/null
 +++ b/src/lib/portal/petals.ts
-@@ -0,0 +1,175 @@
+@@ -0,0 +1,174 @@
 +import { META_CAP_BYTES, bytesOf, type Naira, type Updater } from "./memberMeta";
 +
 +/*
@@ -25417,11 +25242,10 @@ index 0000000..f759b6d
 +  trace her month's flower star by star in her garden's sky.
 +
 +  Her account keeps all of it in one small integer, user_metadata.naira.p
-+  (1 to 63 today, absent when 0; memberMeta): one bit per piece and one for
++  (1 to 63, absent when 0; memberMeta): one bit per piece and one for
 +  the stars. The bits are pinned (a test holds them): Drops 0, the Drawer 1,
 +  Your fit 2, Gifts 3, Care 4, written in her sky 5. Bits a later version
-+  sets (up to bit 9) are kept through this version's writes; every reader
-+  here masks for the bits it knows.
++  might set are not kept: memberMeta reads the number only from 1 to 63.
 +
 +  A play write only ever adds its bit, onto her account's fresh copy (the
 +  debounced writer re-runs it there), so another phone's finds are kept. It

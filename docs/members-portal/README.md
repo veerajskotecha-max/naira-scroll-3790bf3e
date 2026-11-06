@@ -120,6 +120,14 @@ Phase 6 checks on f6a6a88:
   - &hunt=1, 2, 3 and 5 draw exactly the pieces found, each at the crown's place in the flower's shape, with no small flower and no empty slot. The layer is pointer-events none.
   - What's growing names the rooms in words, with no digit.
   - Taps on the bed outside the crown, and on the crown itself, open tap blooms.
+Independent check by the lead on f6a6a88 (a separate detached worktree):
+- 215 files and 2,030 tests pass; tsc is clean (app and node); eslint is clean on the 65 changed files; the build succeeds and leaves the tree clean.
+- The protected files are unchanged since 893d5be; since 1238125 the only file changed outside the portal is config.test.ts, with the one gem line.
+- vendor, three, gsap, RoomEnvironment and the global CSS are byte-identical to 893d5be; Flip and Physics2D to Phase 5.
+- ProductDetail, CartDrawerNext, JewelDetailNext, Jewellery, JewelleryCategory and Index match 893d5be once hashes are masked; Account and Auth match Phase 5. The entry chunk is the same length with the same 117 exports and differs only in short minified names; so does unboxGsap (its source is unchanged).
+- The dist grep is clean, switches and fixtures included. `META_CAP_BYTES` is still 1200, `naira.p` is read only from 1 to 63, and the worst case test pins 1,184 B.
+- `git revert 7625aa2`, `git revert f6a6a88`, both together, and `git revert 38e854f` each apply cleanly with tsc clean. With Tier 2 dropped, 214 files and 1,998 tests pass.
+
 - Not done (needs a real device or a real member):
   - the 60-frame probe, compile time and crossfade on a mid-range Android or an iPhone (SwiftShader's crossfade at about 6 s is not a phone number);
   - the iPhone Safari motion-permission prompt and real DeviceOrientation readings (tested only with a stubbed requestPermission and synthetic events);

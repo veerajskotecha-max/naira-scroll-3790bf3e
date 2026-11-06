@@ -3,7 +3,7 @@
 Backup copies of the members' portal commits. They are **not on main** and must not be merged without the owner's review.
 
 - Base: `893d5be` on main ("Buy 2 takes 10% off and Buy 3 takes 20%").
-- Branch in the session container: `members-portal`, at `fc54f58` (Phase 6 interim: visual fixes in review, on top of f6a6a88, which was Phase 6 final after the acceptance critic's fixes; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
+- Branch in the session container: `members-portal`, at `fc54f58` (Phase 6 final, after the acceptance critic and an independent visual review; Phase 5 final is `1238125`, Phase 4 final is `64d992d`) (includes real merge commits, so the backup is a git bundle).
 - To restore: `git fetch docs/members-portal/members-portal.bundle members-portal:members-portal`
 - To read every change at once: `docs/members-portal/members-portal.diff` (against 893d5be).
 
@@ -99,11 +99,12 @@ Phase 5 checks on 1238125 (run twice: once by the screens step, once independent
 | 04f2435 to 03ce4e9 | Integration and polish after five reviews (phone and performance, engineering, brand and delight, data and privacy, journey) with adversarial checks. |
 | 9fddb81 to 65760a8 | Acceptance-critic fixes. `naira.p` is read only from 1 to 63 again (64 and up are dropped, as planned). The crown's pieces stand in their own places from the first find (the polish had laid petals on the arch until the stem came home). forgetDevice.ts and its test are back to 1238125, so the Account chunk is Phase 5's again. The owner wording and Stone Light's Tier 2 were each lifted out whole so they could be laid back as single droppable commits. |
 | 7625aa2 | **Stone Light's Tier 2 (droppable, owner question 3):** on a Tier 2 phone only, once the panel is nearly in view and then on idle, a faceted 3D heart in three.js (`lib/portal/gem/scene.ts`, its own scene chunk) turns in unseen as the 60-frame probe and then crossfades over the drawing. It is disposed with forceContextLoss if it is slow or lost. It shares one WebGL slot (claimGl) with the Bloom Field, so there are at most two contexts with the header flower. It pauses off screen, when the tab is hidden, after 20 s idle and under the open bag. `git revert 7625aa2` drops all of it, and Stone Light stays complete at Tier 1. |
-| f6a6a88 | **Owner wording (droppable):** 'Written in your sky' for the keepsake, the night line, 'gathered from', rooms in lower case mid-sentence, the Vanity's instruction line, and the 'come apart in the breeze' line in What's growing. `git revert f6a6a88` drops it. |
+| f6a6a88, now laid back as ac2cdbf | **Owner wording (droppable):** 'Written in your sky' for the keepsake, the night line, 'gathered from', rooms in lower case mid-sentence, the Vanity's instruction line, and the 'come apart in the breeze' line in What's growing. It now drops with `git revert ac2cdbf` (f6a6a88 and its first re-lay 8a4d109 are already reverted in history, by d4b4185 and 0e00c7b; ac2cdbf has the same changed lines). |
+| 88522a2 to fc54f58, merged in b83566b and e77824a | **Visual fixes after an independent review of the owner screens** (four viewers, two skeptics per finding; 9 of 19 findings confirmed, two later rounds of adversarial checks clean). The Vanity draws every pendant above every chain, each bezel in a small vellum knockout, so a longer chain passes behind it whatever the tap order. The extenders toggle reads 'Show extenders' or 'Hide extenders' (no aria-pressed beside the changing words). The Vanity's status line is flush left under the tray's footnote. The crown's once-only fall of petals opens whole above the bed instead of being sliced by its edge. In the star sheet the words and 'Trace it again' wait for the flower's line (at once under reduced motion), and no longer pull her back if she has moved on. The night line without a month keeps the plan's words, balanced over two lines, with a row gap so a wrapped link's focus ring clears the sentence above. |
 
 Preview switches (development only, absent from dist): `&hunt=0..5`, `&stars=1`, `&look=1`, `&tilt=sweep`, with Phase 5's `&tier=2&probe=0` and `&hour=night`.
 
-Phase 6 checks on f6a6a88:
+Phase 6 checks on f6a6a88 (before the visual fixes):
 - 215 test files and 2,030 tests pass. tsc is clean (app and node), and eslint is clean on every file changed since 1238125.
 - `git revert 7625aa2`, `git revert f6a6a88`, and both in either order each apply cleanly on f6a6a88. With Tier 2 dropped, 214 files and 1,998 tests pass and tsc is clean, and the build has Phase 5's three scene chunks and no gem code. With the wording dropped, 215 files and 2,029 tests pass and tsc is clean. With both dropped, 214 files and 1,997 tests pass.
 - Since 893d5be, nothing changed in index.html, src/index.css, main.tsx, vite.config.ts, package.json, bun.lock, promo.ts, shopify.ts, CartContext, WishlistContext, the header, the product page, the bag or checkout. Since 1238125 the only file changed outside the portal is src/lib/nairaBox/config.test.ts, with exactly one added line, and that line is inside 7625aa2.
@@ -120,13 +121,15 @@ Phase 6 checks on f6a6a88:
   - &hunt=1, 2, 3 and 5 draw exactly the pieces found, each at the crown's place in the flower's shape, with no small flower and no empty slot. The layer is pointer-events none.
   - What's growing names the rooms in words, with no digit.
   - Taps on the bed outside the crown, and on the crown itself, open tap blooms.
-Independent check by the lead on f6a6a88 (a separate detached worktree):
-- 215 files and 2,030 tests pass; tsc is clean (app and node); eslint is clean on the 65 changed files; the build succeeds and leaves the tree clean.
+Independent check by the lead on fc54f58, the final head (a separate detached worktree; the same checks also passed on f6a6a88):
+- 216 files and 2,073 tests pass; tsc is clean (app and node); eslint is clean on the 68 changed files; the build succeeds and leaves the tree clean.
 - The protected files are unchanged since 893d5be; since 1238125 the only file changed outside the portal is config.test.ts, with the one gem line.
 - vendor, three, gsap, RoomEnvironment and the global CSS are byte-identical to 893d5be; Flip and Physics2D to Phase 5.
 - ProductDetail, CartDrawerNext, JewelDetailNext, Jewellery, JewelleryCategory and Index match 893d5be once hashes are masked; Account and Auth match Phase 5. The entry chunk is the same length with the same 117 exports and differs only in short minified names; so does unboxGsap (its source is unchanged).
 - The dist grep is clean, switches and fixtures included. `META_CAP_BYTES` is still 1200, `naira.p` is read only from 1 to 63, and the worst case test pins 1,184 B.
-- `git revert 7625aa2`, `git revert f6a6a88`, both together, and `git revert 38e854f` each apply cleanly with tsc clean. With Tier 2 dropped, 214 files and 1,998 tests pass.
+- Sizes (gzip -9): MembersRoute 31.0 KB (budget 31.4 for this phase), members.css 3.0 KB, Vanity 7.8 KB + 1.1 KB CSS, StarSheet 4.1 KB, PetalCrown 2.2 KB; still one new scene chunk (the gem, 4.0 KB).
+- `git revert 7625aa2`, `git revert ac2cdbf`, both in either order, and `git revert 38e854f` each apply cleanly on fc54f58 with tsc clean. With both Tier 2 and the wording dropped, 215 files and 2,040 tests pass.
+- Owner screens: the affected stills and clips were re-taken on fc54f58 with GPU rasterisation off (headless SwiftShader had drawn a ghost copy of the garden's plant in one still and one clip; not a product bug), and the Tier 2 captions now describe only what shows.
 
 - Not done (needs a real device or a real member):
   - the 60-frame probe, compile time and crossfade on a mid-range Android or an iPhone (SwiftShader's crossfade at about 6 s is not a phone number);
@@ -180,15 +183,18 @@ Independent check by the lead on f6a6a88 (a separate detached worktree):
 - Phase 6:
   - her account keeping one small play number, `naira.p` (7 bytes at most)
   - showing the brand's own flower 'come apart in the breeze', as four petals and a stem tucked about the rooms, and gathered again at the arbour's crown. Before the stem is home, a petal stands alone above the arch in its place; a brand review wanted petals resting on the arch instead, which the plan's spec does not allow
-  - Stone Light's Tier 2, a second three.js scene (drop it with `git revert 7625aa2`)
+  - Stone Light's Tier 2, a second three.js scene (drop it with `git revert 7625aa2`). Its 3D heart shows facets brightening as the light moves, but no visible 'window' reflection or star highlights; the drawn Tier 1 has the four-point glint
   - the iPhone motion-permission prompt after 'Tilt your phone' (nothing from the sensor is kept or sent)
   - the Vanity's caption: 'Drawn to each listing's own length, one against another. Where a chain sits on you depends on you.'
   - necklace lengths in Shopify: 9 live listings say '(to confirm)', 13 have no Length line, and the Birthstone Heart Necklace says 'plus extender' without a number. Until then those are left out of the Vanity or drawn without a tail
   - showing the shop's public Buy 2 / Buy 3 line inside the portal (read from promo.ts)
   - 'Add the look to your bag' sends one Meta AddToCart per piece, as each Add to bag does today
   - the names 'Gathered', 'Written in your sky' or 'Written in the stars', 'Hold it to the light' and 'The Vanity'
-  - the owner-wording commit f6a6a88 (droppable): 'Written in your sky', the night line, 'gathered from', lower-case rooms, the Vanity's instruction line, and the 'come apart in the breeze' line
+  - the owner-wording commit, now ac2cdbf (droppable with `git revert ac2cdbf`): 'Written in your sky', the night line, 'gathered from', lower-case rooms, the Vanity's instruction line, and the 'come apart in the breeze' line
   - later, optional: a one-time Bloom Field over the garden when the flower is whole (it needs the same Tier 2 approval)
+- Phase 6, small and later:
+  - two necklaces less than about 5.5 cm apart (for example 40 and 42 cm) still let the higher pendant cover most of the lower one's photo in the Vanity; separating them needs a choice of bail length or depth
+  - at 320 px the garden bed's edge trims the descenders of its labels ('Waiting', 'May · Emerald'); it predates Phase 6
 - Phase 6, for the lead (the acceptance critic's four lines, now held to the plan):
   - signing out on a phone does not forget the Vanity's look ('naira-vanity') or her gold-leaf mark (naira-portal.crown). Both are tagged with her id, so another member never sees them. Making sign-out forget them means editing the shop's Account chunk (src/lib/auth/forgetDevice.ts and its test). `git revert 38e854f` puts that change back, and it also clears naira-portal.grown, the Phase 5 roses
   - a later version that wants a seventh play bit must ship a reader that keeps it before any writer sets it, because today's reader drops any number above 63

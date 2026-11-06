@@ -249,6 +249,19 @@ const CartDrawerNext = () => {
       : [...items, pending];
   }, [items, pending, pendingKey]);
   const lineCount = totalItems + (pending?.quantity ?? 0);
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isDrawerOpen) return;
+    // Reveal the arriving line, not just the two pieces above the fold.
+    const frame = requestAnimationFrame(() => {
+      const list = listRef.current;
+      const target = list?.querySelector<HTMLElement>("[data-adding]") ?? list?.querySelector<HTMLElement>("li:last-child");
+      if (!list || !target) return;
+      const bottom = target.getBoundingClientRect().bottom - list.getBoundingClientRect().top;
+      if (bottom > list.clientHeight) list.scrollTop += bottom - list.clientHeight;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isDrawerOpen, pendingKey, lines.length]);
   const lineSubtotal = subtotal + (pending ? pending.price * pending.quantity : 0);
   /* One resolver for the bag and the checkout hand-off: the total shown is the total charged. */
   const discount = resolveCartDiscount({ totalItems: lineCount, promoCode });
@@ -435,7 +448,7 @@ const CartDrawerNext = () => {
           </div>
         ) : (
           <>
-            <div className="flex min-h-[96px] flex-1 flex-col overflow-y-auto overscroll-contain bg-[var(--nf-surface)]">
+            <div ref={listRef} data-bag-list className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-[var(--nf-surface)]">
               <ul className="flex flex-col">
                 {lines.map((item, index) => (
                   <li
@@ -443,16 +456,16 @@ const CartDrawerNext = () => {
                     data-line={item.id}
                     data-variant={item.variantId}
                     data-adding={cartKeyOf(item) === pendingKey ? "" : undefined}
-                    className="flex gap-4 px-5 py-5"
+                    className="flex gap-3 border-b border-nf-ink/10 px-4 py-3 sm:gap-4 sm:px-5 sm:py-5"
                   >
                     <Link to={pageOf(item)} onClick={leave} tabIndex={-1} aria-hidden="true" className="shrink-0">
                       <img
                         src={shopifyImage(item.image, 200) || item.image}
                         alt={item.name}
-                        className="h-[90px] w-[72px] bg-nf-ivory-deep object-cover"
+                        className="h-[80px] w-[64px] bg-nf-ivory-deep object-cover sm:h-[90px] sm:w-[72px]"
                         width={72}
                         height={90}
-                        loading={index < 2 ? "eager" : "lazy"}
+                        loading={index < 3 ? "eager" : "lazy"}
                         decoding="async"
                       />
                     </Link>
@@ -462,7 +475,7 @@ const CartDrawerNext = () => {
                           to={pageOf(item)}
                           onClick={leave}
                           data-line-name
-                          className="line-clamp-2 text-[14.5px] font-medium leading-snug text-nf-ink"
+                          className="line-clamp-2 text-[13.5px] font-medium leading-snug text-nf-ink sm:text-[14.5px]"
                         >
                           {item.name}
                         </Link>
@@ -485,7 +498,8 @@ const CartDrawerNext = () => {
                           </>
                         ) : item.priceLabel}
                       </p>
-                      <div className="mt-3 inline-flex h-10 items-center border border-nf-ink/40">
+                      <div className="mt-1 flex items-center justify-between gap-2 sm:mt-3">
+                      <div className="inline-flex h-8 items-center border border-nf-ink/40 sm:h-10">
                         <button
                           type="button"
                           onClick={() => (item.quantity <= 1 ? remove(item) : updateQuantity(item.id, item.size, item.quantity - 1, item.variantId))}
@@ -513,10 +527,11 @@ const CartDrawerNext = () => {
                         onClick={() => remove(item)}
                         disabled={isLoading}
                         aria-label={`Remove ${item.name}`}
-                        className="mt-1 flex min-h-11 items-center gap-1.5 text-[13px] text-nf-ink/60 hover:text-nf-ink disabled:opacity-50"
+                        className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 text-[13px] text-nf-ink/60 hover:text-nf-ink disabled:opacity-50"
                       >
-                        <X size={14} strokeWidth={1.5} aria-hidden="true" /> Remove
+                        <X size={14} strokeWidth={1.5} aria-hidden="true" /><span className="hidden sm:inline">Remove</span>
                       </button>
+                      </div>
                     </div>
                   </li>
                 ))}
